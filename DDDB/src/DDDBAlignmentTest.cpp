@@ -34,7 +34,7 @@
 #include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsOperators.h"
 
-
+#include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBConditionPrinter.h"
 
@@ -59,6 +59,43 @@ namespace  {
     typedef DDDB::ConditionPrinter           _Printer;
   };
 
+  struct UserData;
+  struct Entry {
+    UserData*            data;
+    DetElement::Object*  det;
+    DetElement::Object*  par;
+    ConditionDependency* dep;
+    int det_key, par_key, top;
+  };
+  struct UserData {
+    typedef std::map<std::string,size_t>       DetectorMap;
+    typedef std::map<unsigned int,size_t>      DetectorKeys;
+    typedef std::vector<Entry>                 Entries;
+    DetectorMap  detectors;
+    DetectorKeys keys;
+    Entries      entries;
+  };
+  struct _Oper : public ConditionsDependencyCollection::Functor {
+    void operator()(UserData& data, const Dependencies::value_type& e) const  {
+      const Dependency* dep = e.second.get();
+      DetElement det = dep->detector;
+      if ( det.isValid() )  {
+        Entry entry;
+        unsigned int key = det.key();
+        entry.data = &data;
+        entry.top  = 0;
+        entry.dep  = e.second.get();
+        entry.det  = det.ptr();
+        entry.par  = det.parent().ptr();
+        entry.det_key = key;
+        entry.par_key = det.parent().key();
+        data.detectors.insert(make_pair(det.path(),data.entries.size()));
+        data.keys.insert(make_pair(key,data.entries.size()));
+        data.entries.insert(data.entries.end(),entry);
+      }
+    }
+  };
+  
   /// Specialized conditions update callback for alignments
   /**
    *  Used by clients to update a condition.
@@ -67,109 +104,55 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  class AlignmentUpdate1 : public ConditionUpdateCall, public AlignmentTypes  {
+  class AlignmentUpdate : public ConditionUpdateCall, public AlignmentTypes  {
   public:
-    AlignmentUpdate1()          {    }
-    virtual ~AlignmentUpdate1() {    }
+    AlignmentUpdate()   {    }
+    virtual ~AlignmentUpdate() {    }
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, const Context& context)  {
-      printout(INFO,"AlignmentUpdate1","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
       Data&        data  = target.bind<Data>();
       Condition    cond0 = context.condition(0);
       const Map&   src0  = cond0.get<Map>();
       const Param& par0  = src0.firstParam().second;
+      DetElement   det0  = context.dependency.detector;
+      printout(INFO,"AlignmentUpdate","++ Building dependent condition: %s Detector [%d]: %s ",
+               key.name.c_str(), det0.level(), det0.path().c_str());
       if ( par0.typeInfo() == typeid(Delta) )  {
         const Delta& delta = src0.first<Delta>();
         data.delta         = delta;
         data.flag          = Data::HAVE_NONE;
       }
       else  {
-        printout(INFO,"AlignmentUpdate1","++ Failed to access alignment-Delta from %s",
+        printout(INFO,"AlignmentUpdate","++ Failed to access alignment-Delta from %s",
                  cond0->value.c_str());
         _Printer()(cond0);
       }
+      data.detector = context.dependency.detector;
       //data.condition   = target;
       return target;
     }
   };
-  /// Specialized conditions update callback for alignments
-  /**
-   *  Used by clients to update a condition.
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP_CONDITIONS
-   */
-  class AlignmentUpdate2 : public ConditionUpdateCall, public AlignmentTypes  {
-  public:
-    AlignmentUpdate2()          {    }
-    virtual ~AlignmentUpdate2() {    }
-    /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& context)  {
-      printout(INFO,"AlignmentUpdate2","++ Building dependent condition: %s",key.name.c_str());
-      Condition     target(key.name,"Alignment");
-      Data&         data  = target.bind<Data>();
-      Condition     cond0 = context.condition(0);
-      const Map&    src0  = cond0.get<Map>();      
-      const Param&  par0  = src0.firstParam().second;
 
-      if ( par0.typeInfo() == typeid(Delta) )  {
-        const Delta& delta0 = src0.first<Delta>();
-        const Data&  delta1 = context.get<Data>(1);
-        data.delta          = delta0;
-        data.delta          = delta1.delta;
-        data.flag           = Data::HAVE_NONE;
-      }
-      else  {
-        printout(INFO,"AlignmentUpdate2","++ Failed to access alignment-Delta from %s",
-                 cond0->value.c_str());
-        _Printer()(cond0);
-      }
-      //data.condition   = target;
-      return target;
+  void __print(DetElement det,
+               UserData& data,
+               int level)
+  {
+    char fmt[128];
+    auto i=data.keys.find(det.key());
+    const char* has_alignment = i==data.keys.end() ? "NO " : "YES";
+    size_t siz =  i==data.keys.end() ? 0 : 1;
+    ::snprintf(fmt,sizeof(fmt),"%%d %%%ds %%p [%%d] %%s %%08X: %%s ",2*level);
+    printout(INFO,"Conditions",fmt,
+             det.level(), "", det.ptr(), siz, has_alignment,
+             det.key(), det.path().c_str());
+    const DetElement::Children& children = det.children();
+    for(auto c=children.begin(); c!=children.end(); ++c)    {
+      DetElement child = (*c).second;
+      __print(child, data, level+1);
     }
-  };
-  /// Specialized conditions update callback for alignments
-  /**
-   *  Used by clients to update a condition.
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP_CONDITIONS
-   */
-  class AlignmentUpdate3 : public ConditionUpdateCall, public AlignmentTypes  {
-  public:
-    AlignmentUpdate3()          {    }
-    virtual ~AlignmentUpdate3() {    }
-    /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& context)  {
-      printout(INFO,"AlignmentUpdate3","++ Building dependent condition: %s",key.name.c_str());
-      Condition    target(key.name,"Alignment");
-      Data&        data  = target.bind<Data>();
-      Condition    cond0 = context.condition(0);
-      const Map&   src0  = cond0.get<Map>();
-      const Param& par0  = src0.firstParam().second;
-
-      if ( par0.typeInfo() == typeid(Delta) )  {
-        const Delta& delta0 = src0.first<Delta>();
-        const Data&  delta1 = context.get<Data>(1);
-        const Data&  delta2 = context.get<Data>(2);
-        data.delta          = delta0;
-        data.delta          = delta1.delta;
-        data.delta          = delta2.delta;
-        data.flag           = Data::HAVE_NONE;
-      }
-      else  {
-        printout(INFO,"AlignmentUpdate2","++ Failed to access alignment-Delta from %s",
-                 cond0->value.c_str());
-        _Printer()(cond0);
-      }
-      //data.condition = target;
-      return target;
-    }
-  };
-
+  }
+  
   /// DDDB Conditions analyser to select alignments.
   /**
    *   \author  M.Frank
@@ -191,17 +174,16 @@ namespace  {
     } m_counters;
 
     /// Initializing constructor
-    AlignmentSelector(ConditionsAccess mgr) : m_manager(mgr) {
+    AlignmentSelector(ConditionsAccess mgr) : m_manager(mgr)    {
       Operators::collectAllConditions(mgr, m_allConditions);
     }
 
     virtual ~AlignmentSelector()   {
-      destroyObjects(m_allDependencies);
+      m_allDependencies.clear();
     }
 
     void addDependency(ConditionDependency* dependency)   {
-      const ConditionKey& key = dependency->target;
-      m_allDependencies.insert(make_pair(key.hash,dependency));
+      m_allDependencies.insert(dependency->target.hash, dependency);
     }
 
     RangeConditions findCond(const string& match)   {
@@ -225,7 +207,9 @@ namespace  {
       }
       return result;
     }
-    long collectDependencies(DetElement de, int level)  {
+
+    AlignmentUpdate* m_update;
+    long collectDependencies(DetElement de, AlignmentUpdate* update, int level)  {
       char fmt[64], text[256];
       DDDB::Catalog* cat = 0;
       DDDB::ConditionPrinter prt;
@@ -246,33 +230,14 @@ namespace  {
                    rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
           if ( !rc.empty() )   {
             ConditionKey target1(cat->condition+"/derived_1");
-            ConditionKey target2(cat->condition+"/derived_2");
-            ConditionKey target3(cat->condition+"/derived_3");
-            DependencyBuilder build_1(target1, new AlignmentUpdate1());
-            DependencyBuilder build_2(target2, new AlignmentUpdate2());
-            DependencyBuilder build_3(target3, new AlignmentUpdate3());
-
+            DependencyBuilder build_1(target1, update->addRef());
             build_1->detector = de;
-            build_2->detector = de;
-            build_3->detector = de;
             for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
-              Condition cond = *ic;
-              ConditionKey       key(cond->value);
-              if ( cond->value.find("/dd/Conditions/Alignment/Velo/Detector10-01") != string::npos )  {
-                printout(INFO,m_name,fmt,"","Alignment--2:    ", cond->value.c_str());
-              }
+              Condition    cond = *ic;
+              ConditionKey key(cond->value);
               build_1.add(key);
-
-              build_2.add(key);
-              build_2.add(target1);
-
-              build_3.add(key);
-              build_3.add(target1);
-              build_3.add(target2);
             }
             addDependency(build_1.release());
-            addDependency(build_2.release());
-            addDependency(build_3.release());
           }
           ++m_counters.numAlignments;
         }
@@ -283,7 +248,7 @@ namespace  {
         ++m_counters.numNoCatalogs;
       }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-        collectDependencies((*i).second,level+1);
+        collectDependencies((*i).second, update, level+1);
       return 1;
     }
 
@@ -296,20 +261,55 @@ namespace  {
       printout(INFO,"Conditions",
                "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
                num_expired, iov.str().c_str());
+      
+      UserData data;
+      data.entries.reserve(dependencies.size());
+      dependencies.for_each(DependencyCollector<UserData,_Oper>(data,_Oper()));
+
+      string prev("-----");
+      for(auto i=data.detectors.begin(); i!=data.detectors.end(); ++i)  {
+        Entry& e = data.entries[(*i).second];
+        DetElement    det = e.det;
+        unsigned int  key = det.key();
+        const string& p   = (*i).first;
+        size_t idx = p.find(prev);
+        if ( idx == 0 )  {
+          //printout(INFO,"Conditions","***** %d %p %08X: %s ",
+          //         det.level(), det.ptr(), key, det.path().c_str());
+          continue;
+        }
+        prev = p;
+        printout(INFO,"Conditions","%d %p %08X: %s ",
+                 det.level(), det.ptr(), key, det.path().c_str());
+        e.top = 1;
+      }
+
+      printout(INFO,"Conditions","Working down the tree....");
+      for(auto i=data.detectors.begin(); i!=data.detectors.end(); ++i)  {
+        Entry& e = data.entries[(*i).second];
+        if ( e.top )  {
+          DetElement det = e.det;
+          printout(INFO,"Conditions","%d %p %08X: %s ",
+                   det.level(), det.ptr(), det.key(), det.path().c_str());
+          __print(det, data, 0);
+        }
+      }
       user_pool->clear();
       return 1;
     }
   };
 
   /// Plugin function
-  long dddb_derived_alignments(LCDD& lcdd, int , char** argv) {
-    long init_time = *(long*)argv[0];
+  long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
+    long int long init_time = argc>0 ? *(long*)argv[0] : 0;//DDDB::DDDBReader::makeTime(2016,4,1,12);
     ConditionsManager manager = ConditionsManager::from(lcdd);
     AlignmentSelector selector(manager);
-    int ret = selector.collectDependencies(lcdd.world(), 0);
+    AlignmentUpdate* update = new AlignmentUpdate();
+    int ret = selector.collectDependencies(lcdd.world(), update, 0);
     if ( ret == 1 )  {
       ret = selector.computeDependencies(init_time);
     }
+    delete update;
     return ret;
   }
 } /* End anonymous namespace  */

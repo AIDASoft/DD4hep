@@ -118,10 +118,10 @@ Geant4Kernel::~Geant4Kernel() {
   if ( this == s_main_instance.get() )   {
     s_main_instance.release();
   }
-  destroyObjects(m_workers)();
+  destroyObjects(m_workers);
   if ( isMaster() )  {
-    releaseObjects(m_globalFilters)();
-    releaseObjects(m_globalActions)();
+    releaseObjects(m_globalFilters);
+    releaseObjects(m_globalActions);
   }
   destroyPhases();
   deletePtr(m_runManager);
@@ -307,8 +307,8 @@ int Geant4Kernel::terminate() {
     Geant4Exec::terminate(*this);
   }
   destroyPhases();
-  for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
-  for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
+  releaseObjects(m_globalFilters);
+  releaseObjects(m_globalActions);
   if ( ptr == this )  {
     deletePtr  (m_runManager);
   }
@@ -445,5 +445,5 @@ bool Geant4Kernel::removePhase(const std::string& nam) {
 
 /// Destroy all phases. To be called only at shutdown
 void Geant4Kernel::destroyPhases() {
-  for_each(m_phases.begin(), m_phases.end(), destroyObjects(m_phases));
+  destroyObjects(m_phases);
 }

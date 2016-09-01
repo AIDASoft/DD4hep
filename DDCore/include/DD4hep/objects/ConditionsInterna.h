@@ -91,13 +91,13 @@ namespace DD4hep {
       class ConditionObject : public NamedObject {
       public:
         /// Forward definition of the key type
-        typedef Condition::key_type key_type;
+        typedef Condition::key_type         key_type;
         /// Forward definition of the iov type
-        typedef Condition::iov_type iov_type;
+        typedef Condition::iov_type         iov_type;
         /// Forward definition of the object properties
-        typedef unsigned int BitMask;
+        typedef unsigned int                mask_type;
         /// Forward definition of the object mask manipulator
-        typedef ReferenceBitMask<BitMask> MaskManip;
+        typedef ReferenceBitMask<mask_type> MaskManip;
 
         /// Condition value (in string form)
         std::string     value;
@@ -116,7 +116,7 @@ namespace DD4hep {
         /// Hash value of the name
         key_type        hash;
         /// Flags
-        BitMask         flags;
+        mask_type       flags;
         /// Reference count
         int             refCount;
         /// Standard constructor

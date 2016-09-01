@@ -29,6 +29,7 @@ ConditionsIOVPool::ConditionsIOVPool()  {
 
 /// Default destructor
 ConditionsIOVPool::~ConditionsIOVPool()  {
+  clean(-1);
   InstanceCount::decrement(this);
 }
 
@@ -81,9 +82,9 @@ int ConditionsIOVPool::clean(int max_age)   {
 
 /// Select all ACTIVE conditions, which do no longer match the IOV requirement
 void ConditionsIOVPool::select(const Condition::iov_type& required_validity, 
-			       RangeConditions& valid,
-			       RangeConditions& expired,
-			       Condition::iov_type& conditions_validity)
+                               RangeConditions& valid,
+                               RangeConditions& expired,
+                               Condition::iov_type& conditions_validity)
 {
   if ( !elements.empty() )  {
     const IOV::Key req_key = required_validity.key(); // 16 bytes => better copy!

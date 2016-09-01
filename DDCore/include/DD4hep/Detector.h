@@ -335,10 +335,14 @@ namespace DD4hep {
       ///  Set the flag word encoding detector types ( ideally use DD4hep::DetType for encoding )
       DetElement& setTypeFlag(unsigned int types);
 
+      /// Access hash key of this detector element (Only valid once geometry is closed!)
+      unsigned int key()  const;
+      /// Access the hierarchical level of the detector element (Only valid once geometry is closed!)
+      int level()  const;
       /// Path of the detector element (not necessarily identical to placement path!)
-      std::string path() const;
+      const std::string& path() const;
       /// Access to the full path to the placed object
-      std::string placementPath() const;
+      const std::string& placementPath() const;
 
       /// Set all attributes in one go
       DetElement& setAttributes(const LCDD& lcdd, const Volume& volume, const std::string& region, const std::string& limits,

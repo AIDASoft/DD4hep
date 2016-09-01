@@ -114,8 +114,19 @@ namespace DD4hep {
           return this->get<T>(key_value);
         }
       };
+    protected:
+      /// Reference count
+      int  m_refCount;
+      /// Standard destructor
+      ConditionUpdateCall() : m_refCount(1)  {                      }
       /// Standard destructor
       virtual ~ConditionUpdateCall();
+
+    public:
+      /// Add use count to the object
+      ConditionUpdateCall* addRef()   {  ++m_refCount;  return this;  }
+      /// Release object. May not be used any longer
+      void release()  {  if ( --m_refCount <= 0 ) delete this;        }
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& target, const Context& ctxt) = 0;
     };
@@ -130,31 +141,41 @@ namespace DD4hep {
      */
     class ConditionDependency    {
     protected:
-      /// Copy constructor
-      ConditionDependency(const ConditionDependency& c);
-      /// Assignment operator
-      ConditionDependency& operator=(const ConditionDependency& c);
+      /// Reference count
+      int                                m_refCount;
 
     public:
       typedef Geometry::DetElement       DetElement;
       /// Defintion of the depencency container
       typedef std::vector<ConditionKey>  Dependencies;
-      DetElement                 detector;
+      /// Reference to the target's detector element
+      DetElement                         detector;
       /// Key to the condition to be updated
-      ConditionKey              target;
+      ConditionKey                       target;
       /// Dependency keys this condition depends on
-      Dependencies               dependencies;
-      /// Reference to the update callback
-      dd4hep_ptr<ConditionUpdateCall>     callback;
+      Dependencies                       dependencies;
+      /// Reference to the update callback. No auto pointer. callback may be shared
+      ConditionUpdateCall*               callback;
 
+    protected:
+      /// Copy constructor
+      ConditionDependency(const ConditionDependency& c);
+      /// Assignment operator
+      ConditionDependency& operator=(const ConditionDependency& c);
+      /// Default destructor
+      virtual ~ConditionDependency();
+
+    public:
       /// Initializing constructor
       ConditionDependency(const ConditionKey& tar, const Dependencies deps, ConditionUpdateCall* call);
       /// Initializing constructor used by builder
       ConditionDependency(const ConditionKey& tar, ConditionUpdateCall* call);
       /// Default constructor
       ConditionDependency();
-      /// Default destructor
-      virtual ~ConditionDependency();
+      /// Add use count to the object
+      ConditionDependency* addRef()   {  ++m_refCount; return this;  }
+      /// Release object. May not be used any longer
+      void release()  {  if ( --m_refCount <= 0 ) delete this;      }
     };
 
     /// Condition dependency builder
@@ -164,16 +185,16 @@ namespace DD4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class DependencyBuilder  {
-    public:
+    protected:
       /// The created dependency
-      dd4hep_ptr<ConditionDependency> dependency;
+      ConditionDependency* m_dependency;
     public:
       /// Initializing constructor
       DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call);
       /// Default destructor
       virtual ~DependencyBuilder();
       /// Access underlying object directly
-      ConditionDependency* operator->()  {   return dependency.get();   }
+      ConditionDependency* operator->()            {   return m_dependency;   }
       /// Add a new dependency
       void add(const ConditionKey& source);
       /// Release the created dependency and take ownership.

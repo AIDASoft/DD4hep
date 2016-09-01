@@ -58,13 +58,13 @@ namespace DD4hep {
     class SensitiveDetectorObject: public NamedObject, public ObjectExtensions {
     public:
       unsigned int magic;
-      int verbose;
-      int combineHits;
-      double ecut;
-      Readout readout;
-      Region region;
-      LimitSet limits;
-      std::string hitsCollection;
+      int          verbose;
+      int          combineHits;
+      double       ecut;
+      Readout      readout;
+      Region       region;
+      LimitSet     limits;
+      std::string  hitsCollection;
 
       /// Default constructor
       SensitiveDetectorObject();
@@ -99,62 +99,66 @@ namespace DD4hep {
       typedef Alignments::Container                AlignmentsContainer;
 
       enum DetFlags {
-        HAVE_WORLD_TRAFO = 1<<0,
-        HAVE_PARENT_TRAFO = 1<<1,
-        HAVE_REFERENCE_TRAFO = 1<<2,
+        HAVE_WORLD_TRAFO        = 1<<0,
+        HAVE_PARENT_TRAFO       = 1<<1,
+        HAVE_REFERENCE_TRAFO    = 1<<2,
         HAVE_SENSITIVE_DETECTOR = 1<<29,
-        IS_TOP_LEVEL_DETECTOR = 1<<30,
-        HAVE_OTHER = 1<<31
+        IS_TOP_LEVEL_DETECTOR   = 1<<30,
+        HAVE_OTHER              = 1<<31
       };
 
       /// Magic number to ensure data integrity
-      unsigned int magic;
+      unsigned int        magic;
       /// Flag to remember internally calculated quatities
-      unsigned int flag;
+      unsigned int        flag;
       /// Unique integer identifier of the detector instance
-      int id;
+      int                 id;
       /// Flag to process hits
-      int combineHits;
+      int                 combineHits;
       /// Flag to encode detector types
-      unsigned int typeFlag;
+      unsigned int        typeFlag;
+      /// Hierarchical level within the detector description
+      int                 level;
+      /// Access hash key of this detector element (Only valid once geometry is closed!)
+      unsigned int        key;
       /// Full path to this detector element. May be invalid
-      std::string path;
+      std::string         path;
       /// The path to the placement of the detector element (if placed)
-      std::string placementPath;
+      std::string         placementPath;
 
       /// The subdetector placement corresponding to the ideal detector element's volume
-      PlacedVolume idealPlace;
+      PlacedVolume        idealPlace;
       /// The subdetector placement corresponding to the actual detector element's volume
-      PlacedVolume placement;
+      PlacedVolume        placement;
       /// The cached VolumeID of this subdetector element
       /**  Please note:
        *  These values are set when populating the volume manager.
        *  There are restrictions: e.g. only sensitive subdetectors are present.
        */
-      VolumeID volumeID;
+      VolumeID            volumeID;
       /// Reference to the parent element
-      World privateWorld;
+      World               privateWorld;
       /// Reference to the parent element
-      DetElement parent;
+      DetElement          parent;
       /// Reference element for stored transformations
-      DetElement reference;
+      DetElement          reference;
       /// The array of children
-      Children children;
+      Children            children;
       /// Placeholder for structure with update callbacks
-      UpdateCallbacks updateCalls;
+      UpdateCallbacks     updateCalls;
 
       //@{ Additional information set externally to facilitate the processing of event data */
       /// Basic ideal/nominal detector element alignment entry
-      Alignment nominal;
+      Alignment           nominal;
       /// Basic detector element alignment entry containing the survey data
-      Alignment survey;
+      Alignment           survey;
       /// The detector elements alignments access
       AlignmentsContainer alignments;
       /// The detector elements conditions access
       ConditionsContainer conditions;
 
       /// Global alignment data
-      Ref_t  global_alignment;
+      Ref_t               global_alignment;
 
       // To be removed!
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements

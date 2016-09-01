@@ -193,31 +193,18 @@ namespace DD4hep {
   template <typename T> inline void destroyHandle(T& h) {
     deletePtr(h.m_element);
   }
-  /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
-  template <typename T> inline void releaseHandle(T& h) {
-    releasePtr(h.m_element);
-  }
   /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
   template <typename T> class DestroyHandle {
   public:
     void operator()(T p) const {  destroyHandle(p);    }
-  };
-  /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
-  template <typename T> class ReleaseHandle {
-  public:
-    void operator()(T p) const {  releaseHandle(p);    }
   };
   /// map Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
   template <typename M> class DestroyHandles {
   public:
     /// Container reference
     M& object;
-    /// Copy constructor allowed!
-    DestroyHandles(const DestroyHandles& c) : object(c.object) {}
     /// Initializing constructor
     DestroyHandles(M& m) : object(m) {                 }
-    /// Defautl destructor
-    ~DestroyHandles()                {                 }
     /// Action operator
     void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& p) const
     {   DestroyHandle<typename M::mapped_type>()(p.second);    }
@@ -225,6 +212,32 @@ namespace DD4hep {
   /// Functional created of map destruction functors
   template <typename M> void destroyHandles(M& m)  {
     for_each(m.begin(), m.end(), DestroyHandles<M>(m));
+    m.clear();
+  }
+
+  /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
+  template <typename T> inline void releaseHandle(T& h) {
+    releasePtr(h.m_element);
+  }
+  /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
+  template <typename T> class ReleaseHandle {
+  public:
+    void operator()(T p) const {  releaseHandle(p);    }
+  };
+  /// map Functor to release handles  \ingroup DD4HEP_GEOMETRY
+  template <typename M> class ReleaseHandles {
+  public:
+    /// Container reference
+    M& object;
+    /// Initializing constructor
+    ReleaseHandles(M& m) : object(m) {                 }
+    /// Action operator
+    void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& p) const
+    {   ReleaseHandle<typename M::mapped_type>()(p.second);    }
+  };
+  /// Functional created of map destruction functors
+  template <typename M> void releaseHandles(M& m)  {
+    for_each(m.begin(), m.end(), ReleaseHandles<M>(m));
     m.clear();
   }
 

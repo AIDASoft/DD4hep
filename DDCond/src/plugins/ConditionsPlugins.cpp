@@ -60,24 +60,24 @@ namespace {
     for( _T::const_iterator i = types.begin(); i != types.end(); ++i )    {
       const IOVType* type = *i;
       if ( type )   {
-	ConditionsIOVPool* pool = manager.iovPool(*type);
-	if ( pool )  {
-	  const _E& e = pool->elements;
-	  printout(INFO,"CondPoolDump","+++ ConditionsIOVPool for type %s  [%d IOV elements]",
-		   type->str().c_str(), int(e.size()));
-	  for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
-	    ConditionsPool* cp = (*j).second;
-	    cp->print("");
-	    if ( print_conditions )   {
-	      _R rc;
-	      cp->select_all(rc);
-	      for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
-		if ( printer )  {  (*printer)(*ic);                   }
-		else            { /* print_conditions<void>(rc);  */  }
-	      }
-	    }
-	  }
-	}
+        ConditionsIOVPool* pool = manager.iovPool(*type);
+        if ( pool )  {
+          const _E& e = pool->elements;
+          printout(INFO,"CondPoolDump","+++ ConditionsIOVPool for type %s  [%d IOV elements]",
+                   type->str().c_str(), int(e.size()));
+          for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
+            ConditionsPool* cp = (*j).second;
+            cp->print("");
+            if ( print_conditions )   {
+              _R rc;
+              cp->select_all(rc);
+              for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
+                if ( printer )  {  (*printer)(*ic);                   }
+                else            { /* print_conditions<void>(rc);  */  }
+              }
+            }
+          }
+        }
       }
     }
     printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -112,18 +112,18 @@ namespace {
       iov.set(iov_key);
       long num_updated = manager.prepare(iov, user_pool);
       if ( iov_type == "epoch" )  {
-	char   c_evt[64];
-	struct tm evt;
-	::gmtime_r(&iov_key, &evt);
-	::strftime(c_evt,sizeof(c_evt),"%T %F",&evt);
-	printout(INFO,"Conditions",
-		 "+++ ConditionsUpdate: Updated %ld conditions... event time: %s",
-		 num_updated, c_evt);
+        char   c_evt[64];
+        struct tm evt;
+        ::gmtime_r(&iov_key, &evt);
+        ::strftime(c_evt,sizeof(c_evt),"%T %F",&evt);
+        printout(INFO,"Conditions",
+                 "+++ ConditionsUpdate: Updated %ld conditions... event time: %s",
+                 num_updated, c_evt);
       }
       else  {
-	printout(INFO,"Conditions",
-		 "+++ ConditionsUpdate: Updated %ld conditions... key[%s]: %ld",
-		 num_updated, iov_type.c_str(), iov_key);
+        printout(INFO,"Conditions",
+                 "+++ ConditionsUpdate: Updated %ld conditions... key[%s]: %ld",
+                 num_updated, iov_type.c_str(), iov_key);
       }
       user_pool->print("User pool");
       manager.clean(epoch, 20);
@@ -144,8 +144,8 @@ namespace {
       string iov_type = argv[0];
       int max_age = *(int*)argv[1];
       printout(INFO,"Conditions",
-	       "+++ ConditionsUpdate: Cleaning conditions... type:%s max age:%d",
-	       iov_type.c_str(), max_age);
+               "+++ ConditionsUpdate: Cleaning conditions... type:%s max age:%d",
+               iov_type.c_str(), max_age);
       ConditionsManager manager = ConditionsManager::from(lcdd);
       const IOVType* epoch = manager.iovType(iov_type);
       manager.clean(epoch, max_age);

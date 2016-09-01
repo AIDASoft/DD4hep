@@ -79,21 +79,22 @@ namespace DD4hep {
 
     public:
       enum StringFlags  {
-        WITH_IOV      = 1<<0,
-        WITH_ADDRESS  = 1<<1,
-        WITH_TYPE     = 1<<2,
-        WITH_COMMENT  = 1<<4,
-        WITH_DATATYPE = 1<<5,
-        WITH_DATA     = 1<<6,
-        NO_NAME       = 1<<20,
+        WITH_IOV         = 1<<0,
+        WITH_ADDRESS     = 1<<1,
+        WITH_TYPE        = 1<<2,
+        WITH_COMMENT     = 1<<4,
+        WITH_DATATYPE    = 1<<5,
+        WITH_DATA        = 1<<6,
+        NO_NAME          = 1<<20,
         NONE
       };
       enum ConditionState {
-        INACTIVE = 0,
-        ACTIVE   = 1<<0,
-        CHECKED  = 1<<2,
-        DERIVED  = 1<<3,
-        USER_FLAGS_FIRST = 1<<10
+        INACTIVE         = 0,
+        ACTIVE           = 1<<0,
+        CHECKED          = 1<<2,
+        DERIVED          = 1<<3,
+        USER_FLAGS_FIRST = 1<<10,
+        USER_FLAGS_LAST  = 1<<31
       };
 
       /// Abstract base for processing callbacks
@@ -117,7 +118,7 @@ namespace DD4hep {
       template <typename Q> Condition(const Handle<Q>& e)
         : Handle<Object>(e) {
       }
-      /// Initializing constructor
+      /// Initializing constructor for a pure, undecorated conditions object
       Condition(const std::string& name, const std::string& type);
       /// Assignment operator
       Condition& operator=(const Condition& c);

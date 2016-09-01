@@ -37,7 +37,6 @@ namespace DD4hep {
      */
     class ConditionsDependencyHandler : public ConditionResolver {
     public:
-      typedef Geometry::LCDD LCDD;
       typedef ConditionsManager::Dependencies Dependencies;
 
     protected:
@@ -49,13 +48,13 @@ namespace DD4hep {
       const Dependencies&        m_dependencies;
   
       /// Internal call to trigger update callback
-      Condition::Object* do_callback(const ConditionDependency* dep) const;
+      Condition::Object* do_callback(const ConditionDependency& dep) const;
 
     public:
       /// Initializing constructor
       ConditionsDependencyHandler(ConditionsManager::Object* mgr,
-				  UserPool& pool, 
-				  const Dependencies& dependencies);
+                                  UserPool& pool, 
+                                  const Dependencies& dependencies);
       /// Default destructor
       ~ConditionsDependencyHandler();
       /// ConditionResolver implementation: Access to the conditions manager
@@ -75,7 +74,7 @@ namespace DD4hep {
       Condition::Object* operator()(const ConditionDependency* dep)  const;
     };
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
+  }        /* End namespace Conditions                */
+}          /* End namespace DD4hep                    */
 
-#endif     /* DDCOND_CONDITIONSDEPENDENCYHANDLER_H       */
+#endif     /* DDCOND_CONDITIONSDEPENDENCYHANDLER_H    */

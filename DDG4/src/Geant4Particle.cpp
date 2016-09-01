@@ -398,7 +398,7 @@ Geant4ParticleMap::~Geant4ParticleMap()    {
 
 /// Clear particle maps
 void Geant4ParticleMap::clear()    {
-  releaseObjects(particleMap)();
+  releaseObjects(particleMap);
   particleMap.clear();
   equivalentTracks.clear();
 }

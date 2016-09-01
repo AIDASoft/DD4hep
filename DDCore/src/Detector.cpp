@@ -24,6 +24,10 @@ using namespace std;
 using namespace DD4hep::Geometry;
 using DD4hep::Alignments::Alignment;
 
+namespace {
+  static string s_empty_string;
+}
+
 /// Clone constructor
 DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
   : RefObject(det_data) {
@@ -70,7 +74,7 @@ void DetElement::removeAtUpdate(unsigned int typ, void* pointer)  const {
 }
 
 /// Access to the full path to the placed object
-string DetElement::placementPath() const {
+const string& DetElement::placementPath() const {
   Object* o = ptr();
   if ( o ) {
     if (o->placementPath.empty()) {
@@ -78,7 +82,7 @@ string DetElement::placementPath() const {
     }
     return o->placementPath;
   }
-  return "";
+  return s_empty_string;
 }
 
 /// Access detector type (structure, tracker, calorimeter, etc.).
@@ -93,7 +97,6 @@ DetElement& DetElement::setType(const string& typ) {
   return *this;
 }
 
-
 unsigned int DetElement::typeFlag() const {
   return m_element ? m_element->typeFlag :  0 ;
 }
@@ -105,16 +108,55 @@ DetElement& DetElement::setTypeFlag(unsigned int types) {
   return *this;
 }
 
-string DetElement::path() const {
+namespace {
+  static void make_path(DetElement::Object* o)   {
+    DetElement par = o->parent;
+    if ( par.isValid() )  {
+      o->path = par.path() + "/" + o->name;
+      if ( o->level < 0 ) o->level = par.level() + 1;
+    }
+    else {
+      o->path = "/" + o->name;
+      o->level = 0;
+    }
+    o->key = DD4hep::hash32(o->path);
+  }
+}
+
+/// Access hash key of this detector element (Only valid once geometry is closed!)
+unsigned int DetElement::key()  const   {
+  Object* o = ptr();
+  if ( o )  {
+    if ( o->key != 0 )
+      return o->key;
+    make_path(o);
+    return o->key;
+  }
+  return 0;
+}
+
+/// Access the hierarchical level of the detector element
+int DetElement::level()  const   {
+  Object* o = ptr();
+  if ( o )  {
+    if ( o->level >= 0 )
+      return o->level;
+    make_path(o);
+    return o->level;
+  }
+  return -1;
+}
+
+/// Access the full path of the detector element
+const string& DetElement::path() const {
   Object* o = ptr();
   if ( o ) {
-    if ( o->path.empty() ) {
-      DetElement par = o->parent;
-      o->path = par.isValid() ? (par.path() + "/") + name() : string("/") + name();
-    }
+    if ( !o->path.empty() )
+      return o->path;
+    make_path(o);
     return o->path;
   }
-  return "";
+  return s_empty_string;
 }
 
 int DetElement::id() const {
@@ -376,7 +418,7 @@ SensitiveDetector& SensitiveDetector::setType(const string& typ) {
 
 /// Access the type of the sensitive detector
 string SensitiveDetector::type() const {
-  return m_element ? m_element->GetTitle() : "";
+  return m_element ? m_element->GetTitle() : s_empty_string;
 }
 
 /// Assign the IDDescriptor reference

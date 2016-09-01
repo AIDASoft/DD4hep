@@ -56,8 +56,8 @@ namespace DD4hep {
     public:
       ConditionsPoolRemove(ConditionsPool& p) : pool(p)         {                   }
       void operator()(object_t* o) const             {
-	pool.onRemove(o);
-	delete o;
+        pool.onRemove(o);
+        delete o;
       }
       void operator()(const cond_t& o) const         { (*this)(o.ptr());             }
       void operator()(const mapentry_t& o) const     { (*this)(o.second.ptr());      }
@@ -97,7 +97,7 @@ namespace DD4hep {
       void operator()(const ptr_mapentry_t& o)    { (*this)(o.second);               }
     };
     template <typename collection_type> 
-      CollectionSelect<collection_type> collectionSelect(collection_type& collection) {
+    CollectionSelect<collection_type> collectionSelect(collection_type& collection) {
       return CollectionSelect<collection_type>(collection);
     }
 
@@ -111,15 +111,15 @@ namespace DD4hep {
     public:
       ActiveSelect(collection_type& p) : collection(p) {}
       void operator()(object_t* o)  const {
-	if ( (o->flags & cond_t::ACTIVE) )
-	  collection.insert(collection.end(),o); 
+        if ( (o->flags & cond_t::ACTIVE) )
+          collection.insert(collection.end(),o); 
       }
       void operator()(const cond_t& o) const          { (*this)(o.ptr());            }
       void operator()(const mapentry_t& o) const      { (*this)(o.second.ptr());     }
       void operator()(const ptr_mapentry_t& o)  const { (*this)(o.second);           }
     };
     template <typename collection_type> 
-      ActiveSelect<collection_type> activeSelect(collection_type& active) {
+    ActiveSelect<collection_type> activeSelect(collection_type& active) {
       return ActiveSelect<collection_type>(active);
     }
 
@@ -132,17 +132,17 @@ namespace DD4hep {
       cond_t::key_type key;
       collection_type& collection;
     public:
-    KeyedSelect(cond_t::key_type k, collection_type& p) : key(k), collection(p) {}
+      KeyedSelect(cond_t::key_type k, collection_type& p) : key(k), collection(p) {}
       void operator()(object_t* o) const {
-	if ( o->hash == key )
-	  collection.insert(collection.end(),o); 
+        if ( o->hash == key )
+          collection.insert(collection.end(),o); 
       }
       void operator()(const cond_t& o) const          { (*this)(o.ptr());            }
       void operator()(const mapentry_t& o) const      { (*this)(o.second.ptr());     }
       void operator()(const ptr_mapentry_t& o) const  { (*this)(o.second);           }
     };
     template <typename collection_type> 
-      KeyedSelect<collection_type> keyedSelect(Condition::key_type k, collection_type& keyed) {
+    KeyedSelect<collection_type> keyedSelect(Condition::key_type k, collection_type& keyed) {
       return KeyedSelect<collection_type>(k, keyed);
     }
 

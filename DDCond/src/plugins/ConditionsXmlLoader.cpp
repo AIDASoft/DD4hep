@@ -35,9 +35,9 @@ namespace DD4hep {
       Buffer m_buffer;
 
       size_t load_source  (const std::string& nam,
-			   key_type key,
-			   const iov_type& req_validity,
-			   RangeConditions& conditions);
+                           key_type key,
+                           const iov_type& req_validity,
+                           RangeConditions& conditions);
     public:
       /// Default constructor
       ConditionsXmlLoader(LCDD& lcdd, ConditionsManager mgr, const std::string& nam);
@@ -45,16 +45,16 @@ namespace DD4hep {
       virtual ~ConditionsXmlLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load(key_type key,
-			  const iov_type& req_validity,
+                          const iov_type& req_validity,
                           RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_range(key_type key,
-				const iov_type& req_validity,
+                                const iov_type& req_validity,
                                 RangeConditions& conditions);
       /// Update a range of conditions according to the required IOV
       virtual size_t update(const iov_type& req_validity,
-			    RangeConditions& conditions,
-			    iov_type& iov_intersection);
+                            RangeConditions& conditions,
+                            iov_type& iov_intersection);
     };
 
   } /* End namespace Conditions             */
@@ -101,9 +101,9 @@ ConditionsXmlLoader::~ConditionsXmlLoader() {
 } 
 
 size_t ConditionsXmlLoader::load_source(const std::string& nam,
-					key_type key,
-					const iov_type& req_validity,
-					RangeConditions& conditions)
+                                        key_type key,
+                                        const iov_type& req_validity,
+                                        RangeConditions& conditions)
 {
   size_t len = conditions.size();
   string fac = "XMLConditionsParser";
@@ -134,7 +134,7 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
 }
 
 size_t ConditionsXmlLoader::load(key_type key,
-				 const iov_type& req_validity,
+                                 const iov_type& req_validity,
                                  RangeConditions& conditions)
 {
   size_t len = conditions.size();
@@ -146,9 +146,9 @@ size_t ConditionsXmlLoader::load(key_type key,
     const IOV* iov = condition->iov;
     if ( IOV::partial_match(req_validity,*iov) )  {
       if ( key == condition->hash )  {
-	conditions.push_back(condition);
-	m_buffer.erase(j);
-	return conditions.size()-len;
+        conditions.push_back(condition);
+        m_buffer.erase(j);
+        return conditions.size()-len;
       }
     }
   }
@@ -156,7 +156,7 @@ size_t ConditionsXmlLoader::load(key_type key,
 }
 
 size_t ConditionsXmlLoader::load_range(key_type key,
-				       const iov_type& req_validity,
+                                       const iov_type& req_validity,
                                        RangeConditions& conditions)
 {
   size_t len = conditions.size();
@@ -169,7 +169,7 @@ size_t ConditionsXmlLoader::load_range(key_type key,
     const IOV* iov = condition->iov;
     if ( IOV::partial_match(req_validity,*iov) )  {
       if ( key == condition->hash )  {
-	conditions.push_back(condition);
+        conditions.push_back(condition);
       }
     }
     keep.push_back(condition);

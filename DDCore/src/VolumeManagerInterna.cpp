@@ -1,4 +1,4 @@
-// $Id: $
+// $Id:$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -39,8 +39,7 @@ VolumeManagerObject::VolumeManagerObject()
 /// Default destructor
 VolumeManagerObject::~VolumeManagerObject() {
   /// Cleanup volume tree
-  for_each(volumes.begin(), volumes.end(), destroyObjects(volumes));
-  volumes.clear();
+  destroyObjects(volumes);
   /// Cleanup dependent managers
   destroyHandles(managers);
   managers.clear();

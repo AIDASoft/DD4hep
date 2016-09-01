@@ -93,6 +93,7 @@ namespace DD4hep {
 // Framework include files
 //#include "DDCond/ConditionsMappedPool.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsInterna.h"
@@ -146,7 +147,7 @@ template<typename MAPPING>
 void ConditionsMappedUserPool<MAPPING>::print(const std::string& opt)   const  {
   const IOV* iov = &m_iov;
   printout(INFO,"UserPool","+++ %s Conditions for USER pool with IOV: %-32s [%4d entries]",
-	   opt.c_str(), iov->str().c_str(), count());
+           opt.c_str(), iov->str().c_str(), count());
   if ( opt == "*" ) {
     typename MAPPING::const_iterator i=m_conditions.begin();
     for( ; i != m_conditions.end(); ++i)   {
@@ -245,24 +246,23 @@ long ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps)  {
     // Loop over the dependencies and check if they have to be upgraded
     for(_D::const_iterator i = deps.begin(); i!=deps.end(); ++i)  {
       key_type key = (*i).first;
-      const ConditionDependency* d = (*i).second;
       typename MAPPING::iterator j = m_conditions.find(key);
-      Condition::Object* cond = j==m_conditions.end() ? 0 : (*j).second;
-      if ( cond )  {
-	if ( IOV::key_is_contained(m_iov.keyData,cond->iov->keyData) )
-	  continue;
-	/// This condition is no longer valid. remove it! Will be added again afterwards.
-	m_conditions.erase(j);
+      if ( j != m_conditions.end() )  {
+        Condition::Object* cond = (*j).second;
+        if ( IOV::key_is_contained(m_iov.keyData,cond->iov->keyData) )
+          continue;
+        /// This condition is no longer valid. remove it! Will be added again afterwards.
+        m_conditions.erase(j);
       }
-      cond = handler(d);
-      m_manager->registerUnlocked(pool, cond);
+      const ConditionDependency* d = (*i).second.get();
+      Condition::Object* cond = handler(d);
+      m_manager->registerUnlocked(pool, cond); // Would bulk update be more efficient?
       ++num_updates;
     }
   }
   return num_updates;
 }
 
-#include "DD4hep/Factories.h"
 namespace {
   void* create_user_pool(DD4hep::Geometry::LCDD&, int argc, char** argv)  {
     if ( argc > 1 )  {

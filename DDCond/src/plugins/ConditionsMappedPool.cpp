@@ -53,34 +53,34 @@ namespace DD4hep {
 
       /// Total entry count
       virtual size_t count()  const   {
-	return m_entries.size();
+        return m_entries.size();
       }
 
       /// Register a new condition to this pool
       virtual void insert(Condition condition)    {
-	Condition::Object* c = condition.access();
+        Condition::Object* c = condition.access();
         m_entries.insert(std::make_pair(c->hash,c));
       }
 
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& new_entries)   {
         for(RangeConditions::iterator i=new_entries.begin(); i!=new_entries.end(); ++i)  {
-	  Condition::Object* c = (*i).access();
-	  m_entries.insert(std::make_pair(c->hash,c));
-	}
+          Condition::Object* c = (*i).access();
+          m_entries.insert(std::make_pair(c->hash,c));
+        }
       }
 
       /// Full cleanup of all managed conditions.
       virtual void clear()   {
-	for_each(m_entries.begin(), m_entries.end(), ConditionsPoolRemove(*this));
+        for_each(m_entries.begin(), m_entries.end(), ConditionsPoolRemove(*this));
         m_entries.clear();
       }
 
       /// Check if a condition exists in the pool
       virtual Condition exists(Condition::key_type key)  const   {
         typename Mapping::const_iterator i=
-	  find_if(m_entries.begin(), m_entries.end(), HashConditionFind(key));
-	return i==m_entries.end() ? Condition() : (*i).second;
+          find_if(m_entries.begin(), m_entries.end(), HashConditionFind(key));
+        return i==m_entries.end() ? Condition() : (*i).second;
       }
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select(Condition::key_type key, RangeConditions& result)
@@ -113,7 +113,7 @@ namespace DD4hep {
     public:
       /// Default constructor
       ConditionsMappedUpdatePool(ConditionsManager mgr)
-	: ConditionsMappedPool<MAPPING,BASE>(mgr) 
+        : ConditionsMappedPool<MAPPING,BASE>(mgr) 
       {
       }
 
@@ -134,15 +134,15 @@ namespace DD4hep {
 
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select_range(Condition::key_type key,
-				const Condition::iov_type& req, 
-				RangeConditions& result)
+                                const Condition::iov_type& req, 
+                                RangeConditions& result)
       {
         MAPPING& m = this->ConditionsMappedPool<MAPPING,BASE>::m_entries;
         if ( !m.empty() )   {
           unsigned int req_typ = req.iovType ? req.iovType->type : req.type;
           const IOV::Key& req_key = req.key();
           for(typename MAPPING::const_iterator i=m.begin(); i != m.end(); ++i)  {
-	    Condition::Object* o = (*i).second;
+            Condition::Object* o = (*i).second;
             if ( key == o->hash )  {
               const IOV* _iov = o->iov;
               unsigned int typ = _iov->iovType ? _iov->iovType->type : _iov->type;

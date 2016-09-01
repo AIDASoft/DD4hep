@@ -50,31 +50,31 @@ namespace DD4hep  {
   /// Default destructor
   dddb::~dddb()   {
     // need to release heare all allocated resources.
-    releaseObjects(isotopes)();
-    releaseObjects(elements)();
-    releaseObjects(elementPaths)();
+    releaseObjects(isotopes);
+    releaseObjects(elements);
+    releaseObjects(elementPaths);
 
-    releaseObjects(materials)();
-    releaseObjects(materialPaths)();
+    releaseObjects(materials);
+    releaseObjects(materialPaths);
 
-    releaseObjects(shapes)();
+    releaseObjects(shapes);
 
-    releaseObjects(volumes)();
-    releaseObjects(volumePaths)();
+    releaseObjects(volumes);
+    releaseObjects(volumePaths);
 
-    releaseObjects(placements)();
-    releaseObjects(placementPaths)();
+    releaseObjects(placements);
+    releaseObjects(placementPaths);
 
-    releaseObjects(tabproperties)();
-    releaseObjects(tabpropertyPaths)();
+    releaseObjects(tabproperties);
+    releaseObjects(tabpropertyPaths);
 
     conditions.clear();
     conditionPaths.clear();
-    //releaseObjects(conditions)();
-    //releaseObjects(conditionPaths)();
-    releaseObjects(catalogs)();
-    releaseObjects(catalogPaths)();
-    releaseObjects(documents)();
+    //releaseObjects(conditions);
+    //releaseObjects(conditionPaths);
+    releaseObjects(catalogs);
+    releaseObjects(catalogPaths);
+    releaseObjects(documents);
     printout(DEBUG,"dddb","++ All intermediate objects deleted!");
     InstanceCount::decrement(this);
   }

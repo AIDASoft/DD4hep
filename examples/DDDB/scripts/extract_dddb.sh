@@ -68,7 +68,9 @@ if test ! -f ${source}; then
     dir=`dirname ${source}`;
     source=${dir}/data/${base};
 fi;
+#
 # Now do the installation
+#
 if test -d ${target}/DDDB; then
     if test "${clean}" = "YES";then
         rm -rf ${target}/DDDB;
@@ -78,10 +80,10 @@ if test -d ${target}/DDDB; then
     echo "DDDB database is already extracted to ${target}. Nothing to do.";
 elif test ! -f ${source}; then
     echo "DDDB database tar file ${source} is not present. [Installation FAILED]";
-    echo "Directory: /builds/CLICdp/DD4hep/examples/DDDB";
-    ls -laF /builds/CLICdp/DD4hep/examples/DDDB;
-    echo "Directory /builds/CLICdp/DD4hep/examples/DDDB/data";
-    ls -laF /builds/CLICdp/DD4hep/examples/DDDB/data;
+    #echo "Directory: /builds/CLICdp/DD4hep/examples/DDDB";
+    #ls -laF /builds/CLICdp/DD4hep/examples/DDDB;
+    #echo "Directory /builds/CLICdp/DD4hep/examples/DDDB/data";
+    #ls -laF /builds/CLICdp/DD4hep/examples/DDDB/data;
     exit 2;  # ENOENT
 else
     mkdir -p ${target}/DDDB;

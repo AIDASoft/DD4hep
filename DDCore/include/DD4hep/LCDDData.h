@@ -98,23 +98,23 @@ namespace DD4hep {
       ObjectHandleMap m_display;
       ObjectHandleMap m_fields;
 
-      ObjectHandleMap m_motherVolumes;
+      ObjectHandleMap  m_motherVolumes;
 
       // GDML fields
-      ObjectHandleMap m_define;
+      ObjectHandleMap  m_define;
 
-      DetElement m_world;
-      DetElement m_trackers;
-      Volume m_worldVol;
-      Volume m_trackingVol;
+      DetElement       m_world;
+      DetElement       m_trackers;
+      Volume           m_worldVol;
+      Volume           m_trackingVol;
 
-      Material m_materialAir;
-      Material m_materialVacuum;
-      VisAttr m_invisibleVis;
-      OverlayedField m_field;
-      Header m_header;
+      Material         m_materialAir;
+      Material         m_materialVacuum;
+      VisAttr          m_invisibleVis;
+      OverlayedField   m_field;
+      Header           m_header;
       LCDD::Properties m_properties;
-      LCDDBuildType m_buildType;
+      LCDDBuildType    m_buildType;
 
       /// Definition of the extension type
       ObjectExtensions m_extensions;

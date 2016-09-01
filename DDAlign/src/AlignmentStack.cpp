@@ -173,7 +173,7 @@ AlignmentStack::AlignmentStack()
 
 /// Default destructor
 AlignmentStack::~AlignmentStack()   {
-  destroyObjects(m_stack)();
+  destroyObjects(m_stack);
   InstanceCount::decrement(this);
 }
 

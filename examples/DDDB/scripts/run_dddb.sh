@@ -20,14 +20,14 @@ echo "|   Starting DDDB plugin executor....                               |";
 #echo "|                                                                   |";
 echo "+ ------------------------------------------------------------------+";
 #
-if test -n "$USER"; then
-    target=/tmp/$USER;
-else
-    target=/tmp;
-fi;
-#
 # Check for arguments:
-DDDB_DIR=${target}/DDDB;
+if test -z "${DDDB_DIR}"; then
+    target=/tmp;
+    if test -n "$USER"; then
+        target=/tmp/$USER;
+    fi;
+    DDDB_DIR=${target}/DDDB;
+fi;
 loader="-loader DDDB_FileReader";
 params="-params file:${DDDB_DIR}/Parameters.xml";
 input="-input file:${DDDB_DIR}/DDDB/lhcb.xml";
@@ -80,6 +80,7 @@ while [[ "$1" == -* ]]; do
 done;
 #
 #
-ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis}`
-echo "Command: ${debug} `which geoPluginRun` $ARGS";
-${debug} `which geoPluginRun` ${ARGS};
+export DD4HEP_TRACE=ON;
+ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis}`;
+echo "Command: ${debug} `which geoPluginRun` -destroy $ARGS";
+${debug} `which geoPluginRun` -destroy ${ARGS};

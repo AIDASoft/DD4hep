@@ -21,8 +21,8 @@ using namespace DD4hep::Conditions;
 
 /// Default constructor
 ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager::Object* mgr,
-							 UserPool& pool,
-							 const Dependencies& dependencies)
+                                                         UserPool& pool,
+                                                         const Dependencies& dependencies)
   : m_manager(mgr), m_pool(pool), m_dependencies(dependencies)
 {
 }
@@ -42,25 +42,28 @@ Condition ConditionsDependencyHandler::get(unsigned int key)  const  {
     Dependencies::const_iterator i = m_dependencies.find(key);
     if ( i != m_dependencies.end() )  {
       /// This condition is no longer valid. remove it! Will be added again afterwards.
+      const ConditionDependency* dep = (*i).second.get();
       m_pool.remove(key);
-      return do_callback((*i).second);
+      return do_callback(*dep);
     }
   }
   Dependencies::const_iterator i = m_dependencies.find(key);
-  if ( i != m_dependencies.end() )
-    return do_callback((*i).second);
+  if ( i != m_dependencies.end() )   {
+    const ConditionDependency* dep = (*i).second.get();
+    return do_callback(*dep);
+  }
   return Condition();
 }
 
 
 /// Internal call to trigger update callback
 Condition::Object* 
-ConditionsDependencyHandler::do_callback(const ConditionDependency* dep)  const {
+ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const {
   try  {
     Condition::iov_type iov(m_pool.validity().iovType);
-    ConditionUpdateCall::Context ctxt(*this, *dep, iov.reset().invert());
-    Condition          cond = (*dep->callback)(dep->target, ctxt);
-    Condition::Object* obj = cond.ptr();
+    ConditionUpdateCall::Context ctxt(*this, dep, iov.reset().invert());
+    Condition          cond = (*dep.callback)(dep.target, ctxt);
+    Condition::Object* obj  = cond.ptr();
     if ( obj )  {
       if ( !obj->hash ) obj->hash = ConditionKey::hashCode(obj->name);
       cond->setFlag(Condition::DERIVED);
@@ -72,23 +75,23 @@ ConditionsDependencyHandler::do_callback(const ConditionDependency* dep)  const 
   }
   catch(const std::exception& e)   {
     printout(ERROR,"ConditionDependency",
-	     "+++ Exception while creating dependent Condition %s:",
-	     dep->target.name.c_str());
+             "+++ Exception while creating dependent Condition %s:",
+             dep.target.name.c_str());
     printout(ERROR,"ConditionDependency","\t\t%s", e.what());
   }
   catch(...)   {
     printout(ERROR,"ConditionDependency",
-	     "+++ UNKNOWN exception while creating dependent Condition %s.",
-	     dep->target.name.c_str());
+             "+++ UNKNOWN exception while creating dependent Condition %s.",
+             dep.target.name.c_str());
   }
   m_pool.print("*");
   except("ConditionDependency",
-	 "++ Exception while creating dependent Condition %s.",
-	 dep->target.name.c_str());
+         "++ Exception while creating dependent Condition %s.",
+         dep.target.name.c_str());
   return 0;
 }
 
 /// Handler callback to process multiple derived conditions
 Condition::Object* ConditionsDependencyHandler::operator()(const ConditionDependency* dep)  const   {
-  return do_callback(dep);
+  return do_callback(*dep);
 }

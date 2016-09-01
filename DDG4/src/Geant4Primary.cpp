@@ -33,7 +33,7 @@ PrimaryExtension::~PrimaryExtension() {
 
 /// Default destructor
 Geant4PrimaryMap::~Geant4PrimaryMap()   {
-  releaseObjects(m_primaryMap)();
+  releaseObjects(m_primaryMap);
 }
 
 /// Add a new object pair (G4 primary particle, DDG4 particle) into the maps
@@ -73,8 +73,8 @@ Geant4PrimaryInteraction& Geant4PrimaryInteraction::operator=(const Geant4Primar
 
 /// Default destructor
 Geant4PrimaryInteraction::~Geant4PrimaryInteraction()   {
-  releaseObjects(vertices)();
-  releaseObjects(particles)();
+  releaseObjects(vertices);
+  releaseObjects(particles);
 }
 
 /// Access a new particle identifier within the interaction
@@ -120,7 +120,7 @@ Geant4PrimaryEvent& Geant4PrimaryEvent::operator=(const Geant4PrimaryEvent& c)  
 
 /// Default destructor
 Geant4PrimaryEvent::~Geant4PrimaryEvent()   {
-  destroyObjects(m_interactions)();
+  destroyObjects(m_interactions);
 }
 
 /// Add a new interaction object to the event

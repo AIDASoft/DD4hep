@@ -175,7 +175,7 @@ namespace  {
     return 1;
   }
 
- struct Callee  {
+  struct Callee  {
     int m_param;
     Callee() : m_param(0) {}
     void call(unsigned long tags, DetElement& det, void* param)    {

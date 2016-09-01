@@ -52,7 +52,7 @@ AlignmentCache::AlignmentCache(LCDD& lcdd, const string& sdPath, bool top)
 AlignmentCache::~AlignmentCache()   {
   int nentries = (int)m_cache.size();
   int nsect = (int)m_detectors.size();
-  releaseObjects(m_detectors)();
+  releaseObjects(m_detectors);
   m_cache.clear();
   printout(INFO,"AlignmentCache",
            "Destroy cache for subdetector %s [%d section(s), %d entrie(s)]",

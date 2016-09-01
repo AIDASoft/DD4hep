@@ -63,7 +63,7 @@ SensitiveDetectorObject::~SensitiveDetectorObject() {
 /// Default constructor
 DetElementObject::DetElementObject()
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
-    flag(0), id(0), combineHits(0), typeFlag(0), path(), placementPath(),
+    flag(0), id(0), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
     nominal(), survey(), alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
@@ -74,7 +74,7 @@ DetElementObject::DetElementObject()
 /// Initializing constructor
 DetElementObject::DetElementObject(const std::string& nam, int ident)
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
-    flag(0), id(ident), combineHits(0), typeFlag(0), path(), placementPath(),
+    flag(0), id(ident), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
     nominal(), survey(), alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
@@ -87,9 +87,9 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 DetElementObject::~DetElementObject() {
   destroyHandles(children);
   deletePtr (referenceTrafo);
-  if ( conditions.isValid() ) delete conditions.ptr();
+  destroyHandle (conditions);
   conditions = ConditionsContainer();
-  if ( alignments.isValid() ) delete alignments.ptr();
+  destroyHandle (alignments);
   alignments = AlignmentsContainer();
   placement.clear();
   idealPlace.clear();
@@ -101,9 +101,11 @@ DetElementObject::~DetElementObject() {
 /// Deep object copy to replicate DetElement trees e.g. for reflection
 DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   DetElementObject* obj = new DetElementObject();
-  obj->id = new_id;
-  obj->typeFlag = typeFlag;
-  obj->flag = 0;
+  obj->id          = new_id;
+  obj->typeFlag    = typeFlag;
+  obj->flag        = 0;
+  obj->key         = 0;
+  obj->level       = -1;
   obj->combineHits = combineHits;
   obj->nominal     = Alignment();
   obj->survey      = Alignment();
@@ -114,7 +116,6 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
     obj->placement  = placement;
     obj->idealPlace = idealPlace;
     obj->placementPath = placementPath;
-    obj->path = path;
   }
   // This implicitly assumes that the children do not access the parent's extensions!
   obj->ObjectExtensions::clear();

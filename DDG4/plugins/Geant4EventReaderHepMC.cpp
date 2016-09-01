@@ -598,8 +598,8 @@ bool HepMC::EventStream::ok()  const   {
 }
 
 void HepMC::EventStream::clear()   {
-  releaseObjects(m_vertices)();
-  releaseObjects(m_particles)();
+  releaseObjects(m_vertices);
+  releaseObjects(m_particles);
 }
 
 bool HepMC::EventStream::read()   {
@@ -608,8 +608,8 @@ bool HepMC::EventStream::read()   {
   static int num_evt = 0;
   int num_line = 0, num_line_accepted = 0;
 
-  releaseObjects(vertices())();
-  releaseObjects(particles())();
+  releaseObjects(vertices());
+  releaseObjects(particles());
 
   ++num_evt;
   if ( num_evt == 998 )  {
@@ -720,8 +720,8 @@ bool HepMC::EventStream::read()   {
     continue;
   Skip:
     printout(WARNING,"HepMC::EventStream","+++ Skip event with ID: %d",this->header.id);
-    releaseObjects(vertices())();
-    releaseObjects(particles())();
+    releaseObjects(vertices());
+    releaseObjects(particles());
     read_until_event_end(instream);
     event_read = false;
     if ( instream.eof() ) return false;
@@ -730,6 +730,6 @@ bool HepMC::EventStream::read()   {
   if( not instream.good() ) return false;
  Done:
   fix_particles(info);
-  releaseObjects(vertices())();
+  releaseObjects(vertices());
   return true;
 }

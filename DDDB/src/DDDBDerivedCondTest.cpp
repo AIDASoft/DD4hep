@@ -196,12 +196,11 @@ namespace  {
     }
 
     virtual ~ConditionsSelector()   {
-      destroyObjects(m_allDependencies);
+      m_allDependencies.clear();
     }
 
     void addDependency(ConditionDependency* dependency)   {
-      const ConditionKey& key = dependency->target;
-      m_allDependencies.insert(make_pair(key.hash,dependency));
+      m_allDependencies.insert(dependency->target.hash, dependency);
     }
 
     RangeConditions findCond(const string& match)   {

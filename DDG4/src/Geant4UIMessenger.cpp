@@ -55,8 +55,8 @@ Geant4UIMessenger::Geant4UIMessenger(const string& name, const string& path)
 
 /// Default destructor
 Geant4UIMessenger::~Geant4UIMessenger() {
-  for_each(m_propertyCmd.begin(), m_propertyCmd.end(), destroyFirst(m_propertyCmd));
-  for_each(m_actionCmd.begin(), m_actionCmd.end(), destroyFirst(m_actionCmd));
+  destroyFirst(m_propertyCmd);
+  destroyFirst(m_actionCmd);
 }
 
 /// Add a new callback structure

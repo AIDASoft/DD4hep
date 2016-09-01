@@ -249,7 +249,7 @@ VisAttr::VisAttr(const string& nam) {
   setLineStyle (SOLID);
   setDrawingStyle(SOLID);
   setShowDaughters(true);
-  setAlpha(0.1f);
+  setAlpha(0.9f);
 }
 
 /// Constructor to be used when creating a new entity
@@ -260,7 +260,7 @@ VisAttr::VisAttr(const char* nam) {
   setLineStyle (SOLID);
   setDrawingStyle(SOLID);
   setShowDaughters(true);
-  setAlpha(0.1f);
+  setAlpha(0.9f);
 }
 
 /// Get Flag to show/hide daughter elements

@@ -53,20 +53,20 @@ namespace DD4hep {
 
       /// Total entry count
       virtual size_t count()  const   {
-	return m_entries.size();
+        return m_entries.size();
       }
 
       /// Full cleanup of all managed conditions.
       virtual void clear()   {
-	for_each(m_entries.begin(), m_entries.end(), ConditionsPoolRemove(*this));
+        for_each(m_entries.begin(), m_entries.end(), ConditionsPoolRemove(*this));
         m_entries.clear();
       }
 
       /// Check if a condition exists in the pool
       virtual Condition exists(Condition::key_type key)  const   {
         typename Mapping::const_iterator i=
-	  find_if(m_entries.begin(), m_entries.end(), HashConditionFind(key));
-	return i==m_entries.end() ? Condition() : (*i);
+          find_if(m_entries.begin(), m_entries.end(), HashConditionFind(key));
+        return i==m_entries.end() ? Condition() : (*i);
       }
 
       /// Register a new condition to this pool
@@ -108,7 +108,7 @@ namespace DD4hep {
     public:
       /// Default constructor
       ConditionsLinearUpdatePool(ConditionsManager mgr)
-	: ConditionsLinearPool<MAPPING,BASE>(mgr) 
+        : ConditionsLinearPool<MAPPING,BASE>(mgr) 
       {
       }
 
@@ -120,7 +120,7 @@ namespace DD4hep {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
         if ( !m.empty() )  {
           for(typename MAPPING::iterator i=m.begin(); i!=m.end(); ++i)   {
-	    Condition::Object* o = *i;
+            Condition::Object* o = *i;
             entries[o->iov].push_back(Condition(o));
           }
           m.clear();        
@@ -129,8 +129,8 @@ namespace DD4hep {
 
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select_range(Condition::key_type key,
-				const Condition::iov_type& req, 
-				RangeConditions& result)
+                                const Condition::iov_type& req, 
+                                RangeConditions& result)
       {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
         if ( !m.empty() )   {

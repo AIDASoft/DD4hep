@@ -148,6 +148,7 @@ LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
 LCDDImp::~LCDDImp() {
   if ( m_manager == gGeoManager ) gGeoManager = 0;
   destroyData(false);
+  m_extensions.clear();
   InstanceCount::decrement(this);
 }
 

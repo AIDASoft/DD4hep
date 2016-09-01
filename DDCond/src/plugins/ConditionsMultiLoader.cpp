@@ -48,7 +48,7 @@ namespace DD4hep {
       virtual ~ConditionsMultiLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load(key_type key,
-			  const iov_type& req_validity,
+                          const iov_type& req_validity,
                           RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_range(key_type key,
@@ -56,14 +56,30 @@ namespace DD4hep {
                                 RangeConditions& conditions);
       /// Update a range of conditions according to the required IOV
       virtual size_t update(const iov_type& req_validity,
-			    RangeConditions& conditions,
-			    iov_type& conditions_validity);
+                            RangeConditions& conditions,
+                            iov_type& conditions_validity);
     };
   } /* End namespace Geometry               */
 } /* End namespace DD4hep                   */
 
 #endif /* DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H  */
 
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//  \author  Markus Frank
+//  \date    2016-02-02
+//  \version 1.0
+//
+//==========================================================================
+// $Id$
+
+// Framework include files
 //#include "ConditionsMultiLoader.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
@@ -95,7 +111,7 @@ ConditionsMultiLoader::~ConditionsMultiLoader() {
 
 ConditionsDataLoader* 
 ConditionsMultiLoader::load_source(const std::string& nam,
-				   const iov_type& req_validity)
+                                   const iov_type& req_validity)
 {
   OpenSources::iterator iop = m_openSources.find(nam);
   if ( iop == m_openSources.end() )  {
@@ -112,8 +128,8 @@ ConditionsMultiLoader::load_source(const std::string& nam,
       const void* argv[] = {fac.c_str(), m_mgr.ptr(), 0};
       loader = createPlugin<ConditionsDataLoader>(typ,m_lcdd,2,argv);
       if ( !loader )  {
-	except("ConditionsMultiLoader",
-	       "Failed to create conditions loader of type: "+typ+" to read:"+nam);
+        except("ConditionsMultiLoader",
+               "Failed to create conditions loader of type: "+typ+" to read:"+nam);
       }
     }
     else  {
@@ -129,8 +145,8 @@ ConditionsMultiLoader::load_source(const std::string& nam,
 
 /// Load  a condition set given a Detector Element and the conditions name according to their validity
 size_t ConditionsMultiLoader::load_range(key_type key,
-					 const iov_type& req_validity,
-					 RangeConditions& conditions)
+                                         const iov_type& req_validity,
+                                         RangeConditions& conditions)
 {
   size_t len = conditions.size();
   // No better idea: Must chack all sources to find the required condition
@@ -138,9 +154,9 @@ size_t ConditionsMultiLoader::load_range(key_type key,
     const IOV& iov = (*i).second;
     if ( iov.type == req_validity.type )  {
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  { 
-	const string& nam = (*i).first;
-	ConditionsDataLoader* loader = load_source(nam, req_validity);
-	loader->load(key, req_validity, conditions);
+        const string& nam = (*i).first;
+        ConditionsDataLoader* loader = load_source(nam, req_validity);
+        loader->load(key, req_validity, conditions);
       }
     }
   }
@@ -149,8 +165,8 @@ size_t ConditionsMultiLoader::load_range(key_type key,
 
 
 size_t ConditionsMultiLoader::load(key_type key,
-				   const iov_type& req_validity,
-				   RangeConditions& conditions)
+                                   const iov_type& req_validity,
+                                   RangeConditions& conditions)
 {
   size_t len = conditions.size();
   // No better idea: Must chack all sources to find the required condition
@@ -158,9 +174,9 @@ size_t ConditionsMultiLoader::load(key_type key,
     const IOV& iov = (*i).second;
     if ( iov.type == req_validity.type )  {
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  {
-	const string& nam = (*i).first;
-	ConditionsDataLoader* loader = load_source(nam, req_validity);
-	loader->load(key, req_validity, conditions);
+        const string& nam = (*i).first;
+        ConditionsDataLoader* loader = load_source(nam, req_validity);
+        loader->load(key, req_validity, conditions);
       }
     }
   }
@@ -169,8 +185,8 @@ size_t ConditionsMultiLoader::load(key_type key,
 
 /// Update a range of conditions according to the required IOV
 size_t ConditionsMultiLoader::update(const iov_type& req_validity,
-				     RangeConditions& conditions,
-				     iov_type& conditions_validity)
+                                     RangeConditions& conditions,
+                                     iov_type& conditions_validity)
 {
   RangeConditions upda;
   for(RangeConditions::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)  {
@@ -179,7 +195,7 @@ size_t ConditionsMultiLoader::update(const iov_type& req_validity,
     if ( items < 1 )  {
       // Error: no such condition
       except("ConditionsManager",
-	     "+++ update_expired: Cannot update condition %s [%s] to iov:%s.",
+             "+++ update_expired: Cannot update condition %s [%s] to iov:%s.",
              cond->name.c_str(), cond->iov->str().c_str(), req_validity.str().c_str());
     }
   }

@@ -104,7 +104,7 @@ bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
 
 /// Clear particle maps
 void Geant4ParticleHandler::clear()  {
-  releaseObjects(m_particleMap)();
+  releaseObjects(m_particleMap);
   m_particleMap.clear();
   m_equivalentTracks.clear();
 }

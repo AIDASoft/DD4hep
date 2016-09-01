@@ -146,10 +146,17 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     /// Pre-Process Parameters
     if ( !params.empty() )    {
       const void* args[] = {0, params.c_str(), 0};
-      printout(INFO,"DDDBExecutor","++ Pre-processing parameters: %s",params.c_str());
+      printout(INFO,"DDDBExecutor","++ Processing parameters: %s",params.c_str());
       result = lcdd.apply("DDDB_Loader", 2, (char**)args);
       check_result(result);
-      printout(INFO,"DDDBExecutor","                         .... done");
+    }
+
+    /// Process visualization attributes. Must be present before converting the geometry!
+    if ( !attr.empty() )  {
+      const void* args[] = {attr.c_str(), 0};
+      printout(INFO,"DDDBExecutor","+++ Processing visualization attributes: %s", attr.c_str());
+      result = lcdd.apply("DD4hepXMLLoader", 1, (char**)args);
+      check_result(result);
     }
 
     /// Process XML
@@ -188,12 +195,6 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
         lcdd.apply(executors[i].c_str(), 0, 0);
     }
 
-    if ( !attr.empty() )  {
-      const void* args[] = {attr.c_str(), 0};
-      printout(INFO,"DDDBExecutor","+++ Processing attrs: %s", attr.c_str());
-      result = lcdd.apply("DD4hepXMLLoader", 1, (char**)args);
-      check_result(result);
-    }
     if ( dump )    {
       printout(INFO,"DDDBExecutor","------------------> Conditions dump:");
       lcdd.apply("DDDB_DetectorConditionDump", 0, 0);

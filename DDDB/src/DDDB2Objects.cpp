@@ -1028,7 +1028,7 @@ namespace DD4hep {
         context.print_detelem       = false;
         context.print_conditions    = false;
         context.print_vis           = false;
-        context.max_volume_depth    = 9;
+        context.max_volume_depth    = 11;
 
         CNV<dddb> cnv(lcdd,&context);
         cnv(make_pair(string("World"),context.geo));

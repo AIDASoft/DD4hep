@@ -19,6 +19,7 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ComponentProperties.h"
+#include "DDCond/ConditionsDependencyCollection.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -34,7 +35,7 @@ namespace DD4hep {
     class ConditionDependency;
     class ConditionsDataLoader;
     class ConditionsManagerObject;
-
+    
     /// Manager class for condition handles
     /**
      *  \author  M.Frank
@@ -50,7 +51,7 @@ namespace DD4hep {
       typedef std::vector<IOVType>               IOVTypes;
       typedef std::map<IOVType*,Container>       TypeConditions;
       typedef std::map<DetElement,Container>     DetectorConditions;
-      typedef std::map<unsigned int,ConditionDependency*> Dependencies;
+      typedef ConditionsDependencyCollection     Dependencies;
 
     public:
 
@@ -74,14 +75,10 @@ namespace DD4hep {
       ConditionsManager(Object* p) : Handle<Object>(p) {}
 
       /// Constructor to assing handle of the same type
-      ConditionsManager(const ConditionsManager& c)
-        : Handle<Object>(c) {
-      }
+      ConditionsManager(const ConditionsManager& c) : Handle<Object>(c) {}
 
       /// Constructor to be used assigning from different type
-      template <typename Q> ConditionsManager(const Handle<Q>& e)
-        : Handle<Object>(e) {
-      }
+      template <typename Q> ConditionsManager(const Handle<Q>& e) : Handle<Object>(e) {}
 
       /// Default destructor
       ~ConditionsManager();
@@ -133,11 +130,11 @@ namespace DD4hep {
 
       /// Prepare all updates to the clients with the defined IOV
       long prepare(const IOV&            required_validity,
-		   dd4hep_ptr<UserPool>& user_pool,
-		   const Dependencies&   dependencies,
-		   bool                  verify_dependencies=true);
+                   dd4hep_ptr<UserPool>& user_pool,
+                   const Dependencies&   dependencies,
+                   bool                  verify_dependencies=true);
     };
 
   }       /* End namespace Geometry                 */
 }         /* End namespace DD4hep                   */
-#endif    /* DDCOND_CONDITIONSMANAGER_H    */
+#endif    /* DDCOND_CONDITIONSMANAGER_H             */

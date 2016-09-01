@@ -402,7 +402,7 @@ Geant4SensDetSequences::Geant4SensDetSequences() {
 
 /// Default destructor
 Geant4SensDetSequences::~Geant4SensDetSequences() {
-  for_each(m_sequences.begin(), m_sequences.end(), releaseObjects(m_sequences));
+  releaseObjects(m_sequences);
   m_sequences.clear();
 }
 
