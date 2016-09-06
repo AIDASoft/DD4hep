@@ -24,6 +24,11 @@ bool DD4hep::XML::UriReader::load(const std::string& system_id, std::string& dat
   return this->load(system_id, context(), data);
 }
 
+/// Inform reader about a locally (e.g. by XercesC) handled source load
+void DD4hep::XML::UriReader::parserLoaded(const std::string& system_id)  {
+  this->parserLoaded(system_id, context());
+}
+
 /// Default constructor
 DD4hep::XML::UriContextReader::UriContextReader(UriReader* reader, UriReader::UserContext* ctxt)
   : m_reader(reader), m_context(ctxt)
@@ -48,4 +53,14 @@ bool DD4hep::XML::UriContextReader::load(const std::string& system_id, std::stri
 /// Resolve a given URI to a string containing the data
 bool DD4hep::XML::UriContextReader::load(const std::string& system_id, UserContext* ctxt, std::string& data)   {
   return m_reader->load(system_id, ctxt, data);
+}
+
+/// Inform reader about a locally (e.g. by XercesC) handled source load
+void DD4hep::XML::UriContextReader::parserLoaded(const std::string& system_id)  {
+  m_reader->parserLoaded(system_id, context());
+}
+
+/// Inform reader about a locally (e.g. by XercesC) handled source load
+void DD4hep::XML::UriContextReader::parserLoaded(const std::string& system_id, UserContext* ctxt)  {
+  m_reader->parserLoaded(system_id, ctxt);
 }

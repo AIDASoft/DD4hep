@@ -10,9 +10,12 @@
 #
 #==========================================================================
 dd4hep_package(    DDAlign
-  USES             DDCore
+  USES             DDCore DDCond
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDAlign)
 
-#---DDAlign library --------------------------------------------------------------
-dd4hep_add_plugin ( DDAlign SOURCES src/*.cpp )
+#---DDCond library --------------------------------------------------------------
+dd4hep_add_package_library(DDAlign SOURCES src/*.cpp )
+
+#---DDAlign plugins -------------------------------------------------------------
+dd4hep_add_plugin(DDAlignPlugins SOURCES src/plugins/*.cpp )

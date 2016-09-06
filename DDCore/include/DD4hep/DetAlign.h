@@ -46,6 +46,8 @@ namespace DD4hep {
       typedef Geometry::DetElementObject Object;
       /// Definition of the base handle type
       typedef Handle<Object> RefObject;
+      /// Pool definition
+      typedef Conditions::UserPool UserPool;
 
     public:
 

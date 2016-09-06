@@ -61,6 +61,10 @@ namespace DD4hep {
       virtual bool load(const std::string& system_id, std::string& buffer);
       /// Resolve a given URI to a string containing the data
       virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt);
       /// Read raw XML object from the database / file
       virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data);
 

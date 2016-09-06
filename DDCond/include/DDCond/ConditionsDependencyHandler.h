@@ -46,7 +46,9 @@ namespace DD4hep {
       UserPool&                  m_pool;
       /// Dependency container to be resolved.
       const Dependencies&        m_dependencies;
-  
+      /// User defined optional processing parameter
+      void*                      m_userParam;
+      
       /// Internal call to trigger update callback
       Condition::Object* do_callback(const ConditionDependency& dep) const;
 
@@ -54,7 +56,8 @@ namespace DD4hep {
       /// Initializing constructor
       ConditionsDependencyHandler(ConditionsManager::Object* mgr,
                                   UserPool& pool, 
-                                  const Dependencies& dependencies);
+                                  const Dependencies& dependencies,
+                                  void* user_param);
       /// Default destructor
       ~ConditionsDependencyHandler();
       /// ConditionResolver implementation: Access to the conditions manager

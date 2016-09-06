@@ -51,6 +51,10 @@ namespace DD4hep {
       virtual bool load(const std::string& system_id, std::string& data);
       /// Resolve a given URI to a string containing the data with context
       virtual bool load(const std::string& system_id, UserContext* context, std::string& data) = 0;
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt) = 0;
     };
 
     /// Class supporting to read data given a URI
@@ -83,6 +87,10 @@ namespace DD4hep {
       virtual bool load(const std::string& system_id, std::string& data);
       /// Resolve a given URI to a string containing the data with context
       virtual bool load(const std::string& system_id, UserContext* context, std::string& data);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt);
     };
 
   }       /* End namespace XML               */

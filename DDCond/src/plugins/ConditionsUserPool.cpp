@@ -69,7 +69,7 @@ namespace DD4hep {
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual long prepare(const IOV& required);
       /// Evaluate and register all derived conditions from the dependency list
-      virtual long compute(const Dependencies& dependencies);
+      virtual long compute(const Dependencies& dependencies, void* user_param);
     };
 
   } /* End namespace Conditions             */
@@ -237,11 +237,11 @@ long ConditionsMappedUserPool<MAPPING>::prepare(const IOV& required)   {
 
 /// Evaluate and register all derived conditions from the dependency list
 template<typename MAPPING>
-long ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps)  {
+long ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps, void* user_param)  {
   long num_updates = 0;
   if ( !deps.empty() )  {
     typedef Dependencies _D;
-    ConditionsDependencyHandler handler(m_manager.ptr(), *this, deps);
+    ConditionsDependencyHandler handler(m_manager.ptr(), *this, deps, user_param);
     ConditionsPool* pool = m_manager->registerIOV(*m_iov.iovType, m_iov.keyData);
     // Loop over the dependencies and check if they have to be upgraded
     for(_D::const_iterator i = deps.begin(); i!=deps.end(); ++i)  {

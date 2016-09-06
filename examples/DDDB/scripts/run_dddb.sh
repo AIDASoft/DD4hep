@@ -83,4 +83,8 @@ done;
 export DD4HEP_TRACE=ON;
 ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis}`;
 echo "Command: ${debug} `which geoPluginRun` -destroy $ARGS";
-${debug} `which geoPluginRun` -destroy ${ARGS};
+if test -z "${debug}";then
+    exec `which geoPluginRun` -destroy ${ARGS};
+else
+    ${debug} `which geoPluginRun` -destroy ${ARGS};
+fi;

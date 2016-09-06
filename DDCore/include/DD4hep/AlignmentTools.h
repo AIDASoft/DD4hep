@@ -25,6 +25,9 @@ namespace DD4hep {
 
     namespace AlignmentTools   {
 
+      /// Copy alignment object from source object
+      void copy(Alignment from, Alignment to);
+
       /// Compute the ideal/nominal to-world transformation from the detector element placement
       /**
        *  Note: Detector information of the alignment data is filled by the caller!

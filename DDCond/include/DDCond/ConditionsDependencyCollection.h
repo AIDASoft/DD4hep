@@ -107,7 +107,7 @@ namespace DD4hep {
       /// Mini-container interface: insert element by key
       std::pair<iterator,bool> insert(const Dependencies::value_type& entry);
       /// Insert new element by key
-      std::pair<iterator,bool> insert(Condition::key_type key, Dependency* dep);
+      std::pair<iterator,bool> insert(Dependency* dep);
       /// Create view by application of functor
       template <typename T> void for_each(const T& function)  const
       {  std::for_each(dependencies.begin(),dependencies.end(),function); }

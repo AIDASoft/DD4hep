@@ -309,9 +309,10 @@ Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
   try {
     if ( !path.empty() )  {
       parser->parse(path.c_str());
+      if ( reader ) reader->parserLoaded(path);
     }
     else   {
-      if ( reader->load(fname, path) )  {
+      if ( reader && reader->load(fname, path) )  {
         MemBufInputSource src((const XMLByte*)path.c_str(), path.length(), fname.c_str(), false);
         parser->parse(src);
         return (XmlDocument*)parser->adoptDocument();
@@ -323,6 +324,7 @@ Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
     printout(ERROR,"DocumentHandler","+++ Exception(XercesC): parse(path):%s",e.what());
     try {
       parser->parse(fname.c_str());
+      if ( reader ) reader->parserLoaded(path);
     }
     catch (const exception& ex) {
       printout(FATAL,"DocumentHandler","+++ Exception(XercesC): parse(URI):%s",ex.what());

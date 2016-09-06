@@ -199,10 +199,6 @@ namespace  {
       m_allDependencies.clear();
     }
 
-    void addDependency(ConditionDependency* dependency)   {
-      m_allDependencies.insert(dependency->target.hash, dependency);
-    }
-
     RangeConditions findCond(const string& match)   {
       RangeConditions result;
       if ( !match.empty() )  {
@@ -266,9 +262,9 @@ namespace  {
               build_3.add(target1);
               build_3.add(target2);
             }
-            addDependency(build_1.release());
-            addDependency(build_2.release());
-            addDependency(build_3.release());
+            m_allDependencies.insert(build_1.release());
+            m_allDependencies.insert(build_2.release());
+            m_allDependencies.insert(build_3.release());
           }
           ++m_counters.numAlignments;
         }

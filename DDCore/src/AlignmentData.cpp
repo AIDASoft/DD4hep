@@ -25,13 +25,9 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
-/// Default constructor
-Delta::Delta()   {
-}
-
 /// Copy constructor
 Delta::Delta(const Delta& c)
-  : pivot(c.pivot), translation(c.translation), rotation(c.rotation)  
+  : pivot(c.pivot), translation(c.translation), rotation(c.rotation), flags(c.flags)
 {
 }
 
@@ -45,12 +41,14 @@ Delta& Delta::operator=(const Delta& c)   {
     pivot       = c.pivot;
     translation = c.translation;
     rotation    = c.rotation;
+    flags       = c.flags;
   }
   return *this;
 }
 
 /// Reset information to identity
 void Delta::clear()   {
+  flags       = 0;
   pivot       = Pivot();
   translation = Position();
   rotation    = RotationZYX();
@@ -201,14 +199,6 @@ void AlignmentData::detectorToLocal(const Double_t global[3], Double_t local[3])
 Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
-
-/// Default destructor
-NamedAlignmentObject::~NamedAlignmentObject()   {
-}
-
-#include "DD4hep/Handle.inl"
-DD4HEP_INSTANTIATE_HANDLE_NAMED(NamedAlignmentObject);
-DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
 
 #include "DD4hep/ToStream.h"
 #include "DD4hep/objects/ConditionsInterna.h"

@@ -27,13 +27,16 @@ using namespace DD4hep::Alignments;
 using namespace DD4hep::Alignments::Interna;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentConditionObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentNamedObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentContainer);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
 
 /// Standard constructor
 AlignmentConditionObject::AlignmentConditionObject(const string& nam, const string& tit)
-  : ConditionObject(nam, tit), AlignmentData()
+  : ConditionObject(nam, tit), alignment_data(0)
 {
   InstanceCount::increment(this);
+  flags = Conditions::Condition::ALIGNMENT;
 }
 
 /// Standard Destructor
@@ -43,11 +46,13 @@ AlignmentConditionObject::~AlignmentConditionObject()  {
 
 /// Clear data content on demand.
 void AlignmentConditionObject::clear()   {
-  trToWorld = Transform3D();
-  detectorTrafo.Clear();
-  worldTrafo.Clear();
-  nodes.clear();
-  flags = 0;
+  AlignmentCondition a(this);
+  Alignment::Data& d = a.data();
+  d.trToWorld = Transform3D();
+  d.detectorTrafo.Clear();
+  d.worldTrafo.Clear();
+  d.nodes.clear();
+  flags = Conditions::Condition::ALIGNMENT;
 }
 
 /// Standard constructor
@@ -134,3 +139,8 @@ Alignment AlignmentContainer::get(key_type hash_key, const UserPool& pool)   {
 /// Protected destructor
 AlignmentsLoader::~AlignmentsLoader()   {
 }
+
+/// Default destructor
+AlignmentNamedObject::~AlignmentNamedObject()   {
+}
+

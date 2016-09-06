@@ -32,6 +32,7 @@ namespace DD4hep {
     using Geometry::DetElement;
     using Geometry::RotationZYX;
     using Geometry::Transform3D;
+    using Geometry::Translation3D;
     using Geometry::Position;
     using Geometry::LCDD;
 
@@ -47,12 +48,21 @@ namespace DD4hep {
      */
     class Delta   {
     public:
-      typedef Position    Pivot;
-      Pivot        pivot;
-      Position     translation;
-      RotationZYX  rotation;
+      typedef Translation3D Pivot;
+      Pivot         pivot;
+      Position      translation;
+      RotationZYX   rotation;
+      unsigned int  flags;
+
+      enum AlignmentFlags {
+        HAVE_NONE         = 0,
+        HAVE_TRANSLATION  = 1<<2,
+        HAVE_ROTATION     = 1<<3,
+        HAVE_PIVOT        = 1<<4,
+      };
+
       /// Default constructor
-      Delta();
+      Delta() : flags(0) {}
       /// Copy constructor
       Delta(const Delta& c);
       /// Default destructor
@@ -61,6 +71,12 @@ namespace DD4hep {
       Delta& operator=(const Delta& c);
       /// Reset information to identity
       void clear();
+      /// Access flags: Check if the delta operation contains a translation
+      bool hasTranslation() const  {  return (flags&HAVE_TRANSLATION) != 0; }
+      /// Access flags: Check if the delta operation contains a rotation
+      bool hasRotation() const     {  return (flags&HAVE_ROTATION) != 0;    }
+      /// Access flags: Check if the delta operation contains a pivot
+      bool hasPivot() const        {  return (flags&HAVE_PIVOT) != 0;       }
     };
 
     /// Derived condition data-object definition
@@ -125,19 +141,16 @@ namespace DD4hep {
       /// Assignment operator necessary due to copy constructor
       AlignmentData& operator=(const AlignmentData& copy);
       /// Data accessor for decorator
-      inline AlignmentData& alignmentData()     { return *this; }
+      inline AlignmentData& data()                       {  return *this;         }
 
       /// Access the ideal/nominal alignment/placement matrix
       Alignment nominal() const;
       /// Create cached matrix to transform to world coordinates
-      const TGeoHMatrix& worldTransformation()  const
-      {  return worldTrafo;                                                       }
+      const TGeoHMatrix& worldTransformation()  const    {  return worldTrafo;    }
       /// Access the alignment/placement matrix with respect to the world
-      const TGeoHMatrix& detectorTransformation() const
-      {  return detectorTrafo;                                                    }
+      const TGeoHMatrix& detectorTransformation() const  {  return detectorTrafo; }
       /// Access the currently applied alignment/placement matrix
-      const Transform3D& localToWorld() const   
-      {  return trToWorld;                                                        }
+      const Transform3D& localToWorld() const            {  return trToWorld;     }
 
       /** Aliases for the transformation from local coordinates to the world system  */
       /// Transformation from local coordinates of the placed volume to the world system
@@ -209,8 +222,7 @@ namespace DD4hep {
       ~AlignmentDecorator()  {                                  }
 
       /// Data accessor
-      const AlignmentData& data()   const
-      { return T::alignmentData();                              }
+      const AlignmentData& data()   const { return T::data();   }
       /// Access to the DetElement node
       DetElement detector()   const
       {  return data().detector;                                }
@@ -267,32 +279,47 @@ namespace DD4hep {
       {  return data().delta;                                   }
 
       /// Set the delta alignment information
-      void setDelta(const Delta& del)
-      {  data().delta = del;                                    }
+      void setDelta(const Delta& del)      {
+        AlignmentData& d = data();
+        d.delta = del;
+      }
       /// Set the delta alignment if only a single translation
-      void setDelta(const Position& translation)
-      {  data().delta.translation = translation;                }
+      void setDelta(const Position& translation)      {
+        AlignmentData& d = data();
+        d.delta.translation = translation;
+        d.delta.flags |= Delta::HAVE_TRANSLATION;
+      }
       /// Set the delta alignment if only a single rotation
-      void setDelta(const RotationZYX& rotation)
-      {  data().delta.rotation = rotation;                      }
+      void setDelta(const RotationZYX& rotation)  {
+        AlignmentData& d = data();
+        d.delta.rotation = rotation;
+        d.delta.flags |= Delta::HAVE_ROTATION;
+      }
       /// Set the delta alignment as a composite of a translation and a rotation
       void setDelta(const Position& translation, RotationZYX& rotation)     {
         AlignmentData& d = data();
         d.delta.rotation = rotation;
         d.delta.translation = translation;
+        d.delta.flags |= Delta::HAVE_ROTATION;
+        d.delta.flags |= Delta::HAVE_TRANSLATION;
       }
       /// Set the delta alignment if only a single rotation around a pivot point
-      void setDeltaPivot(const Position& pivot, const RotationZYX& rotation)  {
+      void setDeltaPivot(const Translation3D& pivot, const RotationZYX& rotation)  {
         AlignmentData& d = data();
         d.delta.pivot = pivot;
         d.delta.rotation = rotation;
+        d.delta.flags |= Delta::HAVE_PIVOT;
+        d.delta.flags |= Delta::HAVE_ROTATION;
       }
       /// Set the delta alignment if a translation and a rotation around pivot
-      void setDeltaPivot(const Position& translation, const Position& pivot, const RotationZYX& rotation)  {
+      void setDeltaPivot(const Position& translation, const Translation3D& pivot, const RotationZYX& rotation)  {
         AlignmentData& d = data();
         d.delta.pivot = pivot;
         d.delta.rotation = rotation;
         d.delta.translation = translation;
+        d.delta.flags |= Delta::HAVE_PIVOT;
+        d.delta.flags |= Delta::HAVE_ROTATION;
+        d.delta.flags |= Delta::HAVE_TRANSLATION;
       }
     };
 
@@ -304,21 +331,6 @@ namespace DD4hep {
     template <typename T> inline 
     AlignmentDecorator<T>::AlignmentDecorator(const AlignmentDecorator& c) : T(c)  {}
 
-
-    /**
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    class NamedAlignmentObject : public NamedObject, public AlignmentData  {
-    public:
-      /// Default constructor
-      NamedAlignmentObject(const std::string& nam, const std::string& tit="")
-        : NamedObject(nam,tit), AlignmentData()  {}
-      /// Default destructor
-      virtual ~NamedAlignmentObject();
-    };
 
   } /* End namespace Aligments                  */
 } /* End namespace DD4hep                       */

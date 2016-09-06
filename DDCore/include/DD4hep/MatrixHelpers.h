@@ -31,24 +31,35 @@ namespace DD4hep {
 
     typedef Position XYZAngles;
   
-    /// Access the TGeo identity transformation  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Access the TGeo identity transformation                \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoIdentity*    identityTransform();
-    /// Convert a Position object to a TGeoTranslation  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a Position object to a TGeoTranslation         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoTranslation* _translation(const Geometry::Position& pos);
-    /// Convert a RotationZYX object to a TGeoRotation  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a RotationZYX object to a TGeoRotation         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoRotation*    _rotationZYX(const Geometry::RotationZYX& rot);
-    /// Convert a Rotation3D object to a TGeoRotation  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a Rotation3D object to a TGeoRotation          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoRotation*    _rotation3D(const Geometry::Rotation3D& rot);
-    /// Convert a Transform3D object to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a Transform3D object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoHMatrix*     _transform(const Geometry::Transform3D& trans);
-    /// Convert a Position object to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a Position object to a TGeoHMatrix             \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoHMatrix*     _transform(const Geometry::Position& pos);
-    /// Convert a RotationZYX object to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a RotationZYX object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoHMatrix*     _transform(const Geometry::RotationZYX& rot);
-    /// Convert a Rotation3D object to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    /// Convert a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoHMatrix*     _transform(const Geometry::Rotation3D& rot3D);
     /// Convert a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     TGeoHMatrix*     _transform(const Geometry::Position& pos, const Geometry::RotationZYX& rot);
+
+    /// Set a Transform3D object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Transform3D& trans);
+    /// Set a Position object (translation) to a TGeoHMatrix \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Position& pos);
+    /// Set a RotationZYX object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::RotationZYX& rot);
+    /// Set a Rotation3D object to a TGeoHMatrix             \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Rotation3D& rot3D);
+    /// Set a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Position& pos, const Geometry::RotationZYX& rot);
 
     /// Convert a TGeoMatrix object to a generic Transform3D  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     Geometry::Transform3D      _transform(const TGeoMatrix* matrix);

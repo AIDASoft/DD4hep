@@ -47,6 +47,7 @@ namespace DD4hep {
     using Geometry::Rotation3D;
     using Geometry::RotationZYX;
     using Geometry::Transform3D;
+    using Geometry::Translation3D;
     using Geometry::Position;
     using Geometry::LCDD;
 

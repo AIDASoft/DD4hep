@@ -15,6 +15,7 @@
 // Framework include files
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 // C/C++ include files
 #include <sstream>
@@ -22,13 +23,84 @@
 using namespace std;
 using namespace DD4hep::Alignments;
 
-/// Default constructor
-Alignment::Alignment() : Handle<Object>() {
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the alignment part of the AIDA detector description toolkit
+  namespace Alignments {
+
+    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
+    template <> Alignment::Alignment<Alignment::Object>(const string& nam) {
+      assign(new Alignment::Object(), nam, "alignment");
+    }
+
+    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
+    template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam) {
+      assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
+    }
+
+    /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
+    template <> AlignmentCondition::AlignmentCondition<AlignmentCondition::Object>(const string& nam) {
+      assign(new Object(nam, "alignment"), nam, "alignment");
+    }
+  } /* End namespace Aligments                  */
+} /* End namespace DD4hep                       */
+
+
+/// Create cached matrix to transform to world coordinates
+const TGeoHMatrix& Alignment::worldTransformation()  const  {
+  return data().worldTransformation();
 }
 
-/// Initializing constructor to create a new object
-Alignment::Alignment(const string& nam) {
-  m_element = new NamedAlignmentObject(nam, "alignment");
+/// Access the alignment/placement matrix with respect to the world
+const TGeoHMatrix& Alignment::detectorTransformation() const   {
+  return data().detectorTransformation();
+}
+
+/// Access the IOV type
+const DD4hep::IOVType& AlignmentCondition::iovType() const   {
+  return *(access()->iovType());
+}
+
+/// Access the IOV block
+const DD4hep::IOV& AlignmentCondition::iov() const   {
+  return *(access()->iovData());
+}
+
+/// Data accessor for the use of decorators
+AlignmentCondition::Data& AlignmentCondition::data()              {
+  Object* o = access();
+  if ( o->alignment_data )
+    return *(o->alignment_data);
+  Conditions::Condition c(*this);
+  o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
+  return *(o->alignment_data);
+}
+
+/// Data accessor for the use of decorators
+const AlignmentCondition::Data& AlignmentCondition::data() const  {
+  Object* o = access();
+  if ( o->alignment_data )
+    return *(o->alignment_data);
+  Conditions::Condition c(*this);
+  o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
+  return *(o->alignment_data);
+}
+
+/// Check if object is already bound....
+bool AlignmentCondition::is_bound()  const  {
+  return isValid() ? ptr()->data.is_bound() : false;
+}
+
+/// Create cached matrix to transform to world coordinates
+const TGeoHMatrix& AlignmentCondition::worldTransformation()  const  {
+  return data().worldTransformation();
+}
+
+/// Access the alignment/placement matrix with respect to the world
+const TGeoHMatrix& AlignmentCondition::detectorTransformation() const   {
+  return data().detectorTransformation();
 }
 
 /// Access the number of conditons keys available for this detector element

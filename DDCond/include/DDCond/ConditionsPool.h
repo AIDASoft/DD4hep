@@ -177,7 +177,7 @@ namespace DD4hep {
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual long prepare(const IOV& required) = 0;
       /// Evaluate and register all derived conditions from the dependency list
-      virtual long compute(const Dependencies& dependencies) = 0;
+      virtual long compute(const Dependencies& dependencies, void* user_param=0) = 0;
     };
 
   } /* End namespace Conditions             */

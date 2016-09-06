@@ -24,15 +24,10 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/ConditionsData.h"
-#include "DD4hep/ConditionDerived.h"
-#include "DD4hep/Alignments.h"
-
-#include "DDCond/ConditionsAccess.h"
+#include "DD4hep/InstanceCount.h"
+#include "DDAlign/AlignmentsManager.h"
 #include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsInterna.h"
-#include "DDCond/ConditionsOperators.h"
 
 #include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
@@ -45,60 +40,16 @@ using namespace DD4hep::Conditions;
 using DDDB::Document;
 using Geometry::LCDD;
 using Geometry::DetElement;
+using Geometry::Position;
+using Geometry::RotationZYX;
+using Geometry::Transform3D;
+using Geometry::Translation3D;
 
 /// Anonymous namespace for plugins
 namespace  {
 
-  class AlignmentTypes  {
-  public:
-    typedef AbstractMap                      Map;
-    typedef Map::Params                      Params;
-    typedef Params::value_type::second_type  Param;
-    typedef Alignments::AlignmentData        Data;
-    typedef Alignments::Delta                Delta;
-    typedef DDDB::ConditionPrinter           _Printer;
-  };
+  using Alignments::AlignmentsManager;
 
-  struct UserData;
-  struct Entry {
-    UserData*            data;
-    DetElement::Object*  det;
-    DetElement::Object*  par;
-    ConditionDependency* dep;
-    int det_key, par_key, top;
-  };
-  struct UserData {
-    struct det_lexical_ordering {
-      bool operator()(const DetElement& a, const DetElement& b) const { return a.path() == b.path(); }
-    };
-    typedef std::map<DetElement,size_t,det_lexical_ordering>       DetectorMap;
-    typedef std::map<unsigned int,size_t>      DetectorKeys;
-    typedef std::vector<Entry>                 Entries;
-    DetectorMap  detectors;
-    DetectorKeys keys;
-    Entries      entries;
-  };
-  struct _Oper : public ConditionsDependencyCollection::Functor {
-    void operator()(UserData& data, const Dependencies::value_type& e) const  {
-      const Dependency* dep = e.second.get();
-      DetElement det = dep->detector;
-      if ( det.isValid() )  {
-        Entry entry;
-        unsigned int key = det.key();
-        entry.data = &data;
-        entry.top  = 0;
-        entry.dep  = e.second.get();
-        entry.det  = det.ptr();
-        entry.par  = det.parent().ptr();
-        entry.det_key = key;
-        entry.par_key = det.parent().key();
-        data.detectors.insert(make_pair(det,data.entries.size()));
-        data.keys.insert(make_pair(key,data.entries.size()));
-        data.entries.insert(data.entries.end(),entry);
-      }
-    }
-  };
-  
   /// Specialized conditions update callback for alignments
   /**
    *  Used by clients to update a condition.
@@ -107,55 +58,42 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  class AlignmentUpdate : public ConditionUpdateCall, public AlignmentTypes  {
+  class AlignmentUpdate : public ConditionUpdateCall  {
+    typedef AbstractMap::Params::value_type::second_type Param;
+    typedef Alignments::AlignmentData Data;
   public:
-    AlignmentUpdate()   {    }
+    AlignmentUpdate()  {    }
     virtual ~AlignmentUpdate() {    }
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, const Context& context)  {
-      Condition    target(key.name,"Alignment");
-      Data&        data  = target.bind<Data>();
-      Condition    cond0 = context.condition(0);
-      const Map&   src0  = cond0.get<Map>();
-      const Param& par0  = src0.firstParam().second;
-      DetElement   det0  = context.dependency.detector;
-      printout(INFO,"AlignmentUpdate","++ Building dependent condition: %s Detector [%d]: %s ",
-               key.name.c_str(), det0.level(), det0.path().c_str());
-      if ( par0.typeInfo() == typeid(Delta) )  {
-        const Delta& delta = src0.first<Delta>();
-        data.delta         = delta;
-        data.flag          = Data::HAVE_NONE;
+      Alignments::AlignmentCondition target(key.name);
+      Data&        data = target.data();
+      Condition    cond = context.condition(0);
+      AbstractMap& src  = cond.get<AbstractMap>();
+      const Param& par  = src.firstParam().second;
+      DetElement   det  = context.dependency.detector;
+      printout(DEBUG,"AlignmentUpdate","++ Building dependent condition: %s Detector [%d]: %s ",
+               key.name.c_str(), det.level(), det.path().c_str());
+      if ( par.typeInfo() == typeid(Data::Delta) )  {
+        const Data::Delta& delta = src.first<Data::Delta>();
+        data.delta = delta;
+        data.flag  = Data::HAVE_NONE;
       }
       else  {
         printout(INFO,"AlignmentUpdate","++ Failed to access alignment-Delta from %s",
-                 cond0->value.c_str());
-        _Printer()(cond0);
+                 cond->value.c_str());
+        DDDB::ConditionPrinter()(cond);
       }
-      data.detector = context.dependency.detector;
-      //data.condition   = target;
+      data.detector = det;
+      AlignmentsManager::newEntry(context, det, &context.dependency, target);
+      // A callback returning no condition is illegal!
+      // Need to crosscheck though if the alignment IOV interval of parents may be
+      // smaller then the daughter IOV interval.
+      // I though expect, that this is a purely academic case.
       return target;
     }
   };
 
-  void __print(DetElement det,
-               UserData& data,
-               int level)
-  {
-    char fmt[128];
-    auto i=data.keys.find(det.key());
-    const char* has_alignment = i==data.keys.end() ? "NO " : "YES";
-    size_t siz =  i==data.keys.end() ? 0 : 1;
-    ::snprintf(fmt,sizeof(fmt),"%%d %%%ds %%p [%%d] %%s %%08X: %%s ",2*level);
-    printout(INFO,"Conditions",fmt,
-             det.level(), "", det.ptr(), siz, has_alignment,
-             det.key(), det.path().c_str());
-    const DetElement::Children& children = det.children();
-    for(auto c=children.begin(); c!=children.end(); ++c)    {
-      DetElement child = (*c).second;
-      __print(child, data, level+1);
-    }
-  }
-  
   /// DDDB Conditions analyser to select alignments.
   /**
    *   \author  M.Frank
@@ -166,153 +104,102 @@ namespace  {
   class AlignmentSelector  {
   public:
     typedef ConditionsManager::Dependencies Dependencies;
+    LCDD&             lcdd;
+    AlignmentUpdate*  updateCall;
+    long int          time;
     string            m_name;
-    RangeConditions   m_allConditions;
-    Dependencies      m_allDependencies;
-    ConditionsManager m_manager;
-    struct Counters {
-      size_t numAlignments;
-      size_t numNoCatalogs;
-      void reset() { numAlignments=numNoCatalogs=0; }
-    } m_counters;
 
     /// Initializing constructor
-    AlignmentSelector(ConditionsAccess mgr) : m_manager(mgr)    {
-      Operators::collectAllConditions(mgr, m_allConditions);
+    AlignmentSelector(LCDD& l, long t) : lcdd(l), time(t), m_name("Selector")   {
+      // The alignment update call can be re-used over and over. It has not state.
+      updateCall = new AlignmentUpdate();
     }
-
+    /// Default destructor
     virtual ~AlignmentSelector()   {
-      m_allDependencies.clear();
+      releasePtr(updateCall);
     }
-
-    void addDependency(ConditionDependency* dependency)   {
-      m_allDependencies.insert(dependency->target.hash, dependency);
-    }
-
-    RangeConditions findCond(const string& match)   {
-      RangeConditions result;
-      if ( !match.empty() )  {
-        for(RangeConditions::iterator ic=m_allConditions.begin(); ic!=m_allConditions.end(); ++ic)  {
-          Condition cond = (*ic);
-          size_t idx = cond->value.find(match);
-          if ( idx == 0 )  {
-            if (cond->value.length() == match.length() )   {
-              result.push_back(cond);
-            }
-            else if ( cond->value[match.length()] == '/' )  {
-              size_t idq = cond->value.find('/',match.length()+1);
-              if ( idq == string::npos )  {
-                result.push_back(cond);
-              }
-            }
-          }
-        }
-      }
-      return result;
-    }
-
-    AlignmentUpdate* m_update;
-    long collectDependencies(DetElement de, AlignmentUpdate* update, int level)  {
-      char fmt[64], text[256];
-      DDDB::Catalog* cat = 0;
-      DDDB::ConditionPrinter prt;
-      const DetElement::Children& c = de.children();
-
-      ::snprintf(fmt,sizeof(fmt),"%%-%ds-> ",2*level+5);
-      ::snprintf(text,sizeof(text),fmt,"");
-      prt.setPrefix(text);
-
+    /// Recursive alignment collector
+    long collect(DetElement de, dd4hep_ptr<UserPool>& user_pool, AlignmentsManager& am, int level)  {
+      char fmt[64];
       try  {
-        ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-        printout(INFO,m_name,fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
-        cat = de.extension<DDDB::Catalog>();
-        ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s",level+1,2*level+3);
+        DDDB::Catalog* cat = de.extension<DDDB::Catalog>();
         if ( !cat->condition.empty() )  {
-          RangeConditions rc = findCond(cat->condition);
-          printout(INFO,m_name,fmt,"","Alignment:    ", 
-                   rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
-          if ( !rc.empty() )   {
-            ConditionKey target1(cat->condition+"/derived_1");
-            DependencyBuilder build_1(target1, update->addRef());
-            build_1->detector = de;
-            for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
-              Condition    cond = *ic;
-              ConditionKey key(cond->value);
-              build_1.add(key);
-            }
-            addDependency(build_1.release());
+          ConditionKey key(cat->condition);
+          Condition cond = user_pool->get(key.hash);
+          if ( cond.isValid() )   {
+            DependencyBuilder b(ConditionKey(cat->condition+"/Tranformations"), updateCall->addRef());
+            b->detector = de;
+            b.add(ConditionKey(cond->value));
+            am.adoptDependency(b.release());
           }
-          ++m_counters.numAlignments;
+          else  {
+            ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s",level+1,2*level+3);
+            printout(INFO,m_name,fmt,"","Alignment:    ", 
+                     !cond.isValid() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
+          }
         }
       }
       catch(...)  {
         ::sprintf(fmt,"%03d %%-%ds %%s%%-20s -> %%s",level+1,2*level+3);
         printout(INFO,m_name, fmt, "", de.path().c_str(), "NO CATALOG availible!", "");
-        ++m_counters.numNoCatalogs;
       }
+      const DetElement::Children& c = de.children();
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-        collectDependencies((*i).second, update, level+1);
+        collect((*i).second, user_pool, am, level+1);
       return 1;
     }
-
-    int computeDependencies(long time)  {
-      dd4hep_ptr<UserPool> user_pool;
-      const Dependencies& dependencies = m_allDependencies;
-      const IOVType* iovType = m_manager.iovType("epoch");
+    /// Initial collector call
+    long collect(ConditionsManager manager, AlignmentsManager& context)  {
+      const IOVType* iovType = manager.iovType("epoch");
       IOV  iov(iovType, IOV::Key(time,time));
-      long num_expired = m_manager.prepare(iov, user_pool, dependencies);
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
-               num_expired, iov.str().c_str());
-      
-      UserData data;
-      data.entries.reserve(dependencies.size());
-      dependencies.for_each(DependencyCollector<UserData,_Oper>(data,_Oper()));
-
-      string prev("-----");
-      for(auto i=data.detectors.begin(); i!=data.detectors.end(); ++i)  {
-        Entry& e = data.entries[(*i).second];
-        DetElement    det = e.det;
-        unsigned int  key = det.key();
-        const string& p   = det.path();
-        size_t idx = p.find(prev);
-        if ( idx == 0 )  {
-          //printout(INFO,"Conditions","***** %d %p %08X: %s ",
-          //         det.level(), det.ptr(), key, det.path().c_str());
-          continue;
+      dd4hep_ptr<UserPool> user_pool;
+      manager.prepare(iov, user_pool);
+      return collect(lcdd.world(), user_pool, context, 0);
+    }
+    
+    int computeDependencies(ConditionsManager manager, AlignmentsManager& am)  {
+      const IOVType* iovType = manager.iovType("epoch");
+      for(int i=0; i<10; ++i)  {   {
+          int t = time + i*3600;
+          IOV  iov(iovType, IOV::Key(t,t));
+          dd4hep_ptr<UserPool> user_pool;
+          long num_expired = manager.prepare(iov, user_pool);
+          printout(INFO,"Conditions",
+                   "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
+                   num_expired, iov.str().c_str());
+          am.compute(user_pool);
+          user_pool->clear();
         }
-        prev = p;
-        printout(INFO,"Conditions","%d %p %08X: %s ",
-                 det.level(), det.ptr(), key, det.path().c_str());
-        e.top = 1;
+        DD4hep::InstanceCount::dump();
       }
-
-      printout(INFO,"Conditions","Working down the tree....");
-      for(auto i=data.detectors.begin(); i != data.detectors.end(); ++i)  {
-        Entry& e = data.entries[(*i).second];
-        if ( e.top )  {
-          DetElement det = e.det;
-          printout(INFO,"Conditions","%d %p %08X: %s ",
-                   det.level(), det.ptr(), det.key(), det.path().c_str());
-          __print(det, data, 0);
-        }
-      }
-      user_pool->clear();
       return 1;
     }
   };
 
   /// Plugin function
   long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
-    long int long init_time = argc>0 ? *(long*)argv[0] : 0;//DDDB::DDDBReader::makeTime(2016,4,1,12);
-    ConditionsManager manager = ConditionsManager::from(lcdd);
-    AlignmentSelector selector(manager);
-    AlignmentUpdate* update = new AlignmentUpdate();
-    int ret = selector.collectDependencies(lcdd.world(), update, 0);
-    if ( ret == 1 )  {
-      ret = selector.computeDependencies(init_time);
+    long int long init_time = DDDB::DDDBReader::makeTime(2016,4,1,12);
+    if ( argc>0 )  {
+      struct tm tm;
+      char* c = ::strptime(argv[0],"%d-%m-%Y %H:%M:%S",&tm);
+      if ( 0 == c )   {
+        except("DerivedAlignmentsTest","Invalid time format given for update:%s "
+               " should be: %d-%m-%Y %H:%M:%S", argv[0]);
+      }
     }
-    delete update;
+    AlignmentSelector selector(lcdd, init_time);
+    AlignmentsManager alig_manager("Test");
+    ConditionsManager cond_manager(ConditionsManager::from(lcdd));
+    int ret = 0;
+    try {
+      ret = selector.collect(cond_manager,alig_manager);
+      if ( ret == 1 )  {
+        ret = selector.computeDependencies(cond_manager,alig_manager);
+      }
+    }
+    catch(...)   {
+    }
+    alig_manager.destroy();
     return ret;
   }
 } /* End anonymous namespace  */

@@ -18,9 +18,10 @@
 #=================================================================================
 
 dd4hep_package(    DDDB
-  USES             DDCore DDCond
+  USES             DDCore DDAlign DDCond
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDDB)
 
 #---DDDB plugin library -------------------------------------------------------
-dd4hep_add_plugin ( DDDB SOURCES src/*.cpp )
+dd4hep_add_plugin ( DDDB SOURCES src/*.cpp
+  USES  DDCore DDAlign DDCond )

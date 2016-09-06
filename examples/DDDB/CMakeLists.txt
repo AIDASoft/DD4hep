@@ -120,12 +120,21 @@ if (DD4HEP_USE_XERCESC)
     -config DD4hep_ConditionsManagerInstaller
     -exec   DDDB_DerivedCondTest
     REGEX_PASS "Building dependent condition: /dd/Conditions/Alignment/TT/TTbVLayerR1Module3B/derived_3" )
+
+  #
+  #---Testing: Load the geometry + conditions + run basic derived alignments test
+  dd4hep_add_test_reg( test_DDDB_derived_alignments
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
+    EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+    -config DD4hep_ConditionsManagerInstaller
+    -exec   DDDB_DerivedAlignmentsTest
+    REGEX_PASS "|     24950| 24950|        0|DD4hep::Alignments::Interna::AlignmentConditionObject" )
+
   #
   #---Testing: Extract DDDB data from zip archive -------------------------------
   dd4hep_add_test_reg( test_DDDB_clean
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/extract_dddb.sh -clean
     REGEX_PASS "DDDB Database successfully removed" )
-
 
 endif()

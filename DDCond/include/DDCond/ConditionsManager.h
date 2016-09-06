@@ -34,6 +34,7 @@ namespace DD4hep {
     class ConditionsIOVPool;
     class ConditionDependency;
     class ConditionsDataLoader;
+    class ConditionUpdateContext;
     class ConditionsManagerObject;
     
     /// Manager class for condition handles
@@ -51,6 +52,7 @@ namespace DD4hep {
       typedef std::vector<IOVType>               IOVTypes;
       typedef std::map<IOVType*,Container>       TypeConditions;
       typedef std::map<DetElement,Container>     DetectorConditions;
+      typedef ConditionDependency                Dependency;
       typedef ConditionsDependencyCollection     Dependencies;
 
     public:

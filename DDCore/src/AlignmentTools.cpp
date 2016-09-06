@@ -30,6 +30,23 @@ using     DD4hep::Alignments::AlignmentData;
 namespace DetectorTools = DD4hep::Geometry::DetectorTools;
 typedef   AlignmentData::MaskManipulator MaskManipulator;
 
+/// Copy alignment object from source object
+void DD4hep::Alignments::AlignmentTools::copy(Alignment from, Alignment to)   {
+  Alignment::Object* f = from.ptr();
+  Alignment::Object* t = to.ptr();
+  if ( t != f )   {
+    t->flag          = f->flag;
+    t->detectorTrafo = f->detectorTrafo;
+    t->worldTrafo    = f->worldTrafo;
+    t->trToWorld     = f->trToWorld;
+    t->detector      = f->detector;
+    t->placement     = f->placement;
+    t->nodes         = f->nodes;
+    t->delta         = f->delta;
+    t->magic         = f->magic;
+  }
+}
+
 /// Compute the ideal/nominal to-world transformation from the detector element placement
 void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
   Alignment::Object* a = alignment.ptr();
@@ -41,11 +58,15 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
     for (size_t i = 0, n=path.size(); n>0 && i < n-1; ++i)  {
       const PlacedVolume& p = path[i];
       a->detectorTrafo.MultiplyLeft(p->GetMatrix());
+      a->nodes.push_back(p);
     }
     a->worldTrafo = parent.nominal()->worldTrafo;
     a->worldTrafo.MultiplyLeft(&a->detectorTrafo);
     a->trToWorld  = Geometry::_transform(&a->worldTrafo);
     a->placement  = a->detector.placement();
+    mask.clear();
+    mask.set(AlignmentData::HAVE_PARENT_TRAFO);
+    mask.set(AlignmentData::HAVE_WORLD_TRAFO);
     mask.set(AlignmentData::IDEAL);
   }
 }

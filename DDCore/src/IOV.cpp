@@ -142,7 +142,7 @@ string IOV::str()  const  {
       struct tm time_buff;
       ::strftime(c_since,sizeof(c_since),"%d-%m-%Y %H:%M:%S",::gmtime_r(&since,&time_buff));
       ::strftime(c_until,sizeof(c_until),"%d-%m-%Y %H:%M:%S",::gmtime_r(&until,&time_buff));
-      ::snprintf(text,sizeof(text),"%s(%d):[%s-%s]",
+      ::snprintf(text,sizeof(text),"%s(%d):[%s - %s]",
 		 iovType->name.c_str(),iovType->type,
 		 c_since, c_until);
     }

@@ -735,14 +735,21 @@ namespace DD4hep {
       Position pos;
       const BasicGrammar& g = BasicGrammar::instance<Position>();
       if ( !g.fromString(&pos,d) ) g.invalidConversion(d, g.type());
-      if ( nam == "dPosXYZ" )
+      if ( nam == "dPosXYZ" )  {
         a->translation = pos;
-      else if ( nam == "dRotXYZ" )
+        a->flags |= AlignmentDelta::HAVE_TRANSLATION;
+      }
+      else if ( nam == "dRotXYZ" )   {
         a->rotation = RotationZYX(pos.z(),pos.y(),pos.x());
-      else if ( nam == "pivotXYZ" )
-        a->pivot = pos;
-      else
-        printout(ERROR,"AlignmentDelta","++ Unknown alignment conditions tag: %s",nam.c_str());	
+        a->flags |= AlignmentDelta::HAVE_ROTATION;
+      }
+      else if ( nam == "pivotXYZ" )   {
+        a->pivot = Translation3D(pos.x(),pos.y(),pos.z());
+        a->flags |= AlignmentDelta::HAVE_PIVOT;
+      }
+      else   {
+        printout(ERROR,"AlignmentDelta","++ Unknown alignment conditions tag: %s",nam.c_str());
+      }
     }
 
     /// Specialized conversion of <condition/> entities
@@ -1684,6 +1691,7 @@ namespace DD4hep {
       xml_coll_t(e, _LBU(detelemref)).for_each(Conv<DetElemRef>(lcdd,context,catalog));
 
       xml_coll_t(e, _LBU(detelem)).for_each(Conv<DetElem>(lcdd,context,catalog));
+      // First handle the catalog. It may refer to local conditions!
       xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
       xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
     }
@@ -1697,8 +1705,9 @@ namespace DD4hep {
       xml_coll_t(e, _LBU(catalogref)).for_each(Conv<CatalogRef>(lcdd,context,catalog));
       {
         Context::PreservedLocals locals(context);
-        xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
+        // First handle the catalog. It may refer to local conditions!
         xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
+        xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
       }
     }
 

@@ -52,7 +52,7 @@ ConditionsDependencyCollection::insert(const Dependencies::value_type& entry)   
 
 /// Insert new element by key
 std::pair<ConditionsDependencyCollection::iterator,bool>
-ConditionsDependencyCollection::insert(Condition::key_type key, Dependency* dep)   {
+ConditionsDependencyCollection::insert(Dependency* dep)   {
   dep->addRef();
-  return dependencies.insert(std::make_pair(key,Holder(dep)));
+  return dependencies.insert(std::make_pair(dep->key(),Holder(dep)));
 }

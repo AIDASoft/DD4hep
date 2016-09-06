@@ -89,12 +89,11 @@ namespace DD4hep {
        *  \version 1.0
        *  \ingroup DD4HEP_ALIGNMENTS
        */
-      class AlignmentConditionObject
-        : public Conditions::Interna::ConditionObject, public AlignmentData
+      class AlignmentConditionObject : public Conditions::Interna::ConditionObject
       {
       public:
-        // Make the conditions object type local!
-        typedef Conditions::Interna::ConditionObject ConditionObject;
+        /// Cached pointer to the bound conditions data, since these may be accessed very frequently
+        AlignmentData* alignment_data;
         /// Standard constructor
         AlignmentConditionObject(const std::string& nam,const std::string& tit="");
         /// Standard Destructor
@@ -155,6 +154,21 @@ namespace DD4hep {
         void addKey(const std::string& key_value, const std::string& data_value);
       };
 
+      /**
+       *
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class AlignmentNamedObject : public NamedObject, public AlignmentData  {
+      public:
+        /// Default constructor
+        AlignmentNamedObject(const std::string& nam, const std::string& tit="")
+          : NamedObject(nam,tit), AlignmentData()  {}
+        /// Default destructor
+        virtual ~AlignmentNamedObject();
+      };
+      
     } /* End namespace Interna    */
 
   } /* End namespace Alignments             */

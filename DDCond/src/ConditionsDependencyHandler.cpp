@@ -22,8 +22,9 @@ using namespace DD4hep::Conditions;
 /// Default constructor
 ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager::Object* mgr,
                                                          UserPool& pool,
-                                                         const Dependencies& dependencies)
-  : m_manager(mgr), m_pool(pool), m_dependencies(dependencies)
+                                                         const Dependencies& dependencies,
+                                                         void* user_param)
+  : m_manager(mgr), m_pool(pool), m_dependencies(dependencies), m_userParam(user_param)
 {
 }
 
@@ -61,7 +62,7 @@ Condition::Object*
 ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const {
   try  {
     Condition::iov_type iov(m_pool.validity().iovType);
-    ConditionUpdateCall::Context ctxt(*this, dep, iov.reset().invert());
+    ConditionUpdateCall::Context ctxt(*this, dep, m_userParam, iov.reset().invert());
     Condition          cond = (*dep.callback)(dep.target, ctxt);
     Condition::Object* obj  = cond.ptr();
     if ( obj )  {

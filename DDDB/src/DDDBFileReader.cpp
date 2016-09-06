@@ -42,6 +42,10 @@ namespace DD4hep {
       virtual ~DDDBFileReader()  {}
       /// Read raw XML object from the database / file
       virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data);
+      /// Resolve a given URI to a string containing the data
+      virtual bool load(const std::string& system_id, std::string& buffer);
+      /// Resolve a given URI to a string containing the data
+      virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer);
 
     };
   }    /* End namespace DDDB            */
@@ -83,6 +87,25 @@ int DD4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
     if ( done>=len ) return 1;
   }
   return 0;
+}
+
+/// Resolve a given URI to a string containing the data
+bool DD4hep::DDDB::DDDBFileReader::load(const std::string& system_id, std::string& buffer)   {
+  return XML::UriReader::load(system_id, buffer);
+}
+
+/// Resolve a given URI to a string containing the data
+bool DD4hep::DDDB::DDDBFileReader::load(const std::string& system_id,
+                                        UserContext*  ctxt,
+                                        std::string& buffer)
+{
+  bool result = DDDBReader::load(system_id, ctxt, buffer);
+  if ( result )  {
+    DDDBReaderContext* context = (DDDBReaderContext*)ctxt;
+    context->valid_since = context->event_time;
+    context->valid_until = context->event_time;
+  }
+  return result;
 }
 
 namespace {

@@ -37,48 +37,70 @@ TGeoRotation* DD4hep::Geometry::_rotation3D(const Rotation3D& rot3D) {
   return new TGeoRotation("", rot.Phi() * RAD_2_DEGREE, rot.Theta() * RAD_2_DEGREE, rot.Psi() * RAD_2_DEGREE);
 }
 
-TGeoHMatrix* DD4hep::Geometry::_transform(const Position& pos)   {
+/// Set a RotationZYX object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix& DD4hep::Geometry::_transform(TGeoHMatrix& tr, const RotationZYX& rot)   {
+  tr.RotateZ(rot.Phi()   * RAD_2_DEGREE);
+  tr.RotateY(rot.Theta() * RAD_2_DEGREE);
+  tr.RotateX(rot.Psi()   * RAD_2_DEGREE);
+  return tr;
+}
+
+/// Set a Position object (translation) to a TGeoHMatrix \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix& DD4hep::Geometry::_transform(TGeoHMatrix& tr, const Position& pos)   {
   double t[3];
-  TGeoHMatrix *tr = new TGeoHMatrix();
   pos.GetCoordinates(t);
-  tr->SetDx(t[0]);
-  tr->SetDy(t[1]);
-  tr->SetDz(t[2]);
+  tr.SetDx(t[0]);
+  tr.SetDy(t[1]);
+  tr.SetDz(t[2]);
   return tr;
 }
 
-TGeoHMatrix* DD4hep::Geometry::_transform(const RotationZYX& rot)   {
-  TGeoHMatrix *tr = new TGeoHMatrix();
-  tr->RotateZ(rot.Phi() * RAD_2_DEGREE);
-  tr->RotateY(rot.Theta() * RAD_2_DEGREE);
-  tr->RotateX(rot.Psi() * RAD_2_DEGREE);
-  return tr;
-}
-
-TGeoHMatrix* DD4hep::Geometry::_transform(const Rotation3D& rot)   {
-  TGeoHMatrix *tr = new TGeoHMatrix();
-  Double_t* r = tr->GetRotationMatrix();
+/// Set a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix& DD4hep::Geometry::_transform(TGeoHMatrix& tr, const Rotation3D& rot)   {
+  Double_t* r = tr.GetRotationMatrix();
   rot.GetComponents(r);
   return tr;
 }
 
-TGeoHMatrix* DD4hep::Geometry::_transform(const Transform3D& trans) {
+/// Set a Transform3D object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix& DD4hep::Geometry::_transform(TGeoHMatrix& tr, const Transform3D& trans) {
   Position pos;
   RotationZYX rot;
   trans.GetDecomposition(rot, pos);
-  return _transform(pos,rot);
+  return _transform(tr, pos, rot);
 }
 
+/// Set a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix& DD4hep::Geometry::_transform(TGeoHMatrix& tr, const Position& pos, const RotationZYX& rot) {
+  return _transform(_transform(tr, rot), pos);
+}
+
+/// Convert a Position object to a TGeoTranslation         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix* DD4hep::Geometry::_transform(const Position& pos)   {
+  return &_transform(*(new TGeoHMatrix()), pos);
+}
+
+/// Convert a RotationZYX object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix* DD4hep::Geometry::_transform(const RotationZYX& rot)   {
+  return &_transform(*(new TGeoHMatrix()), rot);
+}
+
+/// Convert a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix* DD4hep::Geometry::_transform(const Rotation3D& rot)   {
+  return &_transform(*(new TGeoHMatrix()), rot);
+}
+
+/// Convert a Transform3D object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+TGeoHMatrix* DD4hep::Geometry::_transform(const Transform3D& trans) {
+  return &_transform(*(new TGeoHMatrix()), trans);
+}
+
+/// Convert a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
 TGeoHMatrix* DD4hep::Geometry::_transform(const Position& pos, const RotationZYX& rot) {
-  double t[3];
-  TGeoHMatrix *tr = _transform(rot);
-  pos.GetCoordinates(t);
-  tr->SetDx(t[0]);
-  tr->SetDy(t[1]);
-  tr->SetDz(t[2]);
-  return tr;
+  return &_transform(*(new TGeoHMatrix()), pos, rot);
 }
 
+/// Convert a TGeoMatrix object to a generic Transform3D  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
 Transform3D DD4hep::Geometry::_transform(const TGeoMatrix* matrix)    {
   const Double_t* t = matrix->GetTranslation();
   if ( matrix->IsRotation() )  {
@@ -86,11 +108,6 @@ Transform3D DD4hep::Geometry::_transform(const TGeoMatrix* matrix)    {
     return Transform3D(r[0],r[1],r[2],t[0]*MM_2_CM,
                        r[3],r[4],r[5],t[1]*MM_2_CM,
                        r[6],r[7],r[8],t[2]*MM_2_CM);
-#if 0
-    return Transform3D(r[0],r[3],r[6],t[0]*MM_2_CM,
-                       r[1],r[4],r[7],t[1]*MM_2_CM,
-                       r[2],r[5],r[8],t[2]*MM_2_CM);
-#endif
   }
   return Transform3D(0e0,0e0,0e0,t[0]*MM_2_CM,
                      0e0,0e0,0e0,t[1]*MM_2_CM,

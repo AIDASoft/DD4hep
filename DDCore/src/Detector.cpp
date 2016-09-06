@@ -188,7 +188,10 @@ Alignment DetElement::nominal() const   {
 /// Access to the survey alignment information
 Alignment DetElement::survey() const  {
   Object* o = access();
-  if ( !o->survey.isValid() ) return nominal();
+  if ( !o->survey.isValid() )   {
+    o->survey = Alignment("survey");
+    DD4hep::Alignments::AlignmentTools::copy(nominal(), o->survey);
+  }
   return o->survey;
 }
 

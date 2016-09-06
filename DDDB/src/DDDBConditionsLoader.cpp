@@ -206,8 +206,10 @@ size_t DDDBConditionsLoader::update(const iov_type& req_validity,
     Condition::Object* c = (*i).ptr();
     size_t idx = c->address.find('#');
     string url = (idx == string::npos) ? c->address : c->address.substr(0,idx);
+#if 0
     printout(INFO,"DDDB","++ Need to update: %-40s [%08X] --> %s",
              c->name.c_str(), c->hash, url.c_str());
+#endif
     urls.insert(make_pair(url,c));
   }
   /// Now load them. In the callbacks we can check if we got all required conditions

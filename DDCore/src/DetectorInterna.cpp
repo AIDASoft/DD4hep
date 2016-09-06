@@ -89,6 +89,8 @@ DetElementObject::~DetElementObject() {
   deletePtr (referenceTrafo);
   destroyHandle (conditions);
   conditions = ConditionsContainer();
+  destroyHandle (nominal);
+  destroyHandle (survey);
   destroyHandle (alignments);
   alignments = AlignmentsContainer();
   placement.clear();
