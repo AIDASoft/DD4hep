@@ -75,6 +75,7 @@ AlignmentCondition::Data& AlignmentCondition::data()              {
     return *(o->alignment_data);
   Conditions::Condition c(*this);
   o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
+  o->alignment_data->condition = c;
   return *(o->alignment_data);
 }
 
@@ -85,6 +86,7 @@ const AlignmentCondition::Data& AlignmentCondition::data() const  {
     return *(o->alignment_data);
   Conditions::Condition c(*this);
   o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
+  o->alignment_data->condition = c;
   return *(o->alignment_data);
 }
 

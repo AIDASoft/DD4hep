@@ -15,6 +15,7 @@
 // Framework include files
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/objects/AlignmentsInterna.h"
 #include "DD4hep/AlignmentTools.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/World.h"
@@ -225,6 +226,14 @@ DetElement DetElement::world()  const   {
 bool DetElement::hasConditions()  const   {
   Object* o = access();
   if ( o->conditions.isValid() && !o->conditions->keys.empty() ) 
+    return true;
+  return false;
+}
+
+/// Check if alignments are at all present
+bool DetElement::hasAlignments()  const   {
+  Object* o = access();
+  if ( o->alignments.isValid() && !o->alignments->keys.empty() ) 
     return true;
   return false;
 }

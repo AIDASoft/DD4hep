@@ -25,6 +25,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/objects/AlignmentsInterna.h"
 
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsEntry.h"
@@ -33,11 +34,13 @@
 #include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsListener.h"
 #include "DDCond/ConditionsLoaderImp.h"
+#include "DDCond/AlignmentsLoaderImp.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
+typedef Alignments::AlignmentsLoader AlignmentsLoader;
 typedef UpdatePool::UpdateEntries Updates;
 typedef RangeConditions RC;
 
@@ -151,9 +154,12 @@ ConditionsManagerObject::ConditionsManagerObject(LCDD& lcdd_instance)
 ConditionsManagerObject::~ConditionsManagerObject()   {
   Geometry::World world(m_lcdd.world());
   for_each(m_rawPool.begin(), m_rawPool.end(), DestroyObject<ConditionsIOVPool*>());
-  ConditionsLoader* ld = world->conditionsLoader;
+  ConditionsLoader* cld = world->conditionsLoader;
+  AlignmentsLoader* ald = world->alignmentsLoader;
   world->conditionsLoader = 0;
-  if ( ld ) ld->release();
+  world->alignmentsLoader = 0;
+  if ( cld ) cld->release();
+  if ( ald ) ald->release();
   InstanceCount::decrement(this);
 }
 
@@ -173,6 +179,7 @@ void ConditionsManagerObject::initialize()  {
     ref->SetTitle("updates");
     Geometry::World world(m_lcdd.world());
     world->conditionsLoader = new ConditionsLoaderImp(this);
+    world->alignmentsLoader = new AlignmentsLoaderImp(this);
   }
 }
 

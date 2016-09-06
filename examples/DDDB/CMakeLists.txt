@@ -131,6 +131,15 @@ if (DD4HEP_USE_XERCESC)
     REGEX_PASS "|     24950| 24950|        0|DD4hep::Alignments::Interna::AlignmentConditionObject" )
 
   #
+  #---Testing: Load the geometry + conditions + access derived alignments from DetElement structures
+  dd4hep_add_test_reg( test_DDDB_alignment_access
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
+    EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+    -config DD4hep_ConditionsManagerInstaller
+    -exec   DDDB_AlignmentsAccessTest
+    REGEX_PASS "Accessed 4990 conditions from the DetElement objects" )
+
+  #
   #---Testing: Extract DDDB data from zip archive -------------------------------
   dd4hep_add_test_reg( test_DDDB_clean
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"

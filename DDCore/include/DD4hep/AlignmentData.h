@@ -38,7 +38,8 @@ namespace DD4hep {
 
     // Forward declarations
     class Alignment;
-
+    class AlignmentCondition;
+    
     /// Class describing an condition to re-adjust an alignment
     /**
      *
@@ -126,6 +127,8 @@ namespace DD4hep {
       DetElement           detector;
       /// The subdetector placement corresponding to the actual detector element's volume
       PlacedVolume         placement;
+      /// Reference to the original condition object (May not be present!)
+      Ref_t                condition;
       /// Flag to remember internally calculated quatities
       mutable BitMask      flag;
       /// Magic word to verify object if necessary
@@ -141,16 +144,17 @@ namespace DD4hep {
       /// Assignment operator necessary due to copy constructor
       AlignmentData& operator=(const AlignmentData& copy);
       /// Data accessor for decorator
-      inline AlignmentData& data()                       {  return *this;         }
-
+      inline AlignmentData& data()                       {  return *this;               }
+      /// Accessor if a conditions object is behind
+      bool hasCondition()  const                         {  return condition.isValid(); }
       /// Access the ideal/nominal alignment/placement matrix
       Alignment nominal() const;
       /// Create cached matrix to transform to world coordinates
-      const TGeoHMatrix& worldTransformation()  const    {  return worldTrafo;    }
+      const TGeoHMatrix& worldTransformation()  const    {  return worldTrafo;          }
       /// Access the alignment/placement matrix with respect to the world
-      const TGeoHMatrix& detectorTransformation() const  {  return detectorTrafo; }
+      const TGeoHMatrix& detectorTransformation() const  {  return detectorTrafo;       }
       /// Access the currently applied alignment/placement matrix
-      const Transform3D& localToWorld() const            {  return trToWorld;     }
+      const Transform3D& localToWorld() const            {  return trToWorld;           }
 
       /** Aliases for the transformation from local coordinates to the world system  */
       /// Transformation from local coordinates of the placed volume to the world system
@@ -161,7 +165,7 @@ namespace DD4hep {
       Position localToWorld(const Position& local) const;
       /// Transformation from local coordinates of the placed volume to the world system
       Position localToWorld(const Double_t local[3]) const
-      {  return localToWorld(Position(local[0],local[1],local[2]));               }
+      {  return localToWorld(Position(local[0],local[1],local[2]));                     }
 
       /** Aliases for the transformation from world coordinates to the local volume  */
       /// Transformation from world coordinates of the local placed volume coordinates
@@ -172,7 +176,7 @@ namespace DD4hep {
       Position worldToLocal(const Position& global) const;
       /// Transformation from local coordinates of the placed volume to the world system
       Position worldToLocal(const Double_t global[3]) const
-      {  return worldToLocal(Position(global[0],global[1],global[2]));            }
+      {  return worldToLocal(Position(global[0],global[1],global[2]));                  }
 
       /** Aliases for the transformation from local coordinates to the next DetElement system  */
       /// Transformation from local coordinates of the placed volume to the detector system
@@ -183,7 +187,7 @@ namespace DD4hep {
       Position localToDetector(const Position& local) const;
       /// Transformation from local coordinates of the placed volume to the world system
       Position localToDetector(const Double_t local[3]) const
-      {  return localToDetector(Position(local[0],local[1],local[2]));            }
+      {  return localToDetector(Position(local[0],local[1],local[2]));                  }
 
       /** Aliases for the transformation from the next DetElement to local coordinates */
       /// Transformation from detector element coordinates to the local placed volume coordinates
@@ -194,7 +198,7 @@ namespace DD4hep {
       Position detectorToLocal(const Position& detector) const;
       /// Transformation from detector element coordinates to the local placed volume coordinates
       Position detectorToLocal(const Double_t det[3]) const
-      {  return detectorToLocal(Position(det[0],det[1],det[2]));                  }
+      {  return detectorToLocal(Position(det[0],det[1],det[2]));                        }
     };
 
     /**
