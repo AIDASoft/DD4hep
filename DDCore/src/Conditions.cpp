@@ -136,6 +136,11 @@ const type_info& Condition::typeInfo() const   {
   return descriptor().type();
 }
 
+/// Hash identifier
+Condition::key_type Condition::key()  const    {
+  return access()->hash;
+}
+
 /// Access to the grammar type
 const DD4hep::BasicGrammar& Condition::descriptor() const   {
   const BasicGrammar* g = access()->data.grammar;

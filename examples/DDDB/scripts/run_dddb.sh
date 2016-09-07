@@ -35,40 +35,66 @@ config="";
 exec="";
 vis="";
 debug="";
+last_cmd="";
 #
 #
 while [[ "$1" == -* ]]; do
     #echo "Arg:$1 $2 [$*]";
     a1=`echo $1 | tr A-Z a-z`;
+    #echo "Arg: $1 -- ${last_cmd}";
     case ${a1} in
         -debug)
             debug="gdb --args";
+            last_cmd="";
             ;;
 	-attr)
             vis="${vis} -attr $2";
+            last_cmd="";
             shift;
             ;;
 	-visualize)
 	    vis="${vis} -visualize";
+            last_cmd="";
+            ;;
+	-noparams)
+            params="";
+            last_cmd="";
             ;;
 	-params)
             params="-params $2";
+            last_cmd="";
             shift;
             ;;
 	-loader)
             loader="-loader $2";
+            last_cmd="";
             shift;
             ;;                    
+	-noinput)
+            input="";
+            last_cmd="";
+            ;;
 	-input)
             input="-input $2";
+            last_cmd="";
             shift;
             ;;
 	-config)
             config="${config} -config $2";
+            last_cmd="config";
             shift;
             ;;
 	-exec)
             exec="${exec} -exec $2";
+            last_cmd="exec";
+            shift;
+            ;;
+        -arg)
+            if [ "${last_cmd}" = "exec" ]; then
+                exec="${exec} $2";
+            elif [ "${last_cmd}" = "config" ]; then
+                config="${config} $2";
+            fi;
             shift;
             ;;
 	*)

@@ -158,7 +158,9 @@ namespace DD4hep {
       const std::type_info& typeInfo() const;
       /// Access to the grammar type
       const BasicGrammar& descriptor() const;
-
+      /// Hash identifier
+      key_type key()  const;
+      
       /** Conditions handling */
       /// Re-evaluate the conditions data according to the previous bound type definition
       Condition& rebind();

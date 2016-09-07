@@ -70,54 +70,86 @@ static void usage_load_xml_dddb()   {
   ::exit(EINVAL);
 }
 
+static long run_plugin(Geometry::LCDD& lcdd, const std::string& plugin, std::vector<char*>& args)  {
+  args.push_back(0);
+  return lcdd.apply(plugin.c_str(), args.size()-1, &args[0]);
+}
+
 static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     string sys_id, params, match="conddb:", attr="", loader_name="DDDB_FileReader";
     std::vector<string> setup, xmlFiles, executors, config;
+    std::map<std::string, std::vector<char*> > e_args, s_args, c_args;
     long result = 0, visualize = 0, dump = 0;
-
+    char last = 0, c;
     for(int i=0; i<argc;++i) {
+      c = 0;
       if ( argv[i][0] == '-' )  {
-        char c = ::toupper(argv[i][1]);
+        c = ::toupper(argv[i][1]);
         switch(c)  {
         case 'A':
           attr = argv[++i];
+          last = 0;
           break;
         case 'C':
           config.push_back(argv[++i]);
+          c_args[config.back()] = std::vector<char*>();
+          last = c;
           break;
         case 'D':
           dump = 1;
+          last = 0;
           break;
         case 'E':
           executors.push_back(argv[++i]);
+          e_args[executors.back()] = std::vector<char*>();
+          last = c;
           break;
         case 'I':
           sys_id = argv[++i];
+          last = 0;
           break;
         case 'L':
           loader_name = argv[++i];
+          last = 0;
           break;
         case 'M':
           match = argv[++i];
+          last = 0;
           break;
         case 'P':
           params = argv[++i];
+          last = 0;
           break;
         case 'S':
           setup.push_back(argv[++i]);
+          s_args[setup.back()] = std::vector<char*>();
+          last = c;
           break;
         case 'V':
           visualize = 1;
+          last = 0;
           break;
         case 'X':
           xmlFiles.push_back(argv[++i]);
+          last = 0;
           break;
         case 'H':
+          usage_load_xml_dddb();
+          break;
         case '?':
+          usage_load_xml_dddb();
+          break;
         default:
           usage_load_xml_dddb();
         }
+      }
+      if ( !c && last == 'C' )
+        c_args[config.back()].push_back(argv[i]);
+      else if ( !c && last == 'E' )
+        e_args[executors.back()].push_back(argv[i]);
+      else if ( !c && last == 'S' )  {
+        s_args[setup.back()].push_back(argv[i]);
       }
     }
 
@@ -138,10 +170,8 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     }
 
     /// Execute config plugins without arguments
-    if ( !config.empty() )  {
-      for(size_t i=0; i<config.size(); ++i)
-        lcdd.apply(config[i].c_str(), 0, 0);
-    }
+    for(size_t i=0; i<config.size(); ++i)
+      run_plugin(lcdd, config[i], c_args[config[i]]);
     
     /// Pre-Process Parameters
     if ( !params.empty() )    {
@@ -184,16 +214,12 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     }
 
     /// Execute further setup plugins without arguments
-    if ( !setup.empty() )  {
-      for(size_t i=0; i<setup.size(); ++i)
-        lcdd.apply(setup[i].c_str(), 0, 0);
-    }
+    for(size_t i=0; i<setup.size(); ++i)
+      run_plugin(lcdd, setup[i], s_args[setup[i]]);
 
     /// Call executors
-    if ( !executors.empty() )   {
-      for(size_t i=0; i<executors.size(); ++i)
-        lcdd.apply(executors[i].c_str(), 0, 0);
-    }
+    for(size_t i=0; i<executors.size(); ++i)
+      run_plugin(lcdd, executors[i], e_args[executors[i]]);
 
     if ( dump )    {
       printout(INFO,"DDDBExecutor","------------------> Conditions dump:");

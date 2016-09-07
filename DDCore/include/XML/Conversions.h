@@ -44,31 +44,19 @@ namespace DD4hep {
     user_param param;
     user_param optional;
     /// Initializing constructor of the functor
-    Converter(Geometry::LCDD& l)
-    : lcdd(l), param(0), optional(0) {
-    }
+    Converter(Geometry::LCDD& l) : lcdd(l), param(0), optional(0) { }
     /// Initializing constructor of the functor with initialization of the user parameter
-    Converter(Geometry::LCDD& l, user_param p)
-    : lcdd(l), param(p), optional(0) {
-    }
+    Converter(Geometry::LCDD& l, user_param p) : lcdd(l), param(p), optional(0) { }
     /// Initializing constructor of the functor with initialization of the user parameter
-    Converter(Geometry::LCDD& l, user_param p, user_param o)
-    : lcdd(l), param(p), optional(o)  {
-    }
+    Converter(Geometry::LCDD& l, user_param p, user_param o) : lcdd(l), param(p), optional(o)  { }
     /// Callback operator to be specialized depending on the element type
     void operator()(ARG handle) const;
     /// Typed access to the 1rst. user parameter (unchecked)
-    template <typename TYPE> TYPE* _param() const {
-      return (TYPE*) param;
-    }
+    template <typename TYPE> TYPE* _param() const  {    return (TYPE*) param;     }
     /// Typed object access to the 1rst. user parameter (unchecked)
-    template <typename TYPE> TYPE& _object() const {
-      return *(TYPE*) param;
-    }
+    template <typename TYPE> TYPE& _object() const {    return *(TYPE*) param;    }
     /// Typed access to the 2nd. user parameter (unchecked)
-    template <typename TYPE> TYPE* _option() const {
-      return (TYPE*) optional;
-    }
+    template <typename TYPE> TYPE* _option() const {    return (TYPE*) optional;  }
   };
 } /* End namespace DD4hep           */
 #endif    /* DD4hep_COMPACT_CONVERSION_H    */

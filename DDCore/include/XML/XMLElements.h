@@ -510,6 +510,10 @@ namespace DD4hep {
     template <> INLINE int Handle_t::attr<int>(const XmlChar* tag_value) const {
       return _toInt(attr_value(tag_value));
     }
+    
+    template <> INLINE long Handle_t::attr<long>(const XmlChar* tag_value) const {
+      return _toLong(attr_value(tag_value));
+    }
 
     template <> INLINE float Handle_t::attr<float>(const XmlChar* tag_value) const {
       return _toFloat(attr_value(tag_value));

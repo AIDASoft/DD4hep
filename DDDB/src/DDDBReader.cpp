@@ -77,9 +77,9 @@ void DDDBReader::parserLoaded(const std::string& system_id)  {
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
 void DDDBReader::parserLoaded(const std::string& /* system_id */, UserContext* ctxt)  {
-  DDDBReaderContext* context = (DDDBReaderContext*)ctxt;
-  context->valid_since = context->event_time;
-  context->valid_until = context->event_time;
+  DDDBReaderContext* c = (DDDBReaderContext*)ctxt;
+  c->valid_since = c->event_time;
+  c->valid_until = c->event_time;
 }
 
 int DDDBReader::getObject(const string& sys_id, UserContext* /* ctxt */, string& /* out */)

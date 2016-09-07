@@ -26,6 +26,8 @@ namespace DD4hep {
   namespace XML {
     /// Namespace of conditions unicode tags
     namespace Conditions  {
+      UNICODE(address);
+      UNICODE(condition);
       UNICODE(conditions);
       UNICODE(detelements);
       UNICODE(detelement);
@@ -43,4 +45,7 @@ namespace DD4hep {
 
 #undef UNICODE // Do not miss this one!
 #include "XML/XMLTags.h"
+
+#define _UC(x) ::DD4hep::XML::Conditions::Unicode_##x
+
 #endif /* DD4HEP_CONDITIONS_CONDITIONSTAGS_H  */

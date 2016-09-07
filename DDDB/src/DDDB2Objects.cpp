@@ -31,8 +31,6 @@
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
 
-#include "DDCond/ConditionsManager.h"
-//#include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
 
 // ROOT include files
@@ -1039,7 +1037,8 @@ namespace DD4hep {
         printout(INFO,"DDDB","++ Converted %8d logical  volumes.", int(context.volumes.size()));
         printout(INFO,"DDDB","++ Converted %8d placements.",       int(context.placements.size()));
         printout(INFO,"DDDB","++ Converted %8d detector elements.",int(context.detelements.size()));
-        printout(INFO,"DDDB","++ Converted %8d conditions.",       int(context.geo->conditions.size()));
+        printout(INFO,"DDDB","++ Converted %8d conditions.",
+                 context.geo ? int(context.geo->conditions.size()) : 0);
         helper->setDetectorDescription(0);
         return 1;
       }

@@ -154,12 +154,14 @@ ConditionsManagerObject::ConditionsManagerObject(LCDD& lcdd_instance)
 ConditionsManagerObject::~ConditionsManagerObject()   {
   Geometry::World world(m_lcdd.world());
   for_each(m_rawPool.begin(), m_rawPool.end(), DestroyObject<ConditionsIOVPool*>());
-  ConditionsLoader* cld = world->conditionsLoader;
-  AlignmentsLoader* ald = world->alignmentsLoader;
-  world->conditionsLoader = 0;
-  world->alignmentsLoader = 0;
-  if ( cld ) cld->release();
-  if ( ald ) ald->release();
+  if ( world.isValid() )  {
+    ConditionsLoader* cld = world->conditionsLoader;
+    AlignmentsLoader* ald = world->alignmentsLoader;
+    world->conditionsLoader = 0;
+    world->alignmentsLoader = 0;
+    if ( cld ) cld->release();
+    if ( ald ) ald->release();
+  }
   InstanceCount::decrement(this);
 }
 

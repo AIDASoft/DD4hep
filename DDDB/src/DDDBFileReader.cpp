@@ -101,9 +101,9 @@ bool DD4hep::DDDB::DDDBFileReader::load(const std::string& system_id,
 {
   bool result = DDDBReader::load(system_id, ctxt, buffer);
   if ( result )  {
-    DDDBReaderContext* context = (DDDBReaderContext*)ctxt;
-    context->valid_since = context->event_time;
-    context->valid_until = context->event_time;
+    DDDBReaderContext* c = (DDDBReaderContext*)ctxt;
+    c->valid_since = c->event_time;
+    c->valid_until = c->event_time;
   }
   return result;
 }

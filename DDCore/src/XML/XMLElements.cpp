@@ -266,6 +266,28 @@ string DD4hep::XML::_ptrToString(const void* v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
+long DD4hep::XML::_toLong(const XmlChar* value) {
+  if (value) {
+    string s = _toString(value);
+    size_t idx = s.find("(int)");
+    if (idx != string::npos)
+      s.erase(idx, 5);
+    idx = s.find("(long)");
+    if (idx != string::npos)
+      s.erase(idx, 6);
+    while (s[0] == ' ')
+      s.erase(0, 1);
+    double result = eval.evaluate(s.c_str());
+    if (eval.status() != XmlTools::Evaluator::OK) {
+      cerr << s << ": ";
+      eval.print_error();
+      throw runtime_error("DD4hep: Severe error during expression evaluation of " + s);
+    }
+    return (long) result;
+  }
+  return -1;
+}
+
 int DD4hep::XML::_toInt(const XmlChar* value) {
   if (value) {
     string s = _toString(value);

@@ -131,7 +131,7 @@ namespace {
       user_pool->clear();
       return 1;
     }
-    except("DDDB","+++ Failed update DDDB conditions. No event time argument given!");
+    except("Conditions","+++ Failed update conditions. No event time argument given!");
     return 0;
   }
 }
@@ -152,10 +152,76 @@ namespace {
       manager.clean(epoch, max_age);
       return 1;
     }
-    except("DDDB","+++ Failed cleaning conditions. Insufficient arguments!");
+    except("Conditions","+++ Failed cleaning conditions. Insufficient arguments!");
     return 0;
   }
 }
 DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 // ======================================================================================
 
+#include "DDCond/ConditionsRepository.h"
+namespace {
+  /// Plugin entry point.
+  static long ddcond_create_repository(lcdd_t& lcdd, int argc, char** argv) {
+    if ( argc > 0 )   {
+      string output = argv[0];
+      printout(INFO,"Conditions",
+               "+++ ConditionsRepository: Creating %s",output.c_str());
+      ConditionsManager manager = ConditionsManager::from(lcdd);
+      ConditionsRepository().save(manager,output);
+      return 1;
+    }
+    except("Conditions","+++ Failed creating conditions repository. Insufficient arguments!");
+    return 0;
+  }
+}
+DECLARE_APPLY(DD4hep_ConditionsCreateRepository,ddcond_create_repository)
+// ======================================================================================
+
+namespace {
+  /// Plugin entry point.
+  static long ddcond_dump_repository(lcdd_t& lcdd, int argc, char** argv) {
+    if ( argc > 0 )   {
+      typedef ConditionsRepository::Data Data;
+      Data data;
+      string input = argv[0];
+      printout(INFO,"Conditions",
+               "+++ ConditionsRepository: Dumping %s",input.c_str());
+      ConditionsManager manager = ConditionsManager::from(lcdd);
+      if ( ConditionsRepository().load(input, data) )  {
+        printout(INFO,"Repository","%-8s  %-60s %-60s","Key","Name","Address");
+        for(Data::const_iterator i=data.begin(); i!=data.end(); ++i)  {
+          const ConditionsRepository::Entry& e = *i;
+          string add = e.address;
+          if ( add.length() > 80 ) add = e.address.substr(0,60) + "...";
+          printout(INFO,"Repository","%08X  %s",e.key,e.name.c_str());
+          printout(INFO,"Repository","          -> %s",e.address.c_str());
+        }
+      }
+      return 1;
+    }
+    except("Conditions","+++ Failed dumping conditions repository. Insufficient arguments!");
+    return 0;
+  }
+}
+DECLARE_APPLY(DD4hep_ConditionsDumpRepository,ddcond_dump_repository)
+// ======================================================================================
+
+namespace {
+  /// Plugin entry point.
+  static long ddcond_load_repository(lcdd_t& lcdd, int argc, char** argv) {
+    if ( argc > 0 )   {
+      string input = argv[0];
+      printout(INFO,"Conditions",
+               "+++ ConditionsRepository: Loading %s",input.c_str());
+      ConditionsManager manager = ConditionsManager::from(lcdd);
+      ConditionsRepository::Data data;
+      ConditionsRepository().load(input, data);
+      return 1;
+    }
+    except("Conditions","+++ Failed loading conditions repository. Insufficient arguments!");
+    return 0;
+  }
+}
+DECLARE_APPLY(DD4hep_ConditionsLoadRepository,ddcond_load_repository)
+// ======================================================================================
