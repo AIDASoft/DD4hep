@@ -47,6 +47,13 @@ namespace DD4hep {
   inline unsigned int hash32(const std::string& key) {
     return hash32(key.c_str());
   }
+
+  /// Convert date into epoch time (seconds since 1970)
+  long int makeTime(int year, int month, int day,
+                    int hour=0, int minutes=0, int seconds=0);
+  
+  /// Convert date into epoch time (seconds since 1970)
+  long int makeTime(const std::string& date, const char* fmt="%d-%m-%Y %H:%M:%S");
   
   /// Specialized exception to be thrown if invalid handles are accessed
   class invalid_handle_exception : public std::runtime_error  {

@@ -161,7 +161,7 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
 
     /// Process XML
     if ( !sys_id.empty() )   {
-      long long int init_time = DDDBReader::makeTime(2016,4,1,12);
+      long long int init_time = makeTime(2016,4,1,12);
       const void* args[] = {0, sys_id.c_str(), "/", &init_time, 0};
       printout(INFO,"DDDBExecutor","+++ Processing DDDB: %s", sys_id.c_str());
       result = lcdd.apply("DDDB_Loader", 4, (char**)args);

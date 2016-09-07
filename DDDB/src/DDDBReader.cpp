@@ -21,9 +21,9 @@
 // Framework includes
 #include "DDDB/DDDBReader.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Primitives.h"
 
 // C/C++ include files
-#include <ctime>
 #include <cstring>
 
 using namespace std;
@@ -37,22 +37,6 @@ DDDBReader::DDDBReader(const std::string& dir)
 	m_context.valid_since = makeTime(1970,1,1);
 	m_context.valid_until = makeTime(2030,1,1);
 	m_context.event_time  = makeTime(2015,7,1,12,0,0);
-}
-
-
-long long int DDDBReader::makeTime(int year, int month, int day,
-                                   int hour, int minutes, int seconds)
-{
-  struct tm tm_init;
-  ::memset(&tm_init,0,sizeof(tm_init));
-  tm_init.tm_year  = year > 1900 ? year-1900 : year;
-  tm_init.tm_mon   = month;
-  tm_init.tm_mday  = day;
-  tm_init.tm_hour  = hour;
-  tm_init.tm_min   = minutes;
-  tm_init.tm_sec   = seconds;
-  tm_init.tm_isdst = -1;
-  return ::mktime(&tm_init);
 }
 
 /// Resolve a given URI to a string containing the data
@@ -92,7 +76,7 @@ void DDDBReader::parserLoaded(const std::string& system_id)  {
 }
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
-void DDDBReader::parserLoaded(const std::string& system_id, UserContext* ctxt)  {
+void DDDBReader::parserLoaded(const std::string& /* system_id */, UserContext* ctxt)  {
   DDDBReaderContext* context = (DDDBReaderContext*)ctxt;
   context->valid_since = context->event_time;
   context->valid_until = context->event_time;

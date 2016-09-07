@@ -30,6 +30,42 @@ using   abi::__dynamic_cast;
 #endif
 #endif
 
+long int DD4hep::makeTime(int year, int month, int day,
+                          int hour, int minutes, int seconds)
+{
+  struct tm tm_init;
+  ::memset(&tm_init,0,sizeof(tm_init));
+  tm_init.tm_year  = year > 1900 ? year-1900 : year;
+  tm_init.tm_mon   = month;
+  tm_init.tm_mday  = day;
+  tm_init.tm_hour  = hour;
+  tm_init.tm_min   = minutes;
+  tm_init.tm_sec   = seconds;
+  tm_init.tm_isdst = -1;
+  long int ti = ::mktime(&tm_init);
+  if ( ti >= 0 ) return ti;
+  except("DD4hep","Invalid time data given for conversion to epoch: %d-%d-%d %02d:%02d:%02d",
+         year, month, day, hour, minutes, seconds);
+  return ti;
+}
+
+/// Convert date into epoch time (seconds since 1970)
+long int DD4hep::makeTime(const std::string& date, const char* fmt)  {
+  struct tm tm;
+  char* c = ::strptime(date.c_str(),fmt,&tm);
+  if ( 0 == c )   {
+    except("DD4hep",
+           "Invalid time format given for update:%s should be: %s",
+           date.c_str(), fmt);
+  }
+  long ti = ::mktime(&tm);
+  if ( ti >= 0 ) return ti;
+  except("DD4hep",
+         "Invalid time string given for conversion to epoch: %s (fmt='%s')",
+         date.c_str(), fmt);
+  return ti;
+}
+
 static const std::string __typeinfoName(const std::type_info& tinfo) {
   const char* class_name = tinfo.name();
   std::string result;

@@ -28,7 +28,6 @@
 #include "DDCond/ConditionsPool.h"
 #include "DDAlign/AlignmentsManager.h"
 
-#include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBAlignmentUpdateCall.h"
 
@@ -172,7 +171,7 @@ namespace  {
   };
   //========================================================================
   long make_time(int argc, char** argv) {
-    long int time = DDDB::DDDBReader::makeTime(2016,4,1,12);
+    long int time = makeTime(2016,4,1,12);
     if ( argc>0 )  {
       struct tm tm;
       char* c = ::strptime(argv[0],"%d-%m-%Y %H:%M:%S",&tm);

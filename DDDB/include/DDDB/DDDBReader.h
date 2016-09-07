@@ -52,9 +52,6 @@ namespace DD4hep {
       void setMatch(const std::string& dir)      { m_match = dir;   }
       /// Access data match
       const std::string& match() const           { return m_match;  }
-      /// Create time from ingredients
-      static long long int makeTime(int year, int month, int day, int hour=0, int minutes=0, int seconds=0); 
-      
       /// Access to local context
       virtual UserContext* context()    {  return &m_context;  }
       /// Resolve a given URI to a string containing the data
