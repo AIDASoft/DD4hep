@@ -63,7 +63,7 @@ namespace DD4hep {
        *
        * There may very well be several instances of a 
        * conditions manager. Do not think this is a sort of
-       * 'static constructor'. This woul dbe a big mistake!.
+       * 'static constructor'. This would be a big mistake!.
        */
       template <typename T> static ConditionsManager from(T& host);
 
@@ -137,6 +137,6 @@ namespace DD4hep {
                    bool                  verify_dependencies=true);
     };
 
-  }       /* End namespace Geometry                 */
+  }       /* End namespace Conditions               */
 }         /* End namespace DD4hep                   */
 #endif    /* DDCOND_CONDITIONSMANAGER_H             */

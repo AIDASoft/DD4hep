@@ -293,14 +293,16 @@ namespace  {
     }
   };
 
+  //========================================================================
   /// Plugin function
+  /// Load, compute and access derived conditions
   long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
-    long int long init_time = argc>0 ? *(long*)argv[0] : makeTime(2016,4,1,12);
+    long time = argc>0 ? makeTime(argv[0],"%d-%m-%Y %H:%M:%S") : makeTime(2016,4,1,12);
     ConditionsManager manager = ConditionsManager::from(lcdd);
     ConditionsSelector selector(manager);
     int ret = selector.collectDependencies(lcdd.world(), 0);
     if ( ret == 1 )  {
-      ret = selector.computeDependencies(init_time);
+      ret = selector.computeDependencies(time);
     }
     return ret;
   }

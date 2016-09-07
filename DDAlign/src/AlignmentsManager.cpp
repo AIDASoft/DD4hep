@@ -13,6 +13,7 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "DD4hep/MatrixHelpers.h"
@@ -66,56 +67,35 @@ namespace DD4hep {
       }
     };
     
-    /// Alignment manager.
-    /**
-     *  Uses internally the conditions mechanism to manager the alignment conditions.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_ALIGNMENTS
-     */
-    class AlignmentsManagerObject : public NamedObject {
-    public:
-      typedef AlignmentsManager::Dependencies Dependencies;
-      typedef Conditions::Condition Condition;
-      
-      /// Full list of alignment dependencies
-      Dependencies         dependencies;
-      /// References to all alignment possibilities known
-      AlignContext         all_alignments;
-    
-      /// Compute the transformation from the closest detector element of the alignment to the world system
-      void to_world(AlignContext& new_alignments, UserPool& pool, DetElement det, TGeoHMatrix& mat)  const;
-      /// Compute all alignment conditions of the lower levels
-      void compute(AlignContext& new_alignments, UserPool& pool, DetElement child, int level) const;
+    /// Access specialization
+    template <> AlignmentsManager AlignmentsManager::from<LCDD>(LCDD& host)  {
+      Object* obj = host.extension<Object>();
+      if ( obj ) return AlignmentsManager(obj);
+      except("AlignmentsManager","+++ Failed to access manager from LCDD.");
+      return AlignmentsManager();
+    }
 
-    public:
-      /// Initializing constructor
-      AlignmentsManagerObject();
-      /// Default destructor
-      virtual ~AlignmentsManagerObject();
-      /// Compute all alignment conditions of the internal dependency list
-      void compute(UserPool& user_pool) const;
-      /// Compute all alignment conditions of the specified dependency list
-      void compute(UserPool& user_pool, const Dependencies& deps) const;
-    };
-    
-  }       /* End namespace Geometry                    */
-}         /* End namespace DD4hep                      */
+  }       /* End namespace Alignments */
+}         /* End namespace DD4hep     */
 
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentsManagerObject);
 
 /// Initializing constructor
 AlignmentsManagerObject::AlignmentsManagerObject() : NamedObject() {
+  all_alignments = new AlignContext();
+  dependencies = new Dependencies();
 }
   
 /// Default destructor
 AlignmentsManagerObject::~AlignmentsManagerObject()   {
-  dependencies.clear();
+  dependencies->clear();
+  deletePtr(dependencies);
+  deletePtr(all_alignments);
 }
-  
+
 void AlignmentsManagerObject::to_world(AlignContext& new_alignments, UserPool& pool, DetElement det, TGeoHMatrix& mat)  const  {
+  using Conditions::Condition;
   DetElement par = det.parent();
   while( par.isValid() )   {
     // If we find that the parent also got updated, directly take this transformation.
@@ -132,9 +112,9 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments, UserPool& p
     // there is a still valid condition, which we can use to build the world transformation
     // The parent's alignment condition by defintiion must be present in the pool,
     // since it got updated in the past!
-    i = all_alignments.keys.find(par.key());
-    if ( i != all_alignments.keys.end() )  {
-      const AlignContext::Entry& e = all_alignments.entries[(*i).second];
+    i = all_alignments->keys.find(par.key());
+    if ( i != all_alignments->keys.end() )  {
+      const AlignContext::Entry& e = all_alignments->entries[(*i).second];
       Condition::key_type key = e.dep->target.hash;
       AlignmentCondition cond = pool.get(key);
       AlignmentData&    align = cond.data();
@@ -150,7 +130,7 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments, UserPool& p
 
 /// Compute all alignment conditions of the internal dependency list
 void AlignmentsManagerObject::compute(UserPool& user_pool)  const  {
-  compute(user_pool, dependencies);
+  compute(user_pool, *dependencies);
 }
   
 /// Compute all alignment conditions of the specified dependency list
@@ -270,19 +250,19 @@ void AlignmentsManager::destroy()  {
 /// Adopy alignment dependency for later recalculation
 void AlignmentsManager::adoptDependency(Dependency* dependency) const  {
   Object* o = access();
-  o->dependencies.insert(dependency);
-  o->all_alignments.newEntry(dependency->detector, dependency, 0);
+  o->dependencies->insert(dependency);
+  o->all_alignments->newEntry(dependency->detector, dependency, 0);
 }
 
 /// Access all known dependencies
 const AlignmentsManager::Dependencies& AlignmentsManager::knownDependencies()  const   {
-  return access()->dependencies;
+  return *(access()->dependencies);
 }
 
 /// Compute all alignment conditions of the internal dependency list
 void AlignmentsManager::compute(dd4hep_ptr<UserPool>& user_pool) const   {
   Object* o = access();
-  o->compute(*(user_pool.get()), o->dependencies);
+  o->compute(*(user_pool.get()), *(o->dependencies));
 }
 
 /// Compute all alignment conditions of the specified dependency list

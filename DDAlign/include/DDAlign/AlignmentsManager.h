@@ -34,6 +34,7 @@ namespace DD4hep {
   namespace Alignments {
 
     /// Forward declarations
+    class AlignContext;
     class AlignmentsManagerObject;
     
     /// Alignment manager instance to handle alignment dependencies
@@ -54,11 +55,22 @@ namespace DD4hep {
       typedef Conditions::ConditionsDependencyCollection Dependencies;
       
     public:
-      /// Initializing constructor
-      AlignmentsManager(Object* p) : Handle<Object>(p) {}
-      /// Constructor to be used when reading the already parsed object
+
+      /// Static accessor if installed as an extension
+      /**
+       * Note:
+       *
+       * There may very well be several instances of the
+       * alignment manager. Do not think this is a sort of
+       * 'static constructor'. This would be a big mistake!.
+       */
+      template <typename T> static AlignmentsManager from(T& host);
+
+      /// Default constructor
+      AlignmentsManager() : Handle<Object>(0) {}
+      /// Constructor to be used for proper handles
       AlignmentsManager(const Handle<Object>& e) : Handle<Object>(e) {}
-      /// Constructor to be used when reading the already parsed object
+      /// Constructor to be used for proper handles
       template <typename Q> AlignmentsManager(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Initializing constructor. Creates the object!
       AlignmentsManager(const std::string& name);
@@ -83,6 +95,41 @@ namespace DD4hep {
                            AlignmentCondition& con);
     };
 
+
+    /// Alignment manager.
+    /**
+     *  Uses internally the conditions mechanism to manager the alignment conditions.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_ALIGNMENTS
+     */
+    class AlignmentsManagerObject : public NamedObject {
+    public:
+      typedef AlignmentsManager::Dependencies Dependencies;
+      
+      /// Full list of alignment dependencies
+      Dependencies*        dependencies;
+      /// References to all alignment possibilities known
+      AlignContext*        all_alignments;
+
+    protected:
+      /// Compute the transformation from the closest detector element of the alignment to the world system
+      void to_world(AlignContext& new_alignments, UserPool& pool, DetElement det, TGeoHMatrix& mat)  const;
+      /// Compute all alignment conditions of the lower levels
+      void compute(AlignContext& new_alignments, UserPool& pool, DetElement child, int level) const;
+
+    public:
+      /// Initializing constructor
+      AlignmentsManagerObject();
+      /// Default destructor
+      virtual ~AlignmentsManagerObject();
+      /// Compute all alignment conditions of the internal dependency list
+      void compute(UserPool& user_pool) const;
+      /// Compute all alignment conditions of the specified dependency list
+      void compute(UserPool& user_pool, const Dependencies& deps) const;
+    };
+    
   }       /* End namespace Geometry                    */
 }         /* End namespace DD4hep                      */
 #endif    /* DD4HEP_DDALIGN_ALIGNMENTMANAGER_H         */

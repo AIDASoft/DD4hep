@@ -171,35 +171,25 @@ namespace  {
   };
   //========================================================================
   long make_time(int argc, char** argv) {
-    long int time = makeTime(2016,4,1,12);
-    if ( argc>0 )  {
-      struct tm tm;
-      char* c = ::strptime(argv[0],"%d-%m-%Y %H:%M:%S",&tm);
-      if ( 0 == c )   {
-        except("DerivedAlignmentsTest","Invalid time format given for update:%s "
-               " should be: %d-%m-%Y %H:%M:%S", argv[0]);
-      }
-      time = ::mktime(&tm);
-    }
-    return time;
+    return argc>0 ? makeTime(argv[0],"%d-%m-%Y %H:%M:%S") : makeTime(2016,4,1,12);
   }
 }
 
 //==========================================================================
 namespace  {
-  /// Plugin function
+  /// Plugin function:
   /// Load dependent alignment conditions according to time stamps.
   long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
     long time = make_time(argc, argv);
-    AlignmentsManager align("Test");
-    AlignmentSelector selector(lcdd);
+    AlignmentSelector selec(lcdd);
+    AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
-    int ret = selector.collect(conds,align,time);
+    int ret = selec.collect(conds,align,time);
     if ( ret == 1 )  {
       for(int i=0; i<10; ++i)  {  {
           long ti = time + i*3600;
           dd4hep_ptr<UserPool> pool;
-          ret = selector.computeDependencies(pool,conds,align,ti);
+          ret = selec.computeDependencies(pool,conds,align,ti);
           pool->clear();
         }
         DD4hep::InstanceCount::dump();
@@ -209,25 +199,24 @@ namespace  {
     return ret;
   }
 } /* End anonymous namespace  */
-
 DECLARE_APPLY(DDDB_DerivedAlignmentsTest,dddb_derived_alignments)
 //==========================================================================
 
 namespace  {
-  /// Plugin function
+  /// Plugin function:
   /// Access dependent alignment conditions from DetElement object using global and local keys
   long dddb_access_alignments(LCDD& lcdd, int argc, char** argv) {
     long time = make_time(argc, argv);
-    AlignmentsManager align("Test");
-    AlignmentSelector selector(lcdd);
+    AlignmentSelector selec(lcdd);
+    AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
-    int ret = selector.collect(conds,align,time);
+    int ret = selec.collect(conds,align,time);
     if ( ret == 1 )  {
-      ret = selector.access(conds,align,time);
+      ret = selec.access(conds,align,time);
     }
     align.destroy();
     return ret;
   }
 } /* End anonymous namespace  */
-
 DECLARE_APPLY(DDDB_AlignmentsAccessTest,dddb_access_alignments)
+//==========================================================================

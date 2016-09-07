@@ -127,6 +127,7 @@ if (DD4HEP_USE_XERCESC)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
+    -config DD4hep_AlignmentsManagerInstaller
     -exec   DDDB_DerivedAlignmentsTest
     REGEX_PASS "|     24950| 24950|        0|DD4hep::Alignments::Interna::AlignmentConditionObject" )
 
@@ -136,6 +137,7 @@ if (DD4HEP_USE_XERCESC)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
+    -config DD4hep_AlignmentsManagerInstaller
     -exec   DDDB_AlignmentsAccessTest
     REGEX_PASS "Accessed 4990 conditions from the DetElement objects" )
 

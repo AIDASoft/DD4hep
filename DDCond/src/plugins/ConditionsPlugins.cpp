@@ -29,13 +29,14 @@ using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 namespace {
-
+  /// Plugin function:
+  /// Install the alignment manager as an extension to the central LCDD object
   int ddcond_install_cond_mgr (LCDD& lcdd, int /* argc */, char** /* argv */)  {
     Handle<ConditionsManagerObject> mgr(lcdd.extension<ConditionsManagerObject>(false));
     if ( !mgr.isValid() )  {
       ConditionsManager mgr_handle(lcdd);
       lcdd.addExtension<ConditionsManagerObject>(mgr_handle.ptr());
-      printout(INFO,"ConditionsManager","+++ Successfully installed conditions manager instance.");
+      printout(INFO,"ConditionsManager","+++ Successfully installed conditions manager instance to LCDD.");
     }
     return 1;
   }
