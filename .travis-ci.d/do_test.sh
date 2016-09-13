@@ -110,3 +110,10 @@ ninja
 ninja install
 . ../bin/thisdd4hep.sh
 ctest --output-on-failure -j4
+cd ../examples/
+mkdir build
+cd build
+cmake -GNinja ..
+ninja
+ninja install
+ctest --output-on-failure
