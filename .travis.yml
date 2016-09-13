@@ -1,0 +1,13 @@
+sudo: required
+
+services:
+  - docker
+
+# command to install dependencies
+install:
+  - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
+  - tar xvf cvm-docker-3.6.5.1.tar
+
+# command to run tests
+script:
+  - ls
