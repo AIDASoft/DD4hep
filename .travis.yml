@@ -18,4 +18,5 @@ install:
 script:
   - docker run -d -i -t -v $DD4hepDIR:/DD4hep cernvm /init
   - export CONTAINER=`docker ps -q`
-  - echo $CONTAINER
+  - docker exec $CONTAINER /bin/bash -c "ls /DD4hep"
+  - docker exec $CONTAINER /bin/bash -c "ls /cvmfs/clicdp.cern.ch/"
