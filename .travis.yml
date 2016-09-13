@@ -16,4 +16,5 @@ install:
 
 # command to run tests
 script:
+  - docker run -it cernvm /init ls -lah
   - docker run -i -t -v $DD4hepDIR:/DD4hep cernvm /init ps $$
