@@ -9,7 +9,7 @@ install:
   - mkdir DD4hep
   - mv !(DD4hep) DD4hep
   - shopt -u dotglob
-  - export DD4hepDIR=$(pwd)/DDhep
+  - export DD4hepDIR=$(pwd)
   - ls
   - ls $DD4hepDIR
   - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
