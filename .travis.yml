@@ -12,7 +12,7 @@ install:
   - export DD4hepDIR=${PWD}/DD4hep
   - ls $DD4hepDIR
   - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
-  - cat cvm-docker-3.6.5.1.tar | docker import - my_cernvm
+  - cat cvm-docker-3.6.5.1.tar | docker import - cernvm
 
 # command to run tests
 script:
