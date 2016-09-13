@@ -5,9 +5,17 @@ services:
 
 # command to install dependencies
 install:
+  - shopt -s extglob dotglob
+  - mkdir DD4hep
+  - mv !(DD4hep) DD4hep
+  - shopt -u dotglob
+  - export DD4hepDIR=$(pwd)+/DDhep
+  - ls $DD4hepDIR
   - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
-  - cat cvm-docker-3.6.5.1.tar | sudo docker import - cernvm
+  - cat cvm-docker-3.6.5.1.tar | docker import - cernvm
 
 # command to run tests
 script:
-  - ls
+  - docker run -d -i -t -v $DD4hep:/DD4hep cernvm /init
+  - export CONTAINER=`sudo docker ps -q`
+  - echo $CONTAINER
