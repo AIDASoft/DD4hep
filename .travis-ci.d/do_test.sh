@@ -113,7 +113,7 @@ ctest --output-on-failure -j4
 cd ../examples/
 mkdir build
 cd build
-cmake -GNinja ..
+cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON ..
 ninja
 ninja install
 ctest --output-on-failure
