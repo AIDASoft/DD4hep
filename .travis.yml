@@ -16,6 +16,4 @@ install:
 
 # command to run tests
 script:
-  - docker run -d -i -t -v $DD4hepDIR:/DD4hep cernvm /init
-  - export CONTAINER=`docker ps -q`
-  - docker exec $CONTAINER /bin/bash -c "ls /DD4hep"
+  - docker run -i -t -v $DD4hepDIR:/DD4hep cernvm /init ./DD4hep/do_test.sh
