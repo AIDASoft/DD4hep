@@ -110,7 +110,7 @@ or
 
  - running the build 
 
-   For each commit all tests are run through **gitlab CI**. DD4hep is tested against gcc 4.8 and 4.9 on SLC6 and with gcc 4.9 on CC7. Build results can be observed [here](https://gitlab.cern.ch/CLICdp/DD4hep/builds) and the status is indicated by the badge ![Build status](https://gitlab.cern.ch/CLICdp/DD4hep/badges/master/build.svg) 
+   For each commit all tests are run through **Travis CI**. DD4hep is tested against gcc 4.8 on SLC6. Build results can be observed [here](https://travis-ci.org/AIDASoft/DD4hep) and the status is indicated by the badge [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
 
 
  - running individual tests with output (e.g. in case of failed tests):
