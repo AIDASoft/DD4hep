@@ -10,7 +10,7 @@ install:
   - mv !(DD4hep) DD4hep
   - shopt -u dotglob
   - export DD4hepDIR=${PWD}/DD4hep
-  - cat $DD4hepDIR/.travis-ci.d/do_test.sh
+  - cat $DD4hepDIR/.travis-ci.d/compile_and_test.sh
   - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
   - cat cvm-docker-3.6.5.1.tar | docker import - cernvm
 
