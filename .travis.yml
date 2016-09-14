@@ -17,3 +17,7 @@ install:
 # command to run tests
 script:
   - docker run -v $DD4hepDIR:/DD4hep cernvm /init /DD4hep/.travis-ci.d/compile_and_test.sh
+
+# Don't send e-mail notifications
+notifications:
+  email: false
