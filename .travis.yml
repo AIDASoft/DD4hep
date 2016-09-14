@@ -16,4 +16,4 @@ install:
 
 # command to run tests
 script:
-  - docker run -v $DD4hepDIR:/DD4hep cernvm /init /DD4hep/.travis-ci.d/compiler_and_test.sh
+  - docker run -v $DD4hepDIR:/DD4hep cernvm /init /DD4hep/.travis-ci.d/compile_and_test.sh
