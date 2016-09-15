@@ -34,3 +34,6 @@ lib/
 include/
 python/
 build/
+
+# CMake config files
+*Config.cmake
