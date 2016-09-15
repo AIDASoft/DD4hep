@@ -1,0 +1,24 @@
+sudo: required
+dist: trusty
+
+services:
+  - docker
+
+# command to install dependencies
+install:
+  - shopt -s extglob dotglob
+  - mkdir DD4hep
+  - mv !(DD4hep) DD4hep
+  - shopt -u dotglob
+  - export DD4hepDIR=${PWD}/DD4hep
+  - cat $DD4hepDIR/.travis-ci.d/compile_and_test.sh
+  - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
+  - cat cvm-docker-3.6.5.1.tar | docker import - cernvm
+
+# command to run tests
+script:
+  - docker run -t -v $DD4hepDIR:/DD4hep cernvm /init /DD4hep/.travis-ci.d/compile_and_test.sh
+
+# Don't send e-mail notifications
+notifications:
+  email: false
