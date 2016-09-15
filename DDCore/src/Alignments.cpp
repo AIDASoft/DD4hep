@@ -26,24 +26,32 @@ using namespace DD4hep::Alignments;
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
-
+  
   /// Namespace for the alignment part of the AIDA detector description toolkit
   namespace Alignments {
-
+    
+    // // /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
+    // // template <> Alignment::Alignment<Alignment::Object>(const string& nam) {
+    // //   assign(new Alignment::Object(), nam, "alignment");
+    // // }
+    
+    // // /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
+    // // template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam) {
+    // //   assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
+    // // }
     /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<Alignment::Object>(const string& nam) {
-      assign(new Alignment::Object(), nam, "alignment");
-    }
-
-    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam) {
+    Alignment::Alignment(const string& nam) {
       assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
     }
-
+    
     /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
-    template <> AlignmentCondition::AlignmentCondition<AlignmentCondition::Object>(const string& nam) {
-      assign(new Object(nam, "alignment"), nam, "alignment");
+    AlignmentCondition::AlignmentCondition(const string& nam) {
+      assign(new AlignmentCondition::Object(nam, "alignment"), nam, "alignment");
     }
+    // // /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
+    // // template <> AlignmentCondition::AlignmentCondition<AlignmentCondition::Object>(const string& nam) {
+    // //   assign(new Object(nam, "alignment"), nam, "alignment");
+    // // }
   } /* End namespace Aligments                  */
 } /* End namespace DD4hep                       */
 
