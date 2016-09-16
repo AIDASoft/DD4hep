@@ -23,6 +23,8 @@ option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
 option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
 option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
+option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
+ 
 #
 #-----------------------------------------------------------------------------------------------------
 #
@@ -134,6 +136,7 @@ ENDIF()
 # ----for APPLE scripts have to set the DYLD_LIBRARY_PATH 
 if( APPLE ) 
   set( USE_DYLD 1)
+  set(CMAKE_MACOSX_RPATH 1)
 endif()
 
 configure_file(cmake/thisdd4hep.csh bin/thisdd4hep.csh @ONLY)
