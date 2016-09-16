@@ -87,7 +87,8 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Alignment(const Handle<Q>& e) : Handle<Object>(e)  {}
       /// Object constructor for pure alignment objects
-      template <typename Q=Interna::AlignmentNamedObject> Alignment(const std::string& name);
+      //      template <typename Q=Interna::AlignmentNamedObject> Alignment(const std::string& name);
+      Alignment(const std::string& name) ;
 
       /// Hash code generation from input string
       static key_type hashCode(const char* value);
@@ -147,7 +148,8 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> AlignmentCondition(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Object constructor for pure alignment objects
-      template <typename Q=Object> AlignmentCondition(const std::string& name);
+      //      template <typename Q=Object> AlignmentCondition(const std::string& name);
+      AlignmentCondition(const std::string& name) ;
 
       /** Interval of validity            */
       /// Access the IOV type
