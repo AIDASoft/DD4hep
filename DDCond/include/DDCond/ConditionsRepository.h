@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ConditionsRepository.h 2336 2016-09-07 17:27:40Z markus.frank@cern.ch $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -41,6 +41,11 @@ namespace DD4hep {
      */
     class ConditionsRepository  {
     public:
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       class Entry  {
       public:
         std::string name, address;
