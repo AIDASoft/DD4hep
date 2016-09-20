@@ -11,3 +11,12 @@ git diff --staged
 git diff
 
 ## Equiv svn status
+git status
+
+## Push for running tests
+git push gitlab
+
+
+## Adding ssh key using web page!
+
+
