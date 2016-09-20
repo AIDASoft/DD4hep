@@ -21,7 +21,7 @@
 #define DD4HEP_DDDB_DDDBALIGNMENTUPDATECALL_H
 
 // Framework includes
-#include "DD4hep/ConditionDerived.h"
+#include "DDAlign/AlignmentUpdateCall.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -47,14 +47,10 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class DDDBAlignmentUpdateCall : public Conditions::ConditionUpdateCall  {
-    public:
-      typedef Conditions::Condition              Condition;
-      typedef Conditions::ConditionKey           ConditionKey;
-      typedef Conditions::ConditionUpdateContext UpdateContext;
+    class DDDBAlignmentUpdateCall : public Alignments::AlignmentUpdateCall  {
     public:
       /// Default constructor
-      DDDBAlignmentUpdateCall();
+      DDDBAlignmentUpdateCall() : Alignments::AlignmentUpdateCall()  {}
       /// Default destructor
       virtual ~DDDBAlignmentUpdateCall();
       /// Interface to client Callback in order to update the condition

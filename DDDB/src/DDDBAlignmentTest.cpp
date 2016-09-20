@@ -195,10 +195,9 @@ namespace  {
         DD4hep::InstanceCount::dump();
       }
     }
-    align.destroy();
     return ret;
   }
-} /* End anonymous namespace  */
+}   /* End anonymous namespace  */
 DECLARE_APPLY(DDDB_DerivedAlignmentsTest,dddb_derived_alignments)
 //==========================================================================
 
@@ -214,9 +213,8 @@ namespace  {
     if ( ret == 1 )  {
       ret = selec.access(conds,align,time);
     }
-    align.destroy();
     return ret;
   }
-} /* End anonymous namespace  */
+}   /* End anonymous namespace  */
 DECLARE_APPLY(DDDB_AlignmentsAccessTest,dddb_access_alignments)
 //==========================================================================

@@ -14,11 +14,11 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/DetectorTools.h"
+#include "DD4hep/DetFactoryHelper.h"
 
-using namespace std;
 using namespace DD4hep;
+using namespace DD4hep::Alignments;
 
 // ======================================================================================
 #include "DDAlign/AlignmentsManager.h"
@@ -27,8 +27,6 @@ namespace {
   /// Plugin function:
   /// Install the alignment manager as an extension to the central LCDD object
   int ddalign_install_align_mgr (Geometry::LCDD& lcdd, int /* argc */, char** /* argv */)  {
-    using Alignments::AlignmentsManager;
-    using Alignments::AlignmentsManagerObject;
     Handle<AlignmentsManagerObject> mgr(lcdd.extension<AlignmentsManagerObject>(false));
     if ( !mgr.isValid() )  {
       AlignmentsManager mgr_handle("LCDD_AlignmentManager");
@@ -39,14 +37,14 @@ namespace {
   }
 }  /* End anonymous namespace  */
 DECLARE_APPLY(DD4hep_AlignmentsManagerInstaller,ddalign_install_align_mgr)
-// ======================================================================================
 
+// ======================================================================================
 #include "DDAlign/AlignmentWriter.h"
 namespace {
   namespace DetectorTools = DD4hep::Geometry::DetectorTools;
-  long create_alignment_file(Geometry::LCDD& lcdd, int argc, char** argv)   {
+  long create_global_alignment_file(Geometry::LCDD& lcdd, int argc, char** argv)   {
     Geometry::DetElement top;
-    string output, path = "/world";
+    std::string output, path = "/world";
     bool enable_transactions = false;
     for(int i=1; i<argc;++i) {
       if ( argv[i][0]=='-' || argv[i][0]=='/' ) {
@@ -58,7 +56,7 @@ namespace {
         else if ( strncmp(argv[i]+1,"-transactions",5)==0 )
           enable_transactions = true;
         else
-          throw runtime_error("AlignmentWriter: Invalid argument:"+string(argv[i]));
+          throw std::runtime_error("AlignmentWriter: Invalid argument:"+std::string(argv[i]));
       }
     }
     printout(ALWAYS,"AlignmentWriter",
@@ -66,11 +64,11 @@ namespace {
              path.c_str(), output.c_str());
     top = DetectorTools::findDaughterElement(lcdd.world(),path);
     if ( top.isValid() )   {
-      Alignments::AlignmentWriter wr(lcdd);
+      AlignmentWriter wr(lcdd);
       return wr.write(wr.dump(top,enable_transactions), output);
     }
-    throw runtime_error("AlignmentWriter: Invalid top level element name:"+path);
+    throw std::runtime_error("AlignmentWriter: Invalid top level element name:"+path);
   }
 }  /* End anonymous namespace  */
-DECLARE_APPLY(DDAlignmentWriter, create_alignment_file)
+DECLARE_APPLY(DD4hep_GlobalAlignmentWriter, create_global_alignment_file)
 // ======================================================================================

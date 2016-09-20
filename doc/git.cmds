@@ -10,13 +10,16 @@ git diff --staged
 ## Equiv to svn diff (raw stuff)
 git diff
 
+## svn diff for one git repository
+git diff --numstat downstream/master
+
 ## Equiv svn status
 git status
 
 ## Push for running tests
 git push gitlab
 
-
+## Damned password:
 ## Adding ssh key using web page!
 
 
