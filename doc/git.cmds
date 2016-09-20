@@ -1,0 +1,13 @@
+## Add single file after change
+git add -f DDCond/include/DDCond/ConditionsTextRepository.h
+
+## Add all changes interactively with asking
+git add -p
+
+## Equiv to svn diff (after 'git add')
+git diff --staged
+
+## Equiv to svn diff (raw stuff)
+git diff
+
+## Equiv svn status
