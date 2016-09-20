@@ -1,18 +1,18 @@
-// $Id: ConditionsRepository.h 2336 2016-09-07 17:27:40Z markus.frank@cern.ch $
+// $Id: ConditionsTextrepository.h 2336 2016-09-07 17:27:40Z markus.frank@cern.ch $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
-// All rights reserved.
+// All rights For.
 //
-// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// reserved the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSREPOSITORY_H
-#define DD4HEP_CONDITIONS_CONDITIONSREPOSITORY_H
+#ifndef DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H
+#define DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H
 
 // Framework include files
 #include "DDCond/ConditionsManager.h"
@@ -39,13 +39,8 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionsRepository  {
+    class ConditionsTextRepository  {
     public:
-      /**
-       *  \author  M.Frank
-       *  \version 1.0
-       *  \ingroup DD4HEP_CONDITIONS
-       */
       class Entry  {
       public:
         std::string name, address;
@@ -65,16 +60,16 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      ConditionsRepository();
+      ConditionsTextRepository();
       /// Default destructor
-      virtual ~ConditionsRepository();
-      /// Save the repository to file
+      virtual ~ConditionsTextRepository();
+      /// Save the textrepository to file
       int save(ConditionsManager m, const std::string& output)  const;
-      /// Load the repository from file and fill user passed data structory
+      /// Load the textrepository from file and fill user passed data structory
       int load(const std::string& input, Data& data)  const;
     };
 
   } /* End namespace Geometry               */
 } /* End namespace DD4hep                   */
 
-#endif /* DD4HEP_CONDITIONS_CONDITIONSREPOSITORY_H  */
+#endif /* DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H  */
