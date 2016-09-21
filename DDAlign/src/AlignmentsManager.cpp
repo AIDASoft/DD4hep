@@ -16,6 +16,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
+#include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DDCond/ConditionsPool.h"
 #include "DDAlign/AlignmentsManager.h"
@@ -50,7 +51,12 @@ namespace DD4hep {
       Keys         keys;
       Entries      entries;
       unsigned long long int magic;
-      AlignContext() : magic(magic_word()) {}
+      AlignContext() : magic(magic_word()) {
+        InstanceCount::increment(this);
+      }
+      ~AlignContext()  {
+        InstanceCount::decrement(this);
+      }
       void newEntry(DetElement det, const Dependency* dep, AlignmentCondition::Object* con) {
         if ( det.isValid() )  {
           Entry entry;
@@ -83,6 +89,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentsManagerObject);
 
 /// Initializing constructor
 AlignmentsManagerObject::AlignmentsManagerObject() : NamedObject() {
+  InstanceCount::increment(this);
   all_alignments = new AlignContext();
   dependencies = new Dependencies();
 }
@@ -92,6 +99,7 @@ AlignmentsManagerObject::~AlignmentsManagerObject()   {
   dependencies->clear();
   deletePtr(dependencies);
   deletePtr(all_alignments);
+  InstanceCount::decrement(this);
 }
 
 void AlignmentsManagerObject::to_world(AlignContext& new_alignments, UserPool& pool, DetElement det, TGeoHMatrix& mat)  const  {

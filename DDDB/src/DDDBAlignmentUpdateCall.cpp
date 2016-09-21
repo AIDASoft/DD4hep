@@ -21,19 +21,11 @@
 // Framework includes
 #include "DDDB/DDDBAlignmentUpdateCall.h"
 #include "DDDB/DDDBConditionPrinter.h"
-#include "DDAlign/AlignmentsManager.h"
 #include "DD4hep/ConditionsData.h"
-#include "DD4hep/Alignments.h"
 #include "DD4hep/Printout.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
-
-/// Default constructor
-DDDB::DDDBAlignmentUpdateCall::DDDBAlignmentUpdateCall()
-  : Conditions::ConditionUpdateCall()
-{
-}
 
 /// Default destructor
 DDDB::DDDBAlignmentUpdateCall::~DDDBAlignmentUpdateCall() {
@@ -43,31 +35,25 @@ DDDB::DDDBAlignmentUpdateCall::~DDDBAlignmentUpdateCall() {
 DDDB::DDDBAlignmentUpdateCall::Condition
 DDDB::DDDBAlignmentUpdateCall::operator()(const ConditionKey& key, const UpdateContext& context)
 {
-  typedef OpaqueDataBlock Param;
-  typedef Alignments::AlignmentData Data;
-  Alignments::AlignmentCondition target(key.name);
-  Data&          data = target.data();
-  Condition      cond = context.condition(0);
-  AbstractMap&   src  = cond.get<AbstractMap>();
-  const Param&   par  = src.firstParam().second;
-  DetElement     det  = context.dependency.detector;
+  Condition        cond = context.condition(0);
+  AbstractMap&     src  = cond.get<AbstractMap>();
+  OpaqueDataBlock& par  = src.firstParam().second;
+  DetElement       det  = context.dependency.detector;
   printout(DEBUG,"AlignmentUpdate","++ Building dependent condition: %s Detector [%d]: %s ",
            key.name.c_str(), det.level(), det.path().c_str());
   if ( par.typeInfo() == typeid(Data::Delta) )  {
     const Data::Delta& delta = src.first<Data::Delta>();
-    data.delta = delta;
-    data.flag  = Data::HAVE_NONE;
+    return AlignmentUpdateCall::handle(key, context, delta);
   }
-  else  {
-    printout(INFO,"AlignmentUpdate","++ Failed to access alignment-Delta from %s",
-             cond->value.c_str());
-    ConditionPrinter()(cond);
-  }
+  // Somehow the condition is not of type Data::Delta. This is an ERROR.
+  // Here only print and return an empty alignment condition.
+  // Otherwise the return is not accepted!
+  // TODO: To be decided how to handle this error
+  Alignments::AlignmentCondition target(key.name);
+  Data& data = target.data();
   data.detector = det;
-  Alignments::AlignmentsManager::newEntry(context, det, &context.dependency, target);
-  // A callback returning no condition is illegal!
-  // Need to crosscheck though if the alignment IOV interval of parents may be
-  // smaller then the daughter IOV interval.
-  // I though expect, that this is a purely academic case.
+  printout(INFO,"AlignmentUpdate","++ Failed to access alignment-Delta from %s",
+           cond->value.c_str());
+  ConditionPrinter()(cond);
   return target;
 }
