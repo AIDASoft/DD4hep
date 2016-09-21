@@ -63,6 +63,7 @@ namespace {
 #define appendChild         LinkEndChild
 #define getOwnerDocument    GetDocument
 #define getDocumentElement  RootElement
+#define getDocumentURI      Value
 
 /// Union to ease castless object access in TinyXML
 union Xml {
@@ -1032,6 +1033,15 @@ Handle_t Document::root() const {
   if (m_doc)
     return _XE(_D(m_doc)->getDocumentElement());
   throw runtime_error("Document::root: Invalid handle!");
+}
+
+/// Acces the document URI
+std::string Document::uri() const   {
+  if (m_doc)   {
+    Tag_t val(_D(m_doc)->getDocumentURI());
+    return val;
+  }
+  throw runtime_error("Document::uri: Invalid handle!");
 }
 
 /// Assign new document. Old document is dropped.

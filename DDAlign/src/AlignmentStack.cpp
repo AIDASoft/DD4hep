@@ -33,74 +33,16 @@ static dd4hep_ptr<AlignmentStack>& _stack(AlignmentStack* obj)  {
   return s;
 }
 
-/// Fully initializing constructor
-AlignmentStack::StackEntry::StackEntry(const DetElement& p, const string& placement, const Transform3D& t, double ov, int f)
-  : detector(p), transform(t), path(placement), overlap(ov), flag(f)
-{
-  InstanceCount::increment(this);
-}
-
 /// Constructor with partial initialization
-AlignmentStack::StackEntry::StackEntry(DetElement element, bool rst, bool rst_children)
-  : detector(element), transform(), overlap(0.001), flag(0)
+AlignmentStack::StackEntry::StackEntry(DetElement element, const std::string& p, const Delta& del, double ov)
+  : detector(element), delta(del), path(p), overlap(ov)
 {
   InstanceCount::increment(this);
-  if ( rst ) flag |= RESET_VALUE;
-  if ( rst_children ) flag |= RESET_CHILDREN;
-  if ( detector.isValid() ) path = detector.placementPath();
-}
-
-/// Constructor with partial initialization
-AlignmentStack::StackEntry::StackEntry(DetElement element, const Transform3D& trafo, bool rst, bool rst_children)
-  : detector(element), transform(trafo), overlap(0.001), flag(0)
-{
-  InstanceCount::increment(this);
-  flag |= MATRIX_DEFINED;
-  if ( rst ) flag |= RESET_VALUE;
-  if ( rst_children ) flag |= RESET_CHILDREN;
-  if ( detector.isValid() ) path = detector.placementPath();
-}
-
-/// Constructor with partial initialization
-AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& translation, bool rst, bool rst_children)
-  : detector(element), transform(translation), overlap(0.001), flag(0)
-{
-  InstanceCount::increment(this);
-  flag |= MATRIX_DEFINED;
-  if ( rst ) flag |= RESET_VALUE;
-  if ( rst_children ) flag |= RESET_CHILDREN;
-  if ( detector.isValid() ) path = detector.placementPath();
-}
-
-/// Constructor with partial initialization
-AlignmentStack::StackEntry::StackEntry(DetElement element, const RotationZYX& rot, bool rst, bool rst_children)
-  : detector(element), transform(rot), overlap(0.001), flag(0)
-{
-  InstanceCount::increment(this);
-  flag |= MATRIX_DEFINED;
-  if ( rst ) flag |= RESET_VALUE;
-  if ( rst_children ) flag |= RESET_CHILDREN;
-  if ( detector.isValid() ) path = detector.placementPath();
-}
-
-/// Constructor with partial initialization
-AlignmentStack::StackEntry::StackEntry(DetElement element, 
-                                       const Position& translation, 
-                                       const RotationZYX& rot, 
-                                       bool rst, 
-                                       bool rst_children)
-  : detector(element), transform(rot,translation), overlap(0.001), flag(0)
-{
-  InstanceCount::increment(this);
-  flag |= MATRIX_DEFINED;
-  if ( rst ) flag |= RESET_VALUE;
-  if ( rst_children ) flag |= RESET_CHILDREN;
-  if ( detector.isValid() ) path = detector.placementPath();
 }
 
 /// Copy constructor
 AlignmentStack::StackEntry::StackEntry(const StackEntry& e)
-  : detector(e.detector), transform(e.transform), path(e.path), overlap(e.overlap), flag(e.flag)
+  : detector(e.detector), delta(e.delta), path(e.path), overlap(e.overlap)
 {
   InstanceCount::increment(this);
 }
@@ -114,53 +56,38 @@ AlignmentStack::StackEntry::~StackEntry() {
 AlignmentStack::StackEntry& AlignmentStack::StackEntry::operator=(const StackEntry& e)   {
   if ( this != &e )  {
     detector = e.detector;
-    transform = e.transform;
-    overlap = e.overlap;
-    path = e.path;
-    flag = e.flag;
+    delta    = e.delta;
+    overlap  = e.overlap;
+    path     = e.path;
   }
-  return *this;
-}
-
-/// Attach transformation object
-AlignmentStack::StackEntry& AlignmentStack::StackEntry::setTransformation(const Transform3D& trafo)   {
-  flag |= MATRIX_DEFINED;
-  transform = trafo;
-  return *this;
-}
-
-/// Instruct entry to ignore the transformation
-AlignmentStack::StackEntry& AlignmentStack::StackEntry::clearTransformation()   {
-  flag &= ~MATRIX_DEFINED;
-  transform = Transform3D();
   return *this;
 }
 
 /// Set flag to reset the entry to it's ideal geometrical position
 AlignmentStack::StackEntry& AlignmentStack::StackEntry::setReset(bool new_value)   {
-  new_value ? (flag |= RESET_VALUE) : (flag &= ~RESET_VALUE);
+  new_value ? (delta.flags |= RESET_VALUE) : (delta.flags &= ~RESET_VALUE);
   return *this;
 }
 
 
 /// Set flag to reset the entry's children to their ideal geometrical position
 AlignmentStack::StackEntry& AlignmentStack::StackEntry::setResetChildren(bool new_value)   {
-  new_value ? (flag |= RESET_CHILDREN) : (flag &= ~RESET_CHILDREN);
+  new_value ? (delta.flags |= RESET_CHILDREN) : (delta.flags &= ~RESET_CHILDREN);
   return *this;
 }
 
 
 /// Set flag to check overlaps
 AlignmentStack::StackEntry& AlignmentStack::StackEntry::setOverlapCheck(bool new_value)   {
-  new_value ? (flag |= CHECKOVL_DEFINED) : (flag &= ~CHECKOVL_DEFINED);
+  new_value ? (delta.flags |= CHECKOVL_DEFINED) : (delta.flags &= ~CHECKOVL_DEFINED);
   return *this;
 }
 
 
 /// Set the precision for the overlap check (otherwise the default is 0.001 cm)
 AlignmentStack::StackEntry& AlignmentStack::StackEntry::setOverlapPrecision(double precision)   {
-  flag |= CHECKOVL_DEFINED;
-  flag |= CHECKOVL_VALUE;
+  delta.flags |= CHECKOVL_DEFINED;
+  delta.flags |= CHECKOVL_VALUE;
   overlap = precision;
   return *this;
 }

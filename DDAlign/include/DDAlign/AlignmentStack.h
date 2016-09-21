@@ -15,7 +15,7 @@
 #define DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
+#include "DD4hep/Alignments.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Memory.h"
 
@@ -35,12 +35,12 @@ namespace DD4hep {
     class AlignmentStack  {
     public:
       enum {
-        OVERLAP_DEFINED     = 1<<0,
-        MATRIX_DEFINED      = 1<<1,
-        CHECKOVL_DEFINED    = 1<<2,
-        CHECKOVL_VALUE      = 1<<3,
-        RESET_VALUE         = 1<<4,
-        RESET_CHILDREN      = 1<<5,
+        OVERLAP_DEFINED     = 1<<20,
+        MATRIX_DEFINED      = 1<<21,
+        CHECKOVL_DEFINED    = 1<<22,
+        CHECKOVL_VALUE      = 1<<23,
+        RESET_VALUE         = 1<<24,
+        RESET_CHILDREN      = 1<<25,
         ____LLLAST          = 1<<31
       } Flags;
 
@@ -52,28 +52,16 @@ namespace DD4hep {
        */
       struct StackEntry {
         /// Reference to the detector element
-        DetElement    detector;
-        /// 3-D Transformation matrix for the volume
-        Transform3D   transform;
+        DetElement        detector;
+        /// Delta transformation to be applied
+        Delta             delta;
         /// Path to the misaligned volume
-        std::string   path;
+        std::string       path;
         /// Parameter for overlap checking
-        double        overlap;
-        /// Flag containing various encodings
-        int           flag;
+        double            overlap;
 
         /// Fully initializing constructor
-        StackEntry(const DetElement& p, const std::string& placement, const Transform3D& t, double ov, int flg);
-        /// Constructor with partial initialization
-        StackEntry(DetElement element, bool rst=true, bool rst_children=true);
-        /// Constructor with partial initialization
-        StackEntry(DetElement element, const Transform3D& trafo, bool rst=true, bool rst_children=true);
-        /// Constructor with partial initialization
-        StackEntry(DetElement element, const Position& translation, bool rst=true, bool rst_children=true);
-        /// Constructor with partial initialization
-        StackEntry(DetElement element, const RotationZYX& rot, bool rst=true, bool rst_children=true);
-        /// Constructor with partial initialization
-        StackEntry(DetElement element, const Position& translation, const RotationZYX& rot, bool rst=true, bool rst_children=true);
+        StackEntry(DetElement p, const std::string& placement, const Delta& t, double ov);
         /// Copy constructor
         StackEntry(const StackEntry& e);
         /// Default destructor
@@ -82,25 +70,19 @@ namespace DD4hep {
         /// Assignment operator
         StackEntry& operator=(const StackEntry& e);
 
-        /// Check a given flag
-        bool checkFlag(int mask) const {  return (flag&mask) == mask; }
         /// Check if the overlap flag checking is enabled
-        bool overlapDefined() const    {  return checkFlag(OVERLAP_DEFINED); }
+        bool overlapDefined() const    {  return delta.checkFlag(OVERLAP_DEFINED);  }
         /// Check if the overlap flag checking is enabled
-        bool checkOverlap() const      {  return checkFlag(CHECKOVL_DEFINED); }
+        bool checkOverlap() const      {  return delta.checkFlag(CHECKOVL_DEFINED); }
         /// Check if the overalp value is present
-        bool overlapValue() const      {  return checkFlag(CHECKOVL_VALUE); }
+        bool overlapValue() const      {  return delta.checkFlag(CHECKOVL_VALUE);   }
         /// Check if this alignment entry has a non unitary transformation matrix
-        bool hasMatrix() const         {  return checkFlag(MATRIX_DEFINED); }
+        bool hasMatrix() const         {  return delta.checkFlag(MATRIX_DEFINED);   }
         /// Check flag if the node location should be reset
-        bool needsReset() const        {  return checkFlag(RESET_VALUE); }
+        bool needsReset() const        {  return delta.checkFlag(RESET_VALUE);      }
         /// Check flag if the node location and all children should be reset
-        bool resetChildren() const     {  return checkFlag(RESET_CHILDREN); }
+        bool resetChildren() const     {  return delta.checkFlag(RESET_CHILDREN);   }
 
-        /// Attach transformation object
-        StackEntry& setTransformation(const Transform3D& trafo);
-        /// Instruct entry to ignore the transformation
-        StackEntry& clearTransformation();
         /// Set flag to reset the entry to it's ideal geometrical position
         StackEntry& setReset(bool new_value=true);
         /// Set flag to reset the entry's children to their ideal geometrical position

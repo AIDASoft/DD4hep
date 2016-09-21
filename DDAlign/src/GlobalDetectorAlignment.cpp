@@ -13,7 +13,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDAlign/DetectorAlignment.h"
+#include "DDAlign/GlobalDetectorAlignment.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
@@ -36,12 +36,15 @@ namespace DD4hep {
       GlobalAlignment global;
       std::vector<GlobalAlignment> volume_alignments;
     public:
-      GlobalAlignmentData() : NamedObject("","global-alignment") {}
-      virtual ~GlobalAlignmentData() {}
+      GlobalAlignmentData(const std::string& path) : NamedObject(path,"global-alignment") {
+        global = GlobalAlignment(path);
+      }
+      virtual ~GlobalAlignmentData() {
+        destroyHandle (global);
+      }
     };
   } /* End namespace Aligments               */
 } /* End namespace DD4hep                    */
-
 
 using namespace std;
 using namespace DD4hep;
@@ -50,20 +53,30 @@ using namespace DD4hep::Alignments;
 namespace DetectorTools = DD4hep::Geometry::DetectorTools;
 typedef vector<pair<int,DetElement> > LevelElements;
 
+DD4HEP_INSTANTIATE_HANDLE_NAMED(GlobalAlignmentData);
+
+
 namespace {
 
+  static bool s_GlobalDetectorAlignment_debug = false;
+  
   GlobalAlignment _align(const GlobalAlignment& a, TGeoHMatrix* transform, bool check, double overlap) {
     TGeoPhysicalNode* n = a.ptr();
     if ( n )  {
       TGeoMatrix* mm = n->GetNode()->GetMatrix();
-      printout(INFO,"Alignment","DELTA matrix of %s",n->GetName());
-      transform->Print();
-      /*
+      bool dbg = GlobalDetectorAlignment::debug();
+      if ( dbg )  {
+        printout(INFO,"Alignment","DELTA matrix of %s",n->GetName());
+        transform->Print();
         printout(INFO,"Alignment","OLD matrix of %s",n->GetName());
         mm->Print();
-      */
+      }
       transform->MultiplyLeft(mm); // orig * delta
       n->Align(transform, 0, check, overlap);
+      if ( dbg )   {
+        printout(INFO,"Alignment","NEW matrix of %s",n->GetName());
+        n->GetNode()->GetMatrix()->Print();
+      }
       /*
         printout(INFO,"Alignment","Apply new relative matrix  mother to daughter:");
         transform->Print();
@@ -71,8 +84,6 @@ namespace {
         printout(INFO,"Alignment","With deltas %s ....",n->GetName());
         transform->Print();
         n->Align(transform, 0, check, overlap);
-        printout(INFO,"Alignment","NEW matrix of %s",n->GetName());
-        n->GetNode()->GetMatrix()->Print();
 
         Position local, global = a.toGlobal(local);
         cout << "Local:" << local << " Global: " << global
@@ -83,25 +94,20 @@ namespace {
     throw runtime_error("DD4hep: Cannot align non existing physical node. [Invalid Handle]");
   }
 
-  GlobalAlignment _alignment(const DetectorAlignment& det)  {
-    Ref_t gbl = det._data().global_alignment;
-    if ( gbl.isValid() )  {
-      Handle<GlobalAlignmentData> h(gbl);
+  GlobalAlignment _alignment(const GlobalDetectorAlignment& det)  {
+    DetElement::Object& e = det._data();
+    if ( !e.global_alignment.isValid() )  {
+      string path = DetectorTools::placementPath(det);
+      e.global_alignment = Ref_t(new GlobalAlignmentData(path));
+    }
+    Handle<GlobalAlignmentData> h(e.global_alignment);
+    if ( h.isValid() && h->global.isValid() )  {
       return h->global;
     }
     throw runtime_error("DD4hep: Cannot access global alignment data. [Invalid Handle]");
-#if 0
-    DetElement::Object& e = det._data();
-    if ( !e.alignment.isValid() )  {
-      string path = DetectorTools::placementPath(det);
-      //cout << "Align path:" << path << endl;
-      e.alignment = GlobalAlignment(path);
-    }
-    return e.alignment;
-#endif    
   }
 
-  void _dumpParentElements(DetectorAlignment& det, LevelElements& elements)   {
+  void _dumpParentElements(GlobalDetectorAlignment& det, LevelElements& elements)   {
     int level = 0;
     DetectorTools::PlacementPath nodes;
     DetectorTools::ElementPath   det_nodes;
@@ -127,84 +133,94 @@ namespace {
   }
 }
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(GlobalAlignmentData);
-
 /// Initializing constructor
-DetectorAlignment::DetectorAlignment(DetElement e)
+GlobalDetectorAlignment::GlobalDetectorAlignment(DetElement e)
   : DetElement(e)
 {
 }
 
+/// Access debugging flag
+bool GlobalDetectorAlignment::debug()   {
+  return s_GlobalDetectorAlignment_debug;
+}
+
+/// Set debugging flag
+bool GlobalDetectorAlignment::debug(bool value)   {
+  bool tmp = s_GlobalDetectorAlignment_debug;
+  s_GlobalDetectorAlignment_debug = value;
+  return tmp;
+}
+
 /// Collect all placements from the detector element up to the world volume
-void DetectorAlignment::collectNodes(vector<PlacedVolume>& nodes)   {
+void GlobalDetectorAlignment::collectNodes(vector<PlacedVolume>& nodes)   {
   DetectorTools::placementPath(*this,nodes);
 }
 
 /// Access to the alignment block
-GlobalAlignment DetectorAlignment::alignment() const   {
+GlobalAlignment GlobalDetectorAlignment::alignment() const   {
   return _alignment(*this);
 }
 
 /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-vector<GlobalAlignment>& DetectorAlignment::volumeAlignments()  {
+vector<GlobalAlignment>& GlobalDetectorAlignment::volumeAlignments()  {
   Handle<GlobalAlignmentData> h(_data().global_alignment);
   return h->volume_alignments;
 }
 
 /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-const vector<GlobalAlignment>& DetectorAlignment::volumeAlignments() const   {
+const vector<GlobalAlignment>& GlobalDetectorAlignment::volumeAlignments() const   {
   Handle<GlobalAlignmentData> h(_data().global_alignment);
   return h->volume_alignments;
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation only)
-GlobalAlignment DetectorAlignment::align(const Position& pos, bool chk, double overlap) {
+GlobalAlignment GlobalDetectorAlignment::align(const Position& pos, bool chk, double overlap) {
   return align(Geometry::_transform(pos),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (rotation only)
-GlobalAlignment DetectorAlignment::align(const RotationZYX& rot, bool chk, double overlap) {
+GlobalAlignment GlobalDetectorAlignment::align(const RotationZYX& rot, bool chk, double overlap) {
   return align(Geometry::_transform(rot),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
-GlobalAlignment DetectorAlignment::align(const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
+GlobalAlignment GlobalDetectorAlignment::align(const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
   return align(Geometry::_transform(pos,rot),chk,overlap);
 }
 
 /// Align the physical node according to a generic Transform3D
-GlobalAlignment DetectorAlignment::align(const Transform3D& transform, bool chk, double overlap)  {
+GlobalAlignment GlobalDetectorAlignment::align(const Transform3D& transform, bool chk, double overlap)  {
   return align(Geometry::_transform(transform),chk,overlap);
 }
 
 /// Align the physical node according to a generic TGeo matrix
-GlobalAlignment DetectorAlignment::align(TGeoHMatrix* matrix, bool chk, double overlap)  {
+GlobalAlignment GlobalDetectorAlignment::align(TGeoHMatrix* matrix, bool chk, double overlap)  {
   return _align(_alignment(*this),matrix,chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation only)
-GlobalAlignment DetectorAlignment::align(const string& elt_path, const Position& pos, bool chk, double overlap) {
+GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, const Position& pos, bool chk, double overlap) {
   return align(elt_path,Geometry::_transform(pos),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (rotation only)
-GlobalAlignment DetectorAlignment::align(const string& elt_path, const RotationZYX& rot, bool chk, double overlap) {
+GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, const RotationZYX& rot, bool chk, double overlap) {
   return align(elt_path,Geometry::_transform(rot),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
 GlobalAlignment 
-DetectorAlignment::align(const string& elt_path, const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
+GlobalDetectorAlignment::align(const string& elt_path, const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
   return align(elt_path,Geometry::_transform(pos,rot),chk,overlap);
 }
 
 /// Align the physical node according to a generic Transform3D
-GlobalAlignment DetectorAlignment::align(const string& elt_path, const Transform3D& transform, bool chk, double overlap)  {
+GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, const Transform3D& transform, bool chk, double overlap)  {
   return align(elt_path,Geometry::_transform(transform),chk,overlap);
 }
 
 /// Align the physical node according to a generic TGeo matrix
-GlobalAlignment DetectorAlignment::align(const string& elt_path, TGeoHMatrix* matrix, bool chk, double overlap)  {
+GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, TGeoHMatrix* matrix, bool chk, double overlap)  {
   if ( elt_path.empty() )
     return _align(_alignment(*this),matrix,chk,overlap);
   else if ( elt_path == placementPath() )

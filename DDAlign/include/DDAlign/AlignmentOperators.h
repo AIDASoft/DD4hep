@@ -43,7 +43,7 @@ namespace DD4hep {
       /// Initializing functor constructor
       AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
       /// Insert alignment entry
-      void insert(Alignment alignment)  const;
+      void insert(GlobalAlignment alignment)  const;
     };
 
     /// Select alignment operations according to certain criteria

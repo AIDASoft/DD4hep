@@ -35,7 +35,9 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 static LCDDBuildType build_type(const char* value)   {
-  if ( strcmp(value,"BUILD_DEFAULT")==0 )
+  if ( !value )
+    return BUILD_DEFAULT;
+  else if ( strcmp(value,"BUILD_DEFAULT")==0 )
     return BUILD_DEFAULT;
   else if ( strcmp(value,"BUILD_SIMU")==0 )
     return BUILD_SIMU;

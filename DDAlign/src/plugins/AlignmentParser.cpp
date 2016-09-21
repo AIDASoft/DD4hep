@@ -14,6 +14,8 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Path.h"
+#include "DD4hep/Mutex.h"
 #include "DD4hep/Printout.h"
 #include "XML/Conversions.h"
 #include "XML/XMLElements.h"
@@ -25,6 +27,7 @@
 #include "DDAlign/AlignmentStack.h"
 #include "DDAlign/AlignmentCache.h"
 #include "DDAlign/AlignmentTransaction.h"
+#include "DDAlign/GlobalDetectorAlignment.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -41,14 +44,16 @@ namespace DD4hep  {
     class rotation;
     class position;
     class pivot;
-    class transform3d;
+    class delta;
+    class debug;
   }
 
   /// Forward declarations for all specialized converters
+  template <> void Converter<debug>::operator()(xml_h seq)  const;
   template <> void Converter<pivot>::operator()(xml_h seq)  const;
   template <> void Converter<position>::operator()(xml_h seq)  const;
   template <> void Converter<rotation>::operator()(xml_h seq)  const;
-  template <> void Converter<transform3d>::operator()(xml_h seq)  const;
+  template <> void Converter<delta>::operator()(xml_h seq)  const;
 
   template <> void Converter<volume>::operator()(xml_h seq)  const;
   template <> void Converter<alignment>::operator()(xml_h seq)  const;
@@ -62,6 +67,11 @@ using namespace DD4hep::Alignments;
 using DD4hep::Geometry::Position;
 using DD4hep::Geometry::Translation3D;
 
+template <> void Converter<debug>::operator()(xml_h e) const {
+  bool value = e.attr<bool>(_U(value));
+  GlobalDetectorAlignment::debug(value);
+}
+
 /** Convert rotation objects
  *
  *    <rotation x="0.5" y="0"  z="0"/>
@@ -74,7 +84,7 @@ template <> void Converter<rotation>::operator()(xml_h e) const {
   xml_comp_t r(e);
   RotationZYX* v = (RotationZYX*)param;
   v->SetComponents(r.z(), r.y(), r.x());
-  printout(INFO,"Alignment<rotation>",
+  printout(INFO,"Alignment<rot>",
            "  Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
            r.x(), r.y(), r.z(), v->Phi(), v->Psi(), v->Theta());
 }
@@ -91,7 +101,7 @@ template <> void Converter<position>::operator()(xml_h e) const {
   xml_comp_t p(e);
   Position* v = (Position*)param;
   v->SetXYZ(p.x(), p.y(), p.z());
-  printout(INFO,"Alignment<position>","  Position:   x=%9.3f y=%9.3f   z=%9.3f",
+  printout(INFO,"Alignment<pos>","  Position:   x=%9.3f y=%9.3f   z=%9.3f",
            v->X(), v->Y(), v->Z());
 }
 
@@ -108,10 +118,10 @@ template <> void Converter<pivot>::operator()(xml_h e) const {
   double x,y,z;
   Translation3D* v = (Translation3D*)param;
   v->SetXYZ(x=p.x(), y=p.y(), z=p.z());
-  printout(INFO,"Alignment<pivot>","     Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
+  printout(INFO,"Alignment<piv>","     Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
 }
 
-/** Convert transform3d objects
+/** Convert delta objects
  *
  *     A generic alignment transformation is defined by
  *     - a translation in 3D space identified in XML as a
@@ -134,35 +144,30 @@ template <> void Converter<pivot>::operator()(xml_h e) const {
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<transform3d>::operator()(xml_h e) const {
-  typedef pair<bool,Transform3D> Data;
+template <> void Converter<delta>::operator()(xml_h e) const {
   Position pos;
   RotationZYX rot;
   Translation3D piv;
-  xml_h child_rot, child_pos, child_piv;
-  Data* tr = (Data*)param;
+  xml_h  child_rot, child_pos, child_piv;
+  Delta* delta = (Delta*)param;
 
   if ( (child_pos=e.child(_U(position),false)) )
-    Converter<position>(lcdd,&pos)(child_pos);
+    Converter<position>(lcdd,&delta->translation)(child_pos);
   if ( (child_rot=e.child(_U(rotation),false)) )   {
-    Converter<rotation>(lcdd,&rot)(child_rot);
+    Converter<rotation>(lcdd,&delta->rotation)(child_rot);
     if ( (child_piv=e.child(_U(pivot),false)) )
-      Converter<pivot>(lcdd,&piv)(child_piv);
+      Converter<pivot>(lcdd,&delta->pivot)(child_piv);
   }
-  tr->first = true;
   if ( child_rot && child_pos && child_piv )
-    tr->second = Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse()));
+    delta->flags |= Delta::HAVE_ROTATION|Delta::HAVE_PIVOT|Delta::HAVE_TRANSLATION;
   else if ( child_rot && child_pos )
-    tr->second = Transform3D(rot,pos);
+    delta->flags |= Delta::HAVE_ROTATION|Delta::HAVE_TRANSLATION;
   else if ( child_rot && child_piv )
-    tr->second = Transform3D(piv*rot*(piv.Inverse()));
+    delta->flags |= Delta::HAVE_ROTATION|Delta::HAVE_PIVOT;
   else if ( child_rot )
-    tr->second = Transform3D(rot);
+    delta->flags |= Delta::HAVE_ROTATION;
   else if ( child_pos )
-    tr->second = Transform3D(pos);
-  else   {
-    tr->first  = false;
-  }
+    delta->flags |= Delta::HAVE_TRANSLATION;
 }
 
 typedef AlignmentStack::StackEntry StackEntry;
@@ -183,31 +188,30 @@ typedef AlignmentStack::StackEntry StackEntry;
  *  @date    01/04/2014
  */
 template <> void Converter<volume>::operator()(xml_h e) const {
-  pair<bool,Transform3D> trafo;
+  Delta val;
   pair<DetElement,string>* elt = (pair<DetElement,string>*)param;
-  string subpath   = e.attr<string>(_ALU(path));
-  bool   reset     = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
-  bool   reset_dau = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
-  bool   check     = e.hasAttr(_ALU(check_overlaps));
-  bool   check_val = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
-  bool   overlap   = e.hasAttr(_ALU(overlap));
-  double ovl       = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
-  string eltPlacement  = elt->first.placementPath();
-  string placementPath = subpath[0]=='/' ? subpath : eltPlacement + "/" + subpath;
+  string subpath    = e.attr<string>(_ALU(path));
+  bool   reset      = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
+  bool   reset_dau  = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
+  bool   check      = e.hasAttr(_ALU(check_overlaps));
+  bool   check_val  = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
+  bool   overlap    = e.hasAttr(_ALU(overlap));
+  double ovl        = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
+  string elt_place  = elt->first.placementPath();
+  string placement  = subpath[0]=='/' ? subpath : elt_place + "/" + subpath;
 
-  printout(INFO,"Alignment<volume>","    path:%s placement:%s reset:%s children:%s",
-           subpath.c_str(), placementPath.c_str(), yes_no(reset), yes_no(reset_dau));
+  printout(INFO,"Alignment<vol>","    path:%s placement:%s reset:%s children:%s",
+           subpath.c_str(), placement.c_str(), yes_no(reset), yes_no(reset_dau));
 
-  Converter<transform3d>(lcdd,&trafo)(e);
-  int flags = 0;
-  if ( overlap     ) flags |= AlignmentStack::OVERLAP_DEFINED;
-  if ( trafo.first ) flags |= AlignmentStack::MATRIX_DEFINED;
-  if ( reset       ) flags |= AlignmentStack::RESET_VALUE;
-  if ( reset_dau   ) flags |= AlignmentStack::RESET_CHILDREN;
-  if ( check       ) flags |= AlignmentStack::CHECKOVL_DEFINED;
-  if ( check_val   ) flags |= AlignmentStack::CHECKOVL_VALUE;
+  Converter<delta>(lcdd,&val)(e);
+  if ( val.flags ) val.flags |= AlignmentStack::MATRIX_DEFINED;
+  if ( overlap   ) val.flags |= AlignmentStack::OVERLAP_DEFINED;
+  if ( reset     ) val.flags |= AlignmentStack::RESET_VALUE;
+  if ( reset_dau ) val.flags |= AlignmentStack::RESET_CHILDREN;
+  if ( check     ) val.flags |= AlignmentStack::CHECKOVL_DEFINED;
+  if ( check_val ) val.flags |= AlignmentStack::CHECKOVL_VALUE;
 
-  dd4hep_ptr<StackEntry> entry(new StackEntry(elt->first,placementPath,trafo.second,ovl,flags));
+  dd4hep_ptr<StackEntry> entry(new StackEntry(elt->first,placement,val,ovl));
   AlignmentStack::insert(entry);
   pair<DetElement,string> vol_param(elt->first,subpath);
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param));
@@ -239,33 +243,33 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   bool   overlap   = e.hasAttr(_ALU(overlap));
   double ovl       = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
   DetElement elt   = Geometry::DetectorTools::findDaughterElement(det,path);
-  string placementPath = elt.isValid() ? elt.placementPath() : string("-----");
+  string placement = elt.isValid() ? elt.placementPath() : string("-----");
 
   if ( !elt.isValid() )   {
     string err = "DD4hep: DetElement "+det.path()+" has no child:"+path+" [No such child]";
     throw runtime_error(err);
   }
 
-  pair<bool,Transform3D> trafo;
-  Converter<transform3d>(lcdd,&trafo)(e);
-  int flags = 0;
-  if ( trafo.first )  {
-    flags |= AlignmentStack::MATRIX_DEFINED;
+  Delta val;
+  Converter<delta>(lcdd,&val)(e);
+  if ( val.flags )  {
+    val.flags |= AlignmentStack::MATRIX_DEFINED;
     reset = reset_dau = true;
   }
-  if ( overlap     ) flags |= AlignmentStack::OVERLAP_DEFINED;
-  if ( check       ) flags |= AlignmentStack::CHECKOVL_DEFINED;
-  if ( reset       ) flags |= AlignmentStack::RESET_VALUE;
-  if ( reset_dau   ) flags |= AlignmentStack::RESET_CHILDREN;
-  if ( check_val   ) flags |= AlignmentStack::CHECKOVL_VALUE;
+  if ( overlap     ) val.flags |= AlignmentStack::OVERLAP_DEFINED;
+  if ( check       ) val.flags |= AlignmentStack::CHECKOVL_DEFINED;
+  if ( reset       ) val.flags |= AlignmentStack::RESET_VALUE;
+  if ( reset_dau   ) val.flags |= AlignmentStack::RESET_CHILDREN;
+  if ( check_val   ) val.flags |= AlignmentStack::CHECKOVL_VALUE;
 
-  printout(INFO,"Alignment<detelement>","path:%s [%s] placement:%s matrix:%s reset:%s children:%s",
+  printout(INFO,"Alignment<det>","path:%s [%s] placement:%s matrix:%s reset:%s children:%s",
            path.c_str(),
            elt.isValid() ? elt.path().c_str() : "-----",
-           placementPath.c_str(),
-           yes_no(trafo.first), yes_no(reset), yes_no(reset_dau));
+           placement.c_str(),
+           yes_no(val.checkFlag(AlignmentStack::MATRIX_DEFINED)),
+           yes_no(reset), yes_no(reset_dau));
 
-  dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placementPath,trafo.second,ovl,flags));
+  dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placement,val,ovl));
   AlignmentStack::insert(entry);
 
   pair<DetElement,string> vol_param(elt,"");
@@ -316,6 +320,7 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
 
   /// Now we process all allowed elements within the alignment tag:
   /// <detelement/>, <detelements/>, <subdetectors/> and <include/>
+  xml_coll_t(e,_ALU(debug)).for_each(Converter<debug>(lcdd,&top));
   xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,&top));
   xml_coll_t(e,_ALU(detelements)).for_each(_ALU(detelement),Converter<detelement>(lcdd,&top));
   xml_coll_t(e,_ALU(subdetectors)).for_each(_ALU(detelement),Converter<detelement>(lcdd,&top));
@@ -328,13 +333,22 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
-  AlignmentCache::install(lcdd);
-  AlignmentTransaction tr(lcdd, e);
-  (DD4hep::Converter<DD4hep::alignment>(lcdd))(e);
+static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {{
+    static dd4hep_mutex_t s_mutex;
+    dd4hep_lock_t lock(s_mutex);
+    AlignmentCache::install(lcdd);
+    AlignmentTransaction tr(lcdd, e);
+    (DD4hep::Converter<DD4hep::alignment>(lcdd))(e);
+  }
+  if ( GlobalDetectorAlignment::debug() )  {
+    xml_elt_t elt(e);
+    Path uri = elt.document().uri();
+    printout(INFO,"GlobalAlignment","+++ Successfully parsed XML: %s",
+             uri.filename().c_str());
+  }
   return 1;
 }
-DECLARE_XML_DOC_READER(alignment,setup_Alignment)
+DECLARE_XML_DOC_READER(global_alignment,setup_Alignment)
 
 /** Basic entry point to install the alignment cache in a LCDD instance
  *
@@ -346,4 +360,4 @@ static long install_Alignment(lcdd_t& lcdd, int, char**) {
   AlignmentCache::install(lcdd);
   return 1;
 }
-DECLARE_APPLY(DD4hepAlignmentInstall,install_Alignment)
+DECLARE_APPLY(DD4hep_GlobalAlignmentInstall,install_Alignment)

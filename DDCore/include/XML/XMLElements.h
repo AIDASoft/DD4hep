@@ -637,6 +637,8 @@ namespace DD4hep {
       Handle_t createElt(const XmlChar* tag) const;
       /// Clone a DOM element / sub-tree
       Handle_t clone(Handle_t source) const;
+      /// Acces the document URI
+      std::string uri() const;
     };
 
     /// Class supporting the basic functionality of an XML document including ownership

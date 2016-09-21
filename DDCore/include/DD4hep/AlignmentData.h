@@ -50,8 +50,8 @@ namespace DD4hep {
     class Delta   {
     public:
       typedef Translation3D Pivot;
-      Pivot         pivot;
       Position      translation;
+      Pivot         pivot;
       RotationZYX   rotation;
       unsigned int  flags;
 
@@ -64,6 +64,21 @@ namespace DD4hep {
 
       /// Default constructor
       Delta() : flags(0) {}
+      /// Initializing constructor
+      Delta(const Position& tr)
+        : translation(tr), flags(HAVE_TRANSLATION) {}
+      /// Initializing constructor
+      Delta(const RotationZYX& rot)
+        : translation(), rotation(rot), flags(HAVE_ROTATION) {}
+      /// Initializing constructor
+      Delta(const Position& tr, const RotationZYX& rot)
+        : translation(tr), rotation(rot), flags(HAVE_ROTATION|HAVE_TRANSLATION) {}
+      /// Initializing constructor
+      Delta(const Translation3D& piv, const RotationZYX& rot)
+        : pivot(piv), rotation(rot), flags(HAVE_ROTATION|HAVE_PIVOT) {}
+      /// Initializing constructor
+      Delta(const Position& tr, const Translation3D& piv, const RotationZYX& rot)
+        : translation(tr), pivot(piv), rotation(rot), flags(HAVE_ROTATION|HAVE_PIVOT|HAVE_TRANSLATION) {}
       /// Copy constructor
       Delta(const Delta& c);
       /// Default destructor
@@ -72,12 +87,16 @@ namespace DD4hep {
       Delta& operator=(const Delta& c);
       /// Reset information to identity
       void clear();
+      /// Check a given flag
+      bool checkFlag(unsigned int mask) const {  return (flags&mask) == mask;        }
+      /// Check a given flag
+      void setFlag(unsigned int mask)         {  flags |= mask;                      }
       /// Access flags: Check if the delta operation contains a translation
-      bool hasTranslation() const  {  return (flags&HAVE_TRANSLATION) != 0; }
+      bool hasTranslation() const             {  return checkFlag(HAVE_TRANSLATION); }
       /// Access flags: Check if the delta operation contains a rotation
-      bool hasRotation() const     {  return (flags&HAVE_ROTATION) != 0;    }
+      bool hasRotation() const                {  return checkFlag(HAVE_ROTATION);    }
       /// Access flags: Check if the delta operation contains a pivot
-      bool hasPivot() const        {  return (flags&HAVE_PIVOT) != 0;       }
+      bool hasPivot() const                   {  return checkFlag(HAVE_PIVOT);       }
     };
 
     /// Derived condition data-object definition

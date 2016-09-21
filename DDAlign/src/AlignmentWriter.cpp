@@ -22,7 +22,7 @@
 #include "XML/DocumentHandler.h"
 #include "DDAlign/AlignmentTags.h"
 #include "DDAlign/AlignmentCache.h"
-#include "DDAlign/DetectorAlignment.h"
+#include "DDAlign/GlobalDetectorAlignment.h"
 
 #include "TGeoMatrix.h"
 
@@ -52,7 +52,7 @@ XML::Element AlignmentWriter::createElement(XML::Document doc, DetElement elemen
   XML::Element e(0), placement(0), elt = XML::Element(doc,_ALU(detelement));
   string path = element.placementPath();
   GlobalAlignment a = element->global_alignment;
-  DetectorAlignment det(element);
+  GlobalDetectorAlignment det(element);
   const vector<GlobalAlignment>& va = det.volumeAlignments();
 
   elt.setAttr(_ALU(path),element.path());

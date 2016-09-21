@@ -91,8 +91,7 @@ namespace {
       "                                    The lower the level, the more printout...      \n"
       "        -plugin <name> <args>       Execute plugin <name> after loading geometry.  \n"
       "                                    All arguments following until the next '-'     \n"
-      "                                    are considered as arguments to the plugin.     \n"
-      " ";
+      "                                    are considered as arguments to the plugin.     \n";
     return cout;
   }
 
@@ -138,6 +137,8 @@ namespace {
       }
       else if ( strncmp(argv[i],"-load_only",5)==0 )
         dry_run = true;
+      else if ( strncmp(argv[i],"-dry-run",5)==0 )
+        dry_run = true;
       else if ( strncmp(argv[i],"-print",4)==0 )
         DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
       else if ( strncmp(argv[i],"-destroy",5)==0 )
@@ -174,20 +175,23 @@ namespace {
       long result;
       for(size_t i=0; i<plugins.size(); ++i)   {
         std::vector<const char*>& plug=plugins[i];
-        result = run_plugin(lcdd,plug[0],plug.size()-1,(char**)(plug.size()>1 ? &plug[1] : 0));
+        // Remove plugin name and trailing 0x0 from args.
+        size_t num_args = plug.size()>2 ? plug.size()-2 : 0;
+
+        result = run_plugin(lcdd,plug[0],plug.size()-1,(char**)(num_args>0 ? &plug[1] : 0));
         if ( result == EINVAL )   {
           cout << "FAILED to execute DD4hep plugin: '" << plug[0] 
-               << "' with args (" << (plug.size()-1) << ") :[ ";
+               << "' with args (" << num_args << ") :[ ";
           for(size_t j=1; j<plug.size(); ++j)   {
-            cout << plug[j] << " ";
+            if ( plug[j] ) cout << plug[j] << " ";
           }
           cout << "]" << endl;
           usage_default(name);
         }
         cout << "Executed DD4hep plugin: '" << plug[0]
-             << "' with args (" << (plug.size()-1) << ") :[ ";
+             << "' with args (" << num_args << ") :[ ";
         for(size_t j=1; j<plug.size(); ++j)   {
-          cout << plug[j] << " ";
+          if ( plug[j] ) cout << plug[j] << " ";
         }
         cout << "]" << endl;
       }

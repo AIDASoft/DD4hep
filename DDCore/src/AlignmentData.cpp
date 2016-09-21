@@ -27,7 +27,7 @@ using namespace DD4hep::Alignments;
 
 /// Copy constructor
 Delta::Delta(const Delta& c)
-  : pivot(c.pivot), translation(c.translation), rotation(c.rotation), flags(c.flags)
+  : translation(c.translation), pivot(c.pivot), rotation(c.rotation), flags(c.flags)
 {
 }
 
