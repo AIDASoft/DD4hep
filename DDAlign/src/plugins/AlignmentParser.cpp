@@ -26,7 +26,6 @@
 #include "DDAlign/AlignmentTags.h"
 #include "DDAlign/AlignmentStack.h"
 #include "DDAlign/AlignmentCache.h"
-#include "DDAlign/AlignmentTransaction.h"
 #include "DDAlign/GlobalDetectorAlignment.h"
 
 // C/C++ include files
@@ -67,6 +66,12 @@ using namespace DD4hep::Alignments;
 using DD4hep::Geometry::Position;
 using DD4hep::Geometry::Translation3D;
 
+/** Convert to enable/disable debugging.
+ *
+ *  @author  M.Frank
+ *  @version 1.0
+ *  @date    01/04/2014
+ */
 template <> void Converter<debug>::operator()(xml_h e) const {
   bool value = e.attr<bool>(_U(value));
   GlobalDetectorAlignment::debug(value);
@@ -190,6 +195,7 @@ typedef AlignmentStack::StackEntry StackEntry;
 template <> void Converter<volume>::operator()(xml_h e) const {
   Delta val;
   pair<DetElement,string>* elt = (pair<DetElement,string>*)param;
+  AlignmentStack* stack = _option<AlignmentStack>();
   string subpath    = e.attr<string>(_ALU(path));
   bool   reset      = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
   bool   reset_dau  = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
@@ -212,7 +218,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
   if ( check_val ) val.flags |= AlignmentStack::CHECKOVL_VALUE;
 
   dd4hep_ptr<StackEntry> entry(new StackEntry(elt->first,placement,val,ovl));
-  AlignmentStack::insert(entry);
+  stack->insert(entry);
   pair<DetElement,string> vol_param(elt->first,subpath);
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param));
 }
@@ -234,7 +240,8 @@ template <> void Converter<volume>::operator()(xml_h e) const {
  *  @date    01/04/2014
  */
 template <> void Converter<detelement>::operator()(xml_h e) const {
-  DetElement det   = param ? *(DetElement*)param : DetElement();
+  DetElement det(_param<DetElement::Object>());
+  AlignmentStack* stack = _option<AlignmentStack>();
   string path      = e.attr<string>(_ALU(path));
   bool   check     = e.hasAttr(_ALU(check_overlaps));
   bool   check_val = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
@@ -270,12 +277,12 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
            yes_no(reset), yes_no(reset_dau));
 
   dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placement,val,ovl));
-  AlignmentStack::insert(entry);
+  stack->insert(entry);
 
   pair<DetElement,string> vol_param(elt,"");
-  xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param));
-  xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,&elt));
-  xml_coll_t(e,_U(include)).for_each(Converter<include_file>(lcdd,&elt));
+  xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param,optional));
+  xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,elt.ptr(),optional));
+  xml_coll_t(e,_U(include)).for_each(Converter<include_file>(lcdd,elt.ptr(),optional));
 }
 
 /** Convert detelement_include objects
@@ -294,11 +301,11 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
   xml_h node = doc.root();
   string tag = node.tag();
   if ( tag == "alignment" )
-    Converter<alignment>(lcdd,param)(node);
+    Converter<alignment>(lcdd,param,optional)(node);
   else if ( tag == "detelement" )
-    Converter<detelement>(lcdd,param)(node);
+    Converter<detelement>(lcdd,param,optional)(node);
   else if ( tag == "subdetectors" || tag == "detelements" )
-    xml_coll_t(node,_ALU(detelements)).for_each(Converter<detelement>(lcdd,param));
+    xml_coll_t(node,_ALU(detelements)).for_each(Converter<detelement>(lcdd,param,optional));
   else
     throw runtime_error("Undefined tag name in XML structure:"+tag+" XML parsing abandoned.");
 }
@@ -316,15 +323,13 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
  *  @date    01/04/2014
  */
 template <> void Converter<alignment>::operator()(xml_h e)  const  {
-  DetElement top = param ? *(DetElement*)param : lcdd.world();
-
   /// Now we process all allowed elements within the alignment tag:
   /// <detelement/>, <detelements/>, <subdetectors/> and <include/>
-  xml_coll_t(e,_ALU(debug)).for_each(Converter<debug>(lcdd,&top));
-  xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,&top));
-  xml_coll_t(e,_ALU(detelements)).for_each(_ALU(detelement),Converter<detelement>(lcdd,&top));
-  xml_coll_t(e,_ALU(subdetectors)).for_each(_ALU(detelement),Converter<detelement>(lcdd,&top));
-  xml_coll_t(e,_U(include)).for_each(Converter<include_file>(lcdd,&top));
+  xml_coll_t(e,_ALU(debug)).for_each(Converter<debug>(lcdd,param,optional));
+  xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
+  xml_coll_t(e,_ALU(detelements)).for_each(_ALU(detelement),Converter<detelement>(lcdd,param,optional));
+  xml_coll_t(e,_ALU(subdetectors)).for_each(_ALU(detelement),Converter<detelement>(lcdd,param,optional));
+  xml_coll_t(e,_U(include)).for_each(Converter<include_file>(lcdd,param,optional));
 }
 
 /** Basic entry point to read alignment files
@@ -333,12 +338,26 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {{
-    static dd4hep_mutex_t s_mutex;
-    dd4hep_lock_t lock(s_mutex);
-    AlignmentCache::install(lcdd);
-    AlignmentTransaction tr(lcdd, e);
-    (DD4hep::Converter<DD4hep::alignment>(lcdd))(e);
+static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
+  static dd4hep_mutex_t s_mutex;
+  dd4hep_lock_t lock(s_mutex);
+  bool open_trans = e.hasChild(_ALU(close_transaction));
+  bool close_trans = e.hasChild(_ALU(close_transaction));
+
+  AlignmentCache::install(lcdd);
+  /// Check if transaction already present. If not, open, else issue an error
+  if ( open_trans )   {
+    if ( AlignmentStack::exists() )  {
+      except("AlignmentCache","Request to open a second alignment transaction stack -- not allowed!");
+    }
+    AlignmentStack::create();
+  }
+  AlignmentStack& stack = AlignmentStack::get();
+  (DD4hep::Converter<DD4hep::alignment>(lcdd,lcdd.world().ptr(),&stack))(e);
+  if ( close_trans )  {
+    AlignmentCache* cache = lcdd.extension<Alignments::AlignmentCache>();
+    cache->commit(stack);
+    AlignmentStack::get().release();
   }
   if ( GlobalDetectorAlignment::debug() )  {
     xml_elt_t elt(e);

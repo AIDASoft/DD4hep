@@ -112,9 +112,9 @@ namespace DD4hep {
       /// Check existence of alignment stack
       static bool exists();
       /// Add a new entry to the cache. The key is the placement path
-      static bool insert(const std::string& full_path, dd4hep_ptr<StackEntry>& new_entry);
+      bool insert(const std::string& full_path, dd4hep_ptr<StackEntry>& new_entry);
       /// Add a new entry to the cache. The key is the placement path. The placement path must be set in the entry
-      static bool insert(dd4hep_ptr<StackEntry>& new_entry);
+      bool insert(dd4hep_ptr<StackEntry>& new_entry);
       /// Clear data content and remove the slignment stack
       void release();
       /// Access size of the alignment stack

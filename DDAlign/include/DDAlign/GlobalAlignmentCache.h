@@ -43,6 +43,7 @@ namespace DD4hep {
       friend class AlignmentOperator;
 
     public:
+      typedef AlignmentStack Stack;
       typedef AlignmentStack::StackEntry Entry;
       typedef std::map<unsigned int, TGeoPhysicalNode*> Cache;
       typedef std::map<std::string,AlignmentCache*> SubdetectorAlignments;
@@ -53,6 +54,7 @@ namespace DD4hep {
       SubdetectorAlignments m_detectors;
       /// The subdetector specific map of alignments caches
       Cache       m_cache;
+      /// 
       /// Branchg name: If it is not the main tree instance, the name of the subdetector
       std::string m_sdPath;
       /// The length of the branch name to optimize lookups....
@@ -63,10 +65,11 @@ namespace DD4hep {
       bool        m_top;
 
     protected:
-      /// Default constructor
+      /// Default constructor initializing variables
       AlignmentCache(LCDD& lcdd, const std::string& sdPath, bool top);
       /// Default destructor
       virtual ~AlignmentCache();
+
       /// Retrieve branch cache by name. If not present it will be created
       AlignmentCache* subdetectorAlignments(const std::string& name);
 
@@ -79,20 +82,17 @@ namespace DD4hep {
 
     public:
       /// Create and install a new instance tree
-      static void install(LCDD& lcdd);
+      static AlignmentCache* install(LCDD& lcdd);
       /// Unregister and delete a tree instance
       static void uninstall(LCDD& lcdd);
-
       /// Add reference count
       int addRef();
       /// Release object. If reference count goes to NULL, automatic deletion is triggered.
       int release();
       /// Access the section name
       const std::string& name() const   {   return m_sdPath;  }
-      /// Open a new transaction stack (Note: only one stack allowed!)
-      void openTransaction();
       /// Close existing transaction stack and apply all alignments
-      void closeTransaction();
+      void commit(AlignmentStack& stack);
       /// Retrieve the cache section corresponding to the path of an entry.
       AlignmentCache* section(const std::string& path_name) const;
       /// Retrieve an alignment entry by its lacement path

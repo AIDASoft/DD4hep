@@ -15,11 +15,9 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
 #include "DDAlign/AlignmentCache.h"
 #include "DDAlign/AlignmentOperators.h"
 #include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 
 // ROOT include files
 #include "TGeoManager.h"
@@ -71,6 +69,22 @@ int AlignmentCache::release()   {
     delete this;
   }
   return value;
+}
+
+/// Create and install a new instance tree
+AlignmentCache* AlignmentCache::install(LCDD& lcdd)   {
+  AlignmentCache* cache = lcdd.extension<AlignmentCache>(false);
+  if ( !cache )  {
+    lcdd.addExtension<AlignmentCache>(new AlignmentCache(lcdd,"world",true));
+  }
+  return cache;
+}
+
+/// Unregister and delete a tree instance
+void AlignmentCache::uninstall(LCDD& lcdd)   {
+  if ( lcdd.extension<AlignmentCache>(false) )  {
+    lcdd.removeExtension<AlignmentCache>(true);
+  }
 }
 
 /// Add a new entry to the cache. The key is the placement path
@@ -149,48 +163,12 @@ vector<GlobalAlignment> AlignmentCache::matches(const string& match, bool exclud
   return result;
 }
 
-/// Open a new transaction stack (Note: only one stack allowed!)
-void AlignmentCache::openTransaction()   {
-  /// Check if transaction already present. If not, open, else issue an error
-  if ( !AlignmentStack::exists() )  {
-    AlignmentStack::create();
-    return;
-  }
-  string msg = "Request to open a second alignment transaction stack -- not allowed!";
-  string err = format("Alignment<alignment>",msg);
-  printout(FATAL,"AlignmentCache",msg);
-  throw runtime_error(err);
-}
-
 /// Close existing transaction stack and apply all alignments
-void AlignmentCache::closeTransaction()   {
-  /// Check if transaction is open. If yes, close it and apply alignment stack.
-  /// If no transaction is active, ignore the staement, but issue a warning.
-  if ( AlignmentStack::exists() )  {
-    TGeoManager& mgr = m_lcdd.manager();
-    mgr.UnlockGeometry();
-    apply(AlignmentStack::get());
-    AlignmentStack::get().release();
-    mgr.LockGeometry();
-    return;
-  }
-  printout(WARNING,"Alignment<alignment>",
-           "Request to close a non-existing alignmant transaction.");
-}
-
-/// Create and install a new instance tree
-void AlignmentCache::install(LCDD& lcdd)   {
-  AlignmentCache* cache = lcdd.extension<AlignmentCache>(false);
-  if ( !cache )  {
-    lcdd.addExtension<AlignmentCache>(new AlignmentCache(lcdd,"world",true));
-  }
-}
-
-/// Unregister and delete a tree instance
-void AlignmentCache::uninstall(LCDD& lcdd)   {
-  if ( lcdd.extension<AlignmentCache>(false) )  {
-    lcdd.removeExtension<AlignmentCache>(true);
-  }
+void AlignmentCache::commit(AlignmentStack& stack)   {
+  TGeoManager& mgr = m_lcdd.manager();
+  mgr.UnlockGeometry();
+  apply(stack);
+  mgr.LockGeometry();
 }
 
 /// Retrieve branch cache by name. If not present it will be created

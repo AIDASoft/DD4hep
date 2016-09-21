@@ -40,6 +40,7 @@ AlignmentWriter::AlignmentWriter(LCDD& lcdd)
   : m_lcdd(lcdd)
 {
   m_cache = lcdd.extension<Alignments::AlignmentCache>();
+  if ( m_cache ) m_cache->addRef();
 }
 
 /// Standard destructor

@@ -136,14 +136,14 @@ void AlignmentStack::release()    {
 bool AlignmentStack::insert(const string& full_path, dd4hep_ptr<StackEntry>& entry)  {
   if ( entry.get() && !full_path.empty() )  {
     entry->path = full_path;
-    return get().add(entry);
+    return add(entry);
   }
   throw runtime_error("AlignmentStack> Attempt to apply an invalid alignment entry.");
 }
 
 /// Add a new entry to the cache. The key is the placement path
 bool AlignmentStack::insert(dd4hep_ptr<StackEntry>& entry)  {
-  return get().add(entry);
+  return add(entry);
 }
 
 /// Add a new entry to the cache. The key is the placement path
