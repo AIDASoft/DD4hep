@@ -22,7 +22,7 @@ slc6-gcc48:
     - ctest --output-on-failure
     - cd ../..
     - rm -rf .git
-    - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc48-dbg
+    - echo "sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc48-dbg"
 
 
 slc6-gcc49:
@@ -49,7 +49,7 @@ slc6-gcc49:
     - ctest --output-on-failure
     - cd ../..
     - rm -rf .git
-    - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc49-dbg
+    - echo "sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc49-dbg"
 
 
 
@@ -100,4 +100,5 @@ centos7-gcc49:
     - ctest --output-on-failure
     - cd ../..
     - rm -rf .git
-    - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-centos7-gcc49-dbg
+    - echo "sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-centos7-gcc49-dbg"
+    
