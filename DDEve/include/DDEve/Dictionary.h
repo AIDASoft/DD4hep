@@ -40,10 +40,10 @@
 #include "DDEve/DDG4EventHandler.h"
 
 namespace DD4hep {
-  void EveDisplay(const char* xmlFile);
+  void EveDisplay(const char* xmlFile, const char* eventFileName);
   struct DDEve {
     static void run(const char* xmlFile)  {
-      EveDisplay(xmlFile);
+      EveDisplay(xmlFile, nullptr);
     }
   };
 }
@@ -55,7 +55,7 @@ namespace DD4hep {
 
 #pragma link C++ namespace DD4hep;
 
-#pragma link C++ function DD4hep::EveDisplay(const char* xmlFile);
+#pragma link C++ function DD4hep::EveDisplay(const char* xmlFile, const char* eventFileName);
 
 
 #pragma link C++ class DD4hep::DDEve;
