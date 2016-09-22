@@ -1,0 +1,15 @@
+<conditions>
+  <detelement path="TPC" name="ambience">
+    <alignment                       ref="TPC_Alignment.xml"        validity="123457,234566#run"/>
+    <alignment   path="TPC_SideA"    ref="TPC_SideA_Alignment.xml"  validity="123457,234566#run"/>
+    <alignment   name="TPC_A_align"  ref="TPC_SideA_Alignment.xml"  validity="123457,234566#run"/>
+
+    <alignment                       ref="TPC_Alignment.xml"        validity="234568,563542#run"/>
+    <alignment   path="TPC_SideA"    ref="TPC_SideA_Alignment.xml"  validity="234568,563542#run"/>
+    <alignment   name="TPC_A_align"  ref="TPC_SideA_Alignment.xml"  validity="234568,563542#run"/>
+
+    <alignment                       ref="TPC_Alignment.xml"        validity="563544,999999#run"/>
+    <alignment   path="TPC_SideA"    ref="TPC_SideA_Alignment.xml"  validity="563544,999999#run"/>
+    <alignment   name="TPC_A_align"  ref="TPC_SideA_Alignment.xml"  validity="563544,999999#run"/>
+  </detelement>
+</conditions>

@@ -1,0 +1,18 @@
+
+<conditions>
+  <detelement path="TPC/TPC_SideB" name="ambience" validity="1396887257,1396887257#epoch">
+    <alignment   ref="SideB_aligments.xml" validity="563543#run"/>
+    <temperature name="AmbientTemperature" value="20.9*kelvin"/>
+    <pressure    name="ExternalPressure" value="980*hPa"/>
+    <whatever    name="SomeMultiParams" validity="563543#run">[0.0, 1.0, 2.0, 3.0]</whatever>
+
+    <detelement  path="TPC_SideB_sector08" name="ambience" validity="1396887257,1396887257#epoch">
+      <temperature name="AmbientTemperature" value="20.9*kelvin"/>
+      <pressure    name="ExternalPressure" value="980*hPa"/>
+    </detelement>
+    <detelement  path="TPC_SideB_sector09" name="ambience" validity="1396887257,1396887257#epoch">
+      <temperature name="AmbientTemperature" value="20.9*kelvin"/>
+    </detelement>
+
+  </detelement>
+</conditions>

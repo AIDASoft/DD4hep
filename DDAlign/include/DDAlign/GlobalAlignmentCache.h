@@ -11,8 +11,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_ALIGNMENTCACHE_H
-#define DD4HEP_ALIGNMENT_ALIGNMENTCACHE_H
+#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H
+#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H
 
 // Framework include files
 #include "DD4hep/GlobalAlignment.h"
@@ -26,7 +26,7 @@ namespace DD4hep {
 
     /// Forward declarations
     class AlignmentOperator;
-    class AlignmentCache;
+    class GlobalAlignmentCache;
     class AlignmentStack;
 
     /// Class caching all known alignment operations for one LCDD instance.
@@ -38,7 +38,7 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class AlignmentCache  {
+    class GlobalAlignmentCache  {
       friend class LCDD;
       friend class AlignmentOperator;
 
@@ -46,7 +46,7 @@ namespace DD4hep {
       typedef AlignmentStack Stack;
       typedef AlignmentStack::StackEntry Entry;
       typedef std::map<unsigned int, TGeoPhysicalNode*> Cache;
-      typedef std::map<std::string,AlignmentCache*> SubdetectorAlignments;
+      typedef std::map<std::string,GlobalAlignmentCache*> SubdetectorAlignments;
 
     protected:
       LCDD&       m_lcdd;
@@ -66,12 +66,12 @@ namespace DD4hep {
 
     protected:
       /// Default constructor initializing variables
-      AlignmentCache(LCDD& lcdd, const std::string& sdPath, bool top);
+      GlobalAlignmentCache(LCDD& lcdd, const std::string& sdPath, bool top);
       /// Default destructor
-      virtual ~AlignmentCache();
+      virtual ~GlobalAlignmentCache();
 
       /// Retrieve branch cache by name. If not present it will be created
-      AlignmentCache* subdetectorAlignments(const std::string& name);
+      GlobalAlignmentCache* subdetectorAlignments(const std::string& name);
 
       /// Population entry: Apply a complete stack of ordered alignments to the geometry structure
       void apply(AlignmentStack& stack);
@@ -82,7 +82,7 @@ namespace DD4hep {
 
     public:
       /// Create and install a new instance tree
-      static AlignmentCache* install(LCDD& lcdd);
+      static GlobalAlignmentCache* install(LCDD& lcdd);
       /// Unregister and delete a tree instance
       static void uninstall(LCDD& lcdd);
       /// Add reference count
@@ -94,13 +94,13 @@ namespace DD4hep {
       /// Close existing transaction stack and apply all alignments
       void commit(AlignmentStack& stack);
       /// Retrieve the cache section corresponding to the path of an entry.
-      AlignmentCache* section(const std::string& path_name) const;
+      GlobalAlignmentCache* section(const std::string& path_name) const;
       /// Retrieve an alignment entry by its lacement path
       GlobalAlignment get(const std::string& path) const;
       /// Return all entries matching a given path. Careful: Expensive operaton!
       std::vector<GlobalAlignment> matches(const std::string& path_match, bool exclude_exact=false) const;
     };
 
-  } /* End namespace Alignments        */
-} /* End namespace DD4hep              */
-#endif    /* DD4HEP_ALIGNMENT_ALIGNMENTCACHE_H       */
+  } /* End namespace Alignments                            */
+} /* End namespace DD4hep                                  */
+#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H       */

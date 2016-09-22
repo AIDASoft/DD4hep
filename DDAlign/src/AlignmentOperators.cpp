@@ -57,13 +57,13 @@ void AlignmentSelector::operator()(const Cache::value_type& entry)  const {
 }
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_print>::init() {
-  printout(ALWAYS,"AlignmentCache","++++++++++++++++++++++++ Summary ++++++++++++++++++++++++");
+  printout(ALWAYS,"GlobalAlignmentCache","++++++++++++++++++++++++ Summary ++++++++++++++++++++++++");
 }
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_print>::operator()(Nodes::value_type& n)  const {
   TGeoPhysicalNode* p = n.second.first;
   Entry* e = n.second.second;
-  printout(ALWAYS,"AlignmentCache","Need to reset entry:%s - %s [needsReset:%s, hasMatrix:%s]",
+  printout(ALWAYS,"GlobalAlignmentCache","Need to reset entry:%s - %s [needsReset:%s, hasMatrix:%s]",
            p->GetName(),e->path.c_str(),yes_no(e->needsReset()),yes_no(e->hasMatrix()));
 }
 

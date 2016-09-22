@@ -25,7 +25,7 @@
 
 #include "DDAlign/AlignmentTags.h"
 #include "DDAlign/AlignmentStack.h"
-#include "DDAlign/AlignmentCache.h"
+#include "DDAlign/GlobalAlignmentCache.h"
 #include "DDAlign/GlobalDetectorAlignment.h"
 
 // C/C++ include files
@@ -344,18 +344,18 @@ static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
   bool open_trans = e.hasChild(_ALU(close_transaction));
   bool close_trans = e.hasChild(_ALU(close_transaction));
 
-  AlignmentCache::install(lcdd);
+  GlobalAlignmentCache::install(lcdd);
   /// Check if transaction already present. If not, open, else issue an error
   if ( open_trans )   {
     if ( AlignmentStack::exists() )  {
-      except("AlignmentCache","Request to open a second alignment transaction stack -- not allowed!");
+      except("GlobalAlignment","Request to open a second alignment transaction stack -- not allowed!");
     }
     AlignmentStack::create();
   }
   AlignmentStack& stack = AlignmentStack::get();
   (DD4hep::Converter<DD4hep::alignment>(lcdd,lcdd.world().ptr(),&stack))(e);
   if ( close_trans )  {
-    AlignmentCache* cache = lcdd.extension<Alignments::AlignmentCache>();
+    GlobalAlignmentCache* cache = lcdd.extension<Alignments::GlobalAlignmentCache>();
     cache->commit(stack);
     AlignmentStack::get().release();
   }
@@ -376,7 +376,7 @@ DECLARE_XML_DOC_READER(global_alignment,setup_Alignment)
  *  @date    01/04/2014
  */
 static long install_Alignment(lcdd_t& lcdd, int, char**) {
-  AlignmentCache::install(lcdd);
+  GlobalAlignmentCache::install(lcdd);
   return 1;
 }
 DECLARE_APPLY(DD4hep_GlobalAlignmentInstall,install_Alignment)
