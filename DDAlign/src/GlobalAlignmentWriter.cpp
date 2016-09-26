@@ -13,16 +13,16 @@
 //==========================================================================
 
 // Framework includes
-#include "DDAlign/AlignmentWriter.h"
+#include "DDAlign/GlobalAlignmentWriter.h"
+#include "DDAlign/GlobalAlignmentCache.h"
+#include "DDAlign/GlobalDetectorAlignment.h"
+#include "DDAlign/AlignmentTags.h"
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "XML/DocumentHandler.h"
-#include "DDAlign/AlignmentTags.h"
-#include "DDAlign/AlignmentCache.h"
-#include "DDAlign/DetectorAlignment.h"
 
 #include "TGeoMatrix.h"
 
@@ -36,23 +36,24 @@ using namespace DD4hep;
 using namespace std;
 
 /// Initializing Constructor
-AlignmentWriter::AlignmentWriter(LCDD& lcdd)
+GlobalAlignmentWriter::GlobalAlignmentWriter(LCDD& lcdd)
   : m_lcdd(lcdd)
 {
-  m_cache = lcdd.extension<Alignments::AlignmentCache>();
+  m_cache = lcdd.extension<Alignments::GlobalAlignmentCache>();
+  if ( m_cache ) m_cache->addRef();
 }
 
 /// Standard destructor
-AlignmentWriter::~AlignmentWriter()  {
+GlobalAlignmentWriter::~GlobalAlignmentWriter()  {
   if ( m_cache ) m_cache->release();
 }
 
 /// Create the element corresponding to one single detector element without children
-XML::Element AlignmentWriter::createElement(XML::Document doc, DetElement element)  const  {
+XML::Element GlobalAlignmentWriter::createElement(XML::Document doc, DetElement element)  const  {
   XML::Element e(0), placement(0), elt = XML::Element(doc,_ALU(detelement));
   string path = element.placementPath();
   GlobalAlignment a = element->global_alignment;
-  DetectorAlignment det(element);
+  GlobalDetectorAlignment det(element);
   const vector<GlobalAlignment>& va = det.volumeAlignments();
 
   elt.setAttr(_ALU(path),element.path());
@@ -69,7 +70,7 @@ XML::Element AlignmentWriter::createElement(XML::Document doc, DetElement elemen
 }
 
 /// Add single alignment node to the XML document
-void AlignmentWriter::addNode(XML::Element elt, GlobalAlignment a)  const   {
+void GlobalAlignmentWriter::addNode(XML::Element elt, GlobalAlignment a)  const   {
   TGeoNode* n = a->GetNode();
   TGeoHMatrix mat(a->GetOriginalMatrix()->Inverse());
   mat.Multiply(n->GetMatrix());
@@ -78,7 +79,7 @@ void AlignmentWriter::addNode(XML::Element elt, GlobalAlignment a)  const   {
   placement.setAttr(_ALU(placement),a->GetName());
   elt.append(placement);
 
-  printout(INFO,"AlignmentWriter","Write Delta constants for %s",a->GetName());
+  printout(INFO,"GlobalAlignmentWriter","Write Delta constants for %s",a->GetName());
   //mat.Print();
   if ( fabs(t[0]) > numeric_limits<double>::epsilon() ||
        fabs(t[1]) > numeric_limits<double>::epsilon() ||
@@ -107,7 +108,7 @@ void AlignmentWriter::addNode(XML::Element elt, GlobalAlignment a)  const   {
 }
 
 /// Scan a DetElement subtree and add on the fly the XML entries
-XML::Element AlignmentWriter::scan(XML::Document doc, DetElement element)  const  {
+XML::Element GlobalAlignmentWriter::scan(XML::Document doc, DetElement element)  const  {
   XML::Element elt(0);
   if ( element.isValid() )   {
     const DetElement::Children& c = element.children();
@@ -124,7 +125,7 @@ XML::Element AlignmentWriter::scan(XML::Document doc, DetElement element)  const
 }
 
 /// Dump the tree content into a XML document structure
-XML::Document AlignmentWriter::dump(DetElement top, bool enable_transactions)  const {
+XML::Document GlobalAlignmentWriter::dump(DetElement top, bool enable_transactions)  const {
   const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   DD4hep generated alignment file using the         ++++\n"
@@ -147,7 +148,7 @@ XML::Document AlignmentWriter::dump(DetElement top, bool enable_transactions)  c
 }
 
 /// Write the XML document structure to a file.
-long AlignmentWriter::write(XML::Document doc, const string& output)   const {
+long GlobalAlignmentWriter::write(XML::Document doc, const string& output)   const {
   XML::DocumentHandler docH;
   return docH.output(doc, output);
 }

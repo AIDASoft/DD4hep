@@ -1,0 +1,24 @@
+<conditions>
+  <open_transaction/>
+  <detelement path="TPC" name="ambience" validity="1396887257,1396887257#epoch">
+    <alignment   validity="563543#run"/>
+    <alignment   path="TPC_SideA" validity="563543#run"/>
+    <temperature name="AmbientTemperature" value="20.9*kelvin"/>
+    <pressure    name="ExternalPressure" value="980*hPa"/>
+    <whatever    name="SomeMultiParams" validity="563543#run">[0.0, 1.0, 2.0, 3.0]</whatever>
+
+<!--
+    <gains>
+      <gain/>
+    </gains>
+-->
+
+<!--
+    <include ref=""/>
+-->
+  </detelement>
+
+  <include ref="SideB_conditions.xml"/>
+  <close_transaction/>
+
+</conditions>

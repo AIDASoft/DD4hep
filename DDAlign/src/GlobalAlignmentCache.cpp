@@ -15,11 +15,9 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-#include "DDAlign/AlignmentCache.h"
+#include "DDAlign/GlobalAlignmentCache.h"
 #include "DDAlign/AlignmentOperators.h"
 #include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 
 // ROOT include files
 #include "TGeoManager.h"
@@ -43,29 +41,29 @@ DetElement _detector(DetElement child)   {
 }
 
 /// Default constructor
-AlignmentCache::AlignmentCache(LCDD& lcdd, const string& sdPath, bool top)
+GlobalAlignmentCache::GlobalAlignmentCache(LCDD& lcdd, const string& sdPath, bool top)
   : m_lcdd(lcdd), m_sdPath(sdPath), m_sdPathLen(sdPath.length()), m_refCount(1), m_top(top)
 {
 }
 
 /// Default destructor
-AlignmentCache::~AlignmentCache()   {
+GlobalAlignmentCache::~GlobalAlignmentCache()   {
   int nentries = (int)m_cache.size();
   int nsect = (int)m_detectors.size();
   releaseObjects(m_detectors);
   m_cache.clear();
-  printout(INFO,"AlignmentCache",
+  printout(INFO,"GlobalAlignmentCache",
            "Destroy cache for subdetector %s [%d section(s), %d entrie(s)]",
            m_sdPath.c_str(),nsect,nentries);
 }
 
 /// Add reference count
-int AlignmentCache::addRef()   {
+int GlobalAlignmentCache::addRef()   {
   return ++m_refCount;
 }
 
 /// Release object. If reference count goes to NULL, automatic deletion is triggered.
-int AlignmentCache::release()   {
+int GlobalAlignmentCache::release()   {
   int value = --m_refCount;
   if ( value == 0 )  {
     delete this;
@@ -73,12 +71,28 @@ int AlignmentCache::release()   {
   return value;
 }
 
+/// Create and install a new instance tree
+GlobalAlignmentCache* GlobalAlignmentCache::install(LCDD& lcdd)   {
+  GlobalAlignmentCache* cache = lcdd.extension<GlobalAlignmentCache>(false);
+  if ( !cache )  {
+    lcdd.addExtension<GlobalAlignmentCache>(new GlobalAlignmentCache(lcdd,"world",true));
+  }
+  return cache;
+}
+
+/// Unregister and delete a tree instance
+void GlobalAlignmentCache::uninstall(LCDD& lcdd)   {
+  if ( lcdd.extension<GlobalAlignmentCache>(false) )  {
+    lcdd.removeExtension<GlobalAlignmentCache>(true);
+  }
+}
+
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentCache::insert(GlobalAlignment alignment)  {
+bool GlobalAlignmentCache::insert(GlobalAlignment alignment)  {
   TGeoPhysicalNode* pn = alignment.ptr();
   unsigned int index = hash32(pn->GetName()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
-  printout(ALWAYS,"AlignmentCache","Section: %s adding entry: %s",
+  printout(ALWAYS,"GlobalAlignmentCache","Section: %s adding entry: %s",
            name().c_str(),alignment->GetName());
   if ( i == m_cache.end() )   {
     m_cache[index] = pn;
@@ -88,13 +102,13 @@ bool AlignmentCache::insert(GlobalAlignment alignment)  {
 }
 
 /// Retrieve the cache section corresponding to the path of an entry.
-AlignmentCache* AlignmentCache::section(const string& path_name) const   {
+GlobalAlignmentCache* GlobalAlignmentCache::section(const string& path_name) const   {
   size_t idx, idq;
   if ( path_name[0] != '/' )   {
     return section(m_lcdd.world().placementPath()+'/'+path_name);
   }
   else if ( (idx=path_name.find('/',1)) == string::npos )  {
-    return (m_sdPath == path_name.c_str()+1) ? (AlignmentCache*)this : 0;
+    return (m_sdPath == path_name.c_str()+1) ? (GlobalAlignmentCache*)this : 0;
   }
   else if ( m_detectors.empty() )  {
     return 0;
@@ -106,7 +120,7 @@ AlignmentCache* AlignmentCache::section(const string& path_name) const   {
 }
 
 /// Retrieve an alignment entry by its placement path
-GlobalAlignment AlignmentCache::get(const string& path_name) const   {
+GlobalAlignment GlobalAlignmentCache::get(const string& path_name) const   {
   size_t idx, idq;
   unsigned int index = hash32(path_name.c_str()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
@@ -131,9 +145,9 @@ GlobalAlignment AlignmentCache::get(const string& path_name) const   {
 }
 
 /// Return all entries matching a given path.
-vector<GlobalAlignment> AlignmentCache::matches(const string& match, bool exclude_exact) const   {
+vector<GlobalAlignment> GlobalAlignmentCache::matches(const string& match, bool exclude_exact) const   {
   vector<GlobalAlignment> result;
-  AlignmentCache* c = section(match);
+  GlobalAlignmentCache* c = section(match);
   if ( c )  {
     size_t len = match.length();
     result.reserve(c->m_cache.size());
@@ -149,55 +163,19 @@ vector<GlobalAlignment> AlignmentCache::matches(const string& match, bool exclud
   return result;
 }
 
-/// Open a new transaction stack (Note: only one stack allowed!)
-void AlignmentCache::openTransaction()   {
-  /// Check if transaction already present. If not, open, else issue an error
-  if ( !AlignmentStack::exists() )  {
-    AlignmentStack::create();
-    return;
-  }
-  string msg = "Request to open a second alignment transaction stack -- not allowed!";
-  string err = format("Alignment<alignment>",msg);
-  printout(FATAL,"AlignmentCache",msg);
-  throw runtime_error(err);
-}
-
 /// Close existing transaction stack and apply all alignments
-void AlignmentCache::closeTransaction()   {
-  /// Check if transaction is open. If yes, close it and apply alignment stack.
-  /// If no transaction is active, ignore the staement, but issue a warning.
-  if ( AlignmentStack::exists() )  {
-    TGeoManager& mgr = m_lcdd.manager();
-    mgr.UnlockGeometry();
-    apply(AlignmentStack::get());
-    AlignmentStack::get().release();
-    mgr.LockGeometry();
-    return;
-  }
-  printout(WARNING,"Alignment<alignment>",
-           "Request to close a non-existing alignmant transaction.");
-}
-
-/// Create and install a new instance tree
-void AlignmentCache::install(LCDD& lcdd)   {
-  AlignmentCache* cache = lcdd.extension<AlignmentCache>(false);
-  if ( !cache )  {
-    lcdd.addExtension<AlignmentCache>(new AlignmentCache(lcdd,"world",true));
-  }
-}
-
-/// Unregister and delete a tree instance
-void AlignmentCache::uninstall(LCDD& lcdd)   {
-  if ( lcdd.extension<AlignmentCache>(false) )  {
-    lcdd.removeExtension<AlignmentCache>(true);
-  }
+void GlobalAlignmentCache::commit(AlignmentStack& stack)   {
+  TGeoManager& mgr = m_lcdd.manager();
+  mgr.UnlockGeometry();
+  apply(stack);
+  mgr.LockGeometry();
 }
 
 /// Retrieve branch cache by name. If not present it will be created
-AlignmentCache* AlignmentCache::subdetectorAlignments(const string& nam)    {
+GlobalAlignmentCache* GlobalAlignmentCache::subdetectorAlignments(const string& nam)    {
   SubdetectorAlignments::const_iterator i = m_detectors.find(nam);
   if ( i == m_detectors.end() )   {
-    AlignmentCache* ptr = new AlignmentCache(m_lcdd,nam,false);
+    GlobalAlignmentCache* ptr = new GlobalAlignmentCache(m_lcdd,nam,false);
     m_detectors.insert(make_pair(nam,ptr));
     return ptr;
   }
@@ -205,7 +183,7 @@ AlignmentCache* AlignmentCache::subdetectorAlignments(const string& nam)    {
 }
 
 /// Apply a complete stack of ordered alignments to the geometry structure
-void AlignmentCache::apply(AlignmentStack& stack)    {
+void GlobalAlignmentCache::apply(AlignmentStack& stack)    {
   typedef map<string,DetElement> DetElementUpdates;
   typedef map<DetElement,vector<Entry*> > sd_entries_t;
   TGeoManager& mgr = m_lcdd.manager();
@@ -222,12 +200,12 @@ void AlignmentCache::apply(AlignmentStack& stack)    {
   }
   for(sd_entries_t::iterator i=all.begin(); i!=all.end(); ++i)  {
     DetElement det((*i).first);
-    AlignmentCache* sd_cache = subdetectorAlignments(det.placement().name());
+    GlobalAlignmentCache* sd_cache = subdetectorAlignments(det.placement().name());
     sd_cache->apply( (*i).second );
     (*i).second.clear();
   }
 
-  printout(INFO,"AlignmentCache","Alignments were applied. Refreshing physical nodes....");
+  printout(INFO,"GlobalAlignmentCache","Alignments were applied. Refreshing physical nodes....");
   mgr.GetCurrentNavigator()->ResetAll();
   mgr.GetCurrentNavigator()->BuildCache();
   mgr.RefreshPhysicalNodes();
@@ -235,7 +213,7 @@ void AlignmentCache::apply(AlignmentStack& stack)    {
   // Provide update callback for every detector element with a changed placement
   for(DetElementUpdates::iterator i=detelt_updates.begin(); i!=detelt_updates.end(); ++i)  {
     DetElement elt((*i).second);
-    printout(DEBUG,"AlignmentCache","+++ Trigger placement update for %s [2]",elt.path().c_str());
+    printout(DEBUG,"GlobalAlignmentCache","+++ Trigger placement update for %s [2]",elt.path().c_str());
     elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_ELEMENT,elt.ptr());
   }
   // Provide update callback for the highest detector element
@@ -244,7 +222,7 @@ void AlignmentCache::apply(AlignmentStack& stack)    {
     const string& path = (*i).first;
     if ( path.find(last_path) == string::npos )  {
       DetElement elt((*i).second);
-      printout(DEBUG,"AlignmentCache","+++ Trigger placement update for %s [1]",elt.path().c_str());
+      printout(DEBUG,"GlobalAlignmentCache","+++ Trigger placement update for %s [1]",elt.path().c_str());
       elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_HIGHEST,elt.ptr());
       last_path = (*i).first;
     }
@@ -252,13 +230,13 @@ void AlignmentCache::apply(AlignmentStack& stack)    {
   // Provide update callback at the detector level
   for(sd_entries_t::iterator i=all.begin(); i!=all.end(); ++i)  {
     DetElement elt((*i).first);
-    printout(DEBUG,"AlignmentCache","+++ Trigger placement update for %s [0]",elt.path().c_str());
+    printout(DEBUG,"GlobalAlignmentCache","+++ Trigger placement update for %s [0]",elt.path().c_str());
     elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,elt.ptr());
   }
 }
 
 /// Apply a vector of SD entries of ordered alignments to the geometry structure
-void AlignmentCache::apply(const vector<Entry*>& changes)   {
+void GlobalAlignmentCache::apply(const vector<Entry*>& changes)   {
   typedef map<string,pair<TGeoPhysicalNode*,Entry*> > Nodes;
   Nodes nodes;
   AlignmentSelector selector(*this,nodes,changes);

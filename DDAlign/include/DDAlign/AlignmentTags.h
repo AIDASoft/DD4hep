@@ -42,6 +42,7 @@ namespace DD4hep {
     UNICODE(open_transaction);
     UNICODE(close_transaction);
     UNICODE(check_overlaps);
+    UNICODE(debug);
   }
 }
 

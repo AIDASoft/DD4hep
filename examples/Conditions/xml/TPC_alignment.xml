@@ -1,6 +1,5 @@
-<global_alignment>
+<alignment>
 
-  <debug value="true"/>
   <open_transaction/>
   <subdetectors>
     <!--
@@ -77,4 +76,4 @@ Any supplied pivot point in this case is ignored.
   </subdetectors>
 
   <close_transaction/>
-</global_alignment>
+</alignment>

@@ -11,8 +11,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_DETECTORALIGNMENT_H
-#define DD4HEP_GEOMETRY_DETECTORALIGNMENT_H
+#ifndef DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H
+#define DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -27,17 +27,21 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Alignments {
 
-    /// DetectorAlignment. DetElement Handle supporting alignment operations.
+    /// GlobalDetectorAlignment. DetElement Handle supporting alignment operations.
     /**
      *  \author   M.Frank
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class DetectorAlignment : public DetElement {
+    class GlobalDetectorAlignment : public DetElement {
     protected:
     public:
       /// Initializing constructor
-      DetectorAlignment(DetElement e);
+      GlobalDetectorAlignment(DetElement e);
+      /// Access debugging flag
+      static bool debug();
+      /// Set debugging flag
+      static bool debug(bool value);
       /// Collect all placements from the detector element up to the world volume
       void collectNodes(std::vector<PlacedVolume>& nodes);
       /// Access to the alignment block
@@ -72,6 +76,6 @@ namespace DD4hep {
       GlobalAlignment align(const std::string& volume_path, TGeoHMatrix* matrix, bool check = false, double overlap = 0.001);
     };
 
-  } /* End namespace Alignments                     */
-} /* End namespace DD4hep                           */
-#endif    /* DD4HEP_GEOMETRY_DETECTORALIGNMENT_H    */
+  } /* End namespace Alignments                           */
+} /* End namespace DD4hep                                 */
+#endif    /* DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H    */

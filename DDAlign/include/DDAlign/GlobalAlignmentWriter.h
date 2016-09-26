@@ -11,8 +11,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDALIGN_ALIGNMENTWRITER_H
-#define DD4HEP_DDALIGN_ALIGNMENTWRITER_H
+#ifndef DD4HEP_DDALIGN_GLOBALALIGNMENTWRITER_H
+#define DD4HEP_DDALIGN_GLOBALALIGNMENTWRITER_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -26,7 +26,7 @@ namespace DD4hep {
   namespace Alignments {
 
     // Forward declarations
-    class AlignmentCache;
+    class GlobalAlignmentCache;
 
     /// Write aligment data to XML data file
     /**
@@ -34,21 +34,21 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class AlignmentWriter  {
+    class GlobalAlignmentWriter  {
     protected:
       /// Reference to detector description
       LCDD& m_lcdd;
       /// Reference to the alignment cache
-      AlignmentCache* m_cache;
+      GlobalAlignmentCache* m_cache;
 
       /// Add single alignment node to the XML document
       void addNode(XML::Element elt, GlobalAlignment a)  const;
 
     public:
       /// Initializing Constructor
-      AlignmentWriter(LCDD& lcdd);
+      GlobalAlignmentWriter(LCDD& lcdd);
       /// Standard destructor
-      virtual ~AlignmentWriter();
+      virtual ~GlobalAlignmentWriter();
 
       /// Dump one full DetElement subtree into a newly created document
       XML::Document dump(DetElement element, bool enable_transactions=false) const;
@@ -61,5 +61,5 @@ namespace DD4hep {
     };
   }    // End namespace XML
 }      // End namespace DD4hep
-#endif // DD4HEP_DDALIGN_ALIGNMENTWRITER_H
+#endif // DD4HEP_DDALIGN_GLOBALALIGNMENTWRITER_H
 

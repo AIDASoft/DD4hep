@@ -1,0 +1,7 @@
+<conditions>
+  <detelement path="TPC" name="ambience">
+    <alignment                       ref="TPC_Alignment.xml"        validity="123456#run"/>
+    <alignment   path="TPC_SideA"    ref="TPC_SideA_Alignment.xml"  validity="123456#run"/>
+    <alignment   name="TPC_A_align"  ref="TPC_SideA_Alignment.xml"  validity="123456#run"/>
+  </detelement>
+</conditions>

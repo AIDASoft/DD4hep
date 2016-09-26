@@ -39,7 +39,7 @@ namespace {
 DECLARE_APPLY(DD4hep_AlignmentsManagerInstaller,ddalign_install_align_mgr)
 
 // ======================================================================================
-#include "DDAlign/AlignmentWriter.h"
+#include "DDAlign/GlobalAlignmentWriter.h"
 namespace {
   namespace DetectorTools = DD4hep::Geometry::DetectorTools;
   long create_global_alignment_file(Geometry::LCDD& lcdd, int argc, char** argv)   {
@@ -64,7 +64,7 @@ namespace {
              path.c_str(), output.c_str());
     top = DetectorTools::findDaughterElement(lcdd.world(),path);
     if ( top.isValid() )   {
-      AlignmentWriter wr(lcdd);
+      GlobalAlignmentWriter wr(lcdd);
       return wr.write(wr.dump(top,enable_transactions), output);
     }
     throw std::runtime_error("AlignmentWriter: Invalid top level element name:"+path);

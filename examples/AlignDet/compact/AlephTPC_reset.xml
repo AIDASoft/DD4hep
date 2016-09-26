@@ -1,4 +1,4 @@
-<alignment print="true">
+<global_alignment print="true">
   <open_transaction/>
   <subdetectors>
     <!--
@@ -23,4 +23,4 @@
     </detelement>
   </subdetectors>
   <close_transaction/>
-</alignment>
+</global_alignment>

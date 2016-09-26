@@ -17,7 +17,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DDAlign/AlignmentOperators.h"
-#include "DDAlign/DetectorAlignment.h"
+#include "DDAlign/GlobalDetectorAlignment.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -26,7 +26,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
-void AlignmentOperator::insert(Alignment alignment)  const   {
+void AlignmentOperator::insert(GlobalAlignment alignment)  const   {
   if ( !cache.insert(alignment) )     {
     // Error
   }
@@ -57,13 +57,13 @@ void AlignmentSelector::operator()(const Cache::value_type& entry)  const {
 }
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_print>::init() {
-  printout(ALWAYS,"AlignmentCache","++++++++++++++++++++++++ Summary ++++++++++++++++++++++++");
+  printout(ALWAYS,"GlobalAlignmentCache","++++++++++++++++++++++++ Summary ++++++++++++++++++++++++");
 }
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_print>::operator()(Nodes::value_type& n)  const {
   TGeoPhysicalNode* p = n.second.first;
   Entry* e = n.second.second;
-  printout(ALWAYS,"AlignmentCache","Need to reset entry:%s - %s [needsReset:%s, hasMatrix:%s]",
+  printout(ALWAYS,"GlobalAlignmentCache","Need to reset entry:%s - %s [needsReset:%s, hasMatrix:%s]",
            p->GetName(),e->path.c_str(),yes_no(e->needsReset()),yes_no(e->hasMatrix()));
 }
 
@@ -74,7 +74,6 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_delete>::opera
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operator()(Nodes::value_type& n) const  {
   TGeoPhysicalNode* p = n.second.first;
-  //Entry*            e = n.second.second;
   string np;
   if ( p->IsAligned() )   {
     for (Int_t i=0, nLvl=p->GetLevel(); i<=nLvl; i++) {
@@ -103,55 +102,55 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
 }
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operator()(Nodes::value_type& n) const  {
-  Entry& e = *n.second.second;
-  bool       check = e.checkOverlap();
+  Entry&     e       = *n.second.second;
   bool       overlap = e.overlapDefined();
-  bool       has_matrix  = e.hasMatrix();
-  DetElement det = e.detector;
-  bool       valid     = det->global_alignment.isValid();
-  string     det_placement = det.placementPath();
+  DetElement det     = e.detector;
 
-  if ( !valid && !has_matrix )  {
-    cout << "++++ SKIP ALIGNMENT: ++++ " << e.path
-         << " DE:" << det_placement
-         << " Valid:" << yes_no(valid)
-         << " Matrix:" << yes_no(has_matrix) << endl;
-    /*    */
+  if ( !det->global_alignment.isValid() && !e.hasMatrix() )  {
+    printout(WARNING,"AlignmentActor","++++ SKIP Alignment %s DE:%s Valid:%s Matrix:%s",
+             e.path.c_str(),det.placementPath().c_str(),
+             yes_no(det->global_alignment.isValid()), yes_no(e.hasMatrix()));
     return;
   }
-
-  cout << "++++ " << e.path
-       << " DE:" << det_placement
-       << " Valid:" << yes_no(valid)
-       << " Matrix:" << yes_no(has_matrix)
-       << endl;
-  /*  */
+  if ( GlobalDetectorAlignment::debug() )  {
+    printout(INFO,"AlignmentActor","++++ %s DE:%s Matrix:%s",
+             e.path.c_str(),det.placementPath().c_str(),yes_no(e.hasMatrix()));
+  }
   // Need to care about optional arguments 'check_overlaps' and 'overlap'
-  DetectorAlignment ad(det);
-  Alignment alignment;
-  bool is_not_volume = e.path == det_placement;
-  if ( check && overlap )     {
-    alignment = is_not_volume
-      ? ad.align(e.transform, e.overlapValue(), e.overlap)
-      : ad.align(e.path, e.transform, e.overlapValue(), e.overlap);
-  }
-  else if ( check )    {
-    alignment = is_not_volume
-      ? ad.align(e.transform, e.overlapValue())
-      : ad.align(e.path, e.transform, e.overlapValue());
-  }
-  else     {
-    alignment = is_not_volume ? ad.align(e.transform) : ad.align(e.path, e.transform);
-  }
-  if ( alignment.isValid() )  {
-    insert(alignment);
+  GlobalDetectorAlignment ad(det);
+  GlobalAlignment   align;
+  Transform3D       trafo;
+  bool              no_vol  = e.path == det.placementPath();
+  double            ovl_val = e.overlapValue();
+  const Delta&      delta   = e.delta;
+
+  if ( delta.checkFlag(Delta::HAVE_ROTATION|Delta::HAVE_PIVOT|Delta::HAVE_TRANSLATION) )
+    trafo = Transform3D(Translation3D(delta.translation)*delta.pivot*delta.rotation*(delta.pivot.Inverse()));
+  else if ( delta.checkFlag(Delta::HAVE_ROTATION|Delta::HAVE_TRANSLATION) )
+    trafo = Transform3D(delta.rotation,delta.translation);
+  else if ( delta.checkFlag(Delta::HAVE_ROTATION|Delta::HAVE_PIVOT) )
+    trafo = Transform3D(delta.pivot*delta.rotation*(delta.pivot.Inverse()));
+  else if ( delta.checkFlag(Delta::HAVE_ROTATION) )
+    trafo = Transform3D(delta.rotation);
+  else if ( delta.checkFlag(Delta::HAVE_TRANSLATION) )
+    trafo = Transform3D(delta.translation);
+
+  if ( e.checkOverlap() && overlap )
+    align = no_vol ? ad.align(trafo,ovl_val,e.overlap) : ad.align(e.path,trafo,ovl_val,e.overlap);
+  else if ( e.checkOverlap() )
+    align = no_vol ? ad.align(trafo,ovl_val) : ad.align(e.path,trafo,ovl_val);
+  else
+    align = no_vol ? ad.align(trafo) : ad.align(e.path,trafo);
+
+  if ( align.isValid() )  {
+    insert(align);
     return;
   }
-  throw runtime_error("Failed to apply alignment for "+e.path);
+  except("AlignmentActor","Failed to apply alignment for "+e.path);
 }
 
 #if 0
-void alignment_reset_dbg(const string& path, const Alignment& a)   {
+void alignment_reset_dbg(const string& path, const GlobalAlignment& a)   {
   TGeoPhysicalNode* n = a.ptr();
   cout << " +++++++++++++++++++++++++++++++ " << path << endl;
   cout << "      +++++ Misaligned physical node: " << endl;

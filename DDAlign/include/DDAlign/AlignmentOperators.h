@@ -17,7 +17,7 @@
 // Framework include files
 #include "DD4hep/Alignments.h"
 #include "DD4hep/GlobalAlignment.h"
-#include "DDAlign/AlignmentCache.h"
+#include "DDAlign/GlobalAlignmentCache.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -33,17 +33,17 @@ namespace DD4hep {
      */
     class AlignmentOperator  {
     public:
-      typedef AlignmentStack::StackEntry Entry;
-      typedef AlignmentCache::Cache      Cache;
-      typedef std::vector<Entry*>        Entries;
+      typedef AlignmentStack::StackEntry  Entry;
+      typedef GlobalAlignmentCache::Cache Cache;
+      typedef std::vector<Entry*>         Entries;
       typedef std::map<std::string,std::pair<TGeoPhysicalNode*,Entry*> > Nodes;
-      AlignmentCache& cache;
+      GlobalAlignmentCache& cache;
       Nodes& nodes;
     public:
       /// Initializing functor constructor
-      AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
+      AlignmentOperator(GlobalAlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
       /// Insert alignment entry
-      void insert(Alignment alignment)  const;
+      void insert(GlobalAlignment alignment)  const;
     };
 
     /// Select alignment operations according to certain criteria
@@ -56,11 +56,11 @@ namespace DD4hep {
     public:
       const Entries& entries;
       /// Initializing functor constructor
-      AlignmentSelector(AlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
+      AlignmentSelector(GlobalAlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
       ~AlignmentSelector() { }
       const AlignmentSelector& reset()   const { nodes.clear(); return *this; }
       /// Function callback for cache entries
-      void operator()(const AlignmentCache::Cache::value_type& e) const;
+      void operator()(const GlobalAlignmentCache::Cache::value_type& e) const;
       /// Function callback for entries
       void operator()(Entry* e) const;
     };
@@ -74,7 +74,7 @@ namespace DD4hep {
     template <typename T> class AlignmentActor : public AlignmentOperator {
     public:
       /// Initializing functor constructor
-      AlignmentActor(AlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
+      AlignmentActor(GlobalAlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
       void init() {}
       /// Function callback for entries
       void operator()(Nodes::value_type& e) const;
