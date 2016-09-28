@@ -16,8 +16,8 @@
 #define DD4HEP_DDG4_COMPONENTPROPERTIES_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Exceptions.h"
+//#include "DD4hep/Primitives.h"
+//#include "DD4hep/Exceptions.h"
 
 // C/C++ include files
 #include <algorithm>

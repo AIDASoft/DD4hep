@@ -24,9 +24,6 @@
 #include <set>
 #include <map>
 #include <deque>
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
 
 // ============================================================================
 #define PARSERS_DECL_FOR_SINGLE(Type)                 \
@@ -557,6 +554,21 @@ namespace DD4hep {
       //
       return 1;                            //  RETURN
     }
+    // ========================================================================
+  }//                                          end of namespace Parsers
+  // ==========================================================================
+}//                                            end of namespace DD4hep
+
+#ifndef DD4HEP_PARSERS_NO_ROOT
+
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+  /// Namespace for the AIDA detector for utilities using boost::spirit parsers
+  namespace Parsers {
 
     // ========================================================================
     /// parse 3D-point
@@ -731,11 +743,11 @@ namespace DD4hep {
      *   @date 2009-09-05
      */
     PARSERS_DECL_FOR_LIST(ROOT::Math::PxPyPzEVector)
-
     // ========================================================================
   }//                                          end of namespace Parsers
   // ==========================================================================
 }//                                            end of namespace DD4hep
+#endif
 // ============================================================================
 // The END
 // ============================================================================

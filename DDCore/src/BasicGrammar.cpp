@@ -13,7 +13,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Handle.h"
+#include "DD4hep/Primitives.h"
 #include "DD4hep/Exceptions.h"
 #include "DD4hep/BasicGrammar.h"
 

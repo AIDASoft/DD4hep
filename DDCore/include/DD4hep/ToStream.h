@@ -27,9 +27,6 @@
 #include <deque>
 #include <string>
 #include <sstream>
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
 
 // ============================================================================
 /** @file DD4hep/ToStream.h
@@ -306,6 +303,20 @@ namespace DD4hep {
       s.flags(orig_flags);
       return s.str();
     }
+    // ========================================================================
+  }//                                            end of namespace DD4hep::Utils
+  // ==========================================================================
+}//                                                     end of namespace DD4hep
+
+#ifndef DD4HEP_PARSERS_NO_ROOT
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+  // ==========================================================================
+  /// Utility namespace to support boost::spirit
+  namespace Utils {
     // ============================================================================
     /// print XYZ point
     std::ostream& toStream(const ROOT::Math::XYZPoint& obj, std::ostream& s);
@@ -313,11 +324,11 @@ namespace DD4hep {
     std::ostream& toStream(const ROOT::Math::XYZVector& obj, std::ostream& s);
     /// print Lorentz vector
     std::ostream& toStream(const ROOT::Math::PxPyPzEVector& obj, std::ostream& s);
-
     // ========================================================================
   }//                                            end of namespace DD4hep::Utils
   // ==========================================================================
 }//                                                     end of namespace DD4hep
+#endif
 // ============================================================================
 // The END
 // ============================================================================

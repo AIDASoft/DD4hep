@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ParsersObjects_XYZVector.cpp 2119 2016-03-03 14:10:32Z markus.frank@cern.ch $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -12,6 +12,7 @@
 //==========================================================================
 // Include files
 //==========================================================================
+#ifndef DD4HEP_PARSERS_NO_ROOT
 #include "ParsersStandardListCommon.h"
 
 namespace ROOT {  namespace Math {
@@ -50,5 +51,4 @@ namespace DD4hep {
     IMPLEMENT_MAPPED_PARSERS(pair,ROOT::Math::XYZVector)
   }
 }
-
-
+#endif

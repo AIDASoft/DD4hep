@@ -29,8 +29,11 @@
 #ifdef DD4HEP_USE_BOOST
 #include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
-#endif
 #include "XML/Evaluator.h"
+namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
+namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
+#endif
+
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
@@ -42,9 +45,6 @@
 #include <set>
 #include <map>
 #include <deque>
-
-namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
-namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -271,12 +271,16 @@ namespace DD4hep {
       s.erase(idx, 5);
     while (s[0] == ' ')
       s.erase(0, 1);
+#ifdef DD4HEP_USE_BOOST
     double result = s__eval.evaluate(s.c_str());
     if (s__eval.status() != XmlTools::Evaluator::OK) {
       return 0;
     }
     *p = (T)result;
     return 1;
+#else
+    return 0;
+#endif
   }
 
   /// String evaluator

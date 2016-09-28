@@ -344,7 +344,7 @@ static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
   bool open_trans = e.hasChild(_ALU(close_transaction));
   bool close_trans = e.hasChild(_ALU(close_transaction));
 
-  GlobalAlignmentCache::install(lcdd);
+  GlobalAlignmentCache* cache = GlobalAlignmentCache::install(lcdd);
   /// Check if transaction already present. If not, open, else issue an error
   if ( open_trans )   {
     if ( AlignmentStack::exists() )  {
@@ -355,7 +355,6 @@ static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
   AlignmentStack& stack = AlignmentStack::get();
   (DD4hep::Converter<DD4hep::alignment>(lcdd,lcdd.world().ptr(),&stack))(e);
   if ( close_trans )  {
-    GlobalAlignmentCache* cache = lcdd.extension<Alignments::GlobalAlignmentCache>();
     cache->commit(stack);
     AlignmentStack::get().release();
   }
