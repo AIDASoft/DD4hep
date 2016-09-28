@@ -13,7 +13,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/objects/BasicGrammar_inl.h"
+#include "DD4hep/BasicGrammar_inl.h"
+
+#ifndef DD4HEP_PARSERS_NO_ROOT
 namespace ROOT {
   namespace Math {
 
@@ -41,6 +43,10 @@ namespace ROOT {
 template struct std::less<ROOT::Math::XYZPoint>;
 template struct std::less<ROOT::Math::XYZVector>;
 template struct std::less<ROOT::Math::PxPyPzEVector>;
+DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZPoint,eval_obj)
+DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZVector,eval_obj)
+DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::PxPyPzEVector,eval_obj)
+#endif
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(char)
@@ -54,7 +60,3 @@ DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(bool,eval_item)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(float,eval_item)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(double,eval_item)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(std::string,eval_item)
-
-DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZPoint,eval_obj)
-DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZVector,eval_obj)
-DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::PxPyPzEVector,eval_obj)

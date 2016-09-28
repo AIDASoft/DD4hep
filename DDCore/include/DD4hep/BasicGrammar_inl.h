@@ -26,17 +26,20 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/BasicGrammar.h"
 
+#include "XML/Evaluator.h"
+
 #ifdef DD4HEP_USE_BOOST
 #include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
-#include "XML/Evaluator.h"
 namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
-namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
 #endif
+namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
 
+#ifndef DD4HEP_PARSERS_NO_ROOT
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
+#endif
 
 // C/C++ include files
 #include <string>

@@ -13,7 +13,17 @@
 //==========================================================================
 
 // Framework include files
+#if defined(DD4HEP_PARSER_HEADER)
+// This is the case, if the parsers are externalized
+// and the DD4hep namespace is renamed!
+#include DD4HEP_PARSER_HEADER
+
+#else
+
+// Standard DD4hep parser handling
 #include "DD4hep/ToStream.h"
+
+#endif
 #include "XML/Evaluator.h"
 
 // C/C++ include files
@@ -53,6 +63,8 @@ namespace DD4hep {  namespace Parsers {
   }
 }
 
+#ifndef DD4HEP_PARSERS_NO_ROOT
+
 // ============================================================================
 // print XYZ-point
 std::ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZPoint&  obj, std::ostream& s)  {
@@ -91,3 +103,4 @@ std::ostream& DD4hep::Utils::toStream(const ROOT::Math::PxPyPzEVector& obj, std:
   s << " )";
   return s;
 }
+#endif

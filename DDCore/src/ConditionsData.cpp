@@ -74,6 +74,6 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
 #include "DD4hep/objects/ConditionsInterna.h"
 DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(AbstractMap)
 
-#include "DD4hep/objects/BasicGrammar_inl.h"
+#include "DD4hep/BasicGrammar_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR(AbstractMap,eval_none<AbstractMap>)
 
