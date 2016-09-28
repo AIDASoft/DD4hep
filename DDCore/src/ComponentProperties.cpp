@@ -257,7 +257,7 @@ namespace DD4hep {
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
 
-#include "DD4hep/objects/BasicGrammar_inl.h"
+#include "DD4hep/BasicGrammar_inl.h"
 #include "DD4hep/ComponentProperties_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
 

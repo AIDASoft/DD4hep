@@ -13,12 +13,14 @@
 #define DD4HEP_DDCORE_PARSERS_USEDPARSERS_H
 
 
-#if defined(DD4hep)
-
-#include "Parsers/UsedParser.h"
+#if defined(DD4HEP_PARSER_HEADER)
+// This is the case, if the parsers are externalized
+// and the DD4hep namespace is renamed!
+#include DD4HEP_PARSER_HEADER
 
 #else
 
+// Standard DD4hep parser handling
 #include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
 
