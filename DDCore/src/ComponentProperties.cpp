@@ -14,6 +14,7 @@
 
 // Framework include files
 #include "DD4hep/Printout.h"
+#include "DD4hep/Primitives.h"
 #include "DD4hep/BasicGrammar.h"
 #include "DD4hep/ComponentProperties.h"
 

@@ -15,10 +15,10 @@
 #ifndef DD4HEP_DD4HEP_PRIMITIVES_H
 #define DD4HEP_DD4HEP_PRIMITIVES_H
 
-#include "DDSegmentation/Segmentation.h"
-
 // C/C++ include files
+#include <map>
 #include <limits>
+#include <typeinfo>
 #include <algorithm>
 #include <stdexcept>
 
@@ -29,6 +29,9 @@ namespace DD4hep {
   namespace DDSegmentation  {
     class BitField64;
     class BitFieldValue;
+    /// Useful typedefs to differentiate cell IDs and volume IDs
+    typedef long long int CellID;
+    typedef long long int VolumeID;
   }
 
   /// We need it so often: one-at-time 32 bit hash function
@@ -70,6 +73,7 @@ namespace DD4hep {
 
   /// ABI information about type names
   std::string typeName(const std::type_info& type);
+  /// Check type infos for equivalence (dynamic casts) using ABI information
   void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "");
   /// Throw exception when handles are check for validity
   void invalidHandleError(const std::type_info& type);

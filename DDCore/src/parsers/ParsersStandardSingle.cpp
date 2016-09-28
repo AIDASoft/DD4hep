@@ -9,7 +9,6 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-#include "DD4hep/Parsers.h"
 #include "ParsersFactory.h"
 // ============================================================================
 #define PARSERS_DEF_FOR_SINGLE(Type)                                  \

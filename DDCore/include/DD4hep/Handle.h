@@ -258,15 +258,15 @@ namespace DD4hep {
   {      return _ptrToString((void*)p, fmt);       }
 
   /// String conversions: string to boolean value  \ingroup DD4HEP_GEOMETRY
-  bool _toBool(const std::string& value);
+  bool   _toBool(const std::string& value);
   /// String conversions: string to integer value  \ingroup DD4HEP_GEOMETRY
-  short _toShort(const std::string& value);
+  short  _toShort(const std::string& value);
   /// String conversions: string to integer value  \ingroup DD4HEP_GEOMETRY
-  int _toInt(const std::string& value);
+  int    _toInt(const std::string& value);
   /// String conversions: string to long integer value  \ingroup DD4HEP_GEOMETRY
-  long _toLong(const std::string& value);
+  long   _toLong(const std::string& value);
   /// String conversions: string to float value  \ingroup DD4HEP_GEOMETRY
-  float _toFloat(const std::string& value);
+  float  _toFloat(const std::string& value);
   /// String conversions: string to double value  \ingroup DD4HEP_GEOMETRY
   double _toDouble(const std::string& value);
 

@@ -15,6 +15,7 @@
 #define DD4HEP_DDG4_GEANT4ACTIONPHASE_H
 
 // Framework include files
+#include "DD4hep/Exceptions.h"
 #include "DDG4/Geant4Action.h"
 
 // C/C++ include files

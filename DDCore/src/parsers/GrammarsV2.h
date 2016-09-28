@@ -30,15 +30,7 @@
 //==============================================================================
 // Boost:
 //==============================================================================
-#ifdef __GNUC__
-#define __DD4HEP_LOCAL_GNUC__ __GNUC__
-#undef __GNUC__
-// Boost spits out an error if __GNUC__ is defined!
 #include <boost/spirit/include/qi.hpp>
-#define __GNUC__ __DD4HEP_LOCAL_GNUC__
-#else
-#include <boost/spirit/include/qi.hpp>
-#endif
 #include <boost/fusion/include/unused.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 
@@ -49,10 +41,6 @@
 #include <boost/type_traits.hpp>
 
 #include <boost/spirit/repository/include/qi_confix.hpp>
-
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
 
 //==============================================================================
 namespace DD4hep {  namespace Parsers {
@@ -383,7 +371,17 @@ namespace DD4hep {  namespace Parsers {
       // ----------------------------------------------------------------------------
     }; // END KeyValueGrammar
     // We don't register KeyalueGrammar because it's a special parser
+    // ============================================================================
+  }} //   DD4hep::Parsers
 
+
+//==============================================================================
+#ifndef DD4HEP_PARSERS_NO_ROOT
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
+
+namespace DD4hep {  namespace Parsers {
 
     // ============================================================================
     template< typename Iterator, typename PointT, typename Skipper>
@@ -500,5 +498,6 @@ namespace DD4hep {  namespace Parsers {
     };
     // ============================================================================
   }} //   DD4hep::Parsers
+#endif
 //============================================================================
 #endif

@@ -14,8 +14,6 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "DD4hep/Parsers.h"
-#include "DD4hep/ToStream.h"
 #include "ParsersFactory.h"
 
 
@@ -63,6 +61,7 @@
       IMPLEMENT_STL_PARSERS(InnerType)                     \
       IMPLEMENT_MAPPED_PARSERS(pair,InnerType)            }}
 
+#ifndef DD4HEP_PARSERS_NO_ROOT
 // ============================================================================
 namespace DD4hep {
   namespace Parsers {
@@ -79,5 +78,6 @@ namespace DD4hep {
     }
   }
 }
+#endif
 // ============================================================================
 #endif /* PARSERS_STANDARD_LIST_COMMON_H */

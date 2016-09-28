@@ -1,4 +1,4 @@
-// $Id: ParserStandardList_list_double.cpp 2166 2016-03-17 16:37:06Z /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=sailer/CN=683529/CN=Andre Sailer $
+// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -9,8 +9,19 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
+#ifndef DD4HEP_DDCORE_PARSERS_USEDPARSERS_H
+#define DD4HEP_DDCORE_PARSERS_USEDPARSERS_H
 
-#include "ParsersStandardListCommon.h"
-namespace DD4hep{ namespace Parsers{
-IMPLEMENT_STL_PARSER(std::list,double)
-  }}
+
+#if defined(DD4hep)
+
+#include "Parsers/UsedParser.h"
+
+#else
+
+#include "DD4hep/Parsers.h"
+#include "DD4hep/ToStream.h"
+
+#endif
+
+#endif //  DD4HEP_DDCORE_PARSERS_USEDPARSERS_H
