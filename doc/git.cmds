@@ -16,10 +16,12 @@ git diff --numstat downstream/master
 ## Equiv svn status
 git status
 
-## Push for running tests
-git push gitlab
+## Push for running tests (-f required after a git pull from github!)
+git push -f gitlab
 
 ## Damned password:
 ## Adding ssh key using web page!
 
+# Sync with master branch on github
+git pull
 
