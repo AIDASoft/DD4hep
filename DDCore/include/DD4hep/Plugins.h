@@ -19,7 +19,10 @@
 #include <string>
 #include <vector>
 #include <typeinfo>
+
+#ifndef DD4HEP_PARSERS_NO_ROOT
 #include "RVersion.h"
+#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -109,7 +112,7 @@ namespace DD4hep {
                             const std::type_info& signature_type,
                             const std::type_info& return_type);
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
     template <typename R> static R Create(const std::string& name);
 
     template <typename R, typename A0>
@@ -142,7 +145,7 @@ namespace DD4hep {
   public:
     typedef PluginService svc_t;
     typedef SIGNATURE signature_t;
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
     typedef void (*stub_t)(void *retaddr, void*, const std::vector<void*>& arg, void*);
     static void add(const char* name, stub_t stub);
 #else
@@ -153,7 +156,7 @@ namespace DD4hep {
   };
 } /* End namespace DD4hep      */
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 #define DD4HEP_FACTORY_CALL(type,name,signature) DD4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::wrapper);
 #else
 namespace DD4hep {

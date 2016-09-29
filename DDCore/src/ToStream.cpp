@@ -14,6 +14,8 @@
 
 // Framework include files
 #if defined(DD4HEP_PARSER_HEADER)
+
+#define DD4HEP_NEED_EVALUATOR
 // This is the case, if the parsers are externalized
 // and the DD4hep namespace is renamed!
 #include DD4HEP_PARSER_HEADER

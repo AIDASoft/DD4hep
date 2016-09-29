@@ -13,11 +13,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
-#include "DD4hep/Handle.h"
+//#include "DD4hep/LCDD.h"
+//#include "DD4hep/Handle.h"
 #include "DD4hep/Plugins.inl"
-#include "DD4hep/GeoHandler.h"
-#include "XML/XMLElements.h"
+//#include "DD4hep/GeoHandler.h"
+//#include "XML/XMLElements.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -40,7 +40,7 @@ bool PluginService::setDebug(bool new_value)   {
   return old_value;
 }
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 
 /// Default constructor
 PluginDebug::PluginDebug(int dbg)
@@ -68,7 +68,11 @@ void  PluginService::addFactory(const std::string&, void*, const std::type_info&
 
 #else   // ROOT 6
 #include "DD4hep/Printout.h"
+#if !defined(DD4HEP_PARSERS_NO_ROOT)
 #include "TSystem.h"
+#else
+#include <dlfcn.h>
+#endif
 
 namespace   {
   struct PluginInterface  {
@@ -88,7 +92,14 @@ namespace   {
 
   template <typename T> 
   static inline T get_func(const char* plugin, const char* entry)  {
+#if !defined(DD4HEP_PARSERS_NO_ROOT)
     PluginService::FuncPointer<Func_t> fun(gSystem->DynFindSymbol(plugin,entry));
+#else
+    PluginService::FuncPointer<Func_t> fun(0);
+    if ( 0 == fun.fun.ptr )    {
+    
+  }
+#endif
     PluginService::FuncPointer<T> fp(fun.fptr.ptr);
     if ( 0 == fp.fptr.ptr )      {
       string err = "DD4hep:PluginService: Failed to access symbol "
