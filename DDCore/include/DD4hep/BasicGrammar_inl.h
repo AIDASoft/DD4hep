@@ -26,14 +26,23 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/BasicGrammar.h"
 
-#include "XML/Evaluator.h"
-
 #ifdef DD4HEP_USE_BOOST
+#if defined(DD4HEP_PARSER_HEADER)
+
+#define DD4HEP_NEED_EVALUATOR
+// This is the case, if the parsers are externalized
+// and the DD4hep namespace is renamed!
+#include DD4HEP_PARSER_HEADER
+
+#else
+
+#include "XML/Evaluator.h"
 #include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
 namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
-#endif
 namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
+#endif
+#endif
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 #include "Math/Point3D.h"

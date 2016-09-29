@@ -71,6 +71,7 @@ namespace DD4hep {
 
 }      // End namespace DD4hep
 
+#ifndef DD4HEP_PARSERS_NO_ROOT
 // These operators do not really belong here, but also nowhere else.....
 // ....except the proper ROOT headers perhaps?
 #include "Math/Point3D.h"
@@ -80,13 +81,14 @@ namespace DD4hep {
 namespace ROOT {
   namespace Math {
     /// Allow point insertion of a point in maps
-    bool operator<(const XYZPoint& a, const XYZPoint& b);
+    inline bool operator<(const XYZPoint& a, const XYZPoint& b);
     /// Allow 3-vector insertion of a  in maps
-    bool operator<(const XYZVector& a, const XYZVector& b);
+    inline bool operator<(const XYZVector& a, const XYZVector& b);
     /// Allow 4-vector insertion of a  in maps
-    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
+    inline bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
   }
 }
+#endif
 
 // Instantiate single property
 #define DD4HEP_DEFINE_PROPERTY_TYPE(x)                    \

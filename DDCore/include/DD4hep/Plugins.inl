@@ -17,7 +17,7 @@
 
 #include "DD4hep/Plugins.h"
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 #include <set>
 #include <map>
 #include <list>

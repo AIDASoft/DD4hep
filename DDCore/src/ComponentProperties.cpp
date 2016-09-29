@@ -253,10 +253,6 @@ namespace DD4hep {
 #include <set>
 #include <map>
 
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
-
 #include "DD4hep/BasicGrammar_inl.h"
 #include "DD4hep/ComponentProperties_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
@@ -290,9 +286,17 @@ namespace DD4hep {
 
   typedef map<string, string> map_string_string;
   DD4HEP_DEFINE_PROPERTY_TYPE(map_string_string);
+}
 
+#ifndef DD4HEP_PARSERS_NO_ROOT
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
+
+namespace DD4hep {
   // ROOT::Math Object instances
   DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZPoint);
   DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZVector);
   DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::PxPyPzEVector);
 }
+#endif
