@@ -3,6 +3,12 @@
 DD4hep  ----  Release Notes
 =================================
 
+2016-09-29 V.Volkl
+  Small fixes and extensions of DDEve. Show "Views" menu even if specifying xml on the command line.
+  Add possibility to specify event data in EveDisplay method, rather than having to select it in the gui dialogue.
+  Selects FCC EventHandler if specified in the config xml (as an "eventHandler"-attribute to the "display" node),
+  but keeps default behavior if not.
+
 
 2016-08-24 M.Frank
   Adding first somehow useful implementation to use conditions and the consequent loading thereof.
