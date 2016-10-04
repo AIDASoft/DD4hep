@@ -2,6 +2,9 @@
 =================================
 DD4hep  ----  Release Notes
 =================================
+  --------
+ | v00-17 |
+  --------
 
 2016-09-29 V.Volkl
   Small fixes and extensions of DDEve. Show "Views" menu even if specifying xml on the command line.
