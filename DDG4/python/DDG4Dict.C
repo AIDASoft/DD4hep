@@ -33,8 +33,11 @@
 #include "DDG4/Geant4InputAction.h"
 #include "DDG4/Geant4GeneratorWrapper.h"
 
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
-  namespace Simulation  {
+
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation {
 
     using std::string;
 
@@ -199,12 +202,21 @@ namespace DD4hep {
         return 0;
       }
     };
+
+    /// Container definitions for Geant4Vertex
+    typedef vector<Geant4Vertex*>  Geant4VertexVector;
+    typedef map<int,Geant4Vertex*> Geant4VertexIntMap;
+
+    /// Container definitions for Geant4Particle
+    typedef vector<Geant4Particle*>  Geant4ParticleVector;
+    typedef map<int,Geant4Particle*> Geant4ParticleIntMap;
   }
 }
 
 typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 
 #include "DD4hep/objects/DetectorInterna.h"
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
@@ -226,6 +238,12 @@ using namespace DD4hep::Simulation;
 #pragma link C++ class vector<Geant4PrimaryInteraction*>+;
 #pragma link C++ class map<int,Geant4PrimaryInteraction*>+;
 #pragma link C++ class Geant4PrimaryEvent+;
+
+#pragma link C++ typedef Geant4VertexVector;
+#pragma link C++ typedef Geant4VertexIntMap;
+
+#pragma link C++ typedef Geant4ParticleVector;
+#pragma link C++ typedef Geant4ParticleIntMap;
 
 #pragma link C++ class PropertyResult;
 #pragma link C++ class Geant4InputAction::Particles;

@@ -13,11 +13,10 @@
 //==========================================================================
 
 // Framework include files
-//#include "DD4hep/LCDD.h"
-//#include "DD4hep/Handle.h"
+#include "DD4hep/Plugins.h"
+#if defined(DD4HEP_ROOT_VERSION_5)
 #include "DD4hep/Plugins.inl"
-//#include "DD4hep/GeoHandler.h"
-//#include "XML/XMLElements.h"
+#endif
 
 using namespace std;
 using namespace DD4hep;
@@ -40,7 +39,7 @@ bool PluginService::setDebug(bool new_value)   {
   return old_value;
 }
 
-#if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_PARSERS_NO_ROOT) && DD4HEP_ROOT_VERSION_5
 
 /// Default constructor
 PluginDebug::PluginDebug(int dbg)
@@ -66,13 +65,14 @@ string PluginDebug::missingFactory(const string& name) const {
 void* PluginService::getCreator(const std::string&, const std::type_info&)  {  return 0;   }
 void  PluginService::addFactory(const std::string&, void*, const std::type_info&, const std::type_info&)  {}
 
-#else   // ROOT 6
+#else   // ROOT 6 or no ROOT at all
 #include "DD4hep/Printout.h"
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
 #include "TSystem.h"
 #else
 #include <dlfcn.h>
 #endif
+#include <cstring>
 
 namespace   {
   struct PluginInterface  {
@@ -91,38 +91,42 @@ namespace   {
   };
 
   template <typename T> 
-  static inline T get_func(const char* plugin, const char* entry)  {
+  static inline T get_func(void* handle, const char* plugin, const char* entry)  {
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
     PluginService::FuncPointer<Func_t> fun(gSystem->DynFindSymbol(plugin,entry));
-#else
-    PluginService::FuncPointer<Func_t> fun(0);
-    if ( 0 == fun.fun.ptr )    {
-    
-  }
-#endif
     PluginService::FuncPointer<T> fp(fun.fptr.ptr);
+#else
+    PluginService::FuncPointer<T> fp(::dlsym(handle, entry));
+    if ( !fp.fptr.ptr ) fp.fptr.ptr = ::dlsym(0, entry);
+#endif
     if ( 0 == fp.fptr.ptr )      {
       string err = "DD4hep:PluginService: Failed to access symbol "
-        "\""+string(entry)+"\" in plugin library "+string(plugin);
+        "\""+string(entry)+"\" in plugin library "+string(plugin)+
+	" ["+string(::strerror(errno))+"]";
       throw runtime_error(err);
     }
     return fp.fptr.fcn;
   }
 
   PluginInterface::PluginInterface() : getDebug(0), setDebug(0), create(0), add(0)  {    
+    void* handle = 0;
     const char* plugin_name = ::getenv("DD4HEP_PLUGINMGR");
     if ( 0 == plugin_name )   {
       plugin_name = "libDD4hepGaudiPluginMgr";
     }
+#if !defined(DD4HEP_PARSERS_NO_ROOT)
     gSystem->Load(plugin_name);
-    getDebug = get_func< int (*) ()>(plugin_name,"dd4hep_pluginmgr_getdebug");
-    setDebug = get_func< int (*) (int)>(plugin_name,"dd4hep_pluginmgr_getdebug");
+#else
+    handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
+#endif
+    getDebug = get_func< int (*) ()>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
+    setDebug = get_func< int (*) (int)>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
     create   = get_func< void* (*) (const char*,
-                                    const char*)>(plugin_name,"dd4hep_pluginmgr_create");
+                                    const char*)>(handle, plugin_name,"dd4hep_pluginmgr_create");
     add      = get_func< void (*) (const char* identifier, 
                                    void* creator_stub, 
                                    const char* signature, 
-                                   const char* return_type)>(plugin_name,"dd4hep_pluginmgr_add_factory");
+                                   const char* return_type)>(handle, plugin_name,"dd4hep_pluginmgr_add_factory");
   }
 }
 
@@ -159,6 +163,11 @@ void PluginService::addFactory(const std::string& id, stub_t stub,
 }
 #endif
 
+#if !defined(DD4HEP_PARSERS_NO_ROOT)
+#include "DD4hep/LCDD.h"
+#include "DD4hep/Handle.h"
+#include "DD4hep/GeoHandler.h"
+#include "XML/XMLElements.h"
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*,XML::Handle_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*))
@@ -170,3 +179,4 @@ DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, const Geometry::GeoHand
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, ())
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (const char*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (Geometry::LCDD*,int,char**))
+#endif

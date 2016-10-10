@@ -145,6 +145,8 @@ namespace DD4hep {
       Geant4Particle& get_data(Geant4Particle& c);
       /// Remove daughter from set
       void removeDaughter(int id_daughter);
+      /// Charge accessor (for python etc.)
+      int charge3() const  {  return charge; }
     };
 
 #ifndef __DDG4_STANDALONE_DICTIONARIES__
