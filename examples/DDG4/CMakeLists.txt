@@ -1,0 +1,32 @@
+#==========================================================================
+#  AIDA Detector description implementation for LCD
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
+cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+
+#-----------------------------------------------------------------------------------
+dd4hep_configure_output ()
+dd4hep_package ( DDG4 MAJOR 0 MINOR 0 PATCH 1
+  USES  [DD4hep REQUIRED COMPONENTS DDCore]
+)
+dd4hep_install_dir(data DESTINATION ${DD4hep_DIR}/examples/DDG4 )
+#
+#---Geant4 Testsing-----------------------------------------------------------------
+#
+if (DD4HEP_USE_GEANT4)
+  #
+  # Test HepMC input reader
+  dd4hep_add_test_reg( test_DDG4_HepMC_reader
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
+    EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/examples/DDG4/examples/readHEPMC.py
+            ${CMAKE_INSTALL_PREFIX}/examples/DDG4/data/hepmc_geant4.dat
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "EventReaderHepMC::moveToEvent INFO  Current event number: 10")
+endif()
