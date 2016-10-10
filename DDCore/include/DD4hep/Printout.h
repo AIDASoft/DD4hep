@@ -50,7 +50,8 @@ namespace DD4hep {
   };
 
 #ifndef __CINT__
-  typedef size_t (*output_function_t)(void*, PrintLevel severity, const char*, const char*);
+  typedef size_t (*output_function1_t)(void*, PrintLevel severity, const char*, const char*);
+  typedef size_t (*output_function2_t)(void*, PrintLevel severity, const char*, const char*, va_list& args);
 
   /** Calls the display action
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
@@ -181,7 +182,10 @@ namespace DD4hep {
   std::string format(const char* src, const char* fmt, va_list& args);
 
   /// Customize printer function
-  void setPrinter(void* print_arg, output_function_t fcn);
+  void setPrinter(void* print_arg, output_function1_t fcn);
+
+  /// Customize printer function
+  void setPrinter2(void* print_arg, output_function2_t fcn);
 
 #endif // __CINT__
 

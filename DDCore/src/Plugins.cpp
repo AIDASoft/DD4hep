@@ -95,6 +95,7 @@ namespace   {
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
     PluginService::FuncPointer<Func_t> fun(gSystem->DynFindSymbol(plugin,entry));
     PluginService::FuncPointer<T> fp(fun.fptr.ptr);
+    if ( handle ) {}
 #else
     PluginService::FuncPointer<T> fp(::dlsym(handle, entry));
     if ( !fp.fptr.ptr ) fp.fptr.ptr = ::dlsym(0, entry);
@@ -102,7 +103,7 @@ namespace   {
     if ( 0 == fp.fptr.ptr )      {
       string err = "DD4hep:PluginService: Failed to access symbol "
         "\""+string(entry)+"\" in plugin library "+string(plugin)+
-	" ["+string(::strerror(errno))+"]";
+        " ["+string(::strerror(errno))+"]";
       throw runtime_error(err);
     }
     return fp.fptr.fcn;

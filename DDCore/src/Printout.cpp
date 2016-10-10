@@ -21,42 +21,58 @@
 
 using namespace std;
 
-static std::string print_fmt = "%-16s %5s %s";
+namespace {
+  size_t _the_printer_1(void*, DD4hep::PrintLevel lvl, const char* src, const char* text);
+  size_t _the_printer_2(void* par, DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args);
 
-static size_t _the_printer(void*, DD4hep::PrintLevel lvl, const char* src, const char* text) {
-  const char* p_lvl = "?????";
-  if ( lvl> DD4hep::ALWAYS ) lvl = DD4hep::ALWAYS;
-  if ( lvl< DD4hep::NOLOG  ) lvl = DD4hep::NOLOG;
-  switch(lvl)   {
-  case DD4hep::NOLOG:     p_lvl = "NOLOG"; break;
-  case DD4hep::VERBOSE:   p_lvl = "VERB "; break;
-  case DD4hep::DEBUG:     p_lvl = "DEBUG"; break;
-  case DD4hep::INFO:      p_lvl = "INFO "; break;
-  case DD4hep::WARNING:   p_lvl = "WARN "; break;
-  case DD4hep::ERROR:     p_lvl = "ERROR"; break;
-  case DD4hep::FATAL:     p_lvl = "FATAL"; break;
-  case DD4hep::ALWAYS:    p_lvl = "     "; break;
-  default:                                 break;
+  std::string print_fmt = "%-16s %5s %s";
+  DD4hep::PrintLevel print_lvl = DD4hep::INFO;
+  void* print_arg = 0;
+  DD4hep::output_function1_t print_func_1 = 0;
+  DD4hep::output_function2_t print_func_2 = _the_printer_2;
+
+  const char* print_level(DD4hep::PrintLevel lvl)   {
+    switch(lvl)   {
+    case DD4hep::NOLOG:     return "NOLOG";
+    case DD4hep::VERBOSE:   return "VERB ";
+    case DD4hep::DEBUG:     return "DEBUG";
+    case DD4hep::INFO:      return "INFO ";
+    case DD4hep::WARNING:   return "WARN ";
+    case DD4hep::ERROR:     return "ERROR";
+    case DD4hep::FATAL:     return "FATAL";
+    case DD4hep::ALWAYS:    return "     ";
+    default:
+      if ( lvl> DD4hep::ALWAYS )
+	return print_level(DD4hep::ALWAYS);
+      return print_level(DD4hep::NOLOG);
+    }
   }
 
-  size_t len = ::fprintf(stdout, print_fmt.c_str(), src, p_lvl, text);
-  // size_t len = ::fputs(src, stdout);
-  // len += fputs(": ", stdout);
-  // len += fputs(text, stdout);
-  ::fflush(stdout);
-  return len;
-}
+  size_t _the_printer_1(void*, DD4hep::PrintLevel lvl, const char* src, const char* text) {
+    size_t len = ::fprintf(stdout, print_fmt.c_str(), src, print_level(lvl), text);
+    ::fflush(stdout);
+    return len;
+  }
 
-static string __format(const char* fmt, va_list& args) {
-  char str[4096];
-  ::vsnprintf(str, sizeof(str), fmt, args);
-  va_end(args);
-  return string(str);
-}
+  size_t _the_printer_2(void* par, DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
+    if ( !print_func_1 )  {
+      char text[4096];
+      ::snprintf(text,sizeof(text),print_fmt.c_str(),src,print_level(lvl),fmt);
+      size_t len = ::vfprintf(stdout, text, args);
+      ::fflush(stdout);
+      return len;
+    }
+    char str[4096];
+    ::vsnprintf(str, sizeof(str), fmt, args);
+    return print_func_1(par, lvl, src, str);
+  }
 
-static DD4hep::PrintLevel print_lvl = DD4hep::INFO;
-static void* print_arg = 0;
-static DD4hep::output_function_t print_func = _the_printer;
+  string __format(const char* fmt, va_list& args) {
+    char str[4096];
+    ::vsnprintf(str, sizeof(str), fmt, args);
+    return string(str);
+  }
+}
 
 /** Calls the display action
  *  @arg severity   [int,read-only]      Display severity flag
@@ -130,12 +146,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, 
  */
 int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_list& args) {
   if (severity >= print_lvl) {
-    char str[4096];
-    size_t len = vsnprintf(str, sizeof(str) - 2, fmt, args);
-    if ( len>sizeof(str)-2 ) len = sizeof(str) - 2;
-    str[len] = '\n';
-    str[len + 1] = '\0';
-    print_func(print_arg, severity, src, str);
+    print_func_2(print_arg, severity,src,fmt,args);
   }
   return 1;
 }
@@ -288,12 +299,18 @@ DD4hep::PrintLevel DD4hep::printLevel()  {
 /// Set new printout format for the 3 fields: source-level-message. All 3 are strings
 string DD4hep::setPrintFormat(const string& new_format) {
   string old = print_fmt;
-  print_fmt = new_format;
+  print_fmt  = new_format;
   return old;
 }
 
 /// Customize printer function
-void DD4hep::setPrinter(void* arg, output_function_t fcn) {
+void DD4hep::setPrinter(void* arg, output_function1_t fcn) {
+  print_arg  = arg;
+  print_func_1 = fcn ? fcn : _the_printer_1;
+}
+
+/// Customize printer function
+void DD4hep::setPrinter2(void* arg, output_function2_t fcn) {
   print_arg = arg;
-  print_func = fcn;
+  print_func_2 = fcn ? fcn : _the_printer_2;
 }

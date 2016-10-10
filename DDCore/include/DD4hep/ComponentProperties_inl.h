@@ -26,9 +26,7 @@
 #include <set>
 #include <stdexcept>
 
-/*
- *   DD4hep namespace declaration
- */
+/// DD4hep namespace declaration
 namespace DD4hep {
 
   /// Setup property
@@ -70,25 +68,6 @@ namespace DD4hep {
   }
 
 }      // End namespace DD4hep
-
-#ifndef DD4HEP_PARSERS_NO_ROOT
-// These operators do not really belong here, but also nowhere else.....
-// ....except the proper ROOT headers perhaps?
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
-
-namespace ROOT {
-  namespace Math {
-    /// Allow point insertion of a point in maps
-    inline bool operator<(const XYZPoint& a, const XYZPoint& b);
-    /// Allow 3-vector insertion of a  in maps
-    inline bool operator<(const XYZVector& a, const XYZVector& b);
-    /// Allow 4-vector insertion of a  in maps
-    inline bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
-  }
-}
-#endif
 
 // Instantiate single property
 #define DD4HEP_DEFINE_PROPERTY_TYPE(x)                    \

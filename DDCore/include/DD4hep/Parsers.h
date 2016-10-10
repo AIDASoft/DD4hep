@@ -565,6 +565,17 @@ namespace DD4hep {
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
 
+namespace ROOT {
+  namespace Math {
+    /// Allow point insertion of a point in maps
+    bool operator<(const XYZPoint& a, const XYZPoint& b);
+    /// Allow 3-vector insertion of a  in maps
+    bool operator<(const XYZVector& a, const XYZVector& b);
+    /// Allow 4-vector insertion of a  in maps
+    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
+  }
+}
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
