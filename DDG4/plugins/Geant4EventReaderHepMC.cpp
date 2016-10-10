@@ -195,23 +195,35 @@ Geant4EventReaderHepMC::moveToEvent(int event_number) {
       ++m_currEvent;
     }
   }
-  printout(INFO,"EventReaderHepMC::moveToEvent","Event number after skipping: %d", m_currEvent );
+  printout(INFO,"EventReaderHepMC::moveToEvent","Current event number: %d", m_currEvent );
   return EVENT_READER_OK;
 }
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReaderHepMC::EventReaderStatus
 Geant4EventReaderHepMC::readParticles(int /* ev_id */,
-                                      Vertex& /* primary_vertex */,
+                                      Vertex& primary_vertex,
                                       Particles& output) {
   if ( !m_events->ok() )  {
     return EVENT_READER_IO_ERROR;
   }
   else if ( m_events->read() )  {
     EventStream::Particles& parts = m_events->particles();
+    Position pos(primary_vertex.x,primary_vertex.y,primary_vertex.z);
     output.reserve(parts.size());
     transform(parts.begin(),parts.end(),back_inserter(output),reference2nd(parts));
     m_events->clear();
+    if (pos.mag2() > numeric_limits<double>::epsilon() )  {
+      for(Particles::iterator k=output.begin(); k != output.end(); ++k) {
+        Geant4ParticleHandle p(*k);
+        p->vsx += pos.x();
+        p->vsy += pos.y();
+        p->vsz += pos.z();
+        p->vex += pos.x();
+        p->vey += pos.y();
+        p->vez += pos.z();
+      }
+    }
     for(Particles::const_iterator k=output.begin(); k != output.end(); ++k) {
       Geant4ParticleHandle p(*k);
       printout(VERBOSE,m_name,

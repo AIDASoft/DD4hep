@@ -40,15 +40,9 @@
 #include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
 namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
+#endif
+#endif
 namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
-#endif
-#endif
-
-#ifndef DD4HEP_PARSERS_NO_ROOT
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
-#endif
 
 // C/C++ include files
 #include <string>

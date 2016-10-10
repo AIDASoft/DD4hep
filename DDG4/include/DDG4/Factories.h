@@ -72,9 +72,6 @@ namespace DD4hep {
 
 namespace {
 
-  /// Base factory template
-  template <typename P, typename S> class Factory {};
-
   namespace DS = DD4hep::Simulation;
   struct _ns {
     typedef DD4hep::Geometry::LCDD LCDD;
