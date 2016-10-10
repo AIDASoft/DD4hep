@@ -16,11 +16,14 @@ dd4hep_configure_output ()
 dd4hep_package ( DDG4 MAJOR 0 MINOR 0 PATCH 1
   USES  [DD4hep REQUIRED COMPONENTS DDCore]
 )
-dd4hep_install_dir(data DESTINATION ${DD4hep_DIR}/examples/DDG4 )
 #
 #---Geant4 Testsing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
+  #
+  dd4hep_install_dir(data DESTINATION ${DD4hep_DIR}/examples/DDG4 )
+  #
+  dd4hep_configure_scripts (DDG4 DEFAULT_SETUP WITH_TESTS)
   #
   # Test HepMC input reader
   dd4hep_add_test_reg( test_DDG4_HepMC_reader
