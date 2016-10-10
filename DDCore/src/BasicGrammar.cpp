@@ -32,7 +32,7 @@ DD4hep::BasicGrammar::~BasicGrammar()   {
 void DD4hep::BasicGrammar::invalidConversion(const std::string& value, const std::type_info& to) {
   std::string to_name = typeName(to);
   throw unrelated_value_error(to,
-                              "Data conversion of '" + value + "' to type '" + 
+                              "Data conversion of " + value + " to type '" + 
                               to_name + "' is not defined.");
 }
 
