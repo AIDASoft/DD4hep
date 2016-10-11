@@ -84,6 +84,7 @@ Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
   declareProperty("Sync",           m_firstEvent=0);
   declareProperty("Mask",           m_mask = 0);
   declareProperty("MomentumScale",  m_momScale = 1.0);
+  declareProperty("HaveAbort",      m_abort = true);
   m_needsControl = true;
 }
 
@@ -131,13 +132,22 @@ int Geant4InputAction::readParticles(int evt_number,
   }
   int status = m_reader->moveToEvent(evid);
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
-    abortRun(issue(evid)+"Error when moving to event - may be end of file.",
-             "Error when reading file %s",m_input.c_str());
+    string msg = issue(evid)+"Error when moving to event - may be end of file.";
+    if ( m_abort )  {
+      abortRun(msg,"Error when reading file %s",m_input.c_str());
+      return status;
+    }
+    except("%s Error when reading file %s.", msg.c_str(), m_input.c_str());
+    return status;
   }
   status = m_reader->readParticles(evid, prim_vertex, particles);
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
-    abortRun(issue(evid)+"Error when reading file - may be end of file.",
-             "Error when reading file %s",m_input.c_str());
+    string msg = issue(evid)+"Error when moving to event - may be end of file.";
+    if ( m_abort )  {
+      abortRun(msg,"Error when reading file %s",m_input.c_str());
+      return status;
+    }
+    except("%s Error when reading file %s.", msg.c_str(), m_input.c_str());
   }
   return status;
 }
