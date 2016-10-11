@@ -28,8 +28,8 @@ if (DD4HEP_USE_GEANT4)
   # Test HepMC input reader
   dd4hep_add_test_reg( test_DDG4_HepMC_reader
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
-    EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/examples/DDG4/examples/readHEPMC.py
+    EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
             ${CMAKE_INSTALL_PREFIX}/examples/DDG4/data/hepmc_geant4.dat
     REQUIRES   DDG4 Geant4
-    REGEX_PASS "EventReaderHepMC::moveToEvent INFO  Current event number: 10")
+    REGEX_PASS "EventReaderHepMC::moveToEvent INFO  Current event number: 9")
 endif()

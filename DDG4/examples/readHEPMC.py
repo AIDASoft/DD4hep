@@ -17,6 +17,7 @@ def run(input_file):
   gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/"
   gen.Input = "Geant4EventReaderHepMC|"+input_file
   gen.OutputLevel = Output.DEBUG
+  gen.HaveAbort = False
   prim_vtx = DDG4.Geant4Vertex()
   prim_vtx.x = 0.0
   prim_vtx.y = 0.0
@@ -24,7 +25,11 @@ def run(input_file):
   parts = gen.new_particles()
   ret = 1
   while ret:
-    ret = gen.readParticles(0,prim_vtx,parts)
+    try:
+      ret = gen.readParticles(0,prim_vtx,parts)
+    except Exception,X:
+      print '\nException: readParticles:',str(X)
+      ret = None
     if ret:
       for p in parts:
         print 'ID:%5d PDG-id:%8d Charge:%1d Mass:%8.3g Momentum:(%8.2g,%8.2g,%8.2g) '\

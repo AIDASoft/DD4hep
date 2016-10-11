@@ -123,6 +123,8 @@ namespace DD4hep  {
       Geant4EventReader*  m_reader;
       /// current event number without initially skipped events
       int m_currentEventNumber;
+      /// Flag to call abortEvent in case of failure (default: true)
+      bool m_abort;
 
     public:
       /// Read an event and return a LCCollectionVec of MCParticles.
