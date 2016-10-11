@@ -107,7 +107,7 @@ int Geant4InputAction::readParticles(int evt_number,
   int evid = evt_number + m_firstEvent;
   if ( 0 == m_reader )  {
     if ( m_input.empty() )  {
-      throw runtime_error("InputAction: No input file declared!");
+      except("InputAction: No input file declared!");
     }
     string err;
     TypeName tn = TypeName::split(m_input,"|");
@@ -137,7 +137,8 @@ int Geant4InputAction::readParticles(int evt_number,
       abortRun(msg,"Error when reading file %s",m_input.c_str());
       return status;
     }
-    except("%s Error when reading file %s.", msg.c_str(), m_input.c_str());
+    error(msg.c_str());
+    except("Error when reading file %s.", m_input.c_str());
     return status;
   }
   status = m_reader->readParticles(evid, prim_vertex, particles);
@@ -147,7 +148,8 @@ int Geant4InputAction::readParticles(int evt_number,
       abortRun(msg,"Error when reading file %s",m_input.c_str());
       return status;
     }
-    except("%s Error when reading file %s.", msg.c_str(), m_input.c_str());
+    error(msg.c_str());
+    except("Error when reading file %s.", m_input.c_str());
   }
   return status;
 }

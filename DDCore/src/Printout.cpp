@@ -43,23 +43,31 @@ namespace {
     case DD4hep::ALWAYS:    return "     ";
     default:
       if ( lvl> DD4hep::ALWAYS )
-	return print_level(DD4hep::ALWAYS);
+        return print_level(DD4hep::ALWAYS);
       return print_level(DD4hep::NOLOG);
     }
   }
 
   size_t _the_printer_1(void*, DD4hep::PrintLevel lvl, const char* src, const char* text) {
-    size_t len = ::fprintf(stdout, print_fmt.c_str(), src, print_level(lvl), text);
     ::fflush(stdout);
+    ::fflush(stderr);
+    cout << flush;
+    cerr << flush;
+    size_t len = ::fprintf(stdout, print_fmt.c_str(), src, print_level(lvl), text);
+    ::fputc('\n',stdout);
     return len;
   }
 
   size_t _the_printer_2(void* par, DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
     if ( !print_func_1 )  {
       char text[4096];
+      ::fflush(stdout);
+      ::fflush(stderr);
+      cout << flush;
+      cerr << flush;
       ::snprintf(text,sizeof(text),print_fmt.c_str(),src,print_level(lvl),fmt);
       size_t len = ::vfprintf(stdout, text, args);
-      ::fflush(stdout);
+      ::fputc('\n',stdout);
       return len;
     }
     char str[4096];

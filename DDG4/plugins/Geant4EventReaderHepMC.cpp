@@ -188,14 +188,14 @@ Geant4EventReaderHepMC::~Geant4EventReaderHepMC()    {
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderHepMC::moveToEvent(int event_number) {
   if( m_currEvent == 0 && event_number != 0 ) {
-    printout(INFO,"EventReaderHepMC::moveToEvent","Skipping the first %d events ", event_number );
-    printout(INFO,"EventReaderHepMC::moveToEvent","Event number before skipping: %d", m_currEvent );
+    printout(INFO,"EventReaderHepMC::moveToEvent","Skipping the first %d events", event_number);
+    printout(INFO,"EventReaderHepMC::moveToEvent","Event number before skipping: %d", m_currEvent);
     while ( m_currEvent < event_number ) {
       if ( not m_events->read() ) return EVENT_READER_ERROR;
       ++m_currEvent;
     }
   }
-  printout(INFO,"EventReaderHepMC::moveToEvent","Current event number: %d", m_currEvent );
+  printout(INFO,"EventReaderHepMC::moveToEvent","Current event number: %d",m_currEvent);
   return EVENT_READER_OK;
 }
 
