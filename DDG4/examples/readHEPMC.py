@@ -38,7 +38,7 @@ def run(input_file):
                p.vsx,p.vsy,p.vsz,len(p.daughters),p.status)
       parts.clear()
     else:
-      print ' *** End of recordset or read failure.....'
+      print '*** End of recordset or read failure.....'
     print 132*'*'
   return 0
   
