@@ -33,8 +33,8 @@ CartesianGridXY::CartesianGridXY(const Segmentation& e) : Handle<Object>()
 }
 
 /// determine the position based on the cell ID
-Position CartesianGridXY::position(const CellID& cellID) const   {
-  return Position(access()->position(cellID));
+Position CartesianGridXY::position(const CellID& id) const   {
+  return Position(access()->position(id));
 }
 
 /// determine the cell ID based on the position
@@ -84,6 +84,6 @@ const string& CartesianGridXY::fieldNameY() const {
     -# size in x
     -# size in y
 */
-vector<double> CartesianGridXY::cellDimensions(const CellID& cellID) const  {
-  return access()->cellDimensions(cellID);
+vector<double> CartesianGridXY::cellDimensions(const CellID& id) const  {
+  return access()->cellDimensions(id);
 }
