@@ -15,7 +15,7 @@
 #define DD4HEP_DDCORE_CARTESIANGRIDXY_H 1
 
 // Framework include files
-#include "DD4hep/Segmentations.h"
+#include "DD4hep/Objects.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -26,6 +26,9 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
+    // Forward declarations
+    class Segmentation;
+    
     /// Implementation class for the grid XY segmentation.
     /**
      * \author  M.Frank
