@@ -150,7 +150,6 @@ long64 Segmentation::cellID(const Position& localPosition, const Position& globa
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
-
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
@@ -165,7 +164,7 @@ namespace DD4hep {
         }
         except("CartesianGridXY",
                "Cannot convert segmentation:%s to CartesianGridXY.",
-               seg->name());
+               obj->name().c_str());
       }
       return 0;
     }
