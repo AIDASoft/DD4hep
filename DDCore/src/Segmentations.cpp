@@ -15,8 +15,8 @@
 // Framework include files
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Handle.inl"
 
 // C/C++ include files
 #include <iostream>
@@ -172,6 +172,7 @@ namespace DD4hep {
 } /* End namespace DD4hep                */
 
 #define IMPLEMENT_SEGMENTATION_HANDLE(X)                                \
+  DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DDSegmentation::X);                 \
   namespace DD4hep { namespace Geometry {                               \
       template DDSegmentation::X*                                       \
       Segmentation::get<DDSegmentation::X>(const Object* obj); }}

@@ -12,7 +12,6 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/CartesianGridXY.h"
 #include "DDSegmentation/CartesianGridXY.h"
@@ -20,11 +19,7 @@
 // C/C++ include files
 
 using namespace std;
-using namespace DD4hep;
 using namespace DD4hep::Geometry;
-
-/// Instantiate handle functions
-DD4HEP_INSTANTIATE_HANDLE_UNNAMED(CartesianGridXY::Object);
 
 /// Copy Constructor from segmentation base object
 CartesianGridXY::CartesianGridXY(const Segmentation& e) : Handle<Object>()
@@ -38,9 +33,9 @@ Position CartesianGridXY::position(const CellID& id) const   {
 }
 
 /// determine the cell ID based on the position
-CellID CartesianGridXY::cellID(const Position& local,
-                               const Position& global,
-                               const VolumeID& volID) const
+DD4hep::CellID CartesianGridXY::cellID(const Position& local,
+                                       const Position& global,
+                                       const VolumeID& volID) const
 {
   return access()->cellID(local, global, volID);
 }
