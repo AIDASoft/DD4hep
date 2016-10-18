@@ -96,7 +96,30 @@ namespace DD4hep {
       BaseSegmentation* segmentation;      
     };
 
+    /// Concrete wrapper class for segmentation implementation based on DDSegmentation objects
+    /**
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_GEOMETRY
+     */
+    template <typename IMP> class SegmentationImplementation : public SegmentationObject {
+    public:
+      /// DDSegmentation aggregate
+      IMP implementation;
+    public:
+      /// Standard constructor
+      SegmentationImplementation(DDSegmentation::BitField64* decoder);
+      /// Default destructor
+      virtual ~SegmentationImplementation() {}
+    };
 
+    template <typename IMP> inline
+    SegmentationImplementation<IMP>::SegmentationImplementation(DDSegmentation::BitField64* decoder)
+      :  SegmentationObject(0), implementation(decoder)
+    {
+      this->segmentation = &implementation;
+    }
+    
     /// Handle class supporting generic Segmentation of sensitive detectors
     /**
      *
@@ -113,7 +136,7 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor creating a new object of the given DDSegmentation type
-      Segmentation(const std::string& type, const std::string& name);
+      Segmentation(const std::string& type, const std::string& name, BitField64* decoder);
       /// Default constructor
       Segmentation() : Handle<Object>() {    }
       /// Copy Constructor from object

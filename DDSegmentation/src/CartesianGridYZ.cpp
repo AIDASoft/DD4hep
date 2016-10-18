@@ -27,6 +27,23 @@ CartesianGridYZ::CartesianGridYZ(const std::string& cellEncoding) :
 	registerIdentifier("identifier_z", "Cell ID identifier for Z", _zId, "z");
 }
 
+
+/// Default constructor used by derived classes passing an existing decoder
+CartesianGridYZ::CartesianGridYZ(BitField64* decoder) :
+		CartesianGrid(decoder) {
+	// define type and description
+	_type = "CartesianGridYZ";
+	_description = "Cartesian segmentation in the local YZ-plane";
+
+	// register all necessary parameters
+	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_z", "Cell size in Z", _gridSizeZ, 1., SegmentationParameter::LengthUnit);
+	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_z", "Cell offset in Z", _offsetZ, 0., SegmentationParameter::LengthUnit, true);
+	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
+	registerIdentifier("identifier_z", "Cell ID identifier for Z", _zId, "z");
+}
+
 /// destructor
 CartesianGridYZ::~CartesianGridYZ() {
 

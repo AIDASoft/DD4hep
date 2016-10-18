@@ -20,6 +20,8 @@ class MegatileLayerGridXY: public CartesianGrid {
 public:
 	/// Default constructor passing the encoding string
 	MegatileLayerGridXY(const std::string& cellEncoding = "");
+	/// Default constructor used by derived classes passing an existing decoder
+	MegatileLayerGridXY(BitField64* decoder);
 	/// destructor
 	virtual ~MegatileLayerGridXY();
 

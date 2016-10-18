@@ -33,6 +33,23 @@ ProjectiveCylinder::ProjectiveCylinder(const std::string& cellEncoding) :
 	registerIdentifier("identifier_phi", "Cell ID identifier for phi", _phiID, "phi");
 }
 
+
+/// Default constructor used by derived classes passing an existing decoder
+ProjectiveCylinder::ProjectiveCylinder(BitField64* decoder) :
+	CylindricalSegmentation(decoder) {
+	// define type and description
+	_type = "ProjectiveCylinder";
+	_description = "Projective segmentation in the global coordinates";
+
+	// register all necessary parameters
+	registerParameter("theta_bins", "Number of bins theta", _thetaBins, 1);
+	registerParameter("phi_bins", "Number of bins phi", _phiBins, 1);
+	registerParameter("offset_theta", "Angular offset in theta", _offsetTheta, 0., SegmentationParameter::AngleUnit, true);
+	registerParameter("offset_phi", "Angular offset in phi", _offsetPhi, 0., SegmentationParameter::AngleUnit, true);
+	registerIdentifier("identifier_theta", "Cell ID identifier for theta", _thetaID, "theta");
+	registerIdentifier("identifier_phi", "Cell ID identifier for phi", _phiID, "phi");
+}
+
 /// destructor
 ProjectiveCylinder::~ProjectiveCylinder() {
 

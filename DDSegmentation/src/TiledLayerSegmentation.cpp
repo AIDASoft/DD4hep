@@ -41,6 +41,28 @@ TiledLayerSegmentation::TiledLayerSegmentation(const std::string& cellEncoding) 
 
 }
 
+/// Default constructor used by derived classes passing an existing decoder
+TiledLayerSegmentation::TiledLayerSegmentation(BitField64* decoder) :
+		Segmentation(decoder) {
+	_type = "TiledLayerSegmentation";
+	_description = "Cartesian segmentation using optimal tiling depending on the layer dimensions";
+
+	// register all necessary parameters
+	registerParameter("grid_size_x", "Default cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_y", "Default cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
+	registerIdentifier("identifier_x", "Cell encoding identifier for X", _identifierX, "x");
+	registerIdentifier("identifier_y", "Cell encoding identifier for Y", _identifierY, "y");
+	registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, std::string("layer"),
+			SegmentationParameter::NoUnit, true);
+	registerParameter("layer_identifiers", "List of valid layer identifiers", _layerIndices, vector<int>(),
+			SegmentationParameter::NoUnit, true);
+	registerParameter("x_dimensions", "List of layer x dimensions", _layerDimensionsX, vector<double>(),
+			SegmentationParameter::NoUnit, true);
+	registerParameter("y_dimensions", "List of layer y dimensions", _layerDimensionsY, vector<double>(),
+			SegmentationParameter::NoUnit, true);
+
+}
+
 TiledLayerSegmentation::~TiledLayerSegmentation() {
 }
 

@@ -30,12 +30,18 @@ namespace DD4hep {
   }
   class NamedObject;
 
+  /// Namespace describing generic detector segmentations
+  namespace DDSegmentation  {
+    class BitField64;
+  }
+  
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
     class LCDD;
     class SensitiveDetector;
+    class SegmentationObject;
     class DetElement;
   }
   
@@ -52,7 +58,11 @@ namespace DD4hep {
   };
   template <typename T> class LCDDConstructionFactory : public PluginFactoryBase {
   public:
-    static void* create(lcdd_t& lcdd, int argc, char** argv);
+    static void* create(Geometry::LCDD& lcdd, int argc, char** argv);
+  };
+  template <typename T> class SegmentationFactory : public PluginFactoryBase {
+  public:
+    static Geometry::SegmentationObject* create(DDSegmentation::BitField64* decoder);
   };
 
   /// Template class with a generic signature to apply LCDD plugins
@@ -67,7 +77,7 @@ namespace DD4hep {
    */
   template <typename T> class ApplyFactory : public PluginFactoryBase {
   public:
-    static long create(lcdd_t& lcdd, int argc, char** argv);
+    static long create(Geometry::LCDD& lcdd, int argc, char** argv);
   };
 
   /// Specialized factory to translate objects, which can be retrieved from LCDD
@@ -81,7 +91,7 @@ namespace DD4hep {
    */
   template <typename T> class TranslationFactory : public PluginFactoryBase {
   public:
-    static ref_t create(lcdd_t& lcdd);
+    static ref_t create(Geometry::LCDD& lcdd);
   };
 
   /// Create an arbitrary object from it's XML representation.
@@ -94,7 +104,7 @@ namespace DD4hep {
    */
   template <typename T> class XMLElementFactory : public PluginFactoryBase {
   public:
-    static ref_t create(lcdd_t& lcdd, xml_h e);
+    static ref_t create(Geometry::LCDD& lcdd, xml_h e);
   };
 
   ///  Read an arbitrary XML document and analyze it's content
@@ -107,7 +117,7 @@ namespace DD4hep {
    */
   template <typename T> class XMLDocumentReaderFactory : public PluginFactoryBase {
   public:
-    static long create(lcdd_t& lcdd, xml_h e);
+    static long create(Geometry::LCDD& lcdd, xml_h e);
   };
 
   /// Read an arbitrary XML document and analyze it's content
@@ -120,7 +130,7 @@ namespace DD4hep {
    */
   template <typename T> class XMLConversionFactory : public PluginFactoryBase {
   public:
-    static long create(lcdd_t& lcdd, ref_t& handle, xml_h element);
+    static long create(Geometry::LCDD& lcdd, ref_t& handle, xml_h element);
   };
 
   /// Standard factory to create Detector elements from the compact XML representation.
@@ -147,6 +157,8 @@ namespace {
     typedef DD4hep::Geometry::LCDD  LCDD;
     typedef DD4hep::XML::Handle_t   xml_h;
     typedef DD4hep::Geometry::Ref_t ref_t;
+    typedef DD4hep::Geometry::SegmentationObject SegmentationObject;
+    typedef DD4hep::DDSegmentation::BitField64   BitField64;
   };
 
   DD4HEP_PLUGIN_FACTORY_ARGS_1(void*,const char*)  
@@ -154,6 +166,9 @@ namespace {
 
   DD4HEP_PLUGIN_FACTORY_ARGS_1(ns::Named*,ns::LCDD*)
   {    return DD4hep::TranslationFactory<P>::create(*a0).ptr();                         }
+
+  DD4HEP_PLUGIN_FACTORY_ARGS_1(ns::SegmentationObject*,ns::BitField64*)
+  {    return DD4hep::SegmentationFactory<P>::create(a0);                               }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(void*,ns::LCDD*,int,char**)
   {    return DD4hep::LCDDConstructionFactory<P>::create(*a0,a1,a2);                    }
@@ -182,11 +197,18 @@ namespace {
 #define DECLARE_NAMED_XMLELEMENT_FACTORY(n,x)       namespace DD4hep    \
   { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(Geometry::LCDD*,XML::Handle_t*),__LINE__) }
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)       namespace DD4hep    \
-  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__) }
+  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::*(),__LINE__) }
+
+// Call function of the type [Geometry::SegmentationObject (*func)(Geometry::LCDD*,DDSegmentation::BitField64*)]
+#define DECLARE_SEGMENTATION(name,func)        DD4HEP_OPEN_PLUGIN(DD4hep,name)   { \
+    template <> Geometry::SegmentationObject*                           \
+      SegmentationFactory<name>::create(DDSegmentation::BitField64* d) { return func(d); } \
+    DD4HEP_PLUGINSVC_FACTORY(name,segmentation_constructor__##name,     \
+                             Geometry::SegmentationObject*(DDSegmentation::BitField64*),__LINE__)}
 
 // Call function of the type [long (*func)(const char* arg)]
 #define DECLARE_APPLY(name,func)        DD4HEP_OPEN_PLUGIN(DD4hep,name)   { \
-    template <> long ApplyFactory<name>::create(lcdd_t& l,int n,char** a) {return func(l,n,a);} \
+    template <> long ApplyFactory<name>::create(Geometry::LCDD& l,int n,char** a) {return func(l,n,a);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,long(Geometry::LCDD*,int,char**),__LINE__)}
 
 // Call function of the type [void* (*func)(const char* arg)]
@@ -194,29 +216,29 @@ namespace {
     template <> void* ConstructionFactory<name>::create(const char* n) { return func(n);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,void*(const char*),__LINE__) }
 
-// Call function of the type [void* (*func)(lcdd_t& lcdd, int argc,char** argv)]
+// Call function of the type [void* (*func)(Geometry::LCDD& lcdd, int argc,char** argv)]
 #define DECLARE_LCDD_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name) { \
-    template <> void* LCDDConstructionFactory<name>::create(lcdd_t& l, int n,char** a) { return func(l,n,a);} \
+    template <> void* LCDDConstructionFactory<name>::create(Geometry::LCDD& l, int n,char** a) { return func(l,n,a);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,void*(Geometry::LCDD*,int,char**),__LINE__) }
 
-// Call function of the type [void* (*func)(lcdd_t& lcdd)]
+// Call function of the type [void* (*func)(Geometry::LCDD& lcdd)]
 #define DECLARE_TRANSLATION(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name)  { \
-    template <> Geometry::Ref_t TranslationFactory<name>::create(lcdd_t& l) {return func(l);} \
+    template <> Geometry::Ref_t TranslationFactory<name>::create(Geometry::LCDD& l) {return func(l);} \
     DECLARE_NAMED_TRANSLATION_FACTORY(Geometry,name)  }
 
-// Call function of the type [void* (*func)(lcdd_t& lcdd, xml_h handle)]
+// Call function of the type [void* (*func)(Geometry::LCDD& lcdd, xml_h handle)]
 #define DECLARE_XMLELEMENT(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,xml_element_##name)  {\
-    template <> Geometry::Ref_t XMLElementFactory<xml_element_##name>::create(lcdd_t& l,xml_h e) {return func(l,e);} \
+    template <> Geometry::Ref_t XMLElementFactory<xml_element_##name>::create(Geometry::LCDD& l,xml_h e) {return func(l,e);} \
     DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*),__LINE__)  }
 
-// Call function of the type [long (*func)(lcdd_t& lcdd, xml_h handle)]
+// Call function of the type [long (*func)(Geometry::LCDD& lcdd, xml_h handle)]
 #define DECLARE_XML_DOC_READER(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,xml_document_##name)  { \
-    template <> long XMLDocumentReaderFactory<xml_document_##name>::create(lcdd_t& l,xml_h e) {return func(l,e);} \
+    template <> long XMLDocumentReaderFactory<xml_document_##name>::create(Geometry::LCDD& l,xml_h e) {return func(l,e);} \
     DD4HEP_PLUGINSVC_FACTORY(xml_document_##name,name##_XML_reader,long(Geometry::LCDD*,XML::Handle_t*),__LINE__)  }
 
-// Call function of the type [NamedObject* (*func)(lcdd_t& lcdd, xml_h handle, ref_t reference)]
+// Call function of the type [NamedObject* (*func)(Geometry::LCDD& lcdd, xml_h handle, ref_t reference)]
 #define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)  DD4HEP_OPEN_PLUGIN(DD4hep,det_element_##name) {\
-    template <> Geometry::Ref_t DetElementFactory< det_element_##name >::create(lcdd_t& l,xml_h e,ref_t h) \
+    template <> Geometry::Ref_t DetElementFactory< det_element_##name >::create(Geometry::LCDD& l,xml_h e,ref_t h) \
     { if (deprecated) warning_deprecated_xml_factory(#name); return func(l,e,h);} \
     DD4HEP_PLUGINSVC_FACTORY(det_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__)  }
 

@@ -39,6 +39,29 @@ TiledLayerGridXY::TiledLayerGridXY(const std::string& cellEncoding) :
 			SegmentationParameter::NoUnit, true);
 }
 
+/// Default constructor used by derived classes passing an existing decoder
+TiledLayerGridXY::TiledLayerGridXY(BitField64* decoder) :
+		CartesianGrid(decoder) {
+	// define type and description
+	_type = "TiledLayerGridXY";
+	_description = "Cartesian segmentation in the local XY-plane using optimal tiling depending on the layer dimensions";
+    
+	std::cout << " ######### DD4hep::DDSegmentation::TiledLayerGridXY() " << std::endl ; 
+      
+	// register all necessary parameters
+	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
+	registerParameter("offset_x", "Cell offset in X", _offsetX, 0., SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
+	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
+	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
+	registerIdentifier("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, "layer");
+	registerParameter("layer_offsetX", "List of layer x offset", _layerOffsetX, std::vector<double>(),
+			SegmentationParameter::NoUnit, true);
+	registerParameter("layer_offsetY", "List of layer y offset", _layerOffsetY, std::vector<double>(),
+			SegmentationParameter::NoUnit, true);
+}
+
 /// destructor
 TiledLayerGridXY::~TiledLayerGridXY() {
 

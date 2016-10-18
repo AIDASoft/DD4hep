@@ -17,6 +17,8 @@ class CartesianGridXY: public CartesianGrid {
 public:
 	/// Default constructor passing the encoding string
 	CartesianGridXY(const std::string& cellEncoding = "");
+	/// Default constructor used by derived classes passing an existing decoder
+	CartesianGridXY(BitField64* decoder);
 	/// destructor
 	virtual ~CartesianGridXY();
 

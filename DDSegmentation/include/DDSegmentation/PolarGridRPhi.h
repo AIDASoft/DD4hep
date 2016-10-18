@@ -18,6 +18,8 @@ class PolarGridRPhi: public PolarGrid {
 public:
 	/// Default constructor passing the encoding string
 	PolarGridRPhi(const std::string& cellEncoding = "");
+	/// Default constructor used by derived classes passing an existing decoder
+	PolarGridRPhi(BitField64* decoder);
 	/// destructor
 	virtual ~PolarGridRPhi();
 

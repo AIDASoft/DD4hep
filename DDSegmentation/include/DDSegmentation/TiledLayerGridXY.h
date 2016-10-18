@@ -21,6 +21,8 @@ class TiledLayerGridXY: public CartesianGrid {
 public:
 	/// Default constructor passing the encoding string
 	TiledLayerGridXY(const std::string& cellEncoding = "");
+	/// Default constructor used by derived classes passing an existing decoder
+	TiledLayerGridXY(BitField64* decoder);
 	/// destructor
 	virtual ~TiledLayerGridXY();
 

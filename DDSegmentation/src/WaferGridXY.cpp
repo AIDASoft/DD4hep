@@ -30,6 +30,26 @@ WaferGridXY::WaferGridXY(const std::string& cellEncoding) :
                         SegmentationParameter::NoUnit, true);
 }
 
+/// Default constructor used by derived classes passing an existing decoder
+WaferGridXY::WaferGridXY(BitField64* decoder) :
+		CartesianGrid(decoder) {
+	// define type and description
+	_type = "WaferGridXY";
+	_description = "Cartesian segmentation in the local XY-plane for both Normal wafer and Magic wafer(depending on the layer dimensions)";
+
+	// register all necessary parameters
+	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
+	registerParameter("offset_x", "Cell offset in X", _offsetX, 0., SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
+	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
+	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
+        registerParameter("identifier_groupMGWafer", "Cell encoding identifier for Magic Wafer group", _identifierMGWaferGroup, std::string("layer"),
+                        SegmentationParameter::NoUnit, true);
+        registerParameter("identifier_wafer", "Cell encoding identifier for wafer", _identifierWafer, std::string("wafer"),
+                        SegmentationParameter::NoUnit, true);
+}
+
 /// destructor
 WaferGridXY::~WaferGridXY() {
 
