@@ -580,7 +580,8 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
           p->setValue(seg.attr<string>(pNam));
         }
       } else if (not p->isOptional()) {
-        throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
+        throw_print("FAILED to create segmentation: " + type +
+                    ". Missing mandatory parameter: " + p->name() + "!");
       }
     }
     long key_min = 0, key_max = 0;
@@ -889,6 +890,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     }
     xml_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
+    Segmentation seg;
     if (attr_ro)   {
       Readout ro = lcdd.readout(element.attr<string>(attr_ro));
       if (!ro.isValid()) {
@@ -898,6 +900,10 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       sd.setHitsCollection(ro.name());
       sd.setReadout(ro);
       lcdd.addSensitiveDetector(sd);
+      seg = ro.segmentation();
+      if ( seg.isValid() )  {
+        seg->sensitive = sd;
+      }
     }
     Ref_t sens = sd;
     DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens)));
@@ -905,6 +911,9 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       setChildTitles(make_pair(name, det));
       if ( sd.isValid() )  {
         det->flag |= DetElement::Object::HAVE_SENSITIVE_DETECTOR;
+      }
+      if ( seg.isValid() )  {
+        seg->detector = det;
       }
     }
     printout(det.isValid() ? INFO : ERROR, "Compact", "%s subdetector:%s of type %s %s",

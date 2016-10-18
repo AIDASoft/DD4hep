@@ -2,6 +2,18 @@
 =================================
 DD4hep  ----  Release Notes
 =================================
+
+2016-10-18 M.Frank
+  Due to pressure of the FCC folks, I tried to implement a more DD4hep like implementation of the
+  the segmentation objects. For testing only CartesianGridXY. If this mechanism works,
+  it could be a starting recipe for the rest of the segmentations. The draw-back of this approach is,
+  that assignments are not reversible:
+  DD4hep::CartesianGridXY xy = readout.segmentation();  // Works
+  DD4hep::Segmentation seg = xy;                        // Should not work
+
+  Reason: the managed objects are different....at some point in time I will have to find a
+  clean solution for this, but the required changes for such a solution shall be manageable.
+
   --------
  | v00-17 |
   --------
