@@ -41,18 +41,12 @@ namespace DD4hep {
      * \version 1.0
      * \ingroup DD4HEP_GEOMETRY
      */
-    class SegmentationObject : public DDSegmentation::Segmentation {
+    class SegmentationObject /* : public DDSegmentation::Segmentation */  {
     public:
       typedef DDSegmentation::Segmentation BaseSegmentation;
       typedef DDSegmentation::Parameters Parameters;
       typedef DDSegmentation::Parameter Parameter;
     public:
-      /// determine the local position based on the cell ID
-      DDSegmentation::Vector3D position(const long64& cellID) const;
-      /// determine the cell ID based on the local position
-      long64 cellID(const DDSegmentation::Vector3D& localPosition,
-                    const DDSegmentation::Vector3D& globalPosition,
-                    const long64& volumeID) const;
       /// Standard constructor
       SegmentationObject(BaseSegmentation* s = 0);
       /// Default destructor
@@ -77,6 +71,18 @@ namespace DD4hep {
       Parameters parameters() const;
       /// Set all parameters from an existing set of parameters
       void setParameters(const Parameters& parameters);
+
+      /** Segmentation interface  */
+      /// Determine the local position based on the cell ID
+      Position position(const CellID& cellID) const;
+      /// Determine the cell ID based on the position
+      CellID cellID(const Position& localPosition,
+                    const Position& globalPosition,
+                    const VolumeID& volumeID) const;
+      /// Determine the volume ID from the full cell ID by removing all local fields
+      VolumeID volumeID(const CellID& cellID) const;
+      /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
+      void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
 
       /// Magic word to check object integrity
       unsigned long magic;

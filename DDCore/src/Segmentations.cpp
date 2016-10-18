@@ -36,6 +36,8 @@ SegmentationObject::SegmentationObject(BaseSegmentation* s)
   : magic(magic_word()), useForHitPosition(0),
     detector(0), sensitive(0), segmentation(s)
 {
+  //s->backLink = this;
+  //this->backLink = this;
   InstanceCount::increment(this);
 }
 
@@ -47,22 +49,11 @@ SegmentationObject::~SegmentationObject() {
   }
 }
 
-/// determine the local position based on the cell ID
-DDSegmentation::Vector3D SegmentationObject::position(const long64& cell) const {
-  return segmentation->position(cell);
-}
-
-/// determine the cell ID based on the local position
-long64 SegmentationObject::cellID(const DDSegmentation::Vector3D& localPosition,
-                                  const DDSegmentation::Vector3D& globalPosition,
-                                  const long64& volID) const {
-  return segmentation->cellID(localPosition, globalPosition, volID);
-}
-
 /// Access the encoding string
 string SegmentationObject::fieldDescription() const {
   return segmentation->fieldDescription();
 }
+
 /// Access the segmentation name
 const string& SegmentationObject::name() const {
   return segmentation->name();
@@ -105,6 +96,28 @@ Parameters SegmentationObject::parameters() const {
 /// Set all parameters from an existing set of parameters
 void SegmentationObject::setParameters(const Parameters& params) {
   segmentation->setParameters(params);
+}
+
+/// Determine the local position based on the cell ID
+Position SegmentationObject::position(const CellID& cell) const  {
+  return Position(segmentation->position(cell));
+}
+
+/// Determine the cell ID based on the position
+CellID SegmentationObject::cellID(const Position& local,
+                                  const Position& global,
+                                  const VolumeID& volID) const  {
+  return segmentation->cellID(local, global, volID);
+}
+
+/// Determine the volume ID from the full cell ID by removing all local fields
+VolumeID SegmentationObject::volumeID(const CellID& cell) const   {
+  return segmentation->volumeID(cell);
+}
+
+/// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
+void SegmentationObject::neighbours(const CellID& cell, std::set<CellID>& nb) const   {
+  segmentation->neighbours(cell, nb);
 }
 
 /// Constructor to used when creating a new object

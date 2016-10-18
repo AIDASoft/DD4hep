@@ -626,10 +626,18 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
  */
 template <> void Converter<Readout>::operator()(xml_h e) const {
   xml_h seg = e.child(_U(segmentation), false);
+  xml_h id = e.child(_U(id));
   string name = e.attr<string>(_U(name));
   Readout ro(name);
 
   printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
+  if (id) {
+    //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    Ref_t idSpec = IDDescriptor(id.text());
+    idSpec->SetName(ro.name());
+    ro.setIDDescriptor(idSpec);
+    lcdd.addIDSpecification(idSpec);
+  }
   if (seg) {   // Segmentation is not mandatory!
     SegmentationObject* object = 0;
     Converter<Segmentation> converter(lcdd,param,&object);
@@ -639,14 +647,6 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
       Segmentation segment(object);
       ro.setSegmentation(segment);
     }
-  }
-  xml_h id = e.child(_U(id));
-  if (id) {
-    //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-    Ref_t idSpec = IDDescriptor(id.text());
-    idSpec->SetName(ro.name());
-    ro.setIDDescriptor(idSpec);
-    lcdd.addIDSpecification(idSpec);
   }
   for(xml_coll_t colls(e,_U(hits_collections)); colls; ++colls)   {
     string hits_key;
