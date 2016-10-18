@@ -26,6 +26,23 @@ PolarGridRPhi::PolarGridRPhi(const std::string& cellEncoding) :
 	registerIdentifier("identifier_phi", "Cell ID identifier for Phi", _phiId, "phi");
 }
 
+
+/// Default constructor used by derived classes passing an existing decoder
+PolarGridRPhi::PolarGridRPhi(BitField64* decoder) :
+		PolarGrid(decoder) {
+	// define type and description
+	_type = "PolarGridRPhi";
+	_description = "Polar RPhi segmentation in the local XY-plane";
+
+	// register all necessary parameters
+	registerParameter("grid_size_r", "Cell size in R", _gridSizeR, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_phi", "Cell size in Phi", _gridSizePhi, 1., SegmentationParameter::AngleUnit);
+	registerParameter("offset_r", "Cell offset in R", _offsetR, 0., SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_phi", "Cell offset in Phi", _offsetPhi, 0., SegmentationParameter::AngleUnit, true);
+	registerIdentifier("identifier_r", "Cell ID identifier for R", _rId, "r");
+	registerIdentifier("identifier_phi", "Cell ID identifier for Phi", _phiId, "phi");
+}
+
 /// destructor
 PolarGridRPhi::~PolarGridRPhi() {
 

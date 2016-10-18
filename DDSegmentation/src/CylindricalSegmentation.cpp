@@ -15,6 +15,11 @@ CylindricalSegmentation::CylindricalSegmentation(const std::string& cellEncoding
 		Segmentation(cellEncoding) {
 }
 
+/// Default constructor used by derived classes passing an existing decoder
+CylindricalSegmentation::CylindricalSegmentation(BitField64* decoder) :
+		Segmentation(decoder) {
+}
+
 /// destructor
 CylindricalSegmentation::~CylindricalSegmentation() {
 

@@ -25,6 +25,17 @@ namespace DD4hep {
       registerParameter<string>("key",   "Diskriminating field", m_discriminatorId, "");
     }
 
+    /// Default constructor used by derived classes passing an existing decoder
+    MultiSegmentation::MultiSegmentation(BitField64* decoder)
+      :	Segmentation(decoder), m_discriminator(0), m_debug(0)
+    {
+      // define type and description
+      _type        = "MultiSegmentation";
+      _description = "Multi-segmenation wrapper segmentation";
+      //registerParameter<int>("debug", "Debug flag", m_debug, 0);
+      registerParameter<string>("key",   "Diskriminating field", m_discriminatorId, "");
+    }
+
     /// destructor
     MultiSegmentation::~MultiSegmentation() {
       for(Segmentations::iterator i=m_segmentations.begin(); i!=m_segmentations.end(); ++i)

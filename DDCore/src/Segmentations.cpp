@@ -16,6 +16,7 @@
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Plugins.h"
 #include "DD4hep/Handle.inl"
 
 // C/C++ include files
@@ -121,13 +122,22 @@ void SegmentationObject::neighbours(const CellID& cell, std::set<CellID>& nb) co
 }
 
 /// Constructor to used when creating a new object
-Segmentation::Segmentation(const string& typ, const string& nam) :
-  Handle<Implementation>() {
+Segmentation::Segmentation(const string& typ, const string& nam, BitField64* decoder) : Handle<Implementation>()
+{
+  string type = "segmentation_constructor__"+typ;
+  SegmentationObject* obj = PluginService::Create<SegmentationObject*>(type, decoder);
+  if ( obj != 0 )  {
+    assign(obj, nam, typ);
+    if ( !nam.empty() ) obj->setName(nam);
+  }
+#if 0
   BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(typ);
   if (s != 0) {
     assign(new Object(s), nam, "");
     if ( !nam.empty() ) s->setName(nam);
-  } else {
+  }
+#endif
+  else {
     throw runtime_error("FAILED to create segmentation: " + typ + ". Missing factory method for: " + typ + "!");
   }
 }

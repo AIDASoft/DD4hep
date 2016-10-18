@@ -56,6 +56,46 @@ namespace DD4hep {
 
     }
 
+    /// default constructor using an encoding string
+    MegatileLayerGridXY::MegatileLayerGridXY(BitField64* decoder) :
+      CartesianGrid(decoder) {
+      // define type and description
+      _type = "MegatileLayerGridXY";
+      // _description = "Cartesian segmentation in the local XY-plane for both Normal wafer and Magic wafer(depending on the layer dimensions)";
+      _description = "Cartesian segmentation in the local XY-plane: megatiles with dead areas; integer number of megatiles and cells";
+
+//////// setup in the compact-steering file (i.e., ILD_o3_v05.xml)//// 
+// for example,
+// <segmentation type="MegatileLayerGridXY" yer_nCells="36" layer_nStripsX="2" layer_nStripsY="36" deadWidth="0" layer_configuration="TL"/>
+////
+//
+      registerParameter("nMegaY", "number of megatiles along Z", _nMegaY , 1 , SegmentationParameter::NoUnit, true);
+//      _nMegaY is given by Ecal_n_wafers_per_tower from "model_parameters_ILD_o3_v05.xml"
+
+      registerParameter("layer_nCells", "division of megatile into square tiles", _nCells, 36 , SegmentationParameter::NoUnit, true);
+      registerParameter("layer_nStripsX", "division of megatile into strips (1)", _nStripsX, 4 , SegmentationParameter::NoUnit, true);
+      registerParameter("layer_nStripsY", "division of megatile into strips (2)", _nStripsY, 36 , SegmentationParameter::NoUnit, true);
+
+      registerParameter("deadWidth", "width of dead region at edge of megatile", _deadWidth, 0., SegmentationParameter::LengthUnit, true);
+
+      registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "cellX");
+      registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "cellY");
+
+      registerParameter("identifier_wafer", "Cell encoding identifier for wafer", _identifierWafer, std::string("wafer"),
+                        SegmentationParameter::NoUnit, true);
+
+      registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, std::string("layer"),
+                        SegmentationParameter::NoUnit, true);
+
+      registerParameter("identifier_module", "Cell encoding identifier for module", _identifierModule, std::string("module"),
+                        SegmentationParameter::NoUnit, true);
+
+      registerParameter("layer_configuration", "layer configuration (S, T, L)", _layerConfig, std::string("TLS"), SegmentationParameter::NoUnit, true);
+
+      _calculated=false;
+
+    }
+
     /// destructor
     MegatileLayerGridXY::~MegatileLayerGridXY() {
 

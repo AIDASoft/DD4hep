@@ -546,8 +546,10 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
 template <> void Converter<Segmentation>::operator()(xml_h seg) const {
   string type = seg.attr<string>(_U(type));
   string name = seg.hasAttr(_U(name)) ? seg.attr<string>(_U(name)) : string();
-  SegmentationObject** object = _option<SegmentationObject*>();
-  Segmentation segment(type, name);
+  std::pair<Segmentation,IDDescriptor>* opt = _option<pair<Segmentation,IDDescriptor> >();
+
+  BitField64* bitfield = opt->second.ptr();
+  Segmentation segment(type, name, bitfield);
   if (segment.isValid()) {
     typedef Segmentation::Parameters _PARS;
     const _PARS& pars = segment.parameters();
@@ -587,10 +589,11 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
     long key_min = 0, key_max = 0;
     DDSegmentation::Segmentation* base = segment->segmentation;
     for(xml_coll_t sub(seg,_U(segmentation)); sub; ++sub)   {
-      SegmentationObject* sub_object = 0;
+      std::pair<Segmentation,IDDescriptor> sub_object(Segmentation(),opt->second);
       Converter<Segmentation> sub_conv(lcdd,param,&sub_object);
       sub_conv(sub);
-      if ( sub_object )  {
+      if ( sub_object.first.isValid() )  {
+        Segmentation sub_seg = sub_object.first;
         xml_dim_t s(sub);
         if ( sub.hasAttr(_U(key_value)) ) {
           key_min = key_max = s.key_value();
@@ -606,15 +609,15 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
         }
         printout(DEBUG,"Compact","++ Segmentation [%s/%s]: Add sub-segmentation %s [%s]",
                  name.c_str(), type.c_str(), 
-                 sub_object->segmentation->name().c_str(),
-                 sub_object->segmentation->type().c_str());
-        base->addSubsegmentation(key_min, key_max, sub_object->segmentation);
-        sub_object->segmentation = 0;
-        delete sub_object;
+                 sub_seg->segmentation->name().c_str(),
+                 sub_seg->segmentation->type().c_str());
+        base->addSubsegmentation(key_min, key_max, sub_seg->segmentation);
+        sub_seg->segmentation = 0;
+        delete sub_seg.ptr();
       }
     }
   }
-  if ( object ) *object = segment.ptr();
+  opt->first = segment;
 }
 
 /** Specialized converter for compact readout objects.
@@ -628,24 +631,23 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   xml_h seg = e.child(_U(segmentation), false);
   xml_h id = e.child(_U(id));
   string name = e.attr<string>(_U(name));
+  std::pair<Segmentation,IDDescriptor> opt;
   Readout ro(name);
-
+  
   printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
   if (id) {
     //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-    Ref_t idSpec = IDDescriptor(id.text());
-    idSpec->SetName(ro.name());
-    ro.setIDDescriptor(idSpec);
-    lcdd.addIDSpecification(idSpec);
+    opt.second = IDDescriptor(id.text());
+    opt.second->SetName(ro.name());
+    ro.setIDDescriptor(opt.second);
+    lcdd.addIDSpecification(opt.second);
   }
   if (seg) {   // Segmentation is not mandatory!
-    SegmentationObject* object = 0;
-    Converter<Segmentation> converter(lcdd,param,&object);
+    Converter<Segmentation> converter(lcdd,param,&opt);
     converter(seg);
-    if ( object )   {
-      object->setName(name);
-      Segmentation segment(object);
-      ro.setSegmentation(segment);
+    if ( opt.first.isValid() )   {
+      opt.first->setName(name);
+      ro.setSegmentation(opt.first);
     }
   }
   for(xml_coll_t colls(e,_U(hits_collections)); colls; ++colls)   {

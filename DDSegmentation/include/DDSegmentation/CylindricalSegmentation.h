@@ -23,6 +23,8 @@ public:
 protected:
 	/// default constructor using an arbitrary type
 	CylindricalSegmentation(const std::string& cellEncoding);
+	/// Default constructor used by derived classes passing an existing decoder
+	CylindricalSegmentation(BitField64* decoder);
 };
 
 

@@ -17,6 +17,8 @@ class ProjectiveCylinder: public CylindricalSegmentation {
 public:
 	/// default constructor using an arbitrary type
 	ProjectiveCylinder(const std::string& cellEncoding);
+	/// Default constructor used by derived classes passing an existing decoder
+	ProjectiveCylinder(BitField64* decoder);
 	/// destructor
 	virtual ~ProjectiveCylinder();
 
