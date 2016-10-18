@@ -26,13 +26,13 @@ namespace DD4hep {
 
     /// Default constructor used by derived classes passing the encoding string
     Segmentation::Segmentation(const std::string& cellEncoding) :
-      _name("Segmentation"), _type("Segmentation"), _decoder(new BitField64(cellEncoding)), _ownsDecoder(true) {
+      _name("Segmentation"), _type("Segmentation"), _decoder(new BitField64(cellEncoding)), _ownsDecoder(true), backLink(0) {
 
     }
 
     /// Default constructor used by derived classes passing an existing decoder
     Segmentation::Segmentation(BitField64* newDecoder) :
-      _name("Segmentation"), _type("Segmentation"), _decoder(newDecoder), _ownsDecoder(false) {
+      _name("Segmentation"), _type("Segmentation"), _decoder(newDecoder), _ownsDecoder(false), backLink(0) {
     }
 
     /// Destructor
