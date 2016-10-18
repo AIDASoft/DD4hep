@@ -16,6 +16,7 @@
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Handle.inl"
+#include "DD4hep/Printout.h"
 
 // C/C++ include files
 #include <iostream>
@@ -32,7 +33,9 @@ DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationObject);
 
 /// Standard constructor
 SegmentationObject::SegmentationObject(BaseSegmentation* s)
-  : magic(magic_word()), useForHitPosition(0), segmentation(s) {
+  : magic(magic_word()), useForHitPosition(0),
+    detector(0), sensitive(0), segmentation(s)
+{
   InstanceCount::increment(this);
 }
 
@@ -50,7 +53,9 @@ DDSegmentation::Vector3D SegmentationObject::position(const long64& cell) const 
 }
 
 /// determine the cell ID based on the local position
-long64 SegmentationObject::cellID(const DDSegmentation::Vector3D& localPosition, const DDSegmentation::Vector3D& globalPosition, const long64& volID) const {
+long64 SegmentationObject::cellID(const DDSegmentation::Vector3D& localPosition,
+                                  const DDSegmentation::Vector3D& globalPosition,
+                                  const long64& volID) const {
   return segmentation->cellID(localPosition, globalPosition, volID);
 }
 
@@ -142,3 +147,63 @@ Position Segmentation::position(const long64& cell) const {
 long64 Segmentation::cellID(const Position& localPosition, const Position& globalPosition, const long64& volID) const {
   return segmentation()->cellID(localPosition, globalPosition, volID);
 }
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the geometry part of the AIDA detector description toolkit
+  namespace Geometry {
+
+    /// Access the concrete underlying segmentation implementation from DDSegmentation
+    template <typename T> T*
+    Segmentation::get(const Object* obj)   {
+      if ( obj )  {
+        DDSegmentation::Segmentation* seg = obj->segmentation;
+        T* dd_seg = dynamic_cast<T*>(seg);
+        if ( dd_seg )  {
+          return dd_seg;
+        }
+        except("CartesianGridXY",
+               "Cannot convert segmentation:%s to CartesianGridXY.",
+               seg->name());
+      }
+      return 0;
+    }
+  } /* End namespace Geometry              */
+} /* End namespace DD4hep                */
+
+#define IMPLEMENT_SEGMENTATION_HANDLE(X)                                \
+  namespace DD4hep { namespace Geometry {                               \
+      template DDSegmentation::X*                                       \
+      Segmentation::get<DDSegmentation::X>(const Object* obj); }}
+
+#include "DDSegmentation/CartesianGridXY.h"
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridXY)
+
+#include "DDSegmentation/CartesianGridXZ.h"
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridXZ)
+
+#include "DDSegmentation/CartesianGridYZ.h"
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridYZ)
+
+#include "DDSegmentation/CartesianGridXYZ.h"
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridXYZ)
+
+#include "DDSegmentation/TiledLayerGridXY.h"
+IMPLEMENT_SEGMENTATION_HANDLE(TiledLayerGridXY)
+
+#include "DDSegmentation/MegatileLayerGridXY.h"
+IMPLEMENT_SEGMENTATION_HANDLE(MegatileLayerGridXY)
+
+#include "DDSegmentation/WaferGridXY.h"
+IMPLEMENT_SEGMENTATION_HANDLE(WaferGridXY)
+
+#include "DDSegmentation/PolarGridRPhi.h"
+IMPLEMENT_SEGMENTATION_HANDLE(PolarGridRPhi)
+
+#include "DDSegmentation/PolarGridRPhi2.h"
+IMPLEMENT_SEGMENTATION_HANDLE(PolarGridRPhi2)
+
+#include "DDSegmentation/ProjectiveCylinder.h"
+IMPLEMENT_SEGMENTATION_HANDLE(ProjectiveCylinder)
+

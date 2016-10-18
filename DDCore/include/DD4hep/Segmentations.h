@@ -31,6 +31,10 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
+    // Forward declarations
+    class DetElementObject;
+    class SensitiveDetectorObject;
+
     /// Implementation class supporting generic Segmentation of sensitive detectors
     /**
      * \author  M.Frank
@@ -43,14 +47,12 @@ namespace DD4hep {
       typedef DDSegmentation::Parameters Parameters;
       typedef DDSegmentation::Parameter Parameter;
     public:
-      /// Magic word to check object integrity
-      unsigned long magic;
-      /// Flag to use segmentation for hit positioning
-      unsigned char useForHitPosition;
       /// determine the local position based on the cell ID
       DDSegmentation::Vector3D position(const long64& cellID) const;
       /// determine the cell ID based on the local position
-      long64 cellID(const DDSegmentation::Vector3D& localPosition, const DDSegmentation::Vector3D& globalPosition, const long64& volumeID) const;
+      long64 cellID(const DDSegmentation::Vector3D& localPosition,
+                    const DDSegmentation::Vector3D& globalPosition,
+                    const long64& volumeID) const;
       /// Standard constructor
       SegmentationObject(BaseSegmentation* s = 0);
       /// Default destructor
@@ -75,8 +77,17 @@ namespace DD4hep {
       Parameters parameters() const;
       /// Set all parameters from an existing set of parameters
       void setParameters(const Parameters& parameters);
+
+      /// Magic word to check object integrity
+      unsigned long magic;
+      /// Flag to use segmentation for hit positioning
+      unsigned char useForHitPosition;
+      /// Reference to hosting top level DetElement structure
+      Handle<DetElementObject> detector;      
+      /// Reference to hosting top level sensitve detector structure
+      Handle<SensitiveDetectorObject> sensitive;
       /// Reference to base segmentation
-      BaseSegmentation* segmentation;
+      BaseSegmentation* segmentation;      
     };
 
 
@@ -91,25 +102,19 @@ namespace DD4hep {
     public:
       typedef SegmentationObject Object;
       typedef DDSegmentation::Segmentation BaseSegmentation;
-      typedef DDSegmentation::Parameter Parameter;
-      typedef DDSegmentation::Parameters Parameters;
+      typedef DDSegmentation::Parameter    Parameter;
+      typedef DDSegmentation::Parameters   Parameters;
 
     public:
       /// Initializing constructor creating a new object of the given DDSegmentation type
       Segmentation(const std::string& type, const std::string& name);
       /// Default constructor
-      Segmentation()
-        : Handle<Implementation>() {
-      }
+      Segmentation() : Handle<Object>() {    }
       /// Copy Constructor from object
-      Segmentation(const Segmentation& e)
-        : Handle<Object>(e) {
-      }
+      Segmentation(const Segmentation& e) : Handle<Object>(e) {   }
 #ifndef __CINT__
       /// Copy Constructor from handle
-      Segmentation(const Handle<SegmentationObject>& e)
-        : Handle<Object>(e) {
-      }
+      Segmentation(const Handle<Object>& e) : Handle<Object>(e) { }
 #endif
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Segmentation(const Handle<Q>& e)
@@ -133,6 +138,9 @@ namespace DD4hep {
       Position position(const long64& cellID) const;
       /// determine the cell ID based on the local position
       long64 cellID(const Position& localPosition, const Position& globalPosition, const long64& volumeID) const;
+
+      /// Access the concrete underlying segmentation implementation from DDSegmentation
+      template <typename T> static T* get(const Object* object);
     };
 
   } /* End namespace Geometry              */

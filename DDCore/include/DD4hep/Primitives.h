@@ -17,6 +17,8 @@
 
 // C/C++ include files
 #include <map>
+#include <vector>
+#include <string>
 #include <limits>
 #include <typeinfo>
 #include <algorithm>
