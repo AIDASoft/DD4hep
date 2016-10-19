@@ -899,19 +899,16 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     xml_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
     Segmentation seg;
-    if (attr_ro)   {
+    if ( attr_ro )   {
       Readout ro = lcdd.readout(element.attr<string>(attr_ro));
       if (!ro.isValid()) {
         throw runtime_error("No Readout structure present for detector:" + name);
       }
+      seg = ro.segmentation();
       sd = SensitiveDetector(name, "sensitive");
       sd.setHitsCollection(ro.name());
       sd.setReadout(ro);
       lcdd.addSensitiveDetector(sd);
-      seg = ro.segmentation();
-      if ( seg.isValid() )  {
-        seg->sensitive = sd;
-      }
     }
     Ref_t sens = sd;
     DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens)));
@@ -921,7 +918,8 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
         det->flag |= DetElement::Object::HAVE_SENSITIVE_DETECTOR;
       }
       if ( seg.isValid() )  {
-        seg->detector = det;
+        seg->sensitive = sd;
+        seg->detector  = det;
       }
     }
     printout(det.isValid() ? INFO : ERROR, "Compact", "%s subdetector:%s of type %s %s",
