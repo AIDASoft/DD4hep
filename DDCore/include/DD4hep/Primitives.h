@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DD4HEP_PRIMITIVES_H
 #define DD4HEP_DD4HEP_PRIMITIVES_H
 
@@ -20,6 +18,7 @@
 #include <vector>
 #include <string>
 #include <limits>
+
 #include <typeinfo>
 #include <algorithm>
 #include <stdexcept>
