@@ -16,7 +16,7 @@ namespace DD4hep {
     }
 
     /// Default constructor used by derived classes passing an existing decoder
-    CartesianGrid::CartesianGrid(BitField64* decoder) : Segmentation(decoder) {
+    CartesianGrid::CartesianGrid(BitField64* decode) : Segmentation(decode) {
     }
 
     /// Destructor

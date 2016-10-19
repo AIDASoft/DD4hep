@@ -27,8 +27,8 @@ CartesianGridXY::CartesianGridXY(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-CartesianGridXY::CartesianGridXY(BitField64* decoder) :
-		CartesianGrid(decoder)
+CartesianGridXY::CartesianGridXY(BitField64* decode) :
+		CartesianGrid(decode)
 {
 	// define type and description
 	_type = "CartesianGridXY";

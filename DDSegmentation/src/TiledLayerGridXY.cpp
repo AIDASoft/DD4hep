@@ -40,8 +40,7 @@ TiledLayerGridXY::TiledLayerGridXY(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-TiledLayerGridXY::TiledLayerGridXY(BitField64* decoder) :
-		CartesianGrid(decoder) {
+TiledLayerGridXY::TiledLayerGridXY(BitField64* decode) : CartesianGrid(decode) {
 	// define type and description
 	_type = "TiledLayerGridXY";
 	_description = "Cartesian segmentation in the local XY-plane using optimal tiling depending on the layer dimensions";

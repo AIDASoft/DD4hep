@@ -28,8 +28,7 @@ PolarGridRPhi::PolarGridRPhi(const std::string& cellEncoding) :
 
 
 /// Default constructor used by derived classes passing an existing decoder
-PolarGridRPhi::PolarGridRPhi(BitField64* decoder) :
-		PolarGrid(decoder) {
+PolarGridRPhi::PolarGridRPhi(BitField64* decode) : PolarGrid(decode) {
 	// define type and description
 	_type = "PolarGridRPhi";
 	_description = "Polar RPhi segmentation in the local XY-plane";

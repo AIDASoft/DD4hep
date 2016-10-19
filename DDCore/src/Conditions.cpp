@@ -58,12 +58,6 @@ Condition::Condition(const string& nam,const string& typ) : Handle<Object>()  {
   o->hash = ConditionKey::hashCode(nam);
 }
 
-/// Assignment operator
-Condition& Condition::operator=(const Condition& c)   {
-  if ( this != &c ) this->m_element = c.m_element;
-  return *this;
-}
-
 /// Output method
 string Condition::str(int flags)  const   {
   stringstream output;

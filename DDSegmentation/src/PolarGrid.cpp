@@ -15,7 +15,7 @@ namespace DD4hep {
       Segmentation(cellEncoding) {
     }
     /// Default constructor used by derived classes passing an existing decoder
-    PolarGrid::PolarGrid(BitField64* decoder)	: Segmentation(decoder) {
+    PolarGrid::PolarGrid(BitField64* decode)	: Segmentation(decode) {
     }
 
     /// Destructor

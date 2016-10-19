@@ -13,8 +13,8 @@
 
 // Framework include files
 #include "DD4hep/Segmentations.h"
-#include "DD4hep/CartesianGridXZ.h"
-#include "DDSegmentation/CartesianGridXZ.h"
+#include "DD4hep/PolarGridRPhi2.h"
+#include "DDSegmentation/PolarGridRPhi2.h"
 
 // C/C++ include files
 
@@ -22,46 +22,46 @@ using namespace std;
 using namespace DD4hep::Geometry;
 
 /// determine the position based on the cell ID
-Position CartesianGridXZ::position(const CellID& id) const   {
+Position PolarGridRPhi2::position(const CellID& id) const   {
   return Position(access()->implementation->position(id));
 }
 
 /// determine the cell ID based on the position
-DD4hep::CellID CartesianGridXZ::cellID(const Position& local,
-                               const Position& global,
-                               const VolumeID& volID) const
+DD4hep::CellID PolarGridRPhi2::cellID(const Position& local,
+                                      const Position& global,
+                                      const VolumeID& volID) const
 {
   return access()->implementation->cellID(local, global, volID);
 }
 
-/// access the grid size in X
-double CartesianGridXZ::gridSizeX() const {
-  return access()->implementation->gridSizeX();
+/// access the grid size in R
+vector<double> PolarGridRPhi2::gridRValues() const  {
+  return access()->implementation->gridRValues();
 }
 
-/// access the grid size in Z
-double CartesianGridXZ::gridSizeZ() const {
-  return access()->implementation->gridSizeZ();
+/// access the grid size in Phi
+vector<double> PolarGridRPhi2::gridPhiValues() const  {
+  return access()->implementation->gridPhiValues();
 }
 
-/// access the coordinate offset in X
-double CartesianGridXZ::offsetX() const {
-  return access()->implementation->offsetX();
+/// access the coordinate offset in R
+double PolarGridRPhi2::offsetR() const  {
+  return access()->implementation->offsetR();
 }
 
-/// access the coordinate offset in Z
-double CartesianGridXZ::offsetZ() const {
-  return access()->implementation->offsetZ();
+/// access the coordinate offset in Phi
+double PolarGridRPhi2::offsetPhi() const  {
+  return access()->implementation->offsetPhi();
 }
 
-/// access the field name used for X
-const string& CartesianGridXZ::fieldNameX() const {
-  return access()->implementation->fieldNameX();
+/// access the field name used for R
+const string& PolarGridRPhi2::fieldNameR() const  {
+  return access()->implementation->fieldNameR();
 }
 
-/// access the field name used for Z
-const string& CartesianGridXZ::fieldNameZ() const {
-  return access()->implementation->fieldNameZ();
+/// access the field name used for Phi
+const string& PolarGridRPhi2::fieldNamePhi() const  {
+  return access()->implementation->fieldNamePhi();
 }
 
 /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
@@ -73,6 +73,6 @@ const string& CartesianGridXZ::fieldNameZ() const {
     -# size in x
     -# size in z
 */
-vector<double> CartesianGridXZ::cellDimensions(const CellID& id) const  {
+vector<double> PolarGridRPhi2::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

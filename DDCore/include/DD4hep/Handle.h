@@ -96,32 +96,19 @@ namespace DD4hep {
     /// Single and only data member: Reference to the actual element.
     T* m_element;
     /// Defaulot constructor
-    Handle()
-      : m_element(0) {
-    }
+    Handle() : m_element(0) {    }
     /// Initializing constructor from pointer
-    Handle(T* e)
-      : m_element(e) {
-    }
+    Handle(T* e) : m_element(e) {    }
     /// Copy constructor
-    Handle(const Handle<T>& e)
-      : m_element(e.m_element) {
-    }
+    Handle(const Handle<T>& e) = default;
     /// Initializing constructor from unrelated pointer with type checking
-    template <typename Q> Handle(Q* e)
-      : m_element((T*) e) {
-      verifyObject();
-    }
+    template <typename Q> Handle(Q* e) : m_element((T*)e)
+    {    verifyObject();                      }
     /// Initializing constructor from unrelated handle with type checking
-    template <typename Q> Handle(const Handle<Q>& e)
-      : m_element((T*) e.m_element) {
-      verifyObject();
-    }
+    template <typename Q> Handle(const Handle<Q>& e) : m_element((T*)e.m_element)
+    {    verifyObject();                      }
     /// Assignment operator
-    Handle<T>& operator=(const Handle<T>& e) {
-      m_element = e.m_element;
-      return *this;
-    }
+    Handle<T>& operator=(const Handle<T>& e) = default;
     /// Boolean operator == used for RB tree insertions
     bool operator==(const Handle<T>& e)  const {
       return m_element == e.m_element;

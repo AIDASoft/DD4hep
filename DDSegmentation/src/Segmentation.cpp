@@ -91,10 +91,10 @@ namespace DD4hep {
 
     /// Set the underlying decoder
     void Segmentation::setDecoder(BitField64* newDecoder) {
-      if ( _decoder == newDecoder ) return; //self assignment
-      if (_ownsDecoder) {
+      if ( _decoder == newDecoder )
+        return; //self assignment
+      else if (_ownsDecoder)
         delete _decoder;
-      }
       _decoder = newDecoder;
       _ownsDecoder = false;
     }

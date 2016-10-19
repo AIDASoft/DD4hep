@@ -69,39 +69,25 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-      SensitiveDetector()
-        : RefObject() {
-      }
+      SensitiveDetector() : RefObject() {     }
 
       /// Constructor to copy handled object
-      SensitiveDetector(Object* obj_pointer)
-        : RefObject(obj_pointer) {
-      }
+      SensitiveDetector(Object* obj_pointer) : RefObject(obj_pointer) {      }
 
       /// Copy from named handle
-      SensitiveDetector(const RefObject& sd)
-        : RefObject(sd) {
-      }
+      SensitiveDetector(const RefObject& sd) : RefObject(sd) {      }
 
       /// Copy from handle
-      SensitiveDetector(const SensitiveDetector& sd)
-        : RefObject(sd) {
-      }
+      SensitiveDetector(const SensitiveDetector& sd) = default;
 
       /// Templated constructor for handle conversions
-      template <typename Q>
-      SensitiveDetector(const Handle<Q>& e)
-        : RefObject(e) {
-      }
+      template <typename Q> SensitiveDetector(const Handle<Q>& e) : RefObject(e) { }
 
       /// Constructor for a new sensitive detector element
       SensitiveDetector(const std::string& name, const std::string& type = "sensitive");
 
       /// Assignment operator
-      SensitiveDetector& operator=(const SensitiveDetector& sd) {
-        m_element = sd.m_element;
-        return *this;
-      }
+      SensitiveDetector& operator=(const SensitiveDetector& sd)  = default;
 
       /// Access the type of the sensitive detector
       std::string type() const;
@@ -251,7 +237,7 @@ namespace DD4hep {
       template <typename Q> DetElement(const Handle<Q>& e) : RefObject(e) {}
 
       /// Constructor to copy handle
-      DetElement(const DetElement& e) : RefObject(e) { }
+      DetElement(const DetElement& e) = default;
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
@@ -284,10 +270,7 @@ namespace DD4hep {
       }
 
       /// Assignment operator
-      DetElement& operator=(const DetElement& e) {
-        m_element = e.m_element;
-        return *this;
-      }
+      DetElement& operator=(const DetElement& e) = default;
 
       /// Clone (Deep copy) the DetElement structure with a new name
       DetElement clone(const std::string& new_name) const;

@@ -102,7 +102,7 @@ public:
 		return _description;
 	}
 	/// Access the underlying decoder
-	virtual BitField64* decoder() {
+	virtual BitField64* decoder()  const {
 		return _decoder;
 	}
 	/// Set the underlying decoder

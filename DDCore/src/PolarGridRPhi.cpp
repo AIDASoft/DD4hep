@@ -21,15 +21,9 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-/// Copy Constructor from segmentation base object
-PolarGridRPhi::PolarGridRPhi(const Segmentation& e) : Handle<Object>()
-{
-  m_element = Segmentation::get<Object>(e.ptr());
-}
-
 /// determine the position based on the cell ID
 Position PolarGridRPhi::position(const CellID& id) const   {
-  return Position(access()->position(id));
+  return Position(access()->implementation->position(id));
 }
 
 /// determine the cell ID based on the position
@@ -37,37 +31,37 @@ DD4hep::CellID PolarGridRPhi::cellID(const Position& local,
                                      const Position& global,
                                      const VolumeID& volID) const
 {
-  return access()->cellID(local, global, volID);
+  return access()->implementation->cellID(local, global, volID);
 }
 
 /// access the grid size in R
 double PolarGridRPhi::gridSizeR() const  {
-  return access()->gridSizeR();
+  return access()->implementation->gridSizeR();
 }
 
 /// access the grid size in Phi
 double PolarGridRPhi::gridSizePhi() const  {
-  return access()->gridSizePhi();
+  return access()->implementation->gridSizePhi();
 }
 
 /// access the coordinate offset in R
 double PolarGridRPhi::offsetR() const  {
-  return access()->offsetR();
+  return access()->implementation->offsetR();
 }
 
 /// access the coordinate offset in Phi
 double PolarGridRPhi::offsetPhi() const  {
-  return access()->offsetPhi();
+  return access()->implementation->offsetPhi();
 }
 
 /// access the field name used for R
 const string& PolarGridRPhi::fieldNameR() const  {
-  return access()->fieldNameR();
+  return access()->implementation->fieldNameR();
 }
 
 /// access the field name used for Phi
 const string& PolarGridRPhi::fieldNamePhi() const  {
-  return access()->fieldNamePhi();
+  return access()->implementation->fieldNamePhi();
 }
 
 /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
@@ -80,5 +74,5 @@ const string& PolarGridRPhi::fieldNamePhi() const  {
     -# size in z
 */
 vector<double> PolarGridRPhi::cellDimensions(const CellID& id) const  {
-  return access()->cellDimensions(id);
+  return access()->implementation->cellDimensions(id);
 }

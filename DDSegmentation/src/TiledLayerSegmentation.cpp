@@ -42,8 +42,7 @@ TiledLayerSegmentation::TiledLayerSegmentation(const std::string& cellEncoding) 
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-TiledLayerSegmentation::TiledLayerSegmentation(BitField64* decoder) :
-		Segmentation(decoder) {
+TiledLayerSegmentation::TiledLayerSegmentation(BitField64* decode) :	Segmentation(decode) {
 	_type = "TiledLayerSegmentation";
 	_description = "Cartesian segmentation using optimal tiling depending on the layer dimensions";
 

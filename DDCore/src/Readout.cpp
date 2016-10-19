@@ -91,13 +91,13 @@ vector<const HitCollection*> Readout::collections()  const   {
 
 /// Assign IDDescription to readout structure
 void Readout::setIDDescriptor(const Ref_t& new_descriptor) const {
-  if ( isValid() ) {                    // Remember: segmentation is NOT owned by readout structure!
+  if ( isValid() ) {                  // The ID descriptor is NOT owned by the readout!
     if (new_descriptor.isValid()) {   // Do NOT delete!
       data<Object>()->id = new_descriptor;
       Segmentation seg = data<Object>()->segmentation;
-      IDDescriptor id = new_descriptor;
-      if (seg.isValid()) {
-        seg.segmentation()->setDecoder(id.decoder());
+      IDDescriptor id  = new_descriptor;
+      if ( seg.isValid() ) {
+        seg.setDecoder(id.decoder());
       }
       return;
     }
@@ -115,10 +115,10 @@ void Readout::setSegmentation(const Segmentation& seg) const {
   if ( isValid() ) {
     Object& ro = object<Object>();
     Segmentation::Implementation* e = ro.segmentation.ptr();
-    if (e) {      // Remember: segmentation is owned by readout structure!
-      delete e;   // Need to delete the segmentation object
-    }
-    if (seg.isValid()) {
+    if ( e && e != seg.ptr() ) {      // Remember:
+      delete e;                       // The segmentation is owned by the readout!
+    }                                 // Need to delete the segmentation object
+    if ( seg.isValid() ) {
       ro.segmentation = seg;
       return;
     }

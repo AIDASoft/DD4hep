@@ -114,9 +114,9 @@ namespace DD4hep {
       };
 
       /// Default constructor
-      Condition();
+      Condition() = default;
       /// Copy constructor
-      Condition(const Condition& c);
+      Condition(const Condition& c) = default;
       /// Initializing constructor
       Condition(Object* p);
       /// Constructor to be used when reading the already parsed object
@@ -124,7 +124,7 @@ namespace DD4hep {
       /// Initializing constructor for a pure, undecorated conditions object
       Condition(const std::string& name, const std::string& type);
       /// Assignment operator
-      Condition& operator=(const Condition& c);
+      Condition& operator=(const Condition& c) = default;
 
       /// Output method
       std::string str(int with_data=WITH_IOV|WITH_ADDRESS|WITH_DATATYPE)  const;
@@ -183,15 +183,6 @@ namespace DD4hep {
     inline Condition::Condition(Condition::Object* p) : Handle<Condition::Object>(p)  {
     }
 
-    /// Copy constructor
-    inline Condition::Condition(const Condition& c) : Handle<Condition::Object>(c)   {
-    }
-
-    /// Default constructor
-    inline Condition::Condition() : Handle<Condition::Object>()   {
-    }
-
-
     /// Container class for condition handles aggregated by a detector element
     /**
      *  Note: The conditions container is owner by the detector element
@@ -213,10 +204,9 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      Container();
-
+      Container() = default;
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Container(const Container& c) : Handle<Object>(c) {}
+      Container(const Container& c) = default;
 
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Container(const Handle<Q>& e) : Handle<Object>(e) {}
@@ -236,11 +226,6 @@ namespace DD4hep {
       /// Access to condition objects. Only conditions in the pool are accessed.
       Condition get(key_type condition_key, const UserPool& iov);
     };
-
-    /// Default constructor
-    inline Container::Container() : Handle<Object>() {
-    }
-
 
     /// Key definition to optimize ans simplyfy the access to conditions entities
     /**
