@@ -124,8 +124,8 @@ void SegmentationObject::neighbours(const CellID& cell, std::set<CellID>& nb) co
 /// Constructor to used when creating a new object
 Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec) : Handle<Object>()
 {
-  string type = "segmentation_constructor__"+typ;
-  SegmentationObject* obj = PluginService::Create<SegmentationObject*>(type, dec);
+  string seg_type = "segmentation_constructor__"+typ;
+  SegmentationObject* obj = PluginService::Create<SegmentationObject*>(seg_type, dec);
   if ( obj != 0 )  {
     assign(obj, nam, typ);
     if ( !nam.empty() ) obj->setName(nam);
