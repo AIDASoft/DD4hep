@@ -110,14 +110,22 @@ namespace DD4hep {
       /// Standard constructor
       SegmentationImplementation(DDSegmentation::BitField64* decoder);
       /// Default destructor
-      virtual ~SegmentationImplementation() {}
+      virtual ~SegmentationImplementation();
     };
 
+    /// Standard constructor
     template <typename IMP> inline
-    SegmentationImplementation<IMP>::SegmentationImplementation(DDSegmentation::BitField64* decoder)
-      :  SegmentationObject(0), implementation(decoder)
+    SegmentationImplementation<IMP>::SegmentationImplementation(DDSegmentation::BitField64* decode)
+      :  SegmentationObject(0), implementation(decode)
     {
       this->segmentation = &implementation;
+    }
+    
+    /// Default destructor
+    template <typename IMP> inline
+    SegmentationImplementation<IMP>::~SegmentationImplementation()
+    {
+      this->segmentation = 0; // Prevent deletion! We have the object aggregated!
     }
     
     /// Handle class supporting generic Segmentation of sensitive detectors
