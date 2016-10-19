@@ -122,24 +122,24 @@ void SegmentationObject::neighbours(const CellID& cell, std::set<CellID>& nb) co
 }
 
 /// Constructor to used when creating a new object
-Segmentation::Segmentation(const string& typ, const string& nam, BitField64* decoder) : Handle<Implementation>()
+Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec) : Handle<Implementation>()
 {
   string type = "segmentation_constructor__"+typ;
-  SegmentationObject* obj = PluginService::Create<SegmentationObject*>(type, decoder);
+  SegmentationObject* obj = PluginService::Create<SegmentationObject*>(type, dec);
   if ( obj != 0 )  {
     assign(obj, nam, typ);
     if ( !nam.empty() ) obj->setName(nam);
+    return;
   }
 #if 0
   BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(typ);
   if (s != 0) {
     assign(new Object(s), nam, "");
     if ( !nam.empty() ) s->setName(nam);
+    return;
   }
 #endif
-  else {
-    throw runtime_error("FAILED to create segmentation: " + typ + ". Missing factory method for: " + typ + "!");
-  }
+  except("Segmentation","FAILED to create segmentation: %s. [Missing factory]",typ.c_str());
 }
 
 /// Accessor: Segmentation type
