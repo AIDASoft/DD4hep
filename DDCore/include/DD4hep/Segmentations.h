@@ -17,9 +17,7 @@
 // Framework include files
 #include "DD4hep/Objects.h"
 #include "DD4hep/Handle.h"
-#include "DD4hep/IDDescriptor.h"
 #include "DDSegmentation/Segmentation.h"
-#include "DDSegmentation/SegmentationFactory.h"
 
 // C/C++ include files
 #include <cmath>
@@ -37,15 +35,18 @@ namespace DD4hep {
 
     /// Implementation class supporting generic Segmentation of sensitive detectors
     /**
-     * \author  M.Frank
-     * \version 1.0
-     * \ingroup DD4HEP_GEOMETRY
+     *  The SegmentationObject wraps the functionality of the DDSegmentation base class.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
-    class SegmentationObject /* : public DDSegmentation::Segmentation */  {
+    class SegmentationObject {
     public:
       typedef DDSegmentation::Segmentation BaseSegmentation;
-      typedef DDSegmentation::Parameters Parameters;
-      typedef DDSegmentation::Parameter Parameter;
+      typedef DDSegmentation::Parameters   Parameters;
+      typedef DDSegmentation::Parameter    Parameter;
+
     public:
       /// Standard constructor
       SegmentationObject(BaseSegmentation* s = 0);
@@ -62,11 +63,11 @@ namespace DD4hep {
       /// Access the description of the segmentation
       const std::string& description() const;
       /// Access the underlying decoder
-      BitField64* decoder();
+      BitField64* decoder() const;
       /// Set the underlying decoder
-      void setDecoder(BitField64* decoder);
+      void setDecoder(BitField64* decoder) const;
       /// Access to parameter by name
-      Parameter parameter(const std::string& parameterName) const;
+      Parameter  parameter(const std::string& parameterName) const;
       /// Access to all parameters
       Parameters parameters() const;
       /// Set all parameters from an existing set of parameters
@@ -102,30 +103,26 @@ namespace DD4hep {
      * \version 1.0
      * \ingroup DD4HEP_GEOMETRY
      */
-    template <typename IMP> class SegmentationImplementation : public SegmentationObject {
+    template <typename IMP> class SegmentationWrapper : public SegmentationObject {
     public:
       /// DDSegmentation aggregate
-      IMP implementation;
+      IMP* implementation;
     public:
       /// Standard constructor
-      SegmentationImplementation(DDSegmentation::BitField64* decoder);
+      SegmentationWrapper(DDSegmentation::BitField64* decoder);
       /// Default destructor
-      virtual ~SegmentationImplementation();
+      virtual ~SegmentationWrapper();
     };
 
     /// Standard constructor
     template <typename IMP> inline
-    SegmentationImplementation<IMP>::SegmentationImplementation(DDSegmentation::BitField64* decode)
-      :  SegmentationObject(0), implementation(decode)
+    SegmentationWrapper<IMP>::SegmentationWrapper(DDSegmentation::BitField64* decode)
+      :  SegmentationObject(implementation=new IMP(decode))
     {
-      this->segmentation = &implementation;
     }
     
     /// Default destructor
-    template <typename IMP> inline
-    SegmentationImplementation<IMP>::~SegmentationImplementation()
-    {
-      this->segmentation = 0; // Prevent deletion! We have the object aggregated!
+    template <typename IMP> inline SegmentationWrapper<IMP>::~SegmentationWrapper()  {
     }
     
     /// Handle class supporting generic Segmentation of sensitive detectors
@@ -146,36 +143,32 @@ namespace DD4hep {
       /// Initializing constructor creating a new object of the given DDSegmentation type
       Segmentation(const std::string& type, const std::string& name, BitField64* decoder);
       /// Default constructor
-      Segmentation() : Handle<Object>() {    }
+      Segmentation() : Handle<Object>() { }
       /// Copy Constructor from object
-      Segmentation(const Segmentation& e) : Handle<Object>(e) {   }
+      Segmentation(const Segmentation& e) : Handle<Object>(e) { }
 #ifndef __CINT__
       /// Copy Constructor from handle
       Segmentation(const Handle<Object>& e) : Handle<Object>(e) { }
 #endif
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Segmentation(const Handle<Q>& e)
-        : Handle<Implementation>(e) {
-      }
+      template <typename Q>
+      Segmentation(const Handle<Q>& e) : Handle<Object>(e) { }
       /// Assignment operator
-      Segmentation& operator=(const Segmentation& seg)  {
-        if ( &seg == this ) return *this;
-        m_element = seg.m_element;
-        return *this;
-      }
+      Segmentation& operator=(const Segmentation& seg) = default;
       /// Access flag for hit positioning
       bool useForHitPosition() const;
       /// Accessor: Segmentation type
       std::string type() const;
-      /// Access segmentation object
-      BaseSegmentation* segmentation() const;
       /// Access to the parameters
       Parameters parameters() const;
+      /// Access the underlying decoder
+      BitField64* decoder() const;
+      /// Set the underlying decoder
+      void setDecoder(BitField64* decoder) const;
       /// determine the local position based on the cell ID
       Position position(const long64& cellID) const;
       /// determine the cell ID based on the local position
       long64 cellID(const Position& localPosition, const Position& globalPosition, const long64& volumeID) const;
-
       /// Access the concrete underlying segmentation implementation from DDSegmentation
       template <typename T> static T* get(const Object* object);
     };

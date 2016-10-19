@@ -35,8 +35,7 @@ ProjectiveCylinder::ProjectiveCylinder(const std::string& cellEncoding) :
 
 
 /// Default constructor used by derived classes passing an existing decoder
-ProjectiveCylinder::ProjectiveCylinder(BitField64* decoder) :
-	CylindricalSegmentation(decoder) {
+ProjectiveCylinder::ProjectiveCylinder(BitField64* decode) :	CylindricalSegmentation(decode) {
 	// define type and description
 	_type = "ProjectiveCylinder";
 	_description = "Projective segmentation in the global coordinates";

@@ -31,7 +31,6 @@ namespace DD4hep {
   namespace Geometry {
 
     // Forward declarations
-    class DetElement;
     class ReadoutObject;
     class HitCollection;
 
@@ -52,36 +51,24 @@ namespace DD4hep {
       typedef HitCollection Collection;
     public:
       /// Default constructor
-      Readout()
-        : Handle<Object>() {
-      }
+      Readout() = default;
       /// Copy Constructor from object
-      Readout(const Readout& e)
-        : Handle<Object>(e) {
-      }
+      Readout(const Readout& e) = default;
 #ifndef __CINT__
       /// Copy Constructor from handle
-      Readout(const Handle<ReadoutObject>& e)
-        : Handle<Object>(e) {
-      }
+      Readout(const Handle<ReadoutObject>& e) : Handle<Object>(e) { }
 #endif
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Readout(const Handle<Q>& e)
-        : Handle<Object>(e) {
-      }
+      template <typename Q> Readout(const Handle<Q>& e) : Handle<Object>(e) { }
       /// Initializing constructor
       Readout(const std::string& name);
       /// Assignment operator
-      Readout& operator=(const Readout& ro)  {
-        if ( &ro == this ) return *this;
-        m_element = ro.m_element;
-        return *this;
-      }
+      Readout& operator=(const Readout& ro) = default;
       /// Access explicit names of hit collections if present
       std::vector<std::string> collectionNames()  const;
 #ifndef __CINT__
       /// Access hit collections if present
-      std::vector<const HitCollection*> collections()  const;
+      std::vector<const Collection*> collections()  const;
 #endif
       /// Access number of hit collections
       size_t numCollections() const;

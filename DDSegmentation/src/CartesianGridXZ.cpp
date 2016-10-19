@@ -30,8 +30,8 @@ CartesianGridXZ::CartesianGridXZ(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-CartesianGridXZ::CartesianGridXZ(BitField64* decoder) :
-	CartesianGrid(decoder) {
+CartesianGridXZ::CartesianGridXZ(BitField64* decode) :
+	CartesianGrid(decode) {
 	// define type and description
 	_type = "CartesianGridXZ";
 	_description = "Cartesian segmentation in the local XZ-plane";

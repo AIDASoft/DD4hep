@@ -75,12 +75,12 @@ const string& SegmentationObject::description() const {
 }
 
 /// Access the underlying decoder
-BitField64* SegmentationObject::decoder() {
+BitField64* SegmentationObject::decoder() const {
   return segmentation->decoder();
 }
 
 /// Set the underlying decoder
-void SegmentationObject::setDecoder(BitField64* ptr_decoder) {
+void SegmentationObject::setDecoder(BitField64* ptr_decoder) const {
   segmentation->setDecoder(ptr_decoder);
 }
 
@@ -122,7 +122,7 @@ void SegmentationObject::neighbours(const CellID& cell, std::set<CellID>& nb) co
 }
 
 /// Constructor to used when creating a new object
-Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec) : Handle<Implementation>()
+Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec) : Handle<Object>()
 {
   string type = "segmentation_constructor__"+typ;
   SegmentationObject* obj = PluginService::Create<SegmentationObject*>(type, dec);
@@ -131,14 +131,7 @@ Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec
     if ( !nam.empty() ) obj->setName(nam);
     return;
   }
-#if 0
-  BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(typ);
-  if (s != 0) {
-    assign(new Object(s), nam, "");
-    if ( !nam.empty() ) s->setName(nam);
-    return;
-  }
-#endif
+  // This is fatal and cannot be recovered. We need to throw an exception here.
   except("Segmentation","FAILED to create segmentation: %s. [Missing factory]",typ.c_str());
 }
 
@@ -157,18 +150,28 @@ Parameters Segmentation::parameters() const {
 }
 
 /// Access segmentation object
-DDSegmentation::Segmentation* Segmentation::segmentation() const {
-  return data<Object>()->segmentation;
-}
+//DDSegmentation::Segmentation* Segmentation::segmentation() const {
+//  return data<Object>()->segmentation;
+//}
 
 /// determine the local position based on the cell ID
 Position Segmentation::position(const long64& cell) const {
-  return Position(segmentation()->position(cell));
+  return Position(data<Object>()->segmentation->position(cell));
 }
 
 /// determine the cell ID based on the local position
 long64 Segmentation::cellID(const Position& localPosition, const Position& globalPosition, const long64& volID) const {
-  return segmentation()->cellID(localPosition, globalPosition, volID);
+  return data<Object>()->segmentation->cellID(localPosition, globalPosition, volID);
+}
+
+/// Access the underlying decoder
+BitField64* Segmentation::decoder()  const {
+  return data<Object>()->segmentation->decoder();
+}
+
+/// Set the underlying decoder
+void Segmentation::setDecoder(BitField64* decode) const  {
+  data<Object>()->segmentation->setDecoder(decode);
 }
 
 /// Namespace for the AIDA detector description toolkit
@@ -195,7 +198,7 @@ namespace DD4hep {
 } /* End namespace DD4hep                */
 
 #define IMPLEMENT_SEGMENTATION_HANDLE(X)                                \
-  DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DDSegmentation::X);                 \
+  DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationWrapper<DDSegmentation::X>); \
   namespace DD4hep { namespace Geometry {                               \
       template DDSegmentation::X*                                       \
       Segmentation::get<DDSegmentation::X>(const Object* obj); }}

@@ -57,8 +57,8 @@ namespace DD4hep {
     }
 
     /// default constructor using an encoding string
-    MegatileLayerGridXY::MegatileLayerGridXY(BitField64* decoder) :
-      CartesianGrid(decoder) {
+    MegatileLayerGridXY::MegatileLayerGridXY(BitField64* decode) :
+      CartesianGrid(decode) {
       // define type and description
       _type = "MegatileLayerGridXY";
       // _description = "Cartesian segmentation in the local XY-plane for both Normal wafer and Magic wafer(depending on the layer dimensions)";

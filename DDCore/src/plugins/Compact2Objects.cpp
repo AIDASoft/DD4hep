@@ -635,21 +635,27 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   Readout ro(name);
   
   printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
+  
   if (id) {
     //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
     opt.second = IDDescriptor(id.text());
     opt.second->SetName(ro.name());
-    ro.setIDDescriptor(opt.second);
     lcdd.addIDSpecification(opt.second);
   }
   if (seg) {   // Segmentation is not mandatory!
-    Converter<Segmentation> converter(lcdd,param,&opt);
-    converter(seg);
-    if ( opt.first.isValid() )   {
-      opt.first->setName(name);
-      ro.setSegmentation(opt.first);
-    }
+    Converter<Segmentation>(lcdd,param,&opt)(seg);
+    opt.first->setName(name);
   }
+  /// The next 2 if-clauses are a bit tricky, because they are not commutativ.
+  /// The segmentation MUST be set first - THEN the ID descriptor, since it will
+  /// update the segmentation.
+  if ( opt.first.isValid() )   {
+    ro.setSegmentation(opt.first);
+  }
+  if ( opt.second.isValid() )  {
+    ro.setIDDescriptor(opt.second);
+  }
+  
   for(xml_coll_t colls(e,_U(hits_collections)); colls; ++colls)   {
     string hits_key;
     if ( colls.hasAttr(_U(key)) ) hits_key = colls.attr<string>(_U(key));

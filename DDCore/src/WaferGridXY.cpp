@@ -13,8 +13,8 @@
 
 // Framework include files
 #include "DD4hep/Segmentations.h"
-#include "DD4hep/CartesianGridXZ.h"
-#include "DDSegmentation/CartesianGridXZ.h"
+#include "DD4hep/WaferGridXY.h"
+#include "DDSegmentation/WaferGridXY.h"
 
 // C/C++ include files
 
@@ -22,46 +22,55 @@ using namespace std;
 using namespace DD4hep::Geometry;
 
 /// determine the position based on the cell ID
-Position CartesianGridXZ::position(const CellID& id) const   {
+Position WaferGridXY::position(const CellID& id) const   {
   return Position(access()->implementation->position(id));
 }
 
 /// determine the cell ID based on the position
-DD4hep::CellID CartesianGridXZ::cellID(const Position& local,
-                               const Position& global,
-                               const VolumeID& volID) const
+DD4hep::CellID WaferGridXY::cellID(const Position& local,
+                                   const Position& global,
+                                   const VolumeID& volID) const
 {
   return access()->implementation->cellID(local, global, volID);
 }
 
 /// access the grid size in X
-double CartesianGridXZ::gridSizeX() const {
+double WaferGridXY::gridSizeX() const {
   return access()->implementation->gridSizeX();
 }
 
-/// access the grid size in Z
-double CartesianGridXZ::gridSizeZ() const {
-  return access()->implementation->gridSizeZ();
+/// access the grid size in Y
+double WaferGridXY::gridSizeY() const {
+  return access()->implementation->gridSizeY();
 }
 
 /// access the coordinate offset in X
-double CartesianGridXZ::offsetX() const {
+double WaferGridXY::offsetX() const {
   return access()->implementation->offsetX();
 }
 
-/// access the coordinate offset in Z
-double CartesianGridXZ::offsetZ() const {
-  return access()->implementation->offsetZ();
+/// access the coordinate offset in Y
+double WaferGridXY::offsetY() const {
+  return access()->implementation->offsetY();
+}
+/// access the coordinate waferOffset for inGroup in X
+double WaferGridXY::waferOffsetX(int inGroup, int inWafer) const  {
+  return access()->implementation->waferOffsetX(inGroup,inWafer);
+}
+
+/// access the coordinate waferOffset for inGroup in Y
+double WaferGridXY::waferOffsetY(int inGroup, int inWafer) const  {
+  return access()->implementation->waferOffsetY(inGroup,inWafer);
 }
 
 /// access the field name used for X
-const string& CartesianGridXZ::fieldNameX() const {
+const string& WaferGridXY::fieldNameX() const {
   return access()->implementation->fieldNameX();
 }
 
-/// access the field name used for Z
-const string& CartesianGridXZ::fieldNameZ() const {
-  return access()->implementation->fieldNameZ();
+/// access the field name used for Y
+const string& WaferGridXY::fieldNameY() const {
+  return access()->implementation->fieldNameY();
 }
 
 /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
@@ -71,8 +80,8 @@ const string& CartesianGridXZ::fieldNameZ() const {
     \param cellID is ignored as all cells have the same dimension
     \return vector<double> size 2:
     -# size in x
-    -# size in z
+    -# size in y
 */
-vector<double> CartesianGridXZ::cellDimensions(const CellID& id) const  {
+vector<double> WaferGridXY::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

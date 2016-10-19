@@ -53,13 +53,9 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      IDDescriptor()
-        : Handle<Object>() {
-      }
+      IDDescriptor() = default;
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> IDDescriptor(const Handle<Q>& e)
-        : Handle<Object>(e) {
-      }
+      template <typename Q> IDDescriptor(const Handle<Q>& e) : Handle<Object>(e) { }
       /// Initializing constructor
       IDDescriptor(const std::string& description);
       // the string description of all fields

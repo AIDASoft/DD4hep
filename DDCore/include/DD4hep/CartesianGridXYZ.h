@@ -28,34 +28,53 @@ namespace DD4hep {
 
     // Forward declarations
     class Segmentation;
-    
+
+    /// We need some abbreviation to make the code more readable.
+    typedef Handle<SegmentationWrapper<DDSegmentation::CartesianGridXYZ> > CartesianGridXYZHandle;
+  
     /// Implementation class for the grid XYZ segmentation.
     /**
-     * \author  M.Frank
-     * \version 1.0
-     * \ingroup DD4HEP_GEOMETRY
+     *  Concrete user handle to serve specific needs of client code
+     *  which requires access to the base functionality not served
+     *  by the super-class Segmentation.
+     *
+     *  Note:
+     *  We only check the validity of the underlying handle.
+     *  If for whatever reason the implementation object is not valid
+     *  This is not checked.
+     *  In principle this CANNOT happen unless some brain-dead has
+     *  fiddled with the handled object directly.....
+     *
+     *  Note:
+     *  The handle base corrsponding to this object in for
+     *  conveniance reasons instantiated in DD4hep/src/Segmentations.cpp.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
-    class CartesianGridXYZ : public Handle<DDSegmentation::CartesianGridXYZ>  {
+    class CartesianGridXYZ : public CartesianGridXYZHandle {
     public:
       /// Defintiion of the basic handled object
-      typedef DDSegmentation::CartesianGridXYZ Object;
+      typedef CartesianGridXYZHandle::Implementation Object;
 
     public:
       /// Default constructor
-      CartesianGridXYZ() : Handle<Object>() {}
-      /// Copy constructor from handle
-      CartesianGridXYZ(const Handle<Object>& e) : Handle<Object>(e) {}
+      CartesianGridXYZ() = default;
       /// Copy constructor
       CartesianGridXYZ(const CartesianGridXYZ& e) = default;
       /// Copy Constructor from segmentation base object
-      CartesianGridXYZ(const Segmentation& e);
+      CartesianGridXYZ(const Segmentation& e) : Handle<Object>(e) {}
+      /// Copy constructor from handle
+      CartesianGridXYZ(const Handle<Object>& e) : Handle<Object>(e) {}
+      /// Copy constructor from other polymorph/equivalent handle
+      template <typename Q>
+      CartesianGridXYZ(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Assignment operator
       CartesianGridXYZ& operator=(const CartesianGridXYZ& seg) = default;
       /// Equality operator
-      bool operator==(const CartesianGridXYZ& seg) const {
-        return m_element == seg.m_element;
-      }
-
+      bool operator==(const CartesianGridXYZ& seg) const
+      {  return m_element == seg.m_element;    }
       /// determine the position based on the cell ID
       Position position(const CellID& cellID) const;
       /// determine the cell ID based on the position

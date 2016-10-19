@@ -31,8 +31,7 @@ WaferGridXY::WaferGridXY(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-WaferGridXY::WaferGridXY(BitField64* decoder) :
-		CartesianGrid(decoder) {
+WaferGridXY::WaferGridXY(BitField64* decode) :	CartesianGrid(decode) {
 	// define type and description
 	_type = "WaferGridXY";
 	_description = "Cartesian segmentation in the local XY-plane for both Normal wafer and Magic wafer(depending on the layer dimensions)";

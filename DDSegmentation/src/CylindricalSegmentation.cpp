@@ -8,22 +8,22 @@
 #include "DDSegmentation/CylindricalSegmentation.h"
 
 namespace DD4hep {
-namespace DDSegmentation {
+  namespace DDSegmentation {
 
-/// default constructor using an encoding string
-CylindricalSegmentation::CylindricalSegmentation(const std::string& cellEncoding) :
-		Segmentation(cellEncoding) {
-}
+    /// default constructor using an encoding string
+    CylindricalSegmentation::CylindricalSegmentation(const std::string& cellEncoding) :
+      Segmentation(cellEncoding) {
+    }
 
-/// Default constructor used by derived classes passing an existing decoder
-CylindricalSegmentation::CylindricalSegmentation(BitField64* decoder) :
-		Segmentation(decoder) {
-}
+    /// Default constructor used by derived classes passing an existing decoder
+    CylindricalSegmentation::CylindricalSegmentation(BitField64* decode) :
+      Segmentation(decode) {
+    }
 
-/// destructor
-CylindricalSegmentation::~CylindricalSegmentation() {
+    /// destructor
+    CylindricalSegmentation::~CylindricalSegmentation() {
 
-}
+    }
 
-} /* namespace DDSegmentation */
+  } /* namespace DDSegmentation */
 } /* namespace DD4hep */

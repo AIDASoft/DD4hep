@@ -18,6 +18,7 @@
 // Framework include files
 #include "DD4hep/Volumes.h"
 #include "DD4hep/NamedObject.h"
+#include "DD4hep/IDDescriptor.h"
 #include "DD4hep/Segmentations.h"
 #include "DDSegmentation/BitField64.h"
 
@@ -150,7 +151,7 @@ namespace DD4hep {
       /// Range values of the key is not empty.
       long key_min, key_max;
       /// Default constructor
-      HitCollection() {}
+      HitCollection() : key_min(~0x0), key_max(~0x0) {}
       /// Copy constructor
       HitCollection(const HitCollection& c);
       /// Initializing constructor

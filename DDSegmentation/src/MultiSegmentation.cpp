@@ -26,8 +26,8 @@ namespace DD4hep {
     }
 
     /// Default constructor used by derived classes passing an existing decoder
-    MultiSegmentation::MultiSegmentation(BitField64* decoder)
-      :	Segmentation(decoder), m_discriminator(0), m_debug(0)
+    MultiSegmentation::MultiSegmentation(BitField64* decode)
+      :	Segmentation(decode), m_discriminator(0), m_debug(0)
     {
       // define type and description
       _type        = "MultiSegmentation";

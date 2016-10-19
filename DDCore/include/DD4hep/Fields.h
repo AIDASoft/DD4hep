@@ -73,25 +73,17 @@ namespace DD4hep {
       };
 
       /// Default constructor
-      CartesianField()
-        : Ref_t() {
-      }
+      CartesianField() = default;
 
       /// Constructor to be used when reading the already parsed DOM tree
-      CartesianField(const CartesianField& e)
-        : Ref_t(e) {
-      }
+      CartesianField(const CartesianField& e) = default;
 
       /// Constructor to be used when reading the already parsed DOM tree
-      template <typename Q> CartesianField(const Handle<Q>& e)
-        : Ref_t(e) {
+      template <typename Q> CartesianField(const Handle<Q>& e) : Ref_t(e) {
       }
 
       /// Assignment operator
-      CartesianField& operator=(const CartesianField& f) {
-        m_element = f.m_element;
-        return *this;
-      }
+      CartesianField& operator=(const CartesianField& f) = default;
 
       /// Access the field type
       int fieldType() const {
@@ -166,15 +158,10 @@ namespace DD4hep {
       };
 
       /// Default constructor
-      OverlayedField()
-        : Ref_t() {
-      }
+      OverlayedField() = default;
 
       /// Constructor to be used when reading the already parsed DOM tree
-      template <typename Q>
-      OverlayedField(const Handle<Q>& e)
-        : Ref_t(e) {
-      }
+      template <typename Q>  OverlayedField(const Handle<Q>& e) : Ref_t(e) {      }
 
       /// Object constructor
       OverlayedField(const std::string& name);

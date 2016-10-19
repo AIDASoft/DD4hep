@@ -11,8 +11,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CARTESIANGRIDYZ_H 
-#define DD4HEP_DDCORE_CARTESIANGRIDYZ_H 1
+#ifndef DD4HEP_DDCORE_WAFERGRIDZY_H 
+#define DD4HEP_DDCORE_WAFERGRIDZY_H 1
 
 // Framework include files
 #include "DD4hep/Objects.h"
@@ -21,7 +21,7 @@
 namespace DD4hep {
 
   /// Namespace for base segmentations
-  namespace DDSegmentation  {    class CartesianGridYZ;  }
+  namespace DDSegmentation  {    class WaferGridXY;  }
   
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
@@ -30,9 +30,9 @@ namespace DD4hep {
     class Segmentation;
     
     /// We need some abbreviation to make the code more readable.
-    typedef Handle<SegmentationWrapper<DDSegmentation::CartesianGridYZ> > CartesianGridYZHandle;
-  
-   /// Implementation class for the grid YZ segmentation.
+    typedef Handle<SegmentationWrapper<DDSegmentation::WaferGridXY> > WaferGridXYHandle;
+
+    /// Implementation class for the grid XZ segmentation.
     /**
      *  Concrete user handle to serve specific needs of client code
      *  which requires access to the base functionality not served
@@ -53,28 +53,27 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
      */
-    class CartesianGridYZ : public CartesianGridYZHandle  {
+    class WaferGridXY : public WaferGridXYHandle  {
     public:
       /// Defintiion of the basic handled object
-      typedef CartesianGridYZHandle::Implementation Object;
+      typedef WaferGridXYHandle::Implementation Object;
 
     public:
       /// Default constructor
-      CartesianGridYZ() = default;
+      WaferGridXY() = default;
       /// Copy constructor
-      CartesianGridYZ(const CartesianGridYZ& e) = default;
+      WaferGridXY(const WaferGridXY& e) = default;
       /// Copy Constructor from segmentation base object
-      CartesianGridYZ(const Segmentation& e) : Handle<Object>(e) {}
+      WaferGridXY(const Segmentation& e) : Handle<Object>(e) {}
       /// Copy constructor from handle
-      CartesianGridYZ(const Handle<Object>& e) : Handle<Object>(e) {}
-       /// Copy constructor from other polymorph/equivalent handle
-      template <typename Q>
-      CartesianGridYZ(const Handle<Q>& e) : Handle<Object>(e) { }
+      WaferGridXY(const Handle<Object>& e) : Handle<Object>(e) {}
+      /// Copy constructor from other polymorph/equivalent handle
+      template <typename Q> WaferGridXY(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Assignment operator
-      CartesianGridYZ& operator=(const CartesianGridYZ& seg) = default;
+      WaferGridXY& operator=(const WaferGridXY& seg) = default;
       /// Equality operator
-      bool operator==(const CartesianGridYZ& seg) const
-      {  return m_element == seg.m_element;        }
+      bool operator==(const WaferGridXY& seg) const
+      {  return m_element == seg.m_element;      }
       /// determine the position based on the cell ID
       Position position(const CellID& cellID) const;
       /// determine the cell ID based on the position
@@ -83,32 +82,30 @@ namespace DD4hep {
       double gridSizeX() const;
       /// access the grid size in Y
       double gridSizeY() const;
-      /// access the grid size in Z
-      double gridSizeZ() const;
       /// access the coordinate offset in X
       double offsetX() const;
       /// access the coordinate offset in Y
       double offsetY() const;
-      /// access the coordinate offset in Z
-      double offsetZ() const;
+      /// access the coordinate waferOffset for inGroup in X
+      double waferOffsetX(int inGroup, int inWafer) const;
+      /// access the coordinate waferOffset for inGroup in Y
+      double waferOffsetY(int inGroup, int inWafer) const;
       /// access the field name used for X
       const std::string& fieldNameX() const;
       /// access the field name used for Y
       const std::string& fieldNameY() const;
-      /// access the field name used for Z
-      const std::string& fieldNameZ() const;
       /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
-       *  in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
-       *
-       *  Returns a vector of the cellDimensions of the given cell ID
-       *  \param cellID is ignored as all cells have the same dimension
-       *  \return std::vector<double> size 2:
-       *  -# size in y
-       *  -# size in z
-       */
+          in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+
+          Returns a vector of the cellDimensions of the given cell ID
+          \param cellID is ignored as all cells have the same dimension
+          \return std::vector<double> size 2:
+          -# size in x
+          -# size in z
+      */
       std::vector<double> cellDimensions(const CellID& cellID) const;
     };
 
   } /* End namespace Geometry              */
 } /* End namespace DD4hep                */
-#endif // DD4HEP_DDCORE_CARTESIANGRIDYZ_H
+#endif // DD4HEP_DDCORE_WAFERGRIDZY_H

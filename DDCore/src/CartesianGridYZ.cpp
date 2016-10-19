@@ -21,15 +21,9 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-/// Copy Constructor from segmentation base object
-CartesianGridYZ::CartesianGridYZ(const Segmentation& e) : Handle<Object>()
-{
-  m_element = Segmentation::get<Object>(e.ptr());
-}
-
 /// determine the position based on the cell ID
 Position CartesianGridYZ::position(const CellID& id) const   {
-  return Position(access()->position(id));
+  return Position(access()->implementation->position(id));
 }
 
 /// determine the cell ID based on the position
@@ -37,37 +31,37 @@ DD4hep::CellID CartesianGridYZ::cellID(const Position& local,
                                        const Position& global,
                                        const VolumeID& volID) const
 {
-  return access()->cellID(local, global, volID);
+  return access()->implementation->cellID(local, global, volID);
 }
 
 /// access the grid size in Y
 double CartesianGridYZ::gridSizeY() const {
-  return access()->gridSizeY();
+  return access()->implementation->gridSizeY();
 }
 
 /// access the grid size in Z
 double CartesianGridYZ::gridSizeZ() const {
-  return access()->gridSizeZ();
+  return access()->implementation->gridSizeZ();
 }
 
 /// access the coordinate offset in Y
 double CartesianGridYZ::offsetY() const {
-  return access()->offsetY();
+  return access()->implementation->offsetY();
 }
 
 /// access the coordinate offset in Z
 double CartesianGridYZ::offsetZ() const {
-  return access()->offsetZ();
+  return access()->implementation->offsetZ();
 }
 
 /// access the field name used for Y
 const string& CartesianGridYZ::fieldNameY() const {
-  return access()->fieldNameY();
+  return access()->implementation->fieldNameY();
 }
 
 /// access the field name used for Z
 const string& CartesianGridYZ::fieldNameZ() const {
-  return access()->fieldNameZ();
+  return access()->implementation->fieldNameZ();
 }
 
 /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
@@ -80,5 +74,5 @@ const string& CartesianGridYZ::fieldNameZ() const {
     -# size in z
 */
 vector<double> CartesianGridYZ::cellDimensions(const CellID& id) const  {
-  return access()->cellDimensions(id);
+  return access()->implementation->cellDimensions(id);
 }
