@@ -56,6 +56,7 @@ namespace DD4hep {
       const std::string& name() const;
       /// Set the segmentation name
       void setName(const std::string& value);
+
       /// Access the segmentation type
       const std::string& type() const;
       /// Access the description of the segmentation
@@ -83,6 +84,7 @@ namespace DD4hep {
       /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
       void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
 
+      /** Data members.                                          */
       /// Magic word to check object integrity
       unsigned long magic;
       /// Flag to use segmentation for hit positioning

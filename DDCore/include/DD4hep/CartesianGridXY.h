@@ -87,10 +87,18 @@ namespace DD4hep {
       double gridSizeX() const;
       /// access the grid size in Y
       double gridSizeY() const;
+      /// set the grid size in X
+      void setGridSizeX(double cellSize) const;
+      /// set the grid size in Y
+      void setGridSizeY(double cellSize) const;
       /// access the coordinate offset in X
       double offsetX() const;
       /// access the coordinate offset in Y
       double offsetY() const;
+      /// set the coordinate offset in X
+      void setOffsetX(double offset) const;
+      /// set the coordinate offset in Y
+      void setOffsetY(double offset) const;
       /// access the field name used for X
       const std::string& fieldNameX() const;
       /// access the field name used for Y

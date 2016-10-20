@@ -49,6 +49,21 @@ double CartesianGridXYZ::gridSizeZ() const {
   return access()->implementation->gridSizeZ();
 }
 
+/// set the grid size in X
+void CartesianGridXYZ::setGridSizeX(double cellSize) const   {
+  access()->implementation->setGridSizeX(cellSize);
+}
+
+/// set the grid size in Y
+void CartesianGridXYZ::setGridSizeY(double cellSize) const   {
+  access()->implementation->setGridSizeY(cellSize);
+}
+
+/// set the grid size in Z
+void CartesianGridXYZ::setGridSizeZ(double cellSize) const   {
+  access()->implementation->setGridSizeZ(cellSize);
+}
+
 /// access the coordinate offset in X
 double CartesianGridXYZ::offsetX() const {
   return access()->implementation->offsetX();
@@ -62,6 +77,21 @@ double CartesianGridXYZ::offsetY() const {
 /// access the coordinate offset in Z
 double CartesianGridXYZ::offsetZ() const {
   return access()->implementation->offsetZ();
+}
+
+/// set the coordinate offset in X
+void CartesianGridXYZ::setOffsetX(double offset) const   {
+  access()->implementation->setOffsetX(offset);
+}
+
+/// set the coordinate offset in Y
+void CartesianGridXYZ::setOffsetY(double offset) const   {
+  access()->implementation->setOffsetY(offset);
+}
+
+/// set the coordinate offset in Z
+void CartesianGridXYZ::setOffsetZ(double offset) const   {
+  access()->implementation->setOffsetZ(offset);
 }
 
 /// access the field name used for X

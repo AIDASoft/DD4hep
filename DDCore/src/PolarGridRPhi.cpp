@@ -54,6 +54,26 @@ double PolarGridRPhi::offsetPhi() const  {
   return access()->implementation->offsetPhi();
 }
 
+/// set the coordinate offset in R
+void PolarGridRPhi::setOffsetR(double offset) const  {
+  access()->implementation->setOffsetR(offset);
+}
+
+/// set the coordinate offset in Phi
+void PolarGridRPhi::setOffsetPhi(double offset) const  {
+  access()->implementation->setOffsetPhi(offset);
+}
+
+/// set the grid size in R
+void PolarGridRPhi::setGridSizeR(double cellSize) const  {
+  access()->implementation->setGridSizeR(cellSize);
+}
+
+/// set the grid size in Phi
+void PolarGridRPhi::setGridSizePhi(double cellSize) const  {
+  access()->implementation->setGridSizePhi(cellSize);
+}
+
 /// access the field name used for R
 const string& PolarGridRPhi::fieldNameR() const  {
   return access()->implementation->fieldNameR();

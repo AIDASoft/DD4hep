@@ -83,10 +83,18 @@ namespace DD4hep {
       double gridSizeR() const;
       /// access the grid size in Phi
       double gridSizePhi() const;
+      /// set the grid size in R
+      void setGridSizeR(double cellSize) const;
+      /// set the grid size in Phi
+      void setGridSizePhi(double cellSize) const;
       /// access the coordinate offset in R
       double offsetR() const;
       /// access the coordinate offset in Phi
       double offsetPhi() const;
+      /// set the coordinate offset in R
+      void setOffsetR(double offset) const;
+      /// set the coordinate offset in Phi
+      void setOffsetPhi(double offset) const;
       /// access the field name used for R
       const std::string& fieldNameR() const;
       /// access the field name used for Phi
