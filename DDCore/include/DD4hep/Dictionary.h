@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -25,7 +24,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated"
 #pragma GCC diagnostic ignored "-Wunused"
 #endif
-
+// Framework include files
 #include "XML/Evaluator.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/DD4hepRootPersistency.h"
@@ -41,6 +40,7 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/FieldTypes.h"
 
+// C/C++ include files
 #include <vector>
 #include <map>
 #include <string>

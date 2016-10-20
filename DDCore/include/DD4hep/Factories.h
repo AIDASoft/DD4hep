@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -19,6 +18,8 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/NamedObject.h"
 #include "XML/XMLElements.h"
+
+// C/C++ include files
 #include <cstdarg>
 
 /// Namespace for the AIDA detector description toolkit

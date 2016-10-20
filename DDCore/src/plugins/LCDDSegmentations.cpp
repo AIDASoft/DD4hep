@@ -13,63 +13,48 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Segmentations.h"
+#include "DD4hep/objects/SegmentationsInterna.h"
 #include "DD4hep/Factories.h"
 
 using namespace DD4hep::Geometry;
 using namespace DD4hep::DDSegmentation;
 
+namespace {
+  template<typename T> DD4hep::Geometry::SegmentationObject*
+  create_segmentation(DD4hep::Geometry::BitField64* decoder)  {
+    return new DD4hep::Geometry::SegmentationWrapper<T>(decoder);
+  }
+}
+
 #include "DDSegmentation/CartesianGridXY.h"
-static SegmentationObject* create_CartesianGridXY(BitField64* decoder)
-{  return new SegmentationWrapper<CartesianGridXY>(decoder);    }
-DECLARE_SEGMENTATION(CartesianGridXY,create_CartesianGridXY)
+DECLARE_SEGMENTATION(CartesianGridXY,create_segmentation<DD4hep::DDSegmentation::CartesianGridXY>)
 
 #include "DDSegmentation/CartesianGridXZ.h"
-static SegmentationObject* create_CartesianGridXZ(BitField64* decoder)
-{  return new SegmentationWrapper<CartesianGridXZ>(decoder);    }
-DECLARE_SEGMENTATION(CartesianGridXZ,create_CartesianGridXZ)
+DECLARE_SEGMENTATION(CartesianGridXZ,create_segmentation<DD4hep::DDSegmentation::CartesianGridXZ>)
 
 #include "DDSegmentation/CartesianGridYZ.h"
-static SegmentationObject* create_CartesianGridYZ(BitField64* decoder)
-{  return new SegmentationWrapper<CartesianGridYZ>(decoder);    }
-DECLARE_SEGMENTATION(CartesianGridYZ,create_CartesianGridYZ)
+DECLARE_SEGMENTATION(CartesianGridYZ,create_segmentation<DD4hep::DDSegmentation::CartesianGridYZ>)
 
 #include "DDSegmentation/CartesianGridXYZ.h"
-static SegmentationObject* create_CartesianGridXYZ(BitField64* decoder)
-{  return new SegmentationWrapper<CartesianGridXYZ>(decoder);    }
-DECLARE_SEGMENTATION(CartesianGridXYZ,create_CartesianGridXYZ)
+DECLARE_SEGMENTATION(CartesianGridXYZ,create_segmentation<DD4hep::DDSegmentation::CartesianGridXYZ>)
 
 #include "DDSegmentation/TiledLayerGridXY.h"
-static SegmentationObject* create_TiledLayerGridXY(BitField64* decoder)
-{  return new SegmentationWrapper<TiledLayerGridXY>(decoder);    }
-DECLARE_SEGMENTATION(TiledLayerGridXY,create_TiledLayerGridXY)
+DECLARE_SEGMENTATION(TiledLayerGridXY,create_segmentation<DD4hep::DDSegmentation::TiledLayerGridXY>)
 
 #include "DDSegmentation/MegatileLayerGridXY.h"
-static SegmentationObject* create_MegatileLayerGridXY(BitField64* decoder)
-{  return new SegmentationWrapper<MegatileLayerGridXY>(decoder);    }
-DECLARE_SEGMENTATION(MegatileLayerGridXY,create_MegatileLayerGridXY)
+DECLARE_SEGMENTATION(MegatileLayerGridXY,create_segmentation<DD4hep::DDSegmentation::MegatileLayerGridXY>)
 
 #include "DDSegmentation/WaferGridXY.h"
-static SegmentationObject* create_WaferGridXY(BitField64* decoder)
-{  return new SegmentationWrapper<WaferGridXY>(decoder);    }
-DECLARE_SEGMENTATION(WaferGridXY,create_WaferGridXY)
+DECLARE_SEGMENTATION(WaferGridXY,create_segmentation<DD4hep::DDSegmentation::WaferGridXY>)
 
 #include "DDSegmentation/PolarGridRPhi.h"
-static SegmentationObject* create_PolarGridRPhi(BitField64* decoder)
-{  return new SegmentationWrapper<PolarGridRPhi>(decoder);    }
-DECLARE_SEGMENTATION(PolarGridRPhi,create_PolarGridRPhi)
+DECLARE_SEGMENTATION(PolarGridRPhi,create_segmentation<DD4hep::DDSegmentation::PolarGridRPhi>)
 
 #include "DDSegmentation/PolarGridRPhi2.h"
-static SegmentationObject* create_PolarGridRPhi2(BitField64* decoder)
-{  return new SegmentationWrapper<PolarGridRPhi2>(decoder);    }
-DECLARE_SEGMENTATION(PolarGridRPhi2,create_PolarGridRPhi2)
+DECLARE_SEGMENTATION(PolarGridRPhi2,create_segmentation<DD4hep::DDSegmentation::PolarGridRPhi2>)
 
 #include "DDSegmentation/ProjectiveCylinder.h"
-static SegmentationObject* create_ProjectiveCylinder(BitField64* decoder)
-{  return new SegmentationWrapper<ProjectiveCylinder>(decoder);    }
-DECLARE_SEGMENTATION(ProjectiveCylinder,create_ProjectiveCylinder)
+DECLARE_SEGMENTATION(ProjectiveCylinder,create_segmentation<DD4hep::DDSegmentation::ProjectiveCylinder>)
 
 #include "DDSegmentation/MultiSegmentation.h"
-static SegmentationObject* create_MultiSegmentation(BitField64* decoder)
-{  return new SegmentationWrapper<MultiSegmentation>(decoder);    }
-DECLARE_SEGMENTATION(MultiSegmentation,create_MultiSegmentation)
+DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<DD4hep::DDSegmentation::MultiSegmentation>)

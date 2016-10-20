@@ -161,9 +161,6 @@ protected:
 	mutable BitField64* _decoder;
 	/// Keeps track of the decoder ownership
 	bool _ownsDecoder;
-public:
-  /// DD4hep usage ONLY. Backlink to DD4hep segmentation
-  Segmentation* backLink;
 private:
 	/// No copy constructor allowed
 	Segmentation(const Segmentation&);

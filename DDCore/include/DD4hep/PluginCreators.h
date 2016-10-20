@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -11,7 +12,6 @@
 //  \version  1.0
 //
 //==========================================================================
-// $Id$
 #ifndef DD4HEP_PLUGINCREATORS_H 
 #define DD4HEP_PLUGINCREATORS_H 1
 

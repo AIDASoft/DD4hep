@@ -29,6 +29,27 @@ namespace DD4hep {
      */
     class MultiSegmentation : public Segmentation {
     public:
+      
+      struct Entry {
+        long key_min, key_max;
+        Segmentation* segmentation;
+      };
+      typedef std::vector<Entry> Segmentations;
+
+    protected:
+      /// Sub-segmentaion container
+      Segmentations  m_segmentations;
+
+      /// the field name used to discriminate sub-segmentations
+      std::string    m_discriminatorId;
+
+      /// Bitfield corresponding to dicriminator identifier
+      BitFieldValue* m_discriminator;
+
+      /// Debug flags
+      int m_debug;
+
+    public:
       /// Default constructor passing the encoding string
       MultiSegmentation(const std::string& cellEncoding = "");
 
@@ -40,6 +61,9 @@ namespace DD4hep {
 
       /// Add subsegmentation.
       virtual void addSubsegmentation(long key_min, long key_max, Segmentation* entry);
+
+      /// Access subsegmentation by cell identifier
+      const Segmentation& subsegmentation(const CellID& cellID) const;
 
       /// determine the position based on the cell ID
       virtual Vector3D position(const CellID& cellID) const;
@@ -64,27 +88,9 @@ namespace DD4hep {
       /// Set the underlying decoder
       virtual void setDecoder(BitField64* decoder);
 
-    protected:
-      struct Entry {
-        long key_min, key_max;
-        Segmentation* segmentation;
-      };
-      typedef std::vector<Entry> Segmentations;
+      /// The underlying sub-segementations
+      const Segmentations& subSegmentations()  const { return m_segmentations;   }
 
-      /// Access subsegmentation by cell identifier
-      const Segmentation& subsegmentation(const CellID& cellID) const;
-
-      /// Sub-segmentaion container
-      Segmentations  m_segmentations;
-
-      /// the field name used to discriminate sub-segmentations
-      std::string    m_discriminatorId;
-
-      /// Bitfield corresponding to dicriminator identifier
-      BitFieldValue* m_discriminator;
-
-      /// Debug flags
-      int m_debug;
     };
 
   } /* namespace DDSegmentation */

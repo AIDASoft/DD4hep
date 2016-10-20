@@ -16,6 +16,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/objects/SegmentationsInterna.h"
 
 using namespace std;
 using namespace DD4hep;
