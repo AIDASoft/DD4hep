@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -15,13 +14,13 @@
 #define DD4HEP_GEOMETRY_SEGMENTATIONS_H
 
 // Framework include files
-#include "DD4hep/Objects.h"
 #include "DD4hep/Handle.h"
+#include "DD4hep/Objects.h"
+#include "DD4hep/BitField64.h"
 #include "DDSegmentation/Segmentation.h"
 
 // C/C++ include files
-#include <cmath>
-#include <vector>
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -29,101 +28,10 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    // Forward declarations
+    /// Forward declarations
     class DetElementObject;
+    class SegmentationObject;
     class SensitiveDetectorObject;
-
-    /// Implementation class supporting generic Segmentation of sensitive detectors
-    /**
-     *  The SegmentationObject wraps the functionality of the DDSegmentation base class.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
-     */
-    class SegmentationObject {
-    public:
-      typedef DDSegmentation::Segmentation BaseSegmentation;
-      typedef DDSegmentation::Parameters   Parameters;
-      typedef DDSegmentation::Parameter    Parameter;
-
-    public:
-      /// Standard constructor
-      SegmentationObject(BaseSegmentation* s = 0);
-      /// Default destructor
-      virtual ~SegmentationObject();
-      /// Access the encoding string
-      std::string fieldDescription() const;
-      /// Access the segmentation name
-      const std::string& name() const;
-      /// Set the segmentation name
-      void setName(const std::string& value);
-      /// Access the segmentation type
-      const std::string& type() const;
-      /// Access the description of the segmentation
-      const std::string& description() const;
-      /// Access the underlying decoder
-      BitField64* decoder() const;
-      /// Set the underlying decoder
-      void setDecoder(BitField64* decoder) const;
-      /// Access to parameter by name
-      Parameter  parameter(const std::string& parameterName) const;
-      /// Access to all parameters
-      Parameters parameters() const;
-      /// Set all parameters from an existing set of parameters
-      void setParameters(const Parameters& parameters);
-
-      /** Segmentation interface  */
-      /// Determine the local position based on the cell ID
-      Position position(const CellID& cellID) const;
-      /// Determine the cell ID based on the position
-      CellID cellID(const Position& localPosition,
-                    const Position& globalPosition,
-                    const VolumeID& volumeID) const;
-      /// Determine the volume ID from the full cell ID by removing all local fields
-      VolumeID volumeID(const CellID& cellID) const;
-      /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
-      void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
-
-      /// Magic word to check object integrity
-      unsigned long magic;
-      /// Flag to use segmentation for hit positioning
-      unsigned char useForHitPosition;
-      /// Reference to hosting top level DetElement structure
-      Handle<DetElementObject> detector;      
-      /// Reference to hosting top level sensitve detector structure
-      Handle<SensitiveDetectorObject> sensitive;
-      /// Reference to base segmentation
-      BaseSegmentation* segmentation;      
-    };
-
-    /// Concrete wrapper class for segmentation implementation based on DDSegmentation objects
-    /**
-     * \author  M.Frank
-     * \version 1.0
-     * \ingroup DD4HEP_GEOMETRY
-     */
-    template <typename IMP> class SegmentationWrapper : public SegmentationObject {
-    public:
-      /// DDSegmentation aggregate
-      IMP* implementation;
-    public:
-      /// Standard constructor
-      SegmentationWrapper(DDSegmentation::BitField64* decoder);
-      /// Default destructor
-      virtual ~SegmentationWrapper();
-    };
-
-    /// Standard constructor
-    template <typename IMP> inline
-    SegmentationWrapper<IMP>::SegmentationWrapper(DDSegmentation::BitField64* decode)
-      :  SegmentationObject(implementation=new IMP(decode))
-    {
-    }
-    
-    /// Default destructor
-    template <typename IMP> inline SegmentationWrapper<IMP>::~SegmentationWrapper()  {
-    }
     
     /// Handle class supporting generic Segmentation of sensitive detectors
     /**
@@ -134,7 +42,7 @@ namespace DD4hep {
      */
     class Segmentation: public Handle<SegmentationObject> {
     public:
-      typedef SegmentationObject Object;
+      typedef SegmentationObject           Object;
       typedef DDSegmentation::Segmentation BaseSegmentation;
       typedef DDSegmentation::Parameter    Parameter;
       typedef DDSegmentation::Parameters   Parameters;
@@ -161,6 +69,10 @@ namespace DD4hep {
       std::string type() const;
       /// Access to the parameters
       Parameters parameters() const;
+      /// Access the main detector element using this segmetnation object
+      Handle<DetElementObject> detector() const;
+      /// Access the sensitive detector using this segmetnation object
+      Handle<SensitiveDetectorObject> sensitive() const;
       /// Access the underlying decoder
       BitField64* decoder() const;
       /// Set the underlying decoder
@@ -169,8 +81,10 @@ namespace DD4hep {
       Position position(const long64& cellID) const;
       /// determine the cell ID based on the local position
       long64 cellID(const Position& localPosition, const Position& globalPosition, const long64& volumeID) const;
-      /// Access the concrete underlying segmentation implementation from DDSegmentation
-      template <typename T> static T* get(const Object* object);
+      /// Determine the volume ID from the full cell ID by removing all local fields
+      VolumeID volumeID(const CellID& cellID) const;
+      /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
+      void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
     };
 
   } /* End namespace Geometry              */

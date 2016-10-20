@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,21 +15,17 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
-#include "DDSegmentation/BitField64.h"
+#include "DD4hep/BitField64.h"
 
 // C++ include files
 #include <string>
 #include <vector>
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry sub-namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     class IDDescriptorObject;

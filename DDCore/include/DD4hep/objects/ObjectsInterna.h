@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_GEOMETRY_OBJECTSINTERNA_H
 #define DD4HEP_GEOMETRY_OBJECTSINTERNA_H
 
@@ -20,7 +18,7 @@
 #include "DD4hep/NamedObject.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/Segmentations.h"
-#include "DDSegmentation/BitField64.h"
+#include "DD4hep/BitField64.h"
 
 // C/C++ include files
 #include <set>

@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Segmentations.h"
 #include "DD4hep/CartesianGridXY.h"
+#include "DD4hep/objects/SegmentationsInterna.h"
 #include "DDSegmentation/CartesianGridXY.h"
 
 // C/C++ include files

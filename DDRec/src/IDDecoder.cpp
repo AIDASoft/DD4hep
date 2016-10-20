@@ -101,7 +101,7 @@ Position IDDecoder::localPosition(const CellID& cell) const {
  */
 VolumeID IDDecoder::volumeID(const CellID& cell) const {
 	DetElement det = this->detectorElement(cell);
-	return this->findReadout(det).segmentation()->volumeID(cell);
+	return this->findReadout(det).segmentation().volumeID(cell);
 }
 
 /*
@@ -177,7 +177,7 @@ Geometry::Readout IDDecoder::readout(const Position& global) const {
  */
 void IDDecoder::neighbours(const CellID& cell, set<CellID>& neighbour_cells) const {
 	DetElement det = this->detectorElement(cell);
-	this->findReadout(det).segmentation()->neighbours(cell, neighbour_cells);
+	this->findReadout(det).segmentation().neighbours(cell, neighbour_cells);
 }
 
 /*
@@ -186,7 +186,7 @@ void IDDecoder::neighbours(const CellID& cell, set<CellID>& neighbour_cells) con
 bool IDDecoder::areNeighbours(const CellID& cell, const CellID& otherCellID) const {
 	set<CellID> neighbour_cells;
 	DetElement det = this->detectorElement(cell);
-	this->findReadout(det).segmentation()->neighbours(cell, neighbour_cells);
+	this->findReadout(det).segmentation().neighbours(cell, neighbour_cells);
 	return neighbour_cells.count(otherCellID) != 0;
 }
 

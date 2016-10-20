@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -14,6 +13,7 @@
 #ifndef DD4hep_DETECTOR_DETFACTORYHELPER_H
 #define DD4hep_DETECTOR_DETFACTORYHELPER_H
 
+// Framework include files
 #include "XML/XMLDetector.h"
 #include "XML/XMLChildValue.h"
 #include "DD4hep/LCDD.h"

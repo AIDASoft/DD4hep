@@ -15,7 +15,7 @@
 #define DD4HEP_DDCORE_POLARGRIDRPHI_H 1
 
 // Framework include files
-#include "DD4hep/Objects.h"
+#include "DD4hep/Segmentations.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -28,6 +28,7 @@ namespace DD4hep {
 
     // Forward declarations
     class Segmentation;
+    template <typename T> class SegmentationWrapper;
     
     /// We need some abbreviation to make the code more readable.
     typedef Handle<SegmentationWrapper<DDSegmentation::PolarGridRPhi> > PolarGridRPhiHandle;

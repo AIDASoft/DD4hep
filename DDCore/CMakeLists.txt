@@ -33,13 +33,18 @@ dd4hep_add_dictionary( G__DD4hep
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h )
 
+dd4hep_add_package_library ( DDParsers
+  INCLUDE_DIRS  
+  LINK_LIBRARIES
+  OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
+  )
+
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp
   GENERATED      G__DD4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
-  LINK_LIBRARIES ${GaudiPluginService_LIBRARIES}
-  OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
+  LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}
   )
 
 # Generate DDCore plugins---------------------------------------------------------
