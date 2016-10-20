@@ -31,7 +31,7 @@
 # Build and install directories
 bin/
 lib/
-include/
+/include
 python/
 build/
 
