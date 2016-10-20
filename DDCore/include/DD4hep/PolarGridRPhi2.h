@@ -87,11 +87,32 @@ namespace DD4hep {
       double offsetR() const;
       /// access the coordinate offset in Phi
       double offsetPhi() const;
+      /// set the coordinate offset in R
+      void setOffsetR(double offset) const;
+      /// set the coordinate offset in Phi
+      void setOffsetPhi(double offset) const;
       /// access the grid size in R
       std::vector<double> gridRValues() const;
       /// access the grid size in Phi
       std::vector<double>  gridPhiValues() const;
-      /// access the field name used for R
+      /// set the grid Boundaries in R
+      void setGridSizeR(double cellSize, int rID) const;
+      /// set the grid size in Phi
+      void setGridSizePhi(double cellSize, int phiID) const;
+      /// set the grid boundaries for R
+      /** @param rValues The boundaries of the segments in radius,
+       *                 the first value is the lower boundary of the first bin, 
+       *                 the highest value is the upper boundary of the last bin
+       */
+      void setGridRValues(std::vector<double> const& rValues) const;
+      /// set the grid size in Phi for each bin in R
+      /** @param phiValues The size in phi for each bin in R, 
+       *                   this vector is one smaller than the vector 
+       *                   for PolarGridRPhi2::setGridRValues
+       */
+      void setGridPhiValues(std::vector<double> const& phiValues) const;
+
+     /// access the field name used for R
       const std::string& fieldNameR() const;
       /// access the field name used for Phi
       const std::string& fieldNamePhi() const;

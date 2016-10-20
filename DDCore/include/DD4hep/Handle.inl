@@ -46,11 +46,24 @@ namespace DD4hep {
 
 }   /* End namespace DD4hep      */
 
+#if 0
+#include <iostream>
+
+      std::cout << "element:" << (void*)m_element << std::endl;\
+      std::cout << "type:   "  << (char*)(m_element ? typeName(typeid(*m_element)).c_str() : "---") << std::endl;\
+      std::cout << "type:   "  << (void*)(m_element ? &typeid(*m_element) : 0) << std::endl;\
+      std::cout << "target: "  << typeName(typeid(X)) << std::endl;\
+      std::cout << "target: "  << (void*)&typeid(X) << std::endl;\
+      std::cout << "cast:   "  << dynamic_cast<X*>((TObject*)m_element) << std::endl;\
+      std::cout << "cast:   "  << dynamic_cast<X*>(m_element) << std::endl;\
+
+#endif
+
 #define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
   namespace DD4hep {                                                    \
     template <> void Handle<X>::verifyObject() const  {                 \
       increment_object_validations();					\
-      if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
+      if (m_element && dynamic_cast<X*>(m_element) == 0) {	        \
         bad_assignment(typeid(*m_element), typeid(X));		        \
       }                                                                 \
   }}                                                                    \

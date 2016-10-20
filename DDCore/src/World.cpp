@@ -40,4 +40,3 @@ World::AlignmentsLoader& World::alignmentsLoader() const   {
 LCDD& World::lcdd() const   {
   return *(access()->lcdd);
 }
-
