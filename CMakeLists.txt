@@ -34,7 +34,7 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #  !! and make also sure to change in ./DDCore/include/DD4hep/LCDD.h   !!
 #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-dd4hep_set_version(DD4hep MAJOR 0 MINOR 16 PATCH 0)
+dd4hep_set_version(DD4hep MAJOR 0 MINOR 17 PATCH 0)
 dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
 #
 #
