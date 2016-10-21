@@ -235,7 +235,12 @@ namespace {
         return result;
       }
       /// __________________________________________________________________________________
-      void printDetElement(int level, DetElement de, ConditionPrinter& prt, bool with_placement=false, bool with_keys=false, bool with_values=false)   {
+      void printDetElement(int level, DetElement de,
+                           ConditionPrinter& prt,
+                           bool with_placement=false,
+                           bool with_keys=false,
+                           bool with_values=false)
+      {
         typedef Conditions::Container::Object::Keys _K;
         char fmt[128];
         const DetElement::Children& c = de.children();
