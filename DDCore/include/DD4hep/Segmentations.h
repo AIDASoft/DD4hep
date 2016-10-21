@@ -87,6 +87,16 @@ namespace DD4hep {
       VolumeID volumeID(const CellID& cellID) const;
       /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
       void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
+      /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
+       *  in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+       *
+       *   \param cellID cellID of the cell for which parameters are returned
+       *   \return vector<double> in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+       */
+      std::vector<double> cellDimensions(const CellID& cellID) const;
+      
+      /// Access to the base DDSegmentation object. WARNING: Deprecated call!
+      BaseSegmentation* segmentation() const;
     };
 
   } /* End namespace Geometry              */

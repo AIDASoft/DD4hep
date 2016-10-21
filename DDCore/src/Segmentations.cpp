@@ -82,6 +82,21 @@ void Segmentation::neighbours(const CellID& cell, std::set<CellID>& nb) const  {
   data<Object>()->segmentation->neighbours(cell, nb);
 }
 
+/** \brief Returns a vector<double> of the cellDimensions of the given cell ID
+ *  in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+ *
+ *   \param cellID cellID of the cell for which parameters are returned
+ *   \return vector<double> in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+ */
+std::vector<double> Segmentation::cellDimensions(const CellID& cell) const  {
+  return data<Object>()->segmentation->cellDimensions(cell);
+}
+      
+/// Access to the base DDSegmentation object. WARNING: Deprecated call!
+Segmentation::BaseSegmentation* Segmentation::segmentation() const  {
+  return data<Object>()->segmentation;
+}
+
 /// Access the underlying decoder
 BitField64* Segmentation::decoder()  const {
   return data<Object>()->segmentation->decoder();
