@@ -405,9 +405,9 @@ namespace DD4hep{
 	      Readout readOut = sD.readout() ;
 	      Segmentation seg = readOut.segmentation() ;
 	      
-	      //	    DDSegmentation::DoubleVecParameter rPar =  dynamic_cast<DDSegmentation::DoubleVecParameter>( seg.segmentation()->parameter("grid_r_values"));
-	      DDSegmentation::DoubleVecParameter pPar =  dynamic_cast<DDSegmentation::DoubleVecParameter>( seg.segmentation()->parameter("grid_phi_values"));
-	      DDSegmentation::DoubleParameter    oPPar=  dynamic_cast<DDSegmentation::DoubleParameter>(    seg.segmentation()->parameter("offset_phi"));
+	      //	    DDSegmentation::DoubleVecParameter rPar =  dynamic_cast<DDSegmentation::DoubleVecParameter>( seg.parameter("grid_r_values"));
+	      DDSegmentation::DoubleVecParameter pPar =  dynamic_cast<DDSegmentation::DoubleVecParameter>( seg.parameter("grid_phi_values"));
+	      DDSegmentation::DoubleParameter    oPPar=  dynamic_cast<DDSegmentation::DoubleParameter>(    seg.parameter("offset_phi"));
 	      
 
 	      //offset_phi="-180*degree+(360*degree-BCal_SpanningPhi)*0.5"

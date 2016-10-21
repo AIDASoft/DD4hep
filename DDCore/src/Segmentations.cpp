@@ -26,9 +26,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-using DD4hep::DDSegmentation::Parameter;
-using DD4hep::DDSegmentation::Parameters;
-using DD4hep::DDSegmentation::SegmentationParameter;
 
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationObject);
 
@@ -56,8 +53,13 @@ bool Segmentation::useForHitPosition() const {
 }
 
 /// Access to the parameters
-Parameters Segmentation::parameters() const {
+Segmentation::Parameters Segmentation::parameters() const {
   return data<Object>()->parameters();
+}
+
+/// Access to parameter by name
+Segmentation::Parameter  Segmentation::parameter(const std::string& parameterName) const   {
+  return data<Object>()->parameter(parameterName);
 }
 
 /// determine the local position based on the cell ID

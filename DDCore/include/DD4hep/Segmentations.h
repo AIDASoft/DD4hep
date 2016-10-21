@@ -51,7 +51,7 @@ namespace DD4hep {
       /// Initializing constructor creating a new object of the given DDSegmentation type
       Segmentation(const std::string& type, const std::string& name, BitField64* decoder);
       /// Default constructor
-      Segmentation() : Handle<Object>() { }
+      Segmentation() = default;
       /// Copy Constructor from object
       Segmentation(const Segmentation& e) : Handle<Object>(e) { }
 #ifndef __CINT__
@@ -69,6 +69,8 @@ namespace DD4hep {
       std::string type() const;
       /// Access to the parameters
       Parameters parameters() const;
+      /// Access to parameter by name
+      Parameter  parameter(const std::string& parameterName) const;
       /// Access the main detector element using this segmetnation object
       Handle<DetElementObject> detector() const;
       /// Access the sensitive detector using this segmetnation object
