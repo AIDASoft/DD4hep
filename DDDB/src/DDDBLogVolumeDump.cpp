@@ -35,7 +35,8 @@ namespace  {
     std::set<TGeoVolume*> scanned_vols;
   public:
     VolumeScan() {}
-    void scan_daughters(TGeoVolume* vol, string path)   {
+    int scan_daughters(TGeoVolume* vol, string path)   {
+      int count = 0;
       auto ivol = scanned_vols.find(vol);
       if ( ivol == scanned_vols.end() )  {
         int num_dau = vol->GetNdaughters();
@@ -43,12 +44,14 @@ namespace  {
         path += "/";
         path += vol->GetName();
         printout(INFO,"DDDB_vol_dump","%s",path.c_str());
+        ++count;
         for(int i=0; i<num_dau; ++i)  {
           TGeoNode*   n = vol->GetNode(i);
           TGeoVolume* v = n->GetVolume();
-          scan_daughters(v,path);
+          count += scan_daughters(v,path);
         }
       }
+      return count;
     }
   };
 
@@ -56,7 +59,8 @@ namespace  {
   long dddb_dump_logical_volumes(LCDD& lcdd, int , char** ) {
     VolumeScan scan;
     Volume world_vol = lcdd.worldVolume();
-    scan.scan_daughters(world_vol,string());
+    int count = scan.scan_daughters(world_vol,string());
+    printout(INFO,"DDDB_vol_dump","Found %d unique logical volumes.",count);
     return 1;
   }
 } /* End anonymous namespace  */

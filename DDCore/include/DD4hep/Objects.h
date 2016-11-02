@@ -559,8 +559,10 @@ namespace DD4hep {
     };
 
   } /* End namespace Geometry           */
-} /* End namespace DD4hep             */
+}   /* End namespace DD4hep             */
 
+#include "Math/Vector4D.h"
+#include "Math/Point3D.h"
 
 namespace ROOT {
   namespace Math {
@@ -577,6 +579,17 @@ namespace ROOT {
     inline Position mean_direction(const Position& p1, const Position& p2) {
       return 0.5 * (p1 + p2);
     }
+
+    // These operators are used for component properties.
+    // The implementation is in the parsers, but since the parsers
+    // do not have public include files, they are defined here.
+
+    /// Allow point insertion of a point in maps
+    bool operator<(const XYZPoint& a, const XYZPoint& b);
+    /// Allow 3-vector insertion of a  in maps
+    bool operator<(const XYZVector& a, const XYZVector& b);
+    /// Allow 4-vector insertion of a  in maps
+    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
   }
 }
 

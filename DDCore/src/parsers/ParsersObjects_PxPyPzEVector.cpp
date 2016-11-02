@@ -16,7 +16,13 @@
 #include "ParsersStandardListCommon.h"
 
 namespace ROOT {  namespace Math {
-    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
+    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b)  {
+      if ( a.X() < b.X() ) return true;
+      if ( a.Y() < b.Y() ) return true;
+      if ( a.Z() < b.Z() ) return true;
+      if ( a.T() < b.T() ) return true;
+      return false;
+    }
   }}
 
 // ============================================================================

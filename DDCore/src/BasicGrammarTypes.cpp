@@ -16,33 +16,6 @@
 #include "DD4hep/BasicGrammar_inl.h"
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
-namespace ROOT {
-  namespace Math {
-
-    bool operator<(const XYZPoint& a, const XYZPoint& b)  {
-      if ( a.X() < b.X() ) return true;
-      if ( a.Y() < b.Y() ) return true;
-      if ( a.Z() < b.Z() ) return true;
-      return false;
-    }
-    bool operator<(const XYZVector& a, const XYZVector& b)  {
-      if ( a.X() < b.X() ) return true;
-      if ( a.Y() < b.Y() ) return true;
-      if ( a.Z() < b.Z() ) return true;
-      return false;
-    }
-    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b)  {
-      if ( a.X() < b.X() ) return true;
-      if ( a.Y() < b.Y() ) return true;
-      if ( a.Z() < b.Z() ) return true;
-      if ( a.T() < b.T() ) return true;
-      return false;
-    }
-  }
-}
-template struct std::less<ROOT::Math::XYZPoint>;
-template struct std::less<ROOT::Math::XYZVector>;
-template struct std::less<ROOT::Math::PxPyPzEVector>;
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZPoint,eval_obj)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZVector,eval_obj)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::PxPyPzEVector,eval_obj)
