@@ -16,8 +16,17 @@
 #include "ParsersStandardListCommon.h"
 
 namespace ROOT {  namespace Math {
-    bool operator<(const XYZVector& a, const XYZVector& b);
+    bool operator<(const XYZVector& a, const XYZVector& b)  {
+      if ( a.X() < b.X() ) return true;
+      if ( a.Y() < b.Y() ) return true;
+      if ( a.Z() < b.Z() ) return true;
+      return false;
+    }
   }}
+
+template struct std::less<ROOT::Math::XYZPoint>;
+template struct std::less<ROOT::Math::XYZVector>;
+template struct std::less<ROOT::Math::PxPyPzEVector>;
 
 // ============================================================================
 namespace DD4hep {

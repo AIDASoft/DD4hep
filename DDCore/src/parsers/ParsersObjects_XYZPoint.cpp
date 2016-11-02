@@ -16,7 +16,12 @@
 #include "ParsersStandardListCommon.h"
 
 namespace ROOT {  namespace Math {
-    bool operator<(const XYZPoint& a, const XYZPoint& b);
+    bool operator<(const XYZPoint& a, const XYZPoint& b)  {
+      if ( a.X() < b.X() ) return true;
+      if ( a.Y() < b.Y() ) return true;
+      if ( a.Z() < b.Z() ) return true;
+      return false;
+    }
   }}
 // ============================================================================
 namespace DD4hep {
