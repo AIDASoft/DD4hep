@@ -8,7 +8,7 @@ slc6-gcc48:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON  -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Debug ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON  -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -20,10 +20,6 @@ slc6-gcc48:
     - ninja
     - ninja install
     - ctest --output-on-failure
-    - cd ../..
-    - rm -rf .git
-    - echo "sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc48-dbg"
-
 
 slc6-gcc49:
   tags:
@@ -35,7 +31,7 @@ slc6-gcc49:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Debug ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -47,11 +43,6 @@ slc6-gcc49:
     - ninja
     - ninja install
     - ctest --output-on-failure
-    - cd ../..
-    - rm -rf .git
-    - echo "sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc49-dbg"
-    - echo "Test build finished"
-
 
 slc6-gcc49-XERCESC:
   tags:
@@ -63,7 +54,7 @@ slc6-gcc49-XERCESC:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_USE_XERCESC=ON ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -75,7 +66,6 @@ slc6-gcc49-XERCESC:
     - ninja
     - ninja install
     - ctest --output-on-failure
-    - echo "Test build finished"
 
 centos7-gcc49:
   tags:
@@ -87,7 +77,7 @@ centos7-gcc49:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Debug ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -99,8 +89,25 @@ centos7-gcc49:
     - ninja
     - ninja install
     - ctest --output-on-failure
-    - cd ../..
-    - rm -rf .git
-    - echo "sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-centos7-gcc49-dbg"
-    - echo "Test build finished"
     
+
+slc6-llvm39:
+  tags:
+    - docker
+  image: clicdp/slc6-base
+  script:
+    - source .gitlab-ci.d/init_clang.sh
+    - mkdir build
+    - cd build
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
+    - ninja
+    - ninja install
+    - . ../bin/thisdd4hep.sh
+    - ctest --output-on-failure -j4
+    - cd ../examples/
+    - mkdir build
+    - cd build
+    - cmake -GNinja ..
+    - ninja
+    - ninja install
+    - ctest --output-on-failure
