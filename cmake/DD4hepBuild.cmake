@@ -72,6 +72,26 @@ function ( dd4hep_debug msg )
 endfunction( dd4hep_debug )
 
 #---------------------------------------------------------------------------------------------------
+#  dd4hep_include_directories
+#
+#  Same as include_directories but treat all external packages as SYSTEM -> no warnings
+#
+#  \author  A.Sailer
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
+function ( dd4hep_include_directories pkg_incs )
+  FOREACH( INCDIR ${pkg_incs} )
+    string(FIND "${INCDIR}" "${CMAKE_SOURCE_DIR}" out)
+    IF("${out}" EQUAL 0)
+      INCLUDE_DIRECTORIES( ${INCDIR} )
+    ELSE()
+      INCLUDE_DIRECTORIES( SYSTEM ${INCDIR} )
+    ENDIF()
+  ENDFOREACH()
+endfunction( dd4hep_include_directories )
+
+#---------------------------------------------------------------------------------------------------
 #  dd4hep_print
 #
 #
@@ -938,14 +958,7 @@ function( dd4hep_add_library binary building )
         dd4hep_make_unique_list ( sources  VALUES ${sources} )
         dd4hep_debug( "${tag} ${sources}")
         #
-        FOREACH( INCDIR ${pkg_incs} )
-          string(FIND "${INCDIR}" "${CMAKE_SOURCE_DIR}" out)
-          IF("${out}" EQUAL 0)
-            INCLUDE_DIRECTORIES( ${INCDIR} )
-          ELSE()
-            INCLUDE_DIRECTORIES( SYSTEM ${INCDIR} )
-          ENDIF()
-        ENDFOREACH()
+        dd4hep_include_directories( "${pkg_incs}" )
         add_definitions ( ${pkg_defs} )
         #
         add_library ( ${binary} SHARED ${sources} )
@@ -1139,7 +1152,7 @@ function ( dd4hep_add_executable binary )
 	  dd4hep_make_unique_list ( sources VALUES ${sources} )
 	  #
 	  dd4hep_debug ( "${tag} Libs:${libs}" )
-	  include_directories( ${incs} )
+	  dd4hep_include_directories( "${incs}" )
 	  add_executable( ${binary} ${sources} )
 	  target_link_libraries( ${binary} ${libs} )
 	  #
