@@ -20,6 +20,7 @@
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/BitField64.h"
 
 #include "lcio.h"
 #include "IO/LCReader.h"
@@ -115,7 +116,7 @@ int main(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      UTIL::BitField64 idDecoder( cellIDEcoding ) ;
+      DD4hep::BitField64 idDecoder( cellIDEcoding ) ;
 
       int nHit = col->getNumberOfElements() ;
       
