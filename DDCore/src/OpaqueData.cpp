@@ -29,6 +29,23 @@ using namespace DD4hep;
 OpaqueData::OpaqueData() : grammar(0), pointer(0)   {
 }
 
+/// Copy constructor
+OpaqueData::OpaqueData(const OpaqueData& c) : grammar(c.grammar), pointer(c.pointer) {
+}
+
+/// Standard Destructor
+OpaqueData::~OpaqueData()  {
+}
+
+/// Assignment operator
+OpaqueData& OpaqueData::operator=(const OpaqueData& c) {
+  if ( &c != this )  {
+    grammar = c.grammar;
+    pointer = c.pointer;
+  }
+  return *this;
+}
+
 /// Create data block from string representation
 bool OpaqueData::fromString(const string& rep)   {
   if ( pointer && grammar )  {
@@ -109,8 +126,8 @@ OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
   if ( this != &c )  {
     if ( this->grammar == c.grammar )   {
       if ( destruct )  {
-	(*destruct)(pointer);
-	if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
+        (*destruct)(pointer);
+        if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
       }
       pointer = 0;
       grammar = 0;

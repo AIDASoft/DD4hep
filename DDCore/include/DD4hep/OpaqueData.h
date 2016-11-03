@@ -39,11 +39,11 @@ namespace DD4hep {
     /// Standard initializing constructor
     OpaqueData();
     /// Standard Destructor
-    virtual ~OpaqueData() = default;
+    virtual ~OpaqueData();
     /// Copy constructor
-    OpaqueData(const OpaqueData& copy) = default;
+    OpaqueData(const OpaqueData& c);
     /// Assignment operator
-    OpaqueData& operator=(const OpaqueData& copy) = default;
+    OpaqueData& operator=(const OpaqueData& c);
 
   public:
     /// Data type
