@@ -210,6 +210,9 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Container(const Handle<Q>& e) : Handle<Object>(e) {}
 
+      /// Assignment operator
+      Container& operator=(const Container& c) = default;
+
       /// Access the number of conditons keys available for this detector element
       size_t numKeys() const;
 
@@ -278,7 +281,7 @@ namespace DD4hep {
       /// Automatic conversion to the string representation of the key object
       operator const std::string& ()  const  {  return name;     }
       /// Automatic conversion to the hashed representation of the key object
-      operator key_type () const         {  return hash;     }
+      operator key_type () const             {  return hash;     }
     };
 
     /// Hash code generation from input string

@@ -377,7 +377,7 @@ namespace DD4hep {
   namespace XML {
 
     /// XML-DOM ERror handler class for the TinyXML document parser (Compatibility class)
-    struct DocumentErrorHandler {};
+    class DocumentErrorHandler {};
 
     union Xml {
       Xml(void* ptr) : p(ptr) {}

@@ -10,7 +10,7 @@
 #
 #==========================================================================
 dd4hep_package(UtilityApps
-  USES DDCore
+  USES DDSegmentation DDCore
       [ROOT REQUIRED COMPONENTS Geom]
   )
 #-----------------------------------------------------------------------------------

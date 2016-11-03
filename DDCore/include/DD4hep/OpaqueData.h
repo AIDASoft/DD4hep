@@ -39,11 +39,16 @@ namespace DD4hep {
     /// Standard initializing constructor
     OpaqueData();
     /// Standard Destructor
-    virtual ~OpaqueData();
+    virtual ~OpaqueData() = default;
+    /// Copy constructor
+    OpaqueData(const OpaqueData& copy) = default;
+    /// Assignment operator
+    OpaqueData& operator=(const OpaqueData& copy) = default;
 
   public:
     /// Data type
     const BasicGrammar* grammar;
+
   protected:
     /// Pointer to object data
     void* pointer;

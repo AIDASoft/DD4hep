@@ -22,8 +22,8 @@ private:
   int k, max_size;
   T * v;
 
-  stack(const stack& c) : k(0), max_size(0), v(0) {}
-  stack& operator=(const stack&) { k=0; max_size=0; v=0; return *this; }
+  stack(const stack& c) = delete;
+  stack& operator=(const stack&) = delete;
 
 public:
   stack() :  k(0), max_size(20), v(new T[20]) {}

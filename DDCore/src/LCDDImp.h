@@ -50,10 +50,10 @@ namespace DD4hep {
 
     private:
       /// Disable copy constructor
-      LCDDImp(const LCDDImp& copy);
+      LCDDImp(const LCDDImp& copy) = delete;
 
       /// Disable assignment operator
-      LCDDImp& operator=(const LCDDImp& copy);
+      LCDDImp& operator=(const LCDDImp& copy) = delete;
 
       /// Internal helper to map detector types once the geometry is closed
       void mapDetectorTypes();

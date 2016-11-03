@@ -23,6 +23,16 @@
 using namespace std;
 using namespace DD4hep;
 
+/// Assignment operator
+IOVType& IOVType::operator=(const IOVType& copy)  {
+  if ( &copy != this )  {
+    name = copy.name;
+    type = copy.type;
+  }
+  return *this;
+}
+
+/// Conversion to string
 std::string IOVType::str()  const   {
   char text[256];
   ::snprintf(text,sizeof(text),"%s(%d)",name.c_str(),int(type));
@@ -40,20 +50,10 @@ IOV::IOV(const IOVType* t) : iovType(t), keyData(0,0), optData(0)  {
 }
 
 /// Copy constructor
-IOV::IOV(const IOV& c) 
-  : iovType(c.iovType), keyData(c.keyData), optData(c.optData), type(c.type)
-{
-}
-
-/// Copy constructor
 IOV::IOV(const IOVType* t, const Key& k)
   : iovType(t), keyData(k), optData(0)
 {
   type = t ? t->type : int(IOVType::UNKNOWN_IOV);
-}
-
-/// Standard Destructor
-IOV::~IOV()  {
 }
 
 /// Set discrete IOV value

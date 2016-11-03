@@ -128,6 +128,10 @@ namespace DD4hep {
       LCDDData();
       /// Default destructor
       virtual ~LCDDData();
+      /// Copy constructor
+      LCDDData(const LCDDData& copy) = delete;
+      /// Assignment operator
+      //LCDDData& operator=(const LCDDData& copy) = delete;
     public:
       /// Clear data content: releases all allocated resources
       void destroyData(bool destroy_mgr=true);

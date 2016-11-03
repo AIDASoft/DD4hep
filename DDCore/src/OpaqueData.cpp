@@ -29,10 +29,6 @@ using namespace DD4hep;
 OpaqueData::OpaqueData() : grammar(0), pointer(0)   {
 }
 
-/// Standard Destructor
-OpaqueData::~OpaqueData()   {
-}
-
 /// Create data block from string representation
 bool OpaqueData::fromString(const string& rep)   {
   if ( pointer && grammar )  {
