@@ -57,7 +57,6 @@ namespace DD4hep {
       const Entries& entries;
       /// Initializing functor constructor
       AlignmentSelector(GlobalAlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
-      ~AlignmentSelector() { }
       const AlignmentSelector& reset()   const { nodes.clear(); return *this; }
       /// Function callback for cache entries
       void operator()(const GlobalAlignmentCache::Cache::value_type& e) const;

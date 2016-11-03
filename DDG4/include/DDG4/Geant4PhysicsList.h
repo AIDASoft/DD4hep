@@ -66,14 +66,12 @@ namespace DD4hep {
       typedef std::map<std::string, ParticleProcesses> PhysicsProcesses;
 
       /// Structure describing a G4 particle constructor
-      class ParticleConstructor: public std::string {
+      class ParticleConstructor : public std::string {
       public:
         /// Default constructor
         ParticleConstructor() = default;
         /// Initalizing constructor
         ParticleConstructor(const std::string& s) : std::string(s) { }
-        /// Default destructor
-        ~ParticleConstructor() {}
         /// Assignment operator
         ParticleConstructor& operator=(const ParticleConstructor& c)  {
           if ( &c != this ) this->std::string::operator=(c);
@@ -99,8 +97,6 @@ namespace DD4hep {
         PhysicsConstructor(const PhysicsConstructor& c) : std::string(c), pointer(c.pointer)  {}
         /// Initalizing constructor
         PhysicsConstructor(const std::string& s) : std::string(s), pointer(0)  {}
-        /// Default destructor
-        ~PhysicsConstructor() {}
         /// Assignment operator
         PhysicsConstructor& operator=(const PhysicsConstructor& c)  {
           if ( &c != this ) { this->std::string::operator=(c); pointer=c.pointer; }

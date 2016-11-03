@@ -32,7 +32,8 @@ namespace DD4hep {
 
     typedef Conditions::ConditionDependency Dependency;
 
-    struct AlignContext {
+    class AlignContext {
+    public:
       struct Entry {
         const Dependency*           dep;
         DetElement::Object*         det;
