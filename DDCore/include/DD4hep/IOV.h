@@ -60,8 +60,6 @@ namespace DD4hep {
   private:
     /// Initializing constructor: Does not set reference to IOVType !
     explicit IOV() = delete;
-    /// Inhibit assignment
-    IOV& operator=(const IOV& c) = default;
   public:
     /// Key definition
     typedef long Key_first_type;
@@ -82,6 +80,8 @@ namespace DD4hep {
     IOV(const IOV& copy) = default;
     /// Standard Destructor
     ~IOV() = default;
+    /// Assignment operator
+    IOV& operator=(const IOV& c) = default;
     /// Move the data content: 'from' will be reset to NULL
     void move(IOV& from);
     /// Create string representation of the IOV
