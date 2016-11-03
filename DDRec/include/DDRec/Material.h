@@ -87,14 +87,14 @@ namespace DD4hep {
 
       /// assignment from Geometry::Material
       MaterialData& operator=(const IMaterial& m){
-      
-	_name = m.name() ;
-	_Z = m.Z() ;
-	_A = m.A() ;
-	_rho = m.density() ;
-	_x0 = m.radiationLength() ;
-	_lambda = m.interactionLength() ;
-	
+        if ( this != &m )  {
+          _name = m.name() ;
+          _Z = m.Z() ;
+          _A = m.A() ;
+          _rho = m.density() ;
+          _x0 = m.radiationLength() ;
+          _lambda = m.interactionLength() ;
+        }
         return *this ;
       }
 

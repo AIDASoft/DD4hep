@@ -14,12 +14,16 @@ namespace DDSurfaces {
    */
   
   class IMaterial {
+
+  protected:    
+    /// Assignment operator
+    IMaterial& operator=(const IMaterial&) { return *this; }
     
   public:
     
     /// Destructor
     virtual ~IMaterial() {}
-    
+
     /// material name
     virtual std::string name() const =0 ;
 

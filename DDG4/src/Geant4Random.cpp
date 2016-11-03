@@ -54,6 +54,11 @@ namespace    {
       fSeed = seed;
       m_generator->setSeed((long)seed);
     }
+    /// Set new seed
+    virtual  void SetSeed(ULong_t seed=0)    {
+      fSeed = seed;
+      m_generator->setSeed((long)seed);
+    }
     /// Single shot random number creation
     virtual Double_t Rndm(Int_t)  {
       return m_engine->flat();

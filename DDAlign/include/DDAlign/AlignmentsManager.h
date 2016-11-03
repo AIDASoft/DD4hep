@@ -68,7 +68,9 @@ namespace DD4hep {
       template <typename T> static AlignmentsManager from(T& host);
 
       /// Default constructor
-      AlignmentsManager() : Handle<Object>(0) {}
+      AlignmentsManager() = default;
+      /// Copy constructor
+      AlignmentsManager(const AlignmentsManager& copy) = default;
       /// Constructor to be used for proper handles
       AlignmentsManager(const Handle<Object>& e) : Handle<Object>(e) {}
       /// Constructor to be used for proper handles
@@ -77,8 +79,8 @@ namespace DD4hep {
       AlignmentsManager(const std::string& name);
       /// Initializing constructor. Creates the object!
       AlignmentsManager(char const* name);
-      /// Default destructor
-      ~AlignmentsManager() {}
+      /// Assignment operator
+      AlignmentsManager& operator=(const AlignmentsManager& mgr) = default;
       /// Delete the manager. Be careful: this affects all referencing handles!
       void destroy();
       /// Adopy alignment dependency for later recalculation
