@@ -42,6 +42,12 @@ ObjectExtensions::~ObjectExtensions()   {
   InstanceCount::decrement(this);
 }
 
+/// Move extensions to target object
+void ObjectExtensions::move(ObjectExtensions& source)   {
+  extensions = source.extensions;
+  source.extensions.clear();
+}
+
 /// Internal object destructor: release extension object(s)
 void ObjectExtensions::clear(bool destroy) {
   for (Extensions::iterator i = extensions.begin(); i != extensions.end(); ++i) {

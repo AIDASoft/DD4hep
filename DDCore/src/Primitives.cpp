@@ -188,10 +188,6 @@ std::string DD4hep::typeName(const std::type_info& typ) {
   return __typeinfoName(typ);
 }
 
-/// Default destructor of specialized exception
-DD4hep::invalid_handle_exception::~invalid_handle_exception() {
-}
-
 void DD4hep::invalidHandleError(const std::type_info& type)
 {
   throw invalid_handle_exception("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");

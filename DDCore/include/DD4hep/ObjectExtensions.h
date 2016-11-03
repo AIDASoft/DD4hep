@@ -60,8 +60,14 @@ namespace DD4hep {
   public:
     /// Default constructor
     ObjectExtensions(const std::type_info& parent_type);
+    /// Copy constructor
+    ObjectExtensions(const ObjectExtensions& copy) = delete;
     /// Default destructor
     virtual ~ObjectExtensions();
+    /// Assignment operator
+    ObjectExtensions& operator=(const ObjectExtensions& copy) = delete;
+    /// Move extensions to target object
+    void move(ObjectExtensions& copy);
     /// Clear all extensions
     void clear(bool destroy=true);
     /// Copy object extensions from another object. Hosting type must be identical!

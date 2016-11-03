@@ -68,8 +68,10 @@ namespace DD4hep {
     invalid_handle_exception(const std::string& msg) : std::runtime_error(msg) {}
     /// Generic copy constructor
     invalid_handle_exception(const std::exception& e) : std::runtime_error(e.what()) {}
+    /// Generic copy constructor
+    invalid_handle_exception(const invalid_handle_exception& e) : std::runtime_error(e.what()) {}
     /// Default destructor of specialized exception
-    virtual ~invalid_handle_exception();
+    virtual ~invalid_handle_exception() = default;
   };
 
   /// ABI information about type names

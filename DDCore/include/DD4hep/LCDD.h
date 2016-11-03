@@ -98,8 +98,7 @@ namespace DD4hep {
       typedef std::map<std::string, PropertyValues> Properties;
 
       /// Destructor
-      virtual ~LCDD() {
-      }
+      virtual ~LCDD() = default;
 
       /// Access flag to steer the detail of building of the geometry/detector description
       virtual LCDDBuildType buildType() const = 0;

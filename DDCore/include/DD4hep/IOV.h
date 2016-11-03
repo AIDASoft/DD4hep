@@ -33,11 +33,19 @@ namespace DD4hep {
   class IOVType   {
   public:
     enum { UNKNOWN_IOV = ~0x0 } _IOVTypes;
-
+    /// integer identifier ised internally
     unsigned int type;
+    /// String name
     std::string  name;
+    /// Standard Constructor
     IOVType() : type(UNKNOWN_IOV), name() {}
-    ~IOVType() {}
+    /// Standard Destructor
+    ~IOVType() = default;
+    /// Copy constructor
+    IOVType(const IOVType& copy) : type(copy.type), name(copy.name) {}
+    /// Assignment operator
+    IOVType& operator=(const IOVType& copy);
+    /// Conversion to string
     std::string str() const;
   };
 
@@ -69,10 +77,9 @@ namespace DD4hep {
     /// Specialized copy constructor
     explicit IOV(const IOVType* typ, const Key& key);
     /// Copy constructor
-    IOV(const IOV& copy);
-
+    IOV(const IOV& copy) = default;
     /// Standard Destructor
-    ~IOV();
+    ~IOV() = default;
     /// Move the data content: 'from' will be reset to NULL
     void move(IOV& from);
     /// Create string representation of the IOV
