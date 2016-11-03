@@ -59,7 +59,9 @@ namespace DD4hep {
   class IOV   {
   private:
     /// Initializing constructor: Does not set reference to IOVType !
-    explicit IOV();
+    explicit IOV() = delete;
+    /// Inhibit assignment
+    IOV& operator=(const IOV& c) = default;
   public:
     /// Key definition
     typedef long Key_first_type;

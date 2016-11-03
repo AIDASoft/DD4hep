@@ -69,15 +69,15 @@ namespace DD4hep {
       class ParticleConstructor: public std::string {
       public:
         /// Default constructor
-        ParticleConstructor()
-          : std::string() {
-        }
+        ParticleConstructor() = default;
         /// Initalizing constructor
-        ParticleConstructor(const std::string& s)
-          : std::string(s) {
-        }
+        ParticleConstructor(const std::string& s) : std::string(s) { }
         /// Default destructor
-        ~ParticleConstructor() {
+        ~ParticleConstructor() {}
+        /// Assignment operator
+        ParticleConstructor& operator=(const ParticleConstructor& c)  {
+          if ( &c != this ) this->std::string::operator=(c);
+          return *this;
         }
       };
       typedef std::vector<ParticleConstructor> ParticleConstructors;
@@ -94,19 +94,17 @@ namespace DD4hep {
         G4VPhysicsConstructor* pointer;
       public:
         /// Default constructor
-        PhysicsConstructor()
-          : std::string(), pointer(0) {
-        }
+        PhysicsConstructor() : std::string(), pointer(0) {}
         /// Copy constructor
-        PhysicsConstructor(const PhysicsConstructor& c)
-          : std::string(c), pointer(c.pointer)  {
-        }
+        PhysicsConstructor(const PhysicsConstructor& c) : std::string(c), pointer(c.pointer)  {}
         /// Initalizing constructor
-        PhysicsConstructor(const std::string& s)
-          : std::string(s), pointer(0)  {
-        }
+        PhysicsConstructor(const std::string& s) : std::string(s), pointer(0)  {}
         /// Default destructor
-        ~PhysicsConstructor() {
+        ~PhysicsConstructor() {}
+        /// Assignment operator
+        PhysicsConstructor& operator=(const PhysicsConstructor& c)  {
+          if ( &c != this ) { this->std::string::operator=(c); pointer=c.pointer; }
+          return *this;
         }
       };
       typedef std::vector<PhysicsConstructor> PhysicsConstructors;

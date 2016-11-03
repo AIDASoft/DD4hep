@@ -43,10 +43,6 @@ ConditionsManager::ConditionsManager(LCDD& lcdd)  {
   assign(new Object(lcdd), "ConditionsManager","");
 }
  
-/// Default destructor
-ConditionsManager::~ConditionsManager()   {
-}
-
 ConditionsManager& ConditionsManager::initialize()   {
   access()->initialize();
   return *this;

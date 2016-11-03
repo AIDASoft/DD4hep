@@ -18,7 +18,6 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
@@ -35,15 +34,19 @@ namespace DD4hep {
     class LCDDHelper : public Handle<LCDD>  {
     public:
       /// Default constructor
-      explicit LCDDHelper() : handle_t() {}
-      /// Initializing constructor from pointer
-      explicit LCDDHelper(LCDD* lcdd_ptr) : handle_t(lcdd_ptr) {}
-      /// Initializing constructor from pointer
-      explicit LCDDHelper(LCDD& lcdd_ref) : handle_t(&lcdd_ref) {}
+      LCDDHelper() = default;
       /// Copy constructor
-      explicit LCDDHelper(const handle_t& h) : handle_t(h) {}
+      LCDDHelper(const LCDDHelper& h) = default;
+      /// Initializing constructor from pointer
+      LCDDHelper(LCDD* lcdd_ptr) : handle_t(lcdd_ptr) {}
+      /// Initializing constructor from pointer
+      LCDDHelper(LCDD& lcdd_ref) : handle_t(&lcdd_ref) {}
+      /// Copy constructor
+      LCDDHelper(const handle_t& h) : handle_t(h) {}
       /// Default destructor
-      ~LCDDHelper() {}
+      ~LCDDHelper() = default;
+      /// Assignment operator
+      LCDDHelper& operator=(const LCDDHelper& c) = default;
       /// Access the sensitive detector of a given subdetector (if the sub-detector is sensitive!)
       SensitiveDetector sensitiveDetector(const std::string& detector) const;
       /// Given a detector element, access it's sensitive detector (if the sub-detector is sensitive!)

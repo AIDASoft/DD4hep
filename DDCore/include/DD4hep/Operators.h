@@ -24,7 +24,7 @@ namespace DD4hep {
   template <typename T> class ByName {
   private:
     /// Assignment operator
-    template <typename Q> ByName<T>& operator=(const ByName<Q>& copy)  { return *this; }
+    template <typename Q> ByName<T>& operator=(const ByName<Q>& /* copy */)  { return *this; }
   public:
     /// Reference name
     const std::string& name;
@@ -45,7 +45,7 @@ namespace DD4hep {
   template <typename T> class ByNameAttr {
   private:
     /// Assignment operator
-    template <typename Q> ByNameAttr<T>& operator=(const ByNameAttr<Q>& copy)  { return *this; }
+    template <typename Q> ByNameAttr<T>& operator=(const ByNameAttr<Q>& /* copy */)  { return *this; }
   public:
     /// Reference name
     const std::string& name;
