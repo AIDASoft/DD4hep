@@ -36,12 +36,13 @@ dd4hep_add_dictionary( G__DD4hep
 dd4hep_add_package_library ( DDParsers
   INCLUDE_DIRS  
   LINK_LIBRARIES
+  SOURCES        src/Evaluator/*.cpp 
   OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
   )
 
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
-  SOURCES        src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp
+  SOURCES        src/*.cpp src/XML/*.cpp
   GENERATED      G__DD4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
   LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}

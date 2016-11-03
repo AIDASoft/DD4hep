@@ -26,44 +26,6 @@
 #include "DD4hep/ToStream.h"
 
 #endif
-#include "XML/Evaluator.h"
-
-// C/C++ include files
-#include <stdexcept>
-
-namespace DD4hep {
-  XmlTools::Evaluator& g4Evaluator();
-}
-namespace {
-  XmlTools::Evaluator& eval(DD4hep::g4Evaluator());
-}
-
-//==============================================================================
-namespace DD4hep {  namespace Parsers {
-    template <typename T> T evaluate_string(const std::string& /* value */)   {
-      throw "Bad undefined call";
-    }
-
-    template <> double evaluate_string<double>(const std::string& value)   {
-      double result = eval.evaluate(value.c_str());
-      if (eval.status() != XmlTools::Evaluator::OK) {
-        std::cerr << value << ": ";
-        eval.print_error();
-        throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
-      }
-      return result;
-    }
-    template <> float evaluate_string<float>(const std::string& value)   {
-      double result = eval.evaluate(value.c_str());
-      if (eval.status() != XmlTools::Evaluator::OK) {
-        std::cerr << value << ": ";
-        eval.print_error();
-        throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
-      }
-      return (float) result;
-    }
-  }
-}
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 
