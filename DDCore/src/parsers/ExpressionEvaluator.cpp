@@ -36,7 +36,14 @@ namespace {
 
     //    e.setSystemOfUnits(1.e+2, 1./1.60217733e-6, 1.0, 1./1.60217733e-19, 1.0, 1.0, 1.0);
     // use the units as defined in DD4hepUnits.h:
-    e.setSystemOfUnits( dd4hep::meter, dd4hep::kilogram , dd4hep::second , dd4hep::ampere , dd4hep::kelvin , dd4hep::mole , dd4hep::candela , dd4hep::rad );
+    e.setSystemOfUnits( dd4hep::meter,
+                        dd4hep::kilogram,
+                        dd4hep::second,
+                        dd4hep::ampere,
+                        dd4hep::kelvin,
+                        dd4hep::mole,
+                        dd4hep::candela,
+                        dd4hep::rad );
   }
   void _g4Units(XmlTools::Evaluator& e) {
     // ===================================================================================
