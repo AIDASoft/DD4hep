@@ -71,7 +71,7 @@ namespace DD4hep {
       ConditionsManager(LCDD& lcdd);
 
       /// Default constructor
-      ConditionsManager() : Handle<Object>() {}
+      ConditionsManager() = default;
 
       /// Constructor to be used with valid pointer to object
       ConditionsManager(Object* p) : Handle<Object>(p) {}
@@ -83,8 +83,11 @@ namespace DD4hep {
       template <typename Q> ConditionsManager(const Handle<Q>& e) : Handle<Object>(e) {}
 
       /// Default destructor
-      ~ConditionsManager();
+      ~ConditionsManager() = default;
 
+      /// Assignment operator
+      ConditionsManager& operator=(const ConditionsManager& c) = default;
+      
       /// Initialize the object after having set the properties
       ConditionsManager& initialize();
 

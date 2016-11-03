@@ -269,6 +269,10 @@ namespace DD4hep {
         : Strng_t(s), m_str(s) {
         register_func(v, this);
       }
+      /// Copy constructor
+      Tag_t(const Tag_t& c)
+        : Strng_t(c), m_str(c.m_str) {
+      }
       /// Destructor
       ~Tag_t() {
       }

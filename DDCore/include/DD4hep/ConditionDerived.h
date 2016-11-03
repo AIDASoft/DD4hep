@@ -60,7 +60,8 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    struct ConditionUpdateContext  {
+    class ConditionUpdateContext  {
+    public:
       const ConditionResolver&   resolver;
       const ConditionDependency& dependency;
       Condition::iov_type*       iov;

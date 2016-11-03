@@ -39,11 +39,6 @@ std::string IOVType::str()  const   {
   return text;
 }
 
-/// Initializing constructor: Does not set reference to IOVType !
-IOV::IOV() : iovType(0), keyData(0,0), optData(0)  {
-  type = int(IOVType::UNKNOWN_IOV);
-}
-
 /// Initializing constructor
 IOV::IOV(const IOVType* t) : iovType(t), keyData(0,0), optData(0)  {
   type = t ? t->type : int(IOVType::UNKNOWN_IOV);
