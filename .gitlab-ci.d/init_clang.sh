@@ -66,8 +66,7 @@ export G4SYSTEM="Linux-g++"
 #--------------------------------------------------------------------------------
 #     LCIO
 #--------------------------------------------------------------------------------
-export LCIO=${CLICREPO}/software/LCIO/2.7.1/x86_64-slc6-gcc48-opt
-# export PYTHONPATH="$LCIO/src/python:$LCIO/examples/python:$PYTHONPATH"
+export LCIO=${CLICREPO}/software/LCIO/2.7.3/${BUILD_FLAVOUR}
 export PATH="$LCIO/bin:$PATH"
 export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
 
