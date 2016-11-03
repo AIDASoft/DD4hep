@@ -17,6 +17,7 @@
 #if defined(DD4HEP_ROOT_VERSION_5)
 #include "DD4hep/Plugins.inl"
 #endif
+#include <cstdlib>
 
 using namespace std;
 using namespace DD4hep;
