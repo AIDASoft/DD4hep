@@ -1,12 +1,11 @@
-slc6-gcc48:
+slc6-gcc62:
   tags:
     - docker
   image: clicdp/slc6-base
   script:
-    - export GCC_VERSION="4.8.5"
-    - export BUILD_TYPE="opt"
-    - source .gitlab-ci.d/init_x86_64.sh
-    - mkdir build 
+    - export COMPILER_TYPE="gcc"
+    - source .dd4hep-ci.d/init_x86_64.sh
+    - mkdir build
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON  -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
     - ninja
@@ -21,14 +20,13 @@ slc6-gcc48:
     - ninja install
     - ctest --output-on-failure
 
-slc6-gcc49:
+slc6-llvm39:
   tags:
     - docker
   image: clicdp/slc6-base
   script:
-    - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="opt"
-    - source .gitlab-ci.d/init_x86_64.sh
+    - export COMPILER_TYPE="llvm"
+    - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
@@ -44,15 +42,14 @@ slc6-gcc49:
     - ninja install
     - ctest --output-on-failure
 
-slc6-gcc49-XERCESC:
+slc6-gcc62-XERCESC:
   tags:
     - docker
   image: clicdp/slc6-base
   script:
-    - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="opt"
-    - source .gitlab-ci.d/init_x86_64.sh
-    - mkdir build 
+    - export COMPILER_TYPE="gcc"
+    - source .dd4hep-ci.d/init_x86_64.sh
+    - mkdir build
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON ..
     - ninja
@@ -67,15 +64,14 @@ slc6-gcc49-XERCESC:
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc49:
+centos7-gcc62:
   tags:
     - docker
   image: clicdp/cc7-base
   script:
-    - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="opt"
-    - source .gitlab-ci.d/init_x86_64.sh
-    - mkdir build 
+    - export COMPILER_TYPE="gcc"
+    - source .dd4hep-ci.d/init_x86_64.sh
+    - mkdir build
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
     - ninja
@@ -89,14 +85,15 @@ centos7-gcc49:
     - ninja
     - ninja install
     - ctest --output-on-failure
-    
 
-slc6-llvm39:
+
+centos7-llvm39:
   tags:
     - docker
   image: clicdp/slc6-base
   script:
-    - source .gitlab-ci.d/init_clang.sh
+    - export COMPILER_TYPE="llvm"
+    - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release ..
