@@ -9,7 +9,7 @@ if( ${ROOT_VERSION_MAJOR} GREATER 5 )
                  WORKING_DIRECTORY ${genmap_install_dir} "
     )  
   if(APPLE)
-    SET ( ENV{DYLD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{DYLD_LIBRARY_PATH} )
+    SET ( ENV{DYLD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
   else()
     SET ( ENV{LD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{LD_LIBRARY_PATH} )
   endif()

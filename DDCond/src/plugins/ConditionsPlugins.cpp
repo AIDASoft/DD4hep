@@ -31,12 +31,20 @@ using namespace DD4hep::Conditions;
 namespace {
   /// Plugin function:
   /// Install the alignment manager as an extension to the central LCDD object
-  int ddcond_install_cond_mgr (LCDD& lcdd, int /* argc */, char** /* argv */)  {
+  int ddcond_install_cond_mgr (LCDD& lcdd, int argc, char** argv)  {
     Handle<ConditionsManagerObject> mgr(lcdd.extension<ConditionsManagerObject>(false));
     if ( !mgr.isValid() )  {
       ConditionsManager mgr_handle(lcdd);
       lcdd.addExtension<ConditionsManagerObject>(mgr_handle.ptr());
-      printout(INFO,"ConditionsManager","+++ Successfully installed conditions manager instance to LCDD.");
+      printout(INFO,"ConditionsManager",
+               "+++ Successfully installed conditions manager instance to LCDD.");
+      mgr = mgr_handle;
+    }
+    if ( argc == 2 )  {
+      if ( ::strncmp(argv[0],"-handle",7)==0 )  {
+        Handle<NamedObject>* h = (Handle<NamedObject>*)argv[1];
+        *h = mgr;
+      }
     }
     return 1;
   }

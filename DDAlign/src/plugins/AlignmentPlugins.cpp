@@ -26,12 +26,20 @@ using namespace DD4hep::Alignments;
 namespace {
   /// Plugin function:
   /// Install the alignment manager as an extension to the central LCDD object
-  int ddalign_install_align_mgr (Geometry::LCDD& lcdd, int /* argc */, char** /* argv */)  {
+  int ddalign_install_align_mgr (Geometry::LCDD& lcdd, int argc, char** argv)  {
     Handle<AlignmentsManagerObject> mgr(lcdd.extension<AlignmentsManagerObject>(false));
     if ( !mgr.isValid() )  {
       AlignmentsManager mgr_handle("LCDD_AlignmentManager");
       lcdd.addExtension<AlignmentsManagerObject>(mgr_handle.ptr());
-      printout(INFO,"AlignmentsManager","+++ Successfully installed alignments manager instance to LCDD.");
+      printout(INFO,"AlignmentsManager",
+               "+++ Successfully installed alignments manager instance to LCDD.");
+      mgr = mgr_handle;
+    }
+    if ( argc == 2 )  {
+      if ( ::strncmp(argv[0],"-handle",7)==0 )  {
+        Handle<NamedObject>* h = (Handle<NamedObject>*)argv[1];
+        *h = mgr;
+      }
     }
     return 1;
   }

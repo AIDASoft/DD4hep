@@ -292,7 +292,7 @@ namespace DD4hep {
 
       /// Stupid legacy method
       virtual void dump() const = 0;
-      /// Manipulate geometry using facroy converter
+      /// Manipulate geometry using factory converter
       virtual long apply(const char* factory, int argc, char** argv) = 0;
 
       /// Extend the sensitive detector element with an arbitrary structure accessible by the type

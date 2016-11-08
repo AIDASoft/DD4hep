@@ -91,7 +91,12 @@ namespace {
       "                                    The lower the level, the more printout...      \n"
       "        -plugin <name> <args>       Execute plugin <name> after loading geometry.  \n"
       "                                    All arguments following until the next '-'     \n"
-      "                                    are considered as arguments to the plugin.     \n";
+      "                                    are considered as arguments to the plugin.     \n"
+      "        -ui                         Install ROOT interpreter UI for DD4hep         \n"
+      "                                    Will show up in the global interpreter variable\n"
+      "                                    'DD4hep::ROOTUI* gDD4hepUI' and allows the user\n"
+      "                                    to interact with the the LCDD instance from the\n"
+      "                                    ROOT interactive prompt.                       \n";
     return cout;
   }
 
@@ -109,13 +114,14 @@ namespace {
 
   //______________________________________________________________________________
   struct Args  {
-    bool        volmgr, dry_run, destroy, interpreter;
+    bool        volmgr, dry_run, destroy, interpreter, ui;
     int         print;
     std::vector<const char*> geo_files, build_types;
     std::vector<std::vector<const char*> > plugins;
 
     //____________________________________________________________________________
     Args() {
+      ui = false;
       volmgr  = false;
       dry_run = false;
       destroy = false;
@@ -153,6 +159,8 @@ namespace {
         interpreter = true;
       else if ( strncmp(argv[i],"-no-interpreter",7)==0 )
         interpreter = false;
+      else if ( strncmp(argv[i],"-ui",3)==0 )
+        ui = true;
       else if ( strncmp(argv[i],"-plugin",5)==0 )   {
         // Need to interprete plugin args here locally.....
         plugins.push_back(std::vector<const char*>());
@@ -260,8 +268,9 @@ namespace {
     LCDD& lcdd = dd4hep_instance();
     // Load all compact files
     load_compact(lcdd, args);
+    if ( args.ui ) run_plugin(lcdd,"DD4hepROOTUI",0,0);
     // Create volume manager and populate it required
-    if ( args.volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+    if ( args.volmgr ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
 
     // Create an interactive ROOT application
     if ( !args.dry_run ) {

@@ -28,6 +28,26 @@ dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTes
 dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #---  Testing  ------------------------------------------------------------
 #
+#  Test readout strings of the form: <id>system:8,barrel:-2</id>
+dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Bitfield_SidesTest.xml -volmgr -destroy
+  -plugin DD4hepDetectorVolumeDump
+  -plugin DD4hepVolumeDump volids
+  -plugin DD4hepVolumeMgrTest all
+  REGEX_PASS "OK IDS\\(Shell_1\\)  vid\\:0000000000000302 system\\: 2  barrel\\:-1" )
+#
+#
+#  Test readout strings of the form: <id>system:16,barrel:16:-5</id>
+dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Bitfield_SidesTest2.xml -volmgr -destroy
+  -plugin DD4hepDetectorVolumeDump
+  -plugin DD4hepVolumeDump volids
+  -plugin DD4hepVolumeMgrTest all
+  REGEX_PASS "OK IDS\\(Shell_1\\)  vid\\:00000000001f0002 system\\: 2  barrel\\:-1" )
 #
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 

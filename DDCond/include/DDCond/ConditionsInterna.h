@@ -75,6 +75,7 @@ namespace DD4hep {
       typedef std::pair<ConditionsListener*,void*> Listener;
       typedef std::set<Listener>                   Listeners;
       typedef ConditionsManager::Dependencies      Dependencies;
+      typedef ConditionsManager::ConditionKeys     ConditionKeys;
       typedef Condition::key_type                  key_type;
       typedef Condition::iov_type                  iov_type;
 
@@ -130,6 +131,9 @@ namespace DD4hep {
       /// Listener invocation when a condition is deregistered from the cache
       void onRemove(Condition condition);
 
+      /// Helper to check iov and user pool and create user pool if not present
+      void __get_checked_pool(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);
+      
     public:
       /// Set a single conditions value to be managed.
       /// Requires EXTERNALLY held lock on update pool!
@@ -183,6 +187,18 @@ namespace DD4hep {
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       bool registerUnlocked(ConditionsPool* pool, Condition cond);
+
+      /// Prepare all updates for the given keys to the clients with the defined IOV
+      long prepare(const IOV& required_validity,
+                   const ConditionKeys& keys,
+                   dd4hep_ptr<UserPool>& user_pool);
+
+      /// Prepare all updates for the given keys to the clients with the defined IOV
+      long prepare(const IOV& required_validity,
+                   const ConditionKeys&  keys,
+                   dd4hep_ptr<UserPool>& user_pool,
+                   const Dependencies&   dependencies,
+                   bool                  verify_dependencies=true);
 
       /// Prepare all updates to the clients with the defined IOV
       long prepare(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+    <constant name="Barrel_rmax" value="500*cm"/>
+    <constant name="Barrel_zmax" value="600*cm"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleRed"  r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="2" name="Shell" type="DD4hep_CylinderShell" vis="VisibleGreen" readout="ShellHits" >
+      <comment>Containment shell to measure calorimeter escapes</comment>
+      <material name="Air"/>
+      <module name="Barrel" id="0" vis="VisibleBlue">
+	<zplane rmin="Barrel_rmax+20*cm" rmax="Barrel_rmax+22*cm" z="-2*Barrel_zmax"/>
+	<zplane rmin="Barrel_rmax+20*cm" rmax="Barrel_rmax+22*cm" z="2*Barrel_zmax"/>
+      </module>
+      <module name="SideA" id="-1" vis="VisibleRed">
+	<zplane rmin="0" rmax="Barrel_rmax+22*cm" z="2*Barrel_zmax+10*cm"/>
+	<zplane rmin="0" rmax="Barrel_rmax+22*cm" z="2*Barrel_zmax+20*cm"/>
+      </module>
+      <module name="SideB" id="1" vis="VisibleRed">
+	<zplane rmin="0" rmax="Barrel_rmax+22*cm" z="-(2*Barrel_zmax+10*cm)"/>
+	<zplane rmin="0" rmax="Barrel_rmax+22*cm" z="-(2*Barrel_zmax+20*cm)"/>
+      </module>
+    </detector>
+  </detectors>
+  
+  <readouts>
+    <readout name="ShellHits"><id>system:8,barrel:-2</id></readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

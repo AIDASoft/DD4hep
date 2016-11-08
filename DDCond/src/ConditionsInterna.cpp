@@ -446,32 +446,69 @@ long ConditionsManagerObject::prepare(const Condition::iov_type& required_validi
 }
 #endif
 
-/// Prepare all updates to the clients with the defined IOV
-long ConditionsManagerObject::prepare(const Condition::iov_type& req_iov, dd4hep_ptr<UserPool>& up)   {
+/// Helper to check iov and user pool and create user pool if not present
+void ConditionsManagerObject::__get_checked_pool(const IOV& req_iov,
+                                                 dd4hep_ptr<UserPool>& up)
+{
   const IOVType* typ = check_iov_type<Discrete>(this, &req_iov);
   if ( typ )  {
-    RC valid, expired;
     ConditionsIOVPool* pool = m_rawPool[typ->type];
     if ( 0 == up.get() )  {
       const void* argv[] = {this, pool, 0};
       UserPool* p = createPlugin<UserPool>(m_userType,m_lcdd,2,argv);
       up.adopt(p);
     }
-    /// First push any pending updates and register them to pending pools...
-    pushUpdates();
-    /// Now update/fill the user pool
-    return up->prepare(req_iov);
+    return;
   }
+  // Invalid IOV type. Throw exception
   except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
          Errors::invalidArg().c_str());
-  return -1;
+}
+
+/// Prepare all updates for the given keys to the clients with the defined IOV
+long ConditionsManagerObject::prepare(const IOV&            req_iov,
+                                      const ConditionKeys&  keys,
+                                      dd4hep_ptr<UserPool>& up)
+{
+  RC valid, expired;
+  __get_checked_pool(req_iov, up);
+  /// First push any pending updates and register them to pending pools...
+  pushUpdates();
+  /// Now update/fill the user pool
+  return up->prepare(req_iov,keys);
+}
+
+
+/// Prepare all updates for the given keys to the clients with the defined IOV
+long ConditionsManagerObject::prepare(const IOV&            req_iov,
+                                      const ConditionKeys&  keys,
+                                      dd4hep_ptr<UserPool>& up,
+                                      const Dependencies&   dependencies,
+                                      bool                  verify_dependencies)
+{
+  long num_raw_updates = prepare(req_iov, keys, up);
+  if ( num_raw_updates > 0 || verify_dependencies )   {
+    long num_dep_updates = up->compute(dependencies);
+    return num_raw_updates+num_dep_updates;
+  }
+  return num_raw_updates;
+}
+
+/// Prepare all updates to the clients with the defined IOV
+long ConditionsManagerObject::prepare(const Condition::iov_type& req_iov, dd4hep_ptr<UserPool>& up)   {
+  RC valid, expired;
+  __get_checked_pool(req_iov, up);
+  /// First push any pending updates and register them to pending pools...
+  pushUpdates();
+  /// Now update/fill the user pool
+  return up->prepare(req_iov);
 }
 
 /// Prepare all updates to the clients with the defined IOV
 long ConditionsManagerObject::prepare(const Condition::iov_type& req_iov,
-				      dd4hep_ptr<UserPool>& up,
-				      const Dependencies& dependencies,
-				      bool verify_dependencies)
+                                      dd4hep_ptr<UserPool>& up,
+                                      const Dependencies& dependencies,
+                                      bool verify_dependencies)
 {
   long num_raw_updates = prepare(req_iov, up);
   if ( num_raw_updates > 0 || verify_dependencies )   {

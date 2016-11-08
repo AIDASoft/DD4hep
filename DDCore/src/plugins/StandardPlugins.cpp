@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -14,6 +13,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/ROOTUI.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
@@ -21,6 +21,7 @@
 #include "../LCDDImp.h"
 
 // ROOT includes
+#include "TInterpreter.h"
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
 #include "TClass.h"
@@ -79,6 +80,18 @@ static long display(LCDD& lcdd, int argc, char** argv) {
   return 0;
 }
 DECLARE_APPLY(DD4hepGeometryDisplay,display)
+
+static long root_ui(LCDD& lcdd, int /* argc */, char** /* argv */) {
+  char cmd[256];
+  ROOTUI* ui = new ROOTUI(lcdd);
+  ::snprintf(cmd,sizeof(cmd),"DD4hep::ROOTUI* gDD4hepUI = (DD4hep::ROOTUI*)%p;",(void*)ui);
+  gInterpreter->ProcessLine(cmd);
+  printout(ALWAYS,"ROOTUI",
+           "Use the ROOT interpreter variable gDD4hepUI "
+           "to interact with the detector description.");
+  return 1;
+}
+DECLARE_APPLY(DD4hepROOTUI,root_ui)
 
 static long load_compact(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
@@ -262,7 +275,7 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
           ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %c %%s",
                      level+1,2*level+1,(void*)ideal,(void*)aligned, sens);
         }
-        printout(INFO,"+++",fmt,"",
+        printout(INFO,"VolumeDump",fmt,"",
                  aligned->GetName(),
                  volume->GetTitle(),
                  volume->GetShape()->IsA()->GetName(),

@@ -35,11 +35,13 @@ namespace DD4hep  {
 
   namespace {
     /// Some utility class to specialize the converters:
+    class iov;
     class include;
     class arbitrary;
     class conditions;
   }
   /// Forward declarations for all specialized converters
+  template <> void Converter<iov>::operator()(xml_h seq)  const;
   template <> void Converter<include>::operator()(xml_h seq)  const;
   template <> void Converter<arbitrary>::operator()(xml_h seq)  const;
   template <> void Converter<conditions>::operator()(xml_h seq)  const;
@@ -86,6 +88,18 @@ namespace DD4hep {
     return new Entry(elt,name,e.tag(),_getValidity(element),hash32(name));
   }
 
+  /** Convert iov repository objects
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    01/04/2014
+   */
+  template <> void Converter<iov>::operator()(xml_h element) const {
+    xml_dim_t e = element;
+
+  }
+
+  
   /** Convert arbitrary conditon objects containing standard tags
    *
    *    Function entry expects as a parameter a valid DetElement handle
@@ -130,6 +144,8 @@ namespace DD4hep {
       Converter<conditions>(lcdd,param)(e);
     else if ( tag == "detelement" )
       Converter<conditions>(lcdd,param)(e);
+    else if ( tag == "iov" )         // Processing repository file
+      xml_coll_t(e,_U(star)).for_each(Converter<iov>(lcdd,param));
     else if ( tag == "subdetectors" )
       xml_coll_t(e,_U(star)).for_each(Converter<conditions>(lcdd,param));
     else if ( tag == "detelements" )

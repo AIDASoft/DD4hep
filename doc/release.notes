@@ -3,13 +3,26 @@
 DD4hep  ----  Release Notes
 =================================
 
+2016-11-08 M.Frank
+  - Improve conditions handling. Started to implement using simple telescope
+    detector from C.Burr.
+  - Add variable DD4HEP_LIBRARY_PATH to be used on MacOSX El Capitane
+    to overcome DYLD_LIBRARY_PATH protection issues.
+  - Fix to copy with negative(rebased) IDDDescriptor fields
+    (affects IDDDescriptor and VolumeManager).
+    2 New tests:
+    - ClientTests/Bitfield_SidesTest.xml to test readout string:
+      system:8,barrel:-2
+    - ClientTests/Bitfield_SidesTest2.xml to test readout string:
+      system:16,barrel:16:-5
+      
 2016-10-18 M.Frank
   Due to pressure of the FCC folks, I tried to implement a more DD4hep like implementation of the
   the segmentation objects. For testing only CartesianGridXY. If this mechanism works,
   it could be a starting recipe for the rest of the segmentations. The draw-back of this approach is,
   that assignments are not reversible:
   DD4hep::CartesianGridXY xy = readout.segmentation();  // Works
-  DD4hep::Segmentation seg = xy;                        // Should not work
+  DD4hep::Segmentation seg = xy;                    // Should not work
 
   Reason: the managed objects are different....at some point in time I will have to find a
   clean solution for this, but the required changes for such a solution shall be manageable.
@@ -43,7 +56,7 @@ DD4hep  ----  Release Notes
 
 2016-07-26 Shaojun Lu  
 	Added new MegatileLayerGridXY segmentation for Scintillator strip Ecal, which is implemented by K.Kotera, 
-        and used by SEcal04Hybrid geometry driver.
+       and used by SEcal04Hybrid geometry driver.
 
  - many ( minor fixes ) by F. Gaede, M. Petric, A Sailer, ...
 
