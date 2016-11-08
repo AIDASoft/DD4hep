@@ -12,8 +12,7 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
        FORCE )
  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-
-
+#
 #---Options-------------------------------------------------------------------------
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_PYROOT  "Enable 'Detector Builders' based on PyROOT"    OFF)  # does not work (compile error)
@@ -24,7 +23,6 @@ option(BUILD_TESTING      "Enable and build tests"   ON)
 option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
 option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
- 
 #
 #-----------------------------------------------------------------------------------------------------
 #
@@ -158,3 +156,12 @@ display_std_variables()
 ##############################################################################
 # generate and install following configuration files
 generate_package_configuration_files( DD4hepConfig.cmake DD4hepConfigVersion.cmake )
+if(APPLE)
+  SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
+else()
+  SET ( ENV{DD4HEP_LIBRARY_PATH} ${LD_LIBRARY_PATH} )
+  SET ( DD4HEP_LIBRARY_PATH ${LD_LIBRARY_PATH} )
+endif()
+
+message(STATUS "DD4HEP_LIBRARY_PATH= ${DD4HEP_LIBRARY_PATH}")
+message(STATUS "DD4HEP_LIBRARY_PATH= $ENV{DD4HEP_LIBRARY_PATH}")

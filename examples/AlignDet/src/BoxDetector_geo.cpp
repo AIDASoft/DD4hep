@@ -1,11 +1,17 @@
-// $Id: BoxDetector_geo.cpp 633 2013-06-21 13:50:50Z markus.frank $
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;

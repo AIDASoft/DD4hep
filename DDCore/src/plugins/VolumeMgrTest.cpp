@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -26,7 +25,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-
 
 namespace  {
   /** @class VolIDTest
@@ -89,11 +87,9 @@ VolIDTest::VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth) : m_det(sdet) {
 void VolIDTest::checkVolume(DetElement e, PlacedVolume pv, const VolIDs& child_ids)  const {
   stringstream err, log;
   VolumeID vid = m_iddesc.encode(child_ids);
-  VolumeID mask = 0xFFFFULL;
-  vid |= mask<<(31+16);
   try {
-    DetElement det         = m_mgr.lookupDetector(vid);
-    DetElement det_elem    = m_mgr.lookupDetElement(vid);
+    DetElement   det       = m_mgr.lookupDetector(vid);
+    DetElement   det_elem  = m_mgr.lookupDetElement(vid);
     PlacedVolume det_place = m_mgr.lookupPlacement(vid);
     if ( pv.ptr() != det_place.ptr() )   {
       err << "Wrong placement "
@@ -116,18 +112,19 @@ void VolIDTest::checkVolume(DetElement e, PlacedVolume pv, const VolIDs& child_i
     err << "Lookup " << pv.name() << " id:" << (void*)vid << " path:" << e.path() << " error:" << ex.what();
   }
   const IDDescriptor::FieldMap& m = m_iddesc.fields();
-  log << "IDS(" << pv.name() << "): ";
-  for(size_t fi=0; fi<m.size(); ++fi)  {
+  log << "IDS(" << pv.name() << ") ";
+  log << " vid:" << setw(16) << hex << setfill('0') << vid << dec << setfill(' ') << " ";
+  for ( size_t fi=0; fi<m.size(); ++fi )    {
     IDDescriptor::Field fld = m_iddesc.field(fi);
+    long val = fld->value(vid);
     if ( find_if(child_ids.begin(),child_ids.end(),FND(fld->name())) == child_ids.end() ) continue;
-    log << fld->name() << "=" << fld->value(vid) << "  ";
+    log << fld->name() << (val>=0?": ":":") << val << "  ";
   }
-  log << " vid:" << (void*)vid;
   if ( !err.str().empty() )   {
     printout(ERROR,m_det.name(),err.str()+" "+log.str());
     throw runtime_error(err.str());
   }
-  printout(INFO,m_det.name(),"OK: "+log.str());
+  printout(INFO,m_det.name(),"OK "+log.str());
 }
 
 /// Walk through tree of detector elements
@@ -174,25 +171,23 @@ void VolIDTest::walk(DetElement e, VolIDs ids, size_t depth, size_t mx_depth)  c
 
 /// Action routine to execute the test
 long VolIDTest::run(LCDD& lcdd,int argc,char** argv)    {
-  cout << "++ Processing plugin...CLICSid_VolMgrTest..." << endl;
-  for(int iarg=1; iarg<argc;++iarg)  {
-    string name = argv[iarg]+1;
+  printout(ALWAYS,"DD4hepVolumeMgrTest","++ Processing plugin...");
+  for(int iarg=0; iarg<argc;++iarg)  {
+    if ( argv[iarg] == 0 ) break;
+    string name = argv[iarg];
     if ( name == "all" || name == "All" || name == "ALL" )  {
       const DetElement::Children& children = lcdd.world().children();
       for (DetElement::Children::const_iterator i=children.begin(); i!=children.end(); ++i)  {
         DetElement sdet = (*i).second;
-        cout << "++ Processing subdetector: " << sdet.name() << endl;
+        printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",sdet.name());
         VolIDTest test(lcdd,sdet,99);
       }
       return 1;
     }
-    cout << "++ Processing subdetector: " << name << endl;
+    printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",name.c_str());
     VolIDTest test(lcdd,lcdd.detector(name),99);
   }
   return 1;
 }
 
-namespace DD4hep {
-  using ::VolIDTest;
-}
-DECLARE_APPLY(CLICSiD_VolMgrTest,VolIDTest::run)
+DECLARE_APPLY(DD4hepVolumeMgrTest,VolIDTest::run)

@@ -16,6 +16,7 @@
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/Printout.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <cmath>
@@ -109,8 +110,8 @@ VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
   for (VolIds::const_iterator i = id_vector.begin(); i != id_vector.end(); ++i) {
     Field f = field((*i).first);
     VolumeID vid = (*i).second;
-    vid = vid << f->offset();
-    id |= f->value(vid) << f->offset();
+    int offset = f->offset();
+    id |= ((f->value(vid<<offset) << offset)&f->mask());
   }
   return id;
 }

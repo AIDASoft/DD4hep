@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--- Author  : Markus Frank -->
+<!--- Created : 2016-11-07   -->
+
+<conditions>
+  <iov type="run" start="1000" end="2000" ref="module1_run-1000...2000.xml"/>
+<!--
+  <iov type="run" start="1000" end="2000" ref="module2_run-1000...2000.xml"/>
+-->
+</conditions>

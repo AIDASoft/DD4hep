@@ -58,6 +58,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
   for(xml_coll_t m(e,_U(module)); m; ++m)  {
     xml_comp_t mod = m;
     vector<double> rmin,rmax,z;
+    string vis = mod.visStr().empty() ? x_det.visStr() : mod.visStr();
     int num = 0;
     for(xml_coll_t c(m,_U(zplane)); c; ++c, ++num)  {
       xml_comp_t dim(c);
@@ -70,7 +71,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
     }
     Polycone   cone  (0.,2*M_PI,rmin,rmax,z);
     Volume     volume(name, cone, mat);
-    volume.setVisAttributes(lcdd, x_det.visStr());
+    volume.setVisAttributes(lcdd, vis);
     volume.setSensitiveDetector(sensitive);
     pv = assembly.placeVolume(volume);
     pv.addPhysVolID("barrel",mod.id());

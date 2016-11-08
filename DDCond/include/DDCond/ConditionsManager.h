@@ -52,6 +52,7 @@ namespace DD4hep {
       typedef std::vector<IOVType>               IOVTypes;
       typedef std::map<IOVType*,Container>       TypeConditions;
       typedef std::map<DetElement,Container>     DetectorConditions;
+      typedef std::set<ConditionKey>             ConditionKeys;
       typedef ConditionDependency                Dependency;
       typedef ConditionsDependencyCollection     Dependencies;
 
@@ -129,6 +130,18 @@ namespace DD4hep {
 
       /// Full cleanup of all managed conditions.
       void clear();
+
+      /// Prepare all updates for the given keys to the clients with the defined IOV
+      long prepare(const IOV& required_validity,
+                   const ConditionKeys& keys,
+                   dd4hep_ptr<UserPool>& user_pool);
+
+      /// Prepare all updates for the given keys to the clients with the defined IOV
+      long prepare(const IOV& required_validity,
+                   const ConditionKeys&  keys,
+                   dd4hep_ptr<UserPool>& user_pool,
+                   const Dependencies&   dependencies,
+                   bool                  verify_dependencies=true);
 
       /// Prepare all updates to the clients with the defined IOV
       long prepare(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);

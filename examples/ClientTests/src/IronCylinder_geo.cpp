@@ -1,16 +1,19 @@
-/*********************************
- * HcalBarrel_geo
- * Implementing a detector
- *
- * Carlos.Solans@cern.ch
- *********************************/
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
 
+// Framework includes
 #include "DD4hep/DetFactoryHelper.h"
-#include "XML/Layering.h"
 
-#include <vector>
-
-using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
@@ -43,7 +46,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   calo_plv.addPhysVolID("system",x_det.id());
   calo_plv.addPhysVolID("barrel",0);
   d_det.setPlacement(calo_plv);
-
   return d_det;
 }
 

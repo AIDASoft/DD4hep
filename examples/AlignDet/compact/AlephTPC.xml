@@ -5,15 +5,15 @@
   <info name="Alignment_aleph_tpc"
 	title="Alignment test detector with ALPEH TPC like sectors"
 	author="Markus Frank"
-	url="http://www.cern.ch/lhcb"
+        url="https://github.com/AIDASoft/DD4hep/blob/master/examples/AlignDet/compact/AlephTPC.xml"
 	status="development"
-	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+	version="1.0">
     <comment>Alignment test detector with ALPEH TPC like sectors</comment>        
   </info>
   
   <includes>
-    <gdmlFile  ref="../../../DDDetectors/compact/elements.xml"/>
-    <gdmlFile  ref="../../../DDDetectors/compact/materials.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
     <!--
     <xml       ref="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC_alignment.xml"/>
     -->

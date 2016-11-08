@@ -271,7 +271,7 @@ namespace {
         IDDescriptor::Field f = iddesc.field(id.first);
         VolumeID msk = f->mask();
         int offset   = f->offset();
-        volume_id   |= f->value(id.second << offset) << offset;
+        volume_id   |= ((f->value(id.second << offset) << offset)&msk);
         mask        |= msk;
       }
       return make_pair(volume_id, mask);
@@ -283,9 +283,9 @@ namespace {
         const PlacedVolume::VolID& id = (*i);
         IDDescriptor::Field f = iddesc.field(id.first);
         VolumeID msk = f->mask();
-        int offset = f->offset();
-        volume_id |= f->value(id.second << offset) << offset;
-        mask |= msk;
+        int      off = f->offset();
+        volume_id |= ((f->value(id.second<<off)<<off)&msk);
+        mask      |= msk;
       }
       return make_pair(volume_id, mask);
     }

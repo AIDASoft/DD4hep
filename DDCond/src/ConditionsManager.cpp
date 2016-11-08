@@ -42,7 +42,7 @@ namespace DD4hep {
 ConditionsManager::ConditionsManager(LCDD& lcdd)  {
   assign(new Object(lcdd), "ConditionsManager","");
 }
- 
+
 ConditionsManager& ConditionsManager::initialize()   {
   access()->initialize();
   return *this;
@@ -114,6 +114,23 @@ void ConditionsManager::clear()   {
   access()->clear();
 }
 
+/// Prepare all updates for the given keys to the clients with the defined IOV
+long ConditionsManager::prepare(const IOV& required_validity,
+                                const ConditionKeys& keys,
+                                dd4hep_ptr<UserPool>& user_pool)  {
+  return access()->prepare(required_validity, keys, user_pool);
+}
+
+
+/// Prepare all updates for the given keys to the clients with the defined IOV
+long ConditionsManager::prepare(const IOV& required_validity,
+                                const ConditionKeys&  keys,
+                                dd4hep_ptr<UserPool>& user_pool,
+                                const Dependencies&   dependencies,
+                                bool                  verify_dependencies)  {
+  return access()->prepare(required_validity, keys, user_pool, dependencies, verify_dependencies);
+}
+
 /// Prepare all updates to the clients with the defined new IOV. Changes are not yet applied
 long ConditionsManager::prepare(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool)   {
   return access()->prepare(required_validity, user_pool);
@@ -121,8 +138,8 @@ long ConditionsManager::prepare(const IOV& required_validity, dd4hep_ptr<UserPoo
 
 /// Prepare all updates to the clients with the defined IOV
 long ConditionsManager::prepare(const IOV& required_validity,
-				dd4hep_ptr<UserPool>& user_pool,
-				const Dependencies& dependencies,
-				bool verify_dependencies)  {
+                                dd4hep_ptr<UserPool>& user_pool,
+                                const Dependencies& dependencies,
+                                bool verify_dependencies)  {
   return access()->prepare(required_validity, user_pool, dependencies, verify_dependencies);
 }

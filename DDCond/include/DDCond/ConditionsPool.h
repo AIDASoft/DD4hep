@@ -121,7 +121,7 @@ namespace DD4hep {
       virtual void popEntries(UpdateEntries& entries) = 0;
       /// Select the conditions matching the key
       virtual void select_range(Condition::key_type key, 
-				const Condition::iov_type& req_validity,
+                                const Condition::iov_type& req_validity,
                                 RangeConditions& result) = 0;
     };
 
@@ -133,9 +133,11 @@ namespace DD4hep {
     class UserPool  {
     public:
       /// Forward definition of the key type
-      typedef Condition::key_type             key_type;
+      typedef Condition::key_type              key_type;
+      /// Forward definition of the condition keys container
+      typedef ConditionsManager::ConditionKeys ConditionKeys;
       /// Forward definition of the dependency container
-      typedef ConditionsManager::Dependencies Dependencies;
+      typedef ConditionsManager::Dependencies  Dependencies;
 
     protected:
       /// The pool's interval of validity
@@ -176,6 +178,8 @@ namespace DD4hep {
       virtual bool insert(Condition cond) = 0;
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual long prepare(const IOV& required) = 0;
+      /// Prepare user pool for usage (load, fill etc.) according to required IOV
+      virtual long prepare(const IOV& required, const ConditionKeys& keys) = 0;
       /// Evaluate and register all derived conditions from the dependency list
       virtual long compute(const Dependencies& dependencies, void* user_param=0) = 0;
     };
