@@ -389,7 +389,7 @@ namespace DD4hep {
 	
 	Layer() :
 	  distance(0),
-	  thickness(0),
+	  phi0(0),
 	  absorberThickness(0),
 	  inner_nRadiationLengths(0),
 	  inner_nInteractionLengths(0),        
@@ -405,10 +405,10 @@ namespace DD4hep {
 	/// distance from Origin (or the z-axis) to the inner-most face of the layer
 	double distance;
         
-	/// DEPRECATED: total thickness of the layer. Use inner/outer thicknesses instead
-	double thickness ;
+	/// phi0 of layer: potential rotation around normal to absorber plane, e.g. if layers are 'staggered' in phi in fwd. calos 
+	double phi0 ;
 	
-        /// DEPRECATED: thickness of the absorber part of the layer. Use instead number of X0, lambdaI in and out
+        /// thickness of the absorber part of the layer. Consider using inner/outer_nRadiationLengths and inner/outer_nInteractionLengths
 	double absorberThickness ;
         
         ///Absorber material in front of sensitive element in the layer, units of radiation lengths
