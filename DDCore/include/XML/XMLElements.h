@@ -744,6 +744,10 @@ namespace DD4hep {
       const XmlChar* tagName() const {
         return m_element.rawTag();
       }
+      /// Access the tag name of this DOM element
+      std::string text() const {
+        return m_element.text();
+      }
       /// Append a new element to the existing tree
       void append(Handle_t handle) const {
         m_element.append(handle);

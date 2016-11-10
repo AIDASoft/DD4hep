@@ -40,7 +40,7 @@ ConditionsPool::~ConditionsPool()   {
 
 /// Print pool basics
 void ConditionsPool::print(const string& opt)   const  {
-  printout(INFO,"Example","+++ %s Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
+  printout(INFO,"ConditionsPool","+++ %s Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
 	   opt.c_str(), iov->str().c_str(), age_value, count());
 }
 

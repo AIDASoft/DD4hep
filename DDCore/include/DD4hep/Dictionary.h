@@ -35,7 +35,7 @@
 #include "DD4hep/objects/VolumeManagerInterna.h"
 
 #include "DD4hep/World.h"
-#include "DD4hep/ROOTUI.h"
+#include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Callback.h"
 #include "DD4hep/LCDDData.h"
 #include "DD4hep/Conditions.h"
@@ -97,7 +97,7 @@ template class pair<DD4hep::Callback,unsigned long>;
 #pragma link C++ class map<string, DD4hep::Handle<DD4hep::NamedObject> >+;
 #pragma link C++ class map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator;
 #pragma link C++ class map<string, DD4hep::Handle<DD4hep::NamedObject> >::const_iterator;
-#pragma link C++ class DD4hep::ROOTUI;
+#pragma link C++ class DD4hep::DD4hepUI;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler

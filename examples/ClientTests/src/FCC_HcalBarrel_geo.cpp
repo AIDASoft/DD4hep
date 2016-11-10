@@ -74,14 +74,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       float    z   = x_det_layer.dr();
       
       if(debug){
-	cout << " r:" << r 
-	     << " dr:" << dr 
-	     << " x1:" << x1 
-	     << " x2:" << x2
-	     << " y1:" << y1 
-	     << " y2:" << y2 
-	     << " z:" << z 
-	     << endl;
+        cout << " r:" << r 
+             << " dr:" << dr 
+             << " x1:" << x1 
+             << " x2:" << x2
+             << " y1:" << y1 
+             << " y2:" << y2 
+             << " z:" << z 
+             << endl;
       }
       
       //Shape a Trapezoid (tile): DDCore/DD4hep/Shapes.h
@@ -105,38 +105,38 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       tile_seq.setVisAttributes(lcdd.visAttributes("VisibleGreen"));
       for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k, ++slice_num)  {	
-	xml_comp_t tile_xml       = k;
-	string     tile_name      = layer_name + _toString(tile_number,"_slice%d");
-	Material   tile_material  = lcdd.material(tile_xml.materialStr());
-	float      tile_thickness = tile_xml.dz();
-	float      tile_y1        = tile_thickness;
-	float      tile_y2        = tile_thickness;
-	float      tile_z         = x_det_layer.dr();
+        xml_comp_t tile_xml       = k;
+        string     tile_name      = layer_name + _toString(tile_number,"_slice%d");
+        Material   tile_material  = lcdd.material(tile_xml.materialStr());
+        float      tile_thickness = tile_xml.dz();
+        float      tile_y1        = tile_thickness;
+        float      tile_y2        = tile_thickness;
+        float      tile_z         = x_det_layer.dr();
 	
-	Trapezoid tile_shape(x1,x2,tile_y1,tile_y2,tile_z);
-	Volume tile_vol(tile_name,tile_shape,tile_material);
-	pv = tile_seq.placeVolume(tile_vol,Position(0,total_thickness,0));
-	pv.addPhysVolID("slice",slice_num);
-	total_thickness += tile_thickness;
-	if ( tile_xml.isSensitive() ) {
-	  cout << "Set volume " << tile_name << " sensitive...." << endl;
-	  tile_vol.setSensitiveDetector(sens);
-	}
+        Trapezoid tile_shape(x1,x2,tile_y1,tile_y2,tile_z);
+        Volume tile_vol(tile_name,tile_shape,tile_material);
+        pv = tile_seq.placeVolume(tile_vol,Position(0,total_thickness,0));
+        pv.addPhysVolID("slice",slice_num);
+        total_thickness += tile_thickness;
+        if ( tile_xml.isSensitive() ) {
+          cout << "Set volume " << tile_name << " sensitive...." << endl;
+          tile_vol.setSensitiveDetector(sens);
+        }
 	
-	// Set region, limitset, and visibility settings
-	tile_vol.setAttributes(lcdd,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());	
-	tiles.push_back(tile_vol);
-	tile_number++;
+        // Set region, limitset, and visibility settings
+        tile_vol.setAttributes(lcdd,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());	
+        tiles.push_back(tile_vol);
+        tile_number++;
       }
       
       // Place the same volumes inside the envelope
       float tile_pos_z = -x_det_dim.z()/2.;
       int   tile_num = 0;
       while(tile_pos_z<x_det_dim.z()/2.){
-	pv = layer_vol.placeVolume(tile_seq,Position(0,tile_pos_z,0));
-	pv.addPhysVolID("tile",tile_num);
-	tile_pos_z += total_thickness;
-	tile_num++;
+        pv = layer_vol.placeVolume(tile_seq,Position(0,tile_pos_z,0));
+        pv.addPhysVolID("tile",tile_num);
+        tile_pos_z += total_thickness;
+        tile_num++;
       }
       
       // Place the same layer around the beam axis phiBins times

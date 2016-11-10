@@ -26,7 +26,7 @@ namespace DD4hep {
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  class ROOTUI  {
+  class DD4hepUI  {
   protected:
     /// Reference to the LCDD instance object
     Geometry::LCDD& m_lcdd;
@@ -35,9 +35,9 @@ namespace DD4hep {
     
   public:
     /// Default constructor
-    ROOTUI(Geometry::LCDD& instance);
+    DD4hepUI(Geometry::LCDD& instance);
     /// Default destructor
-    virtual ~ROOTUI();
+    virtual ~DD4hepUI();
     /// Access to the LCDD instance
     Geometry::LCDD* instance()  const;
 

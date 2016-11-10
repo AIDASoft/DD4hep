@@ -3,8 +3,23 @@
 <!--- Created : 2016-11-07   -->
 
 <conditions>
-  <iov type="run" start="1000" end="2000" ref="module1_run-1000...2000.xml"/>
+
+  <repository>
+    <manager>
+      <property name="PoolType"       value="DD4hep_ConditionsLinearPool"/>
+      <property name="LoaderType"     value="xml"/>
+      <property name="UserPoolType"   value="DD4hep_ConditionsMapUserPool"/>
+      <property name="UpdatePoolType" value="DD4hep_ConditionsLinearUpdatePool"/>
+    </manager>
+    <iov_type name="epoch" id="0"/>
+    <iov_type name="run"   id="1"/>
+    <iov_type name="fill"  id="2"/>
+  </repository>
+
+  <repository>
+    <iov validity="1000,2000#run" ref="Module1_run-1000...2000.xml"/>
 <!--
-  <iov type="run" start="1000" end="2000" ref="module2_run-1000...2000.xml"/>
+    <iov type="run" start="1000" end="2000" ref="module2_run-1000...2000.xml"/>
 -->
+  </repository>
 </conditions>

@@ -170,6 +170,12 @@ namespace DD4hep {
        *  Any further rebindings MUST match the identical type.
        */
       template <typename T> T& bind();
+      /** Set and bind the data of the conditions object to a given format.
+       *
+       *  Note: The type definition is possible exactly once.
+       *  Any further rebindings MUST match the identical type.
+       */
+      template <typename T> T& bind(const std::string& val);
       /// Generic getter. Specify the exact type, not a polymorph type
       template <typename T> T& get();
       /// Generic getter (const version). Specify the exact type, not a polymorph type

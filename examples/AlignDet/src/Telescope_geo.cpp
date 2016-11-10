@@ -39,7 +39,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sd)  {
     int    noPixY    = sens.attr<int>(_Unicode(NoOfPixY));
     double pitch     = sens.attr<double>(_Unicode(pitch));
     double mod_thick = sens.thickness()+chip.thickness()+pcb.thickness();
-
+    DetElement mod_det(det,_toString(mod.id(),"module_%d"),x_det.id());
+    
     // Make envelope box for each module a bit bigger to ensure all children are within bounds...
     box = Box(pitch*noPixX/2e0+small, pitch*noPixY/2e0+small, mod_thick/2e0+small);
     Volume modvol(_toString(mod.id(),"module_%d"), box, air);
@@ -50,19 +51,23 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sd)  {
     vol.setSensitiveDetector(sd);
     vol.setVisAttributes(lcdd.visAttributes(sens.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()/2e0));
-    phv.addPhysVolID("sensor",mod.id());
+    phv.addPhysVolID("sensor",1);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, chip.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"chip_%d"), box, air);
     vol.setVisAttributes(lcdd.visAttributes(chip.visStr()));
-    modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()/2e0));
+    phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()/2e0));
+    phv.addPhysVolID("sensor",2);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, pcb.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"PCB_%d"), box, air);
     vol.setVisAttributes(lcdd.visAttributes(pcb.visStr()));
-    modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()+pcb.thickness()/2e0));
+    phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()+pcb.thickness()/2e0));
+    phv.addPhysVolID("sensor",3);
 
-    envVol.placeVolume(modvol,Position(0e0, 0e0, mod.z()));
+    phv = envVol.placeVolume(modvol,Position(0e0, 0e0, mod.z()));
+    phv.addPhysVolID("module",mod.id());
+    mod_det.setPlacement(phv);
   }
   envVol.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
   phv = lcdd.pickMotherVolume(det).placeVolume(envVol,Position(0,0,0));

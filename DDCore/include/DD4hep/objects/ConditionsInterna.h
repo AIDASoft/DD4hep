@@ -195,6 +195,11 @@ namespace DD4hep {
       Object* o = access();
       return o->data.set<T>(o->value);
     }
+    /// Bind the data of the conditions object to a given format.
+    template <typename T> T& Condition::bind(const std::string& val)   {
+      Object* o = access();
+      return o->data.set<T>(o->value=val);
+    }
     /// Generic getter. Specify the exact type, not a polymorph type
     template <typename T> T& Condition::get() {
       return access()->data.get<T>();
@@ -207,47 +212,49 @@ namespace DD4hep {
   } /* End namespace Conditions             */
 } /* End namespace DD4hep                   */
 
-#define DD4HEP_DEFINE_CONDITIONS_TYPE(x)            \
-  namespace DD4hep { namespace Conditions  {        \
-      template x& Condition::bind<x>();             \
-      template x& Condition::get<x>();              \
-      template const x& Condition::get<x>() const;  \
+#define DD4HEP_DEFINE_CONDITIONS_TYPE(x)                               \
+  namespace DD4hep { namespace Conditions  {                           \
+      template x& Condition::bind<x>(const std::string& val);          \
+      template x& Condition::bind<x>();                                \
+      template x& Condition::get<x>();                                 \
+      template const x& Condition::get<x>() const;                     \
     }}
 
-#define DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(x)                          \
+#define DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(x)                         \
   namespace DD4hep{namespace Parsers{int parse(x&, const std::string&){return 1;}}} \
   DD4HEP_DEFINE_CONDITIONS_TYPE(x)
 
-#define DD4HEP_DEFINE_EXTERNAL_CONDITIONS_TYPE(x)     \
-  namespace DD4hep { namespace Conditions  {          \
-      template <> x& Condition::bind<x>();            \
-      template <> x& Condition::get<x>();             \
-      template <> const x& Condition::get<x>() const; \
+#define DD4HEP_DEFINE_EXTERNAL_CONDITIONS_TYPE(x)                      \
+  namespace DD4hep { namespace Conditions  {                           \
+      template <> x& Condition::bind<x>(const std::string& val);       \
+      template <> x& Condition::bind<x>();                             \
+      template <> x& Condition::get<x>();                              \
+      template <> const x& Condition::get<x>() const;                  \
     }}
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-#define DD4HEP_DEFINE_CONDITIONS_CONT(x)                            \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(x)                                  \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>)                     \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)                       \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)                        \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::deque<x>)                      \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)    \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::ulong_map_t)  \
+#define DD4HEP_DEFINE_CONDITIONS_CONT(x)                               \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(x)                                     \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>)                        \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)                          \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)                           \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::deque<x>)                         \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)       \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::ulong_map_t)     \
   DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::string_map_t)
 
-#define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)      \
-  DD4HEP_DEFINE_CONDITIONS_CONT(x)              \
+#define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)                             \
+  DD4HEP_DEFINE_CONDITIONS_CONT(x)                                     \
   DD4HEP_DEFINE_CONDITIONS_CONT(unsigned x)
 
 #else
 
-#define DD4HEP_DEFINE_CONDITIONS_CONT(x)                            \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(x)                                  \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>)                     \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)                       \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)                        \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)    \
+#define DD4HEP_DEFINE_CONDITIONS_CONT(x)                               \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(x)                                     \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>)                        \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)                          \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)                           \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)       \
   DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::string_map_t)
 
 #define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)   DD4HEP_DEFINE_CONDITIONS_CONT(x)

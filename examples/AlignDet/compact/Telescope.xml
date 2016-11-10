@@ -42,7 +42,7 @@
   <detectors>
     <comment>No comment so far</comment>
 
-    <detector name="Telescope" type="DD4hep_Example_Telescope"  vis="DetVis" id ="1" readout="TelescopeHits">
+    <detector name="Telescope" type="DD4hep_Example_Telescope"  vis="DetVis" id ="3" readout="TelescopeHits">
       <!-- Front arm -->
       <module z="0.0*cm" id="1" vis="ModVis">
         <sensor thickness="3*mm" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
@@ -105,7 +105,7 @@
   <readouts>
     <readout name="TelescopeHits">
       <segmentation type="CartesianGridXY" grid_size_x="55*micron" grid_size_y="55*micron" />
-      <id>system:6,sensor:10,x:16,y:16</id>
+      <id>system:8,module:10,sensor:10,x:16,y:16</id>
     </readout>
   </readouts>
 

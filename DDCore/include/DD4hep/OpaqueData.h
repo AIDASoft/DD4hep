@@ -112,6 +112,8 @@ namespace DD4hep {
 	      void (*dtor)(void*));
     /// Bind data value
     template <typename T> T& bind();
+    /// Bind data value [Equivalent to set(value)]
+    template <typename T> T& bind(const std::string& value);
     /// Set data value
     void assign(const void* ptr,const std::type_info& typ);
     /// Bind grammar and assign value
