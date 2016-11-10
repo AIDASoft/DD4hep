@@ -88,7 +88,7 @@ namespace DD4hep {
     else if ( typ == "Histo2D" )
       return b.bind(object,val,_string());
     else
-      printout(INFO,"Param","++ Unknown conditions parameter type:%s val:%s",typ.c_str(),val.c_str());
+      printout(INFO,"OpaqueDataBinder","++ Unknown conditions parameter type:%s val:%s",typ.c_str(),val.c_str());
     return b.bind(object,val,_string());
   }
   
@@ -103,8 +103,8 @@ namespace DD4hep {
       return bind(VectorBinder(), object, value_type, val);
     else if ( typ.substr(0,6) == "list" )
       return bind(ListBinder(), object, value_type, val);
-    //else if ( typ.substr(0,6) == "set" )
-    //  return bind(SetBinder(), object, value_type, val);
+    else if ( typ.substr(0,6) == "set" )
+      return bind(SetBinder(), object, value_type, val);
     else if ( idx == string::npos && idq == string::npos )
       return bind(ValueBinder(), object, value_type, val);
     return false;
@@ -117,7 +117,7 @@ namespace DD4hep {
     map_t& m = block.get<map_t>();
     VAL v;
     if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
-      except("Condition::map","++ Failed to convert conditions map entry.");
+      except("OpaqueDataBinder","++ Failed to convert conditions map entry.");
     }
     m.insert(make_pair(k,v));
   }
@@ -127,7 +127,7 @@ namespace DD4hep {
     map_t& m = block.get<map_t>();
     VAL v;
     if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
-      except("Condition::map","++ Failed to convert conditions map entry.");
+      except("OpaqueDataBinder","++ Failed to convert conditions map entry.");
     }
     m.insert(make_pair(k,v));
   }
@@ -226,7 +226,7 @@ namespace DD4hep {
     else if ( key_type == "std::string" )
       bind_mapping(val_type,object,_string());
     else {
-      printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
+      printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
       bind_mapping(val_type,object,_string());
     }
     return true;
@@ -255,33 +255,30 @@ namespace DD4hep {
     else if ( key_type == "std::string" )
       insert_map_key<string>(key,val_type,val,object);
     else {
-      printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
+      printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
       insert_map_key<string>(key,val_type,val,object);
     }
     return true;
   }
 
-  /// Binding function for STL maps
+  /// Conditions binding function for STL maps
   template <> 
-  bool OpaqueDataBinder::bind_map(Conditions::Condition& object, const string& key_type, const string& val_type)   {
-    return bind_map(object->data, key_type, val_type);
-  }
-  /// Filling function for STL maps.
-  template <>
-  bool OpaqueDataBinder::insert_map(Conditions::Condition& object,
-                                    const string& key_type, const string& key,
-                                    const string& val_type, const string& val)  {
-    return insert_map(object->data, key_type, key, val_type, val);
-  }
+  bool OpaqueDataBinder::bind_map(Conditions::Condition& object, const string& key_type, const string& val_type)
+  {    return bind_map(object->data, key_type, val_type);  }
+  /// Conditions: Filling function for STL maps.
+  template <> bool OpaqueDataBinder::insert_map(Conditions::Condition& object,
+                                                const string& key_type, const string& key,
+                                                const string& val_type, const string& val)
+  {    return insert_map(object->data, key_type, key, val_type, val);    }
+  /// Instantiation for Conditions:
+  template bool
+  OpaqueDataBinder::bind_sequence<Conditions::Condition>(Conditions::Condition& object,const string& typ,const string& val);
   
   /// Instantiate the data binder for OpaqueData
-  template bool
-  OpaqueDataBinder::bind_sequence<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
-  template bool
-  OpaqueDataBinder::bind_map<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
-  template bool
-  OpaqueDataBinder::insert_map<OpaqueDataBlock>(OpaqueDataBlock& object,
-                                                const string& key_type, const string& key,
-                                                const string& val_type, const string& val);
+  template bool OpaqueDataBinder::bind_sequence<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
+  template bool OpaqueDataBinder::bind_map<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
+  template bool OpaqueDataBinder::insert_map<OpaqueDataBlock>(OpaqueDataBlock& object,
+                                                              const string& key_type, const string& key,
+                                                              const string& val_type, const string& val);
 
 }
