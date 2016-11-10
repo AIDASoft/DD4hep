@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--- $Id: -->
 <!--- Author  : Markus Frank -->
-<!--- Created : 2016-11-07 -->
-
+<!--- Created : 2016-11-07   -->
 <conditions>
+
+  <detelement path="/world/Telescope/module_1" ref="default_module.xml">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
+  <detelement path="/world/Telescope/module_2" ref="default_module.xml">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
+  <detelement path="/world/Telescope/module_3" ref="default_module.xml">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
+  <detelement path="/world/Telescope/module_4" ref="default_module.xml">
+  </detelement>
+
+  <detelement path="/world/Telescope/module_5" ref="default_module.xml">
+  </detelement>
 
 </conditions>

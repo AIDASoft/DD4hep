@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
-#include "DD4hep/ROOTUI.h"
+#include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
@@ -83,15 +83,15 @@ DECLARE_APPLY(DD4hepGeometryDisplay,display)
 
 static long root_ui(LCDD& lcdd, int /* argc */, char** /* argv */) {
   char cmd[256];
-  ROOTUI* ui = new ROOTUI(lcdd);
-  ::snprintf(cmd,sizeof(cmd),"DD4hep::ROOTUI* gDD4hepUI = (DD4hep::ROOTUI*)%p;",(void*)ui);
+  DD4hepUI* ui = new DD4hepUI(lcdd);
+  ::snprintf(cmd,sizeof(cmd),"DD4hep::DD4hepUI* gDD4hepUI = (DD4hep::DD4hepUI*)%p;",(void*)ui);
   gInterpreter->ProcessLine(cmd);
-  printout(ALWAYS,"ROOTUI",
+  printout(ALWAYS,"DD4hepUI",
            "Use the ROOT interpreter variable gDD4hepUI "
            "to interact with the detector description.");
   return 1;
 }
-DECLARE_APPLY(DD4hepROOTUI,root_ui)
+DECLARE_APPLY(DD4hepInteractiveUI,root_ui)
 
 static long load_compact(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
@@ -244,11 +244,6 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
       bool sensitive = false;
       if ( m_printPositions || m_printVolIDs )  {
         stringstream log;
-        if ( m_printPositions )  {
-          const double* trans = ideal->GetMatrix()->GetTranslation();
-          ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
-          log << fmt;
-        }
         // Top level volume! have no volume ids
         if ( m_printVolIDs && ideal && ideal->GetMotherVolume() )  {
           VIDs vid = pv.volIDs();
@@ -260,7 +255,23 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
               ::snprintf(fmt, sizeof(fmt), "%s:%2d ",(*i).first.c_str(), (*i).second);
               log << fmt;
             }
+            if ( !vid.empty() || pv.volume().isSensitive() )  {
+              SensitiveDetector sd = pv.volume().sensitiveDetector();
+              if ( sd.isValid() )  {
+                IDDescriptor dsc = sd.readout().idSpec();
+                if ( dsc.isValid() )  {
+                  log << hex << " (0x" << setfill('0') << setw(8)
+                      << dsc.encode(volids)
+                      << setfill(' ') << dec << ") ";
+                }
+              }
+            }
           }
+        }
+        if ( m_printPositions )  {
+          const double* trans = ideal->GetMatrix()->GetTranslation();
+          ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+          log << fmt;
         }
         opt_info = log.str();
       }
@@ -268,16 +279,15 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
         char sens = pv.volume().isSensitive() ? 'S' : ' ';
         if ( ideal == aligned )  {
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] %c %%s",
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%-16s (%%s) \t[%p] %c %%s",
                      level+1,2*level+1,(void*)ideal, sens);
         }
         else  {
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %c %%s",
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%-16s (%%s) Ideal:%p Aligned:%p %c %%s",
                      level+1,2*level+1,(void*)ideal,(void*)aligned, sens);
         }
         printout(INFO,"VolumeDump",fmt,"",
                  aligned->GetName(),
-                 volume->GetTitle(),
                  volume->GetShape()->IsA()->GetName(),
                  opt_info.c_str());
       }

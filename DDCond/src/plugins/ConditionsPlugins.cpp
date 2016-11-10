@@ -72,8 +72,8 @@ namespace {
         ConditionsIOVPool* pool = manager.iovPool(*type);
         if ( pool )  {
           const _E& e = pool->elements;
-          printout(INFO,"CondPoolDump","+++ ConditionsIOVPool for type %s  [%d IOV elements]",
-                   type->str().c_str(), int(e.size()));
+          printout(INFO,"CondPoolDump","+++ ConditionsIOVPool for type %s  [%d IOV element%s]",
+                   type->str().c_str(), int(e.size()),e.size()==1 ? "" : "s");
           for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
             ConditionsPool* cp = (*j).second;
             cp->print("");
@@ -89,9 +89,9 @@ namespace {
         }
       }
     }
-    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example","SUCCESS: +++ Conditions pools successfully dumped");
-    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    printout(INFO,"CondPoolDump","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    printout(INFO,"CondPoolDump","SUCCESS: +++ Conditions pools successfully dumped");
+    printout(INFO,"CondPoolDump","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     return 1;
   }
 
@@ -105,6 +105,41 @@ namespace {
 
 DECLARE_APPLY(DD4hep_ConditionsPoolDump,ddcond_dump_pools)
 DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
+// ======================================================================================
+#if 0
+namespace {
+
+  int ddcond_assign_keys(LCDD& lcdd, int /* argc */, char** /* argv */)   {
+    typedef std::vector<const IOVType*> _T;
+    typedef ConditionsIOVPool::Elements _E;
+    typedef RangeConditions _R;
+    ConditionsManager manager = ConditionsManager::from(lcdd);
+
+    const _T types = manager.iovTypesUsed();
+    for( _T::const_iterator i = types.begin(); i != types.end(); ++i )    {
+      const IOVType* type = *i;
+      if ( type )   {
+        ConditionsIOVPool* pool = manager.iovPool(*type);
+        if ( pool )  {
+          const _E& e = pool->elements;
+          for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
+            _R rc;
+            ConditionsPool* cp = (*j).second;
+            cp->select_all(rc);
+            for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
+              Condition cond(*ic);
+              
+            }
+          }
+        }
+      }
+    }
+    return 1;
+  }
+}
+
+DECLARE_APPLY(DD4hep_AssignConditionsKeys,ddcond_assign_keys)
+#endif
 // ======================================================================================
 
 namespace {

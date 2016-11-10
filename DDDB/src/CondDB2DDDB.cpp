@@ -21,6 +21,7 @@
 // Framework includes
 #include "DD4hep/Path.h"
 #include "DD4hep/Alignments.h"
+#include "DD4hep/OpaqueDataBinder.h"
 #include "DDDB/DDDBTags.h"
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
@@ -458,145 +459,6 @@ namespace DD4hep {
       }
     }
 
-    template<typename KEY, typename VAL>
-    static void insert_map_item(const KEY& k, const string& val, OpaqueDataBlock& block)  {
-      typedef std::map<KEY,VAL> map_t;
-      map_t& m = block.get<map_t>();
-      VAL v;
-      if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
-        except("Condition::map","++ Failed to convert conditions map entry.");
-      }
-      m.insert(make_pair(k,v));
-    }
-
-    template<typename KEY> 
-    static void insert_map_key(const string& key_val, const string& val_type,
-                               const string& val, OpaqueDataBlock& block)
-    {
-      KEY key;
-      BasicGrammar::instance<KEY>().fromString(&key, key_val);
-      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
-      if ( val_type.substr(0,4) == "char" )
-        insert_map_item<KEY,int>(key,val,block);
-      else if ( val_type.substr(0,5) == "short" )
-        insert_map_item<KEY,int>(key,val,block);
-      else if ( val_type.substr(0,3) == "int" )
-        insert_map_item<KEY,int>(key,val,block);
-      else if ( val_type.substr(0,4) == "long" )
-        insert_map_item<KEY,long>(key,val,block);
-      else if ( val_type.substr(0,5) == "float" )
-        insert_map_item<KEY,float>(key,val,block);
-      else if ( val_type.substr(0,6) == "double" )
-        insert_map_item<KEY,double>(key,val,block);
-      else if ( val_type.substr(0,6) == "string" )
-        insert_map_item<KEY,string>(key,val,block);
-      else if ( val_type == "std::string" )
-        insert_map_item<KEY,string>(key,val,block);
-      else {
-        printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",
-                 val_type.c_str(),val.c_str());
-        insert_map_item<KEY,string>(key,val,block);
-      }
-    }
-
-    template<typename KEY> 
-    static void bind_map(const string& val_type, OpaqueDataBlock& block)   {
-      if ( val_type.substr(0,3) == "int" )
-        block.bind< map<KEY,int> >();
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-      else if ( val_type.substr(0,12) == "unsigned int" )
-        block.bind< map<KEY,unsigned int> >();
-      else if ( val_type.substr(0,4) == "char" )
-        block.bind< map<KEY,char> >();
-      else if ( val_type.substr(0,13) == "unsigned char" )
-        block.bind< map<KEY,unsigned char> >();
-      else if ( val_type.substr(0,5) == "short" )
-        block.bind< map<KEY,short> >();
-      else if ( val_type.substr(0,14) == "unsigned short" )
-        block.bind< map<KEY,unsigned short> >();
-      else if ( val_type.substr(0,13) == "unsigned long" )
-        block.bind< map<KEY,unsigned long> >();
-#else
-      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
-      else if ( val_type.substr(0,4) == "char" )
-        block.bind< map<KEY,int> >();
-      else if ( val_type.substr(0,5) == "short" )
-        block.bind< map<KEY,int> >();
-#endif
-      else if ( val_type.substr(0,4) == "long" )
-        block.bind< map<KEY,long> >();
-      else if ( val_type.substr(0,5) == "float" )
-        block.bind< map<KEY,float> >();
-      else if ( val_type.substr(0,6) == "double" )
-        block.bind< map<KEY,double> >();
-      else if ( val_type.substr(0,6) == "string" )
-        block.bind< map<KEY,string> >();
-      else if ( val_type == "std::string" )
-        block.bind< map<KEY,string> >();
-      else {
-        block.bind< map<KEY,string> >();
-      }
-    }
-
-    static void extractMap(xml_h element, OpaqueDataBlock& block)  {
-      dddb_dim_t e = element;
-      string n = e.nameStr();
-      string key_type = e.attr<string>(_LBU(keytype));
-      string val_type = e.attr<string>(_LBU(valuetype));
-
-      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
-      if ( key_type.substr(0,3) == "int" )
-        bind_map<int>(val_type,block);
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-      else if ( key_type.substr(0,4) == "char" )
-        bind_map<int>(val_type,block);
-      else if ( key_type.substr(0,5) == "short" )
-        bind_map<int>(val_type,block);
-      else if ( key_type.substr(0,4) == "long" )
-        bind_map<long>(val_type,block);
-      else if ( key_type.substr(0,5) == "float" )
-        bind_map<float>(val_type,block);
-      else if ( key_type.substr(0,6) == "double" )
-        bind_map<double>(val_type,block);
-#endif
-      else if ( key_type.substr(0,6) == "string" )
-        bind_map<string>(val_type,block);
-      else if ( key_type == "std::string" )
-        bind_map<string>(val_type,block);
-      else {
-        printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-        bind_map<string>(val_type,block);
-      }      
-
-      for(xml_coll_t i(e,_LBU(item)); i; ++i)  {
-        string key = i.attr<string>(_LBU(key));
-        string val = i.attr<string>(_LBU(value));
-        if ( key_type.substr(0,3) == "int" )
-          insert_map_key<int>(key,val_type,val,block);
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-        // Short and char is not part of the standard dictionaries. Fall back to 'int'.
-        else if ( key_type.substr(0,4) == "char" )
-          insert_map_key<int>(key,val_type,val,block);
-        else if ( key_type.substr(0,5) == "short" )
-          insert_map_key<int>(key,val_type,val,block);
-        else if ( key_type.substr(0,4) == "long" )
-          insert_map_key<long>(key,val_type,val,block);
-        else if ( key_type.substr(0,5) == "float" )
-          insert_map_key<float>(key,val_type,val,block);
-        else if ( key_type.substr(0,6) == "double" )
-          insert_map_key<double>(key,val_type,val,block);
-#endif
-        else if ( key_type.substr(0,6) == "string" )
-          insert_map_key<string>(key,val_type,val,block);
-        else if ( key_type == "std::string" )
-          insert_map_key<string>(key,val_type,val,block);
-        else {
-          printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-          insert_map_key<string>(key,val_type,val,block);
-        }      
-      }
-    }
-
     /// Specialized conversion of <param/> and <paramVector> entities
     template <> void Conv<ConditionParam>::convert(xml_h element) const {
       string          nam = element.attr<string>(_U(name));
@@ -605,46 +467,7 @@ namespace DD4hep {
       pair<string,OpaqueDataBlock> block;
       block.first = nam;
 
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-      if ( typ.substr(0,4) == "char" )
-        block.second.set<char>(data);
-      else if ( typ.substr(0,13) == "unsigned char" )
-        block.second.set<unsigned char>(data);
-      else if ( typ.substr(0,5) == "short" )
-        block.second.set<short>(data);
-      else if ( typ.substr(0,14) == "unsigned short" )
-        block.second.set<unsigned short>(data);
-      else if ( typ.substr(0,12) == "unsigned int" )
-        block.second.set<unsigned int>(data);
-      else if ( typ.substr(0,13) == "unsigned long" )
-        block.second.set<unsigned long>(data);
-#else
-      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
-      if ( typ.substr(0,4) == "char" )
-        block.second.set<int>(data);
-      else if ( typ.substr(0,5) == "short" )
-        block.second.set<int>(data);
-#endif
-      else if ( typ.substr(0,3) == "int" )
-        block.second.set<int>(data);
-      else if ( typ.substr(0,4) == "long" )
-        block.second.set<long>(data);
-      else if ( typ.substr(0,5) == "float" )
-        block.second.set<float>(data);
-      else if ( typ.substr(0,6) == "double" )
-        block.second.set<double>(data);
-      else if ( typ.substr(0,6) == "string" )
-        block.second.set<string>(data);
-      else if ( typ == "std::string" )
-        block.second.set<string>(data);
-      else if ( typ == "Histo1D" )
-        block.second.set<string>(data);
-      else if ( typ == "Histo2D" )
-        block.second.set<string>(data);
-      else {
-        printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",typ.c_str(),data.c_str());
-        block.second.set<string>(data);
-      }
+      OpaqueDataBinder::bind(VectorBinder(), block.second, typ, data);
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )  {
@@ -679,34 +502,7 @@ namespace DD4hep {
         break;
       }
       d[d.length()-1] = ']';
-      if ( typ.substr(0,3) == "int" )
-        block.second.set<vector<int> >(d);
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-      else if ( typ.substr(0,4) == "char" )
-        block.second.set<vector<char> >(d);
-      else if ( typ.substr(0,5) == "short" )
-        block.second.set<vector<short> >(d);
-#else
-      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
-      else if ( typ.substr(0,4) == "char" )
-        block.second.set<vector<int> >(d);
-      else if ( typ.substr(0,5) == "short" )
-        block.second.set<vector<int> >(d);
-#endif
-      else if ( typ.substr(0,4) == "long" )
-        block.second.set<vector<long> >(d);
-      else if ( typ.substr(0,5) == "float" )
-        block.second.set<vector<float> >(d);
-      else if ( typ.substr(0,6) == "double" )
-        block.second.set<vector<double> >(d);
-      else if ( typ.substr(0,6) == "string" )
-        block.second.set<vector<string> >(d);
-      else if ( typ == "std::string" )
-        block.second.set<vector<string> >(d);
-      else {
-        printout(INFO,"ParamVector","++ Unknown conditions parameter type:%s",typ.c_str());
-        block.second.set<vector<string> >(d);
-      }
+      OpaqueDataBinder::bind(VectorBinder(), block.second, typ, d);
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )  {
@@ -716,11 +512,19 @@ namespace DD4hep {
 
     /// Specialized conversion of <map/> conditions entities
     template <> void Conv<ConditionParamMap>::convert(xml_h element) const {
+      dddb_dim_t e = element;
       string nam = element.attr<string>(_U(name));
+      string key_type = e.attr<string>(_LBU(keytype));
+      string val_type = e.attr<string>(_LBU(valuetype));
       pair<string,OpaqueDataBlock> block;
-      block.first = nam;
-      extractMap(element,block.second);
 
+      block.first = nam;
+      OpaqueDataBinder::bind_map(block.second, key_type, val_type);
+      for(xml_coll_t i(e,_LBU(item)); i; ++i)  {
+        string key = i.attr<string>(_LBU(key));
+        string val = i.attr<string>(_LBU(value));
+        OpaqueDataBinder::insert_map(block.second, key_type, key, val_type, val);
+      }
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )

@@ -11,7 +11,6 @@
 //  \version 1.0
 //
 //==========================================================================
-// $Id$
 #ifndef DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H
 #define DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H
 

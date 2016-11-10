@@ -22,6 +22,7 @@
 #define DD4HEP_OPAQUEDATA_INL_H
 
 // Framework include files
+#include "DD4hep/Primitives.h"
 #include "DD4hep/OpaqueData.h"
 #include "DD4hep/BasicGrammar.h"
 
@@ -51,6 +52,15 @@ namespace DD4hep {
   template <typename T> T& OpaqueDataBlock::bind()  {
     this->bind(&BasicGrammar::instance<T>(),opaqueCopyObject<T>,opaqueDestructObject<T>);
     return *(new(this->pointer) T());
+  }
+  /// Bind grammar and assign value
+  template <typename T> T& OpaqueDataBlock::bind(const std::string& value)   {
+    T& ret = this->bind<T>();
+    if ( !value.empty() && !this->fromString(value) )  {
+      throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
+                               typeName(typeid(T))+" to condition data block.");
+    }
+    return ret;
   }
   /// Bind grammar and assign value
   template <typename T> T& OpaqueDataBlock::set(const std::string& value)   {
