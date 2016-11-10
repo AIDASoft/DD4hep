@@ -458,33 +458,9 @@ namespace DD4hep {
         }
       }
     }
-
-    /// Specialized conversion of <param/> and <paramVector> entities
-    template <> void Conv<ConditionParam>::convert(xml_h element) const {
-      string          nam = element.attr<string>(_U(name));
-      string          typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
-      string         data = element.text();
-      pair<string,OpaqueDataBlock> block;
-      block.first = nam;
-
-      OpaqueDataBinder::bind(VectorBinder(), block.second, typ, data);
-      ConditionParams* par = _option<ConditionParams>();
-      pair<ConditionParams::iterator,bool> res = par->insert(block);
-      if ( !res.second )  {
-        printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
-      }
-    }
-
-    /// Specialized conversion of <param/> and <paramVector> entities
-    template <> void Conv<ConditionParamVector>::convert(xml_h element) const {
-      string          nam = element.attr<string>(_U(name));
-      string          typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
-      string         data = element.text();
-      pair<string,OpaqueDataBlock> block;
-      string d = "["+data+" ";
+    string clean_cond_data(char pre, const string& data, char post)  {
+      string d = pre+data+" ";
       size_t idx, idq;
-
-      block.first = nam;
       for(idx = d.find_first_not_of(' ',1); idx != string::npos;)  {
         if ( ::isspace(d[idx]) ) d[idx] = ' ';
         idx = d.find_first_not_of(' ',++idx);
@@ -501,9 +477,41 @@ namespace DD4hep {
         }
         break;
       }
-      d[d.length()-1] = ']';
-      OpaqueDataBinder::bind(VectorBinder(), block.second, typ, d);
+      d[d.length()-1] = post;
+      return d;
+    }
+
+    /// Specialized conversion of <param/> entities
+    template <> void Conv<ConditionParam>::convert(xml_h element) const {
+      string          nam = element.attr<string>(_U(name));
+      string          typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
+      string         data = element.text();
+      pair<string,OpaqueDataBlock> block;
+      block.first = nam;
+      try {
+        OpaqueDataBinder::bind(ValueBinder(), block.second, typ, data);
+      }
+      catch(...)  {
+        pair<string,OpaqueDataBlock> block1;
+        OpaqueDataBinder::bind(ValueBinder(), block1.second, typ, data);
+      }
       ConditionParams* par = _option<ConditionParams>();
+      pair<ConditionParams::iterator,bool> res = par->insert(block);
+      if ( !res.second )  {
+        printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
+      }
+    }
+
+    /// Specialized conversion of <paramVector> entities
+    template <> void Conv<ConditionParamVector>::convert(xml_h element) const {
+      string  nam = element.attr<string>(_U(name));
+      string  typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
+      string data = clean_cond_data('[',element.text(),']');
+      ConditionParams* par = _option<ConditionParams>();
+      pair<string,OpaqueDataBlock> block;
+
+      block.first = nam;
+      OpaqueDataBinder::bind(VectorBinder(), block.second, typ, data);
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )  {
         printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
@@ -550,32 +558,13 @@ namespace DD4hep {
 
     /// Specialized conversion of <param/> and <paramVector> entities in alignments
     template <> void Conv<AlignmentDelta>::convert(xml_h element) const {
-      string          nam = element.attr<string>(_U(name));
-      string         data = element.text();
+      string        nam = element.attr<string>(_U(name));
+      string       data = clean_cond_data('(',element.text(),')');
       AlignmentDelta* a = _option<AlignmentDelta>();
-      string d = "("+data+" ";
-      size_t idx, idq;
-
-      for(idx = d.find_first_not_of(' ',1); idx != string::npos;)  {
-        if ( ::isspace(d[idx]) ) d[idx] = ' ';
-        idx = d.find_first_not_of(' ',++idx);
-      }
-      for(idx = d.find_first_not_of(' ',1); idx != string::npos; ++idx)  {
-        if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
-        idq = d.find_first_of(' ',idx);
-        if ( idq != string::npos )  {
-          idx = d.find_first_not_of(' ',idq);
-          if ( idx == string::npos ) break;
-          if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
-          d[idq] = ',';
-          continue;
-        }
-        break;
-      }
-      d[d.length()-1] = ')';
       Position pos;
       const BasicGrammar& g = BasicGrammar::instance<Position>();
-      if ( !g.fromString(&pos,d) ) g.invalidConversion(d, g.type());
+
+      if ( !g.fromString(&pos,data) ) g.invalidConversion(data, g.type());
       if ( nam == "dPosXYZ" )  {
         a->translation = pos;
         a->flags |= AlignmentDelta::HAVE_TRANSLATION;
