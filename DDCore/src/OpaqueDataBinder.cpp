@@ -261,24 +261,26 @@ namespace DD4hep {
     return true;
   }
 
-  /// Conditions binding function for STL maps
-  template <> 
-  bool OpaqueDataBinder::bind_map(Conditions::Condition& object, const string& key_type, const string& val_type)
-  {    return bind_map(object->data, key_type, val_type);  }
-  /// Conditions: Filling function for STL maps.
-  template <> bool OpaqueDataBinder::insert_map(Conditions::Condition& object,
-                                                const string& key_type, const string& key,
-                                                const string& val_type, const string& val)
-  {    return insert_map(object->data, key_type, key, val_type, val);    }
-  /// Instantiation for Conditions:
-  template bool
-  OpaqueDataBinder::bind_sequence<Conditions::Condition>(Conditions::Condition& object,const string& typ,const string& val);
-  
-  /// Instantiate the data binder for OpaqueData
+    /// Instantiate the data binder for OpaqueData
   template bool OpaqueDataBinder::bind_sequence<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
   template bool OpaqueDataBinder::bind_map<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
   template bool OpaqueDataBinder::insert_map<OpaqueDataBlock>(OpaqueDataBlock& object,
                                                               const string& key_type, const string& key,
                                                               const string& val_type, const string& val);
 
+  /// Conditions binding function for STL maps
+  template <> 
+  bool OpaqueDataBinder::bind_map(Conditions::Condition& object, const string& key_type, const string& val_type)
+  {    return bind_map(object->data, key_type, val_type);  }
+
+  /// Conditions: Filling function for STL maps.
+  template <> bool OpaqueDataBinder::insert_map(Conditions::Condition& object,
+                                                const string& key_type, const string& key,
+                                                const string& val_type, const string& val)
+  {    return insert_map(object->data, key_type, key, val_type, val);    }
+
+  /// Instantiation for Conditions:
+  template bool
+  OpaqueDataBinder::bind_sequence<Conditions::Condition>(Conditions::Condition& object,const string& typ,const string& val);
+  
 }
