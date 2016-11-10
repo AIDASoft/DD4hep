@@ -111,8 +111,18 @@ namespace DD4hep {
   }
 
 
-  template<typename KEY, typename VAL, typename OBJECT>
-  static void insert_map_item(const KEY& k, const string& val, OBJECT& block)  {
+  template<typename KEY, typename VAL>
+  static void insert_map_item(const KEY& k, const string& val, OpaqueDataBlock& block)  {
+    typedef map<KEY,VAL> map_t;
+    map_t& m = block.get<map_t>();
+    VAL v;
+    if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
+      except("Condition::map","++ Failed to convert conditions map entry.");
+    }
+    m.insert(make_pair(k,v));
+  }
+  template<typename KEY, typename VAL>
+  static void insert_map_item(const KEY& k, const string& val, Conditions::Condition& block)  {
     typedef map<KEY,VAL> map_t;
     map_t& m = block.get<map_t>();
     VAL v;
