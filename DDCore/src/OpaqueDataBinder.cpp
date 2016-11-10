@@ -46,7 +46,7 @@ namespace DD4hep {
 
   /// Helper class to bind STL map objects
   template <typename T, typename Q> bool MapBinder::bind(T& object, const Q*) const
-  {  object.bind<set<Q> >();      return true;  }
+  {  object.bind<Q>();      return true;  }
 
   /// Binding function for scalar items. See the implementation function for the concrete instantiations
   template <typename BINDER, typename T> 
@@ -154,42 +154,42 @@ namespace DD4hep {
     }
   }
 
-  template<typename BINDER, typename OBJECT, typename KEY> 
-    static void bind_mapping(const BINDER& b, const string& val_type, OBJECT& object, const KEY*)   {
+  template<typename OBJECT, typename KEY> 
+    static void bind_mapping(const string& val_type, OBJECT& object, const KEY*)   {
     if ( val_type.substr(0,3) == "int" )
-      b.bind(object, (map<KEY,int>*)0);
+      MapBinder().bind(object, (map<KEY,int>*)0);
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     else if ( val_type.substr(0,12) == "unsigned int" )
-      b.bind(object, (map<KEY,unsigned int>*)0);
+      MapBinder().bind(object, (map<KEY,unsigned int>*)0);
     else if ( val_type.substr(0,4) == "char" )
-      b.bind(object, (map<KEY,char>*)0);
+      MapBinder().bind(object, (map<KEY,char>*)0);
     else if ( val_type.substr(0,13) == "unsigned char" )
-      b.bind(object, (map<KEY,unsigned char>*)0);
+      MapBinder().bind(object, (map<KEY,unsigned char>*)0);
     else if ( val_type.substr(0,5) == "short" )
-      b.bind(object, (map<KEY,short>*)0);
+      MapBinder().bind(object, (map<KEY,short>*)0);
     else if ( val_type.substr(0,14) == "unsigned short" )
-      b.bind(object, (map<KEY,unsigned short>*)0);
+      MapBinder().bind(object, (map<KEY,unsigned short>*)0);
     else if ( val_type.substr(0,13) == "unsigned long" )
-      b.bind(object, (map<KEY,unsigned long>*)0);
+      MapBinder().bind(object, (map<KEY,unsigned long>*)0);
 #else
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     else if ( val_type.substr(0,4) == "char" )
-      b.bind(object, (map<KEY,int>*)0);
+      MapBinder().bind(object, (map<KEY,int>*)0);
     else if ( val_type.substr(0,5) == "short" )
-      b.bind(object, (map<KEY,int>*)0);
+      MapBinder().bind(object, (map<KEY,int>*)0);
 #endif
     else if ( val_type.substr(0,4) == "long" )
-      b.bind(object, (map<KEY,long>*)0);
+      MapBinder().bind(object, (map<KEY,long>*)0);
     else if ( val_type.substr(0,5) == "float" )
-      b.bind(object, (map<KEY,float>*)0);
+      MapBinder().bind(object, (map<KEY,float>*)0);
     else if ( val_type.substr(0,6) == "double" )
-      b.bind(object, (map<KEY,double>*)0);
+      MapBinder().bind(object, (map<KEY,double>*)0);
     else if ( val_type.substr(0,6) == "string" )
-      b.bind(object, (map<KEY,string>*)0);
+      MapBinder().bind(object, (map<KEY,string>*)0);
     else if ( val_type == "std::string" )
-      b.bind(object, (map<KEY,string>*)0);
+      MapBinder().bind(object, (map<KEY,string>*)0);
     else {
-      b.bind(object, (map<KEY,string>*)0);
+      MapBinder().bind(object, (map<KEY,string>*)0);
     }
   }
   
@@ -198,26 +198,26 @@ namespace DD4hep {
   bool OpaqueDataBinder::bind_map(T& object, const string& key_type, const string& val_type)   {
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     if ( key_type.substr(0,3) == "int" )
-      bind_mapping(MapBinder(),val_type,object,_int());
+      bind_mapping(val_type,object,_int());
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     else if ( key_type.substr(0,4) == "char" )
-      bind_mapping(MapBinder(),val_type,object,_int());
+      bind_mapping(val_type,object,_int());
     else if ( key_type.substr(0,5) == "short" )
-      bind_mapping(MapBinder(),val_type,object,_int());
+      bind_mapping(val_type,object,_int());
     else if ( key_type.substr(0,4) == "long" )
-      bind_mapping(MapBinder(),val_type,object,_long());
+      bind_mapping(val_type,object,_long());
     else if ( key_type.substr(0,5) == "float" )
-      bind_mapping(MapBinder(),val_type,object,_float());
+      bind_mapping(val_type,object,_float());
     else if ( key_type.substr(0,6) == "double" )
-      bind_mapping(MapBinder(),val_type,object,_double());
+      bind_mapping(val_type,object,_double());
 #endif
     else if ( key_type.substr(0,6) == "string" )
-      bind_mapping(MapBinder(),val_type,object,_string());
+      bind_mapping(val_type,object,_string());
     else if ( key_type == "std::string" )
-      bind_mapping(MapBinder(),val_type,object,_string());
+      bind_mapping(val_type,object,_string());
     else {
       printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-      bind_mapping(MapBinder(),val_type,object,_string());
+      bind_mapping(val_type,object,_string());
     }
     return true;
   }
