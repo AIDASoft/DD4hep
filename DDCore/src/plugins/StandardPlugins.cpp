@@ -59,11 +59,27 @@ static LCDDBuildType build_type(const char* value)   {
   throw runtime_error(string("Invalid build type value: ")+value);
 }
 
+/// Basic entry point to create a LCDD instance
+/**
+ *  Factory: LCDD_constructor
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static void* create_lcdd_instance(const char* /* name */) {
   return &LCDD::getInstance();
 }
 DECLARE_CONSTRUCTOR(LCDD_constructor,create_lcdd_instance)
 
+/// Basic entry point to display the currently loaded geometry using the ROOT OpenGL viewer
+/**
+ *  Factory: DD4hepGeometryDisplay
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long display(LCDD& lcdd, int argc, char** argv) {
   TGeoManager& mgr = lcdd.manager();
   const char* opt = "ogl";
@@ -81,6 +97,39 @@ static long display(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepGeometryDisplay,display)
 
+/// Basic entry point to start the ROOT interpreter.
+/**
+ *  Factory: DD4hepRint
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long run_interpreter(LCDD& /* lcdd */, int argc, char** argv) {
+  if ( argc > 0 )   {
+    pair<int, char**> a(argc,argv);
+  }
+  else   {
+    pair<int, char**> a(0,0);
+    TRint app("DD4hep", &a.first, a.second);
+    app.Run();
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hepRint,run_interpreter)
+
+/// Basic entry point to start the ROOT interpreter.
+/**
+ *  The UI will show up in the ROOT prompt and is accessible
+ *  in the interpreter with the global variable 
+ *  DD4hep::DD4hepUI* gDD4hepUI;
+ *
+ *  Factory: DD4hepInteractiveUI
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long root_ui(LCDD& lcdd, int /* argc */, char** /* argv */) {
   char cmd[256];
   DD4hepUI* ui = new DD4hepUI(lcdd);
@@ -93,6 +142,19 @@ static long root_ui(LCDD& lcdd, int /* argc */, char** /* argv */) {
 }
 DECLARE_APPLY(DD4hepInteractiveUI,root_ui)
 
+/// Basic entry point to interprete an XML document
+/**
+ *  - The file URI to be opened 
+ *    is passed as first argument to the call.
+ *  - The processing hint (build type) is passed as optional 
+ *    second argument.
+ *
+ *  Factory: DD4hepCompactLoader
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long load_compact(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     LCDDBuildType type = BUILD_DEFAULT;
@@ -112,19 +174,21 @@ static long load_compact(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepCompactLoader,load_compact)
 
-static long run_interpreter(LCDD& /* lcdd */, int argc, char** argv) {
-  if ( argc > 0 )   {
-    pair<int, char**> a(argc,argv);
-  }
-  else   {
-    pair<int, char**> a(0,0);
-    TRint app("DD4hep", &a.first, a.second);
-    app.Run();
-  }
-  return 1;
-}
-DECLARE_APPLY(DD4hepRint,run_interpreter)
-
+/// Basic entry point to process any XML document.
+/**
+ *  - The file URI to be opened 
+ *    is passed as first argument to the call.
+ *  - The processing hint (build type) is passed as optional 
+ *    second argument.
+ *
+ *  The root tag defines the plugin to interprete it.
+ *
+ *  Factory: DD4hepXMLLoader
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long load_xml(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     LCDDBuildType type = BUILD_DEFAULT;
@@ -144,6 +208,21 @@ static long load_xml(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepXMLLoader,load_xml)
 
+/// Basic entry point to process any pre-parsed XML document.
+/**
+ *  - The handle to the XML element (XercesC DOMNode) 
+ *    is passed as first argument to the call.
+ *  - The processing hint (build type) is passed as optional 
+ *    second argument.
+ *
+ *  The root tag defines the plugin to interprete it.
+ *
+ *  Factory: DD4hepXMLProcessor
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long process_xml_doc(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     LCDDBuildType type = BUILD_DEFAULT;
@@ -160,12 +239,22 @@ static long process_xml_doc(LCDD& lcdd, int argc, char** argv) {
         imp->processXMLElement(input, type);
         return 1;
       }
+      except("DD4hepXMLProcessor",
+             "++ The passed reference to the parsed XML document is invalid.");
     }
   }
   return 0;
 }
 DECLARE_APPLY(DD4hepXMLProcessor,process_xml_doc)
 
+/// Basic entry point to load the volume manager object
+/**
+ *  Factory: DD4hepVolumeManager
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
@@ -186,6 +275,14 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
 }
 DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
+/// Basic entry point to dump a DD4hep geometry to a ROOT file
+/**
+ *  Factory: DD4hepGeometry2ROOT
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long dump_geometry2root(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     string output = argv[0];
@@ -200,6 +297,14 @@ static long dump_geometry2root(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
 
+/// Basic entry point to load a DD4hep geometry directly from the ROOT file
+/**
+ *  Factory: DD4hepRootLoader
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 static long load_geometryFromroot(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     string input = argv[0];
@@ -213,11 +318,13 @@ static long load_geometryFromroot(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
 
-/** Basic entry point to print out the volume hierarchy
+/// Basic entry point to print out the volume hierarchy
+/**
+ *  Factory: DD4hepVolumeDump
  *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
  */
 static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
   struct Actor {
@@ -309,11 +416,13 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
-/** Basic entry point to print out the detector element hierarchy
+/// Basic entry point to print out the detector element hierarchy
+/**
+ *  Factory: DD4hepDetectorDump, DD4hepDetectorVolumeDump
  *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
  */
 template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
   struct Actor {
@@ -356,11 +465,13 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
 DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree<0>)
 DECLARE_APPLY(DD4hepDetectorVolumeDump,dump_detelement_tree<1>)
 
-/** Basic entry point to print out the volume hierarchy
+/// Basic entry point to print out the volume hierarchy
+/**
+ *  Factory: DD4hepDetElementCache
  *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
  */
 static long detelement_cache(LCDD& lcdd, int , char** ) {
   struct Actor {
@@ -379,6 +490,14 @@ static long detelement_cache(LCDD& lcdd, int , char** ) {
 }
 DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)
 
+/// Basic entry point to dump the geometry tree of the lcdd instance
+/**
+ *  Factory: DD4hepGeometryTreeDump
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 #include "../GeometryTreeDump.h"
 static long exec_GeometryTreeDump(LCDD& lcdd, int, char** ) {
   GeometryTreeDump dmp;
@@ -387,6 +506,14 @@ static long exec_GeometryTreeDump(LCDD& lcdd, int, char** ) {
 }
 DECLARE_APPLY(DD4hepGeometryTreeDump,exec_GeometryTreeDump)
 
+/// Basic entry point to dump the geometry in GDML format
+/**
+ *  Factory: DD4hepSimpleGDMLWriter
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 #include "../SimpleGDMLWriter.h"
 static long exec_SimpleGDMLWriter(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 1 )   {
@@ -403,11 +530,13 @@ static long exec_SimpleGDMLWriter(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
 
-/** Basic entry point to print out detector type map
+/// Basic entry point to print out detector type map
+/**
+ *  Factory: DD4hepDetectorTypes
  *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
  */
 static long detectortype_cache(LCDD& lcdd, int , char** ) {
   vector<string> v = lcdd.detectorTypes();

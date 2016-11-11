@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -51,21 +50,21 @@ namespace DD4hep {
        */
       class ParamPrinter {
       protected:
-	/// Printout prefix
-	std::string& m_prefix;
+        /// Printout prefix
+        std::string& m_prefix;
       public:
 
-	/// Initializing constructor
+        /// Initializing constructor
         ParamPrinter(std::string& prefix);
-	/// Default destructor
-	virtual ~ParamPrinter()  {}
+        /// Default destructor
+        virtual ~ParamPrinter()  {}
 
-	/// Set prefix for prinouts
-	void setPrefix(const std::string& value)  {  m_prefix = value; }
-	/// Access prefix value
-	const std::string& prefix() const         {   return m_prefix; }
-	/// Callback to output conditions information
-	virtual void operator()(const Conditions::AbstractMap::Params::value_type& obj)  const;
+        /// Set prefix for prinouts
+        void setPrefix(const std::string& value)  {  m_prefix = value; }
+        /// Access prefix value
+        const std::string& prefix() const         {   return m_prefix; }
+        /// Callback to output conditions information
+        virtual void operator()(const Conditions::AbstractMap::Params::value_type& obj)  const;
       };
 
     protected:
@@ -78,8 +77,8 @@ namespace DD4hep {
 
       /// Initializing constructor
       ConditionPrinter(const std::string& prefix="", 
-		       int flag=Cond::NO_NAME|Cond::WITH_IOV|Cond::WITH_ADDRESS,
-		       ParamPrinter* prt=0);
+                       int flag=Cond::NO_NAME|Cond::WITH_IOV|Cond::WITH_ADDRESS,
+                       ParamPrinter* prt=0);
       /// Set prefix for prinouts
       void setPrefix(const std::string& value)  {  m_prefix = value; }
       /// Callback to output conditions information

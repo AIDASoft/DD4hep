@@ -16,7 +16,9 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
+#include "DD4hep/DetConditions.h"
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/ConditionsPrinter.h"
 
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
@@ -27,10 +29,18 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
+using Geometry::DetElement;
+using Geometry::PlacedVolume;
 
 namespace {
-  /// Plugin function:
-  /// Install the alignment manager as an extension to the central LCDD object
+  /// Plugin function: Install the alignment manager as an extension to the central LCDD object
+  /**
+   *  Factory: DD4hep_ConditionsManagerInstaller
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2016
+   */
   int ddcond_install_cond_mgr (LCDD& lcdd, int argc, char** argv)  {
     Handle<ConditionsManagerObject> mgr(lcdd.extension<ConditionsManagerObject>(false));
     if ( !mgr.isValid() )  {
@@ -54,13 +64,24 @@ DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
 
 namespace {
 
+  
+  /// Plugin function: Dump of all Conditions pool with or without conditions
+  /**
+   *  Factory: DD4hep_ConditionsPoolDump: Dump pools only
+   *  Factory: DD4hep_ConditionsDump: Dump pools and conditions
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2016
+   */
   int ddcond_dump_conditions_functor(lcdd_t& lcdd, bool print_conditions, int argc, char** argv)   {
     typedef std::vector<const IOVType*> _T;
     typedef ConditionsIOVPool::Elements _E;
     typedef RangeConditions _R;
     ConditionsManager manager = ConditionsManager::from(lcdd);
-    Condition::Processor* printer = 0;
-
+    ConditionsPrinter default_printer("");
+    Condition::Processor* printer = &default_printer;
+    
     if ( argc > 0 )   {
       printer = (Condition::Processor*) argv[0];
     }
@@ -82,7 +103,9 @@ namespace {
               cp->select_all(rc);
               for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
                 if ( printer )  {  (*printer)(*ic);                   }
-                else            { /* print_conditions<void>(rc);  */  }
+                else            {
+                  /* print_conditions<void>(rc);  */
+                }
               }
             }
           }
@@ -106,42 +129,69 @@ namespace {
 DECLARE_APPLY(DD4hep_ConditionsPoolDump,ddcond_dump_pools)
 DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
 // ======================================================================================
-#if 0
 namespace {
-
-  int ddcond_assign_keys(LCDD& lcdd, int /* argc */, char** /* argv */)   {
-    typedef std::vector<const IOVType*> _T;
-    typedef ConditionsIOVPool::Elements _E;
-    typedef RangeConditions _R;
-    ConditionsManager manager = ConditionsManager::from(lcdd);
-
-    const _T types = manager.iovTypesUsed();
-    for( _T::const_iterator i = types.begin(); i != types.end(); ++i )    {
-      const IOVType* type = *i;
-      if ( type )   {
-        ConditionsIOVPool* pool = manager.iovPool(*type);
-        if ( pool )  {
-          const _E& e = pool->elements;
-          for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
-            _R rc;
-            ConditionsPool* cp = (*j).second;
-            cp->select_all(rc);
-            for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
-              Condition cond(*ic);
-              
-            }
+  /// Plugin function: Dump of all Conditions associated to the detector elements
+  /**
+   *  Factory: DD4hep_DetElementConditionsDump
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2016
+   */
+  int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)   {
+    struct Actor {
+      ConditionsManager manager;
+      ConditionsPrinter printer;
+      dd4hep_ptr<UserPool> user_pool;
+      const IOVType* iov_type;
+      
+      /// Standard constructor
+      Actor(ConditionsManager m)  : manager(m) {
+        iov_type = manager.iovType("run");
+        IOV  iov(iov_type);
+        iov.set(1500);
+        long num_updated = manager.prepare(iov, user_pool);
+        printout(INFO,"Conditions",
+                 "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
+                 num_updated, iov_type ? iov_type->str().c_str() : "???");
+        user_pool->print("User pool");
+      }
+      /// Default destructor
+      ~Actor()   {
+        manager.clean(iov_type, 20);
+        user_pool->clear();
+        user_pool.release();
+      }
+      /// Dump method.
+      long dump(DetElement de,int level)   {
+        const DetElement::Children& children = de.children();
+        PlacedVolume place = de.placement();
+        char sens = place.volume().isSensitive() ? 'S' : ' ';
+        char fmt[128], tmp[32];
+        ::snprintf(tmp,sizeof(tmp),"%03d/",level+1);
+        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s #Dau:%%d VolID:%%08X %%c",level+1,2*level+1);
+        printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
+                 (unsigned long)de.volumeID(), sens);
+        if ( de.hasConditions() )  {
+          DetConditions conds(de);
+          Container cont = conds.conditions();
+          printer.setName(string(tmp)+de.name());
+          for(const auto& k : cont->keys )  {
+            Condition c = cont.get(k.first,*(user_pool.get()));
+            (printer)(c);
           }
         }
+        for (const auto& c : de.children() )
+          dump(c.second,level+1);
+        return 1;
       }
-    }
-    return 1;
+    };
+    return Actor(ConditionsManager::from(lcdd)).dump(lcdd.world(),0);
   }
 }
-
-DECLARE_APPLY(DD4hep_AssignConditionsKeys,ddcond_assign_keys)
-#endif
+DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
+  
 // ======================================================================================
-
 namespace {
   /// Plugin entry point.
   static long ddcond_synchronize_conditions(lcdd_t& lcdd, int argc, char** argv) {
