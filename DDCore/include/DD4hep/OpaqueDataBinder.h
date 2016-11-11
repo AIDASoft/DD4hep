@@ -24,58 +24,43 @@ namespace DD4hep {
 
   /// Helper class to bind string values to C++ data objects (primitive or complex)
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  struct ValueBinder   {
-    template <typename T, typename Q> bool bind(T& object, const std::string& val, const Q*) const;
-  };
+  struct ValueBinder   {  };
 
   /// Helper class to bind string values to a STL vector of data objects (primitive or complex)
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  struct VectorBinder  {
-    template <typename T, typename Q> bool bind(T& object, const std::string& val, const Q*) const;
-  };
+  struct VectorBinder  {  };
 
   /// Helper class to bind string values to a STL list of data objects (primitive or complex)
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  struct ListBinder   {
-    template <typename T, typename Q> bool bind(T& object, const std::string& val, const Q*) const;
-  };
+  struct ListBinder   {  };
 
   /// Helper class to bind string values to a STL set of data objects (primitive or complex)
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  struct SetBinder   {
-    template <typename T, typename Q> bool bind(T& object, const std::string& val, const Q*) const;
-  };
+  struct SetBinder   {  };
 
   /// Helper class to bind STL map objects
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  struct MapBinder   {
-    template <typename T, typename Q> bool bind(T& object, const Q*) const;
-  };
+  struct MapBinder   {  };
 
   /// Helper class to bind string values to C++ data items
   /**
@@ -85,19 +70,6 @@ namespace DD4hep {
    *  \ingroup DD4HEP
    */
   class OpaqueDataBinder  {
-  protected:
-    static const char*           _char()    { return 0; }
-    static const unsigned char*  _uchar()   { return 0; }
-    static const short*          _short()   { return 0; }
-    static const unsigned short* _ushort()  { return 0; }
-    static const int*            _int()     { return 0; }
-    static const unsigned int*   _uint()    { return 0; }
-    static const long*           _long()    { return 0; }
-    static const unsigned long*  _ulong()   { return 0; }
-    static const float*          _float()   { return 0; }
-    static const double*         _double()  { return 0; }
-    static const std::string*    _string()  { return 0; }
-
   public:
     /// Default constructor
     OpaqueDataBinder() = default;

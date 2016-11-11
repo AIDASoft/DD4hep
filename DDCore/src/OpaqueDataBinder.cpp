@@ -25,71 +25,90 @@
 
 using namespace std;
 
-/// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace {
+  using namespace DD4hep;
+  
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+  const char*           _char()    { return 0; }
+  const unsigned char*  _uchar()   { return 0; }
+  const short*          _short()   { return 0; }
+  const unsigned short* _ushort()  { return 0; }
+  const unsigned int*   _uint()    { return 0; }
+  const unsigned long*  _ulong()   { return 0; }
+#endif
+  const int*            _int()     { return 0; }
+  const long*           _long()    { return 0; }
+  const float*          _float()   { return 0; }
+  const double*         _double()  { return 0; }
+  const std::string*    _string()  { return 0; }
 
   /// Helper class to bind string values to C++ data objects (primitive or complex)
-  template <typename T, typename Q> bool ValueBinder::bind(T& object, const string& val, const Q*) const
+  template <typename T, typename Q> bool __bind__(const ValueBinder&, T& object, const string& val, const Q*)
   {  object.template bind<Q>(val);            return true;  }
 
   /// Helper class to bind string values to a STL vector of data objects (primitive or complex)
-  template <typename T, typename Q> bool VectorBinder::bind(T& object, const string& val, const Q*) const
+  template <typename T, typename Q> bool __bind__(const VectorBinder&, T& object, const string& val, const Q*)
   {  object.template bind<vector<Q> >(val);   return true;  }
 
   /// Helper class to bind string values to a STL list of data objects (primitive or complex)
-  template <typename T, typename Q> bool ListBinder::bind(T& object, const string& val, const Q*) const
+  template <typename T, typename Q> bool __bind__(const ListBinder&, T& object, const string& val, const Q*)
   {  object.template bind<list<Q> >(val);     return true;  }
 
   /// Helper class to bind string values to a STL set of data objects (primitive or complex)
-  template <typename T, typename Q> bool SetBinder::bind(T& object, const string& val, const Q*) const
+  template <typename T, typename Q> bool __bind__(const SetBinder&, T& object, const string& val, const Q*)
   {  object.template bind<set<Q> >(val);      return true;  }
 
   /// Helper class to bind STL map objects
-  template <typename T, typename Q> bool MapBinder::bind(T& object, const Q*) const
+  template <typename T, typename Q> bool __bind__(const MapBinder&, T& object, const Q*)
   {  object.template bind<Q>();               return true;  }
+
+}
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
 
   /// Binding function for scalar items. See the implementation function for the concrete instantiations
   template <typename BINDER, typename T> 
   bool OpaqueDataBinder::bind(const BINDER& b, T& object, const string& typ, const string& val)  {
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     if ( typ.substr(0,4) == "char" )
-      return b.bind(object,val,_char());
+      return __bind__(b,object,val,_char());
     else if ( typ.substr(0,13) == "unsigned char" )
-      return b.bind(object,val,_uchar());
+      return __bind__(b,object,val,_uchar());
     else if ( typ.substr(0,5) == "short" )
-      return b.bind(object,val,_short());
+      return __bind__(b,object,val,_short());
     else if ( typ.substr(0,14) == "unsigned short" )
-      return b.bind(object,val,_ushort());
+      return __bind__(b,object,val,_ushort());
     else if ( typ.substr(0,12) == "unsigned int" )
-      return b.bind(object,val,_uint());
+      return __bind__(b,object,val,_uint());
     else if ( typ.substr(0,13) == "unsigned long" )
-      return b.bind(object,val,_ulong());
+      return __bind__(b,object,val,_ulong());
 #else
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     if ( typ.substr(0,4) == "char" )
-      return b.bind(object,val,_int());
+      return __bind__(b,object,val,_int());
     else if ( typ.substr(0,5) == "short" )
-      return b.bind(object,val,_int());
+      return __bind__(b,object,val,_int());
 #endif
     else if ( typ.substr(0,3) == "int" )
-      return b.bind(object,val,_int());
+      return __bind__(b,object,val,_int());
     else if ( typ.substr(0,4) == "long" ) 
-      return b.bind(object,val,_long());
+      return __bind__(b,object,val,_long());
     else if ( typ.substr(0,5) == "float" )
-      return b.bind(object,val,_float());
+      return __bind__(b,object,val,_float());
     else if ( typ.substr(0,6) == "double" )
-      return b.bind(object,val,_double());
+      return __bind__(b,object,val,_double());
     else if ( typ.substr(0,6) == "string" )
-      return b.bind(object,val,_string());
+      return __bind__(b,object,val,_string());
     else if ( typ == "std::string" )
-      return b.bind(object,val,_string());
+      return __bind__(b,object,val,_string());
     else if ( typ == "Histo1D" )
-      return b.bind(object,val,_string());
+      return __bind__(b,object,val,_string());
     else if ( typ == "Histo2D" )
-      return b.bind(object,val,_string());
+      return __bind__(b,object,val,_string());
     else
       printout(INFO,"OpaqueDataBinder","++ Unknown conditions parameter type:%s val:%s",typ.c_str(),val.c_str());
-    return b.bind(object,val,_string());
+    return __bind__(b,object,val,_string());
   }
   
   /// Binding function for sequences (unmapped STL containers)
@@ -210,39 +229,39 @@ namespace DD4hep {
   template<typename BINDER, typename OBJECT, typename KEY> 
   static void bind_mapping(const BINDER& b, const string& val_type, OBJECT& object, const KEY*)   {
     if ( val_type.substr(0,3) == "int" )
-      b.bind(object, (map<KEY,int>*)0);
+      __bind__(b,object, (map<KEY,int>*)0);
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     else if ( val_type.substr(0,12) == "unsigned int" )
-      b.bind(object, (map<KEY,unsigned int>*)0);
+      __bind__(b,object, (map<KEY,unsigned int>*)0);
     else if ( val_type.substr(0,4) == "char" )
-      b.bind(object, (map<KEY,char>*)0);
+      __bind__(b,object, (map<KEY,char>*)0);
     else if ( val_type.substr(0,13) == "unsigned char" )
-      b.bind(object, (map<KEY,unsigned char>*)0);
+      __bind__(b,object, (map<KEY,unsigned char>*)0);
     else if ( val_type.substr(0,5) == "short" )
-      b.bind(object, (map<KEY,short>*)0);
+      __bind__(b,object, (map<KEY,short>*)0);
     else if ( val_type.substr(0,14) == "unsigned short" )
-      b.bind(object, (map<KEY,unsigned short>*)0);
+      __bind__(b,object, (map<KEY,unsigned short>*)0);
     else if ( val_type.substr(0,13) == "unsigned long" )
-      b.bind(object, (map<KEY,unsigned long>*)0);
+      __bind__(b,object, (map<KEY,unsigned long>*)0);
 #else
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     else if ( val_type.substr(0,4) == "char" )
-      b.bind(object, (map<KEY,int>*)0);
+      __bind__(b,object, (map<KEY,int>*)0);
     else if ( val_type.substr(0,5) == "short" )
-      b.bind(object, (map<KEY,int>*)0);
+      __bind__(b,object, (map<KEY,int>*)0);
 #endif
     else if ( val_type.substr(0,4) == "long" )
-      b.bind(object, (map<KEY,long>*)0);
+      __bind__(b,object, (map<KEY,long>*)0);
     else if ( val_type.substr(0,5) == "float" )
-      b.bind(object, (map<KEY,float>*)0);
+      __bind__(b,object, (map<KEY,float>*)0);
     else if ( val_type.substr(0,6) == "double" )
-      b.bind(object, (map<KEY,double>*)0);
+      __bind__(b,object, (map<KEY,double>*)0);
     else if ( val_type.substr(0,6) == "string" )
-      b.bind(object, (map<KEY,string>*)0);
+      __bind__(b,object, (map<KEY,string>*)0);
     else if ( val_type == "std::string" )
-      b.bind(object, (map<KEY,string>*)0);
+      __bind__(b,object, (map<KEY,string>*)0);
     else {
-      b.bind(object, (map<KEY,string>*)0);
+      __bind__(b,object, (map<KEY,string>*)0);
     }
   }
   
