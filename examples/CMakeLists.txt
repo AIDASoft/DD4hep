@@ -40,6 +40,7 @@ dd4hep_package ( DD4hepExample MAJOR 0 MINOR 15 PATCH 0
 dd4hep_enable_tests (AlignDet
   CLICSiD
   ClientTests
+  Conditions
   DDDB
   DDG4
   SimpleDetector)
