@@ -30,4 +30,32 @@
   <detelement path="/world/Telescope/module_5" ref="default_module.xml">
   </detelement>
 
+  <detelement path="/world/Telescope/module_6">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
+  <detelement path="/world/Telescope/module_7">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
+  <detelement path="/world/Telescope/module_8">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
+  <detelement path="/world/Telescope/module_9">
+    <alignment>
+      <position x="0" y="0"    z="290.0*mm"/>
+      <rotation x="0" y="pi/2" z="0"/>     
+    </alignment>
+  </detelement>
+
 </conditions>

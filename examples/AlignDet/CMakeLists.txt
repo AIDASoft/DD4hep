@@ -26,6 +26,14 @@ dd4hep_install_dir( compact DESTINATION examples/AlignDet )
 dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 
 #
+#---Testing: Load Telescope geometry and read conditions ------------------
+dd4hep_add_test_reg( test_DetAlign_Telescope_dump_geometry
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy
+  -compact file:${CMAKE_CURRENT_SOURCE_DIR}/../AlignDet/compact/Telescope.xml
+  -plugin DD4hepDetectorDump
+  REGEX_PASS "DetectorDump     INFO  003       /world/Telescope/module_9 #Dau\\:0 VolID\\:00000903")
+#
 #---Testing: Load ALEPH TPC geometry --------------------------------------
 dd4hep_add_test_reg( test_DetAlign_AlephTPC_load
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"

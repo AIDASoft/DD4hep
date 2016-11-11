@@ -17,9 +17,6 @@
   </repository>
 
   <repository>
-    <iov validity="1000,2000#run" ref="Module1_run-1000...2000.xml"/>
-<!--
-    <iov type="run" start="1000" end="2000" ref="module2_run-1000...2000.xml"/>
--->
+    <iov validity="1000,2000#run" ref="Modules_run-1000...2000.xml"/>
   </repository>
 </conditions>
