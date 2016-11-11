@@ -44,8 +44,8 @@ namespace DD4hep  {
     class manager;
     class repository;
     class detelement;
-    class align_conditions;
-    class align_arbitrary;
+    class conditions;
+    class arbitrary;
     /// Conditions types
     class value;
     class mapping;
@@ -67,8 +67,8 @@ namespace DD4hep  {
   template <> void Converter<sequence>::operator()(xml_h e) const;
   template <> void Converter<mapping>::operator()(xml_h e) const;
   template <> void Converter<alignment>::operator()(xml_h e) const;
-  template <> void Converter<align_conditions>::operator()(xml_h seq)  const;
-  template <> void Converter<align_arbitrary>::operator()(xml_h seq)  const;
+  template <> void Converter<conditions>::operator()(xml_h seq)  const;
+  template <> void Converter<arbitrary>::operator()(xml_h seq)  const;
 }  
   
 using std::string;
@@ -82,6 +82,7 @@ using Geometry::DetElement;
 
 
 namespace {
+  static PrintLevel s_parseLevel = DEBUG;
   struct ConversionArg {
     DetElement         detector;
     ConditionsPool*    pool;
@@ -127,7 +128,7 @@ namespace {
     string add = XML::DocumentHandler::system_path(e);
     Condition cond(det.path()+"#"+nam, typ);
 
-    printout(INFO,"XMLConditions","++ Processing condition tag:%s name:%s type:%s [%s]",
+    printout(s_parseLevel,"XMLConditions","++ Processing condition tag:%s name:%s type:%s [%s]",
              tag.c_str(), nam.c_str(), typ.c_str(),
              Path(add).filename().c_str());
     cond->address  = add;
@@ -162,16 +163,16 @@ namespace DD4hep {
 
   /** Convert iov_type repository objects
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<iov_type>::operator()(xml_h element) const {
     xml_dim_t e  = element;
     size_t id    = e.id();
     string nam   = e.nameStr();
     ConversionArg* arg  = _param<ConversionArg>();
-    printout(INFO,"XMLConditions","++ Registering IOV type: [%d]: %s",id,nam.c_str());
+    printout(s_parseLevel,"XMLConditions","++ Registering IOV type: [%d]: %s",id,nam.c_str());
     const IOVType* iov_type = arg->manager.registerIOVType(id,nam).second;
     if ( !iov_type )  {
       except("XMLConditions","Failed to register iov type: [%d]: %s",id,nam.c_str());
@@ -181,9 +182,9 @@ namespace DD4hep {
   /// Convert iov repository objects
   /**
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<iov>::operator()(xml_h element) const {
     xml_dim_t e   = element;
@@ -191,18 +192,18 @@ namespace DD4hep {
     string    val = e.attr<string>(_U(validity));
     ConversionArg* arg  = _param<ConversionArg>();
     CurrentPool pool(arg);
-    printout(INFO,"XMLConditions","++ Reading IOV file: %s -> %s", val.c_str(), ref.c_str());
+    printout(s_parseLevel,"XMLConditions","++ Reading IOV file: %s -> %s", val.c_str(), ref.c_str());
     pool.set(arg->manager->registerIOV(val));
     XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
-    Converter<align_conditions>(lcdd,param,optional)(doc.root());
+    Converter<conditions>(lcdd,param,optional)(doc.root());
   }
 
   /// Convert manager repository objects
   /**
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<manager>::operator()(xml_h element) const {
     ConversionArg* arg  = _param<ConversionArg>();
@@ -211,7 +212,7 @@ namespace DD4hep {
       string nam = d.nameStr();
       string val = d.valueStr();
       try  {
-        printout(INFO,"XMLConditions","++ Setup conditions Manager[%s] = %s",nam.c_str(),val.c_str());
+        printout(s_parseLevel,"XMLConditions","++ Setup conditions Manager[%s] = %s",nam.c_str(),val.c_str());
         arg->manager[nam] = val;
       }
       catch(const std::exception& e)  {
@@ -219,7 +220,7 @@ namespace DD4hep {
       }
     }
     arg->manager.initialize();
-    printout(INFO,"XMLConditions","++ Conditions Manager successfully initialized.");
+    printout(s_parseLevel,"XMLConditions","++ Conditions Manager successfully initialized.");
   }
 
   /// Convert rotation objects
@@ -227,15 +228,15 @@ namespace DD4hep {
    *
    *    <rotation x="0.5" y="0"  z="0"/>
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<rotation>::operator()(xml_h e) const {
     xml_comp_t r(e);
     RotationZYX* v = (RotationZYX*)param;
     v->SetComponents(r.z(), r.y(), r.x());
-    printout(INFO,"XMLConditions",
+    printout(s_parseLevel,"XMLConditions",
              "++ Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
              r.x(), r.y(), r.z(), v->Phi(), v->Psi(), v->Theta());
   }
@@ -245,15 +246,15 @@ namespace DD4hep {
    *
    *    <position x="0.5" y="0"  z="0"/>
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<position>::operator()(xml_h e) const {
     xml_comp_t p(e);
     Position* v = (Position*)param;
     v->SetXYZ(p.x(), p.y(), p.z());
-    printout(INFO,"XMLConditions","++ Position:   x=%9.3f y=%9.3f   z=%9.3f",
+    printout(s_parseLevel,"XMLConditions","++ Position:   x=%9.3f y=%9.3f   z=%9.3f",
              v->X(), v->Y(), v->Z());
   }
 
@@ -262,23 +263,23 @@ namespace DD4hep {
    *
    *    <pivot x="0.5" y="0"  z="0"/>
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<pivot>::operator()(xml_h e) const {
     xml_comp_t p(e);
     double x,y,z;
     Translation3D* v = (Translation3D*)param;
     v->SetXYZ(x=p.x(), y=p.y(), z=p.z());
-    printout(INFO,"XMLConditions","++ Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
+    printout(s_parseLevel,"XMLConditions","++ Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
   }
 
   /// Convert conditions value objects (scalars)
   /**
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<value>::operator()(xml_h e) const {
     ConversionArg* arg = _param<ConversionArg>();
@@ -288,9 +289,9 @@ namespace DD4hep {
 
   /// Convert conditions sequence objects (unmapped containers)
   /**
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<sequence>::operator()(xml_h e) const {
     xml_dim_t      elt(e);
@@ -314,9 +315,9 @@ namespace DD4hep {
 
   /// Convert conditions STL maps
   /**
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<mapping>::operator()(xml_h e) const {
     xml_comp_t elt(e);
@@ -361,9 +362,9 @@ namespace DD4hep {
    *        <pivot    x="0" y="0"  z="100"/>
    *      </xx>
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<alignment>::operator()(xml_h e) const {
     using Alignments::Delta;
@@ -402,9 +403,9 @@ namespace DD4hep {
 
   /** Convert detelement objects
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<detelement>::operator()(xml_h e) const {
     xml_comp_t elt(e);
@@ -412,7 +413,7 @@ namespace DD4hep {
     CurrentDetector detector(arg);
     if ( elt.hasAttr(_U(path)) )  {
       detector.set(e.attr<string>(_U(path)));
-      printout(INFO,"XMLConditions","++ Processing condition for:%s",
+      printout(s_parseLevel,"XMLConditions","++ Processing condition for:%s",
                arg->detector.path().c_str());
     }
     if ( elt.hasAttr(_U(ref)) )  {
@@ -427,9 +428,9 @@ namespace DD4hep {
 
   /** Convert repository objects
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   template <> void Converter<repository>::operator()(xml_h element) const {
     xml_coll_t(element,_UC(manager)).for_each(Converter<manager>(lcdd,param,optional));
@@ -439,11 +440,11 @@ namespace DD4hep {
 
   /** Convert any top level tag in the XML file
    *
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
-  template <> void Converter<align_arbitrary>::operator()(xml_h e) const {
+  template <> void Converter<arbitrary>::operator()(xml_h e) const {
     xml_comp_t elt(e);
     string tag = elt.tag();
     if ( tag == "repository" )  
@@ -460,12 +461,26 @@ namespace DD4hep {
   }
 
   /// Convert alignment conditions entries
-  template <> void Converter<align_conditions>::operator()(xml_h e) const {
-    xml_coll_t(e,_U(star)).for_each(Converter<align_arbitrary>(lcdd,param,optional));
+  template <> void Converter<conditions>::operator()(xml_h e) const {
+    xml_coll_t(e,_U(star)).for_each(Converter<arbitrary>(lcdd,param,optional));
   }
 }
-#include "DD4hep/DD4hepUI.h"
 
+/** Basic entry point to set print level of this module.
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long setup_repository_loglevel(lcdd_t& lcdd, int argc, char** argv)  {
+  if ( argc == 1 )  {
+    s_parseLevel = printLevel(argv[1]);
+    return 1;
+  }
+  return 0;
+}
+DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryPrintLevel,setup_repository_loglevel)
+
+#include "DD4hep/DD4hepUI.h"
 /** Basic entry point to read alignment conditions files
  *
 
@@ -473,14 +488,15 @@ geoPluginRun -compact file:checkout/examples/AlignDet/compact/Telescope.xml  -vo
              -plugin DD4hepDetectorDump \
              -plugin DD4hepVolumeDump volids \
              -plugin DD4hepVolumeMgrTest all \
-             -plugin DD4hep_XMLAlignmentConditionsParser file:checkout/examples/Conditions/data/repository.xml \
-             -plugin DD4hep_ConditionsPoolDump
+             -plugin DD4hep_ConditionsXMLRepositoryParser file:checkout/examples/Conditions/data/repository.xml \
+             -plugin DD4hep_ConditionsPoolDump \
+             -plugin DD4hep_DetElementConditionsDump
 
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
  */
-static long setup_alignment_Conditions(lcdd_t& lcdd, int argc, char** argv)  {
+static long setup_repository_Conditions(lcdd_t& lcdd, int argc, char** argv)  {
   if ( argc == 1 )  {
     //xml_h e = xml_h::Elt_t(argv[0]);
     DD4hepUI ui(lcdd);
@@ -488,10 +504,10 @@ static long setup_alignment_Conditions(lcdd_t& lcdd, int argc, char** argv)  {
     ConditionsManager mgr = ui.conditionsMgr();
     ConversionArg args(lcdd.world(), mgr);
     XML::DocumentHolder doc(XML::DocumentHandler().load(fname));
-    (DD4hep::Converter<align_conditions>(lcdd,&args))(doc.root());
+    (DD4hep::Converter<conditions>(lcdd,&args))(doc.root());
     return 1;
   }
   except("XML_DOC_READER","Invalid number of arguments to interprete conditions: %d != %d.",argc,1);
   return 0;
 }
-DECLARE_APPLY(DD4hep_XMLAlignmentConditionsParser,setup_alignment_Conditions)
+DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryParser,setup_repository_Conditions)

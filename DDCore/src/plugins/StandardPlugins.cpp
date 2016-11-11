@@ -35,30 +35,6 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static LCDDBuildType build_type(const char* value)   {
-  if ( !value )
-    return BUILD_DEFAULT;
-  else if ( strcmp(value,"BUILD_DEFAULT")==0 )
-    return BUILD_DEFAULT;
-  else if ( strcmp(value,"BUILD_SIMU")==0 )
-    return BUILD_SIMU;
-  else if ( strcmp(value,"1")==0 )
-    return BUILD_SIMU;
-  else if ( strcmp(value,"BUILD_RECO")==0 )
-    return BUILD_RECO;
-  else if ( strcmp(value,"2")==0 )
-    return BUILD_RECO;
-  else if ( strcmp(value,"BUILD_DISPLAY")==0 )
-    return BUILD_DISPLAY;
-  else if ( strcmp(value,"3")==0 )
-    return BUILD_DISPLAY;
-  else if ( strcmp(value,"BUILD_ENVELOPE")==0 )
-    return BUILD_ENVELOPE;
-  else if ( strcmp(value,"4")==0 )
-    return BUILD_ENVELOPE;
-  throw runtime_error(string("Invalid build type value: ")+value);
-}
-
 /// Basic entry point to create a LCDD instance
 /**
  *  Factory: LCDD_constructor
@@ -160,7 +136,7 @@ static long load_compact(LCDD& lcdd, int argc, char** argv) {
     LCDDBuildType type = BUILD_DEFAULT;
     string input = argv[0];
     if ( argc > 1 )  {
-      type = build_type(argv[1]);
+      type = buildType(argv[1]);
       printout(INFO,"CompactLoader","+++ Processing compact file: %s with flag %s",
                input.c_str(), argv[1]);
       lcdd.fromCompact(input,type);
@@ -194,7 +170,7 @@ static long load_xml(LCDD& lcdd, int argc, char** argv) {
     LCDDBuildType type = BUILD_DEFAULT;
     string input = argv[0];
     if ( argc > 1 )  {
-      type = build_type(argv[1]);
+      type = buildType(argv[1]);
       printout(INFO,"XMLLoader","+++ Processing XML file: %s with flag %s",
                input.c_str(), argv[1]);
       lcdd.fromXML(input,type);
@@ -232,7 +208,7 @@ static long process_xml_doc(LCDD& lcdd, int argc, char** argv) {
       XML::Handle_t input(h);
       if ( input.ptr() )   {
         if ( argc > 1 )  {
-          type = build_type(argv[1]);
+          type = buildType(argv[1]);
           printout(INFO,"XMLLoader","+++ Processing XML element: %s with flag %s",
                    input.tag().c_str(), argv[1]);
         }
