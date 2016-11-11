@@ -45,7 +45,14 @@ namespace DD4hep {
   }
 
   enum PrintLevel {
-    NOLOG = 0, VERBOSE=1, DEBUG=2, INFO=3, WARNING=4, ERROR=5, FATAL=6, ALWAYS
+    NOLOG    = 0,
+    VERBOSE  = 1,
+    DEBUG    = 2,
+    INFO     = 3,
+    WARNING  = 4,
+    ERROR    = 5,
+    FATAL    = 6,
+    ALWAYS   = 7
   };
 
 #ifndef __CINT__
@@ -196,6 +203,12 @@ namespace DD4hep {
 
   /// Access the current printer level
   PrintLevel printLevel();
+
+  /// Translate the printer level from string to value
+  PrintLevel printLevel(const char* value);
+
+  /// Translate the printer level from string to value
+  PrintLevel printLevel(const std::string& value);
 
   /// Helper class template to implement ASCII object dumps
   /** @class Printer Conversions.h  DD4hep/compact/Conversions.h

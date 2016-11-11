@@ -30,23 +30,23 @@ namespace DD4hep {
 
   /// Helper class to bind string values to C++ data objects (primitive or complex)
   template <typename T, typename Q> bool ValueBinder::bind(T& object, const string& val, const Q*) const
-  {  object.bind<Q>(val);            return true;  }
+  {  object.template bind<Q>(val);            return true;  }
 
   /// Helper class to bind string values to a STL vector of data objects (primitive or complex)
   template <typename T, typename Q> bool VectorBinder::bind(T& object, const string& val, const Q*) const
-  {  object.bind<vector<Q> >(val);   return true;  }
+  {  object.template bind<vector<Q> >(val);   return true;  }
 
   /// Helper class to bind string values to a STL list of data objects (primitive or complex)
   template <typename T, typename Q> bool ListBinder::bind(T& object, const string& val, const Q*) const
-  {  object.bind<list<Q> >(val);     return true;  }
+  {  object.template bind<list<Q> >(val);     return true;  }
 
   /// Helper class to bind string values to a STL set of data objects (primitive or complex)
   template <typename T, typename Q> bool SetBinder::bind(T& object, const string& val, const Q*) const
-  {  object.bind<set<Q> >(val);      return true;  }
+  {  object.template bind<set<Q> >(val);      return true;  }
 
   /// Helper class to bind STL map objects
   template <typename T, typename Q> bool MapBinder::bind(T& object, const Q*) const
-  {  object.bind((const Q*)0);       return true;  }
+  {  object.template bind<Q>();               return true;  }
 
   /// Binding function for scalar items. See the implementation function for the concrete instantiations
   template <typename BINDER, typename T> 
@@ -118,7 +118,7 @@ namespace DD4hep {
                               const VAL*)
   {
     typedef map<KEY,VAL> map_t;
-    map_t& m = object.get<map_t>();
+    map_t& m = object.template get<map_t>();
     VAL v;
     if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
       except("OpaqueDataBinder","++ Failed to convert conditions map entry.");
@@ -169,7 +169,7 @@ namespace DD4hep {
   {
     typedef map<KEY,VAL> map_t;
     pair<KEY,VAL> entry;
-    map_t& m = object.get<map_t>();
+    map_t& m = object.template get<map_t>();
     if ( !BasicGrammar::instance<pair<KEY,VAL> >().fromString(&entry,data) )  {
       except("OpaqueDataBinder","++ Failed to convert conditions map entry.");
     }

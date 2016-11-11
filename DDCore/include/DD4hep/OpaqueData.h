@@ -79,7 +79,8 @@ namespace DD4hep {
    *  \ingroup DD4HEP_CONDITIONS
    */
   class OpaqueDataBlock : public OpaqueData   {
-  private:
+
+  protected:
     enum {
       PLAIN_DATA = 1<<0,
       ALLOC_DATA = 1<<1,
@@ -114,9 +115,6 @@ namespace DD4hep {
     template <typename T> T& bind();
     /// Bind data value [Equivalent to set(value)]
     template <typename T> T& bind(const std::string& value);
-    /// Bind data value. Ugly, but some compilers otherwise do not recognize the function in templates
-    template <typename T> void bind(const T*);
-
     /// Set data value
     void assign(const void* ptr,const std::type_info& typ);
     /// Bind grammar and assign value

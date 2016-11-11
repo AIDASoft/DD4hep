@@ -33,6 +33,7 @@
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/NamedObject.h"
+#include "DD4hep/BuildType.h"
 
 // C/C++ include files
 #include <map>
@@ -55,16 +56,6 @@ namespace DD4hep {
   
   // Foward declarations
   class NamedObject;
-
-  /// Detector description build types.
-  /** enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
-   * The corresponding flag is ONLY valid while parsing the
-   * compact description. If no eometry, ie. at all other times
-   * the accessor to the flag returns BUILD_NONE.
-   */
-  enum LCDDBuildType {
-    BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY, BUILD_ENVELOPE
-  };
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {

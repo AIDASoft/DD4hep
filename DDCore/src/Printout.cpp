@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,6 +15,7 @@
 #include "DD4hep/Printout.h"
 
 // C/C++ include files
+#include <cstring>
 #include <cstdarg>
 #include <stdexcept>
 
@@ -302,6 +302,35 @@ DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level) {
 /// Access the current printer level
 DD4hep::PrintLevel DD4hep::printLevel()  {
   return print_lvl;
+}
+
+/// Translate the printer level from string to value
+DD4hep::PrintLevel DD4hep::printLevel(const char* value)  {
+  if ( !value ) except("Printout","Invalid printlevel requested");
+  // Explicit values
+  if ( strcmp(value,"NOLOG")   == 0 ) return DD4hep::NOLOG;
+  if ( strcmp(value,"VERBOSE") == 0 ) return DD4hep::VERBOSE;
+  if ( strcmp(value,"DEBUG")   == 0 ) return DD4hep::DEBUG;
+  if ( strcmp(value,"INFO")    == 0 ) return DD4hep::INFO;
+  if ( strcmp(value,"WARNING") == 0 ) return DD4hep::WARNING;
+  if ( strcmp(value,"ERROR")   == 0 ) return DD4hep::ERROR;
+  if ( strcmp(value,"FATAL")   == 0 ) return DD4hep::FATAL;
+  if ( strcmp(value,"ALWAYS")  == 0 ) return DD4hep::ALWAYS;
+  // Numeric values
+  if ( strcmp(value,"0")       == 0 ) return DD4hep::NOLOG;
+  if ( strcmp(value,"1")       == 0 ) return DD4hep::VERBOSE;
+  if ( strcmp(value,"2")       == 0 ) return DD4hep::DEBUG;
+  if ( strcmp(value,"3")       == 0 ) return DD4hep::INFO;
+  if ( strcmp(value,"4")       == 0 ) return DD4hep::WARNING;
+  if ( strcmp(value,"5")       == 0 ) return DD4hep::ERROR;
+  if ( strcmp(value,"6")       == 0 ) return DD4hep::FATAL;
+  if ( strcmp(value,"7")       == 0 ) return DD4hep::ALWAYS;
+  except("Printout","Unknown printlevel requested:%s",value);
+}
+
+/// Translate the printer level from string to value
+DD4hep::PrintLevel DD4hep::printLevel(const std::string& value)  {
+  return printLevel(value.c_str());
 }
 
 /// Set new printout format for the 3 fields: source-level-message. All 3 are strings
