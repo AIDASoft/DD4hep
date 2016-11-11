@@ -203,6 +203,7 @@ namespace DD4hep {
     UNICODE (InvisibleNoDaughters);
     UNICODE (InvisibleWithDaughters);
     UNICODE (isotope);
+    UNICODE (item);
 
     UNICODE (j);
     UNICODE (J);

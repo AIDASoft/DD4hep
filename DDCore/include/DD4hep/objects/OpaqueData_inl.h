@@ -53,6 +53,11 @@ namespace DD4hep {
     this->bind(&BasicGrammar::instance<T>(),opaqueCopyObject<T>,opaqueDestructObject<T>);
     return *(new(this->pointer) T());
   }
+  /// Bind data value. Ugly, but some compilers otherwise do not recognize the function in templates
+  template <typename T> void OpaqueDataBlock::bind(const T*)  {
+    this->bind(&BasicGrammar::instance<T>(),opaqueCopyObject<T>,opaqueDestructObject<T>);
+    new(this->pointer) T();
+  }
   /// Bind grammar and assign value
   template <typename T> T& OpaqueDataBlock::bind(const std::string& value)   {
     T& ret = this->bind<T>();

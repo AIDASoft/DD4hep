@@ -38,14 +38,13 @@ namespace DD4hep {
       UNICODE(open_transaction);
       UNICODE(close_transaction);
 
-      UNICODE(value);
-      UNICODE(mapping);
-      UNICODE(sequence);
-      UNICODE(alignment);
-
       UNICODE(iov);
       UNICODE(iov_type);
       UNICODE(manager);
+
+      UNICODE(mapping);
+      UNICODE(sequence);
+      UNICODE(alignment);
     }
     // User must ensure there are no clashes. If yes, then the clashing entry is unnecessary.
     using namespace ::DD4hep::XML::Conditions;

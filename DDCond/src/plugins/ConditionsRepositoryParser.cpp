@@ -125,7 +125,7 @@ namespace {
     string typ = elt.hasAttr(_U(type)) ? elt.typeStr() : tag;
     string nam = elt.hasAttr(_U(name)) ? elt.nameStr() : tag;
     string add = XML::DocumentHandler::system_path(e);
-    Condition cond(det.path()+"/"+nam, typ);
+    Condition cond(det.path()+"#"+nam, typ);
 
     printout(INFO,"XMLConditions","++ Processing condition tag:%s name:%s type:%s [%s]",
              tag.c_str(), nam.c_str(), typ.c_str(),
@@ -152,12 +152,14 @@ namespace {
     string    typ = type.empty() ? elt.typeStr() : type;
     string    val = elt.hasAttr(_U(value)) ? elt.valueStr() : elt.text();
     Condition con = create_condition(det, e);
+    con->value = val;
     OpaqueDataBinder::bind(bnd, con, typ, val);
     return con;
   }
 }
 
 namespace DD4hep {
+
   /** Convert iov_type repository objects
    *
    *  @author  M.Frank
@@ -319,10 +321,24 @@ namespace DD4hep {
   template <> void Converter<mapping>::operator()(xml_h e) const {
     xml_comp_t elt(e);
     ConversionArg* arg = _param<ConversionArg>();
-    string         typ = elt.typeStr();
+    string    key_type = e.attr<string>(_U(key));
+    string    val_type = e.attr<string>(_U(value));
     Condition      con = create_condition(arg->detector, e);
-    string         val = elt.hasAttr(_U(value)) ? elt.valueStr() : elt.text();
-    OpaqueDataBinder::bind(VectorBinder(), con, typ, val);
+    OpaqueDataBlock& b = con->data;
+    MapBinder binder;
+
+    OpaqueDataBinder::bind_map(binder, b, key_type, val_type);
+    for(xml_coll_t i(e,_U(item)); i; ++i)  {
+      // If explicit key, value data are present in attributes:
+      if ( i.hasAttr(_U(key)) && i.hasAttr(_U(value)) )  {
+        string key = i.attr<string>(_U(key));
+        string val = i.attr<string>(_U(value));
+        OpaqueDataBinder::insert_map(binder, b, key_type, key, val_type, val);
+        continue;
+      }
+      // Otherwise interprete the data directly from the data content
+      OpaqueDataBinder::insert_map(binder, b, key_type, val_type, i.text());
+    }
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
@@ -403,7 +419,7 @@ namespace DD4hep {
       XML::DocumentHolder doc(XML::DocumentHandler().load(e, e.attr_value(_U(ref))));
       (*this)(doc.root());
     }
-    xml_coll_t(e,_UC(value)).for_each(Converter<value>(lcdd,param,optional));
+    xml_coll_t(e,_U(value)).for_each(Converter<value>(lcdd,param,optional));
     xml_coll_t(e,_UC(mapping)).for_each(Converter<mapping>(lcdd,param,optional));
     xml_coll_t(e,_UC(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
     xml_coll_t(e,_UC(alignment)).for_each(Converter<alignment>(lcdd,param,optional));

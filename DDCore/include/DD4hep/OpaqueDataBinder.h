@@ -105,23 +105,27 @@ namespace DD4hep {
     ~OpaqueDataBinder() = default;
 
     /// Binding function for scalar items. See the implementation function for the concrete instantiations
-    template <typename BINDER, typename T> static
-    bool bind(const BINDER& b, T& object, const std::string& typ, const std::string& val);
+    template <typename BINDER, typename OBJECT> static
+    bool bind(const BINDER& b, OBJECT& object, const std::string& typ, const std::string& val);
 
     /// Binding function for sequences (unmapped STL containers)
-    template <typename T> static
-    bool bind_sequence(T& object, const std::string& typ, const std::string& val);
+    template <typename OBJECT> static
+    bool bind_sequence(OBJECT& object, const std::string& typ, const std::string& val);
 
     /// Binding function for STL maps. Does not fill data!
-    template <typename T> static
-    bool bind_map(T& object, const std::string& key_type, const std::string& val_type);
+    template <typename BINDER, typename OBJECT> static
+    bool bind_map(const BINDER& b, OBJECT& o, const std::string& key_type, const std::string& val_type);
 
     /// Filling function for STL maps.
-    template <typename T> static
-    bool insert_map(T& object,
+    template <typename BINDER, typename OBJECT> static
+    bool insert_map(const BINDER& b, OBJECT& o,
                     const std::string& key_type, const std::string& key,
                     const std::string& val_type, const std::string& val);
-
+    /// Filling function for STL maps.
+    template <typename BINDER, typename OBJECT> static
+    bool insert_map(const BINDER& b, OBJECT& o,
+                    const std::string& key_type, const std::string& val_type,
+                    const std::string& pair_data);
   };
 } /* End namespace DD4hep                   */
 #endif    /* DD4HEP_OPAQUEDATABINDER_H */

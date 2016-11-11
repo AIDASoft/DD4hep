@@ -525,13 +525,14 @@ namespace DD4hep {
       string key_type = e.attr<string>(_LBU(keytype));
       string val_type = e.attr<string>(_LBU(valuetype));
       pair<string,OpaqueDataBlock> block;
+      MapBinder binder;
 
       block.first = nam;
-      OpaqueDataBinder::bind_map(block.second, key_type, val_type);
+      OpaqueDataBinder::bind_map(binder,block.second, key_type, val_type);
       for(xml_coll_t i(e,_LBU(item)); i; ++i)  {
         string key = i.attr<string>(_LBU(key));
         string val = i.attr<string>(_LBU(value));
-        OpaqueDataBinder::insert_map(block.second, key_type, key, val_type, val);
+        OpaqueDataBinder::insert_map(binder,block.second, key_type, key, val_type, val);
       }
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
