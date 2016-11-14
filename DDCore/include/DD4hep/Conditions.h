@@ -101,7 +101,7 @@ namespace DD4hep {
         USER_FLAGS_LAST  = 1<<31
       };
 
-      /// Abstract base for processing callbacks
+      /// Abstract base for processing callbacks to conditions objects
       /**
        *  \author  M.Frank
        *  \version 1.0
@@ -200,12 +200,28 @@ namespace DD4hep {
      */
     class Container : public Handle<Interna::ConditionContainer> {
     public:
+      /// Abstract base for processing callbacks to container objects
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Processor {
+      public:
+        /// Container callback for object processing
+        virtual int operator()(Container container, UserPool* pool) = 0;
+      };
+
       /// Standard object type
-      typedef Interna::ConditionContainer Object;
+      typedef Interna::ConditionContainer      Object;
       /// Forward definition of the key type
-      typedef Condition::key_type         key_type;
+      typedef Condition::key_type              key_type;
       /// Forward definition of the iov type
-      typedef Condition::iov_type         iov_type;
+      typedef Condition::iov_type              iov_type;
+      /// Forward definition of the mapping type
+      typedef std::pair<key_type, std::string> key_value;
+      /// Definition of the keys
+      typedef std::map<key_type, key_value>    Keys;
 
     public:
       /// Default constructor
@@ -222,6 +238,9 @@ namespace DD4hep {
       /// Access the number of conditons keys available for this detector element
       size_t numKeys() const;
 
+      /// Known keys of conditions in this container
+      const Keys&  keys()  const;
+      
       /// Access to condition objects by key and IOV. 
       Condition get(const std::string& condition_key, const iov_type& iov);
 
@@ -229,10 +248,10 @@ namespace DD4hep {
       Condition get(key_type condition_key, const iov_type& iov);
 
       /// Access to condition objects. Only conditions in the pool are accessed.
-      Condition get(const std::string& condition_key, const UserPool& iov);
+      Condition get(const std::string& condition_key, const UserPool& pool);
 
       /// Access to condition objects. Only conditions in the pool are accessed.
-      Condition get(key_type condition_key, const UserPool& iov);
+      Condition get(key_type condition_key, const UserPool& pool);
     };
 
     /// Key definition to optimize ans simplyfy the access to conditions entities

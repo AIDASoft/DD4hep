@@ -24,12 +24,19 @@ namespace DD4hep {
 
     /// Generic Conditions data dumper.
     /**
+     *   Please note that the principle of locality applies:
+     *   The object is designed for stack allocation and configuration.
+     *   It may NOT be shared across threads!
+     *
      *   \author  M.Frank
      *   \version 1.0
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class ConditionsPrinter : public Condition::Processor {
+    class ConditionsPrinter :
+      public Condition::Processor,
+      public Container::Processor
+    {
     public:
       std::string   name;
       std::string   prefix;
@@ -37,17 +44,21 @@ namespace DD4hep {
       int           m_flag;
 
     public:
-      typedef Conditions::Condition Cond;
+      typedef Conditions::Container Container;
 
       /// Initializing constructor
       ConditionsPrinter(const std::string& prefix="", 
-                        int flag=Cond::NO_NAME|Cond::WITH_IOV|Cond::WITH_ADDRESS);
+                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
       /// Set name for printouts
       void setName(const std::string& value)    {  name = value;   }
       /// Set prefix for printouts
       void setPrefix(const std::string& value)  {  prefix = value; }
       /// Callback to output conditions information
       virtual int operator()(Condition cond);
+      /// Container callback for object processing
+      virtual int operator()(Container container, UserPool* pool);
+      /// Callback to output conditions information of an entire DetElement
+      virtual int operator()(DetElement de, UserPool* user_pool, bool recurse);
     };
 
   } /* End namespace Conditions    */
