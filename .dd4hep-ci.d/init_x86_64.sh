@@ -1,16 +1,18 @@
 #!/bin/bash
 
 #Determine which OS you are using
-if [ "$( cat /etc/*-release | grep Scientific )" ]; then
-    OS=slc6
-elif [ "$( cat /etc/*-release | grep CentOS )" ]; then
-    OS=centos7
-elif [ "$(uname)" == "Darwin" ]; then
+if [ "$(uname)" == "Darwin" ]; then
     if [ $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}') == "10.12" ]; then
         OS=mac1012
         COMPILER_TYPE=clang80
     else
         echo "Bootstrap only works on macOS Sierra (10.12)"
+    fi
+elif [ "$(uname)" == "Linux" ]; then
+    if [ "$( cat /etc/*-release | grep Scientific )" ]; then
+        OS=slc6
+    elif [ "$( cat /etc/*-release | grep CentOS )" ]; then
+        OS=centos7
     fi
 else
     echo "UNKNOWN OS"
