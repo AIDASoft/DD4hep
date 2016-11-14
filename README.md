@@ -46,13 +46,13 @@ system before building and running the examples
 
 ## How to build DD4hep 
 ### Checkout code
-`svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk DD4hep`
+`git clone git@github.com:AIDASoft/DD4hep.git`
 
 ### Set the environment 
 at least ROOT and BOOST needs to be initialized, e.g.
-`. /afs/cern.ch/sw/lcg/app/releases/ROOT/6.06.02/x86_64-slc6-gcc48-opt/root/bin/thisroot.sh`
+`. /cvmfs/sft.cern.ch/lcg/releases/LCG_85b/ROOT/6.06.06/x86_64-slc6-gcc49-opt/root/bin/thisroot.sh`
 and
-`export BOOST_ROOT=/afs/cern.ch/sw/lcg/releases/LCG_84/Boost/1.59.0_python2.7/x86_64-slc6-gcc48-opt`
+`export BOOST_ROOT=/cvmfs/sft.cern.ch/lcg/releases/LCG_85b/Boost/1.61.0/x86_64-slc6-gcc49-opt/`
 
 ### Configure and build 
 
@@ -79,7 +79,7 @@ and
      `export LD_LIBRARY_PATH="$CLHEP_BASE_DIR/lib:$LD_LIBRARY_PATH"`
      
 
-  * use XercesC instead of TinyXml    
+  * use XercesC instead of TinyXml
   `-D DD4HEP_USE_XERCESC=ON -D XERCESC_ROOT_DIR=__path_to_xercesc__`
 
 
@@ -111,7 +111,7 @@ or
 
  - running the build 
 
-   For each commit all tests are run through **Travis CI**. DD4hep is tested against gcc 4.8 on SLC6. Build results can be observed [here](https://travis-ci.org/AIDASoft/DD4hep) and the status is indicated by the badge [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
+   For each pull request all tests are run through **Travis CI** on SLC6 with GCC 6.2. DD4hep also tested against GCC 6.2 and LLVM 3.9 on SLC6 and CC7 as well as clang 8.0 on macOS Sierra. Build results can be observed [here](https://travis-ci.org/AIDASoft/DD4hep) and the status is indicated by the badge [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
 
 
  - running individual tests with output (e.g. in case of failed tests):
