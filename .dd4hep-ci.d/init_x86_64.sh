@@ -4,7 +4,8 @@
 if [ "$(uname)" == "Darwin" ]; then
     if [ $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}') == "10.12" ]; then
         OS=mac1012
-        COMPILER_TYPE=clang80
+        COMPILER_TYPE=clang
+        COMPILER_VERSION=clang80
     else
         echo "Bootstrap only works on macOS Sierra (10.12)"
     fi
