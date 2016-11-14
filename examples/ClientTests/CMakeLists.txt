@@ -80,7 +80,7 @@ foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBloc
   #
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   if (DD4HEP_USE_GEANT4)
-    dd4hep_add_test_reg( ClientTests_${test}_g4material_scan
+    dd4hep_add_test_reg( ClientTests_${test}_g4material_scan_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
                         --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
@@ -102,7 +102,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiColl
     REGEX_PASS " Execution finished..." )
   #
   # ROOT Geometry overlap checks
-  dd4hep_add_test_reg( ClientTests_${test}_check_overlaps
+  dd4hep_add_test_reg( ClientTests_${test}_check_overlaps_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
                       --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
