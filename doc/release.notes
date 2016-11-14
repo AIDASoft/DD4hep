@@ -3,6 +3,17 @@
 DD4hep  ----  Release Notes
 =================================
 
+  --------
+ | v00-18 |
+  --------
+
+2016-11-09 F.Gaede
+
+  - updated DDRec::LayeredCalorimeterData::Layer:
+     - remove deprecated thickness 
+     - add phi0  
+  - add copy assignement to DDRec::MaterialData
+
 2016-11-08 M.Frank
   - Improve conditions handling. Started to implement using simple telescope
     detector from C.Burr.
