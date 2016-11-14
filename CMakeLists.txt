@@ -28,8 +28,8 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
 #  project version (Major,minor,patch)
 #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#  !! Use the same version numbers in DDSegmentaion/CmakeLists.txt     !!
-#  !! and make also sure to change in ./DDCore/include/DD4hep/LCDD.h   !!
+#  !! Use the same version numbers in DDSegmentation/CMakeLists.txt    !!
+#  !! and make also sure to change in DDCore/include/DD4hep/LCDD.h     !!
 #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
 dd4hep_set_version(DD4hep MAJOR 0 MINOR 19 PATCH 0)
