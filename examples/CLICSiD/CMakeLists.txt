@@ -51,7 +51,7 @@ dd4hep_add_test_reg( test_CLICSiD_check_geometry
   REGEX_PASS " Execution finished..." )
 #
 # ROOT Geometry overlap checks
-dd4hep_add_test_reg( test_CLICSiD_check_overlaps
+dd4hep_add_test_reg( test_CLICSiD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
                     --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
@@ -73,7 +73,7 @@ if (DD4HEP_USE_GEANT4)
   endforeach(script)
   #
   # Material scan
-  dd4hep_add_test_reg( test_CLICSiD_DDG4_g4material_scan
+  dd4hep_add_test_reg( test_CLICSiD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
                       --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml 
@@ -85,7 +85,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script CLICSiDXML CLICSiDAClick)
     #
     # Build AClick from the source file
-    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_AClick
+    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_AClick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${DD4hep_DIR}/examples/CLICSiD/scripts/${script}\")"
       REQUIRES   DDG4 Geant4
@@ -93,7 +93,7 @@ if (DD4HEP_USE_GEANT4)
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
     #
     # Execute identical source linked executable 
-    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_exe
+    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_exe_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  ${script}
       REQUIRES   DDG4 Geant4

@@ -94,7 +94,7 @@ endforeach()
 foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiCollections )
   #
   # ROOT Geometry checks
-  dd4hep_add_test_reg( ClientTests_${test}_check_geometry
+  dd4hep_add_test_reg( ClientTests_${test}_check_geometry_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
                       --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
