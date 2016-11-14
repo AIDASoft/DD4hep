@@ -5,6 +5,13 @@ if [ "$( cat /etc/*-release | grep Scientific )" ]; then
     OS=slc6
 elif [ "$( cat /etc/*-release | grep CentOS )" ]; then
     OS=centos7
+elif [ "$(uname)" == "Darwin" ]; then
+    if [ $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}') == "10.12" ]; then
+        OS=mac1012
+        COMPILER_TYPE=clang80
+    else
+        echo "Bootstrap only works on macOS Sierra (10.12)"
+    fi
 else
     echo "UNKNOWN OS"
     exit 1
@@ -50,7 +57,8 @@ BUILD_FLAVOUR=x86_64-${OS}-${COMPILER_VERSION}-${BUILD_TYPE}
 
 if [ ${COMPILER_TYPE} == "gcc" ]; then
     source ${CLICREPO}/compilers/gcc/6.2.0/x86_64-${OS}/setup.sh
-else
+fi
+if [ ${COMPILER_TYPE} == "llvm" ]; then
     source ${CLICREPO}/compilers/llvm/3.9.0/x86_64-${OS}/setup.sh
 fi
 
@@ -65,9 +73,11 @@ export PATH=${CMAKE_HOME}/bin:$PATH
 #     Python
 #--------------------------------------------------------------------------------
 
-export PYTHONDIR=${CLICREPO}/software/Python/2.7.12/${BUILD_FLAVOUR}
-export PATH=${PYTHONDIR}/bin:$PATH
-export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
+if [ ${OS} == "slc6" ] || [ ${OS} == "centos7" ]; then
+    export PYTHONDIR=${CLICREPO}/software/Python/2.7.12/${BUILD_FLAVOUR}
+    export PATH=${PYTHONDIR}/bin:$PATH
+    export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
+fi
 
 #--------------------------------------------------------------------------------
 #     ROOT
