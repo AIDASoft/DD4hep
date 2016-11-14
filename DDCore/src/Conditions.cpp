@@ -173,6 +173,15 @@ size_t Container::numKeys() const   {
   return o->keys.size();
 }
 
+/// Known keys of conditions in this container
+const Container::Keys& Container::keys()  const   {
+  Object* o = ptr();
+  if ( !o )   {
+    invalidHandleError<Container>();
+  }
+  return o->keys;
+}
+
 /// Access to condition objects
 Condition Container::get(const string& condition_key, const iov_type& iov)  {
   Object* o = ptr();
