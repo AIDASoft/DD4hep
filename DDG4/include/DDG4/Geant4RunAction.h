@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -47,6 +46,10 @@ namespace DD4hep {
     public:
       typedef Geant4SharedRunAction shared_type;
     public:
+      /// Inhibit default constructor
+      Geant4RunAction() = delete;
+      /// Inhibit copy constructor
+      Geant4RunAction(const Geant4RunAction& copy) = delete;
       /// Standard constructor
       Geant4RunAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -75,6 +78,10 @@ namespace DD4hep {
       /// Reference to the shared action
       Geant4RunAction* m_action;
     public:
+      /// Inhibit default constructor
+      Geant4SharedRunAction() = delete;
+      /// Inhibit default constructor
+      Geant4SharedRunAction(const Geant4SharedRunAction& copy) = delete;
       /// Standard constructor
       Geant4SharedRunAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -113,6 +120,10 @@ namespace DD4hep {
       /// The list of action objects to be called
       Actors<Geant4RunAction> m_actors;
     public:
+      /// Inhibit default constructor
+      Geant4RunActionSequence() = delete;
+      /// Inhibit copy constructor
+      Geant4RunActionSequence(const Geant4RunActionSequence& copy) = delete;
       /// Standard constructor
       Geant4RunActionSequence(Geant4Context* context, const std::string& nam);
       /// Default destructor

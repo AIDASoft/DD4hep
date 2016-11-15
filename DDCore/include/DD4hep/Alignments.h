@@ -25,6 +25,7 @@ namespace DD4hep {
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
+
     class UserPool;
     /// Conditions internal namespace
     namespace Interna  {
@@ -80,7 +81,7 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      Alignment() : Handle<Object>()  {}
+      Alignment() = default;
       /// Default constructor
       Alignment(Object* p) : Handle<Object>(p)  {}
       /// Constructor to be used when reading the already parsed object

@@ -93,19 +93,19 @@ namespace DD4hep {
     typedef Handle<Implementation> handle_t;
 
     /// Single and only data member: Reference to the actual element.
-    T* m_element;
+    T* m_element = 0;
     /// Defaulot constructor
-    Handle() : m_element(0) {    }
-    /// Initializing constructor from pointer
-    Handle(T* e) : m_element(e) {    }
+    Handle() = default;
     /// Copy constructor
     Handle(const Handle<T>& e) = default;
+    /// Initializing constructor from pointer
+    Handle(T* e) : m_element(e)   {            }
     /// Initializing constructor from unrelated pointer with type checking
     template <typename Q> Handle(Q* e) : m_element((T*)e)
-    {    verifyObject();                      }
+    {    verifyObject();                       }
     /// Initializing constructor from unrelated handle with type checking
     template <typename Q> Handle(const Handle<Q>& e) : m_element((T*)e.m_element)
-    {    verifyObject();                      }
+    {    verifyObject();                       }
     /// Assignment operator
     Handle<T>& operator=(const Handle<T>& e) = default;
     /// Boolean operator == used for RB tree insertions
@@ -113,19 +113,19 @@ namespace DD4hep {
       return m_element == e.m_element;
     }
     /// Boolean operator < used for RB tree insertions
-    bool operator<(const Handle<T>& e)  const {
+    bool operator<(const Handle<T>& e)  const  {
       return m_element < e.m_element;
     }
     /// Boolean operator > used for RB tree insertions
-    bool operator>(const Handle<T>& e)  const {
+    bool operator>(const Handle<T>& e)  const  {
       return m_element > e.m_element;
     }
     /// Check the validity of the object held by the handle
-    bool isValid() const {
+    bool isValid() const   {
       return 0 != m_element;
     }
     /// Check the validity of the object held by the handle
-    bool operator!() const {
+    bool operator!() const   {
       return 0 == m_element;
     }
     /// Release the object held by the handle

@@ -51,8 +51,7 @@ namespace DD4hep {
       /// Construction initialized with object pointer
       Geant4Handle(handled_type* typ);
       /// Cross type initialization
-      template <typename T> Geant4Handle(T* typ)
-        : value(0) {
+      template <typename T> Geant4Handle(T* typ) : value(0) {
         checked_assign(dynamic_cast<handled_type*>(typ));
       }
       /// Copy constructor
@@ -103,7 +102,7 @@ namespace DD4hep {
       /// Copy constructor
       KernelHandle(const KernelHandle& k) : value(k.value) {}
       /// Default destructor
-      ~KernelHandle()  {}
+      ~KernelHandle()                  {               }
       /// Conversion operator
       operator handled_type*() const   { return value; }
       /// Access to the underlying object

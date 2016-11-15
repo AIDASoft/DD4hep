@@ -48,7 +48,7 @@ namespace DD4hep {
     class PrimaryExtension  {
     public:
       /// Default constructor
-      PrimaryExtension() {}
+      PrimaryExtension() = default;
       /// Default destructor
       virtual ~PrimaryExtension();
     };
@@ -71,7 +71,7 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      Geant4PrimaryMap() {}
+      Geant4PrimaryMap() = default;
       /// Default destructor
       virtual ~Geant4PrimaryMap();
       /// Add a new object pair (G4 primary particle, DDG4 particle) into the maps
@@ -144,9 +144,9 @@ namespace DD4hep {
     class Geant4PrimaryEvent   {
     private:
       /// Copy constructor
-      Geant4PrimaryEvent(const Geant4PrimaryEvent& c);
+      Geant4PrimaryEvent(const Geant4PrimaryEvent& c) = delete;
       /// Assignment operator
-      Geant4PrimaryEvent& operator=(const Geant4PrimaryEvent& c);
+      Geant4PrimaryEvent& operator=(const Geant4PrimaryEvent& c) = delete;
 
     public:
       typedef Geant4PrimaryInteraction     Interaction;
@@ -163,7 +163,7 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      Geant4PrimaryEvent();
+      Geant4PrimaryEvent() = default;
       /// Default destructor
       virtual ~Geant4PrimaryEvent();
       /// Add a new interaction object to the event

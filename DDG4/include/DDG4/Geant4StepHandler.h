@@ -51,13 +51,18 @@ namespace DD4hep {
       G4StepPoint* post;
       G4Track* track;
       bool applyBirksLaw;
-      Geant4StepHandler(const G4Step* s)
-        : step(s) {
+      /// Inhibit default constructor
+      Geant4StepHandler() = delete;
+      /// Initializing constructor
+      Geant4StepHandler(const G4Step* s) : step(s) {
         pre = s->GetPreStepPoint();
         post = s->GetPostStepPoint();
         track = s->GetTrack();
         applyBirksLaw = false;
       }
+      /// Assignment operator inhibited. Should not be copied
+      Geant4StepHandler& operator=(const Geant4StepHandler& copy) = delete;
+      
       G4ParticleDefinition* trackDef() const {
         return track->GetDefinition();
       }

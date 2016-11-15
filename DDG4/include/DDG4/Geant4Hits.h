@@ -58,9 +58,7 @@ namespace DD4hep {
     template <class HIT> struct HitPositionCompare: public HitCompare<HIT> {
       const Position& pos;
       /// Constructor
-      HitPositionCompare(const Position& p)
-        : pos(p) {
-      }
+      HitPositionCompare(const Position& p) : pos(p) {}
       /// Default destructor
       virtual ~HitPositionCompare() {}
       /// Comparison function
@@ -83,40 +81,31 @@ namespace DD4hep {
     public:
 
       // cellID
-      unsigned long cellID;
+      unsigned long cellID = 0;
 
       /// Deprecated!!!
       struct MonteCarloContrib {
         /// Geant 4 Track identifier
-        int trackID;
+        int trackID = -1;
         /// Particle ID from the PDG table
-        int pdgID;
+        int pdgID = -1;
         /// Total energy deposit in this hit
-        double deposit;
+        double deposit = 0.0;
         /// Timestamp when this energy was deposited
-        double time;
-        MonteCarloContrib()
-          : trackID(-1), pdgID(-1), deposit(0.0), time(0.0) {
-        }
+        double time = 0.0;
+        /// Default constructor
+        MonteCarloContrib() = default;
+        /// Copy constructor
+        MonteCarloContrib(const MonteCarloContrib& c) = default;
+        /// Initializing constructor
         MonteCarloContrib(int track_id, double dep, double time_stamp)
-          : trackID(track_id), pdgID(-1), deposit(dep), time(time_stamp) {
-        }
+          : trackID(track_id), pdgID(-1), deposit(dep), time(time_stamp) {}
+        /// Initializing constructor
         MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
-          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp) {
-        }
-        MonteCarloContrib(const MonteCarloContrib& c)
-          : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time) {
-        }
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp) {}
         /// Assignment operator
-        MonteCarloContrib& operator=(const MonteCarloContrib& c)  {
-          if ( this != &c )  {
-            trackID = c.trackID;
-            pdgID = c.pdgID;
-            deposit = c.deposit;
-            time = c.time;
-          }
-          return *this;
-        }
+        MonteCarloContrib& operator=(const MonteCarloContrib& c) = default;
+        /// Clear data
         void clear() {
           time = deposit = 0.0;
           pdgID = trackID = -1;
@@ -127,11 +116,9 @@ namespace DD4hep {
 
     public:
       /// Standard constructor
-      Geant4Hit() : cellID(0) {
-      }
+      Geant4Hit() = default;
       /// Default destructor
-      virtual ~Geant4Hit() {
-      }
+      virtual ~Geant4Hit() { }
       /// Check if the Geant4 track is a Geantino
       static bool isGeantino(G4Track* track);
       /// Extract the MC contribution for a given hit from the step information
@@ -166,8 +153,7 @@ namespace DD4hep {
       /// Standard initializing constructor
       Geant4TrackerHit(int track_id, int pdg_id, double deposit, double time_stamp);
       /// Default destructor
-      virtual ~Geant4TrackerHit() {
-      }
+      virtual ~Geant4TrackerHit() {}
       /// Clear hit content
       Geant4TrackerHit& clear();
       /// Store Geant4 point and step information into tracker hit structure.
@@ -202,8 +188,7 @@ namespace DD4hep {
       /// Standard constructor
       Geant4CalorimeterHit(const Position& cell_pos);
       /// Default destructor
-      virtual ~Geant4CalorimeterHit() {
-      }
+      virtual ~Geant4CalorimeterHit() { }
       /// Geant4 required object allocator
       void *operator new(size_t);
       /// Geat4 required object destroyer

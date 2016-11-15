@@ -52,7 +52,7 @@ namespace DD4hep {
       Position      translation;
       Pivot         pivot;
       RotationZYX   rotation;
-      unsigned int  flags;
+      unsigned int  flags = 0;
 
       enum AlignmentFlags {
         HAVE_NONE         = 0,
@@ -62,7 +62,7 @@ namespace DD4hep {
       };
 
       /// Default constructor
-      Delta() : flags(0) {}
+      Delta() = default;
       /// Initializing constructor
       Delta(const Position& tr)
         : translation(tr), flags(HAVE_TRANSLATION) {}
