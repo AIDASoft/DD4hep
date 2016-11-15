@@ -326,6 +326,7 @@ DD4hep::PrintLevel DD4hep::printLevel(const char* value)  {
   if ( strcmp(value,"6")       == 0 ) return DD4hep::FATAL;
   if ( strcmp(value,"7")       == 0 ) return DD4hep::ALWAYS;
   except("Printout","Unknown printlevel requested:%s",value);
+  return DD4hep::ALWAYS;
 }
 
 /// Translate the printer level from string to value

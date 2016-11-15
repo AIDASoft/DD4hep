@@ -41,8 +41,8 @@ namespace DD4hep {
     public:
       typedef Geant4SharedSteppingAction shared_type;
     public:
-      /// Inhibit default constructor
-      Geant4SteppingAction() = delete;
+      /// Inhibit copy constructor
+      Geant4SteppingAction(const Geant4SteppingAction& copy) = delete;
       /// Standard constructor
       Geant4SteppingAction(Geant4Context* context, const std::string& name);
       /// Default destructor
@@ -69,6 +69,8 @@ namespace DD4hep {
       /// Reference to the shared action
       Geant4SteppingAction* m_action;
     public:
+      /// Inhibit copy constructor
+      Geant4SharedSteppingAction(const Geant4SteppingAction& copy) = delete;
       /// Standard constructor
       Geant4SharedSteppingAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -104,6 +106,8 @@ namespace DD4hep {
       Actors<Geant4SteppingAction> m_actors;
 
     public:
+      /// Inhibit copy constructor
+      Geant4SteppingActionSequence(const Geant4SteppingAction& copy) = delete;
       /// Standard constructor
       Geant4SteppingActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor

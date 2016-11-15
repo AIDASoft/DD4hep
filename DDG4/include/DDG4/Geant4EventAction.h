@@ -54,8 +54,6 @@ namespace DD4hep {
     public:
       typedef Geant4SharedEventAction shared_type;
     public:
-      /// Inhibit default constructor
-      Geant4EventAction() = delete;
       /// Inhibit copy constructor
       Geant4EventAction(const Geant4EventAction& copy) = delete;
       /// Standard constructor
@@ -86,8 +84,6 @@ namespace DD4hep {
       /// Reference to the shared action
       Geant4EventAction* m_action;
     public:
-      /// Inhibit default constructor
-      Geant4SharedEventAction() = delete;
       /// Inhibit copy constructor
       Geant4SharedEventAction(const Geant4SharedEventAction& copy) = delete;
       /// Standard constructor
@@ -131,8 +127,6 @@ namespace DD4hep {
       Actors<Geant4EventAction> m_actors;
 
     public:
-      /// Inhibit default constructor
-      Geant4EventActionSequence() = delete;
       /// Inhibit copy constructor
       Geant4EventActionSequence(const Geant4EventActionSequence& copy) = delete;
       /// Standard constructor

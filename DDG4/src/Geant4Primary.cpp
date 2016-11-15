@@ -53,24 +53,6 @@ const Geant4Particle* Geant4PrimaryMap::get(const G4PrimaryParticle* particle) c
   return i != m_primaryMap.end() ? (*i).second : 0;
 }
 
-/// Default constructor
-Geant4PrimaryInteraction::Geant4PrimaryInteraction()
-  : mask(0), locked(0), next_particle_identifier(-1)
-{
-}
-
-/// Copy constructor
-Geant4PrimaryInteraction::Geant4PrimaryInteraction(const Geant4PrimaryInteraction&)
-  : mask(0), locked(0), next_particle_identifier(-1)
-{
-}
-
-/// Assignment operator
-Geant4PrimaryInteraction& Geant4PrimaryInteraction::operator=(const Geant4PrimaryInteraction& c)  {
-  if ( &c == this ) {}
-  return *this;
-}
-
 /// Default destructor
 Geant4PrimaryInteraction::~Geant4PrimaryInteraction()   {
   releaseObjects(vertices);
