@@ -93,8 +93,6 @@ namespace DD4hep {
      */
     class Geant4Filter: public Geant4Action {
     public:
-      /// Inhibit default constructor
-      Geant4Filter() = delete;
       /// Inhibit copy constructor
       Geant4Filter(const Geant4Filter& copy) = delete;
       /// Standard constructor
@@ -152,9 +150,6 @@ namespace DD4hep {
       Actors<Geant4Filter> m_filters;
 
     public:
-      /// Inhibit default constructor
-      Geant4Sensitive() = delete;
-
       /// Inhibit copy constructor
       Geant4Sensitive(const Geant4Sensitive& copy) = delete;
 
@@ -328,9 +323,6 @@ namespace DD4hep {
       }
 
     public:
-      /// Inhibit default constructor
-      Geant4SensDetActionSequence() = delete;
-
       /// Inhibit copy constructor
       Geant4SensDetActionSequence(const Geant4SensDetActionSequence& copy) = delete;
 
@@ -361,10 +353,13 @@ namespace DD4hep {
 
       /// Access HitCollection container names
       const std::string& hitCollectionName(size_t which) const;
+
       /// Retrieve the hits collection associated with this detector by its serial number
       Geant4HitCollection* collection(size_t which) const;
+
       /// Retrieve the hits collection associated with this detector by its collection identifier
       Geant4HitCollection* collectionByID(size_t id) const;
+
       /// Register begin-of-event callback
       template <typename T> void callAtBegin(T* p, void (T::*f)(G4HCofThisEvent*)) {
         m_begin.add(p, f);

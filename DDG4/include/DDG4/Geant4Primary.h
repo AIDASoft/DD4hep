@@ -96,9 +96,9 @@ namespace DD4hep {
     class Geant4PrimaryInteraction   {
     private:
       /// Copy constructor
-      Geant4PrimaryInteraction(const Geant4PrimaryInteraction& c);
+      Geant4PrimaryInteraction(const Geant4PrimaryInteraction& c) = delete;
       /// Assignment operator
-      Geant4PrimaryInteraction& operator=(const Geant4PrimaryInteraction& c);
+      Geant4PrimaryInteraction& operator=(const Geant4PrimaryInteraction& c) = delete;
 
     public:
       typedef Geant4Particle                    Particle;
@@ -114,15 +114,15 @@ namespace DD4hep {
       /// User data extension if required
       ExtensionHandle extension;
       /// User mask to flag the interaction. Also unique identifier
-      int             mask;
+      int             mask = 0;
       /// Flag that the event is locked for G4 native generators
-      int             locked;
+      int             locked = 0;
       /// Next PID indentifier
-      int             next_particle_identifier;
+      int             next_particle_identifier = -1;
       
     public:
       /// Default constructor
-      Geant4PrimaryInteraction();
+      Geant4PrimaryInteraction() = default;
       /// Default destructor
       virtual ~Geant4PrimaryInteraction();
       /// Access a new particle identifier within the interaction
