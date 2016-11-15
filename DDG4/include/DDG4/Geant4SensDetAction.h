@@ -93,6 +93,10 @@ namespace DD4hep {
      */
     class Geant4Filter: public Geant4Action {
     public:
+      /// Inhibit default constructor
+      Geant4Filter() = delete;
+      /// Inhibit copy constructor
+      Geant4Filter(const Geant4Filter& copy) = delete;
       /// Standard constructor
       Geant4Filter(Geant4Context* context, const std::string& name);
       /// Standard destructor
@@ -148,6 +152,12 @@ namespace DD4hep {
       Actors<Geant4Filter> m_filters;
 
     public:
+      /// Inhibit default constructor
+      Geant4Sensitive() = delete;
+
+      /// Inhibit copy constructor
+      Geant4Sensitive(const Geant4Sensitive& copy) = delete;
+
       /// Constructor. The sensitive detector element is identified by the detector name
       Geant4Sensitive(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd);
 
@@ -318,6 +328,12 @@ namespace DD4hep {
       }
 
     public:
+      /// Inhibit default constructor
+      Geant4SensDetActionSequence() = delete;
+
+      /// Inhibit copy constructor
+      Geant4SensDetActionSequence(const Geant4SensDetActionSequence& copy) = delete;
+
       /// Standard constructor
       Geant4SensDetActionSequence(Geant4Context* context, const std::string& name);
 

@@ -58,25 +58,6 @@ bool PropertyGrammar::fromString(void* ptr, const std::string& value) const  {
   return m_grammar.fromString(ptr,value);
 }
 
-/// Default constructor
-Property::Property()
-  : m_par(0), m_hdl(0) {
-}
-
-/// Copy constructor
-Property::Property(const Property& property)
-  : m_par(property.m_par), m_hdl(property.m_hdl) {
-}
-
-/// Assignment operator
-Property& Property::operator=(const Property& property) {
-  if ( &property != this )  {
-    m_par = property.m_par;
-    m_hdl = property.m_hdl;
-  }
-  return *this;
-}
-
 /// Property type name
 string Property::type(const Property& property) {
   return type(property.grammar().type());

@@ -56,9 +56,10 @@ namespace DD4hep {
       typedef G4ReferenceCountedHandle<G4VTouchable> Touchable;
       /// Reference to the track object
       const G4Track* track;
+      /// Inhibit default constructor
+      Geant4TrackHandler() = delete;
       /// Initializing constructor
-      Geant4TrackHandler(const G4Track* t)
-        : track(t) {
+      Geant4TrackHandler(const G4Track* t) : track(t) {
         /// Should test here if the track pointer is valid to avoind any later trouble
         if ( 0 == t )  {
           throw std::runtime_error("Geant4TrackHandler: NULL pointer passed to constructor!");

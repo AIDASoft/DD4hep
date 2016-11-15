@@ -34,11 +34,11 @@ namespace DD4hep {
   public:
     enum { UNKNOWN_IOV = ~0x0 } _IOVTypes;
     /// integer identifier ised internally
-    unsigned int type;
+    unsigned int type = UNKNOWN_IOV;
     /// String name
     std::string  name;
     /// Standard Constructor
-    IOVType() : type(UNKNOWN_IOV), name() {}
+    IOVType() = default;
     /// Standard Destructor
     ~IOVType() = default;
     /// Copy constructor

@@ -62,15 +62,15 @@ namespace DD4hep {
     class TypeName : public std::pair<std::string, std::string> {
     public:
       /// Default constructor
-      TypeName()
-        : std::pair<std::string, std::string>() {
-      }
+      TypeName() = default;
+      /// Copy constructor
+      TypeName(const TypeName& copy) = default;
+      /// Copy constructor
       TypeName(const std::pair<std::string, std::string>& c)
-        : std::pair<std::string, std::string>(c) {
-      }
+        : std::pair<std::string, std::string>(c) {      }
+      /// Initializing constructor
       TypeName(const std::string& typ, const std::string& nam)
-        : std::pair<std::string, std::string>(typ, nam) {
-      }
+        : std::pair<std::string, std::string>(typ, nam) {      }
       /// Split string pair according to default delimiter ('/')
       static TypeName split(const std::string& type_name);
       /// Split string pair according to custom delimiter
@@ -113,8 +113,8 @@ namespace DD4hep {
        */
       class ContextSwap   {
         /// reference to the context;
-        Geant4Context* context;
-        Geant4Action*  action;
+        Geant4Context* context = 0;
+        Geant4Action*  action = 0;
       public:
         /// Constructor
         ContextSwap(Geant4Action* a,Geant4Context* c) : action(a)  {
@@ -145,35 +145,19 @@ namespace DD4hep {
       public:
         typedef typename std::vector<T*> _V;
         _V m_v;
-        Actors() {
-        }
-        ~Actors() {
-        }
-        void clear() {
-          m_v.clear();
-        }
-        void add(T* obj) {
-          m_v.push_back(obj);
-        }
-        void add_front(T* obj) {
-          m_v.insert(m_v.begin(), obj);
-        }
-        operator const _V&() const {
-          return m_v;
-        }
-        operator _V&() {
-          return m_v;
-        }
-        const _V* operator->() const {
-          return &m_v;
-        }
-        _V* operator->() {
-          return &m_v;
-        }
-        typename _V::iterator begin() { return m_v.begin(); }
-        typename _V::iterator end()   { return m_v.end();   }
-        typename _V::const_iterator begin() const  { return m_v.begin(); }
-        typename _V::const_iterator end()   const  { return m_v.end();   }
+        Actors() = default;
+        ~Actors()  = default;
+        void clear()                  { m_v.clear();                    }
+        void add(T* obj)              { m_v.push_back(obj);             }
+        void add_front(T* obj)        { m_v.insert(m_v.begin(), obj);   }
+        operator const _V&() const    { return m_v;                     }
+        operator _V&()                { return m_v;                     }
+        const _V* operator->() const  { return &m_v;                    }
+        _V* operator->()              { return &m_v;                    }
+        typename _V::iterator begin() { return m_v.begin();             }
+        typename _V::iterator end()   { return m_v.end();               }
+        typename _V::const_iterator begin() const { return m_v.begin(); }
+        typename _V::const_iterator end()   const { return m_v.end();   }
         
         /// Context updates
         void updateContext(Geant4Context* ctxt)  {
@@ -252,6 +236,13 @@ namespace DD4hep {
           return true;
         }
       };
+
+      /// Inhibit default constructor
+      Geant4Action() = delete;
+      /// Inhibit copy constructor
+      Geant4Action(const Geant4Action& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4Action& operator=(const Geant4Action& copy) = delete;
 
       /// Default destructor
       virtual ~Geant4Action();

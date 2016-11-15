@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -42,6 +41,8 @@ namespace DD4hep {
     public:
       typedef Geant4SharedSteppingAction shared_type;
     public:
+      /// Inhibit default constructor
+      Geant4SteppingAction() = delete;
       /// Standard constructor
       Geant4SteppingAction(Geant4Context* context, const std::string& name);
       /// Default destructor

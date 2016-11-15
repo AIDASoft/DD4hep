@@ -102,22 +102,6 @@ bool Geant4PrimaryInteraction::applyMask()   {
   return false;
 }
 
-/// Default constructor
-Geant4PrimaryEvent::Geant4PrimaryEvent()
-{
-}
-
-/// Copy constructor
-Geant4PrimaryEvent::Geant4PrimaryEvent(const Geant4PrimaryEvent&)
-{
-}
-
-/// Assignment operator
-Geant4PrimaryEvent& Geant4PrimaryEvent::operator=(const Geant4PrimaryEvent& c)  {
-  if ( &c == this ) {}
-  return *this;
-}
-
 /// Default destructor
 Geant4PrimaryEvent::~Geant4PrimaryEvent()   {
   destroyObjects(m_interactions);

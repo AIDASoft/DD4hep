@@ -86,31 +86,29 @@ namespace DD4hep {
   class Property {
   protected:
     /// Pointer to the data location
-    void* m_par;
-    const PropertyGrammar* m_hdl;
+    void* m_par = 0;
+    /// Reference to the grammar of this property (extended type description)
+    const PropertyGrammar* m_hdl = 0;
 
     /// Setup property
     template <typename TYPE> void make(TYPE& value);
   public:
     /// Default constructor
-    Property();
+    Property() = default;
     /// Copy constructor
-    Property(const Property& p);
+    Property(const Property& p) = default;
     /// User constructor
-    template <typename TYPE> Property(TYPE& val)
-      : m_par(0), m_hdl(0) {
+    template <typename TYPE> Property(TYPE& val) : m_par(0), m_hdl(0) {
       make(val);
     }
     /// Property type name
     static std::string type(const Property& proptery);
     /// Property type name
     static std::string type(const std::type_info& proptery);
+    /// Access void data pointer
+    void* ptr() const {      return m_par;    }
     /// Property type name
     std::string type() const;
-    /// Access void data pointer
-    void* ptr() const {
-      return m_par;
-    }
     /// Access grammar object
     const PropertyGrammar& grammar() const;
     /// Conversion to string value
@@ -118,7 +116,7 @@ namespace DD4hep {
     /// Conversion from string value
     Property& str(const std::string& input);
     /// Assignment operator
-    Property& operator=(const Property& p);
+    Property& operator=(const Property& p) = default;
     /// Assignment operator / set new balue
     Property& operator=(const char* val);
     /// Assignment operator / set new balue
@@ -142,38 +140,27 @@ namespace DD4hep {
   template <class TYPE> class PropertyValue : private Property {
   public:
     TYPE data;
-    PropertyValue()
-      : Property(data) {
-    }
+    /// Default constructor
+    PropertyValue() : Property(data) {}
+    /// Copy constructor
+    PropertyValue(const PropertyValue& c) = default;
     /// Assignment operator
-    PropertyValue& operator=(const TYPE& val) {
-      data = val;
-      return *this;
-    }
-    // Equality operator
-    bool operator==(const TYPE& val) const {
-      return val == data;
-    }
+    PropertyValue& operator=(const PropertyValue& c) = default;
+    /// Assignment operator
+    PropertyValue& operator=(const TYPE& val) { data = val; return *this;      }
+    /// Equality operator
+    bool operator==(const TYPE& val) const { return val == data;               }
     /// Access grammar object
-    const PropertyGrammar& grammar() const {
-      return this->Property::grammar();
-    }
+    const PropertyGrammar& grammar() const { return this->Property::grammar(); }
     /// Conversion to string value
-    std::string str() const {
-      return this->Property::str();
-    }
+    std::string str() const                { return this->Property::str();     }
     /// Retrieve value with data conversion
-    template <typename T> T value() const {
-      return this->Property::value<T>();
-    }
+    template <typename T> T value() const  { return this->Property::value<T>();}
     /// Retrieve value from stack with data conversion (large values e.g. vectors etc.)
-    template <typename T> void value(TYPE& val) const {
-      this->Property::value(val);
-    }
+    template <typename T>
+    void value(TYPE& val) const            { this->Property::value(val);       }
     /// Set value of this property with data conversion
-    template <typename T> void set(const T& val) {
-      this->Property::set(val);
-    }
+    template <typename T> void set(const T& val)  { this->Property::set(val);  }
   };
 
   /// Manager to ease the handling of groups of properties.
