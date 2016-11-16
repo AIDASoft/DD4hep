@@ -128,20 +128,20 @@ static int ddcond_conditions_pool_print(lcdd_t& lcdd, bool print_conditions, int
   ConditionsPrinter default_printer("");
   Condition::Processor* printer = &default_printer;
   if ( argc > 0 )   {
-    for(int i=0; i<argc; ++i)  {
-      printout(INFO,"","arg[%d]=%s",i,argv[i]);
-    }
-    //printer = (Condition::Processor*)argv[0];
+    //for(int i=0; i<argc; ++i)  {
+      //printout(INFO,"","arg[%d]=%s",i,argv[i]);
+    //}
+    printer = (Condition::Processor*)argv[0];
   }
   const void* args[] = {printer,0};
   return ddcond_conditions_pool_processor(lcdd,true,print_conditions,1,(char**)args);
 }
 
 static int ddcond_dump_pools(LCDD& lcdd, int argc, char** argv)   {
-  return ddcond_conditions_pool_print(lcdd,false, argc, argv);
+  return ddcond_conditions_pool_print(lcdd, false, argc, argv);
 }
 static int ddcond_dump_conditions(LCDD& lcdd, int argc, char** argv)   {
-  return ddcond_conditions_pool_print(lcdd,true, argc, argv);
+  return ddcond_conditions_pool_print(lcdd, true, argc, argv);
 }
 DECLARE_APPLY(DD4hep_ConditionsPoolDump,ddcond_dump_pools)
 DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
