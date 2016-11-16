@@ -12,8 +12,8 @@ install:
   - shopt -u dotglob
   - export DD4hepDIR=${PWD}/DD4hep
   - cat $DD4hepDIR/.dd4hep-ci.d/compile_and_test.sh
-  - curl -O http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar
-  - cat cvm-docker-3.6.5.1.tar | docker import - cernvm
+  - curl -O https://lcd-data.web.cern.ch/lcd-data/CernVM/cernvm3-docker-latest.tar
+  - cat cernvm3-docker-latest.tar | docker import - cernvm
 
 # command to run tests
 script:
