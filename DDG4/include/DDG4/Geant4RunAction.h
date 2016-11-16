@@ -45,11 +45,16 @@ namespace DD4hep {
     class Geant4RunAction: public Geant4Action {
     public:
       typedef Geant4SharedRunAction shared_type;
-    public:
+
+    protected:
       /// Inhibit default constructor
-      Geant4RunAction() = delete;
+      Geant4RunAction() = default;
       /// Inhibit copy constructor
       Geant4RunAction(const Geant4RunAction& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4RunAction& operator=(const Geant4RunAction& copy) = delete;
+
+    public:
       /// Standard constructor
       Geant4RunAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -76,12 +81,18 @@ namespace DD4hep {
     class Geant4SharedRunAction : public Geant4RunAction {
     protected:
       /// Reference to the shared action
-      Geant4RunAction* m_action;
+      Geant4RunAction* m_action = 0;
+
+    protected:
+      /// Inhibit default constructor
+      Geant4SharedRunAction() = default;
+      /// Inhibit copy constructor
+      Geant4SharedRunAction(const Geant4SharedRunAction& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4SharedRunAction& operator=(const Geant4SharedRunAction& copy) = delete;
+
     public:
       /// Inhibit default constructor
-      Geant4SharedRunAction() = delete;
-      /// Inhibit default constructor
-      Geant4SharedRunAction(const Geant4SharedRunAction& copy) = delete;
       /// Standard constructor
       Geant4SharedRunAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -112,6 +123,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4RunActionSequence: public Geant4Action {
+
     protected:
       /// Callback sequence for begin-run action
       CallbackSequence m_begin;
@@ -119,11 +131,16 @@ namespace DD4hep {
       CallbackSequence m_end;
       /// The list of action objects to be called
       Actors<Geant4RunAction> m_actors;
-    public:
+
+    protected:
       /// Inhibit default constructor
-      Geant4RunActionSequence() = delete;
+      Geant4RunActionSequence() = default;
       /// Inhibit copy constructor
       Geant4RunActionSequence(const Geant4RunActionSequence& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4RunActionSequence& operator=(const Geant4RunActionSequence& copy) = delete;
+
+    public:
       /// Standard constructor
       Geant4RunActionSequence(Geant4Context* context, const std::string& nam);
       /// Default destructor

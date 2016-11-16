@@ -53,9 +53,15 @@ namespace DD4hep {
     class Geant4EventAction : public Geant4Action {
     public:
       typedef Geant4SharedEventAction shared_type;
-    public:
+    protected:
+      /// Inhibit copy constructor
+      Geant4EventAction() = default;
       /// Inhibit copy constructor
       Geant4EventAction(const Geant4EventAction& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4EventAction& operator=(const Geant4EventAction& copy) = delete;
+
+    public:
       /// Standard constructor
       Geant4EventAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -82,10 +88,17 @@ namespace DD4hep {
     class Geant4SharedEventAction : public Geant4EventAction {
     protected:
       /// Reference to the shared action
-      Geant4EventAction* m_action;
-    public:
+      Geant4EventAction* m_action = 0;
+
+    protected:
+      /// Inhibit copy constructor
+      Geant4SharedEventAction() = default;
       /// Inhibit copy constructor
       Geant4SharedEventAction(const Geant4SharedEventAction& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4SharedEventAction& operator=(const Geant4SharedEventAction& copy) = delete;
+
+    public:
       /// Standard constructor
       Geant4SharedEventAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -126,9 +139,15 @@ namespace DD4hep {
       /// The list of action objects to be called
       Actors<Geant4EventAction> m_actors;
 
-    public:
+    protected:
+      /// Inhibit copy constructor
+      Geant4EventActionSequence() = default;
       /// Inhibit copy constructor
       Geant4EventActionSequence(const Geant4EventActionSequence& copy) = delete;
+      /// Inhibit assignment operator
+      Geant4EventActionSequence& operator=(const Geant4EventActionSequence& copy) = delete;
+
+    public:
       /// Standard constructor
       Geant4EventActionSequence(Geant4Context* context, const std::string& nam);
       /// Default destructor
