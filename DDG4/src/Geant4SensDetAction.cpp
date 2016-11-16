@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -394,10 +393,6 @@ void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::clear() {
   m_clear (m_hce);
   m_actors(&Geant4Sensitive::clear, m_hce);
-}
-
-/// Default constructor
-Geant4SensDetSequences::Geant4SensDetSequences() {
 }
 
 /// Default destructor

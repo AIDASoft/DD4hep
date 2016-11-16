@@ -92,9 +92,17 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Filter: public Geant4Action {
-    public:
+    protected:
+      /// Inhibit copy constructor
+      Geant4Filter() = default;
+
       /// Inhibit copy constructor
       Geant4Filter(const Geant4Filter& copy) = delete;
+
+      /// Inhibit assignment operator
+      Geant4Filter& operator=(const Geant4Filter& copy) = delete;
+
+    public:
       /// Standard constructor
       Geant4Filter(Geant4Context* context, const std::string& name);
       /// Standard destructor
@@ -129,13 +137,13 @@ namespace DD4hep {
 
     private:
       /// Reference to G4 sensitive detector
-      Geant4ActionSD* m_sensitiveDetector;
+      Geant4ActionSD* m_sensitiveDetector = 0;
       /// Reference to the containing action sequence
-      Geant4SensDetActionSequence* m_sequence;
+      Geant4SensDetActionSequence* m_sequence = 0;
 
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
-      int  m_hitCreationMode;
+      int  m_hitCreationMode = 0;
       /// Reference to the detector description object
       LCDD& m_lcdd;
       /// Reference to the detector element describing this sensitive element
@@ -149,10 +157,16 @@ namespace DD4hep {
       /// The list of sensitive detector filter objects
       Actors<Geant4Filter> m_filters;
 
-    public:
+      /// Protect the default constructor
+      Geant4Sensitive() = default;
+
       /// Inhibit copy constructor
       Geant4Sensitive(const Geant4Sensitive& copy) = delete;
 
+      /// Inhibit assignment operator
+      Geant4Sensitive& operator=(const Geant4Sensitive& copy) = delete;
+
+    public:
       /// Constructor. The sensitive detector element is identified by the detector name
       Geant4Sensitive(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd);
 
@@ -294,7 +308,7 @@ namespace DD4hep {
 
     protected:
       /// Geant4 hit collection context
-      G4HCofThisEvent* m_hce;
+      G4HCofThisEvent* m_hce = 0;
       /// Callback sequence for event initialization action
       CallbackSequence m_begin;
       /// Callback sequence for event finalization action
@@ -322,6 +336,10 @@ namespace DD4hep {
         return new Geant4HitCollection(det, coll, sd, (TYPE*) 0);
       }
 
+    protected:
+      /// Protect the default constructor
+      Geant4SensDetActionSequence() = default;
+
     public:
       /// Inhibit copy constructor
       Geant4SensDetActionSequence(const Geant4SensDetActionSequence& copy) = delete;
@@ -331,6 +349,9 @@ namespace DD4hep {
 
       /// Default destructor
       virtual ~Geant4SensDetActionSequence();
+
+      /// Inhibit assignment operator
+      Geant4SensDetActionSequence& operator=(const Geant4SensDetActionSequence& copy) = delete;
 
       /// Access to the sensitive type of the detector
       virtual const std::string& sensitiveType() const   {
@@ -437,9 +458,10 @@ namespace DD4hep {
       Members m_sequences;
       /// Insert sequence member
       void insert(const std::string& name, Geant4SensDetActionSequence* seq);
+
     public:
       /// Default constructor
-      Geant4SensDetSequences();
+      Geant4SensDetSequences() = default;
       /// Default destructor
       virtual ~Geant4SensDetSequences();
       /// Access sequence member by name
@@ -484,9 +506,13 @@ namespace DD4hep {
       /// Property: collection name. If not set default is readout name!
       std::string m_collectionName;
       /// Collection identifier
-      size_t      m_collectionID;
+      size_t      m_collectionID = -1;
       /// User data block
       UserData    m_userData;
+
+    protected:
+      /// Protect the default constructor
+      Geant4SensitiveAction() = default;
 
     public:
       /// Standard , initializing constructor
@@ -494,6 +520,7 @@ namespace DD4hep {
                             const std::string& name,
                             Geometry::DetElement det,
                             Geometry::LCDD& lcdd);
+
       /// Default destructor
       virtual ~Geant4SensitiveAction();
 
