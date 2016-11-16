@@ -61,7 +61,6 @@ namespace DD4hep {
       virtual int operator()(DetElement de, UserPool* user_pool, bool recurse);
     };
 
-  } /* End namespace Conditions    */
-} /* End namespace DD4hep    */
-
+  }    /* End namespace Conditions  */
+}      /* End namespace DD4hep      */
 #endif /* DD4HEP_DDCOND_CONDITIONSPRINTER_H  */

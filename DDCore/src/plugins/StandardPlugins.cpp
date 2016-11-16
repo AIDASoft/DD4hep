@@ -530,3 +530,27 @@ DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
 #include "DD4hep/SurfaceInstaller.h"
 typedef SurfaceInstaller TestSurfacesPlugin;
 DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
+
+#include "DD4hep/ConditionsPrinter.h"
+/// Basic entry point to instantiate the basic DD4hep conditions printer
+/**
+ *  Factory: DD4hepConditionsPrinter
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    17/11/2016
+ */
+static void* create_conditions_printer(Geometry::LCDD& /* lcdd */, int argc,char** argv)  {
+  string prefix = "";
+  int flags = 0;
+  for(int i=0; i<argc && argv[i]; ++i)  {
+    if ( 0 == ::strncmp("-prefix",argv[i],4) )
+      prefix = argv[++i];
+    else if ( 0 == ::strncmp("-flags",argv[i],2) )
+      flags = ::atol(argv[++i]);
+  }
+  if ( flags )
+    return new Conditions::ConditionsPrinter(prefix,flags);
+  return new Conditions::ConditionsPrinter(prefix);
+}
+DECLARE_LCDD_CONSTRUCTOR(DD4hepConditionsPrinter,create_conditions_printer)

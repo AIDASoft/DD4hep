@@ -20,6 +20,7 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
+#include "DD4hep/Factories.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBConditionPrinter.h"
 
@@ -104,3 +105,19 @@ int ConditionPrinter::operator()(Condition cond)    {
   }
   return 1;
 }
+
+/// Plugin function
+static void* create_dddb_conditions_printer(Geometry::LCDD& /* lcdd */, int argc,char** argv)  {
+  string prefix = "";
+  int flags = 0;
+  for(int i=0; i<argc && argv[i]; ++i)  {
+    if ( 0 == ::strncmp("-prefix",argv[i],4) )
+      prefix = argv[++i];
+    else if ( 0 == ::strncmp("-flags",argv[i],2) )
+      flags = ::atol(argv[++i]);
+  }
+  if ( flags )
+    return new DDDB::ConditionPrinter(prefix,flags);
+  return new DDDB::ConditionPrinter(prefix);
+}
+DECLARE_LCDD_CONSTRUCTOR(DDDB_ConditionsPrinter,create_dddb_conditions_printer)

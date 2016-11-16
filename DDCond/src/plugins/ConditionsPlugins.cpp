@@ -13,6 +13,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/DetFactoryHelper.h"
@@ -70,16 +71,30 @@ DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
  *  \date    01/04/2016
  */
 static int ddcond_conditions_pool_processor(lcdd_t& lcdd, bool process_pool, bool process_conditions, int argc, char** argv)   {
+  Condition::Processor* processor = 0;
+  if ( argc < 2 )   {
+    except("CondPoolProcessor","++ No processor creator name given!");
+  }
+  for(int i=0; i<argc; ++i)  {
+    if ( 0 == ::strncmp(argv[i],"-processor",3) )  {
+      vector<char*> args;
+      for(int j=2; j<argc && argv[j]; ++j) args.push_back(argv[j]);
+      args.push_back(0);
+      string fac = argv[++i];
+      processor = (Condition::Processor*)PluginService::Create<void*>(fac,&lcdd,int(args.size()),&args[0]);
+      break;
+    }
+  }
+  if ( !processor )  {
+    except("CondPoolProcessor","++ Found arguments in plugin call, "
+           "but could not make any sense of them....");
+  }
+
   typedef std::vector<const IOVType*> _T;
   typedef ConditionsIOVPool::Elements _E;
   typedef RangeConditions _R;
+  dd4hep_ptr<Condition::Processor> proc(processor);
   ConditionsManager manager = ConditionsManager::from(lcdd);
-    
-  if ( argc < 1 )   {
-    except("CondPoolProcessor","++ No processor functor given!");
-  }
-
-  Condition::Processor* processor = (Condition::Processor*)argv[0];
   const _T types = manager.iovTypesUsed();
   for( _T::const_iterator i = types.begin(); i != types.end(); ++i )    {
     const IOVType* type = *i;
@@ -100,7 +115,7 @@ static int ddcond_conditions_pool_processor(lcdd_t& lcdd, bool process_pool, boo
             _R rc;
             cp->select_all(rc);
             for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
-              if ( processor )  {  (*processor)(*ic); }
+              if ( proc.get() )  {  (*proc)(*ic); }
             }
           }
         }
@@ -125,16 +140,20 @@ DECLARE_APPLY(DD4hep_ConditionsPoolProcessor,ddcond_conditions_pool_process)
  *  \date    01/04/2016
  */
 static int ddcond_conditions_pool_print(lcdd_t& lcdd, bool print_conditions, int argc, char** argv)   {
-  ConditionsPrinter default_printer("");
-  Condition::Processor* printer = &default_printer;
   if ( argc > 0 )   {
-    //for(int i=0; i<argc; ++i)  {
-      //printout(INFO,"","arg[%d]=%s",i,argv[i]);
-    //}
-    printer = (Condition::Processor*)argv[0];
+    for(int i=0; i<argc; ++i)  {
+      if ( 0 == ::strncmp(argv[i],"-processor",3) )  {
+        vector<char*> args;
+        for(int j=i; j<argc && argv[j]; ++j) args.push_back(argv[j]);
+        args.push_back(0);
+        return ddcond_conditions_pool_processor(lcdd,true,print_conditions,int(args.size()-1),&args[0]);
+      }
+    }
+    printout(WARNING,"DDCondProcessor","++ Found arguments in plugin call, "
+             "but could not make any sense of them....");
   }
-  const void* args[] = {printer,0};
-  return ddcond_conditions_pool_processor(lcdd,true,print_conditions,1,(char**)args);
+  const void* args[] = { "-processor", "DD4hepConditionsPrinter", 0};
+  return ddcond_conditions_pool_processor(lcdd,true,print_conditions,2,(char**)args);
 }
 
 static int ddcond_dump_pools(LCDD& lcdd, int argc, char** argv)   {

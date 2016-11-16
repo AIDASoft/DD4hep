@@ -35,17 +35,12 @@ using namespace std;
 using namespace DD4hep;
 using DD4hep::Geometry::LCDD;
 
-/// Anonymous namespace for plugins
-namespace  {
-
-  /// Plugin function
-  long dddb_dump_conditions(LCDD& lcdd, int , char** ) {
-    DDDB::ConditionPrinter prt;
-    const void* args[] = { &prt, 0};
-    lcdd.apply("DD4hep_ConditionsDump", 1, (char**)args);
-    return 1;
-  }
-} /* End anonymous namespace  */
+/// Plugin function
+static long dddb_dump_conditions(LCDD& lcdd, int , char** ) {
+  const void* args[] = { "-processor", "DDDB_ConditionsPrinter", "-prefix", "DDDB", 0};
+  lcdd.apply("DD4hep_ConditionsDump", 4, (char**)args);
+  return 1;
+}
 
 DECLARE_APPLY(DDDB_ConditionsDump,dddb_dump_conditions)
 //==========================================================================
