@@ -10,200 +10,135 @@
 
 #include "DDSegmentation/CartesianGrid.h"
 
+#include <cassert>
+
 #define MAX_LAYERS 100
-#define MAX_WAFERS 100
+
+/*
+
+a megatile is a rectangule in x-y, split into a grid along x and y, with an exactly integer number of cells in x and y.
+
+this class assumes a mostly-common megatile size, with possibility for a number of "special" megatiles of non-standard size / segmentation
+
+the segmentation of standard megatiles is defined layer-by-layer.
+
+some changes wrt previous version from Kotera et al.
+- significantly simplified. 
+- complications due to end-of-slab moved to higher level detector drivers.
+
+D. Jeans - Nov 2016
+
+ */
+
 
 namespace DD4hep {
-namespace DDSegmentation {
+  namespace DDSegmentation {
 
-class MegatileLayerGridXY: public CartesianGrid {
-public:
-	/// Default constructor passing the encoding string
-	MegatileLayerGridXY(const std::string& cellEncoding = "");
-	/// Default constructor used by derived classes passing an existing decoder
-	MegatileLayerGridXY(BitField64* decoder);
-	/// destructor
-	virtual ~MegatileLayerGridXY();
+    class MegatileLayerGridXY: public CartesianGrid {
+    public:
+      /// Default constructor passing the encoding string
+      MegatileLayerGridXY(const std::string& cellEncoding = "");
+      /// destructor
+      virtual ~MegatileLayerGridXY();
 
-	/// determine the position based on the cell ID
-	virtual Vector3D position(const CellID& cellID) const;
-	/// determine the cell ID based on the position
-	virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;
+      /// determine the position based on the cell ID
+      virtual Vector3D position(const CellID& cellID) const;
+      /// determine the cell ID based on the position
+      virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;
 
-	/// access the field name used for X
-	const std::string& fieldNameX() const {
-		return _xId;
-	}
-	/// access the field name used for Y
-	const std::string& fieldNameY() const {
-		return _yId;
-	}
+      // set size of megatile in X,Y
+      void setMegaTileSizeXY(double x, double y) {
+        _megaTileSizeX = x;
+        _megaTileSizeY = y;
+      }
 
-	// total size of surface in X,Y
-//	double totalSizeX(int inLayer)  {
-//		return _totalSizeX[ inLayer ];
-//	}
-//	double totalSizeY() const  {
-//		return _totalSizeY;
-//	}
+      /// set the coordinate offset in X, Y
+      void setMegaTileOffsetXY( double x, double y) {
+        _megaTileOffsetX = x;
+        _megaTileOffsetY = y;
+      }
 
-	// number of megatiles along X
-//	int nMegaX(int inLayer=0) const {
-//		return _nMegaY[inLayer];
-//	}
+      void setMegaTileCellsXY( unsigned int layer, int ix, int iy ) {
+	assert ( layer < MAX_LAYERS );
+	_nCellsX[layer] = ix;
+	_nCellsY[layer] = iy;
+      }
 
-	// the dead region at edge of megatiles (e.g. guard ring width)
-//	double deadWidth() {
-//		return _deadWidth;
-//	}
-	
-		int NStripsY() {
-			return _nStripsY;
-		}
+      void setSpecialMegaTile( unsigned int layer, unsigned int tile, 
+			       double sizex, double sizey,
+			       double offsetx, double offsety,
+			       unsigned int ncellsx, unsigned int ncellsy );
 
-		int NStripsX() {
-			return _nStripsX;
-		}
+      /// access the field name used for X
+      const std::string& fieldNameX() const {
+        return _xId;
+      }
+      /// access the field name used for Y
+      const std::string& fieldNameY() const {
+        return _yId;
+      }
+      
+      /// set the field name used for X
+      void setFieldNameX(const std::string& fieldName) {
+        _xId = fieldName;
+      }
+      /// set the field name used for Y
+      void setFieldNameY(const std::string& fieldName) {
+        _yId = fieldName;
+      }
 
-		int NMegaY() {
-			return _nMegaY;
-		}
-	/// set the coordinate offset in X
-//	void setSlabOffsetX( int layer, double offset) {
-//	  _slabOffsetX[layer] = offset;
-//	}
-	/// set the coordinate offset in Y
-//	void setSlabOffsetY( int layer, double offset) {
-//	  _slabOffsetY[layer] = offset;
-//	}
+      virtual std::vector<double> cellDimensions(const CellID& cellID) const;
+      virtual std::vector<double> cellDimensions(const unsigned int ilayer, const unsigned int iwafer) const;
 
-	void setIsRegulatingEBU( int layer, int wafer, bool isRegulating ) {
-		_isRegulatingEBU[layer][wafer] = isRegulating;
-	}
+      
+    protected:
 
-	/// set the coordinate offset in X
-	void setWaferOffsetX( int layer, int wafer, double offset) {
-	  _waferOffsetX[layer][wafer] = offset;
-	}
-	/// set the coordinate offset in Y
-	void setWaferOffsetY( int layer, int wafer, double offset) {
-	  _waferOffsetY[layer][wafer] = offset;
-	}
+      struct segInfo {
+	double megaTileSizeX;
+	double megaTileSizeY;
+	double megaTileOffsetX;
+	double megaTileOffsetY;
+	unsigned int nCellsX;
+	unsigned int nCellsY;
+      };
 
-	// total size of surface in X,Y
-  void setTotalSizeX(int inLayer, double x) {
-    _totalSizeX[inLayer] = x;
-	  _calculated=false;
-	}
-        
-	void setTotalSizeY( double y) {
-    _totalSizeY = y;
-	  _calculated=false;
-	}
+      mutable segInfo _currentSegInfo;
 
-	// number of megatiles along X
-//	void setNMegaY( int n) {
-//		_nMegaY = n;
-//		_calculated=false;
-//	}
+      void getSegInfo( unsigned int layerIndex, unsigned int waferIndex) const;
 
-	// the dead region at edge of megatiles (e.g. guard ring width)
-//	void setDeadWidth(double x) {
-//		_deadWidth = x;
-//	  _calculated=false;
-//	}
+      // the "usual" megatiles
+      //  megatile size and offset is constant in all layers
+      //  the segmentation may change layer-to-layer (e.g. orthogonal strips)
 
+      // total size of surface in X,Y
+      double  _megaTileSizeX; // [MAX_LAYERS][MAX_WAFERS];
+      double  _megaTileSizeY; //[MAX_LAYERS][MAX_WAFERS];
 
-	/// set the field name used for X
-	void setFieldNameX(const std::string& fieldName) {
-		_xId = fieldName;
-	}
-	/// set the field name used for Y
-	void setFieldNameY(const std::string& fieldName) {
-		_yId = fieldName;
-	}
+      double  _megaTileOffsetX; 
+      double  _megaTileOffsetY; 
 
-//	void setWaferIndexX(double waferIndexX) {
-//			_waferIndexX = waferIndexX;
-//			_calculated=false;
-//	}
+      // number of cells per megatile in X, Y
+      unsigned int _nCellsX[MAX_LAYERS];
+      unsigned int _nCellsY[MAX_LAYERS];
 
-//	void setWaferIndexY(double waferIndexY) {
-//			_waferIndexY = waferIndexY;
-//			_calculated=false;
-//	}
+      std::map < std::pair < unsigned int, unsigned int > , segInfo > specialMegaTiles_layerWafer;
 
-	/** \brief Returns a vector<double> of the cellDimensions of the given cell ID
-	    in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+      
+      /// the field name used for X
+      std::string _xId;
+      /// the field name used for Y
+      std::string _yId;
+      /// encoding field used for the layer
+      std::string _identifierLayer;
+      /// encoding field used for the wafer
+      std::string _identifierWafer;
 
-	    Returns a vector of the cellDimensions of the given cell ID
-	    \param cellID is ignored as all cells have the same dimension
-	    \return std::vector<double> size 2:
-	    -# size in x
-	    -# size in y
-	*/
-	virtual std::vector<double> cellDimensions(const CellID& cellID) const;
-	virtual std::vector<double> layercellDimensions(const int ilayer) const;
+      std::string _layerConfig;
 
-protected:
+      std::string _identifierModule;
 
-	// total size of surface in X,Y
-	double  _totalSizeX[MAX_LAYERS];
-	double  _totalSizeY;
-  // number of megatiles along X : together with _totalSizeX, this defines the size of the square megatile
-	int  _nMegaY;
-  // number of cells per megatile in X, Y
-	int  _nStripsX;
-	int  _nStripsY;
-	int  _nCells;
+    };
 
-	// the dead region at edge of megatiles (e.g. guard ring width): assumed constant in each layer
-	double _deadWidth;
-
-  // size of megatile (including edge region)
-	mutable double  _megaSize;
-	// the grid size in X
-	mutable double  _gridSizeT;
-	// the grid size in Y
-	mutable double  _gridSizeL;
-	mutable double  _gridSizeS;
-
-	// calculate the derived quantities
-	void calculateDerivedQuantities() const;
-	mutable bool   _calculated;
-
-	/// the coordinate offset in X
-	double _offsetX;
-	/// the coordinate offset in Y
-	double _offsetY;
-	double _slabOffsetX;
-	double _slabOffsetY;
-	double _waferOffsetX[MAX_LAYERS][MAX_WAFERS];
-	double _waferOffsetY[MAX_LAYERS][MAX_WAFERS];
-
-	unsigned int _waferIndexX;
-	unsigned int _waferIndexY;
-
-	bool _isRegulatingEBU[MAX_LAYERS][MAX_WAFERS];
-
-	/// the field name used for X
-	std::string _xId;
-	/// the field name used for Y
-	std::string _yId;
-	/// encoding field used for the layer
-	std::string _identifierLayer; 
-	/// encoding field used for the wafer
-	std::string _identifierWafer; 
-//  std::string _identifierWaferY; 
-
-	//	std::string _identifierGR;
-
-	std::string _layerConfig;
-
-	std::string _identifierModule;
-
-};
-
-} /* namespace DDSegmentation */
+  } /* namespace DDSegmentation */
 } /* namespace DD4hep */
-#endif /* DDSegmentation_MEGATILELAYERGRIDXY_H_ */
+#endif /* DDSegmentation_WAFERGRIDXY_H_ */
