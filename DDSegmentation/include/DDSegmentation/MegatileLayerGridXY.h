@@ -38,8 +38,14 @@ namespace DD4hep {
     public:
       /// Default constructor passing the encoding string
       MegatileLayerGridXY(const std::string& cellEncoding = "");
+
+      /// Default constructor used by derived classes passing an existing decoder
+      MegatileLayerGridXY(BitField64* decoder);
+
       /// destructor
       virtual ~MegatileLayerGridXY();
+
+      void setup();
 
       /// determine the position based on the cell ID
       virtual Vector3D position(const CellID& cellID) const;

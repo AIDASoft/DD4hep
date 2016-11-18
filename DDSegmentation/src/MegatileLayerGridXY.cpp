@@ -19,6 +19,20 @@ namespace DD4hep {
     /// default constructor using an encoding string
     MegatileLayerGridXY::MegatileLayerGridXY(const std::string& cellEncoding) :
       CartesianGrid(cellEncoding) {
+      setup();
+    }
+
+    MegatileLayerGridXY::MegatileLayerGridXY(BitField64* decode) :
+      CartesianGrid(decode) {
+      setup();
+    }
+
+    /// destructor
+    MegatileLayerGridXY::~MegatileLayerGridXY() {
+
+    }
+
+    void MegatileLayerGridXY::setup() {
       // define type and description
       _type = "MegatileLayerGridXY";
       _description = "Cartesian segmentation in the local XY-plane: megatiles, containing integer number of tiles/strips/cells";
@@ -36,16 +50,11 @@ namespace DD4hep {
                         SegmentationParameter::NoUnit, true);
 
       for (int i=0; i<MAX_LAYERS; i++) {
-	_nCellsX[i]=0;
-	_nCellsY[i]=0;
+        _nCellsX[i]=0;
+        _nCellsY[i]=0;
       }
-
     }
 
-    /// destructor
-    MegatileLayerGridXY::~MegatileLayerGridXY() {
-
-    }
 
     /// determine the position based on the cell ID
     Vector3D MegatileLayerGridXY::position(const CellID& cID) const {
@@ -65,9 +74,9 @@ namespace DD4hep {
       cellPosition.Y = cellIndexY * (_currentSegInfo.megaTileSizeY / _currentSegInfo.nCellsY ) + _currentSegInfo.megaTileOffsetY;
 
       if ( abs( cellPosition.X )>10000 || abs( cellPosition.Y )>10000 ) {
-	std::cout << "crazy cell position: " << cellPosition.X << " " << cellPosition.Y << std::endl;
-	std::cout << "layer, wafer, cellx,y indices: " << layerIndex << " " << waferIndex << " " << cellIndexX << " " << cellIndexY << std::endl;
-	assert(0 && "crazy cell position?");
+        std::cout << "crazy cell position: " << cellPosition.X << " " << cellPosition.Y << std::endl;
+        std::cout << "layer, wafer, cellx,y indices: " << layerIndex << " " << waferIndex << " " << cellIndexX << " " << cellIndexY << std::endl;
+        assert(0 && "crazy cell position?");
       }
 
       return cellPosition;
@@ -111,10 +120,10 @@ namespace DD4hep {
       return cellDimensions(layerIndex, waferIndex);
     }
 
-    void MegatileLayerGridXY::setSpecialMegaTile( unsigned int layer, unsigned int tile, 
-						  double sizex, double sizey,
-						  double offsetx, double offsety,
-						  unsigned int ncellsx, unsigned int ncellsy ) {
+    void MegatileLayerGridXY::setSpecialMegaTile( unsigned int layer, unsigned int tile,
+                                                  double sizex, double sizey,
+                                                  double offsetx, double offsety,
+                                                  unsigned int ncellsx, unsigned int ncellsy ) {
 
       std::pair <int, int> tileid(layer, tile);
       segInfo sinf;
@@ -134,15 +143,15 @@ namespace DD4hep {
 
       std::pair < unsigned int, unsigned int > tileid(layerIndex, waferIndex);
       if ( specialMegaTiles_layerWafer.find( tileid ) == specialMegaTiles_layerWafer.end() ) { // standard megatile
-	_currentSegInfo.megaTileSizeX   = _megaTileSizeX;
+        _currentSegInfo.megaTileSizeX   = _megaTileSizeX;
         _currentSegInfo.megaTileSizeY   = _megaTileSizeY;
         _currentSegInfo.megaTileOffsetX = _megaTileOffsetX;
         _currentSegInfo.megaTileOffsetY = _megaTileOffsetY;
         _currentSegInfo.nCellsX         = _nCellsX[layerIndex];
         _currentSegInfo.nCellsY         = _nCellsY[layerIndex];
       } else { // special megatile
-	_currentSegInfo = specialMegaTiles_layerWafer.find( tileid )->second;
-      }	
+        _currentSegInfo = specialMegaTiles_layerWafer.find( tileid )->second;
+      }
     }
 
     std::vector<double> MegatileLayerGridXY::cellDimensions(const unsigned int layerIndex, const unsigned int waferIndex) const {
