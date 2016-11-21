@@ -23,6 +23,10 @@
 using namespace std;
 using namespace DD4hep::Conditions;
 
+/// Default constructor
+Condition::Processor::Processor() {
+}
+
 /// Access the key of the condition
 ConditionKey DD4hep::Conditions::make_key(Condition c) {
   Condition::Object* p = c.ptr();
@@ -162,6 +166,10 @@ Condition& Condition::rebind()    {
   printout(INFO,"Condition","+++ condition:%s rebinding value:%s",
            name().c_str(), o->value.c_str());
   return *this;
+}
+
+/// Default constructor
+Container::Processor::Processor() {
 }
 
 /// Access the number of conditons keys available for this detector element

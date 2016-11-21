@@ -392,6 +392,83 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
+// ======================================================================================
+static DetElement::Processor* create_processor(LCDD& lcdd, int argc, char** argv)  {
+  DetElement::Processor* processor = 0;
+  if ( argc < 2 )   {
+    except("DetectorProcessor","++ No processor creator name given!");
+  }
+  for(int i=0; i<argc; ++i)  {
+    if ( 0 == ::strncmp(argv[i],"-processor",4) )  {
+      vector<char*> args;
+      string fac = argv[++i];
+      for(int j=++i; j<argc && argv[j] && 0 != ::strncmp(argv[j],"-processor",4); ++j)
+        args.push_back(argv[j]);
+      args.push_back(0);
+      DetElement::Processor* p = (DetElement::Processor*)
+        PluginService::Create<void*>(fac,&lcdd,int(args.size()),&args[0]);
+      processor = dynamic_cast<DetElement::Processor*>(p);
+      break;
+    }
+  }
+  if ( !processor )  {
+    except("DetectorProcessor",
+           "++ Found arguments in plugin call, but could not make any sense of them....");
+  }
+  return processor;
+}
+
+// ======================================================================================
+/// Plugin function: Apply arbitrary functor callback on the tree of detector elements
+/**
+ *  Factory: DD4hep_DetElementProcessor
+ *
+ *  Invokation: -plugin DD4hep_DetElementProcessor 
+ *                      -detector /path/to/detElement (default: /world)
+ *                      -processor <factory-name> <processor-args>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    18/11/2016
+ */
+static int detelement_processor(LCDD& lcdd, int argc, char** argv)   {
+  struct Actor {
+    DetElement::Processor*  processor;
+
+    /// Standard constructor
+    Actor(DetElement::Processor* p) : processor(p)  {    }
+    /// Default destructor
+    ~Actor()   {    }
+    /// Dump method.
+    long process(DetElement de)   {
+      if ( de.isValid() )  {
+        int result = 1;
+        (*processor)(de);
+        for (const auto& c : de.children() )  {
+          int ret = process(c.second);
+          if ( 1 != ret )  {
+            printout(ERROR,"DetectorProcessor","++ Failed to process detector element %s.",c.second.name());
+            result = ret;
+          }
+        }
+        return result;
+      }
+      printout(ERROR,"DetectorProcessor","++ Failed to process invalid detector element.");
+      return 0;
+    }
+  };
+  DetElement det = lcdd.world();
+  DetElement::Processor* processor = create_processor(lcdd, argc, argv);
+  for(int i=0, num=std::min(argc,3); i<num; ++i)  {
+    if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
+      det = DetectorTools::findElement(lcdd, argv[++i]);
+      break;
+    }
+  }
+  return Actor(processor).process(det);
+}
+DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
+
 /// Basic entry point to print out the detector element hierarchy
 /**
  *  Factory: DD4hepDetectorDump, DD4hepDetectorVolumeDump
@@ -531,26 +608,31 @@ DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
 typedef SurfaceInstaller TestSurfacesPlugin;
 DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
 
-#include "DD4hep/ConditionsPrinter.h"
-/// Basic entry point to instantiate the basic DD4hep conditions printer
+/// Basic entry point to instantiate the basic DD4hep conditions/alignmants printer
 /**
- *  Factory: DD4hepConditionsPrinter
+ *  Factory: DD4hepConditionsPrinter, DD4hepAlignmentsPrinter 
  *
  *  \author  M.Frank
  *  \version 1.0
  *  \date    17/11/2016
  */
-static void* create_conditions_printer(Geometry::LCDD& /* lcdd */, int argc,char** argv)  {
-  string prefix = "";
-  int flags = 0;
-  for(int i=0; i<argc && argv[i]; ++i)  {
-    if ( 0 == ::strncmp("-prefix",argv[i],4) )
-      prefix = argv[++i];
-    else if ( 0 == ::strncmp("-flags",argv[i],2) )
-      flags = ::atol(argv[++i]);
+namespace  {
+  template <typename PRINTER>
+  void* create_printer(Geometry::LCDD& /* lcdd */, int argc,char** argv)  {
+    string prefix = "";
+    int flags = 0;
+    for(int i=0; i<argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-prefix",argv[i],4) )
+        prefix = argv[++i];
+      else if ( 0 == ::strncmp("-flags",argv[i],2) )
+        flags = ::atol(argv[++i]);
+    }
+    if ( flags )
+      return (void*)new PRINTER(prefix,flags);
+    return (void*)new PRINTER(prefix);
   }
-  if ( flags )
-    return new Conditions::ConditionsPrinter(prefix,flags);
-  return new Conditions::ConditionsPrinter(prefix);
 }
-DECLARE_LCDD_CONSTRUCTOR(DD4hepConditionsPrinter,create_conditions_printer)
+#include "DD4hep/ConditionsPrinter.h"
+DECLARE_LCDD_CONSTRUCTOR(DD4hepConditionsPrinter,create_printer<Conditions::ConditionsPrinter>)
+#include "DD4hep/AlignmentsPrinter.h"
+DECLARE_LCDD_CONSTRUCTOR(DD4hepAlignmentsPrinter,create_printer<Alignments::AlignmentsPrinter>)

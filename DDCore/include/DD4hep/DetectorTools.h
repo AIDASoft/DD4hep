@@ -50,6 +50,8 @@ namespace DD4hep {
 
       /// Collect detector elements to the top detector element (world)
       void elementPath(DetElement elt, ElementPath& detectors);
+      /// Find DetElement as child of the top level volume by it's absolute path
+      DetElement findElement(LCDD& lcdd, const std::string& path);
       /// Find DetElement as child of a parent by it's relative or absolute path
       DetElement findDaughterElement(DetElement parent, const std::string& subpath);
       /// Find path between the child element and the parent element

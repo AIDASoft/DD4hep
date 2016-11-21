@@ -59,6 +59,31 @@ static int ddcond_install_cond_mgr (LCDD& lcdd, int argc, char** argv)  {
 }
 DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
 
+// ======================================================================================
+static ConditionsProcessor* create_processor(lcdd_t& lcdd, int argc, char** argv)  {
+  class Processor {public:    virtual ~Processor() {}  };
+  ConditionsProcessor* processor = 0;
+  if ( argc < 2 )   {
+    except("CondPoolProcessor","++ No processor creator name given!");
+  }
+  for(int i=0; i<argc; ++i)  {
+    if ( 0 == ::strncmp(argv[i],"-processor",3) )  {
+      vector<char*> args;
+      for(int j=2; j<argc && argv[j]; ++j) args.push_back(argv[j]);
+      args.push_back(0);
+      string fac = argv[++i];
+      Condition::Processor* p = (Condition::Processor*)
+        PluginService::Create<void*>(fac,&lcdd,int(args.size()),&args[0]);
+      processor = dynamic_cast<ConditionsProcessor*>(p);
+      break;
+    }
+  }
+  if ( !processor )  {
+    except("CondPoolProcessor",
+           "++ Found arguments in plugin call, but could not make any sense of them....");
+  }
+  return processor;
+}
 
 // ======================================================================================
 /// Plugin function: Dump of all Conditions pool with or without conditions
@@ -71,25 +96,7 @@ DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
  *  \date    01/04/2016
  */
 static int ddcond_conditions_pool_processor(lcdd_t& lcdd, bool process_pool, bool process_conditions, int argc, char** argv)   {
-  Condition::Processor* processor = 0;
-  if ( argc < 2 )   {
-    except("CondPoolProcessor","++ No processor creator name given!");
-  }
-  for(int i=0; i<argc; ++i)  {
-    if ( 0 == ::strncmp(argv[i],"-processor",3) )  {
-      vector<char*> args;
-      for(int j=2; j<argc && argv[j]; ++j) args.push_back(argv[j]);
-      args.push_back(0);
-      string fac = argv[++i];
-      processor = (Condition::Processor*)PluginService::Create<void*>(fac,&lcdd,int(args.size()),&args[0]);
-      break;
-    }
-  }
-  if ( !processor )  {
-    except("CondPoolProcessor","++ Found arguments in plugin call, "
-           "but could not make any sense of them....");
-  }
-
+  ConditionsProcessor* processor = create_processor(lcdd,argc,argv);
   typedef std::vector<const IOVType*> _T;
   typedef ConditionsIOVPool::Elements _E;
   typedef RangeConditions _R;
@@ -125,7 +132,7 @@ static int ddcond_conditions_pool_processor(lcdd_t& lcdd, bool process_pool, boo
   return 1;
 }
 static int ddcond_conditions_pool_process(LCDD& lcdd, int argc, char** argv)   {
-  return ddcond_conditions_pool_processor(lcdd,true,true,argc, argv);
+  return ddcond_conditions_pool_processor(lcdd, false, true, argc, argv);
 }
 DECLARE_APPLY(DD4hep_ConditionsPoolProcessor,ddcond_conditions_pool_process)
 
@@ -175,62 +182,6 @@ DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
  *  \date    01/04/2016
  */
 static int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)   {
-  struct Actor {
-    ConditionsManager     manager;
-    ConditionsPrinter     printer;
-    dd4hep_ptr<UserPool>  user_pool;
-    const IOVType*        iov_type;
-
-    /// Standard constructor
-    Actor(ConditionsManager m)  : manager(m) {
-      iov_type = manager.iovType("run");
-      IOV  iov(iov_type);
-      iov.set(1500);
-      long num_updated = manager.prepare(iov, user_pool);
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
-               num_updated, iov_type ? iov_type->str().c_str() : "???");
-      user_pool->print("User pool");
-    }
-    /// Default destructor
-    ~Actor()   {
-      manager.clean(iov_type, 20);
-      user_pool->clear();
-      user_pool.release();
-    }
-    /// Dump method.
-    long dump(DetElement de,int level)   {
-      const DetElement::Children& children = de.children();
-      PlacedVolume place = de.placement();
-      char sens = place.volume().isSensitive() ? 'S' : ' ';
-      char fmt[128], tmp[32];
-      ::snprintf(tmp,sizeof(tmp),"%03d/",level+1);
-      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s #Dau:%%d VolID:%%08X %%c",level+1,2*level+1);
-      printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
-               (unsigned long)de.volumeID(), sens);
-      printer.setName(string(tmp)+de.name());
-      if ( de.hasConditions() )  {
-        (printer)(de, user_pool.get(), false);
-      }
-      for (const auto& c : de.children() )
-        dump(c.second,level+1);
-      return 1;
-    }
-  };
-  return Actor(ConditionsManager::from(lcdd)).dump(lcdd.world(),0);
-}
-DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
-  
-// ======================================================================================
-/// Plugin function: Dump of all Conditions associated to the detector elements
-/**
- *  Factory: DD4hep_DetElementConditionsDump
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    01/04/2016
- */
-static int ddcond_detelement_processor(LCDD& lcdd, int /* argc */, char** /* argv */)   {
 
   struct Actor {
     ConditionsManager     manager;
@@ -248,6 +199,7 @@ static int ddcond_detelement_processor(LCDD& lcdd, int /* argc */, char** /* arg
                "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
                num_updated, iov_type ? iov_type->str().c_str() : "???");
       user_pool->print("User pool");
+      printer.setPool(user_pool.get());
     }
     /// Default destructor
     ~Actor()   {
@@ -268,7 +220,7 @@ static int ddcond_detelement_processor(LCDD& lcdd, int /* argc */, char** /* arg
                (unsigned long)de.volumeID(), sens);
       printer.setName(string(tmp)+de.name());
       if ( de.hasConditions() )  {
-        (printer)(de, user_pool.get(), false);
+        (printer)(de);
       }
       for (const auto& c : de.children() )
         dump(c.second,level+1);
@@ -277,8 +229,104 @@ static int ddcond_detelement_processor(LCDD& lcdd, int /* argc */, char** /* arg
   };
   return Actor(ConditionsManager::from(lcdd)).dump(lcdd.world(),0);
 }
-DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
+DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
   
+// ======================================================================================
+/// Plugin function: Dump of all Conditions associated to the detector elements
+/**
+ *  Factory: DD4hep_DetElementConditionsDump
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2016
+ */
+static void* ddcond_prepare(LCDD& lcdd, int argc, char** argv)   {
+  long              iov_val = -1;
+  const IOVType*    iov_typ = 0;
+  ConditionsManager manager = ConditionsManager::from(lcdd);
+
+  for(int i=0; i<argc; ++i)  {
+    if ( ::strncmp(argv[i],"-iov_type",7) == 0 )
+      iov_typ = manager.iovType(argv[++i]);
+    else if ( ::strncmp(argv[i],"-iov_value",7) == 0 )
+      iov_val = ::atol(argv[++i]);
+  }
+  if ( 0 == iov_typ )  {
+    except("ConditionsPrepare","++ Unknown IOV type supplied.");
+  }
+  if ( 0 > iov_val )  {
+    except("ConditionsPrepare",
+           "++ Unknown IOV value supplied for iov type %s.",iov_typ->str().c_str());
+  }
+  dd4hep_ptr<UserPool>  user_pool;
+  IOV  iov(iov_typ);
+  iov.set(iov_val);
+  long num_updated = manager.prepare(iov, user_pool);
+  printout(DEBUG,"Conditions",
+           "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
+           num_updated, iov_typ ? iov_typ->str().c_str() : "???");
+  return user_pool.get() && user_pool->count() > 0 ? user_pool.release() : 0;
+}
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare)
+  
+// ======================================================================================
+/// Plugin function: Dump of all Conditions associated to the detector elements
+/**
+ *  Factory: DD4hep_DetElementConditionsDump
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2016
+ */
+static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
+
+  struct Actor {
+    ConditionsManager     manager;
+    ConditionsProcessor*  processor;
+    dd4hep_ptr<UserPool>  user_pool;
+    const IOVType*        iov_type;
+
+    /// Standard constructor
+    Actor(ConditionsProcessor* p, ConditionsManager m)  : manager(m), processor(p)  {
+      iov_type = manager.iovType("run");
+      IOV  iov(iov_type);
+      iov.set(1500);
+      long num_updated = manager.prepare(iov, user_pool);
+      printout(INFO,"Conditions",
+               "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
+               num_updated, iov_type ? iov_type->str().c_str() : "???");
+      user_pool->print("User pool");
+      processor->setPool(user_pool.get());
+    }
+
+    /// Default destructor
+    ~Actor()   {
+      manager.clean(iov_type, 20);
+      user_pool->clear();
+      user_pool.release();
+    }
+    /// Dump method.
+    long dump(DetElement de)   {
+      if ( de.hasConditions() )  {
+        (*processor)(de);
+      }
+      for (const auto& c : de.children() )
+        dump(c.second);
+      return 1;
+    }
+  };
+  ConditionsProcessor* processor = 0;
+  if ( argc > 0 )   {
+    processor = create_processor(lcdd, argc, argv);
+  }
+  else  {
+    const void* args[] = { "-processor", "DD4hepConditionsPrinter", 0};
+    processor = create_processor(lcdd, 2, (char**)args);
+  }
+  return Actor(processor,ConditionsManager::from(lcdd)).dump(lcdd.world());
+}
+DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
+
 // ======================================================================================
 /// Plugin entry point: Synchronize conditions according to new IOV value
 /**

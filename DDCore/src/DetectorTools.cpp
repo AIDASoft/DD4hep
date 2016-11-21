@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -46,8 +45,6 @@ namespace DD4hep {
       void elementPath(DetElement elt, PlacementPath& nodes);
       /// Collect detector elements placements to the parent detector element [no holes!]
       void elementPath(DetElement parent, DetElement element, PlacementPath& nodes);
-      /// Find DetElement as child of the top level volume by it's absolute path
-      DetElement findElement(LCDD& lcdd, const std::string& path);
       /// Find Child of PlacedVolume and assemble on the fly the path of PlacedVolumes
       bool findChild(PlacedVolume parent, PlacedVolume child, PlacementPath& path);
 

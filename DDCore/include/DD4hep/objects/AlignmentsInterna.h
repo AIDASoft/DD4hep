@@ -112,13 +112,13 @@ namespace DD4hep {
       class AlignmentContainer : public NamedObject {
       public:
         /// Forward defintion of the key type
-        typedef Alignment::key_type              key_type;
+        typedef Container::key_type  key_type;
         /// Forward definition of the iov type
-        typedef Alignment::iov_type              iov_type;
+        typedef Container::iov_type  iov_type;
         /// Forward definition of the mapping type
-        typedef std::pair<key_type, std::string> key_value;
+        typedef Container::key_value key_value;
         /// Definition of the keys
-        typedef std::map<key_type, key_value>    Keys;
+        typedef Container::Keys      Keys;
 
       public:
         /// Standard constructor

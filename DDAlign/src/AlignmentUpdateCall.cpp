@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -15,17 +14,21 @@
 // Framework include files
 #include "DDAlign/AlignmentUpdateCall.h"
 #include "DDAlign/AlignmentsManager.h"
+#include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/Printout.h"
 
 using namespace DD4hep::Alignments;
 
 /// Default constructor
 AlignmentUpdateCall::AlignmentUpdateCall() : DD4hep::Conditions::ConditionUpdateCall()
 {
+  InstanceCount::increment(this);
 }
 
 /// Default destructor
 AlignmentUpdateCall::~AlignmentUpdateCall() {
+  InstanceCount::decrement(this);
 }
 
 AlignmentUpdateCall::Condition
@@ -42,5 +45,23 @@ AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, 
   // are present in a second pass. This is necessary, because the parent information
   // may actually be supplied also 'later'.
   AlignmentsManager::newEntry(ctxt, data.detector, &ctxt.dependency, target);
+  return target;
+}
+
+/// Handler to be called if the Alignment cannot be created due to a bad underlying data type.
+AlignmentUpdateCall::Condition
+AlignmentUpdateCall::invalidDataType(const ConditionKey& key, const UpdateContext& context)  {
+  // Here only print and return an empty alignment condition.
+  // Otherwise the return is not accepted!
+  // TODO: To be decided how to handle this error
+  Condition  cond = context.condition(0);
+  DetElement det  = context.dependency.detector;
+  Alignments::AlignmentCondition target(key.name);
+  Data& data = target.data();
+  data.detector = det;
+  printout(ERROR,"AlignmentUpdate","++ Failed to access alignment-Delta for %s from %s",
+           det.path().c_str(), cond->value.c_str());
+  printout(ERROR,"AlignmentUpdate","++ The true data type is: %s",typeName(cond.typeInfo()).c_str());
+  Conditions::ConditionsPrinter()(cond);
   return target;
 }

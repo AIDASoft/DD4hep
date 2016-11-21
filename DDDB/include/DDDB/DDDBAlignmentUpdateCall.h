@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -50,9 +49,9 @@ namespace DD4hep {
     class DDDBAlignmentUpdateCall : public Alignments::AlignmentUpdateCall  {
     public:
       /// Default constructor
-      DDDBAlignmentUpdateCall() : Alignments::AlignmentUpdateCall()  {}
+      DDDBAlignmentUpdateCall() = default;
       /// Default destructor
-      virtual ~DDDBAlignmentUpdateCall();
+      virtual ~DDDBAlignmentUpdateCall() = default;
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& key, const UpdateContext& context);
     };

@@ -84,7 +84,7 @@ namespace DD4hep {
       /// Delete the manager. Be careful: this affects all referencing handles!
       void destroy();
       /// Adopy alignment dependency for later recalculation
-      void adoptDependency(Dependency* dependency)  const;
+      bool adoptDependency(Dependency* dependency)  const;
       /// Access all known dependencies
       const Dependencies& knownDependencies()  const;
       /// Compute all alignment conditions of the internal dependency list
