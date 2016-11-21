@@ -40,7 +40,7 @@ namespace DD4hep {
     }
 #else
     /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<Alignment::Object>(const string& nam) {
+    template <> Alignment::Alignment<AlignmentData>(const string& nam) {
       assign(new Alignment::Object(), nam, "alignment");
     }
     /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
@@ -48,7 +48,7 @@ namespace DD4hep {
       assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
     }
     /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
-    template <> AlignmentCondition::AlignmentCondition<AlignmentCondition::Object>(const string& nam) {
+    template <> AlignmentCondition::AlignmentCondition<Interna::AlignmentConditionObject>(const string& nam) {
       assign(new Object(nam, "alignment"), nam, "alignment");
     }
 #endif
