@@ -28,18 +28,8 @@ namespace DD4hep {
   
   /// Namespace for the alignment part of the AIDA detector description toolkit
   namespace Alignments {
-    
-#if 0
-    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<Alignment::Object>(const string& nam) {
-      assign(new Alignment::Object(), nam, "alignment");
-    }
-    
-    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam) {
-      assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
-    }
-#endif    
+
+#ifdef __APPLE__
     /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
     Alignment::Alignment(const string& nam) {
       assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
@@ -48,15 +38,27 @@ namespace DD4hep {
     AlignmentCondition::AlignmentCondition(const string& nam) {
       assign(new AlignmentCondition::Object(nam, "alignment"), nam, "alignment");
     }
-#if 0
+#else
+    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
+    template <> Alignment::Alignment<Alignment::Object>(const string& nam) {
+      assign(new Alignment::Object(), nam, "alignment");
+    }
+    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
+    template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam) {
+      assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
+    }
     /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
     template <> AlignmentCondition::AlignmentCondition<AlignmentCondition::Object>(const string& nam) {
       assign(new Object(nam, "alignment"), nam, "alignment");
     }
 #endif
-  } /* End namespace Aligments                  */
-} /* End namespace DD4hep                       */
+  } /* End namespace Aligments                    */
+}   /* End namespace DD4hep                       */
 
+
+/// Default constructor
+Alignment::Processor::Processor() {
+}
 
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& Alignment::worldTransformation()  const  {
@@ -115,9 +117,22 @@ const TGeoHMatrix& AlignmentCondition::detectorTransformation() const   {
   return data().detectorTransformation();
 }
 
+/// Default constructor
+Container::Processor::Processor() {
+}
+
 /// Access the number of conditons keys available for this detector element
 size_t Container::numKeys() const   {
   return access()->keys.size();
+}
+
+/// Known keys of conditions in this container
+const Container::Keys& Container::keys()  const   {
+  Object* o = ptr();
+  if ( !o )   {
+    invalidHandleError<Container>();
+  }
+  return o->keys;
 }
 
 /// Access to alignment objects

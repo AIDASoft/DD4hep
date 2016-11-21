@@ -75,6 +75,8 @@ namespace DD4hep {
       typedef unsigned int                key_type;
       /// Forward definition of the iov type
       typedef IOV                         iov_type;
+      /// Forward definition of the object properties
+      typedef unsigned int                mask_type;
 
     public:
       enum StringFlags  {
@@ -109,6 +111,11 @@ namespace DD4hep {
        */
       class Processor {
       public:
+        /// Default constructor
+        Processor();
+        /// Default destructor
+        virtual ~Processor() = default;
+        /// Conditions callback for object processing
         virtual int operator()(Condition c) = 0;
       };
 
@@ -199,6 +206,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class Container : public Handle<Interna::ConditionContainer> {
+
     public:
       /// Abstract base for processing callbacks to container objects
       /**
@@ -208,8 +216,12 @@ namespace DD4hep {
        */
       class Processor {
       public:
+        /// Default constructor
+        Processor();
+        /// Default destructor
+        virtual ~Processor() = default;
         /// Container callback for object processing
-        virtual int operator()(Container container, UserPool* pool) = 0;
+        virtual int operator()(Container container) = 0;
       };
 
       /// Standard object type

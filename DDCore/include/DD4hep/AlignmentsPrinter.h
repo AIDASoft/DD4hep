@@ -10,19 +10,19 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONSPRINTER_H
-#define DD4HEP_DDCORE_CONDITIONSPRINTER_H
+#ifndef DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
+#define DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
 
 // Framework includes
-#include "DD4hep/ConditionsProcessor.h"
+#include "DD4hep/AlignmentsProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace Conditions {
+  namespace Alignments {
 
-    /// Generic Conditions data dumper.
+    /// Generic Alignments data dumper.
     /**
      *   Please note that the principle of locality applies:
      *   The object is designed for stack allocation and configuration.
@@ -33,7 +33,7 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class ConditionsPrinter : public ConditionsProcessor  {
+    class AlignmentsPrinter : public AlignmentsProcessor  {
     public:
       std::string   name;
       std::string   prefix;
@@ -42,23 +42,22 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      ConditionsPrinter(const std::string& prefix="", 
-                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
+      AlignmentsPrinter(const std::string& prefix="",int flags=0);
       /// Default destructor
-      virtual ~ConditionsPrinter() = default;
+      virtual ~AlignmentsPrinter() = default;
       /// Set name for printouts
       void setName(const std::string& value)    {  name = value;   }
       /// Set prefix for printouts
       void setPrefix(const std::string& value)  {  prefix = value; }
-      /// Callback to output conditions information
-      virtual int operator()(Condition cond);
+      /// Callback to output alignments information
+      virtual int operator()(Alignment cond);
       /// Container callback for object processing
       virtual int operator()(Container container);
-      /// Callback to output conditions information of an entire DetElement
+      /// Callback to output alignments information of an entire DetElement
       virtual int operator()(DetElement de)
-      {  return this->ConditionsProcessor::operator()(de);         }
+      {  return this->AlignmentsProcessor::operator()(de);         }
     };
 
-  }    /* End namespace Conditions           */
+  }    /* End namespace Alignments           */
 }      /* End namespace DD4hep               */
-#endif /* DD4HEP_DDCORE_CONDITIONSPRINTER_H  */
+#endif /* DD4HEP_DDCORE_ALIGNMENTSPRINTER_H  */

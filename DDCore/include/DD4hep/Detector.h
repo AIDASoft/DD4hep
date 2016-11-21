@@ -171,6 +171,22 @@ namespace DD4hep {
      */
     class DetElement: public Handle<DetElementObject>  {
     public:
+      /// Abstract base for processing callbacks to DetElement objects
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
+      class Processor {
+      public:
+        /// Default constructor
+        Processor();
+        /// Default destructor
+        virtual ~Processor() = default;
+        /// Container callback for object processing
+        virtual int operator()(DetElement detector) = 0;
+      };
+
       /// Internal object type
       typedef DetElementObject         Object;
       /// Definition of the base handle type

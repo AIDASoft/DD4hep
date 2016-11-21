@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -79,4 +78,19 @@ namespace {
   }
 }  /* End anonymous namespace  */
 DECLARE_APPLY(DD4hep_GlobalAlignmentWriter, create_global_alignment_file)
+
 // ======================================================================================
+#include "DDAlign/DDAlignUpdateCall.h"
+static void* create_DDAlignUpdateCall(Geometry::LCDD& /* lcdd */, int /* argc */, char** /* argv */)   {
+  return (AlignmentUpdateCall*)(new DDAlignUpdateCall());
+}
+DECLARE_LCDD_CONSTRUCTOR(DDAlign_UpdateCall, create_DDAlignUpdateCall)
+
+// ======================================================================================
+#include "DDAlign/DDAlignTest.h"
+static long compute_alignments(Geometry::LCDD& lcdd, int /* argc */, char** /* argv */)   {
+  DDAlignTest* test = lcdd.extension<DDAlignTest>();
+  test->alignmentsMgr.compute(test->alignmentsPool);
+  return 1;
+}
+DECLARE_APPLY(DDAlign_ComputeAlignments, compute_alignments)

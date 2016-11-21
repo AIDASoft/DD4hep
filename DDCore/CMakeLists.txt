@@ -21,7 +21,7 @@ dd4hep_package(    DDCore
 dd4hep_add_dictionary( G__DD4hep
   SOURCES include/DD4hep/*.h 
   include/DD4hep/objects/*.h 
-  include/XML/objects/*.h 
+  include/XML/*.h 
   ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/BitField64.h
   ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/Segmentation.h
   EXCLUDE include/DD4hep/DetFactoryHelper.h
@@ -29,6 +29,7 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/Plugins.h
   include/DD4hep/IoStreams.h
   include/DD4hep/SurfaceInstaller.h
+  include/XML/UnicodeValues.h
   include/XML/tinyxml.h
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h )

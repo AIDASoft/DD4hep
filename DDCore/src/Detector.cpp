@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -29,9 +28,14 @@ namespace {
   static string s_empty_string;
 }
 
+/// Default constructor
+DetElement::Processor::Processor()   {
+}
+
 /// Clone constructor
 DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
-  : RefObject(det_data) {
+  : RefObject(det_data)
+{
   this->assign(det_data, det_name, det_type);
 }
 

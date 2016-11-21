@@ -173,7 +173,7 @@ void AlignmentsManagerObject::compute(UserPool& pool, const Dependencies& deps) 
   }
 }
 /// Compute the alignment delta for one detector element and it's alignment condition
-void computeDelta(AlignmentCondition cond, TGeoHMatrix& tr_delta)  {
+static void computeDelta(AlignmentCondition cond, TGeoHMatrix& tr_delta)  {
   const AlignmentData& align = cond.data();
   const Delta&         delta = align.delta;
   const TGeoHMatrix&     nom = align.detectorTransformation();
@@ -257,10 +257,14 @@ void AlignmentsManager::destroy()  {
 }
 
 /// Adopy alignment dependency for later recalculation
-void AlignmentsManager::adoptDependency(Dependency* dependency) const  {
+bool AlignmentsManager::adoptDependency(Dependency* dependency) const  {
   Object* o = access();
-  o->dependencies->insert(dependency);
-  o->all_alignments->newEntry(dependency->detector, dependency, 0);
+  auto res = o->dependencies->insert(dependency);
+  if ( res.second )  {
+    o->all_alignments->newEntry(dependency->detector, dependency, 0);
+    return res.second;
+  }
+  return false;
 }
 
 /// Access all known dependencies

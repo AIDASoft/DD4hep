@@ -22,7 +22,6 @@
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/OpaqueDataBinder.h"
 #include "DD4hep/ConditionsKeyAssign.h"
-#include "DD4hep/AlignmentsKeyAssign.h"
 #include "DD4hep/DetFactoryHelper.h"
 
 #include "DDCond/ConditionsTags.h"
@@ -139,9 +138,7 @@ namespace {
     if ( elt.hasAttr(_U(comment)) )  {
       cond->comment = elt.attr<string>(_U(comment));
     }
-    ConditionsKeyAssign(det)
-      .addKey(cond.name())
-      .addKey(nam,cond.name());
+    ConditionsKeyAssign(det).addKey(cond.name());//.addKey(nam,cond.name());
     return cond;
   }
   template <typename BINDER> Condition bind_condition(const BINDER& bnd,
@@ -394,10 +391,7 @@ namespace DD4hep {
     else if ( child_pos )
       del.flags |= Delta::HAVE_TRANSLATION;
 
-    Alignments::AlignmentsKeyAssign(arg->detector)
-      .addKey(con.name()+"/Transformation")
-      .addKey(con.type(),con.name()+"/Transformation");
-
+    con->setFlag(Condition::ALIGNMENT);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 

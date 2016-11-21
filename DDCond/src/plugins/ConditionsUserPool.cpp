@@ -134,6 +134,9 @@ ConditionsMappedUserPool<MAPPING>::~ConditionsMappedUserPool()  {
 template<typename MAPPING> inline Condition::Object* 
 ConditionsMappedUserPool<MAPPING>::i_findCondition(key_type key)  const {
   typename MAPPING::const_iterator i=m_conditions.find(key);
+  if ( i == m_conditions.end() )  {
+    print("*");
+  }
   return i != m_conditions.end() ? (*i).second : 0;
 }
 

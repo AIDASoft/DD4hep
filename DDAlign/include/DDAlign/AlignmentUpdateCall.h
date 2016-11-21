@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -54,10 +53,13 @@ namespace DD4hep {
     public:
       /// Default constructor
       AlignmentUpdateCall();
+
       /// Default destructor
       virtual ~AlignmentUpdateCall();
+
       /// Interface to client Callback in order to update the condition. To be overloaded by sub-class
       virtual Condition operator()(const ConditionKey& key, const UpdateContext& context) = 0;
+
       /// Callback to build the alignment conditions object and assign the delta
       /** Please Note:
        *  We MUST register the undigested condition to the alignment manager in order to
@@ -71,8 +73,10 @@ namespace DD4hep {
        *  and may very well depend on the extrnal database technology used to save conditions.
        */
       virtual Condition handle(const ConditionKey& key, const UpdateContext& context, const Delta& delta);
-    };
 
+      /// Handler to be called if the Alignment cannot be created due to a bad underlying data type.
+      virtual Condition invalidDataType(const ConditionKey& key, const UpdateContext& context);
+    };
   } /* End namespace Aligments                        */
 } /* End namespace DD4hep                             */
 #endif    /* DD4HEP_ALIGMENTS_ALIGNMENTUPDATECALL_H   */

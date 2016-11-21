@@ -94,7 +94,7 @@ namespace DD4hep {
         /// Forward definition of the iov type
         typedef Condition::iov_type         iov_type;
         /// Forward definition of the object properties
-        typedef unsigned int                mask_type;
+        typedef Condition::mask_type        mask_type;
         /// Forward definition of the object mask manipulator
         typedef ReferenceBitMask<mask_type> MaskManip;
 

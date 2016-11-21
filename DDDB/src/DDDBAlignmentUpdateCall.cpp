@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -26,10 +25,6 @@
 
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
-
-/// Default destructor
-DDDB::DDDBAlignmentUpdateCall::~DDDBAlignmentUpdateCall() {
-}
 
 /// Interface to client Callback in order to update the condition
 DDDB::DDDBAlignmentUpdateCall::Condition

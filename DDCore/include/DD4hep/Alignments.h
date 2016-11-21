@@ -64,6 +64,22 @@ namespace DD4hep {
      */
     class Alignment : public Handle<AlignmentData>   {
     public:
+      /// Abstract base for processing callbacks to container objects
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Processor {
+      public:
+        /// Default constructor
+        Processor();
+        /// Default destructor
+        virtual ~Processor() = default;
+        /// Container callback for object processing
+        virtual int operator()(Alignment container) = 0;
+      };
+
       /// Forward definition of the base data object containing alignment data
       typedef AlignmentData             Object;
       /// Forward definition of the base data object containing alignment data
@@ -87,9 +103,11 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Alignment(const Handle<Q>& e) : Handle<Object>(e)  {}
       /// Object constructor for pure alignment objects
-      //template <typename Q=Interna::AlignmentNamedObject> Alignment(const std::string& name);
+#ifdef __APPLE__
       Alignment(const std::string& name) ;
-
+#else
+      template <typename Q=Interna::AlignmentNamedObject> Alignment(const std::string& name);
+#endif
       /// Hash code generation from input string
       static key_type hashCode(const char* value);
       /// Hash code generation from input string
@@ -148,9 +166,11 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> AlignmentCondition(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Object constructor for pure alignment objects
-      //      template <typename Q=Object> AlignmentCondition(const std::string& name);
+#ifdef __APPLE__
       AlignmentCondition(const std::string& name) ;
-
+#else
+      template <typename Q=Object> AlignmentCondition(const std::string& name);
+#endif
       /** Interval of validity            */
       /// Access the IOV type
       const IOVType& iovType()  const;
@@ -183,13 +203,33 @@ namespace DD4hep {
      */
     class Container : public Handle<Interna::AlignmentContainer> {
     public:
+      /// Abstract base for processing callbacks to container objects
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Processor {
+      public:
+        /// Default constructor
+        Processor();
+        /// Default destructor
+        virtual ~Processor() = default;
+        /// Container callback for object processing
+        virtual int operator()(Container container) = 0;
+      };
+
       /// Standard object type
-      typedef Interna::AlignmentContainer Object;
+      typedef Interna::AlignmentContainer      Object;
       /// Forward definition of the key type
-      typedef Alignment::key_type key_type;
+      typedef Alignment::key_type              key_type;
       /// Forward definition of the iov type
-      typedef Alignment::iov_type iov_type;
-      
+      typedef Alignment::iov_type              iov_type;
+      /// Forward definition of the mapping type
+      typedef std::pair<key_type, std::string> key_value;
+      /// Definition of the keys
+      typedef std::map<key_type, key_value>    Keys;
+
     public:
       /// Default constructor
       Container();
@@ -202,6 +242,9 @@ namespace DD4hep {
 
       /// Access the number of conditons keys available for this detector element
       size_t numKeys() const;
+
+      /// Known keys of conditions in this container
+      const Keys&  keys()  const;
 
       /// Access to alignment objects by key and IOV. 
       Alignment get(const std::string& alignment_key, const iov_type& iov);

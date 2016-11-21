@@ -401,8 +401,10 @@ void ConditionsManagerObject::pushUpdates()   {
     typedef UpdatePool::ConditionEntries _E;
     const _E& ents = (*iov_iter).second;
     if ( !ents.empty() )  {
-      for(_E::const_iterator j=ents.begin(); j != ents.end(); ++j) {
-        (*j)->pool->insert(*j);
+      for(_E::const_iterator j=ents.begin(); j != ents.end(); ++j)  {
+        Condition c = *j;
+        c->setFlag(Condition::ACTIVE);
+        c->pool->insert(c);
       }
     }
   }

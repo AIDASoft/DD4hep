@@ -43,6 +43,7 @@
     <alignment>
       <position x="0" y="0"    z="290.0*mm"/>
       <rotation x="0" y="pi/2" z="0"/>     
+      <pivot    x="0" y="0" z="0"/>     
     </alignment>
   </detelement>
 
