@@ -22,35 +22,32 @@
 using namespace std;
 using namespace DD4hep::Alignments;
 
-
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
   
   /// Namespace for the alignment part of the AIDA detector description toolkit
   namespace Alignments {
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__clang__)
     /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    Alignment::Alignment(const string& nam) {
-      assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
-    }
+    Alignment::Alignment(const string& nam)
+    { assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");    }
+
     /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
-    AlignmentCondition::AlignmentCondition(const string& nam) {
-      assign(new AlignmentCondition::Object(nam, "alignment"), nam, "alignment");
-    }
+    AlignmentCondition::AlignmentCondition(const string& nam)
+    { assign(new AlignmentCondition::Object(nam, "alignment"), nam, "alignment");       }
 #else
+    /// Initializing constructor to create a new object (Specialized for AlignmentData)
+    template <> Alignment::Alignment<AlignmentData>(const string& nam)
+    { assign(new AlignmentData(), nam, "alignment");                                    }
+
     /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<AlignmentData>(const string& nam) {
-      assign(new Alignment::Object(), nam, "alignment");
-    }
-    /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-    template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam) {
-      assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");
-    }
+    template <> Alignment::Alignment<Interna::AlignmentNamedObject>(const string& nam)
+    { assign(new Interna::AlignmentNamedObject(nam, "alignment"), nam, "alignment");    }
+
     /// Initializing constructor to create a new object (Specialized for AlignmentConditionObject)
-    template <> AlignmentCondition::AlignmentCondition<Interna::AlignmentConditionObject>(const string& nam) {
-      assign(new Object(nam, "alignment"), nam, "alignment");
-    }
+    template <> AlignmentCondition::AlignmentCondition<Interna::AlignmentConditionObject>(const string& nam)
+    { assign(new Object(nam, "alignment"), nam, "alignment");                           }
 #endif
   } /* End namespace Aligments                    */
 }   /* End namespace DD4hep                       */

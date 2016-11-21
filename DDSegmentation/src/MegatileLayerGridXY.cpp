@@ -9,8 +9,8 @@
 #include "DDSegmentation/MegatileLayerGridXY.h"
 
 #undef NDEBUG
+#include <cmath>
 #include <cassert>
-
 #include <algorithm>
 
 namespace DD4hep {
@@ -73,7 +73,7 @@ namespace DD4hep {
       cellPosition.X = cellIndexX * (_currentSegInfo.megaTileSizeX / _currentSegInfo.nCellsX ) + _currentSegInfo.megaTileOffsetX;
       cellPosition.Y = cellIndexY * (_currentSegInfo.megaTileSizeY / _currentSegInfo.nCellsY ) + _currentSegInfo.megaTileOffsetY;
 
-      if ( std::fabs( cellPosition.X )>10000e0 || std::fabs( cellPosition.Y )>10000e0 ) {
+      if ( fabs( cellPosition.X )>10000e0 || fabs( cellPosition.Y )>10000e0 ) {
         std::cout << "crazy cell position: " << cellPosition.X << " " << cellPosition.Y << std::endl;
         std::cout << "layer, wafer, cellx,y indices: " << layerIndex << " " << waferIndex
                   << " " << cellIndexX << " " << cellIndexY << std::endl;
