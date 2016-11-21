@@ -103,7 +103,7 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Alignment(const Handle<Q>& e) : Handle<Object>(e)  {}
       /// Object constructor for pure alignment objects
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__clang__)
       Alignment(const std::string& name) ;
 #else
       template <typename Q=Interna::AlignmentNamedObject> Alignment(const std::string& name);
@@ -166,7 +166,7 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> AlignmentCondition(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Object constructor for pure alignment objects
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__clang__)
       AlignmentCondition(const std::string& name) ;
 #else
       template <typename Q=Object> AlignmentCondition(const std::string& name);

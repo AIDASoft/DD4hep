@@ -9,10 +9,7 @@
 
 # ---- initialize DD4hep for this shell
 . @CMAKE_INSTALL_PREFIX@/bin/thisdd4hep.sh
-if [ @USE_DYLD@ ];
-then
-    export DYLD_LIBRARY_PATH=${DD4HEP_LIBRARY_PATH}:${DYLD_LIBRARY_PATH};
-fi;
+
 #----- parse command line - first argument is the 
 #      test to run
 command=$1
@@ -24,4 +21,4 @@ for i in "$@" ; do
     fi
 done
 echo "---running test :  '" ${command} ${theargs} "'"
-exec ${command} ${theargs}
+${command} ${theargs}

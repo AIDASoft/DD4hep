@@ -18,6 +18,10 @@
 #include <cstring>
 #include <cstdarg>
 #include <stdexcept>
+// Disable some diagnostics for ROOT dictionaries
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wvarargs"
+#endif
 
 using namespace std;
 

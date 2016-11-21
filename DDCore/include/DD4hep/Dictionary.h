@@ -24,6 +24,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated"
 #pragma GCC diagnostic ignored "-Wunused"
 #endif
+
 // Framework include files
 #include "XML/Evaluator.h"
 #include "DD4hep/DetAlign.h"
