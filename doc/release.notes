@@ -3,6 +3,21 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-19 |
+ --------
+
+ 2016-11-17 D.Jeans
+
+   - rewritten MegatileLayerGrid class 
+      - not backward compatible 
+
+  M.Petric:
+
+  - improved Travis CI configuration 
+  - remove some tests from CI
+
+
   --------
  | v00-18 |
   --------
