@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -70,13 +69,12 @@ namespace DD4hep {
       public:
         /// Default constructor
         ParticleConstructor() = default;
+        /// Default constructor
+        ParticleConstructor(const ParticleConstructor& copy) = default;
         /// Initalizing constructor
         ParticleConstructor(const std::string& s) : std::string(s) { }
         /// Assignment operator
-        ParticleConstructor& operator=(const ParticleConstructor& c)  {
-          if ( &c != this ) this->std::string::operator=(c);
-          return *this;
-        }
+        ParticleConstructor& operator=(const ParticleConstructor& c) = default;
       };
       typedef std::vector<ParticleConstructor> ParticleConstructors;
 
@@ -89,19 +87,16 @@ namespace DD4hep {
       class PhysicsConstructor: public std::string {
       public:
         /// Pointer to physics constructor object
-        G4VPhysicsConstructor* pointer;
+        G4VPhysicsConstructor* pointer = 0;
       public:
         /// Default constructor
-        PhysicsConstructor() : std::string(), pointer(0) {}
+        PhysicsConstructor() = default;
         /// Copy constructor
-        PhysicsConstructor(const PhysicsConstructor& c) : std::string(c), pointer(c.pointer)  {}
+        PhysicsConstructor(const PhysicsConstructor& c) = default;
         /// Initalizing constructor
         PhysicsConstructor(const std::string& s) : std::string(s), pointer(0)  {}
         /// Assignment operator
-        PhysicsConstructor& operator=(const PhysicsConstructor& c)  {
-          if ( &c != this ) { this->std::string::operator=(c); pointer=c.pointer; }
-          return *this;
-        }
+        PhysicsConstructor& operator=(const PhysicsConstructor& c) = default;
       };
       typedef std::vector<PhysicsConstructor> PhysicsConstructors;
 

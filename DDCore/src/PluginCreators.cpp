@@ -52,7 +52,8 @@ namespace DD4hep {
         if ( cast )   {
           void* obj = cast(processor);
           if ( obj ) return obj;
-          invalidHandleAssignmentError(typeid(cast),typeid(*component(processor)));
+          ComponentCast* c = component(processor);
+          invalidHandleAssignmentError(typeid(cast),typeid(*c));
         }
       }
     }
@@ -77,7 +78,8 @@ namespace DD4hep {
     if ( cast )   {
       void* obj = cast(object);
       if ( obj ) return obj;
-      invalidHandleAssignmentError(typeid(cast),typeid(*component(object)));
+      ComponentCast* c = component(object);
+      invalidHandleAssignmentError(typeid(cast),typeid(*c));
     }
     return object;
   }

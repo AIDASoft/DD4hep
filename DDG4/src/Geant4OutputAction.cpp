@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -35,7 +34,7 @@ Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
   declareProperty("Output", m_output);
   declareProperty("HandleErrorsAsFatal", m_errorFatal=true);
   // Need to instantiate run action to configure fibers
-  if ( 0 == &ctxt->runAction() )  {}
+  ctxt->runAction();
 }
 
 /// Default destructor

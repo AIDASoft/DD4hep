@@ -181,7 +181,7 @@ namespace DD4hep {
       CNV(LCDD& l, void* p, void* o=0) : Converter<T,T*>(l,p,o) {}
       template<typename Q> CNV<Q> cnv() const {  return CNV<Q>(this->lcdd,this->param,this->optional);   }
       void* convert(T* obj) const;
-      template<typename Q> Q get(const string& obj) const  {
+      template<typename Q> Q get(const string& /* obj */) const  {
         throw runtime_error("NOT implemented virtual call !");
       }
       void operator()(T* obj) const   {	convert(obj);  }

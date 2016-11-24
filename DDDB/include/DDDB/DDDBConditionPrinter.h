@@ -54,11 +54,16 @@ namespace DD4hep {
         /// Printout prefix
         std::string& m_prefix;
       public:
-
+        /// Default constructor
+        ParamPrinter() = default;
+        /// Copy constructor
+        ParamPrinter(const ParamPrinter& copy) = default;
         /// Initializing constructor
         ParamPrinter(std::string& prefix);
         /// Default destructor
-        virtual ~ParamPrinter()  {}
+        virtual ~ParamPrinter() = default;
+        /// Assignment operator
+        ParamPrinter& operator=(const ParamPrinter& copy) = default;
 
         /// Set prefix for prinouts
         void setPrefix(const std::string& value)  {  m_prefix = value; }

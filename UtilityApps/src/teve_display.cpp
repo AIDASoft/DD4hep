@@ -187,12 +187,12 @@ TEveStraightLineSet* getSurfaceVectors(bool addO, bool addU, bool addV, bool add
     DDSurfaces::Vector3D ov = o + v ;
     DDSurfaces::Vector3D on = o + n ;
  
-    if (addU) ls->AddLine( o.x(), o.y(), o.z(), ou.x() , ou.y() , ou.z()  )->fId ;
+    if (addU) ls->AddLine( o.x(), o.y(), o.z(), ou.x() , ou.y() , ou.z()  );
     
 //     TEveStraightLineSet::Marker_t *m = ls->AddMarker(id,1.);
     
-    if (addV) ls->AddLine( o.x(), o.y(), o.z(), ov.x() , ov.y() , ov.z()  )->fId ;
-    if (addN) ls->AddLine( o.x(), o.y(), o.z(), on.x() , on.y() , on.z()  )->fId ;
+    if (addV) ls->AddLine( o.x(), o.y(), o.z(), ov.x() , ov.y() , ov.z()  );
+    if (addN) ls->AddLine( o.x(), o.y(), o.z(), on.x() , on.y() , on.z()  );
     if (addO) ls->AddMarker(  o.x(), o.y(), o.z() );
   }
   ls->SetLineColor( color ) ;

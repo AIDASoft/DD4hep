@@ -333,8 +333,7 @@ static long ddcond_synchronize_conditions(lcdd_t& lcdd, int argc, char** argv) {
                num_updated, c_evt);
     }
     else  {
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions... key[%s]: %ld",
+      printout(INFO,"Conditions","+++ ConditionsUpdate: Updated %ld conditions... key[%s]: %ld",
                num_updated, iov_type.c_str(), iov_key);
     }
     user_pool->print("User pool");
@@ -375,86 +374,6 @@ static long ddcond_clean_conditions(lcdd_t& lcdd, int argc, char** argv) {
 DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 
 // ======================================================================================
-/// Plugin entry point: Create repository csv file from loaded conditions
-/**
- *  Factory: DD4hep_ConditionsCreateRepository
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    01/04/2016
- */
-static long ddcond_create_repository(lcdd_t& lcdd, int argc, char** argv) {
-  bool arg_error = false;
-  string output = "";
-  for(int i=0; i<argc && argv[i]; ++i)  {      
-    if ( 0 == ::strncmp("-output",argv[i],4) )
-      output = argv[++i];
-    else
-      arg_error = true;
-  }
-  if ( arg_error || output.empty() )  {
-    /// Help printout describing the basic command line interface
-    cout <<
-      "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_ConditionsCreateRepository             \n\n"
-      "     -output <string>         Output file name.                             \n\n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
-    ::exit(EINVAL);
-  }
-  printout(INFO,"Conditions",
-           "+++ ConditionsRepository: Creating %s",output.c_str());
-  ConditionsManager manager = ConditionsManager::from(lcdd);
-  ConditionsRepository().save(manager,output);
-  return 1;
-}
-DECLARE_APPLY(DD4hep_ConditionsCreateRepository,ddcond_create_repository)
-
-// ======================================================================================
-/// Plugin entry point: Dump conditions repository csv file
-/**
- *  Factory: DD4hep_ConditionsDumpRepository
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    01/04/2016
- */
-static long ddcond_dump_repository(lcdd_t& lcdd, int argc, char** argv)   {
-  typedef ConditionsRepository::Data Data;
-  bool arg_error = false;
-  string input = "";
-  Data data;
-  for(int i=0; i<argc && argv[i]; ++i)  {      
-    if ( 0 == ::strncmp("-input",argv[i],4) )
-      input = argv[++i];
-    else
-      arg_error = true;
-  }
-  if ( arg_error || input.empty() )  {
-    /// Help printout describing the basic command line interface
-    cout <<
-      "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_ConditionsDumpRepository               \n\n"
-      "     -input <string>          Input file name.                              \n\n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
-    ::exit(EINVAL);
-  }
-  printout(INFO,"Conditions",
-           "+++ ConditionsRepository: Dumping %s",input.c_str());
-  ConditionsManager manager = ConditionsManager::from(lcdd);
-  if ( ConditionsRepository().load(input, data) )  {
-    printout(INFO,"Repository","%-8s  %-60s %-60s","Key","Name","Address");
-    for(Data::const_iterator i=data.begin(); i!=data.end(); ++i)  {
-      const ConditionsRepository::Entry& e = *i;
-      string add = e.address;
-      if ( add.length() > 80 ) add = e.address.substr(0,60) + "...";
-      printout(INFO,"Repository","%08X  %s",e.key,e.name.c_str());
-      printout(INFO,"Repository","          -> %s",e.address.c_str());
-    }
-  }
-  return 1;
-}
-DECLARE_APPLY(DD4hep_ConditionsDumpRepository,ddcond_dump_repository)
-
 /// Basic entry point to instantiate the basic DD4hep conditions/alignmants printer
 /**
  *  Factory: DD4hepConditionsPrinter, DD4hepAlignmentsPrinter 
@@ -512,6 +431,85 @@ DECLARE_LCDD_CONSTRUCTOR(DD4hep_AlignmentsPrinter,create_printer<Alignments::Ali
 DECLARE_LCDD_CONSTRUCTOR(DD4hep_AlignedVolumePrinter,create_printer<Alignments::AlignedVolumePrinter>)
 
 // ======================================================================================
+/// Plugin entry point: Create repository csv file from loaded conditions
+/**
+ *  Factory: DD4hep_ConditionsCreateRepository
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2016
+ */
+static long ddcond_create_repository(lcdd_t& lcdd, int argc, char** argv) {
+  bool arg_error = false;
+  string output = "";
+  for(int i=0; i<argc && argv[i]; ++i)  {      
+    if ( 0 == ::strncmp("-output",argv[i],4) )
+      output = argv[++i];
+    else
+      arg_error = true;
+  }
+  if ( arg_error || output.empty() )  {
+    /// Help printout describing the basic command line interface
+    cout <<
+      "Usage: -plugin <name> -arg [-arg]                                             \n"
+      "     name:   factory name     DD4hep_ConditionsCreateRepository             \n\n"
+      "     -output <string>         Output file name.                             \n\n"
+      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+  printout(INFO,"Conditions",
+           "+++ ConditionsRepository: Creating %s",output.c_str());
+  ConditionsManager manager = ConditionsManager::from(lcdd);
+  ConditionsRepository().save(manager,output);
+  return 1;
+}
+DECLARE_APPLY(DD4hep_ConditionsCreateRepository,ddcond_create_repository)
+
+// ======================================================================================
+/// Plugin entry point: Dump conditions repository csv file
+/**
+ *  Factory: DD4hep_ConditionsDumpRepository
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2016
+ */
+static long ddcond_dump_repository(lcdd_t& /* lcdd */, int argc, char** argv)   {
+  typedef ConditionsRepository::Data Data;
+  bool arg_error = false;
+  string input = "";
+  Data data;
+  for(int i=0; i<argc && argv[i]; ++i)  {      
+    if ( 0 == ::strncmp("-input",argv[i],4) )
+      input = argv[++i];
+    else
+      arg_error = true;
+  }
+  if ( arg_error || input.empty() )  {
+    /// Help printout describing the basic command line interface
+    cout <<
+      "Usage: -plugin <name> -arg [-arg]                                             \n"
+      "     name:   factory name     DD4hep_ConditionsDumpRepository               \n\n"
+      "     -input <string>          Input file name.                              \n\n"
+      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+  printout(INFO,"Conditions","+++ ConditionsRepository: Dumping %s",input.c_str());
+  if ( ConditionsRepository().load(input, data) )  {
+    printout(INFO,"Repository","%-8s  %-60s %-60s","Key","Name","Address");
+    for(Data::const_iterator i=data.begin(); i!=data.end(); ++i)  {
+      const ConditionsRepository::Entry& e = *i;
+      string add = e.address;
+      if ( add.length() > 80 ) add = e.address.substr(0,60) + "...";
+      printout(INFO,"Repository","%08X  %s",e.key,e.name.c_str());
+      printout(INFO,"Repository","          -> %s",e.address.c_str());
+    }
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hep_ConditionsDumpRepository,ddcond_dump_repository)
+
+// ======================================================================================
 /// Plugin entry point: Load conditions repository csv file into conditions manager
 /**
  *  Factory: DD4hep_ConditionsDumpRepository
@@ -523,12 +521,10 @@ TO BE DONE!!!
  *  \version 1.0
  *  \date    01/04/2016
  */
-static long ddcond_load_repository(lcdd_t& lcdd, int argc, char** argv) {
+static long ddcond_load_repository(lcdd_t& /* lcdd */, int argc, char** argv) {
   if ( argc > 0 )   {
     string input = argv[0];
-    printout(INFO,"Conditions",
-             "+++ ConditionsRepository: Loading %s",input.c_str());
-    ConditionsManager manager = ConditionsManager::from(lcdd);
+    printout(INFO,"Conditions","+++ ConditionsRepository: Loading %s",input.c_str());
     ConditionsRepository::Data data;
     ConditionsRepository().load(input, data);
     return 1;

@@ -39,7 +39,7 @@ namespace DD4hep {
     namespace Test  {
 
 
-      template <typename T> void print_bound_condition(Condition c, const char* norm)   {}
+      template <typename T> void print_bound_condition(Condition /* c */, const char* /* norm */)   {}
       
 
       template<typename T> void __print_bound_val(Condition c, const char* norm)  {
