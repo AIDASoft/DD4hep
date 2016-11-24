@@ -67,7 +67,7 @@ namespace {
           arg_error = true;
       }
     }
-          
+
     if ( arg_error || output.empty() || path.empty() )  {
       /// Help printout describing the basic command line interface
       cout <<
@@ -78,7 +78,7 @@ namespace {
         "                              the alignment file should be written.    \n"
         "     -transactions            Enable output transactions.              \n"
         "\tArguments given: " << arguments(argc,argv) << endl << flush;
-      ::_exit(EINVAL);
+      ::exit(EINVAL);
     }
 
     printout(ALWAYS,"AlignmentWriter",

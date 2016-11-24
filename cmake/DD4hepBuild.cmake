@@ -1,5 +1,4 @@
 #=================================================================================
-#  $Id: $
 #
 #  AIDA Detector description implementation for LCD
 #---------------------------------------------------------------------------------
@@ -17,12 +16,22 @@ message ( STATUS "INCLUDING DD4hepBuild.... c++11:${DD4HEP_USE_CXX11} c++14:${DD
 include ( CMakeParseArguments )
 set ( DD4hepBuild_included ON )
 ####set ( DD4HEP_DEBUG_CMAKE ON )
+####set ( CMAKE_CTEST_COMMAND ${CMAKE_CTEST_COMMAND} --test-output-size-passed 4096 )
 
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_to_parent_scope val)
   set ( ${val} ${${val}} PARENT_SCOPE )
 endmacro(dd4hep_to_parent_scope)
 
+#---------------------------------------------------------------------------------------------------
+#  MACRO: dd4hep_set_compiler_flags
+#
+#  Set compiler flags
+#
+#  \author  M.Frank
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
 macro(dd4hep_set_compiler_flags)
   if ( DD4HEP_USE_CXX14 )
     set ( CMAKE_CXX_FLAGS "-std=c++14 -ftls-model=global-dynamic")
@@ -48,8 +57,8 @@ macro(dd4hep_set_compiler_flags)
  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
  endif()
-
 endmacro(dd4hep_set_compiler_flags)
+
 #---------------------------------------------------------------------------------------------------
 #  dd4hep_debug
 #

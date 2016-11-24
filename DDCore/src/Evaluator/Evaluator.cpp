@@ -1,5 +1,4 @@
 // -*- C++ -*-
-// $Id$
 // ---------------------------------------------------------------------------
 
 #include "XML/Evaluator.h"
@@ -13,6 +12,17 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>     // for strtod()
+
+// Disable some diagnostics, which we know, but need to ignore
+#ifdef __GNUC__
+/*  This is OK:
+../DDCore/src/Evaluator/Evaluator.cpp: In function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
+../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this function [-Wmaybe-uninitialized]
+     result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
+....
+ */
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 
 //---------------------------------------------------------------------------
 struct Item {
