@@ -53,6 +53,7 @@ int AlignmentsPrinter::processElement(DetElement de)  {
 /// Default printout of an alignment entry
 void DD4hep::Alignments::printAlignment(const string& prefix, Alignment a)   {
   if ( a.isValid() )   {
+    Alignment::Object* ptr = a.ptr();
     const Alignment::Data& data = a.data();
     Conditions::Condition  cond = data.condition;
     const Delta& D = data.delta;
@@ -60,7 +61,7 @@ void DD4hep::Alignments::printAlignment(const string& prefix, Alignment a)   {
     new_prefix.assign(prefix.length(),' ');
     printout(INFO,prefix,"++ %s \tPath:%s [%p] Typ:%s",
              new_prefix.c_str(), cond.name(), a.ptr(),
-             typeName(typeid(*(a.ptr()))).c_str());
+             typeName(typeid(*ptr)).c_str());
     printout(INFO,prefix,"++ %s \tData:(%11s-%8s-%5s)",
              new_prefix.c_str(), 
              D.hasTranslation() ? "Translation" : "",

@@ -1,8 +1,3 @@
-#ifndef DD4HEP_DDG4_GEANT4ACTION_H
-#define DD4HEP_DDG4_GEANT4ACTION_H
-
-// Framework include files
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -15,6 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+#ifndef DD4HEP_DDG4_GEANT4ACTION_H
+#define DD4HEP_DDG4_GEANT4ACTION_H
+
+// Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/ComponentProperties.h"
 #include "DDG4/Geant4Context.h"
@@ -65,12 +65,14 @@ namespace DD4hep {
       TypeName() = default;
       /// Copy constructor
       TypeName(const TypeName& copy) = default;
-      /// Copy constructor
+      /// Copy constructor from pair
       TypeName(const std::pair<std::string, std::string>& c)
         : std::pair<std::string, std::string>(c) {      }
       /// Initializing constructor
       TypeName(const std::string& typ, const std::string& nam)
         : std::pair<std::string, std::string>(typ, nam) {      }
+      /// Assignment operator
+      TypeName& operator=(const TypeName& copy) = default;
       /// Split string pair according to default delimiter ('/')
       static TypeName split(const std::string& type_name);
       /// Split string pair according to custom delimiter

@@ -32,7 +32,7 @@ namespace DD4hep  {
    *  \ingroup DD4HEP_SIMULATION
    */
   class DDPython {
-  private:
+  protected:
     void* context;
     /// Standard constructor
     DDPython( ); 
