@@ -27,15 +27,15 @@ dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 
 #
 #---Testing: Load Telescope geometry and read conditions ------------------
-dd4hep_add_test_reg( test_DetAlign_Telescope_dump_geometry
+dd4hep_add_test_reg( test_AlignDet_Telescope_dump_geometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy
   -compact file:${CMAKE_CURRENT_SOURCE_DIR}/../AlignDet/compact/Telescope.xml
   -plugin DD4hepDetectorDump
-  REGEX_PASS "DetectorDump     INFO  003       /world/Telescope/module_9 #Dau\\:0 VolID\\:00000903")
+  REGEX_PASS "/world/Telescope/module_9 NumDau\\:1 VolID\\:00000903 Place")
 #
 #---Testing: Load ALEPH TPC geometry --------------------------------------
-dd4hep_add_test_reg( test_DetAlign_AlephTPC_load
+dd4hep_add_test_reg( test_AlignDet_AlephTPC_load
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
              -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC.xml
@@ -43,7 +43,7 @@ dd4hep_add_test_reg( test_DetAlign_AlephTPC_load
   REGEX_PASS "189 nodes/ 23 volume UID's in LCDD Geometry" )
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
-dd4hep_add_test_reg( test_DetAlign_Global_AlephTPC_align
+dd4hep_add_test_reg( test_AlignDet_Global_AlephTPC_align
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
              -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC.xml
@@ -53,7 +53,7 @@ dd4hep_add_test_reg( test_DetAlign_Global_AlephTPC_align
   REGEX_PASS "Successfully parsed XML: AlephTPC_alignment.xml")
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
-dd4hep_add_test_reg( test_DetAlign_Global_AlephTPC_reset
+dd4hep_add_test_reg( test_AlignDet_Global_AlephTPC_reset
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
              -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC.xml

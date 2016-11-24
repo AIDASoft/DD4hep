@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -11,7 +12,12 @@
 //  \version 1.0
 //
 //==========================================================================
-// $Id$
+//
+// DDDB is a detector description convention developed by the LHCb experiment.
+// For further information concerning the DTD, please see:
+// http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
+//
+//==========================================================================
 
 // Framework include files
 #include "DDDB/DDDBConditionsLoader.h"

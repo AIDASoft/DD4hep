@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -251,8 +250,8 @@ namespace  {
             build_2->detector = de;
             build_3->detector = de;
             for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
-              Condition cond = *ic;
-              ConditionKey       key(cond->value);
+              Condition    cond = *ic;
+              ConditionKey key(cond->value);
               build_1.add(key);
 
               build_2.add(key);

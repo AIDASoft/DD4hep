@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -37,11 +36,10 @@ using DD4hep::Geometry::LCDD;
 
 /// Plugin function
 static long dddb_dump_conditions(LCDD& lcdd, int , char** ) {
-  const void* args[] = { "-processor", "DDDB_ConditionsPrinter", "-prefix", "DDDB", 0};
-  lcdd.apply("DD4hep_ConditionsDump", 4, (char**)args);
+  const void* args[] = { "-processor", "DDDB_ConditionsPrinter", "-prefix", "DDDB", "-end-processor", 0};
+  lcdd.apply("DD4hep_ConditionsDump", 5, (char**)args);
   return 1;
 }
-
 DECLARE_APPLY(DDDB_ConditionsDump,dddb_dump_conditions)
 //==========================================================================
 
@@ -49,8 +47,8 @@ DECLARE_APPLY(DDDB_ConditionsDump,dddb_dump_conditions)
 /// Anonymous namespace for plugins
 namespace {
 
-  /** Basic entry point to print out the detector element hierarchy
-   *
+  /// Basic entry point to print out the detector element hierarchy
+  /**
    *  @author  M.Frank
    *  @version 1.0
    *  @date    01/04/2014
@@ -105,8 +103,8 @@ DECLARE_APPLY(DDDB_AssignConditionsKeys,dddb_map_condition_keys2detelements)
 /// Anonymous namespace for plugins
 namespace {
 
-  /** Basic entry point to print out the detector element hierarchy
-   *
+  /// Basic entry point to print out the detector element hierarchy
+  /**
    *  @author  M.Frank
    *  @version 1.0
    *  @date    01/04/2014

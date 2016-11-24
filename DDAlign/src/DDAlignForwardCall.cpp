@@ -23,7 +23,7 @@ using namespace DD4hep::Conditions;
 Condition
 Alignments::DDAlignForwardCall::operator()(const ConditionKey& key, const UpdateContext& context)
 {
-  const Data::Delta delta;
+  Data::Delta delta;
   DetElement det  = context.dependency.detector;
   Condition c = AlignmentUpdateCall::handle(key, context, delta);
   printout(INFO,"DDAlignForward","++ Building child alignment condition: %s Detector [%d]: %s [%p]",

@@ -107,7 +107,7 @@ AlignmentsManagerObject::~AlignmentsManagerObject()   {
 void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
                                        UserPool&     pool,
                                        DetElement    det,
-                                       TGeoHMatrix&  delta)  const
+                                       TGeoHMatrix&  delta_to_world)  const
 {
   using Conditions::Condition;
   DetElement par = det.parent();
@@ -124,13 +124,13 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       AlignmentCondition cond(e.cond);
       AlignmentData&     align = cond.data();
       if ( s_PRINT <= INFO )  {
-        printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta.Print();
+        printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
         printf("  with ALIGN(world) %s :", par.path().c_str());
         align.worldDelta.Print();
       }
-      delta.MultiplyLeft(&align.worldDelta);
+      delta_to_world.MultiplyLeft(&align.worldDelta);
       if ( s_PRINT <= INFO )  {
-        printf("  Result :"); delta.Print();
+        printf("  Result :"); delta_to_world.Print();
       }
       return;
     }
@@ -145,26 +145,26 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       AlignmentCondition cond = pool.get(key);
       AlignmentData&    align = cond.data();
       if ( s_PRINT <= INFO )  {
-        printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta.Print();
+        printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
         printf("  with ALIGN(world) %s :", par.path().c_str());
         align.worldDelta.Print();
       }
-      delta.MultiplyLeft(&align.worldDelta);
+      delta_to_world.MultiplyLeft(&align.worldDelta);
       if ( s_PRINT <= INFO ) {
-        printf("  Result :"); delta.Print();
+        printf("  Result :"); delta_to_world.Print();
       }
       return;
     }
     // There is no special alignment for this detector element.
     // Hence to nominal (relative) transformation to the parent is valid
     if ( s_PRINT <= INFO )  {
-      printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta.Print();
+      printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
       printf("  with NOMINAL(det) %s :", par.path().c_str());
       par.nominal().detectorTransformation().Print();
     }
-    delta.MultiplyLeft(&par.nominal().detectorTransformation());
+    delta_to_world.MultiplyLeft(&par.nominal().detectorTransformation());
     if ( s_PRINT <= INFO )  {
-      printf("  Result :"); delta.Print();
+      printf("  Result :"); delta_to_world.Print();
     }
     par = par.parent();
   }
@@ -254,10 +254,11 @@ void AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& po
     TGeoHMatrix        tr_delta;
     AlignmentCondition cond  = ent->cond;
     AlignmentData&     align = cond.data();
-    printout(INFO,"ComputeAlignment",
-             "============================== Compute transformation of %s ============================== ",
-             det.path().c_str());
-
+    if ( s_PRINT <= INFO )  {  
+      printout(INFO,"ComputeAlignment",
+               "============================== Compute transformation of %s ============================== ",
+               det.path().c_str());
+    }
     ent->valid          = 1;
     computeDelta(cond, tr_delta);
     align.worldDelta    = tr_delta;
@@ -265,10 +266,12 @@ void AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& po
     align.worldTrafo    = det.nominal().worldTransformation()*align.worldDelta;
     align.detectorTrafo = det.nominal().detectorTransformation()*tr_delta;
     align.trToWorld     = Geometry::_transform(&align.worldDelta);
-    printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%08X IOV:%s",
-             det.level(), det.path().c_str(), det.key(),
-             yes_no(has_cond), cond.key(), cond.iov().str().c_str());
     if ( s_PRINT <= INFO )  {  
+      printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%08X IOV:%s",
+               det.level(), det.path().c_str(), det.key(),
+               yes_no(has_cond), cond.key(), cond.iov().str().c_str());
+    }
+    if ( s_PRINT <= DEBUG )  {  
       printf("DetectorTrafo: '%s' -> '%s' ",det.path().c_str(), det.parent().path().c_str());
       det.nominal().detectorTransformation().Print();
       printf("Delta:       '%s' ",det.path().c_str()); tr_delta.Print();

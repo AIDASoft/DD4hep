@@ -465,12 +465,12 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
         char fmt[128];
         switch(value)  {
         case 0:
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s #Dau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
           printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
                    (unsigned long)de.volumeID(), (void*)node, sens);
           break;
         case 1:
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",level+1,2*level+1);
           printout(INFO,"DetectorDump", fmt, "", de.path().c_str(),
                    int(c.size()), (void*)de.volumeID());
           ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s   %%c",level+1,2*level+3);

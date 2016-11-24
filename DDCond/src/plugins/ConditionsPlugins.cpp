@@ -63,8 +63,7 @@ DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
 // ======================================================================================
 /// Plugin function: Dump of all Conditions pool with or without conditions
 /**
- *  Factory: DD4hep_ConditionsPoolDump: Dump pools only
- *  Factory: DD4hep_ConditionsDump: Dump pools and conditions
+ *  Factory: DD4hep_ConditionsPoolProcessor
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -125,9 +124,10 @@ DECLARE_APPLY(DD4hep_ConditionsPoolProcessor,ddcond_conditions_pool_process)
 static int ddcond_conditions_pool_print(lcdd_t& lcdd, bool print_conditions, int argc, char** argv)   {
   if ( argc > 0 )   {
     for(int i=0; i<argc; ++i)  {
-      if ( 0 == ::strncmp(argv[i],"-processor",3) )  {
+      if ( argv[i] && 0 == ::strncmp(argv[i],"-processor",3) )  {
         vector<char*> args;
-        for(int j=i; j<argc && argv[j]; ++j) args.push_back(argv[j]);
+        for(int j=i; j<argc && argv[j] && 0 != ::strncmp(argv[i],"-end-processor",8); ++j)
+          args.push_back(argv[j]);
         args.push_back(0);
         return ddcond_conditions_pool_processor(lcdd,true,print_conditions,int(args.size()-1),&args[0]);
       }
@@ -135,7 +135,7 @@ static int ddcond_conditions_pool_print(lcdd_t& lcdd, bool print_conditions, int
     printout(WARNING,"DDCondProcessor","++ Found arguments in plugin call, "
              "but could not make any sense of them....");
   }
-  const void* args[] = { "-processor", "DD4hepConditionsPrinter", 0};
+  const void* args[] = { "-processor", "DD4hep_ConditionsPrinter", 0};
   return ddcond_conditions_pool_processor(lcdd,true,print_conditions,2,(char**)args);
 }
 
@@ -399,7 +399,7 @@ static long ddcond_create_repository(lcdd_t& lcdd, int argc, char** argv) {
       "     name:   factory name     DD4hep_ConditionsCreateRepository             \n\n"
       "     -output <string>         Output file name.                             \n\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
-    ::_exit(EINVAL);
+    ::exit(EINVAL);
   }
   printout(INFO,"Conditions",
            "+++ ConditionsRepository: Creating %s",output.c_str());
@@ -436,7 +436,7 @@ static long ddcond_dump_repository(lcdd_t& lcdd, int argc, char** argv)   {
       "     name:   factory name     DD4hep_ConditionsDumpRepository               \n\n"
       "     -input <string>          Input file name.                              \n\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
-    ::_exit(EINVAL);
+    ::exit(EINVAL);
   }
   printout(INFO,"Conditions",
            "+++ ConditionsRepository: Dumping %s",input.c_str());
@@ -491,7 +491,7 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
       "     -pool                    Attach conditions user pool from                \n"
       "                              PluginTester instance attached to LCDD.       \n\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
-    ::_exit(EINVAL);
+    ::exit(EINVAL);
   }
   DetElement world = lcdd.world();
   printout(INFO,"Printer","World=%s [%p]",world.path().c_str(),world.ptr());

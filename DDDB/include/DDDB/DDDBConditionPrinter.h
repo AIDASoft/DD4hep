@@ -21,6 +21,7 @@
 
 // Framework includes
 #include "DD4hep/ConditionsData.h"
+#include "DD4hep/ConditionsProcessor.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -38,7 +39,7 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class ConditionPrinter : public Conditions::Condition::Processor {
+    class ConditionPrinter : public Conditions::ConditionsProcessor {
     public:
 
       /// DDDB Conditions data dumper helper to output parameter maps.
@@ -73,16 +74,23 @@ namespace DD4hep {
       int    m_flag;
 
     public:
-      typedef Conditions::Condition Cond;
+      typedef Conditions::Condition Condition;
+      typedef Conditions::Container Container;
 
       /// Initializing constructor
       ConditionPrinter(const std::string& prefix="", 
-                       int flag=Cond::NO_NAME|Cond::WITH_IOV|Cond::WITH_ADDRESS,
+                       int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS,
                        ParamPrinter* prt=0);
       /// Set prefix for prinouts
       void setPrefix(const std::string& value)  {  m_prefix = value; }
       /// Callback to output conditions information
-      virtual int operator()(Cond cond);
+      virtual int operator()(Condition condition);
+      /// Container callback for object processing
+      virtual int operator()(Container container)
+      {  return this->ConditionsProcessor::operator()(container);    }
+      /// Callback to output conditions information of an entire DetElement
+      virtual int processElement(DetElement de)
+      {  return this->ConditionsProcessor::processElement(de);       }
     };
 
   } /* End namespace DDDB    */

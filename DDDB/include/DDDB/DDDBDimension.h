@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -17,6 +16,7 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
+
 #ifndef DD4HEP_DDDB_DIMENSION_H
 #define DD4HEP_DDDB_DIMENSION_H
 

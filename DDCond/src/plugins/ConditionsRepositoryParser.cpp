@@ -31,11 +31,10 @@
 // C/C++ include files
 #include <stdexcept>
 
-/*
- *   DD4hep namespace declaration
- */
+///   DD4hep namespace declaration
 namespace DD4hep  {
 
+  /// Ananymous local stuff only used in this module
   namespace {
     /// List of XML tags used by this parser
     class iov;
@@ -79,9 +78,18 @@ using Geometry::Translation3D;
 using Geometry::Position;
 using Geometry::DetElement;
 
-
+/// Ananymous local stuff only used in this module
 namespace {
+
+  /// Module print level
   static PrintLevel s_parseLevel = DEBUG;
+
+  /// Local helper class to interprete XML conditions
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/11/2016
+   */
   struct ConversionArg {
     DetElement         detector;
     ConditionsPool*    pool;
@@ -90,6 +98,13 @@ namespace {
     {
     }
   };
+
+  /// Local helper class to interprete XML conditions
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/11/2016
+   */
   struct CurrentDetector {
     DetElement detector;
     ConversionArg* arg;
@@ -105,6 +120,12 @@ namespace {
       }
     }
   };
+  /// Local helper class to interprete XML conditions
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/11/2016
+   */
   struct CurrentPool {
     ConditionsPool* pool;
     ConversionArg* arg;
@@ -119,6 +140,12 @@ namespace {
     }
   };
 
+  /// Local helper function to interprete XML conditions
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/11/2016
+   */
   Condition create_condition(DetElement det, xml_h e)  {
     xml_dim_t elt(e);
     string tag = elt.tag();
@@ -141,6 +168,13 @@ namespace {
     ConditionsKeyAssign(det).addKey(cond.name());//.addKey(nam,cond.name());
     return cond;
   }
+
+  /// Local helper function to interprete XML conditions
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/11/2016
+   */
   template <typename BINDER> Condition bind_condition(const BINDER& bnd,
                                                       DetElement det,
                                                       xml_h e,
@@ -156,10 +190,11 @@ namespace {
   }
 }
 
+///   DD4hep namespace declaration
 namespace DD4hep {
 
-  /** Convert iov_type repository objects
-   *
+  /// Convert iov_type repository objects
+  /**
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
@@ -178,7 +213,6 @@ namespace DD4hep {
 
   /// Convert iov repository objects
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
@@ -197,7 +231,6 @@ namespace DD4hep {
 
   /// Convert manager repository objects
   /**
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
@@ -222,7 +255,6 @@ namespace DD4hep {
 
   /// Convert rotation objects
   /**
-   *
    *    <rotation x="0.5" y="0"  z="0"/>
    *
    *  \author  M.Frank
@@ -240,7 +272,6 @@ namespace DD4hep {
 
   /// Convert position objects
   /**
-   *
    *    <position x="0.5" y="0"  z="0"/>
    *
    *  \author  M.Frank
@@ -257,7 +288,6 @@ namespace DD4hep {
 
   /// Convert pivot objects
   /**
-   *
    *    <pivot x="0.5" y="0"  z="0"/>
    *
    *  \author  M.Frank
@@ -340,8 +370,8 @@ namespace DD4hep {
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
-  /** Convert alignment delta objects
-   *
+  /// Convert alignment delta objects
+  /**
    *     A generic alignment transformation is defined by
    *     - a translation in 3D space identified in XML as a
    *         <position/> element
@@ -395,8 +425,8 @@ namespace DD4hep {
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
-  /** Convert detelement objects
-   *
+  /// Convert detelement objects
+  /**
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
@@ -421,8 +451,8 @@ namespace DD4hep {
     xml_coll_t(e,_UC(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
   }
 
-  /** Convert repository objects
-   *
+  /// Convert repository objects
+  /**
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
@@ -433,8 +463,8 @@ namespace DD4hep {
     xml_coll_t(element,_UC(iov)).for_each(Converter<iov>(lcdd,param,optional));
   }
 
-  /** Convert any top level tag in the XML file
-   *
+  /// Convert any top level tag in the XML file
+  /**
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
@@ -456,44 +486,43 @@ namespace DD4hep {
   }
 
   /// Convert alignment conditions entries
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
   template <> void Converter<conditions>::operator()(xml_h e) const {
     xml_coll_t(e,_U(star)).for_each(Converter<arbitrary>(lcdd,param,optional));
   }
 }
 
-/** Basic entry point to set print level of this module.
+/// Basic entry point to set print level of this module.
+/**
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/04/2014
  */
-static long setup_repository_loglevel(lcdd_t& lcdd, int argc, char** argv)  {
+static long setup_repository_loglevel(lcdd_t& /* lcdd */, int argc, char** argv)  {
   if ( argc == 1 )  {
     s_parseLevel = printLevel(argv[1]);
     return 1;
   }
+  except("ConditionsXMLRepositoryPrintLevel","++ Invalid plugin arguments: %s",
+         arguments(argc,argv).c_str());
   return 0;
 }
 DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryPrintLevel,setup_repository_loglevel)
 
 #include "DD4hep/DD4hepUI.h"
-/** Basic entry point to read alignment conditions files
- *
 
-geoPluginRun -compact file:checkout/examples/AlignDet/compact/Telescope.xml  -volmgr -destroy \
-             -plugin DD4hepDetectorDump \
-             -plugin DD4hepVolumeDump volids \
-             -plugin DD4hepVolumeMgrTest all \
-             -plugin DD4hep_ConditionsXMLRepositoryParser file:checkout/examples/Conditions/data/repository.xml \
-             -plugin DD4hep_ConditionsPoolDump \
-             -plugin DD4hep_DetElementConditionsDump
-
+/// Basic entry point to read alignment conditions files
+/**
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/04/2014
  */
 static long setup_repository_Conditions(lcdd_t& lcdd, int argc, char** argv)  {
   if ( argc == 1 )  {
-    //xml_h e = xml_h::Elt_t(argv[0]);
     DD4hepUI ui(lcdd);
     string fname = argv[0];
     ConditionsManager mgr = ui.conditionsMgr();

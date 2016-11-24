@@ -60,7 +60,7 @@ namespace    {
       m_generator->setSeed((long)seed);
     }
     /// Single shot random number creation
-    virtual Double_t Rndm(Int_t)  {
+    virtual Double_t Rndm(Int_t=0)  {
       return m_engine->flat();
     }
     /// Return an array of n random numbers uniformly distributed in ]0,1].
