@@ -12,7 +12,7 @@ using namespace DD4hep ;
 using namespace DDSegmentation ;
 
 // this should be the first line in your test
-DDTest test = DDTest( "bitfield64" ) ; 
+static DDTest test( "bitfield64" ) ; 
 
 //=============================================================================
 

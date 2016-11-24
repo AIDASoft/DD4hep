@@ -110,8 +110,8 @@ namespace {
       // The range may be returned unordered. Hence, 
       // we have to try to match at most conditions.size() times until we really know
       for(size_t j = 0; j < conditions.size(); ++j )  {
-        for(RC::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)  {
-          const IOV::Key& k = (*i)->iov->key();
+        for(const auto& cond : conditions )   {
+          const IOV::Key& k = cond->iov->key();
           if ( k.first   <= test.first+1 && k.second >= test.first  ) test.first = k.second;
           if ( k.first+1 <= test.second  && k.second >= test.second ) test.second = k.first;
           //printout(INFO,"Test","IOV: %ld,%ld --> %ld,%ld",k.first,k.second, test.first, test.second);
@@ -125,10 +125,8 @@ namespace {
 
   template <typename PMF>
   void __callListeners(const ConditionsManagerObject::Listeners& listeners, PMF pmf, Condition& cond)  {
-    for(ConditionsManagerObject::Listeners::const_iterator i=listeners.begin(); i!=listeners.end(); ++i)  {
-      const ConditionsManagerObject::Listener& listener = *i;
+    for(const auto& listener : listeners )
       (listener.first->*pmf)(cond, listener.second);
-    }
   }
 }
 
@@ -248,8 +246,8 @@ const IOVType* ConditionsManagerObject::iovType (size_t iov_type) const  {
 
 /// Access IOV by its name
 const IOVType* ConditionsManagerObject::iovType (const string& iov_name) const   {
-  for( IOVTypes::const_iterator i=m_iovTypes.begin(); i != m_iovTypes.end(); ++i)
-    if ( (*i).name == iov_name ) return &(*i);
+  for( const auto& i : m_iovTypes ) 
+    if ( i.name == iov_name ) return &i;
   except("ConditionsManager","Request to access an unregistered IOV type: %s.", iov_name.c_str());
   return 0;
 }
@@ -397,55 +395,16 @@ void ConditionsManagerObject::pushUpdates()   {
   // Lock global pool so that no other updates happen in the meanwhile
   // which could kill the pool's containers
   dd4hep_lock_t lock(m_poolLock);
-  for(Updates::const_iterator iov_iter=entries.begin(); iov_iter!=entries.end(); ++iov_iter)  {
-    typedef UpdatePool::ConditionEntries _E;
-    const _E& ents = (*iov_iter).second;
+  for(const auto& iov_iter : entries )  {
+    const UpdatePool::ConditionEntries& ents = iov_iter.second;
     if ( !ents.empty() )  {
-      for(_E::const_iterator j=ents.begin(); j != ents.end(); ++j)  {
-        Condition c = *j;
+      for(Condition c : ents )  {
         c->setFlag(Condition::ACTIVE);
         c->pool->insert(c);
       }
     }
   }
 }
-#if 0
-/// Prepare all updates to the clients with the defined IOV
-long ConditionsManagerObject::prepare(const Condition::iov_type& required_validity,
-				      dd4hep_ptr<UserPool>& up)
-{
-  const IOVType* typ = check_iov_type<Discrete>(this, &required_validity);
-  if ( typ )  {
-    RC valid, expired;
-    ConditionsIOVPool* pool = m_rawPool[typ->type];
-    if ( 0 == up.get() || up->pool_type != ConditionsPool::USER_POOL_TYPE )  {
-      const void* argv_pool[] = {this, 0};
-      UserPool* cp = createPlugin<UserPool>(m_userType,m_lcdd,1,argv_pool);
-      up.adopt(cp);
-    }
-    UserPool *user_pool = up.get();
-    /// First push any pending updates and register them to pending pools...
-    Condition::iov_type pool_iov(typ);
-    pool_iov.reset().invert();
-
-    pushUpdates();
-    pool->select(required_validity, valid, expired, pool_iov);
-    user_pool->clear();
-    user_pool->insert(valid);
-    long num_expired = (long)expired.size();
-    if ( num_expired > 0 )  {
-      m_loader->update(required_validity, expired, pool_iov);
-      user_pool->insert(expired);
-    }
-    user_pool->setValidity(pool_iov);
-    user_pool->setReqValidity(required_validity);
-    return num_expired;
-  }
-  except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
-         Errors::invalidArg().c_str());
-  return -1;
-}
-#endif
 
 /// Helper to check iov and user pool and create user pool if not present
 void ConditionsManagerObject::__get_checked_pool(const IOV& req_iov,

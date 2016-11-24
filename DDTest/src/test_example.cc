@@ -8,7 +8,7 @@ using namespace std ;
 using namespace DD4hep ;
 
 // this should be the first line in your test
-DDTest test = DDTest( "example" ) ; 
+static DDTest test( "example" ) ; 
 
 //=============================================================================
 

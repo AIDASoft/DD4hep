@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -40,7 +39,7 @@ using namespace DDSurfaces ;
 using namespace lcio;
 
 
-DDTest test = DDTest( "surfaces" ) ; 
+static DDTest test( "surfaces" ) ; 
 
 //=============================================================================
 

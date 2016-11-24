@@ -15,7 +15,7 @@ using namespace Geometry;
 using namespace dd4hep ;
 
 // this should be the first line in your test
-DDTest test = DDTest( "units" ) ; 
+static DDTest test( "units" ) ; 
 
 //=============================================================================
 //=============================================================================

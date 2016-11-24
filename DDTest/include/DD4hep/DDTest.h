@@ -17,10 +17,16 @@ namespace DD4hep{
    */
   class DDTest{
 
-    DDTest() :  _out(std::cout) {}
-
   public:
+    /// Default constructor
+    DDTest() = delete;
 
+    /// Copy constructor
+    DDTest(const DDTest& copy) = delete;
+
+    /// Assignment operator
+    DDTest& operator=(const DDTest& copy) = delete;
+    
 
     /** Only constructor
      */
@@ -69,17 +75,17 @@ namespace DD4hep{
     
       if ( ! (v1 == v2)  ) {
       
-	std::stringstream sstr ;
-	sstr << "  " << name<< " : [" << v1 << "] != [" << v2 <<"]" ;
+        std::stringstream sstr ;
+        sstr << "  " << name<< " : [" << v1 << "] != [" << v2 <<"]" ;
 
-	error( sstr.str() ) ;
+        error( sstr.str() ) ;
 
       } else {
 
-	std::stringstream sstr ;
-	sstr << "  " << name<< " : [" << v1 << "] == [" << v2 <<"]" ;
+        std::stringstream sstr ;
+        sstr << "  " << name<< " : [" << v1 << "] == [" << v2 <<"]" ;
 
-	pass( sstr.str() ) ;
+        pass( sstr.str() ) ;
       }
 
       return ;
@@ -92,17 +98,17 @@ namespace DD4hep{
     
       if ( ! (c)  ) {
       
-	std::stringstream sstr ;
-	sstr << "  " << name<< " : [" << c << "] " ;
+        std::stringstream sstr ;
+        sstr << "  " << name<< " : [" << c << "] " ;
       
-	error( sstr.str() ) ;
+        error( sstr.str() ) ;
       
       } else {      
 
-	std::stringstream sstr ;
-	sstr << "  " << name<< " : [" << c  << "] " ;
+        std::stringstream sstr ;
+        sstr << "  " << name<< " : [" << c  << "] " ;
 
-	pass( sstr.str() ) ;
+        pass( sstr.str() ) ;
       }
       return ;
     }
@@ -144,8 +150,6 @@ namespace DD4hep{
       //std::cerr << errmsg.str();
     }
 
-
-
     /** Fatal error ...*/
     void fatal_error( const std::string& msg ){
       error( msg );
@@ -153,23 +157,19 @@ namespace DD4hep{
       exit(1);
     }
 
-
-
     /** Return the status from the last test - either PASSED or FAILED */
     const char* last_test_status(){
       return ( _last_test_status ? "PASSED" : "FAILED" ) ;
     }
 
-
-
   private:
 
     std::string _testname ;
-    std::ostream& _out ;
+    std::ostream& _out = std::cout;
 
-    unsigned int _failed ;      // number of failed tests
-    unsigned int _passed ;      // number of passed tests
-    bool _last_test_status ;    // true if last test succeeded, false otherwise
+    unsigned int _failed = 0;          // number of failed tests
+    unsigned int _passed = 0;          // number of passed tests
+    bool _last_test_status = false;    // true if last test succeeded, false otherwise
   };
 
 
