@@ -110,6 +110,23 @@ namespace DD4hep {
       printout(INFO,"OpaqueDataBinder","++ Unknown conditions parameter type:%s val:%s",typ.c_str(),val.c_str());
     return __bind__(b,object,val,_string());
   }
+  template bool OpaqueDataBinder::bind<ValueBinder,OpaqueDataBlock>(        const ValueBinder& b, OpaqueDataBlock& object,
+                                                                            const string& typ, const string& val);
+  template bool OpaqueDataBinder::bind<VectorBinder,OpaqueDataBlock>(       const VectorBinder& b, OpaqueDataBlock& object,
+                                                                            const string& typ, const string& val);
+  template bool OpaqueDataBinder::bind<ListBinder,OpaqueDataBlock>(         const ListBinder& b, OpaqueDataBlock& object,
+                                                                            const string& typ, const string& val);
+  template bool OpaqueDataBinder::bind<SetBinder,OpaqueDataBlock>(          const SetBinder& b, OpaqueDataBlock& object,
+                                                                            const string& typ, const string& val);
+
+  template bool OpaqueDataBinder::bind<ValueBinder,Conditions::Condition>(  const ValueBinder& b, Conditions::Condition& object,
+                                                                            const string& typ, const string& val);
+  template bool OpaqueDataBinder::bind<VectorBinder,Conditions::Condition>( const VectorBinder& b, Conditions::Condition& object,
+                                                                            const string& typ, const string& val);
+  template bool OpaqueDataBinder::bind<ListBinder,Conditions::Condition>(   const ListBinder& b, Conditions::Condition& object,
+                                                                            const string& typ, const string& val);
+  template bool OpaqueDataBinder::bind<SetBinder,Conditions::Condition>(    const SetBinder& b, Conditions::Condition& object,
+                                                                            const string& typ, const string& val);
   
   /// Binding function for sequences (unmapped STL containers)
   template <typename T> 
@@ -359,17 +376,19 @@ namespace DD4hep {
     return true;
   }
 
-  /// Instantiate the data binder for OpaqueData
   template bool OpaqueDataBinder::bind_sequence<OpaqueDataBlock>(OpaqueDataBlock& object,const string& typ,const string& val);
-  template bool OpaqueDataBinder::bind_map<MapBinder,OpaqueDataBlock>(  const MapBinder& b, OpaqueDataBlock& object,
-                                                                        const string& typ,const string& val);
-  template bool OpaqueDataBinder::insert_map<MapBinder,OpaqueDataBlock>(const MapBinder& b, OpaqueDataBlock& object,
-                                                                        const string& key_type, const string& key,
-                                                                        const string& val_type, const string& val);
-  template bool OpaqueDataBinder::insert_map<MapBinder,OpaqueDataBlock>(const MapBinder& b, OpaqueDataBlock& object,
-                                                                        const string& key_type, const string& val_type,
-                                                                        const string& pair_data);
+  template bool OpaqueDataBinder::bind_map<MapBinder,OpaqueDataBlock>(    const MapBinder& b, OpaqueDataBlock& object,
+                                                                          const string& typ,const string& val);
+  template bool OpaqueDataBinder::insert_map<MapBinder,OpaqueDataBlock>(  const MapBinder& b, OpaqueDataBlock& object,
+                                                                          const string& key_type, const string& key,
+                                                                          const string& val_type, const string& val);
+  template bool OpaqueDataBinder::insert_map<MapBinder,OpaqueDataBlock>(  const MapBinder& b, OpaqueDataBlock& object,
+                                                                          const string& key_type, const string& val_type,
+                                                                          const string& pair_data);
 
+  /// Instantiation for Conditions:
+  template bool OpaqueDataBinder::bind_sequence<Conditions::Condition>(   Conditions::Condition& object,
+                                                                          const string& typ,const string& val);
   /// Conditions binding function for STL maps
   template <> bool OpaqueDataBinder::bind_map(const MapBinder& b, Conditions::Condition& object,
                                               const string& key_type, const string& val_type)
@@ -384,10 +403,5 @@ namespace DD4hep {
   /// Conditions: Filling function for STL maps.
   template <> bool OpaqueDataBinder::insert_map(const MapBinder& b, Conditions::Condition& object,
                                                 const string& key_type, const string& val_type, const string& pair_data)
-  {    return insert_map(b, object->data, key_type, val_type, pair_data);   }
-
-  /// Instantiation for Conditions:
-  template bool
-  OpaqueDataBinder::bind_sequence<Conditions::Condition>(Conditions::Condition& object,const string& typ,const string& val);
-  
+  {    return insert_map(b, object->data, key_type, val_type, pair_data);   }  
 }

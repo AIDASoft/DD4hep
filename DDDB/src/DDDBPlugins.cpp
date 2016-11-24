@@ -55,7 +55,6 @@ namespace {
    */
   long dddb_map_condition_keys2detelements(LCDD& lcdd, int /* argc */, char** /* argv */) {
 
-    typedef DDDB::Named::StringMap StringMap;
     using DDDB::Catalog;
     using Geometry::DetElement;
 
@@ -80,16 +79,16 @@ namespace {
             conditions->addKey(cat->condition);
             conditions->addKey("Alignment", cat->condition);
           }
-          for(StringMap::const_iterator i=cat->conditioninfo.begin(); i!=cat->conditioninfo.end(); ++i)  {
-            const string& cond_name = (*i).second;
+          for(const auto& i : cat->conditioninfo )  {
+            const string& cond_name = i.second;
             conditions->addKey(cond_name);
-            conditions->addKey((*i).first, cond_name);
+            conditions->addKey(i.first, cond_name);
           }
         }
         catch(...)   {
         }
-        for (DetElement::Children::const_iterator i=c.begin(); i != c.end(); ++i)
-          (*this)((*i).second);
+        for (const auto& i : c )
+          (*this)(i.second);
         return 1;
       }
     };
@@ -134,10 +133,8 @@ namespace {
      *  @date    01/04/2014
      */
     struct Actor {
-      /// Defintion of the container with all known conditions
-      typedef vector<pair<int,Condition> > _RC;
       /// Container with all known conditions
-      _RC             m_allConditions;
+      vector<pair<int,Condition> >  m_allConditions;
       Counters        m_counters;
       bool            m_sensitivesOnly;
       bool            m_dumpConditions;
@@ -160,16 +157,16 @@ namespace {
         }
 #if 0
         printout(INFO,m_name,"**************** DDDB Detector dump: Conditions Usage ***************************");
-        for(_RC::const_iterator ic=m_allConditions.begin(); ic!=m_allConditions.end(); ++ic)   {
-          Condition cond = (*ic).second;
+        for(const auto& ic : m_allConditions )  {
+          Condition cond = ic.second;
           const AbstractMap& data = cond.get<AbstractMap>();
           const DDDB::Document* doc = data.option<DDDB::Document>();
           if ( doc ) 
             printout(INFO,m_name,"++ Usage: %d Cond: %s/%s  -> %s [%08X]",
-                     (*ic).first, doc->name.c_str(), cond->name.c_str(), cond->value.c_str(), cond->hash);
+                     ic.first, doc->name.c_str(), cond->name.c_str(), cond->value.c_str(), cond->hash);
           else
             printout(INFO,m_name,"++ Usage: %d Cond: ---/%s  -> %s [%08X]",
-                     (*ic).first, cond->name.c_str(), cond->value.c_str(), cond->hash);
+                     ic.first, cond->name.c_str(), cond->value.c_str(), cond->hash);
         }
 #endif
         printout(INFO,m_name,"*********************************************************************************");
@@ -185,8 +182,7 @@ namespace {
           Conditions::Operators::collectAllConditions(m_lcdd, rc);
           m_iov.reset().invert();
           m_iov.iovType = 0;
-          for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)  {
-            Condition cond = *ic;
+          for ( Condition cond : rc )   {
             m_allConditions.push_back(make_pair(0,cond));
             if ( !m_iov.iovType ) m_iov = cond.iov();
             else  m_iov.iov_intersection(cond.iov());
@@ -195,8 +191,7 @@ namespace {
           if ( m_dumpConditions )   {
             DDDB::ConditionPrinter prt;
             printout(INFO,m_name,"**************** DDDB Detector dump: ALL Conditions *****************************");
-            for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
-              prt(*ic);
+            for(Condition cond : rc ) prt(cond);
             printout(INFO,m_name,"*********************************************************************************");
           }
         }
@@ -207,18 +202,18 @@ namespace {
       RangeConditions findCond(const string& match)   {
         RangeConditions result;
         if ( !match.empty() )  {
-          for(_RC::iterator ic=m_allConditions.begin(); ic!=m_allConditions.end(); ++ic)  {
-            Condition cond = (*ic).second;
+          for ( auto& ic : m_allConditions )  {
+            Condition cond = ic.second;
             size_t idx = cond->value.find(match);
             if ( idx == 0 )  {
               if (cond->value.length() == match.length() )   {
-                (*ic).first++;
+                ic.first++;
                 result.push_back(cond);
               }
               else if ( cond->value[match.length()] == '/' )  {
                 size_t idq = cond->value.find('/',match.length()+1);
                 if ( idq == string::npos )  {
-                  (*ic).first++;
+                  ic.first++;
                   result.push_back(cond);
                 }
               }
@@ -234,7 +229,6 @@ namespace {
                            bool with_keys=false,
                            bool with_values=false)
       {
-        typedef Conditions::Container::Object::Keys _K;
         char fmt[128];
         const DetElement::Children& c = de.children();
         ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p Place:%%p",level+1,2*level+1);
@@ -247,14 +241,13 @@ namespace {
         if ( (with_keys || with_values) && de.hasConditions() )  {
           Conditions::DetConditions dc(de);
           Conditions::Container cont = dc.conditions();
-          const _K& keys = cont->keys;
           ::sprintf(fmt,"%03d %%-%ds Key: %%08X -> %%08X -> %%s",level+1,2*level+3);
-          for(_K::const_iterator i=keys.begin(); i!=keys.end(); ++i)  {
+          for(const auto& i : cont->keys )  {
             if ( with_keys )   {
-              printout(INFO,m_name,fmt,"",(*i).first,(*i).second.first, (*i).second.second.c_str());
+              printout(INFO,m_name,fmt,"",i.first,i.second.first, i.second.second.c_str());
             }
             if ( with_values )   {
-              Condition::key_type key = (*i).second.first;
+              Condition::key_type key = i.second.first;
               Condition cond = dc.get(key, m_iov);
               prt(cond);
             }
@@ -266,18 +259,17 @@ namespace {
         if ( cat && !cat->conditioninfo.empty() )   {
           char fmt[128];
           ::sprintf(fmt,"%03d %%-%ds Cond:%%-20s -> %%s",level+1,2*level+3);
-          for(DDDB::Named::StringMap::const_iterator i=cat->conditioninfo.begin(); i!=cat->conditioninfo.end(); ++i)  {
-            const string& cond_name = (*i).second;
+          for(const auto& i : cat->conditioninfo )  {
+            const string& cond_name = i.second;
             ++m_counters.numConditions;
             if ( with_elements )  {
               RangeConditions rc = findCond(cond_name);
-              printout(INFO,m_name,fmt,"",(*i).first.c_str(), 
+              printout(INFO,m_name,fmt,"",i.first.c_str(), 
                        rc.empty() ? (cond_name+"  !!!UNRESOLVED!!!").c_str() : cond_name.c_str());
-              for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
-                prt(*ic);
+              for(Condition cond : rc ) prt(cond);
               continue;
             }
-            printout(INFO,m_name,fmt,"",(*i).first.c_str(),cond_name.c_str());
+            printout(INFO,m_name,fmt,"",i.first.c_str(),cond_name.c_str());
           }
         }
       }
@@ -291,8 +283,8 @@ namespace {
             RangeConditions rc = findCond(cat->condition);
             printout(INFO,m_name,fmt,"","Alignment:", 
                      rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
-            for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
-              prt(*ic);
+            for(const auto& i : rc)
+              prt(i);
             return;
           }
           printout(INFO,m_name,fmt,"","Alignment:",cat->condition.c_str());
@@ -349,8 +341,8 @@ namespace {
           printout(INFO,m_name, fmt, "", de.path().c_str(), "NO CATALOG availible!", "");
           ++m_counters.numNoCatalogs;
         }
-        for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-          dump((*i).second,level+1);
+        for (const auto& i : c)
+          dump(i.second,level+1);
         return 1;
       }
     };

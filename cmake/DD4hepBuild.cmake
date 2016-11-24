@@ -56,6 +56,16 @@ macro(dd4hep_set_compiler_flags)
 
  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
+#   All this simply does not work!
+#   if ( APPLE )
+#     set(CMAKE_SKIP_BUILD_RPATH            FALSE)
+#     set(CMAKE_BUILD_WITH_INSTALL_RPATH    FALSE)
+#     set(CMAKE_INSTALL_RPATH               "${CMAKE_BINARY_DIR}/lib")
+#     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath ${CMAKE_BINARY_DIR}/lib")
+#     message( STATUS "Apple settings: CMAKE_INSTALL_RPATH:       ${CMAKE_INSTALL_RPATH}" )
+#     message( STATUS "Apple settings: CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}" )
+#   endif()
  endif()
 endmacro(dd4hep_set_compiler_flags)
 

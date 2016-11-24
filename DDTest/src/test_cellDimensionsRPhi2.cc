@@ -10,7 +10,7 @@
 #include <exception>
 #include <cmath>
 
-DD4hep::DDTest test = DD4hep::DDTest( "CellDimensions" ) ;
+static DD4hep::DDTest test( "CellDimensions" ) ;
 
 using DD4hep::DDSegmentation::Segmentation;
 using DD4hep::DDSegmentation::CellID;

@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,11 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
-#include "DD4hep/Errors.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-
+#include "DD4hep/Conditions.h"
 #include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsAccess.h"
 
@@ -39,8 +34,8 @@ const vector<const IOVType*> ConditionsAccess::iovTypesUsed() const  {
   Object* obj = access();
   vector<const IOVType*> result;
   const Object::IOVTypes& types = obj->iovTypes();
-  for(Object::IOVTypes::const_iterator i=types.begin(); i!=types.end(); ++i)
-    if ( int((*i).type) != IOVType::UNKNOWN_IOV ) result.push_back(&(*i));
+  for(const auto& i : types )
+    if ( int(i.type) != IOVType::UNKNOWN_IOV ) result.push_back(&i);
   return result;
 }
 

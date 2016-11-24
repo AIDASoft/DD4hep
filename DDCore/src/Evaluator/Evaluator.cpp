@@ -14,7 +14,7 @@
 #include <stdlib.h>     // for strtod()
 
 // Disable some diagnostics, which we know, but need to ignore
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE__)
 /*  This is OK:
 ../DDCore/src/Evaluator/Evaluator.cpp: In function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
 ../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this function [-Wmaybe-uninitialized]

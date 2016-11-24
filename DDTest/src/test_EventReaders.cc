@@ -16,7 +16,7 @@
 typedef DD4hep::Simulation::Geant4Vertex   Vertex;
 typedef DD4hep::Simulation::Geant4Particle Particle;
 
-DD4hep::DDTest test = DD4hep::DDTest( "EventReader" ) ;
+static DD4hep::DDTest test( "EventReader" ) ;
 
 class TestTuple {
 public:

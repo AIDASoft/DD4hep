@@ -8,7 +8,7 @@
 #include <exception>
 
 
-DD4hep::DDTest test = DD4hep::DDTest( "PolarGridRPhi2" ) ;
+static DD4hep::DDTest test( "PolarGridRPhi2" ) ;
 
 class TestTuple {
 public:

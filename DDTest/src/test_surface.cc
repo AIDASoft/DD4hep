@@ -21,7 +21,7 @@ using namespace DDSurfaces ;
 
 
 // this should be the first line in your test
-DDTest test = DDTest( "surface" ) ; 
+static DDTest test( "surface" ) ; 
 //=============================================================================
 
 int main(int argc, char** argv ){
