@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
-#define DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
+#ifndef DD4HEP_DDCORE_ALIGNEDVOLUMEPRINTER_H
+#define DD4HEP_DDCORE_ALIGNEDVOLUMEPRINTER_H
 
 // Framework includes
 #include "DD4hep/AlignmentsProcessor.h"
@@ -33,7 +33,7 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class AlignmentsPrinter : public AlignmentsProcessor  {
+    class AlignedVolumePrinter : public AlignmentsProcessor  {
     public:
       /// Printer name. Want to know who is printing what
       std::string   name;
@@ -45,9 +45,9 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      AlignmentsPrinter(const std::string& prefix="",int flags=0);
+      AlignedVolumePrinter(const std::string& prefix="",int flags=0);
       /// Default destructor
-      virtual ~AlignmentsPrinter() = default;
+      virtual ~AlignedVolumePrinter() = default;
       /// Set name for printouts
       void setName(const std::string& value)    {  name = value;   }
       /// Set prefix for printouts
@@ -59,19 +59,6 @@ namespace DD4hep {
       /// Callback to output alignments information of an entire DetElement
       virtual int processElement(DetElement de);
     };
-
-    /// Default printout of an alignment entry
-    void printAlignment(const std::string& prefix, Alignment alignment);
-
-    /// Default printout of a container entry
-    void printContainer(const std::string& prefix, Container container, UserPool* pool);
-
-    /// Default printout of a detector element entry
-    void printElement(const std::string& prefix, DetElement element, UserPool* pool);
-
-    /// PrintElement placement with/without alignment applied
-    void printElementPlacement(const std::string& prefix, DetElement detector, UserPool* pool);
-
-  }    /* End namespace Alignments           */
-}      /* End namespace DD4hep               */
-#endif /* DD4HEP_DDCORE_ALIGNMENTSPRINTER_H  */
+  }    /* End namespace Alignments              */
+}      /* End namespace DD4hep                  */
+#endif /* DD4HEP_DDCORE_ALIGNEDVOLUMEPRINTER_H  */

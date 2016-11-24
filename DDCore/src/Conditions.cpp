@@ -103,11 +103,6 @@ const DD4hep::IOV& Condition::iov() const   {
   return *(access()->iovData());
 }
 
-/// Access the name of the condition
-const string& Condition::name()  const   {
-  return access()->name;
-}
-
 /// Access the type field of the condition
 const string& Condition::type()  const   {
   return access()->type;
@@ -164,7 +159,7 @@ Condition& Condition::rebind()    {
 #endif
   o->data.fromString(o->value);
   printout(INFO,"Condition","+++ condition:%s rebinding value:%s",
-           name().c_str(), o->value.c_str());
+           name(), o->value.c_str());
   return *this;
 }
 

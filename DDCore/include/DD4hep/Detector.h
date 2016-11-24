@@ -182,9 +182,9 @@ namespace DD4hep {
         /// Default constructor
         Processor();
         /// Default destructor
-        virtual ~Processor() = default;
+        virtual ~Processor();
         /// Container callback for object processing
-        virtual int operator()(DetElement detector) = 0;
+        virtual int processElement(DetElement detector) = 0;
       };
 
       /// Internal object type

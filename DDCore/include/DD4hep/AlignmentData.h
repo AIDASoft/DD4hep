@@ -135,6 +135,8 @@ namespace DD4hep {
       Delta                delta;
       /// Intermediate buffer to store the transformation to the world coordination system
       mutable TGeoHMatrix  worldTrafo;
+      /// Delta transformation to the world coordination system
+      mutable TGeoHMatrix  worldDelta;
       /// Intermediate buffer to store the transformation to the parent detector element
       mutable TGeoHMatrix  detectorTrafo;
       /// The list of TGeoNodes (physical placements)

@@ -32,6 +32,10 @@ namespace {
 DetElement::Processor::Processor()   {
 }
 
+/// Default destructor
+DetElement::Processor::~Processor()   {
+}
+
 /// Clone constructor
 DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
   : RefObject(det_data)

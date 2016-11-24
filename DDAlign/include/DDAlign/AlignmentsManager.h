@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -120,7 +119,7 @@ namespace DD4hep {
       /// Compute the transformation from the closest detector element of the alignment to the world system
       void to_world(AlignContext& new_alignments, UserPool& pool, DetElement det, TGeoHMatrix& mat)  const;
       /// Compute all alignment conditions of the lower levels
-      void compute(AlignContext& new_alignments, UserPool& pool, DetElement child, int level) const;
+      void compute(AlignContext& new_alignments, UserPool& pool, DetElement child) const;
 
     public:
       /// Initializing constructor

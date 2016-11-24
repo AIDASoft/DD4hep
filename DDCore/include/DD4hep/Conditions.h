@@ -148,8 +148,6 @@ namespace DD4hep {
       const iov_type& iov()  const;
 
       /** Direct data items in string form */
-      /// Access the name of the condition
-      const std::string& name()  const;
       /// Access the type field of the condition
       const std::string& type()  const;
       /// Access the comment field of the condition

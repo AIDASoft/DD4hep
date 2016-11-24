@@ -49,23 +49,23 @@ namespace DD4hep {
           T val = _multiply(c.get<T>(),norm);
           ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s [%s] Type: %%s",
                      Primitive<T>::default_format(),Primitive<T>::default_format());
-          printout(INFO,"Cond_Value",text_format, c.name().c_str(), value, val, typeName(c.typeInfo()).c_str());
+          printout(INFO,"Cond_Value",text_format, c.name(), value, val, typeName(c.typeInfo()).c_str());
           return;
         }
         ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s Type: %%s",
                    Primitive<T>::default_format());
-        printout(INFO,"Cond_Value",text_format, c.name().c_str(), value, typeName(c.typeInfo()).c_str());
+        printout(INFO,"Cond_Value",text_format, c.name(), value, typeName(c.typeInfo()).c_str());
       }
       template <> void __print_bound_val<string>(Condition c, const char*)   {
         const string& v = access_val<string>(c);
         printout(INFO,"Cond_Value","  Bound value  %s : string value:%s  Type: %s Ptr:%016X",
-                 c.name().c_str(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str(),
+                 c.name(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str(),
                  (void*)&v);
       }
       template <typename T> void __print_bound_container(Condition c, const char*)   {
         const T& v = access_val<T>(c);
         printout(INFO,"Cond_Value","  Bound value  %s : size:%d = %s Type: %s Ptr:%016X",
-                 c.name().c_str(), int(v.size()), c.data().str().c_str(),
+                 c.name(), int(v.size()), c.data().str().c_str(),
                  typeName(c.typeInfo()).c_str(), (void*)&v);
       }
 
@@ -114,8 +114,8 @@ namespace DD4hep {
       template <> void print_condition<void>(Condition c)   {
         string type = c.type();
         printout(INFO,"Cond_Value","%-32s  [%16s] :  %s [%s] ", 
-                 c.name().c_str(),c.type().c_str(),
-                 c.value().c_str(),c->validity.c_str());
+                 c.name(), c.type().c_str(),
+                 c.value().c_str(), c->validity.c_str());
         if ( type == "alignment" )
           print_bound_value<string>(c);
         else if ( type == "temperature" )

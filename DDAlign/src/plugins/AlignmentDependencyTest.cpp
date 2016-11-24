@@ -11,6 +11,7 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#if 0
 
 // Framework includes
 #include "DD4hep/Plugins.h"
@@ -38,52 +39,6 @@ using Conditions::DetConditions;
 using Conditions::DependencyBuilder;
 
 // ======================================================================================
-#include "DDAlign/AlignmentsManager.h"
-
-namespace {
-  /// Print alignments
-  /**
-   *
-   *   \author  M.Frank
-   *   \version 1.0
-   *   \date    18/11/2016
-   *   \ingroup DD4HEP_DDALIGN
-   */
-  class AlignmentPrinter : public AlignmentsProcessor {
-  public:
-    /// Initializing constructor
-    AlignmentPrinter() : AlignmentsProcessor(0) {}
-    /// Default destructor
-    virtual ~AlignmentPrinter() = default;
-    /// Callback to output conditions information
-    virtual int operator()(Alignment a)  {
-      const Alignments::Delta& D = a.data().delta;
-      printout(INFO,"Alignment","++ (%11s-%8s-%5s) Cond:%p 'Alignment'",
-               D.hasTranslation() ? "Translation" : "",
-               D.hasRotation() ? "Rotation" : "",
-               D.hasPivot() ? "Pivot" : "",
-               a.data().hasCondition() ? a.data().condition.ptr() : 0);
-      return 1;
-    }
-    /// Container callback for object processing
-    virtual int operator()(Container container)
-    {  return this->self_t::operator()(container);  }
-    /// Callback to output conditions information
-    virtual int operator()(DetElement de)
-    {  return this->self_t::operator()(de);         }
-  };
-}
-
-/// Convert alignments conditions to alignment objects
-static void* ddalign_AlignmentsPrinter(Geometry::LCDD& /* lcdd */, int /* argc */, char** /* argv */)  {
-  return (AlignmentsProcessor*)(new AlignmentPrinter()); 
-}
-
-DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentsPrinter,ddalign_AlignmentsPrinter)
-
-  
-
-#if 0
 /// Compute dependent alignment conditions
 int computeDependencies(dd4hep_ptr<UserPool>& user_pool,
                         ConditionsManager conds,

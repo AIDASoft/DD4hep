@@ -89,7 +89,7 @@ int ConditionPrinter::operator()(Condition cond)    {
     new_prefix.assign(m_prefix.length(),' ');
     printout(INFO,"Condition","++ %s Path:%s Class:%d [%s]",
              m_prefix.c_str(),
-             cond.name().c_str(),
+             cond.name(),
              data.classID, 
              cond.data().dataType().c_str());
     if ( !data.params.empty() )  {

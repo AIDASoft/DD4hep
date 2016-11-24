@@ -46,12 +46,14 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sd)  {
     Volume modvol(_toString(mod.id(),"module_%d"), box, air);
     modvol.setVisAttributes(lcdd.visAttributes(mod.visStr()));
 
+    DetElement sens_det(mod_det,"sensor",x_det.id());
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, sens.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"sensor_%d"), box, air);
     vol.setSensitiveDetector(sd);
     vol.setVisAttributes(lcdd.visAttributes(sens.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()/2e0));
     phv.addPhysVolID("sensor",1);
+    sens_det.setPlacement(phv);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, chip.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"chip_%d"), box, air);

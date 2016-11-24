@@ -80,7 +80,7 @@ namespace DD4hep {
       class AlignmentContainer;
       class AlignmentConditionObject;
       
-      /// The data class behind a alignments handle.
+      /// The data class behind an alignments handle.
       /**
        *  See AlignmentsInterna.cpp for the implementation.
        *
@@ -101,7 +101,7 @@ namespace DD4hep {
         void clear();
       };
 
-      /// The data class behind a alignments container handle.
+      /// The data class behind an alignments container handle.
       /**
        *  See AlignmentsInterna.cpp for the implementation.
        *

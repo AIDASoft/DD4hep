@@ -626,14 +626,14 @@ ConditionsManagerObject::get(Condition::key_type key, const Condition::iov_type&
     RC::const_iterator start = conditions.begin();
     Condition first = *start;
     printout(ERROR,"ConditionsManager","+++ Condition %s [%08X] is ambiguous for IOV %s:",
-             first.name().c_str(), key, iov.str().c_str());
+             first.name(), key, iov.str().c_str());
     for(RC::const_iterator i=start; i!=conditions.end(); ++i)  {
       Condition c = *i;
       printout(ERROR,"ConditionsManager","+++ %s [%s] = %s",
-               c.name().c_str(), c->iov->str().c_str(), c->value.c_str());
+               c.name(), c->iov->str().c_str(), c->value.c_str());
     }
     except("ConditionsManager","+++ Condition %s [%08X] is ambiguous for IOV %s:",
-           first.name().c_str(), key, iov.str().c_str());
+           first.name(), key, iov.str().c_str());
   }
   return Condition();
 }

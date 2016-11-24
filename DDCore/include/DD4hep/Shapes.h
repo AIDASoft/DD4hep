@@ -90,6 +90,8 @@ namespace DD4hep {
 
       /// Access to shape name
       const char* name() const;
+      /// Access to shape type (The TClass name of the ROOT implementation)
+      const char* type() const;
       /// Auto conversion to underlying ROOT object
       operator T*() const {
         return this->m_element;

@@ -59,7 +59,16 @@ namespace DD4hep {
   typedef size_t (*output_function1_t)(void*, PrintLevel severity, const char*, const char*);
   typedef size_t (*output_function2_t)(void*, PrintLevel severity, const char*, const char*, va_list& args);
 
-  /** Calls the display action
+  /// Helper function to serialize argument list to a single string
+  /**
+   *  @arg argc       [int,read-only]      Number of arguments.
+   *  @arg argv       [char**,read-only]   Argument strings
+   *  @return String containing the concatenated arguments
+   */
+  std::string arguments(int argc, char** argv);
+  
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -67,7 +76,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const char* src, const char* fmt, ...);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -75,7 +85,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const std::string& src, const char* fmt, ...);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -83,7 +94,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const std::string& src, const std::string& fmt, ...);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -91,7 +103,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const char* src, const std::string& fmt, ...);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -100,7 +113,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const char* src, const char* fmt, va_list& args);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -109,7 +123,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const std::string& src, const char* fmt, va_list& args);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -118,7 +133,8 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const std::string& src, const std::string& fmt, va_list& args);
 
-  /** Calls the display action
+  /// Calls the display action with a given severity level
+  /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
@@ -127,51 +143,58 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const char* src, const std::string& fmt, va_list& args);
 
-  /** Calls the display action with ERROR and throws an std::runtime_error exception
+  /// Calls the display action with ERROR and throws an std::runtime_error exception
+  /**
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @return Status code indicating success or failure
    */
-  void except(const std::string& src, const std::string& fmt, ...);
+  int except(const std::string& src, const std::string& fmt, ...);
 
-  /** Calls the display action with ERROR and throws an std::runtime_error exception
+  /// Calls the display action with ERROR and throws an std::runtime_error exception
+  /**
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @return Status code indicating success or failure
    */
-  void except(const char* src, const char* fmt, ...);
+  int except(const char* src, const char* fmt, ...);
 
-  /** Calls the display action with ERROR and throws an std::runtime_error exception
-   *  @arg src        [string,read-only]   Information source (component, etc.)
-   *  @arg fmt        [string,read-only]   Format string for ellipsis args
-   *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
-   *  @return Status code indicating success or failure
-   */
-  void except(const std::string& src, const std::string& fmt, va_list& args);
-
-  /** Calls the display action with ERROR and throws an std::runtime_error exception
+  /// Calls the display action with ERROR and throws an std::runtime_error exception
+  /**
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
    *  @return Status code indicating success or failure
    */
-  void except(const char* src, const char* fmt, va_list& args);
+  int except(const std::string& src, const std::string& fmt, va_list& args);
 
-  /** Build formatted string
+  /// Calls the display action with ERROR and throws an std::runtime_error exception
+  /**
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+   *  @return Status code indicating success or failure
+   */
+  int except(const char* src, const char* fmt, va_list& args);
+
+  /// Build formatted string
+  /*
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @return Status code indicating success or failure
    */
   std::string format(const std::string& src, const std::string& fmt, ...);
 
-  /** Build exception string
+  /// Build exception string
+  /**
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @return Status code indicating success or failure
    */
   std::string format(const char* src, const char* fmt, ...);
 
-  /** Build formatted string
+  /// Build formatted string
+  /**
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
@@ -179,7 +202,8 @@ namespace DD4hep {
    */
   std::string format(const std::string& src, const std::string& fmt, va_list& args);
 
-  /** Build exception string and throw std::runtime_error
+  /// Build formatted string
+  /**
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.

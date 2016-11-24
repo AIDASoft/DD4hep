@@ -58,7 +58,8 @@ PluginDebug::~PluginDebug() {
 string PluginDebug::missingFactory(const string& name) const {
   ROOT::Reflex::Scope factories = ROOT::Reflex::Scope::ByName(PLUGINSVC_FACTORY_NS);
   string factoryname = ROOT::Reflex::PluginService::FactoryName(name);
-  string msg = "\n\t\tNo factory with name " + factoryname + " for type " + name + " found.\n\t\tPlease check library load path.";
+  string msg = "\t\tNo factory with name " + factoryname + " for type " + name + " found.\n"
+    "\t\tPlease check library load path and/or plugin factory name.";
   return msg;
 }
 
@@ -144,8 +145,9 @@ PluginDebug::~PluginDebug() {
 
 /// Helper to check factory existence
 string PluginDebug::missingFactory(const string& name) const {
-  string factoryname = "??? Create("+name+")";
-  string msg = "\n\t\tNo factory with name " + factoryname + " for type " + name + " found.\n\t\tPlease check library load path.";
+  string factoryname = "Create("+name+")";
+  string msg = "\t\tNo factory with name " + factoryname + " for type " + name + " found.\n"
+    "\t\tPlease check library load path and/or plugin factory name.";
   return msg;
 }
 

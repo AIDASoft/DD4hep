@@ -47,7 +47,7 @@ namespace  {
    *   \date    31/03/2016
    *   \ingroup DD4HEP_DDALIGN
    */
-  class Conditions2Alignments : public DetElement::Processor {
+  class AlignmentRegister : public DetElement::Processor {
   public:
     LCDD&                            lcdd;
     Alignments::AlignmentsManager    alignmentMgr;
@@ -55,32 +55,32 @@ namespace  {
     Conditions::UserPool*            user_pool;
 
     /// Initializing constructor
-    Conditions2Alignments(LCDD& l, AlignmentUpdateCall* c, UserPool* p)
+    AlignmentRegister(LCDD& l, AlignmentUpdateCall* c, UserPool* p)
       : lcdd(l), updateCall(c), user_pool(p)
     {
       alignmentMgr = AlignmentsManager::from(lcdd);
     }
     /// Default destructor
-    virtual ~Conditions2Alignments()   {
+    virtual ~AlignmentRegister()   {
       releasePtr(updateCall);
     }
     /// Callback to output conditions information
-    virtual int operator()(DetElement de)  {
+    virtual int processElement(DetElement de)  {
       if ( de.isValid() )  {
         if ( de.hasConditions() )  {
           DetAlign align(de);
           DetConditions conditions(de);
           Conditions::Container cont = conditions.conditions();
-          printout(INFO,"Conditions2Alignments",
+          printout(DEBUG,"AlignRegister",
                    "++ Processing DE %s hasConditions:%s [%d entries]",
                    de.path().c_str(), yes_no(de.hasConditions()), int(cont.numKeys()));
           for ( const auto& c : cont.keys() )  {
             Condition cond = cont.get(c.first, *user_pool);
-            printout(INFO,"Conditions2Alignments",
+            printout(DEBUG,"AlignRegister",
                      "++ Processing DE %s Cond:%s Key:%08X flags:%d",
-                     de.path().c_str(), cond.name().c_str(), cond.key(), cond->flags);
+                     de.path().c_str(), cond.name(), cond.key(), cond->flags);
             if ( (cond->flags&Condition::ALIGNMENT) )  {
-              ConditionKey k(cond.name()+"/Tranformations");
+              ConditionKey k(cond->name+"/Tranformations");
               //
               // The alignment access through the DetElement object is optional!
               // It is slow and deprecated. The access using the UserPool directly
@@ -90,25 +90,23 @@ namespace  {
               align.alignments()->addKey("Alignment",k.name);
               //
               // Now add the dependency to the alignmant manager
-              DependencyBuilder b(k, updateCall->addRef());
-              b->detector = de;
+              DependencyBuilder b(k, updateCall->addRef(), de);
               b.add(ConditionKey(cond->name));
-              Conditions::ConditionDependency* dep = b.release();
-              bool result = alignmentMgr.adoptDependency(dep);
+              bool result = alignmentMgr.adoptDependency(b.release());
               if ( result )   {
-                printout(INFO,"Conditions2Alignments",
-                         "++ Added Alignment dependency Cond:%s Key:%08X",
-                         k.name.c_str(), k.hash);
+                printout(INFO,"AlignRegister",
+                         "++ Added Alignment dependency Cond:%s Key:%08X flags:%d",
+                         k.name.c_str(), k.hash, cond->flags);
                 continue;
               }
-              printout(ERROR,"Conditions2Alignments",
-                       "++ FAILED to add Alignment dependency Cond:%s Key:%08X",
-                       k.name.c_str(), k.hash);
+              printout(ERROR,"AlignRegister",
+                       "++ FAILED to add Alignment dependency Cond:%s Key:%08X flags:%d",
+                       k.name.c_str(), k.hash, cond->flags);
             }
           }
           return 1;
         }
-        printout(INFO,"Conditions2Alignments","++ Processing DE %s hasConditions:%s",
+        printout(DEBUG,"AlignRegister","++ Processing DE %s hasConditions:%s",
                  de.path().c_str(), yes_no(de.hasConditions()));
       }
       return 1;
@@ -116,41 +114,41 @@ namespace  {
   };
 }
 
-
-#include "DDAlign/DDAlignTest.h"
-
+#include "DD4hep/PluginTester.h"
+#include "DDCond/ConditionsPool.h"
 /// Convert alignments conditions to alignment objects
-static void* ddalign_Conditions2Alignments(Geometry::LCDD& lcdd, int argc, char** argv)  {
+static void* ddalign_AlignmentRegister(Geometry::LCDD& lcdd, int argc, char** argv)  {
   std::vector<char*> args_prepare, args_call;
 
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( ::strcmp(argv[i],"-prepare") == 0 )  {
-      while( 0 != ::strcmp(argv[++i],"-prepare-end") && i<argc )
+      while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-prepare-end") )
         args_prepare.push_back(argv[i]);
     }
     if ( ::strcmp(argv[i],"-call") == 0 )  {
-      while( 0 != ::strcmp(argv[++i],"-call-end") && i<argc )
+      while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-call-end") )
         args_call.push_back(argv[i]);
     }
   }
 
-  DDAlignTest* test = lcdd.extension<DDAlignTest>();
+  PluginTester* test = lcdd.extension<PluginTester>();
   Conditions::UserPool* pool = (Conditions::UserPool*)
     PluginService::Create<void*>((const char*)args_prepare[0],&lcdd,
                                  int(args_prepare.size())-1,
                                  (char**)&args_prepare[1]);
   if ( 0 == pool )  {
-    except("Conditions2Alignments","++ Failed to prepare conditions user-pool!");
+    except("AlignRegister","++ Failed to prepare conditions user-pool!");
   }
-  test->alignmentsPool.adopt(pool);
+  test->addExtension<Conditions::UserPool>(pool,"ConditionsTestUserPool");
   AlignmentUpdateCall* call = (AlignmentUpdateCall*)
     PluginService::Create<void*>((const char*)args_call[0],&lcdd,
                                  int(args_call.size())-1,
                                  (char**)&args_call[1]);
   if ( 0 == call )  {
-    except("Conditions2Alignments","++ Failed to create update call!");
+    except("AlignRegister","++ Failed to create update call!");
   }
-  Conditions2Alignments* obj = new Conditions2Alignments(lcdd, call, pool);
+  AlignmentRegister* obj = new AlignmentRegister(lcdd, call, pool);
   return obj;
 }
-DECLARE_LCDD_CONSTRUCTOR(DDAlign_Conditions2Alignments,ddalign_Conditions2Alignments)
+DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentRegister,ddalign_AlignmentRegister)
+

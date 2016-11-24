@@ -39,6 +39,7 @@ namespace DD4hep {
   void* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, void* (*cast)(void*));
   void* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, const std::string& arg, void* (*cast)(void*));
   void* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, int argc, char** argv, void* (*cast)(void*));
+  void* createProcessor(Geometry::LCDD& lcdd, int argc, char** argv, void* (*cast)(void*));
 
   /// Handler for factories of type: ConstructionFactory with casted return type
   template <typename T> T* createPlugin(const std::string& factory, Geometry::LCDD& lcdd)   {
@@ -57,6 +58,20 @@ namespace DD4hep {
     typedef T plugin_t;
     struct __cast{ static void* cast(void* p) { return &dynamic_cast<plugin_t&>(*(plugin_t*)p); } };
     return (plugin_t*)createPlugin(factory, lcdd, argc, (char**)argv, __cast::cast);
+  }
+
+  /// Handler for factories of type: ConstructionFactory with casted return type
+  template <typename T> T* createProcessor(Geometry::LCDD& lcdd, int argc, char** argv)   {
+    typedef T plugin_t;
+    struct __cast{ static void* cast(void* p) { return &dynamic_cast<plugin_t&>(*(plugin_t*)p); } };
+    return (plugin_t*)createProcessor(lcdd, argc, argv, __cast::cast);
+  }
+
+  /// Handler for factories of type: ConstructionFactory with casted return type
+  template <typename T> T* createProcessor(Geometry::LCDD& lcdd, int argc, const void** argv)   {
+    typedef T plugin_t;
+    struct __cast{ static void* cast(void* p) { return &dynamic_cast<plugin_t&>(*(plugin_t*)p); } };
+    return (plugin_t*)createProcessor(lcdd, argc, (char**)argv, __cast::cast);
   }
 
 } /* End namespace DD4hep      */

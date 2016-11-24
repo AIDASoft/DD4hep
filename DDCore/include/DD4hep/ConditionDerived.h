@@ -206,6 +206,8 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call);
+      /// Initializing constructor
+      DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call, Geometry::DetElement de);
       /// Default destructor
       virtual ~DependencyBuilder();
       /// Access underlying object directly

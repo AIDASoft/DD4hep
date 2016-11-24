@@ -35,9 +35,12 @@ namespace DD4hep {
      */
     class ConditionsPrinter : public ConditionsProcessor  {
     public:
+      /// Printer name. Want to know who is printing what
       std::string   name;
+      /// Printout prefix
       std::string   prefix;
     protected:
+      /// Printout processing and customization flag
       int           m_flag;
 
     public:
@@ -55,8 +58,8 @@ namespace DD4hep {
       /// Container callback for object processing
       virtual int operator()(Container container);
       /// Callback to output conditions information of an entire DetElement
-      virtual int operator()(DetElement de)
-      {  return this->ConditionsProcessor::operator()(de);         }
+      virtual int processElement(DetElement de)
+      {  return this->ConditionsProcessor::processElement(de);     }
     };
 
   }    /* End namespace Conditions           */
