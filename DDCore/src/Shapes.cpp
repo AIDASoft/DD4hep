@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -171,6 +170,14 @@ void Solid_type<T>::_assign(T* n, const string& nam, const string& tit, bool cbb
 /// Access to shape name
 template <typename T> const char* Solid_type<T>::name() const {
   return this->ptr()->GetName();
+}
+
+/// Access to shape type (The TClass name of the ROOT implementation)
+template <typename T> const char* Solid_type<T>::type() const  {
+  if ( this->ptr() )  {
+    return this->ptr()->IsA()->GetName();
+  }
+  return "";
 }
 
 void Box::make(double x_val, double y_val, double z_val) {

@@ -129,7 +129,7 @@ namespace {
         << "." << long(siz_tot) << endl;
     for(AllConditions::const_iterator i=all.begin(); i!=all.end(); ++i)  {
       Condition c = (*i).second;
-      ::snprintf(text, sizeof(text), fmt, c.key(), c.name().c_str(), c.address().c_str());
+      ::snprintf(text, sizeof(text), fmt, c.key(), c.name(), c.address().c_str());
       out << text << endl;
     }
     out.close();

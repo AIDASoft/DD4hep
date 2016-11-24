@@ -17,6 +17,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
+#include "DD4hep/PluginCreators.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "../LCDDImp.h"
 
@@ -393,32 +394,6 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
 // ======================================================================================
-static DetElement::Processor* create_processor(LCDD& lcdd, int argc, char** argv)  {
-  DetElement::Processor* processor = 0;
-  if ( argc < 2 )   {
-    except("DetectorProcessor","++ No processor creator name given!");
-  }
-  for(int i=0; i<argc; ++i)  {
-    if ( 0 == ::strncmp(argv[i],"-processor",4) )  {
-      vector<char*> args;
-      string fac = argv[++i];
-      for(int j=++i; j<argc && argv[j] && 0 != ::strncmp(argv[j],"-processor",4); ++j)
-        args.push_back(argv[j]);
-      args.push_back(0);
-      DetElement::Processor* p = (DetElement::Processor*)
-        PluginService::Create<void*>(fac,&lcdd,int(args.size()),&args[0]);
-      processor = dynamic_cast<DetElement::Processor*>(p);
-      break;
-    }
-  }
-  if ( !processor )  {
-    except("DetectorProcessor",
-           "++ Found arguments in plugin call, but could not make any sense of them....");
-  }
-  return processor;
-}
-
-// ======================================================================================
 /// Plugin function: Apply arbitrary functor callback on the tree of detector elements
 /**
  *  Factory: DD4hep_DetElementProcessor
@@ -443,7 +418,7 @@ static int detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     long process(DetElement de)   {
       if ( de.isValid() )  {
         int result = 1;
-        (*processor)(de);
+        (*processor).processElement(de);
         for (const auto& c : de.children() )  {
           int ret = process(c.second);
           if ( 1 != ret )  {
@@ -458,14 +433,15 @@ static int detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     }
   };
   DetElement det = lcdd.world();
-  DetElement::Processor* processor = create_processor(lcdd, argc, argv);
+  DetElement::Processor* proc =
+    DD4hep::createProcessor<DetElement::Processor>(lcdd, argc, argv);
   for(int i=0, num=std::min(argc,3); i<num; ++i)  {
     if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
       det = DetectorTools::findElement(lcdd, argv[++i]);
       break;
     }
   }
-  return Actor(processor).process(det);
+  return Actor(proc).process(det);
 }
 DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
 
@@ -608,31 +584,15 @@ DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
 typedef SurfaceInstaller TestSurfacesPlugin;
 DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
 
-/// Basic entry point to instantiate the basic DD4hep conditions/alignmants printer
-/**
- *  Factory: DD4hepConditionsPrinter, DD4hepAlignmentsPrinter 
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    17/11/2016
- */
-namespace  {
-  template <typename PRINTER>
-  void* create_printer(Geometry::LCDD& /* lcdd */, int argc,char** argv)  {
-    string prefix = "";
-    int flags = 0;
-    for(int i=0; i<argc && argv[i]; ++i)  {
-      if ( 0 == ::strncmp("-prefix",argv[i],4) )
-        prefix = argv[++i];
-      else if ( 0 == ::strncmp("-flags",argv[i],2) )
-        flags = ::atol(argv[++i]);
-    }
-    if ( flags )
-      return (void*)new PRINTER(prefix,flags);
-    return (void*)new PRINTER(prefix);
+#include "DD4hep/PluginTester.h"
+static long install_plugin_tester(LCDD& lcdd, int , char** ) {
+  PluginTester* test = lcdd.extension<PluginTester>(false);
+  if ( !test )  {
+    lcdd.addExtension<PluginTester>(new PluginTester());
+    printout(INFO,"PluginTester",
+             "+++ Successfully installed PluginTester instance to LCDD.");
   }
+  return 1;
 }
-#include "DD4hep/ConditionsPrinter.h"
-DECLARE_LCDD_CONSTRUCTOR(DD4hepConditionsPrinter,create_printer<Conditions::ConditionsPrinter>)
-#include "DD4hep/AlignmentsPrinter.h"
-DECLARE_LCDD_CONSTRUCTOR(DD4hepAlignmentsPrinter,create_printer<Alignments::AlignmentsPrinter>)
+DECLARE_APPLY(DD4hepPluginTester,install_plugin_tester)
+

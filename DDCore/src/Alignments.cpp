@@ -77,6 +77,11 @@ const DD4hep::IOV& AlignmentCondition::iov() const   {
   return *(access()->iovData());
 }
 
+/// Access the hash identifier
+AlignmentCondition::key_type AlignmentCondition::key() const   {
+  return access()->hash;
+}
+
 /// Data accessor for the use of decorators
 AlignmentCondition::Data& AlignmentCondition::data()              {
   Object* o = access();

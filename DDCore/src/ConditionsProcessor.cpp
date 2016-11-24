@@ -38,7 +38,7 @@ int ConditionsProcessor::operator()(Container container)   {
 }
 
 /// Callback to output conditions information of an entire DetElement
-int ConditionsProcessor::operator()(DetElement de)    {
+int ConditionsProcessor::processElement(DetElement de)    {
   if ( de.isValid() )  {
     if ( m_pool )  {
       DetConditions conds(de);

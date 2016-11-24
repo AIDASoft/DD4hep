@@ -38,7 +38,7 @@ int AlignmentsProcessor::operator()(Container container)   {
 }
 
 /// Callback to output alignments information of an entire DetElement
-int AlignmentsProcessor::operator()(Geometry::DetElement de)    {
+int AlignmentsProcessor::processElement(Geometry::DetElement de)    {
   if ( de.isValid() )  {
     if ( m_pool )  {
       DetAlign align(de);

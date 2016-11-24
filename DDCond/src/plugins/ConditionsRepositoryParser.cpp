@@ -418,6 +418,7 @@ namespace DD4hep {
     xml_coll_t(e,_UC(mapping)).for_each(Converter<mapping>(lcdd,param,optional));
     xml_coll_t(e,_UC(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
     xml_coll_t(e,_UC(alignment)).for_each(Converter<alignment>(lcdd,param,optional));
+    xml_coll_t(e,_UC(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
   }
 
   /** Convert repository objects

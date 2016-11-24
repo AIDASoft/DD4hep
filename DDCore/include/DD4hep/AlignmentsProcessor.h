@@ -40,30 +40,33 @@ namespace DD4hep {
      *   \ingroup DD4HEP_ALIGNMENTS
      */
     class AlignmentsProcessor :
-      public Alignment::Processor,
-      public Container::Processor,
-      public Geometry::DetElement::Processor
+      virtual public Alignment::Processor,
+      virtual public Container::Processor,
+      virtual public Geometry::DetElement::Processor
     {
-    protected:
+    public:
       /// Self type definition
-      typedef AlignmentsProcessor self_t;
+      typedef AlignmentsProcessor  self_type;
+      /// Pool definition
+      typedef UserPool             pool_type;
+    protected:
       /// Make DetElement type local
       typedef Geometry::DetElement DetElement;
       /// Reference to the user pool
-      UserPool* m_pool;
+      pool_type* m_pool;
     public:
       /// Initializing constructor
-      AlignmentsProcessor(UserPool* p) : m_pool(p) {}
+      AlignmentsProcessor(pool_type* p) : m_pool(p) {}
       /// Default destructor
       virtual ~AlignmentsProcessor() = default;
       /// Set pool
-      void setPool(UserPool* value)  { m_pool = value; }
+      void setPool(pool_type* value)  { m_pool = value; }
       /// Callback to output alignments information
       virtual int operator()(Alignment cond);
       /// Container callback for object processing
       virtual int operator()(Container container);
       /// Callback to output alignments information of an entire DetElement
-      virtual int operator()(DetElement de);
+      virtual int processElement(DetElement de);
     };
 
     /// Generic Alignment object collector
@@ -72,7 +75,7 @@ namespace DD4hep {
      *   AlignmentsProcessor base class for further information.
      *
      */
-    class AlignmentsCollector : public AlignmentsProcessor  {
+    class AlignmentsCollector : virtual public AlignmentsProcessor  {
     public:
       /// Collection container
       std::vector<Alignment> alignments;
@@ -88,10 +91,10 @@ namespace DD4hep {
       }
       /// Container callback for object processing
       virtual int operator()(Container container)
-      {  return this->self_t::operator()(container);      }
+      {  return this->self_type::operator()(container);   }
       /// Callback to output alignments information of an entire DetElement
-      virtual int operator()(DetElement detector)
-      {  return this->self_t::operator()(detector);       }
+      virtual int processElement(DetElement detector)
+      {  return this->self_type::processElement(detector);    }
     };
     
   }    /* End namespace Alignments  */

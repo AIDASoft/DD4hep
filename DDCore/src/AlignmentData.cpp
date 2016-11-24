@@ -75,7 +75,8 @@ AlignmentData::AlignmentData()
 
 /// Copy constructor
 AlignmentData::AlignmentData(const AlignmentData& copy)
-  : delta(copy.delta), worldTrafo(copy.worldTrafo), detectorTrafo(copy.detectorTrafo),
+  : delta(copy.delta), worldTrafo(copy.worldTrafo), worldDelta(copy.worldDelta),
+    detectorTrafo(copy.detectorTrafo),
     nodes(copy.nodes), trToWorld(copy.trToWorld), detector(copy.detector),
     placement(copy.placement), flag(copy.flag), magic(magic_word())
 {

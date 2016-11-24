@@ -176,6 +176,8 @@ namespace DD4hep {
       const IOVType& iovType()  const;
       /// Access the IOV block
       const iov_type& iov()  const;
+      /// Access the hash identifier
+      key_type key()  const;
 
       /** Data block (bound type)         */
       /// Data accessor for the use of decorators

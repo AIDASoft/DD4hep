@@ -40,30 +40,33 @@ namespace DD4hep {
      *   \ingroup DD4HEP_CONDITIONS
      */
     class ConditionsProcessor :
-      public Condition::Processor,
-      public Container::Processor,
-      public Geometry::DetElement::Processor
+      virtual public Condition::Processor,
+      virtual public Container::Processor,
+      virtual public Geometry::DetElement::Processor
     {
-    protected:
+    public:
       /// Self type definition
-      typedef ConditionsProcessor self_t;
+      typedef ConditionsProcessor  self_type;
+      /// Pool definition
+      typedef UserPool             pool_type;
+    protected:
       /// Make DetElement type local
       typedef Geometry::DetElement DetElement;
       /// Reference to the user pool
-      UserPool* m_pool;
+      pool_type* m_pool;
     public:
       /// Initializing constructor
-      ConditionsProcessor(UserPool* p) : m_pool(p) {}
+      ConditionsProcessor(pool_type* p) : m_pool(p) {}
       /// Default destructor
       virtual ~ConditionsProcessor() = default;
       /// Set pool
-      void setPool(UserPool* value)  { m_pool = value; }
+      void setPool(pool_type* value)  { m_pool = value; }
       /// Callback to output conditions information
       virtual int operator()(Condition cond);
       /// Container callback for object processing
       virtual int operator()(Container container);
       /// Callback to output conditions information of an entire DetElement
-      virtual int operator()(DetElement de);
+      virtual int processElement(DetElement de);
     };
 
     /// Generic Condition object collector
@@ -72,7 +75,7 @@ namespace DD4hep {
      *   ConditionsProcessor base class for further information.
      *
      */
-    class ConditionsCollector : public ConditionsProcessor  {
+    class ConditionsCollector : virtual public ConditionsProcessor  {
     public:
       /// Collection container
       std::vector<Condition> conditions;
@@ -88,10 +91,10 @@ namespace DD4hep {
       }
       /// Container callback for object processing
       virtual int operator()(Container container)
-      {  return this->self_t::operator()(container);      }
+      {  return this->self_type::operator()(container);   }
       /// Callback to output conditions information of an entire DetElement
-      virtual int operator()(DetElement detector)
-      {  return this->self_t::operator()(detector);       }
+      virtual int processElement(DetElement detector)
+      {  return this->self_type::processElement(detector);    }
     };
   }    /* End namespace Conditions  */
 }      /* End namespace DD4hep      */

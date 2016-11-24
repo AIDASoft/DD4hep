@@ -17,6 +17,7 @@
 // C/C++ include files
 #include <cstring>
 #include <cstdarg>
+#include <sstream>
 #include <stdexcept>
 // Disable some diagnostics for ROOT dictionaries
 #ifdef __GNUC__
@@ -85,6 +86,21 @@ namespace {
     return string(str);
   }
 }
+
+/// Helper function to serialize argument list to a single string
+/**
+ *  @arg argc       [int,read-only]      Number of arguments.
+ *  @arg argv       [char**,read-only]   Argument strings
+ *  @return String containing the concatenated arguments
+ */
+string DD4hep::arguments(int argc, char** argv)   {
+  stringstream str;
+  for(int i=0; i<argc;)  {
+    str << argv[i];
+    if ( ++i < argc ) str << " ";
+  }
+  return str.str();
+}  
 
 /** Calls the display action
  *  @arg severity   [int,read-only]      Display severity flag
@@ -198,10 +214,10 @@ int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, 
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-void DD4hep::except(const string& src, const string& fmt, ...) {
+int DD4hep::except(const string& src, const string& fmt, ...) {
   va_list args;
   va_start(args, &fmt);
-  except(src.c_str(),fmt.c_str(), args);
+  return except(src.c_str(),fmt.c_str(), args);
 }
 
 /** Calls the display action with ERROR and throws an std::runtime_error exception
@@ -209,10 +225,10 @@ void DD4hep::except(const string& src, const string& fmt, ...) {
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-void DD4hep::except(const char* src, const char* fmt, ...) {
+int DD4hep::except(const char* src, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  except(src, fmt, args);
+  return except(src, fmt, args);
 }
 
 /** Calls the display action with ERROR and throws an std::runtime_error exception
@@ -221,7 +237,7 @@ void DD4hep::except(const char* src, const char* fmt, ...) {
  *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  @return Status code indicating success or failure
  */
-void DD4hep::except(const string& src, const string& fmt, va_list& args) {
+int DD4hep::except(const string& src, const string& fmt, va_list& args) {
   string msg = __format(fmt.c_str(), args);
   va_end(args);
   printout(ERROR, src.c_str(), "%s", msg.c_str());
@@ -235,8 +251,8 @@ void DD4hep::except(const string& src, const string& fmt, va_list& args) {
  *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  @return Status code indicating success or failure
  */
-void DD4hep::except(const char* src, const char* fmt, va_list& args) {
-  string msg = format(src, fmt, args);
+int DD4hep::except(const char* src, const char* fmt, va_list& args) {
+  string msg = __format(fmt, args);
   va_end(args);
   printout(ERROR, src, "%s", msg.c_str());
   // No return. Must call va_end here!

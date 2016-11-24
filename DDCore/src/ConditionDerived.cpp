@@ -87,6 +87,13 @@ DependencyBuilder::DependencyBuilder(const ConditionKey& target, ConditionUpdate
 {
 }
 
+/// Initializing constructor
+DependencyBuilder::DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call, Geometry::DetElement de)
+  : m_dependency(new ConditionDependency(target,call))
+{
+  m_dependency->detector = de;
+}
+
 /// Default destructor
 DependencyBuilder::~DependencyBuilder()   {
   releasePtr(m_dependency);
