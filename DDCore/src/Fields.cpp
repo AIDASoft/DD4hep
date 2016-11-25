@@ -27,8 +27,7 @@ DD4HEP_INSTANTIATE_HANDLE(OverlayedFieldObject);
 
 namespace {
   void calculate_combined_field(vector<CartesianField>& v, const double* pos, double* field) {
-    for (vector<CartesianField>::iterator i = v.begin(); i != v.end(); ++i)
-      (*i).value(pos, field);
+    for (const auto& i : v ) i.value(pos, field);
   }
 }
 

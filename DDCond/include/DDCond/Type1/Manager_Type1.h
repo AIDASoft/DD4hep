@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,20 +10,21 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCOND_CONDITIONSINTERNA_H
-#define DDCOND_CONDITIONSINTERNA_H
+#ifndef DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H
+#define DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H
 
 // Framework include files%
 #include "DD4hep/Mutex.h"
 #include "DD4hep/Memory.h"
 #include "DD4hep/Callback.h"
-#include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionDerived.h"
 #include "DD4hep/ObjectExtensions.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsDataLoader.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 // C/C++ include files
 #include <set>
@@ -39,18 +39,7 @@ namespace DD4hep {
     class Entry;
     class ConditionsPool;
     class ConditionsIOVPool;
-    class ConditionsListener;
     class ConditionsDataLoader;
-
-    /// Conditions internal namespace declaration
-    /** Internally defined datastructures are not presented to the
-     *  user directly, but are used by dedicated views.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    //namespace Interna {
 
     /// The data class behind a conditions manager handle
     /**
@@ -61,25 +50,13 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionsManagerObject : public NamedObject, 
-                                    public PropertyConfigurable,
-                                    public ObjectExtensions
+    class ConditionsManagerObject_Type1 : public ConditionsManagerObject, 
+                                          public ObjectExtensions
     {
-      friend class DD4hep::Conditions::ConditionsPool;
-      friend class DD4hep::Conditions::ConditionsDataLoader;
+    protected:
 
-    public:
-      typedef dd4hep_ptr<ConditionsDataLoader>     Loader;
-      typedef std::vector<IOVType>                 IOVTypes;
-      typedef std::vector<ConditionsIOVPool*>      TypedConditionPool;
-      typedef std::pair<ConditionsListener*,void*> Listener;
-      typedef std::set<Listener>                   Listeners;
-      typedef ConditionsManager::Dependencies      Dependencies;
-      typedef ConditionsManager::ConditionKeys     ConditionKeys;
-      typedef Condition::key_type                  key_type;
-      typedef Condition::iov_type                  iov_type;
-
-    public:
+      /** Generic interface of any concrete instance  */
+      
       /// Property: maximal number of IOV types to be handled
       int                    m_maxIOVTypes;
       /// Property: ConditionsPool constructor type (default: empty. MUST BE SET!)
@@ -91,27 +68,26 @@ namespace DD4hep {
       /// Property: Conditions loader type (default: "multi" -> DD4hep_Conditions_multi_Loader)
       std::string            m_loaderType;
 
-      /// Reference to main detector description object
-      LCDD&                  m_lcdd;
       /// Collection of IOV types managed
       IOVTypes               m_iovTypes;
+
+      /** Specialized interface only used by this implementation  */
+
+    public:
+      typedef std::vector<ConditionsIOVPool*>      TypedConditionPool;
       /// Managed pool of typed conditions indexed by IOV-type and IOV key
       TypedConditionPool     m_rawPool;
-      /// Conditions listeners on registration of new conditions
-      Listeners              m_onRegister;
-      /// Conditions listeners on de-registration of new conditions
-      Listeners              m_onRemove;
+
+    protected:
       /// Lock to protect the update/delayed conditions pool
       dd4hep_mutex_t         m_updateLock;
       /// Lock to protect the pool of all known conditions
       dd4hep_mutex_t         m_poolLock;
-      /// Reference to data loader
-      Loader                 m_loader;
       /// Reference to update conditions pool
       dd4hep_ptr<UpdatePool> m_updatePool;
 
       /// Public access: if locked, DetElements stay intact and are not altered
-      int                    locked;
+      int                    m_locked;
 
     protected:
       /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
@@ -123,70 +99,57 @@ namespace DD4hep {
       /// Register a set of new managed condition for an IOV range. Called by __load_immediate
       // void __register_immediate(RangeConditions& c);
 
-      void registerCallee(Listeners& listeners, const Listener& callee, bool add);
-
-      /// Listener invocation when a condition is registered to the cache
-      void onRegister(Condition condition);
-
-      /// Listener invocation when a condition is deregistered from the cache
-      void onRemove(Condition condition);
 
       /// Helper to check iov and user pool and create user pool if not present
       void __get_checked_pool(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);
       
-    public:
+      /** Generic interface of any concrete instance  */
+      
       /// Set a single conditions value to be managed.
       /// Requires EXTERNALLY held lock on update pool!
       Condition __queue_update(Conditions::Entry* data);
 
+    protected:
+      /// Register a new managed condition. (Unused)
+      //void registerCondition(Condition c);
+
+      
     public:
       /// Standard constructor
-      ConditionsManagerObject(LCDD& lcdd);
+      ConditionsManagerObject_Type1(LCDD& lcdd);
 
       /// Default destructor
-      virtual ~ConditionsManagerObject();
-
-      /// Access to the detector description instance
-      LCDD& lcdd() const  {   return m_lcdd; }
+      virtual ~ConditionsManagerObject_Type1();
 
       /// Access to managed pool of typed conditions indexed by IOV-type and IOV key
-      const TypedConditionPool& conditionsPool() const  {  return m_rawPool; }
+      //const TypedConditionPool& conditionsPool() const  {  return m_rawPool; }
 	  
-      ConditionsDataLoader* loader()  const  {  return m_loader.get();  }
-
+      /// Initialize object and define factories
       void initialize();
-
-      /// (Un)Registration of conditions listeners with callback when a new condition is registered
-      void callOnRegister(const Listener& callee, bool add);
-      /// (Un)Registration of conditions listeners with callback when a condition is unregistered
-      void callOnRemove(const Listener& callee, bool add);
 
       /// Register new IOV type if it does not (yet) exist.
       /** Returns (false,pointer) if IOV existed and
        *  (true,pointer) if new IOV was registered to the manager.
        */
-      std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
+      virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
       
       /// Access IOV by its type
-      const IOVTypes& iovTypes () const   {   return  m_iovTypes;  }
+      virtual const IOVTypes& iovTypes () const   {   return  m_iovTypes;  }
 
       /// Access IOV by its type
-      const IOVType* iovType (size_t iov_type) const;
+      virtual const IOVType* iovType (size_t iov_type) const;
 
       /// Access IOV by its name
-      const IOVType* iovType (const std::string& iov_name) const;
-
-      /// Create IOV from string
-      void fromString(const std::string& iov_str, IOV& iov);
-
-      /// Register IOV using new string data
-      ConditionsPool* registerIOV(const std::string& data);
+      virtual const IOVType* iovType (const std::string& iov_name) const;
 
       /// Register IOV with type and key
-      ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
+      virtual ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
+
+      /// Access conditions multi IOV pool by iov type
+      ConditionsIOVPool* iovPool(const IOVType& type)  const;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      bool registerUnlocked(ConditionsPool* pool, Condition cond);
+      virtual bool registerUnlocked(ConditionsPool* pool, Condition cond);
 
       /// Prepare all updates for the given keys to the clients with the defined IOV
       long prepare(const IOV& required_validity,
@@ -210,7 +173,7 @@ namespace DD4hep {
                    bool                  verify_dependencies=true);
 
       /// Clean conditions, which are above the age limit.
-      /** @return Number of conditions cleaned up and removed  */
+      /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */
       int clean(const IOVType* typ, int max_age);
 
       /// Full cleanup of all managed conditions.
@@ -221,22 +184,14 @@ namespace DD4hep {
       /** Note:
        *  This does not yet make the new conditions availible to the clients
        */
-      void pushUpdates();
+      virtual void pushUpdates();
  
-      /// Register a new managed condition.
-      /** The condition is created externally by the user.
-       *  Lengthy and tedious procedure.
-       */
-      void registerCondition(Condition c);
-
       /// Retrieve a condition set given a Detector Element and the conditions name according to their validity
-      Condition get(key_type key, const iov_type& req_validity);
+      virtual Condition get(key_type key, const iov_type& req_validity);
 
       /// Retrieve a condition given a Detector Element and the conditions name
-      RangeConditions getRange(key_type key, const iov_type& req_validity);
+      virtual RangeConditions getRange(key_type key, const iov_type& req_validity);
     };
-    //    } /* End namespace Interna              */
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-
-#endif     /* DDCOND_CONDITIONSINTERNA_H    */
+  }        /* End namespace Conditions               */
+}          /* End namespace DD4hep                   */
+#endif     /* DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H */

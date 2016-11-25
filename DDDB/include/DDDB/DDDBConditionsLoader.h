@@ -23,7 +23,7 @@
 #define DD4HEP_DDDB_DDDBCONDITONSLOADER_H
 
 // Framework include files
-#include "DDCond/ConditionsListener.h"
+#include "DD4hep/ConditionsListener.h"
 #include "DDCond/ConditionsDataLoader.h"
 #include "XML/UriReader.h"
 

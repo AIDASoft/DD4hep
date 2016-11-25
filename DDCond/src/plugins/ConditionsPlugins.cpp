@@ -19,12 +19,13 @@
 #include "DD4hep/PluginCreators.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/ConditionsPrinter.h"
+#include "DD4hep/DetectorProcessor.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsRepository.h"
 
 using namespace std;
@@ -42,20 +43,51 @@ using Geometry::PlacedVolume;
  *  \date    01/04/2016
  */
 static int ddcond_install_cond_mgr (LCDD& lcdd, int argc, char** argv)  {
+  Handle<NamedObject>* h = 0;
   Handle<ConditionsManagerObject> mgr(lcdd.extension<ConditionsManagerObject>(false));
   if ( !mgr.isValid() )  {
-    ConditionsManager mgr_handle(lcdd);
-    lcdd.addExtension<ConditionsManagerObject>(mgr_handle.ptr());
+    bool arg_error = false;
+    string factory = "DD4hep_ConditionsManager_Type1";
+    for(int i=0; i<argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-type",argv[i],4) )
+        factory = argv[++i];
+      else if ( 0 == ::strncmp("-handle",argv[i],5) )
+        h = (Handle<NamedObject>*)argv[++i];
+      else
+        arg_error = true;
+    }
+    if ( arg_error )   {
+      /// Help printout describing the basic command line interface
+      cout <<
+        "Usage: -plugin <name> -arg [-arg]                                             \n"
+        "     name:   factory name     DD4hep_ConditionsManagerInstaller               \n"
+        "     -type   <string>         Manager type.                                   \n"
+        "                              Default: ConditionsManagerObject_Type1_t        \n"
+        "     -handle <pointer>        Pointer to Handle<NamedObject> to pass pointer  \n"
+        "                              to the caller.                                  \n"
+        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      ::exit(EINVAL);
+    }
+    ConditionsManagerObject* obj = createPlugin<ConditionsManagerObject>(factory,lcdd);
+    if ( !obj )  {
+      except("ConditionsManagerInstaller","Failed to create manager object of type %s",
+             factory.c_str());
+    }
+    lcdd.addExtension<ConditionsManagerObject>(obj);
     printout(INFO,"ConditionsManager",
-             "+++ Successfully installed conditions manager instance to LCDD.");
-    mgr = mgr_handle;
+             "+++ Successfully installed conditions manager instance '%s' to LCDD.",
+             factory.c_str());
+    mgr = obj;
   }
-  if ( argc == 2 )  {
-    if ( ::strncmp(argv[0],"-handle",7)==0 )  {
-      Handle<NamedObject>* h = (Handle<NamedObject>*)argv[1];
-      *h = mgr;
+  else if ( argc > 0 )  {
+    for(int i=0; i<argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-handle",argv[i],5) )   {
+        h = (Handle<NamedObject>*)argv[++i];
+        break;
+      }
     }
   }
+  if ( h ) *h = mgr;
   return 1;
 }
 DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
@@ -159,7 +191,7 @@ DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
  */
 static int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)   {
 
-  struct Actor {
+  struct Actor : public Geometry::DetectorProcessor   {
     ConditionsManager     manager;
     ConditionsPrinter     printer;
     dd4hep_ptr<UserPool>  user_pool;
@@ -178,15 +210,14 @@ static int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)
       printer.setPool(user_pool.get());
     }
     /// Default destructor
-    ~Actor()   {
+    virtual ~Actor()   {
       manager.clean(iov_type, 20);
       user_pool->clear();
       user_pool.release();
     }
     /// Dump method.
-    long dump(DetElement de,int level)   {
+    virtual int operator()(DetElement de,int level)   {
       const DetElement::Children& children = de.children();
-      
       PlacedVolume place = de.placement();
       char sens = place.volume().isSensitive() ? 'S' : ' ';
       char fmt[128], tmp[32];
@@ -198,12 +229,10 @@ static int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)
       if ( de.hasConditions() )  {
         printer.processElement(de);
       }
-      for (const auto& c : de.children() )
-        dump(c.second,level+1);
       return 1;
     }
   };
-  return Actor(ConditionsManager::from(lcdd)).dump(lcdd.world(),0);
+  return Actor(ConditionsManager::from(lcdd)).process(lcdd.world(),0,true);
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
   
@@ -256,14 +285,15 @@ DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare)
  */
 static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
 
-  struct Actor {
+  struct Actor : public Geometry::DetElementProcessor<ConditionsProcessor>  {
     ConditionsManager     manager;
-    ConditionsProcessor*  processor;
     dd4hep_ptr<UserPool>  user_pool;
     const IOVType*        iov_type;
 
     /// Standard constructor
-    Actor(ConditionsProcessor* p, ConditionsManager m)  : manager(m), processor(p)  {
+    Actor(ConditionsProcessor* p, ConditionsManager m)
+      : DetElementProcessor<ConditionsProcessor>(p), manager(m)
+    {
       iov_type = manager.iovType("run");
       IOV  iov(iov_type);
       iov.set(1500);
@@ -276,18 +306,16 @@ static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     }
 
     /// Default destructor
-    ~Actor()   {
+    virtual ~Actor()   {
       manager.clean(iov_type, 20);
       user_pool->clear();
       user_pool.release();
     }
     /// Dump method.
-    long dump(DetElement de)   {
+    virtual int operator()(DetElement de, int)   {
       if ( de.hasConditions() )  {
-        processor->processElement(de);
+        return processor->processElement(de);
       }
-      for (const auto& c : de.children() )
-        dump(c.second);
       return 1;
     }
   };
@@ -299,7 +327,7 @@ static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     const void* args[] = { "-processor", "DD4hepConditionsPrinter", 0};
     processor = createProcessor<ConditionsProcessor>(lcdd, 2, (char**)args);
   }
-  return Actor(processor,ConditionsManager::from(lcdd)).dump(lcdd.world());
+  return Actor(processor,ConditionsManager::from(lcdd)).process(lcdd.world(),0,true);
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
 

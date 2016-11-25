@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -33,6 +32,7 @@ namespace DD4hep {
     // Forward declarations
     class Entry;
     class ConditionsDataLoader;
+    class ConditionsManagerObject;
     typedef std::list<Entry*> ConditionsStack;
 
     /// Interface for a generic conditions loader
@@ -60,7 +60,7 @@ namespace DD4hep {
 
     protected:
       /// Queue update to manager.
-      Condition queueUpdate(Entry* data);
+      //Condition queueUpdate(Entry* data);
       /// Push update to manager.
       void pushUpdates();
 

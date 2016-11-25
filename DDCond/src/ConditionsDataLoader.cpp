@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
+#include "DDCond/ConditionsDataLoader.h"
+#include "DDCond/ConditionsManagerObject.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
-#include "DDCond/ConditionsInterna.h"
-#include "DDCond/ConditionsDataLoader.h"
 
 using std::string;
 using namespace DD4hep::Conditions;
@@ -25,7 +24,8 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsDataLoader);
 
 /// Default constructor
 ConditionsDataLoader::ConditionsDataLoader(LCDD& lcdd, ConditionsManager mgr, const string nam) 
-  : NamedObject(nam,"ConditionsDataLoader"), m_lcdd(lcdd), m_mgr(mgr)  {
+  : NamedObject(nam,"ConditionsDataLoader"), m_lcdd(lcdd), m_mgr(mgr)
+{
   if ( m_mgr.isValid() ) return;
   except("ConditionsDataLoader","+++ Cannot create loader without a valid conditions manager handle!");
 }
@@ -40,9 +40,9 @@ void ConditionsDataLoader::addSource(const string& source, const IOV& iov)   {
 }
 
 /// Queue update to manager.
-Condition ConditionsDataLoader::queueUpdate(Entry* data)   {
-  return m_mgr->__queue_update(data);
-}
+//Condition ConditionsDataLoader::queueUpdate(Entry* data)   {
+//  return m_mgr->__queue_update(data);
+//}
 
 /// Push update to manager.
 void ConditionsDataLoader::pushUpdates()   {

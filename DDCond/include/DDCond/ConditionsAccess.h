@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -28,6 +27,8 @@ namespace DD4hep {
 
     /// Manager class for condition handles
     /**
+     *  Facade of the generic ConditionsManagerObject implementation
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS

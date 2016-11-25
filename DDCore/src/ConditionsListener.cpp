@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsListener.h"
+#include "DD4hep/ConditionsListener.h"
 
 using namespace DD4hep::Conditions;
 

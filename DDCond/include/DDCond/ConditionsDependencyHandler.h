@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,9 +15,9 @@
 
 // Framework include files
 #include "DD4hep/Detector.h"
-#include "DD4hep/Conditions.h"
-#include "DDCond/ConditionsInterna.h"
-#include "DDCond/ConditionsManager.h"
+#include "DD4hep/ConditionDerived.h"
+#include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsDependencyCollection.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -28,7 +27,9 @@ namespace DD4hep {
 
     // Forward declarations
     class UserPool;
-
+    class ConditionsManagerObject;
+    class ConditionsDependencyCollection;
+    
     /// Callback handler to update condition dependencies.
     /** 
      *
@@ -37,11 +38,11 @@ namespace DD4hep {
      */
     class ConditionsDependencyHandler : public ConditionResolver {
     public:
-      typedef ConditionsManager::Dependencies Dependencies;
+      typedef ConditionsDependencyCollection Dependencies;
 
     protected:
       /// Reference to conditions manager 
-      ConditionsManager::Object* m_manager;
+      ConditionsManagerObject*   m_manager;
       /// Reference to the user pool object
       UserPool&                  m_pool;
       /// Dependency container to be resolved.
@@ -54,23 +55,20 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      ConditionsDependencyHandler(ConditionsManager::Object* mgr,
+      ConditionsDependencyHandler(ConditionsManagerObject* mgr,
                                   UserPool& pool, 
                                   const Dependencies& dependencies,
                                   void* user_param);
       /// Default destructor
       ~ConditionsDependencyHandler();
-      /// ConditionResolver implementation: Access to the conditions manager
-      virtual Ref_t manager() const
-      { return m_manager;         }
       /// ConditionResolver implementation: Access to the detector description instance
-      virtual LCDD& lcdd() const
-      { return m_manager->lcdd(); }
-      virtual const IOV& requiredValidity()  const
-      { return m_pool.validity(); }
+      LCDD& lcdd() const;
+      /// ConditionResolver implementation: Access to the conditions manager
+      virtual Ref_t manager() const                     { return m_manager;         }
+      /// Access to pool IOV
+      virtual const IOV& requiredValidity()  const      { return m_pool.validity(); }
       /// ConditionResolver implementation: Interface to access conditions.
-      virtual Condition get(const ConditionKey& key)  const
-      {  return get(key.hash);    }
+      virtual Condition get(const ConditionKey& key)  const { return get(key.hash); }
       /// ConditionResolver implementation: Interface to access conditions
       virtual Condition get(unsigned int key)  const;
       /// Handler callback to process multiple derived conditions

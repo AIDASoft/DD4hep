@@ -17,7 +17,9 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/ConditionDerived.h"
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsDependencyCollection.h"
 #include "DDAlign/AlignmentsManager.h"
 
 using namespace DD4hep;

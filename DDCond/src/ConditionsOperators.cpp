@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -15,12 +14,9 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsOperators.h"
 #include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsInterna.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -44,15 +40,15 @@ size_t Operators::collectAllConditions(ConditionsManager manager, RangeCondition
     if ( type )   {
       ConditionsIOVPool* pool = manager.iovPool(*type);
       if ( pool )  {
-	const _E& e = pool->elements;
-	for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
-	  ConditionsPool* cp = (*j).second;
-	  RangeConditions rc;
-	  cp->select_all(rc);
-	  for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
-	    conditions.push_back(*ic);
-	  num_conditions += rc.size();
-	}
+        const _E& e = pool->elements;
+        for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
+          ConditionsPool* cp = (*j).second;
+          RangeConditions rc;
+          cp->select_all(rc);
+          for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
+            conditions.push_back(*ic);
+          num_conditions += rc.size();
+        }
       }
     }
   }
@@ -76,15 +72,15 @@ size_t Operators::collectAllConditions(ConditionsManager manager, std::map<int,C
     if ( type )   {
       ConditionsIOVPool* pool = manager.iovPool(*type);
       if ( pool )  {
-	const _E& e = pool->elements;
-	for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
-	  ConditionsPool* cp = (*j).second;
-	  RangeConditions rc;
-	  cp->select_all(rc);
-	  for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
-	    conditions.insert(make_pair((*ic)->hash,*ic));
-	  num_conditions += rc.size();
-	}
+        const _E& e = pool->elements;
+        for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
+          ConditionsPool* cp = (*j).second;
+          RangeConditions rc;
+          cp->select_all(rc);
+          for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
+            conditions.insert(make_pair((*ic)->hash,*ic));
+          num_conditions += rc.size();
+        }
       }
     }
   }

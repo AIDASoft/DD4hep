@@ -109,9 +109,9 @@ static void* create_DDAlignForwardCall(Geometry::LCDD& /* lcdd */, int /* argc *
 }
 DECLARE_LCDD_CONSTRUCTOR(DDAlign_ForwardCall, create_DDAlignForwardCall)
 
+// ======================================================================================
 #include "DD4hep/PluginTester.h"
 #include "DDCond/ConditionsPool.h"
-// ======================================================================================
 static long compute_alignments(Geometry::LCDD& lcdd, int /* argc */, char** /* argv */)   {
   AlignmentsManager mgr = AlignmentsManager::from(lcdd);
   PluginTester*     tst = lcdd.extension<PluginTester>();
@@ -121,3 +121,75 @@ static long compute_alignments(Geometry::LCDD& lcdd, int /* argc */, char** /* a
   return 1;
 }
 DECLARE_APPLY(DDAlign_ComputeAlignments, compute_alignments)
+
+// ======================================================================================
+#include "DDAlign/AlignmentsRegister.h"
+//#include "DD4hep/PluginTester.h"
+//#include "DDCond/ConditionsPool.h"
+/// Convert alignments conditions to alignment objects
+static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** argv)  {
+  std::vector<char*> args_prepare, args_call;
+
+  for(int i=0; i<argc && argv[i]; ++i)  {
+    if ( ::strcmp(argv[i],"-prepare") == 0 )  {
+      while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-prepare-end") )
+        args_prepare.push_back(argv[i]);
+    }
+    if ( ::strcmp(argv[i],"-call") == 0 )  {
+      while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-call-end") )
+        args_call.push_back(argv[i]);
+    }
+  }
+
+  PluginTester* test = lcdd.extension<PluginTester>();
+  Conditions::UserPool* pool = (Conditions::UserPool*)
+    PluginService::Create<void*>((const char*)args_prepare[0],&lcdd,
+                                 int(args_prepare.size())-1,
+                                 (char**)&args_prepare[1]);
+  if ( 0 == pool )  {
+    except("AlignRegister","++ Failed to prepare conditions user-pool!");
+  }
+  test->addExtension<Conditions::UserPool>(pool,"ConditionsTestUserPool");
+  AlignmentUpdateCall* call = (AlignmentUpdateCall*)
+    PluginService::Create<void*>((const char*)args_call[0],&lcdd,
+                                 int(args_call.size())-1,
+                                 (char**)&args_call[1]);
+  if ( 0 == call )  {
+    except("AlignRegister","++ Failed to create update call!");
+  }
+  AlignmentsManager mgr = AlignmentsManager::from(lcdd);
+  AlignmentsRegister* obj = new AlignmentsRegister(mgr, call, pool);
+  return obj;
+}
+DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentsRegister,ddalign_AlignmentsRegister)
+
+// ======================================================================================
+#include "DDAlign/AlignmentsForward.h"
+//#include "DD4hep/PluginTester.h"
+//#include "DDCond/ConditionsPool.h"
+/// Convert alignments conditions to alignment objects
+static void* ddalign_AlignmentsForward(Geometry::LCDD& lcdd, int argc, char** argv)  {
+  std::vector<char*> args_prepare, args_call;
+
+  for(int i=0; i<argc && argv[i]; ++i)  {
+    if ( ::strcmp(argv[i],"-call") == 0 )  {
+      while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-call-end") )
+        args_call.push_back(argv[i]);
+    }
+  }
+
+  PluginTester* test = lcdd.extension<PluginTester>();
+  Conditions::UserPool* pool = test->extension<Conditions::UserPool>("ConditionsTestUserPool");
+  AlignmentUpdateCall*  call = (AlignmentUpdateCall*)
+    PluginService::Create<void*>((const char*)args_call[0],&lcdd,
+                                 int(args_call.size())-1,
+                                 (char**)&args_call[1]);
+  if ( 0 == call )  {
+    except("AlignForward","++ Failed to create update call!");
+  }
+  AlignmentsManager mgr = AlignmentsManager::from(lcdd);
+  AlignmentsForward* obj = new AlignmentsForward(mgr, call, pool);
+  return obj;
+}
+DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentsForward,ddalign_AlignmentsForward)
+

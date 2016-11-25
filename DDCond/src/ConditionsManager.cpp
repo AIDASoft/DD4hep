@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -14,17 +13,25 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Errors.h"
+#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
-#include "DDCond/ConditionsInterna.h"
+#include "DD4hep/InstanceCount.h"
+
+#include "DD4hep/ConditionsListener.h"
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
+DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsManagerObject);
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+  
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Conditions {
 
@@ -32,15 +39,114 @@ namespace DD4hep {
     template <> ConditionsManager ConditionsManager::from<LCDD>(LCDD& host)  {
       Object* obj = host.extension<Object>();
       if ( obj ) return ConditionsManager(obj);
-      except("ConditionsManager","+++ Failed to access manager from LCDD.");
+      except("ConditionsManager","+++ Failed to access installed manager from LCDD.");
       return ConditionsManager();
     }
   }
 }
 
 /// Default constructor
+ConditionsManagerObject::ConditionsManagerObject(LCDD& ref_lcdd)
+  : NamedObject(), m_lcdd(ref_lcdd)
+{
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+ConditionsManagerObject::~ConditionsManagerObject()   {
+  m_onRegister.clear();
+  m_onRemove.clear();
+  InstanceCount::decrement(this);
+}
+
+void ConditionsManagerObject::registerCallee(Listeners& listeners, const Listener& callee, bool add)  {
+  if ( add )  {
+    listeners.insert(callee);
+    return;
+  }
+  Listeners::iterator i=listeners.find(callee);
+  if ( i != listeners.end() ) listeners.erase(i);  
+}
+
+/// (Un)Registration of conditions listeners with callback when a new condition is registered
+void ConditionsManagerObject::callOnRegister(const Listener& callee, bool add)  {
+  registerCallee(m_onRegister, callee, add);
+}
+
+/// (Un)Registration of conditions listeners with callback when a condition is de-registered
+void ConditionsManagerObject::callOnRemove(const Listener& callee, bool add)  {
+  registerCallee(m_onRemove, callee, add);
+}
+
+/// Call this when a condition is registered to the cache
+void ConditionsManagerObject::onRegister(Condition condition)    {
+  for(const auto& listener : m_onRegister )
+    listener.first->onRegisterCondition(condition, listener.second);
+}
+
+/// Call this when a condition is deregistered from the cache
+void ConditionsManagerObject::onRemove(Condition condition)   {
+  for(const auto& listener : m_onRemove )
+    listener.first->onRegisterCondition(condition, listener.second);
+}
+
+/// Access the used/registered IOV types
+const vector<const IOVType*> ConditionsManagerObject::iovTypesUsed() const   {
+  vector<const IOVType*> result;
+  const IOVTypes& types = iovTypes();
+  for ( const auto& i : types )  {
+    if ( int(i.type) != IOVType::UNKNOWN_IOV ) result.push_back(&i);
+  }
+  return result;
+}
+
+/// Create IOV from string
+void ConditionsManagerObject::fromString(const std::string& data, IOV& iov)   {
+  size_t id1 = data.find(',');
+  size_t id2 = data.find('#');
+  if ( id2 == string::npos )  {
+    except("ConditionsManager","+++ Unknown IOV string representation: %s",data.c_str());
+  }
+  string iov_name = data.substr(id2+1);
+  IOV::Key key;
+  int nents = 0;
+  if ( id1 != string::npos )
+    nents = ::sscanf(data.c_str(),"%ld,%ld#",&key.first,&key.second) == 2 ? 2 : 0;
+  else  {
+    nents = ::sscanf(data.c_str(),"%ld#",&key.first) == 1 ? 1 : 0;
+    key.second = key.first;
+  }
+  if ( nents == 0 )   {
+    except("ConditionsManager",
+           "+++ Failed to read keys from IOV string representation: %s",data.c_str());
+  }
+
+  // Check if this IOV type is known
+  const IOVType* typ = iovType(iov_name);
+  if ( !typ )  {
+    // Severe: We have an unknown IOV type. This is not allowed, 
+    // because we do not known hot to handle it.....
+    except("ConditionsManager","+++ Unknown IOV type requested from data: %s. [%s]",
+           data.c_str(),Errors::invalidArg().c_str());
+  }
+  iov.type    = typ->type;
+  iov.iovType = typ;
+  iov.set(key);
+}
+
+/// Register IOV using new string data
+ConditionsPool* ConditionsManagerObject::registerIOV(const string& data)   {
+  IOV iov(0);
+  // Convert string to IOV
+  fromString(data, iov);
+  // IOV read and checked. Now register it.
+  // The validity of iov->iovType is already ensured in 'fromString'
+  return registerIOV(*iov.iovType, iov.keyData);
+}
+
+/// Default constructor
 ConditionsManager::ConditionsManager(LCDD& lcdd)  {
-  assign(new Object(lcdd), "ConditionsManager","");
+  assign(ConditionsManager::from(lcdd).ptr(), "ConditionsManager","");
 }
 
 ConditionsManager& ConditionsManager::initialize()   {
@@ -59,13 +165,13 @@ Property& ConditionsManager::operator[](const std::string& property_name) const 
 }
 
 /// Access the conditions loader
-Handle<ConditionsManager::Loader> ConditionsManager::loader()  const    {
+ConditionsManager::Loader* ConditionsManager::loader()  const    {
   return access()->loader();
 }
 
 /// Register new IOV type if it does not (yet) exist.
 pair<bool, const IOVType*> 
-ConditionsManager::registerIOVType(size_t iov_type, const string& iov_name)   {
+ConditionsManager::registerIOVType(size_t iov_type, const string& iov_name)  const  {
   return access()->registerIOVType(iov_type, iov_name);
 }
 
@@ -75,8 +181,8 @@ const IOVType* ConditionsManager::iovType (const string& iov_name) const   {
 }
 
 /// Access conditions multi IOV pool by iov type
-ConditionsIOVPool* ConditionsManager::iovPool(const IOVType& iov_type)  const   {
-  return access()->m_rawPool[iov_type.type];
+ConditionsIOVPool* ConditionsManager::iovPool(const IOVType& iov_type)  const {
+  return access()->iovPool(iov_type);
 }
 
 /// Access the used/registered IOV types
@@ -90,33 +196,48 @@ const vector<const IOVType*> ConditionsManager::iovTypesUsed() const  {
 }
 
 /// Register IOV with type and key
-ConditionsPool* ConditionsManager::registerIOV(const IOVType& typ, IOV::Key key)   {
+ConditionsPool* ConditionsManager::registerIOV(const string& iov_rep)  const   {
+  IOV iov(0);
+  Object* o = access();
+  o->fromString(iov_rep, iov);
+  if ( iov.iovType )
+    return o->registerIOV(*iov.iovType, iov.key());
+  except("ConditionsManager","Invalid IOV type registration requested by IOV:%s",iov_rep.c_str());
+  return 0;
+}
+      
+/// Register IOV with type and key
+ConditionsPool* ConditionsManager::registerIOV(const IOVType& typ, IOV::Key key)   const {
   return access()->registerIOV(typ, key);
 }
 
 /// Create IOV from string
-void ConditionsManager::fromString(const string& iov_str, IOV& iov)  {
+void ConditionsManager::fromString(const string& iov_str, IOV& iov)  const  {
   access()->fromString(iov_str, iov);
 }
 
 /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-bool ConditionsManager::registerUnlocked(ConditionsPool* pool, Condition cond)   {
+bool ConditionsManager::registerUnlocked(ConditionsPool* pool, Condition cond)  const  {
   return access()->registerUnlocked(pool, cond);
 }
 
+/// Push all pending updates to the conditions store. 
+void ConditionsManager::pushUpdates()  const {
+}
+
 /// Clean conditions, which are above the age limit.
-void ConditionsManager::clean(const IOVType* typ, int max_age)   {
+void ConditionsManager::clean(const IOVType* typ, int max_age)  const  {
   access()->clean(typ, max_age);
 }
 
 /// Full cleanup of all managed conditions.
-void ConditionsManager::clear()   {
+void ConditionsManager::clear()  const  {
   access()->clear();
 }
 
 /// Prepare all updates for the given keys to the clients with the defined IOV
-long ConditionsManager::prepare(const IOV& required_validity,
-                                const ConditionKeys& keys,
+long ConditionsManager::prepare(const IOV&            required_validity,
+                                const ConditionKeys&  keys,
                                 dd4hep_ptr<UserPool>& user_pool)  {
   return access()->prepare(required_validity, keys, user_pool);
 }
@@ -137,9 +258,9 @@ long ConditionsManager::prepare(const IOV& required_validity, dd4hep_ptr<UserPoo
 }
 
 /// Prepare all updates to the clients with the defined IOV
-long ConditionsManager::prepare(const IOV& required_validity,
+long ConditionsManager::prepare(const IOV&            required_validity,
                                 dd4hep_ptr<UserPool>& user_pool,
-                                const Dependencies& dependencies,
-                                bool verify_dependencies)  {
+                                const Dependencies&   dependencies,
+                                bool                  verify_dependencies)  {
   return access()->prepare(required_validity, user_pool, dependencies, verify_dependencies);
 }

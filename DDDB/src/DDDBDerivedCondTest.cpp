@@ -30,7 +30,7 @@
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsInterna.h"
+#include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsOperators.h"
 
 #include "DDDB/DDDBReader.h"

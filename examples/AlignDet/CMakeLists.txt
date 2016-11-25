@@ -1,4 +1,3 @@
-# $Id: $
 #==========================================================================
 #  AIDA Detector description implementation for LCD
 #--------------------------------------------------------------------------
@@ -16,7 +15,7 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 dd4hep_configure_output()
 dd4hep_package ( AlignDet MAJOR 0 MINOR 0 PATCH 1
   USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
-                 [DD4hep REQUIRED COMPONENTS DDCore]
+                 [DD4hep REQUIRED COMPONENTS DDCore DDAlign]
   OPTIONAL       XERCESC
   INCLUDE_DIRS   include
   )

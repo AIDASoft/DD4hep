@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,14 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
 #include "DDCond/ConditionsDependencyHandler.h"
+#include "DDCond/ConditionsManagerObject.h"
+#include "DD4hep/Printout.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 /// Default constructor
-ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager::Object* mgr,
+ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManagerObject* mgr,
                                                          UserPool& pool,
                                                          const Dependencies& dependencies,
                                                          void* user_param)
@@ -30,6 +30,11 @@ ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager::Obje
 
 /// Default destructor
 ConditionsDependencyHandler::~ConditionsDependencyHandler()   {
+}
+
+/// ConditionResolver implementation: Access to the detector description instance
+LCDD& ConditionsDependencyHandler::lcdd() const  {
+  return m_manager->lcdd();
 }
 
 /// ConditionResolver implementation: Interface to access conditions

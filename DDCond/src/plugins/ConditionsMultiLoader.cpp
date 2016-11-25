@@ -77,14 +77,13 @@ namespace DD4hep {
 //  \version 1.0
 //
 //==========================================================================
-// $Id$
 
 // Framework include files
 //#include "ConditionsMultiLoader.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/PluginCreators.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DDCond/ConditionsManager.h"
 
 // Forward declartions
 using std::string;
@@ -93,7 +92,7 @@ using namespace DD4hep::Conditions;
 namespace {
   void* create_loader(DD4hep::Geometry::LCDD& lcdd, int argc, char** argv)   {
     const char* name = argc>0 ? argv[0] : "MULTILoader";
-    ConditionsManagerObject* mgr = (ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
+    ConditionsManager::Object* mgr = (ConditionsManager::Object*)(argc>0 ? argv[1] : 0);
     return new ConditionsMultiLoader(lcdd,ConditionsManager(mgr),name);
   }
 }
@@ -194,7 +193,7 @@ size_t ConditionsMultiLoader::update(const iov_type& req_validity,
     size_t items = load(cond->hash,req_validity,upda);
     if ( items < 1 )  {
       // Error: no such condition
-      except("ConditionsManager",
+      except("MultiLoader",
              "+++ update_expired: Cannot update condition %s [%s] to iov:%s.",
              cond->name.c_str(), cond->iov->str().c_str(), req_validity.str().c_str());
     }

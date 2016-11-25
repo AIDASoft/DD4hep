@@ -93,7 +93,6 @@ namespace DD4hep {
     template <> void AlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const;
     template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operator() (Nodes::value_type& n)  const;
     template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operator() (Nodes::value_type& n)  const;
-
-  } /* End namespace Geometry        */
-} /* End namespace DD4hep            */
-#endif    /* DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H       */
+  }       /* End namespace Alignments              */
+}         /* End namespace DD4hep                  */
+#endif    /* DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H */
