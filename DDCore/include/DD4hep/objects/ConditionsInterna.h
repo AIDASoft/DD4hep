@@ -34,6 +34,9 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
+  class IOVType;
+
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
 
@@ -54,6 +57,7 @@ namespace DD4hep {
       typedef Condition::iov_type              iov_type;
       /// Protected destructor
       virtual ~ConditionsLoader();
+
     public:
       /// Addreference count. Use object
       virtual void addRef() = 0;

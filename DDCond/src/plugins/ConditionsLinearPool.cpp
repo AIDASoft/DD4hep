@@ -14,7 +14,6 @@
 #define DDCOND_CONDITIONSLINEARPOOL_H
 
 // Framework include files
-#include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsSelectors.h"
@@ -30,6 +29,11 @@ namespace DD4hep {
 
     /// Class implementing the conditions collection for a given IOV type
     /**
+     *  Please note:
+     *  Users should not directly interact with object instances of this type.
+     *  Data are not thread protected and interaction may cause serious harm.
+     *  Only the ConditionsManager implementation should interact with
+     *  this class or any subclass to ensure data integrity.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -181,6 +185,7 @@ namespace DD4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 
+using DD4hep::Handle;
 using namespace DD4hep::Conditions;
 
 /// Default constructor

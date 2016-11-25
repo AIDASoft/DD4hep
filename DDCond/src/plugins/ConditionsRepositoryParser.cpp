@@ -26,7 +26,6 @@
 
 #include "DDCond/ConditionsTags.h"
 #include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsInterna.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -94,9 +93,11 @@ namespace {
     DetElement         detector;
     ConditionsPool*    pool;
     ConditionsManager  manager;
+    ConversionArg() = delete;
+    ConversionArg(const ConversionArg&) = delete;
     ConversionArg(DetElement det, ConditionsManager m) : detector(det), pool(0), manager(m)
-    {
-    }
+    { }
+    ConversionArg& operator=(const ConversionArg&) = delete;
   };
 
   /// Local helper class to interprete XML conditions
@@ -224,7 +225,7 @@ namespace DD4hep {
     ConversionArg* arg  = _param<ConversionArg>();
     CurrentPool pool(arg);
     printout(s_parseLevel,"XMLConditions","++ Reading IOV file: %s -> %s", val.c_str(), ref.c_str());
-    pool.set(arg->manager->registerIOV(val));
+    pool.set(arg->manager.registerIOV(val));
     XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
     Converter<conditions>(lcdd,param,optional)(doc.root());
   }

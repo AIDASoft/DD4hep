@@ -20,6 +20,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
   class IOVType;
   class IOV;
 
@@ -74,8 +75,10 @@ namespace DD4hep {
 
     /// Initializing constructor
     explicit IOV(const IOVType* typ);
-    /// Specialized copy constructor
+    /// Specialized copy constructor for range IOVs
     explicit IOV(const IOVType* typ, const Key& key);
+    /// Specialized copy constructor for discrete IOVs
+    explicit IOV(const IOVType* typ, Key_first_type iov_value);
     /// Copy constructor
     IOV(const IOV& copy) = default;
     /// Standard Destructor

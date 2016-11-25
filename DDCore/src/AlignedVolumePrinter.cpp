@@ -25,6 +25,12 @@ AlignedVolumePrinter::AlignedVolumePrinter(const string& pref, int flg)
 {
 }
 
+/// Initializing constructor
+AlignedVolumePrinter::AlignedVolumePrinter(UserPool* p, const std::string& pref,int flg)
+  : AlignmentsProcessor(p), name("Alignment"), prefix(pref), m_flag(flg)
+{
+}
+
 /// Callback to output alignments information
 int AlignedVolumePrinter::operator()(Alignment a)    {
   printAlignment(name, a);

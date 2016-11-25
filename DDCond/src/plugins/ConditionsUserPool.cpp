@@ -25,19 +25,27 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Conditions {
 
+    /// Forward declarations
+    class ConditionsDataLoader;
+    
     /// Class implementing the conditions user pool for a given IOV type
     /**
+     *
+     *  Please note:
+     *  Users should not directly interact with object instances of this type.
+     *  Data are not thread protected and interaction may cause serious harm.
+     *  Only the ConditionsManager implementation should interact with
+     *  this class or any subclass to ensure data integrity.
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
     template<typename MAPPING> 
-    class ConditionsMappedUserPool : public UserPool
-    {
+    class ConditionsMappedUserPool : public UserPool    {
       typedef MAPPING Mapping;
-      Mapping        m_conditions;
-
+      Mapping               m_conditions;
+      ConditionsDataLoader* m_loader;
       Condition::Object* i_findCondition(key_type key)  const;
 
     public:
@@ -72,12 +80,10 @@ namespace DD4hep {
       /// Evaluate and register all derived conditions from the dependency list
       virtual long compute(const Dependencies& dependencies, void* user_param);
     };
+  }    /* End namespace Conditions               */
+}      /* End namespace DD4hep                   */
+#endif /* DDCOND_CONDITIONSMAPPEDUSERPOOL_H      */
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-#endif // DDCOND_CONDITIONSMAPPEDUSERPOOL_H
-
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -96,10 +102,11 @@ namespace DD4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-#include "DDCond/ConditionsInterna.h"
+
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsSelectors.h"
+#include "DDCond/ConditionsDataLoader.h"
+#include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsDependencyHandler.h"
 
 using namespace DD4hep::Conditions;
@@ -122,6 +129,12 @@ ConditionsMappedUserPool<MAPPING>::ConditionsMappedUserPool(ConditionsManager mg
   : UserPool(mgr, pool)
 {
   InstanceCount::increment(this);
+  if ( mgr.isValid() )  {
+    m_loader = mgr->loader();
+    if ( m_loader ) return;
+    except("UserPool","The conditions manager is not properly setup. No conditions loader present.");
+  }
+  except("UserPool","FAILED to create user pool. [Invalid conditions manager]");
 }
 
 /// Default destructor
@@ -229,7 +242,7 @@ long ConditionsMappedUserPool<MAPPING>::prepare(const IOV& required)   {
     for_each(valid.begin(),valid.end(),Inserter<MAPPING>(m_conditions));
     long num_expired = (long)expired.size();
     if ( num_expired > 0 )  {
-      m_manager->loader()->update(required, expired, pool_iov);
+      m_loader->update(required, expired, pool_iov);
       for_each(expired.begin(),expired.end(),Inserter<MAPPING>(m_conditions));
     }
     m_iov = pool_iov;
@@ -248,7 +261,7 @@ long ConditionsMappedUserPool<MAPPING>::prepare(const IOV& required, const Condi
       typename MAPPING::const_iterator i=m_conditions.find(k.hash);
       if ( i == m_conditions.end() )  {
         RangeConditions loaded;
-        m_manager->loader()->load(k.hash, required, loaded);
+        m_loader->load(k.hash, required, loaded);
         if ( loaded.empty() )  {
           DD4hep::except("UserPool","++ Failed to load condition: %s",k.name.c_str());
         }
@@ -264,8 +277,9 @@ template<typename MAPPING>
 long ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps, void* user_param)  {
   long num_updates = 0;
   if ( !deps.empty() )  {
-    ConditionsDependencyHandler handler(m_manager.ptr(), *this, deps, user_param);
-    ConditionsPool* pool = m_manager->registerIOV(*m_iov.iovType, m_iov.keyData);
+    ConditionsManagerObject* m = m_manager.access();
+    ConditionsDependencyHandler handler(m, *this, deps, user_param);
+    ConditionsPool* pool = m->registerIOV(*m_iov.iovType, m_iov.keyData);
     // Loop over the dependencies and check if they have to be upgraded
     for ( const auto& i : deps )  {
       typename MAPPING::iterator j = m_conditions.find(i.first);
@@ -278,7 +292,7 @@ long ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps, void* 
       }
       const ConditionDependency* d = i.second.get();
       Condition::Object* cond = handler(d);
-      m_manager->registerUnlocked(pool, cond); // Would bulk update be more efficient?
+      m->registerUnlocked(pool, cond); // Would bulk update be more efficient?
       ++num_updates;
     }
   }
@@ -288,7 +302,7 @@ long ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps, void* 
 namespace {
   void* create_user_pool(DD4hep::Geometry::LCDD&, int argc, char** argv)  {
     if ( argc > 1 )  {
-      ConditionsManager::Object* m = (ConditionsManager::Object*)argv[0];
+      ConditionsManagerObject* m = (ConditionsManagerObject*)argv[0];
       ConditionsIOVPool* p = (ConditionsIOVPool*)argv[1];
       UserPool* pool = new ConditionsMappedUserPool<std::map<Condition::key_type,Condition::Object*> >(m, p);
       return pool;

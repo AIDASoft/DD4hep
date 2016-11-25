@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -20,12 +19,10 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/DetConditions.h"
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 
 #include "DDCond/ConditionsAccess.h"
-#include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsInterna.h"
+#include "DDCond/ConditionsManager.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -53,7 +50,6 @@ namespace DD4hep {
         DetElement daughter(const std::string& sub_path)  const;
 
         void add_xml_data_source(const std::string& file, const std::string& iov);
-        void dump_conditions_pools();
         static void dump_detector_element(DetElement elt);
         static void dump_conditions_tree(DetElement elt);
       };

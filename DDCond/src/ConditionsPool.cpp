@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,11 +12,12 @@
 //==========================================================================
 
 // Framework include files
+#include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsManagerObject.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 using std::string;
 using namespace DD4hep;

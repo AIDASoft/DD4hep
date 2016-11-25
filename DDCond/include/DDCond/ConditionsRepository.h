@@ -1,4 +1,3 @@
-// $Id: ConditionsRepository.h 2336 2016-09-07 17:27:40Z markus.frank@cern.ch $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -28,9 +27,6 @@ namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Conditions {
-
-    /// Forward declarations
-
 
     /// Base class to be implemented by objects to listen on condition callbacks
     /**

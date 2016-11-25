@@ -46,7 +46,7 @@ namespace DD4hep {
     public:
 
       /// Standard object type
-      typedef ConditionsManagerObject            Object;
+      typedef ConditionsManagerObject    Object;
       typedef ConditionsDataLoader               Loader;
       typedef std::vector<IOVType>               IOVTypes;
       typedef std::map<IOVType*,Container>       TypeConditions;
@@ -98,7 +98,7 @@ namespace DD4hep {
       PropertyManager& properties()  const;
 
       /// Access the conditions loader
-      Handle<Loader> loader()  const;
+      Loader* loader()  const;
 
       /// Access the used/registered IOV types
       const std::vector<const IOVType*> iovTypesUsed() const;
@@ -110,25 +110,34 @@ namespace DD4hep {
       ConditionsIOVPool* iovPool(const IOVType& type)  const;
 
       /// Create IOV from string
-      void fromString(const std::string& iov_str, IOV& iov);
+      void fromString(const std::string& iov_str, IOV& iov)  const;
 
       /// Register new IOV type if it does not (yet) exist.
       /** Returns (false,pointer) if IOV existed and
        *  (true,pointer) if new IOV was registered to the manager.
        */
-      std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
+      std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name) const;
 
       /// Register IOV with type and key
-      ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
+      ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key) const;
+
+      /// Register IOV with type and key
+      ConditionsPool* registerIOV(const std::string& iov_rep)  const;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      bool registerUnlocked(ConditionsPool* pool, Condition cond);
+      bool registerUnlocked(ConditionsPool* pool, Condition cond) const;
+      
+      /// Push all pending updates to the conditions store. 
+      /** Note:
+       *  This does not yet make the new conditions availible to the clients
+       */
+      void pushUpdates() const;
 
       /// Clean conditions, which are above the age limit.
-      void clean(const IOVType* typ, int max_age);
+      void clean(const IOVType* typ, int max_age) const;
 
       /// Full cleanup of all managed conditions.
-      void clear();
+      void clear()  const;
 
       /// Prepare all updates for the given keys to the clients with the defined IOV
       long prepare(const IOV& required_validity,
@@ -151,7 +160,6 @@ namespace DD4hep {
                    const Dependencies&   dependencies,
                    bool                  verify_dependencies=true);
     };
-
-  }       /* End namespace Conditions               */
-}         /* End namespace DD4hep                   */
-#endif    /* DDCOND_CONDITIONSMANAGER_H             */
+  }       /* End namespace Conditions        */
+}         /* End namespace DD4hep            */
+#endif    /* DDCOND_CONDITIONSMANAGER_H      */

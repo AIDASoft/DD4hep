@@ -1,4 +1,3 @@
-// $Id: ConditionsRepository.cpp 2336 2016-09-07 17:27:40Z markus.frank@cern.ch $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -17,6 +16,7 @@
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsTags.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "XML/DocumentHandler.h"
 #include "XML/XMLTags.h"
 

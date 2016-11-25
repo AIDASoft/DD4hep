@@ -12,9 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Conditions.h"
-#include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsAccess.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 using namespace std;
 using namespace DD4hep;

@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,8 +15,10 @@
 
 // Framework include files
 #include "DD4hep/Detector.h"
-#include "DD4hep/Conditions.h"
 #include "DDCond/ConditionsManager.h"
+
+// C/C++ include files
+#include <set>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -26,8 +27,10 @@ namespace DD4hep {
   namespace Conditions {
 
     // Forward declarations
+    class ConditionsIOVPool;
     class ConditionsPoolInsert;
-    class ConditionsManagerObject;
+    class ConditionDependency;
+    class ConditionsDependencyCollection;
 
     /// Class implementing the conditions collection for a given IOV type
     /**
@@ -35,6 +38,12 @@ namespace DD4hep {
      *  different implementations, which allow for different lookup
      *  and store optimizations and/or various caches.
      *  The interface only represents the basic functionality required.
+     *
+     *  Please note:
+     *  Users should not directly interact with object instances of this type.
+     *  Data are not thread protected and interaction may cause serious harm.
+     *  Only the ConditionsManager implementation should interact with
+     *  this class or any subclass to ensure data integrity.
      *
      *  For convenience, the class definition is here.
      *  See ConditionsManager.cpp for the implementation.
@@ -66,16 +75,11 @@ namespace DD4hep {
     protected:
       friend class ConditionsPoolInsert;
       friend class ConditionsPoolRemove;
-      friend class ConditionsManagerObject;
 
       /// Listener invocation when a condition is registered to the cache
       void onRegister(Condition condition);
       /// Listener invocation when a condition is deregistered from the cache
       void onRemove(Condition condition);
-      /// Register a new condition to this pool
-      virtual void insert(Condition cond) = 0;
-      /// Register a new condition to this pool. May overload for performance reasons.
-      virtual void insert(RangeConditions& cond) = 0;
 
     public:
       /// Default constructor
@@ -86,6 +90,10 @@ namespace DD4hep {
       void print(const std::string& opt)   const;
       /// Full cleanup of all managed conditions.
       virtual void clear() = 0;
+      /// Register a new condition to this pool
+      virtual void insert(Condition cond) = 0;
+      /// Register a new condition to this pool. May overload for performance reasons.
+      virtual void insert(RangeConditions& cond) = 0;
       /// Check if a condition exists in the pool
       virtual Condition exists(Condition::key_type key)  const = 0;
       /// Select the conditions matching the DetElement and the conditions name
@@ -133,19 +141,18 @@ namespace DD4hep {
     class UserPool  {
     public:
       /// Forward definition of the key type
-      typedef Condition::key_type              key_type;
-      /// Forward definition of the condition keys container
-      typedef ConditionsManager::ConditionKeys ConditionKeys;
-      /// Forward definition of the dependency container
-      typedef ConditionsManager::Dependencies  Dependencies;
+      typedef Condition::key_type                  key_type;
+      typedef std::set<ConditionKey>               ConditionKeys;
+      typedef ConditionDependency                  Dependency;
+      typedef ConditionsDependencyCollection       Dependencies;
 
     protected:
       /// The pool's interval of validity
-      IOV                    m_iov;
+      IOV                 m_iov;
       /// Handle to conditions manager object
-      ConditionsManager      m_manager;
+      ConditionsManager   m_manager;
       /// IOV Pool as data source
-      ConditionsIOVPool*     m_iovPool;
+      ConditionsIOVPool*  m_iovPool;
 
     public:
       /// Default constructor

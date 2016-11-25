@@ -69,7 +69,6 @@ namespace DD4hep {
 
 #include "XML/XMLElements.h"
 #include "XML/DocumentHandler.h"
-#include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsEntry.h"
 
 // C/C++ include files
@@ -114,7 +113,8 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
   if ( result == &m_lcdd )  { // All OK.
     for (ConditionsStack::iterator c=stack.begin(); c!=stack.end(); ++c)  {
       Entry* e = (*c);
-      Condition condition = queueUpdate(e);
+      Condition condition;/// = queueUpdate(e);
+      except("ConditionsXmlLoader","Fix me: queueUpdate(e) not implemented");
       delete e;
       if ( condition.isValid() )   {
         if ( key == condition->hash )  {

@@ -29,7 +29,7 @@
 #include "DD4hep/Operators.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/objects/ConditionsInterna.h"
-#include "DDCond/ConditionsInterna.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 // C/C++ include files
 #include <set>

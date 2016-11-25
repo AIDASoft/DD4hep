@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsInterna.h"
 #include "DDCond/AlignmentsLoaderImp.h"
+#include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 using namespace DD4hep::Conditions;
 using DD4hep::Alignments::Alignment;
@@ -25,6 +24,7 @@ using DD4hep::Alignments::AlignmentCondition;
 AlignmentsLoaderImp::AlignmentsLoaderImp(ConditionsManager mgr)
   : m_manager(mgr), m_refCount(1)
 {
+  m_manager.access(); // Check object validity....
 }
 
 /// Default destructor
@@ -45,7 +45,7 @@ void AlignmentsLoaderImp::release()    {
 
 /// Access the conditions loading mechanism
 Alignment AlignmentsLoaderImp::get(key_type key, const Condition::iov_type& iov)  {
-  AlignmentCondition cond = m_manager.ptr()->get(key, iov);
+  AlignmentCondition cond = m_manager->get(key, iov);
   return &cond.data();
 }
 

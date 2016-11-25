@@ -16,7 +16,6 @@
 // Framework include files
 #include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsSelectors.h"
 
 // C/C++ include files
@@ -31,6 +30,12 @@ namespace DD4hep {
 
     /// Class implementing the conditions collection for a given IOV type
     /**
+     *
+     *  Please note:
+     *  Users should not directly interact with object instances of this type.
+     *  Data are not thread protected and interaction may cause serious harm.
+     *  Only the ConditionsManager implementation should interact with
+     *  this class or any subclass to ensure data integrity.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -167,7 +172,6 @@ namespace DD4hep {
 } /* End namespace DD4hep                   */
 #endif // DDCOND_CONDITIONSMAPPEDPOOL_H
 
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -186,6 +190,7 @@ namespace DD4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 
+using DD4hep::Handle;
 using namespace DD4hep::Conditions;
 
 /// Default constructor
@@ -206,7 +211,7 @@ namespace {
   typedef Condition::key_type key_type;
   ConditionsManager _mgr(int argc, char** argv)  {
     if ( argc > 0 )  {
-      ConditionsManager::Object* m = (ConditionsManager::Object*)argv[0];
+      ConditionsManagerObject* m = (ConditionsManagerObject*)argv[0];
       return m;
     }
     DD4hep::except("ConditionsMappedPool","++ Insufficient arguments: arg[0] = ConditionManager!");

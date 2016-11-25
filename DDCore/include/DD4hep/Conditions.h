@@ -43,7 +43,6 @@ namespace DD4hep {
 
     // Forward declarations
     class ConditionsManagerObject;
-    class ConditionsManager;
     class ConditionsLoader;
     class UserPool;
 

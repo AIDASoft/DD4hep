@@ -46,6 +46,8 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       AlignmentsPrinter(const std::string& prefix="",int flags=0);
+      /// Initializing constructor
+      AlignmentsPrinter(UserPool* pool, const std::string& prefix="",int flags=0);
       /// Default destructor
       virtual ~AlignmentsPrinter() = default;
       /// Set name for printouts

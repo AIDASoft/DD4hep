@@ -46,6 +46,8 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       AlignedVolumePrinter(const std::string& prefix="",int flags=0);
+      /// Initializing constructor
+      AlignedVolumePrinter(UserPool* pool, const std::string& prefix="",int flags=0);
       /// Default destructor
       virtual ~AlignedVolumePrinter() = default;
       /// Set name for printouts

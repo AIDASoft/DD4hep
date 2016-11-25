@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,6 +15,8 @@
 #include "DD4hep/DetConditions.h"
 #include "DD4hep/DetectorTools.h"
 #include "DDCond/ConditionsTest.h"
+#include "DDCond/ConditionsDataLoader.h"
+#include "DDCond/ConditionsManager.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
@@ -38,10 +39,8 @@ namespace DD4hep {
     /// Namespace for test environments in DDCond
     namespace Test  {
 
-
       template <typename T> void print_bound_condition(Condition /* c */, const char* /* norm */)   {}
       
-
       template<typename T> void __print_bound_val(Condition c, const char* norm)  {
         char text_format[1024];
         const T& value = access_val<T>(c);
@@ -202,36 +201,8 @@ DetElement Test::TestEnv::daughter(const string& sub_path)  const  {
 void Test::TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
   string source = "xml:"+string(::getenv("DD4hepINSTALL"))+file;
   IOV iov(0);
-  this->manager->fromString(iov_str, iov);
+  this->manager.fromString(iov_str, iov);
   this->loader->addSource(source, iov);
-}
-
-void Test::TestEnv::dump_conditions_pools()
-{
-  typedef RangeConditions _R;
-  typedef ConditionsIOVPool::Elements _E;
-  typedef ConditionsManagerObject::TypedConditionPool _P;
-  int cnt = 0;
-  const _P& p = manager->conditionsPool();
-  for(_P::const_iterator i=p.begin(); i != p.end(); ++i, ++cnt)  {
-    const ConditionsIOVPool* pool = (*i);
-    if ( pool )  {
-      const _E& e = pool->elements;
-      const IOVType* typ = this->manager->iovType(cnt);
-      printout(INFO,"Example","+++ ConditionsIOVPool for type %s", typ->str().c_str());
-      for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
-        _R rc;
-        ConditionsPool* cp = (*j).second;
-        cp->select_all(rc);
-        printout(INFO,"Example","+++ Conditions for pool with IOV: %s age:%d",
-                 cp->iov->str().c_str(), cp->age_value);
-        print_conditions<void>(rc);
-      }
-    }
-  }
-  printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-  printout(INFO,"Example","SUCCESS: +++ Conditions pools successfully dumped");
-  printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 }
 
 /// Dump the conditions of one detectpr element

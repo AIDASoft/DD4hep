@@ -22,9 +22,8 @@
 
 #include "DDCond/ConditionsTags.h"
 #include "DDCond/ConditionsEntry.h"
-#include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsInterna.h"
+#include "DDCond/ConditionsDataLoader.h"
 
 /*
  *   DD4hep namespace declaration

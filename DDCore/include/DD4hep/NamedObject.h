@@ -35,20 +35,21 @@ namespace DD4hep {
     /// The object type
     std::string type;
 
-    /// Standard constructor
-    NamedObject();
     /// Initializing constructor
     NamedObject(const char* nam, const char* typ="");
     /// Initializing constructor
     NamedObject(const std::string& nam);
     /// Initializing constructor
     NamedObject(const std::string& nam, const std::string& typ);
+
+    /// Standard constructor
+    NamedObject() = default;
     /// Copy constructor
-    NamedObject(const NamedObject& c);
+    NamedObject(const NamedObject& c) = default;
     /// Default destructor
-    virtual ~NamedObject();
+    virtual ~NamedObject() = default;
     /// Assignment operator
-    NamedObject& operator=(const NamedObject& c);
+    NamedObject& operator=(const NamedObject& c) = default;
 
     /// Access name
     const char* GetName()  const  {
