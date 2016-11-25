@@ -774,7 +774,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     g4 = new G4Region(r.name());
     // set production cut
     G4ProductionCuts* cuts = new G4ProductionCuts();
-    cuts->SetProductionCut(r.cut()*CLHEP::MeV/dd4hep::MeV);
+    cuts->SetProductionCut(r.cut()*CLHEP::mm/dd4hep::mm);
     g4->SetProductionCuts(cuts);
 
     // create region info with storeSecondaries flag
