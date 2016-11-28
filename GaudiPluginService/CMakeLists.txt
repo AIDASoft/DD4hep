@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 
 project(GaudiPluginService)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

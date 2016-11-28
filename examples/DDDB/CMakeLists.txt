@@ -17,7 +17,7 @@
 #
 
 #==========================================================================
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 
 if (DD4HEP_USE_XERCESC)
   include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )

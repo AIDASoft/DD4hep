@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(DDSegmentation)
  #fg: version number must be the same as DD4hep !!
 set(DDSegmentation_MAJOR_VERSION 0)
