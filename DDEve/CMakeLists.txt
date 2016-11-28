@@ -10,7 +10,7 @@
 #
 #==========================================================================
 dd4hep_package(    DDEve
-  USES             DDCore [ROOT REQUIRED COMPONENTS Eve]
+  USES             DDCore [ROOT REQUIRED COMPONENTS Eve Gui Graf3d RGL]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDEve)
 #
