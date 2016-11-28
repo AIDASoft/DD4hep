@@ -21,8 +21,9 @@
 # 
 # M.Frank, CERN, 2015:  Adapt to new cmake scripts
 #==========================================================================
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 option(BUILD_TESTING "Enable and build tests" ON)
+option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
 find_package ( DD4hep REQUIRED )
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
