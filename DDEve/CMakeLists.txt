@@ -10,7 +10,7 @@
 #
 #==========================================================================
 dd4hep_package(    DDEve
-  USES             DDCore [ROOT REQUIRED COMPONENTS TEve]
+  USES             DDCore [ROOT REQUIRED COMPONENTS Eve]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDEve)
 #

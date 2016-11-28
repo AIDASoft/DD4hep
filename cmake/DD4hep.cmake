@@ -105,11 +105,7 @@ function(dd4hep_generate_rootmap_notapple library)
     SET ( DD4hep_DIR ${CMAKE_SOURCE_DIR} )
   endif()
   find_package(ROOT QUIET)
-if( ${ROOT_VERSION_MAJOR} GREATER 5 )
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
-else()
-  set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
-endif()
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
   #message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
@@ -117,14 +113,14 @@ endif()
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-                             -DROOT_VERSION_MAJOR=${ROOT_VERSION_MAJOR}
+                             -DROOT_VERSION=${ROOT_VERSION}
                              -DDD4hep_DIR=${DD4hep_DIR}
                              -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake)
 
   #add_custom_command(OUTPUT ${rootmapfile}
   #                   COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
   #                           -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-  #                           -DROOT_VERSION_MAJOR=${ROOT_VERSION_MAJOR}
+  #                           -DROOT_VERSION=${ROOT_VERSION}
   #                           -DDD4hep_DIR=${DD4hep_DIR}
   #                           -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake
   #                   DEPENDS ${library})

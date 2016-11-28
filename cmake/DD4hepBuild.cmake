@@ -1266,24 +1266,15 @@ function( dd4hep_add_dictionary dictionary )
     dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
     dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
     #
-    if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
-      ## ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm
-      add_custom_command(OUTPUT ${dictionary}.cxx
-        COMMAND ${ROOTCLING_EXECUTABLE} -cint -f ${dictionary}.cxx 
-        -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${DD4HEP_USE_STDCXX} ${inc_dirs} ${headers} ${linkdefs} 
-        DEPENDS ${headers} ${linkdefs} )
-      #  Install the binary to the destination directory
-      #set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm DESTINATION lib)
-      #set_source_files_properties( ${dictionary}.h ${dictionary}.cxx PROPERTIES GENERATED TRUE )
-    else()
-      add_custom_command(OUTPUT ${dictionary}.h ${dictionary}.cxx
-        COMMAND ${ROOTCINT_EXECUTABLE} -cint -f ${dictionary}.cxx 
-        -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
-        DEPENDS ${headers} ${linkdefs} )
-      #set_source_files_properties( ${dictionary}.h ${dictionary}.cxx PROPERTIES GENERATED TRUE )
+    add_custom_command(OUTPUT ${dictionary}.cxx
+      COMMAND ${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx
+      -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${DD4HEP_USE_STDCXX} ${inc_dirs} ${headers} ${linkdefs}
+      DEPENDS ${headers} ${linkdefs} )
+    #  Install the binary to the destination directory
+    #set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm DESTINATION lib)
+    #set_source_files_properties( ${dictionary}.h ${dictionary}.cxx PROPERTIES GENERATED TRUE )
     endif()
-  endif()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 set ( CMAKE_MODULE_PATH      ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake ) 
 #
 include ( DD4hepBuild )
@@ -20,7 +20,7 @@ option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
-option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
+option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" ON)
 option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
@@ -35,15 +35,13 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 dd4hep_set_version(DD4hep MAJOR 0 MINOR 19 PATCH 0)
 dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
 #
+# Include ROOT
 #
-#  No Reflex library present for ROOT 6
-#
-find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
-if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
-  set ( DD4HEP_USE_CXX11 ON ) 
-  message ( STATUS "ROOT_VERSION_MAJOR: ${ROOT_VERSION_MAJOR} --> Using GaudiPluginService..." )
-  add_subdirectory ( GaudiPluginService)  
-endif()
+find_package ( ROOT REQUIRED COMPONENTS Geom GenVector Eve GUI Graf3d Rgl)
+include(${ROOT_USE_FILE})
+message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
+add_subdirectory ( GaudiPluginService)
+
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
 dd4hep_set_compiler_flags()
