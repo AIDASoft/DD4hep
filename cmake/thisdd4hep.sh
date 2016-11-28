@@ -63,7 +63,6 @@ dd4hep_parse_this ${BASH_ARGV[0]} DD4hep;
 #
 # These 3 are the main configuration variables: ROOT, Geant4 and XercesC
 # --> LCIO & Co. are handled elsewhere!
-export ROOTSYS=@ROOT_ROOT@;
 export Geant4_DIR=@Geant4_DIR@;
 export XERECESCINSTALL=@XERCESC_ROOT_DIR@;
 #

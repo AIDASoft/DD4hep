@@ -1,10 +1,10 @@
-message(STATUS " *** ROOT_genmap[Root version: ${ROOT_VERSION}]: Generate map for ${libname} ..." )
+message(STATUS " *** Gaudi listcomponents: Generate map for ${libname} ..." )
   #
   #  Running listcomponents from Gaudi
   #   
-  FIND_PROGRAM( ROOT_genmap_CMD listcomponents PATHS ${genmap_install_dir}/../bin ${DD4hep_DIR}/bin )
+  FIND_PROGRAM( Gaudi_listcomponents_CMD listcomponents PATHS ${genmap_install_dir}/../bin ${DD4hep_DIR}/bin )
   ###MESSAGE( STATUS " *** MakeRootMap ${genmap_install_dir}/../bin $ENV{DD4hep_DIR}/bin ${DD4hep_DIR}" )
-  MESSAGE( STATUS " *** MakeRootMap[${ROOT_VERSION}].cmake run command : ${ROOT_genmap_CMD} -o ${rootmapfile} ${libname}
+  MESSAGE( STATUS " *** MakeGaudiMap.cmake run command : ${Gaudi_listcomponents_CMD} -o ${rootmapfile} ${libname}
                  WORKING_DIRECTORY ${genmap_install_dir} "
     ) 
 
@@ -15,7 +15,7 @@ message(STATUS " *** ROOT_genmap[Root version: ${ROOT_VERSION}]: Generate map fo
   endif()
   # EXECUTE_PROCESS( COMMAND echo LD_LIBRARY_PATH = $ENV{LD_LIBRARY_PATH} )
   EXECUTE_PROCESS( COMMAND 
-    ${ROOT_genmap_CMD} -o ${rootmapfile} ${libname}
+    ${Gaudi_listcomponents_CMD} -o ${rootmapfile} ${libname}
     WORKING_DIRECTORY ${genmap_install_dir}
     )
 
