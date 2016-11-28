@@ -115,7 +115,7 @@ function(dd4hep_generate_rootmap_notapple library)
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
                              -DROOT_VERSION=${ROOT_VERSION}
                              -DDD4hep_DIR=${DD4hep_DIR}
-                             -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake)
+                             -P ${DD4hep_DIR}/cmake/MakeGaudiMap.cmake)
 
   #add_custom_command(OUTPUT ${rootmapfile}
   #                   COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
