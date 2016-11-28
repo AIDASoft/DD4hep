@@ -46,7 +46,7 @@ if ( ${DD4HEP_USE_LCIO} )
     SOURCES src/EvNavHandler.h
     LINKDEF src/LinkDef.h )
   dd4hep_add_executable( teveLCIO
-    USES           [ROOT REQUIRED COMPONENTS Eve GUI Graf3d Rgl]
+    USES           [ROOT REQUIRED COMPONENTS Eve Gui Graf3d Rgl]
                    [LCIO REQUIRED]
                    DDRec
     GENERATED      G__eve1.cxx
@@ -56,7 +56,7 @@ endif()
 
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( teveDisplay
-  USES           [ROOT REQUIRED COMPONENTS Eve GUI Graf3d Rgl] DDRec
+  USES           [ROOT REQUIRED COMPONENTS Eve Gui Graf3d Rgl] DDRec
   GENERATED      G__eve.cxx
   SOURCES        src/teve_display.cpp src/next_event_dummy.cpp
 )
