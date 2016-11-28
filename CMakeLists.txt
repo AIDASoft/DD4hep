@@ -37,7 +37,7 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 #
 # Include ROOT
 #
-find_package ( ROOT REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL)
+find_package ( ROOT REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG)
 include(${ROOT_USE_FILE})
 message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
 add_subdirectory ( GaudiPluginService)
