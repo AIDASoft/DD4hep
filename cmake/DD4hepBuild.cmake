@@ -1395,3 +1395,36 @@ function ( dd4hep_add_test_reg test_name )
     endif()
   endif()
 endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#  fill_dd4hep_library_path
+#
+#
+#  \author  M.Petric
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
+function ( fill_dd4hep_library_path )
+
+  string(REGEX REPLACE "/lib/libCore.*" "" ROOT_ROOT ${ROOT_Core_LIBRARY})
+  SET( ENV{DD4HEP_LIBRARY_PATH} ${ROOT_ROOT}/lib )
+
+  if ( ${DD4HEP_USE_GEANT4} )
+    string(REGEX REPLACE "/lib/Geant4.*" "" Geant4_ROOT ${Geant4_DIR})
+    SET( ENV{DD4HEP_LIBRARY_PATH} ${Geant4_ROOT}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+  endif()
+
+  if(${DD4HEP_USE_LCIO})
+    SET( ENV{DD4HEP_LIBRARY_PATH} ${LCIO_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+  endif()
+
+  SET( ENV{DD4HEP_LIBRARY_PATH} ${CLHEP_ROOT_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+
+  if(${DD4HEP_USE_XERCESC})
+    SET( ENV{DD4HEP_LIBRARY_PATH} ${XERCESC_ROOT_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+  endif()
+
+  SET( ENV{DD4HEP_LIBRARY_PATH} ${CMAKE_BINARY_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+
+
+endfunction()
