@@ -40,6 +40,11 @@ def loadDD4hep():
   sys.path.append(os.environ['ROOTSYS']+os.sep+'lib')
   import ROOT
   from ROOT import gSystem
+
+  import platform
+  if platform.system()=="Darwin":
+    gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
+
   result = gSystem.Load("libDDCore")
   if 0 != result:
     raise Exception('DD4hep.py: Failed to load the DD4hep library libDDCore: '+gSystem.GetErrorStr())
