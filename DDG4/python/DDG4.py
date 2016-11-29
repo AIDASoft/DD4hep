@@ -23,6 +23,7 @@ def loadDDG4():
   ROOT.gErrorIgnoreLevel=orgLevel
 
   import platform
+  import os
   if platform.system()=="Darwin":
     gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
 
