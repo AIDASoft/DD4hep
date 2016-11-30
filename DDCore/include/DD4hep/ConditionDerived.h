@@ -187,6 +187,8 @@ namespace DD4hep {
       ConditionDependency();
       /// Access the dependency key
       key_type key()  const           {  return target.hash;         }
+      /// Access the dependency key
+      const char* name()  const       {  return target.name.c_str(); }
       /// Add use count to the object
       ConditionDependency* addRef()   {  ++m_refCount; return this;  }
       /// Release object. May not be used any longer

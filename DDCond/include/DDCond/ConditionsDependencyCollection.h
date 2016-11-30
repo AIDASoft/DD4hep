@@ -80,6 +80,13 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       ConditionsDependencyCollection();
+      /// Initializing constructor
+      template <typename I> ConditionsDependencyCollection(I first, I last)
+      { std::for_each(first, last, [this](typename I::reference& v) { this->insert(v); });  }
+      /// Initializing constructor
+      template <typename I, typename R>
+      ConditionsDependencyCollection(I first, I last, R (*func)(typename I::reference val))
+      { std::for_each(first, last, [this,func](typename I::reference v) { this->insert(func(v)); }); }
       /// Copy constructor
       ConditionsDependencyCollection(const ConditionsDependencyCollection& copy);
       /// Default destructor
@@ -108,6 +115,13 @@ namespace DD4hep {
       std::pair<iterator,bool> insert(const Dependencies::value_type& entry);
       /// Insert new element by key
       std::pair<iterator,bool> insert(Dependency* dep);
+      /// Insert a range of items with a item converting adjustment
+      template <typename I> void insert(I first, I last)
+      {  std::for_each(first,last,[this](typename I::reference v) { this->insert(v); }); }
+      /// Insert a range of items with a item converting adjustment
+      template <typename I, typename R>
+      void insert(I first, I last, R (*func)(typename I::reference val))
+      {  std::for_each(first, last, [this,func](typename I::reference v) { this->insert(func(v)); }); }
       /// Create view by application of functor
       template <typename T> void for_each(const T& function)  const
       {  std::for_each(dependencies.begin(),dependencies.end(),function); }

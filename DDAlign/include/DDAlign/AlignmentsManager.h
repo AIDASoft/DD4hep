@@ -14,7 +14,6 @@
 #define DD4HEP_DDALIGN_ALIGNMENTMANAGER_H
 
 // Framework include files
-#include "DD4hep/Memory.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/ConditionDerived.h"
 
@@ -24,6 +23,7 @@ namespace DD4hep {
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
     class UserPool;
+    class ConditionsSlice;
     class ConditionDependency;
     class ConditionUpdateContext;
     class ConditionsDependencyCollection;
@@ -47,6 +47,10 @@ namespace DD4hep {
     public:
       /// Standard object type
       typedef AlignmentsManagerObject                    Object;
+      /// Conditions user pool definition
+      typedef Conditions::UserPool                       Pool;
+      /// Conditions slice definitions
+      typedef Conditions::ConditionsSlice                Slice;
       /// Conditions derivation context
       typedef Conditions::ConditionUpdateContext         Context;
       /// Alignments re-use conditions dependency definition from the conditions manager
@@ -87,9 +91,13 @@ namespace DD4hep {
       /// Access all known dependencies
       const Dependencies& knownDependencies()  const;
       /// Compute all alignment conditions of the internal dependency list
-      void compute(dd4hep_ptr<UserPool>& user_pool)  const;
+      void compute(Slice& slice)  const;
       /// Compute all alignment conditions of the specified dependency list
-      void compute(dd4hep_ptr<UserPool>& user_pool, const Dependencies& deps)  const;
+      void compute(Slice& slice, const Dependencies& deps)  const;
+      /// Compute all alignment conditions of the internal dependency list
+      void compute(Pool& pool)  const;
+      /// Compute all alignment conditions of the specified dependency list
+      void compute(Pool& pool, const Dependencies& deps)  const;
       /// Register new updated derived alignment during the computation step
       static void newEntry(const Context& parameter,
                            DetElement& det,
@@ -108,6 +116,7 @@ namespace DD4hep {
      */
     class AlignmentsManagerObject : public NamedObject {
     public:
+      typedef AlignmentsManager::Pool         Pool;
       typedef AlignmentsManager::Dependencies Dependencies;
       
       /// Full list of alignment dependencies
@@ -117,9 +126,9 @@ namespace DD4hep {
 
     protected:
       /// Compute the transformation from the closest detector element of the alignment to the world system
-      void to_world(AlignContext& new_alignments, UserPool& pool, DetElement det, TGeoHMatrix& mat)  const;
+      void to_world(AlignContext& new_alignments, Pool& pool, DetElement det, TGeoHMatrix& mat)  const;
       /// Compute all alignment conditions of the lower levels
-      void compute(AlignContext& new_alignments, UserPool& pool, DetElement child) const;
+      void compute(AlignContext& new_alignments, Pool& pool, DetElement child) const;
 
     public:
       /// Initializing constructor
@@ -127,9 +136,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~AlignmentsManagerObject();
       /// Compute all alignment conditions of the internal dependency list
-      void compute(UserPool& user_pool) const;
+      void compute(Pool& pool) const;
       /// Compute all alignment conditions of the specified dependency list
-      void compute(UserPool& user_pool, const Dependencies& deps) const;
+      void compute(Pool& pool, const Dependencies& deps) const;
     };
     
   }       /* End namespace Geometry                    */

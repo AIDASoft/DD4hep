@@ -46,8 +46,16 @@ namespace DD4hep {
     protected:
       typedef BASE     Base;
       typedef MAPPING  Mapping;
+      typedef ConditionsMappedPool<Mapping,Base> Self;
       typedef typename BASE::key_type key_type;
       Mapping          m_entries;
+      
+      /// Helper function to loop over the conditions container and apply a functor
+      template <typename R,typename T> size_t loop(R& result, T functor) {
+        size_t len = result.size();
+        for_each(m_entries.begin(),m_entries.end(),functor);
+        return result.size() - len;
+      }
     public:
       /// Default constructor
       ConditionsMappedPool(ConditionsManager mgr);
@@ -56,51 +64,52 @@ namespace DD4hep {
       virtual ~ConditionsMappedPool();
 
       /// Total entry count
-      virtual size_t count()  const   {
+      virtual size_t size()  const   {
         return m_entries.size();
       }
 
       /// Register a new condition to this pool
-      virtual void insert(Condition condition)    {
+      virtual bool insert(Condition condition)    {
         Condition::Object* c = condition.access();
-        m_entries.insert(std::make_pair(c->hash,c));
+        return m_entries.insert(std::make_pair(c->hash,c)).second;
       }
 
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& new_entries)   {
-        for(RangeConditions::iterator i=new_entries.begin(); i!=new_entries.end(); ++i)  {
-          Condition::Object* c = (*i).access();
-          m_entries.insert(std::make_pair(c->hash,c));
+        Condition::Object* o;
+        for( Condition c : new_entries )  {
+          o = c.access();
+          m_entries.insert(std::make_pair(o->hash,o));
         }
       }
 
       /// Full cleanup of all managed conditions.
       virtual void clear()   {
-        for_each(m_entries.begin(), m_entries.end(), ConditionsPoolRemove(*this));
+        for_each(m_entries.begin(), m_entries.end(), Operators::poolRemove(*this));
         m_entries.clear();
       }
 
       /// Check if a condition exists in the pool
       virtual Condition exists(Condition::key_type key)  const   {
-        typename Mapping::const_iterator i=
-          find_if(m_entries.begin(), m_entries.end(), HashConditionFind(key));
+        auto i=find_if(m_entries.begin(), m_entries.end(), Operators::keyFind(key));
         return i==m_entries.end() ? Condition() : (*i).second;
       }
+
       /// Select the conditions matching the DetElement and the conditions name
-      virtual void select(Condition::key_type key, RangeConditions& result)
-      {  for_each(m_entries.begin(),m_entries.end(),keyedSelect(key,result));   }
+      virtual size_t select(Condition::key_type key, RangeConditions& result)
+      {  return loop(result, Operators::keyedSelect(key,result));      }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_used(RangeConditions& result)
-      {  for_each(m_entries.begin(),m_entries.end(),activeSelect(result));      }
+      virtual size_t select_all(const ConditionsSelect& result)
+      {  return loop(result, Operators::operatorWrapper(result));      }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_all(RangeConditions& result)
-      {  for_each(m_entries.begin(),m_entries.end(),collectionSelect(result));  }
+      virtual size_t select_all(RangeConditions& result)
+      {  return loop(result, Operators::sequenceSelect(result));       }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_all(ConditionsPool& selection_pool)
-      {  for_each(m_entries.begin(),m_entries.end(),ConditionsPoolInsert(selection_pool)); }
+      virtual size_t select_all(ConditionsPool& result)
+      {  return loop(result, Operators::poolSelect(result));           }
     };
 
     /// Class implementing the conditions update pool for a given IOV type
@@ -113,27 +122,34 @@ namespace DD4hep {
     template<typename MAPPING, typename BASE> class ConditionsMappedUpdatePool 
       : public ConditionsMappedPool<MAPPING,BASE>
     {
+      typedef ConditionsMappedPool<MAPPING,BASE> Self;
       typedef typename ConditionsMappedPool<MAPPING,BASE>::key_type key_type;
     public:
       /// Default constructor
       ConditionsMappedUpdatePool(ConditionsManager mgr)
-        : ConditionsMappedPool<MAPPING,BASE>(mgr) 
-      {
-      }
+        : ConditionsMappedPool<MAPPING,BASE>(mgr) { }
 
       /// Default destructor
-      virtual ~ConditionsMappedUpdatePool()  {}
+      virtual ~ConditionsMappedUpdatePool()  { }
 
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
-      virtual void popEntries(UpdatePool::UpdateEntries& entries)   {
+      virtual size_t popEntries(UpdatePool::UpdateEntries& entries)   {
+        ClearOnReturn<MAPPING> clear(this->Self::m_entries);
+        return this->Self::loop(entries, [&entries](const std::pair<key_type,Condition::Object*>& o) {
+            entries[o.second->iov].push_back(Condition(o.second));});
+#if 0
         MAPPING& m = this->ConditionsMappedPool<MAPPING,BASE>::m_entries;
+        size_t len = entries.size();
+        size_t len = m.size();
         if ( !m.empty() )  {
           for(typename MAPPING::iterator i=m.begin(); i!=m.end(); ++i)   {
             Condition::Object* o = (*i).second;
             entries[o->iov].push_back(Condition(o));
           }
-          m.clear();        
+          m.clear();
         }
+        return len;
+#endif
       }
 
       /// Select the conditions matching the DetElement and the conditions name
@@ -141,6 +157,8 @@ namespace DD4hep {
                                 const Condition::iov_type& req, 
                                 RangeConditions& result)
       {
+        //return this->Self::loop(entries, [&entries](const std::pair<key_type,Condition::Object*>& o) {
+        //    entries[o.second->iov].push_back(Condition(o.second));});
         MAPPING& m = this->ConditionsMappedPool<MAPPING,BASE>::m_entries;
         if ( !m.empty() )   {
           unsigned int req_typ = req.iovType ? req.iovType->type : req.type;
@@ -166,11 +184,9 @@ namespace DD4hep {
         }
       }
     };
-
-
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-#endif // DDCOND_CONDITIONSMAPPEDPOOL_H
+  }    /* End namespace Conditions               */
+}      /* End namespace DD4hep                   */
+#endif /* DDCOND_CONDITIONSMAPPEDPOOL_H          */
 
 //==========================================================================
 //  AIDA Detector description implementation for LCD

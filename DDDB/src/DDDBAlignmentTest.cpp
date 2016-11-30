@@ -24,7 +24,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/objects/AlignmentsInterna.h"
-#include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsSlice.h"
 #include "DDAlign/AlignmentsManager.h"
 
 #include "DDDB/DDDBConversion.h"
@@ -106,37 +106,38 @@ namespace  {
     long collect(ConditionsManager manager, AlignmentsManager& context, long time)  {
       const IOVType* iovType = manager.iovType("epoch");
       IOV  iov(iovType, IOV::Key(time,time));
-      dd4hep_ptr<UserPool> user_pool;
-      manager.prepare(iov, user_pool);
-      return collect(lcdd.world(), user_pool, context, 0);
+      dd4hep_ptr<ConditionsSlice> slice(createSlice(manager,*iovType));
+      manager.prepare(iov, *slice);
+      return collect(lcdd.world(), slice->pool(), context, 0);
     }
     /// Compute dependent alignment conditions
-    int computeDependencies(dd4hep_ptr<UserPool>& user_pool,
+    int computeDependencies(dd4hep_ptr<ConditionsSlice>& slice,
                             ConditionsManager conds,
                             AlignmentsManager align,
                             long time)
     {
       const IOVType* iovType = conds.iovType("epoch");
       IOV  iov(iovType, IOV::Key(time,time));
-      long num_expired = conds.prepare(iov, user_pool);
+      slice.adopt(createSlice(conds,*iovType));
+      long num_expired = conds.prepare(iov, *slice);
       printout(INFO,"Conditions",
                "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
                num_expired, iov.str().c_str());
-      align.compute(user_pool);
+      align.compute(*(slice->pool()));
       return 1;
     }
     /// Access dependent alignment conditions from DetElement object using global and local keys
     int access(ConditionsManager conds,AlignmentsManager align,long time)  {
-      typedef ConditionsManager::Dependencies Deps;
-      dd4hep_ptr<UserPool> pool;
-      int   ret  = computeDependencies(pool, conds, align, time);
+      typedef ConditionsDependencyCollection Deps;
+      dd4hep_ptr<ConditionsSlice> slice;
+      int ret = computeDependencies(slice, conds, align, time);
       if ( ret == 1 )  {
         const Deps& deps = align.knownDependencies();
         int count = 0;
         for(Deps::const_iterator i=deps.begin(); i!=deps.end(); ++i)   {
           const ConditionDependency* d = (*i).second.get();
           if ( d->detector.hasAlignments() )   {
-            UserPool& p = *(pool.get());
+            UserPool& p = *(slice->pool().get());
             Alignments::DetAlign     det(d->detector);
             const ConditionKey&      k = d->target;
             Alignments::Container    c = det.alignments();
@@ -187,9 +188,9 @@ namespace  {
     if ( ret == 1 )  {
       for(int i=0; i<10; ++i)  {  {
           long ti = time + i*3600;
-          dd4hep_ptr<UserPool> pool;
-          ret = selec.computeDependencies(pool,conds,align,ti);
-          pool->clear();
+          dd4hep_ptr<ConditionsSlice> slice;
+          ret = selec.computeDependencies(slice,conds,align,ti);
+          slice->reset();
         }
         DD4hep::InstanceCount::dump();
       }

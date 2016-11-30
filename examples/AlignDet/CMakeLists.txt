@@ -15,12 +15,12 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 dd4hep_configure_output()
 dd4hep_package ( AlignDet MAJOR 0 MINOR 0 PATCH 1
   USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
-                 [DD4hep REQUIRED COMPONENTS DDCore DDAlign]
+                 [DD4hep REQUIRED COMPONENTS DDCore DDCond DDAlign]
   OPTIONAL       XERCESC
   INCLUDE_DIRS   include
   )
 
-dd4hep_add_plugin( AlignDet SOURCES src/*.cpp  )
+dd4hep_add_plugin( AlignDetExample SOURCES src/*.cpp  )
 dd4hep_install_dir( compact DESTINATION examples/AlignDet )
 dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 
@@ -29,9 +29,17 @@ dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 dd4hep_add_test_reg( test_AlignDet_Telescope_dump_geometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy
-  -compact file:${CMAKE_CURRENT_SOURCE_DIR}/../AlignDet/compact/Telescope.xml
+  -compact file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Telescope.xml
   -plugin DD4hepDetectorDump
   REGEX_PASS "/world/Telescope/module_9 NumDau\\:1 VolID\\:00000903 Place")
+#
+#---Testing: Load Telescope geometry and read conditions ------------------
+dd4hep_add_test_reg( test_AlignDet_Telescope_dump_alignments
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample 
+     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+     -deltas file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
+  REGEX_PASS "\\[E42813AA\\] -> \\[E42813AA\\] /world/Telescope/module_9/sensor#alignment/Tranformations")
 #
 #---Testing: Load ALEPH TPC geometry --------------------------------------
 dd4hep_add_test_reg( test_AlignDet_AlephTPC_load

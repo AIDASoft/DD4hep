@@ -27,7 +27,7 @@ namespace DD4hep {
 
     /// Forward declarations
     class ConditionsDataLoader;
-
+    
     /// Pool of conditions satisfying one IOV type (epoch, run, fill, etc)
     /** 
      *  Purely internal class to the conditions manager implementation.
@@ -44,21 +44,24 @@ namespace DD4hep {
 
       /// Container of IOV dependent conditions pools
       Elements elements;
-
+      const IOVType* type;
+      
     public:
       /// Default constructor
-      ConditionsIOVPool();
+      ConditionsIOVPool(const IOVType* type);
       /// Default destructor
       virtual ~ConditionsIOVPool();
       /// Retrieve  a condition set given the key according to their validity
-      void select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result);
+      size_t select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result);
       /// Retrieve  a condition set given the key according to their validity
-      void selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result);
-      /// Select all ACTIVE conditions, which do no longer match the IOV requirement
-      void select(const Condition::iov_type& required_validity, 
-                  RangeConditions& valid,
-                  RangeConditions& expired,
-                  Condition::iov_type& conditions_validity);
+      size_t selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result);
+      /// Select all ACTIVE conditions, which do match the IOV requirement
+      size_t select(const IOV& req_validity, RangeConditions& valid, IOV& cond_validity);
+      /// Select all ACTIVE conditions, which do match the IOV requirement
+      size_t select(const IOV& req_validity, const ConditionsSelect& valid, IOV& cond_validity);
+      /// Select all ACTIVE conditions pools, which do match the IOV requirement
+      size_t select(const IOV& req_validity, Elements& valid, IOV& cond_validity);
+
       /// Remove all key based pools with an age beyon the minimum age. 
       /** @return Number of conditions cleaned up and removed.                       */
       int clean(int max_age);

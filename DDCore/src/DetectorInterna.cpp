@@ -124,9 +124,9 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->ObjectExtensions::copyFrom(extensions, obj);
 
   obj->children.clear();
-  for (DetElement::Children::const_iterator i = children.begin(); i != children.end(); ++i) {
-    const NamedObject* pc = (*i).second.ptr();
-    const DetElementObject& d = (*i).second._data();
+  for (const auto& i : children )  {
+    const NamedObject* pc = i.second.ptr();
+    const DetElementObject& d = i.second._data();
     DetElement child(d.clone(d.id, DetElement::COPY_PLACEMENT), pc->GetName(), pc->GetTitle());
     pair<Children::iterator, bool> r = obj->children.insert(make_pair(child.name(), child));
     if (r.second) {
@@ -249,15 +249,13 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   deletePtr (referenceTrafo);
 
   /// Now iterate down the children....
-  for(Children::const_iterator i = children.begin(); i!=children.end(); ++i)  {
-    DetElement d((*i).second);
-    d->revalidate(&worldTrafo);
-  }
+  for(const auto& i : children )
+    i.second->revalidate(&worldTrafo);
 }
 
 /// Remove callback from object
 void DetElementObject::removeAtUpdate(unsigned int typ, void* pointer)   {
-  for(UpdateCallbacks::iterator i=updateCalls.begin(); i != updateCalls.end(); ++i)  {
+  for (auto i=updateCalls.begin(); i != updateCalls.end(); ++i)  {
     if ( (typ&((*i).second)) == typ && (*i).first.par == pointer )  {
       updateCalls.erase(i);
       return;
@@ -280,10 +278,9 @@ void DetElementObject::update(unsigned int tags, void* param)   {
     }
     revalidate(parent_world_trafo);
   }
-  for(UpdateCallbacks::const_iterator i=updateCalls.begin(); i != updateCalls.end(); ++i)  {
-    if ( (tags&((*i).second)) )  {
-      (*i).first.execute(args);
-    }
+  for ( const auto& i : updateCalls )  {
+    if ( (tags&i.second) )
+      i.first.execute(args);
   }
 }
 

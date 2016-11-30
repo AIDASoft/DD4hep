@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
+#include "ConditionsTest.h"
 #include "DD4hep/DetConditions.h"
 #include "DD4hep/DetectorTools.h"
-#include "DDCond/ConditionsTest.h"
 #include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsManager.h"
 #include "DD4hep/objects/DetectorInterna.h"

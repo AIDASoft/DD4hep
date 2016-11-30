@@ -221,6 +221,12 @@ namespace DD4hep {
   using DDSegmentation::BitFieldValue;
 #endif
 
+  template<typename C> struct ClearOnReturn {
+    C& container;
+    ClearOnReturn(C& c) : container(c) {  }
+    ~ClearOnReturn() { container.clear(); }
+  };
+
   /// Helper to copy objects.
   template <typename T> inline void copyObject(void* target,const void* source)  {
     const T* s = (const T*)source;

@@ -17,6 +17,7 @@
 
 // Framework include files
 #include "DDCond/ConditionsDataLoader.h"
+#include "DD4hep/Printout.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -47,22 +48,27 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionsMultiLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load(key_type key,
-                          const iov_type& req_validity,
-                          RangeConditions& conditions);
+      virtual size_t load_single(key_type key,
+                                 const iov_type& req_validity,
+                                 RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load_range(key_type key,
-                                const iov_type& req_validity,
-                                RangeConditions& conditions);
-      /// Update a range of conditions according to the required IOV
-      virtual size_t update(const iov_type& req_validity,
-                            RangeConditions& conditions,
-                            iov_type& conditions_validity);
+      virtual size_t load_range( key_type key,
+                                 const iov_type& req_validity,
+                                 RangeConditions& conditions);
+      /// Optimized update using conditions slice data
+      virtual size_t load_many(  const iov_type& /* req_validity */,
+                                 EntryVector&    /* work         */,
+                                 EntryVector&    /* loaded       */,
+                                 EntryVector&    /* missing      */,
+                                 iov_type&       /* conditions_validity */)
+      {
+        except("ConditionsLoader","+++ update: Invalid call!");
+        return 0;
+      }
     };
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                   */
-
-#endif /* DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H  */
+  }     /* End namespace Geometry                     */
+}       /* End namespace DD4hep                       */
+#endif  /* DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H   */
 
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -155,7 +161,7 @@ size_t ConditionsMultiLoader::load_range(key_type key,
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  { 
         const string& nam = (*i).first;
         ConditionsDataLoader* loader = load_source(nam, req_validity);
-        loader->load(key, req_validity, conditions);
+        loader->load_range(key, req_validity, conditions);
       }
     }
   }
@@ -163,9 +169,9 @@ size_t ConditionsMultiLoader::load_range(key_type key,
 }
 
 
-size_t ConditionsMultiLoader::load(key_type key,
-                                   const iov_type& req_validity,
-                                   RangeConditions& conditions)
+size_t ConditionsMultiLoader::load_single(key_type key,
+                                          const iov_type& req_validity,
+                                          RangeConditions& conditions)
 {
   size_t len = conditions.size();
   // No better idea: Must chack all sources to find the required condition
@@ -175,31 +181,9 @@ size_t ConditionsMultiLoader::load(key_type key,
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  {
         const string& nam = (*i).first;
         ConditionsDataLoader* loader = load_source(nam, req_validity);
-        loader->load(key, req_validity, conditions);
+        loader->load_single(key, req_validity, conditions);
       }
     }
   }
   return conditions.size() - len;
-}
-
-/// Update a range of conditions according to the required IOV
-size_t ConditionsMultiLoader::update(const iov_type& req_validity,
-                                     RangeConditions& conditions,
-                                     iov_type& conditions_validity)
-{
-  RangeConditions upda;
-  for(RangeConditions::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)  {
-    Condition::Object* cond = (*i).ptr();
-    size_t items = load(cond->hash,req_validity,upda);
-    if ( items < 1 )  {
-      // Error: no such condition
-      except("MultiLoader",
-             "+++ update_expired: Cannot update condition %s [%s] to iov:%s.",
-             cond->name.c_str(), cond->iov->str().c_str(), req_validity.str().c_str());
-    }
-  }
-  conditions = upda;
-  for(RangeConditions::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)
-    conditions_validity.iov_intersection((*i).iov());
-  return conditions.size();
 }

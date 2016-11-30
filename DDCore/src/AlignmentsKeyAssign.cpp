@@ -23,7 +23,7 @@ using namespace DD4hep::Alignments;
 const AlignmentsKeyAssign&
 AlignmentsKeyAssign::addKey(const string& key_value)  const  {
   DetAlign conds(detector);
-  conds.alignments()->addKey(key_value);
+  conds.alignments().addKey(key_value);
   return *this;
 }
 
@@ -31,7 +31,7 @@ AlignmentsKeyAssign::addKey(const string& key_value)  const  {
 const AlignmentsKeyAssign&
 AlignmentsKeyAssign::addKey(const string& key_value, const string& data_value)  const  {
   DetAlign conds(detector);
-  conds.alignments()->addKey(key_value, data_value);
+  conds.alignments().addKey(key_value, data_value);
   return *this;
 }
 

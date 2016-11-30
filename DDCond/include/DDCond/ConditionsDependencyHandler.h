@@ -17,6 +17,7 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/ConditionDerived.h"
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsDependencyCollection.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -27,6 +28,7 @@ namespace DD4hep {
 
     // Forward declarations
     class UserPool;
+    class ConditionsPool;
     class ConditionsManagerObject;
     class ConditionsDependencyCollection;
     
@@ -42,20 +44,22 @@ namespace DD4hep {
 
     protected:
       /// Reference to conditions manager 
-      ConditionsManagerObject*   m_manager;
+      ConditionsManagerObject* m_manager;
       /// Reference to the user pool object
-      UserPool&                  m_pool;
+      UserPool&                m_pool;
       /// Dependency container to be resolved.
-      const Dependencies&        m_dependencies;
+      const Dependencies&      m_dependencies;
+      /// IOV target pool for this handler
+      ConditionsPool*          m_iovPool;
       /// User defined optional processing parameter
-      void*                      m_userParam;
+      void*                    m_userParam;
       
       /// Internal call to trigger update callback
       Condition::Object* do_callback(const ConditionDependency& dep) const;
 
     public:
       /// Initializing constructor
-      ConditionsDependencyHandler(ConditionsManagerObject* mgr,
+      ConditionsDependencyHandler(ConditionsManager mgr,
                                   UserPool& pool, 
                                   const Dependencies& dependencies,
                                   void* user_param);

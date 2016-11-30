@@ -20,12 +20,14 @@ using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 /// Default constructor
-ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManagerObject* mgr,
+ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
                                                          UserPool& pool,
                                                          const Dependencies& dependencies,
                                                          void* user_param)
-  : m_manager(mgr), m_pool(pool), m_dependencies(dependencies), m_userParam(user_param)
+  : m_manager(mgr.access()), m_pool(pool), m_dependencies(dependencies), m_userParam(user_param)
 {
+  const IOV& iov = m_pool.validity();
+  m_iovPool = m_manager->registerIOV(*iov.iovType, iov.keyData);
 }
 
 /// Default destructor
@@ -43,7 +45,7 @@ Condition ConditionsDependencyHandler::get(unsigned int key)  const  {
   if ( c.isValid() )  {
     Condition::Object* obj = c.ptr();
     const IOV& required = m_pool.validity();
-    if ( obj->iov && IOV::key_is_contained(required.keyData,obj->iov->keyData) )
+    if ( obj && obj->iov && IOV::key_is_contained(required.keyData,obj->iov->keyData) )
       return c;
     Dependencies::const_iterator i = m_dependencies.find(key);
     if ( i != m_dependencies.end() )  {
@@ -76,24 +78,25 @@ ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const 
       cond->iov = m_pool.validityPtr();
       // Must IMMEDIATELY insert to handle inter-dependencies.
       m_pool.insert(cond);
+      m_manager->registerUnlocked(m_iovPool, cond);
     }
     return obj;
   }
   catch(const std::exception& e)   {
     printout(ERROR,"ConditionDependency",
              "+++ Exception while creating dependent Condition %s:",
-             dep.target.name.c_str());
+             dep.name());
     printout(ERROR,"ConditionDependency","\t\t%s", e.what());
   }
   catch(...)   {
     printout(ERROR,"ConditionDependency",
              "+++ UNKNOWN exception while creating dependent Condition %s.",
-             dep.target.name.c_str());
+             dep.name());
   }
   m_pool.print("*");
   except("ConditionDependency",
          "++ Exception while creating dependent Condition %s.",
-         dep.target.name.c_str());
+         dep.name());
   return 0;
 }
 

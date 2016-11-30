@@ -41,7 +41,7 @@ ConditionsPool::~ConditionsPool()   {
 /// Print pool basics
 void ConditionsPool::print(const string& opt)   const  {
   printout(INFO,"ConditionsPool","+++ %s Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
-	   opt.c_str(), iov->str().c_str(), age_value, count());
+	   opt.c_str(), iov->str().c_str(), age_value, size());
 }
 
 /// Listener invocation when a condition is registered to the cache
@@ -64,8 +64,8 @@ UpdatePool::~UpdatePool()   {
 }
 
 /// Default constructor
-UserPool::UserPool(ConditionsManager mgr, ConditionsIOVPool* pool)
-  : m_iov(0), m_manager(mgr), m_iovPool(pool)
+UserPool::UserPool(ConditionsManager mgr)
+  : m_iov(0), m_manager(mgr)
 {
   InstanceCount::increment(this);
 }

@@ -16,6 +16,7 @@
 
 // Framework include files
 #include "DDCond/ConditionsDataLoader.h"
+#include "DD4hep/Printout.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -43,22 +44,26 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionsXmlLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load(key_type key,
-                          const iov_type& req_validity,
-                          RangeConditions& conditions);
+      virtual size_t load_single(key_type key,
+                                 const iov_type& req_validity,
+                                 RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load_range(key_type key,
-                                const iov_type& req_validity,
-                                RangeConditions& conditions);
-      /// Update a range of conditions according to the required IOV
-      virtual size_t update(const iov_type& req_validity,
-                            RangeConditions& conditions,
-                            iov_type& iov_intersection);
+      virtual size_t load_range( key_type key,
+                                 const iov_type& req_validity,
+                                 RangeConditions& conditions);
+      /// Optimized update using conditions slice data
+      virtual size_t load_many(  const iov_type& /* req_validity */,
+                                 EntryVector&    /* work         */,
+                                 EntryVector&    /* loaded       */,
+                                 EntryVector&    /* missing      */,
+                                 iov_type&       /* conditions_validity */)
+      {
+        except("ConditionsLoader","+++ update: Invalid call!");
+        return 0;
+      }
     };
-
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-
+  }    /* End namespace Conditions                */
+}      /* End namespace DD4hep                    */
 #endif /* DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H  */
 
 //#include "ConditionsXmlLoader.h"
@@ -132,9 +137,9 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
   return conditions.size()-len;
 }
 
-size_t ConditionsXmlLoader::load(key_type key,
-                                 const iov_type& req_validity,
-                                 RangeConditions& conditions)
+size_t ConditionsXmlLoader::load_single(key_type key,
+                                        const iov_type& req_validity,
+                                        RangeConditions& conditions)
 {
   size_t len = conditions.size();
   if ( m_buffer.empty() && !m_sources.empty() )  {
@@ -177,8 +182,3 @@ size_t ConditionsXmlLoader::load_range(key_type key,
   return conditions.size()-len;
 }
 
-/// Update a range of conditions according to the required IOV
-size_t ConditionsXmlLoader::update(const IOV&,RangeConditions&, IOV&)  {
-  except("ConditionsXmlLoader","+++ update: Invalid call!");
-  return 0;
-}

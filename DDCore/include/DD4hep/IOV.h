@@ -127,7 +127,7 @@ namespace DD4hep {
       return typ1 == typ2;
     }
     /// Check if IOV 'test' is fully contained in IOV 'key'
-    static bool key_is_contained(const Key& key, const Key& test)         
+    static bool key_is_contained(const Key& key, const Key& test)
     {   return key.first >= test.first && key.second <= test.second;      }
     /// Same as above, but reverse logic. Gives sometimes more understandable logic.
     static bool key_contains_range(const Key& key, const Key& test)

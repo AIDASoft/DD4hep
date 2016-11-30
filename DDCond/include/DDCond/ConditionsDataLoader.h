@@ -17,6 +17,7 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/NamedObject.h"
 #include "DD4hep/ComponentProperties.h"
+#include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsManager.h"
 
 // C/C++ include files
@@ -31,8 +32,7 @@ namespace DD4hep {
 
     // Forward declarations
     class Entry;
-    class ConditionsDataLoader;
-    class ConditionsManagerObject;
+    class ConditionsSlice;
     typedef std::list<Entry*> ConditionsStack;
 
     /// Interface for a generic conditions loader
@@ -50,6 +50,8 @@ namespace DD4hep {
       typedef Condition::iov_type         iov_type;
       typedef Condition::key_type         key_type;
 
+      typedef std::vector<std::pair<key_type,ConditionsSlice::Entry*> > EntryVector;
+      
     protected:
       /// Reference to main detector description object
       LCDD&             m_lcdd;
@@ -71,20 +73,20 @@ namespace DD4hep {
       virtual ~ConditionsDataLoader();
       /// Add data source definition to loader
       void addSource(const std::string& source, const iov_type& iov);
+      /// Load  a condition set given the conditions key according to their validity
+      virtual size_t load_single(key_type         key,
+                                 const iov_type&  req_validity,
+                                 RangeConditions& conditions) = 0;
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load(key_type key,
-                          const iov_type& req_validity,
-                          RangeConditions& conditions) = 0;
-      /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load_range(key_type key,
-                                const iov_type& req_validity,
-                                RangeConditions& conditions) = 0;
-      virtual size_t update(const iov_type& req_validity,
-                            RangeConditions& conditions,
-                            iov_type& conditions_validity) = 0;
+      virtual size_t load_range( key_type         key,
+                                 const iov_type&  req_validity,
+                                 RangeConditions& conditions) = 0;
+      virtual size_t load_many(  const iov_type&  req_validity,
+                                 EntryVector&     work,
+                                 EntryVector&     loaded,
+                                 EntryVector&     missing,
+                                 iov_type&        combined_validity) = 0;
     };
-
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-
+  }        /* End namespace Conditions         */
+}          /* End namespace DD4hep             */
 #endif     /* DDCOND_CONDITIONSDATALOADER_H    */

@@ -26,10 +26,9 @@
 #include "DD4hep/ConditionDerived.h"
 #include "DD4hep/Alignments.h"
 
+#include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsAccess.h"
-#include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsOperators.h"
 
@@ -178,7 +177,7 @@ namespace  {
    */
   class ConditionsSelector  {
   public:
-    typedef ConditionsManager::Dependencies Dependencies;
+    typedef ConditionsDependencyCollection Dependencies;
     string            m_name;
     RangeConditions   m_allConditions;
     Dependencies      m_allDependencies;
@@ -279,15 +278,16 @@ namespace  {
     }
 
     int computeDependencies(long time)  {
-      dd4hep_ptr<UserPool> user_pool;
-      const Dependencies& dependencies = m_allDependencies;
+      const ConditionsDependencyCollection& deps = m_allDependencies;
       const IOVType* iovType = m_manager.iovType("epoch");
+      dd4hep_ptr<ConditionsSlice> slice(createSlice(m_manager,*iovType));
       IOV  iov(iovType, IOV::Key(time,time));
-      long num_expired = m_manager.prepare(iov, user_pool, dependencies);
+      slice->insert(deps);
+      m_manager.prepare(iov, *slice);
       printout(INFO,"Conditions",
                "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
-               num_expired, iov.str().c_str());
-      user_pool->clear();
+               long(slice->pool()->size()), iov.str().c_str());
+      slice->pool()->clear();
       return 1;
     }
   };

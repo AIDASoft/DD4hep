@@ -34,12 +34,16 @@ PropertyGrammar::~PropertyGrammar() {
 }
 
 /// Error callback on invalid conversion
-void PropertyGrammar::invalidConversion(const std::type_info& from, const std::type_info& to)  {
+void PropertyGrammar::invalidConversion(const std::type_info& from,
+                                        const std::type_info& to)
+{
   BasicGrammar::invalidConversion(from,to);
 }
 
 /// Error callback on invalid conversion
-void PropertyGrammar::invalidConversion(const std::string& value, const std::type_info& to)   {
+void PropertyGrammar::invalidConversion(const std::string& value,
+                                        const std::type_info& to)
+{
   BasicGrammar::invalidConversion(value,to);
 }
 
@@ -140,7 +144,8 @@ void PropertyManager::verifyNonExistence(const string& name) const {
 }
 
 /// Verify that this property exists (throw exception if the name was not found)
-PropertyManager::Properties::const_iterator PropertyManager::verifyExistence(const string& name) const {
+PropertyManager::Properties::const_iterator
+PropertyManager::verifyExistence(const string& name) const {
   Properties::const_iterator i = m_properties.find(name);
   if (i != m_properties.end())
     return i;
@@ -148,7 +153,8 @@ PropertyManager::Properties::const_iterator PropertyManager::verifyExistence(con
 }
 
 /// Verify that this property exists (throw exception if the name was not found)
-PropertyManager::Properties::iterator PropertyManager::verifyExistence(const string& name) {
+PropertyManager::Properties::iterator
+PropertyManager::verifyExistence(const string& name) {
   Properties::iterator i = m_properties.find(name);
   if (i != m_properties.end())
     return i;
@@ -183,18 +189,15 @@ void PropertyManager::add(const string& name, const Property& prop) {
 
 /// Bulk set of all properties
 void PropertyManager::set(const string& component_name, PropertyConfigurator& cfg) {
-  for (Properties::iterator i = m_properties.begin(); i != m_properties.end(); ++i) {
-    Property& p = (*i).second;
-    cfg.set(p.grammar(), component_name, (*i).first, p.ptr());
-  }
+  for (auto& i : m_properties )
+    cfg.set(i.second.grammar(), component_name, i.first, i.second.ptr());
 }
 
 /// Dump string values
 void PropertyManager::dump() const {
-  for (Properties::const_iterator i = m_properties.begin(); i != m_properties.end(); ++i) {
-    const Property& p = (*i).second;
-    printout(ALWAYS, "PropertyManager", "Property %s = %s", (*i).first.c_str(), p.str().c_str());
-  }
+  for (const auto& i : m_properties )
+    printout(ALWAYS, "PropertyManager", "Property %s = %s",
+             i.first.c_str(), i.second.str().c_str());
 }
 
 /// Standard PropertyConfigurable constructor

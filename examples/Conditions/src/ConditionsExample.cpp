@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsTest.h"
+#include "ConditionsTest.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -20,7 +20,7 @@ using namespace DD4hep::Conditions;
 using Geometry::LCDD;
 using Geometry::Position;
 using Geometry::DetElement;
-
+#if 0
 namespace  {
 
   struct _Key : public std::string  {
@@ -213,3 +213,5 @@ DECLARE_APPLY(DD4hep_Test_ConditionsAccess,example1)
 DECLARE_APPLY(DD4hep_Test_ConditionsExample3,example3)
 DECLARE_APPLY(DD4hep_Test_ConditionsTreeDump,example2)
 DECLARE_APPLY(DD4hep_Test_CallbackInstall,DD4hep_CallbackInstallTest)
+
+#endif

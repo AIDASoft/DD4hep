@@ -14,11 +14,11 @@
 #define DDCOND_CONDITIONSMANAGER_H
 
 // Framework include files
-#include "DD4hep/Memory.h"
-#include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ComponentProperties.h"
-#include "DDCond/ConditionsDependencyCollection.h"
+
+// C/C++ include files
+#include <set>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -27,13 +27,11 @@ namespace DD4hep {
   namespace Conditions {
 
     // Forward declarations
-    class Entry;
     class UserPool;
     class ConditionsPool;
+    class ConditionsSlice;
     class ConditionsIOVPool;
-    class ConditionDependency;
     class ConditionsDataLoader;
-    class ConditionUpdateContext;
     class ConditionsManagerObject;
     
     /// Manager class for condition handles
@@ -46,14 +44,9 @@ namespace DD4hep {
     public:
 
       /// Standard object type
-      typedef ConditionsManagerObject    Object;
-      typedef ConditionsDataLoader               Loader;
-      typedef std::vector<IOVType>               IOVTypes;
-      typedef std::map<IOVType*,Container>       TypeConditions;
-      typedef std::map<DetElement,Container>     DetectorConditions;
-      typedef std::set<ConditionKey>             ConditionKeys;
-      typedef ConditionDependency                Dependency;
-      typedef ConditionsDependencyCollection     Dependencies;
+      typedef ConditionsManagerObject  Object;
+      typedef ConditionsDataLoader     Loader;
+      typedef std::vector<IOVType>     IOVTypes;
 
     public:
 
@@ -139,26 +132,9 @@ namespace DD4hep {
       /// Full cleanup of all managed conditions.
       void clear()  const;
 
-      /// Prepare all updates for the given keys to the clients with the defined IOV
-      long prepare(const IOV& required_validity,
-                   const ConditionKeys& keys,
-                   dd4hep_ptr<UserPool>& user_pool);
-
-      /// Prepare all updates for the given keys to the clients with the defined IOV
-      long prepare(const IOV& required_validity,
-                   const ConditionKeys&  keys,
-                   dd4hep_ptr<UserPool>& user_pool,
-                   const Dependencies&   dependencies,
-                   bool                  verify_dependencies=true);
-
       /// Prepare all updates to the clients with the defined IOV
-      long prepare(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);
-
-      /// Prepare all updates to the clients with the defined IOV
-      long prepare(const IOV&            required_validity,
-                   dd4hep_ptr<UserPool>& user_pool,
-                   const Dependencies&   dependencies,
-                   bool                  verify_dependencies=true);
+      long prepare(const IOV&              required_validity,
+                   ConditionsSlice&        slice)  const;
     };
   }       /* End namespace Conditions        */
 }         /* End namespace DD4hep            */

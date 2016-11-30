@@ -20,13 +20,13 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 
-#include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsManagerObject.h"
-#include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsSlice.h"
+#include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsRepository.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -91,6 +91,41 @@ static int ddcond_install_cond_mgr (LCDD& lcdd, int argc, char** argv)  {
   return 1;
 }
 DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
+
+/**
+ *  Prepare the conditions manager for execution
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2016
+ */
+static ConditionsSlice* ddcond_prepare(lcdd_t& lcdd, const string& iov_typ, long iov_val, int argc, char** argv)  {
+  const IOVType*    iovtype  = 0;
+  long              iovvalue = iov_val;
+  ConditionsManager manager  = ConditionsManager::from(lcdd);
+
+  for(int i=0; i<argc; ++i)  {
+    if ( ::strncmp(argv[i],"-iov_type",7) == 0 )
+      iovtype = manager.iovType(argv[++i]);
+    else if ( ::strncmp(argv[i],"-iov_value",7) == 0 )
+      iovvalue = ::atol(argv[++i]);
+  }
+  if ( 0 == iovtype )
+    iovtype = manager.iovType(iov_typ);
+  if ( 0 == iovtype )
+    except("ConditionsPrepare","++ Unknown IOV type supplied.");
+  if ( 0 > iovvalue )
+    except("ConditionsPrepare",
+           "++ Unknown IOV value supplied for iov type %s.",iovtype->str().c_str());
+
+  IOV iov(iovtype,iovvalue);
+  dd4hep_ptr<ConditionsSlice> slice(Conditions::createSlice(manager,*iovtype));
+  manager.prepare(iov, *slice);
+  printout(INFO,"Conditions",
+           "+++ ConditionsUpdate: Collected %ld conditions of type %s [iov-value:%ld].",
+           long(slice->size()), iovtype ? iovtype->str().c_str() : "???", iovvalue);
+  return slice.release();
+}
 
 // ======================================================================================
 /// Plugin function: Dump of all Conditions pool with or without conditions
@@ -189,32 +224,21 @@ DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
  *  \version 1.0
  *  \date    01/04/2016
  */
-static int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)   {
+static int ddcond_detelement_dump(LCDD& lcdd, int argc, char** argv)   {
 
+  /// Internal class to perform recursive printout
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/12/2016
+   */
   struct Actor : public Geometry::DetectorProcessor   {
-    ConditionsManager     manager;
-    ConditionsPrinter     printer;
-    dd4hep_ptr<UserPool>  user_pool;
-    const IOVType*        iov_type;
-
+    /// Object printer object
+    ConditionsPrinter           printer;
     /// Standard constructor
-    Actor(ConditionsManager m)  : manager(m) {
-      iov_type = manager.iovType("run");
-      IOV  iov(iov_type);
-      iov.set(1500);
-      long num_updated = manager.prepare(iov, user_pool);
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
-               num_updated, iov_type ? iov_type->str().c_str() : "???");
-      user_pool->print("User pool");
-      printer.setPool(user_pool.get());
-    }
+    Actor() {    }
     /// Default destructor
-    virtual ~Actor()   {
-      manager.clean(iov_type, 20);
-      user_pool->clear();
-      user_pool.release();
-    }
+    virtual ~Actor()   {    }
     /// Dump method.
     virtual int operator()(DetElement de,int level)   {
       const DetElement::Children& children = de.children();
@@ -231,8 +255,14 @@ static int ddcond_detelement_dump(LCDD& lcdd, int /* argc */, char** /* argv */)
       }
       return 1;
     }
-  };
-  return Actor(ConditionsManager::from(lcdd)).process(lcdd.world(),0,true);
+  } actor;
+  dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"run",1500,argc,argv));
+  UserPool* pool = slice->pool().get();
+  pool->print("User pool");
+  actor.printer.setPool(pool);
+  int ret = actor.process(lcdd.world(),0,true);
+  slice->manager.clean(slice->iov().iovType, 20);
+  return ret;
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
   
@@ -245,34 +275,12 @@ DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
  *  \version 1.0
  *  \date    01/04/2016
  */
-static void* ddcond_prepare(LCDD& lcdd, int argc, char** argv)   {
-  long              iov_val = -1;
-  const IOVType*    iov_typ = 0;
-  ConditionsManager manager = ConditionsManager::from(lcdd);
-
-  for(int i=0; i<argc; ++i)  {
-    if ( ::strncmp(argv[i],"-iov_type",7) == 0 )
-      iov_typ = manager.iovType(argv[++i]);
-    else if ( ::strncmp(argv[i],"-iov_value",7) == 0 )
-      iov_val = ::atol(argv[++i]);
-  }
-  if ( 0 == iov_typ )  {
-    except("ConditionsPrepare","++ Unknown IOV type supplied.");
-  }
-  if ( 0 > iov_val )  {
-    except("ConditionsPrepare",
-           "++ Unknown IOV value supplied for iov type %s.",iov_typ->str().c_str());
-  }
-  dd4hep_ptr<UserPool>  user_pool;
-  IOV  iov(iov_typ);
-  iov.set(iov_val);
-  long num_updated = manager.prepare(iov, user_pool);
-  printout(DEBUG,"Conditions",
-           "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
-           num_updated, iov_typ ? iov_typ->str().c_str() : "???");
-  return user_pool.get() && user_pool->count() > 0 ? user_pool.release() : 0;
+static void* ddcond_prepare_plugin(LCDD& lcdd, int argc, char** argv)   {
+  dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"",-1,argc,argv));
+  UserPool* p = slice->pool().get();
+  return p && p->size() > 0 ? slice.release() : 0;
 }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare)
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare_plugin)
   
 // ======================================================================================
 /// Plugin function: Dump of all Conditions associated to the detector elements
@@ -285,39 +293,21 @@ DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare)
  */
 static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
 
+  /// Internal class to perform recursive printout
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/12/2016
+   */
   struct Actor : public Geometry::DetElementProcessor<ConditionsProcessor>  {
-    ConditionsManager     manager;
-    dd4hep_ptr<UserPool>  user_pool;
-    const IOVType*        iov_type;
-
     /// Standard constructor
-    Actor(ConditionsProcessor* p, ConditionsManager m)
-      : DetElementProcessor<ConditionsProcessor>(p), manager(m)
-    {
-      iov_type = manager.iovType("run");
-      IOV  iov(iov_type);
-      iov.set(1500);
-      long num_updated = manager.prepare(iov, user_pool);
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions of type %s.",
-               num_updated, iov_type ? iov_type->str().c_str() : "???");
-      user_pool->print("User pool");
-      processor->setPool(user_pool.get());
-    }
+    Actor(ConditionsProcessor* p) : DetElementProcessor<ConditionsProcessor>(p){}
 
     /// Default destructor
-    virtual ~Actor()   {
-      manager.clean(iov_type, 20);
-      user_pool->clear();
-      user_pool.release();
-    }
+    virtual ~Actor()   {    }
     /// Dump method.
-    virtual int operator()(DetElement de, int)   {
-      if ( de.hasConditions() )  {
-        return processor->processElement(de);
-      }
-      return 1;
-    }
+    virtual int operator()(DetElement de, int)
+    {  return de.hasConditions() ? processor->processElement(de) : 1;    }
   };
   ConditionsProcessor* processor = 0;
   if ( argc > 0 )   {
@@ -327,7 +317,14 @@ static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     const void* args[] = { "-processor", "DD4hepConditionsPrinter", 0};
     processor = createProcessor<ConditionsProcessor>(lcdd, 2, (char**)args);
   }
-  return Actor(processor,ConditionsManager::from(lcdd)).process(lcdd.world(),0,true);
+  dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"run",1500,argc,argv));
+  UserPool* pool = slice->pool().get();
+  Actor actor(processor);
+  pool->print("User pool");
+  processor->setPool(pool);
+  int ret = Actor(processor).process(lcdd.world(),0,true);
+  slice->manager.clean(pool->validity().iovType, 20);
+  return ret;
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
 
@@ -342,31 +339,13 @@ DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
  */
 static long ddcond_synchronize_conditions(lcdd_t& lcdd, int argc, char** argv) {
   if ( argc >= 2 )   {
-    string iov_type = argv[0];
+    string iov_typ = argv[0];
     IOV::Key::first_type iov_key = *(IOV::Key::first_type*)argv[1];
-    ConditionsManager    manager = ConditionsManager::from(lcdd);
-    const IOVType*       epoch   = manager.iovType(iov_type);
-    dd4hep_ptr<UserPool> user_pool;
-    IOV  iov(epoch);
-
-    iov.set(iov_key);
-    long num_updated = manager.prepare(iov, user_pool);
-    if ( iov_type == "epoch" )  {
-      char   c_evt[64];
-      struct tm evt;
-      ::gmtime_r(&iov_key, &evt);
-      ::strftime(c_evt,sizeof(c_evt),"%T %F",&evt);
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions... event time: %s",
-               num_updated, c_evt);
-    }
-    else  {
-      printout(INFO,"Conditions","+++ ConditionsUpdate: Updated %ld conditions... key[%s]: %ld",
-               num_updated, iov_type.c_str(), iov_key);
-    }
-    user_pool->print("User pool");
-    manager.clean(epoch, 20);
-    user_pool->clear();
+    dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,iov_typ,iov_key,argc,argv));
+    UserPool* pool = slice->pool().get();
+    pool->print("User pool");
+    slice->manager.clean(pool->validity().iovType, 20);
+    pool->clear();
     return 1;
   }
   except("Conditions","+++ Failed update conditions. Arguments were: '%s'",
@@ -387,13 +366,13 @@ DECLARE_APPLY(DD4hep_ConditionsSynchronize,ddcond_synchronize_conditions)
 static long ddcond_clean_conditions(lcdd_t& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     string iov_type = argv[0];
-    int max_age = *(int*)argv[1];
+    int    max_age  = *(int*)argv[1];
     printout(INFO,"Conditions",
              "+++ ConditionsUpdate: Cleaning conditions... type:%s max age:%d",
              iov_type.c_str(), max_age);
     ConditionsManager manager = ConditionsManager::from(lcdd);
-    const IOVType* epoch = manager.iovType(iov_type);
-    manager.clean(epoch, max_age);
+    const IOVType* iov_typ = manager.iovType(iov_type);
+    manager.clean(iov_typ, max_age);
     return 1;
   }
   except("Conditions","+++ Failed cleaning conditions. Insufficient arguments!");
@@ -432,7 +411,9 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name DD4hep_ConditionsPrinter, DD4hep_AlignmentsPrinter\n\n"
+      "     name:   factory name(s)  DD4hep_ConditionsPrinter,                       \n"
+      "                              DD4hep_AlignmentsPrinter                        \n"
+      "                              DD4hep_AlignedVolumePrinter                     \n"
       "     -prefix <string>         Printout prefix for user customized output.     \n"
       "     -flags  <number>         Printout processing flags.                      \n"
       "     -pool                    Attach conditions user pool from                \n"

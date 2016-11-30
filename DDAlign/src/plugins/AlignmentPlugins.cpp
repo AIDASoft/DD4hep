@@ -48,51 +48,49 @@ DECLARE_APPLY(DD4hep_AlignmentsManagerInstaller,ddalign_install_align_mgr)
 
 // ======================================================================================
 #include "DDAlign/GlobalAlignmentWriter.h"
-namespace {
+long create_global_alignment_file(Geometry::LCDD& lcdd, int argc, char** argv)   {
   namespace DetectorTools = DD4hep::Geometry::DetectorTools;
-  long create_global_alignment_file(Geometry::LCDD& lcdd, int argc, char** argv)   {
-    Geometry::DetElement top;
-    string output, path = "/world";
-    bool enable_transactions = false, arg_error = false;
-    for(int i=1; i<argc;++i) {
-      if ( argv[i] && (argv[i][0]=='-' || argv[i][0]=='/') ) {
-        const char* p = ::strchr(argv[i],'=');
-        if ( p && strncmp(argv[i]+1,"-output",7)==0 )
-          output = p+1;
-        else if ( p && strncmp(argv[i]+1,"-path",5)==0 )
-          path = p+1;
-        else if ( strncmp(argv[i]+1,"-transactions",5)==0 )
-          enable_transactions = true;
-        else
-          arg_error = true;
-      }
+  Geometry::DetElement top;
+  string output, path = "/world";
+  bool enable_transactions = false, arg_error = false;
+  for(int i=1; i<argc;++i) {
+    if ( argv[i] && (argv[i][0]=='-' || argv[i][0]=='/') ) {
+      const char* p = ::strchr(argv[i],'=');
+      if ( p && strncmp(argv[i]+1,"-output",7)==0 )
+        output = p+1;
+      else if ( p && strncmp(argv[i]+1,"-path",5)==0 )
+        path = p+1;
+      else if ( strncmp(argv[i]+1,"-transactions",5)==0 )
+        enable_transactions = true;
+      else
+        arg_error = true;
     }
-
-    if ( arg_error || output.empty() || path.empty() )  {
-      /// Help printout describing the basic command line interface
-      cout <<
-        "Usage: -plugin <name> -arg [-arg]                                      \n"
-        "     name:   factory nameDD4hep_GlobalAlignmentWriter                \n\n"
-        "     -output <string>         Path to the output file generated.       \n"
-        "     -path   <string>         Path to the detector element for which   \n"
-        "                              the alignment file should be written.    \n"
-        "     -transactions            Enable output transactions.              \n"
-        "\tArguments given: " << arguments(argc,argv) << endl << flush;
-      ::exit(EINVAL);
-    }
-
-    printout(ALWAYS,"AlignmentWriter",
-             "++ Writing DD4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
-             path.c_str(), output.c_str());
-    top = DetectorTools::findDaughterElement(lcdd.world(),path);
-    if ( top.isValid() )   {
-      GlobalAlignmentWriter wr(lcdd);
-      return wr.write(wr.dump(top,enable_transactions), output);
-    }
-    except("AlignmentWriter","++ Invalid top level detector element name: %s",path.c_str());
-    return 1;
   }
-}  /* End anonymous namespace  */
+
+  if ( arg_error || output.empty() || path.empty() )  {
+    /// Help printout describing the basic command line interface
+    cout <<
+      "Usage: -plugin <name> -arg [-arg]                                      \n"
+      "     name:   factory nameDD4hep_GlobalAlignmentWriter                \n\n"
+      "     -output <string>         Path to the output file generated.       \n"
+      "     -path   <string>         Path to the detector element for which   \n"
+      "                              the alignment file should be written.    \n"
+      "     -transactions            Enable output transactions.              \n"
+      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+
+  printout(ALWAYS,"AlignmentWriter",
+           "++ Writing DD4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
+           path.c_str(), output.c_str());
+  top = DetectorTools::findDaughterElement(lcdd.world(),path);
+  if ( top.isValid() )   {
+    GlobalAlignmentWriter wr(lcdd);
+    return wr.write(wr.dump(top,enable_transactions), output);
+  }
+  except("AlignmentWriter","++ Invalid top level detector element name: %s",path.c_str());
+  return 1;
+}
 DECLARE_APPLY(DD4hep_GlobalAlignmentWriter, create_global_alignment_file)
 
 // ======================================================================================
@@ -116,7 +114,7 @@ static long compute_alignments(Geometry::LCDD& lcdd, int /* argc */, char** /* a
   AlignmentsManager mgr = AlignmentsManager::from(lcdd);
   PluginTester*     tst = lcdd.extension<PluginTester>();
   dd4hep_ptr<UserPool> pool(tst->extension<UserPool>("ConditionsTestUserPool"));
-  mgr.compute(pool);
+  mgr.compute(*pool);
   pool.release();
   return 1;
 }
@@ -129,18 +127,37 @@ DECLARE_APPLY(DDAlign_ComputeAlignments, compute_alignments)
 /// Convert alignments conditions to alignment objects
 static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** argv)  {
   std::vector<char*> args_prepare, args_call;
-
+  bool arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( ::strcmp(argv[i],"-prepare") == 0 )  {
       while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-prepare-end") )
         args_prepare.push_back(argv[i]);
     }
-    if ( ::strcmp(argv[i],"-call") == 0 )  {
+    else if ( ::strcmp(argv[i],"-call") == 0 )  {
       while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-call-end") )
         args_call.push_back(argv[i]);
     }
+    else  {
+      arg_error = true;
+    }
   }
 
+  if ( arg_error )  {
+    /// Help printout describing the basic command line interface
+    cout <<
+      "Usage: -plugin <name> -arg [-arg]                                      \n"
+      "     name:   factory          DDAlign_AlignmentsRegister             \n\n"
+      "     Create and return the AlignmentsRegister object.                  \n"
+      "                                                                       \n"
+      "     -prepare ... args ... -prepare-end                                \n"
+      "                              Arguments to the 'prepare' plugin.       \n"
+      "     -call ... args ... -call-end                                      \n"
+      "                              Arguments to the 'call' plugin, which    \n"
+      "                              create the AlignmentUpdateCall callback. \n"
+      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+  
   PluginTester* test = lcdd.extension<PluginTester>();
   Conditions::UserPool* pool = (Conditions::UserPool*)
     PluginService::Create<void*>((const char*)args_prepare[0],&lcdd,
@@ -157,7 +174,7 @@ static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** a
   if ( 0 == call )  {
     except("AlignRegister","++ Failed to create update call!");
   }
-  AlignmentsManager mgr = AlignmentsManager::from(lcdd);
+  AlignmentsManager   mgr = AlignmentsManager::from(lcdd);
   AlignmentsRegister* obj = new AlignmentsRegister(mgr, call, pool);
   return obj;
 }
@@ -170,12 +187,29 @@ DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentsRegister,ddalign_AlignmentsRegister)
 /// Convert alignments conditions to alignment objects
 static void* ddalign_AlignmentsForward(Geometry::LCDD& lcdd, int argc, char** argv)  {
   std::vector<char*> args_prepare, args_call;
-
+  bool arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( ::strcmp(argv[i],"-call") == 0 )  {
       while( (++i)<argc && argv[i] && 0 != ::strcmp(argv[i],"-call-end") )
         args_call.push_back(argv[i]);
     }
+    else  {
+      arg_error = true;
+    }
+  }
+
+  if ( arg_error )  {
+    /// Help printout describing the basic command line interface
+    cout <<
+      "Usage: -plugin <name> -arg [-arg]                                      \n"
+      "     name:   factory          DDAlign_AlignmentsForward              \n\n"
+      "     Create and return the AlignmentsForward object.                   \n"
+      "                                                                       \n"
+      "     -call ... args ... -call-end                                      \n"
+      "                              Arguments to the 'call' plugin, which    \n"
+      "                              create the AlignmentUpdateCall callback. \n"
+      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
   }
 
   PluginTester* test = lcdd.extension<PluginTester>();

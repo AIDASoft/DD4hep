@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_GEOMETRY_FIELDTYPES_H
 #define DD4HEP_GEOMETRY_FIELDTYPES_H
 
@@ -18,7 +17,6 @@
 #include "DD4hep/Fields.h"
 #include "DD4hep/Shapes.h"
 #include <vector>
-
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -40,9 +38,7 @@ namespace DD4hep {
       Direction direction;
     public:
       /// Initializing constructor
-      ConstantField()
-        : direction() {
-      }
+      ConstantField() : direction() {  }
       /// Call to access the field components at a given location
       virtual void fieldComponents(const double* /* pos */, double* field);
     };
@@ -158,11 +154,12 @@ namespace DD4hep {
     class MultipoleField: public CartesianField::Object {
     public:
       typedef std::vector<double> Coefficents;
-      Coefficents coefficents;
-      Coefficents skews;
-      Solid       volume;
-      Transform3D transform;
-      double      B_z;
+      Coefficents  coefficents;
+      Coefficents  skews;
+      Solid        volume;
+      Transform3D  transform;
+      double       B_z;
+
     public:
       /// Initializing constructor
       MultipoleField();
@@ -170,6 +167,6 @@ namespace DD4hep {
       virtual void fieldComponents(const double* pos, double* field);
     };
 
-  } /* End namespace Geometry           */
-} /* End namespace DD4hep             */
+  }       /* End namespace Geometry           */
+}         /* End namespace DD4hep             */
 #endif    /* DD4HEP_GEOMETRY_FIELDTYPES_H     */

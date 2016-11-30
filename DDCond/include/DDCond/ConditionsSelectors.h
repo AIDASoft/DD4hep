@@ -15,6 +15,7 @@
 #define DDCOND_CONDITIONSSELECTORS_H
 
 // Framework include files
+#include "DD4hep/Conditions.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -23,145 +24,223 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Conditions {
 
-    class Cond__Oper {
-    public:
-      typedef Condition cond_t;
-      typedef Condition::Object object_t;
-      typedef std::pair<const Condition::key_type,Condition> mapentry_t;
-      typedef std::pair<const Condition::key_type,object_t*> ptr_mapentry_t;
-    };
+    /// Namespace for condition operators to avoid clashes
+    namespace Operators {
+      class Cond__Oper {
+      public:
+        typedef Condition cond_t;
+        typedef Condition::Object object_t;
+        typedef std::pair<const Condition::key_type,Condition> mapentry_t;
+        typedef std::pair<const Condition::key_type,object_t*> ptr_mapentry_t;
+      };
 
-    /// Helper to insert objects into a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    class ConditionsPoolInsert : public Cond__Oper  {
-      ConditionsPool& pool;
-    public:
-      ConditionsPoolInsert(ConditionsPool& p) : pool(p)         {                   }
-      void operator()(object_t* o) const             { pool.insert(o);               }
-      void operator()(const cond_t& o) const         { pool.insert(o.ptr());         }
-      void operator()(const mapentry_t& o) const     { (*this)(o.second.ptr());      }
-      void operator()(const ptr_mapentry_t& o) const { (*this)(o.second);            }
-    };
+      template <typename T> struct SequenceSelect : public Cond__Oper  {
+        T& mapping;
+        SequenceSelect(T& o) : mapping(o) {                                            }
+        bool operator()(Condition::Object* o)  const
+        { mapping.insert(mapping.end(), o); return true;                               }
+      };
 
-    /// Helper to insert objects into a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    class ConditionsPoolRemove : public Cond__Oper  {
-      ConditionsPool& pool;
-    public:
-      ConditionsPoolRemove(ConditionsPool& p) : pool(p)         {                   }
-      void operator()(object_t* o) const             {
-        pool.onRemove(o);
-        delete o;
+      template <typename T> struct MapSelect : public Cond__Oper  {
+        T& mapping;
+        MapSelect(T& o) : mapping(o) {                                                 }
+        bool operator()(Condition::Object* o)  const
+        { return mapping.insert(std::make_pair(o->hash,o)).second;                     }
+      };
+
+      /// Helper to collect conditions using a ConditionsSelect base class
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename T> struct MapConditionsSelect : public ConditionsSelect  {
+        T& mapping;
+        MapConditionsSelect(T& o) : mapping(o) {                                     }
+        virtual bool operator()(Condition::Object* o)  const
+        { return mapping.insert(std::make_pair(o->hash,o)).second;                     }
+        virtual size_t size() const  { return mapping.size();                          }
+      };
+      
+      /// Helper to insert objects into a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename T> struct PoolSelect : public Cond__Oper  {
+        T& pool;
+        PoolSelect(T& o) : pool(o)                           {                         }
+        bool operator()(Condition::Object* o)  const         { return pool.insert(o);  }
+      };
+
+      /// Helper to remove objects from a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename T> struct PoolRemove : public Cond__Oper  {
+        T& pool;
+        PoolRemove(T& o) : pool(o)         {                                           }
+        bool operator()(object_t* o) const { pool.onRemove(o); delete(o); return true; }
+      };
+    
+      template <typename T> struct ActiveSelect : public Cond__Oper {
+      public:
+        T& collection;
+        ActiveSelect(T& p) : collection(p) {}
+        bool operator()(object_t* o)  const   {
+          if ( (o->flags & cond_t::ACTIVE) )  {
+            collection.insert(collection.end(),o);
+            return true;
+          }
+          return false;
+        }
+      };
+
+      /// Helper to select keyed objects from a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template<typename collection_type> class KeyedSelect : public Cond__Oper  {
+        cond_t::key_type key;
+        collection_type& collection;
+      public:
+        KeyedSelect(cond_t::key_type k, collection_type& p) : key(k), collection(p) {  }
+        bool operator()(object_t* o) const {
+          if ( o->hash == key )  {
+            collection.insert(collection.end(),o);
+            return true;
+          }
+          return false;
+        }
+      };
+
+      /// Helper to select condition objects by hash key from a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      class KeyFind : public Cond__Oper  {
+        cond_t::key_type hash;
+      public:
+        KeyFind(cond_t::key_type h) : hash(h)  {                   }
+        bool operator()(const object_t* o) const       {  return o->hash == hash;      }
+      };
+
+      /// Helper to wrap another object and make it copyable
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename OPER> class OperatorWrapper : public Cond__Oper  {
+      public:
+        typedef OPER operator_t;
+        typedef OperatorWrapper<operator_t> wrapper_t;
+        operator_t& oper;
+      public:
+        OperatorWrapper(operator_t& o) : oper(o)       {                               }
+        bool operator()(object_t* o) const             { return oper(o);               }
+        bool operator()(const cond_t& o) const         { return oper(o.ptr());         }
+        bool operator()(const mapentry_t& o) const     { return oper(o.second.ptr());  }
+        bool operator()(const ptr_mapentry_t& o) const { return oper(o.second);        }
+      };
+      template <typename oper_type> OperatorWrapper<oper_type> operatorWrapper(oper_type& oper) {
+        return OperatorWrapper<oper_type>(oper);
       }
-      void operator()(const cond_t& o) const         { (*this)(o.ptr());             }
-      void operator()(const mapentry_t& o) const     { (*this)(o.second.ptr());      }
-      void operator()(const ptr_mapentry_t& o) const { (*this)(o.second);            }
-    };
+      template <typename OPER> class ConditionsOperation : public Cond__Oper  {
+      public:
+        typedef OPER operator_t;
+        typedef ConditionsOperation<operator_t> wrapper_t;
+        operator_t oper;
+      public:
+        ConditionsOperation(const operator_t& o) : oper(o)     {                       }
+        bool operator()(object_t* o) const             { return oper(o);               }
+        bool operator()(const cond_t& o) const         { return oper(o.ptr());         }
+        bool operator()(const mapentry_t& o) const     { return oper(o.second.ptr());  }
+        bool operator()(const ptr_mapentry_t& o) const { return oper(o.second);        }
+      };
+    
+      /// Helper to insert objects into a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      //class ConditionsPoolSelect : public ConditionsOperation<ConditionsPoolSelect>  {
+      //public: ConditionsPoolSelect(ConditionsPool& p) : wrapper_t(operator_t(p)) {}
+      //};
 
-    /// Helper to insert objects into a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    template<typename pool_type> class PoolInsert : public Cond__Oper  {
-      pool_type& pool;
-    public:
-      PoolInsert(pool_type& p) : pool(p)             {                               }
-      void operator()(object_t* o) const             { pool.insert(o);               }
-      void operator()(const cond_t& o) const         { pool.insert(o.ptr());         }
-      void operator()(const mapentry_t& o) const     { (*this)(o.second.ptr());      }
-      void operator()(const ptr_mapentry_t& o) const { (*this)(o.second);            }
-    };
-    template <typename pool_type> PoolInsert<pool_type> poolInsert(pool_type& pool) {
-      return PoolInsert<pool_type>(pool);
-    }
+      /// Helper to remove objects from a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename P> inline ConditionsOperation<PoolRemove<P> > poolRemove(P& pool)
+      { return ConditionsOperation<PoolRemove<P> >(PoolRemove<P>(pool));  }
 
-    /// Helper to select objects from a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    template<typename collection_type> class CollectionSelect : public Cond__Oper  {
-      collection_type& coll;
-    public:
-      CollectionSelect(collection_type& p) : coll(p) {                               }
-      void operator()(object_t* o) const          { coll.insert(coll.end(),o);       }
-      void operator()(const cond_t& o) const      { coll.insert(coll.end(),o.ptr()); }
-      void operator()(const mapentry_t& o) const  { (*this)(o.second.ptr());         }
-      void operator()(const ptr_mapentry_t& o)    { (*this)(o.second);               }
-    };
-    template <typename collection_type> 
-    CollectionSelect<collection_type> collectionSelect(collection_type& collection) {
-      return CollectionSelect<collection_type>(collection);
-    }
+      /// Helper to insert objects into a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename P> inline ConditionsOperation<PoolSelect<P> > poolSelect(P& pool)
+      { return ConditionsOperation<PoolSelect<P> >(PoolSelect<P>(pool));  }
 
-    /// Helper to select active objects from a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    template<typename collection_type> class ActiveSelect : public Cond__Oper  {
-      collection_type& collection;
-    public:
-      ActiveSelect(collection_type& p) : collection(p) {}
-      void operator()(object_t* o)  const {
-        if ( (o->flags & cond_t::ACTIVE) )
-          collection.insert(collection.end(),o); 
+      /// Helper to collect conditions using a ConditionsSelect base class
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename T> inline MapConditionsSelect<T> mapConditionsSelect(T& collection)
+      {  return MapConditionsSelect<T>(collection);      }
+
+      /// Helper to select objects from a conditions pool into a sequential container
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename C> inline 
+      ConditionsOperation<SequenceSelect<C> > sequenceSelect(C& coll) {
+        typedef SequenceSelect<C> operator_t;
+        return ConditionsOperation<operator_t>(operator_t(coll));
       }
-      void operator()(const cond_t& o) const          { (*this)(o.ptr());            }
-      void operator()(const mapentry_t& o) const      { (*this)(o.second.ptr());     }
-      void operator()(const ptr_mapentry_t& o)  const { (*this)(o.second);           }
-    };
-    template <typename collection_type> 
-    ActiveSelect<collection_type> activeSelect(collection_type& active) {
-      return ActiveSelect<collection_type>(active);
-    }
 
-    /// Helper to select keyed objects from a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    template<typename collection_type> class KeyedSelect : public Cond__Oper  {
-      cond_t::key_type key;
-      collection_type& collection;
-    public:
-      KeyedSelect(cond_t::key_type k, collection_type& p) : key(k), collection(p) {}
-      void operator()(object_t* o) const {
-        if ( o->hash == key )
-          collection.insert(collection.end(),o); 
+      /// Helper to select objects from a conditions pool into a mapped container
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename C> inline 
+      ConditionsOperation<SequenceSelect<C> > mapSelect(C& coll) {
+        typedef MapSelect<C> operator_t;
+        return ConditionsOperation<operator_t>(operator_t(coll));
       }
-      void operator()(const cond_t& o) const          { (*this)(o.ptr());            }
-      void operator()(const mapentry_t& o) const      { (*this)(o.second.ptr());     }
-      void operator()(const ptr_mapentry_t& o) const  { (*this)(o.second);           }
-    };
-    template <typename collection_type> 
-    KeyedSelect<collection_type> keyedSelect(Condition::key_type k, collection_type& keyed) {
-      return KeyedSelect<collection_type>(k, keyed);
-    }
 
-    /// Helper to select condition objects by hash key from a conditions pool
-    /** 
-     *  \author  M.Frank
-     *  \version 1.0
-     */
-    class HashConditionFind : public Cond__Oper  {
-      cond_t::key_type hash;
-    public:
-      HashConditionFind(cond_t::key_type h) : hash(h)  {                   }
-      bool operator()(const cond_t& o) const         {  return o->hash == hash;      }
-      bool operator()(const object_t* o) const       {  return o->hash == hash;      }
-      bool operator()(const mapentry_t& o) const     {  return (*this)(o.second);    }
-      bool operator()(const ptr_mapentry_t& o) const {  return (*this)(o.second);    }
-    };
+      /// Helper to select active objects from a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename C> inline ConditionsOperation<ActiveSelect<C> > activeSelect(C& coll)
+      { return ConditionsOperation<ActiveSelect<C> >(ActiveSelect<C>(coll)); }
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
+      /// Helper to select keyed objects from a conditions pool
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      template <typename C> inline 
+      ConditionsOperation<KeyedSelect<C> > keyedSelect(Condition::key_type key, C& coll)
+      { return ConditionsOperation<KeyedSelect<C> >(KeyedSelect<C>(key, coll)); }
 
-#endif     /* DDCOND_CONDITIONSSELECTORS_H       */
+      /// Helper to find conditions objects by hash key
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
+      ConditionsOperation<KeyFind> inline  keyFind(Condition::key_type key)
+      { return ConditionsOperation<KeyFind>(KeyFind(key)); }
+
+    }        /* End namespace Operators            */
+  }          /* End namespace Conditions           */
+}            /* End namespace DD4hep               */
+#endif       /* DDCOND_CONDITIONSSELECTORS_H       */
