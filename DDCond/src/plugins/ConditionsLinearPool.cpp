@@ -47,6 +47,12 @@ namespace DD4hep {
       typedef typename  BASE::key_type key_type;
       Mapping           m_entries;
 
+      /// Helper function to loop over the conditions container and apply a functor
+      template <typename R,typename T> size_t loop(R& result, T functor) {
+        size_t len = result.size();
+        for_each(m_entries.begin(),m_entries.end(),functor);
+        return result.size() - len;
+      }
     public:
       /// Default constructor
       ConditionsLinearPool(ConditionsManager mgr);
@@ -55,46 +61,45 @@ namespace DD4hep {
       virtual ~ConditionsLinearPool();
 
       /// Total entry count
-      virtual size_t count()  const   {
+      virtual size_t size()  const   {
         return m_entries.size();
       }
 
       /// Full cleanup of all managed conditions.
       virtual void clear()   {
-        for_each(m_entries.begin(), m_entries.end(), ConditionsPoolRemove(*this));
+        for_each(m_entries.begin(), m_entries.end(), Operators::poolRemove(*this));
         m_entries.clear();
       }
 
       /// Check if a condition exists in the pool
       virtual Condition exists(Condition::key_type key)  const   {
-        typename Mapping::const_iterator i=
-          find_if(m_entries.begin(), m_entries.end(), HashConditionFind(key));
+        auto i = find_if(m_entries.begin(), m_entries.end(), Operators::keyFind(key));
         return i==m_entries.end() ? Condition() : (*i);
       }
 
       /// Register a new condition to this pool
-      virtual void insert(Condition condition)
-      {  m_entries.insert(m_entries.end(),condition.access());      }
+      virtual bool insert(Condition condition)
+      {  m_entries.insert(m_entries.end(),condition.access()); return true;     }
 
       /// Register a new condition to this pool. May overload for performance reasons.
-      virtual void insert(RangeConditions& new_entries)
-      {  for_each(new_entries.begin(), new_entries.end(), collectionSelect(m_entries));   }
+      virtual void insert(RangeConditions& rc)
+      {  for_each(rc.begin(), rc.end(), Operators::sequenceSelect(m_entries));  }
 
       /// Select the conditions matching the DetElement and the conditions name
-      virtual void select(Condition::key_type key, RangeConditions& result)
-      {  for_each(m_entries.begin(), m_entries.end(), keyedSelect(key, result));  }
+      virtual size_t select(Condition::key_type key, RangeConditions& result)
+      {  return loop(result, Operators::keyedSelect(key, result));              }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_used(RangeConditions& result)
-      {  for_each(m_entries.begin(), m_entries.end(), activeSelect(result));  }
+      virtual size_t select_all(const ConditionsSelect& result)
+      {  return loop(result, Operators::operatorWrapper(result));               }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_all(RangeConditions& result)
-      {  for_each(m_entries.begin(), m_entries.end(), collectionSelect(result));  }
+      virtual size_t select_all(RangeConditions& result)
+      {  return loop(result, Operators::sequenceSelect(result));                }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_all(ConditionsPool& selection_pool) 
-      {  for_each(m_entries.begin(), m_entries.end(), ConditionsPoolInsert(selection_pool));  }
+      virtual size_t select_all(ConditionsPool& result)
+      {  return loop(result, Operators::poolSelect(result));                    }
     };
 
     /// Class implementing the conditions update pool for a given IOV type
@@ -119,8 +124,9 @@ namespace DD4hep {
       virtual ~ConditionsLinearUpdatePool()  {}
 
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
-      virtual void popEntries(UpdatePool::UpdateEntries& entries)   {
+      virtual size_t popEntries(UpdatePool::UpdateEntries& entries)   {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
+        size_t len = entries.size();
         if ( !m.empty() )  {
           for(typename MAPPING::iterator i=m.begin(); i!=m.end(); ++i)   {
             Condition::Object* o = *i;
@@ -128,6 +134,7 @@ namespace DD4hep {
           }
           m.clear();        
         }
+        return entries.size()-len;
       }
 
       /// Select the conditions matching the DetElement and the conditions name

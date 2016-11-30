@@ -248,6 +248,14 @@ namespace DD4hep {
       /// Known keys of conditions in this container
       const Keys&  keys()  const;
 
+      /// Add a new key to the conditions access map.
+      /**  Caution: This is not thread protected!  */
+      void addKey(const std::string& key_val);
+
+      /// Add a new key to the conditions access map: Allow for alias if key_val != data_val
+      /**  Caution: This is not thread protected!  */
+      void addKey(const std::string& key_val, const std::string& data_val);
+
       /// Access to alignment objects by key and IOV. 
       Alignment get(const std::string& alignment_key, const iov_type& iov);
 

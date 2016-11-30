@@ -16,19 +16,10 @@
 // Framework include files%
 #include "DD4hep/Mutex.h"
 #include "DD4hep/Memory.h"
-#include "DD4hep/Callback.h"
-#include "DD4hep/ConditionDerived.h"
 #include "DD4hep/ObjectExtensions.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsManagerObject.h"
 
 // C/C++ include files
-#include <set>
-#include <list>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -38,6 +29,7 @@ namespace DD4hep {
 
     class Entry;
     class ConditionsPool;
+    class ConditionsSlice;
     class ConditionsIOVPool;
     class ConditionsDataLoader;
 
@@ -50,44 +42,43 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionsManagerObject_Type1 : public ConditionsManagerObject, 
-                                          public ObjectExtensions
+    class Manager_Type1 : public ConditionsManagerObject, 
+                          public ObjectExtensions
     {
+    public:
+      typedef std::vector<ConditionsIOVPool*> TypedConditionPool;
+
     protected:
 
       /** Generic interface of any concrete instance  */
       
       /// Property: maximal number of IOV types to be handled
-      int                    m_maxIOVTypes;
+      int                     m_maxIOVTypes;
       /// Property: ConditionsPool constructor type (default: empty. MUST BE SET!)
-      std::string            m_poolType;
+      std::string             m_poolType;
       /// Property: UpdatePool constructor type (default: DD4hep_ConditionsLinearUpdatePool)
-      std::string            m_updateType;
+      std::string             m_updateType;
       /// Property: UserPool constructor type (default: DD4hep_ConditionsLinearUserPool)
-      std::string            m_userType;
+      std::string             m_userType;
       /// Property: Conditions loader type (default: "multi" -> DD4hep_Conditions_multi_Loader)
-      std::string            m_loaderType;
+      std::string             m_loaderType;
 
       /// Collection of IOV types managed
-      IOVTypes               m_iovTypes;
+      IOVTypes                m_iovTypes;
 
       /** Specialized interface only used by this implementation  */
+      /// Lock to protect the update/delayed conditions pool
+      dd4hep_mutex_t          m_updateLock;
+      /// Lock to protect the pool of all known conditions
+      dd4hep_mutex_t          m_poolLock;
+      /// Reference to update conditions pool
+      dd4hep_ptr<UpdatePool>  m_updatePool;
 
     public:
-      typedef std::vector<ConditionsIOVPool*>      TypedConditionPool;
       /// Managed pool of typed conditions indexed by IOV-type and IOV key
-      TypedConditionPool     m_rawPool;
-
-    protected:
-      /// Lock to protect the update/delayed conditions pool
-      dd4hep_mutex_t         m_updateLock;
-      /// Lock to protect the pool of all known conditions
-      dd4hep_mutex_t         m_poolLock;
-      /// Reference to update conditions pool
-      dd4hep_ptr<UpdatePool> m_updatePool;
-
+      TypedConditionPool      m_rawPool;
       /// Public access: if locked, DetElements stay intact and are not altered
-      int                    m_locked;
+      int                     m_locked;
 
     protected:
       /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
@@ -109,17 +100,12 @@ namespace DD4hep {
       /// Requires EXTERNALLY held lock on update pool!
       Condition __queue_update(Conditions::Entry* data);
 
-    protected:
-      /// Register a new managed condition. (Unused)
-      //void registerCondition(Condition c);
-
-      
     public:
       /// Standard constructor
-      ConditionsManagerObject_Type1(LCDD& lcdd);
+      Manager_Type1(LCDD& lcdd);
 
       /// Default destructor
-      virtual ~ConditionsManagerObject_Type1();
+      virtual ~Manager_Type1();
 
       /// Access to managed pool of typed conditions indexed by IOV-type and IOV key
       //const TypedConditionPool& conditionsPool() const  {  return m_rawPool; }
@@ -134,7 +120,7 @@ namespace DD4hep {
       virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
       
       /// Access IOV by its type
-      virtual const IOVTypes& iovTypes () const   {   return  m_iovTypes;  }
+      virtual const IOVTypes& iovTypes () const { return  m_iovTypes;  }
 
       /// Access IOV by its type
       virtual const IOVType* iovType (size_t iov_type) const;
@@ -151,27 +137,6 @@ namespace DD4hep {
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       virtual bool registerUnlocked(ConditionsPool* pool, Condition cond);
 
-      /// Prepare all updates for the given keys to the clients with the defined IOV
-      long prepare(const IOV& required_validity,
-                   const ConditionKeys& keys,
-                   dd4hep_ptr<UserPool>& user_pool);
-
-      /// Prepare all updates for the given keys to the clients with the defined IOV
-      long prepare(const IOV& required_validity,
-                   const ConditionKeys&  keys,
-                   dd4hep_ptr<UserPool>& user_pool,
-                   const Dependencies&   dependencies,
-                   bool                  verify_dependencies=true);
-
-      /// Prepare all updates to the clients with the defined IOV
-      long prepare(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);
-
-      /// Prepare all updates to the clients with the defined IOV
-      long prepare(const IOV&            required_validity,
-                   dd4hep_ptr<UserPool>& user_pool,
-                   const Dependencies&   dependencies,
-                   bool                  verify_dependencies=true);
-
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */
       int clean(const IOVType* typ, int max_age);
@@ -186,11 +151,22 @@ namespace DD4hep {
        */
       virtual void pushUpdates();
  
-      /// Retrieve a condition set given a Detector Element and the conditions name according to their validity
+      /// Retrieve a condition set given a Detector Element and the conditions name according to their validity  (deprecated)
       virtual Condition get(key_type key, const iov_type& req_validity);
 
-      /// Retrieve a condition given a Detector Element and the conditions name
+      /// Retrieve a condition given a Detector Element and the conditions name (deprecated)
       virtual RangeConditions getRange(key_type key, const iov_type& req_validity);
+
+      /// Prepare all updates for the given keys to the clients with the defined IOV
+      /**
+       *   @arg      req_validity [IOV]            Required interval of validity of the selected conditions
+       *   @arg      slice        []               Conditions slice with load/computation recipes.
+       *
+       *   @return   
+       */
+      UserPool::Result prepare(const IOV&               req_validity,
+                               ConditionsSlice&         slice);
+
     };
   }        /* End namespace Conditions               */
 }          /* End namespace DD4hep                   */

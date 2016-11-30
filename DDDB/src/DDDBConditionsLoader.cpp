@@ -167,9 +167,9 @@ size_t DDDBConditionsLoader::load_range(key_type key,
   return 0;
 }
 
-size_t DDDBConditionsLoader::load(key_type key,
-                                  const iov_type& req_validity,
-                                  RangeConditions& conditions)  {
+size_t DDDBConditionsLoader::load_single(key_type key,
+                                         const iov_type& req_validity,
+                                         RangeConditions& conditions)  {
   KeyMap::const_iterator k = m_keys.keys.find(key);
   if ( k != m_keys.keys.end() )   {
     size_t len = conditions.size();
@@ -191,6 +191,7 @@ size_t DDDBConditionsLoader::load(key_type key,
   return 0;
 }
 
+#if 0
 /// Update a range of conditions according to the required IOV
 size_t DDDBConditionsLoader::update(const iov_type& req_validity,
                                     RangeConditions& conditions,
@@ -228,6 +229,52 @@ size_t DDDBConditionsLoader::update(const iov_type& req_validity,
   m_mgr->callOnRegister(call,false);  
   return 0;
 }
+#endif
+
+/// Optimized update using conditions slice data
+size_t DDDBConditionsLoader::load_many(const iov_type& /* req_validity */,
+                                    EntryVector&    /* work         */,
+                                    EntryVector&    /* loaded       */,
+                                    EntryVector&    /* missing      */,
+                                    iov_type&       /* conditions_validity*/)
+{
+#if 0
+  CallArgs arg(REPLACE, 0, conditions_validity, conditions);
+  pair<ConditionsListener*,void*> call(this,&arg);
+  map<string,Condition::Object*> urls;
+  DDDBReaderContext  local;
+
+  local.event_time  = req_validity.keyData.first;
+  local.valid_since = 0;
+  local.valid_until = 0;
+  m_mgr->callOnRegister(call,true);
+
+  XML::UriContextReader local_reader(m_resolver, &local);
+
+  /// First collect all required URIs
+  for(RC::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)  {
+    Condition::Object* c = (*i).ptr();
+    size_t idx = c->address.find('#');
+    string url = (idx == string::npos) ? c->address : c->address.substr(0,idx);
+#if 0
+    printout(INFO,"DDDB","++ Need to update: %-40s [%08X] --> %s",
+             c->name.c_str(), c->hash, url.c_str());
+#endif
+    urls.insert(make_pair(url,c));
+  }
+  /// Now load them. In the callbacks we can check if we got all required conditions
+  for(map<string,Condition::Object*>::const_iterator j=urls.begin(); j!=urls.end(); ++j)  {
+    Condition            cond = (*j).second;
+    const AbstractMap&   data = cond.get<AbstractMap>();
+    const Document*       doc = data.option<Document>();
+    loadDocument(local_reader, doc->id, doc->name);
+  }
+  m_mgr->callOnRegister(call,false);
+#endif
+  except("ConditionsLoader","+++ update: Invalid call!");
+  return 0;
+}
+
 
 /// ConditionsListener overload: onRegister new condition
 void DDDBConditionsLoader::onRegisterCondition(Condition cond, void* param)  {

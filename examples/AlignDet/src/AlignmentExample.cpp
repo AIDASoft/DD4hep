@@ -27,10 +27,11 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/AlignedVolumePrinter.h"
+#include "DD4hep/AlignmentsPrinter.h"
 #include "DD4hep/Factories.h"
+#include "DD4hep/DetAlign.h"
 
-#include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsSlice.h"
 #include "DDAlign/AlignmentsManager.h"
 #include "DDAlign/DDAlignUpdateCall.h"
 #include "DDAlign/DDAlignForwardCall.h"
@@ -41,13 +42,39 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
+// Don't clutter global namespace
 namespace {
+
+  /// Example how to access the alignment constants from a detector element
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2016
+   */
+  struct AlignmentDataAccess : public AlignmentsProcessor  {
+    Conditions::UserPool* pool;
+    AlignmentDataAccess(Conditions::UserPool* p) : AlignmentsProcessor(0), pool(p) {}
+    int processElement(DetElement de)  {
+      DetAlign     a(de); // Use special facade...
+      Container    container = a.alignments();
+      // Let's go for the deltas....
+      for(const auto& k : container.keys() )  {
+        Alignment align    = container.get(k.first,*pool);
+        const Delta& delta = align.data().delta;
+        if ( delta.hasTranslation() || delta.hasPivot() || delta.hasRotation() )  {}
+      }
+      // Keep it simple. To know how to access stuff,
+      // simply look in DDDCore/src/AlignmentsPrinter.cpp...
+      printElementPlacement("Example",de,pool);
+      return 1;
+    }
+  };
   struct Proc : public Geometry::DetectorProcessor  {
     DetElement::Processor* proc;
     virtual int operator()(DetElement de, int)
     { return proc->processElement(de);                     }
     template <typename Q> Proc& scan(Q& p, DetElement start)
-    { proc = &p; this->process(start, 0, true); return *this; }
+    { Proc obj; obj.proc = &p; obj.process(start, 0, true); return *this; }
   };
 }
 
@@ -99,33 +126,31 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   if ( 0 == iov_typ )  {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
   }
-  IOV iov(iov_typ,1500);                  // IOV goes from run 1000 ... 2000
-  dd4hep_ptr<Conditions::UserPool>  pool; // Working set up conditions for this IOV
-
-  long num_updated = condMgr.prepare(iov, pool);
+  IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
+  dd4hep_ptr<Conditions::ConditionsSlice> slice(Conditions::createSlice(condMgr,*iov_typ));
+  dd4hep_ptr<Conditions::UserPool>& pool = slice->pool();
+  long num_updated = condMgr.prepare(req_iov,*slice);
   printout(DEBUG,"Example","Updated %ld conditions of type %s.",num_updated, iov_typ->str().c_str());
+
+  printout(INFO,"Example","Updated %ld [%ld] conditions of type %s.",
+           num_updated, slice->conditions().size(), iov_typ->str().c_str());
 
   AlignmentsRegister reg(alignMgr,new DDAlignUpdateCall(),pool.get());
   AlignmentsForward  fwd(alignMgr,new DDAlignForwardCall(),pool.get());
   // Let's register the callbacks to compute dependent conditions/alignments
   Proc()
-    .scan(reg,lcdd.world())
-    .scan(fwd,lcdd.world());
+    .scan(reg,lcdd.world())  // Create dependencies for all deltas found in the conditions
+    .scan(fwd,lcdd.world()); // Create child dependencies if higher level alignments exist
 
   // ++++++++++++++++++++++++ Now the registration is finished.
 
   // ++++++++++++++++++++++++ The following has to be done for each new IOV....
-
-  // Need to compute the conditions sources
-  num_updated = condMgr.prepare(iov, pool);
-  printout(DEBUG,"Example","Updated %ld conditions of type %s.",num_updated, iov_typ->str().c_str());
-  
   // Let's compute the tranformation matrices
-  alignMgr.compute(pool);
+  alignMgr.compute(*slice);
 
-  // What else ? let's print the result
-  AlignedVolumePrinter printer(pool.get(),"ExamplePrint");
-  Proc().scan(printer,lcdd.world());
+  // What else ? let's access the data
+  AlignmentDataAccess access(pool.get());
+  Proc().scan(access,lcdd.world());
   
   // All done.
   return 1;

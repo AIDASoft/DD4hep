@@ -15,6 +15,7 @@
 
 // Framework include files
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsDataLoader.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {

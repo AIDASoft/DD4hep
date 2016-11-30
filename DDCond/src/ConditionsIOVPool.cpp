@@ -22,7 +22,7 @@ using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 /// Default constructor
-ConditionsIOVPool::ConditionsIOVPool()  {
+ConditionsIOVPool::ConditionsIOVPool(const IOVType* typ) : type(typ)  {
   InstanceCount::increment(this);
 }
 
@@ -32,20 +32,24 @@ ConditionsIOVPool::~ConditionsIOVPool()  {
   InstanceCount::decrement(this);
 }
 
-void ConditionsIOVPool::select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
+size_t ConditionsIOVPool::select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
 {
   if ( !elements.empty() )  {
+    size_t len = result.size();
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
     for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
       if ( IOV::key_contains_range((*i).first, req_key) )  {
         (*i).second->select(key, result);
       }
     }
+    return result.size() - len;
   }
+  return 0;
 }
 
-void ConditionsIOVPool::selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
+size_t ConditionsIOVPool::selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
 {
+  size_t len = result.size();
   const IOV::Key range = req_validity.key();
   for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
     const IOV::Key& k = (*i).first;
@@ -59,6 +63,7 @@ void ConditionsIOVPool::selectRange(Condition::key_type key, const Condition::io
       // IOV overlap of test on the higher end of key
       (*i).second->select(key, result);
   }
+  return result.size() - len;
 }
 
 /// Remove all key based pools with an age beyon the minimum age
@@ -68,7 +73,7 @@ int ConditionsIOVPool::clean(int max_age)   {
   for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
     ConditionsPool* pool = (*i).second;
     if ( pool->age_value >= max_age )   {
-      count += pool->count();
+      count += pool->size();
       pool->print("Remove");
       delete pool;
     }
@@ -79,27 +84,69 @@ int ConditionsIOVPool::clean(int max_age)   {
   return count;
 }
 
-/// Select all ACTIVE conditions, which do no longer match the IOV requirement
-void ConditionsIOVPool::select(const Condition::iov_type& required_validity, 
-                               RangeConditions& valid,
-                               RangeConditions& expired,
-                               Condition::iov_type& conditions_validity)
+/// Select all ACTIVE conditions, which do match the IOV requirement
+size_t ConditionsIOVPool::select(const IOV&        req_validity, 
+                                 RangeConditions&  valid,
+                                 IOV&              cond_validity)
 {
+  size_t num_selected = 0;
   if ( !elements.empty() )  {
-    const IOV::Key req_key = required_validity.key(); // 16 bytes => better copy!
+    const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
     for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
       ConditionsPool* pool = (*i).second;
       if ( !IOV::key_contains_range((*i).first, req_key) )  {
-        if ( pool->age_value == ConditionsPool::AGE_NONE ) {
-          // Now check the content:
-          pool->select_used(expired);
-        }
         ++pool->age_value;
         continue;
       }
-      conditions_validity.iov_intersection((*i).first);
-      pool->select_used(valid);
+      cond_validity.iov_intersection((*i).first);
+      num_selected += pool->select_all(valid);
       pool->age_value = 0;
     }
   }
+  return num_selected;
+}
+
+/// Select all ACTIVE conditions, which do match the IOV requirement
+size_t ConditionsIOVPool::select(const IOV&              req_validity, 
+                                 const ConditionsSelect& predicate_processor,
+                                 IOV&                    cond_validity)
+{
+  size_t num_selected = 0;
+  if ( !elements.empty() )  {
+    const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
+    for(const auto& i : elements )  {
+      ConditionsPool* pool = i.second;
+      if ( !IOV::key_contains_range(i.first, req_key) )  {
+        ++pool->age_value;
+        continue;
+      }
+      cond_validity.iov_intersection(i.first);
+      num_selected += pool->select_all(predicate_processor);
+      pool->age_value = 0;
+    }
+  }
+  return num_selected;
+}
+
+/// Select all ACTIVE conditions, which do match the IOV requirement
+size_t ConditionsIOVPool::select(const IOV& req_validity, 
+                                 Elements&  valid,
+                                 IOV&       cond_validity)
+{
+  size_t num_selected = 0;
+  if ( !elements.empty() )   {
+    const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
+    for(const auto& i : elements )  {
+      ConditionsPool* pool = i.second;
+      if ( !IOV::key_contains_range(i.first, req_key) )  {
+        ++pool->age_value;
+        continue;
+      }
+      cond_validity.iov_intersection(i.first);
+      valid[i.first] = pool;
+      pool->age_value = 0;
+      ++num_selected;
+    }
+  }
+  return num_selected;
 }

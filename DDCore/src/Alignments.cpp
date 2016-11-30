@@ -137,6 +137,16 @@ const Container::Keys& Container::keys()  const   {
   return o->keys;
 }
 
+/// Add a new key to the alignments access map
+void Container::addKey(const string& key_val)  {
+  access()->addKey(key_val);
+}
+
+/// Add a new key to the alignments access map: Allow for alias if key_val != data_val
+void Container::addKey(const string& key_val, const string& data_val)  {
+  access()->addKey(key_val, data_val);
+}
+
 /// Access to alignment objects
 Alignment Container::get(const string& alignment_key, const iov_type& iov)  {
   Object* o = ptr();

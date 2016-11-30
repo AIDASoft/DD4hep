@@ -14,7 +14,7 @@
 #define DDCOND_CONDITIONSPOOL_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
+#include "DD4hep/NamedObject.h"
 #include "DDCond/ConditionsManager.h"
 
 // C/C++ include files
@@ -27,11 +27,11 @@ namespace DD4hep {
   namespace Conditions {
 
     // Forward declarations
+    class ConditionsSlice;
     class ConditionsIOVPool;
-    class ConditionsPoolInsert;
     class ConditionDependency;
     class ConditionsDependencyCollection;
-
+    
     /// Class implementing the conditions collection for a given IOV type
     /**
      *  Implementation is mostly virtual, to allow to switch between
@@ -72,10 +72,7 @@ namespace DD4hep {
       /// Aging value
       int              age_value;
 
-    protected:
-      friend class ConditionsPoolInsert;
-      friend class ConditionsPoolRemove;
-
+    public:
       /// Listener invocation when a condition is registered to the cache
       void onRegister(Condition condition);
       /// Listener invocation when a condition is deregistered from the cache
@@ -88,24 +85,24 @@ namespace DD4hep {
       virtual ~ConditionsPool();
       /// Print pool basics
       void print(const std::string& opt)   const;
+      /// Total entry count
+      virtual size_t size()  const = 0;
       /// Full cleanup of all managed conditions.
       virtual void clear() = 0;
       /// Register a new condition to this pool
-      virtual void insert(Condition cond) = 0;
+      virtual bool insert(Condition cond) = 0;
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& cond) = 0;
       /// Check if a condition exists in the pool
       virtual Condition exists(Condition::key_type key)  const = 0;
       /// Select the conditions matching the DetElement and the conditions name
-      virtual void select(Condition::key_type key, RangeConditions& result) = 0;
+      virtual size_t select(Condition::key_type key, RangeConditions& result) = 0;
       /// Select all conditions contained
-      virtual void select_all(RangeConditions& result) = 0;
+      virtual size_t select_all(RangeConditions& result) = 0;
+      /// Select the conditons, passing a predicate
+      virtual size_t select_all(const ConditionsSelect& predicate) = 0;
       /// Select all conditions contained
-      virtual void select_all(ConditionsPool& selection_pool) = 0;
-      /// Select the conditons, used also by the DetElement of the condition
-      virtual void select_used(RangeConditions& result) = 0;
-      /// Total entry count
-      virtual size_t count()  const = 0;
+      virtual size_t select_all(ConditionsPool& selection_pool) = 0;
     };
 
     /// Interface for conditions pool optimized to host conditions updates.
@@ -126,7 +123,7 @@ namespace DD4hep {
       /// Default destructor.
       virtual ~UpdatePool();
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
-      virtual void popEntries(UpdateEntries& entries) = 0;
+      virtual size_t popEntries(UpdateEntries& entries) = 0;
       /// Select the conditions matching the key
       virtual void select_range(Condition::key_type key, 
                                 const Condition::iov_type& req_validity,
@@ -145,18 +142,23 @@ namespace DD4hep {
       typedef std::set<ConditionKey>               ConditionKeys;
       typedef ConditionDependency                  Dependency;
       typedef ConditionsDependencyCollection       Dependencies;
-
+      class Result  {
+      public:
+        size_t selected = 0;
+        size_t missing = 0;
+        Result() = default;
+        Result(const Result& result) = default;
+        Result& operator=(const Result& result) = default;
+      };
     protected:
       /// The pool's interval of validity
       IOV                 m_iov;
       /// Handle to conditions manager object
       ConditionsManager   m_manager;
-      /// IOV Pool as data source
-      ConditionsIOVPool*  m_iovPool;
 
     public:
       /// Default constructor
-      UserPool(ConditionsManager mgr, ConditionsIOVPool* pool);
+      UserPool(ConditionsManager mgr);
       /// Default destructor.
       virtual ~UserPool();
       /// Access the interval of validity for this user pool
@@ -166,7 +168,7 @@ namespace DD4hep {
       /// Print pool content
       virtual void print(const std::string& opt) const = 0;
       /// Total entry count
-      virtual size_t count()  const = 0;
+      virtual size_t size()  const = 0;
       /// Full cleanup of all managed conditions.
       virtual void clear() = 0;
       /// Check a condition for existence
@@ -184,14 +186,13 @@ namespace DD4hep {
       /// Register a new condition to this pool
       virtual bool insert(Condition cond) = 0;
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual long prepare(const IOV& required) = 0;
-      /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual long prepare(const IOV& required, const ConditionKeys& keys) = 0;
+      virtual Result prepare(const IOV&               required, 
+                             ConditionsSlice&         slice,
+                             void*                    user_param = 0) = 0;
+
       /// Evaluate and register all derived conditions from the dependency list
-      virtual long compute(const Dependencies& dependencies, void* user_param=0) = 0;
+      virtual size_t compute(const Dependencies& dependencies, void* user_param = 0) = 0;
     };
-
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-
-#endif     /* DDCOND_CONDITIONSPOOL_H       */
+  }        /* End namespace Conditions               */
+}          /* End namespace DD4hep                   */
+#endif     /* DDCOND_CONDITIONSPOOL_H                */

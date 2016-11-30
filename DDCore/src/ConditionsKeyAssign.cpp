@@ -24,7 +24,7 @@ const ConditionsKeyAssign&
 ConditionsKeyAssign::addKey(const string& key_value)  const
 {
   DetConditions conds(detector);
-  conds.conditions()->addKey(key_value);
+  conds.conditions().addKey(key_value);
   return *this;
 }
 
@@ -33,7 +33,7 @@ const ConditionsKeyAssign&
 ConditionsKeyAssign::addKey(const string& key_value, const string& data_value)  const
 {
   DetConditions conds(detector);
-  conds.conditions()->addKey(key_value, data_value);
+  conds.conditions().addKey(key_value, data_value);
   return *this;
 }
 

@@ -248,8 +248,17 @@ namespace DD4hep {
       size_t numKeys() const;
 
       /// Known keys of conditions in this container
+      /**  Caution: This is not thread protected!  */
       const Keys&  keys()  const;
-      
+
+      /// Add a new key to the conditions access map.
+      /**  Caution: This is not thread protected!  */
+      void addKey(const std::string& key_val);
+
+      /// Add a new key to the conditions access map: Allow for alias if key_val != data_val
+      /**  Caution: This is not thread protected!  */
+      void addKey(const std::string& key_val, const std::string& data_val);
+
       /// Access to condition objects by key and IOV. 
       Condition get(const std::string& condition_key, const iov_type& iov);
 
@@ -263,6 +272,89 @@ namespace DD4hep {
       Condition get(key_type condition_key, const UserPool& pool);
     };
 
+    /// Conditions selector functor. Default implementation selects everything evaluated.
+    /**
+     *  Please note:
+     *  This class should never be directly instantiated by the user.
+     *  A typical use-case is to do so in a wrapper class, which contains a refernce
+     *  to a counter object, which in turn allows to deduce information from the
+     *  processed objects.
+     *
+     *  See class ConditionsSelectWrapper below
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionsSelect   {
+    protected:
+      /// Default constructor
+      ConditionsSelect() = default;
+      /// Copy constructor
+      ConditionsSelect(const ConditionsSelect& copy) = default;
+      /// Default destructor. 
+      virtual ~ConditionsSelect();
+      /// Default assignment operator
+      ConditionsSelect& operator=(const ConditionsSelect& copy) = default;
+
+    public:
+      /// Selection callback: return true if the condition should be selected
+      bool operator()(Condition cond)  const  { return (*this)(cond.ptr()); }
+      /// Selection callback: return true if the condition should be selected
+      bool operator()(std::pair<Condition::key_type,Condition::Object*> cond) const
+      /** Arg is 2 longwords. No need to pass by reference.                      */
+      { return (*this)(cond.second);            }
+      /// Selection callback: return true if the condition should be selected
+      /** Arg is 2 longwords. No need to pass by reference.                      */
+      bool operator()(std::pair<Condition::key_type,Condition> cond) const
+      { return (*this)(cond.second.ptr());      }
+
+      /// Overloadable entry: Return number of conditions selected. Default does nothing....
+      virtual size_t size()  const  { return 0; }
+      /// Overloadable entry: Selection callback: return true if the condition should be selected
+      virtual bool operator()(Condition::Object* cond) const = 0;
+    };
+
+    /// Conditions selector functor. Wraps a user defined object by reference
+    /**
+     *  Example usage for the slow ones:
+     *
+     *  class MyCounter : public ConditionsSelectWrapper<long> {
+     *    MyCounter(long& cnt) : ConditionsSelectWrapper<long>(cnt) {}
+     *    virtual bool operator()(Condition::Object* cond) const { if ( cond != 0 ) ++object; }
+     *    // Optionally overload: virtual size_t size()  const  { return object; }
+     *  };
+     *  
+     *  long counter = 0;
+     *  for_each(conditons.begin(), conditions.end(), MyCounter(counter));
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    template <typename OBJECT> class ConditionsSelectWrapper : public ConditionsSelect {
+    private:
+      /// Default constructor
+      ConditionsSelectWrapper() = delete;
+      /// Default assignment operator
+      bool operator==(const ConditionsSelectWrapper& compare) = delete;
+    public:
+      /// Information collector type
+      typedef OBJECT object_t;
+      /// Reference to the infomation collector
+      object_t& object;
+    public:
+      /// Default constructor
+      ConditionsSelectWrapper(object_t& o) : ConditionsSelect(), object(o) {}
+      /// Copy constructor
+      ConditionsSelectWrapper(const ConditionsSelectWrapper& copy) = default;
+      /// Default destructor. 
+      virtual ~ConditionsSelectWrapper() = default;
+      /// Default assignment operator
+      ConditionsSelectWrapper& operator=(const ConditionsSelectWrapper& copy) = default;
+    };
+
+    
     /// Key definition to optimize ans simplyfy the access to conditions entities
     /**
      *  \author  M.Frank
@@ -277,17 +369,17 @@ namespace DD4hep {
       /// String representation of the key object
       std::string  name;
       /// Hashed key representation
-      key_type     hash;
+      key_type     hash = 0;
 
     public:
       /// Default constructor
-      ConditionKey() : hash(0)  {}
+      ConditionKey() = default;
       /// Constructor from string
       ConditionKey(const std::string& compare);
       /// Constructor from string
       ConditionKey(const std::string& s, key_type h) : name(s), hash(h) {}
       /// Copy constructor
-      ConditionKey(const ConditionKey& c) : name(c.name), hash(c.hash) {}
+      ConditionKey(const ConditionKey& c) = default;
 
       /// Hash code generation from input string
       static key_type hashCode(const char* value);
@@ -297,7 +389,7 @@ namespace DD4hep {
       /// Assignment operator from the string representation
       ConditionKey& operator=(const std::string& value);
       /// Assignment operator from object copy
-      ConditionKey& operator=(const ConditionKey& key);
+      ConditionKey& operator=(const ConditionKey& key) = default;
       /// Equality operator using key object
       bool operator==(const ConditionKey& compare)  const;
       /// Equality operator using hash value
@@ -326,15 +418,6 @@ namespace DD4hep {
     inline ConditionKey::key_type ConditionKey::hashCode(const std::string& value)
     {   return hash32(value);    }
 
-    /// Assignment operator from object copy
-    inline ConditionKey& ConditionKey::operator=(const ConditionKey& key)  {
-      if ( this != &key )  {
-        hash  = key.hash;
-        name  = key.name;
-      }
-      return *this;
-    }
-
     /// Equality operator using key object
     inline bool ConditionKey::operator==(const ConditionKey& compare)  const
     {  return hash == compare.hash;                            }
@@ -358,6 +441,6 @@ namespace DD4hep {
     typedef std::vector<Condition>          RangeConditions;
     typedef std::pair<RangeConditions,bool> RangeStatus;
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-#endif    /* DD4HEP_CONDITIONS_CONDITIONS_H */
+  }        /* End namespace Conditions               */
+}          /* End namespace DD4hep                   */
+#endif     /* DD4HEP_CONDITIONS_CONDITIONS_H         */

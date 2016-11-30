@@ -21,6 +21,7 @@
 #include "XML/XMLTags.h"
 
 // C/C++ include files
+#include <cstring>
 #include <fstream>
 #include <climits>
 #include <cerrno>

@@ -1,4 +1,3 @@
-# $Id: $
 #==========================================================================
 #  AIDA Detector description implementation for LCD
 #--------------------------------------------------------------------------
@@ -14,10 +13,13 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #--------------------------------------------------------------------------
 dd4hep_configure_output ()
-dd4hep_package ( CLICSiD MAJOR 0 MINOR 0 PATCH 1
-  USES  [ROOT   REQUIRED COMPONENTS Geom] 
-        [DD4hep REQUIRED COMPONENTS DDCore]
+dd4hep_package ( Conditions MAJOR 0 MINOR 0 PATCH 1
+  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector]
+               [DD4hep REQUIRED COMPONENTS DDCore DDCond DDAlign]
+  OPTIONAL     XERCESC
 )
+#-----------------------------------------------------------------------------------
+dd4hep_add_plugin(ConditionsExample SOURCES src/*.cpp)
 dd4hep_install_dir( xml  DESTINATION ${DD4hep_DIR}/examples/Conditions )
 dd4hep_install_dir( data DESTINATION ${DD4hep_DIR}/examples/Conditions )
 dd4hep_configure_scripts ( Conditions DEFAULT_SETUP WITH_TESTS )

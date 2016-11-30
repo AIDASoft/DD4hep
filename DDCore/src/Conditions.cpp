@@ -27,33 +27,6 @@ using namespace DD4hep::Conditions;
 Condition::Processor::Processor() {
 }
 
-/// Access the key of the condition
-ConditionKey DD4hep::Conditions::make_key(Condition c) {
-  Condition::Object* p = c.ptr();
-  if ( p ) return ConditionKey(p->name,p->hash);
-  invalidHandleError<Condition>();
-  return ConditionKey();
-}
-
-/// Constructor from string
-ConditionKey::ConditionKey(const string& value) 
-  : name(value), hash(hashCode(value))
-{
-}
-
-/// Assignment operator from the string representation
-ConditionKey& ConditionKey::operator=(const string& value)  {
-  ConditionKey key(value);
-  hash = hashCode(value);
-  name = value;
-  return *this;
-}
-
-/// Operator less (for map insertions) using the string representation
-bool ConditionKey::operator<(const string& compare)  const  {  
-  return hash < hashCode(compare);
-}
-
 /// Initializing constructor
 Condition::Condition(const string& nam,const string& typ) : Handle<Object>()  {
   Object* o = new Object();
@@ -185,6 +158,16 @@ const Container::Keys& Container::keys()  const   {
   return o->keys;
 }
 
+/// Add a new key to the conditions access map
+void Container::addKey(const string& key_val)  {
+  access()->addKey(key_val);
+}
+
+/// Add a new key to the conditions access map: Allow for alias if key_val != data_val
+void Container::addKey(const string& key_val, const string& data_val)  {
+  access()->addKey(key_val, data_val);
+}
+
 /// Access to condition objects
 Condition Container::get(const string& condition_key, const iov_type& iov)  {
   Object* o = ptr();
@@ -239,4 +222,35 @@ Condition Container::get(key_type condition_key, const UserPool& pool)  {
   }
   invalidHandleError<Container>();
   return Condition();
+}
+
+/// Default destructor. 
+ConditionsSelect::~ConditionsSelect()   {
+}
+
+/// Access the key of the condition
+ConditionKey DD4hep::Conditions::make_key(Condition c) {
+  Condition::Object* p = c.ptr();
+  if ( p ) return ConditionKey(p->name,p->hash);
+  invalidHandleError<Condition>();
+  return ConditionKey();
+}
+
+/// Constructor from string
+ConditionKey::ConditionKey(const string& value) 
+  : name(value), hash(hashCode(value))
+{
+}
+
+/// Assignment operator from the string representation
+ConditionKey& ConditionKey::operator=(const string& value)  {
+  ConditionKey key(value);
+  hash = hashCode(value);
+  name = value;
+  return *this;
+}
+
+/// Operator less (for map insertions) using the string representation
+bool ConditionKey::operator<(const string& compare)  const  {  
+  return hash < hashCode(compare);
 }

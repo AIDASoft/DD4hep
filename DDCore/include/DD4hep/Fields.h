@@ -204,7 +204,7 @@ namespace DD4hep {
 
       /// Returns the 3 electric field components (x, y, z).
       void electricField(const double* pos, double* field) const {
-	field[0] = field[1] = field[2] = 0.0;
+        field[0] = field[1] = field[2] = 0.0;
         CartesianField f = data<Object>()->electric;
         f.isValid() ? f.value(pos, field) : combinedElectric(pos, field);
       }
@@ -221,7 +221,7 @@ namespace DD4hep {
 
       /// Returns the 3  magnetic field components (x, y, z).
       void magneticField(const double* pos, double* field) const {
-	field[0] = field[1] = field[2] = 0.0;
+        field[0] = field[1] = field[2] = 0.0;
         CartesianField f = data<Object>()->magnetic;
         f.isValid() ? f.value(pos, field) : combinedMagnetic(pos, field);
       }

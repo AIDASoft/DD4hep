@@ -1,4 +1,3 @@
-# $Id: $
 #==========================================================================
 #  AIDA Detector description implementation for LCD
 #--------------------------------------------------------------------------
@@ -43,7 +42,7 @@ def loadDD4hep():
   from ROOT import gSystem
   result = gSystem.Load("libDDCore")
   if 0 != result:
-    raise Exception('DDG4.py: Failed to load the Geant4 library libDDCore: '+gSystem.GetErrorStr())
+    raise Exception('DD4hep.py: Failed to load the DD4hep library libDDCore: '+gSystem.GetErrorStr())
   from ROOT import DD4hep as module
   return module
 
@@ -67,7 +66,7 @@ try:
 except Exception,X:
   import sys
   print '+--%-100s--+'%(100*'-',)
-  print '|  %-100s  |'%('Failed to load DDG4 library:',)
+  print '|  %-100s  |'%('Failed to load DD4hep base library:',)
   print '|  %-100s  |'%(str(X),)
   print '+--%-100s--+'%(100*'-',)
   sys.exit(1)

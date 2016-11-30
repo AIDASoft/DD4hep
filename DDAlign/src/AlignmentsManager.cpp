@@ -19,6 +19,7 @@
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/ConditionDerived.h"
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsDependencyCollection.h"
 #include "DDAlign/AlignmentsManager.h"
 
@@ -173,17 +174,15 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
 }
 
 /// Compute all alignment conditions of the internal dependency list
-void AlignmentsManagerObject::compute(UserPool& user_pool)  const  {
-  compute(user_pool, *dependencies);
+void AlignmentsManagerObject::compute(Pool& pool)  const  {
+  compute(pool, *dependencies);
 }
   
 /// Compute all alignment conditions of the specified dependency list
-void AlignmentsManagerObject::compute(UserPool& pool, const Dependencies& deps) const  {
+void AlignmentsManagerObject::compute(Pool& pool, const Dependencies& deps) const  {
   AlignContext new_alignments;
   new_alignments.entries.reserve(deps.size());
   pool.compute(deps, &new_alignments);
-  for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)
-    compute(new_alignments, pool, (*i).det);
   for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)
     compute(new_alignments, pool, (*i).det);
 #if 0
@@ -341,14 +340,25 @@ const AlignmentsManager::Dependencies& AlignmentsManager::knownDependencies()  c
 }
 
 /// Compute all alignment conditions of the internal dependency list
-void AlignmentsManager::compute(dd4hep_ptr<UserPool>& user_pool) const   {
+void AlignmentsManager::compute(Slice& slice) const   {
   Object* o = access();
-  o->compute(*user_pool, *(o->dependencies));
+  o->compute(*slice.pool(), *(o->dependencies));
 }
 
 /// Compute all alignment conditions of the specified dependency list
-void AlignmentsManager::compute(dd4hep_ptr<UserPool>& user_pool, const Dependencies& deps) const  {
-  access()->compute(*user_pool, deps);
+void AlignmentsManager::compute(Slice& slice, const Dependencies& deps) const  {
+  access()->compute(*slice.pool(), deps);
+}
+
+/// Compute all alignment conditions of the internal dependency list
+void AlignmentsManager::compute(Pool& pool) const   {
+  Object* o = access();
+  o->compute(pool, *(o->dependencies));
+}
+
+/// Compute all alignment conditions of the specified dependency list
+void AlignmentsManager::compute(Pool& pool, const Dependencies& deps) const  {
+  access()->compute(pool, deps);
 }
 
 /// Register new updated derived alignment during the computation step

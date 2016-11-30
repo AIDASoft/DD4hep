@@ -185,11 +185,11 @@ void DetectorTools::elementPath(DetElement element, PlacementPath& det_nodes) {
 std::string DetectorTools::elementPath(const PlacementPath& nodes, bool reverse)   {
   string s = "";
   if ( reverse )  {
-    for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+    for(auto i=nodes.rbegin(); i != nodes.rend(); ++i)
       s += "/" + string((*i).name());
   }
   else  {
-    for(PlacementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
+    for(auto i=begin(nodes); i != end(nodes); ++i)
       s += "/" + string((*i)->GetName());
   }
   return s;
@@ -384,16 +384,15 @@ PlacedVolume DetectorTools::findNode(PlacedVolume top_place, const std::string& 
 /// Convert VolumeID to string
 std::string DetectorTools::toString(const PlacedVolume::VolIDs& ids)   {
   stringstream log;
-  for (PlacedVolume::VolIDs::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
-    log << (*vit).first << "=" << (*vit).second << "; ";
+  for( const PlacedVolume::VolID& v : ids )
+    log << v.first << "=" << v.second << "; ";
   return log.str();
 }
 
 /// Convert VolumeID to string
 std::string DetectorTools::toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code)   {
   stringstream log;
-  for (PlacedVolume::VolIDs::const_iterator idIt = ids.begin(); idIt != ids.end(); ++idIt) {
-    const PlacedVolume::VolID& id = (*idIt);
+  for( const PlacedVolume::VolID& id : ids )  {
     IDDescriptor::Field f = dsc.field(id.first);
     VolumeID value = f->value(code);
     log << id.first << "=" << id.second << "," << value << " [" << f->offset() << "," << f->width() << "] ";

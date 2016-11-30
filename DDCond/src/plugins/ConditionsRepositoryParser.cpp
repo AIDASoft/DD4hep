@@ -23,6 +23,7 @@
 #include "DD4hep/OpaqueDataBinder.h"
 #include "DD4hep/ConditionsKeyAssign.h"
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 #include "DDCond/ConditionsTags.h"
 #include "DDCond/ConditionsManager.h"

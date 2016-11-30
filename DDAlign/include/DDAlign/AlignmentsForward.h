@@ -28,10 +28,13 @@ namespace DD4hep {
     // Forward declarations
     class AlignmentUpdateCall;
 
-    /// Create lignment dependencies from conditions
+    /// Create alignment dependencies for child elements if a parent has re-alignments
     /**
-     *   Conditions analyser to select alignments.and create the
+     *   Conditions analyser to select alignments and create the
      *   corresponding alignment condition dependencies.
+     *
+     *   This class has the same interface like AlignmentsRegister.
+     *   Please see AlignmentsRegister.h for further information.
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -40,9 +43,18 @@ namespace DD4hep {
      */
     class AlignmentsForward : public DetElement::Processor {
     public:
+      /// Reference to the alignment manager object
       AlignmentsManager      alignmentMgr;
+      /// The callback to be registered for the update mechanism
       AlignmentUpdateCall*   updateCall;
+      /// Conditions pool used to access the basic conditions object
       Conditions::UserPool*  user_pool;
+      /// Extension property to construct the name of the alignment condition
+      std::string            extension;
+      /// Name of the alignment alias for the detector elements alignment object
+      std::string            alias;
+      /// Flag if an alias to the real alignment object should be registered
+      bool                   haveAlias;
 
       /// Initializing constructor
       AlignmentsForward(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p);
@@ -50,6 +62,15 @@ namespace DD4hep {
       virtual ~AlignmentsForward();
       /// Callback to output conditions information
       virtual int processElement(DetElement de);
+      /// Overloadable: call to construct the alignment conditions name.
+      /**
+       *   Specialize for user defined implementation.
+       *
+       *   Default implementation returns "de.path()+extension"
+       *   Please note, that the corrsponding implementation of
+       *   'AlignmentsRegister::construct_name' must match
+       */
+      virtual std::string construct_name(DetElement de) const;
     };
   }       /* End namespace Alignments              */
 }         /* End namespace DD4hep                  */

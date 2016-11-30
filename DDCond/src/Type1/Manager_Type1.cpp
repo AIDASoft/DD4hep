@@ -12,29 +12,28 @@
 //==========================================================================
 
 // Framework include files
+#include "DDCond/Type1/Manager_Type1.h"
+
 #include "DD4hep/LCDD.h"
+#include "DD4hep/World.h"
 #include "DD4hep/Errors.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/World.h"
 #include "DD4hep/Handle.inl"
-#include "DD4hep/DetectorTools.h"
+#include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/PluginCreators.h"
-#include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/ConditionsListener.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
-#include "DD4hep/DetFactoryHelper.h"
 
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsEntry.h"
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsLoaderImp.h"
 #include "DDCond/AlignmentsLoaderImp.h"
-#include "DDCond/Type1/Manager_Type1.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -44,10 +43,10 @@ typedef Alignments::AlignmentsLoader AlignmentsLoader;
 typedef UpdatePool::UpdateEntries Updates;
 typedef RangeConditions RC;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsManagerObject_Type1);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(Manager_Type1);
 
 static void* ddcond_create_manager_instance(LCDD& lcdd, int, char**)  {
-  return (ConditionsManagerObject*)new ConditionsManagerObject_Type1(lcdd);
+  return (ConditionsManagerObject*)new Manager_Type1(lcdd);
 }
 DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsManager_Type1,ddcond_create_manager_instance)
 
@@ -60,10 +59,10 @@ namespace {
   int s_debug = INFO;
 
   /// Helper: IOV Check function declaration
-  template <typename T> const IOVType* check_iov_type(const ConditionsManagerObject_Type1* o, const IOV* iov);
+  template <typename T> const IOVType* check_iov_type(const Manager_Type1* o, const IOV* iov);
 
   /// Helper: Specialized IOV check
-  template <> const IOVType* check_iov_type<void>(const ConditionsManagerObject_Type1* o, const IOV* iov)   {
+  template <> const IOVType* check_iov_type<void>(const Manager_Type1* o, const IOV* iov)   {
     if ( iov )  {
       const IOVType* typ = iov->iovType ? iov->iovType : o->iovType(iov->type);
       if ( typ )  {
@@ -80,20 +79,20 @@ namespace {
   }
 
   /// Helper: Specialized IOV check for discrete IOV values
-  template <> const IOVType* check_iov_type<Discrete>(const ConditionsManagerObject_Type1* o, const IOV* iov)   {
+  template <> const IOVType* check_iov_type<Discrete>(const Manager_Type1* o, const IOV* iov)   {
     const IOVType* typ = check_iov_type<void>(o,iov);
     if ( typ && !iov->has_range() ) return typ;
     return 0;
   }
   /// Helper: Specialized IOV check for range IOV values
-  template <> const IOVType* check_iov_type<Range>(const ConditionsManagerObject_Type1* o, const IOV* iov)   {
+  template <> const IOVType* check_iov_type<Range>(const Manager_Type1* o, const IOV* iov)   {
     const IOVType* typ = check_iov_type<void>(o,iov);
     if ( typ && iov->has_range() ) return typ;
     return 0;
   }
 
   /// Helper: Check conditions result for consistency
-  template <typename T> void __check_values__(const ConditionsManagerObject_Type1* o, Condition::key_type key, const IOV* iov)  
+  template <typename T> void __check_values__(const Manager_Type1* o, Condition::key_type key, const IOV* iov)  
   {
     if ( !iov )  {
       except("ConditionsManager","+++ Invalid IOV to access condition: %08X. [Null-reference]",key);
@@ -130,16 +129,16 @@ namespace {
   }
 
   template <typename PMF>
-  void __callListeners(const ConditionsManagerObject_Type1::Listeners& listeners, PMF pmf, Condition& cond)  {
+  void __callListeners(const Manager_Type1::Listeners& listeners, PMF pmf, Condition& cond)  {
     for(const auto& listener : listeners )
       (listener.first->*pmf)(cond, listener.second);
   }
 }
 
 /// Standard constructor
-ConditionsManagerObject_Type1::ConditionsManagerObject_Type1(LCDD& lcdd_instance)
-  : ConditionsManagerObject(lcdd_instance), ObjectExtensions(typeid(ConditionsManagerObject_Type1)),
-    m_rawPool(), m_updateLock(), m_poolLock(), m_updatePool(), m_locked(0)
+Manager_Type1::Manager_Type1(LCDD& lcdd_instance)
+  : ConditionsManagerObject(lcdd_instance), ObjectExtensions(typeid(Manager_Type1)),
+    m_updateLock(), m_poolLock(), m_updatePool(), m_rawPool(), m_locked(0)
 {
   InstanceCount::increment(this);
   declareProperty("MaxIOVTypes",         m_maxIOVTypes=32);
@@ -152,7 +151,7 @@ ConditionsManagerObject_Type1::ConditionsManagerObject_Type1(LCDD& lcdd_instance
 }
 
 /// Default destructor
-ConditionsManagerObject_Type1::~ConditionsManagerObject_Type1()   {
+Manager_Type1::~Manager_Type1()   {
   Geometry::World world(m_lcdd.world());
   for_each(m_rawPool.begin(), m_rawPool.end(), DestroyObject<ConditionsIOVPool*>());
   if ( world.isValid() )  {
@@ -166,7 +165,7 @@ ConditionsManagerObject_Type1::~ConditionsManagerObject_Type1()   {
   InstanceCount::decrement(this);
 }
 
-void ConditionsManagerObject_Type1::initialize()  {
+void Manager_Type1::initialize()  {
   if ( !m_updatePool.get() )  {
     string typ = "DD4hep_Conditions_"+m_loaderType+"_Loader";
     const void* argv_loader[] = {"ConditionsDataLoader", this, 0};
@@ -187,22 +186,22 @@ void ConditionsManagerObject_Type1::initialize()  {
 }
 
 /// Register new IOV type if it does not (yet) exist.
-pair<bool, const IOVType*> ConditionsManagerObject_Type1::registerIOVType(size_t iov_type, const string& iov_name)   {
+pair<bool, const IOVType*> Manager_Type1::registerIOVType(size_t iov_type, const string& iov_name)   {
   if ( iov_type<m_iovTypes.size() )  {
-    IOVType& t = m_iovTypes[iov_type];
-    bool eq_type = t.type == iov_type;
-    bool eq_name = t.name == iov_name;
+    IOVType& typ = m_iovTypes[iov_type];
+    bool eq_type = typ.type == iov_type;
+    bool eq_name = typ.name == iov_name;
     if ( eq_type && eq_name )  {
-      return make_pair(false,&t);
+      return make_pair(false,&typ);
     }
-    else if ( t.type != 0 && eq_type && !eq_name )  {
+    else if ( typ.type != 0 && eq_type && !eq_name )  {
       except("ConditionsManager","Cannot register IOV %s. Type %d already in use!",
              iov_name.c_str(), iov_type);
     }
-    t.name = iov_name;
-    t.type = iov_type;
-    m_rawPool[t.type] = new ConditionsIOVPool();
-    return make_pair(true,&t);    
+    typ.name = iov_name;
+    typ.type = iov_type;
+    m_rawPool[typ.type] = new ConditionsIOVPool(&typ);
+    return make_pair(true,&typ);
   }
   except("ConditionsManager","Cannot register IOV section %d of type %d. Value out of bounds: [%d,%d]",
          iov_name.c_str(), iov_type, 0, int(m_iovTypes.size()));
@@ -210,17 +209,17 @@ pair<bool, const IOVType*> ConditionsManagerObject_Type1::registerIOVType(size_t
 }
 
 /// Access IOV by its type
-const IOVType* ConditionsManagerObject_Type1::iovType (size_t iov_type) const  {
+const IOVType* Manager_Type1::iovType (size_t iov_type) const  {
   if ( iov_type<m_iovTypes.size() )  {
-    const IOVType& t = m_iovTypes[iov_type];
-    if ( t.type == iov_type ) return &t;
+    const IOVType& typ = m_iovTypes[iov_type];
+    if ( typ.type == iov_type ) return &typ;
   }
   except("ConditionsManager","Request to access an unregistered IOV type: %d.", iov_type);
   return 0;
 }
 
 /// Access IOV by its name
-const IOVType* ConditionsManagerObject_Type1::iovType (const string& iov_name) const   {
+const IOVType* Manager_Type1::iovType (const string& iov_name) const   {
   for( const auto& i : m_iovTypes ) 
     if ( i.name == iov_name ) return &i;
   except("ConditionsManager","Request to access an unregistered IOV type: %s.", iov_name.c_str());
@@ -228,12 +227,12 @@ const IOVType* ConditionsManagerObject_Type1::iovType (const string& iov_name) c
 }
 
 /// Register IOV with type and key
-ConditionsPool* ConditionsManagerObject_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
+ConditionsPool* Manager_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
   // IOV read and checked. Now register it, but always locked!
   ConditionsIOVPool* pool = m_rawPool[typ.type];
   dd4hep_lock_t lock(m_poolLock);
   if ( !pool )  {
-    m_rawPool[typ.type] = pool = new ConditionsIOVPool();
+    m_rawPool[typ.type] = pool = new ConditionsIOVPool(&typ);
   }
   ConditionsIOVPool::Elements::const_iterator i = pool->elements.find(key);
   if ( i != pool->elements.end() )   {
@@ -250,12 +249,12 @@ ConditionsPool* ConditionsManagerObject_Type1::registerIOV(const IOVType& typ, I
 }
 
 /// Access conditions multi IOV pool by iov type
-ConditionsIOVPool* ConditionsManagerObject_Type1::iovPool(const IOVType& iov_type)  const    {
+ConditionsIOVPool* Manager_Type1::iovPool(const IOVType& iov_type)  const    {
   return m_rawPool[iov_type.type];
 }
 
 /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-bool ConditionsManagerObject_Type1::registerUnlocked(ConditionsPool* pool, Condition cond)   {
+bool Manager_Type1::registerUnlocked(ConditionsPool* pool, Condition cond)   {
   if ( pool && cond.isValid() )  {
     cond->pool = pool;
     cond->iov  = pool->iov;
@@ -274,7 +273,7 @@ bool ConditionsManagerObject_Type1::registerUnlocked(ConditionsPool* pool, Condi
 
 /// Set a single conditions value to be managed. 
 /// Requires external lock on update pool!
-Condition ConditionsManagerObject_Type1::__queue_update(Conditions::Entry* e)   {
+Condition Manager_Type1::__queue_update(Conditions::Entry* e)   {
   if ( e )  {
     ConditionsPool*  p = this->ConditionsManagerObject::registerIOV(e->validity);
     Condition condition(e->name,e->type);
@@ -291,15 +290,34 @@ Condition ConditionsManagerObject_Type1::__queue_update(Conditions::Entry* e)   
     if ( s_debug > INFO )  {
       printout(INFO,"Conditions","+++ Loaded condition: %s.%s to %s [%s] V: %s",
                e->detector.path().c_str(), c->name.c_str(),
-	       c->value.c_str(), c->type.c_str(), c->validity.c_str());
+               c->value.c_str(), c->type.c_str(), c->validity.c_str());
     }
     return c;
   }
   return Condition();
 }
 
+/// Helper to check iov and user pool and create user pool if not present
+void Manager_Type1::__get_checked_pool(const IOV& req_iov,
+                                       dd4hep_ptr<UserPool>& up)
+{
+  const IOVType* typ = check_iov_type<Discrete>(this, &req_iov);
+  if ( typ )  {
+    ConditionsIOVPool* pool = m_rawPool[typ->type];
+    if ( 0 == up.get() )  {
+      const void* argv[] = {this, pool, 0};
+      UserPool* p = createPlugin<UserPool>(m_userType,m_lcdd,2,argv);
+      up.adopt(p);
+    }
+    return;
+  }
+  // Invalid IOV type. Throw exception
+  except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
+         Errors::invalidArg().c_str());
+}
+
 /// Clean conditions, which are above the age limit.
-int ConditionsManagerObject_Type1::clean(const IOVType* typ, int max_age)   {
+int Manager_Type1::clean(const IOVType* typ, int max_age)   {
   int count = 0;
   dd4hep_lock_t lock(m_updateLock);
   ConditionsIOVPool* pool = m_rawPool[typ->type];
@@ -310,7 +328,7 @@ int ConditionsManagerObject_Type1::clean(const IOVType* typ, int max_age)   {
 }
 
 /// Full cleanup of all managed conditions.
-pair<int,int> ConditionsManagerObject_Type1::clear()   {
+pair<int,int> Manager_Type1::clear()   {
   pair<int,int> count(0,0);
   for( TypedConditionPool::iterator i=m_rawPool.begin(); i != m_rawPool.end(); ++i)  {
     ConditionsIOVPool* p = *i;
@@ -323,7 +341,7 @@ pair<int,int> ConditionsManagerObject_Type1::clear()   {
 }
 
 /// Push all pending updates to the conditions store
-void ConditionsManagerObject_Type1::pushUpdates()   {
+void Manager_Type1::pushUpdates()   {
   Updates entries;  {
     dd4hep_lock_t lock(m_updateLock);
     m_updatePool->popEntries(entries);
@@ -342,82 +360,10 @@ void ConditionsManagerObject_Type1::pushUpdates()   {
   }
 }
 
-/// Helper to check iov and user pool and create user pool if not present
-void ConditionsManagerObject_Type1::__get_checked_pool(const IOV& req_iov,
-                                                 dd4hep_ptr<UserPool>& up)
-{
-  const IOVType* typ = check_iov_type<Discrete>(this, &req_iov);
-  if ( typ )  {
-    ConditionsIOVPool* pool = m_rawPool[typ->type];
-    if ( 0 == up.get() )  {
-      const void* argv[] = {this, pool, 0};
-      UserPool* p = createPlugin<UserPool>(m_userType,m_lcdd,2,argv);
-      up.adopt(p);
-    }
-    return;
-  }
-  // Invalid IOV type. Throw exception
-  except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
-         Errors::invalidArg().c_str());
-}
-
-/// Prepare all updates for the given keys to the clients with the defined IOV
-long ConditionsManagerObject_Type1::prepare(const IOV&            req_iov,
-                                      const ConditionKeys&  keys,
-                                      dd4hep_ptr<UserPool>& up)
-{
-  RC valid, expired;
-  __get_checked_pool(req_iov, up);
-  /// First push any pending updates and register them to pending pools...
-  pushUpdates();
-  /// Now update/fill the user pool
-  return up->prepare(req_iov,keys);
-}
-
-
-/// Prepare all updates for the given keys to the clients with the defined IOV
-long ConditionsManagerObject_Type1::prepare(const IOV&            req_iov,
-                                      const ConditionKeys&  keys,
-                                      dd4hep_ptr<UserPool>& up,
-                                      const Dependencies&   dependencies,
-                                      bool                  verify_dependencies)
-{
-  long num_raw_updates = prepare(req_iov, keys, up);
-  if ( num_raw_updates > 0 || verify_dependencies )   {
-    long num_dep_updates = up->compute(dependencies);
-    return num_raw_updates+num_dep_updates;
-  }
-  return num_raw_updates;
-}
-
-/// Prepare all updates to the clients with the defined IOV
-long ConditionsManagerObject_Type1::prepare(const Condition::iov_type& req_iov, dd4hep_ptr<UserPool>& up)   {
-  RC valid, expired;
-  __get_checked_pool(req_iov, up);
-  /// First push any pending updates and register them to pending pools...
-  pushUpdates();
-  /// Now update/fill the user pool
-  return up->prepare(req_iov);
-}
-
-/// Prepare all updates to the clients with the defined IOV
-long ConditionsManagerObject_Type1::prepare(const Condition::iov_type& req_iov,
-                                      dd4hep_ptr<UserPool>& up,
-                                      const Dependencies& dependencies,
-                                      bool verify_dependencies)
-{
-  long num_raw_updates = prepare(req_iov, up);
-  if ( num_raw_updates > 0 || verify_dependencies )   {
-    long num_dep_updates = up->compute(dependencies);
-    return num_raw_updates+num_dep_updates;
-  }
-  return num_raw_updates;
-}
-
 /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
-bool ConditionsManagerObject_Type1::select(Condition::key_type key,
-				     const Condition::iov_type& req_validity,
-                                     RangeConditions& conditions)   {
+bool Manager_Type1::select(Condition::key_type key,
+                           const Condition::iov_type& req_validity,
+                           RangeConditions& conditions)   {
   {
     ConditionsIOVPool* p = 0;
     dd4hep_lock_t locked_action(m_poolLock);
@@ -432,9 +378,9 @@ bool ConditionsManagerObject_Type1::select(Condition::key_type key,
 }
 
 /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
-bool ConditionsManagerObject_Type1::select_range(Condition::key_type key,
-					   const Condition::iov_type& req_validity,
-					   RangeConditions& conditions)
+bool Manager_Type1::select_range(Condition::key_type key,
+                                 const Condition::iov_type& req_validity,
+                                 RangeConditions& conditions)
 {
   {
     ConditionsIOVPool* p = 0;
@@ -451,14 +397,14 @@ bool ConditionsManagerObject_Type1::select_range(Condition::key_type key,
 
 /// Retrieve a condition given a Detector Element and the conditions name
 Condition
-ConditionsManagerObject_Type1::get(Condition::key_type key, const Condition::iov_type& iov)
+Manager_Type1::get(Condition::key_type key, const Condition::iov_type& iov)
 {
   RC conditions;
   __check_values__<Discrete>(this, key, &iov);
   bool rc = select(key, iov, conditions);
   if ( !rc )  {
     dd4hep_lock_t locked_load(m_updateLock);
-    m_loader->load(key, iov, conditions);
+    m_loader->load_single(key, iov, conditions);
   }
   if ( conditions.size() == 1 )   {
     conditions[0]->flags |= Condition::ACTIVE;
@@ -486,7 +432,7 @@ ConditionsManagerObject_Type1::get(Condition::key_type key, const Condition::iov
 
 /// Retrieve a condition given a Detector Element and the conditions name
 RangeConditions
-ConditionsManagerObject_Type1::getRange(Condition::key_type key, const Condition::iov_type& iov)
+Manager_Type1::getRange(Condition::key_type key, const Condition::iov_type& iov)
 {
   RC conditions;
   __check_values__<Range>(this, key, &iov);
@@ -499,14 +445,27 @@ ConditionsManagerObject_Type1::getRange(Condition::key_type key, const Condition
     m_loader->load_range(key, iov, conditions);
     if ( conditions.empty() )  {
       except("ConditionsManager","+++ Conditions %08X for IOV %s do not exist.",
-	     key, iov.str().c_str());
+             key, iov.str().c_str());
     }
     conditions.clear();
   }
   rc = select_range(key, iov, conditions);
   if ( !rc )  {
     except("ConditionsManager","+++ Conditions %08X for IOV %s do not exist.",
-	   key, iov.str().c_str());
+           key, iov.str().c_str());
   }
   return conditions;
+}
+
+/// Prepare all updates for the given keys to the clients with the defined IOV
+UserPool::Result
+Manager_Type1::prepare(const IOV&               req_iov,
+                       ConditionsSlice&         slice)
+{
+  dd4hep_ptr<UserPool>& up = slice.pool();
+  __get_checked_pool(req_iov, up);
+  /// First push any pending updates and register them to pending pools...
+  pushUpdates();
+  /// Now update/fill the user pool
+  return up->prepare(req_iov, slice);
 }

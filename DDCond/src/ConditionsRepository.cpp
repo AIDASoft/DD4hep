@@ -16,11 +16,13 @@
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsTags.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "DD4hep/Printout.h"
 #include "XML/DocumentHandler.h"
 #include "XML/XMLTags.h"
 
 // C/C++ include files
+#include <cstring>
 #include <fstream>
 #include <climits>
 #include <cerrno>

@@ -58,7 +58,9 @@ ConditionDependency::ConditionDependency()
 
 /// Copy constructor
 ConditionDependency::ConditionDependency(const ConditionDependency& c)
-  : m_refCount(0), target(c.target), dependencies(c.dependencies), callback(c.callback)
+  : m_refCount(0), target(c.target),
+    dependencies(c.dependencies),
+    callback(c.callback)
 {
   InstanceCount::increment(this);
   if ( callback ) callback->addRef();
@@ -82,13 +84,16 @@ ConditionDependency& ConditionDependency::operator=(const ConditionDependency& )
 }
 
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call)
+DependencyBuilder::DependencyBuilder(const ConditionKey& target,
+                                     ConditionUpdateCall* call)
   : m_dependency(new ConditionDependency(target,call))
 {
 }
 
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call, Geometry::DetElement de)
+DependencyBuilder::DependencyBuilder(const ConditionKey& target,
+                                     ConditionUpdateCall* call,
+                                     Geometry::DetElement de)
   : m_dependency(new ConditionDependency(target,call))
 {
   m_dependency->detector = de;

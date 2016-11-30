@@ -15,19 +15,19 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/DetConditions.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
 
 #include "DDAlign/AlignmentsRegister.h"
 #include "DDAlign/AlignmentUpdateCall.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
+using Conditions::Condition;
 
 // ======================================================================================
 
 /// Initializing constructor
 AlignmentsRegister::AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
-  : alignmentMgr(m), updateCall(c), user_pool(p)
+  : alignmentMgr(m), updateCall(c), user_pool(p), extension("/Tranformations"), alias("Alignment"), haveAlias(true)
 {
 }
 
@@ -36,9 +36,15 @@ AlignmentsRegister::~AlignmentsRegister()   {
   releasePtr(updateCall);
 }
 
+/// Overloadable: call to construct the alignment conditions name. Specialize for change
+std::string
+AlignmentsRegister::construct_name(DetElement /* de */, Condition cond) const
+{
+  return cond.name()+extension;
+}
+
 /// Callback to output conditions information
 int AlignmentsRegister::processElement(DetElement de)  {
-  using Conditions::Condition;
   if ( de.isValid() )  {
     if ( de.hasConditions() )  {
       DetAlign align(de);
@@ -53,28 +59,33 @@ int AlignmentsRegister::processElement(DetElement de)  {
                  "++ Processing DE %s Cond:%s Key:%08X flags:%d",
                  de.path().c_str(), cond.name(), cond.key(), cond->flags);
         if ( (cond->flags&Condition::ALIGNMENT) )  {
-          Conditions::ConditionKey k(cond->name+"/Tranformations");
-          //
-          // The alignment access through the DetElement object is optional!
-          // It is slow and deprecated. The access using the UserPool directly
-          // is highly favored.
-          //
-          align.alignments()->addKey(k.name);
-          align.alignments()->addKey("Alignment",k.name);
-          //
-          // Now add the dependency to the alignmant manager
-          Conditions::DependencyBuilder b(k, updateCall->addRef(), de);
-          b.add(Conditions::ConditionKey(cond->name));
-          bool result = alignmentMgr.adoptDependency(b.release());
-          if ( result )   {
-            printout(INFO,"AlignRegister",
-                     "++ Added Alignment dependency Cond:%s Key:%08X flags:%d",
+          std::string alignment_name = construct_name(de, cond);
+          if ( !alignment_name.empty() )  {
+            Conditions::ConditionKey k(alignment_name);
+            //
+            // The alignment access through the DetElement object is optional!
+            // It is slow and deprecated. The access using the UserPool directly
+            // is highly favored.
+            //
+            align.alignments().addKey(k.name);
+            if ( haveAlias && !alias.empty() )  {
+              align.alignments().addKey(alias,k.name);
+            }
+            //
+            // Now add the dependency to the alignmant manager
+            Conditions::DependencyBuilder b(k, updateCall->addRef(), de);
+            b.add(Conditions::ConditionKey(cond->name));
+            bool result = alignmentMgr.adoptDependency(b.release());
+            if ( result )   {
+              printout(INFO,"AlignRegister",
+                       "++ Added Alignment dependency Cond:%s Key:%08X flags:%d",
+                       k.name.c_str(), k.hash, cond->flags);
+              continue;
+            }
+            printout(ERROR,"AlignRegister",
+                     "++ FAILED to add Alignment dependency Cond:%s Key:%08X flags:%d",
                      k.name.c_str(), k.hash, cond->flags);
-            continue;
           }
-          printout(ERROR,"AlignRegister",
-                   "++ FAILED to add Alignment dependency Cond:%s Key:%08X flags:%d",
-                   k.name.c_str(), k.hash, cond->flags);
         }
       }
       return 1;

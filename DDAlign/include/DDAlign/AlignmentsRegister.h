@@ -30,8 +30,24 @@ namespace DD4hep {
 
     /// Create lignment dependencies from conditions
     /**
-     *   Conditions analyser to select alignments.and create the
+     *   Conditions analyser to select alignments and create the
      *   corresponding alignment condition dependencies.
+     *
+     *   This algorithm only serves as an example showing how 
+     *   to program the alignments container of each detector
+     *   element.
+     *
+     *   The procedure implemented here is as follows:
+     *   For each registered and existing condition with a datatype
+     *   Alignments::Delta and a flag Condition::ALIGNMENT,
+     *   an entry is constructed to the alignments container.
+     *   The entry is identified by a name returned by a call to
+     *   construct_name(...). The optional alias is registered if the
+     *   flag 'haveAlias' is set and the property 'alais' is not empty.
+     *
+     *   This does NOT mean, that every experiment must do it this way.
+     *   The way to register the alignments with the detector element
+     *   strongly depend on the surrounding experiment framework.
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -40,16 +56,34 @@ namespace DD4hep {
      */
     class AlignmentsRegister : public DetElement::Processor {
     public:
+      /// Reference to the alignment manager object
       AlignmentsManager      alignmentMgr;
+      /// The callback to be registered for the update mechanism
       AlignmentUpdateCall*   updateCall;
+      /// Conditions pool used to access the basic conditions object
       Conditions::UserPool*  user_pool;
-
+      /// Extension property to construct the name of the alignment condition
+      std::string            extension;
+      /// Name of the alignment alias for the detector elements alignment object
+      std::string            alias;
+      /// Flag if an alias to the real alignment object should be registered
+      bool                   haveAlias;
+      
       /// Initializing constructor
       AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p);
       /// Default destructor
       virtual ~AlignmentsRegister();
       /// Callback to output conditions information
       virtual int processElement(DetElement de);
+      /// Overloadable: call to construct the alignment conditions name.
+      /**
+       *   Specialize for user defined implementation.
+       *
+       *   Default implementation returns "cond.name()+extension".
+       *   Please note, that the corrsponding implementation of
+       *   'AlignmentsForward::construct_name' must match
+       */
+      virtual std::string construct_name(DetElement de, Conditions::Condition cond) const;
     };
   }       /* End namespace Alignments              */
 }         /* End namespace DD4hep                  */
