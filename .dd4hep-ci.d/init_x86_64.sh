@@ -76,11 +76,9 @@ export PATH=${CMAKE_HOME}/bin:$PATH
 #     Python
 #--------------------------------------------------------------------------------
 
-if [ ${OS} == "slc6" ] || [ ${OS} == "centos7" ]; then
-    export PYTHONDIR=${CLICREPO}/software/Python/2.7.12/${BUILD_FLAVOUR}
-    export PATH=${PYTHONDIR}/bin:$PATH
-    export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
-fi
+export PYTHONDIR=${CLICREPO}/software/Python/2.7.12/${BUILD_FLAVOUR}
+export PATH=${PYTHONDIR}/bin:$PATH
+export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 
 #--------------------------------------------------------------------------------
 #     ROOT
