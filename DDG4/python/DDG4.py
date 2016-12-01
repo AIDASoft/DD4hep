@@ -29,7 +29,7 @@ def loadDDG4():
 
   result = gSystem.Load("libDDG4Plugins")
   if 0 != result:
-    raise Exception('DDG4.py: Failed to load the Geant4 library libDDG4: '+gSystem.GetErrorStr())
+    raise Exception('DDG4.py: Failed to load the DDG4 library libDDG4Plugins: '+gSystem.GetErrorStr())
   from ROOT import DD4hep as module
   return module
 
