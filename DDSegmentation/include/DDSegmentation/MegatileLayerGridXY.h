@@ -147,4 +147,4 @@ namespace DD4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace DD4hep */
-#endif /* DDSegmentation_WAFERGRIDXY_H_ */
+#endif /* DDSegmentation_MEGATILELAYERGRIDXY_H_ */
