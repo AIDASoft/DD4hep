@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #==========================================================================
 #  AIDA Detector description implementation for LCD
 #--------------------------------------------------------------------------
@@ -106,6 +105,9 @@ while [[ "$1" == -* ]]; do
 done;
 #
 #
+if [ "$(uname)" == "Darwin" ]; then
+  export DYLD_LIBRARY_PATH=${DD4HEP_LIBRARY_PATH}
+fi
 export DD4HEP_TRACE=ON;
 ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis}`;
 echo "Command: ${debug} `which geoPluginRun` -destroy $ARGS";
