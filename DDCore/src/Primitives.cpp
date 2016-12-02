@@ -37,8 +37,8 @@ using   abi::__dynamic_cast;
 static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 #define seed 0xFEEDBABE
   typedef unsigned long long int uint64;
-	const unsigned int * data = (const unsigned int *)key;
 #if INTPTR_MAX == INT32_MAX
+	const unsigned int * data = (const unsigned int *)key;
 	const unsigned int m = 0x5bd1e995;
 	const int r = 24;
 
@@ -83,6 +83,7 @@ static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 
 	h = (h << 32) | h2;
 #elif INTPTR_MAX == INT64_MAX
+	const uint64* data = (const uint64*)key;
 	const uint64 m = 0xc6a4a7935bd1e995;
 	const int r = 47;
 
