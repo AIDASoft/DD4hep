@@ -67,7 +67,7 @@ int initAClick(const char* command=0)  {
   libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
-    libs += (" -L"+geant4+"/lib -L"+geant4+"/lib64 -lG4event -lG4tracking -lG4particles");
+    libs += (" -L"+geant4+"/lib -L"+geant4+"/lib64");
   }
   if ( !clhep.empty() )  {
     // A bit unclear how to deal with CLHEP libraries here, 
@@ -75,9 +75,7 @@ int initAClick(const char* command=0)  {
     inc += " -I"+clhep+"/include";
   }
   inc += " -Wno-shadow -g -O0" + defs;
-  if ( ROOT_VERSION_CODE < ROOT_VERSION(6,0,0) )
-    libs += " -lCint";
-  libs += " -lCore -lMathCore -pthread -lm -ldl -rdynamic";
+  libs += " -lCint -lCore -lMathCore -pthread -lm -ldl -rdynamic";
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
