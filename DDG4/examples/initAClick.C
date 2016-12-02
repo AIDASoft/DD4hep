@@ -79,7 +79,7 @@ int initAClick(const char* command=0)  {
     inc += " -I"+clhep+"/include";
   }
   inc += " -Wno-shadow -g -O0" + defs;
-  libs += " -lCint -lCore -lMathCore -pthread -lm -ldl -rdynamic";
+  libs += " -lCore -lMathCore -pthread -lm -ldl -rdynamic";
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
