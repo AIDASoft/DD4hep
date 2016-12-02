@@ -36,6 +36,7 @@ using   abi::__dynamic_cast;
 // and endian-ness issues if used across multiple platforms.
 static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 #define seed 0xFEEDBABE
+  typedef unsigned long long int uint64;
 	const unsigned int * data = (const unsigned int *)key;
 #if INTPTR_MAX == INT32_MAX
 	const unsigned int m = 0x5bd1e995;
@@ -78,21 +79,21 @@ static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 	h1 ^= h2 >> 17; h1 *= m;
 	h2 ^= h1 >> 19; h2 *= m;
 
-	uint64_t h = h1;
+	uint64 h = h1;
 
 	h = (h << 32) | h2;
 #elif INTPTR_MAX == INT64_MAX
-	const uint64_t m = 0xc6a4a7935bd1e995;
+	const uint64 m = 0xc6a4a7935bd1e995;
 	const int r = 47;
 
-	uint64_t h = seed ^ (len * m);
+	uint64 h = seed ^ (len * m);
 
-	const uint64_t * data = (const uint64_t *)key;
-	const uint64_t * end = data + (len/8);
+	const uint64 * data = (const uint64 *)key;
+	const uint64 * end = data + (len/8);
 
 	while(data != end)
 	{
-		uint64_t k = *data++;
+		uint64 k = *data++;
 
 		k *= m; 
 		k ^= k >> r; 
@@ -106,13 +107,13 @@ static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 
 	switch(len & 7)
 	{
-	case 7: h ^= uint64_t(data2[6]) << 48;
-	case 6: h ^= uint64_t(data2[5]) << 40;
-	case 5: h ^= uint64_t(data2[4]) << 32;
-	case 4: h ^= uint64_t(data2[3]) << 24;
-	case 3: h ^= uint64_t(data2[2]) << 16;
-	case 2: h ^= uint64_t(data2[1]) << 8;
-	case 1: h ^= uint64_t(data2[0]);
+	case 7: h ^= uint64(data2[6]) << 48;
+	case 6: h ^= uint64(data2[5]) << 40;
+	case 5: h ^= uint64(data2[4]) << 32;
+	case 4: h ^= uint64(data2[3]) << 24;
+	case 3: h ^= uint64(data2[2]) << 16;
+	case 2: h ^= uint64(data2[1]) << 8;
+	case 1: h ^= uint64(data2[0]);
     h *= m;
 	};
  
