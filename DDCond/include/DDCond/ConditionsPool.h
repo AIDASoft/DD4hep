@@ -142,14 +142,8 @@ namespace DD4hep {
       typedef std::set<ConditionKey>               ConditionKeys;
       typedef ConditionDependency                  Dependency;
       typedef ConditionsDependencyCollection       Dependencies;
-      class Result  {
-      public:
-        size_t selected = 0;
-        size_t missing = 0;
-        Result() = default;
-        Result(const Result& result) = default;
-        Result& operator=(const Result& result) = default;
-      };
+      typedef ConditionsManager::Result            Result;
+
     protected:
       /// The pool's interval of validity
       IOV                 m_iov;

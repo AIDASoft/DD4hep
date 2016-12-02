@@ -17,6 +17,7 @@
 #include "DD4hep/ConditionDerived.h"
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/Alignments.h"
+#include "DD4hep/Printout.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -50,6 +51,9 @@ namespace DD4hep {
       typedef Alignments::AlignmentData          Data;
       typedef Alignments::AlignmentData::Delta   Delta;
 
+      /// adjustable printout level for informative messages
+      PrintLevel  printLevel;
+      
     public:
       /// Default constructor
       AlignmentUpdateCall();

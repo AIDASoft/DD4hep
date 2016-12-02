@@ -56,11 +56,11 @@ namespace DD4hep {
       };
 
       /// Forward definition of the dependency container type
-      typedef std::map<unsigned int,Holder>      Dependencies;
-      typedef Dependencies::const_iterator       const_iterator;
-      typedef Dependencies::iterator             iterator;
-      typedef Dependencies::key_type             key_type;
-      typedef Dependencies::mapped_type          mapped_type;
+      typedef std::map<Condition::key_type,Holder> Dependencies;
+      typedef Dependencies::const_iterator         const_iterator;
+      typedef Dependencies::iterator               iterator;
+      typedef Dependencies::key_type               key_type;
+      typedef Dependencies::mapped_type            mapped_type;
 
       /// Functor base to create views
       /** 

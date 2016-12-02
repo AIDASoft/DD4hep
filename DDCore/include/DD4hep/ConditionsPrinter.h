@@ -45,6 +45,9 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
+      ConditionsPrinter(UserPool* pool, const std::string& prefix="", 
+                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
+      /// Initializing constructor
       ConditionsPrinter(const std::string& prefix="", 
                         int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
       /// Default destructor

@@ -18,6 +18,8 @@
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsSelectors.h"
 
+#include "DD4hep/Printout.h"
+
 // C/C++ include files
 #include <list>
 
@@ -189,7 +191,6 @@ namespace DD4hep {
 
 // Framework include files
 //#include "DDCond/ConditionsLinearPool.h"
-#include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 
 using DD4hep::Handle;

@@ -14,7 +14,9 @@
 #define DDCOND_CONDITIONSMAPPEDPOOL_H
 
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "DD4hep/objects/ConditionsInterna.h"
+
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsSelectors.h"
 
@@ -71,8 +73,15 @@ namespace DD4hep {
       /// Register a new condition to this pool
       virtual bool insert(Condition condition)    {
         Condition::Object* c = condition.access();
-        return m_entries.insert(std::make_pair(c->hash,c)).second;
-      }
+        bool result = m_entries.insert(std::make_pair(c->hash,c)).second;
+        if ( result ) return true;
+        auto i = m_entries.find(c->hash);
+        Condition present = (*i).second;
+          
+        printout(ERROR,"MappedPool","ConditionsClash: %s %08llX <> %08llX %s",
+                 present.name(), present.key(), condition.key(), condition.name());
+        return false;
+       }
 
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& new_entries)   {
@@ -203,7 +212,6 @@ namespace DD4hep {
 
 // Framework include files
 //#include "DDCond/ConditionsMappedPool.h"
-#include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 
 using DD4hep::Handle;

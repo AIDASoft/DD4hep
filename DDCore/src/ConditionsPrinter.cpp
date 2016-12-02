@@ -21,6 +21,12 @@ using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 /// Initializing constructor
+ConditionsPrinter::ConditionsPrinter(UserPool* p, const std::string& pref, int flg)
+  : ConditionsProcessor(p), name("Condition"), prefix(pref), m_flag(flg)
+{
+}
+
+/// Initializing constructor
 ConditionsPrinter::ConditionsPrinter(const std::string& pref, int flg)
   : ConditionsProcessor(0), name("Condition"), prefix(pref), m_flag(flg)
 {
@@ -39,7 +45,7 @@ int ConditionsPrinter::operator()(Condition cond)    {
     if ( values.length() > 132 ) values = values.substr(0,130)+"...";
     std::string new_prefix = prefix;
     new_prefix.assign(prefix.length(),' ');
-    printout(INFO,name,"++ %s \tPath:%s Key:%08X Type:%s",
+    printout(INFO,name,"++ %s \tPath:%s Key:%16llX Type:%s",
              new_prefix.c_str(), cond.name(), cond.key(), data.dataType().c_str());
     printout(INFO,name,"++ %s \tData:%s", new_prefix.c_str(), values.c_str());
   }
@@ -56,7 +62,7 @@ int ConditionsPrinter::operator()(Container container)   {
       std::string nam = c.name();
       std::string cn = nam.substr(nam.find('#')+1);
       Condition::key_type key = ConditionKey::hashCode(cn);
-      printout(INFO,name,"++ %s %s %s [%08X] -> %s [%08X]",
+      printout(INFO,name,"++ %s %s %s [%16llX] -> %s [%16llX]",
                prefix.c_str(), "Condition:", cn.c_str(), key==k.first ? key : k.first,
                c.name(), k.second.first);
       (*this)(c);

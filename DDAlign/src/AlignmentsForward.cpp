@@ -24,7 +24,8 @@ using namespace DD4hep::Alignments;
 
 /// Initializing constructor
 AlignmentsForward::AlignmentsForward(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
-  : alignmentMgr(m), updateCall(c), user_pool(p), extension("#alignment/Tranformations"), alias("Alignment"), haveAlias(true)
+  : alignmentMgr(m), updateCall(c), user_pool(p), extension("#alignment/Tranformations"),
+    alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
 
@@ -61,13 +62,13 @@ int AlignmentsForward::processElement(DetElement de)  {
         Conditions::DependencyBuilder b(k, updateCall->addRef(), de);
         bool result = alignmentMgr.adoptDependency(b.release());
         if ( result )   {
-          printout(INFO,"AlignForward",
-                   "++ Added Alignment child dependency Cond:%s Key:%08X",
+          printout(printLevel,"AlignForward",
+                   "++ Added Alignment child dependency Cond:%s Key:%16llX",
                    k.name.c_str(), k.hash);
           return 1;
         }
         printout(ERROR,"AlignForward",
-                 "++ FAILED to add Alignment dependency Cond:%s Key:%08X",
+                 "++ FAILED to add Alignment dependency Cond:%s Key:%16llX",
                  k.name.c_str(), k.hash);
       }
     }

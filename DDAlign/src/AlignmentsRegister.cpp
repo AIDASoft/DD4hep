@@ -27,7 +27,8 @@ using Conditions::Condition;
 
 /// Initializing constructor
 AlignmentsRegister::AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
-  : alignmentMgr(m), updateCall(c), user_pool(p), extension("/Tranformations"), alias("Alignment"), haveAlias(true)
+  : alignmentMgr(m), updateCall(c), user_pool(p), extension("/Tranformations"),
+    alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
 
@@ -56,8 +57,11 @@ int AlignmentsRegister::processElement(DetElement de)  {
       for ( const auto& c : cont.keys() )  {
         Condition cond = cont.get(c.first, *user_pool);
         printout(DEBUG,"AlignRegister",
-                 "++ Processing DE %s Cond:%s Key:%08X flags:%d",
+                 "++ Processing DE %s Cond:%s Key:%16llX flags:%d",
                  de.path().c_str(), cond.name(), cond.key(), cond->flags);
+        //
+        // Due to this very check we have to load the condition.....
+        //
         if ( (cond->flags&Condition::ALIGNMENT) )  {
           std::string alignment_name = construct_name(de, cond);
           if ( !alignment_name.empty() )  {
@@ -77,13 +81,13 @@ int AlignmentsRegister::processElement(DetElement de)  {
             b.add(Conditions::ConditionKey(cond->name));
             bool result = alignmentMgr.adoptDependency(b.release());
             if ( result )   {
-              printout(INFO,"AlignRegister",
-                       "++ Added Alignment dependency Cond:%s Key:%08X flags:%d",
+              printout(printLevel,"AlignRegister",
+                       "++ Added Alignment dependency Cond:%s Key:%16llX flags:%d",
                        k.name.c_str(), k.hash, cond->flags);
               continue;
             }
             printout(ERROR,"AlignRegister",
-                     "++ FAILED to add Alignment dependency Cond:%s Key:%08X flags:%d",
+                     "++ FAILED to add Alignment dependency Cond:%s Key:%16llX flags:%d",
                      k.name.c_str(), k.hash, cond->flags);
           }
         }

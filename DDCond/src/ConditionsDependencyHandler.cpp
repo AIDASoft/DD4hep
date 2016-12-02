@@ -24,7 +24,8 @@ ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
                                                          UserPool& pool,
                                                          const Dependencies& dependencies,
                                                          void* user_param)
-  : m_manager(mgr.access()), m_pool(pool), m_dependencies(dependencies), m_userParam(user_param)
+  : m_manager(mgr.access()), m_pool(pool), m_dependencies(dependencies),
+    m_userParam(user_param), num_callback(0)
 {
   const IOV& iov = m_pool.validity();
   m_iovPool = m_manager->registerIOV(*iov.iovType, iov.keyData);
@@ -40,7 +41,7 @@ LCDD& ConditionsDependencyHandler::lcdd() const  {
 }
 
 /// ConditionResolver implementation: Interface to access conditions
-Condition ConditionsDependencyHandler::get(unsigned int key)  const  {
+Condition ConditionsDependencyHandler::get(Condition::key_type key)  const  {
   Condition c = m_pool.get(key);
   if ( c.isValid() )  {
     Condition::Object* obj = c.ptr();
@@ -77,6 +78,7 @@ ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const 
       cond->setFlag(Condition::DERIVED);
       cond->iov = m_pool.validityPtr();
       // Must IMMEDIATELY insert to handle inter-dependencies.
+      ++num_callback;
       m_pool.insert(cond);
       m_manager->registerUnlocked(m_iovPool, cond);
     }

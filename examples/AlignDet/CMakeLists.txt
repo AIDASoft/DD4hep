@@ -33,10 +33,18 @@ dd4hep_add_test_reg( test_AlignDet_Telescope_dump_geometry
   -plugin DD4hepDetectorDump
   REGEX_PASS "/world/Telescope/module_9 NumDau\\:1 VolID\\:00000903 Place")
 #
-#---Testing: Load Telescope geometry and read conditions ------------------
-dd4hep_add_test_reg( test_AlignDet_Telescope_dump_alignments
+#---Testing: Load Telescope geometry and read and print alignments --------
+dd4hep_add_test_reg( test_AlignDet_Telescope_populate
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample 
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_populate
+     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+     -deltas file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
+  REGEX_PASS "\\[E42813AA\\] -> \\[E42813AA\\] /world/Telescope/module_9/sensor#alignment/Tranformations")
+#
+#---Testing: Load Telescope geometry and read and print alignments --------
+dd4hep_add_test_reg( test_AlignDet_Telescope_read_xml
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml
      -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
      -deltas file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
   REGEX_PASS "\\[E42813AA\\] -> \\[E42813AA\\] /world/Telescope/module_9/sensor#alignment/Tranformations")

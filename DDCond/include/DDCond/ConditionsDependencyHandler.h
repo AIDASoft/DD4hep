@@ -53,7 +53,12 @@ namespace DD4hep {
       ConditionsPool*          m_iovPool;
       /// User defined optional processing parameter
       void*                    m_userParam;
-      
+
+    public:
+      /// Number of callbacks to the handler for monitoring
+      mutable size_t           num_callback;
+
+    protected:
       /// Internal call to trigger update callback
       Condition::Object* do_callback(const ConditionDependency& dep) const;
 
@@ -74,7 +79,7 @@ namespace DD4hep {
       /// ConditionResolver implementation: Interface to access conditions.
       virtual Condition get(const ConditionKey& key)  const { return get(key.hash); }
       /// ConditionResolver implementation: Interface to access conditions
-      virtual Condition get(unsigned int key)  const;
+      virtual Condition get(Condition::key_type key)  const;
       /// Handler callback to process multiple derived conditions
       Condition::Object* operator()(const ConditionDependency* dep)  const;
     };

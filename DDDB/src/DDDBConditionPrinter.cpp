@@ -106,17 +106,18 @@ int ConditionPrinter::operator()(Condition cond)    {
 }
 
 /// Plugin function
-static void* create_dddb_conditions_printer(Geometry::LCDD& /* lcdd */, int argc,char** argv)  {
+static void* create_dddb_conditions_printer(Geometry::LCDD& /* lcdd */, int argc, char** argv)  {
   string prefix = "";
-  int flags = 0;
+  int    flags = 0;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-prefix",argv[i],4) )
       prefix = argv[++i];
     else if ( 0 == ::strncmp("-flags",argv[i],2) )
       flags = ::atol(argv[++i]);
   }
-  if ( flags )
-    return new DDDB::ConditionPrinter(prefix,flags);
-  return new DDDB::ConditionPrinter(prefix);
+  DetElement::Processor* proc = flags
+    ? new DDDB::ConditionPrinter(prefix,flags)
+    : new DDDB::ConditionPrinter(prefix);
+  return proc;
 }
 DECLARE_LCDD_CONSTRUCTOR(DDDB_ConditionsPrinter,create_dddb_conditions_printer)

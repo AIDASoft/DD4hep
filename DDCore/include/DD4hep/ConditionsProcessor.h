@@ -23,6 +23,9 @@ namespace DD4hep {
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace Conditions {
 
+    // Forward declarations
+    class UserPool;
+    
     /// Generic Conditions processor
     /**
      *   Please note that the principle of locality applies:
@@ -40,9 +43,9 @@ namespace DD4hep {
      *   \ingroup DD4HEP_CONDITIONS
      */
     class ConditionsProcessor :
-      virtual public Condition::Processor,
-      virtual public Container::Processor,
-      virtual public Geometry::DetElement::Processor
+      public Condition::Processor,
+      public Container::Processor,
+      public Geometry::DetElement::Processor
     {
     public:
       /// Self type definition

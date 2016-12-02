@@ -75,7 +75,9 @@ Interna::ConditionContainer::~ConditionContainer() {
 void Interna::ConditionContainer::addKey(const string& key_val)  {
   key_type hash = ConditionKey::hashCode(key_val);
   if ( !keys.insert(make_pair(hash,make_pair(hash,key_val))).second )   {
-    except("ConditionContainer","++ Key[%08X]: %s already present. Duplicate insertions inhibited!",hash, key_val.c_str());
+    except("ConditionContainer",
+           "++ Key[%16llX]: %s already present. Duplicate insertions inhibited!",
+           hash, key_val.c_str());
   }
 }
 
@@ -84,7 +86,9 @@ void Interna::ConditionContainer::addKey(const string& key_val, const string& da
   key_type key_hash = ConditionKey::hashCode(key_val);
   key_type val_hash = ConditionKey::hashCode(data_val);
   if ( !keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second )   {
-    except("ConditionContainer","++ Key[%08X]: %s already present. Duplicate insertions inhibited!",key_hash, key_val.c_str());
+    except("ConditionContainer",
+           "++ Key[%16llX]: %s already present. Duplicate insertions inhibited!",
+           key_hash, key_val.c_str());
   }
 }
 

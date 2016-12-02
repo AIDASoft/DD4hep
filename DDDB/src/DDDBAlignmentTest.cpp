@@ -119,10 +119,10 @@ namespace  {
       const IOVType* iovType = conds.iovType("epoch");
       IOV  iov(iovType, IOV::Key(time,time));
       slice.adopt(createSlice(conds,*iovType));
-      long num_expired = conds.prepare(iov, *slice);
+      ConditionsManager::Result res = conds.prepare(iov, *slice);
       printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
-               num_expired, iov.str().c_str());
+               "+++ ConditionsUpdate: Total of %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) ... IOV:%s",
+               res.total(), res.selected, res.loaded, res.computed, res.missing, iov.str().c_str());
       align.compute(*(slice->pool()));
       return 1;
     }
@@ -144,7 +144,7 @@ namespace  {
             {
               Alignments::Alignment    a = c.get(k.hash,p);
               const Alignments::Delta& D = a.data().delta;
-              printout(INFO,"Alignment","++ [%08X] (%11s-%8s-%5s) Cond:%p '%s'", k.hash,
+              printout(INFO,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p '%s'", k.hash,
                        D.hasTranslation() ? "Translation" : "",
                        D.hasRotation() ? "Rotation" : "",
                        D.hasPivot() ? "Pivot" : "",
@@ -155,7 +155,7 @@ namespace  {
             {
               Alignments::Alignment    a = c.get("Alignment",p);
               const Alignments::Delta& D = a.data().delta;
-              printout(INFO,"Alignment","++ [%08X] (%11s-%8s-%5s) Cond:%p 'Alignment'", k.hash,
+              printout(INFO,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p 'Alignment'", k.hash,
                        D.hasTranslation() ? "Translation" : "",
                        D.hasRotation() ? "Rotation" : "",
                        D.hasPivot() ? "Pivot" : "",

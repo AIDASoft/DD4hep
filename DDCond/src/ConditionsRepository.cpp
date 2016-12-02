@@ -63,7 +63,7 @@ namespace {
     for(AllConditions::const_iterator i=all.begin(); i!=all.end(); ++i)  {
       char text[32];
       Condition c = (*i).second;
-      ::snprintf(text,sizeof(text),"0x%08X",c.key());
+      ::snprintf(text,sizeof(text),"0x%16llX",c.key());
       root.append(cond = xml_elt_t(doc, _U(ref)));
       cond.setAttr(_U(key), text);
       cond.setAttr(_U(name), c.name());
@@ -88,7 +88,7 @@ namespace {
         string key = element.attr<string>(_U(key));
         size_t cap = data.capacity();
         ConditionsRepository::Entry e;
-        ::sscanf(key.c_str(),"0x%08X",&e.key);
+        ::sscanf(key.c_str(),"0x%16llX",&e.key);
         e.name = element.attr<string>(_U(name));
         e.address = element.attr<string>(_U(ref));
         if ( data.size() == cap ) data.reserve(cap+500);
@@ -111,7 +111,7 @@ namespace {
              output.c_str(), errno, ::strerror(errno));
     }
     else if ( sep )  {
-      ::snprintf(fmt,sizeof(fmt),"%%08X%c%%s%c%%s%c",sep,sep,sep);
+      ::snprintf(fmt,sizeof(fmt),"%%16llX%c%%s%c%%s%c",sep,sep,sep);
     }
     else   {
       for(AllConditions::const_iterator i=all.begin(); i!=all.end(); ++i)  {
@@ -123,7 +123,7 @@ namespace {
         if ( siz_tot < (siz_n+siz_a) ) siz_tot = siz_n+siz_a;
       }
       siz_tot += 8+2+1;
-      ::snprintf(fmt,sizeof(fmt),"%%08X %%-%lds %%-%lds",long(siz_nam),long(siz_add));
+      ::snprintf(fmt,sizeof(fmt),"%%16llX %%-%lds %%-%lds",long(siz_nam),long(siz_add));
     }
     out << "dd4hep." << char(sep ? sep : '-')
         << "." << long(siz_nam)
@@ -176,7 +176,7 @@ namespace {
             e.address[idx] = 0;
         }
         size_t cap = data.capacity();
-        ::sscanf(text,"%08X",&e.key);
+        ::sscanf(text,"%16llX",&e.key);
         if ( data.size() == cap ) data.reserve(cap+500);
         data.push_back(e);
       }

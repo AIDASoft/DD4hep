@@ -48,6 +48,24 @@ namespace DD4hep {
       typedef ConditionsDataLoader     Loader;
       typedef std::vector<IOVType>     IOVTypes;
 
+      /// Result of a prepare call to the conditions manager
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Result  {
+      public:
+        size_t selected = 0;
+        size_t loaded   = 0;
+        size_t computed = 0;
+        size_t missing  = 0;
+        Result() = default;
+        Result(const Result& result) = default;
+        Result& operator=(const Result& result) = default;
+        size_t total() const { return selected+computed+loaded; }
+      };
+
     public:
 
       /// Static accessor if installed as an extension
@@ -133,8 +151,8 @@ namespace DD4hep {
       void clear()  const;
 
       /// Prepare all updates to the clients with the defined IOV
-      long prepare(const IOV&              required_validity,
-                   ConditionsSlice&        slice)  const;
+      Result prepare(const IOV&              required_validity,
+                     ConditionsSlice&        slice)  const;
     };
   }       /* End namespace Conditions        */
 }         /* End namespace DD4hep            */
