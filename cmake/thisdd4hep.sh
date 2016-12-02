@@ -85,7 +85,7 @@ if [ ${Geant4_DIR} ]; then
     #---- if geant4 was built with external CLHEP we have to extend the dynamic search path
     if [ @GEANT4_USE_CLHEP@ ] ; then
 	dd4hep_add_library_path @CLHEP_LIBRARY_PATH@;
-	export CLHEP_DIR=@CLHEP_DIR@
+	export CLHEP_DIR=@CLHEP_ROOT_DIR@
     fi;
     dd4hep_add_library_path ${G4LIB_DIR};
     unset G4ENV_INIT;
