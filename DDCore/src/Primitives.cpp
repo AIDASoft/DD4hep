@@ -88,7 +88,6 @@ static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 
 	uint64 h = seed ^ (len * m);
 
-	const uint64 * data = (const uint64 *)key;
 	const uint64 * end = data + (len/8);
 
 	while(data != end)
