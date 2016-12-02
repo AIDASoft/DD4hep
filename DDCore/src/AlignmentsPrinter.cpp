@@ -85,12 +85,12 @@ void DD4hep::Alignments::printContainer(const string& prefix, Container containe
     for(const auto& k : container.keys() )  {
       try {
         Alignment align = container.get(k.first,*pool);
-        printout(INFO,tag,"++ %s Alignment [%08X] -> [%08X] %s",
+        printout(INFO,tag,"++ %s Alignment [%16llX] -> [%16llX] %s",
                  prefix.c_str(), k.first, k.second.first, k.second.second.c_str());
         printAlignment(prefix,align);
       }
       catch(...)  {
-        printout(ERROR,tag,"++ %s %s [%08X] -> [%08X]",
+        printout(ERROR,tag,"++ %s %s [%16llX] -> [%16llX]",
                  prefix.c_str(), "FAILED Alignment:", k.first, k.second.first);
       }
     }
@@ -245,11 +245,11 @@ void DD4hep::Alignments::printElementPlacement(const string& prefix, DetElement 
           const Alignment::Data& align_data = align.data();
           Conditions::Condition  align_cond = align_data.condition;
           if ( k.first != k.second.first )  {
-            printout(INFO,tag,"++ Alignment %p [%08X] -> [%08X] %s (SYNONYM) ignored.",
+            printout(INFO,tag,"++ Alignment %p [%16llX] -> [%16llX] %s (SYNONYM) ignored.",
                      a.ptr(), k.first, k.second.first, k.second.second.c_str());
             continue;
           }
-          printout(INFO,tag,"++ Alignment %p [%08X] -> [%08X] %s",
+          printout(INFO,tag,"++ Alignment %p [%16llX] -> [%16llX] %s",
                    a.ptr(), k.first, k.second.first, k.second.second.c_str());
           if ( k.second.second != align_cond.name() )  {
             printout(INFO,prefix,"++ \tPath:%s [%p]", align_cond.name(), a.ptr());
@@ -257,7 +257,7 @@ void DD4hep::Alignments::printElementPlacement(const string& prefix, DetElement 
           printAlignmentEx(tag,"ALIGNMENT",de,align);
         }
         catch(...)  {
-          printout(ERROR,tag,"++ %s %s [%08X] -> [%08X]",
+          printout(ERROR,tag,"++ %s %s [%16llX] -> [%16llX]",
                    prefix.c_str(), "FAILED Alignment:", k.first, k.second.first);
         }
       }

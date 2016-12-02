@@ -510,7 +510,7 @@ static long ddcond_dump_repository(lcdd_t& /* lcdd */, int argc, char** argv)   
       const ConditionsRepository::Entry& e = *i;
       string add = e.address;
       if ( add.length() > 80 ) add = e.address.substr(0,60) + "...";
-      printout(INFO,"Repository","%08X  %s",e.key,e.name.c_str());
+      printout(INFO,"Repository","%16llX  %s",e.key,e.name.c_str());
       printout(INFO,"Repository","          -> %s",e.address.c_str());
     }
   }

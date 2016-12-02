@@ -17,6 +17,7 @@
 #include "DD4hep/Alignments.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/Printout.h"
 #include "DDAlign/AlignmentsManager.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -49,6 +50,11 @@ namespace DD4hep {
      *   The way to register the alignments with the detector element
      *   strongly depend on the surrounding experiment framework.
      *
+     *   Note: We have to load one set of conditions in order to auto-populate
+     *         because we need to see if a detector element actually has alignment
+     *         conditions. For this we must access the conditions data.
+     *         Unfortunate, but unavoidable.
+     *
      *   \author  M.Frank
      *   \version 1.0
      *   \date    31/03/2016
@@ -68,6 +74,8 @@ namespace DD4hep {
       std::string            alias;
       /// Flag if an alias to the real alignment object should be registered
       bool                   haveAlias;
+      /// Print level
+      PrintLevel             printLevel;
       
       /// Initializing constructor
       AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p);

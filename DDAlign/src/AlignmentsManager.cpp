@@ -107,12 +107,14 @@ AlignmentsManagerObject::~AlignmentsManagerObject()   {
   InstanceCount::decrement(this);
 }
 
-void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
-                                       UserPool&     pool,
-                                       DetElement    det,
-                                       TGeoHMatrix&  delta_to_world)  const
+AlignmentsManager::Result
+AlignmentsManagerObject::to_world(AlignContext& new_alignments,
+                                  UserPool&     pool,
+                                  DetElement    det,
+                                  TGeoHMatrix&  delta_to_world)  const
 {
   using Conditions::Condition;
+  Result result;
   DetElement par = det.parent();
   while( par.isValid() )   {
     // If we find that the parent also got updated, directly take this transformation.
@@ -122,7 +124,9 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       const AlignContext::Entry& e = new_alignments.entries[(*i).second];
       // The parent entry is (not yet) valid. need to compute it first
       if ( 0 == e.valid )  {
-        compute(new_alignments, pool, par);
+        Result r = compute(new_alignments, pool, par);
+        result.missing += r.missing;
+        result.computed += r.computed;
       }
       AlignmentCondition cond(e.cond);
       AlignmentData&     align = cond.data();
@@ -135,7 +139,8 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       if ( s_PRINT <= INFO )  {
         printf("  Result :"); delta_to_world.Print();
       }
-      return;
+      ++result.computed;
+      return result;
     }
     // The parent did not get updated: We have to search the conditions pool if
     // there is a still valid condition, which we can use to build the world transformation
@@ -156,7 +161,8 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       if ( s_PRINT <= INFO ) {
         printf("  Result :"); delta_to_world.Print();
       }
-      return;
+      ++result.computed;
+      return result;
     }
     // There is no special alignment for this detector element.
     // Hence to nominal (relative) transformation to the parent is valid
@@ -171,45 +177,27 @@ void AlignmentsManagerObject::to_world(AlignContext& new_alignments,
     }
     par = par.parent();
   }
+  ++result.computed;
+  return result;
 }
 
 /// Compute all alignment conditions of the internal dependency list
-void AlignmentsManagerObject::compute(Pool& pool)  const  {
-  compute(pool, *dependencies);
+AlignmentsManager::Result AlignmentsManagerObject::compute(Pool& pool)  const  {
+  return compute(pool, *dependencies);
 }
   
 /// Compute all alignment conditions of the specified dependency list
-void AlignmentsManagerObject::compute(Pool& pool, const Dependencies& deps) const  {
+AlignmentsManager::Result AlignmentsManagerObject::compute(Pool& pool, const Dependencies& deps) const  {
+  Result result;
   AlignContext new_alignments;
   new_alignments.entries.reserve(deps.size());
   pool.compute(deps, &new_alignments);
-  for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)
-    compute(new_alignments, pool, (*i).det);
-#if 0
-  std::string prev = "-----";
-  for(auto i=new_alignments.detectors.begin(); i!=new_alignments.detectors.end(); ++i)  {
-    AlignContext::Entry& e = new_alignments.entries[(*i).second];
-    DetElement         det = e.det;
-    const std::string&   p = det.path();
-    size_t idx = p.find(prev);
-    if ( idx == 0 )  {
-      continue;
-    }
-    prev = p;
-    printout(s_PRINT,"Alignment","Update top Node: Lvl:%d Key:%08X: %s", det.level(), det.key(), p.c_str());
-    e.top = 1;
+  for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)  {
+    Result r = compute(new_alignments, pool, (*i).det);
+    result.computed += r.computed;
+    result.missing  += r.missing;
   }
-  // We got now the top nodes of the new_alignments. From the top nodes we have to
-  // recursively calculate all changes downwards the lower levels!
-  // Note: The upper levels are already correct and do not need to be updated!
-  printout(INFO,"Alignment","Working down the tree....");
-  for(auto i=new_alignments.detectors.begin(); i != new_alignments.detectors.end(); ++i)  {
-    AlignContext::Entry& e = new_alignments.entries[(*i).second];
-    if ( e.top )     {
-      compute(new_alignments, pool, e.det);
-    }
-  }
-#endif
+  return result;
 }
 
 /// Compute the alignment delta for one detector element and it's alignment condition
@@ -242,14 +230,16 @@ static void computeDelta(AlignmentCondition cond, TGeoHMatrix& tr_delta)  {
 }
 
 /// Compute all alignment conditions of the lower levels
-void AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, DetElement det) const  {
+AlignmentsManager::Result
+AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, DetElement det) const  {
+  Result result, temp;
   auto k=new_alignments.keys.find(det.key());
   bool has_cond = (k != new_alignments.keys.end());
   AlignContext::Entry* ent = has_cond ? &new_alignments.entries[(*k).second] : 0;
 
   if ( ent && ent->valid == 1 )  {
     printout(DEBUG,"ComputeAlignment","================ IGNORE %s (already valid)",det.path().c_str());
-    return;
+    return result;
   }
   if ( ent && ent->valid == 0 )  {
     TGeoHMatrix        tr_delta;
@@ -263,12 +253,14 @@ void AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& po
     ent->valid          = 1;
     computeDelta(cond, tr_delta);
     align.worldDelta    = tr_delta;
-    to_world(new_alignments, pool, det, align.worldDelta);
+    temp = to_world(new_alignments, pool, det, align.worldDelta);
+    result.computed += temp.computed;
+    result.missing  += temp.missing;
     align.worldTrafo    = det.nominal().worldTransformation()*align.worldDelta;
     align.detectorTrafo = det.nominal().detectorTransformation()*tr_delta;
     align.trToWorld     = Geometry::_transform(&align.worldDelta);
     if ( s_PRINT <= INFO )  {  
-      printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%08X IOV:%s",
+      printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%16llX IOV:%s",
                det.level(), det.path().c_str(), det.key(),
                yes_no(has_cond), cond.key(), cond.iov().str().c_str());
     }
@@ -304,8 +296,11 @@ void AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& po
   const DetElement::Children& children = det.children();
   for(auto c=children.begin(); c!=children.end(); ++c)    {
     DetElement child = (*c).second;
-    compute(new_alignments, pool, child);
+    temp = compute(new_alignments, pool, child);
+    result.computed += temp.computed;
+    result.missing  += temp.missing;
   }
+  return result;
 }
 
 /// Initializing constructor
@@ -340,25 +335,25 @@ const AlignmentsManager::Dependencies& AlignmentsManager::knownDependencies()  c
 }
 
 /// Compute all alignment conditions of the internal dependency list
-void AlignmentsManager::compute(Slice& slice) const   {
+AlignmentsManager::Result AlignmentsManager::compute(Slice& slice) const   {
   Object* o = access();
-  o->compute(*slice.pool(), *(o->dependencies));
+  return o->compute(*slice.pool(), *(o->dependencies));
 }
 
 /// Compute all alignment conditions of the specified dependency list
-void AlignmentsManager::compute(Slice& slice, const Dependencies& deps) const  {
-  access()->compute(*slice.pool(), deps);
+AlignmentsManager::Result AlignmentsManager::compute(Slice& slice, const Dependencies& deps) const  {
+  return access()->compute(*slice.pool(), deps);
 }
 
 /// Compute all alignment conditions of the internal dependency list
-void AlignmentsManager::compute(Pool& pool) const   {
+AlignmentsManager::Result AlignmentsManager::compute(Pool& pool) const   {
   Object* o = access();
-  o->compute(pool, *(o->dependencies));
+  return o->compute(pool, *(o->dependencies));
 }
 
 /// Compute all alignment conditions of the specified dependency list
-void AlignmentsManager::compute(Pool& pool, const Dependencies& deps) const  {
-  access()->compute(pool, deps);
+AlignmentsManager::Result AlignmentsManager::compute(Pool& pool, const Dependencies& deps) const  {
+  return access()->compute(pool, deps);
 }
 
 /// Register new updated derived alignment during the computation step

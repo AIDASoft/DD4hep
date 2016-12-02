@@ -162,10 +162,10 @@ namespace {
           const AbstractMap& data = cond.get<AbstractMap>();
           const DDDB::Document* doc = data.option<DDDB::Document>();
           if ( doc ) 
-            printout(INFO,m_name,"++ Usage: %d Cond: %s/%s  -> %s [%08X]",
+            printout(INFO,m_name,"++ Usage: %d Cond: %s/%s  -> %s [%16llX]",
                      ic.first, doc->name.c_str(), cond->name.c_str(), cond->value.c_str(), cond->hash);
           else
-            printout(INFO,m_name,"++ Usage: %d Cond: ---/%s  -> %s [%08X]",
+            printout(INFO,m_name,"++ Usage: %d Cond: ---/%s  -> %s [%16llX]",
                      ic.first, cond->name.c_str(), cond->value.c_str(), cond->hash);
         }
 #endif
@@ -241,7 +241,7 @@ namespace {
         if ( (with_keys || with_values) && de.hasConditions() )  {
           Conditions::DetConditions dc(de);
           Conditions::Container cont = dc.conditions();
-          ::sprintf(fmt,"%03d %%-%ds Key: %%08X -> %%08X -> %%s",level+1,2*level+3);
+          ::sprintf(fmt,"%03d %%-%ds Key: %%16llX -> %%16llX -> %%s",level+1,2*level+3);
           for(const auto& i : cont->keys )  {
             if ( with_keys )   {
               printout(INFO,m_name,fmt,"",i.first,i.second.first, i.second.second.c_str());

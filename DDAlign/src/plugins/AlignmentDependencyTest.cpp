@@ -72,7 +72,7 @@ int access(ConditionsManager conds,AlignmentsManager align,long time)  {
         {
           Alignments::Alignment    a = c.get(k.hash,p);
           const Alignments::Delta& D = a.data().delta;
-          printout(INFO,"Alignment","++ [%08X] (%11s-%8s-%5s) Cond:%p '%s'", k.hash,
+          printout(INFO,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p '%s'", k.hash,
                    D.hasTranslation() ? "Translation" : "",
                    D.hasRotation() ? "Rotation" : "",
                    D.hasPivot() ? "Pivot" : "",
@@ -83,7 +83,7 @@ int access(ConditionsManager conds,AlignmentsManager align,long time)  {
         {
           Alignments::Alignment    a = c.get("Alignment",p);
           const Alignments::Delta& D = a.data().delta;
-          printout(INFO,"Alignment","++ [%08X] (%11s-%8s-%5s) Cond:%p 'Alignment'", k.hash,
+          printout(INFO,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p 'Alignment'", k.hash,
                    D.hasTranslation() ? "Translation" : "",
                    D.hasRotation() ? "Rotation" : "",
                    D.hasPivot() ? "Pivot" : "",

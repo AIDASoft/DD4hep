@@ -236,7 +236,7 @@ void ConditionsManager::clear()  const  {
 }
 
 /// Prepare all updates to the clients with the defined IOV
-long ConditionsManager::prepare(const IOV&              req_iov,
-                                ConditionsSlice&        slice)  const  {
-  return access()->prepare(req_iov, slice).missing;
+ConditionsManager::Result
+ConditionsManager::prepare(const IOV& req_iov, ConditionsSlice& slice)  const  {
+  return access()->prepare(req_iov, slice);
 }

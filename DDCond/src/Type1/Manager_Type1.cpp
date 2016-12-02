@@ -95,13 +95,13 @@ namespace {
   template <typename T> void __check_values__(const Manager_Type1* o, Condition::key_type key, const IOV* iov)  
   {
     if ( !iov )  {
-      except("ConditionsManager","+++ Invalid IOV to access condition: %08X. [Null-reference]",key);
+      except("ConditionsManager","+++ Invalid IOV to access condition: %16llX. [Null-reference]",key);
     }
     const IOVType* typ = check_iov_type<T>(o,iov);
     if ( !typ )  {
       // Severe: We have an unknown IOV type. This is not allowed, 
       // because we do not known hot to handle it.....
-      except("ConditionsManager","+++ Invalid IOV type [%d] to access condition: %08X.",
+      except("ConditionsManager","+++ Invalid IOV type [%d] to access condition: %16llX.",
              iov->type, key);
     }
   }
@@ -411,20 +411,20 @@ Manager_Type1::get(Condition::key_type key, const Condition::iov_type& iov)
     return conditions[0];
   }
   else if ( conditions.empty() )   {
-    except("ConditionsManager","+++ Condition %08X for the requested IOV %s do not exist.",
+    except("ConditionsManager","+++ Condition %16llX for the requested IOV %s do not exist.",
            key, iov.str().c_str());
   }
   else if ( conditions.size() > 1 )  {
     RC::const_iterator start = conditions.begin();
     Condition first = *start;
-    printout(ERROR,"ConditionsManager","+++ Condition %s [%08X] is ambiguous for IOV %s:",
+    printout(ERROR,"ConditionsManager","+++ Condition %s [%16llX] is ambiguous for IOV %s:",
              first.name(), key, iov.str().c_str());
     for(RC::const_iterator i=start; i!=conditions.end(); ++i)  {
       Condition c = *i;
       printout(ERROR,"ConditionsManager","+++ %s [%s] = %s",
                c.name(), c->iov->str().c_str(), c->value.c_str());
     }
-    except("ConditionsManager","+++ Condition %s [%08X] is ambiguous for IOV %s:",
+    except("ConditionsManager","+++ Condition %s [%16llX] is ambiguous for IOV %s:",
            first.name(), key, iov.str().c_str());
   }
   return Condition();
@@ -444,23 +444,22 @@ Manager_Type1::getRange(Condition::key_type key, const Condition::iov_type& iov)
     dd4hep_lock_t locked_load(m_updateLock);
     m_loader->load_range(key, iov, conditions);
     if ( conditions.empty() )  {
-      except("ConditionsManager","+++ Conditions %08X for IOV %s do not exist.",
+      except("ConditionsManager","+++ Conditions %16llX for IOV %s do not exist.",
              key, iov.str().c_str());
     }
     conditions.clear();
   }
   rc = select_range(key, iov, conditions);
   if ( !rc )  {
-    except("ConditionsManager","+++ Conditions %08X for IOV %s do not exist.",
+    except("ConditionsManager","+++ Conditions %16llX for IOV %s do not exist.",
            key, iov.str().c_str());
   }
   return conditions;
 }
 
 /// Prepare all updates for the given keys to the clients with the defined IOV
-UserPool::Result
-Manager_Type1::prepare(const IOV&               req_iov,
-                       ConditionsSlice&         slice)
+ConditionsManager::Result
+Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice)
 {
   dd4hep_ptr<UserPool>& up = slice.pool();
   __get_checked_pool(req_iov, up);

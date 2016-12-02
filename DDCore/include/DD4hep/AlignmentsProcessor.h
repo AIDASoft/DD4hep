@@ -40,9 +40,9 @@ namespace DD4hep {
      *   \ingroup DD4HEP_ALIGNMENTS
      */
     class AlignmentsProcessor :
-      virtual public Alignment::Processor,
-      virtual public Container::Processor,
-      virtual public Geometry::DetElement::Processor
+      public Alignment::Processor,
+      public Container::Processor,
+      public Geometry::DetElement::Processor
     {
     public:
       /// Self type definition

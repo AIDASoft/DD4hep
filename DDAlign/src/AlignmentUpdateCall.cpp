@@ -21,7 +21,8 @@
 using namespace DD4hep::Alignments;
 
 /// Default constructor
-AlignmentUpdateCall::AlignmentUpdateCall() : DD4hep::Conditions::ConditionUpdateCall()
+AlignmentUpdateCall::AlignmentUpdateCall()
+  : DD4hep::Conditions::ConditionUpdateCall(), printLevel(DEBUG)
 {
   InstanceCount::increment(this);
 }

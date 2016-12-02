@@ -91,7 +91,7 @@ namespace DD4hep {
       /// Forward definition of the alignment delta data
       typedef Alignments::Delta         Delta;
       /// Forward definition of the key type
-      typedef unsigned int              key_type;
+      typedef unsigned long long int    key_type;
       /// Forward definition of the iov type
       typedef IOV                       iov_type;
 
@@ -125,11 +125,11 @@ namespace DD4hep {
 
     /// Hash code generation from input string
     inline Alignment::key_type Alignment::hashCode(const char* value)
-    {   return hash32(value);    }
+    {   return hash64(value);    }
 
     /// Hash code generation from input string
     inline Alignment::key_type Alignment::hashCode(const std::string& value)
-    {   return hash32(value);    }
+    {   return hash64(value);    }
 
     /// Main handle class to hold an alignment conditions object
     /**

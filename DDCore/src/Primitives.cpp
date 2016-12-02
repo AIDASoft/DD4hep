@@ -18,6 +18,7 @@
 
 // C/C++ include files
 #include <stdexcept>
+#include <cstdint>
 #include <cstring>
 #include <map>
 
@@ -28,6 +29,113 @@ typedef abi::__class_type_info class_t;
 using   abi::__dynamic_cast;
 #endif
 #endif
+//-----------------------------------------------------------------------------
+// MurmurHash2, 64-bit versions, by Austin Appleby
+
+// The same caveats as 32-bit MurmurHash2 apply here - beware of alignment 
+// and endian-ness issues if used across multiple platforms.
+static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
+#define seed 0xFEEDBABE
+	const unsigned int * data = (const unsigned int *)key;
+#if INTPTR_MAX == INT32_MAX
+	const unsigned int m = 0x5bd1e995;
+	const int r = 24;
+
+	unsigned int h1 = seed ^ len;
+	unsigned int h2 = 0;
+
+	while(len >= 8)
+	{
+		unsigned int k1 = *data++;
+		k1 *= m; k1 ^= k1 >> r; k1 *= m;
+		h1 *= m; h1 ^= k1;
+		len -= 4;
+
+		unsigned int k2 = *data++;
+		k2 *= m; k2 ^= k2 >> r; k2 *= m;
+		h2 *= m; h2 ^= k2;
+		len -= 4;
+	}
+
+	if(len >= 4)
+	{
+		unsigned int k1 = *data++;
+		k1 *= m; k1 ^= k1 >> r; k1 *= m;
+		h1 *= m; h1 ^= k1;
+		len -= 4;
+	}
+
+	switch(len)
+	{
+	case 3: h2 ^= ((unsigned char*)data)[2] << 16;
+	case 2: h2 ^= ((unsigned char*)data)[1] << 8;
+	case 1: h2 ^= ((unsigned char*)data)[0];
+    h2 *= m;
+	};
+
+	h1 ^= h2 >> 18; h1 *= m;
+	h2 ^= h1 >> 22; h2 *= m;
+	h1 ^= h2 >> 17; h1 *= m;
+	h2 ^= h1 >> 19; h2 *= m;
+
+	uint64_t h = h1;
+
+	h = (h << 32) | h2;
+#elif INTPTR_MAX == INT64_MAX
+	const uint64_t m = 0xc6a4a7935bd1e995;
+	const int r = 47;
+
+	uint64_t h = seed ^ (len * m);
+
+	const uint64_t * data = (const uint64_t *)key;
+	const uint64_t * end = data + (len/8);
+
+	while(data != end)
+	{
+		uint64_t k = *data++;
+
+		k *= m; 
+		k ^= k >> r; 
+		k *= m; 
+		
+		h ^= k;
+		h *= m; 
+	}
+
+	const unsigned char * data2 = (const unsigned char*)data;
+
+	switch(len & 7)
+	{
+	case 7: h ^= uint64_t(data2[6]) << 48;
+	case 6: h ^= uint64_t(data2[5]) << 40;
+	case 5: h ^= uint64_t(data2[4]) << 32;
+	case 4: h ^= uint64_t(data2[3]) << 24;
+	case 3: h ^= uint64_t(data2[2]) << 16;
+	case 2: h ^= uint64_t(data2[1]) << 8;
+	case 1: h ^= uint64_t(data2[0]);
+    h *= m;
+	};
+ 
+	h ^= h >> r;
+	h *= m;
+	h ^= h >> r;
+
+#else
+#error "Environment not 32 or 64-bit."
+#endif
+
+	return h;
+}
+
+
+/// We need it so often: one-at-time 64 bit hash function
+unsigned long long int DD4hep::hash64(const char* key)   {
+  return murmur_hash_64(key, strlen(key));
+}
+
+unsigned long long int DD4hep::hash64(const std::string& key)  {
+  return murmur_hash_64(key.data(), key.length());
+}
 
 long int DD4hep::makeTime(int year, int month, int day,
                           int hour, int minutes, int seconds)

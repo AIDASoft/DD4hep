@@ -74,7 +74,10 @@ namespace DD4hep {
       /// Default destructor
       virtual ~DetElementProcessor() = default;
     };
-
+    /// Instantiation helper
+    template <typename T> DetElementProcessor<T> detectorProcessor(T* proc)
+    { return DetElementProcessor<T>(proc); }
+    
     /// Generic Condition object collector
     /**
      *   Please see the documentation of the

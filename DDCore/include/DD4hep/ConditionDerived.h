@@ -45,7 +45,7 @@ namespace DD4hep {
       /// Interface to access conditions by conditions key
       virtual Condition get(const ConditionKey& key) const = 0;
       /// Interface to access conditions by hash value
-      virtual Condition get(unsigned int key) const = 0;
+      virtual Condition get(Condition::key_type key) const = 0;
       /// Access to the conditions manager
       virtual Ref_t manager() const = 0;
       /// Access to the detector description instance

@@ -71,7 +71,7 @@ namespace DD4hep {
       /// Standard object type
       typedef Interna::ConditionObject    Object;
       /// Forward definition of the key type
-      typedef unsigned int                key_type;
+      typedef unsigned long long int      key_type;
       /// Forward definition of the iov type
       typedef IOV                         iov_type;
       /// Forward definition of the object properties
@@ -412,11 +412,11 @@ namespace DD4hep {
 
     /// Hash code generation from input string
     inline ConditionKey::key_type ConditionKey::hashCode(const char* value)
-    {   return hash32(value);    }
+    {   return hash64(value);    }
 
     /// Hash code generation from input string
     inline ConditionKey::key_type ConditionKey::hashCode(const std::string& value)
-    {   return hash32(value);    }
+    {   return hash64(value);    }
 
     /// Equality operator using key object
     inline bool ConditionKey::operator==(const ConditionKey& compare)  const

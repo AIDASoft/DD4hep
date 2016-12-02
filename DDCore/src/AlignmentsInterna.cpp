@@ -70,7 +70,7 @@ AlignmentContainer::~AlignmentContainer() {
 void AlignmentContainer::addKey(const string& key_val)  {
   key_type hash = Alignment::hashCode(key_val);
   if ( !keys.insert(make_pair(hash,make_pair(hash,key_val))).second )   {
-    except("AlignmentContainer","++ Key[%08X]: %s already present. "
+    except("AlignmentContainer","++ Key[%16llX]: %s already present. "
            "Duplicate insertions inhibited!",hash, key_val.c_str());
   }
 }
@@ -80,7 +80,7 @@ void AlignmentContainer::addKey(const string& key_val, const string& data_val)  
   key_type key_hash = Alignment::hashCode(key_val);
   key_type val_hash = Alignment::hashCode(data_val);
   if ( !keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second )   {
-    except("AlignmentContainer","++ Key[%08X]: %s already present. "
+    except("AlignmentContainer","++ Key[%16llX]: %s already present. "
            "Duplicate insertions inhibited!",key_hash, key_val.c_str());
   }
 }

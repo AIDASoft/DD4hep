@@ -34,7 +34,11 @@ namespace DD4hep {
     typedef long long int CellID;
     typedef long long int VolumeID;
   }
-
+  
+  /// We need it so often: one-at-time 64 bit hash function
+  unsigned long long int hash64(const char* key);
+  unsigned long long int hash64(const std::string& key);
+  
   /// We need it so often: one-at-time 32 bit hash function
   inline unsigned int hash32(const char* key) {
     unsigned int hash = 0;

@@ -17,9 +17,8 @@
 #include "DD4hep/Memory.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/NamedObject.h"
-#include "DDCond/ConditionsSlice.h"
-#include "DD4hep/ComponentProperties.h"
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsSlice.h"
 
 // C/C++ include files
 #include <vector>
@@ -35,10 +34,9 @@ namespace DD4hep {
   namespace Conditions {
 
     // Forward declarations
-    class ConditionsPool;
+    class ConditionsIOVPool;
     class ConditionsListener;
     class ConditionsDataLoader;
-    class ConditionsIOVPool;
     
     /// Basic conditions manager implementation
     /**
@@ -61,6 +59,7 @@ namespace DD4hep {
       typedef std::pair<ConditionsListener*,void*> Listener;
       typedef std::set<Listener>                   Listeners;
       typedef dd4hep_ptr<ConditionsDataLoader>     Loader;
+      typedef ConditionsManager::Result            Result;
 
     protected:
       /// Reference to main detector description object
@@ -139,8 +138,7 @@ namespace DD4hep {
       virtual bool registerUnlocked(ConditionsPool* pool, Condition cond) = 0;
 
       /// Prepare all updates to the clients with the defined IOV
-      virtual UserPool::Result prepare(const IOV&              req_iov,
-                                       ConditionsSlice&        slice) = 0;
+      virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice) = 0;
 
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */

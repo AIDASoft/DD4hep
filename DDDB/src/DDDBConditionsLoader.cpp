@@ -214,7 +214,7 @@ size_t DDDBConditionsLoader::update(const iov_type& req_validity,
     size_t idx = c->address.find('#');
     string url = (idx == string::npos) ? c->address : c->address.substr(0,idx);
 #if 0
-    printout(INFO,"DDDB","++ Need to update: %-40s [%08X] --> %s",
+    printout(INFO,"DDDB","++ Need to update: %-40s [%16llX] --> %s",
              c->name.c_str(), c->hash, url.c_str());
 #endif
     urls.insert(make_pair(url,c));
@@ -257,7 +257,7 @@ size_t DDDBConditionsLoader::load_many(const iov_type& /* req_validity */,
     size_t idx = c->address.find('#');
     string url = (idx == string::npos) ? c->address : c->address.substr(0,idx);
 #if 0
-    printout(INFO,"DDDB","++ Need to update: %-40s [%08X] --> %s",
+    printout(INFO,"DDDB","++ Need to update: %-40s [%16llX] --> %s",
              c->name.c_str(), c->hash, url.c_str());
 #endif
     urls.insert(make_pair(url,c));
@@ -287,12 +287,12 @@ void DDDBConditionsLoader::onRegisterCondition(Condition cond, void* param)  {
       RC::iterator i=std::find_if(r.begin(),r.end(),byName(cond));
       if ( i != r.end() ) {
         (*i) = cond;
-        printout(DEBUG,"DDDB","++ Got  MATCH: %-40s [%08X] --> %s.",
+        printout(DEBUG,"DDDB","++ Got  MATCH: %-40s [%16llX] --> %s.",
                  c->name.c_str(), c->hash, c->address.c_str());
         arg->iov.iov_intersection(cond.iov());
         return;
       }
-      printout(INFO,"DDDB","++ Got update: %-40s [%08X] --> %s.",
+      printout(INFO,"DDDB","++ Got update: %-40s [%16llX] --> %s.",
                c->name.c_str(), c->hash, c->address.c_str());
     }
     else if ( arg->cmd == INSERT && arg->key == c->hash )   {

@@ -234,7 +234,7 @@ void ConditionsMappedUserPool<MAPPING>::print(const std::string& opt)   const  {
   if ( opt == "*" ) {
     for( const auto& i : m_conditions )   {
       Condition c = i.second;
-      printout(INFO,"UserPool","++ %08X/%08X Val:%s %s",i.first, c->hash, c->value.c_str(), c.str().c_str());
+      printout(INFO,"UserPool","++ %16llX/%16llX Val:%s %s",i.first, c->hash, c->value.c_str(), c.str().c_str());
     }
   }
 }
@@ -274,7 +274,7 @@ Condition ConditionsMappedUserPool<MAPPING>::get(const ConditionKey& key)  const
 template<typename MAPPING>
 bool ConditionsMappedUserPool<MAPPING>::insert(Condition cond)   {
   bool result = i_insert(cond.ptr());
-  //printout(INFO,"UserPool","++ INSERT: %08X Name:%s",cond->hash, cond.name());
+  //printout(INFO,"UserPool","++ INSERT: %16llX Name:%s",cond->hash, cond.name());
   if ( result ) return true;
   except("UserPool","++ Attempt to double insert condition: %s", cond.name());
   return false;
@@ -350,6 +350,7 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   typedef vector<pair<key_type,SliceEntry*> > _Missing;
   Result result;
   IOV pool_iov(required.iovType);
+  size_t len = m_conditions.size();
   const auto& slice_cond = slice.conditions();
   const auto& slice_calc = slice.derived();
 
@@ -357,19 +358,21 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   pool_iov.reset().invert();
   m_iovPool->select(required, Operators::mapConditionsSelect(m_conditions), pool_iov);
   m_iov = pool_iov;
-  _Missing cond_missing(slice_cond.size()), calc_missing(slice_cond.size());
+  _Missing cond_missing(len+slice_cond.size()), calc_missing(len+slice_calc.size());
   _Missing::iterator cond_last = set_difference(slice_cond.begin(),   slice_cond.end(),
                                                 m_conditions.begin(), m_conditions.end(),
                                                 cond_missing.begin(), _compare); 
   int num_cond_miss = int(cond_last-cond_missing.begin());
-  printout(INFO,"UserPool","Found %ld missing conditions out of %ld conditions.",
+  printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
+           "Found %ld missing conditions out of %ld conditions.",
            num_cond_miss, m_conditions.size());
 
   _Missing::iterator calc_last = set_difference(slice_calc.begin(),   slice_calc.end(),
                                                 m_conditions.begin(), m_conditions.end(),
                                                 calc_missing.begin(), _compare);
   int num_calc_miss = int(calc_last-calc_missing.begin());
-  printout(INFO,"UserPool","Found %ld missing derived conditions out of %ld conditions.",
+  printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
+           "Found %ld missing derived conditions out of %ld conditions.",
            int(calc_last-calc_missing.begin()), m_conditions.size());
 
   result.selected = m_conditions.size();
@@ -381,7 +384,7 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
     vector<pair<key_type,SliceEntry*> > loaded, missing;
     size_t updates = m_loader->load_many(required, cond_missing, loaded, missing, pool_iov);
     for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
-    result.selected += updates;
+    result.loaded    = updates;
     result.missing  -= updates;
     if ( !missing.empty() )  {
       // ERROR!
@@ -389,22 +392,23 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   }
   //
   // Now we update the already existing dependencies, which have expired
+  //
   if ( int(calc_last-calc_missing.begin()) > 0 )  {
     ConditionsDependencyCollection deps(calc_missing.begin(), calc_last, _to_dep);
-    ConditionsDependencyHandler h(m_manager, *this, deps, user_param);
+    ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
     for(auto i=begin(deps); i != end(deps); ++i)   {
       const ConditionDependency* d = (*i).second.get();
       typename MAPPING::iterator j = m_conditions.find(d->key());
       // If we would know, that dependencies are only ONE level, we could skip this search....
       if ( j == m_conditions.end() )  {
-        Condition::Object*   c = h(d);
-        ( c != 0 ) ? ++result.selected : ++result.missing;
+        handler(d);
         continue;
       }
       // printout(INFO,"UserPool","Already calcluated: %s",d->name());
-      ++result.selected;
       continue;
     }
+    result.computed = handler.num_callback;
+    result.missing -= handler.num_callback;
   }
   return result;
 }

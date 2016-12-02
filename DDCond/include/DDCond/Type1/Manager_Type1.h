@@ -164,8 +164,7 @@ namespace DD4hep {
        *
        *   @return   
        */
-      UserPool::Result prepare(const IOV&               req_validity,
-                               ConditionsSlice&         slice);
+      Result prepare(const IOV& req_iov, ConditionsSlice& slice);
 
     };
   }        /* End namespace Conditions               */
