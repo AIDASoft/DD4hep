@@ -1,47 +1,13 @@
-# - Find Xerces-C
-# This module tries to find the Xerces-C library and headers.
-# Once done this will define
-#
-#   XERCESC_FOUND - system has Xerces-C headers and libraries
-#   XERCESC_INCLUDE_DIRS - the include directories needed for Xerces-C
-#   XERCESC_LIBRARIES - the libraries needed to use Xerces-C
-#
-# Variables used by this module, which can change the default behaviour and
-# need to be set before calling find_package:
-#
-#   XERCESC_ROOT_DIR            Root directory to Xerces-C installation. Will
-#                               be used ahead of CMake default path.
-#
-# The following advanced variables may be used if the module has difficulty
-# locating Xerces-C or you need fine control over what is used.
-#
-#   XERCESC_INCLUDE_DIR
-#
-#   XERCESC_LIBRARY
-#
-# Copyright (c) 2009, Ben Morgan, <Ben.Morgan@warwick.ac.uk>
-#
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 include ( FindPackageHandleStandardArgs )
 
 find_package(PythonInterp  REQUIRED)
-message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARIES:    ${PYTHON_LIBRARIES} ${PYTHON_LIBRARY_DIR}")
-message(STATUS "DEBUG: ******** PYTHON: PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARY_DIR:  ${PYTHON_LIBRARY_DIR}")
-
 find_package(PythonLibs    REQUIRED)
 
 if (PYTHONLIBS_FOUND)
-  message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARIES:    ${PYTHON_LIBRARIES}")
-  message(STATUS "DEBUG: ******** PYTHON: PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
   get_filename_component(PYTHON_LIBRARY_DIR  ${PYTHON_LIBRARIES} PATH)
-  message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARY_DIR:  ${PYTHON_LIBRARY_DIR}")
-  #get_filename_component(PYTHON_LIBRARY_NAME ${PYTHON_LIBRARIES} NAME_WE)
   set(PYTHON_LIBRARY_DIR  ${PYTHON_LIBRARY_DIR})
   set(PYTHON_LIBRARIES    ${PYTHON_LIBRARIES})
   set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
-  message(STATUS "******** PYTHON FOUND  ${PYTHON_LIBRARY_DIR}  -> ${PYTHON_LIBRARIES}")
 else()
   message(STATUS "PYTHON ****NOT**** FOUND")
 endif()
