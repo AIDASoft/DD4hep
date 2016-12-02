@@ -33,6 +33,7 @@ endmacro(dd4hep_to_parent_scope)
 #
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_set_compiler_flags)
+  include(CheckCXXCompilerFlag)
   CHECK_CXX_COMPILER_FLAG("-std=c++14" FLAG_CXX14)
   CHECK_CXX_COMPILER_FLAG("-std=c++11" FLAG_CXX11)
   CHECK_CXX_COMPILER_FLAG("-ftls-model=global-dynamic" FLAG_FTLS)
