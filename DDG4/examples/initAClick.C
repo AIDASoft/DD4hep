@@ -67,7 +67,11 @@ int initAClick(const char* command=0)  {
   libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
+#ifdef __APPLE__
+    libs += (" -L"+geant4+"/lib -L"+geant4+"/lib");
+#else
     libs += (" -L"+geant4+"/lib -L"+geant4+"/lib64");
+#endif
   }
   if ( !clhep.empty() )  {
     // A bit unclear how to deal with CLHEP libraries here, 
