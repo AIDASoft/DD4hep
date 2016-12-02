@@ -370,7 +370,7 @@ namespace Gaudi { namespace PluginService {
       }
     }
 
-    static std::auto_ptr<Logger> s_logger(new Logger);
+    static std::unique_ptr<Logger> s_logger(new Logger);
     Logger& logger() {
       return *s_logger;
     }
