@@ -14,6 +14,7 @@
 #define DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
 
 // Framework includes
+#include "DD4hep/Printout.h"
 #include "DD4hep/AlignmentsProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -39,6 +40,8 @@ namespace DD4hep {
       std::string   name;
       /// Printout prefix
       std::string   prefix;
+      /// Printout level
+      PrintLevel    printLevel;
     protected:
       /// Printout processing and customization flag
       int           m_flag;
@@ -63,16 +66,16 @@ namespace DD4hep {
     };
 
     /// Default printout of an alignment entry
-    void printAlignment(const std::string& prefix, Alignment alignment);
+    void printAlignment(PrintLevel prt_level, const std::string& prefix, Alignment alignment);
 
     /// Default printout of a container entry
-    void printContainer(const std::string& prefix, Container container, UserPool* pool);
+    void printContainer(PrintLevel prt_level, const std::string& prefix, Container container, UserPool* pool);
 
     /// Default printout of a detector element entry
-    void printElement(const std::string& prefix, DetElement element, UserPool* pool);
+    void printElement(PrintLevel prt_level, const std::string& prefix, DetElement element, UserPool* pool);
 
     /// PrintElement placement with/without alignment applied
-    void printElementPlacement(const std::string& prefix, DetElement detector, UserPool* pool);
+    void printElementPlacement(PrintLevel prt_level, const std::string& prefix, DetElement detector, UserPool* pool);
 
   }    /* End namespace Alignments           */
 }      /* End namespace DD4hep               */

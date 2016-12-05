@@ -393,6 +393,7 @@ DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 template <typename PRINTER>
 static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
   typedef typename PRINTER::pool_type pool_t;
+  PrintLevel print_level = INFO;
   string prefix = "", name = "";
   int    flags = 0, have_pool = 0, arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
@@ -404,6 +405,8 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
       flags = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-pool",argv[i],5) )
       have_pool = 1;
+    else if ( 0 == ::strncmp("-print",argv[i],5) )
+      print_level = DD4hep::printLevel(argv[++i]);
     else
       arg_error = true;
   }
@@ -418,12 +421,14 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
       "     -flags  <number>         Printout processing flags.                      \n"
       "     -pool                    Attach conditions user pool from                \n"
       "                              PluginTester instance attached to LCDD.       \n\n"
+      "     -print                   Printout level for the printer object.          \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
   DetElement world = lcdd.world();
   printout(INFO,"Printer","World=%s [%p]",world.path().c_str(),world.ptr());
   PRINTER* p = (flags) ? new PRINTER(prefix,flags) : new PRINTER(prefix);
+  p->printLevel = print_level;
   if ( have_pool != 0 )  {
     PluginTester* test = lcdd.extension<PluginTester>();
     pool_t* pool = test->extension<pool_t>("ConditionsTestUserPool");

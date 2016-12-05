@@ -76,20 +76,27 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
   dd4hep_ptr<ConditionsSlice> slice(createSlice(condMgr,*iov_typ));
-  ConditionsManager::Result res = condMgr.prepare(req_iov,*slice);
-  printout(INFO,"Prepare","Total %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of type %s.",
-             slice->conditions().size(), res.total(), res.selected, res.loaded,
-             res.computed, res.missing, iov_typ->str().c_str());
-
+  ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
+    
   // ++++++++++++++++++++++++ We need a valid set of conditions to do this!
   registerAlignmentCallbacks(lcdd,*slice,alignMgr);
 
   // ++++++++++++++++++++++++ Compute the tranformation matrices
-  alignMgr.compute(*slice);
+  AlignmentsManager::Result ares = alignMgr.compute(*slice);
 
   // What else ? let's access the data
   Scanner().scan2(AlignmentDataAccess(slice->pool().get()),lcdd.world());
-  
+
+  // What else ? let's print the current selection
+  Alignments::AlignedVolumePrinter printer(slice->pool().get(),"Example");
+  Scanner().scan(printer,lcdd.world());
+
+  printout(INFO,"Example",
+           "Setup %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
+           slice->conditions().size(),
+           cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
+           ares.computed, ares.missing, iov_typ->str().c_str());
+
   // ++++++++++++++++++++++++ All done.
   return 1;
 }

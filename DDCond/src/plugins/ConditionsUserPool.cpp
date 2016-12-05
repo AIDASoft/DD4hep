@@ -139,18 +139,6 @@ namespace {
   template <typename T> MapSelector<T> mapSelector(T& container)
   {  return MapSelector<T>(container);   }
 
-  template <typename T> struct MapInserter {
-    T& m;
-    MapInserter(T& o) : m(o) {}
-    void operator()(Condition& c)  {
-      Condition::Object* o = c.ptr();
-      m.insert(make_pair(o->hash,o));
-    }
-    void operator()(ConditionsSlice::Entry* e)  { (*this)(e->condition);  }
-  };
-  template <typename T> MapInserter<T> mapInsert(T& container)
-  {  return MapInserter<T>(container);   }
-
   template <typename T> struct Inserter {
     T& m;
     IOV* iov;
@@ -160,21 +148,7 @@ namespace {
       m.insert(make_pair(o->hash,o));
       if ( iov ) iov->iov_intersection(o->iov->key());
     }
-    void operator()(ConditionsSlice::Entry* e)  { (*this)(e->condition);  }
-    void operator()(const pair<Condition::key_type,ConditionsSlice::Entry*>& e)
-    { (*this)(e.second->condition);  }
-  };
-  template <typename T> struct Updater {
-    T& m;
-    IOV* iov;
-    Updater(T& o, IOV* i=0) : m(o), iov(i) {}
-    void operator()(Condition& c)  {
-      Condition::Object* o = c.ptr();
-      typename T::iterator i=m.find(o->hash);
-      (*i).second = o;
-      if ( iov ) iov->iov_intersection(o->iov->key());
-    }
-    void operator()(ConditionsSlice::Entry* e)  { (*this)(e->condition);  }
+    void operator()(const pair<Condition::key_type,Condition>& e) { (*this)(e.second);  }
   };
 }
 
@@ -336,10 +310,18 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
 
 typedef ConditionsSlice::Entry SliceEntry;
 namespace {
-  bool _compare(const pair<Condition::key_type,void*>& a,const pair<Condition::key_type,void*>& b)
-  { return a.first < b.first; }
+  struct COMP {
+    typedef pair<Condition::key_type,SliceEntry*> Slice;
+    typedef pair<Condition::key_type,Condition>   Cond;
+    bool operator()(const Slice& a,const Cond& b) const
+    { return a.first < b.first; }
+    bool operator()(const Cond& a,const Slice& b) const
+    { return a.first < b.first; }
+  };
+  //bool _compare(const pair<const Condition::key_type,void*>& a,const pair<const Condition::key_type,void*>& b)
+  //{ return a.first < b.first; }
   pair<Condition::key_type,ConditionDependency*> _to_dep(pair<Condition::key_type,SliceEntry*>& e)
-  { return make_pair(e.first,e.second->dependency); }
+  { return make_pair(e.second->key.hash,e.second->dependency); }
 }
 
 template<typename MAPPING> UserPool::Result
@@ -347,54 +329,67 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
                                                  ConditionsSlice&        slice,
                                                  void*                   user_param)
 {
-  typedef vector<pair<key_type,SliceEntry*> > _Missing;
-  Result result;
-  IOV pool_iov(required.iovType);
-  size_t len = m_conditions.size();
+  //typedef std::set<pair<Condition::key_type,SliceEntry*> > _Missing;
+  typedef std::vector<pair<Condition::key_type,SliceEntry*> > _Missing;
+  //typedef ConditionsDataLoader::RequiredItems _Missing;
   const auto& slice_cond = slice.conditions();
   const auto& slice_calc = slice.derived();
+  IOV pool_iov(required.iovType);
+  Result result;
 
   m_conditions.clear();
   pool_iov.reset().invert();
   m_iovPool->select(required, Operators::mapConditionsSelect(m_conditions), pool_iov);
   m_iov = pool_iov;
-  _Missing cond_missing(len+slice_cond.size()), calc_missing(len+slice_calc.size());
-  _Missing::iterator cond_last = set_difference(slice_cond.begin(),   slice_cond.end(),
-                                                m_conditions.begin(), m_conditions.end(),
-                                                cond_missing.begin(), _compare); 
-  int num_cond_miss = int(cond_last-cond_missing.begin());
+  _Missing cond_missing(slice_cond.size()+m_conditions.size());
+  _Missing calc_missing(slice_calc.size()+m_conditions.size());
+
+  _Missing::iterator last_cond = set_difference(begin(slice_cond),   end(slice_cond),
+                                                begin(m_conditions), end(m_conditions),
+                                                begin(cond_missing), COMP());
+  int num_cond_miss = int(last_cond-begin(cond_missing));
   printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing conditions out of %ld conditions.",
            num_cond_miss, m_conditions.size());
-
-  _Missing::iterator calc_last = set_difference(slice_calc.begin(),   slice_calc.end(),
-                                                m_conditions.begin(), m_conditions.end(),
-                                                calc_missing.begin(), _compare);
-  int num_calc_miss = int(calc_last-calc_missing.begin());
+  _Missing::iterator last_calc = set_difference(begin(slice_calc),   end(slice_calc),
+                                                begin(m_conditions), end(m_conditions),
+                                                begin(calc_missing), COMP());
+  int num_calc_miss = int(last_calc-begin(calc_missing));
   printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing derived conditions out of %ld conditions.",
-           int(calc_last-calc_missing.begin()), m_conditions.size());
+           num_calc_miss, m_conditions.size());
 
   result.selected = m_conditions.size();
   result.missing  = num_cond_miss+num_calc_miss;
   //
   // Now we load the missing conditions from the conditions loader
   //
-  if ( int(cond_last-cond_missing.begin())>0 )  {
-    vector<pair<key_type,SliceEntry*> > loaded, missing;
-    size_t updates = m_loader->load_many(required, cond_missing, loaded, missing, pool_iov);
+  if ( num_cond_miss > 0 )  {
+    ConditionsDataLoader::LoadedItems loaded;
+    size_t updates = m_loader->load_many(required, cond_missing, loaded, pool_iov);
+    // Need to compute the intersection: All missing entries are required....
+    _Missing load_missing(cond_missing.size()+loaded.size());
+    // Note: cond_missing is already sorted (doc of 'set_difference'). No need to re-sort....
+    _Missing::iterator load_last = set_difference(begin(cond_missing), end(cond_missing),
+                                                  begin(loaded), end(loaded),
+                                                  begin(load_missing), COMP());
+    int num_load_miss = int(load_last-begin(load_missing));
+    printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
+             "Found %ld out of %d conditions, which CANNOT be loaded...",
+             num_load_miss, int(loaded.size()));
+
     for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
     result.loaded    = updates;
     result.missing  -= updates;
-    if ( !missing.empty() )  {
+    if ( cond_missing.size() != loaded.size() )  {
       // ERROR!
     }
   }
   //
   // Now we update the already existing dependencies, which have expired
   //
-  if ( int(calc_last-calc_missing.begin()) > 0 )  {
-    ConditionsDependencyCollection deps(calc_missing.begin(), calc_last, _to_dep);
+  if ( num_calc_miss > 0 )  {
+    ConditionsDependencyCollection deps(calc_missing.begin(), last_calc, _to_dep);
     ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
     for(auto i=begin(deps); i != end(deps); ++i)   {
       const ConditionDependency* d = (*i).second.get();

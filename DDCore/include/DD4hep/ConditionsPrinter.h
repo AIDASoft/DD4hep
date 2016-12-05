@@ -14,6 +14,7 @@
 #define DD4HEP_DDCORE_CONDITIONSPRINTER_H
 
 // Framework includes
+#include "DD4hep/Printout.h"
 #include "DD4hep/ConditionsProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -39,6 +40,9 @@ namespace DD4hep {
       std::string   name;
       /// Printout prefix
       std::string   prefix;
+      /// Printout level
+      PrintLevel    printLevel;
+
     protected:
       /// Printout processing and customization flag
       int           m_flag;

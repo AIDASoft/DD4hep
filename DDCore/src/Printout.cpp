@@ -326,7 +326,7 @@ DD4hep::PrintLevel DD4hep::printLevel()  {
 
 /// Translate the printer level from string to value
 DD4hep::PrintLevel DD4hep::printLevel(const char* value)  {
-  if ( !value ) except("Printout","Invalid printlevel requested");
+  if ( !value ) except("Printout","Invalid printlevel requested [EINVAL: Null-pointer argument]");
   // Explicit values
   if ( strcmp(value,"NOLOG")   == 0 ) return DD4hep::NOLOG;
   if ( strcmp(value,"VERBOSE") == 0 ) return DD4hep::VERBOSE;
@@ -352,6 +352,11 @@ DD4hep::PrintLevel DD4hep::printLevel(const char* value)  {
 /// Translate the printer level from string to value
 DD4hep::PrintLevel DD4hep::printLevel(const std::string& value)  {
   return printLevel(value.c_str());
+}
+
+/// Check if this print level would result in some output
+bool DD4hep::isActivePrintLevel(int severity)   {
+  return severity >= print_lvl;
 }
 
 /// Set new printout format for the 3 fields: source-level-message. All 3 are strings

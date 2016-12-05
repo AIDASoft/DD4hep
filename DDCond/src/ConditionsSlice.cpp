@@ -24,14 +24,14 @@ ConditionsSlice::Info::~Info()  {
 
 /// Copy constructor (special!)
 ConditionsSlice::Entry::Entry(const Entry& copy, Info* l)
-  : key(copy.key), condition(0), loadinfo(l)
+  : key(copy.key), loadinfo(l)
 {
   if ( copy.dependency ) dependency = copy.dependency->addRef();
 }
 
 /// Initializing constructor
 ConditionsSlice::Entry::Entry(const ConditionKey& k, Info* l)
-  : key(k), condition(0), loadinfo(l)
+  : key(k), loadinfo(l)
 {
 }
 
@@ -78,8 +78,8 @@ void ConditionsSlice::clear()   {
 
 /// Clear the conditions access and the user pool.
 void ConditionsSlice::reset()   {
-  for(const auto& e : m_conditions ) e.second->condition = 0;
-  for(const auto& e : m_derived ) e.second->condition = 0;
+  //for(const auto& e : m_conditions ) e.second->condition = 0;
+  //for(const auto& e : m_derived ) e.second->condition = 0;
   if ( pool().get() ) pool()->clear();
   m_iov.reset();
 }
@@ -121,18 +121,24 @@ bool ConditionsSlice::insert_condition(Entry* entry)   {
 namespace  {
   
   struct SliceOper  : public ConditionsSelect  {
-    struct LoadInfo : public ConditionsSlice::Info {
-      std::string info;
-      LoadInfo(const std::string& i) : info(i) {}
-      virtual ~LoadInfo() {}
-    };
     ConditionsSlice* slice;
     SliceOper(ConditionsSlice* s) : slice(s) {}
     void operator()(const ConditionsIOVPool::Elements::value_type& v)    {
       v.second->select_all(*this);
     }
     bool operator()(Condition::Object* c)  const  {
-      slice->insert(ConditionKey(c->name,c->hash),LoadInfo(c->name));
+      if ( 0 == (c->flags&Condition::DERIVED) )   {
+        slice->insert(ConditionKey(c->name,c->hash),ConditionsSlice::loadInfo(c->address));
+        return true;
+      }
+      //DD4hep::printout(DD4hep::INFO,"Slice","++ Ignore dependent condition: %s",c->name.c_str());
+#if 0
+      const ConditionsSlice::ConditionsProxy& cc=slice->conditions();
+      auto i = cc.find(c->hash);
+      const ConditionsSlice::LoadInfo<std::string>* info =
+        (const ConditionsSlice::LoadInfo<std::string>*)(*i).second->loadinfo;
+      std::string* address = info->data<std::string>();
+#endif      
       return true;
     }
     /// Return number of conditions selected

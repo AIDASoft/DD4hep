@@ -50,8 +50,9 @@ namespace DD4hep {
       typedef Condition::iov_type         iov_type;
       typedef Condition::key_type         key_type;
 
-      typedef std::vector<std::pair<key_type,ConditionsSlice::Entry*> > EntryVector;
-      
+      typedef std::map<key_type,Condition>                              LoadedItems;
+      typedef std::vector<std::pair<key_type,ConditionsSlice::Entry*> > RequiredItems;
+
     protected:
       /// Reference to main detector description object
       LCDD&             m_lcdd;
@@ -82,9 +83,8 @@ namespace DD4hep {
                                  const iov_type&  req_validity,
                                  RangeConditions& conditions) = 0;
       virtual size_t load_many(  const iov_type&  req_validity,
-                                 EntryVector&     work,
-                                 EntryVector&     loaded,
-                                 EntryVector&     missing,
+                                 RequiredItems&   work,
+                                 LoadedItems&     loaded,
                                  iov_type&        combined_validity) = 0;
     };
   }        /* End namespace Conditions         */

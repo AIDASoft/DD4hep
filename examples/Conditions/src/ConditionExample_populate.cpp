@@ -98,14 +98,14 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     IOV req_iov(iov_typ,i*10+5);
     // Attach the proper set of conditions to the user pool
     ConditionsManager::Result r = condMgr.prepare(req_iov,*slice);
+    if ( 0 == i )  { // First one we print...
+      ConditionsPrinter printer(slice->pool().get(),"Example");
+      Scanner().scan(printer,lcdd.world());
+    }
     // Now compute the tranformation matrices
-    printout(INFO,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of type %s",
-             r.total(), r.selected, r.loaded, r.computed, r.missing, iov_typ->str().c_str());
-  }
-  // What else ? let's access/print the current selection
-  ConditionsPrinter printer(slice->pool().get(),"Example");
-  Scanner().scan(printer,lcdd.world());
-  
+    printout(INFO,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
+             r.total(), r.selected, r.loaded, r.computed, r.missing, req_iov.str().c_str());
+  }  
   // All done.
   return 1;
 }

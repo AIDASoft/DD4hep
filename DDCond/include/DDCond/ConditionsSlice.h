@@ -52,6 +52,7 @@ namespace DD4hep {
      */
     class ConditionsSlice  {
     public:
+
       /// Base class for data loading information.
       /**
        *   Must be specialized to fit the needs of the concrete ConditionsDataLoader object.
@@ -63,7 +64,32 @@ namespace DD4hep {
       struct Info {
         /// Default destructor. 
         virtual ~Info();
+        virtual const std::type_info& type() const = 0;
+        virtual const void*           ptr()  const = 0;
+        template<typename T> T*       data() const {  return (T*)ptr(); }
       };
+
+      /// Concrete class for data loading information.
+      /**
+       *   \author  M.Frank
+       *   \version 1.0
+       *   \date    31/03/2016
+       */
+      template <typename T> struct LoadInfo : public Info {
+        T info;
+        LoadInfo()           = default;
+        LoadInfo(const T& i) : info(i) {}
+        virtual ~LoadInfo()  = default;
+        LoadInfo& operator=(const LoadInfo& copy) {
+          if ( &copy != this ) info = copy.info;
+          return *this;
+        }
+        virtual const std::type_info& type() const { return typeid(T); }
+        virtual const void*           ptr() const  { return &info;     }
+      };
+      template <typename T> static LoadInfo<T> loadInfo(const T& t)
+      { return LoadInfo<T>(t);                                         }
+      
       /// Slice entry class. Describes all information to load a condition.
       /**
        *   \author  M.Frank
@@ -80,7 +106,6 @@ namespace DD4hep {
       protected:
       public:
         ConditionKey          key;
-        Condition             condition;
         ConditionDependency*  dependency = 0;
         Condition::mask_type  mask       = 0;
         Info*                 loadinfo   = 0;
@@ -118,6 +143,7 @@ namespace DD4hep {
           : Entry(k, this), T(d)       { }
         virtual ~ConditionsLoaderEntry() = default;
         virtual Entry* clone()   { return new ConditionsLoaderEntry(*this); }
+        virtual const void* data() const {  return (T*)this;  }
       };
       
       typedef Condition::key_type                key_type;

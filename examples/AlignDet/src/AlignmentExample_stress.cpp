@@ -144,14 +144,14 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
              res.total(), res.selected, res.loaded, res.computed, res.missing, rndm,
              iov_typ->str().c_str(), stop.AsDouble()-start.AsDouble());
   }
-  printout(INFO,"Statistics","+=======================================================================");
+  printout(INFO,"Statistics","+======= Summary: # of IOV: %3d  # of Runs: %3d ===========================", num_iov, num_runs);
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            cr_stat.GetName(), cr_stat.GetMean(), cr_stat.GetMeanErr(), cr_stat.GetRMS(), cr_stat.GetN());
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            comp_stat.GetName(), comp_stat.GetMean(), comp_stat.GetMeanErr(), comp_stat.GetRMS(), comp_stat.GetN());
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            access_stat.GetName(), access_stat.GetMean(), access_stat.GetMeanErr(), access_stat.GetRMS(), access_stat.GetN());
-  printout(INFO,"Statistics","+=======================================================================");
+  printout(INFO,"Statistics","+==========================================================================");
   // All done.
   return 1;
 }
