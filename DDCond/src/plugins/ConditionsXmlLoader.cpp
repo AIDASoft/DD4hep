@@ -53,9 +53,8 @@ namespace DD4hep {
                                  RangeConditions& conditions);
       /// Optimized update using conditions slice data
       virtual size_t load_many(  const iov_type& /* req_validity */,
-                                 EntryVector&    /* work         */,
-                                 EntryVector&    /* loaded       */,
-                                 EntryVector&    /* missing      */,
+                                 RequiredItems&  /* work         */,
+                                 LoadedItems&    /* loaded       */,
                                  iov_type&       /* conditions_validity */)
       {
         except("ConditionsLoader","+++ update: Invalid call!");

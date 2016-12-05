@@ -590,12 +590,11 @@ namespace DD4hep {
       if ( !_find(id, context->geo->conditions) )  {
         Catalog*   catalog = _option<Catalog>();
         Document*  doc     = context->locals.xml_doc;
-
         string     path    = object_path(context,name);
         static int num_param=0, num_vector=0, num_map=0, num_spec=0, num_align=0;
 
         Condition cond(path,"DDDB");
-        cond->address  = id;
+        cond->address  = doc->name+"@"+id;
         cond->value    = path; // doc->name;
         cond->validity = "";
         cond->hash     = Conditions::ConditionKey::hashCode(cond->value);

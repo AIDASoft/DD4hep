@@ -59,7 +59,7 @@ int AlignmentDataAccess::processElement(DetElement de)  {
   }
   // Keep it simple. To know how to access stuff,
   // simply look in DDDCore/src/AlignmentsPrinter.cpp...
-  Alignments::printElementPlacement("Example",de,pool);
+  Alignments::printElementPlacement(printLevel,"Example",de,pool);
   return 1;
 }
 

@@ -20,6 +20,7 @@
 #define DD4HEP_DDDB_DDDBCONDITIONPRINTER_H
 
 // Framework includes
+#include "DD4hep/Printout.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/ConditionsProcessor.h"
 
@@ -50,42 +51,60 @@ namespace DD4hep {
        *   \ingroup DD4HEP_DDDB
        */
       class ParamPrinter {
+        
       protected:
-        /// Printout prefix
-        std::string& m_prefix;
+        /// Parent object
+        ConditionPrinter* m_parent = 0;
       public:
-        /// Default constructor
-        ParamPrinter() = default;
         /// Copy constructor
         ParamPrinter(const ParamPrinter& copy) = default;
         /// Initializing constructor
-        ParamPrinter(std::string& prefix);
+        ParamPrinter(ConditionPrinter* p);
         /// Default destructor
         virtual ~ParamPrinter() = default;
         /// Assignment operator
         ParamPrinter& operator=(const ParamPrinter& copy) = default;
-
-        /// Set prefix for prinouts
-        void setPrefix(const std::string& value)  {  m_prefix = value; }
-        /// Access prefix value
-        const std::string& prefix() const         {   return m_prefix; }
         /// Callback to output conditions information
         virtual void operator()(const Conditions::AbstractMap::Params::value_type& obj)  const;
       };
 
     protected:
-      std::string m_prefix;
-      ParamPrinter* m_print;
-      int    m_flag;
+      friend class ParamPrinter;
+      
+      /// Sub-printer
+      ParamPrinter* m_print = 0;
+      /// Printout prefix
+      std::string   m_prefix;
+      /// Flags to steer output processing
+      int           m_flag = 0;
+      /// Printout level
+      PrintLevel    m_printLevel = INFO;
 
+      /// Counter: number of parameters
+      size_t        m_numParam = 0;
+      /// Counter: number of conditions
+      size_t        m_numCondition = 0;
+      /// Counter: number of empty conditions
+      size_t        m_numEmptyCondition = 0;
+      
     public:
       typedef Conditions::Condition Condition;
       typedef Conditions::Container Container;
-
+      /// No default constructor
+      ConditionPrinter() = delete;
+      /// No copy constructor
+      ConditionPrinter(const ConditionPrinter& copy) = delete;
       /// Initializing constructor
-      ConditionPrinter(const std::string& prefix="", 
+      ConditionPrinter(const std::string& prefix, 
                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS,
                        ParamPrinter* prt=0);
+      /// Default destructor
+      virtual ~ConditionPrinter();
+      
+      /// Set printout level for prinouts
+      void setPrintLevel(PrintLevel lvl);
+      /// Access the prefix value
+      const std::string& prefix() const         { return m_prefix;   }
       /// Set prefix for prinouts
       void setPrefix(const std::string& value)  {  m_prefix = value; }
       /// Callback to output conditions information

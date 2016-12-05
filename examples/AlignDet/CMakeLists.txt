@@ -24,13 +24,12 @@ dd4hep_add_plugin( AlignDetExample SOURCES src/*.cpp  )
 dd4hep_install_dir( compact DESTINATION examples/AlignDet )
 dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 
-if ( NEVER )
 #
 #---Testing: Load Telescope geometry and read conditions ------------------
 dd4hep_add_test_reg( test_AlignDet_Telescope_dump_geometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy
-  -compact file:${DD4hep_DIR}/examples/AlignDetcompact/Telescope.xml
+  -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
   -plugin DD4hepDetectorDump
   REGEX_PASS "/world/Telescope/module_9 NumDau\\:1 VolID\\:00000903 Place")
 #
@@ -38,17 +37,30 @@ dd4hep_add_test_reg( test_AlignDet_Telescope_dump_geometry
 dd4hep_add_test_reg( test_AlignDet_Telescope_populate
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_populate
-     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
-     -deltas file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
-  REGEX_PASS "\\[E42813AA\\] -> \\[E42813AA\\] /world/Telescope/module_9/sensor#alignment/Tranformations")
+     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml -iovs 10
+  REGEX_PASS "\\[7522800AD665C239\\] -> \\[7522800AD665C239\\] /world/Telescope/module_9/sensor#alignment/Tranformations")
 #
 #---Testing: Load Telescope geometry and read and print alignments --------
 dd4hep_add_test_reg( test_AlignDet_Telescope_read_xml
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml
-     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+     -input  file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
      -deltas file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
-  REGEX_PASS "\\[E42813AA\\] -> \\[E42813AA\\] /world/Telescope/module_9/sensor#alignment/Tranformations")
+  REGEX_PASS "\\[7522800AD665C239\\] -> \\[7522800AD665C239\\] /world/Telescope/module_9/sensor#alignment/Tranformations")
+#
+#---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
+dd4hep_add_test_reg( test_AlignDet_Telescope_stress
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_AlignmentExample_stress
+      -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml -iovs 20 -runs 111
+  REGEX_PASS "Summary: # of IOV:  20  # of Runs: 111")
+#
+#---Testing: Extended stress: Load CLICSiD geometry and have multiple runs on IOVs
+dd4hep_add_test_reg( test_AlignDet_CLICSiD_stress_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_AlignmentExample_stress
+      -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 10 -runs 100
+  REGEX_PASS "Summary: # of IOV:  10  # of Runs: 100")
 #
 #---Testing: Load ALEPH TPC geometry --------------------------------------
 dd4hep_add_test_reg( test_AlignDet_AlephTPC_load
@@ -78,5 +90,3 @@ dd4hep_add_test_reg( test_AlignDet_Global_AlephTPC_reset
              -plugin DD4hepXMLLoader file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC_alignment.xml
              -plugin DD4hepXMLLoader file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC_reset.xml
   REGEX_PASS "Successfully parsed XML: AlephTPC_reset.xml" )
-
-endif()

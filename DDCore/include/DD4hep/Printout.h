@@ -234,6 +234,9 @@ namespace DD4hep {
   /// Translate the printer level from string to value
   PrintLevel printLevel(const std::string& value);
 
+  /// Check if this print level would result in some output
+  bool isActivePrintLevel(int severity);
+
   /// Helper class template to implement ASCII object dumps
   /** @class Printer Conversions.h  DD4hep/compact/Conversions.h
    *

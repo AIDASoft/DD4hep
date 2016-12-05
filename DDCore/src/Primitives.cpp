@@ -17,6 +17,9 @@
 #include "DD4hep/Printout.h"
 
 // C/C++ include files
+#include <algorithm>
+#include <functional>
+#include <numeric>
 #include <stdexcept>
 #include <cstdint>
 #include <cstring>
@@ -29,113 +32,130 @@ typedef abi::__class_type_info class_t;
 using   abi::__dynamic_cast;
 #endif
 #endif
+
+/// Local Utilities
+namespace {
+
+#if 0
 //-----------------------------------------------------------------------------
 // MurmurHash2, 64-bit versions, by Austin Appleby
-
+//
 // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment 
 // and endian-ness issues if used across multiple platforms.
-static inline uint64_t murmur_hash_64 ( const void * key, int len)  {
+  inline uint64_t murmur_hash_64 ( const void * key, int len)  {
 #define seed 0xFEEDBABE
-  typedef unsigned long long int uint64;
+    typedef unsigned long long int uint64;
+
 #if INTPTR_MAX == INT32_MAX
-	const unsigned int * data = (const unsigned int *)key;
-	const unsigned int m = 0x5bd1e995;
-	const int r = 24;
+    const unsigned int * data = (const unsigned int *)key;
+    const unsigned int m = 0x5bd1e995;
+    const int r = 24;
 
-	unsigned int h1 = seed ^ len;
-	unsigned int h2 = 0;
+    unsigned int h1 = seed ^ len;
+    unsigned int h2 = 0;
 
-	while(len >= 8)
-	{
-		unsigned int k1 = *data++;
-		k1 *= m; k1 ^= k1 >> r; k1 *= m;
-		h1 *= m; h1 ^= k1;
-		len -= 4;
+    while(len >= 8)
+    {
+      unsigned int k1 = *data++;
+      k1 *= m; k1 ^= k1 >> r; k1 *= m;
+      h1 *= m; h1 ^= k1;
+      len -= 4;
 
-		unsigned int k2 = *data++;
-		k2 *= m; k2 ^= k2 >> r; k2 *= m;
-		h2 *= m; h2 ^= k2;
-		len -= 4;
-	}
+      unsigned int k2 = *data++;
+      k2 *= m; k2 ^= k2 >> r; k2 *= m;
+      h2 *= m; h2 ^= k2;
+      len -= 4;
+    }
 
-	if(len >= 4)
-	{
-		unsigned int k1 = *data++;
-		k1 *= m; k1 ^= k1 >> r; k1 *= m;
-		h1 *= m; h1 ^= k1;
-		len -= 4;
-	}
+    if(len >= 4)
+    {
+      unsigned int k1 = *data++;
+      k1 *= m; k1 ^= k1 >> r; k1 *= m;
+      h1 *= m; h1 ^= k1;
+      len -= 4;
+    }
 
-	switch(len)
-	{
-	case 3: h2 ^= ((unsigned char*)data)[2] << 16;
-	case 2: h2 ^= ((unsigned char*)data)[1] << 8;
-	case 1: h2 ^= ((unsigned char*)data)[0];
-    h2 *= m;
-	};
+    switch(len)
+    {
+    case 3: h2 ^= ((unsigned char*)data)[2] << 16;
+    case 2: h2 ^= ((unsigned char*)data)[1] << 8;
+    case 1: h2 ^= ((unsigned char*)data)[0];
+      h2 *= m;
+    };
 
-	h1 ^= h2 >> 18; h1 *= m;
-	h2 ^= h1 >> 22; h2 *= m;
-	h1 ^= h2 >> 17; h1 *= m;
-	h2 ^= h1 >> 19; h2 *= m;
+    h1 ^= h2 >> 18; h1 *= m;
+    h2 ^= h1 >> 22; h2 *= m;
+    h1 ^= h2 >> 17; h1 *= m;
+    h2 ^= h1 >> 19; h2 *= m;
 
-	uint64 h = h1;
+    uint64 h = h1;
 
-	h = (h << 32) | h2;
+    h = (h << 32) | h2;
 #elif INTPTR_MAX == INT64_MAX
-	const uint64* data = (const uint64*)key;
-	const uint64 m = 0xc6a4a7935bd1e995;
-	const int r = 47;
+    const uint64* data = (const uint64*)key;
+    const uint64 m = 0xc6a4a7935bd1e995;
+    const int r = 47;
 
-	uint64 h = seed ^ (len * m);
+    uint64 h = seed ^ (len * m);
 
-	const uint64 * end = data + (len/8);
+    const uint64 * end = data + (len/8);
 
-	while(data != end)
-	{
-		uint64 k = *data++;
+    while(data != end)
+    {
+      uint64 k = *data++;
 
-		k *= m; 
-		k ^= k >> r; 
-		k *= m; 
+      k *= m; 
+      k ^= k >> r; 
+      k *= m; 
 		
-		h ^= k;
-		h *= m; 
-	}
+      h ^= k;
+      h *= m; 
+    }
 
-	const unsigned char * data2 = (const unsigned char*)data;
+    const unsigned char * data2 = (const unsigned char*)data;
 
-	switch(len & 7)
-	{
-	case 7: h ^= uint64(data2[6]) << 48;
-	case 6: h ^= uint64(data2[5]) << 40;
-	case 5: h ^= uint64(data2[4]) << 32;
-	case 4: h ^= uint64(data2[3]) << 24;
-	case 3: h ^= uint64(data2[2]) << 16;
-	case 2: h ^= uint64(data2[1]) << 8;
-	case 1: h ^= uint64(data2[0]);
-    h *= m;
-	};
+    switch(len & 7)
+    {
+    case 7: h ^= uint64(data2[6]) << 48;
+    case 6: h ^= uint64(data2[5]) << 40;
+    case 5: h ^= uint64(data2[4]) << 32;
+    case 4: h ^= uint64(data2[3]) << 24;
+    case 3: h ^= uint64(data2[2]) << 16;
+    case 2: h ^= uint64(data2[1]) << 8;
+    case 1: h ^= uint64(data2[0]);
+      h *= m;
+    };
  
-	h ^= h >> r;
-	h *= m;
-	h ^= h >> r;
+    h ^= h >> r;
+    h *= m;
+    h ^= h >> r;
 
 #else
 #error "Environment not 32 or 64-bit."
 #endif
+    return h;
+  }
+#endif
 
-	return h;
+  struct FNV1a_64 {
+    static const unsigned long long int hashinit = 14695981039346656037ull;
+    static constexpr unsigned long long int doByte(unsigned long long int hash,unsigned char val)
+    { return (hash ^ val) * 1099511628211ull; }
+  };
 }
-
 
 /// We need it so often: one-at-time 64 bit hash function
 unsigned long long int DD4hep::hash64(const char* key)   {
-  return murmur_hash_64(key, strlen(key));
+  //return murmur_hash_64(key, strlen(key));
+  unsigned char* str = (unsigned char*)key;
+  unsigned long long int hash = FNV1a_64::hashinit;
+  for ( ; *str; ++str) hash = FNV1a_64::doByte(hash, *str);
+  return hash;
 }
 
 unsigned long long int DD4hep::hash64(const std::string& key)  {
-  return murmur_hash_64(key.data(), key.length());
+  //return murmur_hash_64(key.data(), key.length());
+  return std::accumulate(begin(key),end(key),FNV1a_64::hashinit,FNV1a_64::doByte);
 }
 
 long int DD4hep::makeTime(int year, int month, int day,

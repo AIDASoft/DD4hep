@@ -49,6 +49,6 @@ DDDB::DDDBAlignmentUpdateCall::operator()(const ConditionKey& key, const UpdateC
   data.detector = det;
   printout(INFO,"AlignmentUpdate","++ Failed to access alignment-Delta from %s",
            cond->value.c_str());
-  ConditionPrinter()(cond);
+  ConditionPrinter("AlignmentUpdate")(cond);
   return target;
 }

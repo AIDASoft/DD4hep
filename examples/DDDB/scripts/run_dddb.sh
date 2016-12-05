@@ -35,13 +35,27 @@ exec="";
 vis="";
 debug="";
 last_cmd="";
+plugins="";
 #
+all_args="$*";
 #
 while [[ "$1" == -* ]]; do
     #echo "Arg:$1 $2 [$*]";
     a1=`echo $1 | tr A-Z a-z`;
     #echo "Arg: $1 -- ${last_cmd}";
     case ${a1} in
+        -plugin)
+            plugins="$*";
+            while test -n "$1"; do 
+                shift;
+            done;
+            ;;
+        -end-plugin)
+            plugins="$*";
+            while test -n "$1"; do 
+                shift;
+            done;
+            ;;
         -debug)
             debug="gdb --args";
             last_cmd="";
@@ -109,7 +123,10 @@ if [ "$(uname)" == "Darwin" ]; then
   export DYLD_LIBRARY_PATH=${DD4HEP_LIBRARY_PATH}
 fi
 export DD4HEP_TRACE=ON;
-ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis}`;
+echo "Command(1): ${debug} `which geoPluginRun` -destroy -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis} ${plugins}"
+echo "Command(2): ${debug} `which geoPluginRun` -destroy -plugin DDDB_Executor ${all_args} ${plugins}"
+
+ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis} ${plugins}`;
 echo "Command: ${debug} `which geoPluginRun` -destroy $ARGS";
 if test -z "${debug}";then
     exec `which geoPluginRun` -destroy ${ARGS};

@@ -26,8 +26,8 @@ if (DD4HEP_USE_XERCESC)
   dd4hep_configure_output ()
   dd4hep_package (DDDB MAJOR 0 MINOR 0 PATCH 1
     USES  [XERCESC REQUIRED]
-    [ROOT    REQUIRED COMPONENTS Geom] 
-    [DD4hep  REQUIRED COMPONENTS DDCore DDDB]
+          [ROOT    REQUIRED COMPONENTS Geom] 
+          [DD4hep  REQUIRED COMPONENTS DDCore DDDB]
     )
   #---Package installation procedure(s) -----------------------------------------
   install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)
@@ -60,66 +60,64 @@ if (DD4HEP_USE_XERCESC)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_ConditionsDump
-    REGEX_PASS "Path\\:/dd/Conditions/ReadoutConf/Velo/Tell1Module03 Class\\:5 \\[DD4hep\\:\\:Conditions\\:\\:AbstractMap\\]" )
+    -exec DDDB_ConditionsSummary
+    REGEX_PASS "DDDB Total Number of parameters:    19057  " )
   #
   #---Testing: Load the geometry + dump detector elemets ------------------------
   dd4hep_add_test_reg( test_DDDB_det_elements_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
-    -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DetectorDump
-    REGEX_PASS "Detector\\: /world/LHCb/UpstreamRegion #Dau\\:5" )
+    -config DD4hep_ConditionsManagerInstaller  -end-plugin
+    -plugin   DDDB_DetectorDump -print DEBUG   -end-plugin
+    REGEX_PASS "DDDB: Number of DetElements in the geometry:     3060" )
   #
   #---Testing: Load the geometry + dump volumes ---------------------------------
   dd4hep_add_test_reg( test_DDDB_det_volumes_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DetectorVolumeDump
-    REGEX_PASS "Detector\\: /world/LHCb/MagnetRegion/BcmDown #Dau\\:10" )
+    -plugin DDDB_DetectorVolumeDump -print DEBUG
+    REGEX_PASS "DDDB: Number of DetElement placements:           3056" )
   #
   #---Testing: Load the geometry + dump condition keys --------------------------
   dd4hep_add_test_reg( test_DDDB_det_conditions_keys_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DetectorConditionKeysDump
-    REGEX_PASS "Key\\: D88E83E7 -> 20537B67 -> /dd/Conditions/ReadoutConf/Prs/Readout")
+    -plugin DDDB_DetectorConditionKeysDump -print DEBUG
+    REGEX_PASS "DDDB: Number of DetElement condition keys:      14042")
   #
   #---Testing: Load the geometry + dump condition keys --------------------------
   dd4hep_add_test_reg( test_DDDB_det_conditions_data_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DetectorConditionDump
-    REGEX_PASS "Path\\:/dd/Conditions/Alignment/Spd/SpdCSystem Class\\:6 .DD4hep\\:\\:Conditions\\:\\:AbstractMap." )
+    -plugin DDDB_DetectorConditionDump -print DEBUG
+    REGEX_PASS "DDDB: Number of attached conditions:             2261" )
   #
   #---Testing: Load the geometry + dump condition keys --------------------------
   dd4hep_add_test_reg( test_DDDB_det_conditions_align_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DetectorAlignmentDump
-    REGEX_PASS "Number of attached alignments\\:             2496")
+    -plugin DDDB_DetectorAlignmentDump -print DEBUG
+    REGEX_PASS "Number of attached alignments:             2496")
   #
   #---Testing: Load the geometry + conditions dump as view from DetElement ------
   dd4hep_add_test_reg( test_DDDB_detelement_conditions_dump_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DetElementConditionDump
-    REGEX_PASS "Path\\:/dd/Conditions/Alignment/Spd/SpdCSystem Class\\:6 .DD4hep\\:\\:Conditions\\:\\:AbstractMap." )
-
+    -plugin DDDB_DetElementConditionDump -print DEBUG
+    REGEX_PASS "Total Number of parameters:    18383" )
   #
   #---Testing: Load the geometry + conditions + conditions derives
   dd4hep_add_test_reg( test_DDDB_derived_conditions_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
-    -exec   DDDB_DerivedCondTest
-    REGEX_PASS "Building dependent condition\\: /dd/Conditions/Alignment/TT/TTbVLayerR1Module3B/derived_3" )
-
+    -plugin DDDB_DerivedCondTest -print DEBUG
+    REGEX_PASS "Total Number of callbacks:    7479" )
   #
   #---Testing: Load the geometry + conditions + run basic derived alignments test
   dd4hep_add_test_reg( test_DDDB_derived_alignments_LONGTEST
@@ -127,9 +125,8 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -config DD4hep_AlignmentsManagerInstaller
-    -exec   DDDB_DerivedAlignmentsTest
-    REGEX_PASS "|     24950| 24950|        0|DD4hep\\:\\:Alignments\\:\\:Interna\\:\\:AlignmentConditionObject" )
-
+    -plugin DDDB_DerivedAlignmentsTest -print DEBUG
+    REGEX_PASS "AlignmentManager: 9353 conditions \\(S:9353,L:0,C:0,M:0\\) \\(A:2493,M:0\\) for IOV:epoch\\(0\\)" )
   #
   #---Testing: Load the geometry + conditions + access derived alignments from DetElement structures
   dd4hep_add_test_reg( test_DDDB_alignment_access_LONGTEST
@@ -137,9 +134,8 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -config DD4hep_AlignmentsManagerInstaller
-    -exec   DDDB_AlignmentsAccessTest
+    -plugin DDDB_AlignmentsAccessTest -print DEBUG
     REGEX_PASS "Accessed 4990 conditions from the DetElement objects" )
-
   #
   #---Testing: Extract DDDB data from zip archive -------------------------------
   dd4hep_add_test_reg( test_DDDB_clean_LONGTEST

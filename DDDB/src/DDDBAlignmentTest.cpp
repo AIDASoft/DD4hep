@@ -19,6 +19,7 @@
 
 // Framework includes
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Path.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
@@ -50,14 +51,19 @@ namespace  {
     ConditionUpdateCall* updateCall;
     LCDD&                lcdd;
     string               m_name;
-
+    PrintLevel           m_level = INFO;
+    long                 m_installCount = 0;
+    long                 m_accessCount = 0;
+    
     /// Initializing constructor
-    AlignmentSelector(LCDD& l) : lcdd(l), m_name("Selector")   {
+    AlignmentSelector(LCDD& l, PrintLevel p) : lcdd(l), m_name("DDDBAlignments"), m_level(p)   {
       // The alignment update call can be re-used over and over. It has not state.
       updateCall = new DDDB::DDDBAlignmentUpdateCall();
     }
     /// Default destructor
     virtual ~AlignmentSelector()   {
+      printout(INFO,m_name,"++ Installed alignment calls:     %ld", m_installCount);
+      printout(INFO,m_name,"++ Number of accessed alignments: %ld", m_accessCount);
       releasePtr(updateCall);
     }
     /// Recursive alignment collector
@@ -85,17 +91,22 @@ namespace  {
             b->detector = de;
             b.add(ConditionKey(cond->value));
             am.adoptDependency(b.release());
+            ++m_installCount;
           }
           else  {
             ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s",level+1,2*level+3);
-            printout(INFO,m_name,fmt,"","Alignment:    ", 
+            printout(m_level,m_name,fmt,"","Alignment:    ", 
                      !cond.isValid() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
           }
         }
       }
+      catch(const exception& e)  {
+        ::sprintf(fmt,"%03d %%-%ds %%s: %%-20s  Exception: %%s",level+1,2*level+3);
+        printout(INFO,m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]", e.what());
+      }
       catch(...)  {
-        ::sprintf(fmt,"%03d %%-%ds %%s%%-20s -> %%s",level+1,2*level+3);
-        printout(INFO,m_name, fmt, "", de.path().c_str(), "NO CATALOG availible!", "");
+        ::sprintf(fmt,"%03d %%-%ds %%s: %%-20s",level+1,2*level+3);
+        printout(INFO,m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]");
       }
       const DetElement::Children& c = de.children();
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
@@ -117,13 +128,14 @@ namespace  {
                             long time)
     {
       const IOVType* iovType = conds.iovType("epoch");
-      IOV  iov(iovType, IOV::Key(time,time));
+      IOV  iov(iovType, time);
       slice.adopt(createSlice(conds,*iovType));
-      ConditionsManager::Result res = conds.prepare(iov, *slice);
-      printout(INFO,"Conditions",
-               "+++ ConditionsUpdate: Total of %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) ... IOV:%s",
-               res.total(), res.selected, res.loaded, res.computed, res.missing, iov.str().c_str());
-      align.compute(*(slice->pool()));
+      ConditionsManager::Result cres = conds.prepare(iov, *slice);
+      AlignmentsManager::Result ares = align.compute(*(slice->pool()));
+      printout(INFO,"DDDBAlign",
+               "++ AlignmentManager: %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
+               cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
+               ares.computed, ares.missing, iov.str().c_str());
       return 1;
     }
     /// Access dependent alignment conditions from DetElement object using global and local keys
@@ -131,6 +143,7 @@ namespace  {
       typedef ConditionsDependencyCollection Deps;
       dd4hep_ptr<ConditionsSlice> slice;
       int ret = computeDependencies(slice, conds, align, time);
+
       if ( ret == 1 )  {
         const Deps& deps = align.knownDependencies();
         int count = 0;
@@ -144,23 +157,25 @@ namespace  {
             {
               Alignments::Alignment    a = c.get(k.hash,p);
               const Alignments::Delta& D = a.data().delta;
-              printout(INFO,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p '%s'", k.hash,
+              printout(m_level,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p '%s'", k.hash,
                        D.hasTranslation() ? "Translation" : "",
                        D.hasRotation() ? "Rotation" : "",
                        D.hasPivot() ? "Pivot" : "",
                        a.data().hasCondition() ? a.data().condition.ptr() : 0,
                        k.name.c_str());
               ++count;
+              ++m_accessCount;
             }
             {
               Alignments::Alignment    a = c.get("Alignment",p);
               const Alignments::Delta& D = a.data().delta;
-              printout(INFO,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p 'Alignment'", k.hash,
+              printout(m_level,"Alignment","++ [%16llX] (%11s-%8s-%5s) Cond:%p 'Alignment'", k.hash,
                        D.hasTranslation() ? "Translation" : "",
                        D.hasRotation() ? "Rotation" : "",
                        D.hasPivot() ? "Pivot" : "",
                        a.data().hasCondition() ? a.data().condition.ptr() : 0);
               ++count;
+              ++m_accessCount;              
             }
           }
         }
@@ -169,24 +184,45 @@ namespace  {
       return ret;
     }
   };
-  //========================================================================
-  long make_time(int argc, char** argv) {
-    return argc>0 ? makeTime(argv[0],"%d-%m-%Y %H:%M:%S") : makeTime(2016,4,1,12);
-  }
 }
 
 //==========================================================================
 namespace  {
-  /// Plugin function:
-  /// Load dependent alignment conditions according to time stamps.
+
+  /// Plugin function: Load dependent alignment conditions according to time stamps.
   long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
-    long time = make_time(argc, argv);
-    AlignmentSelector selec(lcdd);
+    int turns = 1;
+    PrintLevel level = INFO;
+    long time = makeTime(2016,4,1,12);
+    
+    for(int i=0; i<argc; ++i)  {
+      if ( ::strcmp(argv[i],"-time")==0 )  {
+        time = makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
+        printout(level,"DDDB","Setting event time in %s to %s [%ld]",
+                 Path(__FILE__).filename().c_str(), argv[i-1], time);
+      }
+      else if ( ::strcmp(argv[i],"-print")==0 )  {
+        level = DD4hep::printLevel(argv[++i]);
+        printout(level,"DDDB","Setting print level in %s to %s [%d]",
+                 Path(__FILE__).filename().c_str(), argv[i-1], level);
+      }
+      else if ( ::strcmp(argv[i],"-turns")==0 )  {
+        turns = ::atol(argv[++i]);
+      }
+      else if ( ::strcmp(argv[i],"--help")==0 )      {
+        printout(level,"Plugin-Help","Usage: DDDB_DerivedAlignmentsTest --opt [--opt]        ");
+        printout(level,"Plugin-Help","  -time  <string>     Set event time Format: \"%%d-%%m-%%Y %%H:%%M:%%S\"");
+        printout(level,"Plugin-Help","  -print <value>      Printlevel for output      ");
+        printout(level,"Plugin-Help","  -help               Print this help message    ");
+        ::exit(EINVAL);
+      }
+    }
+    AlignmentSelector selec(lcdd, level);
     AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
     int ret = selec.collect(conds,align,time);
     if ( ret == 1 )  {
-      for(int i=0; i<10; ++i)  {  {
+      for(int i=0; i<turns; ++i)  {  {
           long ti = time + i*3600;
           dd4hep_ptr<ConditionsSlice> slice;
           ret = selec.computeDependencies(slice,conds,align,ti);
@@ -202,11 +238,30 @@ DECLARE_APPLY(DDDB_DerivedAlignmentsTest,dddb_derived_alignments)
 //==========================================================================
 
 namespace  {
-  /// Plugin function:
-  /// Access dependent alignment conditions from DetElement object using global and local keys
+  /// Plugin function: Access dependent alignment conditions from DetElement object using global and local keys
   long dddb_access_alignments(LCDD& lcdd, int argc, char** argv) {
-    long time = make_time(argc, argv);
-    AlignmentSelector selec(lcdd);
+    PrintLevel level = INFO;
+    long time = makeTime(2016,4,1,12);
+    for(int i=0; i<argc; ++i)  {
+      if ( ::strcmp(argv[i],"-time")==0 )  {
+        time = makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
+        printout(level,"DDDB","Setting event time in %s to %s [%ld]",
+                 Path(__FILE__).filename().c_str(), argv[i-1], time);
+      }
+      else if ( ::strcmp(argv[i],"-print")==0 )  {
+        level = DD4hep::printLevel(argv[++i]);
+        printout(level,"DDDB","Setting print level in %s to %s [%d]",
+                 Path(__FILE__).filename().c_str(), argv[i-1], level);
+      }
+      else if ( ::strcmp(argv[i],"--help")==0 )      {
+        printout(level,"Plugin-Help","Usage: DDDB_AlignmentsAccessTest --opt [--opt]        ");
+        printout(level,"Plugin-Help","  -time  <string>     Set event time Format: \"%%d-%%m-%%Y %%H:%%M:%%S\"");
+        printout(level,"Plugin-Help","  -print <value>      Printlevel for output      ");
+        printout(level,"Plugin-Help","  -help               Print this help message    ");
+        ::exit(EINVAL);
+      }
+    }
+    AlignmentSelector selec(lcdd,level);
     AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
     int ret = selec.collect(conds,align,time);

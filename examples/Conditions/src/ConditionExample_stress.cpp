@@ -120,12 +120,12 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
              res.total(), res.selected, res.loaded, res.computed, res.missing,
              req_iov.str().c_str(), stop.AsDouble()-start.AsDouble());
   }
-  printout(INFO,"Statistics","+=======================================================================");
+  printout(INFO,"Statistics","+======= Summary: # of IOV: %3d  # of Runs: %3d ===========================", num_iov, num_runs);
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            cr_stat.GetName(), cr_stat.GetMean(), cr_stat.GetMeanErr(), cr_stat.GetRMS(), cr_stat.GetN());
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            acc_stat.GetName(), acc_stat.GetMean(), acc_stat.GetMeanErr(), acc_stat.GetRMS(), acc_stat.GetN());
-  printout(INFO,"Statistics","+=======================================================================");
+  printout(INFO,"Statistics","+=========================================================================");
   // All done.
   return 1;
 }
