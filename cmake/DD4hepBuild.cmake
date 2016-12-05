@@ -9,7 +9,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #=================================================================================
-cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+
 ###set(DD4HEP_DEBUG_CMAKE 1)
 message ( STATUS "INCLUDING DD4hepBuild.... c++11:${DD4HEP_USE_CXX11} c++14:${DD4HEP_USE_CXX14}" )
 
