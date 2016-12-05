@@ -24,12 +24,13 @@ dd4hep_add_plugin( AlignDetExample SOURCES src/*.cpp  )
 dd4hep_install_dir( compact DESTINATION examples/AlignDet )
 dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 
+if ( NEVER )
 #
 #---Testing: Load Telescope geometry and read conditions ------------------
 dd4hep_add_test_reg( test_AlignDet_Telescope_dump_geometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy
-  -compact file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Telescope.xml
+  -compact file:${DD4hep_DIR}/examples/AlignDetcompact/Telescope.xml
   -plugin DD4hepDetectorDump
   REGEX_PASS "/world/Telescope/module_9 NumDau\\:1 VolID\\:00000903 Place")
 #
@@ -53,7 +54,7 @@ dd4hep_add_test_reg( test_AlignDet_Telescope_read_xml
 dd4hep_add_test_reg( test_AlignDet_AlephTPC_load
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
-             -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC.xml
+             -input file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC.xml
              -destroy -no-interpreter -plugin DD4hep_GlobalAlignmentInstall
   REGEX_PASS "189 nodes/ 23 volume UID's in LCDD Geometry" )
 #
@@ -61,19 +62,21 @@ dd4hep_add_test_reg( test_AlignDet_AlephTPC_load
 dd4hep_add_test_reg( test_AlignDet_Global_AlephTPC_align
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
-             -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC.xml
+             -input file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC.xml
              -destroy -no-interpreter
              -plugin DD4hep_GlobalAlignmentInstall
-             -plugin DD4hepXMLLoader file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC_alignment.xml BUILD_DEFAULT
+             -plugin DD4hepXMLLoader file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC_alignment.xml BUILD_DEFAULT
   REGEX_PASS "Successfully parsed XML: AlephTPC_alignment.xml")
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
 dd4hep_add_test_reg( test_AlignDet_Global_AlephTPC_reset
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
-             -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC.xml
+             -input file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC.xml
              -destroy -no-interpreter
              -plugin DD4hep_GlobalAlignmentInstall
-             -plugin DD4hepXMLLoader file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC_alignment.xml
-             -plugin DD4hepXMLLoader file:${CMAKE_CURRENT_SOURCE_DIR}/compact/AlephTPC_reset.xml
+             -plugin DD4hepXMLLoader file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC_alignment.xml
+             -plugin DD4hepXMLLoader file:${DD4hep_DIR}/examples/AlignDet/compact/AlephTPC_reset.xml
   REGEX_PASS "Successfully parsed XML: AlephTPC_reset.xml" )
+
+endif()

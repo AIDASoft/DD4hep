@@ -7,16 +7,21 @@ INSTALL_XERCESC=${SW}/xercesc;
 INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
 GEANT_VERSION=10.01.p02;
-ROOT_VERSION=5.34.25
-ROOT_VERSION=6.04.10;
+#ROOT_VERSION=5.34.25
 
-#INSTALL_G4=${SW}/g4_10.02.p02_dbg/lib/Geant4-10.2.2;
-#GEANT_VERSION=10.02.p02;
-ROOT_VERSION=6.06.06;
-#source ${INSTALL_G4}/../../bin/geant4.sh;
+GEANT_VERSION=10.02.p02;
+INSTALL_G4=${SW}/g4_${GEANT_VERSION}_dbg/lib/Geant4-10.2.2;
+#ROOT_VERSION=6.06.06;
+ROOT_VERSION=6.08.00;
+source ${INSTALL_G4}/../../bin/geant4.sh;
 num_threads=2
-export CXX="`which g++-5` -D_GLIBCXX_USE_CXX11_ABI=0";
-export CC="`which gcc-5` -D_GLIBCXX_USE_CXX11_ABI=0";
+#
+# Root version < 6.08 : 
+#export CXX="`which g++-5` -D_GLIBCXX_USE_CXX11_ABI=0";
+#export CC="`which gcc-5` -D_GLIBCXX_USE_CXX11_ABI=0";
+#
+export CXX="`which g++-5`";
+export CC="`which gcc-5`";
 
 # ==============================================================================
 # Parse arguments
@@ -155,7 +160,9 @@ build_all()
                     OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=OFF \
+                    -DCLHEP_INCLUDE_DIR=${INSTALL_G4}/../../include/Geant4/CLHEP \
+                    -DCLHEP_LIBRARY=${INSTALL_G4}/libG4clhep.so \
+                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=ON \
                     -DROOTSYS=${ROOTSYS} -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
 		    CMD="cd ${dir_name}/$folder ; cmake ${BUILD_TYPE} ${OPTS} ${CHECKOUT};";
                     make_build;
@@ -166,7 +173,9 @@ build_all()
                     OPTS_ex="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO    -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=OFF \
+                    -DCLHEP_INCLUDE_DIR=${INSTALL_G4}/../../include/Geant4/CLHEP \
+                    -DCLHEP_LIBRARY=${INSTALL_G4}/libG4clhep.so \
+                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=ON \
                     -DROOTSYS=${ROOTSYS}";
 		    source ${DD4hep_DIR}/bin/thisdd4hep.sh;
    		    CMD="cd ${WORK_DIR}/EX; cmake ${BUILD_TYPE} ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";
