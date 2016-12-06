@@ -14,7 +14,7 @@ dd4hep_package(    DDTest
   USES             DDCore DDRec
   OPTIONAL         DDG4
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include )
+  INSTALL_INCLUDES include/DD4hep )
 
 dd4hep_add_test_reg ( test_example             BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_units               BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
