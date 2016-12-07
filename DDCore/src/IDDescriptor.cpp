@@ -65,7 +65,7 @@ unsigned IDDescriptor::maxBit() const {
 
 /// Access the field-id container
 const IDDescriptor::FieldIDs& IDDescriptor::ids() const {
-  if (isValid()) {
+  if ( isValid() ) {
     return data<Object>()->fieldIDs;
   }
   throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
@@ -73,7 +73,7 @@ const IDDescriptor::FieldIDs& IDDescriptor::ids() const {
 
 /// Access the fieldmap container
 const IDDescriptor::FieldMap& IDDescriptor::fields() const {
-  if (isValid()) {
+  if ( isValid() ) {
     return data<Object>()->fieldMap;
   }
   throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
@@ -82,10 +82,12 @@ const IDDescriptor::FieldMap& IDDescriptor::fields() const {
 /// Get the field descriptor of one field by name
 IDDescriptor::Field IDDescriptor::field(const string& field_name) const {
   const FieldMap& m = fields();   // This already checks the object validity
-  for (FieldMap::const_iterator i = m.begin(); i != m.end(); ++i)
-    if ((*i).first == field_name)
-      return (*i).second;
-  throw runtime_error("DD4hep: " + string(name()) + ": This ID descriptor has no field with the name:" + field_name);
+  for (const auto& i : m )
+    if (i.first == field_name)
+      return i.second;
+  except("IDDescriptor","DD4hep: %s: This ID descriptor has no field with the name: %s",
+         name(),field_name.c_str());
+  throw runtime_error("DD4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Get the field descriptor of one field by its identifier
@@ -97,21 +99,21 @@ IDDescriptor::Field IDDescriptor::field(size_t identifier) const {
 /// Get the field identifier of one field by name
 size_t IDDescriptor::fieldID(const string& field_name) const {
   const FieldIDs& m = ids();   // This already checks the object validity
-  for (FieldIDs::const_iterator i = m.begin(); i != m.end(); ++i)
-    if ((*i).second == field_name)
-      return (*i).first;
-  throw runtime_error("DD4hep: " + string(name()) + ": This ID descriptor has no field with the name:" + field_name);
+  for (const auto& i : m )
+    if (i.second == field_name)
+      return i.first;
+  except("IDDescriptor","DD4hep: %s: This ID descriptor has no field with the name: %s",
+         name(),field_name.c_str());
+  throw runtime_error("DD4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
 VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
-  typedef std::vector<VolID> VolIds;
   VolumeID id = 0;
-  for (VolIds::const_iterator i = id_vector.begin(); i != id_vector.end(); ++i) {
-    Field f = field((*i).first);
-    VolumeID vid = (*i).second;
+  for (const auto& i : id_vector )  {
+    Field f = field(i.first);
     int offset = f->offset();
-    id |= ((f->value(vid<<offset) << offset)&f->mask());
+    id |= ((f->value(i.second<<offset) << offset)&f->mask());
   }
   return id;
 }
@@ -119,13 +121,13 @@ VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
 /// Decode volume IDs and return filled descriptor with all fields
 void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& flds) {
   flds.clear();
-  if (isValid()) {
+  if ( isValid() ) {
     const vector<BitFieldValue*>& v = ptr()->fields();
-    for (vector<BitFieldValue*>::const_iterator i = v.begin(); i != v.end(); ++i)
-      flds.push_back(VolIDField(*i, (*i)->value(vid)));
+    for (auto f : v )
+      flds.push_back(VolIDField(f, f->value(vid)));
     return;
   }
-  throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
+  except("IDDescriptor","DD4hep: Attempt to access an invalid IDDescriptor object.");
 }
 
 /// Access the BitField64 object

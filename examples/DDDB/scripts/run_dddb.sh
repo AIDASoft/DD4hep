@@ -123,9 +123,6 @@ if [ "$(uname)" == "Darwin" ]; then
   export DYLD_LIBRARY_PATH=${DD4HEP_LIBRARY_PATH}
 fi
 export DD4HEP_TRACE=ON;
-echo "Command(1): ${debug} `which geoPluginRun` -destroy -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis} ${plugins}"
-echo "Command(2): ${debug} `which geoPluginRun` -destroy -plugin DDDB_Executor ${all_args} ${plugins}"
-
 ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis} ${plugins}`;
 echo "Command: ${debug} `which geoPluginRun` -destroy $ARGS";
 if test -z "${debug}";then

@@ -60,7 +60,7 @@ int initAClick(const char* command=0)  {
   std::string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
   std::string geant4  = make_str(gSystem->Getenv("G4INSTALL"));
   std::string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
-  std::string clhep   = make_str(gSystem->Getenv("CLHEP_DIR"));
+  std::string clhep   = make_str(gSystem->Getenv("CLHEP_ROOT_DIR"));
   std::string defs    = "";
   std::string libs    = " -L"+rootsys+"/lib";
   std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples -I"+dd4hep + " -I"+dd4hep+"/include";
@@ -68,7 +68,7 @@ int initAClick(const char* command=0)  {
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
 #ifdef __APPLE__
-    libs += (" -L"+geant4+"/lib -L"+geant4+"/lib");
+    libs += (" -L"+geant4+"/lib");
 #else
     libs += (" -L"+geant4+"/lib -L"+geant4+"/lib64");
 #endif
@@ -77,14 +77,18 @@ int initAClick(const char* command=0)  {
     // A bit unclear how to deal with CLHEP libraries here, 
     // if CLHEP is not included in Geant4...
     inc += " -I"+clhep+"/include";
+    std::string clhep_lib = make_str(gSystem->Getenv("CLHEP_LIBRARY_PATH"));
+    if ( !clhep_lib.empty() ) libs += " -L"+clhep_lib+"/lib";
   }
   inc += " -Wno-shadow -g -O0" + defs;
+#ifndef __APPLE__
   libs += " -lCore -lMathCore -pthread -lm -ldl -rdynamic";
+#endif
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
   std::cout << "+++ Linked libs:" << gSystem->GetLinkedLibs()  << std::endl;
-  int ret = gSystem->Load("libDDG4Plugins");
+  int ret = 0;  // gSystem->Load("libDDG4Plugins");
   if ( 0 == ret )   {
     if ( command )  {
       processCommand(command, true);

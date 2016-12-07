@@ -67,8 +67,8 @@ vector<string> Readout::collectionNames()  const   {
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
-      for(Object::Collections::const_iterator i=ro.hits.begin(); i!=ro.hits.end(); ++i)
-        colls.push_back((*i).name);
+      for(const auto& hit : ro.hits )
+        colls.push_back(hit.name);
     }
     return colls;
   }
@@ -81,8 +81,8 @@ vector<const HitCollection*> Readout::collections()  const   {
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
-      for(Object::Collections::const_iterator i=ro.hits.begin(); i!=ro.hits.end(); ++i)
-        colls.push_back(&(*i));
+      for(const auto& hit : ro.hits )
+        colls.push_back(&hit);
     }
     return colls;
   }

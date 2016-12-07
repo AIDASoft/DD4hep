@@ -183,9 +183,9 @@ namespace DD4hep {
 
   /// Insertion function for std vectors
   template <typename TYPE> static int fill_data(std::vector<TYPE>* p,const std::vector<std::string>& temp)  {
-    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
     TYPE val;
-    for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
+    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
+    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !g.fromString(&val,*i) )
         return 0;
       p->push_back(val);
@@ -195,9 +195,9 @@ namespace DD4hep {
 
   /// Insertion function for std lists
   template <typename TYPE> static int fill_data(std::list<TYPE>* p,const std::vector<std::string>& temp)  {
-    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
     TYPE val;
-    for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
+    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
+    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !g.fromString(&val,*i) )
         return 0;
       p->push_back(val);
@@ -207,9 +207,9 @@ namespace DD4hep {
 
   /// Insertion function for std sets
   template <typename TYPE> static int fill_data(std::set<TYPE>* p,const std::vector<std::string>& temp)  {
-    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
     TYPE val;
-    for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
+    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
+    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !g.fromString(&val,*i) )
         return 0;
       p->insert(val);
@@ -219,9 +219,9 @@ namespace DD4hep {
 
   /// Insertion function for std sets
   template <typename TYPE> static int fill_data(std::deque<TYPE>* p,const std::vector<std::string>& temp)  {
-    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
     TYPE val;
-    for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
+    const BasicGrammar& g = BasicGrammar::instance<TYPE>();
+    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !g.fromString(&val,*i) )
         return 0;
       p->push_back(val);
@@ -231,9 +231,9 @@ namespace DD4hep {
 
   /// Insertion function for std sets
   template <typename KEY, typename TYPE> static int fill_data(std::map<KEY,TYPE>* p,const std::vector<std::string>& temp)  {
-    const BasicGrammar& g = BasicGrammar::instance<std::pair<KEY,TYPE> >();
     std::pair<KEY,TYPE> val;
-    for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
+    const BasicGrammar& g = BasicGrammar::instance<std::pair<KEY,TYPE> >();
+    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !g.fromString(&val,*i) )
         return 0;
       p->insert(val);

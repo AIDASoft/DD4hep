@@ -45,11 +45,13 @@ namespace DD4hep {
      */
     template<typename MAPPING, typename BASE> 
     class ConditionsMappedPool : public BASE   {
-    protected:
-      typedef BASE     Base;
-      typedef MAPPING  Mapping;
+    public:
+      typedef BASE                               Base;
+      typedef MAPPING                            Mapping;
       typedef ConditionsMappedPool<Mapping,Base> Self;
-      typedef typename BASE::key_type key_type;
+      typedef typename BASE::key_type            key_type;
+      
+    protected:
       Mapping          m_entries;
       
       /// Helper function to loop over the conditions container and apply a functor
@@ -131,7 +133,8 @@ namespace DD4hep {
     template<typename MAPPING, typename BASE> class ConditionsMappedUpdatePool 
       : public ConditionsMappedPool<MAPPING,BASE>
     {
-      typedef ConditionsMappedPool<MAPPING,BASE> Self;
+    public:
+      typedef ConditionsMappedPool<MAPPING,BASE>                    Self;
       typedef typename ConditionsMappedPool<MAPPING,BASE>::key_type key_type;
     public:
       /// Default constructor
@@ -143,7 +146,7 @@ namespace DD4hep {
 
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
       virtual size_t popEntries(UpdatePool::UpdateEntries& entries)   {
-        ClearOnReturn<MAPPING> clear(this->Self::m_entries);
+        ClearOnReturn<MAPPING> clr(this->Self::m_entries);
         return this->Self::loop(entries, [&entries](const std::pair<key_type,Condition::Object*>& o) {
             entries[o.second->iov].push_back(Condition(o.second));});
 #if 0

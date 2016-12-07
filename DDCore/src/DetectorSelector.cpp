@@ -39,7 +39,7 @@ DetectorSelector::detectors(const string& type1,
     try  {
       if ( !types[i]->empty() )  {
         const vector<DetElement>& v = lcdd.detectors(*(types[i]));
-        result.insert(result.end(),v.begin(),v.end());
+        result.insert(end(result),begin(v),end(v));
       }
     }
     catch(...)   {}
@@ -56,8 +56,8 @@ DetectorSelector::detectors(unsigned int includeFlag, unsigned int excludeFlag )
   const LCDD::HandleMap& entries = lcdd.detectors();
   result.reserve( entries.size() ) ;
   lcdd.detectors(""); // Just to ensure the geometry is closed....
-  for(LCDD::HandleMap::const_iterator i=entries.begin(); i!=entries.end(); ++i)   {
-    DetElement det((*i).second);
+  for(const auto& i : entries )  {
+    DetElement det(i.second);
     if ( det.parent().isValid() )  { // Exclude 'world'
       //fixme: what to do with compounds - add their daughters  ?
       // ...

@@ -53,8 +53,8 @@ namespace {
         parent_sd = m_lcdd.sensitiveDetector(e.name());
       }
       //printout(INFO, "VolumeManager", "++ Executing %s plugin manager version",typ ? "***NEW***" : "***OLD***");
-      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-        DetElement de = (*i).second;
+      for (const auto& i : c )  {
+        DetElement de = i.second;
         PlacedVolume pv = de.placement();
         if (pv.isValid()) {
           Chain chain;
@@ -83,14 +83,14 @@ namespace {
       const DetElement::Children& c = e.children();
       if (e.placement().ptr() == pv.ptr())
         return e;
-      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-        DetElement de = (*i).second;
-        if (de.placement().ptr() == pv.ptr())
+      for (const auto& i : c )  {
+        DetElement de = i.second;
+        if ( de.placement().ptr() == pv.ptr() )
           return de;
       }
-      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-        DetElement de = findElt((*i).second, pv);
-        if (de.isValid())
+      for (const auto& i : c )  {
+        DetElement de = findElt(i.second, pv);
+        if ( de.isValid() )
           return de;
       }
       return DetElement();
@@ -499,12 +499,11 @@ VolumeManager VolumeManager::subdetector(VolumeID id) const {
   if (isValid()) {
     const Object& o = _data();
     /// Need to perform a linear search, because the "system" tag width may vary between subdetectors
-    for (Detectors::const_iterator j = o.subdetectors.begin(); j != o.subdetectors.end(); ++j) {
-      const Object& mo = (*j).second._data();
-      //VolumeID sys_id = mo.system.decode(id);
-      VolumeID sys_id = mo.system->value(id << mo.system->offset());
-      if (sys_id == mo.sysID)
-        return (*j).second;
+    for (const auto& j : o.subdetectors )  {
+      const Object& mo = j.second._data();
+      VolumeID      sys_id = mo.system->value(id << mo.system->offset());
+      if ( sys_id == mo.sysID )
+        return j.second;
     }
     throw runtime_error("DD4hep: VolumeManager::subdetector(VolID): "
                         "Attempt to access unknown subdetector section.");
@@ -541,6 +540,7 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
     goto Fail;
   }
 #endif
+
   if (i == o.volumes.end()) {
     o.volumes[vid] = context;
     o.detMask |= context->mask;
