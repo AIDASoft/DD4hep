@@ -326,7 +326,7 @@ namespace DD4hep {
      *  };
      *  
      *  long counter = 0;
-     *  for_each(conditons.begin(), conditions.end(), MyCounter(counter));
+     *  for_each(std::begin(conditons), std::end(conditions), MyCounter(counter));
      *
      *  \author  M.Frank
      *  \version 1.0

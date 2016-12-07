@@ -505,9 +505,8 @@ IDSpec::IDSpec(LCDD& lcdd, const string& name, const IDDescriptor& dsc)
   const IDDescriptor::FieldIDs& f = dsc.ids();
   const IDDescriptor::FieldMap& m = dsc.fields();
   object<Object>().Attr_length = dsc.maxBit();
-  for(IDDescriptor::FieldIDs::const_iterator i=f.begin(); i!=f.end();++i) {
-    int ident = (*i).first;
-    const string& nam = (*i).second;
+  for(const auto& i : f )  {
+    const string& nam = i.second;
     const pair<int,int>& fld = m.find(nam)->second;
     addField(nam,fld);
   }
