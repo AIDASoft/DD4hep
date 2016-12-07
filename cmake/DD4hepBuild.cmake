@@ -69,7 +69,7 @@ macro(dd4hep_set_compiler_flags)
   endif()
 
  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-   set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
+   set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -Wl,-undefined,error")
  endif()
 
  #rpath treatment
