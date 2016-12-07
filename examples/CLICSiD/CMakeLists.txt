@@ -43,7 +43,7 @@ foreach ( typ lcdd gdml vis )
 endforeach()
 #
 # ROOT Geometry overlap checks
-dd4hep_add_test_reg( test_CLICSiD_check_geometry
+dd4hep_add_test_reg( test_CLICSiD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
                     --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
@@ -64,7 +64,7 @@ if (DD4HEP_USE_GEANT4)
   #
   # Basic DDG4 component/unit tests
   foreach(script testDDPython CLICMagField CLICPhysics CLICRandom CLICSiDScan)
-    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}
+    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py
       REQUIRES   DDG4 Geant4
