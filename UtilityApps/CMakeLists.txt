@@ -24,6 +24,8 @@ dd4hep_add_executable( print_materials src/print_materials.cpp USES DDRec )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( materialScan    src/materialScan.cpp USES DDRec )
 #-----------------------------------------------------------------------------------
+dd4hep_add_executable( graphicalMaterialScan src/graphicalMaterialScan.cpp USES DDRec )
+#-----------------------------------------------------------------------------------
 #dd4hep_add_executable( pydd4hep     
 #  USES        [ROOT   REQUIRED COMPONENTS PyROOT]
 #  OPTIONAL    [PYTHON REQUIRED SOURCES src/dd4hep_python.cpp])
