@@ -1,6 +1,7 @@
 #ifndef DDRec_DetectorData_H_
 #define DDRec_DetectorData_H_
 
+#include <map>
 #include <bitset>
 #include <ostream>
 
@@ -155,6 +156,8 @@ namespace DD4hep {
       } ;
 
       std::vector<LayerLayout> layers ;
+      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > mapNeighbours;
+
 
     } ;
     typedef StructExtension<ZPlanarStruct> ZPlanarData ;
@@ -273,6 +276,7 @@ namespace DD4hep {
       } ;
 
       std::vector<LayerLayout> layers ;
+      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > mapNeighbours;
 
     } ;
     typedef StructExtension<ZDiskPetalsStruct> ZDiskPetalsData ;
