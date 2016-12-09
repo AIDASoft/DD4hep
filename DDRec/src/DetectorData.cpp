@@ -63,8 +63,9 @@ namespace DD4hep {
 	   << " " << l.zHalfSensitive
 	   << std::endl ;
       }
-
-      
+   
+      io <<  "  mapNeighbours.size() : " <<  d.mapNeighbours.size()  << std::endl ; 
+   
       return io ;
     }
 
@@ -109,8 +110,11 @@ namespace DD4hep {
 	   << " " << l.lengthSensitive
 	   << std::endl ;
       }
-      
+
       io <<  " nP:petalNumber  n:sensorsPerPetal  d:DoubleSided  p: Pixel "  << std::endl ;
+
+      io <<  "  mapNeighbours.size() : " <<  d.mapNeighbours.size()  << std::endl ; 
+
       return io ;
     }
 
