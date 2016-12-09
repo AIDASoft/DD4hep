@@ -119,10 +119,8 @@ namespace  {
       return 1;
     }
     /// Initial collector call
-    long collect(ConditionsManager manager, AlignmentsManager& context, long time)  {
-      const IOVType* iovType = manager.iovType("epoch");
-      IOV  iov(iovType, IOV::Key(time,time));
-      dd4hep_ptr<ConditionsSlice> slice(createSlice(manager,*iovType));
+    long collect(ConditionsManager manager, AlignmentsManager& context, const IOV& iov)  {
+      dd4hep_ptr<ConditionsSlice> slice(createSlice(manager,*iov.iovType));
       manager.prepare(iov, *slice);
       int res = collect(lcdd.world(), slice->pool(), context, 0);
       return res;
@@ -131,12 +129,9 @@ namespace  {
     int computeDependencies(dd4hep_ptr<ConditionsSlice>& slice,
                             ConditionsManager conds,
                             AlignmentsManager align,
-                            long time)
+                            const IOV& iov)
     {
-      const IOVType* iovType = conds.iovType("epoch");
-      IOV  iov(iovType, time);
-      slice.adopt(createSlice(conds,*iovType));
-      slice->insert(align.knownDependencies());
+      slice.adopt(createSlice(conds,*iov.iovType));
       TTimeStamp acc_start;
       ConditionsManager::Result cres = conds.prepare(iov, *slice);
       TTimeStamp acc_stop;
@@ -152,10 +147,10 @@ namespace  {
       return 1;
     }
     /// Access dependent alignment conditions from DetElement object using global and local keys
-    int access(ConditionsManager conds,AlignmentsManager align,long time)  {
+    int access(ConditionsManager conds,AlignmentsManager align, const IOV& iov)  {
       typedef ConditionsDependencyCollection Deps;
       dd4hep_ptr<ConditionsSlice> slice;
-      int ret = computeDependencies(slice, conds, align, time);
+      int ret = computeDependencies(slice, conds, align, iov);
 
       if ( ret == 1 )  {
         const Deps& deps = align.knownDependencies();
@@ -234,22 +229,27 @@ namespace  {
     AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
     TStatistic cr_stat("Initialize"), re_acc_stat("Reaccess");
+    const IOVType* iovType = conds.iovType("epoch");
     int ret;
     {
       TTimeStamp start;
-      ret = selec.collect(conds,align,time);
+      IOV  iov(iovType, time);
+      ret = selec.collect(conds,align,iov);
       TTimeStamp stop;
       cr_stat.Fill(stop.AsDouble()-start.AsDouble());
     }
     if ( ret == 1 )  {
       for(int i=0; i<turns; ++i)  {  {
-          long ti = time + i*3600;
+          long ti = time + (i+1)*3600;
+          IOV  iov(iovType, ti);
           dd4hep_ptr<ConditionsSlice> slice;
-          ret = selec.computeDependencies(slice,conds,align,ti);
+          ret = selec.computeDependencies(slice,conds,align,iov);
           slice->reset();
           dd4hep_ptr<ConditionsSlice> slice2;
           TTimeStamp start;
-          ret = selec.computeDependencies(slice2,conds,align,ti);
+          slice2.adopt(createSlice(conds,*iov.iovType));
+          //slice2->insert(align.knownDependencies());
+          conds.prepare(iov, *slice2);
           TTimeStamp stop;
           re_acc_stat.Fill(stop.AsDouble()-start.AsDouble());
         }
@@ -301,9 +301,11 @@ namespace  {
     AlignmentSelector selec(lcdd,level);
     AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
-    int ret = selec.collect(conds,align,time);
+    const IOVType* iovType = conds.iovType("epoch");
+    IOV  iov(iovType, time);
+    int ret = selec.collect(conds,align,iov);
     if ( ret == 1 )  {
-      ret = selec.access(conds,align,time);
+      ret = selec.access(conds,align,iov);
     }
     return ret;
   }
