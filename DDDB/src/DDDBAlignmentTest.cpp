@@ -31,6 +31,9 @@
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBAlignmentUpdateCall.h"
 
+#include "TStatistic.h"
+#include "TTimeStamp.h"
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
@@ -54,9 +57,11 @@ namespace  {
     PrintLevel           m_level = INFO;
     long                 m_installCount = 0;
     long                 m_accessCount = 0;
+    TStatistic           acc_stat, comp_stat;
     
     /// Initializing constructor
-    AlignmentSelector(LCDD& l, PrintLevel p) : lcdd(l), m_name("DDDBAlignments"), m_level(p)   {
+    AlignmentSelector(LCDD& l, PrintLevel p)
+      : lcdd(l), m_name("DDDBAlignments"), m_level(p), acc_stat("Access"), comp_stat("Compute")   {
       // The alignment update call can be re-used over and over. It has not state.
       updateCall = new DDDB::DDDBAlignmentUpdateCall();
     }
@@ -102,11 +107,11 @@ namespace  {
       }
       catch(const exception& e)  {
         ::sprintf(fmt,"%03d %%-%ds %%s: %%-20s  Exception: %%s",level+1,2*level+3);
-        printout(INFO,m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]", e.what());
+        printout(ERROR,m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]", e.what());
       }
       catch(...)  {
         ::sprintf(fmt,"%03d %%-%ds %%s: %%-20s",level+1,2*level+3);
-        printout(INFO,m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]");
+        printout(ERROR,m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]");
       }
       const DetElement::Children& c = de.children();
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
@@ -119,7 +124,8 @@ namespace  {
       IOV  iov(iovType, IOV::Key(time,time));
       dd4hep_ptr<ConditionsSlice> slice(createSlice(manager,*iovType));
       manager.prepare(iov, *slice);
-      return collect(lcdd.world(), slice->pool(), context, 0);
+      int res = collect(lcdd.world(), slice->pool(), context, 0);
+      return res;
     }
     /// Compute dependent alignment conditions
     int computeDependencies(dd4hep_ptr<ConditionsSlice>& slice,
@@ -130,8 +136,15 @@ namespace  {
       const IOVType* iovType = conds.iovType("epoch");
       IOV  iov(iovType, time);
       slice.adopt(createSlice(conds,*iovType));
+      slice->insert(align.knownDependencies());
+      TTimeStamp acc_start;
       ConditionsManager::Result cres = conds.prepare(iov, *slice);
+      TTimeStamp acc_stop;
+      acc_stat.Fill(acc_stop.AsDouble()-acc_start.AsDouble());
+      TTimeStamp comp_start;
       AlignmentsManager::Result ares = align.compute(*(slice->pool()));
+      TTimeStamp comp_stop;
+      comp_stat.Fill(comp_stop.AsDouble()-comp_start.AsDouble());
       printout(INFO,"DDDBAlign",
                "++ AlignmentManager: %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
@@ -220,16 +233,40 @@ namespace  {
     AlignmentSelector selec(lcdd, level);
     AlignmentsManager align(AlignmentsManager::from(lcdd));
     ConditionsManager conds(ConditionsManager::from(lcdd));
-    int ret = selec.collect(conds,align,time);
+    TStatistic cr_stat("Initialize"), re_acc_stat("Reaccess");
+    int ret;
+    {
+      TTimeStamp start;
+      ret = selec.collect(conds,align,time);
+      TTimeStamp stop;
+      cr_stat.Fill(stop.AsDouble()-start.AsDouble());
+    }
     if ( ret == 1 )  {
       for(int i=0; i<turns; ++i)  {  {
           long ti = time + i*3600;
           dd4hep_ptr<ConditionsSlice> slice;
           ret = selec.computeDependencies(slice,conds,align,ti);
           slice->reset();
+          dd4hep_ptr<ConditionsSlice> slice2;
+          TTimeStamp start;
+          ret = selec.computeDependencies(slice2,conds,align,ti);
+          TTimeStamp stop;
+          re_acc_stat.Fill(stop.AsDouble()-start.AsDouble());
         }
         DD4hep::InstanceCount::dump();
       }
+      printout(INFO,"Statistics","+======= Summary: # of Runs: %3d ==========================================",turns);
+      printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
+               cr_stat.GetName(), cr_stat.GetMean(), cr_stat.GetMeanErr(), cr_stat.GetRMS(), cr_stat.GetN());
+      printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
+               selec.acc_stat.GetName(), selec.acc_stat.GetMean(), selec.acc_stat.GetMeanErr(),
+               selec.acc_stat.GetRMS(), selec.acc_stat.GetN());
+      printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
+               selec.comp_stat.GetName(), selec.comp_stat.GetMean(), selec.comp_stat.GetMeanErr(),
+               selec.comp_stat.GetRMS(), selec.comp_stat.GetN());
+      printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
+               re_acc_stat.GetName(), re_acc_stat.GetMean(), re_acc_stat.GetMeanErr(), re_acc_stat.GetRMS(), re_acc_stat.GetN());
+      printout(INFO,"Statistics","+=========================================================================");
     }
     return ret;
   }

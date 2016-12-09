@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 if (DD4HEP_USE_XERCESC)
   include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-  #-----------------------------------------------------------------------------------
+  #------------------------------------------------------------------------------
   dd4hep_configure_output ()
   dd4hep_package (DDDB MAJOR 0 MINOR 0 PATCH 1
     USES  [XERCESC REQUIRED]

@@ -18,6 +18,7 @@
 
 // C/C++ include files
 #include <map>
+#include <unordered_map>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -359,6 +360,8 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
            "Found %ld missing derived conditions out of %ld conditions.",
            num_calc_miss, m_conditions.size());
 
+  result.loaded   = 0;
+  result.computed = 0;
   result.selected = m_conditions.size();
   result.missing  = num_cond_miss+num_calc_miss;
   //
@@ -367,22 +370,24 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   if ( num_cond_miss > 0 )  {
     ConditionsDataLoader::LoadedItems loaded;
     size_t updates = m_loader->load_many(required, cond_missing, loaded, pool_iov);
-    // Need to compute the intersection: All missing entries are required....
-    _Missing load_missing(cond_missing.size()+loaded.size());
-    // Note: cond_missing is already sorted (doc of 'set_difference'). No need to re-sort....
-    _Missing::iterator load_last = set_difference(begin(cond_missing), end(cond_missing),
-                                                  begin(loaded), end(loaded),
-                                                  begin(load_missing), COMP());
-    int num_load_miss = int(load_last-begin(load_missing));
-    printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
-             "Found %ld out of %d conditions, which CANNOT be loaded...",
-             num_load_miss, int(loaded.size()));
+    if ( updates > 0 )  {
+      // Need to compute the intersection: All missing entries are required....
+      _Missing load_missing(cond_missing.size()+loaded.size());
+      // Note: cond_missing is already sorted (doc of 'set_difference'). No need to re-sort....
+      _Missing::iterator load_last = set_difference(begin(cond_missing), last_cond,
+                                                    begin(loaded), end(loaded),
+                                                    begin(load_missing), COMP());
+      int num_load_miss = int(load_last-begin(load_missing));
+      printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
+               "Found %ld out of %d conditions, which CANNOT be loaded...",
+               num_load_miss, int(loaded.size()));
 
-    for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
-    result.loaded    = updates;
-    result.missing  -= updates;
-    if ( cond_missing.size() != loaded.size() )  {
-      // ERROR!
+      for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
+      result.loaded  = slice_cond.size()-num_load_miss;
+      result.missing = num_load_miss+num_calc_miss;
+      if ( cond_missing.size() != loaded.size() )  {
+        // ERROR!
+      }
     }
   }
   //
@@ -409,15 +414,26 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
 }
 
 namespace {
-  void* create_user_pool(Geometry::LCDD&, int argc, char** argv)  {
+  template <typename MAPPING>
+  void* create_pool(Geometry::LCDD&, int argc, char** argv)  {
     if ( argc > 1 )  {
       ConditionsManagerObject* m = (ConditionsManagerObject*)argv[0];
       ConditionsIOVPool* p = (ConditionsIOVPool*)argv[1];
-      UserPool* pool = new ConditionsMappedUserPool<std::map<Condition::key_type,Condition::Object*> >(m, p);
+      UserPool* pool = new ConditionsMappedUserPool<MAPPING>(m, p);
       return pool;
     }
     except("ConditionsMappedUserPool","++ Insufficient arguments: arg[0] = ConditionManager!");
     return 0;
   }
 }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsMapUserPool, create_user_pool)
+
+// Factory for the user pool using a binary tree map
+void* create_map_user_pool(Geometry::LCDD& lcdd, int argc, char** argv)
+{  return create_pool<std::map<Condition::key_type,Condition::Object*> >(lcdd, argc, argv);  }
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsMapUserPool, create_map_user_pool)
+
+// Factory for the user pool using a unordered map (hash-map)
+void* create_unordered_map_user_pool(Geometry::LCDD& lcdd, int argc, char** argv)
+{  return create_pool<std::unordered_map<Condition::key_type,Condition::Object*> >(lcdd, argc, argv);  }
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsUnorderedMapUserPool, create_unordered_map_user_pool)
+

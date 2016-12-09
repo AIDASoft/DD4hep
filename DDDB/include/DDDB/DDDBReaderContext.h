@@ -38,10 +38,12 @@ namespace DD4hep {
      */
     class DDDBReaderContext : public XML::UriReader::UserContext  {
     public:
-      long long int event_time, valid_since, valid_until;
+      long long int event_time  = 0;
+      long long int valid_since = 0;
+      long long int valid_until = 0;
       std::string doc, channel;
       /// Standard constructor
-      DDDBReaderContext() : event_time(0), valid_since(0), valid_until(0) {}
+      DDDBReaderContext() = default;
       /// Copy constructor
       DDDBReaderContext(const DDDBReaderContext& c) 
         : XML::UriReader::UserContext(c), 
@@ -49,6 +51,10 @@ namespace DD4hep {
           valid_since(c.valid_since),
           valid_until(c.valid_until),
           channel(c.channel) {}
+      /// Default destructor
+      virtual ~DDDBReaderContext() = default;
+      /// Assignment operator
+      DDDBReaderContext& operator=(const DDDBReaderContext& c) = default;
     };
   }    /* End namespace DDDB              */
 }      /* End namespace DD4hep            */
