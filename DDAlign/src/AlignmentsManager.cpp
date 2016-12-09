@@ -191,6 +191,16 @@ AlignmentsManager::Result AlignmentsManagerObject::compute(Pool& pool, const Dep
   Result result;
   AlignContext new_alignments;
   new_alignments.entries.reserve(deps.size());
+  //
+  // This here is the main difference compared to other derived conditions:
+  // ----------------------------------------------------------------------
+  //
+  // We enforce here that all computations, which require an update of the corresponding
+  // alignment matrices are stored in "new_alignments", since the update callback registers
+  // all new entries using this user parameter when calling  AlignmentsManager::newEntry.
+  // For this reason also ALL specific update calls must base themself in the
+  // Alignment update callback.
+  //
   pool.compute(deps, &new_alignments);
   for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)  {
     Result r = compute(new_alignments, pool, (*i).det);

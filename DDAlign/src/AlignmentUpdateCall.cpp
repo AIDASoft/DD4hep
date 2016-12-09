@@ -33,18 +33,28 @@ AlignmentUpdateCall::~AlignmentUpdateCall() {
 }
 
 AlignmentUpdateCall::Condition
-AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, const Delta& delta)
-{
+AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, const Delta& delta)  {
   AlignmentCondition target(key.name);
   AlignmentData&     data = target.data();
-  data.delta    = delta;
-  data.flag     = AlignmentData::HAVE_NONE;
-  data.detector = ctxt.dependency.detector;
+  data.delta     = delta;
+  data.flag      = AlignmentData::HAVE_NONE;
+  data.detector  = ctxt.dependency.detector;
+  //
+  // This here is the main difference compared to other derived conditions:
+  // ----------------------------------------------------------------------
+  //
+  // We enforce here that all computations, which require an update of the corresponding
+  // alignment matrices are stored in "new_alignments", since the update callback registers
+  // all new entries using this user parameter when calling  AlignmentsManager::newEntry.
+  // For this reason also ALL specific update calls must base themself in the
+  // Alignment update callback.
+  //
   // We MUST register the undigested condition to the alignment manager in order to
   // later be able to compute the derived transformations.
   // The derived transfomrations can only be computed 'later' once all delta stubs
   // are present in a second pass. This is necessary, because the parent information
   // may actually be supplied also 'later'.
+  //
   AlignmentsManager::newEntry(ctxt, data.detector, &ctxt.dependency, target);
   return target;
 }

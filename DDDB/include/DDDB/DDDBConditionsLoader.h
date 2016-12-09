@@ -40,10 +40,7 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_CONDITIONS
      */
-    class DDDBConditionsLoader
-      : public Conditions::ConditionsDataLoader, 
-        public Conditions::ConditionsListener
-    {
+    class DDDBConditionsLoader : public Conditions::ConditionsDataLoader  {
       typedef Conditions::Condition         Condition;
       typedef Conditions::RangeConditions   RangeConditions;
       typedef Conditions::ConditionsManager ConditionsManager;
@@ -91,10 +88,6 @@ namespace DD4hep {
                                  RequiredItems&  work,
                                  LoadedItems&    loaded,
                                  iov_type&       conditions_validity);
-
-      /// ConditionsListener overload: onRegister new condition
-      virtual void onRegisterCondition(Conditions::Condition cond, void* param);
-
     };
   } /* End namespace DDDB                    */
 } /* End namespace DD4hep                    */
