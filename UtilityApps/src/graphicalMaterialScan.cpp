@@ -89,7 +89,7 @@ int main(int argc, char** argv)   {
     index[1] = 2;
     index[2] = 0;
     labx="Z [cm]";
-    laby="Z [cm]";
+    laby="X [cm]";
   } else if ( XYZ=="z" || XYZ=="Z" ) {
     index[0] = 2;
     index[1] = 0;
