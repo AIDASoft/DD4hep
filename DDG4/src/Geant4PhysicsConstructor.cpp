@@ -35,11 +35,16 @@ namespace  {
     /// Access to a fresh (resetted) instance of the particle table iterator
     G4ParticleTable::G4PTblDicIterator* particleIterator()  const   {
       G4ParticleTable::G4PTblDicIterator* iter;
-#if G4VERSION_NUMBER >= 1000
+
+#if G4VERSION_NUMBER >= 1030
+      iter = GetParticleIterator();
+#else
+ #if G4VERSION_NUMBER >= 1000
       iter = aParticleIterator;
-#else  
+ #else  
       iter = theParticleIterator;
-#endif
+ #endif
+#endif 
       iter->reset();
       return iter;
     }
