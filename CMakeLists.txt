@@ -39,12 +39,12 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG)
 include(${ROOT_USE_FILE})
 message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
-add_subdirectory ( GaudiPluginService)
 
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
 dd4hep_set_compiler_flags()
 
+add_subdirectory ( GaudiPluginService)
 #---DD4hep functions and macros -------------------------------------------------------
 include(DD4hep)
 include(DD4hepMacros) 
