@@ -38,13 +38,12 @@ namespace  {
 
 #if G4VERSION_NUMBER >= 1030
       iter = GetParticleIterator();
-#else
- #if G4VERSION_NUMBER >= 1000
+#elif G4VERSION_NUMBER >= 1000
       iter = aParticleIterator;
- #else  
+#else  
       iter = theParticleIterator;
- #endif
 #endif 
+
       iter->reset();
       return iter;
     }
