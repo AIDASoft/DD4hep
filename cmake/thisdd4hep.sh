@@ -45,9 +45,11 @@ dd4hep_add_library_path()    {
     if [ @USE_DYLD@ ];
     then
         if [ ${DYLD_LIBRARY_PATH} ]; then
-	    export DYLD_LIBRARY_PATH=${path_prefix}:$DYLD_LIBRARY_PATH;
+            export DYLD_LIBRARY_PATH=${path_prefix}:$DYLD_LIBRARY_PATH;
+            export DD4HEP_LIBRARY_PATH=${path_prefix}:$DD4HEP_LIBRARY_PATH;
         else
             export DYLD_LIBRARY_PATH=${path_prefix};
+            export DD4HEP_LIBRARY_PATH=${path_prefix};
         fi;
     else
         if [ ${LD_LIBRARY_PATH} ]; then
@@ -63,6 +65,10 @@ dd4hep_parse_this ${BASH_ARGV[0]} DD4hep;
 #
 # These 3 are the main configuration variables: ROOT, Geant4 and XercesC
 # --> LCIO & Co. are handled elsewhere!
+
+if [ -z $ROOTSYS ]; then
+    export ROOTSYS=`dirname @ROOT_DIR@`
+fi;
 export Geant4_DIR=@Geant4_DIR@;
 export XERCESCINSTALL=@XERCESC_ROOT_DIR@;
 #
