@@ -162,7 +162,9 @@ namespace Gaudi { namespace PluginService {
       const char sep = ';';
 #else
 #ifdef APPLE
-      const char* envVar = "DYLD_LIBRARY_PATH";
+      //fg: on macos >10.11 we cannot rely on DYLD_LIBRARY_PATH any more
+      //    and therefore use consistently DD4HEP_LIBRARY_PATH instead
+      const char* envVar = "DD4HEP_LIBRARY_PATH";
       const char sep = ':';
 #else
       const char* envVar = "LD_LIBRARY_PATH";
@@ -224,9 +226,18 @@ namespace Gaudi { namespace PluginService {
                     logger().warning(o.str());
                     continue;
                   }
+
                   const std::string lib(line, 0, other_pos);
                   const std::string fact(line, other_pos+1);
+
+#ifdef APPLE
+		  //fg: on macos >10.11 we cannot rely on DYLD_LIBRARY_PATH any more
+		  //    and therefore store the complete path to the lib for the dlopen call
+                  m_factories.insert(std::make_pair(fact, FactoryInfo(  std::string(dirName + "/" + lib ) )));
+#else
                   m_factories.insert(std::make_pair(fact, FactoryInfo(lib)));
+#endif
+
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
                   // add an alias for the factory using the Reflex convention
                   std::string old_name = old_style_name(fact);
