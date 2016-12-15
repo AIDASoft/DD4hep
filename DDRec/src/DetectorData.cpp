@@ -64,8 +64,6 @@ namespace DD4hep {
 	   << std::endl ;
       }
    
-      io <<  "  mapNeighbours.size() : " <<  d.mapNeighbours.size()  << std::endl ; 
-   
       return io ;
     }
 
@@ -112,8 +110,6 @@ namespace DD4hep {
       }
 
       io <<  " nP:petalNumber  n:sensorsPerPetal  d:DoubleSided  p: Pixel "  << std::endl ;
-
-      io <<  "  mapNeighbours.size() : " <<  d.mapNeighbours.size()  << std::endl ; 
 
       return io ;
     }
@@ -181,6 +177,14 @@ namespace DD4hep {
       return io ;
     }
 
+
+
+    std::ostream& operator<<( std::ostream& io , const NeighbourSurfacesData& d ){
+      io <<  " --NeighbourSurfacesData: "  << std::scientific << std::endl ; 
+      io <<  "   sameLayer.size() : " << d.sameLayer.size() << std::endl ; 
+      return io ;
+    }
+ 
 
   } // namespace
 }

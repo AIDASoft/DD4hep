@@ -156,8 +156,6 @@ namespace DD4hep {
       } ;
 
       std::vector<LayerLayout> layers ;
-      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > mapNeighbours;
-
 
     } ;
     typedef StructExtension<ZPlanarStruct> ZPlanarData ;
@@ -276,7 +274,6 @@ namespace DD4hep {
       } ;
 
       std::vector<LayerLayout> layers ;
-      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > mapNeighbours;
 
     } ;
     typedef StructExtension<ZDiskPetalsStruct> ZDiskPetalsData ;
@@ -448,6 +445,18 @@ namespace DD4hep {
     typedef StructExtension<LayeredCalorimeterStruct> LayeredCalorimeterData ;
 
     std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) ;
+
+
+    /** holds maps of nearest neighbour surfaces in the same and next (inner/outer ?) layer
+     *  of a tracking detector...
+     */
+    struct NeighbourSurfacesStruct {
+      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > sameLayer ; 
+      /* std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > nextLayer ; */
+    } ;
+    typedef StructExtension<NeighbourSurfacesStruct> NeighbourSurfacesData ;
+
+    std::ostream& operator<<( std::ostream& io , const NeighbourSurfacesData& d ) ;
 
 
   } /* namespace DDRec */
