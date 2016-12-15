@@ -447,12 +447,26 @@ namespace DD4hep {
     std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) ;
 
 
-    /** holds maps of nearest neighbour surfaces in the same and next (inner/outer ?) layer
-     *  of a tracking detector...
+
+
+    /** Simple data strucuture that holds maps of ids of the nearest neighbour surfaces in the same, next and previous layers
+     *  of a tracking detector. Could be used as extension object for tracking DetectorElements and used in 
+     *  pattern recognition. The exact details of the neighbouring criteria depend on the algorithm that is used.
+     *
+     * @author F.Gaede, DESY, R. Simoniello, CERN
+     * @date Dec, 15 2016
      */
     struct NeighbourSurfacesStruct {
+
+      /// map of all neighbours in the same layer
       std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > sameLayer ; 
-      /* std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > nextLayer ; */
+
+      /// map of all neighbours in the previous layer
+      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > prevLayer ;
+
+      /// map of all neighbours in the next layer
+      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > nextLayer ;
+
     } ;
     typedef StructExtension<NeighbourSurfacesStruct> NeighbourSurfacesData ;
 
