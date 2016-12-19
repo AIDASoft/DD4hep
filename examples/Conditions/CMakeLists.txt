@@ -77,3 +77,10 @@ dd4hep_add_test_reg( test_Conditions_CLICSiD_stress2_LONGTEST
   EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress2
     -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 20
   REGEX_PASS "Summary: # of IOV:  20")
+#
+#---Testing: Multi-threading test: Load CLICSiD geometry and have multiple parallel runs on IOVs
+dd4hep_add_test_reg( test_Conditions_CLICSiD_MT_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_MT
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -runs 2
+  REGEX_PASS "Total 280088 conditions \\(S:280088,L:     0,C:     0,M:0\\) of type run\\(0\\):\\[1-1\\]")
