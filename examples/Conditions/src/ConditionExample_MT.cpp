@@ -150,13 +150,15 @@ namespace {
  */
 static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   string input;
-  int    num_iov = 10, num_threads = 1;
+  int    num_iov = 10, num_threads = 1, num_run = 30;
   bool   arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-input",argv[i],4) )
       input = argv[++i];
     else if ( 0 == ::strncmp("-iovs",argv[i],4) )
       num_iov = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("-runs",argv[i],4) )
+      num_run = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-threads",argv[i],4) )
       num_threads = ::atol(argv[++i]);
     else
@@ -197,6 +199,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   ConditionsDependencyCreator(*slice,DEBUG).process(lcdd.world(),0,true);
 
   Statistics stats;
+  EventQueue events;
   /******************** Populate the conditions store *********************/
   // Have e.g. 10 run-slices [1,10], [11,20] .... [91,100]
   for(int i=0; i<num_iov; ++i)  {
@@ -211,15 +214,13 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     printout(INFO,"Example", "Setup %ld conditions for IOV:%s [%8.3f sec]",
              creator.conditionCount, iov.str().c_str(),
              stop.AsDouble()-start.AsDouble());
+    // Fill the event queue with 10 evt per run
+    for(int j=0; j<6; ++j)   {
+      events.push(make_pair((i*10)+j,num_run));
+    }
   }
 
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
-  EventQueue events;
-  for(int i=0; i<num_iov; ++i)   {
-    for(int j=0; j<2; ++j)   {
-      events.push(make_pair((i*10)+j,30));
-    }
-  }
   vector<thread*> threads;
   for(int i=0; i<num_threads; ++i)  {
     Executor* exec = new Executor(condMgr, iov_typ, i, events, stats);
