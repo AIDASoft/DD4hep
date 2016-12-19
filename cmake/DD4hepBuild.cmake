@@ -10,13 +10,13 @@
 #
 #=================================================================================
 
-###set(DD4HEP_DEBUG_CMAKE 1)
+##set(DD4HEP_DEBUG_CMAKE 1)
 message ( STATUS "INCLUDING DD4hepBuild.... c++11:${DD4HEP_USE_CXX11} c++14:${DD4HEP_USE_CXX14}" )
 
 include ( CMakeParseArguments )
 set ( DD4hepBuild_included ON )
-####set ( DD4HEP_DEBUG_CMAKE ON )
-####set ( CMAKE_CTEST_COMMAND ${CMAKE_CTEST_COMMAND} --test-output-size-passed 4096 )
+##set ( DD4HEP_DEBUG_CMAKE ON )
+##set ( CMAKE_CTEST_COMMAND ${CMAKE_CTEST_COMMAND} --test-output-size-passed 4096 )
 
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_to_parent_scope val)
