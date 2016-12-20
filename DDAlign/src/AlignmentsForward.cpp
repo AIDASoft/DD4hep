@@ -59,7 +59,7 @@ int AlignmentsForward::processElement(DetElement de)  {
         }
         //
         // Now add the dependency to the alignmant manager
-        Conditions::DependencyBuilder b(k, updateCall->addRef(), de);
+        Conditions::DependencyBuilder b(k, updateCall, de);
         bool result = alignmentMgr.adoptDependency(b.release());
         if ( result )   {
           printout(printLevel,"AlignForward",

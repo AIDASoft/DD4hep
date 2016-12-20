@@ -128,15 +128,24 @@ namespace DD4hep {
       /// Reference count
       int  m_refCount;
       /// Standard destructor
-      ConditionUpdateCall() : m_refCount(1)  {                      }
+      ConditionUpdateCall();
+      /// No copy constructor
+      ConditionUpdateCall(const ConditionUpdateCall& copy) = delete;
       /// Standard destructor
       virtual ~ConditionUpdateCall();
-
+      /// No assignment operator
+      ConditionUpdateCall& operator=(const ConditionUpdateCall& copy) = delete;
     public:
       /// Add use count to the object
-      ConditionUpdateCall* addRef()   {  ++m_refCount;  return this;  }
+      ConditionUpdateCall* addRef()   {
+        ++m_refCount;
+        return this;
+      }
       /// Release object. May not be used any longer
-      void release()  {  if ( --m_refCount <= 0 ) delete this;        }
+      void release()  {
+        if ( --m_refCount <= 0 )
+          delete this;
+      }
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& target, const Context& ctxt) = 0;
     };

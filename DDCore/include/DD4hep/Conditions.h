@@ -338,11 +338,13 @@ namespace DD4hep {
       ConditionsSelectWrapper() = delete;
       /// Default assignment operator
       bool operator==(const ConditionsSelectWrapper& compare) = delete;
+
     public:
       /// Information collector type
       typedef OBJECT object_t;
       /// Reference to the infomation collector
       object_t& object;
+
     public:
       /// Default constructor
       ConditionsSelectWrapper(object_t& o) : ConditionsSelect(), object(o) {}

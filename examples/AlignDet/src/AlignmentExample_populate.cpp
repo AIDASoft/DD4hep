@@ -92,7 +92,6 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
   /******************** Now as usual: create the slice ********************/
   dd4hep_ptr<ConditionsSlice> slice(Conditions::createSlice(condMgr,*iov_typ));
-  dd4hep_ptr<UserPool>& pool = slice->pool();
   
   /******************** Register alignments *******************************/
   // Note: We have to load one set of conditions in order to auto-populate
@@ -116,7 +115,7 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
              res.computed, res.missing, iov_typ->str().c_str());
   }
   // What else ? let's access/print the current selection
-  Alignments::AlignedVolumePrinter printer(pool.get(),"Example");
+  Alignments::AlignedVolumePrinter printer(slice->pool.get(),"Example");
   Scanner().scan(printer,lcdd.world());
   
   // All done.

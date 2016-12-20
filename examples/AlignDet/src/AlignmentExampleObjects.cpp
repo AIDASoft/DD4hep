@@ -19,6 +19,7 @@
 #include "DDAlign/DDAlignForwardCall.h"
 #include "DDAlign/AlignmentsRegister.h"
 #include "DDAlign/AlignmentsForward.h"
+#include "DDCond/ConditionsSlice.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -37,13 +38,12 @@ void DD4hep::AlignmentExamples::registerAlignmentCallbacks(LCDD& lcdd,
                                                            ConditionsSlice& slice,
                                                            AlignmentsManager alignMgr)
 {
-  dd4hep_ptr<UserPool>& pool = slice.pool();
   // Let's register the callbacks to compute dependent conditions/alignments
   // 1) Create dependencies for all deltas found in the conditions
-  Alignments::AlignmentsRegister reg(alignMgr,new Alignments::DDAlignUpdateCall(),pool.get());
+  Alignments::AlignmentsRegister reg(alignMgr,new Alignments::DDAlignUpdateCall(),slice.pool.get());
   Scanner().scan(reg,lcdd.world());
   // 2) Create child dependencies if higher level alignments exist
-  Alignments::AlignmentsForward  fwd(alignMgr,new Alignments::DDAlignForwardCall(),pool.get());
+  Alignments::AlignmentsForward  fwd(alignMgr,new Alignments::DDAlignForwardCall(),slice.pool.get());
   Scanner().scan(fwd,lcdd.world());
 }
 
@@ -53,13 +53,13 @@ int AlignmentDataAccess::processElement(DetElement de)  {
   Alignments::Container    container = a.alignments();
   // Let's go for the deltas....
   for(const auto& k : container.keys() )  {
-    Alignment align    = container.get(k.first,*pool);
+    Alignment align    = container.get(k.first,pool);
     const Delta& delta = align.data().delta;
     if ( delta.hasTranslation() || delta.hasPivot() || delta.hasRotation() )  {}
   }
   // Keep it simple. To know how to access stuff,
   // simply look in DDDCore/src/AlignmentsPrinter.cpp...
-  Alignments::printElementPlacement(printLevel,"Example",de,pool);
+  Alignments::printElementPlacement(printLevel,"Example",de,&pool);
   return 1;
 }
 

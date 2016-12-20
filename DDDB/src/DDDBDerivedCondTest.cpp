@@ -351,8 +351,8 @@ namespace  {
       m_manager.prepare(iov, *slice);
       printout(m_level,"Conditions",
                "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",
-               long(slice->pool()->size()), iov.str().c_str());
-      slice->pool()->clear();
+               long(slice->pool->size()), iov.str().c_str());
+      slice->pool->clear();
       return 1;
     }
   };

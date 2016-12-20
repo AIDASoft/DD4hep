@@ -64,6 +64,7 @@ using Geometry::DetElement;
 
 
 namespace DD4hep {
+
   struct ConversionArg {
     DetElement         detector;
     ConditionsStack*   stack;

@@ -120,17 +120,19 @@ namespace DD4hep {
       ConditionsManager manager;
       /// Reference to the conditiosn user pool
       ConditionsPool*   pool;
+      ConditionsSlice*  slice;
       /// Counter
       unsigned int      conditionCount;
       /// Print level
       PrintLevel        printLevel;
       /// Constructor
       ConditionsCreator(ConditionsManager& m,ConditionsPool* p,PrintLevel l)
-        : manager(m), pool(p), conditionCount(0), printLevel(l)  {  }
+        : manager(m), pool(p), slice(0), conditionCount(0), printLevel(l)  {  }
       /// Destructor
       virtual ~ConditionsCreator();
       /// Callback to process a single detector element
       virtual int operator()(DetElement de, int level);
+      template<typename T> Condition make_condition(DetElement de, const std::string& name, T val);
     };
 
     /// Example how to populate the detector description with derived conditions
@@ -150,6 +152,8 @@ namespace DD4hep {
       ConditionUpdateCall *call1, *call2, *call3;
       /// Constructor
       ConditionsDependencyCreator(ConditionsSlice& s,PrintLevel p);
+      /// Destructor
+      virtual ~ConditionsDependencyCreator();
       /// Callback to process a single detector element
       virtual int operator()(DetElement de, int level);
     };
@@ -176,12 +180,13 @@ namespace DD4hep {
      *  \date    01/04/2016
      */
     struct ConditionsDataAccess : public Conditions::ConditionsProcessor  {
-      UserPool*         pool;
+      /// IOV to be checked
+      const IOV& iov;
       /// Print level
-      PrintLevel        printLevel;
+      PrintLevel printLevel;
       /// Constructor
-      ConditionsDataAccess(UserPool* p) :
-        ConditionsProcessor(0), pool(p), printLevel(DEBUG) {  }
+      ConditionsDataAccess(const IOV& i, UserPool* p) :
+        ConditionsProcessor(p), iov(i), printLevel(DEBUG) {  }
       /// Callback to process a single detector element
       int processElement(DetElement de);
     };

@@ -41,6 +41,7 @@ using Conditions::Condition;
 using Conditions::RangeConditions;
 using Conditions::ConditionsSlice;
 using Conditions::ConditionsListener;
+using Conditions::ConditionsDescriptor;
 using Conditions::ConditionsManagerObject;
 
 using DDDB::DDDBConditionsLoader;
@@ -248,6 +249,7 @@ size_t DDDBConditionsLoader::load_range(key_type key,
   return 0;
 }
 
+/// Access single conditions from the persistent medium
 size_t DDDBConditionsLoader::load_single(key_type key,
                                          const iov_type& req_iov,
                                          RangeConditions& conditions)  {
@@ -269,7 +271,6 @@ size_t DDDBConditionsLoader::load_single(key_type key,
   return 0;
 }
 
-
 /// Optimized update using conditions slice data
 size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
                                        RequiredItems&  work,
@@ -290,7 +291,7 @@ size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
   // Since one file contains many conditions, we have
   // to create a unique set
   for(const auto& i : work )  {
-    ConditionsSlice::Entry* e = i.second;
+    ConditionsDescriptor* e = i.second;
     if ( e->dependency )  {
       printout(INFO,"DDDBLoader","++ CANNOT update derived: %-40s [%16llX]",
                e->dependency->target.name.c_str(), e->dependency->target.hash);

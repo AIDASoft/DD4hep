@@ -99,7 +99,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     // Attach the proper set of conditions to the user pool
     ConditionsManager::Result r = condMgr.prepare(req_iov,*slice);
     if ( 0 == i )  { // First one we print...
-      ConditionsPrinter printer(slice->pool().get(),"Example");
+      ConditionsPrinter printer(slice->pool.get(),"Example");
       Scanner().scan(printer,lcdd.world());
     }
     // Now compute the tranformation matrices

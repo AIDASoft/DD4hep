@@ -63,44 +63,44 @@ namespace DD4hep {
       virtual ~ConditionsLinearPool();
 
       /// Total entry count
-      virtual size_t size()  const   {
+      virtual size_t size()  const   final  {
         return m_entries.size();
       }
 
       /// Full cleanup of all managed conditions.
-      virtual void clear()   {
+      virtual void clear()  final   {
         for_each(m_entries.begin(), m_entries.end(), Operators::poolRemove(*this));
         m_entries.clear();
       }
 
       /// Check if a condition exists in the pool
-      virtual Condition exists(Condition::key_type key)  const   {
+      virtual Condition exists(Condition::key_type key)  const  final   {
         auto i = find_if(m_entries.begin(), m_entries.end(), Operators::keyFind(key));
         return i==m_entries.end() ? Condition() : (*i);
       }
 
       /// Register a new condition to this pool
-      virtual bool insert(Condition condition)
+      virtual bool insert(Condition condition)  final 
       {  m_entries.insert(m_entries.end(),condition.access()); return true;     }
 
       /// Register a new condition to this pool. May overload for performance reasons.
-      virtual void insert(RangeConditions& rc)
+      virtual void insert(RangeConditions& rc)  final 
       {  for_each(rc.begin(), rc.end(), Operators::sequenceSelect(m_entries));  }
 
       /// Select the conditions matching the DetElement and the conditions name
-      virtual size_t select(Condition::key_type key, RangeConditions& result)
+      virtual size_t select(Condition::key_type key, RangeConditions& result)  final 
       {  return loop(result, Operators::keyedSelect(key, result));              }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual size_t select_all(const ConditionsSelect& result)
+      virtual size_t select_all(const ConditionsSelect& result)  final 
       {  return loop(result, Operators::operatorWrapper(result));               }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual size_t select_all(RangeConditions& result)
+      virtual size_t select_all(RangeConditions& result)  final 
       {  return loop(result, Operators::sequenceSelect(result));                }
 
       /// Select the conditons, used also by the DetElement of the condition
-      virtual size_t select_all(ConditionsPool& result)
+      virtual size_t select_all(ConditionsPool& result)  final 
       {  return loop(result, Operators::poolSelect(result));                    }
     };
 
@@ -126,7 +126,7 @@ namespace DD4hep {
       virtual ~ConditionsLinearUpdatePool()  {}
 
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
-      virtual size_t popEntries(UpdatePool::UpdateEntries& entries)   {
+      virtual size_t popEntries(UpdatePool::UpdateEntries& entries)   final  {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
         size_t len = entries.size();
         if ( !m.empty() )  {
@@ -142,7 +142,7 @@ namespace DD4hep {
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select_range(Condition::key_type key,
                                 const Condition::iov_type& req, 
-                                RangeConditions& result)
+                                RangeConditions& result)  final 
       {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
         if ( !m.empty() )   {

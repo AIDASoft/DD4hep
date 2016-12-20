@@ -125,6 +125,8 @@ namespace DD4hep {
 #include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsDependencyHandler.h"
 
+#include <mutex>
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
@@ -309,19 +311,14 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
   return num_updates;
 }
 
-typedef ConditionsSlice::Entry SliceEntry;
 namespace {
   struct COMP {
-    typedef pair<Condition::key_type,SliceEntry*> Slice;
+    typedef pair<Condition::key_type,ConditionsDescriptor*> Slice;
     typedef pair<Condition::key_type,Condition>   Cond;
-    bool operator()(const Slice& a,const Cond& b) const
-    { return a.first < b.first; }
-    bool operator()(const Cond& a,const Slice& b) const
-    { return a.first < b.first; }
+    bool operator()(const Slice& a,const Cond& b) const { return a.first < b.first; }
+    bool operator()(const Cond& a,const Slice& b) const { return a.first < b.first; }
   };
-  //bool _compare(const pair<const Condition::key_type,void*>& a,const pair<const Condition::key_type,void*>& b)
-  //{ return a.first < b.first; }
-  pair<Condition::key_type,ConditionDependency*> _to_dep(pair<Condition::key_type,SliceEntry*>& e)
+  pair<Condition::key_type,ConditionDependency*> _to_dep(pair<Condition::key_type,ConditionsDescriptor*>& e)
   { return make_pair(e.second->key.hash,e.second->dependency); }
 }
 
@@ -330,13 +327,17 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
                                                  ConditionsSlice&        slice,
                                                  void*                   user_param)
 {
-  //typedef std::set<pair<Condition::key_type,SliceEntry*> > _Missing;
-  typedef std::vector<pair<Condition::key_type,SliceEntry*> > _Missing;
-  //typedef ConditionsDataLoader::RequiredItems _Missing;
+  typedef std::vector<pair<Condition::key_type,ConditionsDescriptor*> > _Missing;
   const auto& slice_cond = slice.conditions();
   const auto& slice_calc = slice.derived();
   IOV pool_iov(required.iovType);
   Result result;
+
+  // This is a critical operation, because we have to ensure the
+  // IOV pools are ONLY manipulated by the current thread.
+  // Otherwise the selection and the population are unsafe!
+  static mutex lock;
+  lock_guard<mutex> guard(lock);
 
   m_conditions.clear();
   pool_iov.reset().invert();

@@ -347,12 +347,12 @@ const AlignmentsManager::Dependencies& AlignmentsManager::knownDependencies()  c
 /// Compute all alignment conditions of the internal dependency list
 AlignmentsManager::Result AlignmentsManager::compute(Slice& slice) const   {
   Object* o = access();
-  return o->compute(*slice.pool(), *(o->dependencies));
+  return o->compute(*slice.pool, *(o->dependencies));
 }
 
 /// Compute all alignment conditions of the specified dependency list
 AlignmentsManager::Result AlignmentsManager::compute(Slice& slice, const Dependencies& deps) const  {
-  return access()->compute(*slice.pool(), deps);
+  return access()->compute(*slice.pool, deps);
 }
 
 /// Compute all alignment conditions of the internal dependency list

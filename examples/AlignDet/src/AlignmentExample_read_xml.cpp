@@ -85,10 +85,10 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   AlignmentsManager::Result ares = alignMgr.compute(*slice);
 
   // What else ? let's access the data
-  Scanner().scan2(AlignmentDataAccess(slice->pool().get()),lcdd.world());
+  Scanner().scan2(AlignmentDataAccess(*slice->pool),lcdd.world());
 
   // What else ? let's print the current selection
-  Alignments::AlignedVolumePrinter printer(slice->pool().get(),"Example");
+  Alignments::AlignedVolumePrinter printer(slice->pool.get(),"Example");
   Scanner().scan(printer,lcdd.world());
 
   printout(INFO,"Example",

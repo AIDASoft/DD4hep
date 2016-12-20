@@ -32,8 +32,9 @@ namespace DD4hep {
 
     // Forward declarations
     class Entry;
-    class ConditionsSlice;
     typedef std::list<Entry*> ConditionsStack;
+    class ConditionsSlice;
+    class ConditionsDescriptor;
 
     /// Interface for a generic conditions loader
     /** 
@@ -50,8 +51,8 @@ namespace DD4hep {
       typedef Condition::iov_type         iov_type;
       typedef Condition::key_type         key_type;
 
-      typedef std::map<key_type,Condition>                              LoadedItems;
-      typedef std::vector<std::pair<key_type,ConditionsSlice::Entry*> > RequiredItems;
+      typedef std::map<key_type,Condition>                            LoadedItems;
+      typedef std::vector<std::pair<key_type,ConditionsDescriptor*> > RequiredItems;
 
     protected:
       /// Reference to main detector description object

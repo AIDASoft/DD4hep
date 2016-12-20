@@ -286,18 +286,18 @@ template <> void Converter<Header>::operator()(xml_h e) const {
  */
 template <> void Converter<Material>::operator()(xml_h e) const {
   xml_ref_t m(e);
-  TGeoManager& mgr = lcdd.manager();
-  xml_tag_t mname = m.name();
-  const char* matname = mname.c_str();
+  TGeoManager&      mgr = lcdd.manager();
+  xml_tag_t         mname = m.name();
+  const char*       matname = mname.c_str();
   TGeoElementTable* table = mgr.GetElementTable();
-  TGeoMaterial* mat = mgr.GetMaterial(matname);
-  TGeoMixture* mix = dynamic_cast<TGeoMixture*>(mat);
-  xml_coll_t fractions(m, _U(fraction));
-  xml_coll_t composites(m, _U(composite));
+  TGeoMaterial*     mat = mgr.GetMaterial(matname);
+  TGeoMixture*      mix = dynamic_cast<TGeoMixture*>(mat);
+  xml_coll_t        fractions(m, _U(fraction));
+  xml_coll_t        composites(m, _U(composite));
 
   if (0 == mat) {
     TGeoMaterial* comp_mat;
-    TGeoElement* comp_elt;
+    TGeoElement*  comp_elt;
     xml_h  radlen      = m.child(_U(RL), false);
     xml_h  intlen      = m.child(_U(NIL), false);
     xml_h  density     = m.child(_U(D), false);
@@ -311,6 +311,14 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     }
     if ( density.ptr() && density.hasAttr(_U(unit)) )   {
       dens_unit = density.attr<double>(_U(unit))/XML::_toDouble(_Unicode(gram/cm3));
+    }
+    if ( radlen.ptr() && radlen.hasAttr(_U(unit)) )   {
+      double radlen_unit = radlen.attr<double>(_U(unit))/XML::_toDouble(_Unicode(cm));
+      radlen_val *= radlen_unit;
+    }
+    if ( intlen.ptr() && intlen.hasAttr(_U(unit)) )   {
+      double intlen_unit = intlen.attr<double>(_U(unit))/XML::_toDouble(_Unicode(cm));
+      intlen_val *= intlen_unit;
     }
     if ( dens_unit != 1.0 )  {
       cout << matname << " Density unit:" << dens_unit;
@@ -329,7 +337,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     cout << "degree " << XML::_toDouble(_Unicode(degree)) << endl;
 #endif
     //throw 1;
-    printout(DEBUG, "Compact", "++ Converting material %s", matname);
+    printout(DEBUG, "Compact", "++ Converting material %-22s IntLen:%8.3g cm RadLen:%8.3g cm Densitiy:%8.3g g/cm3",
+             matname, intlen_val, radlen_val, dens_val);
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
     mat->SetRadLen(radlen_val, intlen_val);
     size_t ifrac = 0;
@@ -421,8 +430,14 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
   TGeoElement* element = tab->FindElement(eltname.c_str());
   if (!element) {
     xml_ref_t atom(elem.child(_U(atom)));
-    tab->AddElement(elem.attr<string>(_U(name)).c_str(), elem.attr<string>(_U(formula)).c_str(), elem.attr<int>(_U(Z)),
-                    atom.attr<int>(_U(value)));
+    string formula = elem.attr<string>(_U(formula));
+    double value   = atom.attr<double>(_U(value));
+    string unit    = atom.attr<string>(_U(unit));
+    int    z = elem.attr<int>(_U(Z));
+    double a = value*_multiply<double>(unit,"mol/g");
+    printout(DEBUG, "Compact", "++ Converting element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol]",
+             eltname.c_str(), formula.c_str(), z, a);
+    tab->AddElement(eltname.c_str(), formula.c_str(), z, a);
     element = tab->FindElement(eltname.c_str());
     if (!element) {
       throw_print("Failed to properly insert the Element:" + eltname + " into the element table!");

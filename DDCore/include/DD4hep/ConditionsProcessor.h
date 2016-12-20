@@ -65,11 +65,11 @@ namespace DD4hep {
       /// Set pool
       void setPool(pool_type* value)  { m_pool = value; }
       /// Callback to output conditions information
-      virtual int operator()(Condition cond);
+      virtual int operator()(Condition cond)  override;
       /// Container callback for object processing
-      virtual int operator()(Container container);
+      virtual int operator()(Container container)  override;
       /// Callback to output conditions information of an entire DetElement
-      virtual int processElement(DetElement de);
+      virtual int processElement(DetElement de)  override;
     };
 
     /// Generic Condition object collector
@@ -88,15 +88,15 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionsCollector() = default;
       /// Callback to output conditions information
-      virtual int operator()(Condition cond)    {
+      virtual int operator()(Condition cond)   final  {
         conditions.push_back(cond);
         return 1;
       }
       /// Container callback for object processing
-      virtual int operator()(Container container)
+      virtual int operator()(Container container)  final
       {  return this->self_type::operator()(container);   }
       /// Callback to output conditions information of an entire DetElement
-      virtual int processElement(DetElement detector)
+      virtual int processElement(DetElement detector)  final
       {  return this->self_type::processElement(detector);    }
     };
   }    /* End namespace Conditions  */

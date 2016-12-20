@@ -61,12 +61,9 @@ namespace DD4hep {
       /// Set prefix for printouts
       void setPrefix(const std::string& value)  {  prefix = value; }
       /// Callback to output conditions information
-      virtual int operator()(Condition cond);
+      virtual int operator()(Condition cond)  override;
       /// Container callback for object processing
-      virtual int operator()(Container container);
-      /// Callback to output conditions information of an entire DetElement
-      virtual int processElement(DetElement de)
-      {  return this->ConditionsProcessor::processElement(de);     }
+      virtual int operator()(Container container)  override;
     };
 
   }    /* End namespace Conditions           */

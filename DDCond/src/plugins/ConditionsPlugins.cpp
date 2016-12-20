@@ -257,11 +257,11 @@ static int ddcond_detelement_dump(LCDD& lcdd, int argc, char** argv)   {
     }
   } actor;
   dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"run",1500,argc,argv));
-  UserPool* pool = slice->pool().get();
+  UserPool* pool = slice->pool.get();
   pool->print("User pool");
   actor.printer.setPool(pool);
   int ret = actor.process(lcdd.world(),0,true);
-  slice->manager.clean(slice->iov().iovType, 20);
+  slice->manager.clean(pool->validity().iovType, 20);
   return ret;
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
@@ -277,7 +277,7 @@ DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
  */
 static void* ddcond_prepare_plugin(LCDD& lcdd, int argc, char** argv)   {
   dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"",-1,argc,argv));
-  UserPool* p = slice->pool().get();
+  UserPool* p = slice->pool.get();
   return p && p->size() > 0 ? slice.release() : 0;
 }
 DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare_plugin)
@@ -318,7 +318,7 @@ static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     processor = createProcessor<ConditionsProcessor>(lcdd, 2, (char**)args);
   }
   dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"run",1500,argc,argv));
-  UserPool* pool = slice->pool().get();
+  UserPool* pool = slice->pool.get();
   Actor actor(processor);
   pool->print("User pool");
   processor->setPool(pool);
@@ -342,7 +342,7 @@ static long ddcond_synchronize_conditions(lcdd_t& lcdd, int argc, char** argv) {
     string iov_typ = argv[0];
     IOV::Key::first_type iov_key = *(IOV::Key::first_type*)argv[1];
     dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,iov_typ,iov_key,argc,argv));
-    UserPool* pool = slice->pool().get();
+    UserPool* pool = slice->pool.get();
     pool->print("User pool");
     slice->manager.clean(pool->validity().iovType, 20);
     pool->clear();

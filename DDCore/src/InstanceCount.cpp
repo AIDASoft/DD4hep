@@ -134,40 +134,40 @@ void InstanceCount::decrement(const std::type_info& typ) {
 void InstanceCount::dump(int typ) {
   bool need_footer = false;
   if ((typ & STRING) && s_strCounts.get()) {
-    if (s_strCounts->begin() != s_strCounts->end()) {
-      StringCounter::const_iterator i;
-      std::cout << "+-----------------------------------------------------------------------+" << std::endl;
-      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    N A M E                  |" << std::endl;
-      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
-      std::cout << "|   Total  |  Max | Leaking |      Type identifier                      |" << std::endl;
-      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
-      for (i = s_strCounts->begin(); i != s_strCounts->end(); ++i) {
-        std::cout << "|" << std::setw(10) << (*i).second->total()
-                  << "|" << std::setw(6) << (*i).second->maximum()
-                  << "|" << std::setw(9) << (*i).second->value()
-                  << "|" << (*i).first << std::endl;
+    if ( !s_strCounts->empty() )  {
+      cout << "+--------------------------------------------------------------------------+" << endl;
+      cout << "|   I n s t a n c e   c o u n t e r s   b y    N A M E                     |" << endl;
+      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << endl;
+      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      for ( const auto& i : *s_strCounts ) {
+        cout << "|" << setw(10) << i.second->total()
+             << "|" << setw(9) << i.second->maximum()
+             << "|" << setw(9) << i.second->value()
+             << "|" << i.first->substr(0,80) << endl;
       }
       need_footer = true;
     }
   }
   if ((typ & TYPEINFO) && s_typCounts.get()) {
-    if (s_typCounts->begin() != s_typCounts->end()) {
-      TypeCounter::const_iterator i;
-      std::cout << "+-----------------------------------------------------------------------+" << std::endl;
-      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O          |" << std::endl;
-      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
-      std::cout << "|   Total  |  Max | Leaking |      Type identifier                      |" << std::endl;
-      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
-      for (i = s_typCounts->begin(); i != s_typCounts->end(); ++i) {
-        std::cout << "|" << std::setw(10) << (*i).second->total()
-                  << "|" << std::setw(6) << (*i).second->maximum()
-                  << "|" << std::setw(9) << (*i).second->value()
-                  << "|" << typeName(*((*i).first)) << std::endl;
+    if ( !s_typCounts->empty() ) {
+      cout << "+--------------------------------------------------------------------------+" << endl;
+      cout << "|   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O             |" << endl;
+      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << endl;
+      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      for ( const auto& i : *s_typCounts ) {
+        string nam = typeName(*(i.first));
+        if ( nam.length() > 80 ) nam = nam.substr(0,80)+" ...";
+        cout << "|" << setw(10) << i.second->total()
+             << "|" << setw(9) << i.second->maximum()
+             << "|" << setw(9) << i.second->value()
+             << "|" << nam << endl;
       }
       need_footer = true;
     }
   }
   if (need_footer) {
-    std::cout << "+----------+-------+-------------------------------------------+" << std::endl;
+    cout << "+----------+-------+-------------------------------------------+" << endl;
   }
 }

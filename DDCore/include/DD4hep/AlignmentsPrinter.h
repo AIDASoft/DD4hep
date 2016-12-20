@@ -58,11 +58,11 @@ namespace DD4hep {
       /// Set prefix for printouts
       void setPrefix(const std::string& value)  {  prefix = value; }
       /// Callback to output alignments information
-      virtual int operator()(Alignment cond);
+      virtual int operator()(Alignment cond)  override;
       /// Container callback for object processing
-      virtual int operator()(Container container);
+      virtual int operator()(Container container)  override;
       /// Callback to output alignments information of an entire DetElement
-      virtual int processElement(DetElement de);
+      virtual int processElement(DetElement de)  override;
     };
 
     /// Default printout of an alignment entry

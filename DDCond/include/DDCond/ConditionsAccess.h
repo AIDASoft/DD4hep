@@ -48,9 +48,7 @@ namespace DD4hep {
       ConditionsAccess(Object* p) : Handle<Object>(p) {}
 
       /// Constructor to assing handle of the same type
-      ConditionsAccess(const ConditionsAccess& c)
-        : Handle<Object>(c) {
-      }
+      ConditionsAccess(const ConditionsAccess& c) : Handle<Object>(c) {}
 
       /// Constructor to be used assigning from different type
       template <typename Q> ConditionsAccess(const Handle<Q>& e)
