@@ -80,7 +80,7 @@ macro(dd4hep_set_compiler_flags)
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
   endif()
 
-  if( "${CMAKE_CXX_COMPILER_ID}" EQUAL "Clang" )
+  if( ("${CMAKE_CXX_COMPILER_ID}" EQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" EQUAL "GNU") )
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
   endif()
 
