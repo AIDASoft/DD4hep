@@ -23,6 +23,8 @@ macro(dd4hep_to_parent_scope val)
   set ( ${val} ${${val}} PARENT_SCOPE )
 endmacro(dd4hep_to_parent_scope)
 
+find_package(Threads REQUIRED)
+
 #---------------------------------------------------------------------------------------------------
 #  MACRO: dd4hep_set_compiler_flags
 #
@@ -71,18 +73,20 @@ macro(dd4hep_set_compiler_flags)
     add_definitions(-DDD4HEP_USE_STDCXX=11)
   endif()
 
-  IF( "${CMAKE_CXX_COMPILER_ID}" EQUAL "Clang" )
-    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
-  ENDIF()
-
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    set ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined -pthread")
+  if ( THREADS_HAVE_PTHREAD_ARG )
+    set ( CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS} -pthread")
+    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pthread")
+  elif ( CMAKE_THREAD_LIBS_INIT )
+    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
   endif()
 
-  IF("${CMAKE_CXX_COMPILER_ID}" EQUAL "AppleClang")
+  if( "${CMAKE_CXX_COMPILER_ID}" EQUAL "Clang" )
+    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+  endif()
+
+  if("${CMAKE_CXX_COMPILER_ID}" EQUAL "AppleClang")
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error")
-  ENDIF()
+  endif()
 
  #rpath treatment
  if (APPLE)
