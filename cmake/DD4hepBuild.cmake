@@ -71,24 +71,17 @@ macro(dd4hep_set_compiler_flags)
     add_definitions(-DDD4HEP_USE_STDCXX=11)
   endif()
 
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
-
-  CHECK_CXX_COMPILER_FLAG("-fdiagnostics-color=always" FLAG_COLOR)
-  if (FLAG_COLOR)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
-  endif()
-   
   IF( "${CMAKE_CXX_COMPILER_ID}" EQUAL "Clang" )
-    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
   ENDIF()
 
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined -pthread")
+    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    set ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined -pthread")
   endif()
 
   IF("${CMAKE_CXX_COMPILER_ID}" EQUAL "AppleClang")
-    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error")
+    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error")
   ENDIF()
 
  #rpath treatment
