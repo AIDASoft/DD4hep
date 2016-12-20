@@ -23,7 +23,13 @@ using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 /// Standard destructor
+ConditionUpdateCall::ConditionUpdateCall() : m_refCount(1)  {
+  InstanceCount::increment(this);
+}
+
+/// Standard destructor
 ConditionUpdateCall::~ConditionUpdateCall()  {
+  InstanceCount::decrement(this);
 }
 
 /// Standard destructor

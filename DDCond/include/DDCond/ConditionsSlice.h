@@ -34,7 +34,61 @@ namespace DD4hep {
     // Forward declarations
     class UserPool;
     class ConditionsSlice;
+    class ConditionsDescriptor;
 
+      /// Base class for data loading information.
+      /**
+       *   Must be specialized to fit the needs of the concrete ConditionsDataLoader object.
+       *
+       *   \author  M.Frank
+       *   \version 1.0
+       *   \date    31/03/2016
+       */
+      class ConditionsLoadInfo {
+      public:
+        /// Default destructor. 
+        virtual ~ConditionsLoadInfo();
+        virtual const std::type_info& type() const = 0;
+        virtual const void*           ptr()  const = 0;
+        template<typename T> T*       data() const {  return (T*)ptr(); }
+      };
+
+    /// Slice entry class. Describes all information to load a condition.
+    /**
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \date    31/03/2016
+     */
+    class ConditionsDescriptor  {
+      friend class ConditionsSlice;
+    private:
+      int                   refCount   = 0;
+    public:
+      ConditionKey          key;
+      ConditionDependency*  dependency = 0;
+      ConditionsLoadInfo*   loadinfo   = 0;
+
+      // These are mine. Do not even dare to call any of these two!
+      ConditionsDescriptor* addRef() { ++refCount;  return this;           }
+      void release()                 { if ( --refCount <= 0 ) delete this; }
+
+    private:
+      /// Default constructor
+      ConditionsDescriptor() = delete;
+      /// Default destructor. 
+      virtual ~ConditionsDescriptor();
+      /// Copy constructor (special!)
+      ConditionsDescriptor(const ConditionsDescriptor& copy) = delete;
+      /// Default assignment operator
+      ConditionsDescriptor& operator=(const ConditionsDescriptor& copy) = delete;
+
+    protected:
+      /// Initializing constructor
+      ConditionsDescriptor(const ConditionKey& k, ConditionsLoadInfo* l);
+      /// Initializing constructor
+      ConditionsDescriptor(ConditionDependency* d, ConditionsLoadInfo* l);
+    };
+    
     /// Conditions slice object. Defines which conditions should be loaded by the ConditionsManager.
     /**
      *  Object contains set of required conditions keys to be loaded to the user pool.
@@ -53,29 +107,15 @@ namespace DD4hep {
     class ConditionsSlice  {
     public:
 
-      /// Base class for data loading information.
-      /**
-       *   Must be specialized to fit the needs of the concrete ConditionsDataLoader object.
-       *
-       *   \author  M.Frank
-       *   \version 1.0
-       *   \date    31/03/2016
-       */
-      struct Info {
-        /// Default destructor. 
-        virtual ~Info();
-        virtual const std::type_info& type() const = 0;
-        virtual const void*           ptr()  const = 0;
-        template<typename T> T*       data() const {  return (T*)ptr(); }
-      };
-
+      typedef ConditionsDescriptor Descriptor;
+      
       /// Concrete class for data loading information.
       /**
        *   \author  M.Frank
        *   \version 1.0
        *   \date    31/03/2016
        */
-      template <typename T> struct LoadInfo : public Info {
+      template <typename T> struct LoadInfo : public ConditionsLoadInfo {
         T info;
         LoadInfo()           = default;
         LoadInfo(const T& i) : info(i) {}
@@ -89,36 +129,15 @@ namespace DD4hep {
       };
       template <typename T> static LoadInfo<T> loadInfo(const T& t)
       { return LoadInfo<T>(t);                                         }
-      
-      /// Slice entry class. Describes all information to load a condition.
-      /**
-       *   \author  M.Frank
-       *   \version 1.0
-       *   \date    31/03/2016
-       */
-      struct Entry  {
-        friend class ConditionsSlice;
-      private:
-        /// Default assignment operator
-        Entry& operator=(const Entry& copy) = delete;
-        /// Copy constructor (special!)
-        Entry(const Entry& copy, Info* l);
-      protected:
-      public:
-        ConditionKey          key;
-        ConditionDependency*  dependency = 0;
-        Condition::mask_type  mask       = 0;
-        Info*                 loadinfo   = 0;
-        /// Default constructor
-        Entry() = default;
-        /// Initializing constructor
-        Entry(const ConditionKey& k, Info* l);
-        /// Default destructor. 
-        virtual ~Entry();
-        /// Clone the entry
-        virtual Entry* clone();
+      struct NoLoadInfo : public ConditionsLoadInfo {
+        NoLoadInfo()           = default;
+        NoLoadInfo(const NoLoadInfo& i) = default;
+        virtual ~NoLoadInfo()  = default;
+        NoLoadInfo& operator=(const NoLoadInfo& copy)  = default;
+        virtual const std::type_info& type() const { return typeid(void); }
+        virtual const void*           ptr() const  { return 0;            }
       };
-
+      
       /// Concrete slice entry class. Includes the load information
       /**
        *   T must be specialized and must 
@@ -127,67 +146,56 @@ namespace DD4hep {
        *   \version 1.0
        *   \date    31/03/2016
        */
-      template <typename T> class ConditionsLoaderEntry : public Entry, public T
+      template <typename T> class ConditionsLoaderDescriptor : public Descriptor, public T
       {
         friend class ConditionsSlice;
         /// No default constructor
-        ConditionsLoaderEntry() = delete;
+        ConditionsLoaderDescriptor() = delete;
         /// Default assignment operator
-        ConditionsLoaderEntry& operator=(const ConditionsLoaderEntry& copy) = delete;
+        ConditionsLoaderDescriptor& operator=(const ConditionsLoaderDescriptor& copy) = delete;
         /// Copy constructor
-        ConditionsLoaderEntry(const ConditionsLoaderEntry& copy)
-          : Entry(copy, this), T(copy) { }
+        ConditionsLoaderDescriptor(const ConditionsLoaderDescriptor& copy) = delete;
+
       private:
         /// Initializing constructor
-        ConditionsLoaderEntry(const ConditionKey& k, const T& d)
-          : Entry(k, this), T(d)       { }
-        virtual ~ConditionsLoaderEntry() = default;
-        virtual Entry* clone()   { return new ConditionsLoaderEntry(*this); }
+        ConditionsLoaderDescriptor(const ConditionKey& k, const T& d)
+          : Descriptor(k, this), T(d)       { }
+        virtual ~ConditionsLoaderDescriptor() = default;
         virtual const void* data() const {  return (T*)this;  }
       };
       
-      typedef Condition::key_type                key_type;
-      typedef ConditionDependency                Dependency;
-      typedef ConditionsDependencyCollection     Dependencies;
-      typedef std::map<key_type,Entry*>          ConditionsProxy;
-      
+      typedef Condition::key_type       key_type;
+      typedef ConditionDependency       Dependency;
+      typedef std::map<key_type,Descriptor*> ConditionsProxy;
+
     public:
       /// Reference to the conditions manager.
       /** Not used by the object, simple for convenience.
-       * Then all actora are lumped together.
+       *  Then all actors are lumped together, which are used by the client code.
        */
       ConditionsManager    manager;
+      /// Reference to the user pool managing all conditions of this slice
+      dd4hep_ptr<UserPool> pool;
 
     protected:
-      /// Reference to the user pool
-      dd4hep_ptr<UserPool> m_pool;
       ConditionsProxy      m_conditions;
       ConditionsProxy      m_derived;
-      Dependencies         m_dependencies;
-      IOV                  m_iov;
+
       /// Default assignment operator
       ConditionsSlice& operator=(const ConditionsSlice& copy) = delete;
 
       /// Add a new conditions entry
-      bool insert_condition(Entry* entry);
+      bool insert_condition(Descriptor* entry);
 
     public:
       /// Default constructor
-      ConditionsSlice() : manager(), m_iov(0) {}
+      ConditionsSlice() = delete;
       /// Initializing constructor
-      ConditionsSlice(ConditionsManager m, const IOV& value) : manager(m), m_iov(value) {}
+      ConditionsSlice(ConditionsManager m);
       /// Copy constructor (Special, partial copy only. Hence no assignment!)
       ConditionsSlice(const ConditionsSlice& copy);
       /// Default destructor. 
       virtual ~ConditionsSlice();
-      /// Required IOV
-      const IOV& iov() const                     { return m_iov;          }
-      /// Set a new IOV
-      void setNewIOV(const IOV& value)           { m_iov = value;         }
-      /// Access the user condition pool
-      dd4hep_ptr<UserPool>& pool()               { return m_pool;         }
-      /// Access dependency list
-      const Dependencies& dependencies() const   { return m_dependencies; }
       /// Access to the real condition entries to be loaded
       const ConditionsProxy& conditions() const  { return m_conditions;   }
       /// Access to the derived condition entries to be computed
@@ -199,12 +207,19 @@ namespace DD4hep {
       /// Clear the conditions access and the user pool.
       void reset();
       /// Add a new conditions dependency collection
-      void insert(const Dependencies& deps);
+      void insert(const ConditionsDependencyCollection& deps);
       /// Add a new shared conditions dependency
       bool insert(Dependency* dependency);
+      /// Create slice entry for external usage
+      template <typename T> static
+      Descriptor* createDescriptor(const ConditionKey& key, const T& loadinfo)   {
+        Descriptor* e = new ConditionsLoaderDescriptor<T>(key,loadinfo);
+        return e;
+      }
       /// Add a new conditions key. T must inherot from class ConditionsSlice::Info
-      template <typename T=Info> bool insert(const ConditionKey& key, const T& loadinfo)   {
-        Entry* e = new ConditionsLoaderEntry<T>(key,loadinfo);
+      template <typename T>
+      bool insert(const ConditionKey& key, const T& loadinfo)   {
+        Descriptor* e = new ConditionsLoaderDescriptor<T>(key,loadinfo);
         return insert_condition(e);
       }
     };

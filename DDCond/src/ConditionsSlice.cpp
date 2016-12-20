@@ -14,107 +14,100 @@
 // Framework include files
 #include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsIOVPool.h"
+#include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 
 using namespace DD4hep::Conditions;
 
 /// Default destructor. 
-ConditionsSlice::Info::~Info()  {
-}
-
-/// Copy constructor (special!)
-ConditionsSlice::Entry::Entry(const Entry& copy, Info* l)
-  : key(copy.key), loadinfo(l)
-{
-  if ( copy.dependency ) dependency = copy.dependency->addRef();
+ConditionsLoadInfo::~ConditionsLoadInfo()  {
 }
 
 /// Initializing constructor
-ConditionsSlice::Entry::Entry(const ConditionKey& k, Info* l)
+ConditionsDescriptor::ConditionsDescriptor(const ConditionKey& k, ConditionsLoadInfo* l)
   : key(k), loadinfo(l)
 {
+  InstanceCount::increment(this);  
 }
 
-/// Clone the entry
-ConditionsSlice::Entry* ConditionsSlice::Entry::clone()   {
-  Entry* e = new Entry(*this);
-  return e;
+/// Initializing constructor
+ConditionsDescriptor::ConditionsDescriptor(ConditionDependency* dep, ConditionsLoadInfo* l)
+  : key(dep->target), dependency(dep->addRef()), loadinfo(l)
+{
+  InstanceCount::increment(this);  
 }
 
 /// Default destructor. 
-ConditionsSlice::Entry::~Entry()  {
+ConditionsDescriptor::~ConditionsDescriptor()  {
   releasePtr(dependency);
+  InstanceCount::decrement(this);  
+}
+
+/// Initializing constructor
+ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
+{
+  InstanceCount::increment(this);  
 }
 
 /// Copy constructor (Special, partial copy only. Hence no assignment!)
 ConditionsSlice::ConditionsSlice(const ConditionsSlice& copy)
-  : manager(copy.manager), m_iov(copy.m_iov.iovType)
+  : manager(copy.manager)
 {
+  InstanceCount::increment(this);  
   for(const auto& c : copy.m_conditions )  {
-    Entry* e = new Entry(*c.second);
+    Descriptor* e = c.second->addRef();
     m_conditions.insert(std::make_pair(e->key.hash,e));
   }
   for(const auto& c : copy.m_derived )  {
-    Entry* e = new Entry(*c.second);
-    if ( m_derived.insert(std::make_pair(e->key.hash,e)).second )  {
-      if ( e->dependency ) m_dependencies.insert(e->dependency);
-    }
+    Descriptor* e = c.second->addRef();
+    m_derived.insert(std::make_pair(e->key.hash,e));
   }
 }
 
 /// Default destructor. 
 ConditionsSlice::~ConditionsSlice()   {
-  destroyObjects(m_conditions);
-  destroyObjects(m_derived);
-  m_dependencies.clear();
+  releaseObjects(m_conditions);
+  releaseObjects(m_derived);
+  InstanceCount::decrement(this);  
 }
 
 /// Clear the container. Destroys the contained stuff
 void ConditionsSlice::clear()   {
-  destroyObjects(m_conditions);
-  destroyObjects(m_derived);
-  m_dependencies.clear();
+  releaseObjects(m_conditions);
+  releaseObjects(m_derived);
 }
 
 /// Clear the conditions access and the user pool.
 void ConditionsSlice::reset()   {
-  //for(const auto& e : m_conditions ) e.second->condition = 0;
-  //for(const auto& e : m_derived ) e.second->condition = 0;
-  if ( pool().get() ) pool()->clear();
-  m_iov.reset();
+  if ( pool.get() ) pool->clear();
 }
 
 /// Add a new conditions dependency collection
-void ConditionsSlice::insert(const Dependencies& deps)   {
-  for ( const auto& d : deps ) insert(d.second.get());
+void ConditionsSlice::insert(const ConditionsDependencyCollection& deps)   {
+  for ( const auto& d : deps ) this->insert(d.second.get());
 }
 
 /// Add a new conditions dependency (shared)
 bool ConditionsSlice::insert(Dependency* dependency)   {
-  Entry* entry = new Entry();
-  entry->dependency = dependency->addRef();
-  entry->mask |= Condition::DERIVED;
-  entry->key = entry->dependency->target;
-  if ( m_derived.insert(std::make_pair(entry->key.hash,entry)).second )  {
-    if ( entry->dependency ) m_dependencies.insert(entry->dependency);
+  Descriptor* entry = new Descriptor(dependency,0);
+  if ( m_derived.insert(std::make_pair(entry->key.hash,entry->addRef())).second )  {
     return true;
   }
-  deletePtr(entry);
+  delete entry;
   return false;
 }
 
 /// Add a new entry
-bool ConditionsSlice::insert_condition(Entry* entry)   {
+bool ConditionsSlice::insert_condition(Descriptor* entry)   {
   if ( entry->dependency )   {
     // ERROR: This call should not be invoked for derivatives!
     DD4hep::except("ConditionsSlice",
                    "insert_condition: Bad invokation. No dependency allowed here!");
   }
-  
-  if ( m_conditions.insert(std::make_pair(entry->key.hash,entry)).second )  {
+  if ( m_conditions.insert(std::make_pair(entry->key.hash,entry->addRef())).second )  {
     return true;
   }
-  deletePtr(entry);
+  releasePtr(entry);
   return false;
 }
 
@@ -149,7 +142,7 @@ namespace  {
 /// Populate the conditions slice from the conditions manager (convenience)
 ConditionsSlice*
 DD4hep::Conditions::createSlice(ConditionsManager mgr, const IOVType& typ)  {
-  dd4hep_ptr<ConditionsSlice> slice(new ConditionsSlice(mgr, IOV(&typ)));
+  dd4hep_ptr<ConditionsSlice> slice(new ConditionsSlice(mgr));
   Conditions::ConditionsIOVPool* iovPool = mgr.iovPool(typ);
   Conditions::ConditionsIOVPool::Elements& pools = iovPool->elements;
   for_each(begin(pools),end(pools),SliceOper(slice.get()));

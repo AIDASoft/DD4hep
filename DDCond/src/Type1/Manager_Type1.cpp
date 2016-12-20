@@ -461,10 +461,9 @@ Manager_Type1::getRange(Condition::key_type key, const Condition::iov_type& iov)
 ConditionsManager::Result
 Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice)
 {
-  dd4hep_ptr<UserPool>& up = slice.pool();
-  __get_checked_pool(req_iov, up);
+  __get_checked_pool(req_iov, slice.pool);
   /// First push any pending updates and register them to pending pools...
   pushUpdates();
   /// Now update/fill the user pool
-  return up->prepare(req_iov, slice);
+  return slice.pool->prepare(req_iov, slice);
 }

@@ -41,7 +41,7 @@ int DetectorProcessor::process(DetElement de, int level, bool recursive)    {
 }
 
 /// Callback to output detector information of an single DetElement
-int DetectorCollector::operator()(DetElement de, int level)  {
+int DetectorCollector::operator()(DetElement de, int level)    {
   if ( de.isValid() )  {
     detectors.push_back(std::make_pair(level,de));
     return 1;

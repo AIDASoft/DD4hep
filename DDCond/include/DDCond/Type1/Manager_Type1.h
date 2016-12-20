@@ -117,45 +117,45 @@ namespace DD4hep {
       /** Returns (false,pointer) if IOV existed and
        *  (true,pointer) if new IOV was registered to the manager.
        */
-      virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
+      virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name) final;
       
       /// Access IOV by its type
-      virtual const IOVTypes& iovTypes () const { return  m_iovTypes;  }
+      virtual const IOVTypes& iovTypes () const final { return  m_iovTypes;  }
 
       /// Access IOV by its type
-      virtual const IOVType* iovType (size_t iov_type) const;
+      virtual const IOVType* iovType (size_t iov_type) const final;
 
       /// Access IOV by its name
-      virtual const IOVType* iovType (const std::string& iov_name) const;
+      virtual const IOVType* iovType (const std::string& iov_name) const final;
 
       /// Register IOV with type and key
-      virtual ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
+      virtual ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key)  final;
 
       /// Access conditions multi IOV pool by iov type
-      ConditionsIOVPool* iovPool(const IOVType& type)  const;
+      ConditionsIOVPool* iovPool(const IOVType& type)  const  final;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      virtual bool registerUnlocked(ConditionsPool* pool, Condition cond);
+      virtual bool registerUnlocked(ConditionsPool* pool, Condition cond)  final;
 
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */
-      int clean(const IOVType* typ, int max_age);
+      int clean(const IOVType* typ, int max_age)  final;
 
       /// Full cleanup of all managed conditions.
       /** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
-      std::pair<int,int> clear();
+      std::pair<int,int> clear()  final;
 
       /// Push all pending updates to the conditions store. 
       /** Note:
        *  This does not yet make the new conditions availible to the clients
        */
-      virtual void pushUpdates();
+      virtual void pushUpdates()  final;
  
       /// Retrieve a condition set given a Detector Element and the conditions name according to their validity  (deprecated)
-      virtual Condition get(key_type key, const iov_type& req_validity);
+      virtual Condition get(key_type key, const iov_type& req_validity)  final;
 
       /// Retrieve a condition given a Detector Element and the conditions name (deprecated)
-      virtual RangeConditions getRange(key_type key, const iov_type& req_validity);
+      virtual RangeConditions getRange(key_type key, const iov_type& req_validity)  final;
 
       /// Prepare all updates for the given keys to the clients with the defined IOV
       /**
@@ -164,7 +164,7 @@ namespace DD4hep {
        *
        *   @return   
        */
-      Result prepare(const IOV& req_iov, ConditionsSlice& slice);
+      Result prepare(const IOV& req_iov, ConditionsSlice& slice)  final;
 
     };
   }        /* End namespace Conditions               */

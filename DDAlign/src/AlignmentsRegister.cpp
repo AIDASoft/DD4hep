@@ -77,7 +77,7 @@ int AlignmentsRegister::processElement(DetElement de)  {
             }
             //
             // Now add the dependency to the alignmant manager
-            Conditions::DependencyBuilder b(k, updateCall->addRef(), de);
+            Conditions::DependencyBuilder b(k, updateCall, de);
             b.add(Conditions::ConditionKey(cond->name));
             bool result = alignmentMgr.adoptDependency(b.release());
             if ( result )   {

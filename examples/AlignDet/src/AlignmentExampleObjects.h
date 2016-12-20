@@ -93,11 +93,11 @@ namespace DD4hep {
      *  \date    01/04/2016
      */
     struct AlignmentDataAccess : public Alignments::AlignmentsProcessor  {
-      UserPool* pool;
+      UserPool& pool;
       /// Print level
       PrintLevel        printLevel;
       /// Constructor
-      AlignmentDataAccess(UserPool* p) : AlignmentsProcessor(0), pool(p),
+      AlignmentDataAccess(UserPool& p) : AlignmentsProcessor(0), pool(p),
                                          printLevel(DEBUG) {
       }
       /// Callback to process a single detector element

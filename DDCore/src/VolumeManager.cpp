@@ -158,9 +158,6 @@ namespace {
             sd = SensitiveDetector(0);
           }
         }
-        if ( e.path().find("/world/EcalBarrel") == 0 )  {
-          printout(DEBUG, "VolumeManager","");
-        }
         if ( sd.isValid() )   {
           if ( !have_encoding )   {
             printout(ERROR, "VolumeManager","%s: Missing SD encoding. Volume manager won't work!",

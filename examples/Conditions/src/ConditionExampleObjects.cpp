@@ -19,6 +19,9 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::ConditionExamples;
 using Conditions::DependencyBuilder;
+using Conditions::ConditionsLoadInfo;
+using Conditions::ConditionsSlice;
+
 
 /// Install the consitions and the alignment manager
 void DD4hep::ConditionExamples::installManagers(LCDD& lcdd)  {
@@ -71,13 +74,20 @@ Condition ConditionUpdate3::operator()(const ConditionKey& key, const Context& c
   return target;
 }
 
-
+/// Initializing constructor
 ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsSlice& s,PrintLevel p)
   : slice(s), printLevel(p)
 {
   call1 = new ConditionUpdate1(printLevel);
   call2 = new ConditionUpdate2(printLevel);
   call3 = new ConditionUpdate3(printLevel);
+}
+
+/// Destructor
+ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
+  releasePtr(call1);
+  releasePtr(call2);
+  releasePtr(call3);
 }
 
 /// Callback to process a single detector element
@@ -87,9 +97,9 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)    {
   ConditionKey      target1(key.name+"/derived_1");
   ConditionKey      target2(key.name+"/derived_2");
   ConditionKey      target3(key.name+"/derived_3");
-  DependencyBuilder build_1(target1, call1->addRef());
-  DependencyBuilder build_2(target2, call2->addRef());
-  DependencyBuilder build_3(target3, call3->addRef());
+  DependencyBuilder build_1(target1, call1);
+  DependencyBuilder build_2(target2, call2);
+  DependencyBuilder build_3(target3, call3);
 
   // Compute the derived stuff
   build_1.add(key);
@@ -130,10 +140,11 @@ int ConditionsDataAccess::processElement(DetElement de)  {
   ConditionKey key_derived2    (path+"#derived_data/derived_2");
   ConditionKey key_derived3    (path+"#derived_data/derived_3");
   Conditions::Container container = dc.conditions();
-  int result = 0;
+  int result = 0, count = 0;
   // Let's go for the deltas....
   for(const auto& k : container.keys() )  {
-    Condition cond = container.get(k.first,*pool);
+    Condition cond = container.get(k.first,*m_pool);
+    ++count;
     if ( k.first == key_temperature.hash )  {
       result += int(cond.get<double>());
     }
@@ -158,16 +169,23 @@ int ConditionsDataAccess::processElement(DetElement de)  {
     else if ( k.first == key_derived3.hash )  {
       result += int(cond.get<vector<int> >().size());
     }
+    if ( !IOV::key_is_contained(iov.key(),cond.iov().key()) )  {
+      printout(printLevel,"CondAccess","++ IOV mismatch:%s <> %s",
+               iov.str().c_str(), cond.iov().str().c_str());
+    }
   }
-  return result;
+  for (const auto& c : de.children() )
+    count += processElement(c.second);
+  return count;
 }
 
-template<typename T> Condition make_condition(DetElement de, const string& name, T val)  {
+template<typename T> Condition ConditionsCreator::make_condition(DetElement de, const string& name, T val)  {
   Condition cond(de.path()+"#"+name, name);
   T& value   = cond.bind<T>();
   value      = val;
   cond->hash = ConditionKey::hashCode(cond->name);
   cond->setFlag(Condition::ACTIVE);
+  if ( slice ) slice->insert(ConditionKey(cond->name,cond->hash),ConditionsSlice::NoLoadInfo());
   return cond;
 }
 

@@ -74,7 +74,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
   /******************** Initialize the conditions manager *****************/
   ConditionsManager condMgr = ConditionsManager::from(lcdd);
-  condMgr["PoolType"]       = "DD4hep_ConditionsMappedPool";
+  condMgr["PoolType"]       = "DD4hep_ConditionsLinearPool";
   condMgr["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
   condMgr["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
   condMgr.initialize();
