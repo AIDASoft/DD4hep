@@ -13,22 +13,29 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Memory.h"
 #include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/PluginCreators.h"
 #include "DD4hep/DD4hepRootPersistency.h"
+#include "XML/DocumentHandler.h"
+#include "XML/XMLElements.h"
+#include "XML/XMLTags.h"
 #include "../LCDDImp.h"
 
 // ROOT includes
 #include "TInterpreter.h"
+#include "TGeoElement.h"
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
 #include "TClass.h"
 #include "TRint.h"
 
 // C/C++ include files
+#include <cerrno>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 
@@ -118,6 +125,109 @@ static long root_ui(LCDD& lcdd, int /* argc */, char** /* argv */) {
   return 1;
 }
 DECLARE_APPLY(DD4hepInteractiveUI,root_ui)
+
+/// Basic entry point to dump the ROOT TGeoElementTable object
+/**
+ *  Dump the elment table to stdout or file.
+ *
+ *  Factory: DD4hepElementTable -format xml/text(default) -output <file-name>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long root_elements(LCDD& lcdd, int argc, char** argv) {
+  struct ElementPrint {
+    ElementPrint() = default;
+    virtual ~ElementPrint() = default;
+    virtual void operator()(TGeoElement* e)  { e->Print();  }
+    virtual void operator()(TGeoIsotope* i)  { i->Print();  }
+  };
+  struct ElementPrintXML : public ElementPrint  {
+    typedef XML::Element elt_h;
+    elt_h root;
+    ElementPrintXML(elt_h r) : root(r) {}
+    virtual ~ElementPrintXML() {}
+    virtual void operator()(TGeoElement* e)  {
+      elt_h elt = root.addChild(_U(element));
+      elt.setAttr(_U(Z),e->Z());
+      elt.setAttr(_U(N),e->N());
+      elt.setAttr(_U(formula),e->GetName());
+      elt.setAttr(_U(name),e->GetName());
+      elt_h atom = elt.addChild(_U(atom));
+      atom.setAttr(_U(type),"A");
+      atom.setAttr(_U(unit),"g/mole");
+      atom.setAttr(_U(value),e->A());
+    }
+    virtual void operator()(TGeoIsotope* i)  {
+      elt_h iso = root.addChild(_U(isotope));
+      iso.setAttr(_U(Z),i->GetZ());
+      iso.setAttr(_U(N),i->GetN());
+      iso.setAttr(_U(formula),i->GetName());
+      iso.setAttr(_U(name),i->GetName());
+      elt_h atom = iso.addChild(_U(atom));
+      atom.setAttr(_U(type),"A");
+      atom.setAttr(_U(unit),"g/mole");
+      atom.setAttr(_U(value),i->GetA());
+    }
+  };
+
+  string type = "text", output = "";
+  for(int i=0; i<argc; ++i)  {
+    if ( argv[i][0] == '-' )  {
+      char c = ::tolower(argv[i][1]);
+      if ( c == 't' ) type = argv[++i];
+      else if ( c == 'o' ) output = argv[++i];
+      else  {
+        ::printf("DD4hepElementTable -opt [-opt]                         \n"
+                 "  -type   <string>    Output format: text or xml       \n"
+                 "  -output <file-name> Output file specifier (xml only) \n"
+                 "\n");
+        exit(EINVAL);
+      }
+    }
+  }
+
+  XML::Document doc(0);
+  XML::DocumentHandler docH;
+  XML::Element  element(0);
+  if ( type == "xml" )  {
+     const char comment[] = "\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   Linear collider detector description in C++       ++++\n"
+    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+     doc = docH.create("materials", comment);
+     element = doc.root();
+  }
+  dd4hep_ptr<ElementPrint> printer(element
+                                   ? new ElementPrintXML(element)
+                                   : new ElementPrint());
+  TGeoElementTable* table = lcdd.manager().GetElementTable();
+  for(Int_t i=0, n=table->GetNelements(); i < n; ++i)
+    (*printer)(table->GetElement(i));
+
+  for(Int_t i=0, n=table->GetNelements(); i < n; ++i)  {
+    TGeoElement* elt = table->GetElement(i);
+    Int_t niso = elt->GetNisotopes();
+    if ( niso > 0 )  {
+      for(Int_t j=0; j < niso; ++j)
+        (*printer)(elt->GetIsotope(j));
+    }
+  }
+  if ( element )   {
+    XML::DocumentHandler dH;
+    dH.output(doc, output);
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hepElementTable,root_elements)
 
 /// Basic entry point to interprete an XML document
 /**
