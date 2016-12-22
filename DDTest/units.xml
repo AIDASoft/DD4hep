@@ -33,6 +33,10 @@
     </define>
     
     <!-- need to define vacuum and air -->
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+    </includes>
+    
     <materials>
       <material name="Vacuum">
 	    <D type="density" unit="g/cm3" value="0.00000001" />
