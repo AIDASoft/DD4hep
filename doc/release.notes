@@ -3,6 +3,99 @@
 DD4hep  ----  Release Notes
 =================================
 
+  --------
+ | v00-20 |
+  --------
+
+ Frank Gaede 2016-12-22 
+   - fix test_surfaces by adapting to elements.xml
+   - fix test_units by including elements.xml
+ 
+ Markus Frank 2016-12-21 
+   - Add plugin to dump the default ROOT element table
+ 
+ Markus Frank 2016-12-20 
+   - Remove obsolete build flags
+ 
+ Markus Frank 2016-12-19 
+   - Add Multi-threading conditions example
+ 
+ Andre Sailer 2016-12-16 
+   - Add drivers for Beampipe, Mask and Solenoid from lcgeo, changed name to DD4hep_*
+ 
+ Rosa Simonielo, Frank Gaede 2016-12-15 
+   - add new struct DDRec::NeighbourSurfacesStruct defined for neighbouring surfaces
+ 
+ Frank Gaede 2016-12-14 
+   - fix library pathes in env scripts for macos
+   - use DD4HEP_LIBRARY_PATH and full lib path on mac
+   - apply rpath compiler settings to GaudiPluginService
+   - make compatible w/ Geant4 10.3
+ 
+ Marko Petric 2016-12-13 
+   - Fix compiler flag handling
+ 
+ Daniel Jeans 2016-12-08 
+   - add utility graphicalMaterialScan
+ 
+ Markus Frank 2016-12-07 
+   - Fix compiler error on MacOSX gcc 4.9
+ 
+ Marko Petric 2016-12-07 
+   - Remove few tests from Travis
+   - move flag to CMAKE_SHARED_LINKER_FLAGS
+   - Remove the dynamic lookup on runtime for libs on mac
+ 
+ Markus Frank 2016-12-05 
+   - First version of conditions and alignments
+ 
+ Andre Sailer 2016-12-06 
+   - DDTest: fix location to install DDtest header files
+   - Remove minimum required cmake version from DD4hepBuild, this interferes with other packages depending on DD4hep
+ 
+ Marko Petric 2016-12-02 
+   - Fix missing CLHEP in thisdd4hep.sh
+   - Clean up FindPYTHON.cmake file
+   - Change gaudi auto_ptr to unique_ptr since the auto is deprecated
+   - Fix initAClick
+ 
+ Marko Petric 2016-11-29 
+   - Fix rpath issues on mac with python
+   - Add custom DynamicPath on mac when loading python libs
+   - Add function to set the DD4HEP_LIBRARY_PATH
+ 
+ Marko Petric 2016-11-28 
+   - Update all minimum CMake versions
+   - Fix gitlab builds
+   - Rename MakeRootMap to MakeGaudiMap for consistency
+   - Remove ROOT5 things and make approprite fixed to the usage of ROOTConfig.cmake
+   - Remove FindROOT.cmake and use from now on ROOTConfig.cmake
+ 
+ 
+ Markus Frank 2016-11-30 
+   - New version of conditions handling
+ 
+ Andre Sailer 2016-11-25 
+   - Fix ProductionCut conversion in Geant4Converter.cpp: cut is a range
+ 
+ Markus Frank 2016-11-24 
+   - Fix linker errors on MAC
+   - Remove compiler warnings on MACOSX
+   - First fixes to version of alignment constant processing also remove where visited the $ statements in the files.
+     They are useless, since git does not support them. Fixed some tests, which no longer properly worked in
+     the conditions area.
+   - First usable version of alignment constant processing
+ 
+ 
+ Markus Frank 2016-11-16 
+   - Try to improve efficiency using C++11 default operations
+ 
+ Markus Frank 2016-11-10 
+   - Simplify opaque data mappings for conditions
+ 
+
+
+
  --------
 | v00-19 |
  --------
