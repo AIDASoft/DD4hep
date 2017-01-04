@@ -201,6 +201,8 @@ static long root_elements(LCDD& lcdd, int argc, char** argv) {
     XML_IMPLEMENTATION_TYPE
     "                ++++\n"
     "      ++++                                                     ++++\n"
+    "      ++++   Table of elements as defined in ROOT: " ROOT_RELEASE  "     ++++\n"
+    "      ++++                                                     ++++\n"
     "      ++++                              M.Frank CERN/LHCb      ++++\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
      doc = docH.create("materials", comment);
