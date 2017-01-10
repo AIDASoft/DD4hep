@@ -18,6 +18,16 @@ dd4hep_package(DDRec
   INSTALL_INCLUDES include/DDRec)
 
 #---Add Library-------------------------------------------------------------
+
+#fg: for CLHEP 2.3.4.3 we need o call again the find_package
+if(DD4HEP_USE_GEANT4)
+  if(NOT Geant4_builtin_clhep_FOUND)
+    find_package( CLHEP REQUIRED )
+    message( STATUS "!!! calling find_package( CLHEP REQUIRED ) !!!" )
+  endif()
+endif()
+
+
 if(DD4HEP_USE_GEAR)
   add_definitions("-D DD4HEP_USE_GEAR")
 endif()
