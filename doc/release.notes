@@ -7,7 +7,16 @@ DD4hep  ----  Release Notes
  | v00-20 |
   --------
 
- Frank Gaede 2016-12-22 
+Frank Gaede 2017-01-13 
+  - fix computation of radiation and interaction lengths
+  - require the density to be specified in the materials xml file
+ 
+Frank Gaede 2017-01-04 
+  - adopt numbers in test_surface.cc to elements.xml
+  - use elements.xml generated with plugin in DDTest
+  -  add ROOT version to dumped element table
+
+Frank Gaede 2016-12-22 
    - fix test_surfaces by adapting to elements.xml
    - fix test_units by including elements.xml
  
