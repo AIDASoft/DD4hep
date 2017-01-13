@@ -305,10 +305,14 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     double intlen_val  = intlen.ptr()  ? intlen.attr<double>(_U(value)) : 0.0;
     double dens_val    = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
     double dens_unit   = 1.0;
-    bool   has_density = true;
+
+    //    bool   has_density = true;
     if ( 0 == mat && !density.ptr() ) {
-      has_density = false;
+      //      has_density = false;
+
+      throw_print("Compact2Objects[ERROR]: material without density tag ( <D  unit=\"g/cm3\" value=\"..\"/> ) provided: " + std::string( matname ) ) ;
     }
+
     if ( density.ptr() && density.hasAttr(_U(unit)) )   {
       dens_unit = density.attr<double>(_U(unit))/XML::_toDouble(_Unicode(gram/cm3));
     }
@@ -374,26 +378,31 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
     }
-    // Update estimated density if not provided.
-    if ( has_density )   {
-      mix->SetDensity(dens_val);
-    }
-    else if (!has_density && mix && 0 == mix->GetDensity()) {
-      double dens = 0.0;
-      for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
-        string nam = composites.attr<string>(_U(ref));
-        comp_mat = mgr.GetMaterial(nam.c_str());
-        dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
-      }
-      for (fractions.reset(); fractions; ++fractions) {
-        string nam = fractions.attr<string>(_U(ref));
-        comp_mat = mgr.GetMaterial(nam.c_str());
-        dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
-      }
-      printout(WARNING, "Compact", "++ Material: %s with NO density. "
-               "Set density to %7.3 g/cm**3", matname, dens);
-      mix->SetDensity(dens);
-    }
+
+    //fg: calling SetDensity for TGeoMixture results in incorrect radLen and intLen ( computed only from first element ) 
+
+    // // Update estimated density if not provided.
+    // if ( has_density )   {
+    //   mix->SetDensity(dens_val);
+    // }
+    // else if (!has_density && mix && 0 == mix->GetDensity()) {
+    //   double dens = 0.0;
+    //   for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
+    //     string nam = composites.attr<string>(_U(ref));
+    //     comp_mat = mgr.GetMaterial(nam.c_str());
+    //     dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
+    //   }
+    //   for (fractions.reset(); fractions; ++fractions) {
+    //     string nam = fractions.attr<string>(_U(ref));
+    //     comp_mat = mgr.GetMaterial(nam.c_str());
+    //     dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
+    //   }
+    //   printout(WARNING, "Compact", "++ Material: %s with NO density. "
+    //            "Set density to %7.3 g/cm**3", matname, dens);
+    //   mix->SetDensity(dens);
+    // }
+
+    
   }
   TGeoMedium* medium = mgr.GetMedium(matname);
   if (0 == medium) {
