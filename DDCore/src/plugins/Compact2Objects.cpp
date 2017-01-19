@@ -298,31 +298,16 @@ template <> void Converter<Material>::operator()(xml_h e) const {
   if (0 == mat) {
     TGeoMaterial* comp_mat;
     TGeoElement*  comp_elt;
-    xml_h  radlen      = m.child(_U(RL), false);
-    xml_h  intlen      = m.child(_U(NIL), false);
     xml_h  density     = m.child(_U(D), false);
-    double radlen_val  = radlen.ptr()  ? radlen.attr<double>(_U(value)) : 0.0;
-    double intlen_val  = intlen.ptr()  ? intlen.attr<double>(_U(value)) : 0.0;
     double dens_val    = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
     double dens_unit   = 1.0;
 
-    //    bool   has_density = true;
-    if ( 0 == mat && !density.ptr() ) {
-      //      has_density = false;
-
-      throw_print("Compact2Objects[ERROR]: material without density tag ( <D  unit=\"g/cm3\" value=\"..\"/> ) provided: " + std::string( matname ) ) ;
+    if ( !density.ptr() ) {
+      throw_print("Compact2Objects[ERROR]: material without density tag ( <D  unit=\"g/cm3\" value=\"..\"/> ) provided: "
+                  + string( matname ) ) ;
     }
-
-    if ( density.ptr() && density.hasAttr(_U(unit)) )   {
+    if ( density.hasAttr(_U(unit)) )   {
       dens_unit = density.attr<double>(_U(unit))/XML::_toDouble(_Unicode(gram/cm3));
-    }
-    if ( radlen.ptr() && radlen.hasAttr(_U(unit)) )   {
-      double radlen_unit = radlen.attr<double>(_U(unit))/XML::_toDouble(_Unicode(cm));
-      radlen_val *= radlen_unit;
-    }
-    if ( intlen.ptr() && intlen.hasAttr(_U(unit)) )   {
-      double intlen_unit = intlen.attr<double>(_U(unit))/XML::_toDouble(_Unicode(cm));
-      intlen_val *= intlen_unit;
     }
     if ( dens_unit != 1.0 )  {
       cout << matname << " Density unit:" << dens_unit;
@@ -330,6 +315,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       cout << " Density Value raw:" << dens_val << " normalized:" << (dens_val*dens_unit) << endl;
       dens_val *= dens_unit;
     }
+
 #if 0
     cout << "Gev    " << XML::_toDouble(_Unicode(GeV)) << endl;
     cout << "sec    " << XML::_toDouble(_Unicode(second)) << endl;
@@ -341,10 +327,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     cout << "degree " << XML::_toDouble(_Unicode(degree)) << endl;
 #endif
     //throw 1;
-    printout(DEBUG, "Compact", "++ Converting material %-22s IntLen:%8.3g cm RadLen:%8.3g cm Densitiy:%8.3g g/cm3",
-             matname, intlen_val, radlen_val, dens_val);
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
-    mat->SetRadLen(radlen_val, intlen_val);
     size_t ifrac = 0;
     vector<double> composite_fractions;
     double composite_fractions_total = 0.0;
@@ -380,7 +363,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     }
 
     //fg: calling SetDensity for TGeoMixture results in incorrect radLen and intLen ( computed only from first element ) 
-
     // // Update estimated density if not provided.
     // if ( has_density )   {
     //   mix->SetDensity(dens_val);
@@ -401,7 +383,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     //            "Set density to %7.3 g/cm**3", matname, dens);
     //   mix->SetDensity(dens);
     // }
-
     
   }
   TGeoMedium* medium = mgr.GetMedium(matname);

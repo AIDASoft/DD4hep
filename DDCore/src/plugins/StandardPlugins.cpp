@@ -427,6 +427,7 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
     {
       for(int i=0; i<ac; ++i)  {
         char c = ::tolower(av[i][0]);
+        if ( c == '-' ) c = ::tolower(av[i][1]);
         if ( c == 'v' ) m_printVolIDs = true;
         else if ( c == 'p' ) m_printPositions = true;
         else if ( c == 's' ) m_printSensitivesOnly = true;
