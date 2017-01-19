@@ -1,6 +1,7 @@
 # DD4hep (Detector Description for High Energy Physics)
 [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
 [![Coverity Status](https://scan.coverity.com/projects/10713/badge.svg)](https://scan.coverity.com/projects/dd4hep)
+[![DOI](https://zenodo.org/badge/60682190.svg)](https://zenodo.org/badge/latestdoi/60682190)
 
 DD4hep is a software framework for providing a complete solution for full detector description
 (geometry, materials, visualization, readout, alignment, calibration, etc.) for the full experiment life cycle (detector concept development, detector optimization, construction, operation). It offers a consistent description through a single source of detector information for simulation, reconstruction, analysis, etc. It distributed under the [GPLv3 License](http://www.gnu.org/licenses/gpl-3.0.en.html)
