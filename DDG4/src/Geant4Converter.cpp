@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -1008,16 +1007,12 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
-  Material mat = m_lcdd.material("Argon");
-  handleMaterial(mat.name(), mat);
-  mat = m_lcdd.material("Silicon");
-  handleMaterial(mat.name(), mat);
 
   //m_outputLevel = WARNING;
   //setPrintLevel(VERBOSE);
 
   handle(this, geo.volumes, &Geant4Converter::collectVolume);
-  handle(this, geo.solids, &Geant4Converter::handleSolid);
+  handle(this, geo.solids,  &Geant4Converter::handleSolid);
   printout(m_outputLevel, "Geant4Converter", "++ Handled %ld solids.", geo.solids.size());
   handleRefs(this, geo.vis, &Geant4Converter::handleVis);
   printout(m_outputLevel, "Geant4Converter", "++ Handled %ld visualization attributes.", geo.vis.size());
