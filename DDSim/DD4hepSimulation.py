@@ -15,7 +15,7 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED=False
 
-POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc")
+POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
 
 def outputLevel( level ):
   """return INT for outputlevel"""
@@ -362,6 +362,9 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepmc"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc%d" % index)
         gen.Input="Geant4EventReaderHepMC|"+inputFile
+      elif inputFile.endswith(".pairs"):
+        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/HEPEvt%d" % index)
+        gen.Input="Geant4EventReaderGuineaPig|"+inputFile
       else:
         ##this should never happen because we already check at the top, but in case of some LogicError...
         raise RuntimeError( "Unknown input file type: %s" % inputFile )
