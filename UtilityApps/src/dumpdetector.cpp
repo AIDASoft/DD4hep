@@ -76,7 +76,7 @@ void printDetectorSets( std::string name, unsigned int includeFlag,  unsigned in
 
 //=============================================================================
 
-int main(int argc, char** argv ){
+int run_main(int argc, char** argv ){
     
   if( argc < 2 ) {
     std::cout << " usage: dumpdetector compact.xml [-s]" 
@@ -231,7 +231,17 @@ int main(int argc, char** argv ){
 }
 
 
-
-
+int main(int argc, char** argv ){
+  try {
+    return run_main(argc,argv);
+  }
+  catch(const std::exception& e)  {
+    std::cout << "Got uncaught exception: " << e.what() << std::endl;
+  }
+  catch (...)  {
+    std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+  }
+  return EINVAL;    
+}
 
 //=============================================================================

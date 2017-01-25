@@ -149,7 +149,7 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, const G4Event
       }
       else  {
         print("+++ Hit unknown hit collection type: %s --> %s",
-              c->GetName(),typeName(typeid(*c)).c_str());
+              c->GetName().c_str(),typeName(typeid(*c)).c_str());
       }
     }
   }
