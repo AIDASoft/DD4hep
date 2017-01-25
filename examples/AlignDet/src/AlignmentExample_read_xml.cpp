@@ -53,7 +53,7 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_AlignmentExample2                        \n"
+      "     name:   factory name     DD4hep_AlignmentExample_read_xml                \n"
       "     -input   <string>        Geometry file                                   \n"
       "     -deltas  <string>        Alignment deltas (Conditions                    \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;

@@ -37,6 +37,7 @@ namespace DD4hep {
   namespace Alignments {
 
     using Geometry::LCDD;
+    using Geometry::Position;
     using Geometry::DetElement;
     using Geometry::PlacedVolume;
     using Conditions::UserPool;
@@ -121,6 +122,50 @@ namespace DD4hep {
       const TGeoHMatrix& worldTransformation()  const;
       /// Access the alignment/placement matrix with respect to the world
       const TGeoHMatrix& detectorTransformation() const;
+
+      /** Aliases for the transformation from local coordinates to the world system  */
+      /// Transformation from local coordinates of the placed volume to the world system
+      void localToWorld(const Position& local, Position& global) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      void localToWorld(const Double_t local[3], Double_t global[3]) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      Position localToWorld(const Position& local) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      Position localToWorld(const Double_t local[3]) const
+      {  return localToWorld(Position(local[0],local[1],local[2]));                     }
+
+      /** Aliases for the transformation from world coordinates to the local volume  */
+      /// Transformation from world coordinates of the local placed volume coordinates
+      void worldToLocal(const Position& global, Position& local) const;
+      /// Transformation from world coordinates of the local placed volume coordinates
+      void worldToLocal(const Double_t global[3], Double_t local[3]) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      Position worldToLocal(const Position& global) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      Position worldToLocal(const Double_t global[3]) const
+      {  return worldToLocal(Position(global[0],global[1],global[2]));                  }
+
+      /** Aliases for the transformation from local coordinates to the next DetElement system  */
+      /// Transformation from local coordinates of the placed volume to the detector system
+      void localToDetector(const Position& local, Position& detector) const;
+      /// Transformation from local coordinates of the placed volume to the detector system
+      void localToDetector(const Double_t local[3], Double_t detector[3]) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      Position localToDetector(const Position& local) const;
+      /// Transformation from local coordinates of the placed volume to the world system
+      Position localToDetector(const Double_t local[3]) const
+      {  return localToDetector(Position(local[0],local[1],local[2]));                  }
+
+      /** Aliases for the transformation from the next DetElement to local coordinates */
+      /// Transformation from detector element coordinates to the local placed volume coordinates
+      void detectorToLocal(const Position& detector, Position& local) const;
+      /// Transformation from detector element coordinates to the local placed volume coordinates
+      void detectorToLocal(const Double_t detector[3], Double_t local[3]) const;
+      /// Transformation from detector element coordinates to the local placed volume coordinates
+      Position detectorToLocal(const Position& detector) const;
+      /// Transformation from detector element coordinates to the local placed volume coordinates
+      Position detectorToLocal(const Double_t det[3]) const
+      {  return detectorToLocal(Position(det[0],det[1],det[2]));                        }
     };
 
     /// Hash code generation from input string

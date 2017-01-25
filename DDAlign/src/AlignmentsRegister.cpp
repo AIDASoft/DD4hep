@@ -17,7 +17,7 @@
 #include "DD4hep/DetConditions.h"
 
 #include "DDAlign/AlignmentsRegister.h"
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
@@ -26,7 +26,7 @@ using Conditions::Condition;
 // ======================================================================================
 
 /// Initializing constructor
-AlignmentsRegister::AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
+AlignmentsRegister::AlignmentsRegister(AlignmentsManager m, AlignmentsUpdateCall* c, UserPool* p)
   : alignmentMgr(m), updateCall(c), user_pool(p), extension("/Tranformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {

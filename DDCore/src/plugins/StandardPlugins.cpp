@@ -736,8 +736,8 @@ static long detelement_cache(LCDD& lcdd, int , char** ) {
   struct Actor {
     static long cache(DetElement de) {
       const DetElement::Children& c = de.children();
-      de.worldTransformation();
-      de.parentTransformation();
+      de.nominal().worldTransformation();
+      de.nominal().detectorTransformation();
       de.placementPath();
       de.path();
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)

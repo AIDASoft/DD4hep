@@ -14,7 +14,7 @@
 #define DD4HEP_DDALIGN_DDALIGNFORWARDCALL_H
 
 // Framework includes
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -29,7 +29,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_ALIGNMENT
      */
-    class DDAlignForwardCall : public AlignmentUpdateCall  {
+    class DDAlignForwardCall : public AlignmentsUpdateCall  {
     public:
       /// Default constructor
       DDAlignForwardCall() = default;

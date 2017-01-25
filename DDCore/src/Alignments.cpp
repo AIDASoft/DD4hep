@@ -67,6 +67,65 @@ const TGeoHMatrix& Alignment::detectorTransformation() const   {
   return data().detectorTransformation();
 }
 
+/// Transformation from local coordinates of the placed volume to the world system
+void Alignment::localToWorld(const Position& local, Position& global) const  {
+  return access()->localToWorld(local,global);
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+void Alignment::localToWorld(const Double_t local[3], Double_t global[3]) const  {
+  return access()->localToWorld(local,global);
+}
+/// Transformation from local coordinates of the placed volume to the world system
+Position Alignment::localToWorld(const Position& local) const  {
+  return access()->localToWorld(local);
+}
+
+/// Transformation from world coordinates of the local placed volume coordinates
+void Alignment::worldToLocal(const Position& global, Position& local) const  {
+  return access()->worldToLocal(global,local);
+}
+
+/// Transformation from world coordinates of the local placed volume coordinates
+void Alignment::worldToLocal(const Double_t global[3], Double_t local[3]) const  {
+  return access()->worldToLocal(global,local);
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+Position Alignment::worldToLocal(const Position& global) const  {
+  return access()->worldToLocal(global);
+}
+
+/// Transformation from local coordinates of the placed volume to the detector system
+void Alignment::localToDetector(const Position& local, Position& detector) const  {
+  return access()->localToDetector(local,detector);
+}
+
+/// Transformation from local coordinates of the placed volume to the detector system
+void Alignment::localToDetector(const Double_t local[3], Double_t detector[3]) const  {
+  return access()->localToDetector(local,detector);
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+Position Alignment::localToDetector(const Position& local) const  {
+  return access()->localToDetector(local);
+}
+
+/// Transformation from detector element coordinates to the local placed volume coordinates
+void Alignment::detectorToLocal(const Position& detector, Position& local) const  {
+  return access()->detectorToLocal(detector,local);
+}
+
+/// Transformation from detector element coordinates to the local placed volume coordinates
+void Alignment::detectorToLocal(const Double_t detector[3], Double_t local[3]) const  {
+  return access()->detectorToLocal(detector,local);
+}
+
+/// Transformation from detector element coordinates to the local placed volume coordinates
+Position Alignment::detectorToLocal(const Position& detector) const  {
+  return access()->detectorToLocal(detector);
+}
+
 /// Access the IOV type
 const DD4hep::IOVType& AlignmentCondition::iovType() const   {
   return *(access()->iovType());

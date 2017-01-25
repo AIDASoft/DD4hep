@@ -78,6 +78,15 @@ namespace DD4hep {
     virtual ~invalid_handle_exception() = default;
   };
 
+  /// Macro for deprecated functions. Prints once only. useage: deprecatedCall(__PRETTY_FUNCTION__);
+#define   DD4HEP_DEPRECATED_CALL(tag,replacement,func)                  \
+  { static bool __dd4hep_first=true;                                    \
+    if ( __dd4hep_first ) { __dd4hep_first=false;                       \
+      DD4hep::printout(DD4hep::WARNING,tag,                             \
+                       "Deprecated function: '%s' use '%s' instead.",   \
+                       func,replacement);                               \
+    }}
+  
   /// ABI information about type names
   std::string typeName(const std::type_info& type);
   /// Check type infos for equivalence (dynamic casts) using ABI information

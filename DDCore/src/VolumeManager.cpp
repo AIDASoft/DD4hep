@@ -305,12 +305,41 @@ namespace {
           //context->volID      = ids;
           context->path       = nodes;
           for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
-            TGeoMatrix* m = nodes[i - 1]->GetMatrix();
+            TGeoMatrix* m = nodes[i-1]->GetMatrix();
             context->toWorld.MultiplyLeft(m);
           }
           context->toDetector = context->toWorld;
           context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-          context->toWorld.MultiplyLeft(&parent.worldTransformation());
+          //context->toWorld.MultiplyLeft(&parent->worldTransformation());
+          context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
+
+          // We HAVE to check at least once if the matrices from the original DetElement
+          // and from the nominal alignment are identical....
+          string p = "";
+          for (size_t i = 0; i<nodes.size(); ++i) {   // Omit the placement of the parent DetElement
+            p += "/";
+            p += nodes[i]->GetName();
+          }
+          const Double_t* t1 = parent->worldTransformation().GetTranslation();
+          const Double_t* t2 = parent.nominal().worldTransformation().GetTranslation();
+          for(int i=0; i<3; ++i)   {
+            if ( std::fabs(t1[i]-t2[i]) > numeric_limits<double>::epsilon() )  {
+              printout(WARNING,"Volumes",
+                       "+++ World matrix of %s // %s is NOT equal (translation) [diff[%d]=%f]!",
+                       e.placementPath().c_str(),p.c_str(),i,std::fabs(t1[i]-t2[i]));
+              break;
+            }
+          }
+          const Double_t* r1 = parent->worldTransformation().GetRotationMatrix();
+          const Double_t* r2 = parent.nominal().worldTransformation().GetRotationMatrix();
+          for(int i=0; i<9; ++i)   {
+            if ( std::fabs(r1[i]-r2[i]) > numeric_limits<double>::epsilon() )  {
+              printout(WARNING,"Volumes",
+                       "+++ World matrix of %s // %s is NOT equal (rotation) [diff[%d]=%f]!",
+                       e.placementPath().c_str(),p.c_str(),i,std::fabs(r1[i]-r2[i]));
+              break;
+            }
+          }
           if (!section.adoptPlacement(context)) {
             print_node(sd, parent, e, n, code, nodes);
           }
@@ -346,7 +375,8 @@ namespace {
           }
           context->toDetector = context->toWorld;
           context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-          context->toWorld.MultiplyLeft(&parent.worldTransformation());
+          context->toWorld.MultiplyLeft(&parent->worldTransformation());
+          //context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
           if (!section.adoptPlacement(context)) {
             print_node(sd, parent, e, n, ids, nodes);
           }

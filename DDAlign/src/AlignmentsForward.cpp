@@ -17,13 +17,13 @@
 #include "DD4hep/DetConditions.h"
 
 #include "DDAlign/AlignmentsForward.h"
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
 /// Initializing constructor
-AlignmentsForward::AlignmentsForward(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
+AlignmentsForward::AlignmentsForward(AlignmentsManager m, AlignmentsUpdateCall* c, UserPool* p)
   : alignmentMgr(m), updateCall(c), user_pool(p), extension("#alignment/Tranformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
