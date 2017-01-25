@@ -141,9 +141,6 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
     shape->SetUserData(n);
     element = shape;
   }
-  else  {
-    printout(INFO,"createEveShape","Weird!! %s",n->GetName());
-  }
 
  Daughters:
   for (Int_t idau = 0, ndau = n->GetNdaughters(); idau < ndau; ++idau) {

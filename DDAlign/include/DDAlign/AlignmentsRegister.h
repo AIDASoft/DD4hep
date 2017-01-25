@@ -27,7 +27,7 @@ namespace DD4hep {
   namespace Alignments {
   
     // Forward declarations
-    class AlignmentUpdateCall;
+    class AlignmentsUpdateCall;
 
     /// Create lignment dependencies from conditions
     /**
@@ -65,7 +65,7 @@ namespace DD4hep {
       /// Reference to the alignment manager object
       AlignmentsManager      alignmentMgr;
       /// The callback to be registered for the update mechanism
-      AlignmentUpdateCall*   updateCall;
+      AlignmentsUpdateCall*  updateCall;
       /// Conditions pool used to access the basic conditions object
       Conditions::UserPool*  user_pool;
       /// Extension property to construct the name of the alignment condition
@@ -78,7 +78,7 @@ namespace DD4hep {
       PrintLevel             printLevel;
       
       /// Initializing constructor
-      AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p);
+      AlignmentsRegister(AlignmentsManager m, AlignmentsUpdateCall* c, UserPool* p);
       /// Default destructor
       virtual ~AlignmentsRegister();
       /// Callback to output conditions information

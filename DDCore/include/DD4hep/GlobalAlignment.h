@@ -87,9 +87,9 @@ namespace DD4hep {
       Transform3D delta() const;
       /// Access the inverse of the currently applied correction matrix (delta) (mother to daughter)
       Transform3D invDelta() const;
-
     };
 
-  } /* End namespace Alignments               */
-} /* End namespace DD4hep                     */
+  }       /* End namespace Alignments                */
+}         /* End namespace DD4hep                    */
 #endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENT_H      */
+      

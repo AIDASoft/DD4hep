@@ -23,7 +23,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 #include "DDAlign/AlignmentTags.h"
-#include "DDAlign/AlignmentStack.h"
+#include "DDAlign/GlobalAlignmentStack.h"
 #include "DDAlign/GlobalAlignmentCache.h"
 #include "DDAlign/GlobalDetectorAlignment.h"
 
@@ -42,7 +42,7 @@ namespace DD4hep  {
     class rotation;
     class position;
     class pivot;
-    class delta;
+    class alignment_delta;
     class debug;
   }
 
@@ -51,7 +51,7 @@ namespace DD4hep  {
   template <> void Converter<pivot>::operator()(xml_h seq)  const;
   template <> void Converter<position>::operator()(xml_h seq)  const;
   template <> void Converter<rotation>::operator()(xml_h seq)  const;
-  template <> void Converter<delta>::operator()(xml_h seq)  const;
+  template <> void Converter<alignment_delta>::operator()(xml_h seq)  const;
 
   template <> void Converter<volume>::operator()(xml_h seq)  const;
   template <> void Converter<alignment>::operator()(xml_h seq)  const;
@@ -148,7 +148,7 @@ template <> void Converter<pivot>::operator()(xml_h e) const {
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<delta>::operator()(xml_h e) const {
+template <> void Converter<alignment_delta>::operator()(xml_h e) const {
   Position pos;
   RotationZYX rot;
   Translation3D piv;
@@ -174,7 +174,7 @@ template <> void Converter<delta>::operator()(xml_h e) const {
     delta->flags |= Delta::HAVE_TRANSLATION;
 }
 
-typedef AlignmentStack::StackEntry StackEntry;
+typedef GlobalAlignmentStack::StackEntry StackEntry;
 
 /** Convert volume objects
  *
@@ -194,7 +194,7 @@ typedef AlignmentStack::StackEntry StackEntry;
 template <> void Converter<volume>::operator()(xml_h e) const {
   Delta val;
   pair<DetElement,string>* elt = (pair<DetElement,string>*)param;
-  AlignmentStack* stack = _option<AlignmentStack>();
+  GlobalAlignmentStack* stack = _option<GlobalAlignmentStack>();
   string subpath    = e.attr<string>(_ALU(path));
   bool   reset      = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
   bool   reset_dau  = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
@@ -208,13 +208,13 @@ template <> void Converter<volume>::operator()(xml_h e) const {
   printout(INFO,"Alignment<vol>","    path:%s placement:%s reset:%s children:%s",
            subpath.c_str(), placement.c_str(), yes_no(reset), yes_no(reset_dau));
 
-  Converter<delta>(lcdd,&val)(e);
-  if ( val.flags ) val.flags |= AlignmentStack::MATRIX_DEFINED;
-  if ( overlap   ) val.flags |= AlignmentStack::OVERLAP_DEFINED;
-  if ( reset     ) val.flags |= AlignmentStack::RESET_VALUE;
-  if ( reset_dau ) val.flags |= AlignmentStack::RESET_CHILDREN;
-  if ( check     ) val.flags |= AlignmentStack::CHECKOVL_DEFINED;
-  if ( check_val ) val.flags |= AlignmentStack::CHECKOVL_VALUE;
+  Converter<alignment_delta>(lcdd,&val)(e);
+  if ( val.flags ) val.flags |= GlobalAlignmentStack::MATRIX_DEFINED;
+  if ( overlap   ) val.flags |= GlobalAlignmentStack::OVERLAP_DEFINED;
+  if ( reset     ) val.flags |= GlobalAlignmentStack::RESET_VALUE;
+  if ( reset_dau ) val.flags |= GlobalAlignmentStack::RESET_CHILDREN;
+  if ( check     ) val.flags |= GlobalAlignmentStack::CHECKOVL_DEFINED;
+  if ( check_val ) val.flags |= GlobalAlignmentStack::CHECKOVL_VALUE;
 
   dd4hep_ptr<StackEntry> entry(new StackEntry(elt->first,placement,val,ovl));
   stack->insert(entry);
@@ -240,7 +240,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
  */
 template <> void Converter<detelement>::operator()(xml_h e) const {
   DetElement det(_param<DetElement::Object>());
-  AlignmentStack* stack = _option<AlignmentStack>();
+  GlobalAlignmentStack* stack = _option<GlobalAlignmentStack>();
   string path      = e.attr<string>(_ALU(path));
   bool   check     = e.hasAttr(_ALU(check_overlaps));
   bool   check_val = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
@@ -256,26 +256,26 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
     throw runtime_error(err);
   }
 
-  Delta val;
-  Converter<delta>(lcdd,&val)(e);
-  if ( val.flags )  {
-    val.flags |= AlignmentStack::MATRIX_DEFINED;
+  Delta delta;
+  Converter<alignment_delta>(lcdd,&delta)(e);
+  if ( delta.flags )  {
+    delta.flags |= GlobalAlignmentStack::MATRIX_DEFINED;
     reset = reset_dau = true;
   }
-  if ( overlap     ) val.flags |= AlignmentStack::OVERLAP_DEFINED;
-  if ( check       ) val.flags |= AlignmentStack::CHECKOVL_DEFINED;
-  if ( reset       ) val.flags |= AlignmentStack::RESET_VALUE;
-  if ( reset_dau   ) val.flags |= AlignmentStack::RESET_CHILDREN;
-  if ( check_val   ) val.flags |= AlignmentStack::CHECKOVL_VALUE;
+  if ( overlap     ) delta.flags |= GlobalAlignmentStack::OVERLAP_DEFINED;
+  if ( check       ) delta.flags |= GlobalAlignmentStack::CHECKOVL_DEFINED;
+  if ( reset       ) delta.flags |= GlobalAlignmentStack::RESET_VALUE;
+  if ( reset_dau   ) delta.flags |= GlobalAlignmentStack::RESET_CHILDREN;
+  if ( check_val   ) delta.flags |= GlobalAlignmentStack::CHECKOVL_VALUE;
 
   printout(INFO,"Alignment<det>","path:%s [%s] placement:%s matrix:%s reset:%s children:%s",
            path.c_str(),
            elt.isValid() ? elt.path().c_str() : "-----",
            placement.c_str(),
-           yes_no(val.checkFlag(AlignmentStack::MATRIX_DEFINED)),
+           yes_no(delta.checkFlag(GlobalAlignmentStack::MATRIX_DEFINED)),
            yes_no(reset), yes_no(reset_dau));
 
-  dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placement,val,ovl));
+  dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placement,delta,ovl));
   stack->insert(entry);
 
   pair<DetElement,string> vol_param(elt,"");
@@ -346,16 +346,16 @@ static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
   GlobalAlignmentCache* cache = GlobalAlignmentCache::install(lcdd);
   /// Check if transaction already present. If not, open, else issue an error
   if ( open_trans )   {
-    if ( AlignmentStack::exists() )  {
+    if ( GlobalAlignmentStack::exists() )  {
       except("GlobalAlignment","Request to open a second alignment transaction stack -- not allowed!");
     }
-    AlignmentStack::create();
+    GlobalAlignmentStack::create();
   }
-  AlignmentStack& stack = AlignmentStack::get();
+  GlobalAlignmentStack& stack = GlobalAlignmentStack::get();
   (DD4hep::Converter<DD4hep::alignment>(lcdd,lcdd.world().ptr(),&stack))(e);
   if ( close_trans )  {
     cache->commit(stack);
-    AlignmentStack::get().release();
+    GlobalAlignmentStack::get().release();
   }
   if ( GlobalDetectorAlignment::debug() )  {
     xml_elt_t elt(e);

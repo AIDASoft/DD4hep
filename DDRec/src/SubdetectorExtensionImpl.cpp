@@ -132,7 +132,7 @@ double SubdetectorExtensionImpl::getZMin() const {
 		if (box.isValid()) {
 			Position local(0.,0.,-box->GetDZ()/2.);
 			Position global;
-			det.localToWorld(local, global);
+			det.nominal().localToWorld(local, global);
 			return global.z();
 		}
 	}
@@ -150,7 +150,7 @@ double SubdetectorExtensionImpl::getZMax() const {
 		if (box.isValid()) {
 			Position local(0.,0.,box->GetDZ()/2.);
 			Position global;
-			det.localToWorld(local, global);
+			det.nominal().localToWorld(local, global);
 			return global.z();
 		}
 	}

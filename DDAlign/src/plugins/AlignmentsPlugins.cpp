@@ -96,14 +96,14 @@ DECLARE_APPLY(DD4hep_GlobalAlignmentWriter, create_global_alignment_file)
 // ======================================================================================
 #include "DDAlign/DDAlignUpdateCall.h"
 static void* create_DDAlignUpdateCall(Geometry::LCDD& /* lcdd */, int /* argc */, char** /* argv */)   {
-  return (AlignmentUpdateCall*)(new DDAlignUpdateCall());
+  return (AlignmentsUpdateCall*)(new DDAlignUpdateCall());
 }
 DECLARE_LCDD_CONSTRUCTOR(DDAlign_UpdateCall, create_DDAlignUpdateCall)
 
 // ======================================================================================
 #include "DDAlign/DDAlignForwardCall.h"
 static void* create_DDAlignForwardCall(Geometry::LCDD& /* lcdd */, int /* argc */, char** /* argv */)   {
-  return (AlignmentUpdateCall*)(new DDAlignForwardCall());
+  return (AlignmentsUpdateCall*)(new DDAlignForwardCall());
 }
 DECLARE_LCDD_CONSTRUCTOR(DDAlign_ForwardCall, create_DDAlignForwardCall)
 
@@ -153,7 +153,7 @@ static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** a
       "                              Arguments to the 'prepare' plugin.       \n"
       "     -call ... args ... -call-end                                      \n"
       "                              Arguments to the 'call' plugin, which    \n"
-      "                              create the AlignmentUpdateCall callback. \n"
+      "                              create the AlignmentsUpdateCall callback. \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
@@ -167,7 +167,7 @@ static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** a
     except("AlignRegister","++ Failed to prepare conditions user-pool!");
   }
   test->addExtension<Conditions::UserPool>(pool,"ConditionsTestUserPool");
-  AlignmentUpdateCall* call = (AlignmentUpdateCall*)
+  AlignmentsUpdateCall* call = (AlignmentsUpdateCall*)
     PluginService::Create<void*>((const char*)args_call[0],&lcdd,
                                  int(args_call.size())-1,
                                  (char**)&args_call[1]);
@@ -207,14 +207,14 @@ static void* ddalign_AlignmentsForward(Geometry::LCDD& lcdd, int argc, char** ar
       "                                                                       \n"
       "     -call ... args ... -call-end                                      \n"
       "                              Arguments to the 'call' plugin, which    \n"
-      "                              create the AlignmentUpdateCall callback. \n"
+      "                              create the AlignmentsUpdateCall callback.\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
 
   PluginTester* test = lcdd.extension<PluginTester>();
   Conditions::UserPool* pool = test->extension<Conditions::UserPool>("ConditionsTestUserPool");
-  AlignmentUpdateCall*  call = (AlignmentUpdateCall*)
+  AlignmentsUpdateCall*  call = (AlignmentsUpdateCall*)
     PluginService::Create<void*>((const char*)args_call[0],&lcdd,
                                  int(args_call.size())-1,
                                  (char**)&args_call[1]);

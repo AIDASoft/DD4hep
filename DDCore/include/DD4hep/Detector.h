@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DETECTOR_H
 #define DD4HEP_DETECTOR_H
 
@@ -401,14 +400,14 @@ namespace DD4hep {
       /// Transformation from local coordinates of the placed volume to the parent system
       bool localToParent(const Position& local, Position& parent) const;
       /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
-      //bool localToReference(const Position& local, Position& reference) const;
+      bool localToReference(const Position& local, Position& reference) const;
 
       /// Transformation from world coordinates of the local placed volume coordinates
       bool worldToLocal(const Position& global, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
       bool parentToLocal(const Position& parent, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
-      //bool referenceToLocal(const Position& reference, Position& local) const;
+      bool referenceToLocal(const Position& reference, Position& local) const;
     };
 
   } /* End namespace Geometry      */

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H
-#define DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H
+#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H
+#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -31,7 +31,7 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class AlignmentStack  {
+    class GlobalAlignmentStack  {
     public:
       enum {
         OVERLAP_DEFINED     = 1<<20,
@@ -98,14 +98,14 @@ namespace DD4hep {
       Stack m_stack;
 
       /// Default constructor
-      AlignmentStack();
+      GlobalAlignmentStack();
     public:
 
       /// Default destructor. Careful with this one:
-      virtual ~AlignmentStack();
+      virtual ~GlobalAlignmentStack();
 
       /// Static client accessor
-      static AlignmentStack& get();
+      static GlobalAlignmentStack& get();
       /// Create an alignment stack instance. The creation of a second instance will be refused.
       static void create();
       /// Check existence of alignment stack
@@ -126,6 +126,6 @@ namespace DD4hep {
       std::vector<const StackEntry*> entries() const;
     };
 
-  } /* End namespace Geometry        */
-} /* End namespace DD4hep            */
-#endif    /* DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H       */
+  }       /* End namespace Geometry                        */
+}         /* End namespace DD4hep                          */
+#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H       */

@@ -43,7 +43,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class AlignmentUpdateCall : public Conditions::ConditionUpdateCall  {
+    class AlignmentsUpdateCall : public Conditions::ConditionUpdateCall  {
     public:
       typedef Conditions::Condition              Condition;
       typedef Conditions::ConditionKey           ConditionKey;
@@ -56,10 +56,10 @@ namespace DD4hep {
       
     public:
       /// Default constructor
-      AlignmentUpdateCall();
+      AlignmentsUpdateCall();
 
       /// Default destructor
-      virtual ~AlignmentUpdateCall();
+      virtual ~AlignmentsUpdateCall();
 
       /// Interface to client Callback in order to update the condition. To be overloaded by sub-class
       virtual Condition operator()(const ConditionKey& key, const UpdateContext& context) = 0;

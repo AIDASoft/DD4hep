@@ -38,7 +38,7 @@ DDDB::DDDBAlignmentUpdateCall::operator()(const ConditionKey& key, const UpdateC
            key.name.c_str(), det.level(), det.path().c_str());
   if ( par.typeInfo() == typeid(Data::Delta) )  {
     const Data::Delta& delta = src.first<Data::Delta>();
-    return AlignmentUpdateCall::handle(key, context, delta);
+    return AlignmentsUpdateCall::handle(key, context, delta);
   }
   // Somehow the condition is not of type Data::Delta. This is an ERROR.
   // Here only print and return an empty alignment condition.

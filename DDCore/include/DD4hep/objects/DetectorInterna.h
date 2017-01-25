@@ -158,20 +158,23 @@ namespace DD4hep {
 
       /// Global alignment data
       Ref_t               global_alignment;
+      //@}
 
+#if 0      
       // To be removed!
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
       std::vector<Alignment> volume_alignments;
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
       std::vector<Alignment> volume_surveys;
-      //@}
+#endif
+
       //@{ Cached information of the detector element
       /// Intermediate buffer to store the transformation to the world coordination system
       TGeoHMatrix worldTrafo;
       /// Intermediate buffer to store the transformation to the parent detector element
-      TGeoHMatrix parentTrafo;
+      //TGeoHMatrix parentTrafo;
       /// Intermediate buffer for the transformation to an arbitrary DetElement
-      TGeoHMatrix* referenceTrafo;
+      //TGeoHMatrix* referenceTrafo;
       //@}
 
     private:
@@ -199,7 +202,7 @@ namespace DD4hep {
       /// Create cached matrix to transform to parent coordinates
       const TGeoHMatrix& parentTransformation();
       /// Create cached matrix to transform to reference coordinates
-      const TGeoHMatrix& referenceTransformation();
+      //const TGeoHMatrix& referenceTransformation();
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer);
       /// Trigger update callbacks

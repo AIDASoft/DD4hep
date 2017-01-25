@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -32,7 +31,7 @@ void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
     }
     else if ( !handleUsingCache(component,comp_vol) )  {
       DetElement par = component.parent();
-      const TGeoHMatrix& m = par.worldTransformation();
+      const TGeoHMatrix& m = par.nominal().worldTransformation();
       double dz = m.GetTranslation()[2];
       const double* trans = placementTranslation(component);
       double half_mod_thickness  = (mod_shape->GetZ(1)-mod_shape->GetZ(0))/2.0;

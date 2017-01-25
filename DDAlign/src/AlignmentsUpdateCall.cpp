@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
 #include "DDAlign/AlignmentsManager.h"
 #include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/InstanceCount.h"
@@ -21,19 +21,19 @@
 using namespace DD4hep::Alignments;
 
 /// Default constructor
-AlignmentUpdateCall::AlignmentUpdateCall()
+AlignmentsUpdateCall::AlignmentsUpdateCall()
   : DD4hep::Conditions::ConditionUpdateCall(), printLevel(DEBUG)
 {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-AlignmentUpdateCall::~AlignmentUpdateCall() {
+AlignmentsUpdateCall::~AlignmentsUpdateCall() {
   InstanceCount::decrement(this);
 }
 
-AlignmentUpdateCall::Condition
-AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, const Delta& delta)  {
+AlignmentsUpdateCall::Condition
+AlignmentsUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, const Delta& delta)  {
   AlignmentCondition target(key.name);
   AlignmentData&     data = target.data();
   data.delta     = delta;
@@ -60,8 +60,8 @@ AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, 
 }
 
 /// Handler to be called if the Alignment cannot be created due to a bad underlying data type.
-AlignmentUpdateCall::Condition
-AlignmentUpdateCall::invalidDataType(const ConditionKey& key, const UpdateContext& context)  {
+AlignmentsUpdateCall::Condition
+AlignmentsUpdateCall::invalidDataType(const ConditionKey& key, const UpdateContext& context)  {
   // Here only print and return an empty alignment condition.
   // Otherwise the return is not accepted!
   // TODO: To be decided how to handle this error

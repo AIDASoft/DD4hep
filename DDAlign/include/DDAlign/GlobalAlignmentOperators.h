@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H
-#define DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H
+#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H
+#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -31,17 +30,18 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class AlignmentOperator  {
+    class GlobalAlignmentOperator  {
     public:
-      typedef AlignmentStack::StackEntry  Entry;
-      typedef GlobalAlignmentCache::Cache Cache;
-      typedef std::vector<Entry*>         Entries;
+      typedef GlobalAlignmentStack::StackEntry  Entry;
+      typedef GlobalAlignmentCache::Cache       Cache;
+      typedef std::vector<Entry*>               Entries;
       typedef std::map<std::string,std::pair<TGeoPhysicalNode*,Entry*> > Nodes;
       GlobalAlignmentCache& cache;
       Nodes& nodes;
+
     public:
       /// Initializing functor constructor
-      AlignmentOperator(GlobalAlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
+      GlobalAlignmentOperator(GlobalAlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
       /// Insert alignment entry
       void insert(GlobalAlignment alignment)  const;
     };
@@ -52,12 +52,18 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class AlignmentSelector : public AlignmentOperator {
+    class GlobalAlignmentSelector : public GlobalAlignmentOperator {
     public:
       const Entries& entries;
       /// Initializing functor constructor
-      AlignmentSelector(GlobalAlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
-      const AlignmentSelector& reset()   const { nodes.clear(); return *this; }
+      GlobalAlignmentSelector(GlobalAlignmentCache& c, Nodes& n, const Entries& e)
+        : GlobalAlignmentOperator(c,n), entries(e)
+      {
+      }
+      const GlobalAlignmentSelector& reset()   const {
+        nodes.clear();
+        return *this;
+      }
       /// Function callback for cache entries
       void operator()(const GlobalAlignmentCache::Cache::value_type& e) const;
       /// Function callback for entries
@@ -70,11 +76,16 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    template <typename T> class AlignmentActor : public AlignmentOperator {
+    template <typename T> class GlobalAlignmentActor : public GlobalAlignmentOperator {
     public:
       /// Initializing functor constructor
-      AlignmentActor(GlobalAlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
-      void init() {}
+      GlobalAlignmentActor(GlobalAlignmentCache& c, Nodes& n)
+        : GlobalAlignmentOperator(c,n)
+      {
+        init();
+      }
+      void init() {
+      }
       /// Function callback for entries
       void operator()(Nodes::value_type& e) const;
     };
@@ -88,11 +99,11 @@ namespace DD4hep {
     }
 
     // Specializations
-    template <> void AlignmentActor<DDAlign_standard_operations::node_print>::init();
-    template <> void AlignmentActor<DDAlign_standard_operations::node_print>::operator() (Nodes::value_type& n)  const;
-    template <> void AlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const;
-    template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operator() (Nodes::value_type& n)  const;
-    template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operator() (Nodes::value_type& n)  const;
-  }       /* End namespace Alignments              */
-}         /* End namespace DD4hep                  */
-#endif    /* DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H */
+    template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_print>::init();
+    template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_print>::operator() (Nodes::value_type& n)  const;
+    template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const;
+    template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::operator() (Nodes::value_type& n)  const;
+    template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_align>::operator() (Nodes::value_type& n)  const;
+  }       /* End namespace Alignments                    */
+}         /* End namespace DD4hep                        */
+#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H */
