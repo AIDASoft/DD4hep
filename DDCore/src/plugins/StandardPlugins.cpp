@@ -17,6 +17,7 @@
 #include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/PluginCreators.h"
 #include "DD4hep/DD4hepRootPersistency.h"
@@ -176,8 +177,8 @@ static long root_elements(LCDD& lcdd, int argc, char** argv) {
   for(int i=0; i<argc; ++i)  {
     if ( argv[i][0] == '-' )  {
       char c = ::tolower(argv[i][1]);
-      if ( c == 't' ) type = argv[++i];
-      else if ( c == 'o' ) output = argv[++i];
+      if ( c == 't' && i+1<argc ) type = argv[++i];
+      else if ( c == 'o' && i+1<argc ) output = argv[++i];
       else  {
         ::printf("DD4hepElementTable -opt [-opt]                         \n"
                  "  -type   <string>    Output format: text or xml       \n"
@@ -230,6 +231,121 @@ static long root_elements(LCDD& lcdd, int argc, char** argv) {
   return 1;
 }
 DECLARE_APPLY(DD4hepElementTable,root_elements)
+
+/// Basic entry point to dump the ROOT TGeoElementTable object
+/**
+ *  Dump the elment table to stdout or file.
+ *
+ *  Factory: DD4hepElementTable -format xml/text(default) -output <file-name>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long root_materials(LCDD& lcdd, int argc, char** argv) {
+  struct MaterialPrint {
+    typedef XML::Element elt_h;
+    MaterialPrint() = default;
+    virtual ~MaterialPrint() = default;
+    virtual elt_h print(TGeoMaterial* m)  {
+      ::printf("%-8s %-32s  Aeff=%7.3f Zeff=%7.4f rho=%8.3f [g/mole] radlen=%8.3g [cm] intlen=%8.3g [cm] index=%3d\n",
+               m->IsMixture() ? "Mixture" : "Material",
+               m->GetName(), m->GetA(), m->GetZ(), m->GetDensity(),
+               m->GetRadLen(), m->GetIntLen(), m->GetIndex());
+      return elt_h(0);
+    }
+    virtual void print(elt_h, TGeoElement* e, double frac)   {
+      ::printf("  %-6s Fraction: %7.3f Z=%3d A=%6.2f N=%3d Neff=%6.2f\n",
+               e->GetName(), frac, e->Z(), e->A(), e->N(), e->Neff());
+    }
+    virtual void operator()(TGeoMaterial* m)  {
+      Double_t* mix = m->IsMixture() ? ((TGeoMixture*)m)->GetWmixt() : 0;
+      elt_h  mh = print(m);
+      for(int n=m->GetNelements(), i=0; i<n; ++i)   {
+        TGeoElement* e = m->GetElement(i);
+        print(mh, e, mix ? mix[i] : 1);
+      }
+    }
+  };
+  struct MaterialPrintXML : public MaterialPrint  {
+    elt_h root;
+    MaterialPrintXML(elt_h r) : root(r) {}
+    virtual ~MaterialPrintXML() {}
+    virtual elt_h print(TGeoMaterial* m)  {
+      elt_h elt = root.addChild(_U(material));
+      elt.setAttr(_U(name),m->GetName());
+      if ( ::strlen(m->GetTitle())>0 )   {
+        elt.setAttr(_U(formula),m->GetTitle());
+      }
+      else if ( m->GetNelements() == 1 )   {
+        elt.setAttr(_U(formula),m->GetElement(0)->GetName());
+      }
+      elt_h D = elt.addChild(_U(D));
+      D.setAttr(_U(type),"density");
+      D.setAttr(_U(value),m->GetDensity());
+      D.setAttr(_U(unit),"g/cm3");
+      return elt;
+    }
+    virtual void print(elt_h mat, TGeoElement* e, double frac)  {
+      elt_h elt = mat.addChild(_U(composite));
+      elt.setAttr(_U(n),frac);
+      elt.setAttr(_U(ref),e->GetName());
+    }
+  };
+
+  string type = "text", output = "";
+  for(int i=0; i<argc; ++i)  {
+    if ( argv[i][0] == '-' )  {
+      char c = ::tolower(argv[i][1]);
+      if ( c == 't' && i+1<argc ) type = argv[++i];
+      else if ( c == 'o' && i+1<argc ) output = argv[++i];
+      else  {
+        ::printf("DD4hepElementTable -opt [-opt]                         \n"
+                 "  -type   <string>    Output format: text or xml       \n"
+                 "  -output <file-name> Output file specifier (xml only) \n"
+                 "\n");
+        exit(EINVAL);
+      }
+    }
+  }
+
+  XML::Document doc(0);
+  XML::DocumentHandler docH;
+  XML::Element  element(0);
+  if ( type == "xml" )  {
+     const char comment[] = "\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   Linear collider detector description in C++       ++++\n"
+    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Table of elements as defined in ROOT: " ROOT_RELEASE  "     ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+     doc = docH.create("materials", comment);
+     element = doc.root();
+  }
+  dd4hep_ptr<MaterialPrint> printer(element
+                                   ? new MaterialPrintXML(element)
+                                   : new MaterialPrint());
+  TObject* obj = 0;
+  TList* mats = lcdd.manager().GetListOfMaterials();
+  dd4hep_ptr<TIterator> iter(mats->MakeIterator());
+  while( (obj=iter->Next()) != 0 )  {
+    TGeoMaterial* mat = (TGeoMaterial*)obj;
+    (*printer)(mat);
+  }
+  if ( element )   {
+    XML::DocumentHandler dH;
+    dH.output(doc, output);
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hepMaterialTable,root_materials)
 
 /// Basic entry point to interprete an XML document
 /**

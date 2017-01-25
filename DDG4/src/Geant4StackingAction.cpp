@@ -41,7 +41,7 @@ Geant4StackingAction::~Geant4StackingAction() {
 
 /// Standard constructor
 Geant4SharedStackingAction::Geant4SharedStackingAction(Geant4Context* ctxt, const string& nam)
-  : Geant4StackingAction(ctxt, nam)
+  : Geant4StackingAction(ctxt, nam), m_action(0)
 {
   InstanceCount::increment(this);
 }

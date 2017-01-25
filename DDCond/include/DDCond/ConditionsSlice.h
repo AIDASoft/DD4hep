@@ -178,14 +178,22 @@ namespace DD4hep {
       dd4hep_ptr<UserPool> pool;
 
     protected:
+      /// Container of conditions required by this slice
       ConditionsProxy      m_conditions;
+      /// Container of derived conditions required by this slice
       ConditionsProxy      m_derived;
-
+      /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
+      ConditionsProxy      m_missingConditions;
+      /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not computed
+      ConditionsProxy      m_missingDerivations;
+      
       /// Default assignment operator
       ConditionsSlice& operator=(const ConditionsSlice& copy) = delete;
 
-      /// Add a new conditions entry
+      /// Add a new conditions descriptor entry
       bool insert_condition(Descriptor* entry);
+      /// Add a new condition to the user pool
+      bool insert_condition(Condition condition);
 
     public:
       /// Default constructor
@@ -202,6 +210,11 @@ namespace DD4hep {
       const ConditionsProxy& derived() const     { return m_derived;      }
       /// Number of entries
       size_t size() const  { return m_conditions.size()+m_derived.size(); }
+      /// Access the map of missing conditions (only valid after preparation)
+      ConditionsProxy& missingConditions()  { return m_missingConditions; }
+      /// Access the map of missing computational conditions (only valid after preparation)
+      ConditionsProxy& missingDerivations() { return m_missingDerivations;}
+
       /// Clear the container. Destroys the contained stuff
       void clear();
       /// Clear the conditions access and the user pool.
@@ -221,6 +234,12 @@ namespace DD4hep {
       bool insert(const ConditionKey& key, const T& loadinfo)   {
         Descriptor* e = new ConditionsLoaderDescriptor<T>(key,loadinfo);
         return insert_condition(e);
+      }
+      /// Add a condition directly to the slice
+      /** Note: The user pool must exist. This call ONLY allows to update the user pool.
+       */
+      bool insert(Condition condition)   {
+        return insert_condition(condition);
       }
     };
 

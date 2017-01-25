@@ -260,12 +260,12 @@ namespace DD4hep {
       void getData(const ComponentCast& cast, std::vector<void*>* result);
 
     public:
-      enum {
+      enum OptimizationFlags  {
         OPTIMIZE_NONE = 0,
         OPTIMIZE_REPEATEDLOOKUP = 1<<0,
         OPTIMIZE_MAPPEDLOOKUP   = 1<<1,
         OPTIMIZE_LAST
-      } OptimizationFlags;
+      };
 
       /// Initializing constructor (C++ version)
       template <typename TYPE>
@@ -287,7 +287,7 @@ namespace DD4hep {
       {
         newInstance();
         m_hits.reserve(200);
-        m_flags.value = 0;//OPTIMIZE_REPEATEDLOOKUP;
+        m_flags.value = OPTIMIZE_NONE;
       }
       /// Default destructor
       virtual ~Geant4HitCollection();

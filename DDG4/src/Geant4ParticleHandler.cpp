@@ -49,7 +49,8 @@ typedef ReferenceBitMask<int> PropertyMask;
 
 /// Standard constructor
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& nam)
-: Geant4GeneratorAction(ctxt,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
+  : Geant4GeneratorAction(ctxt,nam), Geant4MonteCarloTruth(),
+    m_ownsParticles(false), m_userHandler(0), m_primaryMap(0)
 {
   InstanceCount::increment(this);
   //generatorAction().adopt(this);
@@ -69,7 +70,10 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& 
 }
 
 /// No default constructor
-Geant4ParticleHandler::Geant4ParticleHandler() : Geant4GeneratorAction(0,"") {
+Geant4ParticleHandler::Geant4ParticleHandler()
+  : Geant4GeneratorAction(0,""), Geant4MonteCarloTruth(),
+    m_ownsParticles(false), m_userHandler(0), m_primaryMap(0)
+{
 }
 
 /// Default destructor

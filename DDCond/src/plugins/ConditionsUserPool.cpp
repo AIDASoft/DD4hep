@@ -330,7 +330,11 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   typedef std::vector<pair<Condition::key_type,ConditionsDescriptor*> > _Missing;
   const auto& slice_cond = slice.conditions();
   const auto& slice_calc = slice.derived();
-  IOV pool_iov(required.iovType);
+  auto&  slice_miss_cond = slice.missingConditions();
+  auto&  slice_miss_calc = slice.missingDerivations();
+  bool   do_load         = m_manager->doLoadConditions();
+  bool   do_output_miss  = m_manager->doOutputUnloaded();
+  IOV    pool_iov(required.iovType);
   Result result;
 
   // This is a critical operation, because we have to ensure the
@@ -340,6 +344,8 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   lock_guard<mutex> guard(lock);
 
   m_conditions.clear();
+  slice_miss_cond.clear();
+  slice_miss_calc.clear();
   pool_iov.reset().invert();
   m_iovPool->select(required, Operators::mapConditionsSelect(m_conditions), pool_iov);
   m_iov = pool_iov;
@@ -369,47 +375,66 @@ ConditionsMappedUserPool<MAPPING>::prepare_VSN_1(const IOV&              require
   // Now we load the missing conditions from the conditions loader
   //
   if ( num_cond_miss > 0 )  {
-    ConditionsDataLoader::LoadedItems loaded;
-    size_t updates = m_loader->load_many(required, cond_missing, loaded, pool_iov);
-    if ( updates > 0 )  {
-      // Need to compute the intersection: All missing entries are required....
-      _Missing load_missing(cond_missing.size()+loaded.size());
-      // Note: cond_missing is already sorted (doc of 'set_difference'). No need to re-sort....
-      _Missing::iterator load_last = set_difference(begin(cond_missing), last_cond,
-                                                    begin(loaded), end(loaded),
-                                                    begin(load_missing), COMP());
-      int num_load_miss = int(load_last-begin(load_missing));
-      printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
-               "Found %ld out of %d conditions, which CANNOT be loaded...",
-               num_load_miss, int(loaded.size()));
-
-      for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
-      result.loaded  = slice_cond.size()-num_load_miss;
-      result.missing = num_load_miss+num_calc_miss;
-      if ( cond_missing.size() != loaded.size() )  {
-        // ERROR!
+    if ( do_load )  {
+      ConditionsDataLoader::LoadedItems loaded;
+      size_t updates = m_loader->load_many(required, cond_missing, loaded, pool_iov);
+      if ( updates > 0 )  {
+        // Need to compute the intersection: All missing entries are required....
+        _Missing load_missing(cond_missing.size()+loaded.size());
+        // Note: cond_missing is already sorted (doc of 'set_difference'). No need to re-sort....
+        _Missing::iterator load_last = set_difference(begin(cond_missing), last_cond,
+                                                      begin(loaded), end(loaded),
+                                                      begin(load_missing), COMP());
+        int num_load_miss = int(load_last-begin(load_missing));
+        printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
+                 "Found %ld out of %d conditions, which CANNOT be loaded...",
+                 num_load_miss, int(loaded.size()));
+        if ( do_output_miss )  {
+          copy(begin(load_missing), load_last, inserter(slice_miss_cond, slice_miss_cond.begin()));
+        }
+        for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
+        result.loaded  = slice_cond.size()-num_load_miss;
+        result.missing = num_load_miss+num_calc_miss;
+        if ( cond_missing.size() != loaded.size() )  {
+          // ERROR!
+        }
       }
+    }
+    else if ( do_output_miss )  {
+      copy(begin(cond_missing), last_cond, inserter(slice_miss_cond, slice_miss_cond.begin()));
     }
   }
   //
   // Now we update the already existing dependencies, which have expired
   //
   if ( num_calc_miss > 0 )  {
-    ConditionsDependencyCollection deps(calc_missing.begin(), last_calc, _to_dep);
-    ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
-    for(auto i=begin(deps); i != end(deps); ++i)   {
-      const ConditionDependency* d = (*i).second.get();
-      typename MAPPING::iterator j = m_conditions.find(d->key());
-      // If we would know, that dependencies are only ONE level, we could skip this search....
-      if ( j == m_conditions.end() )  {
-        handler(d);
+    if ( do_load )  {
+      ConditionsDependencyCollection deps(calc_missing.begin(), last_calc, _to_dep);
+      ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
+      for(auto i=begin(deps); i != end(deps); ++i)   {
+        const ConditionDependency* d = (*i).second.get();
+        typename MAPPING::iterator j = m_conditions.find(d->key());
+        // If we would know, that dependencies are only ONE level, we could skip this search....
+        if ( j == m_conditions.end() )  {
+          handler(d);
+          continue;
+        }
+        // printout(INFO,"UserPool","Already calcluated: %s",d->name());
         continue;
       }
-      // printout(INFO,"UserPool","Already calcluated: %s",d->name());
-      continue;
+      result.computed = handler.num_callback;
+      result.missing -= handler.num_callback;
+      if ( do_output_miss && result.computed < deps.size() )  {
+        for(auto i=calc_missing.begin(); i != last_calc; ++i)   {
+          typename MAPPING::iterator j = m_conditions.find((*i).first);
+          if ( j == m_conditions.end() )
+            slice_miss_calc.insert(*i);
+        }
+      }
     }
-    result.computed = handler.num_callback;
-    result.missing -= handler.num_callback;
+    else if ( do_output_miss )  {
+      copy(begin(calc_missing), last_calc, inserter(slice_miss_calc, slice_miss_calc.begin()));
+    }
   }
   return result;
 }

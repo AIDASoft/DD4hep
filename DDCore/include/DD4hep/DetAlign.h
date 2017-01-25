@@ -89,11 +89,11 @@ namespace DD4hep {
       /// Access to the alignments information
       Container alignments() const;
       /// Access to alignment objects from a given pool
-      Alignment get(const std::string& key,  const UserPool& pool);
+      Alignment get(const std::string&  key, const UserPool& pool);
       /// Access to alignment objects from a given pool
       Alignment get(Alignment::key_type key, const UserPool& pool);
       /// Access to alignment objects. Only alignments in the pool are accessed.
-      Alignment get(const std::string& key,  const Alignment::iov_type& iov);
+      Alignment get(const std::string&  key, const Alignment::iov_type& iov);
       /// Access to alignment objects. Only alignments in the pool are accessed.
       Alignment get(Alignment::key_type key, const Alignment::iov_type& iov);
     };

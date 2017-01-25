@@ -359,12 +359,12 @@ namespace DD4hep {
       /// Access to the physical volume of this detector element
       PlacedVolume placement() const;
       /// Set the physical volumes of the detector element
-      DetElement& setPlacement(const PlacedVolume& volume);
+      DetElement&  setPlacement(const PlacedVolume& volume);
       /// The cached VolumeID of this subdetector element
-      VolumeID volumeID() const;
+      VolumeID     volumeID() const;
 
       /// Add new child to the detector structure
-      DetElement& add(DetElement sub_element);
+      DetElement&  add(DetElement sub_element);
       /// Access to the list of children
       const Children& children() const;
       /// Access to individual children by name

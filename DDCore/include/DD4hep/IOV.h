@@ -33,7 +33,7 @@ namespace DD4hep {
    */
   class IOVType   {
   public:
-    enum { UNKNOWN_IOV = ~0x0 } _IOVTypes;
+    enum _IOVTypes { UNKNOWN_IOV = ~0x0 };
     /// integer identifier ised internally
     unsigned int type = UNKNOWN_IOV;
     /// String name

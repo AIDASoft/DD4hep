@@ -50,6 +50,8 @@ ConditionsManagerObject::ConditionsManagerObject(LCDD& ref_lcdd)
   : NamedObject(), m_lcdd(ref_lcdd)
 {
   InstanceCount::increment(this);
+  declareProperty("LoadConditions",           m_doLoad);
+  declareProperty("OutputUnloadedConditions", m_doOutputUnloaded);
 }
 
 /// Default destructor

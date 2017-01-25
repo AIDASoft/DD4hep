@@ -111,6 +111,16 @@ bool ConditionsSlice::insert_condition(Descriptor* entry)   {
   return false;
 }
 
+/// Add a new condition to the user pool
+bool ConditionsSlice::insert_condition(Condition condition)   {
+  if ( condition.isValid() )  {
+    return pool->insert(condition);
+  }
+  DD4hep::except("ConditionsSlice",
+                 "insert_condition: Cannot insert invalid conditions to the user pool!");
+  return false;
+}
+
 namespace  {
   
   struct SliceOper  : public ConditionsSelect  {

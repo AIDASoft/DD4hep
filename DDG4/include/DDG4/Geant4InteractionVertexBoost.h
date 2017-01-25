@@ -48,6 +48,8 @@ namespace DD4hep {
       void boost(Interaction* interaction)  const;
 
     public:
+      /// Inhibit default constructor
+      Geant4InteractionVertexBoost() = delete;
       /// Standard constructor
       Geant4InteractionVertexBoost(Geant4Context* context, const std::string& name);
       /// Default destructor

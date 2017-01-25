@@ -153,15 +153,17 @@ namespace {
      *  @date    01/04/2014
      */
     struct DumpActor {
-      struct Counters {
-        long totConditions;
-        long numConditions;
-        long numAlignments;
-        long numDetElements;
-        long numDetAlignmentKeys;
-        long numDetConditionKeys;
-        long numNoCatalogs;
-        long numDetPlacements;
+      struct Counters  final {
+        long totConditions = 0;
+        long numConditions = 0;
+        long numAlignments = 0;
+        long numDetElements = 0;
+        long numDetAlignmentKeys = 0;
+        long numDetConditionKeys = 0;
+        long numNoCatalogs = 0;
+        long numDetPlacements = 0;
+        Counters() = default;
+        ~Counters() = default;
         void reset() {
           totConditions=numConditions=numAlignments=numNoCatalogs=0;
           numDetElements=numDetConditionKeys=numDetAlignmentKeys=0;

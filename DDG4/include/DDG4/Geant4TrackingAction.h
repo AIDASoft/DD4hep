@@ -43,6 +43,8 @@ namespace DD4hep {
     public:
       typedef Geant4SharedTrackingAction shared_type;
     public:
+      /// Inhibit default constructor
+      Geant4TrackingAction() = delete;
       /// Inhibit copy constructor
       Geant4TrackingAction(const Geant4TrackingAction& copy) = delete;
       /// Standard constructor
@@ -79,6 +81,8 @@ namespace DD4hep {
       /// Reference to the shared action
       Geant4TrackingAction* m_action;
     public:
+      /// Inhibit default constructor
+      Geant4SharedTrackingAction() = delete;
       /// Inhibit copy constructor
       Geant4SharedTrackingAction(const Geant4TrackingAction& copy) = delete;
       /// Standard constructor
@@ -123,8 +127,10 @@ namespace DD4hep {
       /// The list of action objects to be called
       Actors<Geant4TrackingAction> m_actors;
     public:
+      /// Inhibit default constructor
+      Geant4TrackingActionSequence() = delete;
       /// Inhibit copy constructor
-      Geant4TrackingActionSequence(const Geant4TrackingAction& copy) = delete;
+      Geant4TrackingActionSequence(const Geant4TrackingActionSequence& copy) = delete;
       /// Standard constructor
       Geant4TrackingActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor

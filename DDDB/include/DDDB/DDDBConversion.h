@@ -114,8 +114,8 @@ namespace DD4hep {
      */
     class Atom  {
     public:
-      double A, Zeff;
-      Atom() : A(0), Zeff(0) {}
+      double A = 0E0, Zeff = 0E0;
+      Atom() = default;
     };
 
     /// Intermediate structure representing data of a Isotope
@@ -123,7 +123,7 @@ namespace DD4hep {
      */
     class Isotope : public Named  {
     public:
-      double A,Z,density;
+      double A = 0E0,Z = 0E0,density = 0E0;
       /// Default constructor
       Isotope();
       /// Default destructor

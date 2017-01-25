@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -49,7 +48,7 @@ AbstractMap::AbstractMap(const AbstractMap& c)
 }
 
 /// Default constructor
-AbstractMap::AbstractMap() : clientData(0) {
+AbstractMap::AbstractMap() : clientData(0), classID(0) {
   InstanceCount::increment(this);
 }
 

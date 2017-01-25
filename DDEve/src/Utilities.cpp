@@ -74,7 +74,7 @@ void Utilities::MakeNodesVisible(TEveElement* e, bool visible, int level)   {
 }
 
 std::pair<bool,TEveElement*> 
-Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, TGeoHMatrix mat, const std::string& nam)  {
+Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, const TGeoHMatrix& mat, const std::string& nam)  {
   TGeoVolume* vol = n ? n->GetVolume() : 0;
   bool created = false;
 

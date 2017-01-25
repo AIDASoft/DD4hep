@@ -118,32 +118,38 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, const G4Event
     for (int ihc=0, nhc=hc->GetNumberOfCollections(); ihc<nhc; ++ihc)   {
       G4VHitsCollection* c = hc->GetHC(ihc);
       Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(c);
-      size_t nhits = coll->GetSize();
-      for(size_t i=0; i<nhits; ++i)   {
-        Geant4HitData* h = coll->hit(i);
-        Geant4Tracker::Hit* trk_hit = dynamic_cast<Geant4Tracker::Hit*>(h);
-        if ( 0 != trk_hit )   {
-          Geant4HitData::Contribution& t = trk_hit->truth;
-          int trackID = t.trackID;
-          int trueID  = truth->particleID(trackID);
-          if ( trueID == p->id )   {
-            print("+++ %20s           %s[%d]  (%+.2e,%+.2e,%+.2e)[mm]","",c->GetName().c_str(),i,
-                  trk_hit->position.x(),trk_hit->position.y(),trk_hit->position.z());
-          }
-        }
-        Geant4Calorimeter::Hit* cal_hit = dynamic_cast<Geant4Calorimeter::Hit*>(h);
-        if ( 0 != cal_hit )   {
-          Geant4HitData::Contributions& contrib = cal_hit->truth;
-          for(Geant4HitData::Contributions::iterator j=contrib.begin(); j!=contrib.end(); ++j)  {
-            Geant4HitData::Contribution& t = *j;
+      if ( coll )  {
+        size_t nhits = coll->GetSize();
+        for(size_t i=0; i<nhits; ++i)   {
+          Geant4HitData* h = coll->hit(i);
+          Geant4Tracker::Hit* trk_hit = dynamic_cast<Geant4Tracker::Hit*>(h);
+          if ( 0 != trk_hit )   {
+            Geant4HitData::Contribution& t = trk_hit->truth;
             int trackID = t.trackID;
             int trueID  = truth->particleID(trackID);
             if ( trueID == p->id )   {
               print("+++ %20s           %s[%d]  (%+.2e,%+.2e,%+.2e)[mm]","",c->GetName().c_str(),i,
-                    cal_hit->position.x(),cal_hit->position.y(),cal_hit->position.z());
+                    trk_hit->position.x(),trk_hit->position.y(),trk_hit->position.z());
+            }
+          }
+          Geant4Calorimeter::Hit* cal_hit = dynamic_cast<Geant4Calorimeter::Hit*>(h);
+          if ( 0 != cal_hit )   {
+            Geant4HitData::Contributions& contrib = cal_hit->truth;
+            for(Geant4HitData::Contributions::iterator j=contrib.begin(); j!=contrib.end(); ++j)  {
+              Geant4HitData::Contribution& t = *j;
+              int trackID = t.trackID;
+              int trueID  = truth->particleID(trackID);
+              if ( trueID == p->id )   {
+                print("+++ %20s           %s[%d]  (%+.2e,%+.2e,%+.2e)[mm]","",c->GetName().c_str(),i,
+                      cal_hit->position.x(),cal_hit->position.y(),cal_hit->position.z());
+              }
             }
           }
         }
+      }
+      else  {
+        print("+++ Hit unknown hit collection type: %s --> %s",
+              c->GetName(),typeName(typeid(*c)).c_str());
       }
     }
   }
@@ -182,9 +188,13 @@ void Geant4ParticlePrint::printParticles(const G4Event* e, const ParticleMap& pa
         num_calo_hits,num_tracker_hits,num_process,num_parent);
 }
 
-void Geant4ParticlePrint::printParticleTree(const G4Event* e, const ParticleMap& particles, int level, Geant4ParticleHandle p)  const  {
-  char txt[32];
-  size_t len = sizeof(txt)-1;
+void Geant4ParticlePrint::printParticleTree(const G4Event* e,
+                                            const ParticleMap& particles,
+                                            int level,
+                                            Geant4ParticleHandle p)  const
+{
+  char txt[64];
+  size_t len = sizeof(txt)-33; // Careful about overruns...
   // Ensure we do not overwrite the array
   if ( level>int(len)-3 ) level=len-3;
 

@@ -18,7 +18,6 @@
 #include "DDCond/ConditionsManager.h"
 
 // C/C++ include files
-#include <set>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -139,7 +138,6 @@ namespace DD4hep {
     public:
       /// Forward definition of the key type
       typedef Condition::key_type                  key_type;
-      typedef std::set<ConditionKey>               ConditionKeys;
       typedef ConditionDependency                  Dependency;
       typedef ConditionsDependencyCollection       Dependencies;
       typedef ConditionsManager::Result            Result;
