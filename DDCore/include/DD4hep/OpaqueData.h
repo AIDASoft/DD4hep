@@ -81,11 +81,11 @@ namespace DD4hep {
   class OpaqueDataBlock : public OpaqueData   {
 
   protected:
-    enum {
+    enum _DataTypes  {
       PLAIN_DATA = 1<<0,
       ALLOC_DATA = 1<<1,
       BOUND_DATA = 1<<2
-    } _DataTypes;
+    };
     /// Data buffer: plain data are allocated directly on this buffer
     /** Internal data buffer is sufficient to store any vector  */
     unsigned char data[sizeof(std::vector<void*>)];

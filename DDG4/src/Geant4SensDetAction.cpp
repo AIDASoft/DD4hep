@@ -239,7 +239,7 @@ long long int Geant4Sensitive::cellID(const G4Step* s) {
 
 /// Standard constructor
 Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, const string& nam)
-  : Geant4Action(ctxt, nam), m_hce(0)
+  : Geant4Action(ctxt, nam), m_hce(0), m_detector(0)
 {
   m_needsControl = true;
   context()->sensitiveActions().insert(name(), this);

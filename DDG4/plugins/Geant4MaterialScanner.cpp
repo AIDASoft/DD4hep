@@ -54,9 +54,9 @@ namespace DD4hep {
       };
       typedef std::vector<StepInfo*> Steps;
 
-      double m_sumX0;
-      double m_sumLambda;
-      double m_sumPath;
+      double m_sumX0     = 0E0;
+      double m_sumLambda = 0E0;
+      double m_sumPath   = 0E0;
       Steps  m_steps;
 
     public:
@@ -124,7 +124,7 @@ Geant4MaterialScanner::StepInfo& Geant4MaterialScanner::StepInfo::operator=(cons
 
 /// Standard constructor
 Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* ctxt, const string& nam)
-: Geant4SteppingAction(ctxt,nam)
+  : Geant4SteppingAction(ctxt,nam)
 {
   m_needsControl = true;
   eventAction().callAtBegin(this,&Geant4MaterialScanner::beginEvent);

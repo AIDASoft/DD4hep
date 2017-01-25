@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -38,7 +37,8 @@ ClassImp(EventControl)
 /// Standard constructor
 EventControl::EventControl(Display* display, unsigned int width, unsigned int height) 
 : FrameControl(&display->client(), "EventControl GUI", width, height), EventConsumer(), 
-  m_display(display), m_dataGroup(0), m_dataFrame(0), m_numEvtFrame(0), m_input1(0), m_input2(0),
+  m_display(display), m_dataGroup(0), m_dataFrame(0), m_eventGroup(0),
+  m_numEvtFrame(0), m_input1(0), m_input2(0), m_numEvtLabel(0),
   m_open(0), m_prev(0), m_next(0), m_goto(0)
 {
   SetWindowName("XX GUI");
@@ -48,7 +48,11 @@ EventControl::EventControl(Display* display, unsigned int width, unsigned int he
 
 /// Default destructor
 EventControl::~EventControl()   {
-  m_display->eventHandler().Unsubscribe(this);
+  try {
+    m_display->eventHandler().Unsubscribe(this);
+  }
+  catch(...)  {
+  }
   InstanceCount::decrement(this);
 }
 

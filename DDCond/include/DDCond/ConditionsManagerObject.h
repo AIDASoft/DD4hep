@@ -70,30 +70,52 @@ namespace DD4hep {
       Listeners              m_onRemove;
       /// Reference to the data loader userd by this instance
       Loader                 m_loader;
+      /// Property: Flag to indicate if items should be loaded (or not)
+      bool                   m_doLoad = true;
+      /// Property: Flag to indicate if unloaded items should be saved to the slice (or not)
+      bool                   m_doOutputUnloaded = false;
+
       /// Register callback listener object
       void registerCallee(Listeners& listeners, const Listener& callee, bool add);
 
     public:
+
       /// Default constructor
       ConditionsManagerObject(LCDD& lcdd);
+
       /// Default destructor
       virtual ~ConditionsManagerObject();
+
       /// Access to the detector description instance
-      LCDD& lcdd() const                    {  return m_lcdd;          }
+      LCDD& lcdd() const                    {  return m_lcdd;              }
+
       /// Access to the data loader
-      ConditionsDataLoader* loader()  const {  return m_loader.get();  }
+      ConditionsDataLoader* loader()  const {  return m_loader.get();      }
+
+      /// Access to load flag
+      bool doLoadConditions()  const        {  return m_doLoad;            }
+
+      /// Access to flag to indicate if unloaded items should be saved to the slice (or not)
+      bool doOutputUnloaded()  const        {  return m_doOutputUnloaded;  }
+
       /// Listener invocation when a condition is registered to the cache
       void onRegister(Condition condition);
+
       /// Listener invocation when a condition is deregistered from the cache
       void onRemove(Condition condition);
+
       /// (Un)Registration of conditions listeners with callback when a new condition is registered
       void callOnRegister(const Listener& callee, bool add);
+
       /// (Un)Registration of conditions listeners with callback when a condition is unregistered
       void callOnRemove(const Listener& callee, bool add);
+
       /// Access the used/registered IOV types
       const std::vector<const IOVType*> iovTypesUsed() const;
+
       /// Create IOV from string
       void fromString(const std::string& iov_str, IOV& iov);
+
       /// Register IOV using new string data
       ConditionsPool* registerIOV(const std::string& data);
 
@@ -147,6 +169,7 @@ namespace DD4hep {
       /// Full cleanup of all managed conditions.
       /** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
       virtual std::pair<int,int> clear() = 0;
+
     };
   }    /* End namespace Geometry                       */
 }      /* End namespace DD4hep                         */

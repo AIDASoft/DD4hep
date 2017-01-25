@@ -42,7 +42,7 @@ namespace DD4hep  {
   using namespace DDDB;
 
   /// Default constructor
-  dddb::dddb() : top(0), structure(0), geometry(0)  {
+  dddb::dddb() : world{0E0,0E0,0E0}, top(0), structure(0), geometry(0)  {
     InstanceCount::increment(this);
   }
 
@@ -197,7 +197,7 @@ namespace DD4hep  {
 
   /// Default constructor
   Shape::Shape() : type(0), zplanes(), boolean_ops() {
-    ::memset(&s.box,0,sizeof(s));
+    ::memset(&s,0,sizeof(s));
     InstanceCount::increment(this);
   }
   

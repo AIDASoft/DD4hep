@@ -70,7 +70,7 @@ namespace DD4hep {
       int load(const std::string& input, Data& data)  const;
     };
 
-  } /* End namespace Geometry               */
+  } /* End namespace Conditions             */
 } /* End namespace DD4hep                   */
 
 #endif /* DD4HEP_CONDITIONS_CONDITIONSREPOSITORY_H  */

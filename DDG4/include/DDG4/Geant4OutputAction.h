@@ -60,6 +60,10 @@ namespace DD4hep {
       /// Reference to MC truth object
       Geant4ParticleMap* m_truth;
     public:
+      /// Inhibit default constructor
+      Geant4OutputAction() = delete;
+      /// Inhibit copy constructor
+      Geant4OutputAction(const Geant4OutputAction& copy) = delete;
       /// Standard constructor
       Geant4OutputAction(Geant4Context* c, const std::string& nam);
       /// Default destructor

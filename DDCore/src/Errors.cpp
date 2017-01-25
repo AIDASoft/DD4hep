@@ -11,7 +11,6 @@
 //  \version 1.0
 //
 //==========================================================================
-// $Id$
 
 // Framework include files
 #include "DD4hep/Errors.h"

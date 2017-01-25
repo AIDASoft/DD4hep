@@ -17,6 +17,7 @@
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Printout.h"
+//#include "DD4hep/Mixture.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/objects/SegmentationsInterna.h"
 #include "DD4hep/objects/DetectorInterna.h"
@@ -328,6 +329,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 #endif
     //throw 1;
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
+    //mat = mix = new Mixture(matname, composites.size(), dens_val);
     size_t ifrac = 0;
     vector<double> composite_fractions;
     double composite_fractions_total = 0.0;
@@ -361,6 +363,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
     }
+    mix->SetRadLen(0e0);
 
     //fg: calling SetDensity for TGeoMixture results in incorrect radLen and intLen ( computed only from first element ) 
     // // Update estimated density if not provided.

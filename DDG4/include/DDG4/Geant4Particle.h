@@ -105,18 +105,18 @@ namespace DD4hep {
     public:
       typedef std::set<int> Particles;
       /// Reference counter
-      int ref;           //! not persistent
-      int id, g4Parent, reason, mask;
-      int steps, secondaries, pdgID;
-      int status, colorFlow[2];
-      char charge, _spare[3];
-      float spin[3];
+      int ref = 0;           //! not persistent
+      int id  = 0, g4Parent = 0, reason = 0, mask = 0;
+      int steps  = 0, secondaries = 0, pdgID = 0;
+      int status = 0, colorFlow[2] {0,0};
+      char charge = 0, _spare[3] {0,0,0};
+      float spin[3] {0E0,0E0,0E0};
       // 12 ints + 4 floats should be aligned to 8 bytes....
-      double vsx, vsy, vsz;
-      double vex, vey, vez;
-      double psx, psy, psz;
-      double pex, pey, pez;
-      double mass, time, properTime;
+      double vsx = 0E0, vsy = 0E0, vsz = 0E0;
+      double vex = 0E0, vey = 0E0, vez = 0E0;
+      double psx = 0E0, psy = 0E0, psz = 0E0;
+      double pex = 0E0, pey = 0E0, pez = 0E0;
+      double mass = 0E0, time = 0E0, properTime = 0E0;
       /// The list of daughters of this MC particle
       Particles parents;
       Particles daughters;
@@ -127,7 +127,7 @@ namespace DD4hep {
 #else
       dd4hep_ptr<ParticleExtension> extension;   //! not persisten. ROOT cannot handle
 #endif
-      const G4VProcess *process;                 //! not persistent
+      const G4VProcess *process = 0;             //! not persistent
       /// Default constructor
       Geant4Particle();
       /// Constructor with ID initialization

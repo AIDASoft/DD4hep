@@ -41,7 +41,7 @@ Geant4GeneratorAction::~Geant4GeneratorAction() {
 
 /// Standard constructor
 Geant4SharedGeneratorAction::Geant4SharedGeneratorAction(Geant4Context* ctxt, const string& nam)
-  : Geant4GeneratorAction(ctxt, nam)
+  : Geant4GeneratorAction(ctxt, nam), m_action(0)
 {
   InstanceCount::increment(this);
 }

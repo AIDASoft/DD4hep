@@ -56,6 +56,10 @@ namespace DD4hep {
       void smear(Interaction* interaction)  const;
       
     public:
+      /// Inhibit default constructor
+      Geant4InteractionVertexSmear() = delete;
+      /// Inhibit copy constructor
+      Geant4InteractionVertexSmear(const Geant4InteractionVertexSmear& copy) = delete;
       /// Standard constructor
       Geant4InteractionVertexSmear(Geant4Context* context, const std::string& name);
       /// Default destructor

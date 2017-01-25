@@ -51,6 +51,8 @@ namespace DD4hep {
     protected:
       Callback m_calls;
     public:
+      /// Inhibit default constructor
+      Geant4GeneratorAction() = delete;
       /// Standard constructor
       Geant4GeneratorAction(Geant4Context* context, const std::string& name);
       /// Default destructor
@@ -78,6 +80,8 @@ namespace DD4hep {
       /// Reference to the shared action
       Geant4GeneratorAction* m_action;
     public:
+      /// Inhibit default constructor
+      Geant4SharedGeneratorAction() = delete;
       /// Standard constructor
       Geant4SharedGeneratorAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
@@ -114,6 +118,8 @@ namespace DD4hep {
       /// The list of action objects to be called
       Actors<Geant4GeneratorAction> m_actors;
     public:
+      /// Inhibit default constructor
+      Geant4GeneratorActionSequence() = delete;
       /// Standard constructor
       Geant4GeneratorActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor
