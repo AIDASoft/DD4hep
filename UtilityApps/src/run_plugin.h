@@ -247,7 +247,7 @@ namespace {
   }
 
   //______________________________________________________________________________
-  int main_default(const char* name, int argc,char** argv)  {
+  int main_wrapper(const char* name, int argc, char** argv)  {
     Args args;
     for(int i=1; i<argc;++i) {
       if ( argv[i][0]=='-' ) {
@@ -289,5 +289,19 @@ namespace {
     }
     if ( args.destroy ) delete &lcdd;
     return 0;
+  }
+
+  //______________________________________________________________________________
+  int main_default(const char* name, int argc, char** argv)  {
+    try {
+      return main_wrapper(name,argc,argv);
+    }
+    catch(const std::exception& e)  {
+      std::cout << "Got uncaught exception: " << e.what() << std::endl;
+    }
+    catch (...)  {
+      std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+    }
+    return EINVAL;    
   }
 }
