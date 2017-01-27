@@ -110,7 +110,6 @@ add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
 add_subdirectory(DDEve)
 add_subdirectory(DDDB)
-add_subdirectory(DDTest)
 
 dd4hep_enable_tests( DDTest )
 add_subdirectory(UtilityApps)
