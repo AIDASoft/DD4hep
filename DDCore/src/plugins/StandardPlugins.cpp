@@ -461,6 +461,7 @@ DECLARE_APPLY(DD4hepXMLProcessor,process_xml_doc)
  *  \date    01/04/2014
  */
 static long load_volmgr(LCDD& lcdd, int, char**) {
+  printout(INFO,"DD4hepVolumeManager","**** running plugin DD4hepVolumeManager ! " );
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
     if ( imp )  {

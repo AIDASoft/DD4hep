@@ -34,7 +34,8 @@ IDDecoder::IDDecoder() {
 	LCDD& lcdd = LCDD::getInstance();
 	_volumeManager = lcdd.volumeManager();
 	if (not _volumeManager.isValid()) {
-		_volumeManager = VolumeManager(lcdd, "volman", lcdd.world(), Readout(), VolumeManager::TREE);
+		lcdd.apply("DD4hepVolumeManager",0,0);
+		_volumeManager = lcdd.volumeManager();
 	}
 	_tgeoMgr = lcdd.world().volume()->GetGeoManager();
 }
