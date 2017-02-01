@@ -76,7 +76,7 @@ MACRO( GENERATE_PACKAGE_CONFIGURATION_FILES )
                 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake/${arg}.in"
                                 "${PROJECT_BINARY_DIR}/${arg}" @ONLY
                 )
-                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION . )
+                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION cmake )
                 #IF( EXISTS "${_current_dir}/MacroCheckPackageLibs.cmake" )
                 #    INSTALL( FILES "${_current_dir}/MacroCheckPackageLibs.cmake" DESTINATION cmake )
                 #ENDIF()
