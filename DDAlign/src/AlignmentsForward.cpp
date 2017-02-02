@@ -12,19 +12,20 @@
 //==========================================================================
 
 // Framework includes
+#include "DDAlign/AlignmentsForward.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
+
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/DetConditions.h"
-
-#include "DDAlign/AlignmentsForward.h"
-#include "DDAlign/AlignmentsUpdateCall.h"
+#include "DDCond/ConditionsSlice.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
 /// Initializing constructor
-AlignmentsForward::AlignmentsForward(AlignmentsManager m, AlignmentsUpdateCall* c, UserPool* p)
-  : alignmentMgr(m), updateCall(c), user_pool(p), extension("#alignment/Tranformations"),
+AlignmentsForward::AlignmentsForward(Slice& s, AlignmentsUpdateCall* c)
+  : slice(s), updateCall(c), extension("#alignment/Tranformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
@@ -60,7 +61,7 @@ int AlignmentsForward::processElement(DetElement de)  {
         //
         // Now add the dependency to the alignmant manager
         Conditions::DependencyBuilder b(k, updateCall, de);
-        bool result = alignmentMgr.adoptDependency(b.release());
+        bool result = slice.insert(b.release());
         if ( result )   {
           printout(printLevel,"AlignForward",
                    "++ Added Alignment child dependency Cond:%s Key:%16llX",

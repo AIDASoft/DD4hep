@@ -267,7 +267,7 @@ namespace {
     LCDD& lcdd = dd4hep_instance();
     // Load all compact files
     load_compact(lcdd, args);
-    if ( args.ui ) run_plugin(lcdd,"DD4hepROOTUI",0,0);
+    if ( args.ui ) run_plugin(lcdd,"DD4hepInteractiveUI",0,0);
     // Create volume manager and populate it required
     if ( args.volmgr ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
 

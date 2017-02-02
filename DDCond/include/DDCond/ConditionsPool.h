@@ -183,7 +183,9 @@ namespace DD4hep {
                              void*                    user_param = 0) = 0;
 
       /// Evaluate and register all derived conditions from the dependency list
-      virtual size_t compute(const Dependencies& dependencies, void* user_param = 0) = 0;
+      virtual size_t compute(const Dependencies& dependencies,
+                             void* user_param,
+                             bool force) = 0;
     };
   }        /* End namespace Conditions               */
 }          /* End namespace DD4hep                   */

@@ -92,7 +92,9 @@ namespace DD4hep {
       {
       public:
         /// Cached pointer to the bound conditions data, since these may be accessed very frequently
-        AlignmentData* alignment_data;
+        AlignmentData* alignment_data = 0;
+        /// Accessor to the alignment data
+        AlignmentData& values();
         /// Standard constructor
         AlignmentConditionObject(const std::string& nam,const std::string& tit="");
         /// Standard Destructor

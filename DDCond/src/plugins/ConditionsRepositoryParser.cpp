@@ -46,6 +46,8 @@ namespace DD4hep  {
     class arbitrary;
     /// Conditions types
     class value;
+    class pressure;
+    class temperature;
     class mapping;
     class sequence;
     class alignment;
@@ -62,6 +64,8 @@ namespace DD4hep  {
   template <> void Converter<position>::operator()(xml_h e) const;
   template <> void Converter<pivot>::operator()(xml_h e) const;
   template <> void Converter<value>::operator()(xml_h e) const;
+  template <> void Converter<pressure>::operator()(xml_h e) const;
+  template <> void Converter<temperature>::operator()(xml_h e) const;
   template <> void Converter<sequence>::operator()(xml_h e) const;
   template <> void Converter<mapping>::operator()(xml_h e) const;
   template <> void Converter<alignment>::operator()(xml_h e) const;
@@ -78,7 +82,7 @@ using Geometry::Translation3D;
 using Geometry::Position;
 using Geometry::DetElement;
 
-/// Ananymous local stuff only used in this module
+/// Anonymous local stuff only used in this module
 namespace {
 
   /// Module print level
@@ -183,9 +187,11 @@ namespace {
                                                       const std::string& type="")
   {
     xml_dim_t elt(e);
-    string    typ = type.empty() ? elt.typeStr() : type;
-    string    val = elt.hasAttr(_U(value)) ? elt.valueStr() : elt.text();
-    Condition con = create_condition(det, e);
+    string    typ  = type.empty() ? elt.typeStr() : type;
+    string    val  = elt.hasAttr(_U(value)) ? elt.valueStr() : elt.text();
+    Condition con  = create_condition(det, e);
+    string    unit = elt.hasAttr(_U(unit))  ? elt.attr<string>(_U(unit)) : string("");
+    if ( !unit.empty() ) val += "*"+unit;
     con->value = val;
     OpaqueDataBinder::bind(bnd, con, typ, val);
     return con;
@@ -255,55 +261,6 @@ namespace DD4hep {
     printout(s_parseLevel,"XMLConditions","++ Conditions Manager successfully initialized.");
   }
 
-  /// Convert rotation objects
-  /**
-   *    <rotation x="0.5" y="0"  z="0"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<rotation>::operator()(xml_h e) const {
-    xml_comp_t r(e);
-    RotationZYX* v = (RotationZYX*)param;
-    v->SetComponents(r.z(), r.y(), r.x());
-    printout(s_parseLevel,"XMLConditions",
-             "++ Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
-             r.x(), r.y(), r.z(), v->Phi(), v->Psi(), v->Theta());
-  }
-
-  /// Convert position objects
-  /**
-   *    <position x="0.5" y="0"  z="0"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<position>::operator()(xml_h e) const {
-    xml_comp_t p(e);
-    Position* v = (Position*)param;
-    v->SetXYZ(p.x(), p.y(), p.z());
-    printout(s_parseLevel,"XMLConditions","++ Position:   x=%9.3f y=%9.3f   z=%9.3f",
-             v->X(), v->Y(), v->Z());
-  }
-
-  /// Convert pivot objects
-  /**
-   *    <pivot x="0.5" y="0"  z="0"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<pivot>::operator()(xml_h e) const {
-    xml_comp_t p(e);
-    double x,y,z;
-    Translation3D* v = (Translation3D*)param;
-    v->SetXYZ(x=p.x(), y=p.y(), z=p.z());
-    printout(s_parseLevel,"XMLConditions","++ Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
-  }
-
   /// Convert conditions value objects (scalars)
   /**
    *  \author  M.Frank
@@ -313,6 +270,21 @@ namespace DD4hep {
   template <> void Converter<value>::operator()(xml_h e) const {
     ConversionArg* arg = _param<ConversionArg>();
     Condition      con = bind_condition(ValueBinder(), arg->detector, e);
+    arg->manager.registerUnlocked(arg->pool, con);
+  }
+
+  /// Convert conditions pressure objects (scalars with unit)
+  /**
+   *   <pressure value="980" unit="hPa"/>
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
+  template <> void Converter<pressure>::operator()(xml_h e) const {
+    ConversionArg* arg = _param<ConversionArg>();
+    Condition      con = bind_condition(ValueBinder(), arg->detector, e);
+    con->setFlag(Condition::PRESSURE);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
@@ -370,6 +342,70 @@ namespace DD4hep {
       OpaqueDataBinder::insert_map(binder, b, key_type, val_type, i.text());
     }
     arg->manager.registerUnlocked(arg->pool, con);
+  }
+
+  /// Convert conditions temperature objects (scalars with unit)
+  /**
+   *   <temperature value="273.1" unit="kelvin"/>
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
+  template <> void Converter<temperature>::operator()(xml_h e) const {
+    ConversionArg* arg = _param<ConversionArg>();
+    Condition      con = bind_condition(ValueBinder(), arg->detector, e);
+    con->setFlag(Condition::TEMPERATURE);
+    arg->manager.registerUnlocked(arg->pool, con);
+  }
+
+  /// Convert rotation objects
+  /**
+   *    <rotation x="0.5" y="0"  z="0"/>
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
+  template <> void Converter<rotation>::operator()(xml_h e) const {
+    xml_comp_t r(e);
+    RotationZYX* v = (RotationZYX*)param;
+    v->SetComponents(r.z(), r.y(), r.x());
+    printout(s_parseLevel,"XMLConditions",
+             "++ Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
+             r.x(), r.y(), r.z(), v->Phi(), v->Psi(), v->Theta());
+  }
+
+  /// Convert position objects
+  /**
+   *    <position x="0.5" y="0"  z="0"/>
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
+  template <> void Converter<position>::operator()(xml_h e) const {
+    xml_comp_t p(e);
+    Position* v = (Position*)param;
+    v->SetXYZ(p.x(), p.y(), p.z());
+    printout(s_parseLevel,"XMLConditions","++ Position:   x=%9.3f y=%9.3f   z=%9.3f",
+             v->X(), v->Y(), v->Z());
+  }
+
+  /// Convert pivot objects
+  /**
+   *    <pivot x="0.5" y="0"  z="0"/>
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
+  template <> void Converter<pivot>::operator()(xml_h e) const {
+    xml_comp_t p(e);
+    double x,y,z;
+    Translation3D* v = (Translation3D*)param;
+    v->SetXYZ(x=p.x(), y=p.y(), z=p.z());
+    printout(s_parseLevel,"XMLConditions","++ Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
   }
 
   /// Convert alignment delta objects
@@ -449,7 +485,9 @@ namespace DD4hep {
     xml_coll_t(e,_U(value)).for_each(Converter<value>(lcdd,param,optional));
     xml_coll_t(e,_UC(mapping)).for_each(Converter<mapping>(lcdd,param,optional));
     xml_coll_t(e,_UC(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
+    xml_coll_t(e,_UC(pressure)).for_each(Converter<pressure>(lcdd,param,optional));
     xml_coll_t(e,_UC(alignment)).for_each(Converter<alignment>(lcdd,param,optional));
+    xml_coll_t(e,_UC(temperature)).for_each(Converter<temperature>(lcdd,param,optional));
     xml_coll_t(e,_UC(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
   }
 

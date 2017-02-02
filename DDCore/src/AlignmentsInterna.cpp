@@ -43,6 +43,16 @@ AlignmentConditionObject::~AlignmentConditionObject()  {
   InstanceCount::decrement(this);
 }
 
+/// Accessor to the alignment data
+Alignment::Data& AlignmentConditionObject::values()   {
+  if ( alignment_data )
+    return *alignment_data;
+  Conditions::Condition c(this);
+  alignment_data = c.is_bound() ? &c.get<Alignment::Data>() : &c.bind<Alignment::Data>();
+  alignment_data->condition = c;
+  return *alignment_data;
+}
+
 /// Clear data content on demand.
 void AlignmentConditionObject::clear()   {
   AlignmentCondition a(this);

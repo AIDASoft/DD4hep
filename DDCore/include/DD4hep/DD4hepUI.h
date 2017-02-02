@@ -40,6 +40,8 @@ namespace DD4hep {
     virtual ~DD4hepUI();
     /// Access to the LCDD instance
     Geometry::LCDD* instance()  const;
+    /// Access to the LCDD instance
+    Geometry::LCDD* lcdd()  const;
 
     /// Install the DD4hep conditions manager object
     Handle<NamedObject> conditionsMgr()  const;
@@ -48,13 +50,17 @@ namespace DD4hep {
     
     /// Install the DD4hep alignment manager object
     Handle<NamedObject> alignmentMgr()  const;
-    
-    /// LCDD interface: Manipulate geometry using facroy converter
+
+    /// LCDD interface: Manipulate geometry using factory converter
     virtual long apply(const char* factory, int argc, char** argv) const;
     /// LCDD interface: Read any geometry description or alignment file
     virtual void fromXML(const std::string& fname, LCDDBuildType type = BUILD_DEFAULT) const;
     /// LCDD interface: Re-draw the entire scene
     virtual void redraw() const;
+    /// Dump the volume tree
+    virtual long dumpVols(int argc=0, char** argv=0)  const;
+    /// Dump the DetElement tree
+    virtual long dumpDet()  const;
   };
   
 } /* End namespace DD4hep        */

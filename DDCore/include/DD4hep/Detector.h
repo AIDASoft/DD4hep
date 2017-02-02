@@ -356,7 +356,17 @@ namespace DD4hep {
       Volume volume() const;
 
       /// Access to the physical volume of this detector element
+      /** This is the current placement value of the detector eleemnt.
+       *  A possible global re-alignment may alter the value.
+       *  Hence, it should hence not be cached.
+       */
       PlacedVolume placement() const;
+      /// Access to the ideal physical volume of this detector element
+      /** This is the original placement set in the detector constructor.
+       *  A possible global re-alignment make this value different
+       *  from the regular placement() call.
+       */
+      PlacedVolume idealPlacement() const;
       /// Set the physical volumes of the detector element
       DetElement&  setPlacement(const PlacedVolume& volume);
       /// The cached VolumeID of this subdetector element
@@ -385,29 +395,20 @@ namespace DD4hep {
 
       // Deprecated functions to be removed soon:
 
-      /// Set detector element for reference transformations. Will delete existing reference trafo.
-      //DetElement& setReference(DetElement reference);
-
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation() const;
       /// Create cached matrix to transform to parent coordinates
       const TGeoHMatrix& parentTransformation() const;
-      /// Create cached matrix to transform to reference coordinates
-      //const TGeoHMatrix& referenceTransformation() const;
 
       /// Transformation from local coordinates of the placed volume to the world system
       bool localToWorld(const Position& local, Position& global) const;
       /// Transformation from local coordinates of the placed volume to the parent system
       bool localToParent(const Position& local, Position& parent) const;
-      /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
-      bool localToReference(const Position& local, Position& reference) const;
 
       /// Transformation from world coordinates of the local placed volume coordinates
       bool worldToLocal(const Position& global, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
       bool parentToLocal(const Position& parent, Position& local) const;
-      /// Transformation from world coordinates of the local placed volume coordinates
-      bool referenceToLocal(const Position& reference, Position& local) const;
     };
 
   } /* End namespace Geometry      */

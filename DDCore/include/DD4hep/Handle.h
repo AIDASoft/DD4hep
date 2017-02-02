@@ -161,7 +161,9 @@ namespace DD4hep {
     template <typename Q> Q& object() const {
       return *(Q*) m_element;
     }
-    /// Checked object access. Throws invalid handle runtime exception
+    /// Checked object access. Throws invalid handle runtime exception if invalid handle.
+    /** Very compact way to check the validity of a handle with exception thrown.  
+     */
     T* access() const;
     /// Verify the object type after a (re-)assignment
     void verifyObject() const;

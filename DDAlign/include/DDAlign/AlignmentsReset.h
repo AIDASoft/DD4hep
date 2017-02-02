@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDALIGN_ALIGNMENTFORWARD_H
-#define DD4HEP_DDALIGN_ALIGNMENTFORWARD_H
+#ifndef DD4HEP_DDALIGN_ALIGNMENTRESET_H
+#define DD4HEP_DDALIGN_ALIGNMENTRESET_H
 
 // Framework includes
 #include "DD4hep/Alignments.h"
@@ -27,43 +27,30 @@ namespace DD4hep {
     // Forward declarations
     class ConditionsSlice;
   }
-
+  
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Alignments {
   
     // Forward declarations
     class AlignmentsUpdateCall;
 
-    /// Create alignment dependencies for child elements if a parent has re-alignments
+    /// Reset alignment dependencies from conditions
     /**
-     *   Conditions analyser to select alignments and create the
-     *   corresponding alignment condition dependencies.
-     *
-     *   This class has the same interface like AlignmentsRegister.
-     *   Please see AlignmentsRegister.h for further information.
-     *
-     *   Note: We have to load one set of conditions in order to auto-populate
-     *         because we need to see if a detector element actually has alignment
-     *         conditions. For this we must access the conditions data.
-     *         Unfortunate, but unavoidable.
      *
      *   \author  M.Frank
      *   \version 1.0
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDALIGN
      */
-    class AlignmentsForward : public DetElement::Processor {
+    class AlignmentsReset : public DetElement::Processor {
     public:
       /// Shortcut the ConditionsSlice type
       typedef Conditions::ConditionsSlice Slice;
-
     public:
       /// Reference to the alignment manager object
       Slice&                 slice;
       /// The callback to be registered for the update mechanism
       AlignmentsUpdateCall*  updateCall;
-      /// Conditions pool used to access the basic conditions object
-      Conditions::UserPool*  user_pool;
       /// Extension property to construct the name of the alignment condition
       std::string            extension;
       /// Name of the alignment alias for the detector elements alignment object
@@ -74,21 +61,21 @@ namespace DD4hep {
       PrintLevel             printLevel;
       
       /// Initializing constructor
-      AlignmentsForward(Slice& slice, AlignmentsUpdateCall* c);
+      AlignmentsReset(Slice& slice, AlignmentsUpdateCall* call);
       /// Default destructor
-      virtual ~AlignmentsForward();
+      virtual ~AlignmentsReset();
       /// Callback to output conditions information
       virtual int processElement(DetElement de);
       /// Overloadable: call to construct the alignment conditions name.
       /**
        *   Specialize for user defined implementation.
        *
-       *   Default implementation returns "de.path()+extension"
+       *   Default implementation returns "cond.name()+extension".
        *   Please note, that the corrsponding implementation of
-       *   'AlignmentsRegister::construct_name' must match
+       *   'AlignmentsForward::construct_name' must match
        */
-      virtual std::string construct_name(DetElement de) const;
+      virtual std::string construct_name(DetElement de, Conditions::Condition cond) const;
     };
   }       /* End namespace Alignments              */
 }         /* End namespace DD4hep                  */
-#endif    /* DD4HEP_DDALIGN_ALIGNMENTFORWARD_H     */
+#endif    /* DD4HEP_DDALIGN_ALIGNMENTRESET_H       */

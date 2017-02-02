@@ -91,14 +91,9 @@ DECLARE_APPLY(DD4hepGeometryDisplay,display)
  *  \date    01/04/2014
  */
 static long run_interpreter(LCDD& /* lcdd */, int argc, char** argv) {
-  if ( argc > 0 )   {
-    pair<int, char**> a(argc,argv);
-  }
-  else   {
-    pair<int, char**> a(0,0);
-    TRint app("DD4hep", &a.first, a.second);
-    app.Run();
-  }
+  pair<int, char**> a(argc,argv);
+  TRint app("DD4hep", &a.first, a.second);
+  app.Run();
   return 1;
 }
 DECLARE_APPLY(DD4hepRint,run_interpreter)
@@ -537,17 +532,20 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
     typedef PlacedVolume::VolID  VID;
     typedef PlacedVolume::VolIDs VIDs;
     bool m_printVolIDs;
+    bool m_printPointers;
     bool m_printPositions;
     bool m_printSensitivesOnly;
     Actor(int ac, char** av) 
-      : m_printVolIDs(false), m_printPositions(false), m_printSensitivesOnly(false)
+      : m_printVolIDs(false), m_printPointers(false), m_printPositions(false), m_printSensitivesOnly(false)
     {
       for(int i=0; i<ac; ++i)  {
         char c = ::tolower(av[i][0]);
-        if ( c == '-' ) c = ::tolower(av[i][1]);
-        if ( c == 'v' ) m_printVolIDs = true;
-        else if ( c == 'p' ) m_printPositions = true;
-        else if ( c == 's' ) m_printSensitivesOnly = true;
+        char* p = av[i];
+        if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
+        if ( ::strncmp(p,"volume_ids",3)==0 ) m_printVolIDs = true;
+        else if ( ::strncmp(p,"positions",3)==0 ) m_printPositions = true;
+        else if ( ::strncmp(p,"pointers",3)==0  ) m_printPointers  = true;
+        else if ( ::strncmp(p,"sensitive",3)==0 ) m_printSensitivesOnly = true;
       }
     }
 
@@ -558,6 +556,13 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
       bool sensitive = false;
       if ( m_printPositions || m_printVolIDs )  {
         stringstream log;
+        if ( m_printPointers )    {
+          if ( ideal != aligned )
+            ::snprintf(fmt,sizeof(fmt),"Ideal:%p Aligned:%p ",(void*)ideal,(void*)aligned);
+          else
+            ::snprintf(fmt,sizeof(fmt),"Ideal:%p ",(void*)ideal);
+          log << fmt;
+        }
         // Top level volume! have no volume ids
         if ( m_printVolIDs && ideal && ideal->GetMotherVolume() )  {
           VIDs vid = pv.volIDs();
@@ -592,13 +597,25 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
       TGeoVolume* volume = ideal->GetVolume();
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
         char sens = pv.volume().isSensitive() ? 'S' : ' ';
-        if ( ideal == aligned )  {
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%-16s (%%s) \t[%p] %c %%s",
-                     level+1,2*level+1,(void*)ideal, sens);
+        if ( m_printPointers )    {
+          if ( ideal == aligned )  {
+            ::snprintf(fmt,sizeof(fmt),"%03d [Ideal:%p] %%-%ds %%-16s (%%s) \t %c %%s",
+                       level+1,(void*)ideal,2*level+1,sens);
+          }
+          else  {
+            ::snprintf(fmt,sizeof(fmt),"%03d Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
+                       level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
+          }
         }
         else  {
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%-16s (%%s) Ideal:%p Aligned:%p %c %%s",
-                     level+1,2*level+1,(void*)ideal,(void*)aligned, sens);
+          if ( ideal == aligned )  {
+            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%-16s (%%s) \t %c %%s",
+                       level+1,2*level+1,sens);
+          }
+          else  {
+            ::snprintf(fmt,sizeof(fmt),"%03d Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
+                       level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
+          }
         }
         printout(INFO,"VolumeDump",fmt,"",
                  aligned->GetName(),
@@ -695,16 +712,28 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
         char fmt[128];
         switch(value)  {
         case 0:
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
+          if ( de.placement() == de.idealPlacement() )  {
+            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
+            printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
+                     (unsigned long)de.volumeID(), (void*)node, sens);
+            break;
+          }
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",level+1,2*level+1);
           printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
-                   (unsigned long)de.volumeID(), (void*)node, sens);
+                   (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(), (void*)node, sens);
           break;
         case 1:
           ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",level+1,2*level+1);
           printout(INFO,"DetectorDump", fmt, "", de.path().c_str(),
                    int(c.size()), (void*)de.volumeID());
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s   %%c",level+1,2*level+3);
-          printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
+          if ( de.placement() == de.idealPlacement() )  {
+            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s  %%c",level+1,2*level+3);
+            printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
+            break;
+          }
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",level+1,2*level+3);
+          printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(),
+                   (void*)de.idealPlacement().ptr(), (void*)node, sens);          
           break;
         default:
           break;

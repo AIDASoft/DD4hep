@@ -392,7 +392,6 @@ DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 #include "DD4hep/PluginTester.h"
 template <typename PRINTER>
 static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
-  typedef typename PRINTER::pool_type pool_t;
   PrintLevel print_level = INFO;
   string prefix = "", name = "";
   int    flags = 0, have_pool = 0, arg_error = false;
@@ -420,7 +419,7 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
       "     -prefix <string>         Printout prefix for user customized output.     \n"
       "     -flags  <number>         Printout processing flags.                      \n"
       "     -pool                    Attach conditions user pool from                \n"
-      "                              PluginTester instance attached to LCDD.       \n\n"
+      "                              PluginTester's slice instance attached.       \n\n"
       "     -print                   Printout level for the printer object.          \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
@@ -431,9 +430,9 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
   p->printLevel = print_level;
   if ( have_pool != 0 )  {
     PluginTester* test = lcdd.extension<PluginTester>();
-    pool_t* pool = test->extension<pool_t>("ConditionsTestUserPool");
+    ConditionsSlice* slice = test->extension<ConditionsSlice>("ConditionsTestSlice");
     if ( !name.empty() ) p->name = name;
-    p->setPool(pool);
+    p->setPool(slice->pool.get());
   }
   return (void*)dynamic_cast<DetElement::Processor*>(p);
 }

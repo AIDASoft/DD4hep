@@ -94,7 +94,8 @@ namespace DD4hep {
                            void*                   user_param);
       /// Evaluate and register all derived conditions from the dependency list
       virtual size_t compute(const Dependencies&     dependencies,
-                             void*                   user_param);
+                             void*                   user_param,
+                             bool                    force);
     };
   }    /* End namespace Conditions               */
 }      /* End namespace DD4hep                   */
@@ -277,7 +278,8 @@ bool ConditionsMappedUserPool<MAPPING>::remove(key_type hash_key)    {
 /// Evaluate and register all derived conditions from the dependency list
 template<typename MAPPING>
 size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
-                                                  void* user_param)
+                                                  void* user_param,
+                                                  bool force)
 {
   size_t num_updates = 0;
   if ( !deps.empty() )  {
@@ -287,15 +289,20 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
     for ( const auto& i : deps )  {
       typename MAPPING::iterator j = m_conditions.find(i.first);
       if ( j != m_conditions.end() )  {
-        Condition::Object* c = (*j).second;
-        // Remeber: key ist first, test is second!
-        if ( IOV::key_is_contained(m_iov.keyData,c->iov->keyData) )  {
-          /// This condition is no longer valid. remove it!
-          /// This condition will be added again by the handler.
-          m_conditions.erase(j);
-          missing.push_back(i.second.get());
+        if ( !force )  {
+          Condition::Object* c = (*j).second;
+          // Remeber: key ist first, test is second!
+          if ( IOV::key_is_contained(m_iov.keyData,c->iov->keyData) )  {
+            /// This condition is no longer valid. remove it!
+            /// This condition will be added again by the handler.
+            m_conditions.erase(j);
+            missing.push_back(i.second.get());
+          }
+          continue;
         }
-        continue;
+        else  {
+          m_conditions.erase(j);
+        }
       }
       missing.push_back(i.second.get());      
     }

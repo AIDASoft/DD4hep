@@ -465,9 +465,9 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
                  doc->ErrorDesc());
         printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
                  doc->Value(), doc->ErrorRow(), doc->ErrorCol());
-        throw runtime_error("DD4hep: file:"+clean+" error:"+doc->ErrorDesc());
+        except("DD4hep: file:%s error:%s",clean.c_str(),doc->ErrorDesc().c_str());
       }
-      throw runtime_error("DD4hep: Unknown error (TinyXML) while parsing:%s",fname.c_str());
+      except("DD4hep: Unknown error (TinyXML) while parsing:%s",fname.c_str());
     }
   }
   catch(exception& e) {
@@ -556,6 +556,22 @@ DocumentHandler::DocumentHandler() {}
 /// Default destructor of a document handler using TiXml
 DocumentHandler::~DocumentHandler() {}
 
+/// Default comment string
+std::string DocumentHandler::defaultComment()  {
+  const char comment[] = "\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   DD4hep generated alignment file using the         ++++\n"
+    "      ++++   DD4hep Detector description XML generator.        ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+  return comment;
+}
+
 /// Load XML file and parse it.
 Document DocumentHandler::load(const std::string& fname) const {
   return load(fname, 0);
@@ -602,6 +618,11 @@ Document DocumentHandler::create(const char* tag, const char* comment) const {
     top_elt.addComment(comment);
   }
   return doc;
+}
+
+// Create new XML document by parsing empty xml buffer
+Document DocumentHandler::create(const std::string& tag, const std::string& comment) const   {
+  return create(tag.c_str(), comment.c_str());
 }
 
 /// Dump partial or full XML trees to stdout

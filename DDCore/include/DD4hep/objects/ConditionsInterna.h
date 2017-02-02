@@ -133,10 +133,11 @@ namespace DD4hep {
         /// Access safely the IOV-type
         const IOVType* iovType() const;
         /// Check if object is already bound....
-        bool is_bound()  const    {  return data.is_bound();  }
-        bool is_traced()  const   {  return true;             }
-        void setFlag(int option)  {  flags |= option;         }
-        void unFlag(int option)   {  flags &= ~option;        }
+        bool is_bound()  const          {  return data.is_bound();         }
+        bool is_traced()  const         {  return true;                    }
+        void setFlag(int option)        {  flags |= option;                }
+        void unFlag(int option)         {  flags &= ~option;               }
+        bool testFlag(int option) const {  return 0 != (flags&option);     }
       };
 
       /// The data class behind a conditions container handle.

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DDAlign/AlignmentsRegister.h"
+#include "DDAlign/AlignmentsReset.h"
 #include "DDAlign/AlignmentsUpdateCall.h"
 
 #include "DD4hep/Printout.h"
@@ -27,37 +27,38 @@ using Conditions::Condition;
 // ======================================================================================
 
 /// Initializing constructor
-AlignmentsRegister::AlignmentsRegister(Slice& s, AlignmentsUpdateCall* c)
+AlignmentsReset::AlignmentsReset(Slice& s, AlignmentsUpdateCall* c)
   : slice(s), updateCall(c), extension("/Tranformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
 
 /// Default destructor
-AlignmentsRegister::~AlignmentsRegister()   {
+AlignmentsReset::~AlignmentsReset()   {
   releasePtr(updateCall);
 }
 
 /// Overloadable: call to construct the alignment conditions name. Specialize for change
 std::string
-AlignmentsRegister::construct_name(DetElement /* de */, Condition cond) const
+AlignmentsReset::construct_name(DetElement /* de */, Condition cond) const
 {
   return cond.name()+extension;
 }
 
 /// Callback to output conditions information
-int AlignmentsRegister::processElement(DetElement de)  {
+int AlignmentsReset::processElement(DetElement de)  {
   if ( de.isValid() )  {
+    printLevel = WARNING;
     if ( de.hasConditions() )  {
       DetAlign align(de);
       Conditions::DetConditions conditions(de);
       Conditions::Container cont = conditions.conditions();
-      printout(DEBUG,"AlignRegister",
+      printout(DEBUG,"AlignReset",
                "++ Processing DE %s hasConditions:%s [%d entries]",
                de.path().c_str(), yes_no(de.hasConditions()), int(cont.numKeys()));
       for ( const auto& c : cont.keys() )  {
         Condition cond = cont.get(c.first, *slice.pool);
-        printout(DEBUG,"AlignRegister",
+        printout(DEBUG,"AlignReset",
                  "++ Processing DE %s Cond:%s Key:%16llX flags:%d",
                  de.path().c_str(), cond.name(), cond.key(), cond->flags);
         //
@@ -67,27 +68,17 @@ int AlignmentsRegister::processElement(DetElement de)  {
           std::string alignment_name = construct_name(de, cond);
           if ( !alignment_name.empty() )  {
             Conditions::ConditionKey k(alignment_name);
-            //
-            // The alignment access through the DetElement object is optional!
-            // It is slow and deprecated. The access using the UserPool directly
-            // is highly favored.
-            //
-            align.alignments().addKey(k.name);
-            if ( haveAlias && !alias.empty() )  {
-              align.alignments().addKey(alias,k.name);
-            }
-            //
             // Now add the dependency to the alignmant manager
             Conditions::DependencyBuilder b(k, updateCall, de);
             b.add(Conditions::ConditionKey(cond->name));
             bool result = slice.insert(b.release());
             if ( result )   {
-              printout(printLevel,"AlignRegister",
+              printout(printLevel,"AlignReset",
                        "++ Added Alignment dependency Cond:%s Key:%16llX flags:%d",
                        k.name.c_str(), k.hash, cond->flags);
               continue;
             }
-            printout(ERROR,"AlignRegister",
+            printout(ERROR,"AlignReset",
                      "++ FAILED to add Alignment dependency Cond:%s Key:%16llX flags:%d",
                      k.name.c_str(), k.hash, cond->flags);
           }
@@ -95,7 +86,7 @@ int AlignmentsRegister::processElement(DetElement de)  {
       }
       return 1;
     }
-    printout(DEBUG,"AlignRegister","++ Processing DE %s hasConditions:%s",
+    printout(DEBUG,"AlignReset","++ Processing DE %s hasConditions:%s",
              de.path().c_str(), yes_no(de.hasConditions()));
   }
   return 1;

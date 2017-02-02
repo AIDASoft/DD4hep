@@ -15,10 +15,13 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/DetFactoryHelper.h"
+#include "DDCond/ConditionsSlice.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
+using Conditions::UserPool;
+using Conditions::ConditionsSlice;
 
 // ======================================================================================
 #include "DDAlign/AlignmentsManager.h"
@@ -108,14 +111,20 @@ static void* create_DDAlignForwardCall(Geometry::LCDD& /* lcdd */, int /* argc *
 DECLARE_LCDD_CONSTRUCTOR(DDAlign_ForwardCall, create_DDAlignForwardCall)
 
 // ======================================================================================
+#include "DDAlign/DDAlignResetCall.h"
+static void* create_DDAlignResetCall(Geometry::LCDD& /* lcdd */, int /* argc */, char** /* argv */)   {
+  return (AlignmentsUpdateCall*)(new DDAlignResetCall());
+}
+DECLARE_LCDD_CONSTRUCTOR(DDAlign_ResetCall, create_DDAlignResetCall)
+
+// ======================================================================================
 #include "DD4hep/PluginTester.h"
 #include "DDCond/ConditionsPool.h"
 static long compute_alignments(Geometry::LCDD& lcdd, int /* argc */, char** /* argv */)   {
   AlignmentsManager mgr = AlignmentsManager::from(lcdd);
   PluginTester*     tst = lcdd.extension<PluginTester>();
-  dd4hep_ptr<UserPool> pool(tst->extension<UserPool>("ConditionsTestUserPool"));
-  mgr.compute(*pool);
-  pool.release();
+  ConditionsSlice*  slc = tst->extension<ConditionsSlice>("ConditionsTestSlice");
+  mgr.compute(*slc);
   return 1;
 }
 DECLARE_APPLY(DDAlign_ComputeAlignments, compute_alignments)
@@ -153,20 +162,13 @@ static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** a
       "                              Arguments to the 'prepare' plugin.       \n"
       "     -call ... args ... -call-end                                      \n"
       "                              Arguments to the 'call' plugin, which    \n"
-      "                              create the AlignmentsUpdateCall callback. \n"
+      "                              create the AlignmentsUpdateCall callback.\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
   
   PluginTester* test = lcdd.extension<PluginTester>();
-  Conditions::UserPool* pool = (Conditions::UserPool*)
-    PluginService::Create<void*>((const char*)args_prepare[0],&lcdd,
-                                 int(args_prepare.size())-1,
-                                 (char**)&args_prepare[1]);
-  if ( 0 == pool )  {
-    except("AlignRegister","++ Failed to prepare conditions user-pool!");
-  }
-  test->addExtension<Conditions::UserPool>(pool,"ConditionsTestUserPool");
+  ConditionsSlice* slice = test->extension<ConditionsSlice>("ConditionsTestSlice");
   AlignmentsUpdateCall* call = (AlignmentsUpdateCall*)
     PluginService::Create<void*>((const char*)args_call[0],&lcdd,
                                  int(args_call.size())-1,
@@ -174,8 +176,7 @@ static void* ddalign_AlignmentsRegister(Geometry::LCDD& lcdd, int argc, char** a
   if ( 0 == call )  {
     except("AlignRegister","++ Failed to create update call!");
   }
-  AlignmentsManager   mgr = AlignmentsManager::from(lcdd);
-  AlignmentsRegister* obj = new AlignmentsRegister(mgr, call, pool);
+  AlignmentsRegister* obj = new AlignmentsRegister(*slice, call);
   return obj;
 }
 DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentsRegister,ddalign_AlignmentsRegister)
@@ -213,7 +214,7 @@ static void* ddalign_AlignmentsForward(Geometry::LCDD& lcdd, int argc, char** ar
   }
 
   PluginTester* test = lcdd.extension<PluginTester>();
-  Conditions::UserPool* pool = test->extension<Conditions::UserPool>("ConditionsTestUserPool");
+  ConditionsSlice* slice = test->extension<ConditionsSlice>("ConditionsTestSlice");
   AlignmentsUpdateCall*  call = (AlignmentsUpdateCall*)
     PluginService::Create<void*>((const char*)args_call[0],&lcdd,
                                  int(args_call.size())-1,
@@ -221,8 +222,7 @@ static void* ddalign_AlignmentsForward(Geometry::LCDD& lcdd, int argc, char** ar
   if ( 0 == call )  {
     except("AlignForward","++ Failed to create update call!");
   }
-  AlignmentsManager mgr = AlignmentsManager::from(lcdd);
-  AlignmentsForward* obj = new AlignmentsForward(mgr, call, pool);
+  AlignmentsForward* obj = new AlignmentsForward(*slice, call);
   return obj;
 }
 DECLARE_LCDD_CONSTRUCTOR(DDAlign_AlignmentsForward,ddalign_AlignmentsForward)

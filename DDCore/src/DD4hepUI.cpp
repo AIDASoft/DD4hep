@@ -32,6 +32,11 @@ LCDD* DD4hepUI::instance()  const   {
   return &m_lcdd;
 }
 
+/// Access to the LCDD instance
+LCDD* DD4hepUI::lcdd()  const   {
+  return &m_lcdd;
+}
+
 /// Install the DD4hep conditions manager object
 Handle<NamedObject> DD4hepUI::conditionsMgr()  const  {
   if ( !m_condMgr.isValid() )  {
@@ -83,4 +88,18 @@ void DD4hepUI::fromXML(const std::string& fname, LCDDBuildType type) const  {
 /// LCDD interface: Re-draw the entire scene
 void DD4hepUI::redraw() const   {
   m_lcdd.worldVolume()->Draw("oglsame");
+}
+
+/// Dump the volume tree
+long DD4hepUI::dumpVols(int argc, char** argv)  const   {
+  if ( argc==0 )  {
+    const void* av[] = {"-positions","-pointers",0};
+    return m_lcdd.apply("DD4hepVolumeDump",2,(char**)av);
+  }
+  return m_lcdd.apply("DD4hepVolumeDump",argc,argv);
+}
+
+/// Dump the DetElement tree
+long DD4hepUI::dumpDet()  const   {
+  return m_lcdd.apply("DD4hepDetectorVolumeDump",0,0);
 }

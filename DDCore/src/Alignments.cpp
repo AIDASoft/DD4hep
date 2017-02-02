@@ -144,23 +144,13 @@ AlignmentCondition::key_type AlignmentCondition::key() const   {
 /// Data accessor for the use of decorators
 AlignmentCondition::Data& AlignmentCondition::data()              {
   Object* o = access();
-  if ( o->alignment_data )
-    return *(o->alignment_data);
-  Conditions::Condition c(*this);
-  o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
-  o->alignment_data->condition = c;
-  return *(o->alignment_data);
+  return o->alignment_data ? *o->alignment_data : o->values();
 }
 
 /// Data accessor for the use of decorators
 const AlignmentCondition::Data& AlignmentCondition::data() const  {
   Object* o = access();
-  if ( o->alignment_data )
-    return *(o->alignment_data);
-  Conditions::Condition c(*this);
-  o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
-  o->alignment_data->condition = c;
-  return *(o->alignment_data);
+  return o->alignment_data ? *o->alignment_data : o->values();
 }
 
 /// Check if object is already bound....
@@ -189,11 +179,7 @@ size_t Container::numKeys() const   {
 
 /// Known keys of conditions in this container
 const Container::Keys& Container::keys()  const   {
-  Object* o = ptr();
-  if ( !o )   {
-    invalidHandleError<Container>();
-  }
-  return o->keys;
+  return access()->keys;
 }
 
 /// Add a new key to the alignments access map
@@ -208,56 +194,20 @@ void Container::addKey(const string& key_val, const string& data_val)  {
 
 /// Access to alignment objects
 Alignment Container::get(const string& alignment_key, const iov_type& iov)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, iov);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, iov).access());
 }
 
 /// Access to alignment objects
 Alignment Container::get(key_type alignment_key, const iov_type& iov)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, iov);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, iov).access());
 }
 
 /// Access to alignment objects
 Alignment Container::get(const string& alignment_key, const UserPool& pool)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, pool);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, pool).access());
 }
 
 /// Access to alignment objects
 Alignment Container::get(key_type alignment_key, const UserPool& pool)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, pool);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, pool).access());
 }
