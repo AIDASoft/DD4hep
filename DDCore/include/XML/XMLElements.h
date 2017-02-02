@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -748,6 +747,10 @@ namespace DD4hep {
       std::string text() const {
         return m_element.text();
       }
+      /// Set text attribute to the XML node
+      void text(const std::string value) const {
+        return m_element.setText(value);
+      }
       /// Append a new element to the existing tree
       void append(Handle_t handle) const {
         m_element.append(handle);
@@ -829,8 +832,14 @@ namespace DD4hep {
       Attribute setRef(const XmlChar* tag, const std::string& refname) const;
       /// Access the value of the reference attribute of the node (attribute ref="ref-name")
       const XmlChar* getRef(const XmlChar* tag) const;
+#ifndef __TIXML__
+      /// Add comment node to the element
+      void addComment(const XmlChar* text) const;
+#endif
       /// Add comment node to the element
       void addComment(const char* text) const;
+      /// Add comment node to the element
+      void addComment(const std::string& text_value) const;
     };
 
     /// User abstraction class to manipulate named XML elements (references) within a document

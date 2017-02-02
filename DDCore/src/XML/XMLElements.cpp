@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -1122,6 +1121,13 @@ Handle_t Element::setChild(const XmlChar* t) const {
   return e ? Handle_t(e) : addChild(t);
 }
 
+#ifdef DD4HEP_USE_TINYXML
+/// Add comment node to the element
+void Element::addComment(const XmlChar* text_value) const {
+  _N(m_element)->appendChild(_D(document().m_doc)->createComment(text_value));
+}
+#endif
+
 /// Add comment node to the element
 void Element::addComment(const char* text_value) const {
 #ifdef DD4HEP_USE_TINYXML
@@ -1129,6 +1135,11 @@ void Element::addComment(const char* text_value) const {
 #else
   _N(m_element)->appendChild(_D(document().m_doc)->createComment(Strng_t(text_value)));
 #endif
+}
+
+/// Add comment node to the element
+void Element::addComment(const string& text_value) const {
+  addComment(text_value.c_str());
 }
 
 /// Initializing constructor to create a new XMLElement and add it to the document.

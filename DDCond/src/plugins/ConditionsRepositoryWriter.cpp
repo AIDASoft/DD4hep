@@ -100,8 +100,12 @@ namespace DD4hep {
 
 // C/C++ include files
 #include <stdexcept>
+#include <sstream>
+#include <list>
+#include <set>
 
 using std::string;
+using std::stringstream;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 using Geometry::RotationZYX;
@@ -119,16 +123,18 @@ namespace {
   class pressure;
   class temperature;
   class alignment;
-  class position;
-  class rotation;
-  class pivot;
-
+  class value;
+  class sequence;
+  
   template <typename T> XML::Element _convert(XML::Element par, Condition c);
 
   XML::Element make(XML::Element e, Condition c)  {
+    char hash[64];
     std::string nam = c.name();
     std::string cn = nam.substr(nam.find('#')+1);
+    ::snprintf(hash,sizeof(hash),"%llX",c.key());
     e.setAttr(_U(name),cn);
+    e.setAttr(_U(key),hash);
     return e;
   }
   XML::Element _convert(XML::Element par, const Translation3D& tr)  {
@@ -155,15 +161,22 @@ namespace {
     e.setAttr(_U(z),z);
     return e;
   }
+  template <> XML::Element _convert<value>(XML::Element par, Condition c)  {
+    XML::Element v = make(XML::Element(par.document(),_U(value)),c);
+    OpaqueData& data = c.data();
+    v.setAttr(_U(type),data.dataType());
+    v.setAttr(_U(value),data.str());
+    return v;
+  }
   template <> XML::Element _convert<pressure>(XML::Element par, Condition c)  {
     XML::Element press = make(XML::Element(par.document(),_UC(pressure)),c);
-    press.setAttr(_U(value),c.get<float>()/(100e0*dd4hep::pascal));
+    press.setAttr(_U(value),c.get<double>()/(100e0*dd4hep::pascal));
     press.setAttr(_U(unit),"hPa");
     return press;
   }
   template <> XML::Element _convert<temperature>(XML::Element par, Condition c)  {
     XML::Element temp = make(XML::Element(par.document(),_UC(temperature)),c);
-    temp.setAttr(_U(value),c.get<float>()/dd4hep::kelvin);
+    temp.setAttr(_U(value),c.get<double>()/dd4hep::kelvin);
     temp.setAttr(_U(unit),"kelvin");
     return temp;
   }
@@ -178,6 +191,34 @@ namespace {
     if ( delta.flags&Delta::HAVE_PIVOT )
       align.append(_convert(align,delta.pivot));
     return align;
+  }
+  XML::Element _seq(XML::Element v, Condition c, const char* tag, const char* match)  {
+    OpaqueData& data = c.data();
+    string typ = data.dataType();
+    size_t len = ::strlen(match);
+    size_t idx = typ.find(match);
+    size_t idq = typ.find(',',idx+len);
+    if ( idx != string::npos && idq != string::npos )   {
+      string subtyp = tag;
+      subtyp += "["+typ.substr(idx+len,idq-idx-len)+"]";
+      v.setAttr(_U(type),subtyp);
+      XML::Handle_t(v.ptr()).setText(data.str());
+      return v;
+    }
+    except("Writer","++ Unknwon XML conversion to type: %s",typ.c_str());
+    return v;
+  }
+  template <> XML::Element _convert<std::vector<void*> >(XML::Element par, Condition c)  {
+    XML::Element v = make(XML::Element(par.document(),_U(sequence)),c);
+    return _seq(v,c,"vector","::vector<");
+  }
+  template <> XML::Element _convert<std::list<void*> >(XML::Element par, Condition c)  {
+    XML::Element v = make(XML::Element(par.document(),_U(sequence)),c);
+    return _seq(v,c,"list","::list<");
+  }
+  template <> XML::Element _convert<std::set<void*> >(XML::Element par, Condition c)  {
+    XML::Element v = make(XML::Element(par.document(),_U(sequence)),c);
+    return _seq(v,c,"set","::set<");
   }
 }
 
@@ -211,10 +252,14 @@ size_t ConditionsXMLRepositoryWriter::collectConditions(XML::Element root,
       DetConditions det(detector);
       Container     cont = det.conditions();
       if ( cont.numKeys() > 0 )   {
+        stringstream comment;
         XML::Element conditions = XML::Element(root.document(),_U(detelement));
         conditions.setAttr(_U(path),detector.path());
         printout(s_printLevel,"Writer","++ Conditions of DE %s [%d entries]",
                  detector.path().c_str(), int(cont.keys().size()));
+        comment << " DDCond conditions for DetElement " << detector.path()
+                << " Total of " << int(cont.keys().size()) << " Entries.  ";
+        root.addComment(comment.str());
         root.append(conditions);
         for(const auto& k : cont.keys() )   {
           if ( k.first == k.second.first )  {
@@ -222,7 +267,7 @@ size_t ConditionsXMLRepositoryWriter::collectConditions(XML::Element root,
             std::string nam = c.name();
             std::string cn  = nam.substr(nam.find('#')+1);
             ReferenceBitMask<Condition::mask_type> msk(c->flags);
-          
+
             printout(s_printLevel,"Writer","++ Condition %s [%16llX] -> %s",
                      cn.c_str(), k.first, c.name());
             if ( msk.isSet(Condition::TEMPERATURE) )  {
@@ -234,9 +279,45 @@ size_t ConditionsXMLRepositoryWriter::collectConditions(XML::Element root,
             else if ( msk.isSet(Condition::ALIGNMENT) )  {
               conditions.append(_convert<alignment>(conditions,c));
             }
-            else   {
-              printout(ERROR,"Writer","Unknown data type of condition: %s [%16llX] -> %s Flags:0x%08X",
-                       cn.c_str(), k.first, c.name(), c->flags);
+            else {
+              const OpaqueData&   data = c.data();
+              const std::type_info& typ = data.typeInfo();
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+              if ( typ == typeid(char)   || typ == typeid(unsigned char)  ||
+                   typ == typeid(short)  || typ == typeid(unsigned short) ||
+                   typ == typeid(int)    || typ == typeid(unsigned int)   ||
+                   typ == typeid(long)   || typ == typeid(unsigned long)  ||
+                   typ == typeid(float)  || typ == typeid(double)         ||
+                   typ == typeid(string) )
+#else
+              if ( typ == typeid(int)    || typ == typeid(long)           ||
+                   typ == typeid(float)  || typ == typeid(double)         ||
+                   typ == typeid(string) )
+#endif
+              {
+                conditions.append(_convert<value>(conditions,c));
+              }
+              else if ( ::strstr(data.dataType().c_str(),"::vector<") )  {
+                conditions.append(_convert<std::vector<void*> >(conditions,c));
+              }
+              else if ( ::strstr(data.dataType().c_str(),"::list<") )  {
+                conditions.append(_convert<std::list<void*> >(conditions,c));
+              }
+              else if ( ::strstr(data.dataType().c_str(),"::set<") )  {
+                conditions.append(_convert<std::set<void*> >(conditions,c));
+              }
+              else   {
+                comment.str("");
+                comment << "\n ** Unconverted condition: "
+                        << "Unknown data type of condition: " << cn
+                        << " [" << (void*)k.first << "] -> "
+                        << c.name() << "  Flags:" << (unsigned int)c->flags << "\n";
+                conditions.addComment(comment.str());
+                printout(ERROR,"Writer",comment.str());
+                comment.str("");
+                comment << c.data().str() << " [" << c.data().dataType() << "]\n";
+                conditions.addComment(comment.str());
+              }
             }
           }
         }
@@ -300,4 +381,4 @@ static long write_repository_conditions(lcdd_t& lcdd, int argc, char** argv)  {
   writer.write(doc, output);
   return 1;
 }
-DECLARE_APPLY(DD4hep_XMLConditionsRepositoryWriter,write_repository_conditions)
+DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryWriter,write_repository_conditions)

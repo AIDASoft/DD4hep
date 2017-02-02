@@ -42,6 +42,7 @@ namespace DD4hep {
       UNICODE(iov_type);
       UNICODE(manager);
 
+      UNICODE(hash);
       UNICODE(mapping);
       UNICODE(sequence);
       UNICODE(alignment);
