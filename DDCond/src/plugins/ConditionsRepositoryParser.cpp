@@ -283,8 +283,23 @@ namespace DD4hep {
    */
   template <> void Converter<pressure>::operator()(xml_h e) const {
     ConversionArg* arg = _param<ConversionArg>();
-    Condition      con = bind_condition(ValueBinder(), arg->detector, e);
+    Condition      con = bind_condition(ValueBinder(), arg->detector, e, "double");
     con->setFlag(Condition::PRESSURE);
+    arg->manager.registerUnlocked(arg->pool, con);
+  }
+
+  /// Convert conditions temperature objects (scalars with unit)
+  /**
+   *   <temperature value="273.1" unit="kelvin"/>
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
+  template <> void Converter<temperature>::operator()(xml_h e) const {
+    ConversionArg* arg = _param<ConversionArg>();
+    Condition      con = bind_condition(ValueBinder(), arg->detector, e, "double");
+    con->setFlag(Condition::TEMPERATURE);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
@@ -341,21 +356,6 @@ namespace DD4hep {
       // Otherwise interprete the data directly from the data content
       OpaqueDataBinder::insert_map(binder, b, key_type, val_type, i.text());
     }
-    arg->manager.registerUnlocked(arg->pool, con);
-  }
-
-  /// Convert conditions temperature objects (scalars with unit)
-  /**
-   *   <temperature value="273.1" unit="kelvin"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<temperature>::operator()(xml_h e) const {
-    ConversionArg* arg = _param<ConversionArg>();
-    Condition      con = bind_condition(ValueBinder(), arg->detector, e);
-    con->setFlag(Condition::TEMPERATURE);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 

@@ -465,7 +465,7 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
                  doc->ErrorDesc());
         printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
                  doc->Value(), doc->ErrorRow(), doc->ErrorCol());
-        except("DD4hep: file:%s error:%s",clean.c_str(),doc->ErrorDesc().c_str());
+        except("DD4hep: file:%s error:%s",clean.c_str(),doc->ErrorDesc());
       }
       except("DD4hep: Unknown error (TinyXML) while parsing:%s",fname.c_str());
     }
