@@ -169,7 +169,7 @@ namespace  {
       TTimeStamp acc_stop;
       acc_stat.Fill(acc_stop.AsDouble()-acc_start.AsDouble());
       TTimeStamp comp_start;
-      AlignmentsManager::Result ares = align.compute(*slice->pool);
+      AlignmentsManager::Result ares = align.compute(*slice);
       TTimeStamp comp_stop;
       comp_stat.Fill(comp_stop.AsDouble()-comp_start.AsDouble());
       printout(INFO,"DDDBAlign",

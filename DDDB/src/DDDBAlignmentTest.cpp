@@ -51,6 +51,7 @@ namespace  {
    */
   class AlignmentSelector  {
   public:
+    ConditionsDependencyCollection dependencies;
     ConditionUpdateCall* updateCall;
     LCDD&                lcdd;
     string               m_name;
@@ -72,14 +73,14 @@ namespace  {
       releasePtr(updateCall);
     }
     /// Recursive alignment collector
-    long collect(DetElement de, dd4hep_ptr<UserPool>& user_pool, AlignmentsManager& am, int level)
+    long collect(DetElement de, ConditionsSlice& slice, int level)
     {
       char fmt[64];
       try  {
         DDDB::Catalog* cat = de.extension<DDDB::Catalog>();
         if ( !cat->condition.empty() )  {
           ConditionKey key(cat->condition);
-          Condition cond = user_pool->get(key.hash);
+          Condition cond = slice.pool->get(key.hash);
           if ( cond.isValid() )   {
             ConditionKey k(cat->condition+"/Tranformations");
             //
@@ -95,7 +96,9 @@ namespace  {
             DependencyBuilder b(k, updateCall);
             b->detector = de;
             b.add(ConditionKey(cond->value));
-            am.adoptDependency(b.release());
+            ConditionDependency* dep = b.release();
+            dependencies.insert(dep);
+            slice.insert(dep);
             ++m_installCount;
           }
           else  {
@@ -115,14 +118,14 @@ namespace  {
       }
       const DetElement::Children& c = de.children();
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-        collect((*i).second, user_pool, am, level+1);
+        collect((*i).second, slice, level+1);
       return 1;
     }
     /// Initial collector call
-    long collect(ConditionsManager manager, AlignmentsManager& context, const IOV& iov)  {
+    long collect(ConditionsManager manager, const IOV& iov)  {
       dd4hep_ptr<ConditionsSlice> slice(createSlice(manager,*iov.iovType));
       manager.prepare(iov, *slice);
-      int res = collect(lcdd.world(), slice->pool, context, 0);
+      int res = collect(lcdd.world(), *slice, 0);
       return res;
     }
     /// Compute dependent alignment conditions
@@ -132,16 +135,17 @@ namespace  {
                             const IOV& iov)
     {
       slice.adopt(createSlice(conds,*iov.iovType));
+      slice->insert(dependencies);
       TTimeStamp acc_start;
       ConditionsManager::Result cres = conds.prepare(iov, *slice);
       TTimeStamp acc_stop;
       acc_stat.Fill(acc_stop.AsDouble()-acc_start.AsDouble());
       TTimeStamp comp_start;
-      AlignmentsManager::Result ares = align.compute(*slice->pool);
+      AlignmentsManager::Result ares = align.compute(*slice);
       TTimeStamp comp_stop;
       comp_stat.Fill(comp_stop.AsDouble()-comp_start.AsDouble());
       printout(INFO,"DDDBAlign",
-               "++ AlignmentManager: %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
+               "++ AlignmentManager: %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
                ares.computed, ares.missing, iov.str().c_str());
       return 1;
@@ -150,10 +154,10 @@ namespace  {
     int access(ConditionsManager conds,AlignmentsManager align, const IOV& iov)  {
       typedef ConditionsDependencyCollection Deps;
       dd4hep_ptr<ConditionsSlice> slice;
-      int ret = computeDependencies(slice, conds, align, iov);
 
+      int ret = computeDependencies(slice, conds, align, iov);
       if ( ret == 1 )  {
-        const Deps& deps = align.knownDependencies();
+        const Deps& deps = dependencies;
         int count = 0;
         for(Deps::const_iterator i=deps.begin(); i!=deps.end(); ++i)   {
           const ConditionDependency* d = (*i).second.get();
@@ -234,7 +238,7 @@ namespace  {
       {
         TTimeStamp start;
         IOV  iov(iovType, time);
-        ret = selec.collect(conds,align,iov);
+        ret = selec.collect(conds,iov);
         TTimeStamp stop;
         cr_stat.Fill(stop.AsDouble()-start.AsDouble());
       }
@@ -249,7 +253,7 @@ namespace  {
             TTimeStamp stop;
             re_acc_stat.Fill(stop.AsDouble()-start.AsDouble());
             printout(INFO,"DDDBAlign",
-                     "++ REACCESS:        %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld)             for IOV:%-12s",
+                     "++ REACCESS:         %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld)             for IOV:%-12s",
                      cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, iov.str().c_str());
           }
         }
@@ -303,7 +307,7 @@ namespace  {
     ConditionsManager conds(ConditionsManager::from(lcdd));
     const IOVType* iovType = conds.iovType("epoch");
     IOV  iov(iovType, time);
-    int ret = selec.collect(conds,align,iov);
+    int ret = selec.collect(conds,iov);
     if ( ret == 1 )  {
       ret = selec.access(conds,align,iov);
     }
@@ -312,3 +316,4 @@ namespace  {
 }   /* End anonymous namespace  */
 DECLARE_APPLY(DDDB_AlignmentsAccessTest,dddb_access_alignments)
 //==========================================================================
+

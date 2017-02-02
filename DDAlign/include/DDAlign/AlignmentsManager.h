@@ -55,8 +55,6 @@ namespace DD4hep {
       typedef Conditions::ConditionUpdateContext         Context;
       /// Alignments re-use conditions dependency definition from the conditions manager
       typedef Conditions::ConditionDependency            Dependency;
-      /// Alignments re-use conditions dependency container def from the conditions manager
-      typedef Conditions::ConditionsDependencyCollection Dependencies;
 
       /// Result of a computation call to the alignments manager
       /**
@@ -102,18 +100,16 @@ namespace DD4hep {
       AlignmentsManager& operator=(const AlignmentsManager& mgr) = default;
       /// Delete the manager. Be careful: this affects all referencing handles!
       void destroy();
-      /// Adopy alignment dependency for later recalculation
-      bool adoptDependency(Dependency* dependency)  const;
-      /// Access all known dependencies
-      const Dependencies& knownDependencies()  const;
       /// Compute all alignment conditions of the internal dependency list
       Result compute(Slice& slice)  const;
+#if 0
       /// Compute all alignment conditions of the specified dependency list
       Result compute(Slice& slice, const Dependencies& deps)  const;
       /// Compute all alignment conditions of the internal dependency list
       Result compute(Pool& pool)  const;
       /// Compute all alignment conditions of the specified dependency list
       Result compute(Pool& pool, const Dependencies& deps)  const;
+#endif
       /// Register new updated derived alignment during the computation step
       static void newEntry(const Context& parameter,
                            DetElement& det,
@@ -133,13 +129,11 @@ namespace DD4hep {
     class AlignmentsManagerObject : public NamedObject {
     public:
       typedef AlignmentsManager::Pool         Pool;
+      typedef AlignmentsManager::Slice        Slice;
       typedef AlignmentsManager::Result       Result;
-      typedef AlignmentsManager::Dependencies Dependencies;
       
-      /// Full list of alignment dependencies
-      Dependencies*        dependencies;
       /// References to all alignment possibilities known
-      AlignContext*        all_alignments;
+      //AlignContext*        all_alignments;
 
     protected:
       /// Compute the transformation from the closest detector element of the alignment to the world system
@@ -153,9 +147,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~AlignmentsManagerObject();
       /// Compute all alignment conditions of the internal dependency list
-      Result compute(Pool& pool) const;
+      Result compute(Slice& slice) const;
       /// Compute all alignment conditions of the specified dependency list
-      Result compute(Pool& pool, const Dependencies& deps) const;
+      //Result compute(Pool& pool, const Dependencies& deps) const;
     };
     
   }       /* End namespace Geometry                    */

@@ -125,19 +125,8 @@ XML::Element GlobalAlignmentWriter::scan(XML::Document doc, DetElement element) 
 
 /// Dump the tree content into a XML document structure
 XML::Document GlobalAlignmentWriter::dump(DetElement top, bool enable_transactions)  const {
-  const char comment[] = "\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   DD4hep generated alignment file using the         ++++\n"
-    "      ++++   DD4hep Detector description XML generator.        ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++   Parser:"
-    XML_IMPLEMENTATION_TYPE
-    "                ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++                              M.Frank CERN/LHCb      ++++\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
-  XML::Document doc = docH.create("alignment", comment);
+  XML::Document doc = docH.create("alignment", docH.defaultComment());
   XML::Element elt(0), elements(0), root = doc.root();
   root.append(elements = XML::Element(doc, _ALU(detelements)));
   if ( enable_transactions ) root.append(XML::Element(doc,_ALU(open_transaction)));

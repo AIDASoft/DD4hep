@@ -10,8 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
-// $Id$
 #ifndef DD4HEP_GEOMETRY_PANDORACONVERTER_H
 #define DD4HEP_GEOMETRY_PANDORACONVERTER_H
 
@@ -67,14 +65,18 @@ namespace DD4hep {
 }      // End namespace DD4hep
 
 #endif // DD4HEP_GEOMETRY_PANDORACONVERTER_H
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-// $Id$
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework includes
 #include "DD4hep/LCDD.h"

@@ -89,17 +89,18 @@ namespace DD4hep {
         NONE
       };
       enum ConditionState {
-        INACTIVE         = 0,
-        ACTIVE           = 1<<0,
-        CHECKED          = 1<<2,
-        DERIVED          = 1<<3,
-        TEMPERATURE      = 1<<4,
-        PRESSURE         = 1<<5,
-        ALIGNMENT        = 1<<6,
-        // Keep bit 7-15 for other generic types
+        INACTIVE          = 0,
+        ACTIVE            = 1<<0,
+        CHECKED           = 1<<2,
+        DERIVED           = 1<<3,
+        TEMPERATURE       = 1<<4,
+        PRESSURE          = 1<<5,
+        ALIGNMENT         = 1<<6,
+        ALIGNMENT_DERIVED = 1<<7,
+        // Keep bit 8-15 for other generic types
         // Bit 16-31 is reserved for user classifications
-        USER_FLAGS_FIRST = 1<<16,
-        USER_FLAGS_LAST  = 1<<31
+        USER_FLAGS_FIRST  = 1<<16,
+        USER_FLAGS_LAST   = 1<<31
       };
 
       /// Abstract base for processing callbacks to conditions objects

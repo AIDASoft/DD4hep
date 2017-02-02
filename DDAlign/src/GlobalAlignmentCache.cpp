@@ -74,7 +74,8 @@ int GlobalAlignmentCache::release()   {
 GlobalAlignmentCache* GlobalAlignmentCache::install(LCDD& lcdd)   {
   GlobalAlignmentCache* cache = lcdd.extension<GlobalAlignmentCache>(false);
   if ( !cache )  {
-    lcdd.addExtension<GlobalAlignmentCache>(new GlobalAlignmentCache(lcdd,"world",true));
+    cache = new GlobalAlignmentCache(lcdd,"world",true);
+    lcdd.addExtension<GlobalAlignmentCache>(cache);
   }
   return cache;
 }

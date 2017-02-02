@@ -1110,19 +1110,8 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   collect(top, geo);
 
   printout(ALWAYS,"LCDDConverter","++ ==> Converting in memory detector description to GDML format...");
-  const char* comment = "\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   Linear collider detector description GDML in C++  ++++\n"
-    "      ++++   DD4hep Detector description generator.            ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++   Parser:"
-    XML_IMPLEMENTATION_TYPE
-    "                ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++                              M.Frank CERN/LHCb      ++++\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
-  geo.doc = docH.create("gdml", comment);
+  geo.doc = docH.create("gdml", docH.defaultComment());
   geo.doc_root = geo.doc.root();
   geo.doc_root.setAttr(Unicode("xmlns:xs"), "http://www.w3.org/2001/XMLSchema-instance");
   geo.doc_root.setAttr(Unicode("xs:noNamespaceSchemaLocation"),
@@ -1177,20 +1166,9 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
   collect(top, geo);
   printout(ALWAYS,"LCDDConverter","++ ==> Dump visualisation attributes "
            "from in memory detector description...");
-  const char comment[] = "\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   Linear collider detector description LCDD in C++  ++++\n"
-    "      ++++   DD4hep Detector description generator.            ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++   Parser:"
-    XML_IMPLEMENTATION_TYPE
-    "                ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++                              M.Frank CERN/LHCb      ++++\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
   xml_elt_t elt(0);
-  geo.doc = docH.create("visualization", comment);
+  geo.doc = docH.create("visualization", docH.defaultComment());
   geo.doc_root = geo.doc.root();
   geo.doc_root.append(geo.doc_display = xml_elt_t(geo.doc, _U(display)));
   geo.doc_root.append(geo.doc_structure = xml_elt_t(geo.doc, _U(structure)));
@@ -1211,21 +1189,10 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
   m_data->clear();
   collect(top, geo);
-  const char comment[] = "\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   Linear collider detector description LCDD in C++  ++++\n"
-    "      ++++   DD4hep Detector description generator.            ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++   Parser:"
-    XML_IMPLEMENTATION_TYPE
-    "                ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++                              M.Frank CERN/LHCb      ++++\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
   xml_elt_t elt(0);
   Volume world_vol = lcdd.worldVolume();
-  geo.doc = docH.create("lcdd", comment);
+  geo.doc = docH.create("lcdd", docH.defaultComment());
   geo.doc_root = geo.doc.root();
   geo.doc_root.setAttr(Unicode("xmlns:lcdd"), "http://www.lcsim.org/schemas/lcdd/1.0");
   geo.doc_root.setAttr(Unicode("xmlns:xs"), "http://www.w3.org/2001/XMLSchema-instance");

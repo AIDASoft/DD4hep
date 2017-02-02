@@ -1,0 +1,12 @@
+<global_alignment print="true">
+  <open_transaction/>
+  <subdetectors>
+    <!--
+	Note: The subdetector name MUST be in the list of top level
+	detector elements attached to the LCDD structure.
+
+    -->
+    <detelement path="TPC" reset="true" reset_children="true"/>
+  </subdetectors>
+  <close_transaction/>
+</global_alignment>

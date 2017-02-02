@@ -51,6 +51,7 @@ namespace DD4hep {
     using Alignments::Delta;
     using Alignments::DetAlign;
     using Alignments::Alignment;
+    using Alignments::AlignmentData;
     using Alignments::AlignmentsManager;
     
     /// Example how to populate the detector description with alignment constants
@@ -62,7 +63,9 @@ namespace DD4hep {
      *  \date    01/04/2016
      */
     struct AlignmentCreator : public DetectorProcessor {
+      /// Reference to the conditions manager
       ConditionsManager manager;
+      /// Reference to the used conditions pool
       ConditionsPool*   pool;
       /// Print level
       PrintLevel        printLevel;
@@ -73,7 +76,7 @@ namespace DD4hep {
       virtual int operator()(DetElement de, int level);
     };
 
-    // This is important, otherwise the register and forward calls won't find them!
+    /// This is important, otherwise the register and forward calls won't find them!
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -93,17 +96,34 @@ namespace DD4hep {
      *  \date    01/04/2016
      */
     struct AlignmentDataAccess : public Alignments::AlignmentsProcessor  {
-      UserPool& pool;
+      /// Reference to the used conditions pool
+      UserPool&  pool;
       /// Print level
-      PrintLevel        printLevel;
+      PrintLevel printLevel;
       /// Constructor
-      AlignmentDataAccess(UserPool& p) : AlignmentsProcessor(0), pool(p),
-                                         printLevel(DEBUG) {
-      }
+      AlignmentDataAccess(UserPool& p) : AlignmentsProcessor(0), pool(p), printLevel(DEBUG) {}
       /// Callback to process a single detector element
       int processElement(DetElement de);
     };
 
+    /// Reset all alignment deltas of the detector elements scanned
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2016
+     */
+    struct AlignmentReset : public Alignments::AlignmentsProcessor {
+      /// Reference to the used conditions pool
+      UserPool&  pool;
+      /// Print level
+      PrintLevel printLevel;
+      /// Constructor
+      AlignmentReset(UserPool& p,PrintLevel pr=INFO)
+        : AlignmentsProcessor(0), pool(p), printLevel(pr) {}
+      /// Callback to process a single detector element
+      virtual int processElement(DetElement de);
+    };
+    
     /// Helper to run DetElement scans
     /**
      *  \author  M.Frank
@@ -113,20 +133,29 @@ namespace DD4hep {
     struct Scanner : public DetectorProcessor  {
       DetElement::Processor* proc;
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int)
-      { return proc->processElement(de);                     }
-      template <typename Q> Scanner& scan(Q& p, DetElement start)
-      { Scanner obj; obj.proc = &p; obj.process(start, 0, true); return *this; }
-      template <typename Q> Scanner& scan2(const Q& p, DetElement start)
-      { Scanner obj; obj.proc = const_cast<Q*>(&p); obj.process(start, 0, true); return *this; }
+      virtual int operator()(DetElement de, int)      {
+        return proc->processElement(de);
+      }
+      template <typename Q> Scanner& scan(Q& p, DetElement start)      {
+        Scanner obj;
+        obj.proc = &p;
+        obj.process(start, 0, true);
+        return *this;
+      }
+      template <typename Q> Scanner& scan(const Q& p, DetElement start)  {
+        Scanner obj;
+        Q* q = const_cast<Q*>(&p);
+        obj.proc = q;
+        obj.process(start, 0, true); return *this;
+      }
     };
 
     /// Install the consitions and the alignment manager
     void installManagers(LCDD& lcdd);
     /// Register the alignment callbacks
-    void registerAlignmentCallbacks(LCDD& lcdd,
-                                    ConditionsSlice& slice,
-                                    Alignments::AlignmentsManager alignMgr);
+    void registerAlignmentCallbacks(LCDD& lcdd, ConditionsSlice& slice);
+    /// Register the alignment callbacks
+    void registerResetCallbacks(LCDD& lcdd, ConditionsSlice& slice);
 
     
   }       /* End namespace AlignmentExamples           */

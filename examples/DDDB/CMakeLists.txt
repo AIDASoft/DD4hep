@@ -126,7 +126,7 @@ if (DD4HEP_USE_XERCESC)
     -config DD4hep_ConditionsManagerInstaller
     -config DD4hep_AlignmentsManagerInstaller
     -plugin DDDB_DerivedAlignmentsTest -print DEBUG
-    REGEX_PASS "AlignmentManager: 9353 conditions \\(S:0,L:9353,C:0,M:0\\) \\(A:2493,M:0\\)" )
+    REGEX_PASS "AlignmentManager:   11848 conditions \\(S:0,L:9353,C:2495,M:0\\) \\(A:2493,M:0\\)" )
   #
   #---Testing: Load the geometry + conditions + access derived alignments from DetElement structures
   dd4hep_add_test_reg( test_DDDB_alignment_access_LONGTEST

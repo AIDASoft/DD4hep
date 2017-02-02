@@ -16,7 +16,7 @@
  This plugin behaves like a main program.
  Invoke the plugin with something like this:
 
- geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml \
+ geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_recompute \
               -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml \
               -delta file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
 
@@ -31,7 +31,7 @@ using namespace DD4hep::AlignmentExamples;
 
 /// Plugin function: Alignment program example
 /**
- *  Factory: DD4hep_AlignmentExample_read_xml
+ *  Factory: DD4hep_AlignmentExample_recompute
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -53,7 +53,7 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_AlignmentExample_read_xml                \n"
+      "     name:   factory name     DD4hep_AlignmentExample_recompute               \n"
       "     -input   <string>        Geometry file                                   \n"
       "     -deltas  <string>        Alignment deltas (Conditions                    \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
@@ -75,31 +75,48 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
   }
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
-  dd4hep_ptr<ConditionsSlice> slice(createSlice(condMgr,*iov_typ));
-  ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
-    
+  dd4hep_ptr<ConditionsSlice> slice_align(createSlice(condMgr,*iov_typ));
+  ConditionsManager::Result   cres_align = condMgr.prepare(req_iov,*slice_align);
+
   // ++++++++++++++++++++++++ We need a valid set of conditions to do this!
-  registerAlignmentCallbacks(lcdd,*slice);
+  registerAlignmentCallbacks(lcdd,*slice_align);
 
   // ++++++++++++++++++++++++ Compute the tranformation matrices
-  AlignmentsManager::Result ares = alignMgr.compute(*slice);
+  AlignmentsManager::Result ares_align = alignMgr.compute(*slice_align);
 
   // What else ? let's access the data
-  Scanner().scan(AlignmentDataAccess(*slice->pool),lcdd.world());
+  Scanner().scan(AlignmentDataAccess(*slice_align->pool),lcdd.world());
 
   // What else ? let's print the current selection
-  Alignments::AlignedVolumePrinter printer(slice->pool.get(),"Example");
-  Scanner().scan(printer,lcdd.world());
+  Alignments::AlignedVolumePrinter print_align(slice_align->pool.get(),"Example");
+  Scanner().scan(print_align,lcdd.world());
 
+  // What else ? let's access the data
+  //Scanner().scan(AlignmentReset(*slice_align->pool,INFO),lcdd.world());
+  // Print again the changed values
+
+  // ++++++++++++++++++++++++ Compute the tranformation matrices
+  dd4hep_ptr<ConditionsSlice> slice_reset(createSlice(condMgr,*iov_typ));
+  ConditionsManager::Result   cres_reset = condMgr.prepare(req_iov,*slice_reset);
+  registerResetCallbacks(lcdd,*slice_reset);
+  AlignmentsManager::Result   ares_reset = alignMgr.compute(*slice_reset);
+  Alignments::AlignedVolumePrinter print_reset(slice_reset->pool.get(),"Example");
+  Scanner().scan(print_reset,lcdd.world());
+  
   printout(INFO,"Example",
            "Setup %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
-           slice->conditions().size(),
-           cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
-           ares.computed, ares.missing, iov_typ->str().c_str());
+           slice_align->conditions().size(),
+           cres_align.total(), cres_align.selected, cres_align.loaded, cres_align.computed, cres_align.missing, 
+           ares_align.computed, ares_align.missing, iov_typ->str().c_str());
+  printout(INFO,"Example",
+           "Setup %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
+           slice_reset->conditions().size(),
+           cres_reset.total(), cres_reset.selected, cres_reset.loaded, cres_reset.computed, cres_reset.missing, 
+           ares_reset.computed, ares_reset.missing, iov_typ->str().c_str());
 
   // ++++++++++++++++++++++++ All done.
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_APPLY(DD4hep_AlignmentExample_read_xml,alignment_example)
+DECLARE_APPLY(DD4hep_AlignmentExample_recompute,alignment_example)

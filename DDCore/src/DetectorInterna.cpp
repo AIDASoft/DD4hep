@@ -63,7 +63,7 @@ SensitiveDetectorObject::~SensitiveDetectorObject() {
 DetElementObject::DetElementObject()
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(0), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
-    idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
+    idealPlace(), placement(), volumeID(0), parent(), children(),
     nominal(), survey(), alignments(), conditions(), worldTrafo()
 {
   printout(VERBOSE,"DetElementObject","+++ Created new anonymous DetElementObject()");
@@ -74,7 +74,7 @@ DetElementObject::DetElementObject()
 DetElementObject::DetElementObject(const std::string& nam, int ident)
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(ident), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
-    idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
+    idealPlace(), placement(), volumeID(0), parent(), children(),
     nominal(), survey(), alignments(), conditions(), worldTrafo()
 {
   SetName(nam.c_str());
@@ -85,7 +85,6 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 /// Internal object destructor: release extension object(s)
 DetElementObject::~DetElementObject() {
   destroyHandles(children);
-  //deletePtr (referenceTrafo);
   destroyHandle (conditions);
   conditions = ConditionsContainer();
   destroyHandle (nominal);
@@ -179,34 +178,6 @@ const TGeoHMatrix& DetElementObject::parentTransformation() {
   return DetElement(this).nominal().detectorTransformation();
 }
 
-#if 0
-/// Create cached matrix to transform to reference coordinates
-const TGeoHMatrix& DetElementObject::referenceTransformation() {
-  if (!referenceTrafo) {
-    DetElement  ref(reference);
-    DetElement  self(this);
-    if ( ref.ptr() == self.ptr() )  {
-      referenceTrafo = new TGeoHMatrix(gGeoIdentity->Inverse());
-    }
-    else if ( DetectorTools::isParentElement(ref,self) ) {
-      PlacementPath nodes;
-      DetectorTools::placementPath(ref,self,nodes);
-      DetectorTools::placementTrafo(nodes,false,referenceTrafo);
-    }
-    else if ( DetectorTools::isParentElement(self,ref) ) {
-      PlacementPath nodes;
-      DetectorTools::placementPath(self,ref,nodes);
-      DetectorTools::placementTrafo(nodes,false,referenceTrafo);
-    }
-    else  {
-      throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) +
-                          " to reference element " + string(ref.name()) + " present!");
-    }
-  }
-  return *referenceTrafo;
-}
-#endif
-
 /// Revalidate the caches
 void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   PlacementPath par_path;
@@ -227,8 +198,19 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
            "DetElement","+++ Invalidate chache of %s -> %s Placement:%p --> %p %s",
            det.path().c_str(), DetectorTools::placementPath(par_path).c_str(),
            placement.ptr(), node.ptr(), (placement.ptr() == node.ptr()) ? "" : "[UPDATE]");
-
+  if ( idealPlace.ptr() != node.ptr() && 0 == node->GetUserExtension() )  {
+    auto ext = idealPlace->GetUserExtension();
+    node->SetUserExtension(ext);
+  }
+  Volume node_vol = node.volume();
+  Volume plac_vol = idealPlace.volume();
+  if ( node_vol.ptr() != plac_vol.ptr() && 0 == node_vol->GetUserExtension() )  {
+    auto ext = plac_vol->GetUserExtension();
+    node_vol->SetUserExtension(ext);    
+  }
+  // Now we can assign the new placement to the object
   placement = node;
+
   Alignments::Alignment::Data& data = det.nominal().data();
   if ( have_trafo && print )  data.worldTransformation().Print();
 
@@ -252,7 +234,6 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   }
 
   if ( (flag&HAVE_PARENT_TRAFO) && print )  data.worldTrafo.Print();
-  //deletePtr (referenceTrafo);
 
   /// Now iterate down the children....
   for(const auto& i : children )

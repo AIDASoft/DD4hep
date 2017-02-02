@@ -139,8 +139,6 @@ namespace DD4hep {
       World               privateWorld;
       /// Reference to the parent element
       DetElement          parent;
-      /// Reference element for stored transformations
-      DetElement          reference;
       /// The array of children
       Children            children;
       /// Placeholder for structure with update callbacks
@@ -173,8 +171,6 @@ namespace DD4hep {
       TGeoHMatrix worldTrafo;
       /// Intermediate buffer to store the transformation to the parent detector element
       //TGeoHMatrix parentTrafo;
-      /// Intermediate buffer for the transformation to an arbitrary DetElement
-      //TGeoHMatrix* referenceTrafo;
       //@}
 
     private:
@@ -201,8 +197,6 @@ namespace DD4hep {
       const TGeoHMatrix& worldTransformation();
       /// Create cached matrix to transform to parent coordinates
       const TGeoHMatrix& parentTransformation();
-      /// Create cached matrix to transform to reference coordinates
-      //const TGeoHMatrix& referenceTransformation();
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer);
       /// Trigger update callbacks

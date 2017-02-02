@@ -18,10 +18,15 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
-#include "DDAlign/AlignmentsManager.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  /// Namespace for the geometry part of the AIDA detector description toolkit
+  namespace Conditions {
+    // Forward declarations
+    class ConditionsSlice;
+  }
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Alignments {
@@ -62,12 +67,13 @@ namespace DD4hep {
      */
     class AlignmentsRegister : public DetElement::Processor {
     public:
+      /// Shortcut the ConditionsSlice type
+      typedef Conditions::ConditionsSlice Slice;
+    public:
       /// Reference to the alignment manager object
-      AlignmentsManager      alignmentMgr;
+      Slice&                 slice;
       /// The callback to be registered for the update mechanism
       AlignmentsUpdateCall*  updateCall;
-      /// Conditions pool used to access the basic conditions object
-      Conditions::UserPool*  user_pool;
       /// Extension property to construct the name of the alignment condition
       std::string            extension;
       /// Name of the alignment alias for the detector elements alignment object
@@ -78,7 +84,7 @@ namespace DD4hep {
       PrintLevel             printLevel;
       
       /// Initializing constructor
-      AlignmentsRegister(AlignmentsManager m, AlignmentsUpdateCall* c, UserPool* p);
+      AlignmentsRegister(Slice& slice, AlignmentsUpdateCall* c);
       /// Default destructor
       virtual ~AlignmentsRegister();
       /// Callback to output conditions information

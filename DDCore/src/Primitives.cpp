@@ -432,7 +432,7 @@ __dynamic_cast(const void* __src_ptr,// Starting object.
                const abi::__class_type_info* __dst_type,// Desired target type.
                ptrdiff_t __src2dst);// How src and dst are related.
 #endif
-
+#if 0
 #ifndef __APPLE__
 static inline void* cast_wrap(const void* p,
                               const abi::__class_type_info* src,
@@ -441,6 +441,7 @@ static inline void* cast_wrap(const void* p,
 {
   return abi::__dynamic_cast(p,src,dst,src2dst);
 }
+#endif
 #endif
 
 /// Apply cast using typeinfo instead of dynamic_cast

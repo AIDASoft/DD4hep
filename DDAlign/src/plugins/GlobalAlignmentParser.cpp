@@ -340,7 +340,7 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
 static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
   static dd4hep_mutex_t s_mutex;
   dd4hep_lock_t lock(s_mutex);
-  bool open_trans = e.hasChild(_ALU(close_transaction));
+  bool open_trans  = e.hasChild(_ALU(open_transaction));
   bool close_trans = e.hasChild(_ALU(close_transaction));
 
   GlobalAlignmentCache* cache = GlobalAlignmentCache::install(lcdd);
@@ -350,6 +350,11 @@ static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
       except("GlobalAlignment","Request to open a second alignment transaction stack -- not allowed!");
     }
     GlobalAlignmentStack::create();
+  }
+  if ( !GlobalAlignmentStack::exists() )  {
+    printout(ERROR,"GlobalAlignment","Request process global alignments without cache.");
+    printout(ERROR,"GlobalAlignment","Call plugin DD4hep_GlobalAlignmentInstall first OR add XML tag <open_transaction/>");
+    except("GlobalAlignment","Request process global alignments without cache.");
   }
   GlobalAlignmentStack& stack = GlobalAlignmentStack::get();
   (DD4hep::Converter<DD4hep::alignment>(lcdd,lcdd.world().ptr(),&stack))(e);

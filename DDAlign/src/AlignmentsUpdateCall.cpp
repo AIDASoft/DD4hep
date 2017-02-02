@@ -14,6 +14,9 @@
 // Framework include files
 #include "DDAlign/AlignmentsUpdateCall.h"
 #include "DDAlign/AlignmentsManager.h"
+
+#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
@@ -37,8 +40,8 @@ AlignmentsUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt,
   AlignmentCondition target(key.name);
   AlignmentData&     data = target.data();
   data.delta     = delta;
-  data.flag      = AlignmentData::HAVE_NONE;
   data.detector  = ctxt.dependency.detector;
+  target->setFlag(Condition::ALIGNMENT_DERIVED);
   //
   // This here is the main difference compared to other derived conditions:
   // ----------------------------------------------------------------------
@@ -70,6 +73,7 @@ AlignmentsUpdateCall::invalidDataType(const ConditionKey& key, const UpdateConte
   Alignments::AlignmentCondition target(key.name);
   Data& data = target.data();
   data.detector = det;
+  data.flag     = AlignmentData::HAVE_NONE;
   printout(ERROR,"AlignmentUpdate","++ Failed to access alignment-Delta for %s from %s",
            det.path().c_str(), cond->value.c_str());
   printout(ERROR,"AlignmentUpdate","++ The true data type is: %s",typeName(cond.typeInfo()).c_str());
