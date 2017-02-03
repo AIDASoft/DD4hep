@@ -33,6 +33,7 @@ include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
 include(${ROOT_USE_FILE})
 #
+include ( DD4hepSetCompilerFlags )
 dd4hep_set_compiler_flags()
 #
 dd4hep_configure_output()

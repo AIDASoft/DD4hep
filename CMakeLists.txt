@@ -1,17 +1,22 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
-set ( CMAKE_MODULE_PATH      ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake ) 
-#
-include ( DD4hepBuild )
-#
+SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/Modules )
+SET( SYSTEM_INSTALL OFF CACHE BOOL  "Install into CMAKE_INSTALL_PREFIX in standard way")
 
+if(SYSTEM_INSTALL)
+  include ( DD4hepOutOfSourceBuild )
+  dd4hep_ensure_out_of_source_build()
+  include ( DD4hepInstallDirs )
+ELSE()
 #------------- set the default installation directory to be the source directory
+  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH
+      "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..."
+      FORCE )
+    MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
+  ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+ENDIF()
 
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH
-       "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..."
-       FORCE )
- MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+include ( DD4hepBuild )
 #
 #---Options-------------------------------------------------------------------------
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
@@ -42,6 +47,7 @@ message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
 
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
+include ( DD4hepSetCompilerFlags )
 dd4hep_set_compiler_flags()
 
 add_subdirectory ( GaudiPluginService)
@@ -141,10 +147,15 @@ configure_file(cmake/run_test.sh    bin/run_test.sh @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/bin/thisdd4hep.csh ${CMAKE_BINARY_DIR}/bin/thisdd4hep.sh DESTINATION bin )
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/run_test.sh DESTINATION bin )
 
-install(DIRECTORY cmake
-  DESTINATION ${CMAKE_INSTALL_PREFIX}
-  FILES_MATCHING PATTERN "*.cmake" PATTERN "thisdd4hep_package.sh.in" PATTERN "run*.sh"
-  PATTERN ".svn" EXCLUDE
+SET(SYSTEM_INSTALL_LOCATION ${CMAKE_INSTALL_PREFIX}/cmake)
+IF(SYSTEM_INSTALL)
+  SET(SYSTEM_INSTALL_LOCATION ${CMAKE_INSTALL_LIBDIR}/DD4hep)
+ENDIF()
+FILE(GLOB_RECURSE cmake_module_files cmake/*.cmake)
+install(FILES ${cmake_module_files}
+  DESTINATION ${SYSTEM_INSTALL_LOCATION}
+  #FILES_MATCHING PATTERN "*.cmake" PATTERN "thisdd4hep_package.sh.in" PATTERN "run*.sh"
+  #PATTERN ".svn" EXCLUDE
   )
 
 #-----------------------------------------------------------------------------------
@@ -164,3 +175,4 @@ if(APPLE)
   fill_dd4hep_library_path()
   message(STATUS "DD4HEP_LIBRARY_PATH= $ENV{DD4HEP_LIBRARY_PATH}")
 endif()
+

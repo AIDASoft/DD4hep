@@ -36,10 +36,17 @@ install(DIRECTORY include/DDSegmentation
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DDSegmentation
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
+IF(SYSTEM_INSTALL)
+  install(TARGETS DDSegmentation
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+ELSE()
+  install(TARGETS DDSegmentation
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    )
+ENDIF() 
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
 
@@ -48,6 +55,14 @@ install(TARGETS DDSegmentation
 #export(PACKAGE DDSegmentation)
  
 # Create the DDSegmentationConfig.cmake and DDSegmentationConfigVersion files
-configure_file(cmake/DDSegmentationConfig.cmake.in ${CMAKE_INSTALL_PREFIX}/DDSegmentationConfig.cmake)
+configure_file(cmake/DDSegmentationConfig.cmake.in ${PROJECT_BINARY_DIR}/DDSegmentationConfig.cmake)
+
+IF(SYSTEM_INSTALL)
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/DDSegmentationConfig.cmake
+    DESTINATION  ${CMAKE_INSTALL_LIBDIR}/DD4hep )
+ELSE()
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/DDSegmentationConfig.cmake
+    DESTINATION  ${CMAKE_INSTALL_PREFIX} )
+ENDIF()
 
 #install(FILES ${PROJECT_SOURCE_DIR}/DDSegmentationConfig.cmake DESTINATION . )
