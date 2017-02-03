@@ -33,7 +33,10 @@ DisplayConfiguration::~DisplayConfiguration()  {
 }
 
 /// Default constructor
-DisplayConfiguration::ViewConfig::ViewConfig() : Config()  {
+DisplayConfiguration::ViewConfig::ViewConfig()
+  : Config(), type(),
+    subdetectors(), show_sensitive(false), show_structure(false)
+{
 }
 
 /// Copy constructor
@@ -64,6 +67,7 @@ DisplayConfiguration::Config::Config()   {
   data.defaults.load_geo = -1;
   data.defaults.show_evt =  1;
   data.defaults.alpha = 0.5;
+  type = NO_DATA;
 }
 
 /// Copy constructor

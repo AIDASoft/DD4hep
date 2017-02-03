@@ -49,7 +49,9 @@ namespace DD4hep {
     /// Initializing constructor
     Path(const std::string& c) : std::string(c) {                    }
     /// Copy constructor
-    Path(const Path& c) : std::string(c)    {                        }
+    Path(const Path& c) : std::string(c)        {                    }
+    /// Move constructor
+    Path(Path&& c) : std::string(c)             {                    }
     /// Assigning constructor
     template <class Iter> Path(Iter _begin,Iter _end)  {
       if ( _begin != _end )  {
@@ -66,6 +68,16 @@ namespace DD4hep {
     }
     /// Assignment operator from string object
     Path& operator=(const std::string& c)   {
+      this->std::string::operator=(c);
+      return *this;
+    }
+    /// Move assignment operator from Path object
+    Path& operator=(Path&& c)          {
+      this->std::string::operator=(c);
+      return *this;
+    }
+    /// Assignment operator from string object
+    Path& operator=(std::string&& c)   {
       this->std::string::operator=(c);
       return *this;
     }
@@ -101,5 +113,5 @@ namespace DD4hep {
       static const Path& dot_dot_path();
     };
   };
-} /* End namespace DD4hep           */
-#endif    /* DD4HEP_DDCORE_PATH_H   */
+}         /* End namespace DD4hep           */
+#endif    /* DD4HEP_DDCORE_PATH_H           */

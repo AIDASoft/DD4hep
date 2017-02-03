@@ -702,12 +702,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     TGeoVolume* vol = node->GetVolume();
     TGeoMatrix* tr = node->GetMatrix();
     if (!tr) {
-      printout(FATAL, "Geant4Converter", "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p", node,
-               node->GetName(), node->IsA()->GetName(), vol);
+      except("Geant4Converter", "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p", node,
+             node->GetName(), node->IsA()->GetName(), vol);
     }
     else if (0 == vol) {
-      printout(FATAL, "Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p", node, node->GetName(),
-               node->IsA()->GetName(), vol);
+      except("Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p", node, node->GetName(),
+             node->IsA()->GetName(), vol);
     }
     else {
       int copy = node->GetNumber();

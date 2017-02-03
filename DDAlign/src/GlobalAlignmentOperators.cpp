@@ -90,8 +90,14 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::
           else if ( i==nLvl ) {
             TGeoHMatrix* hm = dynamic_cast<TGeoHMatrix*>(mm);
             TGeoMatrix*  org = p->GetOriginalMatrix();
-            hm->SetTranslation(org->GetTranslation());
-            hm->SetRotation(org->GetRotationMatrix());
+            if ( hm && org )  {
+              hm->SetTranslation(org->GetTranslation());
+              hm->SetRotation(org->GetRotationMatrix());
+            }
+            else  {
+              printout(ALWAYS,"GlobalAlignmentActor<reset>",
+                       "Invalid operation: %p %p", (void*)hm, (void*)org);
+            }
           }
           *glob *= *mm;
         }

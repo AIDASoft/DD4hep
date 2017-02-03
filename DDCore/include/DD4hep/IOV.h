@@ -43,9 +43,13 @@ namespace DD4hep {
     /// Standard Destructor
     ~IOVType() = default;
     /// Copy constructor
-    IOVType(const IOVType& copy) : type(copy.type), name(copy.name) {}
+    IOVType(const IOVType& copy) = default; //: type(copy.type), name(copy.name) {}
+    /// Move constructor
+    IOVType(IOVType&& copy) = default;
     /// Assignment operator
-    IOVType& operator=(const IOVType& copy);
+    IOVType& operator=(const IOVType& copy) = default;
+    /// Move assignment operator
+    IOVType& operator=(IOVType&& copy) = default;
     /// Conversion to string
     std::string str() const;
   };
@@ -81,10 +85,14 @@ namespace DD4hep {
     explicit IOV(const IOVType* typ, Key_first_type iov_value);
     /// Copy constructor
     IOV(const IOV& copy) = default;
+    /// Move constructor
+    IOV(IOV&& copy) = default;
     /// Standard Destructor
     ~IOV() = default;
     /// Assignment operator
     IOV& operator=(const IOV& c) = default;
+    /// Move assignment operator
+    IOV& operator=(IOV&& c) = default;
     /// Move the data content: 'from' will be reset to NULL
     void move(IOV& from);
     /// Create string representation of the IOV

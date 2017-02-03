@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -39,11 +38,12 @@ namespace DD4hep {
   protected:
     Display* m_display;
   public:
-    enum { CALODATA=1<<1, 
-           DETELEMENT=1<<2, 
-           VIEW=1<<3, 
-           PANEL=1<<4,
-           COLLECTION=1<<5
+    enum { NO_DATA    = 0,
+           CALODATA   = 1<<1, 
+           DETELEMENT = 1<<2, 
+           VIEW       = 1<<3, 
+           PANEL      = 1<<4,
+           COLLECTION = 1<<5
     };
     struct Defaults {
       char  load_geo;

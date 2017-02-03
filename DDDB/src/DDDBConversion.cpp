@@ -241,7 +241,7 @@ namespace DD4hep  {
     string rest = nam.substr(cat->path.length()+1);
     size_t idx = rest.find('/');
     string sub = rest.substr(0,idx);
-    while( idx != string::npos )  {
+    while( cat && idx != string::npos )  {
       dddb::Catalogs::const_iterator ic = cat->catalogs.find(sub);
       if ( ic != cat->catalogs.end() )  {
         rest = rest.substr(idx+1);

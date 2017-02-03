@@ -23,6 +23,7 @@
 using namespace std;
 using namespace DD4hep;
 
+#if 0
 /// Assignment operator
 IOVType& IOVType::operator=(const IOVType& copy)  {
   if ( &copy != this )  {
@@ -31,6 +32,7 @@ IOVType& IOVType::operator=(const IOVType& copy)  {
   }
   return *this;
 }
+#endif
 
 /// Conversion to string
 std::string IOVType::str()  const   {

@@ -30,7 +30,7 @@ using namespace DD4hep;
 LCDDData::LCDDData()
   : m_manager(0), m_world(), m_trackers(), m_worldVol(),
     m_trackingVol(), m_field("global"),
-    m_extensions(typeid(LCDDData)), m_volManager(),
+    m_buildType(BUILD_DEFAULT), m_extensions(typeid(LCDDData)), m_volManager(),
     m_inhibitConstants(false)
 {
   InstanceCount::increment(this);

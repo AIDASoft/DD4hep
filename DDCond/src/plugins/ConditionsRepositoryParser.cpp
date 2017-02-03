@@ -227,14 +227,19 @@ namespace DD4hep {
    */
   template <> void Converter<iov>::operator()(xml_h element) const {
     xml_dim_t e   = element;
-    string    ref = e.attr<string>(_U(ref));
     string    val = e.attr<string>(_U(validity));
     ConversionArg* arg  = _param<ConversionArg>();
     CurrentPool pool(arg);
-    printout(s_parseLevel,"XMLConditions","++ Reading IOV file: %s -> %s", val.c_str(), ref.c_str());
+
     pool.set(arg->manager.registerIOV(val));
-    XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
-    Converter<conditions>(lcdd,param,optional)(doc.root());
+    if ( e.hasAttr(_U(ref)) )  {
+      string    ref = e.attr<string>(_U(ref));
+      printout(s_parseLevel,"XMLConditions","++ Reading IOV file: %s -> %s",val.c_str(),ref.c_str());
+      XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+      Converter<conditions>(lcdd,param,optional)(doc.root());
+      return;
+    }
+    xml_coll_t(e,_UC(detelement)).for_each(Converter<arbitrary>(lcdd,param,optional));
   }
 
   /// Convert manager repository objects
@@ -245,13 +250,13 @@ namespace DD4hep {
    */
   template <> void Converter<manager>::operator()(xml_h element) const {
     ConversionArg* arg  = _param<ConversionArg>();
-    for( xml_coll_t c(element,_Unicode(property)); c; ++c)  {
+    for( xml_coll_t c(element,_UC(property)); c; ++c)  {
       xml_dim_t d = c;
       string nam = d.nameStr();
       string val = d.valueStr();
       try  {
         printout(s_parseLevel,"XMLConditions","++ Setup conditions Manager[%s] = %s",nam.c_str(),val.c_str());
-        arg->manager[nam] = val;
+        arg->manager[nam].str(val);
       }
       catch(const std::exception& e)  {
         printout(ERROR,"XMLConditions","++ FAILED: conditions Manager[%s] = %s [%s]",nam.c_str(),val.c_str(),e.what());
@@ -516,6 +521,8 @@ namespace DD4hep {
       Converter<repository>(lcdd,param,optional)(e);
     else if ( tag == "manager" )  
       Converter<manager>(lcdd,param,optional)(e);
+    else if ( tag == "conditions" )  
+      Converter<conditions>(lcdd,param,optional)(e);
     else if ( tag == "detelement" )
       Converter<detelement>(lcdd,param,optional)(e);
     else if ( tag == "iov" )         // Processing repository file

@@ -85,17 +85,17 @@ namespace DD4hep {
       };
 
     protected:
-      TGeoManager* m_manager;
-      ObjectHandleMap m_readouts;
-      ObjectHandleMap m_idDict;
-      ObjectHandleMap m_limits;
-      ObjectHandleMap m_regions;
-      ObjectHandleMap m_detectors;
-      ObjectHandleMap m_alignments;
+      TGeoManager*     m_manager;
+      ObjectHandleMap  m_readouts;
+      ObjectHandleMap  m_idDict;
+      ObjectHandleMap  m_limits;
+      ObjectHandleMap  m_regions;
+      ObjectHandleMap  m_detectors;
+      ObjectHandleMap  m_alignments;
 
-      ObjectHandleMap m_sensitive;
-      ObjectHandleMap m_display;
-      ObjectHandleMap m_fields;
+      ObjectHandleMap  m_sensitive;
+      ObjectHandleMap  m_display;
+      ObjectHandleMap  m_fields;
 
       ObjectHandleMap  m_motherVolumes;
 
@@ -118,10 +118,10 @@ namespace DD4hep {
       /// Definition of the extension type
       ObjectExtensions m_extensions;
       /// Volume manager reference
-      VolumeManager m_volManager;
+      VolumeManager    m_volManager;
 
       /// Flag to inhibit the access to global constants. Value set by constants section 'LCDD_InhibitConstants'
-      bool m_inhibitConstants;
+      bool             m_inhibitConstants;
 
     protected:
       /// Default constructor
