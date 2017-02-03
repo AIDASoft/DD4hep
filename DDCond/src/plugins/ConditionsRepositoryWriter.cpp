@@ -15,18 +15,19 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
-#include "DDCond/ConditionsManager.h"
 #include "XML/XMLElements.h"
+#include "DDCond/ConditionsManager.h"
 
 // C/C++ include files
-
-
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Conditions {
+
+    // Forward declarations
+    class ConditionsSlice;
     
     /// Conditions slice object. Defines which conditions should be loaded by the ConditionsManager.
     /**
@@ -44,25 +45,26 @@ namespace DD4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionsXMLRepositoryWriter  {
-      ConditionsManager manager;
     public:
       /// Default constructor
-      ConditionsXMLRepositoryWriter() = delete;
+      ConditionsXMLRepositoryWriter() = default;
       /// Copy constructor (Special, partial copy only. Hence no assignment!)
-      ConditionsXMLRepositoryWriter(const ConditionsXMLRepositoryWriter& copy) = delete;
-      /// Initializing constructor
-      ConditionsXMLRepositoryWriter(ConditionsManager& mgr);
+      ConditionsXMLRepositoryWriter(const ConditionsXMLRepositoryWriter& copy) = default;
       /// Default destructor. 
-      virtual ~ConditionsXMLRepositoryWriter();
+      virtual ~ConditionsXMLRepositoryWriter() = default;
      
       /// Dump the tree content into a XML document structure
-      size_t collectConditions(XML::Element root,
-                               ConditionsSlice& slice,
-                               DetElement detector)  const;
+      XML::Document dump(ConditionsSlice& slice)  const;
+      /// Dump the ConditionsManager configuration properties into a XML document structure
+      XML::Document dump(ConditionsManager manager)  const;
+      /// Dump the tree content into an existing XML document structure
+      size_t collect(XML::Element root,ConditionsSlice& slice,DetElement detector)  const;
+      /// Dump the ConditionsManager configuration properties into an existing XML document structure
+      size_t collect(XML::Element root, ConditionsManager manager)  const;
+      /// Dump the conditions tree content into a XML document structure
+      size_t collect(XML::Element root, ConditionsSlice& slice)  const;
       /// Write the XML document structure to a file.
       long write(XML::Document doc, const std::string& output)   const;
-      /// Dump the tree content into a XML document structure
-      XML::Document dump(ConditionsSlice& slice, DetElement element)  const;
     };
     
   }        /* End namespace Conditions                          */
@@ -96,7 +98,7 @@ namespace DD4hep {
 
 #include "DDCond/ConditionsTags.h"
 #include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -125,6 +127,21 @@ namespace {
   class alignment;
   class value;
   class sequence;
+
+  class PropertyDumper {
+    XML::Element root;
+  public:
+    PropertyDumper(XML::Element p) : root(p)  {}
+    void operator()(const std::pair<string,Property>& p)  const  {
+      XML::Element e = XML::Element(root.document(),_UC(property));
+      string val = p.second.str();
+      if ( val[0] == '\'' ) val = p.second.str().c_str()+1;
+      if ( !val.empty() && val[val.length()-1] == '\'' ) val[val.length()-1] = 0;
+      e.setAttr(_U(name), p.first);
+      e.setAttr(_U(value), val);
+      root.append(e);
+    }
+  };
   
   template <typename T> XML::Element _convert(XML::Element par, Condition c);
 
@@ -222,29 +239,69 @@ namespace {
   }
 }
 
-/// Initializing constructor
-ConditionsXMLRepositoryWriter::ConditionsXMLRepositoryWriter(ConditionsManager& mgr)
-  : manager(mgr)
-{
-}
-
-/// Default destructor. 
-ConditionsXMLRepositoryWriter::~ConditionsXMLRepositoryWriter()   {
-}
-
 /// Dump the tree content into a XML document structure
-XML::Document ConditionsXMLRepositoryWriter::dump(ConditionsSlice& slice, DetElement element)  const {
+XML::Document ConditionsXMLRepositoryWriter::dump(ConditionsSlice& slice)  const {
   XML::DocumentHandler docH;
-  XML::Document doc  = docH.create("conditions", docH.defaultComment());
-  XML::Element  root = doc.root();
-  collectConditions(root,slice,element);
+  XML::Document doc = docH.create("conditions", docH.defaultComment());
+  collect(doc.root(),slice);
   return doc;
 }
 
-/// Dump the tree content into a XML document structure
-size_t ConditionsXMLRepositoryWriter::collectConditions(XML::Element root,
-                                                        ConditionsSlice& slice,
-                                                        DetElement detector)  const
+/// Dump the ConditionsManager configuration properties into a XML document structure
+XML::Document ConditionsXMLRepositoryWriter::dump(ConditionsManager manager)  const {
+  XML::DocumentHandler docH;
+  XML::Document doc  = docH.create("conditions", docH.defaultComment());
+  XML::Element  root = doc.root();
+  collect(root,manager);
+  return doc;
+}
+
+/// Dump the conditions tree content into a XML document structure
+size_t ConditionsXMLRepositoryWriter::collect(XML::Element root, ConditionsSlice& slice)  const  {
+  XML::Element  repo(root.document(),_UC(repository));
+  XML::Element  iov (repo.document(),_UC(iov));
+  const IOV&    validity = slice.pool->validity();
+  char text[128];
+
+  root.append(repo);
+  repo.append(iov);
+  ::snprintf(text,sizeof(text),"%ld,%ld#%s",
+             validity.keyData.first,validity.keyData.second,
+             validity.iovType->name.c_str());
+  iov.setAttr(_UC(validity),text);
+  return collect(iov,slice,slice.manager->lcdd().world());
+}
+
+/// Dump the ConditionsManager configuration properties into an existing XML document structure
+size_t ConditionsXMLRepositoryWriter::collect(XML::Element root,
+                                              ConditionsManager manager)  const
+{
+  size_t count = 0;
+  if ( manager.isValid() )  {
+    /// Access to the property manager
+    PropertyManager& prp = manager.properties();
+    XML::Element     rep(root.document(),_UC(repository));
+    XML::Element     mgr(rep.document(),_UC(manager));
+    const auto iovs = manager.iovTypesUsed();
+
+    prp.for_each(PropertyDumper(mgr));
+    rep.append(mgr);
+    count += prp.size();
+    for ( const auto t : iovs )  {
+      XML::Element iov_typ(rep.document(),_UC(iov_type));
+      iov_typ.setAttr(_U(name),t->name);
+      iov_typ.setAttr(_U(id),int(t->type));
+      rep.append(iov_typ);
+    }
+    root.append(rep);
+  }
+  return count;
+}
+
+/// Dump the conditions tree content into a XML document structure
+size_t ConditionsXMLRepositoryWriter::collect(XML::Element root,
+                                              ConditionsSlice& slice,
+                                              DetElement detector)  const
 {
   size_t count = 0;
   if ( detector.isValid() )  {
@@ -288,51 +345,56 @@ size_t ConditionsXMLRepositoryWriter::collectConditions(XML::Element root,
                    typ == typeid(int)    || typ == typeid(unsigned int)   ||
                    typ == typeid(long)   || typ == typeid(unsigned long)  ||
                    typ == typeid(float)  || typ == typeid(double)         ||
-                   typ == typeid(string) )
+                   typ == typeid(bool)   || typ == typeid(string) )
 #else
-              if ( typ == typeid(int)    || typ == typeid(long)           ||
-                   typ == typeid(float)  || typ == typeid(double)         ||
-                   typ == typeid(string) )
+                if ( typ == typeid(int)    || typ == typeid(long)           ||
+                     typ == typeid(float)  || typ == typeid(double)         ||
+                     typ == typeid(bool)   || typ == typeid(string) )
 #endif
-              {
-                conditions.append(_convert<value>(conditions,c));
-              }
-              else if ( ::strstr(data.dataType().c_str(),"::vector<") )  {
-                conditions.append(_convert<std::vector<void*> >(conditions,c));
-              }
-              else if ( ::strstr(data.dataType().c_str(),"::list<") )  {
-                conditions.append(_convert<std::list<void*> >(conditions,c));
-              }
-              else if ( ::strstr(data.dataType().c_str(),"::set<") )  {
-                conditions.append(_convert<std::set<void*> >(conditions,c));
-              }
-              else   {
-                comment.str("");
-                comment << "\n ** Unconverted condition: "
-                        << "Unknown data type of condition: " << cn
-                        << " [" << (void*)k.first << "] -> "
-                        << c.name() << "  Flags:" << (unsigned int)c->flags << "\n";
-                conditions.addComment(comment.str());
-                printout(ERROR,"Writer",comment.str());
-                comment.str("");
-                comment << c.data().str() << " [" << c.data().dataType() << "]\n";
-                conditions.addComment(comment.str());
-              }
+                {
+                  conditions.append(_convert<value>(conditions,c));
+                }
+                else if ( ::strstr(data.dataType().c_str(),"::vector<") )  {
+                  conditions.append(_convert<std::vector<void*> >(conditions,c));
+                }
+                else if ( ::strstr(data.dataType().c_str(),"::list<") )  {
+                  conditions.append(_convert<std::list<void*> >(conditions,c));
+                }
+                else if ( ::strstr(data.dataType().c_str(),"::set<") )  {
+                  conditions.append(_convert<std::set<void*> >(conditions,c));
+                }
+                else   {
+                  comment.str("");
+                  comment << "\n ** Unconverted condition: "
+                          << "Unknown data type of condition: " << cn
+                          << " [" << (void*)k.first << "] -> "
+                          << c.name() << "  Flags:" << (unsigned int)c->flags << "\n";
+                  conditions.addComment(comment.str());
+                  printout(ERROR,"Writer",comment.str());
+                  comment.str("");
+                  comment << c.data().str() << " [" << c.data().dataType() << "]\n";
+                  conditions.addComment(comment.str());
+                }
             }
           }
         }
       }
     }
     for (const auto& i : detector.children())
-      count += collectConditions(root,slice,i.second);
+      count += collect(root,slice,i.second);
   }
   return count;
 }
+// ======================================================================================
 
 /// Write the XML document structure to a file.
 long ConditionsXMLRepositoryWriter::write(XML::Document doc, const string& output)   const {
   XML::DocumentHandler docH;
-  return docH.output(doc, output);
+  long ret = docH.output(doc, output);
+  if ( !output.empty() )  {
+    printout(INFO,"Writer","++ Successfully wrote conditions file: %s",output.c_str());
+  }
+  return ret;
 }
 
 /// Basic entry point to read alignment conditions files
@@ -345,6 +407,7 @@ static long write_repository_conditions(lcdd_t& lcdd, int argc, char** argv)  {
   ConditionsManager manager  =  ConditionsManager::from(lcdd);
   const IOVType*    iovtype  =  0;
   long              iovvalue = -1;
+  long              mgr_prop = 0;
   string            output;
 
   for(int i=0; i<argc; ++i)  {
@@ -354,9 +417,12 @@ static long write_repository_conditions(lcdd_t& lcdd, int argc, char** argv)  {
       iovvalue = ::atol(argv[++i]);
     else if ( ::strncmp(argv[i],"-output",4) == 0 && argc>i+1)
       output = argv[++i];
+    else if ( ::strncmp(argv[i],"-manager",4) == 0 )
+      mgr_prop = 1;
     else if ( ::strncmp(argv[i],"-help",2) == 0 )  {
       printout(ALWAYS,"Plugin-Help","Usage: DD4hep_XMLConditionsRepositoryWriter --opt [--opt]           ");
       printout(ALWAYS,"Plugin-Help","  -output    <string>   Output file name. Default: stdout           ");
+      printout(ALWAYS,"Plugin-Help","  -manager   <string>   Add manager properties to the output.       ");
       printout(ALWAYS,"Plugin-Help","  -iov_type  <string>   IOV type to be selected.                    ");
       printout(ALWAYS,"Plugin-Help","  -iov_value <string>   IOV value to create the conditions snapshot.");
       ::exit(EINVAL);
@@ -376,9 +442,43 @@ static long write_repository_conditions(lcdd_t& lcdd, int argc, char** argv)  {
            cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing,
            iovtype ? iov.str().c_str() : "???");
   
-  ConditionsXMLRepositoryWriter writer(manager);
-  XML::Document doc = writer.dump(*slice,lcdd.world());
+  ConditionsXMLRepositoryWriter writer;  
+  XML::Document doc(0);
+  if ( mgr_prop )  {
+    doc = writer.dump(manager);
+    writer.collect(doc.root(), *slice);
+  }
+  else  {
+    doc = writer.dump(*slice);
+  }
   writer.write(doc, output);
   return 1;
 }
 DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryWriter,write_repository_conditions)
+// ======================================================================================
+/// Basic entry point to read alignment conditions files
+/**
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long write_repository_manager(lcdd_t& lcdd, int argc, char** argv)  {
+  ConditionsManager manager  =  ConditionsManager::from(lcdd);
+  string            output;
+
+  for(int i=0; i<argc; ++i)  {
+    if ( ::strncmp(argv[i],"-output",4) == 0 && argc>i+1)
+      output = argv[++i];
+    else if ( ::strncmp(argv[i],"-help",2) == 0 )  {
+      printout(ALWAYS,"Plugin-Help","Usage: DD4hep_XMLConditionsManagerWriter --opt [--opt]           ");
+      printout(ALWAYS,"Plugin-Help","  -output    <string>   Output file name. Default: stdout        ");
+      ::exit(EINVAL);
+    }
+  }
+  ConditionsXMLRepositoryWriter writer;
+  XML::Document doc = writer.dump(manager);
+  writer.write(doc, output);
+  return 1;
+}
+DECLARE_APPLY(DD4hep_ConditionsXMLManagerWriter,write_repository_manager)
+// ======================================================================================

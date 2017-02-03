@@ -246,8 +246,12 @@ template <> void Converter<collection>::operator()(xml_h e)  const  {
  *  @date    01/06/2014
  */
 template <> void Converter<include>::operator()(xml_h e)  const  {
-  LCDDLoad* load = dynamic_cast<LCDDLoad*>(&this->lcdd);
-  load->processXML(e,e.attr<string>(_U(ref)));
+  if ( e )  {
+    LCDDLoad* load = dynamic_cast<LCDDLoad*>(&this->lcdd);
+    load->processXML(e,e.attr<string>(_U(ref)));
+    return;
+  }
+  except("DisplayConfiguration","++ Attempt to parse invalid include statement [Invalid XML element]");
 }
 
 /** Convert display configuration elements of tag type ddeve/include

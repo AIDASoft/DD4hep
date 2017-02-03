@@ -54,18 +54,18 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& 
 {
   InstanceCount::increment(this);
   //generatorAction().adopt(this);
-  eventAction().callAtBegin(this,&Geant4ParticleHandler::beginEvent);
-  eventAction().callAtEnd(this,&Geant4ParticleHandler::endEvent);
-  trackingAction().callAtFinal(this,&Geant4ParticleHandler::end,CallbackSequence::FRONT);
-  trackingAction().callUpFront(this,&Geant4ParticleHandler::begin,CallbackSequence::FRONT);
-  steppingAction().call(this,&Geant4ParticleHandler::step);
+  eventAction().callAtBegin(this,    &Geant4ParticleHandler::beginEvent);
+  eventAction().callAtEnd(this,      &Geant4ParticleHandler::endEvent);
+  trackingAction().callAtFinal(this, &Geant4ParticleHandler::end,CallbackSequence::FRONT);
+  trackingAction().callUpFront(this, &Geant4ParticleHandler::begin,CallbackSequence::FRONT);
+  steppingAction().call(this,        &Geant4ParticleHandler::step);
   m_globalParticleID = 0;
-  declareProperty("PrintEndTracking",    m_printEndTracking = false);
-  declareProperty("PrintStartTracking",  m_printStartTracking = false);
-  declareProperty("KeepAllParticles",    m_keepAll = false);
-  declareProperty("SaveProcesses",       m_processNames);
-  declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*CLHEP::MeV);
-  declareProperty("MinDistToParentVertex",m_minDistToParentVertex = 2.2e-14*CLHEP::mm);//default tolerance for g4ThreeVector isNear
+  declareProperty("PrintEndTracking",      m_printEndTracking = false);
+  declareProperty("PrintStartTracking",    m_printStartTracking = false);
+  declareProperty("KeepAllParticles",      m_keepAll = false);
+  declareProperty("SaveProcesses",         m_processNames);
+  declareProperty("MinimalKineticEnergy",  m_kinEnergyCut = 100e0*CLHEP::MeV);
+  declareProperty("MinDistToParentVertex", m_minDistToParentVertex = 2.2e-14*CLHEP::mm);//default tolerance for g4ThreeVector isNear
   m_needsControl = true;
 }
 
@@ -74,6 +74,14 @@ Geant4ParticleHandler::Geant4ParticleHandler()
   : Geant4GeneratorAction(0,""), Geant4MonteCarloTruth(),
     m_ownsParticles(false), m_userHandler(0), m_primaryMap(0)
 {
+  m_globalParticleID = 0;
+  declareProperty("PrintEndTracking",      m_printEndTracking = false);
+  declareProperty("PrintStartTracking",    m_printStartTracking = false);
+  declareProperty("KeepAllParticles",      m_keepAll = false);
+  declareProperty("SaveProcesses",         m_processNames);
+  declareProperty("MinimalKineticEnergy",  m_kinEnergyCut = 100e0*CLHEP::MeV);
+  declareProperty("MinDistToParentVertex", m_minDistToParentVertex = 2.2e-14*CLHEP::mm);//default tolerance for g4ThreeVector isNear
+  m_needsControl = true;
 }
 
 /// Default destructor

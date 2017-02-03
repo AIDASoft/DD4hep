@@ -1121,7 +1121,7 @@ Handle_t Element::setChild(const XmlChar* t) const {
   return e ? Handle_t(e) : addChild(t);
 }
 
-#ifdef DD4HEP_USE_TINYXML
+#ifndef DD4HEP_USE_TINYXML
 /// Add comment node to the element
 void Element::addComment(const XmlChar* text_value) const {
   _N(m_element)->appendChild(_D(document().m_doc)->createComment(text_value));

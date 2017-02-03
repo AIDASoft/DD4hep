@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -45,9 +44,9 @@ namespace DD4hep {
     public:
       typedef TYPE handled_type;
       /// Pointer to referenced object
-      mutable handled_type* value;
+      mutable handled_type* value = 0;
       /// Default constructor
-      explicit Geant4Handle();
+      explicit Geant4Handle() = default;
       /// Construction initialized with object pointer
       Geant4Handle(handled_type* typ);
       /// Cross type initialization
@@ -56,6 +55,8 @@ namespace DD4hep {
       }
       /// Copy constructor
       Geant4Handle(const Geant4Handle& handle);
+      /// Move constructor
+      //Geant4Handle(Geant4Handle&& handle) = default;
       /// Initializing constructor
       Geant4Handle(Geant4Kernel&, const char* type_name, bool shared=false);
       /// Initializing constructor
@@ -68,6 +69,8 @@ namespace DD4hep {
       Property& operator[](const std::string& property_name) const;
       /// Assignment operator
       Geant4Handle& operator=(const Geant4Handle& handle);
+      /// Move assignment operator
+      //Geant4Handle& operator=(Geant4Handle&& handle) = default;
       /// Assignment operator
       Geant4Handle& operator=(handled_type* ptr);
       /// Validity check

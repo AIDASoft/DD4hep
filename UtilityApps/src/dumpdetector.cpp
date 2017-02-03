@@ -38,7 +38,7 @@ using namespace DDSurfaces ;
 using namespace dd4hep ;
 
 //=============================================================================
-void printDetectorData( DetElement det ){
+static void printDetectorData( DetElement det ){
 
   try{ 
     FixedPadSizeTPCData* d = det.extension<FixedPadSizeTPCData>() ; 
@@ -63,7 +63,7 @@ void printDetectorData( DetElement det ){
 
 }
 
-void printDetectorSets( std::string name, unsigned int includeFlag,  unsigned int excludeFlag=DetType::IGNORE ){
+static void printDetectorSets( std::string name, unsigned int includeFlag,  unsigned int excludeFlag=DetType::IGNORE ){
 
   LCDD& lcdd = LCDD::getInstance();
   const std::vector<DetElement>& dets = DetectorSelector(lcdd).detectors( includeFlag, excludeFlag ) ;
@@ -76,7 +76,7 @@ void printDetectorSets( std::string name, unsigned int includeFlag,  unsigned in
 
 //=============================================================================
 
-int run_main(int argc, char** argv ){
+static int invoke_dump_detector(int argc, char** argv ){
     
   if( argc < 2 ) {
     std::cout << " usage: dumpdetector compact.xml [-s]" 
@@ -233,7 +233,7 @@ int run_main(int argc, char** argv ){
 
 int main(int argc, char** argv ){
   try {
-    return run_main(argc,argv);
+    return invoke_dump_detector(argc,argv);
   }
   catch(const std::exception& e)  {
     std::cout << "Got uncaught exception: " << e.what() << std::endl;

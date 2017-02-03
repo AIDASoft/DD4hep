@@ -189,6 +189,8 @@ namespace DD4hep {
     PropertyManager();
     /// Default destructor
     virtual ~PropertyManager();
+    /// Access total number of properties
+    size_t size()  const;
     /// Check for existence
     bool exists(const std::string& name) const;
     /// Access property by name (CONST)
@@ -202,13 +204,17 @@ namespace DD4hep {
     /// Add a new property
     void add(const std::string& name, const Property& property);
     /// Add a new property
-    template <typename T> void add(const std::string& name, T& value) {
+    template <typename T> void add(const std::string& name, T& value)   {
       add(name, Property(value));
     }
     /// Bulk set of all properties
     void set(const std::string& component_name, PropertyConfigurator& setup);
     /// Apply functor on properties
-    template <typename FUNCTOR> void for_each(FUNCTOR& func) {
+    template <typename FUNCTOR> void for_each(FUNCTOR& func)   {
+      std::for_each(m_properties.begin(), m_properties.end(), func);
+    }
+    /// Apply functor on properties
+    template <typename FUNCTOR> void for_each(const FUNCTOR& func)   {
       std::for_each(m_properties.begin(), m_properties.end(), func);
     }
     /// Export properties of another instance
