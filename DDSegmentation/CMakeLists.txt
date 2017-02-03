@@ -1,20 +1,28 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(DDSegmentation)
- #fg: version number must be the same as DD4hep !!
-set(DDSegmentation_MAJOR_VERSION 0)
-set(DDSegmentation_MINOR_VERSION 20)
-set(DDSegmentation_PATCH_VERSION 0)
+if(SYSTEM_INSTALL)
+  set(DDSegmentation_MAJOR_VERSION ${DD4hep_VERSION_MAJOR})
+  set(DDSegmentation_MINOR_VERSION ${DD4hep_VERSION_MINOR})
+  set(DDSegmentation_PATCH_VERSION ${DD4hep_VERSION_PATCH})
+ELSE()
+#fg: version number must be the same as DD4hep !!
+  set(DDSegmentation_MAJOR_VERSION 0)
+  set(DDSegmentation_MINOR_VERSION 20)
+  set(DDSegmentation_PATCH_VERSION 0)
+ENDIF()
 set(DDSegmentation_VERSION "${DDSegmentation_MAJOR_VERSION}.${DDSegmentation_MINOR_VERSION}" )
 set(DDSegmentation_SOVERSION "${DDSegmentation_MAJOR_VERSION}.${DDSegmentation_MINOR_VERSION}")
 
 #------------- set the default installation directory to be the source directory
 
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
-    "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..." 
-    FORCE )
-  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if(NOT SYSTEM_INSTALL)
+  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
+      "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..." 
+      FORCE )
+    MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
+  ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+ENDIF()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 

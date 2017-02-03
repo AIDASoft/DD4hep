@@ -38,6 +38,9 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
 dd4hep_set_version(DD4hep MAJOR 0 MINOR 20 PATCH 0)
 dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
+configure_file( "${PROJECT_SOURCE_DIR}/DD4hepConfig.h.in" "${PROJECT_BINARY_DIR}/DD4hep/DD4hepConfig.h")
+include_directories(${PROJECT_BINARY_DIR}/DD4hep)
+install(FILES "${PROJECT_BINARY_DIR}/DD4hepConfig.h" DESTINATION include/DD4hep)
 #
 # Include ROOT
 #
