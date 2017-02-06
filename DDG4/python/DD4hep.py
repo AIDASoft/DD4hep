@@ -46,7 +46,7 @@ def loadDD4hep():
     gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
 
   result = gSystem.Load("libDDCore")
-  if 0 != result:
+  if result < 0:
     raise Exception('DD4hep.py: Failed to load the DD4hep library libDDCore: '+gSystem.GetErrorStr())
   from ROOT import DD4hep as module
   return module
