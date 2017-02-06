@@ -13,7 +13,7 @@ dd4hep_package(    DDCore
   USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
                    DDSegmentation
   OPTIONAL         XERCESC
-  INCLUDE_DIRS     include
+  INCLUDE_DIRS     include include/DD4hep
   INSTALL_INCLUDES include/DD4hep include/XML)
 
 #---Generate ROOT dictionary------------------------------------------------------
