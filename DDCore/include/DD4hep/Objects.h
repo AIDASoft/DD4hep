@@ -556,6 +556,10 @@ namespace DD4hep {
       double threshold() const;
       /// Access secondaries flag
       bool storeSecondaries() const;
+      /// Access use_default_cut flag
+      bool useDefaultCut() const;
+      /// Access was_threshold_set flag
+      bool wasThresholdSet() const;
     };
 
   } /* End namespace Geometry           */

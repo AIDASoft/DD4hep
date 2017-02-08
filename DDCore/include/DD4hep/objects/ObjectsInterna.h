@@ -112,6 +112,8 @@ namespace DD4hep {
       double threshold;
       double cut;
       bool store_secondaries;
+      bool use_default_cut;
+      bool was_threshold_set;
       std::vector<std::string> user_limits;
       /// Standard constructor
       RegionObject();
