@@ -92,7 +92,10 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   ctxt->geometry = conv.create(world).detach();
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
-  ctxt->lcdd.apply("DD4hepVolumeManager", 0, 0);
+  // Create Geant4 volume manager only if not yet available
+  if ( not g4map.volumeManager().isValid() ) {
+    ctxt->lcdd.apply("DD4hepVolumeManager", 0, 0);
+  }
   // Create Geant4 volume manager
   g4map.volumeManager();
   if ( m_dumpHierarchy )   {
