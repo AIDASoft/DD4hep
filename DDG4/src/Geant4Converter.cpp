@@ -772,11 +772,16 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     Region r = Ref_t(region);
     g4 = new G4Region(r.name());
     // set production cut
-    G4ProductionCuts* cuts = new G4ProductionCuts();
-    cuts->SetProductionCut(r.cut()*CLHEP::mm/dd4hep::mm);
-    g4->SetProductionCuts(cuts);
+    if( not r.useDefaultCut() ) {
+      G4ProductionCuts* cuts = new G4ProductionCuts();
+      cuts->SetProductionCut(r.cut()*CLHEP::mm/dd4hep::mm);
+      g4->SetProductionCuts(cuts);
+    }
 
     // create region info with storeSecondaries flag
+    if( not r.wasThresholdSet() and r.storeSecondaries() ) {
+      throw runtime_error("G4Region: StoreSecondaries is True, but no explicit threshold set:");
+    }
     G4UserRegionInformation* info = new G4UserRegionInformation();
     info->region = r;
     info->threshold = r.threshold()*CLHEP::MeV/dd4hep::MeV;
