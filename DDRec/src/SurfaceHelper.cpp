@@ -27,15 +27,8 @@ namespace DD4hep {
       // have to populate the volume manager once in order to have 
       // the volumeIDs attached to the DetElements
       LCDD& lcdd = LCDD::getInstance();
-      VolumeManager volMgr = lcdd.volumeManager();
-      if(not volMgr.isValid()) {
-	// VolumeManager initialised by DD4hepVolumeManager plugin
-	lcdd.apply("DD4hepVolumeManager",0,0);
-	volMgr = lcdd.volumeManager();
-      }
+      VolumeManager volMgr = VolumeManager::getVolumeManager(lcdd);
 
-
- 
       //------------------ breadth first tree traversal ---------
       std::list< DetElement > dets ;
       std::list< DetElement > daugs ; 
