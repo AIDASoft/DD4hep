@@ -216,7 +216,7 @@ int dumpddg4_load_geometry(const char* fname)   {
     gSystem->Load("libDDG4Plugins");
     LCDD& lcdd = LCDD::getInstance();
     lcdd.fromXML(fname);
-    lcdd.apply("DD4hepVolumeManager",0,(char**)0);
+    VolumeManager::getVolumeManager();
   }
   return 1;
 }

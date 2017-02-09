@@ -470,6 +470,13 @@ VolumeManager::VolumeManager(DetElement sub_detector, Readout ro)  {
   assign(obj_ptr, sub_detector.name(), "VolumeManager");
 }
 
+VolumeManager VolumeManager::getVolumeManager(LCDD& lcdd) {
+  if( not lcdd.volumeManager().isValid() ) {
+    lcdd.apply("DD4hepVolumeManager", 0, 0);
+  }
+  return lcdd.volumeManager();
+}
+
 /// Add a new Volume manager section according to a new subdetector
 VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
   if (isValid()) {

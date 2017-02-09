@@ -123,6 +123,9 @@ namespace DD4hep {
       /// Initializing constructor for subdetector volume managers.
       VolumeManager(DetElement subdetector, Readout ro);
 
+      /// static accessor calling DD4hepVolumeManagerPlugin if necessary
+      static VolumeManager getVolumeManager(LCDD& lcdd);
+
       /// Assignment operator
       VolumeManager& operator=(const VolumeManager& m)  {
         if ( this != &m ) m_element = m.m_element;

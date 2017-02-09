@@ -32,12 +32,7 @@ IDDecoder& IDDecoder::getInstance() {
 /// Default constructor
 IDDecoder::IDDecoder() {
 	LCDD& lcdd = LCDD::getInstance();
-	_volumeManager = lcdd.volumeManager();
-	if (not _volumeManager.isValid()) {
-		lcdd.apply("DD4hepVolumeManager",0,0);
-		_volumeManager = lcdd.volumeManager();
-	}
-	_tgeoMgr = lcdd.world().volume()->GetGeoManager();
+	_volumeManager = VolumeManager::getVolumeManager(lcdd);
 }
 
 /**
