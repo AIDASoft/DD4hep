@@ -30,27 +30,31 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentNamedObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentContainer);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
 
-/// Standard constructor
-AlignmentConditionObject::AlignmentConditionObject(const string& nam, const string& tit)
-  : ConditionObject(nam, tit), alignment_data(0)
+/// Default constructor
+AlignmentConditionObject::AlignmentConditionObject()
+  : ConditionObject(), alignment_data(0), source_key(0)
 {
   InstanceCount::increment(this);
   flags = Conditions::Condition::ALIGNMENT;
+  Alignment::Data& d = Conditions::Condition(this).bind<Alignment::Data>();
+  d.condition = this;
+  alignment_data = &d;
+}
+
+/// Standard constructor
+AlignmentConditionObject::AlignmentConditionObject(const string& nam, const string& tit)
+  : ConditionObject(nam, tit), alignment_data(0), source_key(0)
+{
+  InstanceCount::increment(this);
+  flags = Conditions::Condition::ALIGNMENT;
+  Alignment::Data& d = Conditions::Condition(this).bind<Alignment::Data>();
+  d.condition = this;
+  alignment_data = &d;
 }
 
 /// Standard Destructor
 AlignmentConditionObject::~AlignmentConditionObject()  {
   InstanceCount::decrement(this);
-}
-
-/// Accessor to the alignment data
-Alignment::Data& AlignmentConditionObject::values()   {
-  if ( alignment_data )
-    return *alignment_data;
-  Conditions::Condition c(this);
-  alignment_data = c.is_bound() ? &c.get<Alignment::Data>() : &c.bind<Alignment::Data>();
-  alignment_data->condition = c;
-  return *alignment_data;
 }
 
 /// Clear data content on demand.
@@ -74,6 +78,19 @@ AlignmentContainer::AlignmentContainer(Geometry::DetElementObject* par)
 /// Default destructor
 AlignmentContainer::~AlignmentContainer() {
   InstanceCount::decrement(this);
+}
+
+/// Insert a new key to the alignments access map. Ignores already existing keys.
+bool AlignmentContainer::insertKey(const std::string& key_val)  {
+  key_type hash = Alignment::hashCode(key_val);
+  return keys.insert(make_pair(hash,make_pair(hash,key_val))).second;
+}
+
+/// Insert a new key to the alignments access map: Allow for alias if key_val != data_val
+bool AlignmentContainer::insertKey(const std::string& key_val, const std::string& data_val)  {
+  key_type key_hash = Alignment::hashCode(key_val);
+  key_type val_hash = Alignment::hashCode(data_val);
+  return keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second;
 }
 
 /// Add a new key to the alignments access map

@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -62,6 +61,10 @@ namespace DD4hep {
   template<> std::streamsize dd4hep_file<int>::read(char_type* s, std::streamsize n)
   {      return ::read(m_handle,s,n);                   }
 
+  /// Specialization for standard file descriptor files according to the posix standard: Default destructor
+  template<> dd4hep_file<int>::~dd4hep_file()
+  {      if (m_handle) ::close(m_handle);  m_handle = 0;}
+
   /// Specialization for standard file descriptor files according to the posix standard
   template<> std::streamsize dd4hep_file<int>::write(const char_type* s, std::streamsize n)
   {      return ::write(m_handle,s,n);                  }
@@ -98,11 +101,15 @@ namespace DD4hep {
 
   /// Specialization for the usage of TFile structures
   template<> dd4hep_file<TFile*>::dd4hep_file(handle_type fd, dd4hep_file_flags flags)
-    : m_handle(fd), m_flag(flags)    {                                }
+    : m_handle(fd), m_flag(flags)    {                                         }
 
   /// Specialization for the usage of TFile structures
   template<> dd4hep_file<TFile*>::dd4hep_file(const char* fname, BOOST_IOS::openmode mode)
-    : m_handle(0), m_flag(close_handle)  { open(fname,mode);          }
+    : m_handle(0), m_flag(close_handle)  { open(fname,mode);                   }
+
+  /// Specialization for the usage of TFile structures: Default destructor
+  template<> dd4hep_file<TFile*>::~dd4hep_file()
+  {      if ( m_handle ) m_handle->Close();  m_handle = 0;                     }
 
   /// Specialization for the usage of TFile structures
   template<> std::streamsize dd4hep_file<TFile*>::read(char_type* s, std::streamsize n)  {

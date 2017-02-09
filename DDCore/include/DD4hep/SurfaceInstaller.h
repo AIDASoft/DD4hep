@@ -72,10 +72,16 @@ namespace DD4hep  {
     void scan(DetElement de);
 
   public:
+    /// No default constructor
+    SurfaceInstaller() = delete;
+    /// No copy constructor
+    SurfaceInstaller(const SurfaceInstaller& copy) = delete;
     /// Initializing constructor
     SurfaceInstaller(LCDD& lcdd, int argc, char** argv);
     /// Default destructor
-    virtual ~SurfaceInstaller() {}
+    virtual ~SurfaceInstaller() = default;
+    /// No assignment
+    SurfaceInstaller& operator=(const SurfaceInstaller& copy) = delete;
     /// Set flag to stop scanning volumes and detector elements
     void stopScanning()   {  m_stopScanning = true;   }
     /// Indicate error message and throw exception
@@ -148,10 +154,16 @@ namespace {
     /// Default (empty argument handler
     void handle_arguments(int argc, char** argv);
   public:
+    /// No default constructor
+    Installer() = delete;
+    /// No copy constructor
+    Installer(const Installer& copy) = delete;
     /// Initializing constructor
     Installer(LCDD& lcdd, int argc, char** argv);
     /// Default destructor
-    virtual ~Installer() {}
+    virtual ~Installer() = default;
+    /// No assignment
+    Installer& operator=(const Installer& copy) = delete;
     /// Install volume information. Default implementation only prints!
     virtual void install(DetElement component, PlacedVolume pv);
     /// Try to handle surface using the surface cache
@@ -168,7 +180,7 @@ namespace {
   /// Initializing constructor
   template <typename UserData>
   Installer<UserData>::Installer(LCDD& lcdd, int argc, char** argv)
-    : DD4hep::SurfaceInstaller(lcdd, argc, argv) 
+    : DD4hep::SurfaceInstaller(lcdd, argc, argv), data()
   {
     handle_arguments(argc, argv);
   }
@@ -203,5 +215,4 @@ typedef Installer<SURFACEINSTALLER_DATA> InstallerClass;
 DECLARE_SURFACE_INSTALLER(DD4HEP_USE_SURFACEINSTALL_HELPER,InstallerClass)
 
 #endif /* defined(DD4HEP_USE_SURFACEINSTALL_HELPER) */
-
-#endif /* DD4HEP_DDREC_SURFACEINSTALLER_H */
+#endif /* DD4HEP_DDREC_SURFACEINSTALLER_H           */

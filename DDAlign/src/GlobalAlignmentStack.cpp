@@ -51,17 +51,6 @@ GlobalAlignmentStack::StackEntry::~StackEntry() {
   InstanceCount::decrement(this);
 }
 
-/// Assignment operator
-GlobalAlignmentStack::StackEntry& GlobalAlignmentStack::StackEntry::operator=(const StackEntry& e)   {
-  if ( this != &e )  {
-    detector = e.detector;
-    delta    = e.delta;
-    overlap  = e.overlap;
-    path     = e.path;
-  }
-  return *this;
-}
-
 /// Set flag to reset the entry to it's ideal geometrical position
 GlobalAlignmentStack::StackEntry& GlobalAlignmentStack::StackEntry::setReset(bool new_value)   {
   new_value ? (delta.flags |= RESET_VALUE) : (delta.flags &= ~RESET_VALUE);
@@ -150,14 +139,13 @@ bool GlobalAlignmentStack::add(dd4hep_ptr<StackEntry>& entry)  {
   if ( entry.get() && !entry->path.empty() )  {
     Stack::const_iterator i = m_stack.find(entry->path);
     if ( i == m_stack.end() )   {
-
+      StackEntry* e = entry.get();
       // Need to make some checks BEFORE insertion
-      if ( !entry->detector.isValid() )   {
+      if ( !e->detector.isValid() )   {
         throw runtime_error("GlobalAlignmentStack> Invalid alignment entry [No such detector]");
       }
-      printout(INFO,"GlobalAlignmentStack","Add node:%s",entry->path.c_str());
-      m_stack.insert(make_pair(entry->path,entry.get()));
-      entry.release();
+      printout(INFO,"GlobalAlignmentStack","Add node:%s",e->path.c_str());
+      m_stack.insert(make_pair(e->path,entry.release()));
       return true;
     }
     throw runtime_error("GlobalAlignmentStack> The entry with path "+entry->path+

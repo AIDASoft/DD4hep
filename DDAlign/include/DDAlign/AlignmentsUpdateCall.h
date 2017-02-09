@@ -76,7 +76,10 @@ namespace DD4hep {
        *  We also cannot do this is some 'generic' way, because the delta is provided outside
        *  and may very well depend on the extrnal database technology used to save conditions.
        */
-      virtual Condition handle(const ConditionKey& key, const UpdateContext& context, const Delta& delta);
+      virtual Condition handle(const ConditionKey&  key,
+                               const UpdateContext& context,
+                               Condition::key_type  source,
+                               const Delta&         delta);
 
       /// Handler to be called if the Alignment cannot be created due to a bad underlying data type.
       virtual Condition invalidDataType(const ConditionKey& key, const UpdateContext& context);

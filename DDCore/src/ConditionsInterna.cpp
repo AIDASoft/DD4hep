@@ -26,11 +26,18 @@ using namespace DD4hep::Conditions;
 DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionContainer);
 
+/// Default constructor
+Interna::ConditionObject::ConditionObject()
+  : NamedObject(), value(), validity(), address(), comment(),
+    data(), pool(0), iov(0), hash(0), flags(0), refCount(0)
+{
+  InstanceCount::increment(this);
+}
+
 /// Standard constructor
 Interna::ConditionObject::ConditionObject(const string& nam,const string& tit)
   : NamedObject(nam, tit), value(), validity(), address(), comment(),
-    data(), pool(0), iov(0), 
-    hash(0), flags(0), refCount(0)
+    data(), pool(0), iov(0), hash(0), flags(0), refCount(0)
 {
   InstanceCount::increment(this);
 }
@@ -38,6 +45,19 @@ Interna::ConditionObject::ConditionObject(const string& nam,const string& tit)
 /// Standard Destructor
 Interna::ConditionObject::~ConditionObject()  {
   InstanceCount::decrement(this);
+}
+
+/// Data offset from the opaque data block pointer to the condition
+size_t Interna::ConditionObject::offset()   {
+  ConditionObject* o = (ConditionObject*)(0x1000);
+  size_t off = ((char*)&o->data.grammar) - ((char*)o) + sizeof(o->data.grammar);
+  return off;
+}
+
+/// Access the bound data payload. Exception id object is unbound
+void* Interna::ConditionObject::payload() const   {
+  void** p = (void**)(((char*)this)+offset());
+  return p ? *p : 0;
 }
 
 /// Move data content: 'from' will be reset to NULL
@@ -69,6 +89,19 @@ Interna::ConditionContainer::ConditionContainer(Geometry::DetElementObject* par)
 /// Default destructor
 Interna::ConditionContainer::~ConditionContainer() {
   InstanceCount::decrement(this);
+}
+
+/// Insert a new key to the conditions access map. Ignores already existing keys.
+bool Interna::ConditionContainer::insertKey(const std::string& key_val)  {
+  key_type hash = ConditionKey::hashCode(key_val);
+  return keys.insert(make_pair(hash,make_pair(hash,key_val))).second;
+}
+
+/// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
+bool Interna::ConditionContainer::insertKey(const std::string& key_val, const std::string& data_val)  {
+  key_type key_hash = ConditionKey::hashCode(key_val);
+  key_type val_hash = ConditionKey::hashCode(data_val);
+  return keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second;
 }
 
 /// Add a new key to the conditions access map

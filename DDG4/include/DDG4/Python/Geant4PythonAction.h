@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -10,7 +11,6 @@
 //  \date   2015-11-03
 //
 //==========================================================================
-// $Id$
 #ifndef DD4HEP_DDG4_GEANT4PYTHONACTION_H
 #define DD4HEP_DDG4_GEANT4PYTHONACTION_H
 

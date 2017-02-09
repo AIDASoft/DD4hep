@@ -29,7 +29,7 @@ Alignments::DDAlignResetCall::operator()(const ConditionKey& key, const UpdateCo
     Data::Delta empty_delta;
     Data::Delta& delta = cond.get<Data::Delta>();
     delta = empty_delta;
-    Condition c = AlignmentsUpdateCall::handle(key, context, empty_delta);
+    Condition c = AlignmentsUpdateCall::handle(key, context, cond.key(), empty_delta);
     printLevel = INFO;
     printout(printLevel,"DDAlignReset","++ Building dependent condition: %s Detector [%d]: %s [%p]",
              key.name.c_str(), det.level(), det.path().c_str(), c.ptr());

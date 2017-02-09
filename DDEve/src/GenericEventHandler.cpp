@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -47,9 +46,9 @@ EventHandler* GenericEventHandler::current() const   {
 }
 
 /// Notfy all subscribers
-void GenericEventHandler::NotifySubscribers(void (EventConsumer::*pmf)(EventHandler*))   {
+void GenericEventHandler::NotifySubscribers(void (EventConsumer::*pmf)(EventHandler&))   {
   for(Subscriptions::iterator i=m_subscriptions.begin(); i!=m_subscriptions.end();++i)
-    ((*i)->*pmf)(this);
+    ((*i)->*pmf)(*this);
 }
 
 /// Subscribe to notification of new data present

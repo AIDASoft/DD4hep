@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -373,10 +372,15 @@ TFile* Display::Open(const char* name) const   {
 }
 
 /// Consumer event data
-void Display::OnNewEvent(EventHandler* handler )   {
+void Display::OnFileOpen(EventHandler& handler )   {
+  EventConsumer::OnFileOpen(handler);
+}
+
+/// Consumer event data
+void Display::OnNewEvent(EventHandler& handler )   {
   typedef EventHandler::TypedEventCollections Types;
   typedef vector<EventHandler::Collection> Collections;
-  const Types& types = handler->data();
+  const Types& types = handler.data();
   TEveElement* particles = 0;
 
   printout(ERROR,"EventHandler","+++ Display new event.....");
@@ -387,7 +391,7 @@ void Display::OnNewEvent(EventHandler* handler )   {
       size_t len = (*j).second;
       const char* nam = (*j).first;
       if ( len > 0 )   {
-        EventHandler::CollectionType typ = handler->collectionType(nam);
+        EventHandler::CollectionType typ = handler.collectionType(nam);
         if ( typ == EventHandler::CALO_HIT_COLLECTION ||
              typ == EventHandler::TRACKER_HIT_COLLECTION )  {
           const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
@@ -395,28 +399,28 @@ void Display::OnNewEvent(EventHandler* handler )   {
             const DataConfig& cfg = (*i).second;
             if ( cfg.hits == "PointSet" )  {
               PointsetCreator cr(nam,len,cfg);
-              handler->collectionLoop((*j).first, cr);
+              handler.collectionLoop((*j).first, cr);
               ImportEvent(cr.element());
             }
             else if ( cfg.hits == "BoxSet" )  {
               BoxsetCreator cr(nam,len,cfg);
-              handler->collectionLoop((*j).first, cr);
+              handler.collectionLoop((*j).first, cr);
               ImportEvent(cr.element());
             }
             else if ( cfg.hits == "TowerSet" )  {
               TowersetCreator cr(nam,len,cfg);
-              handler->collectionLoop((*j).first, cr);
+              handler.collectionLoop((*j).first, cr);
               ImportEvent(cr.element());
             }
             else {  // Default is point set
               PointsetCreator cr(nam,len);
-              handler->collectionLoop((*j).first, cr);
+              handler.collectionLoop((*j).first, cr);
               ImportEvent(cr.element());
             }
           }
           else  {
             PointsetCreator cr(nam,len);
-            handler->collectionLoop((*j).first, cr);
+            handler.collectionLoop((*j).first, cr);
             ImportEvent(cr.element());
           }
         }
@@ -430,7 +434,7 @@ void Display::OnNewEvent(EventHandler* handler )   {
           const DataConfig* cfg = (i==m_collectionsConfigs.end()) ? 0 : &((*i).second);
           MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
                                new TEveCompound("MC_Particles","MC_Particles"),cfg);
-          handler->collectionLoop((*j).first, cr);
+          handler.collectionLoop((*j).first, cr);
           cr.close();
           particles = cr.particles;
         }

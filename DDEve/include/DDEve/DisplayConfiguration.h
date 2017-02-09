@@ -124,8 +124,6 @@ namespace DD4hep {
     /// Root implementation macro
     ClassDef(DisplayConfiguration,0);
   };
-
-} /* End namespace DD4hep   */
-
-#endif /* DD4HEP_DDEVE_DISPLAYCONFIGURATION_H */
+}        /* End namespace DD4hep                */
+#endif   /* DD4HEP_DDEVE_DISPLAYCONFIGURATION_H */
 

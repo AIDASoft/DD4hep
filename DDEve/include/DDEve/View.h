@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -156,7 +155,5 @@ namespace DD4hep {
     /// Root implementation macro
     ClassDef(View,0);
   };
-} /* End namespace DD4hep   */
-
-
-#endif /* DD4HEP_DDEVE_VIEW_H */
+}      /* End namespace DD4hep   */
+#endif /* DD4HEP_DDEVE_VIEW_H    */

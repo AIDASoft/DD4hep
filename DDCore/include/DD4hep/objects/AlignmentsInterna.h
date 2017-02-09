@@ -93,14 +93,24 @@ namespace DD4hep {
       public:
         /// Cached pointer to the bound conditions data, since these may be accessed very frequently
         AlignmentData* alignment_data = 0;
-        /// Accessor to the alignment data
-        AlignmentData& values();
+        /// Reference to the source conditions object
+        key_type       source_key = 0;
+
+      public:
+        /// Default constructor
+        AlignmentConditionObject();
+        /// Copy constructor
+        AlignmentConditionObject(const AlignmentConditionObject& copy) = delete;
         /// Standard constructor
         AlignmentConditionObject(const std::string& nam,const std::string& tit="");
         /// Standard Destructor
         virtual ~AlignmentConditionObject();
+        /// Assignment operator
+        AlignmentConditionObject& operator=(const AlignmentConditionObject& copy) = delete;
         /// Clear data
         void clear();
+        /// Accessor to the alignment data. Cannot be NULL. Initialized in the constructor(s)
+        AlignmentData& values()  {  return *alignment_data;  }
       };
 
       /// The data class behind an alignments container handle.
@@ -149,9 +159,27 @@ namespace DD4hep {
       public:
         /// Known keys of alignments in this container
         Keys       keys;
+
+        /// Insert a new key to the alignments access map. Ignores already existing keys.
+        /**  Caution: This is not thread protected!
+         *
+         *   @return true if key was inserted. False otherwise.
+         */
+        bool insertKey(const std::string& key_val);
+        
+        /// Insert a new key to the alignments access map: Allow for alias if key_val != data_val
+        /**  Caution: This is not thread protected!
+         *
+         *   @return true if key was inserted. False otherwise.
+         */
+        bool insertKey(const std::string& key_val, const std::string& data_val);
+
         /// Add a new key to the alignments access map
+        /**  Caution: This is not thread protected!  */
         void addKey(const std::string& key_value);
+
         /// Add a new key to the alignments access map: Allow for alias if key_val != data_val
+        /**  Caution: This is not thread protected!  */
         void addKey(const std::string& key_value, const std::string& data_value);
       };
 

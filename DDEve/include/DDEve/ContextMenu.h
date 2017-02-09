@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -49,7 +48,7 @@ namespace DD4hep {
     /// Callback
     void Context(TObject* target);
     /// Root implementation macro
-    ClassDef(ContextMenuHandler,0);    
+    ClassDefOverride(ContextMenuHandler,0);    
   };
 
 

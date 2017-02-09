@@ -150,6 +150,16 @@ const Container::Keys& Container::keys()  const   {
   return access()->keys;
 }
 
+/// Insert a new key to the conditions access map. Ignores already existing keys.
+bool Container::insertKey(const std::string& key_val)  {
+  return access()->insertKey(key_val);
+}
+
+/// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
+bool Container::insertKey(const std::string& key_val, const std::string& data_val)  {
+  return access()->insertKey(key_val, data_val);
+}
+
 /// Add a new key to the conditions access map
 void Container::addKey(const string& key_val)  {
   access()->addKey(key_val);

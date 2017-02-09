@@ -27,7 +27,7 @@ Alignments::DDAlignUpdateCall::operator()(const ConditionKey& key, const UpdateC
   DetElement det  = context.dependency.detector;
   if ( cond.typeInfo() == typeid(Data::Delta) )  {
     const Data::Delta& delta = cond.get<Data::Delta>();
-    Condition c = AlignmentsUpdateCall::handle(key, context, delta);
+    Condition c = AlignmentsUpdateCall::handle(key, context, cond.key(), delta);
     //printLevel = INFO;
     printout(printLevel,"DDAlignUpdate","++ Building dependent condition: %s Detector [%d]: %s [%p]",
              key.name.c_str(), det.level(), det.path().c_str(), c.ptr());

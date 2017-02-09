@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -45,7 +44,6 @@ namespace DD4hep {
     /// Default margin for placement in bottom left corner
     static float DefaultMargin();
   };
-
-}      /* End namespace DD4hep   */
+}      /* End namespace DD4hep      */
 #endif /* DD4HEP_DDEVE_ANNOTATION_H */
 

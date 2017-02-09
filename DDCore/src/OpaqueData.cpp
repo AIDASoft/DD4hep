@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -24,27 +23,6 @@
 
 using namespace std;
 using namespace DD4hep;
-
-/// Standard initializing constructor
-OpaqueData::OpaqueData() : grammar(0), pointer(0)   {
-}
-
-/// Copy constructor
-OpaqueData::OpaqueData(const OpaqueData& c) : grammar(c.grammar), pointer(c.pointer) {
-}
-
-/// Standard Destructor
-OpaqueData::~OpaqueData()  {
-}
-
-/// Assignment operator
-OpaqueData& OpaqueData::operator=(const OpaqueData& c) {
-  if ( &c != this )  {
-    grammar = c.grammar;
-    pointer = c.pointer;
-  }
-  return *this;
-}
 
 /// Create data block from string representation
 bool OpaqueData::fromString(const string& rep)   {

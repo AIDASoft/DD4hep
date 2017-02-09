@@ -57,6 +57,19 @@ namespace DD4hep {
 Alignment::Processor::Processor() {
 }
 
+/// Access the hash identifier
+Alignment::key_type Alignment::key()  const   {
+  // If the alignment is bound to a condition, the key is the same as the one of the condition.
+  // Otherwise the key is invalid and an exception is thrown
+  Conditions::Condition cond = access()->condition;
+  return cond.access()->hash;
+}
+
+/// Access the bound condition if the alignment is bound to a condition. Otherwise NULL.
+AlignmentCondition Alignment::condition()  const   {
+  return AlignmentCondition(data().condition);
+}
+
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& Alignment::worldTransformation()  const  {
   return data().worldTransformation();
@@ -180,6 +193,16 @@ size_t Container::numKeys() const   {
 /// Known keys of conditions in this container
 const Container::Keys& Container::keys()  const   {
   return access()->keys;
+}
+
+/// Insert a new key to the alignments access map. Ignores already existing keys.
+bool Container::insertKey(const std::string& key_val)  {
+  return access()->insertKey(key_val);
+}
+
+/// Insert a new key to the alignments access map: Allow for alias if key_val != data_val
+bool Container::insertKey(const std::string& key_val, const std::string& data_val)  {
+  return access()->insertKey(key_val, data_val);
 }
 
 /// Add a new key to the alignments access map

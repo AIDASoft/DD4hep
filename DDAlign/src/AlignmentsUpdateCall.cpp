@@ -36,11 +36,17 @@ AlignmentsUpdateCall::~AlignmentsUpdateCall() {
 }
 
 AlignmentsUpdateCall::Condition
-AlignmentsUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, const Delta& delta)  {
+AlignmentsUpdateCall::handle(const ConditionKey&  key,
+                             const UpdateContext& ctxt,
+                             Condition::key_type  source,
+                             const Delta&         delta)
+{
   AlignmentCondition target(key.name);
   AlignmentData&     data = target.data();
-  data.delta     = delta;
-  data.detector  = ctxt.dependency.detector;
+  data.delta         = delta;
+  data.flag          = AlignmentData::HAVE_NONE;
+  data.detector      = ctxt.dependency.detector;
+  target->source_key = source;
   target->setFlag(Condition::ALIGNMENT_DERIVED);
   //
   // This here is the main difference compared to other derived conditions:
@@ -71,9 +77,10 @@ AlignmentsUpdateCall::invalidDataType(const ConditionKey& key, const UpdateConte
   Condition  cond = context.condition(0);
   DetElement det  = context.dependency.detector;
   Alignments::AlignmentCondition target(key.name);
-  Data& data = target.data();
-  data.detector = det;
-  data.flag     = AlignmentData::HAVE_NONE;
+  Data& data         = target.data();
+  data.detector      = det;
+  data.flag          = AlignmentData::HAVE_NONE;
+  target->source_key = 0;
   printout(ERROR,"AlignmentUpdate","++ Failed to access alignment-Delta for %s from %s",
            det.path().c_str(), cond->value.c_str());
   printout(ERROR,"AlignmentUpdate","++ The true data type is: %s",typeName(cond.typeInfo()).c_str());

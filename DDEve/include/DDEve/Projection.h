@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -40,11 +39,11 @@ namespace DD4hep {
     /// Call an element to a event element list
     virtual TEveElement* ImportElement(TEveElement* el, TEveElementList* list);
     /// Call an element to a geometry element list
-    virtual TEveElement* ImportGeoElement(TEveElement* element, TEveElementList* list);
+    virtual TEveElement* ImportGeoElement(TEveElement* element, TEveElementList* list)  override;
     /// Call an element to a geometry element list
-    virtual TEveElement* ImportGeoTopic(TEveElement* element, TEveElementList* list);
+    virtual TEveElement* ImportGeoTopic(TEveElement* element, TEveElementList* list) override;
     /// Call an element to a event element list
-    virtual TEveElement* ImportEventElement(TEveElement* element, TEveElementList* list);
+    virtual TEveElement* ImportEventElement(TEveElement* element, TEveElementList* list)  override;
 
 
   public:
@@ -53,7 +52,7 @@ namespace DD4hep {
     /// Default destructor
     virtual ~Projection();
     /// Map the projection view to the slot
-    virtual View& Map(TEveWindow* slot);
+    virtual View& Map(TEveWindow* slot)  override;
     /// Add projection axis to the view
     virtual Projection& AddAxis();
     /// Create Rho-Phi projection 
@@ -63,9 +62,7 @@ namespace DD4hep {
 
     virtual void SetDepth(Float_t d);
 
-    ClassDef(Projection,0);
+    ClassDefOverride(Projection,0);
   };
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep      */
 #endif /* DD4HEP_DDEVE_PROJECTION_H */
