@@ -252,7 +252,7 @@ namespace DD4hep {
     ConversionArg* arg  = _param<ConversionArg>();
     if ( element.hasAttr(_U(ref)) )  {
       XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
-      (*this)(doc.root());
+      Converter<arbitrary>(lcdd,param,optional)(doc.root());
     }
     for( xml_coll_t c(element,_UC(property)); c; ++c)  {
       xml_dim_t d = c;

@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -70,11 +69,11 @@ namespace DD4hep  {
       /// Default destructor
       virtual ~Geant4EventReader();
       /// File name
-      const std::string& name()  const   {  return m_name;   }
+      const std::string& name()  const   {  return m_name;         }
       /// Flag if direct event access (by event sequence number) is supported (Default: false)
-      bool hasDirectAccess() const  {  return m_directAccess; }
+      bool hasDirectAccess() const       {  return m_directAccess; }
       /// return current Event Number
-      int currentEventNumber() const { return m_currEvent; }
+      int currentEventNumber() const     {  return m_currEvent;    }
       /// Move to the indicated event number.
       /** For pure sequential access, the default implementation
        *  will skip events one by one.
