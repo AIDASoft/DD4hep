@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -49,7 +48,7 @@ namespace DD4hep {
     virtual ~ViewMenu();
 
     /// Add the menu to the menu bar
-    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal);
+    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal)  override;
 
     /// Import Geometry data and build the view
     void BuildView(View *view)  const;
@@ -66,11 +65,8 @@ namespace DD4hep {
     View* CreateRhoPhiProjection(const std::string& title);
 
     /// ROOT implementation macro
-    ClassDef(ViewMenu,0);
+    ClassDefOverride(ViewMenu,0);
   };
-
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep    */
 #endif /* DD4HEP_DDEVE_VIEWMENU_H */
 

@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -40,18 +39,17 @@ namespace DD4hep {
     /// Default destructor
     virtual ~Calo2DProjection();
     /// Build the projection view and map it to the given slot
-    virtual View& Build(TEveWindow* slot);
+    virtual View& Build(TEveWindow* slot)  override;
     /// Configure a single geometry view
-    virtual void ConfigureGeometry(const DisplayConfiguration::ViewConfig& config);
+    virtual void ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)  override;
     /// Configure a single event scene view
-    virtual void ConfigureEvent(const DisplayConfiguration::ViewConfig& config);
+    virtual void ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  override;
     /// Call to import geometry topics
-    void ImportGeoTopics(const std::string& title);
+    void ImportGeoTopics(const std::string& title)  override;
 
     /// Root implementation macro
-    ClassDef(Calo2DProjection,0);
+    ClassDefOverride(Calo2DProjection,0);
   };
 
-} /* End namespace DD4hep   */
-
+}      /* End namespace DD4hep   */
 #endif /* DD4HEP_DDEVE_CALO2DPROJECTION_H */

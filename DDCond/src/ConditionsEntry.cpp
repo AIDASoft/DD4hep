@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -19,6 +18,13 @@
 using std::string;
 using namespace DD4hep::Conditions;
 
+/// Default constructor
+Entry::Entry()
+  : NamedObject(), detector(), value(), validity(), hash(0)
+{
+  InstanceCount::increment(this);
+}
+
 /// Initializing constructor
 Entry::Entry(const DD4hep::Geometry::DetElement& det, const string& nam, const string& typ, const string& valid, int h)
   : NamedObject(nam,typ), detector(det), value(), validity(valid), hash(h)
@@ -28,7 +34,7 @@ Entry::Entry(const DD4hep::Geometry::DetElement& det, const string& nam, const s
 
 /// Copy constructor
 Entry::Entry(const Entry& c)
-  : NamedObject(c), detector(c.detector), value(c.value), validity(c.validity)
+  : NamedObject(c), detector(c.detector), value(c.value), validity(c.validity), hash(c.hash)
 {
   InstanceCount::increment(this);
 }
@@ -43,8 +49,9 @@ Entry& Entry::operator=(const Entry& c)   {
   if ( this != &c )  {
     this->NamedObject::operator=(c);
     detector = c.detector;
-    value = c.value;
+    value    = c.value;
     validity = c.validity;
+    hash     = c.hash;
   }
   return *this;
 }

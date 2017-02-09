@@ -79,28 +79,31 @@ namespace DD4hep {
 
     public:
       enum StringFlags  {
-        WITH_IOV         = 1<<0,
-        WITH_ADDRESS     = 1<<1,
-        WITH_TYPE        = 1<<2,
-        WITH_COMMENT     = 1<<4,
-        WITH_DATATYPE    = 1<<5,
-        WITH_DATA        = 1<<6,
-        NO_NAME          = 1<<20,
+        WITH_IOV           = 1<<0,
+        WITH_ADDRESS       = 1<<1,
+        WITH_TYPE          = 1<<2,
+        WITH_COMMENT       = 1<<4,
+        WITH_DATATYPE      = 1<<5,
+        WITH_DATA          = 1<<6,
+        NO_NAME            = 1<<20,
         NONE
       };
       enum ConditionState {
-        INACTIVE          = 0,
-        ACTIVE            = 1<<0,
-        CHECKED           = 1<<2,
-        DERIVED           = 1<<3,
-        TEMPERATURE       = 1<<4,
-        PRESSURE          = 1<<5,
-        ALIGNMENT         = 1<<6,
-        ALIGNMENT_DERIVED = 1<<7,
+        INACTIVE            = 0,
+        ACTIVE              = 1<<0,
+        CHECKED             = 1<<2,
+        DERIVED             = 1<<3,
+        // Flags for specific conditions
+        TEMPERATURE         = 1<<4,
+        TEMPERATURE_DERIVED = TEMPERATURE|DERIVED,
+        PRESSURE            = 1<<5,
+        PRESSURE_DERIVED    = PRESSURE|DERIVED,
+        ALIGNMENT           = 1<<6,
+        ALIGNMENT_DERIVED   = ALIGNMENT|DERIVED,
         // Keep bit 8-15 for other generic types
         // Bit 16-31 is reserved for user classifications
-        USER_FLAGS_FIRST  = 1<<16,
-        USER_FLAGS_LAST   = 1<<31
+        USER_FLAGS_FIRST    = 1<<16,
+        USER_FLAGS_LAST     = 1<<31
       };
 
       /// Abstract base for processing callbacks to conditions objects
@@ -252,6 +255,14 @@ namespace DD4hep {
       /**  Caution: This is not thread protected!  */
       const Keys&  keys()  const;
 
+      /// Insert a new key to the conditions access map. Ignores already existing keys.
+      /**  Caution: This is not thread protected!  */
+      bool insertKey(const std::string& key_val);
+
+      /// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
+      /**  Caution: This is not thread protected!  */
+      bool insertKey(const std::string& key_val, const std::string& data_val);
+
       /// Add a new key to the conditions access map.
       /**  Caution: This is not thread protected!  */
       void addKey(const std::string& key_val);
@@ -374,6 +385,17 @@ namespace DD4hep {
       /// Hashed key representation
       key_type     hash = 0;
 
+      /// Compare keys by the hash value
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      struct HashCompare {
+        Condition::key_type      key;
+        HashCompare(Condition::key_type k) : key(k) {}
+        bool operator==(const ConditionKey& k) const { return key==k.hash; }
+      };
     public:
       /// Default constructor
       ConditionKey() = default;

@@ -677,8 +677,10 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
       else   {
         Geant4GeometryMaps::VolumeMap::iterator volIt = info.g4Volumes.find(dau_vol);
         if ( volIt == info.g4Volumes.end() )  {
-          printout(FATAL, "Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
+          printout(FATAL,"Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
                    __FILE__, __LINE__, name.c_str(), d->GetName());
+          except("Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
+                 __FILE__, __LINE__, name.c_str(), d->GetName());
         }
         g4->placeVolume(d,(*volIt).second, transform);
         printout(m_outputLevel, "Geant4Converter", "+++ Assembly: AddPlacedVolume : dau:%s "
@@ -736,7 +738,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         //
         printout(m_outputLevel, "Geant4Converter", "+++ Assembly: makeImprint: dau:%s in mother %s "
                  "Tr:x=%8.3f y=%8.3f z=%8.3f",
-                 node->GetName(), mot_vol->GetName(),
+                 node->GetName(), mot_vol ? mot_vol->GetName() : "<unknown>",
                  transform.dx(), transform.dy(), transform.dz());
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;

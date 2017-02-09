@@ -23,6 +23,7 @@
 #include <string>
 
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 //________________________________________________________________________________
@@ -40,16 +41,15 @@ namespace {
       if ( v.p )  {
         return *v.l;
       }
-      throw runtime_error("Failed to locate plugin to create LCDD instance");
+      except("RunPlugin","++ Failed to locate plugin to create LCDD instance");
     }
     catch(const exception& e)  {
-      cout << "Exception:" << e.what() << endl;
-      throw runtime_error("Exception:\""+string(e.what()));
+      except("RunPlugin","++ Exception: %s", e.what());
     }
     catch(...)  {
-      cout << "UNKNOWN Exception while creating LCDD instance." << endl;
+      except("RunPlugin","++ UNKNOWN Exception while creating LCDD instance.");
     }
-    throw runtime_error("UNKNOWN Exception while creating LCDD instance.");
+    except("RunPlugin","++ UNKNOWN Exception while creating LCDD instance.");
 #endif
     return LCDD::getInstance();
   }
@@ -61,19 +61,18 @@ namespace {
       return 0;
     }
     catch(const exception& e)  {
-      cout << e.what() << endl;
-      return EINVAL;
+      except("RunPlugin","++ Exception while executing plugin %s: %s",
+             name ? name : "<unknown>", e.what());
     }
     catch(...)  {
-      cout << "UNKNOWN Exception" << endl;
-      return EINVAL;
+      except("RunPlugin","++ UNKNOWN Exception while executing plugin %s.",name ? name : "<unknown>");
     }
     ::exit(EINVAL);
     return EINVAL;
   }
 
   //______________________________________________________________________________
-  std::ostream& print_default_args()  {
+  ostream& print_default_args()  {
     cout << 
       "        -build_type <number/string> Specify the build type                         \n"
       "                     [OPTIONAL]     MUST come immediately after the -compact input.\n"
@@ -115,8 +114,8 @@ namespace {
   struct Args  {
     bool        volmgr, dry_run, destroy, interpreter, ui;
     int         print;
-    std::vector<const char*> geo_files, build_types;
-    std::vector<std::vector<const char*> > plugins;
+    vector<const char*> geo_files, build_types;
+    vector<vector<const char*> > plugins;
 
     //____________________________________________________________________________
     Args() {
@@ -162,7 +161,7 @@ namespace {
         ui = true;
       else if ( strncmp(argv[i],"-plugin",5)==0 )   {
         // Need to interprete plugin args here locally.....
-        plugins.push_back(std::vector<const char*>());
+        plugins.push_back(vector<const char*>());
         plugins.back().push_back(argv[++i]);
         for( ++i; i < argc; ++i )   {
           if ( strncmp(argv[i],"-plugin",5)==0 ) { --i; break; }
@@ -181,7 +180,7 @@ namespace {
       pair<int, char**> a(0,0);
       long result;
       for(size_t i=0; i<plugins.size(); ++i)   {
-        std::vector<const char*>& plug=plugins[i];
+        vector<const char*>& plug=plugins[i];
         // Remove plugin name and trailing 0x0 from args.
         size_t num_args = plug.size()>2 ? plug.size()-2 : 0;
 
@@ -207,7 +206,7 @@ namespace {
     }
 
     //____________________________________________________________________________
-    int decodePrintLevel(const std::string& val)   {
+    int decodePrintLevel(const string& val)   {
       switch(::toupper(val[0]))  {
       case '1':
       case 'V':
@@ -232,7 +231,7 @@ namespace {
         return DD4hep::FATAL;
       default:
         cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << endl;
-        throw std::runtime_error("Invalid printLevel:"+val);
+        throw runtime_error("Invalid printLevel:"+val);
       }
     }
   };
@@ -296,11 +295,11 @@ namespace {
     try {
       return main_wrapper(name,argc,argv);
     }
-    catch(const std::exception& e)  {
-      std::cout << "Got uncaught exception: " << e.what() << std::endl;
+    catch(const exception& e)  {
+      cout << "Got uncaught exception: " << e.what() << endl;
     }
     catch (...)  {
-      std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+      cout << "Got UNKNOWN uncaught exception." << endl;
     }
     return EINVAL;    
   }

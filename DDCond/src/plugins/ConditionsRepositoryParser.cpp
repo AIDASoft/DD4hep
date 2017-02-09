@@ -209,8 +209,8 @@ namespace DD4hep {
    */
   template <> void Converter<iov_type>::operator()(xml_h element) const {
     xml_dim_t e  = element;
-    size_t id    = e.id();
     string nam   = e.nameStr();
+    size_t id    = size_t(e.id());
     ConversionArg* arg  = _param<ConversionArg>();
     printout(s_parseLevel,"XMLConditions","++ Registering IOV type: [%d]: %s",id,nam.c_str());
     const IOVType* iov_type = arg->manager.registerIOVType(id,nam).second;
@@ -250,6 +250,10 @@ namespace DD4hep {
    */
   template <> void Converter<manager>::operator()(xml_h element) const {
     ConversionArg* arg  = _param<ConversionArg>();
+    if ( element.hasAttr(_U(ref)) )  {
+      XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+      (*this)(doc.root());
+    }
     for( xml_coll_t c(element,_UC(property)); c; ++c)  {
       xml_dim_t d = c;
       string nam = d.nameStr();
@@ -525,6 +529,8 @@ namespace DD4hep {
       Converter<conditions>(lcdd,param,optional)(e);
     else if ( tag == "detelement" )
       Converter<detelement>(lcdd,param,optional)(e);
+    else if ( tag == "iov_type" )
+      Converter<iov_type>(lcdd,param,optional)(e);
     else if ( tag == "iov" )         // Processing repository file
       Converter<iov>(lcdd,param,optional)(e);
     else

@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -44,9 +43,9 @@ namespace DD4hep {
     /// Default destructor
     virtual ~ElementList();
     /// Clone object: Overload from TEveElementList
-    virtual TEveElementList* CloneElement()  const;
+    virtual TEveElementList* CloneElement()  const  override;
     /// Root implementation macro
-    ClassDef(ElementList,0);
+    ClassDefOverride(ElementList,0);
   };
 
   /// DDEve context menu class
@@ -68,7 +67,5 @@ namespace DD4hep {
     ClassDef(ElementListContextMenu,0);
   };
 
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep       */
 #endif /* DD4HEP_DDEVE_ELEMENTLIST_H */

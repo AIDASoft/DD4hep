@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -85,8 +84,8 @@ namespace   {
                  void* creator_stub, 
                  const char* signature, 
                  const char* return_type);
-    PluginInterface();
-    static PluginInterface& instance()    {
+    PluginInterface() throw(std::exception);
+    static PluginInterface& instance()  throw(std::exception)   {
       static PluginInterface s_instance;
       return s_instance;
     }
@@ -111,7 +110,9 @@ namespace   {
     return fp.fptr.fcn;
   }
 
-  PluginInterface::PluginInterface() : getDebug(0), setDebug(0), create(0), add(0)  {    
+  PluginInterface::PluginInterface()   throw(std::exception)
+    : getDebug(0), setDebug(0), create(0), add(0)
+  {
     void* handle = 0;
     const char* plugin_name = ::getenv("DD4HEP_PLUGINMGR");
     if ( 0 == plugin_name )   {

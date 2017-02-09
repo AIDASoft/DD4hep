@@ -141,7 +141,7 @@ namespace {
   int readText(const string& input, ConditionsTextRepository::Data& data)    {
     size_t idx;
     ConditionsTextRepository::Entry e;
-    long siz_nam, siz_add, siz_tot;
+    size_t siz_nam, siz_add, siz_tot;
     char sep, c, text[2*PATH_MAX+64];
     ifstream in(input);
     in >> c >> c >> c >> c >> c >> c >> c >> sep 

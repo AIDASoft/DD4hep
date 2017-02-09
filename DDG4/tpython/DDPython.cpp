@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -10,7 +11,6 @@
 //  \date   2015-11-07
 //
 //==========================================================================
-// $Id$
 
 // C/C++ include files
 #include <fstream>
@@ -137,7 +137,7 @@ DDPython::AllowThreads::~AllowThreads()  {
 }
 
 /// Standard constructor, initializes variables
-DDPython::DDPython()  {
+DDPython::DDPython() : context(0)  {
   ++_refCount;
   bool inited = ::Py_IsInitialized();
   if ( !inited ) {

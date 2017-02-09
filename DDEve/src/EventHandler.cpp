@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -20,16 +19,8 @@ using namespace DD4hep;
 ClassImp(EventHandler)
 ClassImp(EventConsumer)
 
-/// Standard constructor
-EventHandler::EventHandler() : m_hasFile(false), m_hasEvent(false) {
-}
-
 /// Default destructor
 EventHandler::~EventHandler()   {
-}
-
-/// Standard constructor
-EventConsumer::EventConsumer()  {
 }
 
 /// Default destructor

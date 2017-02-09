@@ -37,21 +37,21 @@ namespace DD4hep {
   private:
   protected:
     /// Standard initializing constructor
-    OpaqueData();
+    OpaqueData() = default;
     /// Standard Destructor
-    virtual ~OpaqueData();
+    virtual ~OpaqueData() = default;
     /// Copy constructor
-    OpaqueData(const OpaqueData& c);
+    OpaqueData(const OpaqueData& c) = default;
     /// Assignment operator
-    OpaqueData& operator=(const OpaqueData& c);
+    OpaqueData& operator=(const OpaqueData& c) = default;
 
   public:
     /// Data type
-    const BasicGrammar* grammar;
+    const BasicGrammar* grammar = 0;
 
   protected:
     /// Pointer to object data
-    void* pointer;
+    void* pointer = 0;
 
   public:
     /// Create data block from string representation
@@ -62,8 +62,10 @@ namespace DD4hep {
     const std::type_info& typeInfo() const;
     /// Access type name of the condition data block
     const std::string& dataType() const;
+    /// Access to the data buffer (read only!). Is only valid after call to bind<T>()
+    const void* ptr()  const {  return pointer;      }
     /// Check if object is already bound....
-    bool is_bound()  const  {  return 0 != pointer; }
+    bool is_bound()  const   {  return 0 != pointer; }
     /// Generic getter. Specify the exact type, not a polymorph type
     template <typename T> T& get();
     /// Generic getter (const version). Specify the exact type, not a polymorph type

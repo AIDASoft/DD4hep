@@ -37,7 +37,7 @@ find_package(Threads REQUIRED)
 macro(dd4hep_set_compiler_flags)
   include(CheckCXXCompilerFlag)
 
-  SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto )
+  SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Winconsistent-missing-override)
 
   FOREACH( FLAG ${COMPILER_FLAGS} )
     CHECK_CXX_COMPILER_FLAG( "${FLAG}" CXX_FLAG_WORKS_${FLAG} )

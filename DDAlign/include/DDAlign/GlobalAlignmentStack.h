@@ -33,7 +33,7 @@ namespace DD4hep {
      */
     class GlobalAlignmentStack  {
     public:
-      enum {
+      enum Flags {
         OVERLAP_DEFINED     = 1<<20,
         MATRIX_DEFINED      = 1<<21,
         CHECKOVL_DEFINED    = 1<<22,
@@ -41,7 +41,7 @@ namespace DD4hep {
         RESET_VALUE         = 1<<24,
         RESET_CHILDREN      = 1<<25,
         ____LLLAST          = 1<<31
-      } Flags;
+      };
 
       /// Stack entry definition
       /**
@@ -57,8 +57,10 @@ namespace DD4hep {
         /// Path to the misaligned volume
         std::string       path;
         /// Parameter for overlap checking
-        double            overlap;
+        double            overlap = 0.0;
 
+        /// Default constructor
+        StackEntry() = delete;
         /// Fully initializing constructor
         StackEntry(DetElement p, const std::string& placement, const Delta& t, double ov);
         /// Copy constructor
@@ -67,7 +69,7 @@ namespace DD4hep {
         virtual ~StackEntry();
 
         /// Assignment operator
-        StackEntry& operator=(const StackEntry& e);
+        StackEntry& operator=(const StackEntry& e) = default;
 
         /// Check if the overlap flag checking is enabled
         bool overlapDefined() const    {  return delta.checkFlag(OVERLAP_DEFINED);  }

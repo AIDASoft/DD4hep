@@ -708,9 +708,8 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
         PlacedVolume place = de.placement();
         const TGeoNode* node = place.ptr();
         char sens = place.volume().isSensitive() ? 'S' : ' ';
-        int value = flag;
         char fmt[128];
-        switch(value)  {
+        switch(flag)  {
         case 0:
           if ( de.placement() == de.idealPlacement() )  {
             ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);

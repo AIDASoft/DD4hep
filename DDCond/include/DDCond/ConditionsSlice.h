@@ -164,8 +164,8 @@ namespace DD4hep {
         virtual const void* data() const {  return (T*)this;  }
       };
       
-      typedef Condition::key_type       key_type;
-      typedef ConditionDependency       Dependency;
+      typedef Condition::key_type            key_type;
+      typedef ConditionDependency            Dependency;
       typedef std::map<key_type,Descriptor*> ConditionsProxy;
 
     public:
@@ -214,7 +214,6 @@ namespace DD4hep {
       ConditionsProxy& missingConditions()  { return m_missingConditions; }
       /// Access the map of missing computational conditions (only valid after preparation)
       ConditionsProxy& missingDerivations() { return m_missingDerivations;}
-
       /// Clear the container. Destroys the contained stuff
       void clear();
       /// Clear the conditions access and the user pool.

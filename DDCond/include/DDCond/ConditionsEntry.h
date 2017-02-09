@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -43,9 +42,9 @@ namespace DD4hep {
       /// The validity string to be interpreted by the updating engine
       std::string validity;
       /// Hash value of the name for fast identification
-      int hash;
+      int hash = 0;
       /// Default constructor
-      Entry() {}
+      Entry();
       /// Initializing constructor
       Entry(const Geometry::DetElement& det, const std::string& nam, const std::string& typ, const std::string& valid, int hash);
       /// Copy constructor

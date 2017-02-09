@@ -62,8 +62,6 @@ namespace DD4hep {
       Slice&                 slice;
       /// The callback to be registered for the update mechanism
       AlignmentsUpdateCall*  updateCall;
-      /// Conditions pool used to access the basic conditions object
-      Conditions::UserPool*  user_pool;
       /// Extension property to construct the name of the alignment condition
       std::string            extension;
       /// Name of the alignment alias for the detector elements alignment object

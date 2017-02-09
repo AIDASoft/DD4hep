@@ -76,6 +76,7 @@ ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const 
     if ( obj )  {
       if ( !obj->hash ) obj->hash = ConditionKey::hashCode(obj->name);
       cond->setFlag(Condition::DERIVED);
+      cond->validate();
       cond->iov = m_pool.validityPtr();
       // Must IMMEDIATELY insert to handle inter-dependencies.
       ++num_callback;
