@@ -5,8 +5,9 @@
 //====================================================================
 
 #include "DDG4/Geant4Config.h"
+#include <cerrno>
 #include <iostream>
-
+#include <stdexcept>
 
 using namespace DD4hep::Simulation::Setup;
 
@@ -44,6 +45,7 @@ int main_wrapper(int argc, char** argv)  {
 
   std::cout << "Successfully executed application .... " << std::endl;
   kernel.terminate();
+  return 0;
 }
 
 //______________________________________________________________________________
@@ -51,11 +53,11 @@ int main(int argc, char** argv)  {
   try {
     return main_wrapper(argc,argv);
   }
-  catch(const exception& e)  {
-    cout << "Got uncaught exception: " << e.what() << endl;
+  catch(const std::exception& e)  {
+    std::cout << "Got uncaught exception: " << e.what() << std::endl;
   }
   catch (...)  {
-    cout << "Got UNKNOWN uncaught exception." << endl;
+    std::cout << "Got UNKNOWN uncaught exception." << std::endl;
   }
   return EINVAL;    
 }
