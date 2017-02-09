@@ -81,13 +81,13 @@ namespace DD4hep {
     struct  category : boost::iostreams::seekable_device_tag, boost::iostreams::closable_tag { };
 
     /// Default constructor
-    dd4hep_file() : m_handle(0) {   }
+    dd4hep_file() = default;
     /// Constructors taking file desciptors
     dd4hep_file(handle_type fd, dd4hep_file_flags);
     /// Constructors taking file desciptors
     dd4hep_file(const char* fname, BOOST_IOS::openmode mode);
     /// Default destructor
-    ~dd4hep_file();
+    ~dd4hep_file() = default;
     /// open overloads taking file descriptors
     void open(handle_type fd, dd4hep_file_flags flags);
     /// open overload taking C-style string
@@ -107,9 +107,9 @@ namespace DD4hep {
 
   private:
     /// Native stream handle
-    handle_type m_handle;
+    handle_type       m_handle = 0;
     /// Stream flag(s)
-    dd4hep_file_flags m_flag;
+    dd4hep_file_flags m_flag = 0;
   };
 
 

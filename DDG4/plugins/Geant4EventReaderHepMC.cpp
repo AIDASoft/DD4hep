@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -50,15 +49,14 @@ namespace DD4hep {
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number,
                                               Vertex& primary_vertex,
-                                              std::vector<Particle*>& particles);
-      virtual EventReaderStatus moveToEvent(int event_number);
-      virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
+                                              std::vector<Particle*>& particles)  override;
+      virtual EventReaderStatus moveToEvent(int event_number)  override;
+      virtual EventReaderStatus skipEvent() override { return EVENT_READER_OK; }
 
     };
   }     /* End namespace Simulation   */
 }       /* End namespace DD4hep       */
 
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -170,9 +168,8 @@ Geant4EventReaderHepMC::Geant4EventReaderHepMC(const string& nam)
   // Now open the input file:
   m_input.open(nam.c_str(),BOOST_IOS::in|BOOST_IOS::binary);
   if ( not m_input.is_open() )   {
-    string err = "+++ Geant4EventReaderHepMC: Failed to open input stream:"+nam+
-      " Error:"+string(strerror(errno));
-    throw runtime_error(err);
+    except("Geant4EventReaderHepMC","+++ Failed to open input stream: %s Error:%s.",
+           nam.c_str(), ::strerror(errno));
   }
   m_events = new HepMC::EventStream(m_input);
 }
@@ -187,7 +184,7 @@ Geant4EventReaderHepMC::~Geant4EventReaderHepMC()    {
 /// skipEvents if required
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderHepMC::moveToEvent(int event_number) {
-  if( m_currEvent == 0 && event_number != 0 ) {
+  if( m_currEvent < event_number && event_number != 0 ) {
     printout(INFO,"EventReaderHepMC::moveToEvent","Skipping the first %d events", event_number);
     printout(INFO,"EventReaderHepMC::moveToEvent","Event number before skipping: %d", m_currEvent);
     while ( m_currEvent < event_number ) {
