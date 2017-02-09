@@ -109,7 +109,7 @@ namespace DD4hep {
     /// Native stream handle
     handle_type       m_handle = 0;
     /// Stream flag(s)
-    dd4hep_file_flags m_flag = 0;
+    dd4hep_file_flags m_flag = close_handle;
   };
 
 
