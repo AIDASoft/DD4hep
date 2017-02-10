@@ -145,8 +145,6 @@ namespace DD4hep {
         void setFlag(mask_type option)        {  flags |= option;                }
         void unFlag(mask_type option)         {  flags &= ~option;               }
         bool testFlag(mask_type option) const {  return 0 != (flags&option);     }
-        void validate()                       {  setFlag(Condition::ACTIVE);     }
-        void invalidate()                     {  unFlag(Condition::ACTIVE);      }
       };
 
       /// The data class behind a conditions container handle.

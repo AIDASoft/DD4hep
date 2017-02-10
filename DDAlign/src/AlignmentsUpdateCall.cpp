@@ -64,7 +64,7 @@ AlignmentsUpdateCall::handle(const ConditionKey&  key,
   // are present in a second pass. This is necessary, because the parent information
   // may actually be supplied also 'later'.
   //
-  AlignmentsManager::newEntry(ctxt, data.detector, &ctxt.dependency, target);
+  AlignmentsManager::newEntry(ctxt, &ctxt.dependency, target);
   return target;
 }
 

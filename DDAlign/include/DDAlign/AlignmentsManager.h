@@ -55,7 +55,9 @@ namespace DD4hep {
       typedef Conditions::ConditionUpdateContext         Context;
       /// Alignments re-use conditions dependency definition from the conditions manager
       typedef Conditions::ConditionDependency            Dependency;
-
+      /// Alignments re-use the dependency collections
+      typedef Conditions::ConditionsDependencyCollection Dependencies;
+      
       /// Result of a computation call to the alignments manager
       /**
        *  \author  M.Frank
@@ -102,9 +104,10 @@ namespace DD4hep {
       void destroy();
       /// Compute all alignment conditions of the internal dependency list
       Result compute(Slice& slice)  const;
+      /// Compute all alignment conditions of the internal dependency list
+      Result compute(Slice& slice, const Dependencies& dependencies)  const;
       /// Register new updated derived alignment during the computation step
       static void newEntry(const Context& parameter,
-                           DetElement& det,
                            const Dependency* dep,
                            AlignmentCondition& con);
     };
@@ -123,6 +126,7 @@ namespace DD4hep {
       typedef AlignmentsManager::Pool         Pool;
       typedef AlignmentsManager::Slice        Slice;
       typedef AlignmentsManager::Result       Result;
+      typedef AlignmentsManager::Dependencies Dependencies;
 
     protected:
       /// Compute the transformation from the closest detector element of the alignment to the world system
@@ -137,6 +141,8 @@ namespace DD4hep {
       virtual ~AlignmentsManagerObject();
       /// Compute all alignment conditions of the internal dependency list
       Result compute(Slice& slice) const;
+      /// Compute all alignment conditions of the internal dependency list
+      Result compute(Slice& slice, const Dependencies& dependencies)  const;
     };
     
   }       /* End namespace Geometry                    */

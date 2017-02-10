@@ -71,22 +71,25 @@ namespace DD4hep {
         Delta       delta;
         Descriptor* source = 0;
         Descriptor* target = 0;
+        DetElement  detector;
+        Entry*      parent = 0;
         int         dirty  = 0;
+        std::set<Entry*> children;
         Entry() = default;
-        Entry(const Entry& c) = default;
-        Entry(Descriptor* s, Descriptor* d) : delta(), source(s), target(d), dirty(0)  {}
-        Entry(Descriptor* s, Descriptor* d, const Delta& del) : delta(del), source(s), target(d), dirty(0)  {}
-        Entry& operator=(const Entry& c) = default;
+        Entry(const Entry& c) = delete;
+        Entry& operator=(const Entry& c) = delete;
       };
-      typedef std::map<key_type,Entry*>    UsedConditions;
+      typedef std::map<key_type,Entry*>        UsedConditions;
+      typedef std::map<key_type,Entry*>        UsedEntry;
+      typedef std::map<DetElement,UsedEntry>   UsedDetectors;
 
     public:
       LCDD&                  lcdd;
       /// Reference to the alignment manager object
       Slice&                 slice;
       UsedConditions         used;
+      AlignmentsManager      alignManager;
       AlignmentsUpdateCall*  derivationCall  = 0;
-      AlignmentsUpdateCall*  propagationCall = 0;
       
     protected:
       /// Propagate all Delta parameters to the source conditions
@@ -97,7 +100,7 @@ namespace DD4hep {
       AlignmentsManager::Result computeDependencies();
 
       /// Implementation: Add a new entry to the transaction list
-      key_type  _insert(const std::pair<Condition::key_type,Entry*>& e);
+      std::pair<key_type,Entry*> _insert(const std::pair<Condition::key_type,Entry*>& e);
       /// Implementation: Register newly created condition to user-pool, slice and manager
       Condition _register(Condition cond)  const;
       /// Implementation: Add a new raw(delta)-condition to the transaction stack.
@@ -106,7 +109,9 @@ namespace DD4hep {
       Condition _create_target(DetElement detector, key_type key, const std::string& nam)  const;
 
       /// Implementation: Add a new entry to the transaction stack.
-      key_type _use(AlignmentCondition alignment);
+      std::pair<key_type,Entry*> _use(DetElement detector, AlignmentCondition alignment);
+      /// Implementation: Add a new entry to the transaction stack.
+      std::pair<key_type,Entry*> _use(DetElement detector, const std::string& alignment);
 
     public:
 
@@ -137,7 +142,7 @@ namespace DD4hep {
        *
        *  The resulting alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(Alignment alignment);
+      key_type use(DetElement detector, Alignment alignment);
 
       /// (2) Add a new entry to an existing DetElement structure.
       /**
@@ -155,7 +160,7 @@ namespace DD4hep {
        *       
        *  2) an AlignmentCondition object is added to the
        *     ConditionsManager's repository and the used ConditionsSlice.
-       *     Hereby as a name 'align_name' is used.
+       *     Hereby as a name 'align_name' = 'name'+"/Transformations" is used.
        *     If empty, the default results to: align_name = name+"/Transformations".
        *
        *     Then for align_name:
@@ -173,12 +178,12 @@ namespace DD4hep {
        *
        *  The resulting alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(DetElement detector, const std::string& name, const std::string& align_name="");
+      key_type use(DetElement detector, const std::string& name);
 
       /// (3) Add a new entry to an existing DetElement structure.
       /**
        *  Shortcut call equivalent to:
-       *  key_type use(detector, detector.path()+"#alignment","")
+       *  key_type use(detector, detector.path()+"#alignment")
        *
        *  The alignment key is returned to the client. If NULL: Failure
        */
@@ -188,13 +193,16 @@ namespace DD4hep {
       /**
        *  The alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(const std::string& detector, const std::string& name, const std::string& align_name="");
+      key_type use(const std::string& detector, const std::string& name);
 
       /// (5) Add a new entry to an existing DetElement structure.
       /**
        *  The alignment key is returned to the client. If NULL: Failure
        */
       key_type use(const std::string& detector);
+
+      /// Complete the setup procedure
+      bool start();
       
       /// Set a new delta value in the transaction stack.
       /** Note: has no effect on the real alignment conditions

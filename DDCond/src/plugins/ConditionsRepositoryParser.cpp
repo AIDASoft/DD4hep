@@ -167,11 +167,10 @@ namespace {
     cond->value    = "";
     cond->validity = "";
     cond->hash     = Conditions::ConditionKey::hashCode(cond->name);
-    cond->setFlag(Condition::ACTIVE);
     if ( elt.hasAttr(_U(comment)) )  {
       cond->comment = elt.attr<string>(_U(comment));
     }
-    ConditionsKeyAssign(det).addKey(cond.name());//.addKey(nam,cond.name());
+    ConditionsKeyAssign(det).addKey(cond.name());
     return cond;
   }
 

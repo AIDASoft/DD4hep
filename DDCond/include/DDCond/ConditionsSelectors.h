@@ -88,7 +88,7 @@ namespace DD4hep {
         T& collection;
         ActiveSelect(T& p) : collection(p) {}
         bool operator()(object_t* o)  const   {
-          if ( (o->flags & cond_t::ACTIVE) )  {
+          if ( (o->flags & Condition::ACTIVE) )  {
             collection.insert(collection.end(),o);
             return true;
           }
