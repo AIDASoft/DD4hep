@@ -17,9 +17,13 @@
 #define DD4HEP_MAJOR_VERSION 0
 #define DD4HEP_MINOR_VERSION 19
 
-#define DD4HEP_VERSION_GE( MAJV , MINV )  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || ( (DD4HEP_MAJOR_VERSION==MAJV) && ( DD4HEP_MINOR_VERSION >= MINV ) ) )
+#define DD4HEP_VERSION_GE(MAJV,MINV)  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || \
+                                        ( (DD4HEP_MAJOR_VERSION == MAJV ) && \
+                                          (DD4HEP_MINOR_VERSION >= MINV ) ) )
 
-#define DD4HEP_VERSION_GT( MAJV , MINV )  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || ( (DD4HEP_MAJOR_VERSION==MAJV) && ( DD4HEP_MINOR_VERSION >  MINV ) ) )
+#define DD4HEP_VERSION_GT(MAJV,MINV)  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || \
+                                        ( (DD4HEP_MAJOR_VERSION == MAJV ) && \
+                                          (DD4HEP_MINOR_VERSION >  MINV ) ) )
 
 
 // Framework includes
@@ -48,11 +52,7 @@ class TGeoManager;
 namespace DD4hep {
 
   /// return a string with the current DD4hep version in the form vXX-YY.
-  inline std::string versionString(){
-    std::string vs("vXX-YY") ;
-    std::sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
-    return vs ;
-  }
+  std::string versionString();
   
   // Foward declarations
   class NamedObject;

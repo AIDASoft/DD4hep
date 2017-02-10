@@ -14,6 +14,7 @@
 #define DD4HEP_DDALIGN_ALIGNMENTCALIB_H
 
 // Framework includes
+#include "DD4hep/Printout.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Alignments.h"
@@ -84,21 +85,20 @@ namespace DD4hep {
       typedef std::map<DetElement,UsedEntry>   UsedDetectors;
 
     public:
+      enum CommitMode   {
+        DIRECT   = 1,
+        NORMAL   = 2
+      };
       LCDD&                  lcdd;
       /// Reference to the alignment manager object
       Slice&                 slice;
       UsedConditions         used;
       AlignmentsManager      alignManager;
       AlignmentsUpdateCall*  derivationCall  = 0;
+      DD4hep::PrintLevel     printLevel      = DD4hep::DEBUG;
       
     protected:
-      /// Propagate all Delta parameters to the source conditions
-      bool propagateDeltas();
-      /// Update Dependencies between the source conditions and the computations
-      bool updateDependencies();
-      /// Compute all dependent conditions from the Delta parameters
-      AlignmentsManager::Result computeDependencies();
-
+      
       /// Implementation: Add a new entry to the transaction list
       std::pair<key_type,Entry*> _insert(const std::pair<Condition::key_type,Entry*>& e);
       /// Implementation: Register newly created condition to user-pool, slice and manager
@@ -106,12 +106,12 @@ namespace DD4hep {
       /// Implementation: Add a new raw(delta)-condition to the transaction stack.
       Condition _create_source(key_type key, const std::string& nam)  const;
       /// Implementation: Add a new alignment-condition to the transaction stack.
-      Condition _create_target(DetElement detector, key_type key, const std::string& nam)  const;
+      Condition _create_target(DetElement det, key_type key, const std::string& nam)  const;
 
       /// Implementation: Add a new entry to the transaction stack.
-      std::pair<key_type,Entry*> _use(DetElement detector, AlignmentCondition alignment);
+      std::pair<key_type,Entry*> _use(DetElement det, AlignmentCondition alignment);
       /// Implementation: Add a new entry to the transaction stack.
-      std::pair<key_type,Entry*> _use(DetElement detector, const std::string& alignment);
+      std::pair<key_type,Entry*> _use(DetElement det, const std::string& alignment);
 
     public:
 
@@ -142,7 +142,7 @@ namespace DD4hep {
        *
        *  The resulting alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(DetElement detector, Alignment alignment);
+      key_type use(DetElement det, Alignment alignment);
 
       /// (2) Add a new entry to an existing DetElement structure.
       /**
@@ -178,28 +178,28 @@ namespace DD4hep {
        *
        *  The resulting alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(DetElement detector, const std::string& name);
+      key_type use(DetElement det, const std::string& name);
 
       /// (3) Add a new entry to an existing DetElement structure.
       /**
        *  Shortcut call equivalent to:
-       *  key_type use(detector, detector.path()+"#alignment")
+       *  key_type use(det, det.path()+"#alignment")
        *
        *  The alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(DetElement detector);
+      key_type use(DetElement det);
 
       /// (4) Add a new entry to an existing DetElement structure.
       /**
        *  The alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(const std::string& detector, const std::string& name);
+      key_type use(const std::string& path, const std::string& name);
 
       /// (5) Add a new entry to an existing DetElement structure.
       /**
        *  The alignment key is returned to the client. If NULL: Failure
        */
-      key_type use(const std::string& detector);
+      key_type use(const std::string& path);
 
       /// Complete the setup procedure
       bool start();
@@ -221,8 +221,11 @@ namespace DD4hep {
       /// We clear the entire cached stack of used entries.
       void clear();
 
+      /// Convenience only: Access detector element by path
+      DetElement detector(const std::string& path)  const;
+      
       /// Commit all pending transactions. Returns number of altered entries
-      AlignmentsManager::Result commit();
+      AlignmentsManager::Result commit(CommitMode mode=NORMAL);
     };
     
   }       /* End namespace Alignments              */

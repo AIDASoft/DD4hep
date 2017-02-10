@@ -106,6 +106,9 @@ namespace DD4hep {
       Result compute(Slice& slice)  const;
       /// Compute all alignment conditions of the internal dependency list
       Result compute(Slice& slice, const Dependencies& dependencies)  const;
+      /// Compute all alignment conditions of the dependency list
+      /** Assume that source and target conditions were updated externally. */
+      Result computeDirect(Slice& slice, const Dependencies& dependencies)  const;
       /// Register new updated derived alignment during the computation step
       static void newEntry(const Context& parameter,
                            const Dependency* dep,
@@ -139,10 +142,13 @@ namespace DD4hep {
       AlignmentsManagerObject();
       /// Default destructor
       virtual ~AlignmentsManagerObject();
-      /// Compute all alignment conditions of the internal dependency list
+      /// Compute all alignment conditions. Dependency list created from slice information
       Result compute(Slice& slice) const;
-      /// Compute all alignment conditions of the internal dependency list
+      /// Compute all alignment conditions of the dependency list
       Result compute(Slice& slice, const Dependencies& dependencies)  const;
+      /// Compute all alignment conditions of the dependency list
+      /** Assume that source and target conditions were updated externally. */
+      Result computeDirect(Slice& slice, const Dependencies& dependencies)  const;
     };
     
   }       /* End namespace Geometry                    */

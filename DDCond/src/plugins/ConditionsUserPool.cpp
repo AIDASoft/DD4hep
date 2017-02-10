@@ -194,7 +194,13 @@ ConditionsMappedUserPool<MAPPING>::i_findCondition(key_type key)  const {
 
 template<typename MAPPING> inline bool
 ConditionsMappedUserPool<MAPPING>::i_insert(Condition::Object* o)   {
-  return m_conditions.insert(make_pair(o->hash,o)).second;
+  int ret = m_conditions.insert(make_pair(o->hash,o)).second;
+#if 0
+  printout(INFO,"UserPool","++ %s condition [%016llX]: %s.",
+           ret ? "Successfully inserted" : "FAILED to insert",
+           o->hash, o->name.c_str());
+#endif
+  return ret;
 }
 
 /// Total entry count
