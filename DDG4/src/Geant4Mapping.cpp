@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -13,8 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
 #include "DDG4/Geant4Mapping.h"
+
+#include "DD4hep/Printout.h"
+#include "DD4hep/VolumeManager.h"
 #include "G4PVPlacement.hh"
 #include <stdexcept>
 
@@ -70,8 +71,9 @@ void Geant4Mapping::attach(Geant4GeometryInfo* data_ptr) {
 
 /// Access the volume manager
 Geant4VolumeManager Geant4Mapping::volumeManager() const {
-  if (m_dataPtr) {
-    if (m_dataPtr->g4Paths.empty()) {
+  if ( m_dataPtr ) {
+    if ( m_dataPtr->g4Paths.empty() ) {
+      VolumeManager::getVolumeManager(m_lcdd);
       return Geant4VolumeManager(m_lcdd, m_dataPtr);
     }
     return Geant4VolumeManager(Geometry::Handle < Geant4GeometryInfo > (m_dataPtr));
