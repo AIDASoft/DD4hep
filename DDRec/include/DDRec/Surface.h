@@ -699,11 +699,11 @@ namespace DD4hep {
       SurfaceList(const SurfaceList& other ) : std::list< ISurface* >( other ), _isOwner( false ){}
 
       /// required c'tor for extension mechanism
-      SurfaceList(const Geometry::DetElement& ){
+      SurfaceList(const Geometry::DetElement& ) : _isOwner( false ) {
         // anything to do here  ?
       }
       /// required c'tor for extension mechanism
-      SurfaceList(const SurfaceList& ,const Geometry::DetElement& ){
+      SurfaceList(const SurfaceList& ,const Geometry::DetElement& ) : _isOwner( false ) {
         // anything to do here  ?
       }
     
