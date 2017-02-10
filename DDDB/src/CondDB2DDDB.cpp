@@ -32,6 +32,10 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::DDDB;
 
+#ifdef __GNUC__    // Disable some diagnostics.
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
