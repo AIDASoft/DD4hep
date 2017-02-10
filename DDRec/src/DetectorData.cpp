@@ -1,10 +1,14 @@
 #include "DDRec/DetectorData.h"
 
+#include <boost/io/ios_state.hpp>
+
 namespace DD4hep {
   namespace DDRec {
 
 
     std::ostream& operator<<( std::ostream& io , const FixedPadSizeTPCData& d ){
+      boost::io::ios_base_all_saver ifs(io);
+
       io <<  " --FixedPadSizeTPCData: "  << std::scientific << std::endl ; 
       io <<  "   zHalf : "              <<  d.zHalf  << std::endl ; 
       io <<  "   rMin : "               <<  d.rMin << std::endl ; 
@@ -25,6 +29,7 @@ namespace DD4hep {
 
 
     std::ostream& operator<<( std::ostream& io , const ZPlanarData& d ) {
+      boost::io::ios_base_all_saver ifs(io);
 
       io <<  " -- ZPlanarData: "  << std::scientific << std::endl ; 
       io <<  " zHalfShell  : " <<  d.zHalfShell  << std::endl ; 
@@ -68,6 +73,7 @@ namespace DD4hep {
     }
 
     std::ostream& operator<<( std::ostream& io , const ZDiskPetalsData& d ) {
+      boost::io::ios_base_all_saver ifs(io);
 
       io <<  " -- ZDiskPetalsData: "  << std::scientific << std::endl ; 
       io <<  "  widthStrip : " <<  d.widthStrip  << std::endl ; 
@@ -116,6 +122,7 @@ namespace DD4hep {
 
     
     std::ostream& operator<<( std::ostream& io , const ConicalSupportData& d ) {
+      boost::io::ios_base_all_saver ifs(io);
 
       io <<  " -- ConicalSupportData : "  << std::scientific << std::endl ; 
       io <<  "  isSymmetricInZ : " <<  d.isSymmetricInZ  << std::endl ; 
@@ -139,6 +146,7 @@ namespace DD4hep {
 
     
     std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) {
+      boost::io::ios_base_all_saver ifs(io);
 
       io <<  " -- LayeredCalorimeterData : "  << std::scientific << std::endl ; 
       io <<  "  LayoutType : " <<  ( d.layoutType == LayeredCalorimeterStruct::BarrelLayout ?
@@ -180,6 +188,8 @@ namespace DD4hep {
 
 
     std::ostream& operator<<( std::ostream& io , const NeighbourSurfacesData& d ){
+      boost::io::ios_base_all_saver ifs(io);
+
       io <<  " --NeighbourSurfacesData: "  << std::scientific << std::endl ; 
       io <<  "   sameLayer.size() : " << d.sameLayer.size() << std::endl ; 
       return io ;
