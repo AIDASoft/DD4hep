@@ -373,7 +373,6 @@ TFile* Display::Open(const char* name) const   {
 
 /// Consumer event data
 void Display::OnFileOpen(EventHandler& handler )   {
-  EventConsumer::OnFileOpen(handler);
 }
 
 /// Consumer event data

@@ -184,7 +184,6 @@ template<typename T> Condition ConditionsCreator::make_condition(DetElement de, 
   T& value   = cond.bind<T>();
   value      = val;
   cond->hash = ConditionKey::hashCode(cond->name);
-  cond->setFlag(Condition::ACTIVE);
   if ( slice ) slice->insert(ConditionKey(cond->name,cond->hash),ConditionsSlice::NoLoadInfo());
   return cond;
 }

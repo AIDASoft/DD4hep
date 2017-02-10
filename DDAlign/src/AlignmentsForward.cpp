@@ -54,9 +54,9 @@ int AlignmentsForward::processElement(DetElement de)  {
         // It is slow and deprecated. The access using the UserPool directly
         // is highly favored.
         //
-        align.alignments().addKey(k.name);
+        align.alignments().insertKey(k.name);
         if ( haveAlias && !alias.empty() )  {
-          align.alignments().addKey("Alignment",k.name);
+          align.alignments().insertKey("Alignment",k.name);
         }
         //
         // Now add the dependency to the alignmant manager

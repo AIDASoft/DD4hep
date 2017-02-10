@@ -598,7 +598,6 @@ namespace DD4hep {
         cond->value    = path; // doc->name;
         cond->validity = "";
         cond->hash     = Conditions::ConditionKey::hashCode(cond->value);
-        cond->setFlag(Condition::ACTIVE);
         if ( element.hasAttr(_U(comment)) )  {
           cond->comment = element.attr<string>(_U(comment));
         }
