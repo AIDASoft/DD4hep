@@ -30,9 +30,9 @@ namespace DD4hep {
     long64 VolSurfaceBase::id() const  { return _id ; } 
 
     const SurfaceType& VolSurfaceBase::type() const { return _type ; }
-    Vector3D VolSurfaceBase::u( const Vector3D& point ) const {  point.x() ; return _u ; }
-    Vector3D VolSurfaceBase::v(const Vector3D& point  ) const { point.x() ;  return _v ; }
-    Vector3D VolSurfaceBase::normal(const Vector3D& point ) const {  point.x() ; return _n ; }
+    Vector3D VolSurfaceBase::u(const Vector3D& /*point*/) const { return _u ; }
+    Vector3D VolSurfaceBase::v(const Vector3D& /*point*/) const { return _v ; }
+    Vector3D VolSurfaceBase::normal(const Vector3D& /*point*/) const { return _n ; }
     const Vector3D& VolSurfaceBase::origin() const { return _o ;}
 
     Vector2D VolSurfaceBase::globalToLocal( const Vector3D& point) const {
@@ -190,7 +190,7 @@ namespace DD4hep {
     }
     
 
-    double VolSurfaceBase::distance(const Vector3D& point ) const  {  point.x() ; return 1.e99 ; }
+    double VolSurfaceBase::distance(const Vector3D& /*point*/ ) const { return 1.e99 ; }
 
     /// Checks if the given point lies within the surface
     bool VolSurfaceBase::insideBounds(const Vector3D& point, double epsilon) const {
@@ -604,9 +604,9 @@ namespace DD4hep {
 
     const SurfaceType& Surface::type() const { return _type ; }
 
-    Vector3D Surface::u( const Vector3D& point ) const { point.x() ; return _u ; }
-    Vector3D Surface::v(const Vector3D& point ) const {  point.x() ; return _v ; }
-    Vector3D Surface::normal(const Vector3D& point ) const {  point.x() ; return _n ; }
+    Vector3D Surface::u(const Vector3D& /*point*/) const { return _u ; }
+    Vector3D Surface::v(const Vector3D& /*point*/) const { return _v ; }
+    Vector3D Surface::normal(const Vector3D& /*point*/) const { return _n ; }
     const Vector3D& Surface::origin() const { return _o ;}
     double Surface::innerThickness() const { return _volSurf.innerThickness() ; }
     double Surface::outerThickness() const { return _volSurf.outerThickness() ; }
