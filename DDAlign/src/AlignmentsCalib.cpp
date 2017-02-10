@@ -62,32 +62,21 @@ namespace  {
     }
   };
 
-  struct ConnectChildren : public CalibCallback  {
-    /// Standard constructor
-    ConnectChildren(AlignmentsCalib& c, Entry& e) : CalibCallback(c,e) {    }
-    /// Dump method.
-    virtual int operator()(DetElement de,int /* level */)   {
-      if ( entry.detector.ptr() == de.parent().ptr() )   {
-        Entry* child = 0;///TODO
-        entry.children.insert(child);
+  void set_children_dirty(PrintLevel lvl, AlignmentsCalib::Entry* entry)  {
+    for ( auto& e : entry->children )  {
+      if ( !e->dirty )
+        set_children_dirty(lvl,e);
+      if ( e->dirty )  {
+        printout(lvl,"SetDirty"," detector: %s --> %s",
+                 entry->detector.path().c_str(), e->detector.name());
       }
-      return 1;
+      e->dirty = 1;
     }
-  };
-
-  struct Callback_SetDirty : public CalibCallback  {
-    /// Standard constructor
-    Callback_SetDirty(AlignmentsCalib& c, Entry& e) : CalibCallback(c,e) {    }
-    /// Dump method.
-    virtual int operator()(DetElement de,int /* level */)   {
-      if ( entry.detector.ptr() == de.ptr() )   {
-      }
-      return 1;
-    }
-
-  };
+  }
+  
 }
 // ======================================================================================
+#define TAG "AlignmentsCalib"
 
 /// Initializing constructor
 AlignmentsCalib::AlignmentsCalib(LCDD& l, Slice& s) : lcdd(l), slice(s), derivationCall(0)
@@ -97,6 +86,12 @@ AlignmentsCalib::AlignmentsCalib(LCDD& l, Slice& s) : lcdd(l), slice(s), derivat
 
 /// Default destructor
 AlignmentsCalib::~AlignmentsCalib()   {
+}
+
+/// Convenience only: Access detector element by path
+AlignmentsCalib::DetElement AlignmentsCalib::detector(const std::string& path)  const   {
+  DetElement det(Geometry::DetectorTools::findElement(lcdd,path));
+  return det;
 }
 
 /// Add a new entry to the transaction list
@@ -117,22 +112,18 @@ AlignmentsCalib::_use(DetElement detector, AlignmentCondition alignment_conditio
   }
   
   dd4hep_ptr<Entry>  entry(new Entry());
-  UserPool*          pool     = slice.pool.get();
-  Condition cc(alignment_condition);
-  printout(INFO,"Ex","Check key: %p %p -> %s",(void*)alignment_condition.key(),(void*)cc.key(),
-           alignment_condition.name());
+  UserPool*          pool = slice.pool.get();
 
   /// This may be the derived condition: check presence  
-  cc = pool->get(tar_key);
   AlignmentCondition align_cond = pool->get(tar_key);
   if ( !align_cond.isValid() )  {
-    except("AlignmentsCalib","++ The DERIVED alignment condition [%p] is invalid.",(void*)tar_key);
+    except(TAG,"++ The DERIVED alignment condition [%016llX] is invalid.",tar_key);
   }
-  key_type  src_key = align_cond->source_key;
+  key_type  src_key  = align_cond->source_key;
   Condition src_cond = pool->get(src_key);
   if ( !src_cond.isValid() )  {
-    except("AlignmentsCalib","++ The SOURCE alignment condition [%p] for %s is invalid.",
-           (void*)src_key, align_cond.name());
+    except(TAG,"++ The SOURCE alignment condition [%016llX] for %s is invalid.",
+           src_key, align_cond.name());
   }
   /// Check for the source data entry
   Proxy::const_iterator is = slice.conditions().find(src_key);
@@ -142,22 +133,22 @@ AlignmentsCalib::_use(DetElement detector, AlignmentCondition alignment_conditio
   }
   entry->source = (*is).second;
   /// Check for the derived conditions entry
+  /// We ensure it is out callback, which is installed!
   Proxy::const_iterator ip = slice.derived().find(tar_key);
-  if ( ip == slice.derived().end() && derivationCall )  {
+  if ( ip != slice.derived().end() )   {
+    slice.remove((*ip).second->dependency);
+  }
+  
+  if ( derivationCall )  {
     ConditionKey key(align_cond.name(),align_cond.key());
     Conditions::DependencyBuilder b(key,derivationCall,detector);
     b.add(ConditionKey(src_cond.name(),src_cond.key()));
     slice.insert(b.release());
     ip = slice.derived().find(tar_key);
   }
-  else if ( derivationCall )  {
-    UpdateCall* call = (*ip).second->dependency->callback;
-    if ( call ) call->release();
-    (*ip).second->dependency->callback = derivationCall->addRef();
-  }
   else  {
-    except("AlignmentsCalib","++ The dependency rule for [%p] %s cannot be added [no callback].",
-           (void*)tar_key, align_cond.name());
+    except(TAG,"++ The dependency rule for [%016llX] %s cannot be added [no callback].",
+           tar_key, align_cond.name());
   }
   entry->target   = (*ip).second;
   entry->detector = detector;
@@ -184,8 +175,8 @@ AlignmentsCalib::_use(DetElement detector,const string& src_nam)  {
     src_cond = _create_source(src_key, src_nam);
     /// Now check again if we succeeded.
     if ( !src_cond.isValid() )   {
-      except("AlignmentsCalib","++ The SOURCE alignment condition [%p]: %s is invalid.",
-             (void*)src_key, src_nam.c_str());
+      except(TAG,"++ The SOURCE alignment condition [%016llX]: %s is invalid.",
+             src_key, src_nam.c_str());
     }
     // Add the conditons keys to the detector element:
     Conditions::DetConditions conditions(detector);
@@ -200,8 +191,8 @@ AlignmentsCalib::_use(DetElement detector,const string& src_nam)  {
     align_cond = _create_target(detector, tar_key, tar_nam);
     /// Now check again if we succeeded.
     if ( !align_cond.isValid() )  {
-      except("AlignmentsCalib","++ The DERIVED alignment condition [%p]: %s is invalid.",
-             (void*)tar_key, tar_nam.c_str());
+      except(TAG,"++ The DERIVED alignment condition [%016llX]: %s is invalid.",
+             tar_key, tar_nam.c_str());
     }
     // Add the conditons keys to the detector element:
     Conditions::DetConditions conditions(detector);
@@ -236,7 +227,8 @@ Condition AlignmentsCalib::_register(Condition cond)  const  {
     ConditionKey key(cond.name(),cond.key());
     slice.insert(key,slice.loadInfo(cond.address()));
     slice.insert(cond);
-    printout(INFO,"Ex","Inserted key: %p -> %s",(void*)key.hash,key.name.c_str());
+    printout(DEBUG,TAG,"++ Inserted key: %016llX -> %s",
+             key.hash,key.name.c_str());
     return cond;
   }
   invalidHandleError<Condition>();
@@ -250,7 +242,6 @@ Condition AlignmentsCalib::_create_source(key_type      key,
   Condition cond(nam,"alignment");
   cond.bind<Delta>();
   cond->setFlag(Condition::ALIGNMENT);
-  //cond->validate();
   cond->hash = key;
   return _register(cond);
 }
@@ -264,54 +255,35 @@ Condition AlignmentsCalib::_create_target(DetElement    detector,
   AlignmentData&     data = Condition(cond).get<AlignmentData>();
   data.detector = detector;
   cond->setFlag(Condition::ALIGNMENT_DERIVED);
-  //cond->invalidate();
   cond->hash = key;
   return _register(cond);
 }
 
 /// (1) Add a new entry to the transaction stack.
-AlignmentsCalib::key_type AlignmentsCalib::use(DetElement detector, Alignment alignment)   {
-  AlignmentCondition cond = alignment.condition();
-  detector.access(); // Throw exception if invalid.
-  cond.access(); // Throw exception if invalid.
-  return _use(detector, cond).first;
+AlignmentsCalib::key_type AlignmentsCalib::use(DetElement det, Alignment alignment)   {
+  AlignmentCondition condition = alignment.condition();
+  return _use(det.access(), condition.access()).first;
 }
 
 /// (2) Add a new entry to an existing DetElement structure.
-AlignmentsCalib::key_type
-AlignmentsCalib::use(DetElement detector,const string& src_nam)  {
-  return _use(detector, src_nam).first;
+AlignmentsCalib::key_type AlignmentsCalib::use(DetElement det,const string& src_nam)  {
+  return _use(det.access(), src_nam).first;
 }
 
 /// (3) Add a new entry to an existing DetElement structure.
-AlignmentsCalib::key_type AlignmentsCalib::use(DetElement detector)   {
-  if ( detector.isValid() )  {
-    string name = detector.path()+"#alignment";
-    return use(detector,name);
-  }
-  invalidHandleError<DetElement>();
-  return 0;
+AlignmentsCalib::key_type AlignmentsCalib::use(DetElement det)   {
+  string name = det.path()+"#alignment";
+  return use(det.access(), name);
 }
 
 /// (4) Add a new entry to an existing DetElement structure.
-AlignmentsCalib::key_type
-AlignmentsCalib::use(const std::string& detector, const string& src_nam)   {
-  DetElement det(Geometry::DetectorTools::findElement(lcdd,detector));
-  if ( det.isValid() )  {
-    return use(det, src_nam);
-  }
-  invalidHandleError<DetElement>();
-  return 0;
+AlignmentsCalib::key_type AlignmentsCalib::use(const string& path, const string& src_nam)   {
+  return use(detector(path).access(), src_nam);
 }
 
 /// (5) Add a new entry to an existing DetElement structure.
-AlignmentsCalib::key_type AlignmentsCalib::use(const std::string& detector)   {
-  DetElement det(Geometry::DetectorTools::findElement(lcdd,detector));
-  if ( det.isValid() )  {
-    return use(det);
-  }
-  invalidHandleError<DetElement>();
-  return 0;
+AlignmentsCalib::key_type AlignmentsCalib::use(const string& path)   {
+  return use(detector(path).access());
 }
 
 /// Update Dependencies between the source conditions and the computations
@@ -361,7 +333,7 @@ bool AlignmentsCalib::setDelta(Condition::key_type key_val, const Delta& delta) 
     (*i).second->dirty = 1;
     return true;
   }
-  except("AlignmentsCalib","++ FAILED setDelta: invalid entry id: %p",(void*)key_val);
+  except(TAG,"++ FAILED setDelta: invalid entry id: %016llX",key_val);
   return false;
 }
 
@@ -370,61 +342,38 @@ bool AlignmentsCalib::setDelta(const ConditionKey& key, const Delta& delta)   {
   return setDelta(key.hash, delta);
 }
 
-/// Propagate all Delta parameters to the source conditions
-bool AlignmentsCalib::propagateDeltas()   {
+/// Commit all pending transactions. Returns number of altered entries
+AlignmentsManager::Result AlignmentsCalib::commit(CommitMode mode)   {
   UserPool* pool = slice.pool.get();
+  ConditionsDependencyCollection deps;
+
+  /// 1) Propagate the Delta values to the source conditions
   for ( auto& entry : used )  {
     Entry* e = entry.second;
     if ( e->dirty )  {
       /// Update the source condition with the new delta value
       Condition src_cond = pool->get(e->source->key.hash);
       if ( !src_cond.isValid() )  {
-        except("AlignmentsCalib","++ The SOURCE alignment condition [%p]: %s is invalid.",
-               (void*)e->source->key.hash, e->source->key.name.c_str());
+        except(TAG,"++ The SOURCE alignment condition [%016llX]: %s is invalid.",
+               e->source->key.hash, e->source->key.name.c_str());
       }
       src_cond.get<Delta>() = e->delta;
     }
   }
-  return true;
-}
-
-void set_children_dirty(AlignmentsCalib::Entry* entry)  {
-  for ( auto& e : entry->children )  {
-    if ( !e->dirty )
-      set_children_dirty(e);
-    if ( e->dirty )
-      printout(INFO,"SetDirty"," detector: %s --> %s",entry->detector.path().c_str(), e->detector.name());
-    e->dirty = 1;
+  /// 2) Update the dirty dependencies between the source conditions and the computations
+  for ( auto& entry : used )  {
+    if ( entry.second->dirty )
+      set_children_dirty(printLevel, entry.second); 
   }
-}
-
-/// Update Dependencies between the source conditions and the computations
-bool AlignmentsCalib::updateDependencies()   {
-  // To optimize the lookup we have to enable the parent chain for the entries
-  for ( auto& e : used )  {
-    if ( e.second->dirty )
-      set_children_dirty(e.second);
-  }
-  return true;
-}
-
-/// Compute all dependent conditions from the Delta parameters
-AlignmentsManager::Result AlignmentsCalib::computeDependencies()   {
-  ConditionsDependencyCollection deps;
-  for ( auto& e : used )  {
-    if ( e.second->dirty )  {
-      deps.insert(e.second->target->dependency);
+  /// 3) Setup dependency collection
+  for ( auto& entry : used )  {
+    Entry* e = entry.second;
+    if ( e->dirty )  {
+      deps.insert(e->target->dependency);
     }
   }
-  return alignManager.compute(slice, deps);
-}
-
-/// Commit all pending transactions. Returns number of altered entries
-AlignmentsManager::Result AlignmentsCalib::commit()   {
-  if ( propagateDeltas() )  {
-    if ( updateDependencies() )  {
-      return computeDependencies();
-    }
+  if ( mode == NORMAL )  {
+    return alignManager.compute(slice, deps);
   }
-  return AlignmentsManager::Result();
+  return alignManager.computeDirect(slice, deps);
 }

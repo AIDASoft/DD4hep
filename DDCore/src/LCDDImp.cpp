@@ -67,21 +67,27 @@ namespace {
   void lcdd_unexpected()    {
     try  {
       throw;
-    }  catch( std::exception& e){
-      std::cout << "\n"
-                << "**************************************************** \n"
-                << "*  A runtime error has occured :                     \n"
-                << "*    " << e.what()   << std::endl
-                << "*  the program will have to be terminated - sorry.   \n"
-                << "**************************************************** \n"
-                << std::endl ;
+    }  catch( exception& e )  {
+      cout << "\n"
+           << "**************************************************** \n"
+           << "*  A runtime error has occured :                     \n"
+           << "*    " << e.what()   << endl
+           << "*  the program will have to be terminated - sorry.   \n"
+           << "**************************************************** \n"
+           << endl ;
 
-      std::set_unexpected( std::unexpected ) ;
-      std::set_terminate( std::terminate ) ;
+      set_unexpected(std::unexpected);
+      set_terminate(std::terminate);
       // this provokes ROOT seg fault and stack trace (comment out to avoid it)
       exit(1) ;
     }
   }
+}
+
+string DD4hep::versionString(){
+  string vs("vXX-YY") ;
+  sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
+  return vs;
 }
 
 LCDD& LCDD::getInstance() {
@@ -101,8 +107,8 @@ void LCDD::destroyInstance() {
 LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
 {
 
-  std::set_unexpected( lcdd_unexpected ) ;
-  std::set_terminate( lcdd_unexpected ) ;
+  set_unexpected( lcdd_unexpected ) ;
+  set_terminate( lcdd_unexpected ) ;
 
   InstanceCount::increment(this);
   if (0 == gGeoManager) {
@@ -149,22 +155,22 @@ void LCDDImp::imp_loadVolumeManager()   {
 }
 
 /// Add an extension object to the LCDD instance
-void* LCDDImp::addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
+void* LCDDImp::addUserExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
   return m_extensions.addExtension(ptr,info,destruct);
 }
 
 /// Remove an existing extension object from the LCDD instance
-void* LCDDImp::removeUserExtension(const std::type_info& info, bool destroy)  {
+void* LCDDImp::removeUserExtension(const type_info& info, bool destroy)  {
   return m_extensions.removeExtension(info,destroy);
 }
 
 /// Access an existing extension object from the LCDD instance
-void* LCDDImp::userExtension(const std::type_info& info, bool alert) const {
+void* LCDDImp::userExtension(const type_info& info, bool alert) const {
   return m_extensions.extension(info,alert);
 }
 
 /// Register new mother volume using the detector name.
-void LCDDImp::declareMotherVolume(const std::string& detector_name, const Volume& vol)  {
+void LCDDImp::declareMotherVolume(const string& detector_name, const Volume& vol)  {
   if ( !detector_name.empty() )  {
     if ( vol.isValid() )  {
       HandleMap::const_iterator i = m_motherVolumes.find(detector_name);
@@ -240,7 +246,7 @@ LCDD& LCDDImp::addConstant(const Ref_t& x) {
 }
 
 /// Retrieve a constant by it's name from the detector description
-Constant LCDDImp::constant(const std::string& name) const {
+Constant LCDDImp::constant(const string& name) const {
   if ( !m_inhibitConstants )   {
     return getRefChild(m_define, name);
   }
@@ -540,7 +546,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
 }
 
 /// Read any geometry description or alignment file with external XML entity resolution
-void LCDDImp::fromXML(const std::string& fname, UriReader* entity_resolver, LCDDBuildType build_type)  {
+void LCDDImp::fromXML(const string& fname, UriReader* entity_resolver, LCDDBuildType build_type)  {
   TypePreserve build_type_preserve(m_buildType = build_type);
   processXML(fname,entity_resolver);
 }

@@ -26,6 +26,8 @@
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
+using Conditions::Condition;
+using Conditions::ConditionKey;
 using Conditions::ConditionsSlice;
 using Conditions::ConditionDependency;
 using Conditions::ConditionsDependencyCollection;
@@ -97,8 +99,8 @@ namespace DD4hep {
 
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentsManagerObject);
-//static PrintLevel s_PRINT = WARNING;
-static PrintLevel s_PRINT = INFO;
+static PrintLevel s_PRINT = WARNING;
+//static PrintLevel s_PRINT = INFO;
 
 /// Initializing constructor
 AlignmentsManagerObject::AlignmentsManagerObject() : NamedObject() {
@@ -218,44 +220,6 @@ static void computeDelta(AlignmentCondition cond, TGeoHMatrix& tr_delta)  {
   }
 }
 
-/// Compute all alignment conditions of the internal dependency list
-AlignmentsManager::Result
-AlignmentsManagerObject::compute(Slice& slice, const Dependencies& dependencies)  const  {
-  Result result;
-  AlignContext new_alignments;
-  new_alignments.entries.reserve(slice.derived().size());
-  //
-  // This here is the main difference compared to other derived conditions:
-  // ----------------------------------------------------------------------
-  //
-  // We enforce here that all computations, which require an update of the corresponding
-  // alignment matrices are stored in "new_alignments", since the update callback registers
-  // all new entries using this user parameter when calling  AlignmentsManager::newEntry.
-  // For this reason also ALL specific update calls must base themself in the
-  // Alignment update callback.
-  //
-  slice.pool->compute(dependencies, &new_alignments, true);
-  for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)  {
-    Result r = compute(new_alignments, *slice.pool, (*i).det);
-    result.computed += r.computed;
-    result.missing  += r.missing;
-  }
-  return result;
-}
-
-/// Compute all alignment conditions of the specified dependency list
-AlignmentsManager::Result
-AlignmentsManagerObject::compute(Slice& slice) const  {
-  ConditionsDependencyCollection deps;
-  for(const auto& d : slice.derived() )  {
-    ConditionDependency* dep = d.second->dependency;
-    if ( dep )  {
-      deps.insert(dep);
-    }
-  }
-  return compute(slice, deps);
-}
-
 /// Compute all alignment conditions of the lower levels
 AlignmentsManager::Result
 AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, DetElement det) const  {
@@ -272,11 +236,8 @@ AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, D
     TGeoHMatrix        tr_delta;
     AlignmentCondition cond  = ent->cond;
     AlignmentData&     align = cond.data();
-    if ( s_PRINT <= INFO )  {  
-      printout(INFO,"ComputeAlignment",
-               "============================== Compute transformation of %s ============================== ",
-               det.path().c_str());
-    }
+    printout(DEBUG,"ComputeAlignment",
+             "============================== Compute transformation of %s",det.path().c_str());
     ent->valid          = 1;
     computeDelta(cond, tr_delta);
     align.worldDelta    = tr_delta;
@@ -330,6 +291,79 @@ AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, D
   return result;
 }
 
+
+/// Compute all alignment conditions of the internal dependency list
+AlignmentsManager::Result
+AlignmentsManagerObject::computeDirect(Slice& slice, const Dependencies& dependencies)  const  {
+  Result result;
+  AlignContext context;
+  context.entries.reserve(dependencies.size());
+
+  for ( const auto& i : dependencies )  {
+    Dependency*         dep      = i.second.get();
+    const ConditionKey& src_key  = *(dep->dependencies.begin());
+    Condition           src_cond = slice.pool->get(src_key.hash);
+    AlignmentCondition  tar_cond = slice.pool->get(dep->key());
+    
+    /// Update the source condition with the new delta value
+    if ( !src_cond.isValid() )  {
+      except("AlignmentsManager","++ The SOURCE alignment condition [%p]: %s is invalid.",
+             (void*)src_key.hash, src_key.name.c_str());
+    }
+    /// Update the source condition with the new delta value
+    if ( !tar_cond.isValid() )  {
+      except("AlignmentsManager","++ The TARGET alignment condition [%p]: %s is invalid.",
+             (void*)dep->key(), dep->name());
+    }
+    tar_cond.data().delta = src_cond.get<Delta>();
+    context.newEntry(dep, tar_cond.ptr());
+  }
+  for ( const auto& i : context.entries )  {
+    Result r = compute(context, *slice.pool, i.det);
+    result.computed += r.computed;
+    result.missing  += r.missing;
+  }
+  return result;
+}
+
+/// Compute all alignment conditions of the internal dependency list
+AlignmentsManager::Result
+AlignmentsManagerObject::compute(Slice& slice, const Dependencies& dependencies)  const  {
+  Result result;
+  AlignContext context;
+  context.entries.reserve(slice.derived().size());
+  //
+  // This here is the main difference compared to other derived conditions:
+  // ----------------------------------------------------------------------
+  //
+  // We enforce here that all computations, which require an update of the corresponding
+  // alignment matrices are stored in "context", since the update callback registers
+  // all new entries using this user parameter when calling  AlignmentsManager::newEntry.
+  // For this reason also ALL specific update calls must base themself in the
+  // Alignment update callback.
+  //
+  slice.pool->compute(dependencies, &context, true);
+  for(auto i=context.entries.begin(); i != context.entries.end(); ++i)  {
+    Result r = compute(context, *slice.pool, (*i).det);
+    result.computed += r.computed;
+    result.missing  += r.missing;
+  }
+  return result;
+}
+
+/// Compute all alignment conditions of the specified dependency list
+AlignmentsManager::Result
+AlignmentsManagerObject::compute(Slice& slice) const  {
+  ConditionsDependencyCollection deps;
+  for(const auto& d : slice.derived() )  {
+    ConditionDependency* dep = d.second->dependency;
+    if ( dep )  {
+      deps.insert(dep);
+    }
+  }
+  return compute(slice, deps);
+}
+
 /// Initializing constructor
 AlignmentsManager::AlignmentsManager(const std::string& nam)   {
   assign(new AlignmentsManagerObject(), nam, "alignmentmanager");
@@ -354,6 +388,12 @@ AlignmentsManager::Result AlignmentsManager::compute(Slice& slice) const   {
 AlignmentsManager::Result
 AlignmentsManager::compute(Slice& slice, const Dependencies& dependencies)  const  {
   return access()->compute(slice, dependencies);
+}
+
+/// Compute all alignment conditions of the internal dependency list
+AlignmentsManager::Result
+AlignmentsManager::computeDirect(Slice& slice, const Dependencies& dependencies)  const  {
+  return access()->computeDirect(slice, dependencies);
 }
 
 /// Register new updated derived alignment during the computation step

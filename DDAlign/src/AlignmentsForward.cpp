@@ -25,7 +25,7 @@ using namespace DD4hep::Alignments;
 
 /// Initializing constructor
 AlignmentsForward::AlignmentsForward(Slice& s, AlignmentsUpdateCall* c)
-  : slice(s), updateCall(c), extension("#alignment/Tranformations"),
+  : slice(s), updateCall(c), extension("#alignment/Transformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }

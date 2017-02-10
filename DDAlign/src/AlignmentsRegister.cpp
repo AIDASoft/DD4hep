@@ -28,7 +28,7 @@ using Conditions::Condition;
 
 /// Initializing constructor
 AlignmentsRegister::AlignmentsRegister(Slice& s, AlignmentsUpdateCall* c)
-  : slice(s), updateCall(c), extension("/Tranformations"),
+  : slice(s), updateCall(c), extension("/Transformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
