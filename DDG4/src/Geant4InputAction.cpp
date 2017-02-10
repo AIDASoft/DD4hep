@@ -24,6 +24,8 @@
 using namespace std;
 using namespace DD4hep::Simulation;
 typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+typedef Geant4InputAction::Vertices Vertices ;
+
 
 /// Initializing constructor
 Geant4EventReader::Geant4EventReader(const std::string& nam)
@@ -42,9 +44,10 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
     return EVENT_READER_OK;
   }
   std::vector<Particle*> particles;
-  Geant4Vertex vertex;
+  Vertices vertices ;
+  
   ++m_currEvent;
-  EventReaderStatus sc = readParticles(m_currEvent,vertex,particles);
+  EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
   for_each(particles.begin(),particles.end(),deleteObject<Particle>);
   return sc;
 }
@@ -100,7 +103,7 @@ string Geant4InputAction::issue(int i)  const  {
 
 /// Read an event and return a LCCollection of MCParticles.
 int Geant4InputAction::readParticles(int evt_number,
-                                     Vertex& prim_vertex,
+                                     Vertices& vertices,
                                      std::vector<Particle*>& particles)
 {
   int evid = evt_number + m_firstEvent;
@@ -140,7 +143,9 @@ int Geant4InputAction::readParticles(int evt_number,
     except("Error when reading file %s.", m_input.c_str());
     return status;
   }
-  status = m_reader->readParticles(evid, prim_vertex, particles);
+  status = m_reader->readParticles(evid, vertices, particles);
+
+
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
     string msg = issue(evid)+"Error when moving to event - may be end of file.";
     if ( m_abort )  {
@@ -158,14 +163,10 @@ void Geant4InputAction::operator()(G4Event* event)   {
   vector<Particle*>         primaries;
   Geant4Event&              evt = context()->event();
   Geant4PrimaryEvent*       prim = evt.extension<Geant4PrimaryEvent>();
-  dd4hep_ptr<Geant4Vertex>  vertex(new Geant4Vertex());
+  Vertices                  vertices ;
   int result;
 
-  vertex->x = 0;
-  vertex->y = 0;
-  vertex->z = 0;
-  vertex->time = 0;
-  result = readParticles(m_currentEventNumber, *(vertex.get()), primaries);
+  result = readParticles(m_currentEventNumber, vertices, primaries);
 
   event->SetEventID(m_firstEvent + m_currentEventNumber);
   ++m_currentEventNumber;
@@ -176,13 +177,21 @@ void Geant4InputAction::operator()(G4Event* event)   {
 
   Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
   prim->add(m_mask, inter);
+
   // check if there is at least one particle
   if ( primaries.empty() ) return;
 
-  print("+++ Particle interaction with %d generator particles ++++++++++++++++++++++++",
-        int(primaries.size()));
-  Geant4Vertex* vtx = vertex.get();
-  inter->vertices.insert(make_pair(m_mask,vertex.release())); // Move vertex ownership
+  // check if there is at least one primary vertex
+  if ( vertices.empty() ) return;
+
+  print("+++ Particle interaction with %d generator particles and %d vertices ++++++++++++++++++++++++",
+        int(primaries.size()), int(vertices.size()) );
+  
+
+  for(size_t i=0; i<vertices.size(); ++i )   {
+    inter->vertices.insert(make_pair(m_mask,vertices[i])); 
+  }
+
   // build collection of MCParticles
   for(size_t i=0; i<primaries.size(); ++i )   {
     Geant4ParticleHandle p(primaries[i]);
@@ -192,13 +201,19 @@ void Geant4InputAction::operator()(G4Event* event)   {
     p->psy  = mom_scale*p->psy;
     p->psz  = mom_scale*p->psz;
 
-    if ( p->parents.size() == 0 )  {
-      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
-        vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
-      else
-        vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
-    }
+    //FIXME: this needs to be done now in the readers ...
+    // // if ( p->parents.size() == 0 )  {
+    // //   if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+    // //     vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+    // //   else
+    // //     vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+    // // }
+
+
     inter->particles.insert(make_pair(p->id,p));
     p.dumpWithMomentumAndVertex(outputLevel()-1,name(),"->");
   }
+
+
+
 }

@@ -48,7 +48,7 @@ namespace DD4hep {
       virtual ~Geant4EventReaderHepMC();
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number,
-                                              Vertex& primary_vertex,
+                                              Vertices& vertices,
                                               std::vector<Particle*>& particles)  override;
       virtual EventReaderStatus moveToEvent(int event_number)  override;
       virtual EventReaderStatus skipEvent() override { return EVENT_READER_OK; }
@@ -199,14 +199,25 @@ Geant4EventReaderHepMC::moveToEvent(int event_number) {
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReaderHepMC::EventReaderStatus
 Geant4EventReaderHepMC::readParticles(int /* ev_id */,
-                                      Vertex& primary_vertex,
+                                      Vertices&  vertices,
                                       Particles& output) {
+
+  //fg: for now we create exactly one event vertex here ( as before )
+  //    this needs revisiting as HepMC allows to have more than one vertex ...
+  Geant4Vertex* primary_vertex = new Geant4Vertex ;
+  vertices.push_back( primary_vertex );
+  primary_vertex->x = 0;
+  primary_vertex->y = 0;
+  primary_vertex->z = 0;
+
   if ( !m_events->ok() )  {
     return EVENT_READER_IO_ERROR;
   }
   else if ( m_events->read() )  {
     EventStream::Particles& parts = m_events->particles();
-    Position pos(primary_vertex.x,primary_vertex.y,primary_vertex.z);
+
+    Position pos(primary_vertex->x,primary_vertex->y,primary_vertex->z);
+
     output.reserve(parts.size());
     transform(parts.begin(),parts.end(),back_inserter(output),reference2nd(parts));
     m_events->clear();
@@ -231,6 +242,16 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
                p->daughters.size(),
                p->parents.size());
       //output.push_back(p);
+
+      //ad particles to the 'primary vertex'
+      if ( p->parents.size() == 0 )  {
+	PropertyMask status(p->status);
+	if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+	  primary_vertex->in.insert(p->id);  // Beam particles and primary quarks etc.
+	else
+	  primary_vertex->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+      }
+      
     }
     ++m_currEvent;
     return EVENT_READER_OK;

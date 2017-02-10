@@ -60,12 +60,9 @@ int main(int argc, char** argv ){
       thisReader->moveToEvent(1);
       test( thisReader->currentEventNumber() == 1 , readerType + std::string("Event Number after Skip") );
       std::vector<Particle*> particles;
-      Vertex vertex;
-      vertex.x = 0;
-      vertex.y = 0;
-      vertex.z = 0;
-      vertex.time = 0;
-      DD4hep::Simulation::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(3,vertex,particles);
+      std::vector<Vertex*> vertices ;
+
+      DD4hep::Simulation::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(3,vertices,particles);
       std::for_each(particles.begin(),particles.end(),DD4hep::deleteObject<Particle>);
       test( thisReader->currentEventNumber() == 2 && sc == DD4hep::Simulation::Geant4EventReader::EVENT_READER_OK,
             readerType + std::string("Event Number Read") );
