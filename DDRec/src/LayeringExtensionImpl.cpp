@@ -171,7 +171,9 @@ void LayeringExtensionImpl::checkMap(int layerIndex) const {
 	map<int, LayerAttributes>::iterator it;
 	it = _layerMap.find(layerIndex);
 	if (it == _layerMap.end()) {
-		// TODO throw exception
+	  std::stringstream err;
+	  err << "No entry found for layer" << layerIndex;
+	  throw std::out_of_range(err.str());
 	}
 	if (not it->second.isCalculated) {
 		it->second.calculate();
