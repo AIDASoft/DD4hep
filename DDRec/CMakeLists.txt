@@ -12,7 +12,7 @@
 #
 #==========================================================================
 dd4hep_package(DDRec
-  USES             DDCore DDSurfaces
+  USES             DDCore DDSurfaces boost
                   [ROOT REQUIRED COMPONENTS Geom]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDRec)
