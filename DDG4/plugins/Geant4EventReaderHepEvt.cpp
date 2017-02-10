@@ -47,7 +47,7 @@ namespace DD4hep {
       virtual ~Geant4EventReaderHepEvt();
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number,
-                                              Vertex& primary_vertex,
+                                              Vertices& vertices,
                                               std::vector<Particle*>& particles);
       virtual EventReaderStatus moveToEvent(int event_number);
       virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
@@ -129,9 +129,10 @@ Geant4EventReaderHepEvt::moveToEvent(int event_number) {
     printout(INFO,"EventReaderHepEvt::moveToEvent","Skipping the first %d events ", event_number );
     printout(INFO,"EventReaderHepEvt::moveToEvent","Event number before skipping: %d", m_currEvent );
     while ( m_currEvent < event_number ) {
-      Geant4Vertex vertex;
       std::vector<Particle*> particles;
-      EventReaderStatus sc = readParticles(m_currEvent,vertex,particles);
+      Vertices vertices ;
+      EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
+      for_each(vertices.begin(),vertices.end(),deleteObject<Vertex>);
       for_each(particles.begin(),particles.end(),deleteObject<Particle>);
       if ( sc != EVENT_READER_OK ) return sc;
       //Current event is increased in readParticles already!
@@ -145,8 +146,9 @@ Geant4EventReaderHepEvt::moveToEvent(int event_number) {
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderHepEvt::readParticles(int /* event_number */, 
-                                       Vertex& /* primary_vertex */,
+                                       Vertices& vertices,
                                        vector<Particle*>& particles)   {
+
 
   // First check the input file status
   if ( !m_input.good() || m_input.eof() )   {
@@ -165,23 +167,33 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     //   -> FG:   EOF is not an exception as it happens for every file at the end !
     return EVENT_READER_IO_ERROR;
   }
+
+  //fg: for now we create exactly one event vertex here ( as before )
+  //     and fill it below from the first final state particle 
+  Geant4Vertex* vtx = new Geant4Vertex ;
+  vertices.push_back( vtx );
+  vtx->x = 0;
+  vtx->y = 0;
+  vtx->z = 0;
+  vtx->time = 0;
+  bool haveVertex = false ;
   //
   //  Loop over particles
-  int ISTHEP;   // status code
-  int IDHEP;    // PDG code
-  int JMOHEP1;  // first mother
-  int JMOHEP2;  // last mother
-  int JDAHEP1;  // first daughter
-  int JDAHEP2;  // last daughter
-  double PHEP1; // px in GeV/c
-  double PHEP2; // py in GeV/c
-  double PHEP3; // pz in GeV/c
-  double PHEP4; // energy in GeV
-  double PHEP5; // mass in GeV/c**2
-  double VHEP1; // x vertex position in mm
-  double VHEP2; // y vertex position in mm
-  double VHEP3; // z vertex position in mm
-  double VHEP4; // production time in mm/c
+  int ISTHEP(0);   // status code
+  int IDHEP(0);    // PDG code
+  int JMOHEP1(0);  // first mother
+  int JMOHEP2(0);  // last mother
+  int JDAHEP1(0);  // first daughter
+  int JDAHEP2(0);  // last daughter
+  double PHEP1(0); // px in GeV/c
+  double PHEP2(0); // py in GeV/c
+  double PHEP3(0); // pz in GeV/c
+  double PHEP4(0); // energy in GeV
+  double PHEP5(0); // mass in GeV/c**2
+  double VHEP1(0); // x vertex position in mm
+  double VHEP2(0); // y vertex position in mm
+  double VHEP3(0); // z vertex position in mm
+  double VHEP4(0); // production time in mm/c
 
   vector<int> daughter1;
   vector<int> daughter2;
@@ -201,8 +213,9 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
 
     if(m_input.eof())
       return EVENT_READER_IO_ERROR;
+
     //
-    //  Create a MCParticle and fill it from stdhep info
+    //  create a MCParticle and fill it from stdhep info
     Particle* p = new Particle(IHEP);
     PropertyMask status(p->status);
     //
@@ -218,13 +231,17 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     p->mass = PHEP5*GeV;
     //
     //  Vertex
-    // (missing information in HEPEvt files)
-    p->vsx = 0.0;
-    p->vsy = 0.0;
-    p->vsz = 0.0;
+    p->vsx = VHEP1*mm;
+    p->vsy = VHEP2*mm;
+    p->vsz = VHEP3*mm;
+    // endpoint (missing information in HEPEvt files)
     p->vex = 0.0;
     p->vey = 0.0;
     p->vez = 0.0;
+    //
+    //  Creation time (note the units [1/c_light])
+    p->time       = VHEP4*ns;
+    p->properTime = VHEP4*ns;
     //
     //  Generator status
     //  Simulator status 0 until simulator acts on it
@@ -234,11 +251,16 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     else if ( ISTHEP == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
     else if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
     else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
-    //
-    //  Creation time (note the units [1/c_light])
-    // (No information in HEPEvt files)
-    p->time = 0.0;
-    p->properTime = 0.0;
+
+    // fill vertex information from first stable particle
+    if( !haveVertex &&  ISTHEP == 1 ){
+      vtx->x = p->vsx ;
+      vtx->y = p->vsy ;
+      vtx->z = p->vsz ;
+      vtx->time = p->time ;
+      haveVertex = true ;
+    }
+
     //
     // Keep daughters information for later
     daughter1.push_back(JDAHEP1);
@@ -309,6 +331,20 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
       if ( !part.findParent(mcp) ) part.addParent(mcp);
     }
   }  // End second loop over particles
+
+
+  //---  need a third loop to add particles to the vertex
+  for(size_t i=0; i<particles.size(); ++i )   {
+    Geant4ParticleHandle p(particles[i]);
+    if ( p->parents.size() == 0 )  {
+      PropertyMask status(p->status);
+      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+      else
+	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+    }
+  }
+
   ++m_currEvent;
   return EVENT_READER_OK;
 }
