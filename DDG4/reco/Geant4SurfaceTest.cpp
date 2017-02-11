@@ -10,7 +10,6 @@
 //  \date   2015-10-14
 //
 //==========================================================================
-// $Id$
 #ifndef DD4HEP_DDG4_GEANT4SURFACETEST_H
 #define DD4HEP_DDG4_GEANT4SURFACETEST_H
 

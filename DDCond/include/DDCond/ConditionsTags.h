@@ -41,10 +41,13 @@ namespace DD4hep {
       UNICODE(iov);
       UNICODE(iov_type);
       UNICODE(manager);
+      UNICODE(property);
 
+      UNICODE(hash);
       UNICODE(mapping);
       UNICODE(sequence);
       UNICODE(alignment);
+      UNICODE(repository);
     }
     // User must ensure there are no clashes. If yes, then the clashing entry is unnecessary.
     using namespace ::DD4hep::XML::Conditions;

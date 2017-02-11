@@ -61,7 +61,7 @@ namespace  {
     long                 m_accessCount = 0;
     TStatistic           acc_stat, comp_stat;
 
-    struct UCall : public Alignments::AlignmentUpdateCall  {
+    struct UCall : public Alignments::AlignmentsUpdateCall  {
       AlignmentsManager manager;
       UCall(AlignmentsManager m) : manager(m) {}
       virtual ~UCall() = default;
@@ -75,7 +75,7 @@ namespace  {
                  key.name.c_str(), det.level(), det.path().c_str());
         if ( par.typeInfo() == typeid(Data::Delta) )  {
           const Data::Delta& delta = src.first<Data::Delta>();
-          return AlignmentUpdateCall::handle(key, context, delta);
+          return AlignmentsUpdateCall::handle(key, context, cond.key(), delta);
         }
         // Somehow the condition is not of type Data::Delta. This is an ERROR.
         // Here only print and return an empty alignment condition.
@@ -169,7 +169,7 @@ namespace  {
       TTimeStamp acc_stop;
       acc_stat.Fill(acc_stop.AsDouble()-acc_start.AsDouble());
       TTimeStamp comp_start;
-      AlignmentsManager::Result ares = align.compute(*slice->pool);
+      AlignmentsManager::Result ares = align.compute(*slice);
       TTimeStamp comp_stop;
       comp_stat.Fill(comp_stop.AsDouble()-comp_start.AsDouble());
       printout(INFO,"DDDBAlign",

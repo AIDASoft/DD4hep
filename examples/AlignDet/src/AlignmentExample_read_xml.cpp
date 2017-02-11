@@ -53,7 +53,7 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_AlignmentExample2                        \n"
+      "     name:   factory name     DD4hep_AlignmentExample_read_xml                \n"
       "     -input   <string>        Geometry file                                   \n"
       "     -deltas  <string>        Alignment deltas (Conditions                    \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
@@ -79,13 +79,13 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
     
   // ++++++++++++++++++++++++ We need a valid set of conditions to do this!
-  registerAlignmentCallbacks(lcdd,*slice,alignMgr);
+  registerAlignmentCallbacks(lcdd,*slice);
 
   // ++++++++++++++++++++++++ Compute the tranformation matrices
   AlignmentsManager::Result ares = alignMgr.compute(*slice);
 
   // What else ? let's access the data
-  Scanner().scan2(AlignmentDataAccess(*slice->pool),lcdd.world());
+  Scanner().scan(AlignmentDataAccess(*slice->pool),lcdd.world());
 
   // What else ? let's print the current selection
   Alignments::AlignedVolumePrinter printer(slice->pool.get(),"Example");

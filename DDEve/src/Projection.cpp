@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -58,7 +57,7 @@ TEveElement* Projection::ImportElement(TEveElement* el, TEveElementList* list)  
   }
   TEveElement* e = m_projMgr->ImportElements(el, list);
   printout(INFO,"Projection","ImportElement %s [%s] into list: %s Projectable:%s [%p]",
-           Utilities::GetName(el),el->IsA()->GetName(),list->GetName(),
+           Utilities::GetName(el),el->IsA()->GetName(), list ? list->GetName() : "???",
            dynamic_cast<TEveProjectable*>(list) ? "true" : "false", e);
 
   unprojected->AddElement(el);

@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -49,7 +48,7 @@ namespace DD4hep {
     virtual ~DD4hepMenu();
 
     /// Add the menu to the menu bar
-    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal);
+    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal)  override;
     /// Callback when loading the configuration
     void OnLoadXML(TGMenuEntry* entry, void* ptr);
     /// Callback when loading the configuration
@@ -68,11 +67,9 @@ namespace DD4hep {
     /// Callback when the geometry was loaded
     void OnGeometryLoaded();
     /// ROOT implementation macro
-    ClassDef(DD4hepMenu,0);
+    ClassDefOverride(DD4hepMenu,0);
   };
 
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep      */
 #endif /* DD4HEP_DDEVE_DD4HEPMENU_H */
 

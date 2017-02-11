@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -80,12 +79,12 @@ namespace DD4hep {
 
   protected:
     /// Flag to indicate that a file is opened
-    bool m_hasFile;
+    bool m_hasFile = false;
     /// Flag to indicate that an event is loaded
-    bool m_hasEvent;
+    bool m_hasEvent = false;
   public:
     /// Standard constructor
-    EventHandler();
+    EventHandler() = default;
     /// Default destructor
     virtual ~EventHandler();
     /// Check if an event is present in memory
@@ -124,19 +123,16 @@ namespace DD4hep {
   class EventConsumer   {
   public:
     /// Standard constructor
-    EventConsumer();
+    EventConsumer() = default;
     /// Default destructor
     virtual ~EventConsumer();
     /// Consumer event data callback
-    virtual void OnNewEvent(EventHandler* /* handler */) {}
+    virtual void OnNewEvent(EventHandler& /* handler */) = 0;
     /// Consumer file open callback
-    virtual void OnFileOpen(EventHandler* /* handler */) {}
+    virtual void OnFileOpen(EventHandler& /* handler */) = 0;
 
     ClassDef(EventConsumer,0);
   };
-
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep        */
 #endif /* DD4HEP_DDEVE_EVENTHANDLER_H */
 

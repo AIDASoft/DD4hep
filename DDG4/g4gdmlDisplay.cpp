@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -59,7 +58,7 @@ static const char* get_arg(int argc, char**  argv,int which)  {
   throw runtime_error("Invalid argument sequence");
 }
 
-int main(int argc, char** argv)   {
+int main_wrapper(int argc, char** argv)   {
   string gdml = argv[1];
   string setup = argv[2];
   const char* args[] = {"cmd"};
@@ -98,4 +97,18 @@ int main(int argc, char** argv)   {
   delete vis;
   delete run;
   return 0;
+}
+
+//______________________________________________________________________________
+int main(int argc, char** argv)  {
+  try {
+    return main_wrapper(argc,argv);
+  }
+  catch(const exception& e)  {
+    cout << "Got uncaught exception: " << e.what() << endl;
+  }
+  catch (...)  {
+    cout << "Got UNKNOWN uncaught exception." << endl;
+  }
+  return EINVAL;    
 }

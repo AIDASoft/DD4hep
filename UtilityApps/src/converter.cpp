@@ -39,70 +39,83 @@ namespace {
          << endl;
     exit(EINVAL);
   }
-}
 
 
-//______________________________________________________________________________
-int main(int argc,char** argv)  {
-  bool ascii = false;
-  bool volmgr = false;
-  bool destroy      = false;
-  bool compact2lcdd = false;
-  bool compact2gdml = false;
-  bool compact2pand = false;
-  bool compact2vis  = false;
-  int output = 0;
-  vector<char*> geo_files;
-  for(int i=1; i<argc;++i) {
-    if ( argv[i][0]=='-' ) {
-      if ( strncmp(argv[i],"-compact2lcdd",12)==0 )
-        compact2lcdd = true;
-      else if ( strncmp(argv[i],"-compact2gdml",12)==0 )
-        compact2gdml = true;
-      else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
-        compact2pand = true;
-      else if ( strncmp(argv[i],"-compact2vis",12)==0 )
-        compact2vis = true;
-      else if ( strncmp(argv[i],"-input",2)==0 )
-        geo_files.push_back(argv[++i]);
-      else if ( strncmp(argv[i],"-output",2)==0 )
-        output = ++i;
-      else if ( strncmp(argv[i],"-ascii",5)==0 )
-        ascii = true;
-      else if ( strncmp(argv[i],"-destroy",2)==0 )
-        destroy = true;
-      else if ( strncmp(argv[i],"-volmgr",2)==0 )
-        volmgr = true;
-      else
+  //______________________________________________________________________________
+  int invoke_converter(int argc,char** argv)  {
+    bool ascii = false;
+    bool volmgr = false;
+    bool destroy      = false;
+    bool compact2lcdd = false;
+    bool compact2gdml = false;
+    bool compact2pand = false;
+    bool compact2vis  = false;
+    int output = 0;
+    vector<char*> geo_files;
+    for(int i=1; i<argc;++i) {
+      if ( argv[i][0]=='-' ) {
+        if ( strncmp(argv[i],"-compact2lcdd",12)==0 )
+          compact2lcdd = true;
+        else if ( strncmp(argv[i],"-compact2gdml",12)==0 )
+          compact2gdml = true;
+        else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
+          compact2pand = true;
+        else if ( strncmp(argv[i],"-compact2vis",12)==0 )
+          compact2vis = true;
+        else if ( strncmp(argv[i],"-input",2)==0 )
+          geo_files.push_back(argv[++i]);
+        else if ( strncmp(argv[i],"-output",2)==0 )
+          output = ++i;
+        else if ( strncmp(argv[i],"-ascii",5)==0 )
+          ascii = true;
+        else if ( strncmp(argv[i],"-destroy",2)==0 )
+          destroy = true;
+        else if ( strncmp(argv[i],"-volmgr",2)==0 )
+          volmgr = true;
+        else
+          usage();
+      }
+      else {
         usage();
+      }
     }
-    else {
+    if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand && !compact2vis))
       usage();
-    }
-  }
-  if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand && !compact2vis))
-    usage();
 
-  LCDD& lcdd = dd4hep_instance();
-  // Load compact files
-  for(size_t i=0; i<geo_files.size(); ++i)  {
-    const char* plugin_argv[] = {geo_files[i], 0};
-    run_plugin(lcdd,"DD4hepCompactLoader",1,(char**)plugin_argv);
+    LCDD& lcdd = dd4hep_instance();
+    // Load compact files
+    for(size_t i=0; i<geo_files.size(); ++i)  {
+      const char* plugin_argv[] = {geo_files[i], 0};
+      run_plugin(lcdd,"DD4hepCompactLoader",1,(char**)plugin_argv);
+    }
+    // Create volume manager and populate it required
+    if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+    // Execute data converter.
+    if ( compact2lcdd )
+      run_plugin(lcdd,"DD4hepGeometry2LCDD",output,&argv[output]);
+    else if ( compact2gdml )
+      run_plugin(lcdd,"DD4hepGeometry2GDML",output,&argv[output]);
+    else if ( compact2pand )
+      run_plugin(lcdd,"DD4hepGeometry2PANDORA",output,&argv[output]);
+    else if ( compact2vis && ascii )
+      run_plugin(lcdd,"DD4hepGeometry2VISASCII",output,&argv[output]);
+    else if ( compact2vis )
+      run_plugin(lcdd,"DD4hepGeometry2VIS",output,&argv[output]);
+    if ( destroy ) delete &lcdd;
+    return 0;
   }
-  // Create volume manager and populate it required
-  if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
-  // Execute data converter.
-  if ( compact2lcdd )
-    run_plugin(lcdd,"DD4hepGeometry2LCDD",output,&argv[output]);
-  else if ( compact2gdml )
-    run_plugin(lcdd,"DD4hepGeometry2GDML",output,&argv[output]);
-  else if ( compact2pand )
-    run_plugin(lcdd,"DD4hepGeometry2PANDORA",output,&argv[output]);
-  else if ( compact2vis && ascii )
-    run_plugin(lcdd,"DD4hepGeometry2VISASCII",output,&argv[output]);
-  else if ( compact2vis )
-    run_plugin(lcdd,"DD4hepGeometry2VIS",output,&argv[output]);
-  if ( destroy ) delete &lcdd;
-  return 0;
 }
 
+/// Main entry point as a program
+int main(int argc, char** argv)   {
+  try  {
+    return invoke_converter(argc, argv);
+  }
+  catch(const std::exception& e)  {
+    std::cout << "Got uncaught exception: " << e.what() << std::endl;
+  }
+  catch (...)  {
+    std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+  }
+  return EINVAL;    
+}

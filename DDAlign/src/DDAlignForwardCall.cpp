@@ -25,8 +25,8 @@ Alignments::DDAlignForwardCall::operator()(const ConditionKey& key, const Update
 {
   Data::Delta delta;
   DetElement det  = context.dependency.detector;
-  Condition c = AlignmentUpdateCall::handle(key, context, delta);
-  printout(INFO,"DDAlignForward","++ Building child alignment condition: %s Detector [%d]: %s [%p]",
+  Condition c = AlignmentsUpdateCall::handle(key, context, 0, delta);
+  printout(printLevel,"DDAlignForward","++ Building child alignment condition: %s Detector [%d]: %s [%p]",
            key.name.c_str(), det.level(), det.path().c_str(), c.ptr());
   return c;
 }

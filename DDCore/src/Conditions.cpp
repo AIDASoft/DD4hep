@@ -142,20 +142,22 @@ Container::Processor::Processor() {
 
 /// Access the number of conditons keys available for this detector element
 size_t Container::numKeys() const   {
-  Object* o = ptr();
-  if ( !o )   {
-    invalidHandleError<Container>();
-  }
-  return o->keys.size();
+  return access()->keys.size();
 }
 
 /// Known keys of conditions in this container
 const Container::Keys& Container::keys()  const   {
-  Object* o = ptr();
-  if ( !o )   {
-    invalidHandleError<Container>();
-  }
-  return o->keys;
+  return access()->keys;
+}
+
+/// Insert a new key to the conditions access map. Ignores already existing keys.
+bool Container::insertKey(const std::string& key_val)  {
+  return access()->insertKey(key_val);
+}
+
+/// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
+bool Container::insertKey(const std::string& key_val, const std::string& data_val)  {
+  return access()->insertKey(key_val, data_val);
 }
 
 /// Add a new key to the conditions access map
@@ -170,58 +172,22 @@ void Container::addKey(const string& key_val, const string& data_val)  {
 
 /// Access to condition objects
 Condition Container::get(const string& condition_key, const iov_type& iov)  {
-  Object* o = ptr();
-  if ( o )  {
-    Condition c = o->get(condition_key, iov);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Condition>();
-  }
-  invalidHandleError<Container>();
-  return Condition();
+  return Condition(access()->get(condition_key, iov).access());
 }
 
 /// Access to condition objects
 Condition Container::get(key_type condition_key, const iov_type& iov)  {
-  Object* o = ptr();
-  if ( o )  {
-    Condition c = o->get(condition_key, iov);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Condition>();
-  }
-  invalidHandleError<Container>();
-  return Condition();
+  return Condition(access()->get(condition_key, iov).access());
 }
 
 /// Access to condition objects
 Condition Container::get(const string& condition_key, const UserPool& pool)  {
-  Object* o = ptr();
-  if ( o )  {
-    Condition c = o->get(condition_key, pool);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Condition>();
-  }
-  invalidHandleError<Container>();
-  return Condition();
+  return Condition(access()->get(condition_key, pool).access());
 }
 
 /// Access to condition objects
 Condition Container::get(key_type condition_key, const UserPool& pool)  {
-  Object* o = ptr();
-  if ( o )  {
-    Condition c = o->get(condition_key, pool);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Condition>();
-  }
-  invalidHandleError<Container>();
-  return Condition();
+  return Condition(access()->get(condition_key, pool).access());
 }
 
 /// Default destructor. 
@@ -230,10 +196,8 @@ ConditionsSelect::~ConditionsSelect()   {
 
 /// Access the key of the condition
 ConditionKey DD4hep::Conditions::make_key(Condition c) {
-  Condition::Object* p = c.ptr();
-  if ( p ) return ConditionKey(p->name,p->hash);
-  invalidHandleError<Condition>();
-  return ConditionKey();
+  Condition::Object* p = c.access();
+  return ConditionKey(p->name,p->hash);
 }
 
 /// Constructor from string

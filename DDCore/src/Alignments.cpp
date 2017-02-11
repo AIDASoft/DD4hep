@@ -57,6 +57,19 @@ namespace DD4hep {
 Alignment::Processor::Processor() {
 }
 
+/// Access the hash identifier
+Alignment::key_type Alignment::key()  const   {
+  // If the alignment is bound to a condition, the key is the same as the one of the condition.
+  // Otherwise the key is invalid and an exception is thrown
+  Conditions::Condition cond = access()->condition;
+  return cond.access()->hash;
+}
+
+/// Access the bound condition if the alignment is bound to a condition. Otherwise NULL.
+AlignmentCondition Alignment::condition()  const   {
+  return AlignmentCondition(data().condition);
+}
+
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& Alignment::worldTransformation()  const  {
   return data().worldTransformation();
@@ -65,6 +78,65 @@ const TGeoHMatrix& Alignment::worldTransformation()  const  {
 /// Access the alignment/placement matrix with respect to the world
 const TGeoHMatrix& Alignment::detectorTransformation() const   {
   return data().detectorTransformation();
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+void Alignment::localToWorld(const Position& local, Position& global) const  {
+  return access()->localToWorld(local,global);
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+void Alignment::localToWorld(const Double_t local[3], Double_t global[3]) const  {
+  return access()->localToWorld(local,global);
+}
+/// Transformation from local coordinates of the placed volume to the world system
+Position Alignment::localToWorld(const Position& local) const  {
+  return access()->localToWorld(local);
+}
+
+/// Transformation from world coordinates of the local placed volume coordinates
+void Alignment::worldToLocal(const Position& global, Position& local) const  {
+  return access()->worldToLocal(global,local);
+}
+
+/// Transformation from world coordinates of the local placed volume coordinates
+void Alignment::worldToLocal(const Double_t global[3], Double_t local[3]) const  {
+  return access()->worldToLocal(global,local);
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+Position Alignment::worldToLocal(const Position& global) const  {
+  return access()->worldToLocal(global);
+}
+
+/// Transformation from local coordinates of the placed volume to the detector system
+void Alignment::localToDetector(const Position& local, Position& detector) const  {
+  return access()->localToDetector(local,detector);
+}
+
+/// Transformation from local coordinates of the placed volume to the detector system
+void Alignment::localToDetector(const Double_t local[3], Double_t detector[3]) const  {
+  return access()->localToDetector(local,detector);
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+Position Alignment::localToDetector(const Position& local) const  {
+  return access()->localToDetector(local);
+}
+
+/// Transformation from detector element coordinates to the local placed volume coordinates
+void Alignment::detectorToLocal(const Position& detector, Position& local) const  {
+  return access()->detectorToLocal(detector,local);
+}
+
+/// Transformation from detector element coordinates to the local placed volume coordinates
+void Alignment::detectorToLocal(const Double_t detector[3], Double_t local[3]) const  {
+  return access()->detectorToLocal(detector,local);
+}
+
+/// Transformation from detector element coordinates to the local placed volume coordinates
+Position Alignment::detectorToLocal(const Position& detector) const  {
+  return access()->detectorToLocal(detector);
 }
 
 /// Access the IOV type
@@ -85,23 +157,13 @@ AlignmentCondition::key_type AlignmentCondition::key() const   {
 /// Data accessor for the use of decorators
 AlignmentCondition::Data& AlignmentCondition::data()              {
   Object* o = access();
-  if ( o->alignment_data )
-    return *(o->alignment_data);
-  Conditions::Condition c(*this);
-  o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
-  o->alignment_data->condition = c;
-  return *(o->alignment_data);
+  return o->alignment_data ? *o->alignment_data : o->values();
 }
 
 /// Data accessor for the use of decorators
 const AlignmentCondition::Data& AlignmentCondition::data() const  {
   Object* o = access();
-  if ( o->alignment_data )
-    return *(o->alignment_data);
-  Conditions::Condition c(*this);
-  o->alignment_data = c.is_bound() ? &c.get<Data>() : &c.bind<Data>();
-  o->alignment_data->condition = c;
-  return *(o->alignment_data);
+  return o->alignment_data ? *o->alignment_data : o->values();
 }
 
 /// Check if object is already bound....
@@ -130,11 +192,17 @@ size_t Container::numKeys() const   {
 
 /// Known keys of conditions in this container
 const Container::Keys& Container::keys()  const   {
-  Object* o = ptr();
-  if ( !o )   {
-    invalidHandleError<Container>();
-  }
-  return o->keys;
+  return access()->keys;
+}
+
+/// Insert a new key to the alignments access map. Ignores already existing keys.
+bool Container::insertKey(const std::string& key_val)  {
+  return access()->insertKey(key_val);
+}
+
+/// Insert a new key to the alignments access map: Allow for alias if key_val != data_val
+bool Container::insertKey(const std::string& key_val, const std::string& data_val)  {
+  return access()->insertKey(key_val, data_val);
 }
 
 /// Add a new key to the alignments access map
@@ -149,56 +217,20 @@ void Container::addKey(const string& key_val, const string& data_val)  {
 
 /// Access to alignment objects
 Alignment Container::get(const string& alignment_key, const iov_type& iov)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, iov);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, iov).access());
 }
 
 /// Access to alignment objects
 Alignment Container::get(key_type alignment_key, const iov_type& iov)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, iov);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, iov).access());
 }
 
 /// Access to alignment objects
 Alignment Container::get(const string& alignment_key, const UserPool& pool)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, pool);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, pool).access());
 }
 
 /// Access to alignment objects
 Alignment Container::get(key_type alignment_key, const UserPool& pool)  {
-  Object* o = ptr();
-  if ( o )  {
-    Alignment c = o->get(alignment_key, pool);
-    if ( c.isValid() )  {
-      return c;
-    }
-    invalidHandleError<Alignment>();
-  }
-  invalidHandleError<Container>();
-  return Alignment();
+  return Alignment(access()->get(alignment_key, pool).access());
 }

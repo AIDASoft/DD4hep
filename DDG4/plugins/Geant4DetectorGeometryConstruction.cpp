@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -10,7 +11,6 @@
 //  \date   2015-11-09
 //
 //==========================================================================
-// $Id$
 
 // Framework include files
 #include "DDG4/Geant4DetectorConstruction.h"
@@ -92,8 +92,7 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   ctxt->geometry = conv.create(world).detach();
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
-  ctxt->lcdd.apply("DD4hepVolumeManager", 0, 0);
-  // Create Geant4 volume manager
+  // Create Geant4 volume manager only if not yet available
   g4map.volumeManager();
   if ( m_dumpHierarchy )   {
     Geant4HierarchyDump dmp(ctxt->lcdd);

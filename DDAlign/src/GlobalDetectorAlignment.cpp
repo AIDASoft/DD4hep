@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -24,6 +23,11 @@
 // ROOT include files
 #include "TGeoMatrix.h"
 #include "TGeoManager.h"
+
+
+#ifdef __GNUC__    // Disable some diagnostics.
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {

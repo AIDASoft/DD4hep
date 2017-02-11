@@ -12,19 +12,20 @@
 //==========================================================================
 
 // Framework includes
+#include "DDAlign/AlignmentsForward.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
+
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/DetConditions.h"
-
-#include "DDAlign/AlignmentsForward.h"
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDCond/ConditionsSlice.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
 /// Initializing constructor
-AlignmentsForward::AlignmentsForward(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
-  : alignmentMgr(m), updateCall(c), user_pool(p), extension("#alignment/Tranformations"),
+AlignmentsForward::AlignmentsForward(Slice& s, AlignmentsUpdateCall* c)
+  : slice(s), updateCall(c), extension("#alignment/Transformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
@@ -53,14 +54,14 @@ int AlignmentsForward::processElement(DetElement de)  {
         // It is slow and deprecated. The access using the UserPool directly
         // is highly favored.
         //
-        align.alignments().addKey(k.name);
+        align.alignments().insertKey(k.name);
         if ( haveAlias && !alias.empty() )  {
-          align.alignments().addKey("Alignment",k.name);
+          align.alignments().insertKey("Alignment",k.name);
         }
         //
         // Now add the dependency to the alignmant manager
         Conditions::DependencyBuilder b(k, updateCall, de);
-        bool result = alignmentMgr.adoptDependency(b.release());
+        bool result = slice.insert(b.release());
         if ( result )   {
           printout(printLevel,"AlignForward",
                    "++ Added Alignment child dependency Cond:%s Key:%16llX",

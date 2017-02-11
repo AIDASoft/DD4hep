@@ -43,7 +43,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class AlignmentUpdateCall : public Conditions::ConditionUpdateCall  {
+    class AlignmentsUpdateCall : public Conditions::ConditionUpdateCall  {
     public:
       typedef Conditions::Condition              Condition;
       typedef Conditions::ConditionKey           ConditionKey;
@@ -56,10 +56,10 @@ namespace DD4hep {
       
     public:
       /// Default constructor
-      AlignmentUpdateCall();
+      AlignmentsUpdateCall();
 
       /// Default destructor
-      virtual ~AlignmentUpdateCall();
+      virtual ~AlignmentsUpdateCall();
 
       /// Interface to client Callback in order to update the condition. To be overloaded by sub-class
       virtual Condition operator()(const ConditionKey& key, const UpdateContext& context) = 0;
@@ -76,7 +76,10 @@ namespace DD4hep {
        *  We also cannot do this is some 'generic' way, because the delta is provided outside
        *  and may very well depend on the extrnal database technology used to save conditions.
        */
-      virtual Condition handle(const ConditionKey& key, const UpdateContext& context, const Delta& delta);
+      virtual Condition handle(const ConditionKey&  key,
+                               const UpdateContext& context,
+                               Condition::key_type  source,
+                               const Delta&         delta);
 
       /// Handler to be called if the Alignment cannot be created due to a bad underlying data type.
       virtual Condition invalidDataType(const ConditionKey& key, const UpdateContext& context);

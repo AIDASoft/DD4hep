@@ -2,12 +2,12 @@
 //  DDSim - LC simulation based on DD4hep
 //--------------------------------------------------------------------
 //  F.Gaede, DESY
-//  $Id:$
 //====================================================================
 
 #include "DDG4/Geant4Config.h"
+#include <cerrno>
 #include <iostream>
-
+#include <stdexcept>
 
 using namespace DD4hep::Simulation::Setup;
 
@@ -17,9 +17,7 @@ using namespace DD4hep::Simulation::Setup;
  *   - subsequent files configure the application
  */
 
-int main(int argc, char** argv)  {
-
-
+int main_wrapper(int argc, char** argv)  {
   if( argc < 2 ){
     std::cout << " --- Usage example: \n "
               << " dd_sim  ../ILD/compact/ILD_o1_v05.xml [sensitive_detectors.xml] sequences.xml physics.xml "
@@ -27,9 +25,7 @@ int main(int argc, char** argv)  {
     exit( 0 ) ;
   }
 
-
   DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
-
   Kernel& kernel = Kernel::instance(lcdd);
 
   // first argument: geometry file
@@ -38,21 +34,30 @@ int main(int argc, char** argv)  {
   geoFile += argv[1] ;
 
   kernel.loadGeometry( geoFile ) ;
-
   for( int i=2 ; i < argc  ; ++i ) {
-
     std::cout << "  will open xml file " << argv[i] <<  " and load to kernel ..." << std::endl ;
-
     kernel.loadXML( argv[i] ) ;
   }
 
   kernel.configure();
   kernel.initialize();
-
   kernel.run();
 
-
   std::cout << "Successfully executed application .... " << std::endl;
-
   kernel.terminate();
+  return 0;
+}
+
+//______________________________________________________________________________
+int main(int argc, char** argv)  {
+  try {
+    return main_wrapper(argc,argv);
+  }
+  catch(const std::exception& e)  {
+    std::cout << "Got uncaught exception: " << e.what() << std::endl;
+  }
+  catch (...)  {
+    std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+  }
+  return EINVAL;    
 }

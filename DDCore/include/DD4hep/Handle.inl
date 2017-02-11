@@ -38,6 +38,8 @@ namespace DD4hep {
     }
 
     /// Checked object access. Throws invalid handle runtime exception
+    /** Very compact way to check the validity of a handle with exception thrown.  
+    */
     template <typename T> T* Handle<T>::access() const   {
       if ( this->m_element ) return this->m_element;
       invalidHandleError(typeid(T));

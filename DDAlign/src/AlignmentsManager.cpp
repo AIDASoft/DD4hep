@@ -12,6 +12,8 @@
 //==========================================================================
 
 // Framework include files
+#include "DDAlign/AlignmentsManager.h"
+
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
@@ -21,10 +23,14 @@
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsDependencyCollection.h"
-#include "DDAlign/AlignmentsManager.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
+using Conditions::Condition;
+using Conditions::ConditionKey;
+using Conditions::ConditionsSlice;
+using Conditions::ConditionDependency;
+using Conditions::ConditionsDependencyCollection;
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -60,7 +66,8 @@ namespace DD4hep {
       ~AlignContext()  {
         InstanceCount::decrement(this);
       }
-      void newEntry(DetElement det, const Dependency* dep, AlignmentCondition::Object* con) {
+      void newEntry(const Dependency* dep, AlignmentCondition::Object* con) {
+        DetElement det = dep->detector;
         if ( det.isValid() )  {
           Entry entry;
           unsigned int key = det.key();
@@ -73,7 +80,9 @@ namespace DD4hep {
           detectors.insert(std::make_pair(det, entries.size()));
           keys.insert(std::make_pair(key, entries.size()));
           entries.insert(entries.end(), entry);
+          return;
         }
+        except("AlignContext","Failed to add entry: invalid detector handle!");
       }
     };
     
@@ -91,19 +100,20 @@ namespace DD4hep {
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentsManagerObject);
 static PrintLevel s_PRINT = WARNING;
+//static PrintLevel s_PRINT = INFO;
 
 /// Initializing constructor
 AlignmentsManagerObject::AlignmentsManagerObject() : NamedObject() {
   InstanceCount::increment(this);
-  all_alignments = new AlignContext();
-  dependencies = new Dependencies();
+  //all_alignments = new AlignContext();
+  //dependencies = new Dependencies();
 }
   
 /// Default destructor
 AlignmentsManagerObject::~AlignmentsManagerObject()   {
-  dependencies->clear();
-  deletePtr(dependencies);
-  deletePtr(all_alignments);
+  //dependencies->clear();
+  //deletePtr(dependencies);
+  //deletePtr(all_alignments);
   InstanceCount::decrement(this);
 }
 
@@ -131,17 +141,17 @@ AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       AlignmentCondition cond(e.cond);
       AlignmentData&     align = cond.data();
       if ( s_PRINT <= INFO )  {
-        printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
-        printf("  with ALIGN(world) %s :", par.path().c_str());
-        align.worldDelta.Print();
+        ::printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
+        ::printf("  with ALIGN(world) %s :", par.path().c_str());    align.worldDelta.Print();
       }
       delta_to_world.MultiplyLeft(&align.worldDelta);
       if ( s_PRINT <= INFO )  {
-        printf("  Result :"); delta_to_world.Print();
+        ::printf("  Result :"); delta_to_world.Print();
       }
       ++result.computed;
       return result;
     }
+#if 0
     // The parent did not get updated: We have to search the conditions pool if
     // there is a still valid condition, which we can use to build the world transformation
     // The parent's alignment condition by defintiion must be present in the pool,
@@ -153,60 +163,31 @@ AlignmentsManagerObject::to_world(AlignContext& new_alignments,
       AlignmentCondition cond = pool.get(key);
       AlignmentData&    align = cond.data();
       if ( s_PRINT <= INFO )  {
-        printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
-        printf("  with ALIGN(world) %s :", par.path().c_str());
-        align.worldDelta.Print();
+        ::printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
+        ::printf("  with ALIGN(pool) %s :", par.path().c_str());    align.worldDelta.Print();
       }
       delta_to_world.MultiplyLeft(&align.worldDelta);
       if ( s_PRINT <= INFO ) {
-        printf("  Result :"); delta_to_world.Print();
+        ::printf("  Result :"); delta_to_world.Print();
       }
       ++result.computed;
       return result;
     }
+#endif
     // There is no special alignment for this detector element.
     // Hence to nominal (relative) transformation to the parent is valid
     if ( s_PRINT <= INFO )  {
-      printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
-      printf("  with NOMINAL(det) %s :", par.path().c_str());
+      ::printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
+      ::printf("  with NOMINAL(det) %s :", par.path().c_str());
       par.nominal().detectorTransformation().Print();
     }
     delta_to_world.MultiplyLeft(&par.nominal().detectorTransformation());
     if ( s_PRINT <= INFO )  {
-      printf("  Result :"); delta_to_world.Print();
+      ::printf("  Result :"); delta_to_world.Print();
     }
     par = par.parent();
   }
   ++result.computed;
-  return result;
-}
-
-/// Compute all alignment conditions of the internal dependency list
-AlignmentsManager::Result AlignmentsManagerObject::compute(Pool& pool)  const  {
-  return compute(pool, *dependencies);
-}
-  
-/// Compute all alignment conditions of the specified dependency list
-AlignmentsManager::Result AlignmentsManagerObject::compute(Pool& pool, const Dependencies& deps) const  {
-  Result result;
-  AlignContext new_alignments;
-  new_alignments.entries.reserve(deps.size());
-  //
-  // This here is the main difference compared to other derived conditions:
-  // ----------------------------------------------------------------------
-  //
-  // We enforce here that all computations, which require an update of the corresponding
-  // alignment matrices are stored in "new_alignments", since the update callback registers
-  // all new entries using this user parameter when calling  AlignmentsManager::newEntry.
-  // For this reason also ALL specific update calls must base themself in the
-  // Alignment update callback.
-  //
-  pool.compute(deps, &new_alignments);
-  for(auto i=new_alignments.entries.begin(); i != new_alignments.entries.end(); ++i)  {
-    Result r = compute(new_alignments, pool, (*i).det);
-    result.computed += r.computed;
-    result.missing  += r.missing;
-  }
   return result;
 }
 
@@ -243,7 +224,7 @@ static void computeDelta(AlignmentCondition cond, TGeoHMatrix& tr_delta)  {
 AlignmentsManager::Result
 AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, DetElement det) const  {
   Result result, temp;
-  auto k=new_alignments.keys.find(det.key());
+  auto k = new_alignments.keys.find(det.key());
   bool has_cond = (k != new_alignments.keys.end());
   AlignContext::Entry* ent = has_cond ? &new_alignments.entries[(*k).second] : 0;
 
@@ -255,11 +236,8 @@ AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, D
     TGeoHMatrix        tr_delta;
     AlignmentCondition cond  = ent->cond;
     AlignmentData&     align = cond.data();
-    if ( s_PRINT <= INFO )  {  
-      printout(INFO,"ComputeAlignment",
-               "============================== Compute transformation of %s ============================== ",
-               det.path().c_str());
-    }
+    printout(DEBUG,"ComputeAlignment",
+             "============================== Compute transformation of %s",det.path().c_str());
     ent->valid          = 1;
     computeDelta(cond, tr_delta);
     align.worldDelta    = tr_delta;
@@ -272,15 +250,15 @@ AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, D
     if ( s_PRINT <= INFO )  {  
       printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%16llX IOV:%s",
                det.level(), det.path().c_str(), det.key(),
-               yes_no(has_cond), cond.key(), cond.iov().str().c_str());
+               yes_no(has_cond), (long long int)cond.key(), cond.iov().str().c_str());
     }
     if ( s_PRINT <= DEBUG )  {  
-      printf("DetectorTrafo: '%s' -> '%s' ",det.path().c_str(), det.parent().path().c_str());
+      ::printf("DetectorTrafo: '%s' -> '%s' ",det.path().c_str(), det.parent().path().c_str());
       det.nominal().detectorTransformation().Print();
-      printf("Delta:       '%s' ",det.path().c_str()); tr_delta.Print();
-      printf("World-Delta: '%s' ",det.path().c_str()); align.worldDelta.Print();
-      printf("Nominal:     '%s' ",det.path().c_str()); det.nominal().worldTransformation().Print();
-      printf("Result:      '%s' ",det.path().c_str()); align.worldTrafo.Print();
+      ::printf("Delta:       '%s' ",det.path().c_str()); tr_delta.Print();
+      ::printf("World-Delta: '%s' ",det.path().c_str()); align.worldDelta.Print();
+      ::printf("Nominal:     '%s' ",det.path().c_str()); det.nominal().worldTransformation().Print();
+      ::printf("Result:      '%s' ",det.path().c_str()); align.worldTrafo.Print();
     }
   }
   else  {
@@ -313,6 +291,79 @@ AlignmentsManagerObject::compute(AlignContext& new_alignments, UserPool& pool, D
   return result;
 }
 
+
+/// Compute all alignment conditions of the internal dependency list
+AlignmentsManager::Result
+AlignmentsManagerObject::computeDirect(Slice& slice, const Dependencies& dependencies)  const  {
+  Result result;
+  AlignContext context;
+  context.entries.reserve(dependencies.size());
+
+  for ( const auto& i : dependencies )  {
+    Dependency*         dep      = i.second.get();
+    const ConditionKey& src_key  = *(dep->dependencies.begin());
+    Condition           src_cond = slice.pool->get(src_key.hash);
+    AlignmentCondition  tar_cond = slice.pool->get(dep->key());
+    
+    /// Update the source condition with the new delta value
+    if ( !src_cond.isValid() )  {
+      except("AlignmentsManager","++ The SOURCE alignment condition [%p]: %s is invalid.",
+             (void*)src_key.hash, src_key.name.c_str());
+    }
+    /// Update the source condition with the new delta value
+    if ( !tar_cond.isValid() )  {
+      except("AlignmentsManager","++ The TARGET alignment condition [%p]: %s is invalid.",
+             (void*)dep->key(), dep->name());
+    }
+    tar_cond.data().delta = src_cond.get<Delta>();
+    context.newEntry(dep, tar_cond.ptr());
+  }
+  for ( const auto& i : context.entries )  {
+    Result r = compute(context, *slice.pool, i.det);
+    result.computed += r.computed;
+    result.missing  += r.missing;
+  }
+  return result;
+}
+
+/// Compute all alignment conditions of the internal dependency list
+AlignmentsManager::Result
+AlignmentsManagerObject::compute(Slice& slice, const Dependencies& dependencies)  const  {
+  Result result;
+  AlignContext context;
+  context.entries.reserve(slice.derived().size());
+  //
+  // This here is the main difference compared to other derived conditions:
+  // ----------------------------------------------------------------------
+  //
+  // We enforce here that all computations, which require an update of the corresponding
+  // alignment matrices are stored in "context", since the update callback registers
+  // all new entries using this user parameter when calling  AlignmentsManager::newEntry.
+  // For this reason also ALL specific update calls must base themself in the
+  // Alignment update callback.
+  //
+  slice.pool->compute(dependencies, &context, true);
+  for(auto i=context.entries.begin(); i != context.entries.end(); ++i)  {
+    Result r = compute(context, *slice.pool, (*i).det);
+    result.computed += r.computed;
+    result.missing  += r.missing;
+  }
+  return result;
+}
+
+/// Compute all alignment conditions of the specified dependency list
+AlignmentsManager::Result
+AlignmentsManagerObject::compute(Slice& slice) const  {
+  ConditionsDependencyCollection deps;
+  for(const auto& d : slice.derived() )  {
+    ConditionDependency* dep = d.second->dependency;
+    if ( dep )  {
+      deps.insert(dep);
+    }
+  }
+  return compute(slice, deps);
+}
+
 /// Initializing constructor
 AlignmentsManager::AlignmentsManager(const std::string& nam)   {
   assign(new AlignmentsManagerObject(), nam, "alignmentmanager");
@@ -328,53 +379,31 @@ void AlignmentsManager::destroy()  {
   deletePtr(m_element);
 }
 
-/// Adopy alignment dependency for later recalculation
-bool AlignmentsManager::adoptDependency(Dependency* dependency) const  {
-  Object* o = access();
-  auto res = o->dependencies->insert(dependency);
-  if ( res.second )  {
-    o->all_alignments->newEntry(dependency->detector, dependency, 0);
-    return res.second;
-  }
-  return false;
-}
-
-/// Access all known dependencies
-const AlignmentsManager::Dependencies& AlignmentsManager::knownDependencies()  const   {
-  return *(access()->dependencies);
-}
-
 /// Compute all alignment conditions of the internal dependency list
 AlignmentsManager::Result AlignmentsManager::compute(Slice& slice) const   {
-  Object* o = access();
-  return o->compute(*slice.pool, *(o->dependencies));
-}
-
-/// Compute all alignment conditions of the specified dependency list
-AlignmentsManager::Result AlignmentsManager::compute(Slice& slice, const Dependencies& deps) const  {
-  return access()->compute(*slice.pool, deps);
+  return access()->compute(slice);
 }
 
 /// Compute all alignment conditions of the internal dependency list
-AlignmentsManager::Result AlignmentsManager::compute(Pool& pool) const   {
-  Object* o = access();
-  return o->compute(pool, *(o->dependencies));
+AlignmentsManager::Result
+AlignmentsManager::compute(Slice& slice, const Dependencies& dependencies)  const  {
+  return access()->compute(slice, dependencies);
 }
 
-/// Compute all alignment conditions of the specified dependency list
-AlignmentsManager::Result AlignmentsManager::compute(Pool& pool, const Dependencies& deps) const  {
-  return access()->compute(pool, deps);
+/// Compute all alignment conditions of the internal dependency list
+AlignmentsManager::Result
+AlignmentsManager::computeDirect(Slice& slice, const Dependencies& dependencies)  const  {
+  return access()->computeDirect(slice, dependencies);
 }
 
 /// Register new updated derived alignment during the computation step
 void AlignmentsManager::newEntry(const Context& context,
-                                 DetElement& det,
                                  const Dependency* dep,
                                  AlignmentCondition& con)    {
   // It must be ensured this is a valid object! Check magic word
   AlignContext* o = static_cast<AlignContext*>(context.parameter);
   if ( o && o->magic == magic_word() )  {
-    o->newEntry(det, dep, con.ptr());
+    o->newEntry(dep, con.ptr());
     return;
   }
 }

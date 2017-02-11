@@ -113,30 +113,38 @@ namespace DD4hep {
         /// Data block
         OpaqueDataBlock data;
         /// Reference to conditions pool
-        ConditionsPool* pool;
+        ConditionsPool* pool  = 0;
         /// Interval of validity
-        const iov_type* iov;
+        const iov_type* iov   = 0;
         /// Hash value of the name
-        key_type        hash;
+        key_type        hash  = 0;
         /// Flags
-        mask_type       flags;
+        mask_type       flags = 0;
         /// Reference count
-        int             refCount;
+        int             refCount = 0;
+        /// Default constructor
+        ConditionObject();
         /// Standard constructor
-        ConditionObject(const std::string& nam="",const std::string& tit="");
+        ConditionObject(const std::string& nam,const std::string& tit="");
         /// Standard Destructor
         virtual ~ConditionObject();
+        /// Data offset from the opaque data block pointer to the condition
+        static size_t offset();
         /// Move data content: 'from' will be reset to NULL
         ConditionObject& move(ConditionObject& from);
         /// Access safely the IOV
         const iov_type* iovData() const;
         /// Access safely the IOV-type
         const IOVType* iovType() const;
+        /// Access the bound data payload. Exception id object is unbound
+        void* payload() const;
         /// Check if object is already bound....
-        bool is_bound()  const    {  return data.is_bound();  }
-        bool is_traced()  const   {  return true;             }
-        void setFlag(int option)  {  flags |= option;         }
-        void unFlag(int option)   {  flags &= ~option;        }
+        bool is_bound()  const                {  return data.is_bound();         }
+        bool is_traced()  const               {  return true;                    }
+        /// Flag operations
+        void setFlag(mask_type option)        {  flags |= option;                }
+        void unFlag(mask_type option)         {  flags &= ~option;               }
+        bool testFlag(mask_type option) const {  return 0 != (flags&option);     }
       };
 
       /// The data class behind a conditions container handle.
@@ -186,9 +194,26 @@ namespace DD4hep {
         /// Known keys of conditions in this container
         Keys       keys;
 
+        /// Insert a new key to the conditions access map. Ignores already existing keys.
+        /**  Caution: This is not thread protected!
+         *
+         *   @return true if key was inserted. False if already present.
+         */
+        bool insertKey(const std::string& key_val);
+        
+        /// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
+        /**  Caution: This is not thread protected!
+         *
+         *   @return true if key was inserted. False if already present.
+         */
+        bool insertKey(const std::string& key_val, const std::string& data_val);
+
         /// Add a new key to the conditions access map
+        /**  Caution: This is not thread protected!  */
         void addKey(const std::string& key_value);
+
         /// Add a new key to the conditions access map: Allow for alias if key_val != data_val
+        /**  Caution: This is not thread protected!  */
         void addKey(const std::string& key_value, const std::string& data_value);
       };
 

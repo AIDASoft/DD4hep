@@ -61,7 +61,7 @@
   
   <readouts>
     <readout name="HcalBarrelHits">
-      <id>system:8,barrel:3,module:7,layer:5,slice:10</id>
+      <id>system:8,barrel:3,module:7,layer:5,slice:10,eta:10,phi:5</id> 
     </readout>
     <readout name="ContainmentHits">
       <id>system:8,barrel:3</id>

@@ -5,9 +5,11 @@
 
     <value name="external_pressure" type="float" value="980*hPa"/>
     <value name="other_pressure" type="double">980*hPa</value>
-
+    <temperature name="ambient" value="273*kelvin"/>
+    <pressure name="athmospheric" value="980*hPa"/>
     <sequence name="Seq1" type="vector[int]" value="[0,1,2,3,4,5]"/>
     <sequence name="Seq2" type="list[int]">[0,1,2,3,4,5]</sequence>
+    <sequence name="Seq3" type="set[double]">[0,10,20,30,40,50]</sequence>
 <!--
     <mapping> name="Map1" key_type="string" mapped_type="int">
       ("a": 1, "b": 2 )

@@ -94,7 +94,8 @@ namespace DD4hep {
                            void*                   user_param);
       /// Evaluate and register all derived conditions from the dependency list
       virtual size_t compute(const Dependencies&     dependencies,
-                             void*                   user_param);
+                             void*                   user_param,
+                             bool                    force);
     };
   }    /* End namespace Conditions               */
 }      /* End namespace DD4hep                   */
@@ -193,7 +194,13 @@ ConditionsMappedUserPool<MAPPING>::i_findCondition(key_type key)  const {
 
 template<typename MAPPING> inline bool
 ConditionsMappedUserPool<MAPPING>::i_insert(Condition::Object* o)   {
-  return m_conditions.insert(make_pair(o->hash,o)).second;
+  int ret = m_conditions.insert(make_pair(o->hash,o)).second;
+#if 0
+  printout(INFO,"UserPool","++ %s condition [%016llX]: %s.",
+           ret ? "Successfully inserted" : "FAILED to insert",
+           o->hash, o->name.c_str());
+#endif
+  return ret;
 }
 
 /// Total entry count
@@ -277,7 +284,8 @@ bool ConditionsMappedUserPool<MAPPING>::remove(key_type hash_key)    {
 /// Evaluate and register all derived conditions from the dependency list
 template<typename MAPPING>
 size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
-                                                  void* user_param)
+                                                  void* user_param,
+                                                  bool force)
 {
   size_t num_updates = 0;
   if ( !deps.empty() )  {
@@ -287,15 +295,20 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
     for ( const auto& i : deps )  {
       typename MAPPING::iterator j = m_conditions.find(i.first);
       if ( j != m_conditions.end() )  {
-        Condition::Object* c = (*j).second;
-        // Remeber: key ist first, test is second!
-        if ( IOV::key_is_contained(m_iov.keyData,c->iov->keyData) )  {
-          /// This condition is no longer valid. remove it!
-          /// This condition will be added again by the handler.
-          m_conditions.erase(j);
-          missing.push_back(i.second.get());
+        if ( !force )  {
+          Condition::Object* c = (*j).second;
+          // Remeber: key ist first, test is second!
+          if ( IOV::key_is_contained(m_iov.keyData,c->iov->keyData) )  {
+            /// This condition is no longer valid. remove it!
+            /// This condition will be added again by the handler.
+            m_conditions.erase(j);
+            missing.push_back(i.second.get());
+          }
+          continue;
         }
-        continue;
+        else  {
+          m_conditions.erase(j);
+        }
       }
       missing.push_back(i.second.get());      
     }

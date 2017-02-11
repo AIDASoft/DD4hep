@@ -32,6 +32,10 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::DDDB;
 
+#ifdef __GNUC__    // Disable some diagnostics.
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
@@ -443,7 +447,7 @@ namespace DD4hep {
         for(dddb::Volumes::iterator j=det->logvolrefs.begin(); j!=det->logvolrefs.end(); ++j)  {
           LogVol* c = (*j).second;
           if ( !c )  {
-            printout(ERROR,"fixCatalogs","++  MISSING Volume: %s child:%s",det->id.c_str(),c->id.c_str());
+            printout(ERROR,"fixCatalogs","++  MISSING Volume: %s child:%s",det->id.c_str(),(*j).first.c_str());
             continue;
           }
           dddb::Volumes::const_iterator k = geo->volumes.find(c->id);
@@ -598,7 +602,6 @@ namespace DD4hep {
         cond->value    = path; // doc->name;
         cond->validity = "";
         cond->hash     = Conditions::ConditionKey::hashCode(cond->value);
-        cond->setFlag(Condition::ACTIVE);
         if ( element.hasAttr(_U(comment)) )  {
           cond->comment = element.attr<string>(_U(comment));
         }
@@ -1051,6 +1054,8 @@ namespace DD4hep {
             // Error. What to do? 
             // Anyhow: ShapeConv<BooleanOperation> throws exception if the
             //         shape is unknown. We never get here.
+            printout(ERROR,"ShapeConv","++ Invalid boolean shape operation. [Invalid operand]");
+            continue;
           }
           op.shape->id = id + "/" + op.shape->name;
           ++p;

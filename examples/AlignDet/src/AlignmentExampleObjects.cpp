@@ -12,14 +12,19 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/AlignmentsPrinter.h"
 #include "AlignmentExampleObjects.h"
 #include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/AlignmentsPrinter.h"
+#include "DD4hep/Objects.h"
+
+#include "DDAlign/DDAlignResetCall.h"
 #include "DDAlign/DDAlignUpdateCall.h"
 #include "DDAlign/DDAlignForwardCall.h"
 #include "DDAlign/AlignmentsRegister.h"
 #include "DDAlign/AlignmentsForward.h"
+#include "DDAlign/AlignmentsReset.h"
 #include "DDCond/ConditionsSlice.h"
+
 
 using namespace std;
 using namespace DD4hep;
@@ -34,23 +39,33 @@ void DD4hep::AlignmentExamples::installManagers(LCDD& lcdd)  {
 }
 
 /// Register the alignment callbacks
-void DD4hep::AlignmentExamples::registerAlignmentCallbacks(LCDD& lcdd,
-                                                           ConditionsSlice& slice,
-                                                           AlignmentsManager alignMgr)
+void DD4hep::AlignmentExamples::registerAlignmentCallbacks(LCDD& lcdd,ConditionsSlice& slice)
 {
   // Let's register the callbacks to compute dependent conditions/alignments
   // 1) Create dependencies for all deltas found in the conditions
-  Alignments::AlignmentsRegister reg(alignMgr,new Alignments::DDAlignUpdateCall(),slice.pool.get());
+  Alignments::AlignmentsRegister reg(slice,new Alignments::DDAlignUpdateCall());
   Scanner().scan(reg,lcdd.world());
   // 2) Create child dependencies if higher level alignments exist
-  Alignments::AlignmentsForward  fwd(alignMgr,new Alignments::DDAlignForwardCall(),slice.pool.get());
+  Alignments::AlignmentsForward  fwd(slice,new Alignments::DDAlignForwardCall());
+  Scanner().scan(fwd,lcdd.world());
+}
+
+/// Register the alignment callbacks
+void DD4hep::AlignmentExamples::registerResetCallbacks(LCDD& lcdd,ConditionsSlice& slice)
+{
+  // Let's register the callbacks to compute dependent conditions/alignments
+  // 1) Create dependencies for all deltas found in the conditions
+  Alignments::AlignmentsReset reg(slice,new Alignments::DDAlignResetCall());
+  Scanner().scan(reg,lcdd.world());
+  // 2) Create child dependencies if higher level alignments exist
+  Alignments::AlignmentsForward  fwd(slice,new Alignments::DDAlignForwardCall());
   Scanner().scan(fwd,lcdd.world());
 }
 
 /// Callback to process a single detector element
 int AlignmentDataAccess::processElement(DetElement de)  {
   DetAlign     a(de); // Use special facade...
-  Alignments::Container    container = a.alignments();
+  Alignments::Container container = a.alignments();
   // Let's go for the deltas....
   for(const auto& k : container.keys() )  {
     Alignment align    = container.get(k.first,pool);
@@ -60,6 +75,31 @@ int AlignmentDataAccess::processElement(DetElement de)  {
   // Keep it simple. To know how to access stuff,
   // simply look in DDDCore/src/AlignmentsPrinter.cpp...
   Alignments::printElementPlacement(printLevel,"Example",de,&pool);
+  return 1;
+}
+
+/// Callback to process a single detector element
+int AlignmentReset::processElement(DetElement de)    {
+  DetAlign     a(de); // Use special facade...
+  Alignments::Container container = a.alignments();
+
+  for(const auto& k : container.keys() )  {
+    Alignment      align = container.get(k.first,pool);
+    AlignmentData& data  = align.data();
+    Delta&         delta = data.delta;
+    // Leave the flags to get the proper printout!
+    //delta.flags &= ~(Delta::HAVE_TRANSLATION|Delta::HAVE_ROTATION|Delta::HAVE_PIVOT);
+    delta.translation  = Geometry::Position();
+    delta.rotation     = Geometry::RotationZYX();
+    delta.pivot        = Delta::Pivot();
+    data.worldDelta    = *Geometry::identityTransform();
+    data.worldTrafo    = *Geometry::identityTransform();
+    data.detectorTrafo = *Geometry::identityTransform();
+    data.trToWorld     = Geometry::Transform3D();
+    data.nodes.clear();
+  }
+  printout(printLevel,"Example","++ Reset alignment deltas for %s [%d keys]",
+           de.path().c_str(), int(container.keys().size()));
   return 1;
 }
 

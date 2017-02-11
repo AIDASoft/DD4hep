@@ -63,9 +63,9 @@ SensitiveDetectorObject::~SensitiveDetectorObject() {
 DetElementObject::DetElementObject()
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(0), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
-    idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
-    nominal(), survey(), alignments(), conditions(),
-    worldTrafo(), parentTrafo(), referenceTrafo(0) {
+    idealPlace(), placement(), volumeID(0), parent(), children(),
+    nominal(), survey(), alignments(), conditions(), worldTrafo()
+{
   printout(VERBOSE,"DetElementObject","+++ Created new anonymous DetElementObject()");
   InstanceCount::increment(this);
 }
@@ -74,9 +74,9 @@ DetElementObject::DetElementObject()
 DetElementObject::DetElementObject(const std::string& nam, int ident)
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(ident), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
-    idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
-    nominal(), survey(), alignments(), conditions(),
-    worldTrafo(), parentTrafo(), referenceTrafo(0) {
+    idealPlace(), placement(), volumeID(0), parent(), children(),
+    nominal(), survey(), alignments(), conditions(), worldTrafo()
+{
   SetName(nam.c_str());
   printout(VERBOSE,"DetElementObject","+++ Created new DetElementObject('%s', %d)",nam.c_str(),id);
   InstanceCount::increment(this);
@@ -85,7 +85,6 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 /// Internal object destructor: release extension object(s)
 DetElementObject::~DetElementObject() {
   destroyHandles(children);
-  deletePtr (referenceTrafo);
   destroyHandle (conditions);
   conditions = ConditionsContainer();
   destroyHandle (nominal);
@@ -154,6 +153,7 @@ World DetElementObject::i_access_world()   {
 
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& DetElementObject::worldTransformation() {
+  DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
   if ( (flag&HAVE_WORLD_TRAFO) == 0 ) {
     PlacementPath nodes;
     flag |= HAVE_WORLD_TRAFO;
@@ -165,6 +165,8 @@ const TGeoHMatrix& DetElementObject::worldTransformation() {
 
 /// Create cached matrix to transform to parent coordinates
 const TGeoHMatrix& DetElementObject::parentTransformation() {
+  DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
+#if 0
   if ( (flag&HAVE_PARENT_TRAFO) == 0 ) {
     PlacementPath nodes;
     flag |= HAVE_PARENT_TRAFO;
@@ -172,32 +174,8 @@ const TGeoHMatrix& DetElementObject::parentTransformation() {
     DetectorTools::placementTrafo(nodes,false,parentTrafo);
   }
   return parentTrafo;
-}
-
-/// Create cached matrix to transform to reference coordinates
-const TGeoHMatrix& DetElementObject::referenceTransformation() {
-  if (!referenceTrafo) {
-    DetElement  ref(reference);
-    DetElement  self(this);
-    if ( ref.ptr() == self.ptr() )  {
-      referenceTrafo = new TGeoHMatrix(gGeoIdentity->Inverse());
-    }
-    else if ( DetectorTools::isParentElement(ref,self) ) {
-      PlacementPath nodes;
-      DetectorTools::placementPath(ref,self,nodes);
-      DetectorTools::placementTrafo(nodes,false,referenceTrafo);
-    }
-    else if ( DetectorTools::isParentElement(self,ref) ) {
-      PlacementPath nodes;
-      DetectorTools::placementPath(self,ref,nodes);
-      DetectorTools::placementTrafo(nodes,false,referenceTrafo);
-    }
-    else  {
-      throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) +
-                          " to reference element " + string(ref.name()) + " present!");
-    }
-  }
-  return *referenceTrafo;
+#endif
+  return DetElement(this).nominal().detectorTransformation();
 }
 
 /// Revalidate the caches
@@ -220,36 +198,46 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
            "DetElement","+++ Invalidate chache of %s -> %s Placement:%p --> %p %s",
            det.path().c_str(), DetectorTools::placementPath(par_path).c_str(),
            placement.ptr(), node.ptr(), (placement.ptr() == node.ptr()) ? "" : "[UPDATE]");
-
+  if ( idealPlace.ptr() != node.ptr() && 0 == node->GetUserExtension() )  {
+    auto ext = idealPlace->GetUserExtension();
+    node->SetUserExtension(ext);
+  }
+  Volume node_vol = node.volume();
+  Volume plac_vol = idealPlace.volume();
+  if ( node_vol.ptr() != plac_vol.ptr() && 0 == node_vol->GetUserExtension() )  {
+    auto ext = plac_vol->GetUserExtension();
+    node_vol->SetUserExtension(ext);    
+  }
+  // Now we can assign the new placement to the object
   placement = node;
 
-  if ( have_trafo && print )  worldTrafo.Print();
+  Alignments::Alignment::Data& data = det.nominal().data();
+  if ( have_trafo && print )  data.worldTransformation().Print();
 
   if ( (flag&HAVE_PARENT_TRAFO) )  {
-    DetectorTools::placementTrafo(par_path,false,parentTrafo);
+    DetectorTools::placementTrafo(par_path,false,data.detectorTrafo);
   }
 
   /// Compute world transformations
   if ( parent_world_trafo )  {
     // If possible use the pre-computed values from the parent
     worldTrafo = *parent_world_trafo;
-    worldTrafo.Multiply(&parentTransformation());
+    worldTrafo.Multiply(&data.detectorTransformation());
     flag |= HAVE_WORLD_TRAFO;
   }
   else if ( have_trafo )  {
     // Else re-compute the transformation to the world.
     PlacementPath world_nodes;
     DetectorTools::placementPath(this, world_nodes);
-    DetectorTools::placementTrafo(world_nodes,false,worldTrafo);
+    DetectorTools::placementTrafo(world_nodes,false,data.worldTrafo);
     flag |= HAVE_WORLD_TRAFO;
   }
 
-  if ( (flag&HAVE_PARENT_TRAFO) && print )  worldTrafo.Print();
-  deletePtr (referenceTrafo);
+  if ( (flag&HAVE_PARENT_TRAFO) && print )  data.worldTrafo.Print();
 
   /// Now iterate down the children....
   for(const auto& i : children )
-    i.second->revalidate(&worldTrafo);
+    i.second->revalidate(&data.worldTrafo);
 }
 
 /// Remove callback from object

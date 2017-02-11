@@ -32,12 +32,7 @@ IDDecoder& IDDecoder::getInstance() {
 /// Default constructor
 IDDecoder::IDDecoder() {
 	LCDD& lcdd = LCDD::getInstance();
-	_volumeManager = lcdd.volumeManager();
-	if (not _volumeManager.isValid()) {
-		lcdd.apply("DD4hepVolumeManager",0,0);
-		_volumeManager = lcdd.volumeManager();
-	}
-	_tgeoMgr = lcdd.world().volume()->GetGeoManager();
+	_volumeManager = VolumeManager::getVolumeManager(lcdd);
 }
 
 /**
@@ -50,7 +45,7 @@ CellID IDDecoder::cellIDFromLocal(const Position& local, const VolumeID volID) c
 	// FIXME: direct lookup of transformations seems to be broken
 	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(volID);
 	DetElement det = this->detectorElement(volID);
-	const TGeoMatrix& localToGlobal = det.worldTransformation();
+	const TGeoMatrix& localToGlobal = det.nominal().worldTransformation();
 	localToGlobal.LocalToMaster(l, g);
 	Position global(g[0], g[1], g[2]);
 	return this->findReadout(det).segmentation().cellID(local, global, volID);
@@ -67,7 +62,7 @@ CellID IDDecoder::cellID(const Position& global) const {
 	// FIXME: direct lookup of transformations seems to be broken
 	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(volID);
 	DetElement det = this->detectorElement(volID);
-	const TGeoMatrix& localToGlobal = det.worldTransformation();
+	const TGeoMatrix& localToGlobal = det.nominal().worldTransformation();
 	localToGlobal.MasterToLocal(g, l);
 	Position local(l[0], l[1], l[2]);
 	return this->findReadout(det).segmentation().cellID(local, global, volID);
@@ -84,7 +79,7 @@ Position IDDecoder::position(const CellID& cell) const {
 	local.GetCoordinates(l);
 	// FIXME: direct lookup of transformations seems to be broken
 	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cell);
-	const TGeoMatrix& localToGlobal = det.worldTransformation();
+	const TGeoMatrix& localToGlobal = det.nominal().worldTransformation();
 	localToGlobal.LocalToMaster(l, g);
 	return Position(g[0], g[1], g[2]);
 }
@@ -243,7 +238,7 @@ DetElement IDDecoder::getClosestDaughter(const DetElement& det, const Position& 
 	if (det.volume().isValid() and det.volume().solid().isValid()) {
 		double globalPosition[3] = { position.x(), position.y(), position.z() };
 		double localPosition[3] = { 0., 0., 0. };
-		det.worldTransformation().MasterToLocal(globalPosition, localPosition);
+		det.nominal().worldTransformation().MasterToLocal(globalPosition, localPosition);
 		if (det.volume().solid()->Contains(localPosition)) {
 			result = det;
 		} else {

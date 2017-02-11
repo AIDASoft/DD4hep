@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -196,7 +195,7 @@ void Geant4ParticlePrint::printParticleTree(const G4Event* e,
   char txt[64];
   size_t len = sizeof(txt)-33; // Careful about overruns...
   // Ensure we do not overwrite the array
-  if ( level>int(len)-3 ) level=len-3;
+  if ( level>int(len)-3 ) level = len-3;
 
   ::snprintf(txt,sizeof(txt),"%5d ",level);
   ::memset(txt+6,' ',len-6);

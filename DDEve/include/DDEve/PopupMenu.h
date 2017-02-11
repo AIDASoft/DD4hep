@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -79,14 +78,10 @@ namespace DD4hep {
     /// Public access to the popup menu using '->'
     TGPopupMenu* operator->() { return &m_popup; }
     /// Public access to the popup menu using '->'
-    operator TGPopupMenu* () { return &m_popup; }
+    operator TGPopupMenu* ()  { return &m_popup; }
 
     ClassDef(PopupMenu,0);
   };
-
-
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep     */
 #endif /* DD4HEP_DDEVE_POPUPMENU_H */
 

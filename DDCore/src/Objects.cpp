@@ -444,6 +444,8 @@ Region::Region(const string& nam) {
   p->store_secondaries = false;
   p->threshold = 10.0;
   p->cut = 10.0;
+  p->use_default_cut = true;
+  p->was_threshold_set = false;
 }
 
 Region& Region::setStoreSecondaries(bool value) {
@@ -453,11 +455,13 @@ Region& Region::setStoreSecondaries(bool value) {
 
 Region& Region::setThreshold(double value) {
   object<Object>().threshold = value;
+  object<Object>().was_threshold_set = true;
   return *this;
 }
 
 Region& Region::setCut(double value) {
   object<Object>().cut = value;
+  object<Object>().use_default_cut = false;
   return *this;
 }
 
@@ -479,6 +483,14 @@ double Region::threshold() const {
 /// Access secondaries flag
 bool Region::storeSecondaries() const {
   return object<Object>().store_secondaries;
+}
+
+bool Region::useDefaultCut() const {
+  return object<Object>().use_default_cut;
+}
+
+bool Region::wasThresholdSet() const {
+  return object<Object>().was_threshold_set;
 }
 
 #undef setAttr

@@ -82,6 +82,32 @@ void ConditionsSlice::reset()   {
   if ( pool.get() ) pool->clear();
 }
 
+/// Remove a new shared conditions dependency
+bool ConditionsSlice::remove(Dependency* dependency)   {
+  if ( dependency )  {
+    ConditionsProxy::iterator i = m_derived.find(dependency->key());
+    if ( i != m_derived.end() )  {
+      delete (*i).second;
+      m_derived.erase(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+/// Remove a new shared condition
+bool ConditionsSlice::remove(Condition condition)   {
+  if ( condition.isValid() )  {
+    ConditionsProxy::iterator i = m_conditions.find(condition->hash);
+    if ( i != m_conditions.end() )  {
+      delete (*i).second;
+      m_conditions.erase(i);
+      return true;
+    }
+  }
+  return false;
+}
+
 /// Add a new conditions dependency collection
 void ConditionsSlice::insert(const ConditionsDependencyCollection& deps)   {
   for ( const auto& d : deps ) this->insert(d.second.get());

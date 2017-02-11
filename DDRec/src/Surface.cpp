@@ -723,7 +723,7 @@ namespace DD4hep {
 
       //=========== compute and cache world transform for surface ==========
       
-      const TGeoHMatrix& wm = _det.worldTransformation() ;
+      const TGeoHMatrix& wm = _det.nominal().worldTransformation() ;
       
 #if 0 // debug
       wm.Print() ;

@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -80,28 +79,23 @@ namespace DD4hep {
       
       Geant4Tracker::Hit    pre, post;
       Position              mean_pos;
-      Geant4Sensitive*      sensitive;
-      G4VSensitiveDetector* thisSD;
-      double                distance_to_inside;
-      double                distance_to_outside;
-      double                mean_time;
-      double                step_length;
-      double                e_cut;
-      int                   current, parent;
-      int                   combined;
-      int                   hit_position_type;
-      int                   hit_flag;
-      int                   g4ID;
-      EInside               last_inside;
-      long long int         cell;
-      bool                  single_deposit_mode;
-      TrackerWeighted() : pre(), post(), sensitive(0), thisSD(0), 
-                          distance_to_inside(0.0), distance_to_outside(0.0), mean_time(0.0), 
-                          step_length(0.0), e_cut(0.0), current(-1), parent(0), combined(0),
-                          hit_position_type(POSITION_MIDDLE), hit_flag(0), g4ID(0), cell(0),
-                          single_deposit_mode(false)
-      {
-      }
+      Geant4Sensitive*      sensitive            = 0;
+      G4VSensitiveDetector* thisSD               = 0;
+      double                distance_to_inside   = 0.0;
+      double                distance_to_outside  = 0.0;
+      double                mean_time            = 0.0;
+      double                step_length          = 0.0;
+      double                e_cut                = 0.0;
+      int                   current              = 0;
+      int                   parent               = 0;
+      int                   combined             = 0;
+      int                   hit_position_type    = POSITION_MIDDLE;
+      int                   hit_flag             = 0;
+      int                   g4ID                 = 0;
+      EInside               last_inside          = kOutside;
+      long long int         cell                 = 0;
+      bool                  single_deposit_mode  = false;
+      TrackerWeighted() = default;
 
       /// Clear collected information and restart for new hit
       TrackerWeighted& clear()   {

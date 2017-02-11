@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H
-#define DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H
+#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H
+#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -31,9 +31,9 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN
      */
-    class AlignmentStack  {
+    class GlobalAlignmentStack  {
     public:
-      enum {
+      enum Flags {
         OVERLAP_DEFINED     = 1<<20,
         MATRIX_DEFINED      = 1<<21,
         CHECKOVL_DEFINED    = 1<<22,
@@ -41,7 +41,7 @@ namespace DD4hep {
         RESET_VALUE         = 1<<24,
         RESET_CHILDREN      = 1<<25,
         ____LLLAST          = 1<<31
-      } Flags;
+      };
 
       /// Stack entry definition
       /**
@@ -57,8 +57,10 @@ namespace DD4hep {
         /// Path to the misaligned volume
         std::string       path;
         /// Parameter for overlap checking
-        double            overlap;
+        double            overlap = 0.0;
 
+        /// Default constructor
+        StackEntry() = delete;
         /// Fully initializing constructor
         StackEntry(DetElement p, const std::string& placement, const Delta& t, double ov);
         /// Copy constructor
@@ -67,7 +69,7 @@ namespace DD4hep {
         virtual ~StackEntry();
 
         /// Assignment operator
-        StackEntry& operator=(const StackEntry& e);
+        StackEntry& operator=(const StackEntry& e) = default;
 
         /// Check if the overlap flag checking is enabled
         bool overlapDefined() const    {  return delta.checkFlag(OVERLAP_DEFINED);  }
@@ -98,14 +100,14 @@ namespace DD4hep {
       Stack m_stack;
 
       /// Default constructor
-      AlignmentStack();
+      GlobalAlignmentStack();
     public:
 
       /// Default destructor. Careful with this one:
-      virtual ~AlignmentStack();
+      virtual ~GlobalAlignmentStack();
 
       /// Static client accessor
-      static AlignmentStack& get();
+      static GlobalAlignmentStack& get();
       /// Create an alignment stack instance. The creation of a second instance will be refused.
       static void create();
       /// Check existence of alignment stack
@@ -126,6 +128,6 @@ namespace DD4hep {
       std::vector<const StackEntry*> entries() const;
     };
 
-  } /* End namespace Geometry        */
-} /* End namespace DD4hep            */
-#endif    /* DD4HEP_ALIGNMENT_ALIGNMENTSTACK_H       */
+  }       /* End namespace Geometry                        */
+}         /* End namespace DD4hep                          */
+#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H       */

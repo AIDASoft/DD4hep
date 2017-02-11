@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -64,12 +63,8 @@ namespace DD4hep {
     /// Helper: Load picture using path name
     virtual const TGPicture* LoadPicture(const std::string& path);
 
-    ClassDef(FrameControl,0)  // Top level window frame
+    ClassDefOverride(FrameControl,0)  // Top level window frame
   };
-
-
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep        */
 #endif /* DD4HEP_DDEVE_FRAMECONTROL_H */
 

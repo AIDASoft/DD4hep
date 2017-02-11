@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -109,11 +108,11 @@ namespace DD4hep {
   namespace Simulation {
 #define NO_CALL {      throw "This function shoule never ever be called!";    }
     /// Default constructor
-    inline SimpleRun::SimpleRun() {    }
+    inline SimpleRun::SimpleRun() : runID(0), numEvents(0)  {    }
     /// Default destructor
     inline SimpleRun::~SimpleRun() {    }
     /// Default constructor
-    inline SimpleEvent::SimpleEvent() {    }
+    inline SimpleEvent::SimpleEvent() : runID(0), eventID(0) {    }
     /// Default destructor
     inline SimpleEvent::~SimpleEvent() {    }
 
@@ -130,13 +129,13 @@ namespace DD4hep {
     /// Remove daughter from set
     inline void Geant4Particle::removeDaughter(int)   {   NO_CALL  }
     /// Default constructor
-    inline Geant4HitData::Geant4HitData()   {    }
+    inline Geant4HitData::Geant4HitData(): cellID(0), flag(0), g4ID(0)   {    }
     /// Default destructor
     inline  Geant4HitData::~Geant4HitData()  {    }
     /// Extract the MC contribution for a given hit from the step information
     inline Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step*) { return Contribution(); }
     /// Default constructor
-    inline Geant4Tracker::Hit::Hit()   {    }
+    inline Geant4Tracker::Hit::Hit() : length(0), energyDeposit(0e0)  {    }
     /// Initializing constructor
     inline Geant4Tracker::Hit::Hit(int, int, double, double)   {}
     /// Default destructor
@@ -148,9 +147,9 @@ namespace DD4hep {
     /// Store Geant4 point and step information into tracker hit structure.
     inline Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step*, const G4StepPoint*)  { return *this;}
     /// Default constructor
-    inline Geant4Calorimeter::Hit::Hit()   {    }
+    inline Geant4Calorimeter::Hit::Hit() : energyDeposit(0e0)  {    }
     /// Initializing constructor
-    inline Geant4Calorimeter::Hit::Hit(const Position&)  {}
+    inline Geant4Calorimeter::Hit::Hit(const Position&) : energyDeposit(0e0) {}
     /// Default destructor
     inline Geant4Calorimeter::Hit::~Hit()   {    }
   }

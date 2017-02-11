@@ -112,7 +112,7 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   //
   IOV iov(iov_typ,15);
   condMgr.prepare(iov,*slice);
-  registerAlignmentCallbacks(lcdd,*slice,alignMgr);
+  registerAlignmentCallbacks(lcdd,*slice);
 
   /******************** Compute  alignments *******************************/
   for(int i=0; i<num_iov; ++i)  {

@@ -490,7 +490,7 @@ namespace DD4hep {
       int           level, typeID;
       /// Default constructor
       Catalog();
-      Catalog(const Catalog&, const DetElement&) {}
+      Catalog(const Catalog&, const DetElement&) : level(0), typeID(0) {}
       /// Default destructor
       virtual ~Catalog();
       /// Reference count mechanism

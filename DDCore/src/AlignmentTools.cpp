@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -30,6 +29,18 @@ using     DD4hep::Alignments::AlignmentData;
 namespace DetectorTools = DD4hep::Geometry::DetectorTools;
 typedef   AlignmentData::MaskManipulator MaskManipulator;
 
+namespace {
+  void reset_matrix(TGeoHMatrix* m)  {
+    double tr[3]  = {0e0,0e0,0e0};
+    double rot[9] = {1e0,0e0,0e0,
+                     0e0,1e0,0e0,
+                     0e0,0e0,1e0};
+    m->SetTranslation(tr);
+    m->SetRotation(rot);
+  }
+
+}
+
 /// Copy alignment object from source object
 void DD4hep::Alignments::AlignmentTools::copy(Alignment from, Alignment to)   {
   Alignment::Object* f = from.ptr();
@@ -52,6 +63,7 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
   Alignment::Object* a = alignment.ptr();
   MaskManipulator mask(a->flag);
   DetElement parent = a->detector.parent();
+  reset_matrix(&a->detectorTrafo);
   if ( parent.isValid() )  {
     DetectorTools::PlacementPath path;
     DetectorTools::placementPath(parent, a->detector, path);
@@ -68,6 +80,9 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
     mask.set(AlignmentData::HAVE_PARENT_TRAFO);
     mask.set(AlignmentData::HAVE_WORLD_TRAFO);
     mask.set(AlignmentData::IDEAL);
+  }
+  else  {
+    reset_matrix(&a->worldTrafo);
   }
 }
 

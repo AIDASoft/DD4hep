@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,7 +15,7 @@
 
 // Framework include files
 #include "DD4hep/GlobalAlignment.h"
-#include "DDAlign/AlignmentStack.h"
+#include "DDAlign/GlobalAlignmentStack.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -25,9 +24,9 @@ namespace DD4hep {
   namespace Alignments {
 
     /// Forward declarations
-    class AlignmentOperator;
+    class GlobalAlignmentOperator;
     class GlobalAlignmentCache;
-    class AlignmentStack;
+    class GlobalAlignmentStack;
 
     /// Class caching all known alignment operations for one LCDD instance.
     /**
@@ -40,12 +39,12 @@ namespace DD4hep {
      */
     class GlobalAlignmentCache  {
       friend class LCDD;
-      friend class AlignmentOperator;
+      friend class GlobalAlignmentOperator;
 
     public:
-      typedef AlignmentStack Stack;
-      typedef AlignmentStack::StackEntry Entry;
-      typedef std::map<unsigned int, TGeoPhysicalNode*> Cache;
+      typedef GlobalAlignmentStack                        Stack;
+      typedef Stack::StackEntry                           Entry;
+      typedef std::map<unsigned int, TGeoPhysicalNode*>   Cache;
       typedef std::map<std::string,GlobalAlignmentCache*> SubdetectorAlignments;
 
     protected:
@@ -74,7 +73,7 @@ namespace DD4hep {
       GlobalAlignmentCache* subdetectorAlignments(const std::string& name);
 
       /// Population entry: Apply a complete stack of ordered alignments to the geometry structure
-      void apply(AlignmentStack& stack);
+      void apply(GlobalAlignmentStack& stack);
       /// Apply a vector of SD entries of ordered alignments to the geometry structure
       void apply(const std::vector<Entry*> &changes);
       /// Add a new entry to the cache. The key is the placement path
@@ -92,7 +91,7 @@ namespace DD4hep {
       /// Access the section name
       const std::string& name() const   {   return m_sdPath;  }
       /// Close existing transaction stack and apply all alignments
-      void commit(AlignmentStack& stack);
+      void commit(GlobalAlignmentStack& stack);
       /// Retrieve the cache section corresponding to the path of an entry.
       GlobalAlignmentCache* section(const std::string& path_name) const;
       /// Retrieve an alignment entry by its lacement path

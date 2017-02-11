@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -34,12 +33,10 @@ namespace DD4hep {
     /// Default destructor
     virtual ~RhoZProjection();
     /// Build the projection view and map it to the given slot
-    virtual View& Build(TEveWindow* slot);
+    virtual View& Build(TEveWindow* slot)  override;
     /// Root implementation macro
-    ClassDef(RhoZProjection,0);
+    ClassDefOverride(RhoZProjection,0);
   };
-
-} /* End namespace DD4hep   */
-
+}      /* End namespace DD4hep          */
 #endif /* DD4HEP_DDEVE_RHOZPROJECTION_H */
 

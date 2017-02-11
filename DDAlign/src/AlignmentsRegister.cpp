@@ -12,12 +12,13 @@
 //==========================================================================
 
 // Framework includes
+#include "DDAlign/AlignmentsRegister.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
+
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/DetConditions.h"
-
-#include "DDAlign/AlignmentsRegister.h"
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDCond/ConditionsSlice.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
@@ -26,8 +27,8 @@ using Conditions::Condition;
 // ======================================================================================
 
 /// Initializing constructor
-AlignmentsRegister::AlignmentsRegister(AlignmentsManager m, AlignmentUpdateCall* c, UserPool* p)
-  : alignmentMgr(m), updateCall(c), user_pool(p), extension("/Tranformations"),
+AlignmentsRegister::AlignmentsRegister(Slice& s, AlignmentsUpdateCall* c)
+  : slice(s), updateCall(c), extension("/Transformations"),
     alias("Alignment"), haveAlias(true), printLevel(DEBUG)
 {
 }
@@ -55,7 +56,7 @@ int AlignmentsRegister::processElement(DetElement de)  {
                "++ Processing DE %s hasConditions:%s [%d entries]",
                de.path().c_str(), yes_no(de.hasConditions()), int(cont.numKeys()));
       for ( const auto& c : cont.keys() )  {
-        Condition cond = cont.get(c.first, *user_pool);
+        Condition cond = cont.get(c.first, *slice.pool);
         printout(DEBUG,"AlignRegister",
                  "++ Processing DE %s Cond:%s Key:%16llX flags:%d",
                  de.path().c_str(), cond.name(), cond.key(), cond->flags);
@@ -79,7 +80,7 @@ int AlignmentsRegister::processElement(DetElement de)  {
             // Now add the dependency to the alignmant manager
             Conditions::DependencyBuilder b(k, updateCall, de);
             b.add(Conditions::ConditionKey(cond->name));
-            bool result = alignmentMgr.adoptDependency(b.release());
+            bool result = slice.insert(b.release());
             if ( result )   {
               printout(printLevel,"AlignRegister",
                        "++ Added Alignment dependency Cond:%s Key:%16llX flags:%d",

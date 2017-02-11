@@ -66,7 +66,8 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(RegionObject);
 
 /// Standard constructor
 RegionObject::RegionObject()
-  : magic(magic_word()), threshold(10.0), cut(10.0), store_secondaries(false)
+  : magic(magic_word()), threshold(10.0), cut(10.0), store_secondaries(false),
+    use_default_cut(true), was_threshold_set(false)
 {
   InstanceCount::increment(this);
 }

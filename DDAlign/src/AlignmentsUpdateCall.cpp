@@ -12,8 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DDAlign/AlignmentUpdateCall.h"
+#include "DDAlign/AlignmentsUpdateCall.h"
 #include "DDAlign/AlignmentsManager.h"
+
+#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
@@ -21,24 +24,30 @@
 using namespace DD4hep::Alignments;
 
 /// Default constructor
-AlignmentUpdateCall::AlignmentUpdateCall()
+AlignmentsUpdateCall::AlignmentsUpdateCall()
   : DD4hep::Conditions::ConditionUpdateCall(), printLevel(DEBUG)
 {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-AlignmentUpdateCall::~AlignmentUpdateCall() {
+AlignmentsUpdateCall::~AlignmentsUpdateCall() {
   InstanceCount::decrement(this);
 }
 
-AlignmentUpdateCall::Condition
-AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, const Delta& delta)  {
+AlignmentsUpdateCall::Condition
+AlignmentsUpdateCall::handle(const ConditionKey&  key,
+                             const UpdateContext& ctxt,
+                             Condition::key_type  source,
+                             const Delta&         delta)
+{
   AlignmentCondition target(key.name);
   AlignmentData&     data = target.data();
-  data.delta     = delta;
-  data.flag      = AlignmentData::HAVE_NONE;
-  data.detector  = ctxt.dependency.detector;
+  data.delta         = delta;
+  data.flag          = AlignmentData::HAVE_NONE;
+  data.detector      = ctxt.dependency.detector;
+  target->source_key = source;
+  target->setFlag(Condition::ALIGNMENT_DERIVED);
   //
   // This here is the main difference compared to other derived conditions:
   // ----------------------------------------------------------------------
@@ -55,21 +64,23 @@ AlignmentUpdateCall::handle(const ConditionKey& key, const UpdateContext& ctxt, 
   // are present in a second pass. This is necessary, because the parent information
   // may actually be supplied also 'later'.
   //
-  AlignmentsManager::newEntry(ctxt, data.detector, &ctxt.dependency, target);
+  AlignmentsManager::newEntry(ctxt, &ctxt.dependency, target);
   return target;
 }
 
 /// Handler to be called if the Alignment cannot be created due to a bad underlying data type.
-AlignmentUpdateCall::Condition
-AlignmentUpdateCall::invalidDataType(const ConditionKey& key, const UpdateContext& context)  {
+AlignmentsUpdateCall::Condition
+AlignmentsUpdateCall::invalidDataType(const ConditionKey& key, const UpdateContext& context)  {
   // Here only print and return an empty alignment condition.
   // Otherwise the return is not accepted!
   // TODO: To be decided how to handle this error
   Condition  cond = context.condition(0);
   DetElement det  = context.dependency.detector;
   Alignments::AlignmentCondition target(key.name);
-  Data& data = target.data();
-  data.detector = det;
+  Data& data         = target.data();
+  data.detector      = det;
+  data.flag          = AlignmentData::HAVE_NONE;
+  target->source_key = 0;
   printout(ERROR,"AlignmentUpdate","++ Failed to access alignment-Delta for %s from %s",
            det.path().c_str(), cond->value.c_str());
   printout(ERROR,"AlignmentUpdate","++ The true data type is: %s",typeName(cond.typeInfo()).c_str());

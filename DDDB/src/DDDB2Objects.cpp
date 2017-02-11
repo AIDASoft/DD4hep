@@ -261,13 +261,15 @@ namespace DD4hep {
         for(auto i = o->isotopes.begin(); i != o->isotopes.end(); ++i)  {
           auto iso = context->geo->isotopes.find((*i).first);
           if ( iso == context->geo->isotopes.end() )  {
-            /// Error!
+            printout(ERROR,"DDDB","++ Invalid isotope: %s [Ignore Isotope]",(*i).first.c_str());
+            continue;
           }
           Isotope* isotope = (*iso).second;
           TGeoIsotope* geo_iso = 
             (TGeoIsotope*)CNV<Isotope>(context->lcdd,context).convert(isotope);
           if ( !geo_iso )  {
-            /// Error!
+            printout(ERROR,"DDDB","++ Invalid isotope: %s [Ignore Isotope]",(*iso).first.c_str());
+            continue;
           }
           e->AddIsotope(geo_iso, (*i).second);
         }

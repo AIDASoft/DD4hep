@@ -677,8 +677,10 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
       else   {
         Geant4GeometryMaps::VolumeMap::iterator volIt = info.g4Volumes.find(dau_vol);
         if ( volIt == info.g4Volumes.end() )  {
-          printout(FATAL, "Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
+          printout(FATAL,"Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
                    __FILE__, __LINE__, name.c_str(), d->GetName());
+          except("Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
+                 __FILE__, __LINE__, name.c_str(), d->GetName());
         }
         g4->placeVolume(d,(*volIt).second, transform);
         printout(m_outputLevel, "Geant4Converter", "+++ Assembly: AddPlacedVolume : dau:%s "
@@ -702,12 +704,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     TGeoVolume* vol = node->GetVolume();
     TGeoMatrix* tr = node->GetMatrix();
     if (!tr) {
-      printout(FATAL, "Geant4Converter", "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p", node,
-               node->GetName(), node->IsA()->GetName(), vol);
+      except("Geant4Converter", "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p", node,
+             node->GetName(), node->IsA()->GetName(), vol);
     }
     else if (0 == vol) {
-      printout(FATAL, "Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p", node, node->GetName(),
-               node->IsA()->GetName(), vol);
+      except("Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p", node, node->GetName(),
+             node->IsA()->GetName(), vol);
     }
     else {
       int copy = node->GetNumber();
@@ -736,7 +738,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         //
         printout(m_outputLevel, "Geant4Converter", "+++ Assembly: makeImprint: dau:%s in mother %s "
                  "Tr:x=%8.3f y=%8.3f z=%8.3f",
-                 node->GetName(), mot_vol->GetName(),
+                 node->GetName(), mot_vol ? mot_vol->GetName() : "<unknown>",
                  transform.dx(), transform.dy(), transform.dz());
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;
@@ -772,11 +774,16 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     Region r = Ref_t(region);
     g4 = new G4Region(r.name());
     // set production cut
-    G4ProductionCuts* cuts = new G4ProductionCuts();
-    cuts->SetProductionCut(r.cut()*CLHEP::mm/dd4hep::mm);
-    g4->SetProductionCuts(cuts);
+    if( not r.useDefaultCut() ) {
+      G4ProductionCuts* cuts = new G4ProductionCuts();
+      cuts->SetProductionCut(r.cut()*CLHEP::mm/dd4hep::mm);
+      g4->SetProductionCuts(cuts);
+    }
 
     // create region info with storeSecondaries flag
+    if( not r.wasThresholdSet() and r.storeSecondaries() ) {
+      throw runtime_error("G4Region: StoreSecondaries is True, but no explicit threshold set:");
+    }
     G4UserRegionInformation* info = new G4UserRegionInformation();
     info->region = r;
     info->threshold = r.threshold()*CLHEP::MeV/dd4hep::MeV;

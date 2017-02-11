@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -47,12 +46,7 @@ namespace DD4hep {
       TNamed *n = dynamic_cast<TNamed*>(p);
       return n ? n->GetName() : "???";
     }
-
   }
-
-
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep     */
 #endif /* DD4HEP_DDEVE_UTILITIES_H */
 

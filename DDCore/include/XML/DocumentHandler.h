@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -44,8 +43,12 @@ namespace DD4hep {
       DocumentHandler();
       /// Default destructor
       virtual ~DocumentHandler();
+      /// Default comment string
+      static std::string defaultComment();
       // Create new XML document by parsing empty xml buffer
       Document create(const char* tag, const char* comment = 0) const;
+      // Create new XML document by parsing empty xml buffer
+      Document create(const std::string& tag, const std::string& comment) const;
       /// Load XML file and parse it.
       virtual Document load(const std::string& fname) const;
       /// Load XML file and parse it using URI resolver to read data.

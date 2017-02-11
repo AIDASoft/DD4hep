@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -10,8 +11,6 @@
 //  \date   2015-11-03
 //
 //==========================================================================
-// $Id$
-
 // Framework include files
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Kernel.h"

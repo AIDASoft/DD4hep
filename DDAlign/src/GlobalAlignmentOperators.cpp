@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,7 +15,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/objects/DetectorInterna.h"
-#include "DDAlign/AlignmentOperators.h"
+#include "DDAlign/GlobalAlignmentOperators.h"
 #include "DDAlign/GlobalDetectorAlignment.h"
 
 // C/C++ include files
@@ -26,18 +25,18 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
-void AlignmentOperator::insert(GlobalAlignment alignment)  const   {
+void GlobalAlignmentOperator::insert(GlobalAlignment alignment)  const   {
   if ( !cache.insert(alignment) )     {
     // Error
   }
 }
 
-void AlignmentSelector::operator()(Entries::value_type e)  const {
+void GlobalAlignmentSelector::operator()(Entries::value_type e)  const {
   TGeoPhysicalNode* pn = 0;
   nodes.insert(make_pair(e->path,make_pair(pn,e)));
 }
 
-void AlignmentSelector::operator()(const Cache::value_type& entry)  const {
+void GlobalAlignmentSelector::operator()(const Cache::value_type& entry)  const {
   TGeoPhysicalNode* pn = entry.second;
   for(Entries::const_iterator j=entries.begin(); j != entries.end(); ++j)   {
     Entries::value_type e = (*j);
@@ -56,23 +55,23 @@ void AlignmentSelector::operator()(const Cache::value_type& entry)  const {
   }
 }
 
-template <> void AlignmentActor<DDAlign_standard_operations::node_print>::init() {
+template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_print>::init() {
   printout(ALWAYS,"GlobalAlignmentCache","++++++++++++++++++++++++ Summary ++++++++++++++++++++++++");
 }
 
-template <> void AlignmentActor<DDAlign_standard_operations::node_print>::operator()(Nodes::value_type& n)  const {
+template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_print>::operator()(Nodes::value_type& n)  const {
   TGeoPhysicalNode* p = n.second.first;
   Entry* e = n.second.second;
   printout(ALWAYS,"GlobalAlignmentCache","Need to reset entry:%s - %s [needsReset:%s, hasMatrix:%s]",
            p->GetName(),e->path.c_str(),yes_no(e->needsReset()),yes_no(e->hasMatrix()));
 }
 
-template <> void AlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const {
+template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const {
   delete n.second.second;
   n.second.second = 0;
 }
 
-template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operator()(Nodes::value_type& n) const  {
+template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::operator()(Nodes::value_type& n) const  {
   TGeoPhysicalNode* p = n.second.first;
   string np;
   if ( p->IsAligned() )   {
@@ -83,7 +82,7 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
       if ( !mm->IsIdentity() && i > 0 )  {    // Ignore the 'world', is identity anyhow
         GlobalAlignment a = cache.get(np);
         if ( a.isValid() )  {
-          printout(ALWAYS,"AlignmentActor<reset>","Correct path:%s leaf:%s",p->GetName(),np.c_str());
+          printout(ALWAYS,"GlobalAlignmentActor<reset>","Correct path:%s leaf:%s",p->GetName(),np.c_str());
           TGeoHMatrix* glob = p->GetMatrix(i-1);
           if ( a.isValid() && i!=nLvl )   {
             *mm = *(a->GetOriginalMatrix());
@@ -91,8 +90,14 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
           else if ( i==nLvl ) {
             TGeoHMatrix* hm = dynamic_cast<TGeoHMatrix*>(mm);
             TGeoMatrix*  org = p->GetOriginalMatrix();
-            hm->SetTranslation(org->GetTranslation());
-            hm->SetRotation(org->GetRotationMatrix());
+            if ( hm && org )  {
+              hm->SetTranslation(org->GetTranslation());
+              hm->SetRotation(org->GetRotationMatrix());
+            }
+            else  {
+              printout(ALWAYS,"GlobalAlignmentActor<reset>",
+                       "Invalid operation: %p %p", (void*)hm, (void*)org);
+            }
           }
           *glob *= *mm;
         }
@@ -101,19 +106,19 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
   }
 }
 
-template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operator()(Nodes::value_type& n) const  {
+template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_align>::operator()(Nodes::value_type& n) const  {
   Entry&     e       = *n.second.second;
   bool       overlap = e.overlapDefined();
   DetElement det     = e.detector;
 
   if ( !det->global_alignment.isValid() && !e.hasMatrix() )  {
-    printout(WARNING,"AlignmentActor","++++ SKIP Alignment %s DE:%s Valid:%s Matrix:%s",
+    printout(WARNING,"GlobalAlignmentActor","++++ SKIP Alignment %s DE:%s Valid:%s Matrix:%s",
              e.path.c_str(),det.placementPath().c_str(),
              yes_no(det->global_alignment.isValid()), yes_no(e.hasMatrix()));
     return;
   }
   if ( GlobalDetectorAlignment::debug() )  {
-    printout(INFO,"AlignmentActor","++++ %s DE:%s Matrix:%s",
+    printout(INFO,"GlobalAlignmentActor","++++ %s DE:%s Matrix:%s",
              e.path.c_str(),det.placementPath().c_str(),yes_no(e.hasMatrix()));
   }
   // Need to care about optional arguments 'check_overlaps' and 'overlap'
@@ -146,7 +151,7 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operat
     insert(align);
     return;
   }
-  except("AlignmentActor","Failed to apply alignment for "+e.path);
+  except("GlobalAlignmentActor","Failed to apply alignment for "+e.path);
 }
 
 #if 0

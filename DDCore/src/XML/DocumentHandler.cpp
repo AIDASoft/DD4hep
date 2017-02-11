@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -451,7 +450,8 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
              fname.c_str(),"[URI Resolution is not supported by TiXML]");
   }
   else  {
-    printout(INFO,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
+    printout(INFO,"DocumentHandler","+++ Loading document URI: %s [Resolved:'%s']",
+             fname.c_str(),clean.c_str());
   }
   TiXmlDocument* doc = new TiXmlDocument(clean.c_str());
   bool result = false;
@@ -459,19 +459,23 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
     result = doc->LoadFile();
     if ( !result ) {
       if ( doc->Error() ) {
-        printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
+        printout(FATAL,"DocumentHandler","+++ Error (TinyXML) parsing XML document:%s [%s]",
+                 fname.c_str(), clean.c_str());
+        printout(FATAL,"DocumentHandler","+++ Error (TinyXML) XML parsing error:%s",
+                 doc->ErrorDesc());
         printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
                  doc->Value(), doc->ErrorRow(), doc->ErrorCol());
-        throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
+        except("DD4hep: file:%s error:%s",clean.c_str(),doc->ErrorDesc());
       }
-      throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TinyXML.");
+      except("DD4hep: Unknown error (TinyXML) while parsing:%s",fname.c_str());
     }
   }
   catch(exception& e) {
     printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(path):%s",e.what());
   }
   if ( result ) {
-    printout(INFO,"DocumentHandler","+++ Document %s succesfully parsed with TinyXML .....",fname.c_str());
+    printout(INFO,"DocumentHandler","+++ Document %s succesfully parsed with TinyXML .....",
+             fname.c_str());
     return (XmlDocument*)doc;
   }
   delete doc;
@@ -496,12 +500,15 @@ Document DocumentHandler::parse(const char* bytes, size_t /* length */, const ch
       return (XmlDocument*)doc;
     }
     if ( doc->Error() ) {
-      printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
-      printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
+      printout(FATAL,"DocumentHandler",
+               "+++ Error (TinyXML) while parsing XML string [%s]",
+               doc->ErrorDesc());
+      printout(FATAL,"DocumentHandler",
+               "+++ XML Document error: %s Location Line:%d Column:%d",
                doc->Value(), doc->ErrorRow(), doc->ErrorCol());
       throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
     }
-    throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");
+    throw runtime_error("DD4hep: Unknown error while parsing XML document with TiXml.");
   }
   catch(exception& e) {
     printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(string):%s",e.what());
@@ -549,6 +556,22 @@ DocumentHandler::DocumentHandler() {}
 /// Default destructor of a document handler using TiXml
 DocumentHandler::~DocumentHandler() {}
 
+/// Default comment string
+std::string DocumentHandler::defaultComment()  {
+  const char comment[] = "\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   DD4hep generated alignment file using the         ++++\n"
+    "      ++++   DD4hep Detector description XML generator.        ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+  return comment;
+}
+
 /// Load XML file and parse it.
 Document DocumentHandler::load(const std::string& fname) const {
   return load(fname, 0);
@@ -595,6 +618,11 @@ Document DocumentHandler::create(const char* tag, const char* comment) const {
     top_elt.addComment(comment);
   }
   return doc;
+}
+
+// Create new XML document by parsing empty xml buffer
+Document DocumentHandler::create(const std::string& tag, const std::string& comment) const   {
+  return create(tag.c_str(), comment.c_str());
 }
 
 /// Dump partial or full XML trees to stdout

@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,7 +15,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DDAlign/GlobalAlignmentCache.h"
-#include "DDAlign/AlignmentOperators.h"
+#include "DDAlign/GlobalAlignmentOperators.h"
 #include "DD4hep/objects/DetectorInterna.h"
 
 // ROOT include files
@@ -26,7 +25,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 using namespace DD4hep::Alignments::DDAlign_standard_operations;
-typedef AlignmentStack::StackEntry Entry;
+typedef GlobalAlignmentStack::StackEntry Entry;
 
 DetElement _detector(DetElement child)   {
   if ( child.isValid() )   {
@@ -75,7 +74,8 @@ int GlobalAlignmentCache::release()   {
 GlobalAlignmentCache* GlobalAlignmentCache::install(LCDD& lcdd)   {
   GlobalAlignmentCache* cache = lcdd.extension<GlobalAlignmentCache>(false);
   if ( !cache )  {
-    lcdd.addExtension<GlobalAlignmentCache>(new GlobalAlignmentCache(lcdd,"world",true));
+    cache = new GlobalAlignmentCache(lcdd,"world",true);
+    lcdd.addExtension<GlobalAlignmentCache>(cache);
   }
   return cache;
 }
@@ -164,7 +164,7 @@ vector<GlobalAlignment> GlobalAlignmentCache::matches(const string& match, bool 
 }
 
 /// Close existing transaction stack and apply all alignments
-void GlobalAlignmentCache::commit(AlignmentStack& stack)   {
+void GlobalAlignmentCache::commit(GlobalAlignmentStack& stack)   {
   TGeoManager& mgr = m_lcdd.manager();
   mgr.UnlockGeometry();
   apply(stack);
@@ -183,7 +183,7 @@ GlobalAlignmentCache* GlobalAlignmentCache::subdetectorAlignments(const string& 
 }
 
 /// Apply a complete stack of ordered alignments to the geometry structure
-void GlobalAlignmentCache::apply(AlignmentStack& stack)    {
+void GlobalAlignmentCache::apply(GlobalAlignmentStack& stack)    {
   typedef map<string,DetElement> DetElementUpdates;
   typedef map<DetElement,vector<Entry*> > sd_entries_t;
   TGeoManager& mgr = m_lcdd.manager();
@@ -239,12 +239,12 @@ void GlobalAlignmentCache::apply(AlignmentStack& stack)    {
 void GlobalAlignmentCache::apply(const vector<Entry*>& changes)   {
   typedef map<string,pair<TGeoPhysicalNode*,Entry*> > Nodes;
   Nodes nodes;
-  AlignmentSelector selector(*this,nodes,changes);
+  GlobalAlignmentSelector selector(*this,nodes,changes);
   for_each(m_cache.begin(),m_cache.end(),selector.reset());
-  for_each(nodes.begin(),nodes.end(),AlignmentActor<node_print>(*this,nodes));
-  for_each(nodes.begin(),nodes.end(),AlignmentActor<node_reset>(*this,nodes));
+  for_each(nodes.begin(),nodes.end(),GlobalAlignmentActor<node_print>(*this,nodes));
+  for_each(nodes.begin(),nodes.end(),GlobalAlignmentActor<node_reset>(*this,nodes));
 
   for_each(changes.begin(),changes.end(),selector.reset());
-  for_each(nodes.begin(),nodes.end(),AlignmentActor<node_align>(*this,nodes));
-  for_each(nodes.begin(),nodes.end(),AlignmentActor<node_delete>(*this,nodes));
+  for_each(nodes.begin(),nodes.end(),GlobalAlignmentActor<node_align>(*this,nodes));
+  for_each(nodes.begin(),nodes.end(),GlobalAlignmentActor<node_delete>(*this,nodes));
 }

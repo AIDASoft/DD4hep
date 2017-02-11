@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -77,7 +76,8 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
   : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_lcdd(&lcdd_ref), 
-    m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0), phase(this)  
+    m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0),
+    m_threadContext(0), phase(this)
 {
   m_lcdd->addExtension < Geant4Kernel > (this);
   m_ident = -1;
@@ -97,11 +97,13 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(Geant4Kernel* m, unsigned long ident)
   : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_lcdd(0),
-    m_numThreads(1), m_id(ident), m_master(m), m_shared(0), phase(this)
+    m_numThreads(1), m_id(ident), m_master(m), m_shared(0),
+    m_threadContext(0), phase(this)
 {
   char text[64];
   m_lcdd           = m_master->m_lcdd;
   m_ident          = m_master->m_workers.size();
+  m_numEvent       = m_master->m_numEvent;
   declareProperty("UI",m_uiName = m_master->m_uiName);
   declareProperty("OutputLevel", m_outputLevel = m_master->m_outputLevel);
   declareProperty("OutputLevels",m_clientLevels = m_master->m_clientLevels);

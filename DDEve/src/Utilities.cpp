@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -140,9 +139,6 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
     }
     shape->SetUserData(n);
     element = shape;
-  }
-  else  {
-    printout(INFO,"createEveShape","Weird!! %s",n->GetName());
   }
 
  Daughters:

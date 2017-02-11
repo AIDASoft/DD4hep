@@ -258,6 +258,7 @@ bool Manager_Type1::registerUnlocked(ConditionsPool* pool, Condition cond)   {
   if ( pool && cond.isValid() )  {
     cond->pool = pool;
     cond->iov  = pool->iov;
+    cond->setFlag(Condition::ACTIVE);
     pool->insert(cond);
     __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);
     return true;

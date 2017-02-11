@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -190,20 +189,18 @@ namespace DD4hep {
     /// Call to import event elements by topic
     void ImportEvent(const std::string& topic, TEveElement* el);
 
+    /// Consumer overload: open file
+    virtual void OnFileOpen(EventHandler& handler)  override;
     /// EventConsumer overload: Consumer event data
-    virtual void OnNewEvent(EventHandler* handler);
+    virtual void OnNewEvent(EventHandler& handler)  override;
 
     /// Build the DDEve specific menues. Default bar is the ROOT browser's bar
     virtual void BuildMenus(TGMenuBar* bar=0);
     /// Add new menu to the main menu bar
     virtual void AddMenu(TGMenuBar* bar, PopupMenu* menu, int hints=kLHintsNormal);
 
-    ClassDef(Display,0);
+    ClassDefOverride(Display,0);
   };
-
-
-} /* End namespace DD4hep   */
-
-
+}      /* End namespace DD4hep   */
 #endif /* DD4HEP_DDEVE_DISPLAY_H */
 

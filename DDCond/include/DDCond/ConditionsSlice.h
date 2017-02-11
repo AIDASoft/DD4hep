@@ -127,8 +127,12 @@ namespace DD4hep {
         virtual const std::type_info& type() const { return typeid(T); }
         virtual const void*           ptr() const  { return &info;     }
       };
-      template <typename T> static LoadInfo<T> loadInfo(const T& t)
-      { return LoadInfo<T>(t);                                         }
+      /// Concrete class for NO data loading information.
+      /**
+       *   \author  M.Frank
+       *   \version 1.0
+       *   \date    31/03/2016
+       */
       struct NoLoadInfo : public ConditionsLoadInfo {
         NoLoadInfo()           = default;
         NoLoadInfo(const NoLoadInfo& i) = default;
@@ -164,8 +168,8 @@ namespace DD4hep {
         virtual const void* data() const {  return (T*)this;  }
       };
       
-      typedef Condition::key_type       key_type;
-      typedef ConditionDependency       Dependency;
+      typedef Condition::key_type            key_type;
+      typedef ConditionDependency            Dependency;
       typedef std::map<key_type,Descriptor*> ConditionsProxy;
 
     public:
@@ -214,21 +218,20 @@ namespace DD4hep {
       ConditionsProxy& missingConditions()  { return m_missingConditions; }
       /// Access the map of missing computational conditions (only valid after preparation)
       ConditionsProxy& missingDerivations() { return m_missingDerivations;}
-
       /// Clear the container. Destroys the contained stuff
       void clear();
       /// Clear the conditions access and the user pool.
       void reset();
+      /// Remove a new shared conditions dependency
+      bool remove(Dependency* dependency);
+      /// Remove a condition from the slice
+      bool remove(Condition condition);
+
       /// Add a new conditions dependency collection
       void insert(const ConditionsDependencyCollection& deps);
       /// Add a new shared conditions dependency
       bool insert(Dependency* dependency);
-      /// Create slice entry for external usage
-      template <typename T> static
-      Descriptor* createDescriptor(const ConditionKey& key, const T& loadinfo)   {
-        Descriptor* e = new ConditionsLoaderDescriptor<T>(key,loadinfo);
-        return e;
-      }
+
       /// Add a new conditions key. T must inherot from class ConditionsSlice::Info
       template <typename T>
       bool insert(const ConditionKey& key, const T& loadinfo)   {
@@ -240,6 +243,15 @@ namespace DD4hep {
        */
       bool insert(Condition condition)   {
         return insert_condition(condition);
+      }
+      /// Create load-info object
+      template <typename T> static LoadInfo<T> loadInfo(const T& t) { return LoadInfo<T>(t);  }
+      
+      /// Create slice entry for external usage
+      template <typename T> static
+      Descriptor* createDescriptor(const ConditionKey& key, const T& loadinfo)   {
+        Descriptor* e = new ConditionsLoaderDescriptor<T>(key,loadinfo);
+        return e;
       }
     };
 

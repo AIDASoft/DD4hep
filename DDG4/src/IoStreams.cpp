@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -98,11 +97,11 @@ namespace DD4hep {
 
   /// Specialization for the usage of TFile structures
   template<> dd4hep_file<TFile*>::dd4hep_file(handle_type fd, dd4hep_file_flags flags)
-    : m_handle(fd), m_flag(flags)    {                                }
+    : m_handle(fd), m_flag(flags)    {                                         }
 
   /// Specialization for the usage of TFile structures
   template<> dd4hep_file<TFile*>::dd4hep_file(const char* fname, BOOST_IOS::openmode mode)
-    : m_handle(0), m_flag(close_handle)  { open(fname,mode);          }
+    : m_handle(0), m_flag(close_handle)  { open(fname,mode);                   }
 
   /// Specialization for the usage of TFile structures
   template<> std::streamsize dd4hep_file<TFile*>::read(char_type* s, std::streamsize n)  {

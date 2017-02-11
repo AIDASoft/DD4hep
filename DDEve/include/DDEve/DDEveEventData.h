@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -72,8 +71,6 @@ namespace DD4hep {
     DDEveParticle& operator=(const DDEveParticle& c);
   };
   typedef std::vector<DDEveParticle> DDEveParticles;
-} /* End namespace DD4hep   */
-
-
-#endif /* DD4HEP_DDEVE_DDEVEHIT_H */
+}      /* End namespace DD4hep     */
+#endif /* DD4HEP_DDEVE_DDEVEHIT_H  */
 
