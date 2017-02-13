@@ -49,6 +49,7 @@ except Exception as X:
   print '|  %-100s  |'%(str(X),)
   print '+--%-100s--+'%(100*'-',)
   exit(1)
+
 from ROOT import CLHEP as CLHEP
 Core       = DD4hep
 Sim        = DD4hep.Simulation
@@ -56,6 +57,7 @@ Simulation = DD4hep.Simulation
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
 LCDD       = Geo.LCDD
+from DD4hep import std, std_vector, std_list, std_map, std_pair
 
 #---------------------------------------------------------------------------
 def _constant(self,name):
