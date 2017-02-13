@@ -1264,10 +1264,10 @@ macro ( dd4hep_configure_scripts _pkg )
   dd4hep_list_to_string( _dir_entries PREFIX "DIRS:" ENTRIES ${MACRO_ARG_UNPARSED_ARGUMENTS} )
   dd4hep_print ( "|++> Setting up test environment for ${PackageName}: Testing:${BUILD_TESTING} Setup:${MACRO_ARG_DEFAULT_SETUP} With Tests(${MACRO_ARG_WITH_TESTS}): ${_dir_entries}" )
   if ( (NOT "${MACRO_ARG_DEFAULT_SETUP}" STREQUAL "") OR (NOT "${_pkg}" STREQUAL "") )
-    configure_file( ${DD4hep_DIR}/cmake/run_test_package.sh ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh @ONLY)
+    configure_file( ${DD4hep_CMAKE_FILES_PATH}/run_test_package.sh ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh @ONLY)
     INSTALL(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh DESTINATION bin )
     #---- configure run environment ---------------
-    configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh @ONLY)
+    configure_file( ${DD4hep_CMAKE_FILES_PATH}/thisdd4hep_package.sh.in  ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh @ONLY)
     install(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh DESTINATION bin )
     #--- install target-------------------------------------
     if ( IS_DIRECTORY scripts )

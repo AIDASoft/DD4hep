@@ -154,7 +154,7 @@ SET(SYSTEM_INSTALL_LOCATION ${CMAKE_INSTALL_PREFIX}/cmake)
 IF(SYSTEM_INSTALL)
   SET(SYSTEM_INSTALL_LOCATION ${CMAKE_INSTALL_LIBDIR}/DD4hep)
 ENDIF()
-FILE(GLOB_RECURSE cmake_module_files cmake/*.cmake)
+FILE(GLOB_RECURSE cmake_module_files cmake/*.cmake cmake/*.sh cmake/*.csh cmake/*.sh.in)
 install(FILES ${cmake_module_files}
   DESTINATION ${SYSTEM_INSTALL_LOCATION}
   #FILES_MATCHING PATTERN "*.cmake" PATTERN "thisdd4hep_package.sh.in" PATTERN "run*.sh"
