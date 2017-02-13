@@ -149,6 +149,14 @@ LCIOEventReader::readParticles(int event_number,
       haveVertex = false ;
     }
 
+    if ( p->parents.size() == 0 )  {
+      PropertyMask status(p->status);
+      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+      else
+	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+    }
+
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
     if ( mcp->isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);
     if ( mcp->vertexIsNotEndpointOfParent() ) status.set(G4PARTICLE_SIM_PARENT_RADIATED);
