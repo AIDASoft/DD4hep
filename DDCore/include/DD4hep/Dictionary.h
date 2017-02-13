@@ -380,6 +380,7 @@ template vector<pair<string, int> >::iterator;
 // -------------------------------------------------------------------------
 #ifdef __HAVE_DDSEGMENTATION__
 #include "DDSegmentation/Segmentation.h"
+#include "DDSegmentation/NoSegmentation.h"
 #include "DDSegmentation/CartesianGrid.h"
 #include "DDSegmentation/CartesianGridXY.h"
 #include "DDSegmentation/CartesianGridXYZ.h"
@@ -408,6 +409,7 @@ typedef DD4hep::DDSegmentation::CellID CellID;
 #endif
 
 #pragma link C++ class DD4hep::DDSegmentation::Segmentation+;
+#pragma link C++ class DD4hep::DDSegmentation::NoSegmentation+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGrid+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXY+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXYZ+;
