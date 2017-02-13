@@ -13,10 +13,10 @@
 #ifndef DD4HEP_LCDD_LCDD_H
 #define DD4HEP_LCDD_LCDD_H
 
-#include "DD4hep/DD4hepConfig.h"
+//#include "DD4hep/DD4hepConfig.h"
 // define version macros for DD4hep
-//#define DD4HEP_MAJOR_VERSION 0
-//#define DD4HEP_MINOR_VERSION 19
+#define DD4HEP_MAJOR_VERSION 0
+#define DD4HEP_MINOR_VERSION 19
 
 #define DD4HEP_VERSION_GE(MAJV,MINV)  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || \
                                         ( (DD4HEP_MAJOR_VERSION == MAJV ) && \
