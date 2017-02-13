@@ -24,6 +24,7 @@ SubdetectorExtensionImpl::SubdetectorExtensionImpl(const Geometry::DetElement& d
 
 /// Copy constructor
 SubdetectorExtensionImpl::SubdetectorExtensionImpl(const SubdetectorExtensionImpl& e, const Geometry::DetElement& d) {
+	this->resetAll();
 	this->det = d;
 	if (e._setIsBarrel) {
 		this->setIsBarrel(e.isBarrel());

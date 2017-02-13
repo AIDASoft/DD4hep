@@ -87,6 +87,18 @@ class _Levels:
     self.ALWAYS=7
 
 OutputLevel = _Levels()
+#------------------------Generic STL stuff can be accessed using std:  -----
+#
+#-- e.g. Create an instance of std::vector<DD4hep::Simulation::Geant4Vertex*>:
+#    >>> v=DD4hep.vector('DD4hep::Simulation::Geant4Vertex*')()
+#                          
+#---------------------------------------------------------------------------
+import cppyy
+std = cppyy.gbl.std
+std_vector = std.vector
+std_list   = std.list
+std_map    = std.map
+std_pair   = std.pair
 #---------------------------------------------------------------------------
 Core       = DD4hep
 Geo        = DD4hep.Geometry

@@ -61,7 +61,7 @@ LCIOEventReader::~LCIOEventReader()   {
 /// Read an event and fill a vector of MCParticles.
 LCIOEventReader::EventReaderStatus
 LCIOEventReader::readParticles(int event_number, 
-                               Vertex& /* primary_vertex */,
+			       Vertices& vertices,
                                vector<Particle*>& particles)
 {
   EVENT::LCCollection*        primaries = 0;
@@ -74,6 +74,17 @@ LCIOEventReader::readParticles(int event_number,
   int NHEP = primaries->getNumberOfElements();
   // check if there is at least one particle
   if ( NHEP == 0 ) return EVENT_READER_NO_PRIMARIES;
+
+  //fg: for now we create exactly one event vertex here ( as before )
+  //     and fill it below from the first final state particle 
+  Geant4Vertex* vtx = new Geant4Vertex ;
+  vertices.push_back( vtx );
+  vtx->x = 0;
+  vtx->y = 0;
+  vtx->z = 0;
+  vtx->time = 0;
+  bool haveVertex = true ;
+
 
   mcpcoll.resize(NHEP,0);
   for(int i=0; i<NHEP; ++i ) {
@@ -128,6 +139,24 @@ LCIOEventReader::readParticles(int event_number,
       cout << " #### WARNING - LCIOInputAction : unknown generator status : "
            << genStatus << " -> ignored ! " << endl;
     }
+
+    // fill vertex information from first stable particle
+    if( !haveVertex &&  genStatus == 1 ){
+      vtx->x = p->vsx ;
+      vtx->y = p->vsy ;
+      vtx->z = p->vsz ;
+      vtx->time = p->time ;
+      haveVertex = false ;
+    }
+
+    if ( p->parents.size() == 0 )  {
+      PropertyMask status(p->status);
+      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+      else
+	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+    }
+
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
     if ( mcp->isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);
     if ( mcp->vertexIsNotEndpointOfParent() ) status.set(G4PARTICLE_SIM_PARENT_RADIATED);

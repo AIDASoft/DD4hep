@@ -3,6 +3,18 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+
+Frank Gaede 2017-02-10
+   - allow event readers to create more than one vertex per event
+     this should be possible as most generator formats allow to specify
+     more than one event vertex 
+      - changed signature of Geant4EventReader::readParticles(int,Vertex*, Particles&)
+        to Geant4EventReader::readParticles(int,Vertices&, Particles& )
+      - implement in LCIOEventReader, Geant4EventReaderHepEvt and Geant4EventReaderHepMC
+      - for now still one vertex only is created using the first final state particle
+        for HepEvt and LCIO
+
   --------
  | v00-20 |
   --------

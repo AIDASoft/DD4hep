@@ -47,6 +47,7 @@ namespace DD4hep  {
       typedef Geant4Vertex   Vertex;
       typedef Geant4Particle Particle;
       typedef std::vector<Particle*> Particles;
+      typedef std::vector<Vertex*> Vertices;
       /// Status codes of the event reader object. Anything with NOT low-bit set is an error.
       enum EventReaderStatus {
         EVENT_READER_ERROR=0,
@@ -89,7 +90,7 @@ namespace DD4hep  {
       /** The additional argument
        */
       virtual EventReaderStatus readParticles(int event_number, 
-                                              Vertex& primary_vertex,
+                                              Vertices&  vertices,
                                               Particles& particles) = 0;
     };
 
@@ -109,6 +110,7 @@ namespace DD4hep  {
       typedef Geant4Vertex   Vertex;
       typedef Geant4Particle Particle;
       typedef std::vector<Particle*> Particles;
+      typedef std::vector<Vertex*> Vertices;
     protected:
       /// Property: input file
       std::string         m_input;
@@ -127,7 +129,9 @@ namespace DD4hep  {
 
     public:
       /// Read an event and return a LCCollectionVec of MCParticles.
-      int readParticles(int event_number, Vertex& primary_vertex, Particles& particles);
+      int readParticles(int event_number,
+			Vertices&  vertices,
+			Particles& particles);
       /// helper to report Geant4 exceptions
       std::string issue(int i) const;
 
