@@ -35,6 +35,7 @@ Readout    = DD4hep.Geometry.Readout
 GridXYZ = DD4hep.Geometry.GridXYZ
 GlobalGridXY = DD4hep.Geometry.GlobalGridXY
 CartesianGridXY = DD4hep.Geometry.CartesianGridXY
+NoSegmentation = DD4hep.Geometry.NoSegmentation
 ProjectiveCylinder = DD4hep.Geometry.ProjectiveCylinder
 NonProjectiveCylinder = DD4hep.Geometry.NonProjectiveCylinder
 ProjectiveZPlane = DD4hep.Geometry.ProjectiveZPlane
@@ -363,6 +364,10 @@ def create_CartesianGridXY(lcdd, elem) :
   obj = CartesianGridXY()
   if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
   if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
+  return obj
+
+def create_NoSegmentation(lcdd, elem) :
+  obj = NoSegmentation()
   return obj
 
 def create_ProjectiveCylinder(lcdd, elem) :

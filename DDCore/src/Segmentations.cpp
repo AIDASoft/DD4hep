@@ -120,6 +120,9 @@ Handle<SensitiveDetectorObject> Segmentation::sensitive() const  {
 #define IMPLEMENT_SEGMENTATION_HANDLE(X)                                \
   DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationWrapper<DDSegmentation::X>);
 
+#include "DDSegmentation/NoSegmentation.h"
+IMPLEMENT_SEGMENTATION_HANDLE(NoSegmentation)
+
 #include "DDSegmentation/CartesianGrid.h"
 IMPLEMENT_SEGMENTATION_HANDLE(CartesianGrid)
 
