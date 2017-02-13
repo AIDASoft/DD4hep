@@ -46,7 +46,7 @@ namespace DD4hep {
       virtual ~Geant4EventReaderGuineaPig();
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number,
-                                              Vertex& primary_vertex,
+                                              Vertices& vertices,
                                               std::vector<Particle*>& particles);
       virtual EventReaderStatus moveToEvent(int event_number);
       virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
@@ -104,9 +104,9 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
     printout(INFO,"EventReaderGuineaPig::moveToEvent","Skipping the first %d events ", event_number );
     printout(INFO,"EventReaderGuineaPig::moveToEvent","Event number before skipping: %d", m_currEvent );
     while ( m_currEvent < event_number ) {
-      Geant4Vertex vertex;
+      Vertices vertices;
       std::vector<Particle*> particles;
-      EventReaderStatus sc = readParticles(m_currEvent,vertex,particles);
+      EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
       for_each(particles.begin(),particles.end(),deleteObject<Particle>);
       if ( sc != EVENT_READER_OK ) return sc;
       //Current event is increased in readParticles already!
@@ -120,27 +120,13 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::readParticles(int /* event_number */, 
-                                         Vertex& /* primary_vertex */,
-                                         vector<Particle*>& particles)   {
+					  Vertices& vertices,
+					  vector<Particle*>& particles)   {
 
   // First check the input file status
   if ( !m_input.good() || m_input.eof() )   {
     return EVENT_READER_IO_ERROR;
   }
-  
-  //cout << "Hello! I am in the readParticles function of Geant4EventReaderGuineaPig" << endl;
-
-  //static const double c_light = 299.792;// mm/ns
-  //
-  //  Read the event, check for errors
-  //
-
-  //if( m_input.eof() )   {
-    //
-    // End of File :: ??? Exception ???
-    //   -> FG:   EOF is not an exception as it happens for every file at the end !
-    //return EVENT_READER_IO_ERROR;
-  //}
   
   double Energy;
   double betaX;
@@ -156,11 +142,11 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
                  >> betaX   >> betaY >> betaZ
                  >> posX    >> posY  >> posZ) {
 
-    cout << endl;
-    cout << "Reading line " << counter+1 
-         << ": (E,betaX,betaY,betaZ,posX,posY,posZ) = (" << Energy << "," << betaX << "," <<betaY << "," << betaZ << "," << posX << "," << posY << "," << posZ << ")" 
-         << endl;  
-    cout << endl;
+    // cout << endl;
+    // cout << "Reading line " << counter+1 
+    //      << ": (E,betaX,betaY,betaZ,posX,posY,posZ) = (" << Energy << "," << betaX << "," <<betaY << "," << betaZ << "," << posX << "," << posY << "," << posZ << ")" 
+    //      << endl;  
+    // cout << endl;
     
     //if(m_input.eof()) return EVENT_READER_IO_ERROR;
     //
@@ -184,24 +170,40 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     //  Mass
     p->mass = 0.0005109989461*GeV;
     //
+
+
+    //  Creation time (note the units [1/c_light])
+    // ( not information in GuineaPig files )
+    p->time       = 0.0;
+    p->properTime = 0.0;
+
+
     //  Vertex
-    // (missing information in HEPEvt files)
     p->vsx = posX*nm;
     p->vsy = posY*nm;
     p->vsz = posZ*nm;
+
+    Vertex* vtx = new Vertex ;
+    vtx->x = p->vsx ;
+    vtx->y = p->vsy ;
+    vtx->z = p->vsz ;
+    vtx->time = p->time ;
+
+    vtx->out.insert( p->id ); 
+
     //
     //  Generator status
     //  Simulator status 0 until simulator acts on it
     p->status = 0;
     status.set(G4PARTICLE_GEN_STABLE);
 
-    //  Creation time (note the units [1/c_light])
-    // (No information in HEPEvt files)
-    p->time       = 0.0;
-    p->properTime = 0.0;
 
     //  Add the particle to the collection vector
     particles.push_back(p);
+
+    // create a new vertex for this particle
+    vertices.push_back( vtx) ;
+
     counter++;
   } // End loop over particles
 
