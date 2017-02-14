@@ -24,13 +24,13 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /// Class to populate Geant4 primaries from StdHep files.
     /**
-     * Class to populate Geant4 primary particles and vertices from a
-     * file in HEPEvt format (ASCII)
-     *
-     *  \author  P.Kostka (main author)
-     *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  Reader for ascii files with e+e- pairs created from GuineaPig.
+     *  Will read complete the file into one event - unless skip N events is
+     *  called, then N particles are compiled into one event.
+     * 
+     *  \author  F.Gaede, DESY
+     *  \author  A. Perez Perez IPHC
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
@@ -38,7 +38,8 @@ namespace DD4hep {
 
     protected:
       std::ifstream m_input;
-
+      int m_part_num ;
+      
     public:
       /// Initializing constructor
       explicit Geant4EventReaderGuineaPig(const std::string& nam);
@@ -54,13 +55,6 @@ namespace DD4hep {
   }     /* End namespace Simulation   */
 }       /* End namespace DD4hep       */
 
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
-//  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
-//
-//====================================================================
-// #include "DDG4/Geant4EventReaderGuineaPig"
 
 // Framework include files
 #include "DDG4/Factories.h"
@@ -81,7 +75,7 @@ DECLARE_GEANT4_EVENT_READER(Geant4EventReaderGuineaPig)
 
 /// Initializing constructor
 Geant4EventReaderGuineaPig::Geant4EventReaderGuineaPig(const string& nam)
-: Geant4EventReader(nam), m_input()
+: Geant4EventReader(nam), m_input(), m_part_num(-1) 
 {
   // Now open the input file:
   m_input.open(nam.c_str(),ifstream::in);
@@ -97,23 +91,19 @@ Geant4EventReaderGuineaPig::~Geant4EventReaderGuineaPig()    {
   m_input.close();
 }
 
-/// skipEvents if required
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
-  if( m_currEvent == 0 && event_number != 0 ) {
-    printout(INFO,"EventReaderGuineaPig::moveToEvent","Skipping the first %d events ", event_number );
-    printout(INFO,"EventReaderGuineaPig::moveToEvent","Event number before skipping: %d", m_currEvent );
-    while ( m_currEvent < event_number ) {
-      Vertices vertices;
-      std::vector<Particle*> particles;
-      EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
-      for_each(particles.begin(),particles.end(),deleteObject<Particle>);
-      if ( sc != EVENT_READER_OK ) return sc;
-      //Current event is increased in readParticles already!
-      // ++m_currEvent;
-    }
+  
+  //  if( m_currEvent == 0 && event_number > 0 ){
+  if( m_part_num < 0 ){
+
+    m_part_num = event_number ;
+  
+    printout(INFO,"EventReaderGuineaPig::moveToEvent"," --- Will read %d particles per event from pairs file ", m_part_num );
+    printout(INFO,"EventReaderGuineaPig::moveToEvent"," ***  Due to a workaround event numbers will start from %d  for now !!", m_part_num );
+
   }
-  printout(INFO,"EventReaderGuineaPig::moveToEvent","Event number after skipping: %d", m_currEvent );
+  
   return EVENT_READER_OK;
 }
 
@@ -122,6 +112,13 @@ Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::readParticles(int /* event_number */, 
 					  Vertices& vertices,
 					  vector<Particle*>& particles)   {
+
+
+  // if no number of particles per event set, we will read the whole file
+  if ( m_part_num == 0 )
+    m_part_num = std::numeric_limits<int>::max() ; 
+
+
 
   // First check the input file status
   if ( !m_input.good() || m_input.eof() )   {
@@ -137,18 +134,21 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
   double posZ;
 
   //  Loop over particles
-  int counter = 0;
-  while(m_input >> Energy
-                 >> betaX   >> betaY >> betaZ
-                 >> posX    >> posY  >> posZ) {
+  for( int counter = 0; counter < m_part_num ; ++counter ){      
 
-    // cout << endl;
-    // cout << "Reading line " << counter+1 
-    //      << ": (E,betaX,betaY,betaZ,posX,posY,posZ) = (" << Energy << "," << betaX << "," <<betaY << "," << betaZ << "," << posX << "," << posY << "," << posZ << ")" 
-    //      << endl;  
-    // cout << endl;
     
-    //if(m_input.eof()) return EVENT_READER_IO_ERROR;
+    m_input >> Energy
+	    >> betaX   >> betaY >> betaZ
+	    >> posX    >> posY  >> posZ ;
+
+    if( m_input.eof() ) {
+      
+      if( counter==0 ) 
+	return EVENT_READER_IO_ERROR ;  // reading first particle of event failed 
+      else
+	return EVENT_READER_OK ; // simply EOF
+    }
+    
     //
     //  Create a MCParticle and fill it from stdhep info
     Particle* p = new Particle(counter);
@@ -204,7 +204,7 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     // create a new vertex for this particle
     vertices.push_back( vtx) ;
 
-    counter++;
+    //    counter++;
   } // End loop over particles
 
   ++m_currEvent;
