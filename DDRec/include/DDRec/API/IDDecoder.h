@@ -150,7 +150,6 @@ public:
 
 protected:
 	Geometry::VolumeManager _volumeManager;
-	TGeoManager* _tgeoMgr;
 
 	/// Helper method to find the corresponding Readout object to a DetElement
 	Geometry::Readout findReadout(const Geometry::DetElement& det) const;
