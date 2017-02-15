@@ -46,7 +46,7 @@ using DDSurfaces::Vector3D;
 using std::cout;
 using std::endl;
 
-int main(int argc, char** argv)   {
+int main_wrapper(int argc, char** argv)   {
   struct Handler  {
     Handler() { SetErrorHandler(Handler::print); }
     static void print(int level, Bool_t abort, const char *location, const char *msg)  {
@@ -54,11 +54,11 @@ int main(int argc, char** argv)   {
     }
     static void usage()  {
       std::cout << " usage: graphicalMaterialScan compact.xml axis xMin yMin zMin xMax yMax zMax nSlices nBins nSamples" << std::endl
-		<< " axis (X, Y, or Z)             : perpendicular to the slices" << std::endl 
-		<< " xMin yMin zMin xMax yMax zMax : range of scans " << std::endl 
-		<< " nSlices                       : number of slices (equally spaced along chose axis)" << std::endl 
-		<< " nBins                         : number of bins along each axis of histograms" << std::endl 
-		<< " nSamples                      : the number of times each bin is sampled " << std::endl 
+                << " axis (X, Y, or Z)             : perpendicular to the slices" << std::endl 
+                << " xMin yMin zMin xMax yMax zMax : range of scans " << std::endl 
+                << " nSlices                       : number of slices (equally spaced along chose axis)" << std::endl 
+                << " nBins                         : number of bins along each axis of histograms" << std::endl 
+                << " nSamples                      : the number of times each bin is sampled " << std::endl 
                 << "        -> produces graphical scans of the detector material "
                 << std::endl;
       exit(1);
@@ -159,8 +159,8 @@ int main(int argc, char** argv)   {
 
     for (int j=1; j<=2; j++) {
       if ( mmax[index[j]] - mmin[index[j]] < 1e-4 ) {
-	cout << "ERROR: max and min of axis are the same!" << endl;
-	assert(0);
+        cout << "ERROR: max and min of axis are the same!" << endl;
+        assert(0);
       }
     }
 
@@ -181,62 +181,62 @@ int main(int argc, char** argv)   {
 
       for (int iy=1; iy<=h2slice->GetNbinsY(); iy++) { // and the other axis
 
-	double ymin = h2slice->GetYaxis()->GetBinLowEdge(iy);
-	double ymax = h2slice->GetYaxis()->GetBinUpEdge(iy);
+        double ymin = h2slice->GetYaxis()->GetBinLowEdge(iy);
+        double ymax = h2slice->GetYaxis()->GetBinUpEdge(iy);
 
-	// for this bin, estimate the material
-	double sum_lambda(0);
-	double sum_x0(0);
-	double sum_length(0);
+        // for this bin, estimate the material
+        double sum_lambda(0);
+        double sum_x0(0);
+        double sum_length(0);
 
-	std::map < std::string , float > materialmap;
+        std::map < std::string , float > materialmap;
 
-	for (unsigned int jx=0; jx<2*mm; jx++) {
-	  if ( jx<mm ) {
-	    double xcom = xmin + (1+jx)*( xmax - xmin )/(mm+1.);
-	    p0.array()[index[1]] = xcom;  p0.array()[index[2]] = ymin;
-	    p1.array()[index[1]] = xcom;  p1.array()[index[2]] = ymax;
-	  } else {
-	    double ycom =  ymin + (jx-mm+1)*( ymax - ymin )/(mm+1.);
-	    p0.array()[index[1]] = xmin;  p0.array()[index[2]] = ycom;
-	    p1.array()[index[1]] = xmax;  p1.array()[index[2]] = ycom;
-	  }
+        for (unsigned int jx=0; jx<2*mm; jx++) {
+          if ( jx<mm ) {
+            double xcom = xmin + (1+jx)*( xmax - xmin )/(mm+1.);
+            p0.array()[index[1]] = xcom;  p0.array()[index[2]] = ymin;
+            p1.array()[index[1]] = xcom;  p1.array()[index[2]] = ymax;
+          } else {
+            double ycom =  ymin + (jx-mm+1)*( ymax - ymin )/(mm+1.);
+            p0.array()[index[1]] = xmin;  p0.array()[index[2]] = ycom;
+            p1.array()[index[1]] = xmax;  p1.array()[index[2]] = ycom;
+          }
 
-	  const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
-	  for( unsigned i=0,n=materials.size();i<n;++i){
-	    TGeoMaterial* mat =  materials[i].first->GetMaterial();
-	    double length = materials[i].second;
-	    sum_length += length;
-	    double nx0 = length / mat->GetRadLen();
-	    sum_x0 += nx0;
-	    double nLambda = length / mat->GetIntLen();
-	    sum_lambda += nLambda;
+          const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
+          for( unsigned i=0,n=materials.size();i<n;++i){
+            TGeoMaterial* mat =  materials[i].first->GetMaterial();
+            double length = materials[i].second;
+            sum_length += length;
+            double nx0 = length / mat->GetRadLen();
+            sum_x0 += nx0;
+            double nLambda = length / mat->GetIntLen();
+            sum_lambda += nLambda;
 
-	    std::string mname = mat->GetName();
-	    if ( materialmap.find( mname )!=materialmap.end() ) {
-	      materialmap[mname]+=length;
-	    } else {
-	      materialmap[mname]=length;
-	    }
+            std::string mname = mat->GetName();
+            if ( materialmap.find( mname )!=materialmap.end() ) {
+              materialmap[mname]+=length;
+            } else {
+              materialmap[mname]=length;
+            }
 
-	  }
+          }
 
-	}
+        }
 	
-	scanmap["x0"]->SetBinContent(ix, iy, sum_x0/sum_length); // normalise to cm (ie x0/cm density: indep of bin size)
-	scanmap["lambda"]->SetBinContent(ix, iy, sum_lambda/sum_length);
+        scanmap["x0"]->SetBinContent(ix, iy, sum_x0/sum_length); // normalise to cm (ie x0/cm density: indep of bin size)
+        scanmap["lambda"]->SetBinContent(ix, iy, sum_lambda/sum_length);
 
-	for (  std::map < std::string , float >::iterator jj = materialmap.begin(); jj!=materialmap.end(); jj++) {
-	  if ( scanmap.find( jj->first )==scanmap.end() ) {
-	    hn = "slice"; hn+=isl; hn+="_"+jj->first;
-	    hnn = jj->first; hnn += " "+XYZ; hnn+="="; 
-	    // hnn+=sz; 
-	    hnn += Form("%7.3f",sz);
-	    hnn+=" [cm]";
-	    scanmap[jj->first] = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
-	  }
-	  scanmap[jj->first]->SetBinContent(ix, iy, jj->second / sum_length );
-	}
+        for (  std::map < std::string , float >::iterator jj = materialmap.begin(); jj!=materialmap.end(); jj++) {
+          if ( scanmap.find( jj->first )==scanmap.end() ) {
+            hn = "slice"; hn+=isl; hn+="_"+jj->first;
+            hnn = jj->first; hnn += " "+XYZ; hnn+="="; 
+            // hnn+=sz; 
+            hnn += Form("%7.3f",sz);
+            hnn+=" [cm]";
+            scanmap[jj->first] = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+          }
+          scanmap[jj->first]->SetBinContent(ix, iy, jj->second / sum_length );
+        }
 
 
       }
@@ -247,13 +247,22 @@ int main(int argc, char** argv)   {
       jj->second->GetXaxis()->SetTitle(labx);
       jj->second->GetYaxis()->SetTitle(laby);
     }
-
-
   }
-
-
   f->Write();
   f->Close();
-
   return 0;
+}
+
+/// Main entry point as a program
+int main(int argc, char** argv)   {
+  try  {
+    return main_wrapper(argc, argv);
+  }
+  catch(const std::exception& e)  {
+    std::cout << "Got uncaught exception: " << e.what() << std::endl;
+  }
+  catch (...)  {
+    std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+  }
+  return EINVAL;    
 }

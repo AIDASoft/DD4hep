@@ -46,8 +46,15 @@ namespace DD4hep {
        */
       class ConditionsLoadInfo {
       public:
+        /// Default constructor
+        ConditionsLoadInfo() = default;
+        /// Copy constructor
+        ConditionsLoadInfo(const ConditionsLoadInfo& copy) = default;
         /// Default destructor. 
         virtual ~ConditionsLoadInfo();
+        /// Assignment operator
+        ConditionsLoadInfo& operator=(const ConditionsLoadInfo& copy) = default;
+
         virtual const std::type_info& type() const = 0;
         virtual const void*           ptr()  const = 0;
         template<typename T> T*       data() const {  return (T*)ptr(); }
@@ -117,15 +124,13 @@ namespace DD4hep {
        */
       template <typename T> struct LoadInfo : public ConditionsLoadInfo {
         T info;
-        LoadInfo()           = default;
         LoadInfo(const T& i) : info(i) {}
-        virtual ~LoadInfo()  = default;
-        LoadInfo& operator=(const LoadInfo& copy) {
-          if ( &copy != this ) info = copy.info;
-          return *this;
-        }
+        LoadInfo()                  = default;
+        LoadInfo(const LoadInfo& c) = default;
+        virtual ~LoadInfo()         = default;
+        LoadInfo& operator=(const LoadInfo& copy) = default;
         virtual const std::type_info& type() const { return typeid(T); }
-        virtual const void*           ptr() const  { return &info;     }
+        virtual const void*           ptr()  const { return &info;     }
       };
       /// Concrete class for NO data loading information.
       /**

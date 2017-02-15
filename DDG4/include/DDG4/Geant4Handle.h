@@ -56,7 +56,7 @@ namespace DD4hep {
       /// Copy constructor
       Geant4Handle(const Geant4Handle& handle);
       /// Move constructor
-      //Geant4Handle(Geant4Handle&& handle) = default;
+      Geant4Handle(Geant4Handle&& handle);
       /// Initializing constructor
       Geant4Handle(Geant4Kernel&, const char* type_name, bool shared=false);
       /// Initializing constructor
@@ -70,7 +70,7 @@ namespace DD4hep {
       /// Assignment operator
       Geant4Handle& operator=(const Geant4Handle& handle);
       /// Move assignment operator
-      //Geant4Handle& operator=(Geant4Handle&& handle) = default;
+      Geant4Handle& operator=(Geant4Handle&& handle);
       /// Assignment operator
       Geant4Handle& operator=(handled_type* ptr);
       /// Validity check

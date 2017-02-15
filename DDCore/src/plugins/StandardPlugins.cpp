@@ -588,13 +588,18 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
           }
         }
         if ( m_printPositions )  {
-          const double* trans = ideal->GetMatrix()->GetTranslation();
-          ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+          if ( ideal )  {
+            const double* trans = ideal->GetMatrix()->GetTranslation();
+            ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+          }
+          else  {
+            ::snprintf(fmt, sizeof(fmt), " <ERROR: INVALID Translation matrix> ");
+          }
           log << fmt;
         }
         opt_info = log.str();
       }
-      TGeoVolume* volume = ideal->GetVolume();
+      TGeoVolume* volume = ideal ? ideal->GetVolume() : 0;
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
         char sens = pv.volume().isSensitive() ? 'S' : ' ';
         if ( m_printPointers )    {
@@ -623,10 +628,15 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
                  opt_info.c_str());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
-        TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
-        const char* daughter_name    = ideal_daughter->GetName();
-        TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
-        dump(ideal_daughter, aligned_daughter, level+1, volids);
+        if ( ideal )   {
+          TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
+          const char* daughter_name    = ideal_daughter->GetName();
+          TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
+          dump(ideal_daughter, aligned_daughter, level+1, volids);
+        }
+        else  {
+          printout(ERROR,"VolumeDump"," <ERROR: INVALID IDEAL Translation matrix>: %s",aligned->GetName());
+        }
       }
       return 1;
     }

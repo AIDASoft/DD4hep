@@ -84,8 +84,8 @@ namespace   {
                  void* creator_stub, 
                  const char* signature, 
                  const char* return_type);
-    PluginInterface() throw(std::exception);
-    static PluginInterface& instance()  throw(std::exception)   {
+    PluginInterface() noexcept(false);
+    static PluginInterface& instance()  noexcept(false)   {
       static PluginInterface s_instance;
       return s_instance;
     }
@@ -110,7 +110,7 @@ namespace   {
     return fp.fptr.fcn;
   }
 
-  PluginInterface::PluginInterface()   throw(std::exception)
+  PluginInterface::PluginInterface()  noexcept(false)
     : getDebug(0), setDebug(0), create(0), add(0)
   {
     void* handle = 0;

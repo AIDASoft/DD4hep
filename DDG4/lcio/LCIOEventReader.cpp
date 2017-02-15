@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -61,7 +60,7 @@ LCIOEventReader::~LCIOEventReader()   {
 /// Read an event and fill a vector of MCParticles.
 LCIOEventReader::EventReaderStatus
 LCIOEventReader::readParticles(int event_number, 
-			       Vertices& vertices,
+                               Vertices& vertices,
                                vector<Particle*>& particles)
 {
   EVENT::LCCollection*        primaries = 0;
@@ -150,11 +149,11 @@ LCIOEventReader::readParticles(int event_number,
     }
 
     if ( p->parents.size() == 0 )  {
-      PropertyMask status(p->status);
-      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
-	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+      PropertyMask st(p->status);
+      if ( st.isSet(G4PARTICLE_GEN_EMPTY) || st.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+        vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
       else
-	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+        vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     }
 
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);

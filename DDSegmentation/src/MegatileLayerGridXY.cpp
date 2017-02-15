@@ -18,7 +18,8 @@ namespace DD4hep {
 
     /// default constructor using an encoding string
     MegatileLayerGridXY::MegatileLayerGridXY(const std::string& cellEncoding) :
-      CartesianGrid(cellEncoding) {
+      CartesianGrid(cellEncoding)
+    {
       setup();
     }
 

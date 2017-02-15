@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -63,10 +62,15 @@ namespace DD4hep {
         value->addRef();
     }
 
-    template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Handle<TYPE>& handle)
-      : value(handle.get()) {
+    template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Handle<TYPE>& handle) : value(handle.get())
+    {
       if (value)
         value->addRef();
+    }
+
+    template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Handle<TYPE>&& handle) : value(handle.get())
+    {
+      handle.value = 0;
     }
 
     template <typename TYPE> TYPE* _create_object(Geant4Kernel& kernel, const TypeName& typ)    {
@@ -190,6 +194,14 @@ namespace DD4hep {
         if ( value ) value->addRef();
         if ( point ) point->release();
       }
+      return *this;
+    }
+
+    /// Assignment move operator
+    template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(Geant4Handle&& handle) {
+      if ( value ) value->release();
+      value = handle.get();
+      handle.value = 0;
       return *this;
     }
 

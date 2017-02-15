@@ -57,7 +57,7 @@ size_t Interna::ConditionObject::offset()   {
 /// Access the bound data payload. Exception id object is unbound
 void* Interna::ConditionObject::payload() const   {
   void** p = (void**)(((char*)this)+offset());
-  return p ? *p : 0;
+  return *p;
 }
 
 /// Move data content: 'from' will be reset to NULL

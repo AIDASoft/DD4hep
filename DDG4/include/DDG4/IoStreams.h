@@ -87,7 +87,7 @@ namespace DD4hep {
     /// Constructors taking file desciptors
     dd4hep_file(const char* fname, BOOST_IOS::openmode mode);
     /// Default destructor
-    ~dd4hep_file() = default;
+    //~dd4hep_file() = default;
     /// open overloads taking file descriptors
     void open(handle_type fd, dd4hep_file_flags flags);
     /// open overload taking C-style string
