@@ -159,15 +159,21 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   //
   //  Read the event, check for errors
   //
-  int NHEP;  // number of entries
+  unsigned NHEP(0);  // number of entries
   m_input >> NHEP;
-  if( m_input.eof() )   {
-    //
-    // End of File :: ??? Exception ???
-    //   -> FG:   EOF is not an exception as it happens for every file at the end !
-    return EVENT_READER_IO_ERROR;
+
+  if( m_input.eof() ){ return EVENT_READER_IO_ERROR; }
+
+
+  //check loop variable read from input file and chack that is reasonable
+  // should fix coverity issue: "Using tainted variable NHEP as a loop boundary."
+
+  if( NHEP > 1e6 ){ 
+    printout(ERROR,"EventReaderHepEvt::readParticles","Cannot read in more than million particles, but  %d requested", NHEP );
+    return EVENT_READER_IO_ERROR; 
   }
 
+  
   //fg: for now we create exactly one event vertex here ( as before )
   //     and fill it below from the first final state particle 
   Geant4Vertex* vtx = new Geant4Vertex ;
@@ -277,7 +283,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   //  information, and this utility assumes all parents listed are
   //  parents and all daughters listed are daughters
   //
-  for( int IHEP=0; IHEP<NHEP; IHEP++ )    {
+  for( unsigned IHEP=0; IHEP<NHEP; IHEP++ )    {
     struct ParticleHandler  {
       Particle* m_part;
       ParticleHandler(Particle* p) : m_part(p) {}
