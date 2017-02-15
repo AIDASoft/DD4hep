@@ -145,12 +145,11 @@ LCIOEventReader::readParticles(int event_number,
       vtx->y = p->vsy ;
       vtx->z = p->vsz ;
       vtx->time = p->time ;
-      haveVertex = false ;
+      haveVertex = true ;
     }
 
     if ( p->parents.size() == 0 )  {
-      PropertyMask st(p->status);
-      if ( st.isSet(G4PARTICLE_GEN_EMPTY) || st.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
         vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
       else
         vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
