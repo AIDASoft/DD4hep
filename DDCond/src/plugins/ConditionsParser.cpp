@@ -135,7 +135,9 @@ namespace DD4hep {
     xml_comp_t elt(e);
     string tag = elt.tag();
     ConversionArg* arg  = _param<ConversionArg>();
-    if ( tag == "conditions" )  
+    if ( !arg )
+      except("ConditionsParser","++ Invalid parser argument [Internal Error]");
+    else if ( tag == "conditions" )  
       Converter<conditions>(lcdd,param,optional)(e);
     else if ( arg->stack && tag == "detelement" )
       Converter<conditions>(lcdd,param,optional)(e);

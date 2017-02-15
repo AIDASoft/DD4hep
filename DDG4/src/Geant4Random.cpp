@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -249,9 +248,13 @@ void Geant4Random::showStatus() const    {
   printP2("   Instance is %sidentical to ROOT's gRandom instance.",
           gRandom == m_rootRandom ? "" : "NOT ");
 
-  if ( gRandom != m_rootRandom )  {
+  if ( gRandom != m_rootRandom )   {
     printP2("      Local TRandom: 0x%p  gRandom: 0x%p",m_rootRandom,gRandom);
-  }  
+  }
+  else if ( !m_engine )   {
+    error("   Geant4Random instance has not engine attached!");
+    return;
+  }
   m_engine->showStatus();
 }
 

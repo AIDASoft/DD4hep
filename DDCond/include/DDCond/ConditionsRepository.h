@@ -45,17 +45,10 @@ namespace DD4hep {
       class Entry  {
       public:
         std::string name, address;
-        Condition::key_type key;
-        Entry() {}
-        Entry(const Entry& e) : name(e.name), address(e.address), key(e.key) {}
-        Entry& operator=(const Entry& e) {
-          if ( this != &e )  {
-            key = e.key;
-            name = e.name;
-            address = e.address;
-          }
-          return *this;
-        }
+        Condition::key_type key = 0;
+        Entry() = default;
+        Entry(const Entry& e) = default;
+        Entry& operator=(const Entry& e) = default;
       };
       typedef std::vector<Entry> Data;
 

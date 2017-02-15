@@ -24,10 +24,17 @@ namespace DD4hep {
       typedef std::map< std::string,  SurfaceMap > SurfaceMapsMap ;
 
     public:
-
+      /// Default constructor
       SurfaceManager();
+
+      /// No copy constructor
+      SurfaceManager(const SurfaceManager& copy) = delete;
       
+      /// Default destructor
       ~SurfaceManager();
+
+      /// No assignment operator
+      SurfaceManager& operator=(const SurfaceManager& copy) = delete;
       
       /** Get the maps of all surfaces associated to the given detector or
        *  type of detectors, e.g. map("tracker") returns a map with all surfaces

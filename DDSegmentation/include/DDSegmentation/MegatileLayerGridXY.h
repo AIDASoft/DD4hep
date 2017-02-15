@@ -16,19 +16,19 @@
 
 /*
 
-a megatile is a rectangule in x-y, split into a grid along x and y, with an exactly integer number of cells in x and y.
+  a megatile is a rectangule in x-y, split into a grid along x and y, with an exactly integer number of cells in x and y.
 
-this class assumes a mostly-common megatile size, with possibility for a number of "special" megatiles of non-standard size / segmentation
+  this class assumes a mostly-common megatile size, with possibility for a number of "special" megatiles of non-standard size / segmentation
 
-the segmentation of standard megatiles is defined layer-by-layer.
+  the segmentation of standard megatiles is defined layer-by-layer.
 
-some changes wrt previous version from Kotera et al.
-- significantly simplified. 
-- complications due to end-of-slab moved to higher level detector drivers.
+  some changes wrt previous version from Kotera et al.
+  - significantly simplified. 
+  - complications due to end-of-slab moved to higher level detector drivers.
 
-D. Jeans - Nov 2016
+  D. Jeans - Nov 2016
 
- */
+*/
 
 
 namespace DD4hep {
@@ -65,15 +65,15 @@ namespace DD4hep {
       }
 
       void setMegaTileCellsXY( unsigned int layer, int ix, int iy ) {
-	assert ( layer < MAX_LAYERS );
-	_nCellsX[layer] = ix;
-	_nCellsY[layer] = iy;
+        assert ( layer < MAX_LAYERS );
+        _nCellsX[layer] = ix;
+        _nCellsY[layer] = iy;
       }
 
       void setSpecialMegaTile( unsigned int layer, unsigned int tile, 
-			       double sizex, double sizey,
-			       double offsetx, double offsety,
-			       unsigned int ncellsx, unsigned int ncellsy );
+                               double sizex, double sizey,
+                               double offsetx, double offsety,
+                               unsigned int ncellsx, unsigned int ncellsy );
 
       /// access the field name used for X
       const std::string& fieldNameX() const {
@@ -100,12 +100,13 @@ namespace DD4hep {
     protected:
 
       struct segInfo {
-	double megaTileSizeX;
-	double megaTileSizeY;
-	double megaTileOffsetX;
-	double megaTileOffsetY;
-	unsigned int nCellsX;
-	unsigned int nCellsY;
+        double megaTileSizeX = 0;
+        double megaTileSizeY = 0;
+        double megaTileOffsetX = 0;
+        double megaTileOffsetY = 0;
+        unsigned int nCellsX = 0;
+        unsigned int nCellsY = 0;
+        segInfo() = default;
       };
 
       mutable segInfo _currentSegInfo;
@@ -117,11 +118,11 @@ namespace DD4hep {
       //  the segmentation may change layer-to-layer (e.g. orthogonal strips)
 
       // total size of surface in X,Y
-      double  _megaTileSizeX; // [MAX_LAYERS][MAX_WAFERS];
-      double  _megaTileSizeY; //[MAX_LAYERS][MAX_WAFERS];
+      double  _megaTileSizeX = 0; // [MAX_LAYERS][MAX_WAFERS];
+      double  _megaTileSizeY = 0; //[MAX_LAYERS][MAX_WAFERS];
 
-      double  _megaTileOffsetX; 
-      double  _megaTileOffsetY; 
+      double  _megaTileOffsetX = 0;
+      double  _megaTileOffsetY = 0;
 
       // number of cells per megatile in X, Y
       unsigned int _nCellsX[MAX_LAYERS];
@@ -145,6 +146,6 @@ namespace DD4hep {
 
     };
 
-  } /* namespace DDSegmentation */
-} /* namespace DD4hep */
-#endif /* DDSegmentation_WAFERGRIDXY_H_ */
+  }    /* namespace DDSegmentation              */
+}      /* namespace DD4hep                      */
+#endif /* DDSegmentation_MEGATILELAYERGRIDXY_H_ */

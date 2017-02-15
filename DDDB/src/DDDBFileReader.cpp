@@ -71,7 +71,7 @@ int DD4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
   struct stat buff;
   if ( 0 == ::stat(path.c_str(), &buff) )  {
     int fid  = ::open(path.c_str(), O_RDONLY);
-    if ( fid > 0 )   {
+    if ( fid != 0 )   {
       int done = 0, len = buff.st_size;
       char* b  = new char[len+1];
       b[0] = 0;
@@ -84,7 +84,11 @@ int DD4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
       b[done] = 0;
       buffer = b;
       delete [] b;
-      if ( done>=len ) return 1;
+      if ( done>=len ) {
+        ::close(fid);
+        return 1;
+      }
+      ::close(fid);
     }
   }
   return 0;

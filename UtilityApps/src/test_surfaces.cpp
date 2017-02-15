@@ -81,7 +81,7 @@ int main(int argc, char** argv ){
   }
 #else  
 
-  SurfaceManager surfMan = *lcdd.extension< SurfaceManager >() ;
+  SurfaceManager& surfMan = *lcdd.extension< SurfaceManager >() ;
   const SurfaceMap& surfMap = *surfMan.map( "world" ) ;
 
 #endif

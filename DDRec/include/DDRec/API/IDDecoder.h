@@ -39,10 +39,15 @@ public:
 			EndcapNorth,
 			n_BarrelEndcapID
 		};
-		BarrelEndcapFlag(unsigned int val) :
-			value(static_cast<BarrelEncapID>(val)) {}
+		BarrelEndcapFlag(unsigned int val) : value(static_cast<BarrelEncapID>(val)) {}
 
-		virtual ~BarrelEndcapFlag() {}
+		BarrelEndcapFlag() = default;
+
+    BarrelEndcapFlag(const BarrelEndcapFlag& copy) = default;
+
+		virtual ~BarrelEndcapFlag() = default;
+
+		BarrelEndcapFlag& operator=(const BarrelEndcapFlag& copy) = default;
 
 		bool isBarrel() const {
 			return value == Barrel;
@@ -65,7 +70,7 @@ public:
 		}
 
 	protected:
-		BarrelEncapID value;
+		BarrelEncapID value = Barrel;
 	};
 
 	/// Access to the global IDDecoder instance

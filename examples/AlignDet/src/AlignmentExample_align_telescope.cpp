@@ -48,7 +48,9 @@ using Geometry::Position;
 static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  {
   DetAlign  d(calib.detector(path));
   Alignment a = d.alignments().get("Alignment",*calib.slice.pool);
-  printout(INFO,"Example","++ World transformation of: %s", path.c_str());
+  const double* tr = a->worldTransformation().GetTranslation();
+  printout(INFO,"Example","++ World transformation of: %-32s  Tr:(%8.2g,%8.2g,%8.2g [cm])",
+           path.c_str(), tr[0],tr[1],tr[2]);
   a->worldTransformation().Print();
 }
 

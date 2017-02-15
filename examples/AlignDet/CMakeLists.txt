@@ -81,6 +81,14 @@ dd4hep_add_test_reg( test_AlignDet_Telescope_readback_xml
      -deltas file:./new_cond.xml
   REGEX_PASS "\\[7438F09CE3AD4ACA\\] -> \\[7438F09CE3AD4ACA\\] /world/Telescope/module_9/sensor#alignment/Transformations")
 #
+#---Testing: Load Telescope geometry and read and print alignments --------
+dd4hep_add_test_reg( test_AlignDet_Telescope_align_new
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_align_telescope
+     -input  file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+     -setup  file:${DD4hep_DIR}/examples/Conditions/data/manager.xml 
+  REGEX_PASS "World transformation of: /world/Telescope/module_3/sensor  Tr:\\( 3.9e\\+02,       0,     4.9 \\[cm\\]\\)")
+#
 #---Testing: Extended stress: Load CLICSiD geometry and have multiple runs on IOVs
 dd4hep_add_test_reg( test_AlignDet_CLICSiD_stress_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
