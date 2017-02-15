@@ -175,14 +175,14 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
 
   
   //fg: for now we create exactly one event vertex here ( as before )
-  //     and fill it below from the first final state particle 
   Geant4Vertex* vtx = new Geant4Vertex ;
   vertices.push_back( vtx );
   vtx->x = 0;
   vtx->y = 0;
   vtx->z = 0;
   vtx->time = 0;
-  bool haveVertex = false ;
+  //  bool haveVertex = false ;
+
   //
   //  Loop over particles
   int ISTHEP(0);   // status code
@@ -204,7 +204,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   vector<int> daughter1;
   vector<int> daughter2;
 
-  for( int IHEP=0; IHEP<NHEP; IHEP++ )    {
+  for( unsigned IHEP=0; IHEP<NHEP; IHEP++ )    {
     if ( m_format == HEPEvtShort )
       m_input >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2
               >> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5;
@@ -258,14 +258,16 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     else if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
     else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
 
+    //fixme: need to define the correct logic for selecting the particle to use
+    //       for the _one_ event vertex 
     // fill vertex information from first stable particle
-    if( !haveVertex &&  ISTHEP == 1 ){
-      vtx->x = p->vsx ;
-      vtx->y = p->vsy ;
-      vtx->z = p->vsz ;
-      vtx->time = p->time ;
-      haveVertex = true ;
-    }
+    // if( !haveVertex &&  ISTHEP == 1 ){
+    //   vtx->x = p->vsx ;
+    //   vtx->y = p->vsy ;
+    //   vtx->z = p->vsz ;
+    //   vtx->time = p->time ;
+    //   haveVertex = true ;
+    // }
 
     //
     // Keep daughters information for later
