@@ -159,24 +159,30 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   //
   //  Read the event, check for errors
   //
-  int NHEP;  // number of entries
+  unsigned NHEP(0);  // number of entries
   m_input >> NHEP;
-  if( m_input.eof() )   {
-    //
-    // End of File :: ??? Exception ???
-    //   -> FG:   EOF is not an exception as it happens for every file at the end !
-    return EVENT_READER_IO_ERROR;
+
+  if( m_input.eof() ){ return EVENT_READER_IO_ERROR; }
+
+
+  //check loop variable read from input file and chack that is reasonable
+  // should fix coverity issue: "Using tainted variable NHEP as a loop boundary."
+
+  if( NHEP > 1e6 ){ 
+    printout(ERROR,"EventReaderHepEvt::readParticles","Cannot read in more than million particles, but  %d requested", NHEP );
+    return EVENT_READER_IO_ERROR; 
   }
 
+  
   //fg: for now we create exactly one event vertex here ( as before )
-  //     and fill it below from the first final state particle 
   Geant4Vertex* vtx = new Geant4Vertex ;
   vertices.push_back( vtx );
   vtx->x = 0;
   vtx->y = 0;
   vtx->z = 0;
   vtx->time = 0;
-  bool haveVertex = false ;
+  //  bool haveVertex = false ;
+
   //
   //  Loop over particles
   int ISTHEP(0);   // status code
@@ -198,7 +204,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   vector<int> daughter1;
   vector<int> daughter2;
 
-  for( int IHEP=0; IHEP<NHEP; IHEP++ )    {
+  for( unsigned IHEP=0; IHEP<NHEP; IHEP++ )    {
     if ( m_format == HEPEvtShort )
       m_input >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2
               >> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5;
@@ -252,14 +258,16 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     else if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
     else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
 
+    //fixme: need to define the correct logic for selecting the particle to use
+    //       for the _one_ event vertex 
     // fill vertex information from first stable particle
-    if( !haveVertex &&  ISTHEP == 1 ){
-      vtx->x = p->vsx ;
-      vtx->y = p->vsy ;
-      vtx->z = p->vsz ;
-      vtx->time = p->time ;
-      haveVertex = true ;
-    }
+    // if( !haveVertex &&  ISTHEP == 1 ){
+    //   vtx->x = p->vsx ;
+    //   vtx->y = p->vsy ;
+    //   vtx->z = p->vsz ;
+    //   vtx->time = p->time ;
+    //   haveVertex = true ;
+    // }
 
     //
     // Keep daughters information for later
@@ -277,7 +285,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   //  information, and this utility assumes all parents listed are
   //  parents and all daughters listed are daughters
   //
-  for( int IHEP=0; IHEP<NHEP; IHEP++ )    {
+  for( unsigned IHEP=0; IHEP<NHEP; IHEP++ )    {
     struct ParticleHandler  {
       Particle* m_part;
       ParticleHandler(Particle* p) : m_part(p) {}
