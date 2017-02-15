@@ -82,7 +82,7 @@ LCIOEventReader::readParticles(int event_number,
   vtx->y = 0;
   vtx->z = 0;
   vtx->time = 0;
-  bool haveVertex = true ;
+  bool haveVertex = false ;
 
 
   mcpcoll.resize(NHEP,0);
