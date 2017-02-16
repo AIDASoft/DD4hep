@@ -86,7 +86,7 @@ namespace DD4hep {
       double                mean_time            = 0.0;
       double                step_length          = 0.0;
       double                e_cut                = 0.0;
-      int                   current              = 0;
+      int                   current              = -1;
       int                   parent               = 0;
       int                   combined             = 0;
       int                   hit_position_type    = POSITION_MIDDLE;
