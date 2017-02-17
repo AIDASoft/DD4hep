@@ -21,7 +21,7 @@
 
 // Framework include files
 #include "XML/config.h"
-#include "DD4hep/Primitives.h"
+//#include "DD4hep/Primitives.h"
 
 #ifndef RAD_2_DEGREE
 #define RAD_2_DEGREE 57.295779513082320876798154814105
@@ -195,7 +195,7 @@ namespace DD4hep {
       }
       /// String length in native representation
       size_t length()  const  {
-	return XmlString::length(m_xml);
+        return XmlString::length(m_xml);
       }
       /// Assignment opertor from ascii string
       Strng_t& operator=(const char* s);
@@ -313,6 +313,15 @@ namespace DD4hep {
     inline bool operator==(const std::string& c, const Tag_t& b) {
       return c == b.m_str;
     }
+
+    /// Convert Strng_t to std::string
+    std::string _toString(const Strng_t& s);
+    /// Convert Tag_t to std::string
+    std::string _toString(const Tag_t& s);
+    /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
+    void _toDictionary(const XmlChar* name, const Strng_t& s);
+    /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
+    void _toDictionary(const XmlChar* name, const Tag_t& t);
 
     /// Class describing a list of XML nodes
     /**

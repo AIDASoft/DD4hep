@@ -70,6 +70,10 @@ namespace DD4hep {
       template <typename T> T* option()  const   {
         return static_cast<T*>(clientData);
       }
+      /// Access the number of contained blocks
+      size_t size()  const   {
+        return params.size();
+      }
       /// Simplify access to first item of the parameter list (const access)
       const Params::value_type& firstParam()  const   {
         Params::const_iterator i=std::begin(params);

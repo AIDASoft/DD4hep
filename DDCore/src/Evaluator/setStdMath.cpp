@@ -3,7 +3,16 @@
 // ----------------------------------------------------------------------
 
 #include "XML/Evaluator.h"
+
+#ifdef DD4HEP_NONE
+/// Utility namespace to support TGeo units.
+namespace dd4hep {
+  static const double radian = 1. ;
+  static const double degree = (3.14159265358979323846/180.0)*radian;
+}
+#else
 #include "DD4hep/DD4hepUnits.h"
+#endif
 
 #include <cmath>        // for sqrt and pow
 #include <math.h>
@@ -66,10 +75,10 @@ namespace XmlTools {
     // setVariable("rad",    1.0);
     // setVariable("degree", 3.14159265358979323846/180.);
     // setVariable("deg",    3.14159265358979323846/180.);
-    setVariable("radian", dd4hep::rad );
-    setVariable("rad",    dd4hep::rad );
-    setVariable("degree", dd4hep::deg );
-    setVariable("deg",    dd4hep::deg );
+    setVariable("radian", dd4hep::radian );
+    setVariable("rad",    dd4hep::radian );
+    setVariable("degree", dd4hep::degree );
+    setVariable("deg",    dd4hep::degree );
 
     //   S E T   S T A N D A R D   F U N C T I O N S
 

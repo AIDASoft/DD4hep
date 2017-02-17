@@ -620,7 +620,12 @@ namespace DD4hep {
           xml_coll_t(element,_LBU(paramVector)).for_each(conv);
           pair<ConditionParams::iterator,bool> res = d.params.insert(block);
           if ( !res.second )  {
-            printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",name.c_str());
+            printout(INFO,"Condition","++ Failed to insert condition parameter:%s",name.c_str());
+          }
+          if ( d.size() > 1 )  {
+            printout(WARNING,"Condition",
+                     "++ Found ALIGNMENT condition block with MULTIPLE entries [%d]: %s",
+                     int(d.size()), name.c_str());
           }
           ++num_align;
         }
@@ -644,10 +649,10 @@ namespace DD4hep {
             printout(INFO,"ParamMap","++ Condition:%s -> %s",path.c_str(),nam.c_str());
           }
           if ( d.classID == AbstractMap::ALIGNMENT ) { continue; }
-          if ( tag == "param"       ) { ++num_param;  continue; }
-          if ( tag == "paramVector" ) { ++num_vector; continue; }
-          if ( tag == "map"         ) { ++num_map;    continue; }
-          if ( tag == "specific"    ) { ++num_spec;   continue; }
+          if ( tag == "param"       )  { ++num_param;  continue; }
+          if ( tag == "paramVector" )  { ++num_vector; continue; }
+          if ( tag == "map"         )  { ++num_map;    continue; }
+          if ( tag == "specific"    )  { ++num_spec;   continue; }
           printout(INFO,"Condition","++ Unknown conditions tag:%s obj:%s id:%s",
                    tag.c_str(), path.c_str(), id.c_str());
         }

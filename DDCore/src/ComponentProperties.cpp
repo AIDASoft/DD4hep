@@ -25,6 +25,10 @@
 using namespace std;
 using namespace DD4hep;
 
+/// Default destructor
+PropertyConfigurator::~PropertyConfigurator()   {
+}
+
 /// Default constructor
 PropertyGrammar::PropertyGrammar(const BasicGrammar& g) : m_grammar(g) {
 }

@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/Primitives.h"
 #include "XML/XMLDetector.h"
 #include "XML/Layering.h"
 #include "XML/XMLTags.h"
