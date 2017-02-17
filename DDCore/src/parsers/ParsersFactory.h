@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -60,5 +59,12 @@ namespace DD4hep  {
   }/* Parsers */
 } /*  DD4hep */
 //=============================================================================
+
+// ============================================================================
+#define PARSERS_DEF_FOR_SINGLE(Type)                                  \
+  int DD4hep::Parsers::parse(Type& result, const std::string& input)  \
+  {  return DD4hep::Parsers::parse_(result, input);  }
+// ============================================================================
+
 #endif // DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H
 

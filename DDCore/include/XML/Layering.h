@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4hep_LAYERING_H
-#define DD4hep_LAYERING_H
+#ifndef DD4HEP_DDCORE_LAYERING_H
+#define DD4HEP_DDCORE_LAYERING_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -179,8 +179,6 @@ namespace DD4hep {
     inline LayeringCnv::LayeringCnv(Element e)
       : Element(e) {
     }
-
   }
-
-} /* End namespace DD4hep   */
-#endif    /* DD4hep_LAYERING_H      */
+}         /* End namespace DD4hep          */
+#endif    /* DD4HEP_DDCORE_LAYERING_H      */

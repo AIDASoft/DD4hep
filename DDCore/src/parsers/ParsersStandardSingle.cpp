@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -10,11 +9,6 @@
 //
 //==========================================================================
 #include "ParsersFactory.h"
-// ============================================================================
-#define PARSERS_DEF_FOR_SINGLE(Type)                                  \
-  int DD4hep::Parsers::parse(Type& result, const std::string& input)  \
-  {  return DD4hep::Parsers::parse_(result, input);  }
-// ============================================================================
 
 PARSERS_DEF_FOR_SINGLE(bool)
 PARSERS_DEF_FOR_SINGLE(int)

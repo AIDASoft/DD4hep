@@ -30,14 +30,17 @@ namespace DD4hep {
   class BasicGrammar;
   class PropertyGrammar;
 
-  /// Heler class to configure properties
+  /// Interface class to configure properties in components
   /**
+   *  Placeholder interface.
+   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP_SIMULATION
    */
   class PropertyConfigurator {
   protected:
+    /// Default destructor
     virtual ~PropertyConfigurator();
   public:
     virtual void set(const PropertyGrammar& setter, const std::string&, const std::string&, void* ptr) const = 0;

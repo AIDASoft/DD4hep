@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
+#include "XML/Printout.h"
 #include "XML/Evaluator.h"
 #include "XML/XMLElements.h"
 #include "XML/XMLTags.h"
@@ -181,6 +181,7 @@ namespace {
   }
 }
 
+/// Convert XML char to std::string
 string DD4hep::XML::_toString(const XmlChar *toTranscode) {
   char *buff = XmlString::transcode(toTranscode);
   string tmp(buff == 0 ? "" : buff);
@@ -259,6 +260,15 @@ string DD4hep::XML::_toString(float v, const char* fmt) {
 /// Format double procision float number (64 bits) to string with arbitrary format
 string DD4hep::XML::_toString(double v, const char* fmt) {
   return __to_string(v, fmt);
+}
+
+/// Convert Strng_t to std::string
+string DD4hep::XML::_toString(const Strng_t& s)   {
+  return _toString(Tag_t(s));
+}
+/// Convert Tag_t to std::string
+string DD4hep::XML::_toString(const Tag_t& s)     {
+  return s.str();
 }
 
 /// Format pointer to string with arbitrary format
@@ -360,6 +370,16 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, const XmlChar* value) {
   eval.setVariable(n.c_str(), result);
 }
 
+/// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
+void DD4hep::XML::_toDictionary(const XmlChar* name, const Strng_t& s)   {
+  return _toDictionary(name, s.ptr());
+}
+
+/// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
+void DD4hep::XML::_toDictionary(const XmlChar* name, const Tag_t& t)   {
+  return _toDictionary(name, t.ptr());
+}
+
 template <typename T>
 void DD4hep::XML::_toDictionary(const XmlChar* name, T value)   {
   Strng_t item = _toString(value);
@@ -370,6 +390,8 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, T value)   {
 #ifndef DD4HEP_USE_TINYXML
 template void DD4hep::XML::_toDictionary(const XmlChar* name, const char* value);
 #endif
+template void DD4hep::XML::_toDictionary(const XmlChar* name, const Tag_t& value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, const Strng_t& value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, const string& value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned long value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned int value);

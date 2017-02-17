@@ -12,13 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
+#include "XML/Printout.h"
 #include "XML/UriReader.h"
 #include "XML/DocumentHandler.h"
-#include "TUri.h"
-#include "TUrl.h"
 
 // C/C++ include files
+#include <memory>
 #include <iostream>
 #include <stdexcept>
 #include <sys/types.h>
@@ -221,6 +220,19 @@ namespace DD4hep {
   }
 }
 
+#ifdef DD4HEP_NONE
+/// System ID of a given XML entity
+string DocumentHandler::system_path(Handle_t base, const string& fn)   {
+  string path = system_path(base);
+  string dir  = ::dirname((char*)path.c_str());
+  return dir+fn;
+}
+#else
+
+#include "TUri.h"
+#include "TUrl.h"
+#endif
+
 /// System ID of a given XML entity
 string DocumentHandler::system_path(Handle_t base, const string& fn)   {
   string path, dir = system_path(base);
@@ -304,7 +316,7 @@ Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
   }
   catch(...)   {
   }
-  dd4hep_ptr < XercesDOMParser > parser(make_parser(reader));
+  unique_ptr < XercesDOMParser > parser(make_parser(reader));
   try {
     if ( !path.empty() )  {
       parser->parse(path.c_str());
@@ -336,7 +348,7 @@ Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
 
 /// Parse a standalong XML string into a document.
 Document DocumentHandler::parse(const char* bytes, size_t length, const char* sys_id, UriReader* rdr) const {
-  dd4hep_ptr < XercesDOMParser > parser(make_parser(rdr));
+  unique_ptr < XercesDOMParser > parser(make_parser(rdr));
   MemBufInputSource src((const XMLByte*)bytes, length, sys_id, false);
   parser->parse(src);
   DOMDocument* doc = parser->adoptDocument();
@@ -465,9 +477,9 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
                  doc->ErrorDesc());
         printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
                  doc->Value(), doc->ErrorRow(), doc->ErrorCol());
-        except("DD4hep: file:%s error:%s",clean.c_str(),doc->ErrorDesc());
+        except("DD4hep:XML","++ file:%s error:%s",clean.c_str(),doc->ErrorDesc());
       }
-      except("DD4hep: Unknown error (TinyXML) while parsing:%s",fname.c_str());
+      except("DD4hep:XML","++ Unknown error (TinyXML) while parsing:%s",fname.c_str());
     }
   }
   catch(exception& e) {

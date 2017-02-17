@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,8 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#pragma push_macro("Gaudi")
-#undef Gaudi
 #include <string>
 #include <sstream>
 #include <map>
@@ -20,12 +17,23 @@
 #include <typeinfo>
 #include <utility>
 
+#define Gaudi DD4hep_Flavor
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
+
 #define private public
 // This define will give us a version of the gaudi plugin manager,
 // which will NOT clash with Gaudi! It of course has a correspondance in the
 // compiler options of the GaudiPluginService package.
-//#define Gaudi DD4hep_Flavor
 #include "Gaudi/PluginService.h"
+#undef private
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 extern "C"  {
   /// Access debug level
@@ -47,5 +55,4 @@ extern "C"  {
     Gaudi::PluginService::Details::Registry::instance().add(id,stub,sig,ret,id);
   }
 }
-#pragma pop_macro("Gaudi")
 
