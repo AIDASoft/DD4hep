@@ -13,11 +13,11 @@
 
 #---------------------------------------------------------------------------------------------------
 if ( DD4hep_DIR )
-  set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake ) 
+  set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DD4hep_CMAKE_FILES_PATH} ) 
 endif()
-if(CMAKE_INSTALL_PREFIX)
-  set ( CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} )
-endif()
+#if(CMAKE_INSTALL_PREFIX)
+#  set ( CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} )
+#endif()
 
 #---------------------------------------------------------------------------------------------------
 #  Need this fix, since the cmake name is Geant4 and on GEANT4

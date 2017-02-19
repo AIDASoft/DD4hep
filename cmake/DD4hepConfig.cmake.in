@@ -13,8 +13,17 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-set ( DD4hep_DIR         "$ENV{DD4hep_DIR}" )
-set ( DD4hep_ROOT        "$ENV{DD4hep_ROOT}" )
+set ( DD4hep_CMAKE_FILES_PATH  )
+if(@SYSTEM_INSTALL@) 
+  get_filename_component(_thisdir "${CMAKE_CURRENT_LIST_FILE}" PATH)
+  set ( DD4hep_DIR         ${_thisdir}/../.. )
+  set ( DD4hep_ROOT        ${_thisdir}/../.. )
+  set ( DD4hep_CMAKE_FILES_PATH  ${_thisdir})
+ELSE()
+  set ( DD4hep_DIR         "$ENV{DD4hep_DIR}" )
+  set ( DD4hep_ROOT        "$ENV{DD4hep_ROOT}" )
+  set ( DD4hep_CMAKE_FILES_PATH  $ENV{DD4hep_DIR}/cmake)
+ENDIF()
 set ( DD4hep_VERSION     "@DD4hep_VERSION@" )
 set ( DD4hep_SOVERSION   "@DD4hep_SOVERSION@" )
 set ( DD4HEP_USE_BOOST   "@DD4HEP_USE_BOOST@" )
@@ -25,12 +34,20 @@ set ( DD4HEP_USE_CXX14   "@DD4HEP_USE_CXX14@" )
 set ( Geant4_DIR         "@Geant4_DIR@" )
 set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
 
+if(@SYSTEM_INSTALL@) 
+
+ELSE()
+
 set ( ROOTSYS            "$ENV{ROOTSYS}" )
 set ( ROOT_DIR           "$ENV{ROOTSYS}/cmake" )
 set ( ROOT_VERSION       "@ROOT_VERSION@" )
+endif()
 
-include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+include ( ${DD4hep_CMAKE_FILES_PATH}/DD4hep.cmake )
 
+# Shipping "FindXXXX" with the install is bad form, as each dependency 
+# should have their own. "FindXXXX" are mainly for the project currenlty being
+# built.
 set (CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake  )
 
 # ---------- include dirs -----------------------------------------------------
@@ -56,7 +73,7 @@ set( DD4hep_LIBRARY_DIRS ${DD4hep_DIR}/lib )
 set( DD4hep_LIBRARIES    DD4hep_LIBRARIES-NOTFOUND )
 mark_as_advanced( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
 
-include( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
+include( ${DD4hep_CMAKE_FILES_PATH}/DD4hepMacros.cmake )
 
 # only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
 # additional components are set by cmake in variable PKG_FIND_COMPONENTS
@@ -87,7 +104,7 @@ ENDIF()
 if( @DD4HEP_USE_XERCESC@ )
   set( DD4HEP_USE_XERCESC True )
 endif()
-INCLUDE( ${DD4hep_DIR}/cmake/DD4hep_XML_setup.cmake )
+INCLUDE( ${DD4hep_CMAKE_FILES_PATH}/DD4hep_XML_setup.cmake )
 
 # -----------------------------------------
 if( @DD4HEP_USE_CXX14@ )
