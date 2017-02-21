@@ -25,6 +25,7 @@ copy_files()   {
         ${target}/src/DD4hep/;
     cd -;
     scp doc/externalize/PluginManager.cpp ${target}/src/DD4hep/;
+    scp doc/externalize/ExtraProperties.cpp ${target}/src/DD4hep/;
 }
 
 TARGET=${1};

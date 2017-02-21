@@ -69,15 +69,15 @@ namespace DD4hep {
     /// Default destructor
     virtual ~Grammar();
     /// PropertyGrammar overload: Access to the type information
-    virtual const std::type_info& type() const;
+    virtual const std::type_info& type() const  override;
     /// Access to the type information name
-    virtual const std::string& type_name() const;    
+    virtual const std::string& type_name() const  override;    
     /// Access the object size (sizeof operator)
-    virtual size_t sizeOf() const;
+    virtual size_t sizeOf() const  override;
     /// PropertyGrammar overload: Serialize a property to a string
-    virtual std::string str(const void* ptr) const;
+    virtual std::string str(const void* ptr) const  override;
     /// PropertyGrammar overload: Retrieve value from string
-    virtual bool fromString(void* ptr, const std::string& value) const;
+    virtual bool fromString(void* ptr, const std::string& value) const  override;
     /// Evaluate string value if possible before calling boost::spirit
     virtual int evaluate(void* ptr, const std::string& value) const;
   };
