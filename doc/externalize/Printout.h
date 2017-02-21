@@ -29,6 +29,12 @@ namespace DD4hep {
     FATAL    = 6,
     ALWAYS   = 7
   };
+  /// Access the current printer level
+  PrintLevel printLevel();
+
+  /// Set new print level. Returns the old print level
+  PrintLevel setPrintLevel(PrintLevel new_level);
+
   /// Calls the display action with a given severity level
   /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)

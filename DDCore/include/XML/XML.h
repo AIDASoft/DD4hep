@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_XML_TYPES_H
-#define DD4HEP_DDCORE_XML_TYPES_H
+#ifndef DD4HEP_DDCORE_XML_XML_H
+#define DD4HEP_DDCORE_XML_XML_H
 
 #include "XML/XMLTags.h"
 #include "XML/XMLDimension.h"
@@ -28,4 +28,4 @@ typedef DD4hep::XML::Dimension     xml_dim_t;
 typedef DD4hep::XML::Document      xml_doc_t;
 typedef DD4hep::XML::Strng_t       Unicode;
 
-#endif // DD4HEP_DDCORE_XML_TYPES_H
+#endif // DD4HEP_DDCORE_XML_XML_H

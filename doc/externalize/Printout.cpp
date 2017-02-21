@@ -41,7 +41,27 @@ namespace {
       return print_level(DD4hep::NOLOG);
     }
   }
+  size_t print_out(DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
+    char text[4096];
+    ::snprintf(text,sizeof(text),print_fmt.c_str(),src,print_level(lvl),fmt);
+    size_t len = ::vfprintf(stdout, text, args);
+    ::fputc('\n',stdout);
+    return len;
+  }
 }
+
+/// Set new print level. Returns the old print level
+DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level) {
+  PrintLevel old = print_lvl;
+  print_lvl = new_level;
+  return old;
+}
+
+/// Access the current printer level
+DD4hep::PrintLevel DD4hep::printLevel()  {
+  return print_lvl;
+}
+
 
 /** Calls the display action
  *  \arg severity   [int,read-only]      Display severity flag
@@ -53,7 +73,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
-    printout(severity, src, fmt, args);
+    print_out(severity, src, fmt, args);
     va_end(args);
   }
   return 1;
@@ -69,7 +89,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, ..
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
-    printout(severity, src.c_str(), fmt, args);
+    print_out(severity, src.c_str(), fmt, args);
     va_end(args);
   }
   return 1;

@@ -81,15 +81,15 @@ namespace DD4hep {
       /// Default destructor
       virtual ~UriContextReader();
       /// Access to local context
-      virtual UserContext* context()  {  return m_context;  }
+      virtual UserContext* context()  override  {  return m_context;  }
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, std::string& data);
+      virtual bool load(const std::string& system_id, std::string& data)  override;
       /// Resolve a given URI to a string containing the data with context
-      virtual bool load(const std::string& system_id, UserContext* context, std::string& data);
+      virtual bool load(const std::string& system_id, UserContext* context, std::string& data)  override;
       /// Inform reader about a locally (e.g. by XercesC) handled source load
-      virtual void parserLoaded(const std::string& system_id);
+      virtual void parserLoaded(const std::string& system_id)  override;
       /// Inform reader about a locally (e.g. by XercesC) handled source load
-      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt);
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt)  override;
     };
 
   }       /* End namespace XML               */
