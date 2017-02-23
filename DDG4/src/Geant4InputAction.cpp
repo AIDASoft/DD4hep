@@ -52,6 +52,21 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
   return sc;
 }
 
+/// check if all parameters have been consumed by the reader, otherwise throws exception
+void Geant4EventReader::checkParameters(std::map< std::string, std::string > &parameters) {
+
+  if( parameters.empty() ) {
+    return;
+  }
+  for (auto const& pairNV : parameters ) {
+    printout(FATAL,"EventReader::checkParameters","Unknown parameter name: %s with value %s",
+	     pairNV.first.c_str(),
+	     pairNV.second.c_str());
+  }
+  throw std::runtime_error("Unknown parameter for event reader");
+
+}
+
 /// Move to the indicated event number.
 Geant4EventReader::EventReaderStatus
 Geant4EventReader::moveToEvent(int event_number)   {
@@ -87,6 +102,7 @@ Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
   declareProperty("Mask",           m_mask = 0);
   declareProperty("MomentumScale",  m_momScale = 1.0);
   declareProperty("HaveAbort",      m_abort = true);
+  declareProperty("Parameters",     m_parameters = {});
   m_needsControl = true;
 }
 
@@ -123,6 +139,8 @@ int Geant4InputAction::readParticles(int evt_number,
                  tn.first.c_str(),tn.second.c_str());
         return Geant4EventReader::EVENT_READER_NO_FACTORY;
       }
+      m_reader->setParameters( m_parameters );
+      m_reader->checkParameters( m_parameters );
     }
     catch(const exception& e)  {
       err = e.what();
