@@ -18,6 +18,7 @@
 #include "DDG4/Geant4Vertex.h"
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4GeneratorAction.h"
+#include "DD4hep/Parsers.h"
 
 // C/C++ include files
 #include <vector>
@@ -64,6 +65,24 @@ namespace DD4hep  {
       bool m_directAccess;
       /// Current event number
       int  m_currEvent;
+
+      /// transform the string parameter value into the type of parameter
+      /**
+       * removes parameter from the parameters map
+       */
+      template <typename T>
+      void _getParameterValue( std::map< std::string, std::string > & parameters,
+			       std::string const& parameterName,
+			       T& parameter, T defaultValue ) {
+
+	if( parameters.find( parameterName ) != parameters.end() ) {
+	  DD4hep::Parsers::parse( parameter, parameters.at( parameterName ) );
+	  parameters.erase( parameterName );
+	} else {
+	  parameter = defaultValue;
+	}
+      }
+
     public:
       /// Initializing constructor
       Geant4EventReader(const std::string& nam);
@@ -92,6 +111,12 @@ namespace DD4hep  {
       virtual EventReaderStatus readParticles(int event_number, 
                                               Vertices&  vertices,
                                               Particles& particles) = 0;
+
+      /// pass parameters to the event reader object
+      virtual EventReaderStatus setParameters( std::map< std::string, std::string > & ) {return EVENT_READER_OK; }
+
+      /// make sure that all parameters have been processed, otherwise throw exceptions
+      virtual void checkParameters( std::map< std::string, std::string >& );
     };
 
     /// Generic input action capable of using the Geant4EventReader class.
@@ -126,6 +151,8 @@ namespace DD4hep  {
       int m_currentEventNumber;
       /// Flag to call abortEvent in case of failure (default: true)
       bool m_abort;
+      /// Property: named parameters to configure file readers or input actions
+      std::map< std::string, std::string> m_parameters;
 
     public:
       /// Read an event and return a LCCollectionVec of MCParticles.
