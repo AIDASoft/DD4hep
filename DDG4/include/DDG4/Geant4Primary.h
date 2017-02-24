@@ -100,11 +100,11 @@ namespace DD4hep {
       Geant4PrimaryInteraction& operator=(const Geant4PrimaryInteraction& c) = delete;
 
     public:
-      typedef Geant4Particle                    Particle;
-      typedef Geant4Vertex                      Vertex;
-      typedef std::map<int,Particle*>           ParticleMap;
-      typedef std::map<int,Vertex*>             VertexMap;
-      typedef dd4hep_ptr<PrimaryExtension>      ExtensionHandle;
+      typedef Geant4Particle                     Particle;
+      typedef Geant4Vertex                       Vertex;
+      typedef std::map<int,Particle*>            ParticleMap;
+      typedef std::map<int,std::vector<Vertex*>> VertexMap;
+      typedef dd4hep_ptr<PrimaryExtension>       ExtensionHandle;
 
       /// The map of primary vertices for the particles.
       VertexMap       vertices;
