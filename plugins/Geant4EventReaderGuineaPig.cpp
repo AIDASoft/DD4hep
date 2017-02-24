@@ -48,9 +48,10 @@ namespace DD4hep {
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number,
                                               Vertices& vertices,
-                                              std::vector<Particle*>& particles);
-      virtual EventReaderStatus moveToEvent(int event_number);
-      virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
+                                              std::vector<Particle*>& particles) override ;
+      virtual EventReaderStatus moveToEvent(int event_number) override ;
+      virtual EventReaderStatus skipEvent() override  { return EVENT_READER_OK; }
+      virtual EventReaderStatus setParameters( std::map< std::string, std::string > & parameters ) override ;
     };
   }     /* End namespace Simulation   */
 }       /* End namespace DD4hep       */
@@ -91,19 +92,32 @@ Geant4EventReaderGuineaPig::~Geant4EventReaderGuineaPig()    {
   m_input.close();
 }
 
+
+Geant4EventReader::EventReaderStatus
+Geant4EventReaderGuineaPig::setParameters( std::map< std::string, std::string > & parameters ) {
+
+  _getParameterValue( parameters, "ParticlesPerEvent", m_part_num, -1);
+  
+  if( m_part_num <  0 ) 
+    printout(INFO,"EventReaderGuineaPig::setParameters"," --- Will read all particles in pairs file into one event " );
+  else
+    printout(INFO,"EventReaderGuineaPig::setParameters"," --- Will read %d particles per event from pairs file ", m_part_num );
+    
+  return EVENT_READER_OK;
+}
+
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
   
-  //  if( m_currEvent == 0 && event_number > 0 ){
-  if( m_part_num < 0 ){
-
-    m_part_num = event_number ;
+  printout(DEBUG,"EventReaderGuineaPig::moveToEvent"," event_number: %d , m_currEvent %d",
+	   event_number,m_currEvent ) ;
   
-    printout(INFO,"EventReaderGuineaPig::moveToEvent"," --- Will read %d particles per event from pairs file ", m_part_num );
-    printout(INFO,"EventReaderGuineaPig::moveToEvent"," ***  Due to a workaround event numbers will start from %d  for now !!", m_part_num );
+  if( m_currEvent == 0 && event_number > 0 ){
 
+    printout(INFO,"EventReaderGuineaPig::moveToEvent"," --- Cannot skip to event %d in GuineaPig files - ignored ! ", event_number ); 
   }
-  
+  // else: nothing to do ...
+
   return EVENT_READER_OK;
 }
 
@@ -115,7 +129,7 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
 
 
   // if no number of particles per event set, we will read the whole file
-  if ( m_part_num == 0 )
+  if ( m_part_num < 0 )
     m_part_num = std::numeric_limits<int>::max() ; 
 
 
@@ -143,10 +157,14 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
 
     if( m_input.eof() ) {
       
-      if( counter==0 ) 
+      if( counter==0 ) { 
 	return EVENT_READER_IO_ERROR ;  // reading first particle of event failed 
-      else
+
+      } else{
+
+	++m_currEvent;
 	return EVENT_READER_OK ; // simply EOF
+      }
     }
     
     //
