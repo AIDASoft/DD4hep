@@ -42,6 +42,7 @@ from DDSim.Helper.Action import Action
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Physics import Physics
+from DDSim.Helper.GuineaPig import GuineaPig
 
 import os
 import sys
@@ -83,6 +84,7 @@ class DD4hepSimulation(object):
     self.part = ParticleHandler()
     self.field = MagneticField()
     self.action = Action()
+    self.guineapig = GuineaPig()
 
     self.filter = Filter()
     self.physics = Physics()
@@ -363,8 +365,9 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc%d" % index)
         gen.Input="Geant4EventReaderHepMC|"+inputFile
       elif inputFile.endswith(".pairs"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/HEPEvt%d" % index)
+        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/GuineaPig%d" % index)
         gen.Input="Geant4EventReaderGuineaPig|"+inputFile
+        gen.Parameters = self.guineapig.getParameters()
       else:
         ##this should never happen because we already check at the top, but in case of some LogicError...
         raise RuntimeError( "Unknown input file type: %s" % inputFile )
@@ -635,6 +638,8 @@ SIM = DD4hepSimulation()
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
         for opt,valAndDoc in sorted( options.iteritems(), sortParameters ):
+          if opt.startswith("_"):
+            continue
           parValue, parDoc, _parOptions = valAndDoc
           if parDoc:
             steeringFileBase += "\n## %s\n" % "\n## ".join(parDoc.splitlines())
