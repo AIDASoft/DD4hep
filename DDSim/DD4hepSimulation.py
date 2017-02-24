@@ -86,7 +86,6 @@ class DD4hepSimulation(object):
 
     self.filter = Filter()
     self.physics = Physics()
-    self.readerParameters = {}
 
     ### use TCSH geant UI instead of QT
     os.environ['G4UI_USE_TCSH'] = "1"
@@ -348,32 +347,24 @@ class DD4hepSimulation(object):
       actionList.append(self._g4gps)
 
     for index,inputFile in enumerate(self.inputFiles, start=4):
-      print " ******** self.readerParameters = ", self.readerParameters
       if inputFile.endswith(".slcio"):
         gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO%d" % index)
         gen.Input="LCIOFileReader|"+inputFile
-        gen.Parameters = self.readerParameters
       elif inputFile.endswith(".stdhep"):
         gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/STDHEP%d" % index)
         gen.Input="LCIOStdHepReader|"+inputFile
-        gen.Parameters = self.readerParameters
       elif inputFile.endswith(".HEPEvt"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/HEPEvt%d" % index)
         gen.Input="Geant4EventReaderHepEvtShort|"+inputFile
-        gen.Parameters = self.readerParameters
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepevt%d" % index)
         gen.Input="Geant4EventReaderHepEvtLong|"+inputFile
-        gen.Parameters = self.readerParameters
       elif inputFile.endswith(".hepmc"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc%d" % index)
         gen.Input="Geant4EventReaderHepMC|"+inputFile
-        gen.Parameters = self.readerParameters
       elif inputFile.endswith(".pairs"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/HEPEvt%d" % index)
         gen.Input="Geant4EventReaderGuineaPig|"+inputFile
-        gen.Parameters = self.readerParameters
-
       else:
         ##this should never happen because we already check at the top, but in case of some LogicError...
         raise RuntimeError( "Unknown input file type: %s" % inputFile )
