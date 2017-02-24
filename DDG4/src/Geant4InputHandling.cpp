@@ -279,7 +279,7 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* caller,
       Geant4ParticleHandle p = (*ip).second;
       double t = gamma * p->time + betagamma * p->vsx / CLHEP::c_light;
       double x = gamma * p->vsx + betagamma * CLHEP::c_light * p->time;
-      double y = p->vsx;
+      double y = p->vsy;
       double z = p->vsz;
 
       double m  = p->mass;
