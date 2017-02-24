@@ -114,7 +114,32 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
   
   if( m_currEvent == 0 && event_number > 0 ){
 
-    printout(INFO,"EventReaderGuineaPig::moveToEvent"," --- Cannot skip to event %d in GuineaPig files - ignored ! ", event_number ); 
+    if( m_part_num <  1 ) {
+
+      printout(ERROR,"EventReaderGuineaPig::moveToEvent"," --- Cannot skip to event %d in GuineaPig file without parameter 'ParticlesPerEvent' being set ! ", event_number );
+
+      return EVENT_READER_IO_ERROR;
+
+    } else {
+
+
+      unsigned nSkipParticles = m_part_num * event_number ;
+
+      printout(INFO,"EventReaderGuineaPig::moveToEvent"," --- Will skip first %d events, i.e. %d particles ", event_number , nSkipParticles  );
+
+      // First check the input file status
+      if ( !m_input.good() || m_input.eof() )   {
+	return EVENT_READER_IO_ERROR;
+      }
+
+      for (unsigned i = 0; i<nSkipParticles; ++i){
+	if (m_input.ignore(numeric_limits<streamsize>::max(), m_input.widen('\n'))){
+	  //just skipping the line
+	}
+	else
+	  return EVENT_READER_IO_ERROR ;
+      }
+    }
   }
   // else: nothing to do ...
 
@@ -138,6 +163,14 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
   if ( !m_input.good() || m_input.eof() )   {
     return EVENT_READER_IO_ERROR;
   }
+
+  // Vertex* vtx = new Vertex ;
+  // vtx->x = 0 ;
+  // vtx->y = 0 ;
+  // vtx->z = 0 ;
+  // vtx->time = 0 ;
+  // vertices.push_back( vtx ) ;
+
   
   double Energy;
   double betaX;
@@ -167,6 +200,8 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
       }
     }
     
+    //    printf(" ------- %e  %e  %e  %e  %e  %e  %e \n", Energy,betaX, betaY,betaZ,posX,posY,posZ ) ;
+
     //
     //  Create a MCParticle and fill it from stdhep info
     Particle* p = new Particle(counter);
@@ -222,7 +257,7 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     // create a new vertex for this particle
     vertices.push_back( vtx) ;
 
-    //    counter++;
+
   } // End loop over particles
 
   ++m_currEvent;
