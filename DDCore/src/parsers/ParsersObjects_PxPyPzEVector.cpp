@@ -1,4 +1,3 @@
-// $Id: ParsersObjects_PxPyPzEVector.cpp 2190 2016-04-08 08:31:42Z /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=sailer/CN=683529/CN=Andre Sailer $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------

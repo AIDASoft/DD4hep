@@ -29,8 +29,11 @@
 #include "UsedParser.h"
 #include "GrammarsV2.h"
 // ============================================================================
-namespace DD4hep  {
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+  /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
+
     // ========================================================================
     typedef std::string::const_iterator IteratorT;
     //typedef boost::spirit::ascii::space_type Skipper;
@@ -56,12 +59,15 @@ namespace DD4hep  {
       return true;
     }
     //=========================================================================
-  }/* Parsers */
-} /*  DD4hep */
+
+  }                                        //  end of namespace Parsers
+}                                          //  end of namespace DD4hep
+
 //=============================================================================
 
 // ============================================================================
 #define PARSERS_DEF_FOR_SINGLE(Type)                                  \
+  PARSERS_DECL_FOR_SINGLE(Type)                                       \
   int DD4hep::Parsers::parse(Type& result, const std::string& input)  \
   {  return DD4hep::Parsers::parse_(result, input);  }
 // ============================================================================

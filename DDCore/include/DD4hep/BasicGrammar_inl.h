@@ -116,7 +116,7 @@ namespace DD4hep {
     int sc = 0;
     TYPE temp;
 #ifdef DD4HEP_USE_BOOST
-    sc = Parsers::parse(temp,string_val);
+    sc = ::DD4hep::Parsers::parse(temp,string_val);
 #endif
     if ( !sc ) sc = evaluate(&temp,string_val);
 #if 0
@@ -252,7 +252,7 @@ namespace DD4hep {
     else   {
       TYPE temp;
       std::string temp_str = pre_parse_obj(str);
-      sc = Parsers::parse(temp,temp_str);
+      sc = ::DD4hep::Parsers::parse(temp,temp_str);
       if ( sc )   {
         *p = temp;
         return 1;

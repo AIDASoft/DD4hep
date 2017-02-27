@@ -25,35 +25,40 @@
 #include <deque>
 
 // ============================================================================
-#define PARSERS_DECL_FOR_SINGLE(Type)                 \
-  int parse(Type& result, const std::string& input);
+#define PARSERS_DECL_FOR_SINGLE(Type)                       \
+  namespace DD4hep { namespace Parsers {                    \
+      int parse(Type& result, const std::string& input); }}
 
 #define PARSERS_DECL_FOR_PAIR(FirstType, SecondType)                    \
-  int parse(std::pair<FirstType, SecondType >& result,const std::string& input);
+  namespace DD4hep { namespace Parsers {                                \
+      int parse(std::pair<FirstType, SecondType >& result,const std::string& input); }}
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define PARSERS_DECL_FOR_LIST(InnerType)                                \
-  int parse(std::vector<InnerType >& result,const std::string& input);  \
-  int parse(std::list<InnerType >& result,const std::string& input);    \
-  int parse(std::set<InnerType >& result,const std::string& input);     \
-  int parse(std::deque<InnerType >& result,const std::string& input);   \
-  int parse(std::map<std::string,InnerType >& result,const std::string& input); \
-  int parse(std::map<int,InnerType >& result,const std::string& input); \
-  int parse(std::map<unsigned long,InnerType >& result,const std::string& input); \
-  int parse(std::pair<std::string,InnerType >& result,const std::string& input); \
-  int parse(std::pair<int,InnerType >& result,const std::string& input); \
-  int parse(std::pair<unsigned long,InnerType >& result,const std::string& input);
-
+  namespace DD4hep { namespace Parsers {                                \
+      int parse(std::vector<InnerType >& result,const std::string& input); \
+      int parse(std::list<InnerType >& result,const std::string& input); \
+      int parse(std::set<InnerType >& result,const std::string& input); \
+      int parse(std::deque<InnerType >& result,const std::string& input); \
+      int parse(std::map<std::string,InnerType >& result,const std::string& input); \
+      int parse(std::map<int,InnerType >& result,const std::string& input); \
+      int parse(std::map<unsigned long,InnerType >& result,const std::string& input); \
+      int parse(std::pair<std::string,InnerType >& result,const std::string& input); \
+      int parse(std::pair<int,InnerType >& result,const std::string& input); \
+      int parse(std::pair<unsigned long,InnerType >& result,const std::string& input); \
+    }}
 #else
 
-#define PARSERS_DECL_FOR_LIST(InnerType)                                 \
-  int parse(std::vector<InnerType >& result,const std::string& input);   \
-  int parse(std::list<InnerType >& result,const std::string& input);     \
-  int parse(std::set<InnerType >& result,const std::string& input);      \
-  int parse(std::map<std::string,InnerType >& result,const std::string& input); \
-  int parse(std::map<int,InnerType >& result,const std::string& input);  \
-  int parse(std::pair<std::string,InnerType >& result,const std::string& input); \
-  int parse(std::pair<int,InnerType >& result,const std::string& input);
+#define PARSERS_DECL_FOR_LIST(InnerType)                                \
+  namespace DD4hep { namespace Parsers {                                \
+      int parse(std::vector<InnerType >& result,const std::string& input); \
+      int parse(std::list<InnerType >& result,const std::string& input); \
+      int parse(std::set<InnerType >& result,const std::string& input); \
+      int parse(std::map<std::string,InnerType >& result,const std::string& input); \
+      int parse(std::map<int,InnerType >& result,const std::string& input); \
+      int parse(std::pair<std::string,InnerType >& result,const std::string& input); \
+      int parse(std::pair<int,InnerType >& result,const std::string& input); \
+    }}
 
 #endif   //  DD4HEP_HAVE_ALL_PARSERS
 
@@ -91,156 +96,156 @@
  */
 // ============================================================================
 
+// ========================================================================
+/// parse the <c>bool</c> value
+/**  @see DD4hep::Parsers::BoolGrammar
+ *  @param result (output) boolean result
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-12
+ */
+PARSERS_DECL_FOR_SINGLE(bool)
+// ========================================================================
+/// parse the <c>char</c> value
+/**
+ *  @see DD4hep::Parsers::CharGrammar
+ *  @param result (output) boolean result
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-12
+ */
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+PARSERS_DECL_FOR_SINGLE(char)
+/// @see DD4hep::Parsers::parser(char&,std::string&)
+PARSERS_DECL_FOR_SINGLE(unsigned char)
+/// @see DD4hep::Parsers::parser(char&,std::string&)
+PARSERS_DECL_FOR_SINGLE(signed char)
+#endif
+// ========================================================================
+/// parse the <c>int</c> value
+/**
+ *  @see DD4hep::Parsers::IntGrammar
+ *  @param result (output) integer result
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-14
+ */
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(int)
+PARSERS_DECL_FOR_SINGLE(long)
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(short)
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(unsigned short)
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(unsigned int)
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(unsigned long)
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(long long)
+/// @see DD4hep::Parsers::parser( int&, const std::string& )
+  PARSERS_DECL_FOR_SINGLE(unsigned long long)
+#endif
+// ========================================================================
+/// parse the <c>double</c> value
+/**
+ *  @see DD4hep::Parsers::RealGrammar
+ *  @param result (output) double result
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-14
+ */
+PARSERS_DECL_FOR_SINGLE(double)
+/// @see DD4hep::Parsers::parser( double&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(float)
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+/// @see DD4hep::Parsers::parser( double&, const std::string& )
+PARSERS_DECL_FOR_SINGLE(long double)
+#endif
+// ========================================================================
+/** parse the <c>std::string</c> value
+ *
+ *  @see DD4hep::Parsers::StringGrammar
+ *  @param result (output) string result
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-14
+ */
+PARSERS_DECL_FOR_SINGLE(std::string)
+// ========================================================================
+
+PARSERS_DECL_FOR_LIST(int)
+PARSERS_DECL_FOR_LIST(long)
+PARSERS_DECL_FOR_LIST(bool)
+PARSERS_DECL_FOR_LIST(double)
+PARSERS_DECL_FOR_LIST(float)
+PARSERS_DECL_FOR_LIST(std::string)
+
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+PARSERS_DECL_FOR_LIST(char)
+PARSERS_DECL_FOR_LIST(unsigned char)
+PARSERS_DECL_FOR_LIST(signed char)
+PARSERS_DECL_FOR_LIST(short)
+PARSERS_DECL_FOR_LIST(unsigned short)
+PARSERS_DECL_FOR_LIST(unsigned int)
+PARSERS_DECL_FOR_LIST(unsigned long)
+PARSERS_DECL_FOR_LIST(long long)
+PARSERS_DECL_FOR_LIST(unsigned long long)
+PARSERS_DECL_FOR_LIST(long double)
+#endif
+
+// ========================================================================
+// Advanced parses
+// ========================================================================
+/// parse the <c>std::pair\<double,double\></c> value
+/**
+ *  @see DD4hep::Parsers::PairGrammar
+ *  @see DD4hep::Parsers::RealGrammar
+ *  @param result (output) pair of doubles
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-14
+ */
+PARSERS_DECL_FOR_PAIR(double, double)
+// ========================================================================
+/** parse the <c>std::pair\<int,int\></c> value
+ *
+ *  @see DD4hep::Parsers::PairGrammar
+ *  @see DD4hep::Parsers::IntGrammar
+ *  @param result (output) pair of integers
+ *  @param input  (input) the string to be parsed
+ *  @return status code
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-14
+ */
+PARSERS_DECL_FOR_PAIR(int, int)
+// ========================================================================
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
-
-    // ========================================================================
-    /// parse the <c>bool</c> value
-    /**  @see DD4hep::Parsers::BoolGrammar
-     *  @param result (output) boolean result
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-12
-     */
-    PARSERS_DECL_FOR_SINGLE(bool)
-    // ========================================================================
-    /// parse the <c>char</c> value
-    /**
-     *  @see DD4hep::Parsers::CharGrammar
-     *  @param result (output) boolean result
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-12
-     */
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-    PARSERS_DECL_FOR_SINGLE(char)
-    /// @see DD4hep::Parsers::parser(char&,std::string&)
-    PARSERS_DECL_FOR_SINGLE(unsigned char)
-    /// @see DD4hep::Parsers::parser(char&,std::string&)
-    PARSERS_DECL_FOR_SINGLE(signed char)
-#endif
-    // ========================================================================
-    /// parse the <c>int</c> value
-    /**
-     *  @see DD4hep::Parsers::IntGrammar
-     *  @param result (output) integer result
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(int)
-    PARSERS_DECL_FOR_SINGLE(long)
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(short)
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(unsigned short)
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(unsigned int)
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(unsigned long)
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(long long)
-    /// @see DD4hep::Parsers::parser( int&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(unsigned long long)
-#endif
-    // ========================================================================
-    /// parse the <c>double</c> value
-    /**
-     *  @see DD4hep::Parsers::RealGrammar
-     *  @param result (output) double result
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    PARSERS_DECL_FOR_SINGLE(double)
-    /// @see DD4hep::Parsers::parser( double&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(float)
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-    /// @see DD4hep::Parsers::parser( double&, const std::string& )
-    PARSERS_DECL_FOR_SINGLE(long double)
-#endif
-    // ========================================================================
-    /** parse the <c>std::string</c> value
-     *
-     *  @see DD4hep::Parsers::StringGrammar
-     *  @param result (output) string result
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    PARSERS_DECL_FOR_SINGLE(std::string)
-    // ========================================================================
-
-    PARSERS_DECL_FOR_LIST(int)
-    PARSERS_DECL_FOR_LIST(long)
-    PARSERS_DECL_FOR_LIST(bool)
-    PARSERS_DECL_FOR_LIST(double)
-    PARSERS_DECL_FOR_LIST(float)
-    PARSERS_DECL_FOR_LIST(std::string)
-
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-    PARSERS_DECL_FOR_LIST(char)
-    PARSERS_DECL_FOR_LIST(unsigned char)
-    PARSERS_DECL_FOR_LIST(signed char)
-    PARSERS_DECL_FOR_LIST(short)
-    PARSERS_DECL_FOR_LIST(unsigned short)
-    PARSERS_DECL_FOR_LIST(unsigned int)
-    PARSERS_DECL_FOR_LIST(unsigned long)
-    PARSERS_DECL_FOR_LIST(long long)
-    PARSERS_DECL_FOR_LIST(unsigned long long)
-    PARSERS_DECL_FOR_LIST(long double)
-#endif
-
-    // ========================================================================
-    // Advanced parses
-    // ========================================================================
-    /// parse the <c>std::pair\<double,double\></c> value
-    /**
-     *  @see DD4hep::Parsers::PairGrammar
-     *  @see DD4hep::Parsers::RealGrammar
-     *  @param result (output) pair of doubles
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    PARSERS_DECL_FOR_PAIR(double, double)
-    // ========================================================================
-    /** parse the <c>std::pair\<int,int\></c> value
-     *
-     *  @see DD4hep::Parsers::PairGrammar
-     *  @see DD4hep::Parsers::IntGrammar
-     *  @param result (output) pair of integers
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    PARSERS_DECL_FOR_PAIR(int, int)
-    // ========================================================================
 
     /// parse the <c>std::vector\<std::pair\<double,double\> \></c> value
     /**
@@ -553,10 +558,8 @@ namespace DD4hep {
       //
       return 1;                            //  RETURN
     }
-    // ========================================================================
-  }//                                          end of namespace Parsers
-  // ==========================================================================
-}//                                            end of namespace DD4hep
+  }                                        //  end of namespace Parsers
+}                                          //  end of namespace DD4hep
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 
@@ -726,37 +729,37 @@ namespace DD4hep {
      *  @date 2009-09-05
      */
     int parse(ROOT::Math::PxPyPzEVector& result, const std::string& input);
+  }                                        //  end of namespace Parsers
+}                                          //  end of namespace DD4hep
 
-    // ========================================================================
-    /// parse the vector of points
-    /**  @param result (OUTPUT) the parser vector
-     *   @param input (INPUT) the string to be parsed
-     *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *   @date 2009-09-05
-     */
-    PARSERS_DECL_FOR_LIST(ROOT::Math::XYZPoint)
 
-    // ========================================================================
-    /// parse the vector of vectors
-    /**  @param result (OUTPUT) the parser vector
-     *   @param input (INPIUT) the string to be parsed
-     *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *   @date 2009-09-05
-     */
-    PARSERS_DECL_FOR_LIST(ROOT::Math::XYZVector)
+// ========================================================================
+/// parse the vector of points
+/**  @param result (OUTPUT) the parser vector
+ *   @param input (INPUT) the string to be parsed
+ *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+ *   @date 2009-09-05
+ */
+PARSERS_DECL_FOR_LIST(ROOT::Math::XYZPoint)
 
-    // ========================================================================
-    /// parse the vector of vectors
-    /**  @param result (OUTPUT) the parser vector
-     *   @param input (INPUT) the string to be parsed
-     *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *   @date 2009-09-05
-     */
-    PARSERS_DECL_FOR_LIST(ROOT::Math::PxPyPzEVector)
-    // ========================================================================
-  }//                                          end of namespace Parsers
-  // ==========================================================================
-}//                                            end of namespace DD4hep
+// ========================================================================
+/// parse the vector of vectors
+/**  @param result (OUTPUT) the parser vector
+ *   @param input (INPIUT) the string to be parsed
+ *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+ *   @date 2009-09-05
+ */
+PARSERS_DECL_FOR_LIST(ROOT::Math::XYZVector)
+
+// ========================================================================
+/// parse the vector of vectors
+/**  @param result (OUTPUT) the parser vector
+ *   @param input (INPUT) the string to be parsed
+ *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+ *   @date 2009-09-05
+ */
+PARSERS_DECL_FOR_LIST(ROOT::Math::PxPyPzEVector)
+
 #endif
 // ============================================================================
 // The END
