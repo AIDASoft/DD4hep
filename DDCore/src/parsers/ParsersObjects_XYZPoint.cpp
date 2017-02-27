@@ -1,4 +1,3 @@
-// $Id: ParsersObjects_XYZPoint.cpp 2119 2016-03-03 14:10:32Z markus.frank@cern.ch $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
