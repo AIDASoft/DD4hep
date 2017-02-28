@@ -40,8 +40,14 @@ macro(dd4hep_set_compiler_flags)
   SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Winconsistent-missing-override)
 
   FOREACH( FLAG ${COMPILER_FLAGS} )
-    CHECK_CXX_COMPILER_FLAG( "${FLAG}" CXX_FLAG_WORKS_${FLAG} )
-    IF( ${CXX_FLAG_WORKS_${FLAG}} )
+    ## meed to replace the minus or plus signs from the variables, because it is passed
+    ## as a macro to g++ which causes a warning about no whitespace after macro
+    ## definition
+    STRING(REPLACE "-" "_" FLAG_WORD ${FLAG} )
+    STRING(REPLACE "+" "P" FLAG_WORD ${FLAG_WORD} )
+
+    CHECK_CXX_COMPILER_FLAG( "${FLAG}" CXX_FLAG_WORKS_${FLAG_WORD} )
+    IF( ${CXX_FLAG_WORKS_${FLAG_WORD}} )
       MESSAGE ( STATUS "Adding ${FLAG} to CXX_FLAGS" )
       SET ( CMAKE_CXX_FLAGS "${FLAG} ${CMAKE_CXX_FLAGS} ")
     ELSE()
@@ -49,15 +55,15 @@ macro(dd4hep_set_compiler_flags)
     ENDIF()
   ENDFOREACH()
 
-  CHECK_CXX_COMPILER_FLAG("-std=c++14" CXX_FLAG_WORKS_C++14)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" CXX_FLAG_WORKS_C++11)
-  CHECK_CXX_COMPILER_FLAG("-ftls-model=global-dynamic" CXX_FLAG_WORKS_FTLS_global-dynamic)
+  CHECK_CXX_COMPILER_FLAG("-std=c++14" CXX_FLAG_WORKS_CXX14)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" CXX_FLAG_WORKS_CXX11)
+  CHECK_CXX_COMPILER_FLAG("-ftls-model=global-dynamic" CXX_FLAG_WORKS_FTLS_global_dynamic)
 
-  if (NOT CXX_FLAG_WORKS_C++11)
+  if (NOT CXX_FLAG_WORKS_CXX11)
     message( FATAL_ERROR "The provided compiler does not support the C++11 standard" )
   endif()
 
-  if (NOT CXX_FLAG_WORKS_FTLS_global-dynamic)
+  if (NOT CXX_FLAG_WORKS_FTLS_global_dynamic)
     message( FATAL_ERROR "The provided compiler does not support the flag -ftls-model=global-dynamic" )
   endif()
 
