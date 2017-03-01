@@ -21,4 +21,9 @@ dd4hep_package( DDDetectors USES DDRec )
 #---Add Plugin Library-----------------------------------------------------
 dd4hep_add_plugin ( DDDetectors SOURCES src/*.cpp )
 #---Package installation procedure(s) -------------------------------------
-dd4hep_install_dir ( compact DESTINATION DDDetectors )
+IF(SYSTEM_INSTALL)
+  dd4hep_install_dir ( compact DESTINATION share/DD4hep/examples/DDDetectors )
+ELSE()
+  dd4hep_install_dir ( compact DESTINATION DDDetectors )
+ENDIF()
+

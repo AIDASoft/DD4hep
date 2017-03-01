@@ -9,8 +9,12 @@ if(DOXYGEN_FOUND)
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                     COMMENT "Generating API documentation with Doxygen" VERBATIM)
 
+  SET(SYSTEM_INSTALL_LOCATION doc)
+  IF(SYSTEM_INSTALL)
+    SET(SYSTEM_INSTALL_LOCATION share/DD4hep/doc)
+  ENDIF()
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
-    DESTINATION doc
+    DESTINATION ${SYSTEM_INSTALL_LOCATION}
     )
 
 else()
