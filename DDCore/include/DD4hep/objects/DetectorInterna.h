@@ -45,7 +45,8 @@ namespace DD4hep {
     class WorldObject;
     class DetElementObject;
     class SensitiveDetectorObject;
-
+    class VolumeManager_Populator;
+    
     /// Data class with properties of sensitive detectors
     /**
      *
@@ -167,11 +168,15 @@ namespace DD4hep {
 #endif
 
       //@{ Cached information of the detector element
+    private:
+      friend class VolumeManager_Populator;
       /// Intermediate buffer to store the transformation to the world coordination system
       TGeoHMatrix worldTrafo;
       /// Intermediate buffer to store the transformation to the parent detector element
-      //TGeoHMatrix parentTrafo;
+      TGeoHMatrix parentTrafo;
       //@}
+      /// Create cached matrix to transform to parent coordinates
+      const TGeoHMatrix& parentTransformation();
 
     private:
       //@{ Private methods used internally by the object itself. */
@@ -195,8 +200,6 @@ namespace DD4hep {
       //@}
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation();
-      /// Create cached matrix to transform to parent coordinates
-      const TGeoHMatrix& parentTransformation();
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer);
       /// Trigger update callbacks

@@ -166,7 +166,6 @@ const TGeoHMatrix& DetElementObject::worldTransformation() {
 /// Create cached matrix to transform to parent coordinates
 const TGeoHMatrix& DetElementObject::parentTransformation() {
   DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
-#if 0
   if ( (flag&HAVE_PARENT_TRAFO) == 0 ) {
     PlacementPath nodes;
     flag |= HAVE_PARENT_TRAFO;
@@ -174,8 +173,9 @@ const TGeoHMatrix& DetElementObject::parentTransformation() {
     DetectorTools::placementTrafo(nodes,false,parentTrafo);
   }
   return parentTrafo;
-#endif
+#if 0
   return DetElement(this).nominal().detectorTransformation();
+#endif
 }
 
 /// Revalidate the caches

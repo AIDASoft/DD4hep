@@ -37,7 +37,7 @@ namespace DD4hep {
       /**
        *  Note: Detector information of the alignment data is filled by the caller!
        */
-      void computeIdeal(Alignment alignment, const Alignment::NodeList& node_list);
+      //void computeIdeal(Alignment alignment, const Alignment::NodeList& node_list);
 
       /// Compute the survey to-world transformation.
       /** Compute the survey to-world transformation from 

@@ -164,6 +164,6 @@ namespace DD4hep {
     /// Enable printouts for debugging
     std::ostream& operator<<(std::ostream& os, const VolumeManager& m);
 
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                */
+  }       /* End namespace Geometry              */
+}         /* End namespace DD4hep                */
 #endif    /* DD4hep_GEOMETRY_READOUT_H           */
