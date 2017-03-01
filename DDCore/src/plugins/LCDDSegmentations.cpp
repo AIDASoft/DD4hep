@@ -25,6 +25,9 @@ namespace {
   }
 }
 
+#include "DDSegmentation/NoSegmentation.h"
+DECLARE_SEGMENTATION(NoSegmentation,create_segmentation<DD4hep::DDSegmentation::NoSegmentation>)
+
 #include "DDSegmentation/CartesianGridXY.h"
 DECLARE_SEGMENTATION(CartesianGridXY,create_segmentation<DD4hep::DDSegmentation::CartesianGridXY>)
 

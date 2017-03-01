@@ -70,13 +70,18 @@ ENDMACRO( DISPLAY_STD_VARIABLES )
 MACRO( GENERATE_PACKAGE_CONFIGURATION_FILES )
 #---------------------------------------------------------------------------
 
+SET(SYSTEM_INSTALL_LOCATION .)
+IF(SYSTEM_INSTALL)
+  SET(SYSTEM_INSTALL_LOCATION ${CMAKE_INSTALL_LIBDIR}/DD4hep)
+ENDIF()
+
     FOREACH( arg ${ARGN} )
         IF( ${arg} MATCHES "Config.cmake" )
             IF( EXISTS "${PROJECT_SOURCE_DIR}/cmake/${arg}.in" )
                 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake/${arg}.in"
                                 "${PROJECT_BINARY_DIR}/${arg}" @ONLY
                 )
-                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION . )
+              INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION ${SYSTEM_INSTALL_LOCATION} )
                 #IF( EXISTS "${_current_dir}/MacroCheckPackageLibs.cmake" )
                 #    INSTALL( FILES "${_current_dir}/MacroCheckPackageLibs.cmake" DESTINATION cmake )
                 #ENDIF()
@@ -93,7 +98,7 @@ MACRO( GENERATE_PACKAGE_CONFIGURATION_FILES )
                 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake/${arg}.in"
                                 "${PROJECT_BINARY_DIR}/${arg}" @ONLY
                 )
-                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION . )
+                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION ${SYSTEM_INSTALL_LOCATION} )
                 #IF( EXISTS "${_current_dir}/MacroCheckPackageVersion.cmake" )
                 #    INSTALL( FILES "${_current_dir}/MacroCheckPackageVersion.cmake" DESTINATION cmake )
                 #ENDIF()

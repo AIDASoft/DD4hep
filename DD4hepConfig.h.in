@@ -1,0 +1,12 @@
+// the configured options and settings for Tutorial
+#define DD4hep_VERSION_MAJOR @DD4hep_VERSION_MAJOR@
+#define DD4hep_VERSION_MINOR @DD4hep_VERSION_MINOR@
+#define DD4hep_VERSION_PATCH @DD4hep_VERSION_PATCH@
+
+#define DD4hep_DATA_DIR      "@DD4hep_DATA_DIR@"
+#define DD4hep_CXX_CFLAGS    "@DD4hep_CXX_CFLAGS@"
+#define DD4hep_CXX_LDFLAGS   "@DD4hep_CXX_LDFLAGS@"
+#define DD4hep_CXX_LIBS      "@DD4hep_CXX_LIBS@"
+#define DD4hep_CXX_INC_DIR   "@DD4hep_CXX_INC_DIR@"
+#define DD4hep_PREFIX        "@CMAKE_INSTALL_PREFIX@"
+

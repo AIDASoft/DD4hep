@@ -1,20 +1,28 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(DDSegmentation)
- #fg: version number must be the same as DD4hep !!
-set(DDSegmentation_MAJOR_VERSION 0)
-set(DDSegmentation_MINOR_VERSION 20)
-set(DDSegmentation_PATCH_VERSION 0)
+if(SYSTEM_INSTALL)
+  set(DDSegmentation_MAJOR_VERSION ${DD4hep_VERSION_MAJOR})
+  set(DDSegmentation_MINOR_VERSION ${DD4hep_VERSION_MINOR})
+  set(DDSegmentation_PATCH_VERSION ${DD4hep_VERSION_PATCH})
+ELSE()
+#fg: version number must be the same as DD4hep !!
+  set(DDSegmentation_MAJOR_VERSION 0)
+  set(DDSegmentation_MINOR_VERSION 20)
+  set(DDSegmentation_PATCH_VERSION 0)
+ENDIF()
 set(DDSegmentation_VERSION "${DDSegmentation_MAJOR_VERSION}.${DDSegmentation_MINOR_VERSION}" )
 set(DDSegmentation_SOVERSION "${DDSegmentation_MAJOR_VERSION}.${DDSegmentation_MINOR_VERSION}")
 
 #------------- set the default installation directory to be the source directory
 
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
-    "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..." 
-    FORCE )
-  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if(NOT SYSTEM_INSTALL)
+  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
+      "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..." 
+      FORCE )
+    MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
+  ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+ENDIF()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
@@ -36,10 +44,17 @@ install(DIRECTORY include/DDSegmentation
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DDSegmentation
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
+IF(SYSTEM_INSTALL)
+  install(TARGETS DDSegmentation
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+ELSE()
+  install(TARGETS DDSegmentation
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    )
+ENDIF() 
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
 
@@ -48,6 +63,14 @@ install(TARGETS DDSegmentation
 #export(PACKAGE DDSegmentation)
  
 # Create the DDSegmentationConfig.cmake and DDSegmentationConfigVersion files
-configure_file(cmake/DDSegmentationConfig.cmake.in ${CMAKE_INSTALL_PREFIX}/DDSegmentationConfig.cmake)
+configure_file(cmake/DDSegmentationConfig.cmake.in ${PROJECT_BINARY_DIR}/DDSegmentationConfig.cmake)
+
+IF(SYSTEM_INSTALL)
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/DDSegmentationConfig.cmake
+    DESTINATION  ${CMAKE_INSTALL_LIBDIR}/DD4hep )
+ELSE()
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/DDSegmentationConfig.cmake
+    DESTINATION  ${CMAKE_INSTALL_PREFIX} )
+ENDIF()
 
 #install(FILES ${PROJECT_SOURCE_DIR}/DDSegmentationConfig.cmake DESTINATION . )
