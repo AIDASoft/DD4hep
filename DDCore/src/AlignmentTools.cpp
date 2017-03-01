@@ -67,13 +67,16 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
   if ( parent.isValid() )  {
     DetectorTools::PlacementPath path;
     DetectorTools::placementPath(parent, a->detector, path);
+
     for (size_t i = 0, n=path.size(); n>0 && i < n-1; ++i)  {
       const PlacedVolume& p = path[i];
       a->detectorTrafo.MultiplyLeft(p->GetMatrix());
       a->nodes.push_back(p);
     }
-    a->worldTrafo = parent.nominal()->worldTrafo;
-    a->worldTrafo.MultiplyLeft(&a->detectorTrafo);
+    //a->worldTrafo = parent.nominal()->worldTrafo;
+    //a->worldTrafo.MultiplyLeft(&a->detectorTrafo);
+    a->worldTrafo = a->detectorTrafo;
+    a->worldTrafo.MultiplyLeft(&parent.nominal()->worldTrafo);
     a->trToWorld  = Geometry::_transform(&a->worldTrafo);
     a->placement  = a->detector.placement();
     mask.clear();
@@ -85,7 +88,7 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
     reset_matrix(&a->worldTrafo);
   }
 }
-
+#if 0
 /// Compute the ideal/nominal to-world transformation from the detector element placement
 void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment, 
                                                       const Alignment::NodeList& node_list)
@@ -110,7 +113,7 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment,
   a->trToWorld = Geometry::_transform(&a->worldTrafo);
   mask.set(AlignmentData::IDEAL);
 }
-
+#endif
 
 /// Compute the survey to-world transformation from the detector element placement with respect to the survey constants
 void DD4hep::Alignments::AlignmentTools::computeSurvey(Alignment alignment)
