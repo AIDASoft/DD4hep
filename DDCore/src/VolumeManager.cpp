@@ -33,7 +33,12 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    struct VolumeManager_Populator {
+    /// Helper class to populate the volume manager
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     */
+    class VolumeManager_Populator {
       typedef PlacedVolume::VolIDs VolIDs;
       typedef vector<TGeoNode*> Chain;
       typedef pair<VolumeID, VolumeID> Encoding;
@@ -43,6 +48,8 @@ namespace DD4hep {
       VolumeManager m_volManager;
       /// Set of already added entries
       set<VolumeID> m_entries;
+
+    public:
       /// Default constructor
       VolumeManager_Populator(LCDD& lcdd, VolumeManager vm)
         : m_lcdd(lcdd), m_volManager(vm) {
@@ -326,7 +333,7 @@ namespace DD4hep {
             }
             {
               double epsilon = 1e-12;
-              const Double_t* t1 = e->worldTransformation().GetTranslation();
+              const Double_t* t1 = e->__worldTransformation().GetTranslation();
               const Double_t* t2 = e.nominal().worldTransformation().GetTranslation();
               for(int i=0; i<3; ++i)   {
                 if ( std::fabs(t1[i]-t2[i]) > epsilon )  {
@@ -344,7 +351,7 @@ namespace DD4hep {
                   break;
                 }
               }
-              const Double_t* r1 = e->worldTransformation().GetRotationMatrix();
+              const Double_t* r1 = e->__worldTransformation().GetRotationMatrix();
               const Double_t* r2 = e.nominal().worldTransformation().GetRotationMatrix();
               for(int i=0; i<9; ++i)   {
                 if ( std::fabs(r1[i]-r2[i]) > epsilon )  {
@@ -365,7 +372,7 @@ namespace DD4hep {
             }
             {
               double epsilon = 1e-12;
-              const Double_t* t1 = e->parentTransformation().GetTranslation();
+              const Double_t* t1 = e->__parentTransformation().GetTranslation();
               const Double_t* t2 = e.nominal().detectorTransformation().GetTranslation();
               for(int i=0; i<3; ++i)   {
                 if ( std::fabs(t1[i]-t2[i]) > epsilon )  {
@@ -383,7 +390,7 @@ namespace DD4hep {
                   break;
                 }
               }
-              const Double_t* r1 = e->parentTransformation().GetRotationMatrix();
+              const Double_t* r1 = e->__parentTransformation().GetRotationMatrix();
               const Double_t* r2 = e.nominal().detectorTransformation().GetRotationMatrix();
               for(int i=0; i<9; ++i)   {
                 if ( std::fabs(r1[i]-r2[i]) > epsilon )  {
@@ -437,7 +444,7 @@ namespace DD4hep {
             }
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-            context->toWorld.MultiplyLeft(&parent->worldTransformation());
+            context->toWorld.MultiplyLeft(&parent.worldTransformation());
             //context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
             if (!section.adoptPlacement(context)) {
               print_node(sd, parent, e, n, ids, nodes);

@@ -358,40 +358,40 @@ const TGeoHMatrix& DetElement::parentTransformation() const   {
 
 /// Transformation from local coordinates of the placed volume to the world system
 bool DetElement::localToWorld(const Position& local, Position& global) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal()",__PRETTY_FUNCTION__);
+  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
   Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
   // If the path is unknown an exception will be thrown inside worldTransformation() !
-  worldTransformation().LocalToMaster(local_point, master_point);
+  nominal().worldTransformation().LocalToMaster(local_point, master_point);
   global.SetCoordinates(master_point);
   return true;
 }
 
 /// Transformation from local coordinates of the placed volume to the parent system
 bool DetElement::localToParent(const Position& local, Position& global) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal()",__PRETTY_FUNCTION__);
-  // If the path is unknown an exception will be thrown inside parentTransformation() !
+  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
+  // If the path is unknown an exception will be thrown inside detectorTransformation() !
   Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
-  parentTransformation().LocalToMaster(local_point, master_point);
+  nominal().detectorTransformation().LocalToMaster(local_point, master_point);
   global.SetCoordinates(master_point);
   return true;
 }
 
 /// Transformation from world coordinates of the local placed volume coordinates
 bool DetElement::worldToLocal(const Position& global, Position& local) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal()",__PRETTY_FUNCTION__);
+  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
   // If the path is unknown an exception will be thrown inside worldTransformation() !
   Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  worldTransformation().MasterToLocal(master_point, local_point);
+  nominal().worldTransformation().MasterToLocal(master_point, local_point);
   local.SetCoordinates(local_point);
   return true;
 }
 
 /// Transformation from parent coordinates of the local placed volume coordinates
 bool DetElement::parentToLocal(const Position& global, Position& local) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal()",__PRETTY_FUNCTION__);
-  // If the path is unknown an exception will be thrown inside parentTransformation() !
+  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
+  // If the path is unknown an exception will be thrown inside detectorTransformation() !
   Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  parentTransformation().MasterToLocal(master_point, local_point);
+  nominal().detectorTransformation().MasterToLocal(master_point, local_point);
   local.SetCoordinates(local_point);
   return true;
 }

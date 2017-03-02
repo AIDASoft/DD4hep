@@ -167,16 +167,19 @@ namespace DD4hep {
       std::vector<Alignment> volume_surveys;
 #endif
 
-      //@{ Cached information of the detector element
+      //@{ Cached information of the detector element.
+      /// The usage is deprecated and only present for backwards compatibility
     private:
       friend class VolumeManager_Populator;
       /// Intermediate buffer to store the transformation to the world coordination system
       TGeoHMatrix worldTrafo;
       /// Intermediate buffer to store the transformation to the parent detector element
       TGeoHMatrix parentTrafo;
-      //@}
       /// Create cached matrix to transform to parent coordinates
-      const TGeoHMatrix& parentTransformation();
+      const TGeoHMatrix& __parentTransformation();
+      /// Create cached matrix to transform to world coordinates
+      const TGeoHMatrix& __worldTransformation();
+      //@}
 
     private:
       //@{ Private methods used internally by the object itself. */
@@ -198,8 +201,6 @@ namespace DD4hep {
       {  return privateWorld.isValid() ? privateWorld : i_access_world(); }
       ConditionsContainer assign_conditions();
       //@}
-      /// Create cached matrix to transform to world coordinates
-      const TGeoHMatrix& worldTransformation();
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer);
       /// Trigger update callbacks
