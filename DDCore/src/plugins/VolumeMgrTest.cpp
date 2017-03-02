@@ -77,7 +77,8 @@ VolIDTest::VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth) : m_det(sdet) {
     err << "The sensitive detector of subdetector " << m_det.name()
         << " is not known to the geometry.";
     printout(INFO,"VolIDTest",err.str().c_str());
-    throw runtime_error(err.str());
+    //throw runtime_error(err.str());
+    return;
   }
   m_iddesc = lcdd.sensitiveDetector(m_det.name()).readout().idSpec();
   walk(m_det,VolIDs(),0,depth);
@@ -86,45 +87,49 @@ VolIDTest::VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth) : m_det(sdet) {
 /// Check volume integrity
 void VolIDTest::checkVolume(DetElement e, PlacedVolume pv, const VolIDs& child_ids)  const {
   stringstream err, log;
-  VolumeID vid = m_iddesc.encode(child_ids);
-  try {
-    DetElement   det       = m_mgr.lookupDetector(vid);
-    DetElement   det_elem  = m_mgr.lookupDetElement(vid);
-    PlacedVolume det_place = m_mgr.lookupPlacement(vid);
-    if ( pv.ptr() != det_place.ptr() )   {
-      err << "Wrong placement "
-          << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
-          << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
-          << " vid:" << (void*)vid;
+  bool is_sensitive = pv.volume().isSensitive();
+  if ( is_sensitive )  {
+    VolumeID vid = m_iddesc.encode(child_ids);
+    try {
+      DetElement   det       = m_mgr.lookupDetector(vid);
+      DetElement   det_elem  = m_mgr.lookupDetElement(vid);
+      PlacedVolume det_place = m_mgr.lookupPlacement(vid);
+      if ( pv.ptr() != det_place.ptr() )   {
+        err << "Wrong placement "
+            << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
+            << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
+            << " vid:" << (void*)vid;
+      }
+      else if ( det_elem.ptr() != e.ptr() )   {
+        err << "Wrong associated detector element vid="  << (void*)vid
+            << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
+            << " instead of " << e.path()        << " (" << (void*)e.ptr()        << ")"
+            << " vid:" << (void*)vid;
+      }
+      else if ( det.ptr() != m_det.ptr() )   {
+        err << "Wrong associated detector "
+            << " vid:" << (void*)vid;
+      }
     }
-    else if ( det_elem.ptr() != e.ptr() )   {
-      err << "Wrong associated detector element vid="  << (void*)vid
-          << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
-          << " instead of " << e.path()        << " (" << (void*)e.ptr()        << ")"
-          << " vid:" << (void*)vid;
+    catch(const exception& ex) {
+      err << "Lookup " << pv.name() << " id:" << (void*)vid << " path:" << e.path() << " error:" << ex.what();
     }
-    else if ( det.ptr() != m_det.ptr() )   {
-      err << "Wrong associated detector "
-          << " vid:" << (void*)vid;
+    const IDDescriptor::FieldMap& m = m_iddesc.fields();
+    log << "IDS(" << pv.name() << ") ";
+    log << " vid:" << setw(16) << hex << setfill('0') << vid << dec << setfill(' ') << " ";
+    for ( size_t fi=0; fi<m.size(); ++fi )    {
+      IDDescriptor::Field fld = m_iddesc.field(fi);
+      long val = fld->value(vid);
+      if ( find_if(child_ids.begin(),child_ids.end(),FND(fld->name())) == child_ids.end() ) continue;
+      log << fld->name() << (val>=0?": ":":") << val << "  ";
     }
+    if ( !err.str().empty() )   {
+      printout(ERROR,m_det.name(),err.str()+" "+log.str());
+      //throw runtime_error(err.str());
+      return;
+    }
+    printout(INFO,m_det.name(),"OK "+log.str());
   }
-  catch(const exception& ex) {
-    err << "Lookup " << pv.name() << " id:" << (void*)vid << " path:" << e.path() << " error:" << ex.what();
-  }
-  const IDDescriptor::FieldMap& m = m_iddesc.fields();
-  log << "IDS(" << pv.name() << ") ";
-  log << " vid:" << setw(16) << hex << setfill('0') << vid << dec << setfill(' ') << " ";
-  for ( size_t fi=0; fi<m.size(); ++fi )    {
-    IDDescriptor::Field fld = m_iddesc.field(fi);
-    long val = fld->value(vid);
-    if ( find_if(child_ids.begin(),child_ids.end(),FND(fld->name())) == child_ids.end() ) continue;
-    log << fld->name() << (val>=0?": ":":") << val << "  ";
-  }
-  if ( !err.str().empty() )   {
-    printout(ERROR,m_det.name(),err.str()+" "+log.str());
-    throw runtime_error(err.str());
-  }
-  printout(INFO,m_det.name(),"OK "+log.str());
 }
 
 /// Walk through tree of detector elements

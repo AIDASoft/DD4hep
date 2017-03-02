@@ -313,17 +313,24 @@ namespace DD4hep {
             context->detector   = parent;
             context->placement  = PlacedVolume(n);
             context->element    = e;
-            //context->volID      = ids;
-            context->path       = nodes;
             for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
               TGeoMatrix* m = nodes[i-1]->GetMatrix();
               context->toWorld.MultiplyLeft(m);
             }
+            //            context->volID      = ids;
+            //            context->path       = nodes;
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-            //context->toWorld.MultiplyLeft(&parent->worldTransformation());
             context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
+            if (!section.adoptPlacement(context)) {
+              print_node(sd, parent, e, n, code, nodes);
+            }
+            m_entries.insert(code.first);
 
+            /** Comment this section to avoid too many computations .... 
+             *  These are only consistentcyu tests
+             */
+            
             // We HAVE to check at least once if the matrices from the original DetElement
             // and from the nominal alignment are identical....
             string p = "";
@@ -409,10 +416,6 @@ namespace DD4hep {
                 }
               }
             }
-            if (!section.adoptPlacement(context)) {
-              print_node(sd, parent, e, n, code, nodes);
-            }
-            m_entries.insert(code.first);
           }
         }
       }
@@ -436,8 +439,10 @@ namespace DD4hep {
             context->detector   = parent;
             context->placement  = PlacedVolume(n);
             context->element    = e;
+#if 0
             context->volID      = ids;
             context->path       = nodes;
+#endif
             for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
               TGeoMatrix* m = nodes[i - 1]->GetMatrix();
               context->toWorld.MultiplyLeft(m);
@@ -445,7 +450,6 @@ namespace DD4hep {
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
             context->toWorld.MultiplyLeft(&parent.worldTransformation());
-            //context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
             if (!section.adoptPlacement(context)) {
               print_node(sd, parent, e, n, ids, nodes);
             }
@@ -636,45 +640,53 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
   VolumeID vid = context->identifier;
   PlacedVolume pv = context->placement;
   Volumes::iterator i = o.volumes.find(vid);
-#if 0
+
   if ( (context->identifier&context->mask) != context->identifier ) {
-    err << "Bad context mask:" << (void*)context->mask << " id:" << (void*)context->identifier
+    err << "Bad context mask:" << (void*)context->mask
+        << " id:" << (void*)context->identifier
         << " pv:" << pv.name() << " Sensitive:"
         << yes_no(pv.volume().isSensitive()) << endl;
     goto Fail;
   }
-#endif
 
   if (i == o.volumes.end()) {
     o.volumes[vid] = context;
     o.detMask |= context->mask;
-    err << "Inserted new volume:" << setw(6) << left << o.volumes.size() << " Ptr:" << (void*) pv.ptr() << " ["
-        << pv.name() << "]" << " ID:" << (void*) context->identifier << " Mask:" << (void*) context->mask;
+    err << "Inserted new volume:" << setw(6) << left << o.volumes.size()
+        << " Ptr:" << (void*) pv.ptr()
+        << " ["    << pv.name() << "]"
+        << " ID:" << (void*) context->identifier
+        << " Mask:" << (void*) context->mask;
     printout(VERBOSE, "VolumeManager", err.str().c_str());
     return true;
   }
-  err << "+++ Attempt to register duplicate volID " << (void*) context->identifier
+  err << "+++ Attempt to register duplicate"
+      << " volID " << (void*) context->identifier
       << " Mask:" << (void*) context->mask
       << " to detector " << o.detector.name()
       << " ptr:" << (void*) pv.ptr()
       << " Name:" << pv.name()
       << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
+#if 0
   err.str("");
   err << " !!!!!                      ++++ VolIDS ";
   const VolIDs::Base& id_vector = context->volID;
   for (VolIDs::Base::const_iterator vit = id_vector.begin(); vit != id_vector.end(); ++vit)
     err << (*vit).first << "=" << (*vit).second << "; ";
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
+#endif
   err.str("");
   context = (*i).second;
   pv = context->placement;
-  err << " !!!!!               +++ Clashing volID " << (void*) context->identifier
+  err << " !!!!!               +++ Clashing"
+      << " volID " << (void*) context->identifier
       << " Mask:" << (void*) context->mask
       << " to detector " << o.detector.name()
       << " ptr:" << (void*) pv.ptr()
       << " Name:" << pv.name()
       << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
+#if 0
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
 
@@ -685,6 +697,8 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
     for (VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
       err << (*vit).first << "=" << (*vit).second << "; ";
   }
+#endif
+ Fail:
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   // throw runtime_error(err.str());
   return false;
@@ -803,8 +817,9 @@ std::ostream& DD4hep::Geometry::operator<<(std::ostream& os, const VolumeManager
     const VolumeManager::Context* c = (*i).second;
     PlacedVolume pv = c->placement;
     os << prefix << "PV:" << setw(32) << left << pv.name() 
-       << " id:" << setw(18) << left << (void*) c->identifier << " mask:"
-       << setw(18) << left << (void*) c->mask << endl;
+       << " id:"   << setw(18) << left << (void*) c->identifier
+       << " mask:" << setw(18) << left << (void*) c->mask
+       << endl;
   }
   for (VolumeManager::Managers::const_iterator i = o.managers.begin(); i != o.managers.end(); ++i)
     os << prefix << (*i).second << endl;

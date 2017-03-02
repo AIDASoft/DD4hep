@@ -23,7 +23,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
 
 /// Default constructor
 VolumeManagerContext::VolumeManagerContext()
-  : identifier(0), mask(~0x0ULL) {
+ : identifier(0), mask(~0x0ULL) {
 }
 
 /// Default destructor
