@@ -152,8 +152,8 @@ World DetElementObject::i_access_world()   {
 }
 
 /// Create cached matrix to transform to world coordinates
-const TGeoHMatrix& DetElementObject::worldTransformation() {
-  DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
+const TGeoHMatrix& DetElementObject::__worldTransformation() {
+  //DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
   if ( (flag&HAVE_WORLD_TRAFO) == 0 ) {
     PlacementPath nodes;
     flag |= HAVE_WORLD_TRAFO;
@@ -164,8 +164,8 @@ const TGeoHMatrix& DetElementObject::worldTransformation() {
 }
 
 /// Create cached matrix to transform to parent coordinates
-const TGeoHMatrix& DetElementObject::parentTransformation() {
-  DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
+const TGeoHMatrix& DetElementObject::__parentTransformation() {
+  //DD4HEP_DEPRECATED_CALL("DetElementObject","DetElement::nominal()",__PRETTY_FUNCTION__);
   if ( (flag&HAVE_PARENT_TRAFO) == 0 ) {
     PlacementPath nodes;
     flag |= HAVE_PARENT_TRAFO;
