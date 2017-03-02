@@ -51,11 +51,8 @@ namespace DD4hep {
      */
     class VolumeManagerContext {
     public:
-      typedef std::vector<TGeoNode*> Path;
-      typedef PlacedVolume::VolIDs::Base VolIDs;
-
       /// Placement identifier
-      VolumeID identifier;
+      VolumeID     identifier;
       /// Ignore mask of the placement identifier
       [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       VolumeID mask;
@@ -66,18 +63,14 @@ namespace DD4hep {
       [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       DetElement detector;
       /// Handle to the closest Detector element
-      DetElement element;
+      DetElement   element;
+      /// The transformation of space-points to the world corrdinate system
+      TGeoHMatrix  toWorld;
       /// The transformation of space-points to the corrdinate system of the closests detector element
       [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       TGeoHMatrix toDetector;
       /// The transformation of space-points to the world corrdinate system
       TGeoHMatrix toWorld;
-      /// Volume IDS corresponding to this element
-      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
-      VolIDs volID;
-      /// Path of placements to this sensitive volume
-      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
-      Path path;
     public:
       /// Default constructor
       VolumeManagerContext();
