@@ -158,6 +158,7 @@ namespace DD4hep {
       /// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
       DetElement lookupDetElement(VolumeID volume_id) const;
       /// Access the transformation of a physical volume to the world coordinate system
+      [[gnu::deprecated("This function might be buggy and will be removed")]]
       const TGeoMatrix& worldTransformation(VolumeID volume_id) const;
     };
 
