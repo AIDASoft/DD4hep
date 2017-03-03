@@ -396,18 +396,24 @@ namespace DD4hep {
       // Deprecated functions to be removed soon:
 
       /// Create cached matrix to transform to world coordinates
+      [[gnu::deprecated("Use _DetElement_.nominal().worldTransformation")]]
       const TGeoHMatrix& worldTransformation() const;
       /// Create cached matrix to transform to parent coordinates
+      [[gnu::deprecated("Use _DetElement_.nominal().parentTransformation")]]
       const TGeoHMatrix& parentTransformation() const;
 
       /// Transformation from local coordinates of the placed volume to the world system
+      [[gnu::deprecated("Use _DetElement_.nominal().localToWorld()")]]
       bool localToWorld(const Position& local, Position& global) const;
       /// Transformation from local coordinates of the placed volume to the parent system
+      [[gnu::deprecated("Use _DetElement_.nominal().localToParent")]]
       bool localToParent(const Position& local, Position& parent) const;
 
       /// Transformation from world coordinates of the local placed volume coordinates
+      [[gnu::deprecated("Use _DetElement_.nominal().worldToLocal")]]
       bool worldToLocal(const Position& global, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
+      [[gnu::deprecated("Use _DetElement_.nominal().parentToLocal")]]
       bool parentToLocal(const Position& parent, Position& local) const;
     };
 
