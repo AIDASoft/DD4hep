@@ -69,8 +69,6 @@ namespace DD4hep {
       /// The transformation of space-points to the corrdinate system of the closests detector element
       [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       TGeoHMatrix toDetector;
-      /// The transformation of space-points to the world corrdinate system
-      TGeoHMatrix toWorld;
     public:
       /// Default constructor
       VolumeManagerContext();

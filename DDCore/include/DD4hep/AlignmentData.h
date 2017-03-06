@@ -148,7 +148,7 @@ namespace DD4hep {
       /// The subdetector placement corresponding to the actual detector element's volume
       PlacedVolume         placement;
       /// Reference to the original condition object (May not be present!)
-      Ref_t                condition;
+      AlignmentCondition   condition;
       /// Flag to remember internally calculated quatities
       mutable BitMask      flag;
       /// Magic word to verify object if necessary
