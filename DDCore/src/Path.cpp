@@ -1,3 +1,4 @@
+//==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
@@ -11,7 +12,6 @@
 //  \version 1.0
 //
 //==========================================================================
-// $Id$
 
 #include "DD4hep/Path.h"
 #include <climits>

@@ -274,7 +274,6 @@ namespace dd4hep {
   static const double perMillion = 0.000001;
 
   // -*- C++ -*-
-  // $Id: $
   // ----------------------------------------------------------------------
   // HEP coherent Physical Constants
   //

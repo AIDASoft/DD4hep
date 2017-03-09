@@ -14,6 +14,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/VolumeManagerInterna.h"
 
@@ -48,11 +49,15 @@ namespace DD4hep {
       VolumeManager m_volManager;
       /// Set of already added entries
       set<VolumeID> m_entries;
+      /// Debug flag
+      bool          m_debug;
 
     public:
       /// Default constructor
       VolumeManager_Populator(LCDD& lcdd, VolumeManager vm)
-        : m_lcdd(lcdd), m_volManager(vm) {
+        : m_lcdd(lcdd), m_volManager(vm)
+      {
+        m_debug = (0 != ::getenv("DD4HEP_VOLMGR_DEBUG"));
       }
 
       /// Populate the Volume manager
@@ -69,42 +74,15 @@ namespace DD4hep {
           PlacedVolume pv = de.placement();
           if (pv.isValid()) {
             Chain chain;
+            Encoding coding(0, 0);
             SensitiveDetector sd = parent_sd;
             m_entries.clear();
-#if 0
-            if ( typ )  {
-              Encoding coding(0, 0);
-              scanPhysicalVolume(de, de, pv, coding, sd, chain);
-              continue;
-            }
-            VolIDs ids;
-            scanPhysicalVolume(de, de, pv, ids, sd, chain);
-#else
-            Encoding coding(0, 0);
             scanPhysicalVolume(de, de, pv, coding, sd, chain);
-#endif
             continue;
           }
           printout(WARNING, "VolumeManager", "++ Detector element %s of type %s has no placement.", 
                    de.name(), de.type().c_str());
         }
-      }
-      /// Find a detector element below with the corresponding placement
-      DetElement findElt(DetElement e, PlacedVolume pv) {
-        const DetElement::Children& c = e.children();
-        if (e.placement().ptr() == pv.ptr())
-          return e;
-        for (const auto& i : c )  {
-          DetElement de = i.second;
-          if ( de.placement().ptr() == pv.ptr() )
-            return de;
-        }
-        for (const auto& i : c )  {
-          DetElement de = findElt(i.second, pv);
-          if ( de.isValid() )
-            return de;
-        }
-        return DetElement();
       }
       /// Scan a single physical volume and look for sensitive elements below
       size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
@@ -151,7 +129,16 @@ namespace DD4hep {
             PlacedVolume placement(daughter);
             if ( placement.data() ) {
               PlacedVolume pv_dau(daughter);
-              DetElement   de_dau = findElt(e, daughter);
+              DetElement   de_dau;
+              /// Check if this particular volume is the placement of one of the
+              /// children of this detector element. If the daughter placement is also
+              /// a detector child, then we must reset the node chain.
+              for( const auto& de : e.children() )  {
+                if ( de.second.placement().ptr() == daughter )  {
+                  de_dau = de.second;
+                  break;
+                }
+              }
               if ( de_dau.isValid() ) {
                 Chain dau_chain;
                 count += scanPhysicalVolume(parent, de_dau, pv_dau, vol_encoding, sd, dau_chain);
@@ -171,98 +158,40 @@ namespace DD4hep {
           }
           if ( sd.isValid() )   {
             if ( !have_encoding )   {
-              printout(ERROR, "VolumeManager","%s: Missing SD encoding. Volume manager won't work!",
+              printout(ERROR, "VolumeManager","Element %s: Missing SD encoding. Volume manager won't work!",
                        e.path().c_str());
             }
-            bool add_det_vol_id = (is_sensitive || count > 0) && node == e.placement().ptr();
-            if ( add_det_vol_id )   {
-              // 1) We recuperate volumes from lower levels by reusing the subdetector
-              //    This only works if there is exactly one sensitive detector per subdetector!
-              // 2) DetElements in the upper hierarchy of the sensitive also get al volume id,
-              //    and the volume is registered. (to be discussed)
-              //
-              // I hate this, but I could not talk Frank out of this!  M.F.
-              //
-              printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
-                       have_encoding ? "RECUPERATED" : "REGULAR", sd.name(),
-                       (void*)vol_encoding.first, (void*)vol_encoding.second);
-              e.object<DetElement::Object>().volumeID = vol_encoding.first;
-            }
-            if ( is_sensitive || add_det_vol_id )  {
+            if ( is_sensitive || count > 0 )  {
+              /// Distinguish logically the two following cases for our understanding....
+              /// Though the treatment is identical
+              if ( node == e.placement().ptr() )  {
+                // These here are placement nodes, which at the same time are DetElement placements
+                // 1) We recuperate volumes from lower levels by reusing the subdetector
+                //    This only works if there is exactly one sensitive detector per subdetector!
+                // 2) DetElements in the upper hierarchy of the sensitive also get al volume id,
+                //    and the volume is registered. (to be discussed)
+                //
+                // I hate this, but I could not talk Frank out of this!  M.F.
+                //
+                e.object<DetElement::Object>().volumeID = vol_encoding.first;
+              }
+              else  {
+                // These here are placement nodes, which are no DetElement placement
+                // used e.g. to model a very fine grained sensitive volume structure
+                // without always having DetElements.
+              }
               add_entry(sd, parent, e, node, vol_encoding, chain);
               ++count;
-            }
-          }
-          chain.pop_back();
-        }
-        return count;
-      }
-      /// Scan a single physical volume and look for sensitive elements below
-      size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
-                                VolIDs ids, SensitiveDetector& sd, Chain& chain)
-      {
-        TGeoNode* node = pv.ptr();
-        size_t count = 0;
-        if (node) {
-          Volume vol = pv.volume();
-          chain.push_back(node);
-          VolIDs pv_ids = pv.volIDs();
-          ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
-          bool got_readout = false;
-          if ( vol.isSensitive() )  {
-            sd = vol.sensitiveDetector();
-            Readout ro = sd.readout();
-            if ( sd.isValid() && ro.isValid() )   {
-              got_readout = true;
-              add_entry(sd, parent, e, node, ids, chain);
-              ++count;
-            }
-            else {
-              printout(WARNING, "VolumeManager",
-                       "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
-                       parent.name(), pv.volume().name(), sd.ptr());
-            }
-          }
-          for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
-            TGeoNode* daughter = node->GetDaughter(idau);
-            PlacedVolume placement(daughter);
-            if ( placement.data() ) {
-              size_t cnt;
-              PlacedVolume pv_dau = Ref_t(daughter);
-              DetElement de_dau = findElt(e, daughter);
-              if ( de_dau.isValid() ) {
-                Chain dau_chain;
-                cnt = scanPhysicalVolume(parent, de_dau, pv_dau, ids, sd, dau_chain);
+              if ( m_debug )  {
+                IDDescriptor id(sd.readout().idSpec());
+                printout(INFO,"VolumeManager","Parent: %-44s id:%016llx Encoding: %s",
+                         parent.path().c_str(), parent.volumeID(), id.str(parent_encoding.first,parent_encoding.second).c_str());
+                printout(INFO,"VolumeManager","Element:%-44s id:%016llx Encoding: %s",
+                         e.path().c_str(), e.volumeID(), id.str(vol_encoding.first,vol_encoding.second).c_str());
+                printout(INFO, "VolumeManager", "%s SD:%s VolIDs:%s id:%016llx mask:%016llx",
+                         node == e.placement().ptr() ? "DETELEMENT PLACEMENT" : "VOLUME PLACEMENT    ",
+                         sd.name(), pv_ids.str().c_str(), vol_encoding.first, vol_encoding.second);
               }
-              else {
-                cnt = scanPhysicalVolume(parent, e, pv_dau, ids, sd, chain);
-              }
-              // There was a sensitive daughter volume, also add the parent entry.
-              if ( count == 0 && cnt > 0 && sd.isValid() && !pv_ids.empty()) {
-                add_entry(sd, parent, e, node, ids, chain);
-              }
-              count += cnt;
-            }
-            else  {
-              throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+
-                                  " [Internal error -- bad detector constructor]");
-            }
-          }
-          if ( count == 0 )   { 
-            sd = SensitiveDetector(0);
-          }
-          else if ( count > 0 && sd.isValid() )   {
-            // We recuperate volumes from lower levels by reusing the subdetector
-            // This only works if there is exactly one sensitive detector per subdetector!
-            // I hate this, but I could not talk Frank out of this!  M.F.
-            Readout ro = sd.readout();
-            if ( ro.isValid() ) {
-              IDDescriptor iddesc = ro.idSpec();
-              Encoding det_encoding = encoding(iddesc,ids);
-              printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
-                       got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
-                       (void*)det_encoding.first, (void*)det_encoding.second);
-              e.object<DetElement::Object>().volumeID = det_encoding.first;
             }
           }
           chain.pop_back();
@@ -277,8 +206,9 @@ namespace DD4hep {
           const PlacedVolume::VolID& id = (*i);
           IDDescriptor::Field f = iddesc.field(id.first);
           VolumeID msk = f->mask();
-          int offset   = f->offset();
-          volume_id   |= ((f->value(id.second << offset) << offset)&msk);
+          int      off = f->offset();
+          VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
+          volume_id   |= ((f->value(val << off) << off)&msk);
           mask        |= msk;
         }
         return make_pair(volume_id, mask);
@@ -291,7 +221,8 @@ namespace DD4hep {
           IDDescriptor::Field f = iddesc.field(id.first);
           VolumeID msk = f->mask();
           int      off = f->offset();
-          volume_id |= ((f->value(id.second<<off)<<off)&msk);
+          VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
+          volume_id |= ((f->value(val << off) << off)&msk);
           mask      |= msk;
         }
         return make_pair(volume_id, mask);
@@ -322,7 +253,7 @@ namespace DD4hep {
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
             context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
-            if (!section.adoptPlacement(context)) {
+            if ( !section.adoptPlacement(context) || m_debug )  {
               print_node(sd, parent, e, n, code, nodes);
             }
             m_entries.insert(code.first);
@@ -331,88 +262,43 @@ namespace DD4hep {
              *  These are only consistentcyu tests
              */
             
-            // We HAVE to check at least once if the matrices from the original DetElement
-            // and from the nominal alignment are identical....
-            string p = "";
-            for (size_t i=0; i<nodes.size(); ++i) {   // Omit the placement of the parent DetElement
-              p += "/";
-              p += nodes[i]->GetName();
-            }
             {
-              double epsilon = 1e-12;
-              const Double_t* t1 = e->__worldTransformation().GetTranslation();
-              const Double_t* t2 = e.nominal().worldTransformation().GetTranslation();
-              for(int i=0; i<3; ++i)   {
-                if ( std::fabs(t1[i]-t2[i]) > epsilon )  {
-                  stringstream log;
-                  log << "Alignment:";
-                  for(size_t j=0; j<e.nominal()->nodes.size(); ++j)
-                    log << " " << (void*)e.nominal()->nodes[j].ptr();
-                  log << " Nodes:";
-                  for (size_t j = 0; j<nodes.size(); ++j) {
-                    log << " " << (void*)nodes[j];
-                  }
-                  printout(WARNING,"Volumes",
-                           "+++ World matrix of %s // %s is NOT equal (translation) [diff[%d]=%g]!  Pointers:%s",
-                           e.placementPath().c_str(),p.c_str(),i,std::fabs(t1[i]-t2[i]),log.str().c_str());
-                  break;
+              int res1 = _matrixEqual(e->__worldTransformation(),e.nominal().worldTransformation());
+              int res2 = _matrixEqual(e->__parentTransformation(),e.nominal().detectorTransformation());
+              if ( res1 != MATRICES_EQUAL || res2 != MATRICES_EQUAL )  {
+                stringstream log;
+                // We HAVE to check at least once if the matrices from the original DetElement
+                // and from the nominal alignment are identical....
+                string p = "";
+                for (size_t i=0; i<nodes.size(); ++i) {   // Omit the placement of the parent DetElement
+                  p += "/";
+                  p += nodes[i]->GetName();
                 }
-              }
-              const Double_t* r1 = e->__worldTransformation().GetRotationMatrix();
-              const Double_t* r2 = e.nominal().worldTransformation().GetRotationMatrix();
-              for(int i=0; i<9; ++i)   {
-                if ( std::fabs(r1[i]-r2[i]) > epsilon )  {
-                  stringstream log;
-                  log << "Alignment:";
-                  for(size_t j=0; j<e.nominal()->nodes.size(); ++j)
-                    log << " " << (void*)e.nominal()->nodes[j].ptr();
-                  log << " Nodes:";
-                  for (size_t j = 0; j<nodes.size(); ++j) {
-                    log << " " << (void*)nodes[j];
-                  }
-                  printout(WARNING,"Volumes",
-                           "+++ World matrix of %s // %s is NOT equal (rotation) [diff[%d]=%g]!  Pointers:%s",
-                           e.placementPath().c_str(),p.c_str(),i,std::fabs(r1[i]-r2[i]),log.str().c_str());
-                  break;
+
+                log << "Alignment:";
+                for(size_t j=0; j<e.nominal()->nodes.size(); ++j)
+                  log << " " << (void*)e.nominal()->nodes[j].ptr();
+                log << " Nodes:";
+                for (size_t j = 0; j<nodes.size(); ++j) {
+                  log << " " << (void*)nodes[j];
                 }
-              }
-            }
-            {
-              double epsilon = 1e-12;
-              const Double_t* t1 = e->__parentTransformation().GetTranslation();
-              const Double_t* t2 = e.nominal().detectorTransformation().GetTranslation();
-              for(int i=0; i<3; ++i)   {
-                if ( std::fabs(t1[i]-t2[i]) > epsilon )  {
-                  stringstream log;
-                  log << "Alignment:";
-                  for(size_t j=0; j<e.nominal()->nodes.size(); ++j)
-                    log << " " << (void*)e.nominal()->nodes[j].ptr();
-                  log << " Nodes:";
-                  for (size_t j = 0; j<nodes.size(); ++j) {
-                    log << " " << (void*)nodes[j];
-                  }
-                  printout(WARNING,"Volumes",
-                           "+++ Parent matrix of %s // %s is NOT equal (translation) [diff[%d]=%g]! Pointers:%s ",
-                           e.placementPath().c_str(),p.c_str(),i,std::fabs(t1[i]-t2[i]), log.str().c_str());
-                  break;
+                if ( res1 != MATRICES_EQUAL )  {
+                  res1 = _matrixEqual(e->__worldTransformation(),e.nominal().worldTransformation());
+                  const char* tag = (res1==MATRICES_DIFFER_TRANSLATION) ? "translation"
+                    : (res1==MATRICES_DIFFER_ROTATION) ? "rotation"
+                    : "translation+rotation";
+                  printout(WARNING,"VolumeManager",
+                           "+++ World matrix of %s // %s is NOT equal (%s)!  Pointers:%s",
+                           e.placementPath().c_str(),p.c_str(),tag,log.str().c_str());
                 }
-              }
-              const Double_t* r1 = e->__parentTransformation().GetRotationMatrix();
-              const Double_t* r2 = e.nominal().detectorTransformation().GetRotationMatrix();
-              for(int i=0; i<9; ++i)   {
-                if ( std::fabs(r1[i]-r2[i]) > epsilon )  {
-                  stringstream log;
-                  log << "Alignment:";
-                  for(size_t j=0; j<e.nominal()->nodes.size(); ++j)
-                    log << " " << (void*)e.nominal()->nodes[j].ptr();
-                  log << " Nodes:";
-                  for (size_t j = 0; j<nodes.size(); ++j) {
-                    log << " " << (void*)nodes[j];
-                  }
-                  printout(WARNING,"Volumes",
-                           "+++ Parent matrix of %s // %s is NOT equal (rotation) [diff[%d]=%g]!  %s",
-                           e.placementPath().c_str(),p.c_str(),i,std::fabs(r1[i]-r2[i]), log.str().c_str());
-                  break;
+                if ( res2 != MATRICES_EQUAL )  {
+                  res2 = _matrixEqual(e->__parentTransformation(),e.nominal().detectorTransformation());
+                  const char* tag = (res2==MATRICES_DIFFER_TRANSLATION) ? "translation"
+                    : (res2==MATRICES_DIFFER_ROTATION) ? "rotation"
+                    : "translation+rotation";
+                  printout(WARNING,"VolumeManager",
+                           "+++ Parent matrix of %s // %s is NOT equal (%s)! Pointers:%s ",
+                           e.placementPath().c_str(),p.c_str(), tag, log.str().c_str());
                 }
               }
             }
@@ -420,101 +306,27 @@ namespace DD4hep {
         }
       }
 
-      void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, 
-                     const TGeoNode* n, const VolIDs& ids, Chain& nodes) 
-      {
-        if ( sd.isValid() )   {
-          Readout ro = sd.readout();
-          IDDescriptor iddesc = ro.idSpec();
-          Encoding code = encoding(iddesc, ids);
-
-          if (m_entries.find(code.first) == m_entries.end()) {
-            string        sd_name      = sd.name();
-            DetElement    sub_detector = m_lcdd.detector(sd_name);
-            VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
-            // This is the block, we effectively have to save for each physical volume with a VolID
-            VolumeManager::Context* context = new VolumeManager::Context;
-            context->identifier = code.first;
-            context->mask       = code.second;
-            context->detector   = parent;
-            context->placement  = PlacedVolume(n);
-            context->element    = e;
-#if 0
-            context->volID      = ids;
-            context->path       = nodes;
-#endif
-            for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
-              TGeoMatrix* m = nodes[i - 1]->GetMatrix();
-              context->toWorld.MultiplyLeft(m);
-            }
-            context->toDetector = context->toWorld;
-            context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-            context->toWorld.MultiplyLeft(&parent.worldTransformation());
-            if (!section.adoptPlacement(context)) {
-              print_node(sd, parent, e, n, ids, nodes);
-            }
-            m_entries.insert(code.first);
-          }
-        }
-      }
-
       void print_node(SensitiveDetector sd, DetElement parent, DetElement e,
-                      const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */) const
+                      const TGeoNode* n, const Encoding& code, const Chain& nodes) const
       {
-        static int s_count = 0;
-        Readout ro = sd.readout();
-        const IDDescriptor& en = ro.idSpec();
-        PlacedVolume pv = Ref_t(n);
+        PlacedVolume pv = n;
+        Readout      ro = sd.readout();
         bool sensitive = pv.volume().isSensitive();
-        Encoding code = encoding(en, ids);
-        VolumeID volume_id = code.first;
 
         //if ( !sensitive ) return;
-        ++s_count;
         stringstream log;
-        log << s_count << ": " << parent.name() << ": " << e.name() 
-            << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
-            << (void*) volume_id << " : ";
-        for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
-          const PlacedVolume::VolID& id = (*i);
-          IDDescriptor::Field f = ro.idSpec().field(id.first);
-          VolumeID value = f->value(volume_id);
-          log << id.first << "=" << id.second << "," << value 
-              << " [" << f->offset() << "," << f->width() << "] ";
-        }
-        log << " Sensitive:" << yes_no(sensitive);
-        printout(DEBUG, "VolumeManager", log.str().c_str());
-#if 0
-        log.str("");
-        log << s_count << ": " << e.name() << " Detector GeoNodes:";
-        for(vector<const TGeoNode*>::const_iterator j=nodes.begin(); j!=nodes.end();++j)
-          log << (void*)(*j) << " ";
-        printout(DEBUG,"VolumeManager",log.str().c_str());
-#endif
-      }
-      void print_node(SensitiveDetector sd, DetElement parent, DetElement e,
-                      const TGeoNode* n, const Encoding& code, const Chain& /* nodes */) const
-      {
-        static int s_count = 0;
-        Readout ro = sd.readout();
-        PlacedVolume pv = Ref_t(n);
-        bool sensitive = pv.volume().isSensitive();
-        VolumeID volume_id = code.first;
+        log << m_entries.size() << ": Detector: " << e.path()
+            << " id:" << volumeID(code.first)
+            << " Nodes(" << int(nodes.size()) << "):" << ro.idSpec().str(code.first,code.second);
+        printout(m_debug ? INFO : DEBUG,"VolumeManager",log.str().c_str());
+        //for(const auto& i : nodes )
+        //  log << i->GetName() << "/";
 
-        //if ( !sensitive ) return;
-        ++s_count;
-        stringstream log;
-        log << s_count << ": " << parent.name() << ": " << e.name() 
-            << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
-            << (void*) volume_id << " Sensitive:" << yes_no(sensitive);
-        printout(DEBUG, "VolumeManager", log.str().c_str());
-#if 0
         log.str("");
-        log << s_count << ": " << e.name() << " Detector GeoNodes:";
-        for(vector<const TGeoNode*>::const_iterator j=nodes.begin(); j!=nodes.end();++j)
-          log << (void*)(*j) << " ";
-        printout(DEBUG,"VolumeManager",log.str().c_str());
-#endif
+        log << m_entries.size() << ": " << parent.name()
+            << " ro:" << ro.name() << " pv:" << n->GetName()
+            << " Sensitive:" << yes_no(sensitive);
+        printout(m_debug ? INFO : DEBUG, "VolumeManager", log.str().c_str());
       }
     };
   }       /* End namespace Geometry              */
@@ -638,12 +450,13 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
   stringstream err;
   Object& o = _data();
   VolumeID vid = context->identifier;
+  VolumeID mask = context->mask;
   PlacedVolume pv = context->placement;
   Volumes::iterator i = o.volumes.find(vid);
 
-  if ( (context->identifier&context->mask) != context->identifier ) {
-    err << "Bad context mask:" << (void*)context->mask
-        << " id:" << (void*)context->identifier
+  if ( (vid&mask) != vid ) {
+    err << "Bad context mask:" << (void*)mask
+        << " id:" << (void*)vid
         << " pv:" << pv.name() << " Sensitive:"
         << yes_no(pv.volume().isSensitive()) << endl;
     goto Fail;
@@ -651,53 +464,35 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
 
   if (i == o.volumes.end()) {
     o.volumes[vid] = context;
-    o.detMask |= context->mask;
+    o.detMask |= mask;
     err << "Inserted new volume:" << setw(6) << left << o.volumes.size()
-        << " Ptr:" << (void*) pv.ptr()
-        << " ["    << pv.name() << "]"
-        << " ID:" << (void*) context->identifier
-        << " Mask:" << (void*) context->mask;
+        << " Ptr:"  << (void*) pv.ptr()
+        << " ["     << pv.name() << "]"
+        << " id:"   << setw(16) << hex << right << setfill('0') << vid  << dec << setfill(' ')
+        << " mask:" << setw(16) << hex << right << setfill('0') << mask << dec << setfill(' ')
+        << " Det:"  << context->element.path();
     printout(VERBOSE, "VolumeManager", err.str().c_str());
+    //printout(INFO, "VolumeManager", err.str().c_str());
     return true;
   }
   err << "+++ Attempt to register duplicate"
-      << " volID " << (void*) context->identifier
-      << " Mask:" << (void*) context->mask
+      << " id:"   << setw(16) << hex << right << setfill('0') << vid  << dec << setfill(' ')
+      << " mask:" << setw(16) << hex << right << setfill('0') << mask << dec << setfill(' ')
       << " to detector " << o.detector.name()
       << " ptr:" << (void*) pv.ptr()
       << " Name:" << pv.name()
       << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
-#if 0
-  err.str("");
-  err << " !!!!!                      ++++ VolIDS ";
-  const VolIDs::Base& id_vector = context->volID;
-  for (VolIDs::Base::const_iterator vit = id_vector.begin(); vit != id_vector.end(); ++vit)
-    err << (*vit).first << "=" << (*vit).second << "; ";
-  printout(ERROR, "VolumeManager", "%s", err.str().c_str());
-#endif
   err.str("");
   context = (*i).second;
   pv = context->placement;
   err << " !!!!!               +++ Clashing"
-      << " volID " << (void*) context->identifier
-      << " Mask:" << (void*) context->mask
+      << " id:"   << setw(16) << hex << right << setfill('0') << vid  << dec << setfill(' ')
+      << " mask:" << setw(16) << hex << right << setfill('0') << mask << dec << setfill(' ')
       << " to detector " << o.detector.name()
       << " ptr:" << (void*) pv.ptr()
       << " Name:" << pv.name()
       << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
-#if 0
-  printout(ERROR, "VolumeManager", "%s", err.str().c_str());
-  err.str("");
-
-  goto Fail;
- Fail: {
-    err << " !!!!!                      ++++ VolIDS ";
-    const VolIDs::Base& ids = context->volID;
-    for (VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
-      err << (*vit).first << "=" << (*vit).second << "; ";
-  }
-#endif
  Fail:
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   // throw runtime_error(err.str());

@@ -26,7 +26,6 @@ namespace DD4hep {
    *
    * @author F.gaede, DESY
    * @date 05.02.2016
-   * @version $Id: $
    */
   class DetType {
 

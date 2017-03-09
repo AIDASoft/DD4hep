@@ -1,0 +1,83 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="Nested_Detectors_test"
+        title="Test for nested detector descriptions"
+        author="Markus Frank"
+        url="None"
+        status="development"
+        version="$Id: compact.xml 1374 2014-11-05 10:49:55Z markus.frank@cern.ch $">
+    <comment>Test for nested detector descriptions</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile ref="${DDDetectors_dir}/elements.xml"/>
+    <gdmlFile ref="${DDDetectors_dir}/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="DDDetectors_dir" value="${DD4hepINSTALL}/DDDetectors/compact" type="string"/>;
+    <constant name="SiD_dir" value="${DDDetectors_dir}/SiD" type="string"/>;
+    <constant name="world_side" value="30000*mm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+
+    <constant name="SiTrackerBarrel_ID" value="255"/>
+
+    <constant name="tracker_region_rmax" value="world_side"/>
+    <constant name="tracker_region_zmax" value="world_side"/>
+
+  </define>
+
+  <limits><limitset name="SiTrackerBarrelRegionLimitSet"/></limits>
+  <regions><region name="SiTrackerBarrelRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001"/></regions>
+
+  <comment>Common Generic visualization attributes</comment>
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="BlueVis" alpha="1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="BlueVisTrans" alpha="0.1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="SiTrackerLayerVis"   alpha="1.0" r="1.0" g="1.0" b="0.6" showDaughters="true" visible="true"/>
+    <vis name="SiTrackerModuleVis"  alpha="0.1" r="0.0" g="1.0" b="0.6" showDaughters="false" visible="true"/>
+
+  </display>
+
+  <comment>Tracking detectors</comment>
+  <readouts>
+    <readout name="SiTrackerBarrelHits">
+      <id>system:32,barrel:3,layer:2,module:16,sensor:2</id>
+    </readout>
+  </readouts>
+
+<detectors>
+  <detector id="SiTrackerBarrel_ID" name="SiTrackerBarrel" type="DD4hep_SiBarrelMultiSensitiveDetector" readout="SiTrackerBarrelHits" region="SiTrackerBarrelRegion" limits="SiTrackerBarrelRegionLimitSet">
+
+    <comment>Silicon Outer Tracker Barrel</comment>
+
+    <module name="SiTrackerModule_Layer1" vis="SiTrackerModuleVis">                
+      <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="0.0915*cm" />
+      </module_component>                
+      <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
+	<position z="0.1145*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
+	<position z="0.12974*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00038*cm" material="Copper" sensitive="false">
+	<position z="0.146*cm"/>
+      </module_component>                
+    </module>
+
+    <layer module="SiTrackerModule_Layer1" id="1" vis="SiTrackerLayerVis">
+      <barrel_envelope inner_r="215.075*mm" outer_r="245.0*mm" z_length="578 * 2*mm"/>
+      <rphi_layout phi_tilt="0.17506*rad" nphi="4" phi0="0." rc="(216.355 + 5.0)*mm" dr="0.0"/>
+      <z_layout dr="4.0*mm" z0="512.128*mm" nz="13"/>
+    </layer>                
+  </detector>
+</detectors>
+</lccdd>

@@ -77,6 +77,20 @@ namespace DD4hep {
     /// Convert a the rotation part of a TGeoMatrix to XYZAngles                              \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
     XYZAngles _XYZangles(const TGeoMatrix* matrix);
 
+    enum MatrixEqualityCode  {
+      MATRICES_EQUAL = 1,
+      MATRICES_DIFFER_TRANSLATION = 2,
+      MATRICES_DIFFER_ROTATION = 4
+    };
+    /// Check matrices for equality
+    /** Return codes:
+     *  MATRICES_EQUAL:                matrices left and right are equal
+     *  MATRICES_DIFFER_TRANSLATION:   matrices differ in translation
+     *  MATRICES_DIFFER_ROTATION:      matrices differ in rotation
+     *  or combination: MATRICES_DIFFER_TRANSLATION|MATRICES_DIFFER_ROTATION
+     */
+    int _matrixEqual(const TGeoMatrix& left, const TGeoMatrix& right);
+    
   } /* End namespace Geometry        */
 } /* End namespace DD4hep            */
 

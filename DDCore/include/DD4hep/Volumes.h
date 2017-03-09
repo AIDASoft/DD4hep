@@ -94,8 +94,18 @@ namespace DD4hep {
         }
         /// Find entry
         std::vector<VolID>::const_iterator find(const std::string& name) const;
-        /// Inert new entry
+        /// Insert new entry
         std::pair<std::vector<VolID>::iterator, bool> insert(const std::string& name, int value);
+        /// Insert bunch of entries
+        template< class InputIt>
+        iterator insert(InputIt first, InputIt last)
+        {  return this->Base::insert(this->Base::end(), first, last);    }
+        /// Insert bunch of entries
+        template< class InputIt>
+        iterator insert(std::vector<VolID>::const_iterator pos, InputIt first, InputIt last)
+        {  return this->Base::insert(pos, first, last);    }
+        /// String representation for debugging
+        std::string str()  const;
       };
       /// Magic word to detect memory corruptions
       unsigned long magic;

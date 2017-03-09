@@ -144,6 +144,13 @@ namespace {
   };
 }
 
+/// Convert volumeID to string format (016X)
+std::string DD4hep::volumeID(VolumeID vid)   {
+  char text[32];
+  ::snprintf(text,sizeof(text),"%016llx",vid);
+  return text;
+}
+
 /// We need it so often: one-at-time 64 bit hash function
 unsigned long long int DD4hep::hash64(const char* key)   {
   //return murmur_hash_64(key, strlen(key));

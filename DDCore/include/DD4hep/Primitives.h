@@ -234,6 +234,9 @@ namespace DD4hep {
   using DDSegmentation::BitFieldValue;
 #endif
 
+  /// Convert volumeID to string format (016X)
+  std::string volumeID(VolumeID vid);
+
   template<typename C> struct ClearOnReturn {
     C& container;
     ClearOnReturn(C& c) : container(c) {  }
