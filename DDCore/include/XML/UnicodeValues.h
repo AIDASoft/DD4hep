@@ -72,6 +72,7 @@ namespace DD4hep {
     UNICODE (chambers);
     UNICODE (check);
     UNICODE (checksum);
+    UNICODE (close);
     UNICODE (cm);
     UNICODE (coefficient);
     UNICODE (coefficients);
@@ -154,6 +155,7 @@ namespace DD4hep {
     UNICODE (generator);
     UNICODE (gdml);
     UNICODE (gdmlFile);
+    UNICODE (geometry);
     UNICODE (glass);
     UNICODE (global);
     UNICODE (global_grid_xy);
@@ -274,6 +276,7 @@ namespace DD4hep {
     UNICODE (o);
     UNICODE (O);
     UNICODE (offset);
+    UNICODE (open);
     UNICODE (overlap);
     UNICODE (outer);
     UNICODE (outer_field);

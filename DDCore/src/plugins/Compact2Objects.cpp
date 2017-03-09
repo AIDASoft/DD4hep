@@ -1000,7 +1000,16 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 
   ++num_calls;
   xml_elt_t compact(element);
+  bool steer_geometry = compact.hasChild(_U(geometry));
+  bool open_geometry  = true;
+  bool close_geometry = true;
 
+  if ( steer_geometry )   {
+    xml_elt_t steer = compact.child(_U(geometry));
+    if ( steer.hasAttr(_U(open))  ) open_geometry  = steer.attr<bool>(_U(open));
+    if ( steer.hasAttr(_U(close)) ) close_geometry = steer.attr<bool>(_U(close));
+  }
+  
   xml_coll_t(compact, _U(define)).for_each(_U(include), Converter<DetElementInclude>(lcdd));
   xml_coll_t(compact, _U(define)).for_each(_U(constant), Converter<Constant>(lcdd));
   xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter<GdmlFile>(lcdd));
@@ -1011,7 +1020,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(lcdd));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(lcdd));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(lcdd));
-  lcdd.init();
+  if ( open_geometry ) lcdd.init();
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(lcdd));
@@ -1032,7 +1041,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter<SensitiveDetector>(lcdd));
   ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
   lcdd.addConstant(Constant("compact_checksum", text));
-  if ( --num_calls == 0 )  {
+  if ( --num_calls == 0 && close_geometry )  {
     lcdd.endDocument();
   }
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter<Plugin> (lcdd));

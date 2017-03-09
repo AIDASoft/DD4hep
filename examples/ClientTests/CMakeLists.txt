@@ -1,4 +1,3 @@
-# $Id: $
 #==========================================================================
 #  AIDA Detector description implementation for LCD
 #--------------------------------------------------------------------------
@@ -34,6 +33,25 @@ dd4hep_add_test_reg( ClientTests_DumpElements
   EXEC_ARGS  geoPluginRun -plugin DD4hepElementTable -type xml
   REGEX_PASS "formula=\"UUB\" name=\"UUB\"" )
 #
+#  Test long volume IDs Detector setups with placements of
+#  identical volumes at different levels of the hierarchy
+dd4hep_add_test_reg( ClientTests_MultiPlace
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
+  -plugin DD4hepVolumeMgrTest SiTrackerBarrel
+
+  REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001")
+#
+#  Test long volume IDs exceeding 32 bit addressing of the form: <id>system:32,barrel:16:-5....</id>
+dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
+  -plugin DD4hepVolumeMgrTest SiTrackerBarrel
+
+  REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001")
+#
 #  Test readout strings of the form: <id>system:8,barrel:-2</id>
 dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
@@ -42,7 +60,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
   -plugin DD4hepDetectorVolumeDump
   -plugin DD4hepVolumeDump volids
   -plugin DD4hepVolumeMgrTest all
-  REGEX_PASS "OK IDS\\(Shell_1\\)  vid\\:0000000000000302 system\\: 2  barrel\\:-1" )
+  REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000000102 system:0002 barrel:0001")
 #
 #  Test readout strings of the form: <id>system:16,barrel:16:-5</id>
 dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
@@ -52,7 +70,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
   -plugin DD4hepDetectorVolumeDump
   -plugin DD4hepVolumeDump volids
   -plugin DD4hepVolumeMgrTest all
-  REGEX_PASS "OK IDS\\(Shell_1\\)  vid\\:00000000001f0002 system\\: 2  barrel\\:-1" )
+  REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000010002 system:0002 barrel:0001")
 #
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 

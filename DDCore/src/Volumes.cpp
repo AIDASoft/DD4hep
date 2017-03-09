@@ -360,6 +360,17 @@ PlacedVolumeExtension::VolIDs::insert(const string& name, int value) {
   return make_pair(i, true);
 }
 
+/// String representation for debugging
+string PlacedVolumeExtension::VolIDs::str()  const   {
+  stringstream str;
+  str << hex;
+  for(const auto& i : *this )   {
+    str << i.first << "=" << setw(4) << right
+        << setfill('0') << i.second << setfill(' ') << " ";
+  }
+  return str.str();
+}
+
 static PlacedVolume::Object* _data(const PlacedVolume& v) {
   PlacedVolume::Object* o = _userExtension(v);
   if (o)

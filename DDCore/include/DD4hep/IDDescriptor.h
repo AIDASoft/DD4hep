@@ -30,7 +30,7 @@ namespace DD4hep {
 
     class IDDescriptorObject;
 
-    /// Class implementing the ID encoding of detector response
+    /// Class implementing the ID encoding of the detector response
     /** @class IDDescriptor IDDescriptor.h DDCore/IDDescriptor.h
      *
      *  @author  M.Frank
@@ -73,12 +73,16 @@ namespace DD4hep {
       VolumeID encode(const std::vector<VolID>& ids) const;
 #endif
       /// Decode volume IDs and return filled descriptor with all fields
-      void decodeFields(VolumeID vid, VolIDFields& fields);
+      void decodeFields(VolumeID vid, VolIDFields& fields)  const;
+      /// Decode volume IDs and return string reprensentation for debugging purposes
+      std::string str(VolumeID vid)  const;
+      /// Decode volume IDs and return string reprensentation for debugging purposes
+      std::string str(VolumeID vid, VolumeID mask)  const;
       /// Access string representation
       std::string toString() const;
       /// Access the BitField64 object
       BitField64* decoder();
     };
-  } /* End namespace Geometry    */
-} /* End namespace DD4hep      */
+  }       /* End namespace Geometry    */
+}         /* End namespace DD4hep      */
 #endif    /* DD4hep_IDDESCRIPTOR_H     */

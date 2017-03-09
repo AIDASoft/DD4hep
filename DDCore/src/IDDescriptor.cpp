@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,6 +15,7 @@
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
 #include <stdexcept>
 #include <cstdlib>
@@ -47,7 +47,7 @@ IDDescriptor::IDDescriptor(const string& description) {
 
 /// Acces string representation
 string IDDescriptor::toString() const {
-  if (isValid()) {
+  if ( isValid() ) {
     return m_element->GetName();
   }
   return "----";
@@ -110,24 +110,45 @@ size_t IDDescriptor::fieldID(const string& field_name) const {
 /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
 VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
   VolumeID id = 0;
+  //const PlacedVolume::VolIDs* ids = (const PlacedVolume::VolIDs*)&id_vector;
+  //printout(INFO,"IDDescriptor","VolIDs: %s",ids->str().c_str());
   for (const auto& i : id_vector )  {
-    Field f = field(i.first);
-    int offset = f->offset();
-    id |= ((f->value(i.second<<offset) << offset)&f->mask());
+    Field    fld = field(i.first);
+    int      off = fld->offset();
+    VolumeID val = i.second;
+    id |= ((fld->value(val<<off) << off)&fld->mask());
   }
   return id;
 }
 
 /// Decode volume IDs and return filled descriptor with all fields
-void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& flds) {
+void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& flds)  const {
+  const vector<BitFieldValue*>& v = access()->fields();
   flds.clear();
-  if ( isValid() ) {
-    const vector<BitFieldValue*>& v = ptr()->fields();
-    for (auto f : v )
-      flds.push_back(VolIDField(f, f->value(vid)));
-    return;
+  for (auto f : v )
+    flds.push_back(VolIDField(f, f->value(vid)));
+}
+
+/// Decode volume IDs and return string reprensentation for debugging purposes
+string IDDescriptor::str(VolumeID vid)   const {
+  const vector<BitFieldValue*>& v = access()->fields();
+  stringstream str;
+  for (auto f : v )
+    str << f->name() << ":" << setw(4) << setfill('0') << hex << right << f->value(vid)
+        << left << dec << " ";
+  return str.str().substr(0,str.str().length()-1);
+}
+
+/// Decode volume IDs and return string reprensentation for debugging purposes
+string IDDescriptor::str(VolumeID vid, VolumeID mask)   const {
+  const vector<BitFieldValue*>& v = access()->fields();
+  stringstream str;
+  for (auto f : v )  {
+    if ( 0 == (mask&f->mask()) ) continue;
+    str << f->name() << ":" << setw(4) << setfill('0') << hex << right << f->value(vid)
+        << left << dec << " ";
   }
-  except("IDDescriptor","DD4hep: Attempt to access an invalid IDDescriptor object.");
+  return str.str().substr(0,str.str().length()-1);
 }
 
 /// Access the BitField64 object

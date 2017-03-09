@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -145,3 +144,28 @@ void DD4hep::Geometry::_decompose(const Transform3D& trafo, Position& pos, XYZAn
   trafo.GetDecomposition(r,pos);
   rot.SetXYZ(r.Psi(),r.Theta(),r.Phi());
 }
+
+/// Check matrices for equality
+int DD4hep::Geometry::_matrixEqual(const TGeoMatrix& left, const TGeoMatrix& right)   {
+  double epsilon = 1e-12;
+  int result = MATRICES_EQUAL;
+  const Double_t* t1 = left.GetTranslation();
+  const Double_t* t2 = right.GetTranslation();
+  for(int i=0; i<3; ++i)   {
+    if ( std::fabs(t1[i]-t2[i]) > epsilon )  {
+      result = MATRICES_DIFFER_TRANSLATION;
+      break;
+    }
+  }
+  const Double_t* r1 = left.GetRotationMatrix();
+  const Double_t* r2 = right.GetRotationMatrix();
+  for(int i=0; i<9; ++i)   {
+    if ( std::fabs(r1[i]-r2[i]) > epsilon )  {
+      result |= MATRICES_DIFFER_ROTATION;
+      break;
+    }
+  }
+  return result;
+}
+
+    

@@ -15,6 +15,7 @@
 // 
 //==========================================================================
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/Printout.h"
 
 using namespace std;
@@ -47,6 +48,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     volumes[m_nam] = m_vol;
     m_vol.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
+    printout(INFO,"Detector","++ Building module: %s",m_nam.c_str());
     for(xml_coll_t ci(x_mod,_U(module_component)); ci; ++ci, ++ncomponents)  {
       xml_comp_t x_comp = ci;
       xml_comp_t x_pos  = x_comp.position(false);
@@ -110,7 +112,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // Starting z for module placement along Z axis.
     double module_z = -z0;
     int module = 1;
-      
+
+    printout(INFO,"Detector","++ Placing module: %s",m_nam.c_str());
     // Loop over the number of modules in phi.
     for (int ii = 0; ii < nphi; ii++)        {
       double dx = z_dr * std::cos(phic + phi_tilt);        // Delta x of module position.
@@ -120,20 +123,29 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       // Loop over the number of modules in z.
       for (int j = 0; j < nz; j++)          {
-        string module_name = _toString(module,"module%d");
-        DetElement mod_elt(lay_elt,module_name,module);
         // Module PhysicalVolume.
         //         Transform3D tr(RotationZYX(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
         //NOTE (Nikiforos, 26/08 Rotations needed to be fixed so that component1 (silicon) is on the outside
         Transform3D tr(RotationZYX(0,((M_PI/2)-phic-phi_tilt),-M_PI/2),Position(x,y,module_z));
-
         pv = lay_vol.placeVolume(m_env,tr);
         pv.addPhysVolID("module", module);
-        mod_elt.setPlacement(pv);
-        for(size_t ic=0; ic<sensVols.size(); ++ic)  {
-          PlacedVolume sens_pv = sensVols[ic];
-          DetElement comp_elt(mod_elt,sens_pv.volume().name(),module);
-          comp_elt.setPlacement(sens_pv);
+
+        if ( 0 == (module%2) )  {
+          // Not terribly physical: we only make a child-element for every second module.
+          // Need this for testing the volume manager!
+          string module_name = _toString(module,"module%d");
+          DetElement mod_elt(lay_elt,module_name,module);
+          mod_elt.setPlacement(pv);
+#if 0
+          ::printf("+++ Module: %s  %s [%p]",
+                 module_name.c_str(),pv->GetMatrix()->GetName(),(void*)pv->GetMatrix());
+          pv->GetMatrix()->Print();
+#endif
+          for(size_t ic=0; ic<sensVols.size(); ++ic)  {
+            PlacedVolume sens_pv = sensVols[ic];
+            DetElement comp_elt(mod_elt,sens_pv.volume().name(),module);
+            comp_elt.setPlacement(sens_pv);
+          }
         }
 
         /// Increase counters etc.
@@ -167,5 +179,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(DD4hep_SiTrackerBarrel,create_detector)
-DECLARE_DEPRECATED_DETELEMENT(SiTrackerBarrel,create_detector)
+DECLARE_DETELEMENT(DD4hep_SiBarrelMultiSensitiveDetector,create_detector)

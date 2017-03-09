@@ -4,8 +4,15 @@ DD4hep  ----  Release Notes
 =================================
 
 
+ Markus Frank 2017-03-09
+ -- Fix issue with long volume ids exceeding 32 bits.
+    Test added in examples/ClientTests
+ -- Fix volume manager id identical placed volumes are used in different places of the hierarchy.
+    Test added in examples/ClientTests
+ -- Remove various svn left-overs (ID$ strings etc.)
 
-Frank Gaede 2017-02-10
+
+ Frank Gaede 2017-02-10
    - allow event readers to create more than one vertex per event
      this should be possible as most generator formats allow to specify
      more than one event vertex 
