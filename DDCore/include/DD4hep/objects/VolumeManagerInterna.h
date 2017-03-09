@@ -57,17 +57,17 @@ namespace DD4hep {
       //[[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       VolumeID mask;
       /// The placement
-      //[[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
+      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       PlacedVolume placement;
       /// Handle to the subdetector element handle
-      //[[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
+      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       DetElement detector;
       /// Handle to the closest Detector element
       DetElement   element;
       /// The transformation of space-points to the world corrdinate system
       TGeoHMatrix  toWorld;
       /// The transformation of space-points to the corrdinate system of the closests detector element
-      //[[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
+      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
       TGeoHMatrix toDetector;
     public:
       /// Default constructor
