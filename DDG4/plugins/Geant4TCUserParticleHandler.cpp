@@ -93,8 +93,12 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   double z_prod = std::fabs(p.vsz);
   bool starts_in_trk_vol = ( r_prod <= m_rTracker && z_prod <= m_zTracker )  ;
 
-  // created in tracking volume but below energy cut
-  if( starts_in_trk_vol && ! (p.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
+  DD4hep::ReferenceBitMask<int> reason(p.reason);
+
+  if( reason.isSet(G4PARTICLE_PRIMARY) ) {
+    //do nothing
+  } else if( starts_in_trk_vol && ! reason.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
+    // created in tracking volume but below energy cut
     p.reason = 0;
     return;
   }
@@ -103,15 +107,21 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   double z_end  = std::fabs(p.vez);
   bool ends_in_trk_vol =  ( r_end <= m_rTracker && z_end <= m_zTracker ) ;
 
-  // created and ended in calo
-  if( !starts_in_trk_vol ) {
-    
-    if( !ends_in_trk_vol ){  
-      p.reason = 0;
+  // created and ended in calo but not primary particle
+  //
+  // we can have particles from the generator only in the calo, if we have a
+  // long particle with preassigned decay, we need to keep the reason or the
+  // MChistory will not be updated later on
+  if( not reason.isSet(G4PARTICLE_PRIMARY) ) {
+    if( !starts_in_trk_vol ) {
+      if( !ends_in_trk_vol ){
+	p.reason = 0;
+      }
+      //fg: dont keep backscatter that did not create a tracker hit
+      else if( ! reason.isSet(G4PARTICLE_CREATED_TRACKER_HIT) ) {
+	p.reason = 0;
+      }
     }
-    //fg: dont keep backscatter that did not create a tracker hit
-    else if( !( p.reason & G4PARTICLE_CREATED_TRACKER_HIT  ) )
-      p.reason = 0;
   }
 
   // Set the simulator status bits
