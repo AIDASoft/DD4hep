@@ -41,7 +41,9 @@ dd4hep_add_test_reg( ClientTests_MultiPlace
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
   -plugin DD4hepVolumeMgrTest SiTrackerBarrel
 
-  REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001")
+  REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
+  REGEX_FAIL "FAILED: World transformation DIFFER"
+  )
 #
 #  Test long volume IDs exceeding 32 bit addressing of the form: <id>system:32,barrel:16:-5....</id>
 dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
@@ -50,7 +52,9 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
   -plugin DD4hepVolumeMgrTest SiTrackerBarrel
 
-  REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001")
+  REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
+  REGEX_FAIL "FAILED: World transformation DIFFER"
+  )
 #
 #  Test readout strings of the form: <id>system:8,barrel:-2</id>
 dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides

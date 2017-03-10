@@ -18,6 +18,7 @@
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/DetectorTools.h"
+#include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/objects/VolumeManagerInterna.h"
 
 // C/C++ include files
@@ -102,7 +103,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
   VolumeManager::Context* mgr_ctxt = 0;
   
   try {
-    vid = m_iddesc.encode(child_ids);
+    vid       = m_iddesc.encode(child_ids);
     top_sdet  = m_mgr.lookupDetector(vid);
     det_elem  = m_mgr.lookupDetElement(vid);
     mgr_ctxt  = m_mgr.lookupContext(vid);
@@ -167,38 +168,66 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
     try  {
       if ( pv.volume().isSensitive() )  {
         TGeoHMatrix trafo;
-        //for (size_t i = chain.size(); i > 1; --i)  {
-        for (size_t i = 0; i<chain.size(); ++i )  {
+        for (size_t i = chain.size()-1; i > 0; --i)  {
+          //for (size_t i = 0; i<chain.size(); ++i )  {
           const TGeoMatrix* mat = chain[i]->GetMatrix();
           trafo.MultiplyLeft(mat);
         }
+        for (size_t i = chain.size(); i > 0; --i)  {
+          const TGeoMatrix* mat = chain[i-1]->GetMatrix();
+          ::printf("Placement [%d]  VolID:%s\t\t",int(i),chain[i-1].volIDs().str().c_str());
+          mat->Print();
+        }
+        ::printf("Computed Trafo (from placements):\t\t");
+        trafo.Print();
+        det_elem  = m_mgr.lookupDetElement(vid);
+        ::printf("DetElement Trafo: %s [%s]\t\t",
+                 det_elem.path().c_str(),volumeID(det_elem.volumeID()).c_str());
+        det_elem.nominal().worldTransformation().Print();
+        ::printf("VolumeMgr  Trafo: %s [%s]\t\t",det_elem.path().c_str(),volumeID(vid).c_str());
+        m_mgr.worldTransformation(vid).Print();
+        if ( 0 == mgr_ctxt )  {
+          printout(ERROR,m_det.name(),"VOLUME_MANAGER FAILED: Could not find entry for vid:%s.",
+                   volumeID(vid).c_str());
+        }
         if ( pv.ptr() == det_elem.placement().ptr() )   {
-          for (size_t i = chain.size(); i > 0; --i)  {
-            const TGeoMatrix* mat = chain[i-1]->GetMatrix();
-            ::printf("Placement [%d]  VolID:%s\t\t",int(i),chain[i-1].volIDs().str().c_str());
-            mat->Print();
+          // The computed transformation 'trafo' MUST be equal to:
+          // m_mgr.worldTransformation(vid) AND det_elem.nominal().worldTransformation()
+          int res1 = _matrixEqual(trafo, det_elem.nominal().worldTransformation());
+          int res2 = _matrixEqual(trafo, m_mgr.worldTransformation(vid));
+          if ( res1 != MATRICES_EQUAL || res2 != MATRICES_EQUAL )  {
+            printout(ERROR,m_det.name(),"DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
           }
-          ::printf("Computed Trafo (from placements):\t\t");
-          trafo.Print();
-          det_elem  = m_mgr.lookupDetElement(vid);
-          ::printf("DetElement Trafo: %s [%s]\t\t",
-                   det_elem.path().c_str(),volumeID(det_elem.volumeID()).c_str());
-          det_elem.nominal().worldTransformation().Print();
-          ::printf("VolumeMgr  Trafo: %s \t\t",det_elem.path().c_str());
-          m_mgr.worldTransformation(vid).Print();
-          int ii=1;
-          DetElement par = det_elem;
-          while( (par.isValid()) )  {
-            const TGeoMatrix* mat = par.placement()->GetMatrix();
-            ::printf("Element placement [%d]  VolID:%s %s\t\t",int(ii),
-                     par.placement().volIDs().str().c_str(), par.path().c_str());
-            mat->Print();
-            par = par.parent();
-            ++ii;
+          else  {
+            printout(ERROR,m_det.name(),"DETELEMENT_PLACEMENT: PASSED. All matrices equal: %s",
+                     volumeID(vid).c_str());
           }
         }
         else  {
+          // The computed transformation 'trafo' MUST be equal to:
+          // m_mgr.worldTransformation(vid)
+          // The det_elem.nominal().worldTransformation() however is DIFFERENT!
+          int res2 = _matrixEqual(trafo, m_mgr.worldTransformation(vid));
+          if ( res2 != MATRICES_EQUAL )  {
+            printout(ERROR,m_det.name(),"VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
+          }
+          else  {
+            printout(ERROR,m_det.name(),"VOLUME_PLACEMENT: PASSED. All matrices equal: %s",
+                     volumeID(vid).c_str());
+          }
         }
+#if 0
+        int ii=1;
+        DetElement par = det_elem;
+        while( (par.isValid()) )  {
+          const TGeoMatrix* mat = par.placement()->GetMatrix();
+          ::printf("Element placement [%d]  VolID:%s %s\t\t",int(ii),
+                   par.placement().volIDs().str().c_str(), par.path().c_str());
+          mat->Print();
+          par = par.parent();
+          ++ii;
+        }
+#endif
       }
     }
     catch(const exception& ex) {
@@ -229,8 +258,8 @@ void VolIDTest::walkVolume(DetElement detector, PlacedVolume pv, VolIDs ids, con
       child_ids.insert(child_ids.end(), place.volIDs().begin(), place.volIDs().end());
       //bool is_sensitive = place.volume().isSensitive();
       //if ( is_sensitive || !child_ids.empty() )  {
-        checkVolume(detector, place, child_ids, child_chain);
-        //}
+      checkVolume(detector, place, child_ids, child_chain);
+      //}
       walkVolume(detector, place, child_ids, child_chain, depth+1, mx_depth);
     }
   }
@@ -249,8 +278,8 @@ void VolIDTest::walk(DetElement detector, VolIDs ids, const Chain& chain, size_t
     child_chain.push_back(pv);
     child_ids.insert(child_ids.end(), pv.volIDs().begin(), pv.volIDs().end());
     //if ( is_sensitive )  {
-      checkVolume(detector, pv, child_ids, child_chain);
-      //}
+    checkVolume(detector, pv, child_ids, child_chain);
+    //}
     walkVolume(detector, pv, child_ids, child_chain, depth+1, mx_depth);
   }
 }

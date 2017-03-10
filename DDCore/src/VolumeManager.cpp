@@ -247,14 +247,17 @@ namespace DD4hep {
             for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
               TGeoMatrix* m = nodes[i-1]->GetMatrix();
               context->toWorld.MultiplyLeft(m);
+              //::printf("Element [%d]: ",int(i)); m->Print();
             }
             //            context->volID      = ids;
             //            context->path       = nodes;
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-            context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
+            //context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
+            context->toWorld.MultiplyLeft(&e.nominal().worldTransformation());
             if ( !section.adoptPlacement(context) || m_debug )  {
               print_node(sd, parent, e, n, code, nodes);
+              //context->toWorld.Print();
             }
             m_entries.insert(code.first);
 
