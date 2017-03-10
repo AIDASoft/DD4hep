@@ -100,7 +100,7 @@ namespace {
   }
 }
 
-DDPython::GILState::GILState(int)  {
+DDPython::GILState::GILState(int) : state(0) {
   if ( ::Py_IsInitialized() )  {
     PyGILState_STATE st = (PyGILState_STATE)::PyGILState_Ensure();
     state = (int)st;

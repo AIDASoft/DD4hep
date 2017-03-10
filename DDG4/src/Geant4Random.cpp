@@ -251,7 +251,7 @@ void Geant4Random::showStatus() const    {
   if ( gRandom != m_rootRandom )   {
     printP2("      Local TRandom: 0x%p  gRandom: 0x%p",m_rootRandom,gRandom);
   }
-  else if ( !m_engine )   {
+  if ( 0 == m_engine )   {
     error("   Geant4Random instance has not engine attached!");
     return;
   }

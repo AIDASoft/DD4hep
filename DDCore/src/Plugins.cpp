@@ -135,12 +135,12 @@ namespace   {
 }
 
 /// Default constructor
-PluginDebug::PluginDebug(int dbg) : m_debug(0) {
+PluginDebug::PluginDebug(int dbg)  noexcept(false) : m_debug(0) {
   m_debug = PluginInterface::instance().setDebug(dbg);
 }
 
 /// Default destructor
-PluginDebug::~PluginDebug() {
+PluginDebug::~PluginDebug()  {
   PluginInterface::instance().setDebug(m_debug);
 }
 

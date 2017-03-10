@@ -77,7 +77,7 @@ namespace DD4hep {
   struct PluginDebug {
     int m_debug;
     /// Default constructor
-    PluginDebug(int dbg = 2);
+    PluginDebug(int dbg = 2)  noexcept(false);
     /// Default destructor
     ~PluginDebug();
     /// Helper to check factory existence
