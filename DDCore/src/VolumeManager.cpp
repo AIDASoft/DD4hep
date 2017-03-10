@@ -237,6 +237,7 @@ namespace DD4hep {
             string        sd_name      = sd.name();
             DetElement    sub_detector = m_lcdd.detector(sd_name);
             VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
+
             // This is the block, we effectively have to save for each physical volume with a VolID
             VolumeManager::Context* context = new VolumeManager::Context;
             context->identifier = code.first;
@@ -247,13 +248,11 @@ namespace DD4hep {
             for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
               TGeoMatrix* m = nodes[i-1]->GetMatrix();
               context->toWorld.MultiplyLeft(m);
-              //::printf("Element [%d]: ",int(i)); m->Print();
             }
             //            context->volID      = ids;
             //            context->path       = nodes;
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-            //context->toWorld.MultiplyLeft(&parent.nominal().worldTransformation());
             context->toWorld.MultiplyLeft(&e.nominal().worldTransformation());
             if ( !section.adoptPlacement(context) || m_debug )  {
               print_node(sd, parent, e, n, code, nodes);
