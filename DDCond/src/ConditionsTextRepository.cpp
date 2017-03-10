@@ -154,6 +154,8 @@ namespace {
       text[0] = 0;
       in.getline(text,sizeof(text),'\n');
       if ( in.good() )  {
+        size_t idx_nam = 9+siz_nam<sizeof(text)-1 ? 9+siz_nam : 0;
+        size_t idx_add = 10+siz_nam+siz_add<sizeof(text)-1 ? 10+siz_nam+siz_add : 0;
         if ( 9+siz_nam >= sizeof(text) )
           except("ConditionsTextRepository","Inconsistent input data in %s: %s -> (%lld,%lld,%lld)",
                  __FILE__, input.c_str(), siz_nam, siz_add, siz_tot);
@@ -162,9 +164,9 @@ namespace {
                  __FILE__, input.c_str(), siz_nam, siz_add, siz_tot);
         else if ( siz_tot )  {
           // Direct access mode with fixed record size
-          text[8]   = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
+          text[8]   = text[idx_nam] = text[idx_add] = 0;
           e.name    = text+9;
-          e.address = text+10+siz_nam;  
+          e.address = text+idx_nam+1;  
           if ( (idx=e.name.find(' ')) != string::npos )
             e.name[idx]=0;
           if ( (idx=e.address.find(' ')) != string::npos )

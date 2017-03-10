@@ -30,6 +30,7 @@
 
 // C/C++ include files
 #include <stdexcept>
+#include <climits>
 
 ///   DD4hep namespace declaration
 namespace DD4hep  {
@@ -209,7 +210,7 @@ namespace DD4hep {
   template <> void Converter<iov_type>::operator()(xml_h element) const {
     xml_dim_t e   = element;
     string    nam = e.nameStr();
-    size_t    id  = e.id();
+    size_t    id  = e.id() > 0 ? e.id() : INT_MAX;
     ConversionArg* arg  = _param<ConversionArg>();
     printout(s_parseLevel,"XMLConditions","++ Registering IOV type: [%d]: %s",int(id),nam.c_str());
     const IOVType* iov_type = arg->manager.registerIOVType(id,nam).second;
