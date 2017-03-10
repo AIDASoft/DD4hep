@@ -129,7 +129,7 @@ void InstanceCount::decrement(const std::type_info& typ) {
     on_exit_destructors();
 }
 
-/// Force dump of counters
+/// Force dump of counter
 void InstanceCount::dump(int typ) {
   bool need_footer = false;
   if ((typ & STRING) && s_strCounts.get()) {
@@ -139,12 +139,21 @@ void InstanceCount::dump(int typ) {
       cout << "+----------+---------+---------+-------------------------------------------+" << endl;
       cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << endl;
       cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      long tot_instances=0, max_instances=0, now_instances=0;
       for ( const auto& i : *s_strCounts ) {
         cout << "|" << setw(10) << i.second->total()
-             << "|" << setw(9) << i.second->maximum()
-             << "|" << setw(9) << i.second->value()
+             << "|" << setw(9)  << i.second->maximum()
+             << "|" << setw(9)  << i.second->value()
              << "|" << i.first->substr(0,80) << endl;
+        tot_instances += i.second->total();
+        max_instances += i.second->maximum();
+        now_instances += i.second->value();
       }
+      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      cout << "|" << setw(10) << tot_instances
+           << "|" << setw(9)  << max_instances
+           << "|" << setw(9)  << now_instances
+           << "|" << "Grand total (Sum of all counters)" << endl;
       need_footer = true;
     }
   }
@@ -155,14 +164,23 @@ void InstanceCount::dump(int typ) {
       cout << "+----------+---------+---------+-------------------------------------------+" << endl;
       cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << endl;
       cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      long tot_instances=0, max_instances=0, now_instances=0;
       for ( const auto& i : *s_typCounts ) {
         string nam = typeName(*(i.first));
         if ( nam.length() > 80 ) nam = nam.substr(0,80)+" ...";
         cout << "|" << setw(10) << i.second->total()
-             << "|" << setw(9) << i.second->maximum()
-             << "|" << setw(9) << i.second->value()
+             << "|" << setw(9)  << i.second->maximum()
+             << "|" << setw(9)  << i.second->value()
              << "|" << nam << endl;
+        tot_instances += i.second->total();
+        max_instances += i.second->maximum();
+        now_instances += i.second->value();
       }
+      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      cout << "|" << setw(10) << tot_instances
+           << "|" << setw(9)  << max_instances
+           << "|" << setw(9)  << now_instances
+           << "|" << "Grand total (Sum of all counters)" << endl;
       need_footer = true;
     }
   }
