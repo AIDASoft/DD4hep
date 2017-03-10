@@ -4,6 +4,12 @@ DD4hep  ----  Release Notes
 =================================
 
 
+
+ Markus Frank 2017-03-10
+ -- New round to kill coverity deficiencies.
+ -- Add exception try-catch clauses around various main programs in UtilityApps
+    See UtilityApps/src/main.h for details.
+
  Markus Frank 2017-03-09
  -- Fix issue with long volume ids exceeding 32 bits.
     Test added in examples/ClientTests

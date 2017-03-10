@@ -33,6 +33,7 @@
 #include "DDRec/MaterialManager.h"
 
 #include <iostream>
+#include <cerrno>
 #include <string>
 #include <map>
 
@@ -108,7 +109,10 @@ int main_wrapper(int argc, char** argv)   {
     argv[6] << " " << argv[7] << " " << argv[8] << " " << 
     argv[9] << " " << argv[10] << " " << argv[11] << " " << "NONE";
   sstr >> x0 >> y0 >> z0 >> x1 >> y1 >> z1 >> nslice >> nbins >> mm;
-  if ( !sstr.good() ) Handler::usage();
+  if ( !sstr.good() )   {
+    Handler::usage();
+    ::exit(EINVAL);
+  }
 
   if ( x0>x1 ) { double temp=x0; x0=x1; x1=temp; }
   if ( y0>y1 ) { double temp=y0; y0=y1; y1=temp; }

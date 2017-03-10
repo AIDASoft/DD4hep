@@ -624,7 +624,7 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
         }
         printout(INFO,"VolumeDump",fmt,"",
                  aligned->GetName(),
-                 volume->GetShape()->IsA()->GetName(),
+                 volume ? volume->GetShape()->IsA()->GetName() : "[Invalid Volume]",
                  opt_info.c_str());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
