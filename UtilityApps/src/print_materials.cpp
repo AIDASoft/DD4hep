@@ -28,8 +28,9 @@ using namespace DDSurfaces ;
 using namespace dd4hep ;
 
 //=============================================================================
+#include "main.h"
 
-int main(int argc, char** argv ){
+int main_wrapper(int argc, char** argv ){
     
   if( argc != 8 ) {
     std::cout << " usage: print_materials compact.xml x0 y0 z0 x1 y1 z1 " << std::endl 

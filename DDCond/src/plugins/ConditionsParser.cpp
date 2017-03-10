@@ -154,12 +154,18 @@ namespace DD4hep {
     else if ( tag == "alignment" )   {
       dd4hep_ptr<Entry> val(_createStackEntry(param,e));
       val->value = elt.attr<string>(_U(ref));
-      arg->stack->push_back(val.release());
+      if ( !arg->stack )
+        except("ConditionsParser","Non-existing Conditions stack:%s %d",__FILE__, __LINE__);
+      else
+        arg->stack->push_back(val.release());
     }
     else  {
       dd4hep_ptr<Entry> val(_createStackEntry(param,e));
       val->value = elt.hasAttr(_U(value)) ? elt.valueStr() : e.text();
-      arg->stack->push_back(val.release());
+      if ( !arg->stack )
+        except("ConditionsParser","Non-existing Conditions stack:%s %d",__FILE__, __LINE__);
+      else
+        arg->stack->push_back(val.release());
     }
   }
 

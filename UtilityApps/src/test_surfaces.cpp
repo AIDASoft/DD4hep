@@ -43,7 +43,7 @@ static DDTest test( "surfaces" ) ;
 
 //=============================================================================
 
-int main(int argc, char** argv ){
+int main_wrapper(int argc, char** argv ){
 
   if( argc < 3 ) {
     std::cout << " usage: test_surfaces compact.xml lcio_file.slcio" << std::endl ;
@@ -219,3 +219,4 @@ int main(int argc, char** argv ){
 }
 
 //=============================================================================
+#include "main.h"

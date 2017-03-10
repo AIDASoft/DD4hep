@@ -154,10 +154,16 @@ namespace {
       text[0] = 0;
       in.getline(text,sizeof(text),'\n');
       if ( in.good() )  {
-        if ( siz_tot )  {
+        if ( 9+siz_nam >= sizeof(text) )
+          except("ConditionsTextRepository","Inconsistent input data in %s: %s -> (%lld,%lld,%lld)",
+                 __FILE__, input.c_str(), siz_nam, siz_add, siz_tot);
+        else if ( 10+siz_nam+siz_add >= sizeof(text) )
+          except("ConditionsTextRepository","Inconsistent input data in %s: %s -> (%lld,%lld,%lld)",
+                 __FILE__, input.c_str(), siz_nam, siz_add, siz_tot);
+        else if ( siz_tot )  {
           // Direct access mode with fixed record size
-          text[8] = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
-          e.name = text+9;
+          text[8]   = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
+          e.name    = text+9;
           e.address = text+10+siz_nam;  
           if ( (idx=e.name.find(' ')) != string::npos )
             e.name[idx]=0;
@@ -167,7 +173,7 @@ namespace {
         else  {
           // Variable record size
           e.name=text+9;
-          if ( (idx=e.name.find(sep)) != string::npos )
+          if ( (idx=e.name.find(sep)) != string::npos && idx+10 < sizeof(text) )
             text[9+idx]=0, e.address=text+idx+10, e.name=text+9;
           if ( (idx=e.address.find(sep)) != string::npos )
             e.address[idx]=0;

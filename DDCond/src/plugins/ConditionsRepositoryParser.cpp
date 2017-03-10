@@ -209,12 +209,12 @@ namespace DD4hep {
   template <> void Converter<iov_type>::operator()(xml_h element) const {
     xml_dim_t e   = element;
     string    nam = e.nameStr();
-    int       id  = e.id();
+    size_t    id  = e.id();
     ConversionArg* arg  = _param<ConversionArg>();
-    printout(s_parseLevel,"XMLConditions","++ Registering IOV type: [%d]: %s",id,nam.c_str());
+    printout(s_parseLevel,"XMLConditions","++ Registering IOV type: [%d]: %s",int(id),nam.c_str());
     const IOVType* iov_type = arg->manager.registerIOVType(id,nam).second;
     if ( !iov_type )   {
-      except("XMLConditions","Failed to register iov type: [%d]: %s",id,nam.c_str());
+      except("XMLConditions","Failed to register iov type: [%d]: %s",int(id),nam.c_str());
     }
   }
 

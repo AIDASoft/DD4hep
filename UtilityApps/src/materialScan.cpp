@@ -23,12 +23,13 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DDRec/MaterialManager.h"
+#include "main.h"
 
 using namespace DD4hep;
 using namespace DDRec;
 using DDSurfaces::Vector3D;
 
-int main(int argc, char** argv)   {
+int main_wrapper(int argc, char** argv)   {
   struct Handler  {
     Handler() { SetErrorHandler(Handler::print); }
     static void print(int level, Bool_t abort, const char *location, const char *msg)  {

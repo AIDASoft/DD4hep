@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -248,8 +247,11 @@ template <> void Converter<collection>::operator()(xml_h e)  const  {
 template <> void Converter<include>::operator()(xml_h e)  const  {
   if ( e )  {
     LCDDLoad* load = dynamic_cast<LCDDLoad*>(&this->lcdd);
-    load->processXML(e,e.attr<string>(_U(ref)));
-    return;
+    if ( load )   {
+      load->processXML(e,e.attr<string>(_U(ref)));
+      return;
+    }
+    except("DisplayConfiguration","++ Invalid LCDDLoad instance in XML converter <include>");
   }
   except("DisplayConfiguration","++ Attempt to parse invalid include statement [Invalid XML element]");
 }
