@@ -26,7 +26,7 @@ namespace DD4hep {
     NoSegmentation::~NoSegmentation()
     { }
 
-    Vector3D NoSegmentation::position(const CellID& cID) const
+    Vector3D NoSegmentation::position(const CellID& /*cID*/) const
     {
       Vector3D cellPosition{0,0,0};
       return cellPosition;
