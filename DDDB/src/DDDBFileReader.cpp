@@ -87,6 +87,7 @@ int DD4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
       if ( done>=len ) {
         return 1;
       }
+      return 0;
     }
     ::close(fid);
   }

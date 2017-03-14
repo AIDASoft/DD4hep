@@ -667,6 +667,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
         if ( assIt == info.g4AssemblyVolumes.end() )  {
           printout(FATAL, "Geant4Converter", "+++ Invalid child assembly at %s : %d  parent: %s child:%s",
                    __FILE__, __LINE__, name.c_str(), d->GetName());
+          return 0;
         }
         g4->placeAssembly(d,(*assIt).second,transform);
         printout(m_outputLevel, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
