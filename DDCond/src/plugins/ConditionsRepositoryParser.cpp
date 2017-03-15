@@ -343,7 +343,8 @@ namespace DD4hep {
     xml_h              child_rot, child_pos, child_piv;
     ConversionArg*     arg = _param<ConversionArg>();
     Condition          con = create_condition(arg->detector, e);
-    XML::parse_delta(e, con->data);
+    Alignments::Delta& del = con.bind<Alignments::Delta>();
+    XML::parse(e, del);
     con->setFlag(Condition::ALIGNMENT);
     arg->manager.registerUnlocked(arg->pool, con);
   }

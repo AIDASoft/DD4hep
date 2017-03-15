@@ -94,7 +94,7 @@ namespace DD4hep {
       void commit(GlobalAlignmentStack& stack);
       /// Retrieve the cache section corresponding to the path of an entry.
       GlobalAlignmentCache* section(const std::string& path_name) const;
-      /// Retrieve an alignment entry by its lacement path
+      /// Retrieve an alignment entry by its placement path
       GlobalAlignment get(const std::string& path) const;
       /// Return all entries matching a given path. Careful: Expensive operaton!
       std::vector<GlobalAlignment> matches(const std::string& path_match, bool exclude_exact=false) const;

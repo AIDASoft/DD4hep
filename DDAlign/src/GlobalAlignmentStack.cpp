@@ -31,7 +31,7 @@ static dd4hep_ptr<GlobalAlignmentStack>& _stack(GlobalAlignmentStack* obj)  {
   s.adopt(obj);
   return s;
 }
-
+#if 0
 /// Constructor with partial initialization
 GlobalAlignmentStack::StackEntry::StackEntry(DetElement element, const std::string& p, const Delta& del, double ov)
   : detector(element), delta(del), path(p), overlap(ov)
@@ -79,6 +79,7 @@ GlobalAlignmentStack::StackEntry& GlobalAlignmentStack::StackEntry::setOverlapPr
   overlap = precision;
   return *this;
 }
+#endif
 
 /// Default constructor
 GlobalAlignmentStack::GlobalAlignmentStack()
