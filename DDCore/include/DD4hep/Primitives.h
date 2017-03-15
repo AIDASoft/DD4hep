@@ -165,6 +165,8 @@ namespace DD4hep {
     static std::string type_name()       { return typeName(type());     }
     /// Auto conversion to string using the default format
     static std::string toString(T value);
+    /// Get typed null pointer (for template selctions)
+    static const value_t* null_pointer() { return (value_t*)0;          }
   };
 
 
