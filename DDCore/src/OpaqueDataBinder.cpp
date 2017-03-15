@@ -137,9 +137,9 @@ namespace DD4hep {
     string value_type = typ.substr(idx+1,idq-idx-1);
     if ( typ.substr(0,6) == "vector" )
       return bind(VectorBinder(), object, value_type, val);
-    else if ( typ.substr(0,6) == "list" )
+    else if ( typ.substr(0,4) == "list" )
       return bind(ListBinder(), object, value_type, val);
-    else if ( typ.substr(0,6) == "set" )
+    else if ( typ.substr(0,3) == "set" )
       return bind(SetBinder(), object, value_type, val);
     else if ( idx == string::npos && idq == string::npos )
       return bind(ValueBinder(), object, value_type, val);

@@ -17,7 +17,7 @@
 #include "DD4hep/Mutex.h"
 #include "DD4hep/Printout.h"
 #include "XML/Conversions.h"
-#include "XML/XMLElements.h"
+#include "XML/XMLParsers.h"
 #include "XML/DocumentHandler.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/DetFactoryHelper.h"
@@ -48,11 +48,6 @@ namespace DD4hep  {
 
   /// Forward declarations for all specialized converters
   template <> void Converter<debug>::operator()(xml_h seq)  const;
-  template <> void Converter<pivot>::operator()(xml_h seq)  const;
-  template <> void Converter<position>::operator()(xml_h seq)  const;
-  template <> void Converter<rotation>::operator()(xml_h seq)  const;
-  template <> void Converter<alignment_delta>::operator()(xml_h seq)  const;
-
   template <> void Converter<volume>::operator()(xml_h seq)  const;
   template <> void Converter<alignment>::operator()(xml_h seq)  const;
   template <> void Converter<detelement>::operator()(xml_h seq)  const;
@@ -62,8 +57,6 @@ namespace DD4hep  {
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
-using DD4hep::Geometry::Position;
-using DD4hep::Geometry::Translation3D;
 
 /** Convert to enable/disable debugging.
  *
@@ -74,104 +67,6 @@ using DD4hep::Geometry::Translation3D;
 template <> void Converter<debug>::operator()(xml_h e) const {
   bool value = e.attr<bool>(_U(value));
   GlobalDetectorAlignment::debug(value);
-}
-
-/** Convert rotation objects
- *
- *    <rotation x="0.5" y="0"  z="0"/>
- *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
- */
-template <> void Converter<rotation>::operator()(xml_h e) const {
-  xml_comp_t r(e);
-  RotationZYX* v = (RotationZYX*)param;
-  v->SetComponents(r.z(), r.y(), r.x());
-  printout(INFO,"Alignment<rot>",
-           "  Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
-           r.x(), r.y(), r.z(), v->Phi(), v->Psi(), v->Theta());
-}
-
-/** Convert position objects
- *
- *    <position x="0.5" y="0"  z="0"/>
- *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
- */
-template <> void Converter<position>::operator()(xml_h e) const {
-  xml_comp_t p(e);
-  Position* v = (Position*)param;
-  v->SetXYZ(p.x(), p.y(), p.z());
-  printout(INFO,"Alignment<pos>","  Position:   x=%9.3f y=%9.3f   z=%9.3f",
-           v->X(), v->Y(), v->Z());
-}
-
-/** Convert pivot objects
- *
- *    <pivot x="0.5" y="0"  z="0"/>
- *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
- */
-template <> void Converter<pivot>::operator()(xml_h e) const {
-  xml_comp_t p(e);
-  double x,y,z;
-  Translation3D* v = (Translation3D*)param;
-  v->SetXYZ(x=p.x(), y=p.y(), z=p.z());
-  printout(INFO,"Alignment<piv>","     Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
-}
-
-/** Convert delta objects
- *
- *     A generic alignment transformation is defined by
- *     - a translation in 3D space identified in XML as a
- *         <position/> element
- *       - a rotation in 3D space around a pivot point specified in XML by
- *         2 elements: the <rotation/> and the <pivot/> element.
- *       The specification of any of the elements is optional:
- *     - The absence of a translation implies the origine (0,0,0)
- *     - The absence of a pivot point implies the origine (0,0,0)
- *       - The absence of a rotation implies the identity rotation.
- *         Any supplied pivot point in this case is ignored.
- *
- *      <xx>
- *        <position x="0" y="0"  z="0.0001*mm"/>
- *        <rotation x="0" y="0"  z="0"/>
- *        <pivot    x="0" y="0"    z="100"/>
- *      </xx>
- *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
- */
-template <> void Converter<alignment_delta>::operator()(xml_h e) const {
-  Position pos;
-  RotationZYX rot;
-  Translation3D piv;
-  xml_h  child_rot, child_pos, child_piv;
-  Delta* delta = (Delta*)param;
-
-  if ( (child_pos=e.child(_U(position),false)) )
-    Converter<position>(lcdd,&delta->translation)(child_pos);
-  if ( (child_rot=e.child(_U(rotation),false)) )   {
-    Converter<rotation>(lcdd,&delta->rotation)(child_rot);
-    if ( (child_piv=e.child(_U(pivot),false)) )
-      Converter<pivot>(lcdd,&delta->pivot)(child_piv);
-  }
-  if ( child_rot && child_pos && child_piv )
-    delta->flags |= Delta::HAVE_ROTATION|Delta::HAVE_PIVOT|Delta::HAVE_TRANSLATION;
-  else if ( child_rot && child_pos )
-    delta->flags |= Delta::HAVE_ROTATION|Delta::HAVE_TRANSLATION;
-  else if ( child_rot && child_piv )
-    delta->flags |= Delta::HAVE_ROTATION|Delta::HAVE_PIVOT;
-  else if ( child_rot )
-    delta->flags |= Delta::HAVE_ROTATION;
-  else if ( child_pos )
-    delta->flags |= Delta::HAVE_TRANSLATION;
 }
 
 typedef GlobalAlignmentStack::StackEntry StackEntry;
@@ -193,8 +88,8 @@ typedef GlobalAlignmentStack::StackEntry StackEntry;
  */
 template <> void Converter<volume>::operator()(xml_h e) const {
   Delta val;
-  pair<DetElement,string>* elt = (pair<DetElement,string>*)param;
-  GlobalAlignmentStack* stack = _option<GlobalAlignmentStack>();
+  GlobalAlignmentStack* stack  = _option<GlobalAlignmentStack>();
+  pair<DetElement,string>* elt = _param<pair<DetElement,string> >();
   string subpath    = e.attr<string>(_ALU(path));
   bool   reset      = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
   bool   reset_dau  = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
@@ -208,7 +103,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
   printout(INFO,"Alignment<vol>","    path:%s placement:%s reset:%s children:%s",
            subpath.c_str(), placement.c_str(), yes_no(reset), yes_no(reset_dau));
 
-  Converter<alignment_delta>(lcdd,&val)(e);
+  XML::parse(e,val);
   if ( val.flags ) val.flags |= GlobalAlignmentStack::MATRIX_DEFINED;
   if ( overlap   ) val.flags |= GlobalAlignmentStack::OVERLAP_DEFINED;
   if ( reset     ) val.flags |= GlobalAlignmentStack::RESET_VALUE;
@@ -231,7 +126,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
  *    <detelement path="/world/TPC/TPC_SideA/TPC_SideA_sector02">
  *      <position x="0"   y="0"  z="0"/>
  *      <rotation x="0.5" y="0"  z="0"/>
- *        <pivot    x="0" y="0"    z="100"/>
+ *      <pivot    x="0"   y="0"  z="100"/>
  *    </detelement>
  *
  *  @author  M.Frank
@@ -257,7 +152,7 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   }
 
   Delta delta;
-  Converter<alignment_delta>(lcdd,&delta)(e);
+  XML::parse(e, delta);
   if ( delta.flags )  {
     delta.flags |= GlobalAlignmentStack::MATRIX_DEFINED;
     reset = reset_dau = true;

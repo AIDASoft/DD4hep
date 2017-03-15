@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "XML/Conversions.h"
-#include "XML/XMLElements.h"
+#include "XML/XMLParsers.h"
 #include "XML/DocumentHandler.h"
 #include "DD4hep/Path.h"
 #include "DD4hep/Printout.h"
@@ -45,6 +45,7 @@ namespace DD4hep  {
     class detelement;
     class conditions;
     class arbitrary;
+
     /// Conditions types
     class value;
     class pressure;
@@ -52,18 +53,12 @@ namespace DD4hep  {
     class mapping;
     class sequence;
     class alignment;
-    class position;
-    class rotation;
-    class pivot;
   }
   /// Forward declarations for all specialized converters
   template <> void Converter<iov>::operator()(xml_h seq)  const;
   template <> void Converter<iov_type>::operator()(xml_h seq)  const;
   template <> void Converter<repository>::operator()(xml_h seq)  const;
   template <> void Converter<manager>::operator()(xml_h seq)  const;
-  template <> void Converter<rotation>::operator()(xml_h e) const;
-  template <> void Converter<position>::operator()(xml_h e) const;
-  template <> void Converter<pivot>::operator()(xml_h e) const;
   template <> void Converter<value>::operator()(xml_h e) const;
   template <> void Converter<pressure>::operator()(xml_h e) const;
   template <> void Converter<temperature>::operator()(xml_h e) const;
@@ -312,162 +307,43 @@ namespace DD4hep {
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
-  /// Convert conditions sequence objects (unmapped containers)
+  /// Convert conditions sequence objects (unmapped containers). See XML/XMLParsers.h for details.
   /**
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
    */
   template <> void Converter<sequence>::operator()(xml_h e) const {
-    xml_dim_t      elt(e);
-    Condition      con(0);
-    string         typ = elt.typeStr();
     ConversionArg* arg = _param<ConversionArg>();
-    size_t idx = typ.find('[');
-    size_t idq = typ.find(']');
-    string value_type = typ.substr(idx+1,idq-idx-1);
-    if ( typ.substr(0,6) == "vector" )
-      con = bind_condition(VectorBinder(), arg->detector, e, value_type);
-    else if ( typ.substr(0,4) == "list" )
-      con = bind_condition(ListBinder(), arg->detector, e, value_type);
-    else if ( typ.substr(0,3) == "set" )
-      con = bind_condition(SetBinder(), arg->detector, e, value_type);
-    else
-      except("XMLConditions",
-             "++ Failed to convert unknown sequence conditions type: %s",typ.c_str());
+    Condition      con = create_condition(arg->detector, e);
+    XML::parse_sequence(e, con->data);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
-  /// Convert conditions STL maps
+  /// Convert conditions STL maps. See XML/XMLParsers.h for details.
   /**
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
    */
   template <> void Converter<mapping>::operator()(xml_h e) const {
-    xml_comp_t elt(e);
     ConversionArg* arg = _param<ConversionArg>();
-    string    key_type = e.attr<string>(_U(key));
-    string    val_type = e.attr<string>(_U(value));
     Condition      con = create_condition(arg->detector, e);
-    OpaqueDataBlock& b = con->data;
-    MapBinder binder;
-
-    OpaqueDataBinder::bind_map(binder, b, key_type, val_type);
-    for(xml_coll_t i(e,_U(item)); i; ++i)  {
-      // If explicit key, value data are present in attributes:
-      if ( i.hasAttr(_U(key)) && i.hasAttr(_U(value)) )  {
-        string key = i.attr<string>(_U(key));
-        string val = i.attr<string>(_U(value));
-        OpaqueDataBinder::insert_map(binder, b, key_type, key, val_type, val);
-        continue;
-      }
-      // Otherwise interprete the data directly from the data content
-      OpaqueDataBinder::insert_map(binder, b, key_type, val_type, i.text());
-    }
+    XML::parse_mapping(e, con->data);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 
-  /// Convert rotation objects
+  /// Convert alignment delta objects. See XML/XMLParsers.h for details.
   /**
-   *    <rotation x="0.5" y="0"  z="0"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<rotation>::operator()(xml_h e) const {
-    xml_comp_t r(e);
-    RotationZYX* v = (RotationZYX*)param;
-    v->SetComponents(r.z(), r.y(), r.x());
-    printout(s_parseLevel,"XMLConditions",
-             "++ Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
-             r.x(), r.y(), r.z(), v->Phi(), v->Psi(), v->Theta());
-  }
-
-  /// Convert position objects
-  /**
-   *    <position x="0.5" y="0"  z="0"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<position>::operator()(xml_h e) const {
-    xml_comp_t p(e);
-    Position* v = (Position*)param;
-    v->SetXYZ(p.x(), p.y(), p.z());
-    printout(s_parseLevel,"XMLConditions","++ Position:   x=%9.3f y=%9.3f   z=%9.3f",
-             v->X(), v->Y(), v->Z());
-  }
-
-  /// Convert pivot objects
-  /**
-   *    <pivot x="0.5" y="0"  z="0"/>
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \date    01/04/2014
-   */
-  template <> void Converter<pivot>::operator()(xml_h e) const {
-    xml_comp_t p(e);
-    double x,y,z;
-    Translation3D* v = (Translation3D*)param;
-    v->SetXYZ(x=p.x(), y=p.y(), z=p.z());
-    printout(s_parseLevel,"XMLConditions","++ Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
-  }
-
-  /// Convert alignment delta objects
-  /**
-   *     A generic alignment transformation is defined by
-   *     - a translation in 3D space identified in XML as a
-   *         <position/> element
-   *       - a rotation in 3D space around a pivot point specified in XML by
-   *         2 elements: the <rotation/> and the <pivot/> element.
-   *       The specification of any of the elements is optional:
-   *     - The absence of a translation implies the origine (0,0,0)
-   *     - The absence of a pivot point implies the origine (0,0,0)
-   *       - The absence of a rotation implies the identity rotation.
-   *         Any supplied pivot point in this case is ignored.
-   *
-   *      <xx>
-   *        <position x="0" y="0"  z="0.0001*mm"/>
-   *        <rotation x="0" y="0"  z="0"/>
-   *        <pivot    x="0" y="0"  z="100"/>
-   *      </xx>
-   *
    *  \author  M.Frank
    *  \version 1.0
    *  \date    01/04/2014
    */
   template <> void Converter<alignment>::operator()(xml_h e) const {
-    using Alignments::Delta;
-    Position       pos;
-    RotationZYX    rot;
-    Translation3D  piv;
-    xml_h          child_rot, child_pos, child_piv;
-    ConversionArg* arg = _param<ConversionArg>();
-    Condition      con = create_condition(arg->detector, e);
-    Delta&         del = con.bind<Delta>();
-
-    if ( (child_pos=e.child(_U(position),false)) )
-      Converter<position>(lcdd,&del.translation)(child_pos);
-    if ( (child_rot=e.child(_U(rotation),false)) )   {
-      Converter<rotation>(lcdd,&del.rotation)(child_rot);
-      if ( (child_piv=e.child(_U(pivot),false)) )
-        Converter<pivot>(lcdd,&del.pivot)(child_piv);
-    }
-    if ( child_rot && child_pos && child_piv )
-      del.flags |= Delta::HAVE_ROTATION|Delta::HAVE_PIVOT|Delta::HAVE_TRANSLATION;
-    else if ( child_rot && child_pos )
-      del.flags |= Delta::HAVE_ROTATION|Delta::HAVE_TRANSLATION;
-    else if ( child_rot && child_piv )
-      del.flags |= Delta::HAVE_ROTATION|Delta::HAVE_PIVOT;
-    else if ( child_rot )
-      del.flags |= Delta::HAVE_ROTATION;
-    else if ( child_pos )
-      del.flags |= Delta::HAVE_TRANSLATION;
-
+    xml_h              child_rot, child_pos, child_piv;
+    ConversionArg*     arg = _param<ConversionArg>();
+    Condition          con = create_condition(arg->detector, e);
+    XML::parse_delta(e, con->data);
     con->setFlag(Condition::ALIGNMENT);
     arg->manager.registerUnlocked(arg->pool, con);
   }
