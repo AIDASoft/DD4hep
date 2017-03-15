@@ -242,6 +242,7 @@ namespace DD4hep {
 } /* End namespace DD4hep                   */
 
 #define DD4HEP_DEFINE_CONDITIONS_TYPE(x)                               \
+  DD4HEP_DEFINE_OPAQUEDATA_TYPE(x)                                     \
   namespace DD4hep {                                                   \
     namespace Conditions  {                                            \
       template x& Condition::bind<x>(const std::string& val);          \

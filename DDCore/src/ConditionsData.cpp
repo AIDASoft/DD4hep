@@ -69,10 +69,10 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
   return *this;
 }
 
+#include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(AbstractMap)
-
+DD4HEP_DEFINE_PARSER_DUMMY(AbstractMap)
 #include "DD4hep/BasicGrammar_inl.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR(AbstractMap,eval_none<AbstractMap>)
-
+DD4HEP_DEFINE_CONDITIONS_TYPE(AbstractMap)
