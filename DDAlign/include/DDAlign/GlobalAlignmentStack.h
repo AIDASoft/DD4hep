@@ -15,7 +15,8 @@
 
 // Framework include files
 #include "DD4hep/Alignments.h"
-#include "DD4hep/Objects.h"
+#include "DD4hep/AlignmentData.h"
+//#include "DD4hep/Objects.h"
 #include "DD4hep/Memory.h"
 
 
@@ -42,7 +43,7 @@ namespace DD4hep {
         RESET_CHILDREN      = 1<<25,
         ____LLLAST          = 1<<31
       };
-
+      //#if 0
       /// Stack entry definition
       /**
        *  \author   M.Frank
@@ -70,7 +71,7 @@ namespace DD4hep {
 
         /// Assignment operator
         StackEntry& operator=(const StackEntry& e) = default;
-
+#if 0
         /// Check if the overlap flag checking is enabled
         bool overlapDefined() const    {  return delta.checkFlag(OVERLAP_DEFINED);  }
         /// Check if the overlap flag checking is enabled
@@ -92,7 +93,10 @@ namespace DD4hep {
         StackEntry& setOverlapCheck(bool new_value=true);
         /// Set the precision for the overlap check (otherwise the default is 0.001 cm)
         StackEntry& setOverlapPrecision(double precision=0.001);
+#endif
       };
+      //#endif
+      //typedef AlignmentData StackEntry;
       typedef std::map<std::string, StackEntry*> Stack;
 
     protected:
@@ -112,6 +116,20 @@ namespace DD4hep {
       static void create();
       /// Check existence of alignment stack
       static bool exists();
+
+      /// Check if the overlap flag checking is enabled
+      static bool overlapDefined(const StackEntry& e)    {  return e.delta.checkFlag(OVERLAP_DEFINED);  }
+      /// Check if the overlap flag checking is enabled
+      static bool checkOverlap(const StackEntry& e)      {  return e.delta.checkFlag(CHECKOVL_DEFINED); }
+      /// Check if the overalp value is present
+      static bool overlapValue(const StackEntry& e)      {  return e.delta.checkFlag(CHECKOVL_VALUE);   }
+      /// Check if this alignment entry has a non unitary transformation matrix
+      static bool hasMatrix(const StackEntry& e)         {  return e.delta.checkFlag(MATRIX_DEFINED);   }
+      /// Check flag if the node location should be reset
+      static bool needsReset(const StackEntry& e)        {  return e.delta.checkFlag(RESET_VALUE);      }
+      /// Check flag if the node location and all children should be reset
+      static bool resetChildren(const StackEntry& e)     {  return e.delta.checkFlag(RESET_CHILDREN);   }
+
       /// Add a new entry to the cache. The key is the placement path
       bool insert(const std::string& full_path, dd4hep_ptr<StackEntry>& new_entry);
       /// Add a new entry to the cache. The key is the placement path. The placement path must be set in the entry

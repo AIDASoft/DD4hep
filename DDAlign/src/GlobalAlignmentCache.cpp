@@ -194,7 +194,7 @@ void GlobalAlignmentCache::apply(GlobalAlignmentStack& stack)    {
     Entry* e = stack.pop().release();
     DetElement det = _detector(e->detector);
     all[det].push_back(e);
-    if ( e->hasMatrix() || e->needsReset() || e->resetChildren() )  {
+    if ( stack.hasMatrix(*e) || stack.needsReset(*e) || stack.resetChildren(*e) )  {
       detelt_updates.insert(make_pair(e->detector.path(),e->detector));
     }
   }

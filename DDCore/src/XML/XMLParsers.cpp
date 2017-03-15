@@ -47,7 +47,7 @@ bool DD4hep::XML::setXMLParserDebug(bool value)   {
 void DD4hep::XML::parse(xml_h e, Geometry::RotationZYX& rot)  {
   xml_dim_t r(e);
   rot.SetComponents(r.z(), r.y(), r.x());
-  printout(s_print,"Alignment<rot>",
+  printout(s_print,"<rotation>",
            "  Rotation:   x=%9.3f y=%9.3f   z=%9.3f  phi=%7.4f psi=%7.4f theta=%7.4f",
            r.x(), r.y(), r.z(), rot.Phi(), rot.Psi(), rot.Theta());
 }
@@ -56,7 +56,7 @@ void DD4hep::XML::parse(xml_h e, Geometry::RotationZYX& rot)  {
 void DD4hep::XML::parse(xml_h e, Geometry::Position& pos)  {
   xml_dim_t p(e);
   pos.SetXYZ(p.x(), p.y(), p.z());
-  printout(s_print,"Alignment<pos>","  Position:   x=%9.3f y=%9.3f   z=%9.3f",
+  printout(s_print,"<position>","  Position:   x=%9.3f y=%9.3f   z=%9.3f",
            pos.X(), pos.Y(), pos.Z());
 }
 
@@ -65,7 +65,7 @@ void DD4hep::XML::parse(xml_h e, Geometry::Translation3D& tr)   {
   xml_dim_t p(e);
   double x,y,z;
   tr.SetXYZ(x=p.x(), y=p.y(), z=p.z());
-  printout(s_print,"<pivot>","     Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
+  printout(s_print,"<translation>","     Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
 }
 
 /// Convert alignment delta objects to Alignments::Delta

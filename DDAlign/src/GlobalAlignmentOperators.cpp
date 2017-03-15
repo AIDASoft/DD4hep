@@ -40,9 +40,9 @@ void GlobalAlignmentSelector::operator()(const Cache::value_type& entry)  const 
   TGeoPhysicalNode* pn = entry.second;
   for(Entries::const_iterator j=entries.begin(); j != entries.end(); ++j)   {
     Entries::value_type e = (*j);
-    if ( e->needsReset() || e->hasMatrix() )  {
+    if ( GlobalAlignmentStack::needsReset(*e) || GlobalAlignmentStack::hasMatrix(*e) )  {
       const char* p = pn->GetName();
-      bool reset_children = e->resetChildren();
+      bool reset_children = GlobalAlignmentStack::resetChildren(*e);
       if ( reset_children && ::strstr(p,e->path.c_str()) == p )   {
         nodes.insert(make_pair(p,make_pair(pn,e)));
         break;
@@ -61,9 +61,11 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_print>::
 
 template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_print>::operator()(Nodes::value_type& n)  const {
   TGeoPhysicalNode* p = n.second.first;
-  Entry* e = n.second.second;
+  const Entry& e = *n.second.second;
   printout(ALWAYS,"GlobalAlignmentCache","Need to reset entry:%s - %s [needsReset:%s, hasMatrix:%s]",
-           p->GetName(),e->path.c_str(),yes_no(e->needsReset()),yes_no(e->hasMatrix()));
+           p->GetName(), e.path.c_str(),
+           yes_no(GlobalAlignmentStack::needsReset(e)),
+           yes_no(GlobalAlignmentStack::hasMatrix(e)));
 }
 
 template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const {
@@ -108,26 +110,26 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::
 
 template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_align>::operator()(Nodes::value_type& n) const  {
   Entry&     e       = *n.second.second;
-  bool       overlap = e.overlapDefined();
+  bool       overlap = GlobalAlignmentStack::overlapDefined(e);
   DetElement det     = e.detector;
 
-  if ( !det->global_alignment.isValid() && !e.hasMatrix() )  {
+  if ( !det->global_alignment.isValid() && !GlobalAlignmentStack::hasMatrix(e) )  {
     printout(WARNING,"GlobalAlignmentActor","++++ SKIP Alignment %s DE:%s Valid:%s Matrix:%s",
              e.path.c_str(),det.placementPath().c_str(),
-             yes_no(det->global_alignment.isValid()), yes_no(e.hasMatrix()));
+             yes_no(det->global_alignment.isValid()), yes_no(GlobalAlignmentStack::hasMatrix(e)));
     return;
   }
   if ( GlobalDetectorAlignment::debug() )  {
     printout(INFO,"GlobalAlignmentActor","++++ %s DE:%s Matrix:%s",
-             e.path.c_str(),det.placementPath().c_str(),yes_no(e.hasMatrix()));
+             e.path.c_str(),det.placementPath().c_str(),yes_no(GlobalAlignmentStack::hasMatrix(e)));
   }
   // Need to care about optional arguments 'check_overlaps' and 'overlap'
   GlobalDetectorAlignment ad(det);
   GlobalAlignment   align;
   Transform3D       trafo;
-  bool              no_vol  = e.path == det.placementPath();
-  double            ovl_val = e.overlapValue();
-  const Delta&      delta   = e.delta;
+  const Delta&      delta  = e.delta;
+  bool              no_vol = e.path == det.placementPath();
+  double            ovl_precision = e.overlap;
 
   if ( delta.checkFlag(Delta::HAVE_ROTATION|Delta::HAVE_PIVOT|Delta::HAVE_TRANSLATION) )
     trafo = Transform3D(Translation3D(delta.translation)*delta.pivot*delta.rotation*(delta.pivot.Inverse()));
@@ -140,10 +142,10 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_align>::
   else if ( delta.checkFlag(Delta::HAVE_TRANSLATION) )
     trafo = Transform3D(delta.translation);
 
-  if ( e.checkOverlap() && overlap )
-    align = no_vol ? ad.align(trafo,ovl_val,e.overlap) : ad.align(e.path,trafo,ovl_val,e.overlap);
-  else if ( e.checkOverlap() )
-    align = no_vol ? ad.align(trafo,ovl_val) : ad.align(e.path,trafo,ovl_val);
+  if ( GlobalAlignmentStack::checkOverlap(e) && overlap )
+    align = no_vol ? ad.align(trafo,ovl_precision,e.overlap) : ad.align(e.path,trafo,ovl_precision,e.overlap);
+  else if ( GlobalAlignmentStack::checkOverlap(e) )
+    align = no_vol ? ad.align(trafo,ovl_precision) : ad.align(e.path,trafo,ovl_precision);
   else
     align = no_vol ? ad.align(trafo) : ad.align(e.path,trafo);
 
