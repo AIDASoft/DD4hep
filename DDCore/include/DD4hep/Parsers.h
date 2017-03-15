@@ -25,9 +25,16 @@
 #include <deque>
 
 // ============================================================================
-#define PARSERS_DECL_FOR_SINGLE(Type)                       \
-  namespace DD4hep { namespace Parsers {                    \
-      int parse(Type& result, const std::string& input); }}
+#define PARSERS_DECL_FOR_SINGLE(Type)                                   \
+  namespace DD4hep { namespace Parsers {                                \
+      int parse(Type& result, const std::string& input);                \
+    }}
+
+#define DD4HEP_DEFINE_PARSER_DUMMY(Type)                                \
+  PARSERS_DECL_FOR_SINGLE(Type)                                         \
+  namespace DD4hep   {   namespace Parsers   {                          \
+      int parse(Type&, const std::string&)     {  return 1;  }          \
+    }}
 
 #define PARSERS_DECL_FOR_PAIR(FirstType, SecondType)                    \
   namespace DD4hep { namespace Parsers {                                \

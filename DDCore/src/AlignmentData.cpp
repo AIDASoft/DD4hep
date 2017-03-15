@@ -202,13 +202,16 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
+#include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-DD4HEP_DEFINE_OPAQUEDATA_TYPE(Delta)
-DD4HEP_DEFINE_OPAQUEDATA_TYPE(AlignmentData)
-DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(Delta)
-DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(AlignmentData)
+DD4HEP_DEFINE_PARSER_DUMMY(Delta)
+DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
 
 #include "DD4hep/BasicGrammar_inl.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR(Delta,eval_none<Delta>)
 DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentData,eval_none<AlignmentData>)
+
+DD4HEP_DEFINE_CONDITIONS_TYPE(Delta)
+DD4HEP_DEFINE_CONDITIONS_TYPE(AlignmentData)
+

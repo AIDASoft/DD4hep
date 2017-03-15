@@ -331,6 +331,14 @@ namespace DD4hep {
   DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)          \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY(x,func)                      \
+  PARSERS_DECL_FOR_SINGLE(x)                                            \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                                  \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                             \
+  namespace DD4hep   {   namespace Parsers   {                          \
+      int parse(x&, const std::string&)     {  return 1;  }             \
+    }}
+
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)                  \
   DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                             \
