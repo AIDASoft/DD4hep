@@ -31,7 +31,7 @@ static dd4hep_ptr<GlobalAlignmentStack>& _stack(GlobalAlignmentStack* obj)  {
   s.adopt(obj);
   return s;
 }
-#if 0
+
 /// Constructor with partial initialization
 GlobalAlignmentStack::StackEntry::StackEntry(DetElement element, const std::string& p, const Delta& del, double ov)
   : detector(element), delta(del), path(p), overlap(ov)
@@ -50,7 +50,7 @@ GlobalAlignmentStack::StackEntry::StackEntry(const StackEntry& e)
 GlobalAlignmentStack::StackEntry::~StackEntry() {
   InstanceCount::decrement(this);
 }
-
+#if 0
 /// Set flag to reset the entry to it's ideal geometrical position
 GlobalAlignmentStack::StackEntry& GlobalAlignmentStack::StackEntry::setReset(bool new_value)   {
   new_value ? (delta.flags |= RESET_VALUE) : (delta.flags &= ~RESET_VALUE);
