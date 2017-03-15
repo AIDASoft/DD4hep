@@ -28,20 +28,6 @@ using namespace std;
 namespace {
   using namespace DD4hep;
   
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-  const char*           _char()    { return 0; }
-  const unsigned char*  _uchar()   { return 0; }
-  const short*          _short()   { return 0; }
-  const unsigned short* _ushort()  { return 0; }
-  const unsigned int*   _uint()    { return 0; }
-  const unsigned long*  _ulong()   { return 0; }
-#endif
-  const int*            _int()     { return 0; }
-  const long*           _long()    { return 0; }
-  const float*          _float()   { return 0; }
-  const double*         _double()  { return 0; }
-  const std::string*    _string()  { return 0; }
-
   /// Helper class to bind string values to C++ data objects (primitive or complex)
   template <typename T, typename Q> bool __bind__(const ValueBinder&, T& object, const string& val, const Q*)
   {  object.template bind<Q>(val);            return true;  }
@@ -72,43 +58,43 @@ namespace DD4hep {
   bool OpaqueDataBinder::bind(const BINDER& b, T& object, const string& typ, const string& val)  {
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     if ( typ.substr(0,4) == "char" )
-      return __bind__(b,object,val,_char());
+      return __bind__(b,object,val,Primitive<char>::null_pointer());
     else if ( typ.substr(0,13) == "unsigned char" )
-      return __bind__(b,object,val,_uchar());
+      return __bind__(b,object,val,Primitive<unsigned char>::null_pointer());
     else if ( typ.substr(0,5) == "short" )
-      return __bind__(b,object,val,_short());
+      return __bind__(b,object,val,Primitive<short>::null_pointer());
     else if ( typ.substr(0,14) == "unsigned short" )
-      return __bind__(b,object,val,_ushort());
+      return __bind__(b,object,val,Primitive<unsigned short>::null_pointer());
     else if ( typ.substr(0,12) == "unsigned int" )
-      return __bind__(b,object,val,_uint());
+      return __bind__(b,object,val,Primitive<unsigned int>::null_pointer());
     else if ( typ.substr(0,13) == "unsigned long" )
-      return __bind__(b,object,val,_ulong());
+      return __bind__(b,object,val,Primitive<unsigned long>::null_pointer());
 #else
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     if ( typ.substr(0,4) == "char" )
-      return __bind__(b,object,val,_int());
+      return __bind__(b,object,val,Primitive<int>::null_pointer());
     else if ( typ.substr(0,5) == "short" )
-      return __bind__(b,object,val,_int());
+      return __bind__(b,object,val,Primitive<int>::null_pointer());
 #endif
     else if ( typ.substr(0,3) == "int" )
-      return __bind__(b,object,val,_int());
+      return __bind__(b,object,val,Primitive<int>::null_pointer());
     else if ( typ.substr(0,4) == "long" ) 
-      return __bind__(b,object,val,_long());
+      return __bind__(b,object,val,Primitive<long>::null_pointer());
     else if ( typ.substr(0,5) == "float" )
-      return __bind__(b,object,val,_float());
+      return __bind__(b,object,val,Primitive<float>::null_pointer());
     else if ( typ.substr(0,6) == "double" )
-      return __bind__(b,object,val,_double());
+      return __bind__(b,object,val,Primitive<double>::null_pointer());
     else if ( typ.substr(0,6) == "string" )
-      return __bind__(b,object,val,_string());
+      return __bind__(b,object,val,Primitive<string>::null_pointer());
     else if ( typ == "std::string" )
-      return __bind__(b,object,val,_string());
+      return __bind__(b,object,val,Primitive<string>::null_pointer());
     else if ( typ == "Histo1D" )
-      return __bind__(b,object,val,_string());
+      return __bind__(b,object,val,Primitive<string>::null_pointer());
     else if ( typ == "Histo2D" )
-      return __bind__(b,object,val,_string());
+      return __bind__(b,object,val,Primitive<string>::null_pointer());
     else
       printout(INFO,"OpaqueDataBinder","++ Unknown conditions parameter type:%s val:%s",typ.c_str(),val.c_str());
-    return __bind__(b,object,val,_string());
+    return __bind__(b,object,val,Primitive<string>::null_pointer());
   }
   template bool OpaqueDataBinder::bind<ValueBinder,OpaqueDataBlock>(        const ValueBinder& b, OpaqueDataBlock& object,
                                                                             const string& typ, const string& val);
@@ -288,26 +274,26 @@ namespace DD4hep {
                                   const string& key_type, const string& val_type)   {
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     if ( key_type.substr(0,3) == "int" )
-      bind_mapping(b, val_type, object, _int());
+      bind_mapping(b, val_type, object, Primitive<int>::null_pointer());
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     else if ( key_type.substr(0,4) == "char" )
-      bind_mapping(b, val_type, object, _int());
+      bind_mapping(b, val_type, object, Primitive<int>::null_pointer());
     else if ( key_type.substr(0,5) == "short" )
-      bind_mapping(b, val_type, object, _int());
+      bind_mapping(b, val_type, object, Primitive<int>::null_pointer());
     else if ( key_type.substr(0,4) == "long" )
-      bind_mapping(b, val_type, object, _long());
+      bind_mapping(b, val_type, object, Primitive<long>::null_pointer());
     else if ( key_type.substr(0,5) == "float" )
-      bind_mapping(b, val_type, object, _float());
+      bind_mapping(b, val_type, object, Primitive<float>::null_pointer());
     else if ( key_type.substr(0,6) == "double" )
-      bind_mapping(b, val_type, object, _double());
+      bind_mapping(b, val_type, object, Primitive<double>::null_pointer());
 #endif
     else if ( key_type.substr(0,6) == "string" )
-      bind_mapping(b, val_type, object, _string());
+      bind_mapping(b, val_type, object, Primitive<string>::null_pointer());
     else if ( key_type == "std::string" )
-      bind_mapping(b, val_type, object, _string());
+      bind_mapping(b, val_type, object, Primitive<string>::null_pointer());
     else {
       printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-      bind_mapping(b, val_type, object, _string());
+      bind_mapping(b, val_type, object, Primitive<string>::null_pointer());
     }
     return true;
   }
@@ -319,27 +305,27 @@ namespace DD4hep {
                                     const string& val_type, const string& val)
   {
     if ( key_type.substr(0,3) == "int" )
-      insert_map_key(b, object, key, val_type, val, _int());
+      insert_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     else if ( key_type.substr(0,4) == "char" )
-      insert_map_key(b, object, key, val_type, val, _int());
+      insert_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
     else if ( key_type.substr(0,5) == "short" )
-      insert_map_key(b, object, key, val_type, val, _int());
+      insert_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
     else if ( key_type.substr(0,4) == "long" )
-      insert_map_key(b, object, key, val_type, val, _long());
+      insert_map_key(b, object, key, val_type, val, Primitive<long>::null_pointer());
     else if ( key_type.substr(0,5) == "float" )
-      insert_map_key(b, object, key, val_type, val, _float());
+      insert_map_key(b, object, key, val_type, val, Primitive<float>::null_pointer());
     else if ( key_type.substr(0,6) == "double" )
-      insert_map_key(b, object, key, val_type, val, _double());
+      insert_map_key(b, object, key, val_type, val, Primitive<double>::null_pointer());
 #endif
     else if ( key_type.substr(0,6) == "string" )
-      insert_map_key(b, object, key, val_type, val, _string());
+      insert_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
     else if ( key_type == "std::string" )
-      insert_map_key(b, object, key, val_type, val, _string());
+      insert_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
     else {
       printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-      insert_map_key(b, object, key, val_type, val, _string());
+      insert_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
     }
     return true;
   }
@@ -351,27 +337,27 @@ namespace DD4hep {
                                     const std::string& pair_data)
   {
     if ( key_type.substr(0,3) == "int" )
-      insert_map_data(b, object, val_type, pair_data, _int());
+      insert_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
     // Short and char is not part of the standard dictionaries. Fall back to 'int'.
     else if ( key_type.substr(0,4) == "char" )
-      insert_map_data(b, object, val_type, pair_data, _int());
+      insert_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
     else if ( key_type.substr(0,5) == "short" )
-      insert_map_data(b, object, val_type, pair_data, _int());
+      insert_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
     else if ( key_type.substr(0,4) == "long" )
-      insert_map_data(b, object, val_type, pair_data, _long());
+      insert_map_data(b, object, val_type, pair_data, Primitive<long>::null_pointer());
     else if ( key_type.substr(0,5) == "float" )
-      insert_map_data(b, object, val_type, pair_data, _float());
+      insert_map_data(b, object, val_type, pair_data, Primitive<float>::null_pointer());
     else if ( key_type.substr(0,6) == "double" )
-      insert_map_data(b, object, val_type, pair_data, _double());
+      insert_map_data(b, object, val_type, pair_data, Primitive<double>::null_pointer());
 #endif
     else if ( key_type.substr(0,6) == "string" )
-      insert_map_data(b, object, val_type, pair_data, _string());
+      insert_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
     else if ( key_type == "std::string" )
-      insert_map_data(b, object, val_type, pair_data, _string());
+      insert_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
     else {
       printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-      insert_map_data(b, object, val_type, pair_data, _string());
+      insert_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
     }
     return true;
   }

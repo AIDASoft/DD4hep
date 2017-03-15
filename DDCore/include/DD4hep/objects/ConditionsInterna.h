@@ -242,15 +242,16 @@ namespace DD4hep {
 } /* End namespace DD4hep                   */
 
 #define DD4HEP_DEFINE_CONDITIONS_TYPE(x)                               \
-  namespace DD4hep { namespace Conditions  {                           \
+  namespace DD4hep {                                                   \
+    template x& OpaqueDataBlock::bind<x>();                            \
+    template x& OpaqueDataBlock::bind<x>(const std::string& val);      \
+    template x& OpaqueDataBlock::set<x> (const std::string& val);      \
+    namespace Conditions  {                                            \
       template x& Condition::bind<x>(const std::string& val);          \
       template x& Condition::bind<x>();                                \
       template x& Condition::get<x>();                                 \
       template const x& Condition::get<x>() const;                     \
     }                                                                  \
-    template x& OpaqueDataBlock::bind<x>();                            \
-    template x& OpaqueDataBlock::bind<x>(const std::string& val);      \
-    template x& OpaqueDataBlock::set<x> (const std::string& val);      \
   }
 
 #define DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(x)                         \
