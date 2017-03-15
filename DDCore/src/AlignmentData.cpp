@@ -15,6 +15,7 @@
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/OpaqueData.h"
 #include "DD4hep/Primitives.h"
 
 // ROOT include files
