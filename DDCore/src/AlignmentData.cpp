@@ -204,6 +204,8 @@ Alignment AlignmentData::nominal() const   {
 
 #include "DD4hep/ToStream.h"
 #include "DD4hep/objects/ConditionsInterna.h"
+DD4HEP_DEFINE_OPAQUEDATA_TYPE(Delta)
+DD4HEP_DEFINE_OPAQUEDATA_TYPE(AlignmentData)
 DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(Delta)
 DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(AlignmentData)
 

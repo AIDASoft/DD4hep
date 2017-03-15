@@ -78,4 +78,12 @@ namespace DD4hep {
   }
 
 } /* End namespace DD4hep               */
+
+#define DD4HEP_DEFINE_OPAQUEDATA_TYPE(x)                               \
+  namespace DD4hep {                                                   \
+    template x& OpaqueDataBlock::bind<x>();                            \
+    template x& OpaqueDataBlock::bind<x>(const std::string& val);      \
+    template x& OpaqueDataBlock::set<x> (const std::string& val);      \
+  }
+
 #endif    /* DD4HEP_OPAQUEDATA_INL_H    */
