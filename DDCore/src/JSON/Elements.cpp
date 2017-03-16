@@ -42,7 +42,7 @@ namespace {
 
 namespace {
 
-  JsonElement* node_first(JsonElement* e, const JsonChar* tag) {
+  JsonElement* node_first(JsonElement* e, const char* tag) {
     if ( e )  {
       string t(tag);
       if ( t == "*" )  {
@@ -60,11 +60,11 @@ namespace {
 }
 
 namespace {
-  Attribute attribute_node(JsonElement* n, const JsonChar* t)  {
+  Attribute attribute_node(JsonElement* n, const char* t)  {
     auto i = n->second.find(t);
     return i != n->second.not_found() ? &(*i) : 0;
   }
-  const JsonChar* attribute_value(Attribute a) {
+  const char* attribute_value(Attribute a) {
     return a->second.get_value<std::string>().c_str();
   }
 }
@@ -130,7 +130,7 @@ string DD4hep::JSON::_ptrToString(const void* v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-long DD4hep::JSON::_toLong(const JsonChar* value) {
+long DD4hep::JSON::_toLong(const char* value) {
   if (value) {
     string s = _toString(value);
     size_t idx = s.find("(int)");
@@ -152,7 +152,7 @@ long DD4hep::JSON::_toLong(const JsonChar* value) {
   return -1;
 }
 
-int DD4hep::JSON::_toInt(const JsonChar* value) {
+int DD4hep::JSON::_toInt(const char* value) {
   if (value) {
     string s = _toString(value);
     size_t idx = s.find("(int)");
@@ -171,7 +171,7 @@ int DD4hep::JSON::_toInt(const JsonChar* value) {
   return -1;
 }
 
-bool DD4hep::JSON::_toBool(const JsonChar* value) {
+bool DD4hep::JSON::_toBool(const char* value) {
   if (value) {
     string s = _toString(value);
     return s == "true";
@@ -179,7 +179,7 @@ bool DD4hep::JSON::_toBool(const JsonChar* value) {
   return false;
 }
 
-float DD4hep::JSON::_toFloat(const JsonChar* value) {
+float DD4hep::JSON::_toFloat(const char* value) {
   if (value) {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
@@ -194,7 +194,7 @@ float DD4hep::JSON::_toFloat(const JsonChar* value) {
   return 0.0;
 }
 
-double DD4hep::JSON::_toDouble(const JsonChar* value) {
+double DD4hep::JSON::_toDouble(const char* value) {
   if (value) {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
@@ -208,7 +208,7 @@ double DD4hep::JSON::_toDouble(const JsonChar* value) {
   return 0.0;
 }
 
-void DD4hep::JSON::_toDictionary(const JsonChar* name, const JsonChar* value) {
+void DD4hep::JSON::_toDictionary(const char* name, const char* value) {
   string n = _toString(name).c_str(), v = _toString(value);
   size_t idx = v.find("(int)");
   if (idx != string::npos)
@@ -225,20 +225,20 @@ void DD4hep::JSON::_toDictionary(const JsonChar* name, const JsonChar* value) {
 }
 
 template <typename T>
-void DD4hep::JSON::_toDictionary(const JsonChar* name, T value)   {
+void DD4hep::JSON::_toDictionary(const char* name, T value)   {
   string item = _toString(value);
   _toDictionary(name, item.c_str());
 }
 
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, const string& value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, unsigned long value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, unsigned int value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, unsigned short value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, int value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, long value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, short value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, float value);
-template void DD4hep::JSON::_toDictionary(const JsonChar* name, double value);
+template void DD4hep::JSON::_toDictionary(const char* name, const string& value);
+template void DD4hep::JSON::_toDictionary(const char* name, unsigned long value);
+template void DD4hep::JSON::_toDictionary(const char* name, unsigned int value);
+template void DD4hep::JSON::_toDictionary(const char* name, unsigned short value);
+template void DD4hep::JSON::_toDictionary(const char* name, int value);
+template void DD4hep::JSON::_toDictionary(const char* name, long value);
+template void DD4hep::JSON::_toDictionary(const char* name, short value);
+template void DD4hep::JSON::_toDictionary(const char* name, float value);
+template void DD4hep::JSON::_toDictionary(const char* name, double value);
 
 /// Evaluate string constant using environment stored in the evaluator
 string DD4hep::JSON::getEnviron(const string& env)   {
@@ -320,27 +320,27 @@ NodeList& NodeList::operator=(const NodeList& l) {
 }
 
 /// Unicode text access to the element's tag. This must be wrong ....
-const JsonChar* Handle_t::rawTag() const {
+const char* Handle_t::rawTag() const {
   return (*m_node).first.c_str();
 }
 
 /// Unicode text access to the element's text
-const JsonChar* Handle_t::rawText() const {
+const char* Handle_t::rawText() const {
   return (*m_node).second.get_value<string>().c_str();
 }
 
 /// Unicode text access to the element's value
-const JsonChar* Handle_t::rawValue() const {
+const char* Handle_t::rawValue() const {
   return (*m_node).second.get_value<string>().c_str();
 }
 
 /// Access attribute pointer by the attribute's unicode name (no exception thrown if not present)
-Attribute Handle_t::attr_nothrow(const JsonChar* tag_value) const {
+Attribute Handle_t::attr_nothrow(const char* tag_value) const {
   return attribute_node(m_node, tag_value);
 }
 
 /// Check for the existence of a named attribute
-bool Handle_t::hasAttr(const JsonChar* tag_value) const {
+bool Handle_t::hasAttr(const char* tag_value) const {
   return m_node && 0 != node_first(m_node, tag_value);
 }
 
@@ -356,7 +356,7 @@ vector<Attribute> Handle_t::attributes() const {
   return attrs;
 }
 
-size_t Handle_t::numChildren(const JsonChar* t, bool throw_exception) const {
+size_t Handle_t::numChildren(const char* t, bool throw_exception) const {
   size_t n = node_count(m_node, t);
   if (n == INVALID_NODE && !throw_exception)
     return 0;
@@ -371,7 +371,7 @@ size_t Handle_t::numChildren(const JsonChar* t, bool throw_exception) const {
 }
 
 /// Remove a single child node identified by it's handle from the tree of the element
-Handle_t Handle_t::child(const JsonChar* t, bool throw_exception) const {
+Handle_t Handle_t::child(const char* t, bool throw_exception) const {
   Elt_t e = node_first(m_node, t);
   if (e || !throw_exception)
     return e;
@@ -383,16 +383,16 @@ Handle_t Handle_t::child(const JsonChar* t, bool throw_exception) const {
   throw runtime_error(msg);
 }
 
-NodeList Handle_t::children(const JsonChar* tag_value) const {
+NodeList Handle_t::children(const char* tag_value) const {
   return NodeList(m_node, tag_value);
 }
 
-bool Handle_t::hasChild(const JsonChar* tag_value) const {
+bool Handle_t::hasChild(const char* tag_value) const {
   return node_first(m_node, tag_value) != 0;
 }
 
 /// Access attribute pointer by the attribute's unicode name (throws exception if not present)
-Attribute Handle_t::attr_ptr(const JsonChar* t) const {
+Attribute Handle_t::attr_ptr(const char* t) const {
   Attribute a = attribute_node(m_node, t);
   if (0 != a)
     return a;
@@ -405,7 +405,7 @@ Attribute Handle_t::attr_ptr(const JsonChar* t) const {
 }
 
 /// Access attribute name (throws exception if not present)
-const JsonChar* Handle_t::attr_name(const Attribute a) const {
+const char* Handle_t::attr_name(const Attribute a) const {
   if (a) {
     return (*a).first.c_str();
   }
@@ -413,17 +413,17 @@ const JsonChar* Handle_t::attr_name(const Attribute a) const {
 }
 
 /// Access attribute value by the attribute's unicode name (throws exception if not present)
-const JsonChar* Handle_t::attr_value(const JsonChar* attr_tag) const {
+const char* Handle_t::attr_value(const char* attr_tag) const {
   return attribute_value(attr_ptr(attr_tag));
 }
 
 /// Access attribute value by the attribute  (throws exception if not present)
-const JsonChar* Handle_t::attr_value(const Attribute attr_val) const {
+const char* Handle_t::attr_value(const Attribute attr_val) const {
   return attribute_value(attr_val);
 }
 
 /// Access attribute value by the attribute's unicode name (no exception thrown if not present)
-const JsonChar* Handle_t::attr_value_nothrow(const JsonChar* attr_tag) const {
+const char* Handle_t::attr_value_nothrow(const char* attr_tag) const {
   Attribute a = attr_nothrow(attr_tag);
   return a ? attribute_value(a) : 0;
 }
@@ -443,7 +443,7 @@ DocumentHolder::~DocumentHolder() {
   assign(0);
 }
 
-Attribute Element::getAttr(const JsonChar* name) const {
+Attribute Element::getAttr(const char* name) const {
   return m_element ? attribute_node(m_element, name) : 0;
 }
 
