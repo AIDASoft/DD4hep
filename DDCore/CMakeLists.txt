@@ -42,7 +42,8 @@ dd4hep_add_package_library ( DDParsers
 
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
-  SOURCES        src/*.cpp src/XML/*.cpp src/JSON/*.cpp
+  SOURCES        src/*.cpp src/XML/*.cpp
+  OPTIONAL       [BOOST SOURCES src/JSON/*.cpp]
   GENERATED      G__DD4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
   LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}
