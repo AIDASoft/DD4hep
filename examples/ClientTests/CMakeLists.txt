@@ -19,7 +19,9 @@ dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
   OPTIONAL     XERCESC
   INCLUDE_DIRS include )
 #--------------------------------------------------------------------------
-dd4hep_add_plugin( ClientTests SOURCES src/*.cpp  )
+dd4hep_add_plugin( ClientTests SOURCES src/*.cpp
+  OPTIONAL       [BOOST SOURCES src_boost/*.cpp]
+  )
 dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTests )
 #--------------------------------------------------------------------------
 
