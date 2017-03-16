@@ -45,7 +45,7 @@ namespace DD4hep {
     /// Convert json attribute to STL string  \ingroup DD4HEP_JSON
     std::string _toString(const Attribute attr);
     /// Convert json string to STL string  \ingroup DD4HEP_JSON
-    std::string _toString(const JsonChar *toTranscode);
+    std::string _toString(const char *toTranscode);
     /// Do-nothing version. Present for completeness and argument interchangeability  \ingroup DD4HEP_JSON
     std::string _toString(const char* s);
     /// Do-nothing version. Present for completeness and argument interchangeability  \ingroup DD4HEP_JSON
@@ -69,30 +69,30 @@ namespace DD4hep {
     {      return _ptrToString((void*)p,fmt);       }
 
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    void _toDictionary(const JsonChar* name, const JsonChar* value);
+    void _toDictionary(const char* name, const char* value);
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    void _toDictionary(const std::string& name, const JsonChar* value)
+    void _toDictionary(const std::string& name, const char* value)
     {  _toDictionary(name, value);  }
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    template <typename T> void _toDictionary(const JsonChar* name, T value);
+    template <typename T> void _toDictionary(const char* name, T value);
 
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    void _toDictionary(const JsonChar* name, float  value);
+    void _toDictionary(const char* name, float  value);
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    void _toDictionary(const JsonChar* name, double value);
+    void _toDictionary(const char* name, double value);
     /// Helper function to lookup environment from the expression evaluator
     std::string getEnviron(const std::string& env);
 
     /// Conversion function from raw unicode string to bool  \ingroup DD4HEP_JSON
-    bool _toBool(const JsonChar* value);
+    bool _toBool(const char* value);
     /// Conversion function from raw unicode string to int  \ingroup DD4HEP_JSON
-    int _toInt(const JsonChar* value);
+    int _toInt(const char* value);
     /// Conversion function from raw unicode string to long  \ingroup DD4HEP_JSON
-    long _toLong(const JsonChar* value);
+    long _toLong(const char* value);
     /// Conversion function from raw unicode string to float  \ingroup DD4HEP_JSON
-    float _toFloat(const JsonChar* value);
+    float _toFloat(const char* value);
     /// Conversion function from raw unicode string to double  \ingroup DD4HEP_JSON
-    double _toDouble(const JsonChar* value);
+    double _toDouble(const char* value);
 
     /// Class describing a list of JSON nodes
     /**
@@ -147,60 +147,42 @@ namespace DD4hep {
       mutable Elt_t m_node;
 
       /// Initializing constructor
-      Handle_t(Elt_t e = 0)
-        : m_node(e) {
-      }
+      Handle_t(Elt_t e = 0) : m_node(e)   {                                 }
       /// Direct access to the JsonElement using the operator->
-      Elt_t operator->() const {
-        return m_node;
-      }
+      Elt_t operator->() const  {        return m_node;                     }
       /// Direct access to the JsonElement by dereferencing
-      operator Elt_t() const {
-        return m_node;
-      }
+      operator Elt_t() const    {        return m_node;                     }
       /// Direct access to the JsonElement by function
-      Elt_t ptr() const {
-        return m_node;
-      }
-      /// Clone the DOMelement - with the option of a deep copy
-      Handle_t clone(JsonDocument* new_doc) const;
-
+      Elt_t ptr() const         {        return m_node;                     }
       /// Unicode text access to the element's tag. Tis must be wrong ....
-      const JsonChar* rawTag() const;
+      const char* rawTag() const;
       /// Unicode text access to the element's text
-      const JsonChar* rawText() const;
+      const char* rawText() const;
       /// Unicode text access to the element's value
-      const JsonChar* rawValue() const;
+      const char* rawValue() const;
       /// Text access to the element's tag
-      std::string tag() const {
-        return _toString(rawTag());
-      }
+      std::string tag() const   {          return _toString(rawTag());      }
       /// Text access to the element's text
-      std::string text() const {
-        return _toString(rawText());
-      }
+      std::string text() const  {          return _toString(rawText());     }
       /// Text access to the element's value
-      std::string value() const {
-        return _toString(rawValue());
-      }
+      std::string value() const {          return _toString(rawValue());    }
 
-      /*** DOM Attribute handling
-       */
+      /*** Attribute handling                                              */
       /// Access attribute name (throws exception if not present)
-      const JsonChar* attr_name(const Attribute attr) const;
+      const char* attr_name(const Attribute attr) const;
       /// Access attribute value by the attribute  (throws exception if not present)
-      const JsonChar* attr_value(const Attribute attr) const;
+      const char* attr_value(const Attribute attr) const;
       /// Access attribute value by the attribute's unicode name (throws exception if not present)
-      const JsonChar* attr_value(const JsonChar* attr) const;
+      const char* attr_value(const char* attr) const;
       /// Access attribute value by the attribute's unicode name (no exception thrown if not present)
-      const JsonChar* attr_value_nothrow(const JsonChar* attr) const;
+      const char* attr_value_nothrow(const char* attr) const;
 
       /// Access attribute pointer by the attribute's unicode name (throws exception if not present)
-      Attribute attr_ptr(const JsonChar* attr) const;
+      Attribute attr_ptr(const char* attr) const;
       /// Access attribute pointer by the attribute's unicode name (no exception thrown if not present)
-      Attribute attr_nothrow(const JsonChar* tag) const;
+      Attribute attr_nothrow(const char* tag) const;
       /// Check for the existence of a named attribute
-      bool hasAttr(const JsonChar* t) const;
+      bool hasAttr(const char* t) const;
       /// Retrieve a collection of all attributes of this DOM element
       std::vector<Attribute> attributes() const;
       /// Access typed attribute value by the JsonAttr
@@ -208,54 +190,49 @@ namespace DD4hep {
         return this->attr<T>(this->attr_name(a));
       }
       /// Access typed attribute value by it's unicode name
-      template <class T> T attr(const JsonChar* name) const;
+      template <class T> T attr(const char* name) const;
 
-      /*** DOM Element child handling
-       */
+      /*** DOM Element child handling                                     */
       /// Check the existence of a child with a given tag name
-      bool hasChild(const JsonChar* tag) const;
+      bool hasChild(const char* tag) const;
       /// Access a single child by it's tag name (unicode)
-      Handle_t child(const JsonChar* tag, bool throw_exception = true) const;
+      Handle_t child(const char* tag, bool throw_exception = true) const;
       /// Access a group of children identified by the same tag name
-      NodeList children(const JsonChar* tag) const;
+      NodeList children(const char* tag) const;
       /// Access the number of children of this DOM element with a given tag name
-      size_t numChildren(const JsonChar* tag, bool throw_exception) const;
-      /// Access the element's parent element
-      //Handle_t parent() const;
+      size_t numChildren(const char* tag, bool throw_exception) const;
     };
 
 #define INLINE inline
-    typedef const JsonChar* cpJsonChar;
-
-    template <> INLINE Attribute Handle_t::attr<Attribute>(const JsonChar* tag_value) const {
+    template <> INLINE Attribute Handle_t::attr<Attribute>(const char* tag_value) const {
       return attr_ptr(tag_value);
     }
 
-    template <> INLINE cpJsonChar Handle_t::attr<cpJsonChar>(const JsonChar* tag_value) const {
+    template <> INLINE const char* Handle_t::attr<const char*>(const char* tag_value) const {
       return attr_value(tag_value);
     }
 
-    template <> INLINE bool Handle_t::attr<bool>(const JsonChar* tag_value) const {
+    template <> INLINE bool Handle_t::attr<bool>(const char* tag_value) const {
       return _toBool(attr_value(tag_value));
     }
 
-    template <> INLINE int Handle_t::attr<int>(const JsonChar* tag_value) const {
+    template <> INLINE int Handle_t::attr<int>(const char* tag_value) const {
       return _toInt(attr_value(tag_value));
     }
     
-    template <> INLINE long Handle_t::attr<long>(const JsonChar* tag_value) const {
+    template <> INLINE long Handle_t::attr<long>(const char* tag_value) const {
       return _toLong(attr_value(tag_value));
     }
 
-    template <> INLINE float Handle_t::attr<float>(const JsonChar* tag_value) const {
+    template <> INLINE float Handle_t::attr<float>(const char* tag_value) const {
       return _toFloat(attr_value(tag_value));
     }
 
-    template <> INLINE double Handle_t::attr<double>(const JsonChar* tag_value) const {
+    template <> INLINE double Handle_t::attr<double>(const char* tag_value) const {
       return _toDouble(attr_value(tag_value));
     }
 
-    template <> INLINE std::string Handle_t::attr<std::string>(const JsonChar* tag_value) const {
+    template <> INLINE std::string Handle_t::attr<std::string>(const char* tag_value) const {
       return _toString(attr_value(tag_value));
     }
 
@@ -302,7 +279,7 @@ namespace DD4hep {
         }
       }
       /// Loop processor using function object
-      template <class T> void for_each(const JsonChar* tag_name, T oper) const {
+      template <class T> void for_each(const char* tag_name, T oper) const {
         try {
           for (const Collection_t& c = *this; c; ++c)
             Collection_t(c.m_node, tag_name).for_each(oper);
@@ -395,7 +372,7 @@ namespace DD4hep {
       /// Constructor from JsonElement handle
       Element(const Element& e) : m_element(e.m_element) {      }
       /// Constructor from DOM document entity
-      //Element(const Document& document, const JsonChar* type);
+      //Element(const Document& document, const char* type);
       /// Access the hosting document handle of this DOM element
       //Document document() const;
 
@@ -442,7 +419,7 @@ namespace DD4hep {
         return m_element.tag();
       }
       /// Access the tag name of this element
-      const JsonChar* tagName() const {
+      const char* tagName() const {
         return m_element.rawTag();
       }
       /// Access the tag name of this element
@@ -450,23 +427,23 @@ namespace DD4hep {
         return m_element.text();
       }
       /// Check for the existence of a named attribute
-      bool hasAttr(const JsonChar* name) const {
+      bool hasAttr(const char* name) const {
         return m_element.hasAttr(name);
       }
       /// Access attribute with implicit return type conversion
-      template <class T> T attr(const JsonChar* tag_value) const {
+      template <class T> T attr(const char* tag_value) const {
         return m_element.attr<T>(tag_value);
       }
       /// Access attribute name (throws exception if not present)
-      const JsonChar* attr_name(const Attribute a) const {
+      const char* attr_name(const Attribute a) const {
         return m_element.attr_name(a);
       }
       /// Access attribute value by the attribute  (throws exception if not present)
-      const JsonChar* attr_value(const Attribute a) const {
+      const char* attr_value(const Attribute a) const {
         return m_element.attr_value(a);
       }
       /// Access the number of children of this element with a given tag name
-      size_t numChildren(const JsonChar* tag_value, bool exc = true) const {
+      size_t numChildren(const char* tag_value, bool exc = true) const {
         return m_element.numChildren(tag_value, exc);
       }
       /// Retrieve a collection of all attributes of this element
@@ -474,13 +451,13 @@ namespace DD4hep {
         return m_element.attributes();
       }
       /// Access single attribute by it's name
-      Attribute getAttr(const JsonChar* name) const;
+      Attribute getAttr(const char* name) const;
      /// Access child by tag name. Thow an exception if required in case the child is not present
-      Handle_t child(const JsonChar* tag_value, bool except = true) const {
+      Handle_t child(const char* tag_value, bool except = true) const {
         return m_element.child(tag_value, except);
       }
       /// Check the existence of a child with a given tag name
-      bool hasChild(const JsonChar* tag_value) const {
+      bool hasChild(const char* tag_value) const {
         return m_element.hasChild(tag_value);
       }
     };
