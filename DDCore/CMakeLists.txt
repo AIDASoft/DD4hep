@@ -14,7 +14,7 @@ dd4hep_package(    DDCore
                    DDSegmentation
   OPTIONAL         XERCESC
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DD4hep include/XML)
+  INSTALL_INCLUDES include/DD4hep include/XML  include/JSON)
 
 #---Generate ROOT dictionary------------------------------------------------------
 dd4hep_add_dictionary( G__DD4hep

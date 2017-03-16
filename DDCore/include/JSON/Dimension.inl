@@ -11,14 +11,14 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_XMLDIMENSION_INL
-#define DD4HEP_XMLDIMENSION_INL
+#ifndef DD4HEP_JSONDIMENSION_INL
+#define DD4HEP_JSONDIMENSION_INL
 
-
-#define DIMENSION_NS XML
+// Configuration definitions
+#define DIMENSION_NS JSON
 
 // Framework include files
-#include "XML/XMLDimension.h"
+#include "JSON/Dimension.h"
 #include "XML/detail/Dimension.inl"
 
-#endif /* DD4HEP_XMLDIMENSION_INL  */
+#endif /* DD4HEP_JSONDIMENSION_INL  */

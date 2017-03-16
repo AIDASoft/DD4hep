@@ -10,15 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#ifndef DD4HEP_JSON_TAGS_H
+#define DD4HEP_JSON_TAGS_H
 
-#ifndef DD4HEP_XMLDIMENSION_INL
-#define DD4HEP_XMLDIMENSION_INL
-
-
-#define DIMENSION_NS XML
+#define DECLARE_UNICODE_TAG(x)  
 
 // Framework include files
-#include "XML/XMLDimension.h"
-#include "XML/detail/Dimension.inl"
+#include "JSON/Elements.h"
 
-#endif /* DD4HEP_XMLDIMENSION_INL  */
+// Helpers to access tags and attributes quickly without specifying explicitly namespaces
+#define _DD4hep_Unicode_Item(a) #a
+#define _U(a) #a
+#define _Unicode(a) #a
+
+#endif // DD4HEP_JSON_TAGS_H

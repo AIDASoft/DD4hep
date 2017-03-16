@@ -1,0 +1,36 @@
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+{
+    "detectors":  {
+        "detector1":  {
+            "id":        1,
+            "type":     "MiniTelPixel",
+            "material": "Silicon",
+            "vis":      "DetVis",
+            "readout":  "MyLHCBdetector1Hits",
+            "dimensions": { "z": "1*mm", "y": "10*cm", "x": "10*cm" },
+            "module": {
+                "name":     "pixel",
+                "type:":    "MiniTelPixel",
+                "material": "Silicon",
+                "x":        "6*mm",
+                "y":        "6*mm",
+                "z":        "1*mm",
+                "vis":      "ModVis",
+                "alpha":    "-2.*radian",
+                "beta":     "-2.*radian",
+                "gamma":    "-0.*radian"
+            }
+        }
+    }
+}

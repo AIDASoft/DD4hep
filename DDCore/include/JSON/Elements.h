@@ -37,11 +37,6 @@ namespace DD4hep {
 
     typedef const JsonAttr* Attribute;
 
-    typedef const std::string& CSTR;
-
-    /// Dump DOM tree of a document
-    void dumpTree(JsonDocument* doc);
-
     /// Convert json attribute to STL string  \ingroup DD4HEP_JSON
     std::string _toString(const Attribute attr);
     /// Convert json string to STL string  \ingroup DD4HEP_JSON
@@ -69,13 +64,12 @@ namespace DD4hep {
     {      return _ptrToString((void*)p,fmt);       }
 
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
+    template <typename T> void _toDictionary(const char* name, T value);
+    /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
     void _toDictionary(const char* name, const char* value);
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    void _toDictionary(const std::string& name, const char* value)
-    {  _toDictionary(name, value);  }
-    /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
-    template <typename T> void _toDictionary(const char* name, T value);
-
+    inline void _toDictionary(const std::string& name, const char* value)
+    {  _toDictionary(name.c_str(), value);          }
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
     void _toDictionary(const char* name, float  value);
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_JSON
@@ -84,13 +78,13 @@ namespace DD4hep {
     std::string getEnviron(const std::string& env);
 
     /// Conversion function from raw unicode string to bool  \ingroup DD4HEP_JSON
-    bool _toBool(const char* value);
+    bool   _toBool(const char* value);
     /// Conversion function from raw unicode string to int  \ingroup DD4HEP_JSON
-    int _toInt(const char* value);
+    int    _toInt(const char* value);
     /// Conversion function from raw unicode string to long  \ingroup DD4HEP_JSON
-    long _toLong(const char* value);
+    long   _toLong(const char* value);
     /// Conversion function from raw unicode string to float  \ingroup DD4HEP_JSON
-    float _toFloat(const char* value);
+    float  _toFloat(const char* value);
     /// Conversion function from raw unicode string to double  \ingroup DD4HEP_JSON
     double _toDouble(const char* value);
 
@@ -154,7 +148,7 @@ namespace DD4hep {
       operator Elt_t() const    {        return m_node;                     }
       /// Direct access to the JsonElement by function
       Elt_t ptr() const         {        return m_node;                     }
-      /// Unicode text access to the element's tag. Tis must be wrong ....
+      /// Unicode text access to the element's tag.
       const char* rawTag() const;
       /// Unicode text access to the element's text
       const char* rawText() const;
@@ -371,19 +365,7 @@ namespace DD4hep {
       Element(const Handle_t& e) : m_element(e)          {      }
       /// Constructor from JsonElement handle
       Element(const Element& e) : m_element(e.m_element) {      }
-      /// Constructor from DOM document entity
-      //Element(const Document& document, const char* type);
-      /// Access the hosting document handle of this DOM element
-      //Document document() const;
 
-      /// operator bool: check handle validity
-      operator bool() const {
-        return 0 != m_element.ptr();
-      }
-      /// operator NOT: check handle validity
-      bool operator!() const {
-        return 0 == m_element.ptr();
-      }
       /// Assignment operator
       Element& operator=(const Element& c)  {
         m_element = c.m_element;
@@ -394,88 +376,50 @@ namespace DD4hep {
         m_element = handle;
         return *this;
       }
+      /// operator bool: check handle validity
+      operator bool() const        {        return 0 != m_element.ptr();      }
+      /// operator NOT: check handle validity
+      bool operator!() const       {        return 0 == m_element.ptr();      }
       /// Automatic conversion to DOM element handle
-      operator Handle_t() const {
-        return m_element;
-      }
+      operator Handle_t() const    {        return m_element;                 }
       /// Automatic conversion to JsonElement pointer
-      operator Elt_t() const {
-        return m_element;
-      }
+      operator Elt_t() const       {        return m_element;                 }
       /// Access to JsonElement pointer
-      Elt_t ptr() const {
-        return m_element;
-      }
-#if 0
-      /// Access the JsonElements parent
-      Handle_t parent()  const   {
-        return m_element.parent();
-      }
-      /// Access the JsonElements parent
-      Elt_t parentElement()  const;
-#endif
+      Elt_t ptr() const            {        return m_element;                 }
       /// Access the tag name of this element
-      std::string tag() const {
-        return m_element.tag();
-      }
+      std::string tag() const      {        return m_element.tag();           }
       /// Access the tag name of this element
-      const char* tagName() const {
-        return m_element.rawTag();
-      }
+      const char* tagName() const  {        return m_element.rawTag();        }
       /// Access the tag name of this element
-      std::string text() const {
-        return m_element.text();
-      }
+      std::string text() const     {        return m_element.text();          }
       /// Check for the existence of a named attribute
-      bool hasAttr(const char* name) const {
-        return m_element.hasAttr(name);
-      }
+      bool hasAttr(const char* name) const {return m_element.hasAttr(name);   }
       /// Access attribute with implicit return type conversion
-      template <class T> T attr(const char* tag_value) const {
-        return m_element.attr<T>(tag_value);
-      }
+      template <class T> T attr(const char* tag_value) const
+      {  return m_element.attr<T>(tag_value);                                 }
       /// Access attribute name (throws exception if not present)
-      const char* attr_name(const Attribute a) const {
-        return m_element.attr_name(a);
-      }
+      const char* attr_name(const Attribute a) const
+      {  return m_element.attr_name(a);                                       }
       /// Access attribute value by the attribute  (throws exception if not present)
-      const char* attr_value(const Attribute a) const {
-        return m_element.attr_value(a);
-      }
+      const char* attr_value(const Attribute a) const
+      {  return m_element.attr_value(a);                                      }
       /// Access the number of children of this element with a given tag name
-      size_t numChildren(const char* tag_value, bool exc = true) const {
-        return m_element.numChildren(tag_value, exc);
-      }
+      size_t numChildren(const char* tag_value, bool exc = true) const
+      {  return m_element.numChildren(tag_value, exc);                        }
       /// Retrieve a collection of all attributes of this element
-      std::vector<Attribute> attributes() const {
-        return m_element.attributes();
-      }
+      std::vector<Attribute> attributes() const
+      {  return m_element.attributes();                                       }
       /// Access single attribute by it's name
       Attribute getAttr(const char* name) const;
      /// Access child by tag name. Thow an exception if required in case the child is not present
-      Handle_t child(const char* tag_value, bool except = true) const {
-        return m_element.child(tag_value, except);
-      }
+      Handle_t child(const char* tag_value, bool except = true) const
+      {  return m_element.child(tag_value, except);                           }
       /// Check the existence of a child with a given tag name
-      bool hasChild(const char* tag_value) const {
-        return m_element.hasChild(tag_value);
-      }
+      bool hasChild(const char* tag_value) const
+      {  return m_element.hasChild(tag_value);                                }
     };
 
-
 #undef INLINE
-
-    /// Forward declarations
-    class DocumentHandler;
-
-    /// Dump partial or full JSON trees to stdout
-    void dump_tree(Handle_t elt);
-    /// Dump partial or full JSON trees
-    void dump_tree(Handle_t elt, std::ostream& os);
-    /// Dump partial or full JSON documents to stdout
-    void dump_tree(Document doc);
-    /// Dump partial or full JSON documents
-    void dump_tree(Document doc, std::ostream& os);
 
   }       /* End namespace XML               */
 }         /* End namespace DD4hep            */

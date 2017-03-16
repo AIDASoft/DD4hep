@@ -61,7 +61,14 @@ namespace {
 }
 
 #define UNICODE(x)        extern const Tag_t Unicode_##x (#x, #x, __Init::register_tag)
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
+  namespace XML {
 #include "XML/UnicodeValues.h"
+  }
+}
 
 namespace DD4hep {
   namespace XML {
