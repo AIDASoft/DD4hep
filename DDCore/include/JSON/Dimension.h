@@ -10,15 +10,22 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
-#ifndef DD4HEP_XMLDIMENSION_INL
-#define DD4HEP_XMLDIMENSION_INL
-
-
-#define DIMENSION_NS XML
+#ifndef DD4HEP_JSON_DIMENSION_H
+#define DD4HEP_JSON_DIMENSION_H
 
 // Framework include files
-#include "XML/XMLDimension.h"
-#include "XML/detail/Dimension.inl"
+#include "JSON/Elements.h"
+#include "JSON/Tags.h"
 
-#endif /* DD4HEP_XMLDIMENSION_INL  */
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the AIDA detector description toolkit supporting JSON utilities
+  namespace JSON {
+
+    /// Re-use the defined interface for the XML data access
+#include "XML/detail/Dimension.h"
+
+  }       /* End namespace JSON       */
+}         /* End namespace DD4hep     */
+#endif    /* DD4HEP_JSON_DIMENSION_H  */

@@ -23,11 +23,13 @@ namespace DD4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting JSON utilities
   namespace JSON {
+
+    typedef char                                    XmlChar;
     typedef boost::property_tree::ptree             ptree;
     typedef boost::property_tree::ptree             JsonDocument;
     typedef boost::property_tree::ptree::value_type JsonAttr;
     typedef boost::property_tree::ptree::value_type JsonElement;
+
   }       /* End namespace JSON              */
 }         /* End namespace DD4hep            */
-
-#endif   /* DD4HEP_DDCORE_JSON_CONFIG_H  */
+#endif    /* DD4HEP_DDCORE_JSON_CONFIG_H  */

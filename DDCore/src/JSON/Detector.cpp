@@ -11,14 +11,9 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_XMLDIMENSION_INL
-#define DD4HEP_XMLDIMENSION_INL
-
-
-#define DIMENSION_NS XML
-
 // Framework include files
-#include "XML/XMLDimension.h"
-#include "XML/detail/Dimension.inl"
+#include "JSON/Detector.h"
 
-#endif /* DD4HEP_XMLDIMENSION_INL  */
+using namespace DD4hep::JSON;
+#include "XML/detail/Detector.imp"
+

@@ -10,9 +10,24 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#ifndef DD4HEP_JSON_DETECTOR_H
+#define DD4HEP_JSON_DETECTOR_H
 
 // Framework include files
-#include "XML/XMLDetector.h"
+#include "JSON/Dimension.h"
 
-using namespace DD4hep::XML;
-#include "XML/detail/Detector.imp"
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  // Forward declarations
+  class NamedObject;
+
+  /// Namespace for the AIDA detector description toolkit supporting JSON utilities
+  namespace JSON {
+
+    /// Include the implementation in the proper namespace
+#include "XML/detail/Detector.h"
+
+  }       /* End namespace JSON       */
+}         /* End namespace DD4hep     */
+#endif    /* DD4HEP_JSON_DETECTOR_H   */
