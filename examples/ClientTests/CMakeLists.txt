@@ -30,8 +30,18 @@ dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTes
 dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #---  Testing  ------------------------------------------------------------
 #
+#  Test JSON based parser
+dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -destroy -plugin DD4hep_JsonDumper
+  ${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.json
+  REGEX_PASS "Successfully dumped json input"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+  )
+#
 #  Test JSON based detector construction
-dd4hep_add_test_reg( ClientTests_MiniTel_JSON
+dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Detector
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hepCompactLoader
   file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel_json.xml
