@@ -22,34 +22,13 @@ using namespace DD4hep;
 using namespace DD4hep::JSON;
 using namespace DD4hep::Geometry;
 
-static long json_dump(LCDD& lcdd, int argc, char** argv)   {
+static long json_dump(LCDD& /* lcdd */, int argc, char** argv)   {
   if ( argc < 1 )  {
-    return 0;
+    ::printf("DD4hep_JsonDumper <file>                               \n");
+    exit(EINVAL);
   }
   DocumentHolder doc(JSON::DocumentHandler().load(argv[0]));
-  Element        elt = doc.root();
-
-  for( boost::property_tree::ptree::value_type const& rowPair : elt.ptr()->second.get_child( "" ) ) 
-	{
-		cout << "1--" << rowPair.first << ": " << endl;
-    cout << rowPair.second.get_value<string>() << " " << endl;
-
-		for( boost::property_tree::ptree::value_type const& itemPair : rowPair.second ) 
-		{
-			cout << "\t2--" << itemPair.first << " " << endl;
-
-		  for( boost::property_tree::ptree::value_type const& node : itemPair.second ) 
-			{
-				cout << "\t\t3--" << node.first << "=" << node.second.get_value<string>() << endl;
-			}
-
-			cout << endl;
-
-		}
-
-		cout << endl;
-  }
-
+  dumpTree(doc.root());
   return 1;
 }
 

@@ -422,11 +422,13 @@ namespace DD4hep {
     };
 
     /// Forward declarations
-    class DocumentHandler;
-
-    
+    class DocumentHandler;    
 #undef INLINE
+    
+    void dumpTree(Handle_t elt);
+    void dumpTree(Element elt);
+    void dumpTree(const JsonElement* elt);
 
-  }       /* End namespace XML               */
+  }       /* End namespace JSON              */
 }         /* End namespace DD4hep            */
 #endif    /* DDCORE_DD4HEP_JSON_ELEMENTS_H   */

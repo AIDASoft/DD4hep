@@ -518,3 +518,24 @@ void Collection_t::operator++(int) const {
 void Collection_t::operator--(int) const {
   --(*this);
 }
+
+void DD4hep::JSON::dumpTree(Handle_t elt)   {
+  dumpTree(elt.ptr());
+}
+
+void DD4hep::JSON::dumpTree(Element elt)   {
+  dumpTree(elt.ptr());
+}
+
+void DD4hep::JSON::dumpTree(const JsonElement* elt)   {
+  struct Dump {
+    void operator()(const JsonElement* elt, const string& tag)   const  {
+      string t = tag+"   ";
+      printout(INFO,"DumpTree","+++ %s %s: %s",tag.c_str(), elt->first.c_str(), elt->second.data().c_str());
+      for(auto i=elt->second.begin(); i!=elt->second.end(); ++i)
+        (*this)(&(*i), t);
+    }
+  } _dmp;
+  _dmp(elt," ");
+}
+
