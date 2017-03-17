@@ -1,0 +1,195 @@
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+
+XML_CHILDVALUE_ACCESSOR(int, id)
+XML_CHILDVALUE_ACCESSOR_INT(id)
+XML_CHILDVALUE_ACCESSOR(bool, combineHits)
+
+XML_CHILDVALUE_ACCESSOR(double, x)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(x)
+XML_CHILDVALUE_ACCESSOR(double, X)
+XML_CHILDVALUE_ACCESSOR(double, dx)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(dx)
+XML_CHILDVALUE_ACCESSOR(double, x0)
+XML_CHILDVALUE_ACCESSOR(double, x1)
+XML_CHILDVALUE_ACCESSOR(double, x2)
+XML_CHILDVALUE_ACCESSOR(double, xmin)
+XML_CHILDVALUE_ACCESSOR(double, xmax)
+XML_CHILDVALUE_ACCESSOR(double, x_offset)
+XML_CHILDVALUE_ACCESSOR(double, dim_x)
+
+XML_CHILDVALUE_ACCESSOR(double, y)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(y)
+XML_CHILDVALUE_ACCESSOR(double, Y)
+XML_CHILDVALUE_ACCESSOR(double, dy)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(dy)
+XML_CHILDVALUE_ACCESSOR(double, y0)
+XML_CHILDVALUE_ACCESSOR(double, y1)
+XML_CHILDVALUE_ACCESSOR(double, y2)
+XML_CHILDVALUE_ACCESSOR(double, ymin)
+XML_CHILDVALUE_ACCESSOR(double, ymax)
+XML_CHILDVALUE_ACCESSOR(double, y_offset)
+XML_CHILDVALUE_ACCESSOR(double, dim_y)
+
+XML_CHILDVALUE_ACCESSOR(double, z)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(z)
+XML_CHILDVALUE_ACCESSOR(double, Z)
+XML_CHILDVALUE_ACCESSOR(double, dz)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(dz)
+XML_CHILDVALUE_ACCESSOR(double, z0)
+XML_CHILDVALUE_ACCESSOR(double, z1)
+XML_CHILDVALUE_ACCESSOR(double, z2)
+XML_CHILDVALUE_ACCESSOR(double, zmin)
+XML_CHILDVALUE_ACCESSOR(double, zmax)
+XML_CHILDVALUE_ACCESSOR(double, z_offset)
+XML_CHILDVALUE_ACCESSOR(double, dim_z)
+XML_CHILDVALUE_ACCESSOR(double, outer_z)
+XML_CHILDVALUE_ACCESSOR(double, inner_z)
+
+XML_CHILDVALUE_ACCESSOR(double, b)
+XML_CHILDVALUE_ACCESSOR(double, g)
+XML_CHILDVALUE_ACCESSOR(double, B)
+XML_CHILDVALUE_ACCESSOR(double, G)
+XML_CHILDVALUE_ACCESSOR(double, r)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(r)
+XML_CHILDVALUE_ACCESSOR(double, R)
+XML_CHILDVALUE_ACCESSOR(double, dr)
+XML_CHILDVALUE_ACCESSOR(double, rmin)
+XML_CHILDVALUE_ACCESSOR(double, rmax)
+XML_CHILDVALUE_ACCESSOR(double, rmin1)
+XML_CHILDVALUE_ACCESSOR(double, rmax1)
+XML_CHILDVALUE_ACCESSOR(double, rmin2)
+XML_CHILDVALUE_ACCESSOR(double, rmax2)
+XML_CHILDVALUE_ACCESSOR(double, radius)
+XML_CHILDVALUE_ACCESSOR(double, outer_r)
+XML_CHILDVALUE_ACCESSOR(double, distance)
+XML_CHILDVALUE_ACCESSOR(double, outer_radius)
+XML_CHILDVALUE_ACCESSOR(double, inner_r)
+XML_CHILDVALUE_ACCESSOR(double, inner_radius)
+
+XML_CHILDVALUE_ACCESSOR(double, angle)
+XML_CHILDVALUE_ACCESSOR(double, alpha)
+XML_CHILDVALUE_ACCESSOR(double, beta)
+XML_CHILDVALUE_ACCESSOR(double, gamma)
+XML_CHILDVALUE_ACCESSOR(double, delta)
+XML_CHILDVALUE_ACCESSOR(double, epsilon)
+XML_CHILDVALUE_ACCESSOR(double, theta)
+XML_CHILDVALUE_ACCESSOR(int, thetaBins)
+XML_CHILDVALUE_ACCESSOR(double, psi)
+XML_CHILDVALUE_ACCESSOR(double, phi)
+XML_CHILDVALUE_ACCESSOR(int, phiBins)
+XML_CHILDVALUE_ACCESSOR(double, phi0)
+XML_CHILDVALUE_ACCESSOR(double, phi0_offset)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(phi0)
+XML_CHILDVALUE_ACCESSOR(double, phi1)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(phi1)
+XML_CHILDVALUE_ACCESSOR(double, deltaphi)
+
+XML_CHILDVALUE_ACCESSOR(double, length)
+XML_CHILDVALUE_ACCESSOR(double, width)
+XML_CHILDVALUE_ACCESSOR(double, height)
+XML_CHILDVALUE_ACCESSOR(double, depth)
+XML_CHILDVALUE_ACCESSOR(double, offset)
+XML_CHILDVALUE_ACCESSOR_DOUBLE(offset)
+XML_CHILDVALUE_ACCESSOR(double, crossing_angle)
+XML_CHILDVALUE_ACCESSOR(double, incoming_r)
+XML_CHILDVALUE_ACCESSOR(double, outgoing_r)
+XML_CHILDVALUE_ACCESSOR(double, phi_size_max)
+XML_CHILDVALUE_ACCESSOR(double, r_size)
+
+XML_CHILDVALUE_ACCESSOR(double, gap)
+XML_CHILDVALUE_ACCESSOR(double, z_length)
+XML_CHILDVALUE_ACCESSOR(double, zhalf)
+XML_CHILDVALUE_ACCESSOR(double, phi_tilt)
+XML_CHILDVALUE_ACCESSOR(int, nphi)
+XML_CHILDVALUE_ACCESSOR(double, rc)
+XML_CHILDVALUE_ACCESSOR(int, nz)
+XML_CHILDVALUE_ACCESSOR(double, zstart)
+XML_CHILDVALUE_ACCESSOR(double, start)
+XML_CHILDVALUE_ACCESSOR(double, end)
+XML_CHILDVALUE_ACCESSOR(double, thickness)
+XML_CHILDVALUE_ACCESSOR(int, numsides)
+XML_CHILDVALUE_ACCESSOR(int, nsides)
+XML_CHILDVALUE_ACCESSOR(int, nsides_inner)
+XML_CHILDVALUE_ACCESSOR(int, nsides_outer)
+XML_CHILDVALUE_ACCESSOR(int, number)
+XML_CHILDVALUE_ACCESSOR(int, repeat)
+XML_CHILDVALUE_ACCESSOR(bool, reflect)
+XML_CHILDVALUE_ACCESSOR_BOOL(reflect)
+
+XML_CHILDVALUE_ACCESSOR(int, nmodules)
+XML_CHILDVALUE_ACCESSOR(int, nModules)
+XML_CHILDVALUE_ACCESSOR(int, RowID)
+XML_CHILDVALUE_ACCESSOR(int, nPads)
+XML_CHILDVALUE_ACCESSOR(double, moduleHeight)
+XML_CHILDVALUE_ACCESSOR(double, moduleWidth)
+XML_CHILDVALUE_ACCESSOR(double, modulePosX)
+XML_CHILDVALUE_ACCESSOR(double, modulePosY)
+XML_CHILDVALUE_ACCESSOR(double, modulePitch)
+XML_CHILDVALUE_ACCESSOR(double, rowPitch)
+XML_CHILDVALUE_ACCESSOR(double, padPitch)
+XML_CHILDVALUE_ACCESSOR(double, rowHeight)
+XML_CHILDVALUE_ACCESSOR(double, inner_field)
+XML_CHILDVALUE_ACCESSOR(double, outer_field)
+XML_CHILDVALUE_ACCESSOR(int, type)
+
+XML_CHILDVALUE_ACCESSOR(bool, visible)
+XML_CHILDVALUE_ACCESSOR(bool, show_daughters)
+#if 0
+XML_CHILDVALUE_ACCESSOR(double,)
+XML_CHILDVALUE_ACCESSOR(double,)
+XML_CHILDVALUE_ACCESSOR(double,)
+XML_CHILDVALUE_ACCESSOR(double,)
+#endif
+
+
+std::string ChildValue::padType() const {
+  return XML_CHILDVALUE_childValue(pads,std::string);
+}
+
+std::string ChildValue::nameStr() const {
+  return XML_CHILDVALUE_childValue(name,std::string);
+}
+
+std::string ChildValue::refStr() const {
+  return XML_CHILDVALUE_childValue(ref,std::string);
+}
+
+std::string ChildValue::typeStr() const {
+  return XML_CHILDVALUE_childValue(type,std::string);
+}
+
+/// Access "value" attribute as STL std::string
+std::string ChildValue::valueStr() const   {
+  return XML_CHILDVALUE_childValue(value,std::string);
+}
+
+std::string ChildValue::regionStr() const {
+  XML_CHILDVALUE_childValueDefault(region,std::string,std::string());
+}
+
+std::string ChildValue::limitsStr() const {
+  XML_CHILDVALUE_childValueDefault(limits,std::string,std::string());
+}
+
+std::string ChildValue::visStr() const {
+  XML_CHILDVALUE_childValueDefault(vis,std::string,std::string());
+}
+
+std::string ChildValue::readoutStr() const {
+  XML_CHILDVALUE_childValueDefault(readout,std::string,std::string());
+}
+
+std::string ChildValue::moduleStr() const {
+  XML_CHILDVALUE_childValueDefault(module,std::string,std::string());
+}
