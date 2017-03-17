@@ -13,7 +13,10 @@
 
 // Framework include files
 #include "JSON/Detector.h"
+#include "JSON/Dimension.inl"
 
 using namespace DD4hep::JSON;
-#include "XML/detail/Detector.imp"
 
+// Instantiate here the concrete implementations
+#include "XML/detail/Dimension.imp"
+#include "XML/detail/Detector.imp"

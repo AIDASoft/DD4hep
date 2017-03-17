@@ -12,6 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "JSON/Dimension.inl"
-// Instantiate here the concrete implementations
+#include "XML/XMLDetector.h"
+#include "XML/XMLDimension.inl"
+#include "XML/XMLChildValue.inl"
+
+using namespace DD4hep::XML;
+#include "XML/detail/Detector.imp"
 #include "XML/detail/Dimension.imp"
+#include "XML/detail/ChildValue.imp"
