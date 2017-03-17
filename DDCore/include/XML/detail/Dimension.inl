@@ -11,12 +11,10 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_XML_DETAIL_DIMENSION_INL
-#define DD4HEP_XML_DETAIL_DIMENSION_INL
-
 /** 
  *  Note: Do NEVER include this file directly!
  *
+ *  Also NO header guards!
  *  Include XML/XMLDimension.h or JSON/Dimension.h !
  */
 
@@ -51,5 +49,3 @@
 #define XML_CHILD_ACCESSOR_XML_DIM(name)                        		\
     DD4hep::DIMENSION_NS::Dimension DD4hep::DIMENSION_NS::Dimension::name(bool throw_if_not_present) const {		\
     return m_element.child(_DD4hep_Unicode_Item(name),throw_if_not_present); }
-
-#endif /* DD4HEP_XML_DETAIL_DIMENSION_INL  */

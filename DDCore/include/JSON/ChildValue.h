@@ -10,22 +10,24 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_DIMENSION_H
-#define DD4HEP_JSON_DIMENSION_H
+#ifndef DD4HEP_JSON_CHILDVALUE_H
+#define DD4HEP_JSON_CHILDVALUE_H
 
 // Framework include files
-#include "JSON/Elements.h"
-#include "JSON/Tags.h"
+#include "JSON/Dimension.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
+  class NamedObject;
+
   /// Namespace for the AIDA detector description toolkit supporting JSON utilities
   namespace JSON {
 
-    /// Re-use the defined interface for the XML data access
-#include "XML/detail/Dimension.h"
+    /// Include the implementation in the proper namespace
+#include "XML/detail/ChildValue.h"
 
-  }       /* End namespace JSON        */
-}         /* End namespace DD4hep      */
-#endif    /* DD4HEP_JSON_DIMENSION_H   */
+  }       /* End namespace JSON         */
+}         /* End namespace DD4hep       */
+#endif    /* DD4HEP_JSON_CHILDVALUE_H   */
