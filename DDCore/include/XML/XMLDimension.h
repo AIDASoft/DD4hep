@@ -17,15 +17,8 @@
 #include "XML/XMLElements.h"
 #include "XML/XMLTags.h"
 
-/// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
-
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML {
-
-    /// Re-use the defined interface for the XML data access
+#define DD4HEP_DIMENSION_NS XML
 #include "XML/detail/Dimension.h"
-    
-  }       /* End namespace XML           */
-}         /* End namespace DD4hep        */
+#undef  DD4HEP_DIMENSION_NS
+
 #endif    /* DD4HEP_XML_XMLDIMENSION_H   */

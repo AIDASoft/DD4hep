@@ -16,18 +16,8 @@
 // Framework include files
 #include "XML/XMLDimension.h"
 
-/// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
-
-  // Forward declarations
-  class NamedObject;
-
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML {
-
-    /// Include the implementation in the proper namespace
+#define DD4HEP_DIMENSION_NS XML
 #include "XML/detail/Detector.h"
+#undef  DD4HEP_DIMENSION_NS
 
-  }
-}         /* End namespace DD4hep    */
 #endif    /* DD4HEP_XMLDETECTOR_H    */

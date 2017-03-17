@@ -5,6 +5,15 @@ DD4hep  ----  Release Notes
 
 
 
+ Markus Frank 2017-03-17
+ -- Add a new input type by parsing JSON files. The basic json interpreter
+    is present and offers essentially the same interface as the XML persers.
+    The integration to the compact dialect however is not yet done.
+    It should become however a valid alternative to parsing XML files
+    with a small maintenance overhead, since the enhancement implementation
+    present in XMLDimesion.h, XMLDetector.h and XMLChildValue.h is shared
+    and instantiated for both.
+
  Markus Frank 2017-03-10
  -- New round to kill coverity deficiencies.
  -- Add exception try-catch clauses around various main programs in UtilityApps

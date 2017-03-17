@@ -22,6 +22,7 @@
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBTags.h"
 
+#define DD4HEP_DIMENSION_NS XML
 using namespace DD4hep::XML;
 
 XML_ATTR_NS_ACCESSOR_DOUBLE(DD4hep::DDDB::dddb_dim_t, alp1)

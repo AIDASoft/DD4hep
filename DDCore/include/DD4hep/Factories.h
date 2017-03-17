@@ -17,7 +17,6 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/NamedObject.h"
-#include "XML/XMLElements.h"
 
 // C/C++ include files
 #include <cstdarg>
@@ -25,9 +24,14 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  /// Namespace for the AIDA detector description toolkit supporting JSON utilities
+  namespace JSON {
+    class Handle_t;
+  }
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
     class Handle_t;
+    class RefElement;
   }
   class NamedObject;
 
@@ -105,7 +109,7 @@ namespace DD4hep {
    */
   template <typename T> class XMLElementFactory : public PluginFactoryBase {
   public:
-    static ref_t create(Geometry::LCDD& lcdd, xml_h e);
+    static ref_t create(Geometry::LCDD& lcdd, XML::Handle_t e);
   };
 
   ///  Read an arbitrary XML document and analyze it's content
@@ -118,7 +122,7 @@ namespace DD4hep {
    */
   template <typename T> class XMLDocumentReaderFactory : public PluginFactoryBase {
   public:
-    static long create(Geometry::LCDD& lcdd, xml_h e);
+    static long create(Geometry::LCDD& lcdd, XML::Handle_t e);
   };
 
   /// Read an arbitrary XML document and analyze it's content
@@ -131,7 +135,7 @@ namespace DD4hep {
    */
   template <typename T> class XMLConversionFactory : public PluginFactoryBase {
   public:
-    static long create(Geometry::LCDD& lcdd, ref_t& handle, xml_h element);
+    static long create(Geometry::LCDD& lcdd, XML::RefElement& handle, XML::Handle_t element);
   };
 
   /// Standard factory to create Detector elements from the compact XML representation.
@@ -142,9 +146,22 @@ namespace DD4hep {
    *  \date    2012/07/31
    *  \ingroup DD4HEP_GEOMETRY
    */
-  template <typename T> class DetElementFactory : public PluginFactoryBase {
+  template <typename T> class XmlDetElementFactory : public PluginFactoryBase {
   public:
     static Geometry::Ref_t create(Geometry::LCDD& lcdd, XML::Handle_t e, Geometry::Ref_t sens);
+  };
+
+  /// Standard factory to create Detector elements from the compact XML representation.
+  /**
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    2012/07/31
+   *  \ingroup DD4HEP_GEOMETRY
+   */
+  template <typename T> class JsonDetElementFactory : public PluginFactoryBase {
+  public:
+    static Geometry::Ref_t create(Geometry::LCDD& lcdd, JSON::Handle_t e, Geometry::Ref_t sens);
   };
 }
 
@@ -154,10 +171,11 @@ namespace {
   template <typename P, typename S> class Factory;
 
   struct ns  {
-    typedef DD4hep::NamedObject     Named;
-    typedef DD4hep::Geometry::LCDD  LCDD;
-    typedef DD4hep::XML::Handle_t   xml_h;
-    typedef DD4hep::Geometry::Ref_t ref_t;
+    typedef DD4hep::NamedObject       Named;
+    typedef DD4hep::Geometry::LCDD    LCDD;
+    typedef DD4hep::XML::Handle_t     xml_h;
+    typedef DD4hep::JSON::Handle_t    json_h;
+    typedef DD4hep::Geometry::Ref_t   ref_t;
     typedef DD4hep::Geometry::SegmentationObject SegmentationObject;
     typedef DD4hep::DDSegmentation::BitField64   BitField64;
   };
@@ -184,23 +202,26 @@ namespace {
   {    return make_return<long>(DD4hep::XMLDocumentReaderFactory<P>::create(*a0,*a1));  }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(ns::Named*,ns::LCDD*,ns::xml_h*,ns::ref_t*)
-  {    return DD4hep::DetElementFactory<P>::create(*a0,*a1,*a2).ptr();                  }
+  {    return DD4hep::XmlDetElementFactory<P>::create(*a0,*a1,*a2).ptr();               }
+
+  DD4HEP_PLUGIN_FACTORY_ARGS_3(ns::Named*,ns::LCDD*,ns::json_h*,ns::ref_t*)
+  {    return DD4hep::JsonDetElementFactory<P>::create(*a0,*a1,*a2).ptr();              }
 }
 
 #define DECLARE_DETELEMENT_FACTORY(x)               namespace DD4hep    \
-  { DD4HEP_PLUGINSVC_FACTORY(x,x,DD4hep::NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__) }
+  { DD4HEP_PLUGINSVC_FACTORY(x,x,DD4hep::NamedObject*(ns::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__) }
 #define DECLARE_NAMESPACE_DETELEMENT_FACTORY(n,x)   namespace DD4hep    \
-  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__)      }
+  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,NamedObject*(ns::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__)      }
 #define DECLARE_NAMED_APPLY_FACTORY(n,x)            namespace DD4hep    \
-  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,long(Geometry::LCDD*,int, char**),__LINE__) }
+  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,long(ns::LCDD*,int, char**),__LINE__) }
 #define DECLARE_NAMED_TRANSLATION_FACTORY(n,x)      namespace DD4hep    \
-  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(Geometry::LCDD*),__LINE__) }
+  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(ns::LCDD*),__LINE__) }
 #define DECLARE_NAMED_XMLELEMENT_FACTORY(n,x)       namespace DD4hep    \
-  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(Geometry::LCDD*,XML::Handle_t*),__LINE__) }
+  { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(ns::LCDD*,XML::Handle_t*),__LINE__) }
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)       namespace DD4hep    \
   { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::*(),__LINE__) }
 
-// Call function of the type [Geometry::SegmentationObject (*func)(Geometry::LCDD*,DDSegmentation::BitField64*)]
+// Call function of the type [Geometry::SegmentationObject (*func)(ns::LCDD*,DDSegmentation::BitField64*)]
 #define DECLARE_SEGMENTATION(name,func)        DD4HEP_OPEN_PLUGIN(DD4hep,name)   { \
     template <> Geometry::SegmentationObject*                           \
       SegmentationFactory<name>::create(DDSegmentation::BitField64* d) { return func(d); } \
@@ -209,44 +230,52 @@ namespace {
 
 // Call function of the type [long (*func)(const char* arg)]
 #define DECLARE_APPLY(name,func)        DD4HEP_OPEN_PLUGIN(DD4hep,name)   { \
-    template <> long ApplyFactory<name>::create(Geometry::LCDD& l,int n,char** a) {return func(l,n,a);} \
-    DD4HEP_PLUGINSVC_FACTORY(name,name,long(Geometry::LCDD*,int,char**),__LINE__)}
+    template <> long ApplyFactory<name>::create(ns::LCDD& l,int n,char** a) {return func(l,n,a);} \
+    DD4HEP_PLUGINSVC_FACTORY(name,name,long(ns::LCDD*,int,char**),__LINE__)}
 
 // Call function of the type [void* (*func)(const char* arg)]
 #define DECLARE_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name) { \
     template <> void* ConstructionFactory<name>::create(const char* n) { return func(n);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,void*(const char*),__LINE__) }
 
-// Call function of the type [void* (*func)(Geometry::LCDD& lcdd, int argc,char** argv)]
+// Call function of the type [void* (*func)(ns::LCDD& lcdd, int argc,char** argv)]
 #define DECLARE_LCDD_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name) { \
-    template <> void* LCDDConstructionFactory<name>::create(Geometry::LCDD& l, int n,char** a) { return func(l,n,a);} \
-    DD4HEP_PLUGINSVC_FACTORY(name,name,void*(Geometry::LCDD*,int,char**),__LINE__) }
+    template <> void* LCDDConstructionFactory<name>::create(ns::LCDD& l, int n,char** a) { return func(l,n,a);} \
+    DD4HEP_PLUGINSVC_FACTORY(name,name,void*(ns::LCDD*,int,char**),__LINE__) }
 
-// Call function of the type [void* (*func)(Geometry::LCDD& lcdd)]
+// Call function of the type [void* (*func)(ns::LCDD& lcdd)]
 #define DECLARE_TRANSLATION(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name)  { \
-    template <> Geometry::Ref_t TranslationFactory<name>::create(Geometry::LCDD& l) {return func(l);} \
+    template <> Geometry::Ref_t TranslationFactory<name>::create(ns::LCDD& l) {return func(l);} \
     DECLARE_NAMED_TRANSLATION_FACTORY(Geometry,name)  }
 
-// Call function of the type [void* (*func)(Geometry::LCDD& lcdd, xml_h handle)]
+// Call function of the type [void* (*func)(ns::LCDD& lcdd, xml_h handle)]
 #define DECLARE_XMLELEMENT(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,xml_element_##name)  {\
-    template <> Geometry::Ref_t XMLElementFactory<xml_element_##name>::create(Geometry::LCDD& l,xml_h e) {return func(l,e);} \
-    DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*),__LINE__)  }
+    template <> Geometry::Ref_t XMLElementFactory<xml_element_##name>::create(ns::LCDD& l,ns::xml_h e) {return func(l,e);} \
+    DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,NamedObject*(ns::LCDD*,ns::xml_h*),__LINE__)  }
 
-// Call function of the type [long (*func)(Geometry::LCDD& lcdd, xml_h handle)]
+// Call function of the type [long (*func)(ns::LCDD& lcdd, xml_h handle)]
 #define DECLARE_XML_DOC_READER(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,xml_document_##name)  { \
-    template <> long XMLDocumentReaderFactory<xml_document_##name>::create(Geometry::LCDD& l,xml_h e) {return func(l,e);} \
-    DD4HEP_PLUGINSVC_FACTORY(xml_document_##name,name##_XML_reader,long(Geometry::LCDD*,XML::Handle_t*),__LINE__)  }
+    template <> long XMLDocumentReaderFactory<xml_document_##name>::create(ns::LCDD& l,ns::xml_h e) {return func(l,e);} \
+    DD4HEP_PLUGINSVC_FACTORY(xml_document_##name,name##_XML_reader,long(ns::LCDD*,ns::xml_h*),__LINE__)  }
 
-// Call function of the type [NamedObject* (*func)(Geometry::LCDD& lcdd, xml_h handle, ref_t reference)]
+// Call function of the type [NamedObject* (*func)(ns::LCDD& lcdd, xml_h handle, ref_t reference)]
 #define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)  DD4HEP_OPEN_PLUGIN(DD4hep,det_element_##name) {\
-    template <> Geometry::Ref_t DetElementFactory< det_element_##name >::create(Geometry::LCDD& l,xml_h e,ref_t h) \
+    template <> Geometry::Ref_t XmlDetElementFactory< det_element_##name >::create(ns::LCDD& l,ns::xml_h e,ns::ref_t h) \
     { if (deprecated) warning_deprecated_xml_factory(#name); return func(l,e,h);} \
-    DD4HEP_PLUGINSVC_FACTORY(det_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__)  }
+    DD4HEP_PLUGINSVC_FACTORY(det_element_##name,name,NamedObject*(ns::LCDD*,ns::xml_h*,Geometry::Ref_t*),__LINE__)  }
+
+// Call function of the type [NamedObject* (*func)(ns::LCDD& lcdd, json_h handle, ref_t reference)]
+#define DECLARE_JSON_PROCESSOR_BASIC(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,det_element_##name) { \
+    template <> Geometry::Ref_t JsonDetElementFactory< det_element_##name >::create(ns::LCDD& l,ns::json_h e,ns::ref_t h) \
+    { return func(l,e,h);}                                              \
+    DD4HEP_PLUGINSVC_FACTORY(det_element_##name,name,NamedObject*(ns::LCDD*,ns::json_h*,ns::ref_t*),__LINE__)  }
 
 #define DECLARE_XML_PROCESSOR(name,func)          DECLARE_XML_PROCESSOR_BASIC(name,func,0)
 #define DECLARE_SUBDETECTOR(name,func)            DECLARE_XML_PROCESSOR_BASIC(name,func,0)
 #define DECLARE_DETELEMENT(name,func)             DECLARE_XML_PROCESSOR_BASIC(name,func,0)
 #define DECLARE_DEPRECATED_DETELEMENT(name,func)  DECLARE_XML_PROCESSOR_BASIC(name,func,1)
+
+#define DECLARE_JSON_DETELEMENT(name,func)        DECLARE_JSON_PROCESSOR_BASIC(name,func)
 
 #endif // DD4HEP_FACTORIES_H
 

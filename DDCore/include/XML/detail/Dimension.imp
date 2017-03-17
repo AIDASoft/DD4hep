@@ -185,43 +185,43 @@ XML_CHILD_ACCESSOR_XML_DIM(tubs)
 XML_CHILD_ACCESSOR_XML_DIM(staves)
 XML_CHILD_ACCESSOR_XML_DIM(beampipe)
 
-std::string DD4hep::DIMENSION_NS::Dimension::padType() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::padType() const {
   return m_element.attr < std::string > (_U(pads));
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::nameStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::nameStr() const {
   return m_element.attr < std::string > (_U(name));
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::refStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::refStr() const {
   return m_element.attr < std::string > (_U(ref));
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::typeStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::typeStr() const {
   return m_element.attr < std::string > (_U(type));
 }
 
 /// Access "value" attribute as STL std::string
-std::string DD4hep::DIMENSION_NS::Dimension::valueStr() const   {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::valueStr() const   {
   return m_element.attr < std::string > (_U(value));
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::regionStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::regionStr() const {
   return m_element.hasAttr(_U(region)) ? m_element.attr < std::string > (_U(region)) : std::string();
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::limitsStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::limitsStr() const {
   return m_element.hasAttr(_U(limits)) ? m_element.attr < std::string > (_U(limits)) : std::string();
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::visStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::visStr() const {
   return m_element.hasAttr(_U(vis)) ? m_element.attr < std::string > (_U(vis)) : std::string();
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::readoutStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::readoutStr() const {
   return m_element.hasAttr(_U(readout)) ? m_element.attr < std::string > (_U(readout)) : std::string();
 }
 
-std::string DD4hep::DIMENSION_NS::Dimension::moduleStr() const {
+std::string DD4hep::DD4HEP_DIMENSION_NS::Dimension::moduleStr() const {
   return m_element.hasAttr(_U(module)) ? m_element.attr < std::string > (_U(module)) : std::string();
 }

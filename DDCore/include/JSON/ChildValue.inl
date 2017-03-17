@@ -10,15 +10,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_JSONCHILDVALUE_INL
 #define DD4HEP_JSONCHILDVALUE_INL
 
-// Configuration definitions
-#define CHILDVALUE_NS JSON
-
 // Framework include files
 #include "JSON/ChildValue.h"
+
+#define DD4HEP_DIMENSION_NS JSON
 #include "XML/detail/ChildValue.inl"
+#undef  DD4HEP_DIMENSION_NS
 
 #endif /* DD4HEP_JSONCHILDVALUE_INL  */

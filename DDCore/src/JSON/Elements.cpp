@@ -42,30 +42,39 @@ namespace {
 
 namespace {
 
+  // This should ensure we are not passing temporaries of std::string and then
+  // returning the "const char*" content calling .c_str()
+  const ptree::data_type& value_data(const ptree& entry)  {
+    return entry.data();
+  }
+
   JsonElement* node_first(JsonElement* e, const char* tag) {
     if ( e )  {
       string t(tag);
       if ( t == "*" )  {
-        auto i = e->second.begin();
+        ptree::iterator i = e->second.begin();
         return i != e->second.end() ? &(*i) : 0;
       }
-      auto i = e->second.find(t);
+      ptree::assoc_iterator i = e->second.find(t);
       return i != e->second.not_found() ? &(*i) : 0;
     }
     return 0;
   }
+
   size_t node_count(JsonElement* e, const string& t) {
     return e ? (t=="*" ? e->second.size() : e->second.count(t)) : 0;
   }
-}
 
-namespace {
   Attribute attribute_node(JsonElement* n, const char* t)  {
-    auto i = n->second.find(t);
-    return i != n->second.not_found() ? &(*i) : 0;
+    if ( n )  {
+      auto i = n->second.find(t);
+      return i != n->second.not_found() ? &(*i) : 0;
+    }
+    return 0;
   }
+
   const char* attribute_value(Attribute a) {
-    return a->second.get_value<std::string>().c_str();
+    return value_data(a->second).c_str();
   }
 }
 
@@ -321,17 +330,17 @@ NodeList& NodeList::operator=(const NodeList& l) {
 
 /// Unicode text access to the element's tag. This must be wrong ....
 const char* Handle_t::rawTag() const {
-  return (*m_node).first.c_str();
+  return m_node->first.c_str();
 }
 
 /// Unicode text access to the element's text
 const char* Handle_t::rawText() const {
-  return (*m_node).second.get_value<string>().c_str();
+  return value_data(m_node->second).c_str();
 }
 
 /// Unicode text access to the element's value
 const char* Handle_t::rawValue() const {
-  return (*m_node).second.get_value<string>().c_str();
+  return value_data(m_node->second).c_str();
 }
 
 /// Access attribute pointer by the attribute's unicode name (no exception thrown if not present)
@@ -407,7 +416,7 @@ Attribute Handle_t::attr_ptr(const char* t) const {
 /// Access attribute name (throws exception if not present)
 const char* Handle_t::attr_name(const Attribute a) const {
   if (a) {
-    return (*a).first.c_str();
+    return a->first.c_str();
   }
   throw runtime_error("Attempt to access invalid XML attribute object!");
 }
@@ -428,10 +437,19 @@ const char* Handle_t::attr_value_nothrow(const char* attr_tag) const {
   return a ? attribute_value(a) : 0;
 }
 
+
+/// Access the ROOT eleemnt of the DOM document
+Handle_t Document::root() const   {
+  if ( m_doc )   {
+    return m_doc;
+  }
+  throw runtime_error("Document::root: Invalid handle!");
+}
+
 /// Assign new document. Old document is dropped.
 DocumentHolder& DocumentHolder::assign(DOC d)   {
-  if (m_doc)   {
-    printout(DEBUG,"DocumentHolder","+++ Release DOM document....");
+  if ( m_doc )   {
+    printout(DEBUG,"DocumentHolder","+++ Release JSON document....");
     delete m_doc;
   }
   m_doc = d;
@@ -439,7 +457,7 @@ DocumentHolder& DocumentHolder::assign(DOC d)   {
 }
 
 /// Standard destructor - releases the document
-DocumentHolder::~DocumentHolder() {
+DocumentHolder::~DocumentHolder()   {
   assign(0);
 }
 
