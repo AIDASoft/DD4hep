@@ -19,7 +19,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm", "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "0*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "0*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -42,7 +42,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "10*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "10*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -65,7 +65,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "20*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "20*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -88,7 +88,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "30*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "30*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -111,7 +111,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "40*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "40*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -134,7 +134,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "50*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "50*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -157,7 +157,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "60*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "60*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -180,7 +180,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "70*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "70*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -203,7 +203,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "80*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "80*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
@@ -226,7 +226,7 @@
         "vis":      "DetVis",
         "readout":  "MyLHCBdetector1Hits",
         "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
-        "position":   { "z": "90*mm", "y": "0*cm", "x": "0*cm" },
+        "position":   { "z": "90*mm", "y": "0*cm",  "x": "0*cm" },
         "module": {
             "name":     "pixel",
             "type:":    "MiniTelPixel",
