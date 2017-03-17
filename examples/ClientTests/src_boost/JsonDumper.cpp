@@ -15,23 +15,22 @@
 // Framework include files
 #include "JSON/Elements.h"
 #include "JSON/DocumentHandler.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 
-using namespace std;
 using namespace DD4hep;
-using namespace DD4hep::JSON;
-using namespace DD4hep::Geometry;
 
-static long json_dump(LCDD& /* lcdd */, int argc, char** argv)   {
+static long json_dump(Geometry::LCDD& /* lcdd */, int argc, char** argv)   {
   if ( argc < 1 )  {
     ::printf("DD4hep_JsonDumper <file>                               \n");
     exit(EINVAL);
   }
-  DocumentHolder doc(JSON::DocumentHandler().load(argv[0]));
+  std::string fname = argv[0];
+  JSON::DocumentHolder doc(JSON::DocumentHandler().load(fname));
   dumpTree(doc.root());
+  printout(INFO,"JsonDumper","+++ Successfully dumped json input: %s.",fname.c_str());
   return 1;
 }
-
 DECLARE_APPLY(DD4hep_JsonDumper,json_dump)
 
 #endif
