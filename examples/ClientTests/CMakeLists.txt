@@ -33,7 +33,8 @@ dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoDisplay
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel_json.xml -volmgr -destroy -load_only
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel_json.xml
+  -volmgr -destroy -load_only
   REGEX_PASS "Successfully processed JSON input"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
