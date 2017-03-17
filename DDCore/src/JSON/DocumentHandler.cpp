@@ -34,6 +34,9 @@ DocumentHandler::~DocumentHandler()   {
 Document DocumentHandler::load(const string& fname) const   {
   string fn = fname;
   if ( fname.find("://") != string::npos ) fn = fname.substr(fname.find("://")+3);
+  string cmd = "cat "+fn;
+  ::printf("\n\n+++++ Dump json file: %s\n\n\n",fn.c_str());
+  ::system(cmd.c_str());
   unique_ptr<JsonElement> doc(new JsonElement(fn, ptree()));
   boost::property_tree::read_json(fn,doc->second);
   return doc.release();
