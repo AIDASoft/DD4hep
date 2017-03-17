@@ -10,19 +10,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_DETAIL_DETECTOR_H
-#define DD4HEP_XML_DETAIL_DETECTOR_H
     
 /** 
  *  Note: Do NEVER include this file directly!
  *
+ *  Also NO header guards!
  *  Include XML/XMLDetector.h or JSON/Detector.h !
  */
 
-// Framework includes
-#include "XML/detail/Dimension.h"
-
-/// XML Handle class extending the XML handle Dimension
+/// Generic Handle class extending the generic handle Dimension
 /**
  *  Helper class to access any field in a xml tag.
  *  Specialized for attributes of a detector sub-element.
@@ -90,5 +86,3 @@ struct DetElement: public Dimension {
     return m_element.attr < T > (tag_value);
   }
 };
-
-#endif    /* DD4HEP_XML_DETAIL_DETECTOR_H    */

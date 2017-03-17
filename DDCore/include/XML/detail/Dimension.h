@@ -10,12 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_DETAIL_DIMENSION_H
-#define DD4HEP_XML_DETAIL_DIMENSION_H
 
 /** 
  *  Note: Do NEVER include this file directly!
  *
+ *  Also NO header guards!
  *  Include XML/XMLDimension.h or JSON/Dimension.h !
  */
 
@@ -564,5 +563,3 @@ struct Dimension: public Element {
   /// Access limits attribute as STL string. If not present empty return empty string
   std::string limitsStr() const;
 };
-
-#endif    /* DD4HEP_XML_DETAIL_DIMENSION_H   */

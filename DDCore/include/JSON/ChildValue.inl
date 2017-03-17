@@ -11,14 +11,14 @@
 //
 //==========================================================================
 
+#ifndef DD4HEP_JSONCHILDVALUE_INL
+#define DD4HEP_JSONCHILDVALUE_INL
+
+// Configuration definitions
+#define CHILDVALUE_NS JSON
+
 // Framework include files
-#include "XML/XMLDetector.h"
-#include "XML/XMLDimension.inl"
-#include "XML/XMLChildValue.inl"
+#include "JSON/ChildValue.h"
+#include "XML/detail/ChildValue.inl"
 
-using namespace DD4hep::XML;
-
-// Instantiate here the concrete implementations
-#include "XML/detail/Detector.imp"
-#include "XML/detail/Dimension.imp"
-#include "XML/detail/ChildValue.imp"
+#endif /* DD4HEP_JSONCHILDVALUE_INL  */
