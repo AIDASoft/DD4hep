@@ -17,14 +17,8 @@
 // Framework include files
 #include "XML/XMLChildValue.h"
 
-/// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
-
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML {
-
+#define DD4HEP_DIMENSION_NS XML
 #include "XML/detail/ChildValue.inl"
-    
-  }       /* End namespace XML            */
-}         /* End namespace DD4hep         */
+#undef  DD4HEP_DIMENSION_NS
+
 #endif    /* DD4HEP_XML_XMLCHILDVALUE_INL */

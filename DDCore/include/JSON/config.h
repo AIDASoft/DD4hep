@@ -15,7 +15,6 @@
 
 #define DD4HEP_USE_BOOST_JSON 1
 
-#include "boost/property_tree/json_parser.hpp"
 #include "boost/property_tree/ptree.hpp"
 
 /// Namespace for the AIDA detector description toolkit

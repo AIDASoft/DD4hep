@@ -10,11 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4hep_DETECTOR_DETFACTORYHELPER_H
-#define DD4hep_DETECTOR_DETFACTORYHELPER_H
+#ifndef DD4HEP_JSON_CONVERSIONS_H
+#define DD4HEP_JSON_CONVERSIONS_H
 
-/** Obsolete header. Better use XML/Helper.h instead !  */
+#define DD4HEP_CONVERSION_NS JSON
+#include "XML/detail/Conversions.h"
+#undef  DD4HEP_CONVERSION_NS
 
-#include "XML/Helper.h"
-
-#endif // DD4hep_DETECTOR_DETFACTORYHELPER_H
+#endif /* DD4HEP_JSON_CONVERSIONS_H  */

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+       xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="Sensor"
+	title="Sensor for New experiment"
+        author="Anastasia Karachaliou"
+        status="development"
+        url="/afs/cern.ch/user/a/akaracha/workspace/MyExperiment/DetDesc/xmlDDescr/geometry_myexper.xml"
+        version= "v0r1">
+    <comment>simple Detector as a small box</comment>
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side"             value="2*m"/>
+    <constant name="world_x"                value="world_side/2"/>
+    <constant name="world_y"                value="world_side/2"/>
+    <constant name="world_z"                value="world_side/2"/>
+    <constant name="CrossingAngle"          value="0.020"/>
+  </define>
+
+  <materials>
+  </materials>
+
+
+  <display>
+    <vis name="DetVis"  alpha="1.0"    r="0"   g="1.0" b="0.0"  showDaughters="true"   visible="true" />
+    <vis name="ModVis"  alpha="1.0"   r="1"   g="0.0" b="0.0"  showDaughters="true"  visible="false" />
+
+  </display>
+
+
+  <include type="json" ref="MiniTel.json"/>
+
+  <readouts>
+    <readout name="MyLHCBdetector1Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector2Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector3Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector4Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector5Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector6Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector7Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector8Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector9Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+    <readout name="MyLHCBdetector10Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,x:12:-6,y:24:-6</id>
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="0.0*tesla"
+	   outer_field="0.0*tesla" 
+	   zmax="2*m"
+	   outer_radius="2*m">
+    </field>
+  </fields>
+
+</lccdd>

@@ -11,26 +11,233 @@
 //
 //==========================================================================
 {
-    "detectors":  {
-        "detector1":  {
-            "id":        1,
-            "type":     "MiniTelPixel",
+    "detector":  {
+        "id":       1,
+        "name":     "detector1",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm", "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "0*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
             "material": "Silicon",
-            "vis":      "DetVis",
-            "readout":  "MyLHCBdetector1Hits",
-            "dimensions": { "z": "1*mm", "y": "10*cm", "x": "10*cm" },
-            "module": {
-                "name":     "pixel",
-                "type:":    "MiniTelPixel",
-                "material": "Silicon",
-                "x":        "6*mm",
-                "y":        "6*mm",
-                "z":        "1*mm",
-                "vis":      "ModVis",
-                "alpha":    "-2.*radian",
-                "beta":     "-2.*radian",
-                "gamma":    "-0.*radian"
-            }
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       2,
+        "name":     "detector2",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "10*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       3,
+        "name":     "detector3",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "20*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       4,
+        "name":     "detector4",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "30*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       5,
+        "name":     "detector5",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "40*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       6,
+        "name":     "detector6",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "50*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       7,
+        "name":     "detector7",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "60*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       8,
+        "name":     "detector8",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "70*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       9,
+        "name":     "detector9",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "80*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
+        }
+    },
+
+    "detector":  {
+        "id":       10,
+        "name":     "detector10",
+        "type":     "MiniTelPixel_json",
+        "material": "Silicon",
+        "vis":      "DetVis",
+        "readout":  "MyLHCBdetector1Hits",
+        "dimensions": { "z": "1*mm",  "y": "10*cm", "x": "10*cm" },
+        "position":   { "z": "90*mm", "y": "0*cm", "x": "0*cm" },
+        "module": {
+            "name":     "pixel",
+            "type:":    "MiniTelPixel",
+            "material": "Silicon",
+            "x":        "6*mm",
+            "y":        "6*mm",
+            "z":        "1*mm",
+            "vis":      "ModVis",
+            "alpha":    "-2.*radian",
+            "beta":     "-2.*radian",
+            "gamma":    "-0.*radian"
         }
     }
 }

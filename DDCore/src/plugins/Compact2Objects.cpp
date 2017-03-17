@@ -47,6 +47,7 @@ namespace DD4hep {
     struct GdmlFile;
     struct Property;
     struct XMLFile;
+    struct JsonFile;
     struct AlignmentFile;
     struct DetElementInclude {};
   }
@@ -65,6 +66,7 @@ namespace DD4hep {
   template <> void Converter<SensitiveDetector>::operator()(xml_h element) const;
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
+  template <> void Converter<JsonFile>::operator()(xml_h element) const;
   template <> void Converter<XMLFile>::operator()(xml_h element) const;
   template <> void Converter<AlignmentFile>::operator()(xml_h element) const;
   template <> void Converter<Header>::operator()(xml_h element) const;
@@ -857,7 +859,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
   }
 }
 
-void setChildTitles(const pair<string, DetElement>& e) {
+static void setChildTitles(const pair<string, DetElement>& e) {
   DetElement parent = e.second.parent();
   const DetElement::Children& children = e.second.children();
   if (::strlen(e.second->GetTitle()) == 0) {
@@ -958,6 +960,14 @@ template <> void Converter<GdmlFile>::operator()(xml_h element) const {
   xml_coll_t(materials, _U(material)).for_each(Converter<Material>(this->lcdd));
 }
 
+/// Read material entries from a seperate file in one of the include sections of the geometry
+template <> void Converter<JsonFile>::operator()(xml_h element) const {
+  string base = XML::DocumentHandler::system_directory(element);
+  string file = element.attr<string>(_U(ref));
+  vector<char*>  argv{&file[0],&base[0]};
+  lcdd.apply("DD4hep_JsonProcessor",int(argv.size()), &argv[0]);
+}
+
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<XMLFile>::operator()(xml_h element) const {
   this->lcdd.fromXML(element.attr<string>(_U(ref)));
@@ -973,25 +983,40 @@ template <> void Converter<AlignmentFile>::operator()(xml_h element) const {
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
-  XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
-  xml_h node = doc.root();
-  string tag = node.tag();
-  if ( tag == "lccdd" )
-    Converter<Compact>(this->lcdd)(node);
-  else if ( tag == "define" )
-    xml_coll_t(node, _U(constant)).for_each(Converter<Constant>(this->lcdd));
-  else if ( tag == "readouts" )
-    xml_coll_t(node, _U(readout)).for_each(Converter<Readout>(this->lcdd));
-  else if ( tag == "regions" )
-    xml_coll_t(node, _U(region)).for_each(Converter<Region>(this->lcdd));
-  else if ( tag == "limitsets" )
-    xml_coll_t(node, _U(limitset)).for_each(Converter<LimitSet>(this->lcdd));
-  else if ( tag == "display" )
-    xml_coll_t(node,_U(vis)).for_each(Converter<VisAttr>(this->lcdd));
-  else if ( tag == "detector" )
-    Converter<DetElement>(this->lcdd)(node);
-  else if ( tag == "detectors" )
-    xml_coll_t(node,_U(detector)).for_each(Converter<DetElement>(this->lcdd));
+  string type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("xml");
+  if ( type == "xml" )  {
+    XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+    xml_h node = doc.root();
+    string tag = node.tag();
+    if ( tag == "lccdd" )
+      Converter<Compact>(this->lcdd)(node);
+    else if ( tag == "define" )
+      xml_coll_t(node, _U(constant)).for_each(Converter<Constant>(this->lcdd));
+    else if ( tag == "readouts" )
+      xml_coll_t(node, _U(readout)).for_each(Converter<Readout>(this->lcdd));
+    else if ( tag == "regions" )
+      xml_coll_t(node, _U(region)).for_each(Converter<Region>(this->lcdd));
+    else if ( tag == "limitsets" )
+      xml_coll_t(node, _U(limitset)).for_each(Converter<LimitSet>(this->lcdd));
+    else if ( tag == "display" )
+      xml_coll_t(node,_U(vis)).for_each(Converter<VisAttr>(this->lcdd));
+    else if ( tag == "detector" )
+      Converter<DetElement>(this->lcdd)(node);
+    else if ( tag == "detectors" )
+      xml_coll_t(node,_U(detector)).for_each(Converter<DetElement>(this->lcdd));
+  }
+  else if ( type == "json" )  {
+    Converter<JsonFile>(this->lcdd)(element);
+  }
+  else if ( type == "gdml" )  {
+    Converter<GdmlFile>(this->lcdd)(element);
+  }
+  else if ( type == "xml-extended" )  {
+    Converter<XMLFile>(this->lcdd)(element);
+  }
+  else  {
+    except("Compact","++ FAILED    Invalid file type:%s. This cannot be processed!",type.c_str());
+  }
 }
 
 template <> void Converter<Compact>::operator()(xml_h element) const {

@@ -295,11 +295,11 @@ namespace DD4hep {
      */
     class Document {
     public:
-      typedef JsonDocument* DOC;
+      typedef JsonElement* DOC;
       DOC m_doc;
 
       /// Constructor
-      Document(DOC d) : m_doc(d) {
+      Document(DOC d=0) : m_doc(d) {
       }
       /// Auto-conversion to DOM document
       operator DOC() const {
@@ -313,6 +313,8 @@ namespace DD4hep {
       DOC ptr() const {
         return m_doc;
       }
+      /// Access the ROOT eleemnt of the DOM document
+      Handle_t root() const;
     };
 
     /// Class supporting the basic functionality of an JSON document including ownership
@@ -330,7 +332,7 @@ namespace DD4hep {
     class DocumentHolder : public Document {
     public:
       /// Default Constructor
-      DocumentHolder() : Document(0) {
+      DocumentHolder() : Document() {
       }
       /// Constructor
       DocumentHolder(DOC d) : Document(d) {
@@ -419,6 +421,10 @@ namespace DD4hep {
       {  return m_element.hasChild(tag_value);                                }
     };
 
+    /// Forward declarations
+    class DocumentHandler;
+
+    
 #undef INLINE
 
   }       /* End namespace XML               */

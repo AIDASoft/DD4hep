@@ -14,11 +14,10 @@
 #ifndef DD4HEP_XMLDIMENSION_INL
 #define DD4HEP_XMLDIMENSION_INL
 
-
-#define DIMENSION_NS XML
-
-// Framework include files
 #include "XML/XMLDimension.h"
+
+#define DD4HEP_DIMENSION_NS XML
 #include "XML/detail/Dimension.inl"
+#undef  DD4HEP_DIMENSION_NS
 
 #endif /* DD4HEP_XMLDIMENSION_INL  */

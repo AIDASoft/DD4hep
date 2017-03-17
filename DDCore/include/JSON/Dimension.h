@@ -17,15 +17,8 @@
 #include "JSON/Elements.h"
 #include "JSON/Tags.h"
 
-/// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
-
-  /// Namespace for the AIDA detector description toolkit supporting JSON utilities
-  namespace JSON {
-
-    /// Re-use the defined interface for the XML data access
+#define DD4HEP_DIMENSION_NS JSON
 #include "XML/detail/Dimension.h"
+#undef DD4HEP_DIMENSION_NS
 
-  }       /* End namespace JSON        */
-}         /* End namespace DD4hep      */
 #endif    /* DD4HEP_JSON_DIMENSION_H   */

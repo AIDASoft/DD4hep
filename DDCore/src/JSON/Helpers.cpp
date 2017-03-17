@@ -19,6 +19,7 @@
 using namespace DD4hep::JSON;
 
 // Instantiate here the concrete implementations
+#define DD4HEP_DIMENSION_NS JSON
 #include "XML/detail/Detector.imp"
 #include "XML/detail/Dimension.imp"
 #include "XML/detail/ChildValue.imp"

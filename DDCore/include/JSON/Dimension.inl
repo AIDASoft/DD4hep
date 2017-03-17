@@ -10,15 +10,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_JSONDIMENSION_INL
 #define DD4HEP_JSONDIMENSION_INL
 
-// Configuration definitions
-#define DIMENSION_NS JSON
-
 // Framework include files
 #include "JSON/Dimension.h"
+
+#define DD4HEP_DIMENSION_NS JSON
 #include "XML/detail/Dimension.inl"
+#undef DD4HEP_DIMENSION_NS
 
 #endif /* DD4HEP_JSONDIMENSION_INL  */
