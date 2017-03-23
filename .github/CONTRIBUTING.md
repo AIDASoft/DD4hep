@@ -6,12 +6,24 @@
 When making a `Pull Request` please explain what and why things were
 changed. Please include a short description in the
 BEGINRELEASENOTES/ENDRELEASENOTES block, which will appear in the
-doc/ReleaseNotes.md of the given package, once a new tag is made.
+doc/ReleaseNotes.md, once a new tag is made.
+
+We are happy if you create pull-requests also if you feature is not ready, yet.
+Please mar them as such by adding `[WIP]` to the start of the title. The purpose
+of this is, for example, that you want to let other people know you are working
+on a given issue. For these work-in-progress pull-request, we propose to have a
+check list of things that still need to be done.
+
+## Issue tracking
+
+Use the github issue tracker. Reference the issues that you are working on. If
+you notice an issue, consider first creating an issue and then refering to it in
+your pull-request and commit messages with `#[issue-id]`.
+
 
 ## Coding Conventions
 
  * Your code should not introduce any new warnings, and fix as many existing warnings as possible
-
 
 ## Git workflow
 
