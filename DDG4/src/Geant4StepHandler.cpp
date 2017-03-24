@@ -114,9 +114,10 @@ G4ThreeVector Geant4StepHandler::globalToLocalG4(const G4ThreeVector& global)  c
 /// Apply BirksLaw
 double Geant4StepHandler::birkAttenuation() const    {
 #if G4VERSION_NUMBER >= 1001
-  static G4EmSaturation s_emSaturation(0);
+  static G4EmSaturation s_emSaturation(1);
 #else
   static G4EmSaturation s_emSaturation();
+  s_emSaturation.SetVerbose(1);
 #endif
 
   double energyDeposition = step->GetTotalEnergyDeposit();
