@@ -372,6 +372,7 @@ namespace DD4hep {
       /** Same as outer_phi for the first inner face.
        */
       double  inner_phi0  ;
+      
 
        /** Azimuthal angle of the first module in barrel layout
        *  DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD

@@ -147,6 +147,7 @@ namespace DD4hep {
     
     std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) {
       boost::io::ios_base_all_saver ifs(io);
+      
       io <<  " -- LayeredCalorimeterData : "  << std::scientific << std::endl ; 
       switch (d.layoutType){
       case LayeredCalorimeterStruct::BarrelLayout: { io <<  " LayoutType : BarrelLayout "  << std::endl ;  io <<  "  extent[ rmin, rmax, zmin, zmax ] : " 
