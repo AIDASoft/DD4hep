@@ -337,14 +337,17 @@ namespace DD4hep {
       /// enum for encoding the sensor type in typeFlags
       enum LayoutType{
 	BarrelLayout=0,
-	EndcapLayout
+	EndcapLayout,
+	ConicalLayout
       };
 
       /// type of layout: BarrelLayout or EndcapLayout
       LayoutType layoutType ;
 
-      /// extent of the calorimeter in the r-z-plane [ rmin, rmax, zmin, zmax ] in mm.
-      double extent[4] ;
+      /** extent of the calorimeter in the r-z-plane [ rmin, rmax, zmin, zmax, rmin2, rmax2 ] in mm.
+       * where rmin2, rmax2 are the radii at zmax for the ConicalLayout and not used else.
+       */
+      double extent[6] ;
 
       /** the order of the rotational symmetry at the outside, e.g.
        *  8 for an octagonal barrel calorimeter.
@@ -369,12 +372,12 @@ namespace DD4hep {
       /** Same as outer_phi for the first inner face.
        */
       double  inner_phi0  ;
-      
-      
-      /** Azimuthal angle of the first module in barrel layout
+
+       /** Azimuthal angle of the first module in barrel layout
        *  DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD
        */
       double  phi0  ;
+           
       
       /// Gap between modules(eg. stave gap) in the phi-direction
       double gap0;
@@ -445,150 +448,6 @@ namespace DD4hep {
     typedef StructExtension<LayeredCalorimeterStruct> LayeredCalorimeterData ;
 
     std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /** Simple data structure defining a layered calorimeter layout for
-     *  reconstruction. Modified version of the above LayeredCalorimeterStruct that
-     *  can deal with a conical shaped calorimeter
-     * 
-     * @author Y.Voutsinas, CERN
-     * @date March, 2017
-     * @version $Id: $
-     */
-    struct LayeredConicalCalorimeterStruct{
-      
-      /// enum for encoding the sensor type in typeFlags
-      enum LayoutType{
-	BarrelLayout=0,
-	EndcapLayout
-      };
-
-      /// type of layout: BarrelLayout or EndcapLayout
-      LayoutType layoutType ;
-
-      /// extent of the calorimeter in the r-z-plane [ RminInn, RmaxInn, RminOut, RmaxOut, zmin, zmax ] in mm.
-      double extent[6] ;
-
-      /** the order of the rotational symmetry at the outside, e.g.
-       *  8 for an octagonal barrel calorimeter.
-       */
-      int outer_symmetry ;
-
-      /** the order of the rotational symmetry at the inside, e.g.
-       *  4 for an endcap with a rectangular cout out at the inside.
-       */
-      int inner_symmetry ;
-
-      /** Angle between the normal to the first outer face of the 
-       *  calorimeter and the x-axis, where the first face is defined
-       *  to be the one with the smallest positve angle.
-       *  Example:
-       *  outer_phi0=0 corresponds to the first face beeing vertical and 
-       *  thus the bottom face being parallel to the floor for a 
-       *  symmetry that is a multiple of 4.
-       */      
-      double  outer_phi0  ;
-
-      /** Same as outer_phi for the first inner face.
-       */
-      double  inner_phi0  ;
-      
-      
-      /** Azimuthal angle of the first module in barrel layout
-       *  DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD
-       */
-      double  phi0  ;
-      
-      /// Gap between modules(eg. stave gap) in the phi-direction
-      double gap0;
-      
-      /// Gap between modules(eg. middle stave gap) in the z-direction
-      double gap1;
-      
-      /// Gap between modules(reserved for future use) e.g in the r-direction
-      double gap2;
-      
-
-      struct Layer {
-	
-	Layer() :
-	  distance(0),
-	  phi0(0),
-	  absorberThickness(0),
-	  inner_nRadiationLengths(0),
-	  inner_nInteractionLengths(0),        
-	  outer_nRadiationLengths(0),
-	  outer_nInteractionLengths(0), 
-	  inner_thickness(0),
-	  outer_thickness(0),
-	  sensitive_thickness(0),
-	  cellSize0(0),
-	  cellSize1(0) {
-	}
-	
-	/// distance from Origin (or the z-axis) to the inner-most face of the layer
-	double distance;
-        
-	/// phi0 of layer: potential rotation around normal to absorber plane, e.g. if layers are 'staggered' in phi in fwd. calos 
-	double phi0 ;
-	
-        /// thickness of the absorber part of the layer. Consider using inner/outer_nRadiationLengths and inner/outer_nInteractionLengths
-	double absorberThickness ;
-        
-        ///Absorber material in front of sensitive element in the layer, units of radiation lengths
-        double inner_nRadiationLengths ;
-        ///Absorber material in front of sensitive element in the layer, units of radiation lengths
-        double inner_nInteractionLengths ;        
-        
-        ///Absorber material in behind of sensitive element in the layer, units of radiation lengths
-        double outer_nRadiationLengths ;
-        ///Absorber material in behind of sensitive element in the layer, units of radiation lengths
-        double outer_nInteractionLengths ; 
-        
-        ///Distance between the innermost face of the layer (closest to IP) and the center of the sensitive element
-        double inner_thickness;
-        
-        ///Distance between the center of the sensitive element and the outermost face of the layer
-        double outer_thickness;
-        
-        ///Thickness of the sensitive element (e.g. scintillator)
-        double sensitive_thickness;
-        
-        
-        
-	/// cell size along the first axis where first is either along the beam (BarrelLayout) or up (EndcapLayout) or the direction closest to that. 
-	double cellSize0 ;
-	/// second cell size, perpendicular to the first direction cellSize0 and the depth of the layers. 
-	double cellSize1 ;
-      } ;   
-
-      std::vector<Layer> layers ;	
-    } ;
-
-    typedef StructExtension<LayeredConicalCalorimeterStruct> LayeredConicalCalorimeterData ;
-
-    std::ostream& operator<<( std::ostream& io , const LayeredConicalCalorimeterData& d ) ;
-
-
-
-
-
-
-
-
-
-
 
 
 

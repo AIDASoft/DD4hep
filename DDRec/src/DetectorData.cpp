@@ -147,12 +147,14 @@ namespace DD4hep {
     
     std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) {
       boost::io::ios_base_all_saver ifs(io);
-
       io <<  " -- LayeredCalorimeterData : "  << std::scientific << std::endl ; 
-      io <<  "  LayoutType : " <<  ( d.layoutType == LayeredCalorimeterStruct::BarrelLayout ?
-				     "BarrelLayout" : "EndcapLayout" ) << std::endl ; 
-      io <<  "  extent[ rmin, rmax, zmin, zmax ] : " 
-	 <<  d.extent[0] << " "  << d.extent[1] << " "  << d.extent[2] << " " << d.extent[3]  << std::endl ; 
+      switch (d.layoutType){
+      case LayeredCalorimeterStruct::BarrelLayout: { io <<  " LayoutType : BarrelLayout "  << std::endl ;  io <<  "  extent[ rmin, rmax, zmin, zmax ] : " 
+							<<  d.extent[0] << " "  << d.extent[1] << " "  << d.extent[2] << " " << d.extent[3]  << std::endl ;  break; }
+      case LayeredCalorimeterStruct::EndcapLayout: { io <<  " LayoutType : EndcapLayout "  << std::endl ;  io <<  "  extent[ rmin, rmax, zmin, zmax ] : " 
+							<<  d.extent[0] << " "  << d.extent[1] << " "  << d.extent[2] << " " << d.extent[3]  << std::endl ;  break; }
+      case LayeredCalorimeterStruct::ConicalLayout: { io <<  " LayoutType : ConicalLayout "  << std::endl ; io <<  "  extent[ rmin, rmax, zmin, zmax, rEndMin, rEndMax ] : " 	                                             <<  d.extent[0] << " "  << d.extent[1] << " "  << d.extent[2] << " " << d.extent[3] << " "  << d.extent[4] << " " << d.extent[5] << std::endl ;   break;}
+      }
       io <<  " outer_symmetry : " <<  d.outer_symmetry  << std::endl ; 
       io <<  " inner_symmetry : " <<  d.inner_symmetry  << std::endl ; 
       io <<  " outer_phi0 : " <<  d.outer_phi0  << std::endl ; 
@@ -165,55 +167,10 @@ namespace DD4hep {
       io <<  " Layers : " << std::endl 
 	 <<  "  distance      inner_nX0   outer_nX0    inner_nInt    outer_nInt  inner_thick outer_thick   sense_thick" 
 	 << std::endl ;
-      //"distance inner_nX0   outer_nX0 inner_nLambda outer_nLambda inner_thick outer_thick sensitive_thick" << std::endl ;
 
       for(unsigned i=0,N=layers.size() ; i<N ; ++i){
 
 	LayeredCalorimeterData::Layer l = layers[i] ;
-
-	io << " " << l.distance
-	   << " " << l.inner_nRadiationLengths
-	   << " " << l.outer_nRadiationLengths
-	   << " " << l.inner_nInteractionLengths 
-	   << " " << l.outer_nInteractionLengths
-	   << " " << l.inner_thickness
-	   << " " << l.outer_thickness
-	   << " " << l.sensitive_thickness
-	   << std::endl ;
-      }
-
-      return io ;
-    }
-
-
-
-
-
-
-    std::ostream& operator<<( std::ostream& io , const LayeredConicalCalorimeterData& d ) {
-
-      io <<  " -- LayeredConicalCalorimeterData : "  << std::scientific << std::endl ; 
-      io <<  "  LayoutType : " <<  ( d.layoutType == LayeredCalorimeterStruct::BarrelLayout ?
-				     "BarrelLayout" : "EndcapLayout" ) << std::endl ; 
-      io <<  "  extent[  RminInn, RmaxInn, RminOut, RmaxOut, zmin, zmax  ] : " 
-	 <<  d.extent[0] << " "  << d.extent[1] << " "  << d.extent[2] << " " << d.extent[3] << " " << d.extent[4] << " " << d.extent[5]  << std::endl ; 
-      io <<  " outer_symmetry : " <<  d.outer_symmetry  << std::endl ; 
-      io <<  " inner_symmetry : " <<  d.inner_symmetry  << std::endl ; 
-      io <<  " outer_phi0 : " <<  d.outer_phi0  << std::endl ; 
-      io <<  " inner_phi0 : " <<  d.inner_phi0  << std::endl ; 
-      io <<  " gap1 : " <<  d.gap1  << std::endl ; 
-      io <<  " gap2 : " <<  d.gap2  << std::endl ; 
-      
-      std::vector<LayeredConicalCalorimeterData::Layer> layers = d.layers ;
-
-      io <<  " Layers : " << std::endl 
-	 <<  "  distance      inner_nX0   outer_nX0    inner_nInt    outer_nInt  inner_thick outer_thick   sense_thick" 
-	 << std::endl ;
-      //"distance inner_nX0   outer_nX0 inner_nLambda outer_nLambda inner_thick outer_thick sensitive_thick" << std::endl ;
-
-      for(unsigned i=0,N=layers.size() ; i<N ; ++i){
-
-	LayeredConicalCalorimeterData::Layer l = layers[i] ;
 
 	io << " " << l.distance
 	   << " " << l.inner_nRadiationLengths
@@ -239,6 +196,6 @@ namespace DD4hep {
       return io ;
     }
  
-    
+
   } // namespace
 }
