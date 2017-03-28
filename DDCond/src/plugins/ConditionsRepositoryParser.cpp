@@ -234,7 +234,7 @@ namespace DD4hep {
       Converter<conditions>(lcdd,param,optional)(doc.root());
       return;
     }
-    xml_coll_t(e,_UC(detelement)).for_each(Converter<arbitrary>(lcdd,param,optional));
+    xml_coll_t(e,_U(detelement)).for_each(Converter<arbitrary>(lcdd,param,optional));
   }
 
   /// Convert manager repository objects
@@ -249,16 +249,18 @@ namespace DD4hep {
       XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
       Converter<arbitrary>(lcdd,param,optional)(doc.root());
     }
-    for( xml_coll_t c(element,_UC(property)); c; ++c)  {
+    for( xml_coll_t c(element,_U(property)); c; ++c)  {
       xml_dim_t d = c;
       string nam = d.nameStr();
       string val = d.valueStr();
       try  {
-        printout(s_parseLevel,"XMLConditions","++ Setup conditions Manager[%s] = %s",nam.c_str(),val.c_str());
+        printout(s_parseLevel,"XMLConditions","++ Setup conditions Manager[%s] = %s",
+                 nam.c_str(),val.c_str());
         arg->manager[nam].str(val);
       }
       catch(const std::exception& e)  {
-        printout(ERROR,"XMLConditions","++ FAILED: conditions Manager[%s] = %s [%s]",nam.c_str(),val.c_str(),e.what());
+        printout(ERROR,"XMLConditions","++ FAILED: conditions Manager[%s] = %s [%s]",
+                 nam.c_str(),val.c_str(),e.what());
       }
     }
     arg->manager.initialize();
@@ -369,12 +371,12 @@ namespace DD4hep {
       (*this)(doc.root());
     }
     xml_coll_t(e,_U(value)).for_each(Converter<value>(lcdd,param,optional));
-    xml_coll_t(e,_UC(mapping)).for_each(Converter<mapping>(lcdd,param,optional));
-    xml_coll_t(e,_UC(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
-    xml_coll_t(e,_UC(pressure)).for_each(Converter<pressure>(lcdd,param,optional));
-    xml_coll_t(e,_UC(alignment)).for_each(Converter<alignment>(lcdd,param,optional));
-    xml_coll_t(e,_UC(temperature)).for_each(Converter<temperature>(lcdd,param,optional));
-    xml_coll_t(e,_UC(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
+    xml_coll_t(e,_U(mapping)).for_each(Converter<mapping>(lcdd,param,optional));
+    xml_coll_t(e,_U(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
+    xml_coll_t(e,_U(pressure)).for_each(Converter<pressure>(lcdd,param,optional));
+    xml_coll_t(e,_U(alignment)).for_each(Converter<alignment>(lcdd,param,optional));
+    xml_coll_t(e,_U(temperature)).for_each(Converter<temperature>(lcdd,param,optional));
+    xml_coll_t(e,_U(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
   }
 
   /// Convert repository objects
@@ -384,9 +386,9 @@ namespace DD4hep {
    *  \date    01/04/2014
    */
   template <> void Converter<repository>::operator()(xml_h element) const {
-    xml_coll_t(element,_UC(manager)).for_each(Converter<manager>(lcdd,param,optional));
-    xml_coll_t(element,_UC(iov_type)).for_each(Converter<iov_type>(lcdd,param,optional));
-    xml_coll_t(element,_UC(iov)).for_each(Converter<iov>(lcdd,param,optional));
+    xml_coll_t(element,_U(manager)).for_each(Converter<manager>(lcdd,param,optional));
+    xml_coll_t(element,_U(iov_type)).for_each(Converter<iov_type>(lcdd,param,optional));
+    xml_coll_t(element,_U(iov)).for_each(Converter<iov>(lcdd,param,optional));
   }
 
   /// Convert any top level tag in the XML file

@@ -118,6 +118,8 @@ namespace DD4hep {
     std::string str() const;
     /// Conversion from string value
     Property& str(const std::string& input);
+    /// Conversion from string value
+    const Property& str(const std::string& input)  const;
     /// Assignment operator
     Property& operator=(const Property& p) = default;
     /// Assignment operator / set new balue

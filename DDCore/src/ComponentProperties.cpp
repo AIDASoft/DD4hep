@@ -95,7 +95,16 @@ string Property::str() const {
 }
 
 /// Conversion from string value
-Property& Property::str(const std::string& input) {
+const Property& Property::str(const std::string& input)   const {
+  if (m_hdl && m_par )   {
+    m_hdl->fromString(m_par,input);
+    return *this;
+  }
+  throw runtime_error("Attempt to access property grammar from invalid object.");
+}
+
+/// Conversion from string value
+Property& Property::str(const std::string& input)    {
   if (m_hdl && m_par )   {
     m_hdl->fromString(m_par,input);
     return *this;
