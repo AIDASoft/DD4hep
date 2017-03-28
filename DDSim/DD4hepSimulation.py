@@ -611,6 +611,7 @@ class DD4hepSimulation(object):
       for pattern in self.action.mapActions:
         if pattern.lower() in det.lower():
           action = self.action.mapActions[pattern]
+          print  '       replace default action with : ' , action 
           break
       seq,act = setupFuction( det, type=action )
       self.filter.applyFilters( seq, det, defaultFilter )
