@@ -126,11 +126,11 @@ namespace DD4hep {
         return *this;
       }
       /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-      virtual TGeoExtension *Grab();
+      virtual TGeoExtension *Grab()  override;
       /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-      virtual void Release() const;
+      virtual void Release() const  override;
       /// Enable ROOT persistency
-      ClassDef(PlacedVolumeExtension,1);
+      ClassDefOverride(PlacedVolumeExtension,1);
     };
 
     /// Handle class holding a placed volume (also called physical volume)
@@ -226,11 +226,11 @@ namespace DD4hep {
         referenced = c.referenced;
       }
       /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-      virtual TGeoExtension *Grab();
+      virtual TGeoExtension *Grab()  override;
       /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-      virtual void Release() const;
+      virtual void Release() const  override;
       /// Enable ROOT persistency
-      ClassDef(VolumeExtension,1);
+      ClassDefOverride(VolumeExtension,1);
     };
 
     /// Handle class holding a placed volume (also called physical volume)

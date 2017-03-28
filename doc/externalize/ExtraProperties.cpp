@@ -32,12 +32,20 @@ PARSERS_DECL_FOR_SINGLE(long long)
 PARSERS_DECL_FOR_SINGLE(unsigned long long)
 #endif
 
+typedef std::map<std::string, std::vector<std::string> > map_vector_t;
+typedef std::map<std::string, std::map<std::string,std::string> > map_map_t;
+PARSERS_DECL_FOR_SINGLE(map_map_t)
+
 #include "DD4hep/BasicGrammar_inl.h"
 #include "DD4hep/ComponentProperties_inl.h"
 
-typedef std::map<std::string, std::vector<std::string> > map_t;
-DD4HEP_DEFINE_PARSER_GRAMMAR(map_t,eval_obj)
-DD4HEP_DEFINE_PROPERTY_TYPE(map_t)
+#include "parsers/ParsersFactory.h"
+DD4HEP_DEFINE_PARSER_GRAMMAR(map_vector_t,eval_obj)
+DD4HEP_DEFINE_PROPERTY_TYPE(map_vector_t)
+
+PARSERS_DEF_FOR_SINGLE(map_map_t)
+DD4HEP_DEFINE_PARSER_GRAMMAR(map_map_t,eval_obj)
+DD4HEP_DEFINE_PROPERTY_TYPE(map_map_t)
 
 #if !defined(DD4HEP_HAVE_ALL_PARSERS)
 DD4HEP_DEFINE_PARSER_GRAMMAR(unsigned int,eval_item)
