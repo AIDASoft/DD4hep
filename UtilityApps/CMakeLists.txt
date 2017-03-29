@@ -19,6 +19,8 @@ dd4hep_add_executable( geoConverter    src/converter.cpp )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( geoPluginRun    src/plugin_runner.cpp )
 #-----------------------------------------------------------------------------------
+dd4hep_add_executable( dumpBfield      src/dumpBfield.cpp )
+#-----------------------------------------------------------------------------------
 dd4hep_add_executable( print_materials src/print_materials.cpp USES DDRec )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( materialScan    src/materialScan.cpp USES DDRec )
