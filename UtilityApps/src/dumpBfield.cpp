@@ -67,7 +67,7 @@ static int invoke_dump_B_field(int argc, char** argv ){
 
 	double posV[3] = { x, y, z }  ;
 	double bfieldV[3] ;
-	lcdd.field().magneticField( { 0., 0., 0. }  , bfieldV  ) ;
+	lcdd.field().magneticField( posV  , bfieldV  ) ;
 
 	printf(" %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  \n", posV[0], posV[1],  posV[2], bfieldV[0]/dd4hep::tesla , bfieldV[1]/dd4hep::tesla, bfieldV[2]/dd4hep::tesla ) ; 
 
