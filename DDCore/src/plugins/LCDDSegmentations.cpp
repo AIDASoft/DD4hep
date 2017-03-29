@@ -52,6 +52,12 @@ DECLARE_SEGMENTATION(WaferGridXY,create_segmentation<DD4hep::DDSegmentation::Waf
 #include "DDSegmentation/PolarGridRPhi.h"
 DECLARE_SEGMENTATION(PolarGridRPhi,create_segmentation<DD4hep::DDSegmentation::PolarGridRPhi>)
 
+#include "DDSegmentation/GridPhiEta.h"
+DECLARE_SEGMENTATION(GridPhiEta,create_segmentation<DD4hep::DDSegmentation::GridPhiEta>)
+
+#include "DDSegmentation/GridRPhiEta.h"
+DECLARE_SEGMENTATION(GridRPhiEta,create_segmentation<DD4hep::DDSegmentation::GridRPhiEta>)
+
 #include "DDSegmentation/PolarGridRPhi2.h"
 DECLARE_SEGMENTATION(PolarGridRPhi2,create_segmentation<DD4hep::DDSegmentation::PolarGridRPhi2>)
 

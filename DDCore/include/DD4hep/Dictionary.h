@@ -102,8 +102,8 @@ template class pair<DD4hep::Callback,unsigned long>;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator& ); 
-#pragma link C++ function operator!=( const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator& ); 
+#pragma link C++ function operator==( const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator& );
+#pragma link C++ function operator!=( const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator& );
 #endif
 
 #pragma link C++ class DD4hep::ObjectExtensions+;
@@ -251,8 +251,8 @@ template class DD4hep::Handle<TNamed>;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& ); 
-#pragma link C++ function operator!=( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& ); 
+#pragma link C++ function operator==( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& );
+#pragma link C++ function operator!=( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& );
 #endif
 
 #pragma link C++ class DD4hep::Geometry::SensitiveDetector+;
@@ -381,6 +381,8 @@ template vector<pair<string, int> >::iterator;
 #ifdef __HAVE_DDSEGMENTATION__
 #include "DDSegmentation/Segmentation.h"
 #include "DDSegmentation/NoSegmentation.h"
+#include "DDSegmentation/GridPhiEta.h"
+#include "DDSegmentation/GridRPhiEta.h"
 #include "DDSegmentation/CartesianGrid.h"
 #include "DDSegmentation/CartesianGridXY.h"
 #include "DDSegmentation/CartesianGridXYZ.h"
@@ -410,6 +412,8 @@ typedef DD4hep::DDSegmentation::CellID CellID;
 
 #pragma link C++ class DD4hep::DDSegmentation::Segmentation+;
 #pragma link C++ class DD4hep::DDSegmentation::NoSegmentation+;
+#pragma link C++ class DD4hep::DDSegmentation::GridPhiEta+;
+#pragma link C++ class DD4hep::DDSegmentation::GridRPhiEta+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGrid+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXY+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXYZ+;
