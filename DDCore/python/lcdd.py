@@ -36,6 +36,8 @@ GridXYZ = DD4hep.Geometry.GridXYZ
 GlobalGridXY = DD4hep.Geometry.GlobalGridXY
 CartesianGridXY = DD4hep.Geometry.CartesianGridXY
 NoSegmentation = DD4hep.Geometry.NoSegmentation
+GridPhiEta = DD4hep.Geometry.GridPhiEta
+GridRPhiEta = DD4hep.Geometry.GridRPhiEta
 ProjectiveCylinder = DD4hep.Geometry.ProjectiveCylinder
 NonProjectiveCylinder = DD4hep.Geometry.NonProjectiveCylinder
 ProjectiveZPlane = DD4hep.Geometry.ProjectiveZPlane
@@ -386,6 +388,19 @@ def create_ProjectiveZPlane(lcdd, elem) :
   obj = ProjectiveZPlaner()
   if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
   if 'thetaBins' in elem.keys() : obj.setThetaBins(elem.getI('thetaBins'))
+  return obj
+
+def create_GridPhiEta(lcdd, elem) :
+  obj = GridPhiEta()
+  if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
+  if 'gridSizeEta' in elem.keys() : obj.setGridSizeEta(elem.getI('gridSizeEta'))
+  return obj
+
+def create_GridRPhiEta(lcdd, elem) :
+  obj = GridRPhiEta()
+  if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('gridSizeR'))
+  if 'gridSizeEta' in elem.keys() : obj.setGridSizeEta(elem.getI('gridSizeEta'))
+  if 'gridSizeR' in elem.keys() : obj.setGridSizeR(elem.getI('gridSizeR'))
   return obj
 
 
