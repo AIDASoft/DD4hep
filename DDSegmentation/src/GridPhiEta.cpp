@@ -67,6 +67,7 @@ double GridPhiEta::phi(const CellID& cID) const {
   CellID phiValue = (*_decoder)[m_phiID].value();
   return binToPosition(phiValue, 2.*M_PI/(double)m_phiBins, m_offsetPhi);
 }
+REGISTER_SEGMENTATION(GridPhiEta)
 }
 }
 
