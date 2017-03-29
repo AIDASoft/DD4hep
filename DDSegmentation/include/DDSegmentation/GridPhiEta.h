@@ -4,7 +4,6 @@
 #include "DDSegmentation/Segmentation.h"
 
 /* #include "DDSegmentation/SegmentationUtil.h" */
-#include "TVector3.h"
 #include <cmath>
 
 /** GridPhiEta DDSegmentation/include/DDSegmentation/GridPhiEta.h GridPhiEta.h
