@@ -91,7 +91,7 @@ void Segmentation::neighbours(const CellID& cell, std::set<CellID>& nb) const  {
 std::vector<double> Segmentation::cellDimensions(const CellID& cell) const  {
   return data<Object>()->segmentation->cellDimensions(cell);
 }
-      
+
 /// Access to the base DDSegmentation object. WARNING: Deprecated call!
 Segmentation::BaseSegmentation* Segmentation::segmentation() const  {
   return data<Object>()->segmentation;
@@ -152,6 +152,12 @@ IMPLEMENT_SEGMENTATION_HANDLE(PolarGridRPhi)
 
 #include "DDSegmentation/PolarGridRPhi2.h"
 IMPLEMENT_SEGMENTATION_HANDLE(PolarGridRPhi2)
+
+#include "DDSegmentation/GridPhiEta.h"
+IMPLEMENT_SEGMENTATION_HANDLE(GridPhiEta)
+
+#include "DDSegmentation/GridRPhiEta.h"
+IMPLEMENT_SEGMENTATION_HANDLE(GridRPhiEta)
 
 #include "DDSegmentation/ProjectiveCylinder.h"
 IMPLEMENT_SEGMENTATION_HANDLE(ProjectiveCylinder)
