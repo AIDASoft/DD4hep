@@ -11,8 +11,6 @@
 #include <cmath>
 #include <vector>
 
-#include "TVector3.h"
-
 namespace DD4hep {
 namespace DDSegmentation {
 namespace Util {
@@ -40,14 +38,30 @@ inline double radiusFromXYZ(const Vector3D& position) {
 	return std::sqrt(position.X * position.X + position.Y * position.Y);
 }
 
+/// Calculates cosine of the polar angle theat from Cartesian coodinates
+inline double cosThetaFromXYZ(const Vector3D& position) {
+	return position.Z / radiusFromXYZ(position);
+}
+
 /// calculates the polar angle theta from Cartesian coordinates
 inline double thetaFromXYZ(const Vector3D& position) {
-	return std::acos(position.Z / radiusFromXYZ(position));
+	return std::acos(cosThetaFromXYZ(position));
 }
 
 /// calculates the azimuthal angle phi from Cartesian coordinates
 inline double phiFromXYZ(const Vector3D& position) {
 	return std::atan2(position.Y, position.X);
+}
+
+/// calculates the pseudorapidity from Cartesian coordinates
+// implementation taken from ROOT TVector3D
+inline double etaFromXYZ(const Vector3D& aposition) {
+	double cosTheta = cosThetaFromXYZ(aposition);
+	if (cosTheta*cosTheta < 1) return -0.5* std::log((1.0-cosTheta)/(1.0+cosTheta));
+	if (aposition.Z == 0) return 0;
+	//Warning("PseudoRapidity","transvers momentum = 0! return +/- 10e10");
+	if (aposition.Z > 0) return 10e10;
+	else return -10e10;
 }
 
 /////////////////////////////////////////////////////////////
@@ -96,12 +110,6 @@ inline Vector3D positionFromMagThetaPhi(double mag, double theta, double phi) {
 /// calculates the Cartesian position from spherical coordinates (r, phi, eta)
 inline Vector3D positionFromREtaPhi(double ar, double aeta, double aphi) {
 	return Vector3D(ar * std::cos(aphi), ar * std::sin(aphi), ar * std::sinh(aeta));
-}
-
-/// calculates the pseudorapidity from Cartesian coordinates
-inline double etaFromXYZ(const Vector3D& aposition) {
-	TVector3 vec(aposition.X, aposition.Y, aposition.Z);
-	return vec.Eta();
 }
 
 
