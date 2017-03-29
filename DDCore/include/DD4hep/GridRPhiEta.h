@@ -77,6 +77,9 @@ public:
   /// access the grid size in Phi
   inline int phiBins() const { return access()->implementation->phiBins(); }
 
+  /// access the grid size in Phi
+  inline double gridSizeR() const { return access()->implementation->gridSizeR(); }
+
   /// access the coordinate offset in R
   inline double offsetR() const { return access()->implementation->offsetR(); }
 
