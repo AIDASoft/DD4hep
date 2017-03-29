@@ -29,7 +29,7 @@ using namespace DD4hep::Geometry;
 static int invoke_dump_B_field(int argc, char** argv ){
   
   if( argc != 8 ) {
-    std::cout << " usage: dumpBfield compact.xml x y z dx dy dz [in cm]" 
+    std::cout << " usage: dumpBfield compact.xml x y z dx dy dz [in cm]" << std::endl 
 	      << "    will dump the B-field in volume [-x:x,-y:y,-z,z] with steps [dx,dy,dz] "
 	      << std::endl ;
     
