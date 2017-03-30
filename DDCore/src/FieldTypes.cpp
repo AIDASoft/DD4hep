@@ -27,7 +27,7 @@ DD4HEP_INSTANTIATE_HANDLE(SolenoidField);
 DD4HEP_INSTANTIATE_HANDLE(DipoleField);
 DD4HEP_INSTANTIATE_HANDLE(MultipoleField);
 
-/// Call to access the field components at a given location
+/// Compute  the field components at a given location and add to given field
 void ConstantField::fieldComponents(const double* /* pos */, double* field) {
   field[0] += direction.X();
   field[1] += direction.Y();
@@ -40,7 +40,7 @@ SolenoidField::SolenoidField()
   type = CartesianField::MAGNETIC;
 }
 
-/// Call to access the field components at a given location
+/// Compute  the field components at a given location and add to given field
 void SolenoidField::fieldComponents(const double* pos, double* field) {
   double z = pos[2] ;
   //  std::cout << " field z=" << z << " maxZ=" << maxZ << " minZ = " << minZ << std::endl ;
@@ -59,7 +59,7 @@ DipoleField::DipoleField()
   type = CartesianField::MAGNETIC;
 }
 
-/// Call to access the field components at a given location
+/// Compute  the field components at a given location and add to given field
 void DipoleField::fieldComponents(const double* pos, double* field) {
   double z = pos[2], r = std::sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
   // Check if z coordinate is within dipole z bounds.
@@ -85,7 +85,7 @@ MultipoleField::MultipoleField() : coefficents(), skews(), volume(), transform()
   type = CartesianField::MAGNETIC;
 }
 
-/// Call to access the field components at a given location
+/// Compute  the field components at a given location and add to given field
 void MultipoleField::fieldComponents(const double* pos, double* field) {
   Transform3D::Point p = transform * Transform3D::Point(pos[0],pos[1],pos[2]);
   //const Transform3D::Point::CoordinateType& c = p.Coordinates();

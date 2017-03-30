@@ -31,13 +31,10 @@ namespace DD4hep {
     typedef Position Direction;
 
 
-    /// Handle class describing any field with 3D cartesian vectors for the field strength.
-    /**
-     *  Generic structure describing any field type (electric or magnetic)
-     *  with field components in Cartesian coordinates.
-     *
-     *  The actual behaviour is solely implemented in the underlying object
-     *  class.
+    /** Abstract base class describing any field (electric or magnetic) with 3D cartesian vectors 
+     *  for the field strength and positions.
+     *  Implementation classes need to overwrite void fieldComponents(const double* pos, double* field).
+     *  The actual behaviour is solely implemented in the underlying object class.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -67,7 +64,11 @@ namespace DD4hep {
         Object();
         /// Default destructor
         virtual ~Object();
-        /// Call to access the field components at a given location
+
+        /** Overwrite to compute the field components at a given location -
+	 *  NB: The field components have to be added to the provided
+	 *  field vector in order to allow for superposition of the fields.
+	 */
         virtual void fieldComponents(const double* pos, double* field) = 0;
       };
 
