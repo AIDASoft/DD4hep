@@ -615,9 +615,14 @@ class DD4hepSimulation(object):
           break
       seq,act = setupFuction( det, type=action )
       self.filter.applyFilters( seq, det, defaultFilter )
+
       ##set detailed hit creation mode for this
       if self.enableDetailedShowerMode:
-        act.HitCreationMode = 2
+        if isinstance(act, list):
+          for a in act:
+            a.HitCreationMode = 2
+        else:
+          act.HitCreationMode = 2
 
   def __printSteeringFile( self, parser):
     """print the parameters formated as a steering file"""
