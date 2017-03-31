@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -59,18 +58,21 @@ namespace DD4hep {
       /// Print a single particle to the output logging using the specified print level
       void print(PrintLevel level, Geant4ParticleHandle p)  const;
 #endif
+      /// Print the particle map to the output logging using the specified print level
+      void print(PrintLevel level, const Geant4ParticleMap* parts)  const;
+
       /// Print the particle container to the output logging using the specified print level
-      void print(PrintLevel level, const std::string& container, const Particles* parts);
+      void print(PrintLevel level, const std::string& container, const Particles* parts)  const;
 
       /// Print a single tracker hit to the output logging using the specified print level
-      void print(PrintLevel level, const TrackerHit* h);
+      void print(PrintLevel level, const TrackerHit* h)  const;
       /// Print the tracker hits container to the output logging using the specified print level
-      void print(PrintLevel level, const std::string& container, const TrackerHits* hits);
+      void print(PrintLevel level, const std::string& container, const TrackerHits* hits) const;
 
       /// Print a calorimeter tracker hit to the output logging using the specified print level
-      void print(PrintLevel level, const CalorimeterHit* h);
+      void print(PrintLevel level, const CalorimeterHit* h)  const;
       /// Print the calorimeter hits container to the output logging using the specified print level
-      void print(PrintLevel level, const std::string& container, const CalorimeterHits* hits);
+      void print(PrintLevel level, const std::string& container, const CalorimeterHits* hits)  const;
 
     };
   }    // End namespace Simulation

@@ -56,6 +56,8 @@ namespace DD4hep {
     protected:
       /// Inhibit copy constructor
       Geant4EventAction() = default;
+      /// Inhibit move constructor
+      Geant4EventAction(Geant4EventAction&& copy) = delete;
       /// Inhibit copy constructor
       Geant4EventAction(const Geant4EventAction& copy) = delete;
       /// Inhibit assignment operator

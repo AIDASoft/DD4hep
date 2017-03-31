@@ -1,10 +1,8 @@
 //
 // Authors: Tomohiko Tanabe <tomohiko@icepp.s.u-tokyo.ac.jp>
 //          Taikan Suehara <suehara@icepp.s.u-tokyo.ac.jp>
-// Proted from Mokka by A.Sailer (CERN )
+// Ported from Mokka by A.Sailer (CERN )
 //
-// $Id$
-// $Name: $
 
 /** \addtogroup Geant4PhysicsConstructor
  *

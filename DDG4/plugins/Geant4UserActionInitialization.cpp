@@ -11,7 +11,6 @@
 //  \date   2015-11-03
 //
 //==========================================================================
-// $Id$
 #ifndef DD4HEP_DDG4_GEANT4USERACTIONINITIALIZATION_H
 #define DD4HEP_DDG4_GEANT4USERACTIONINITIALIZATION_H
 

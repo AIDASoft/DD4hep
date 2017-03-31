@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -36,6 +35,7 @@ namespace DD4hep {
     class Geant4EscapeCounter : /* virtual public Geant4SteppingAction, virtual */ public Geant4Sensitive {
       /// Collection identifiers
       size_t m_collectionID;
+      /// Detector name set
       std::vector<std::string> m_detectorNames;
     public:
       /// Standard constructor
@@ -43,7 +43,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4EscapeCounter();
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
-      virtual bool process(G4Step* step, G4TouchableHistory* history);
+      virtual bool process(G4Step* step, G4TouchableHistory* history)  override;
     };
 
   }    // End namespace Simulation
@@ -51,12 +51,16 @@ namespace DD4hep {
 
 #endif /* DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H */
 
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
 //
 //====================================================================
 #include "DD4hep/Printout.h"
