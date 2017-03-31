@@ -30,7 +30,7 @@ namespace DD4hep {
     // Forward declarations
     typedef Position Direction;
 
-
+    /// Base class describing any field with 3D cartesian vectors for the field strength.
     /** Abstract base class describing any field (electric or magnetic) with 3D cartesian vectors 
      *  for the field strength and positions.
      *  Implementation classes need to overwrite void fieldComponents(const double* pos, double* field).
