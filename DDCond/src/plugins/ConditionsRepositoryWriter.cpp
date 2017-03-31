@@ -310,7 +310,7 @@ size_t ConditionsXMLRepositoryWriter::collect(XML::Element root,
       Container     cont = det.conditions();
       if ( cont.numKeys() > 0 )   {
         stringstream comment;
-        XML::Element conditions = XML::Element(root.document(),_U(detelement));
+        XML::Element conditions = XML::Element(root.document(),_UC(detelement));
         conditions.setAttr(_U(path),detector.path());
         printout(s_printLevel,"Writer","++ Conditions of DE %s [%d entries]",
                  detector.path().c_str(), int(cont.keys().size()));

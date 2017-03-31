@@ -78,9 +78,9 @@ namespace DD4hep {
   string _getValidity(xml_h elt)  {
     if ( !elt.ptr() )
       return "Infinite";
-    else if ( !elt.hasAttr(_U(validity)) )
+    else if ( !elt.hasAttr(_UC(validity)) )
       return _getValidity(elt.parent());
-    return elt.attr<string>(_U(validity));
+    return elt.attr<string>(_UC(validity));
   }
 
   /// Helper: Extract the required detector element from the parsing information

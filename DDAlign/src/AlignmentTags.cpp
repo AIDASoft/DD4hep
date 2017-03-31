@@ -16,6 +16,6 @@
 
 // Define unicode tags
 #ifndef UNICODE
-#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x
+#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x ( #x )
 #endif
 #include "DDAlign/AlignmentTags.h"
