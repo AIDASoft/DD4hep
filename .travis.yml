@@ -33,8 +33,8 @@ install:
 
 # command to run tests
 script:
-  - docker run -ti --name CI_container -v $PKGDIR:/Package -e COMPILER=$COMPILER -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/slc6-build /bin/bash
-  - docker exec -ti CI_container /bin/bash -c "./Package/.dd4hep-ci.d/compile_and_test.sh"
+  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER=$COMPILER -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/slc6-build /bin/bash
+  - docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/compile_and_test.sh"
 
 # Don't send e-mail notifications
 notifications:
