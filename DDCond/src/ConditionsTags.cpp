@@ -15,7 +15,5 @@
 #include "XML/XMLTags.h"
 
 // Define unicode tags
-#ifndef UNICODE
-#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x
-#endif
+#define UNICODE(x)  const ::DD4hep::XML::Tag_t Unicode_##x ( #x )
 #include "DDCond/ConditionsTags.h"
