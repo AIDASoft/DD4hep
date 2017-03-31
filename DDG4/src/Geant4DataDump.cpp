@@ -50,6 +50,26 @@ void Geant4DataDump::print(PrintLevel level, Geant4ParticleHandle p)  const  {
            );
 }
 
+/// Print a single particle to the output logging using the specified print level
+void Geant4DataDump::print(PrintLevel level, int id, Geant4ParticleHandle p)  const  {
+  PropertyMask mask(p->reason);
+  int parent = p->parents.empty() ? -1 : *p->parents.begin();
+  printout(level, m_tag, "   +++ TrackID: %6d [key:%d] %12d %6d %-7s %3s %5d %6s %8.3g %-4s %-7s %-7s %-3s",
+           p->id, id,
+           p->pdgID,
+           parent,
+           yes_no(mask.isSet(G4PARTICLE_PRIMARY)),
+           yes_no(mask.isSet(G4PARTICLE_HAS_SECONDARIES)),
+           int(p->daughters.size()),
+           yes_no(mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD)),
+           p.energy(),
+           yes_no(mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT)),
+           yes_no(mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT)),
+           yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),
+           mask.isSet(G4PARTICLE_KEEP_PARENT) ? "YES" : ""
+           );
+}
+
 /// Print the particle container to the output logging using the specified print level
 void Geant4DataDump::print(PrintLevel level, const std::string& container, const Particles* parts)  const   {
   if ( parts )    {
@@ -74,7 +94,7 @@ void Geant4DataDump::print(PrintLevel level, const Geant4ParticleMap* parts)  co
     printout(level,m_tag,"+++ # of Tracks:%6d          PDG Parent Primary Secondary Energy %-8s Calo Tracker Process/Par",
              int(pm.size()),"in [MeV]");
     for(const auto& p : pm)
-      print(low_lvl, p.second);
+      print(low_lvl, p.first, p.second);
   }
 }
 

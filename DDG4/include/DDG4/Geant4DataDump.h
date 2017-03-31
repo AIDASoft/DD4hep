@@ -57,6 +57,8 @@ namespace DD4hep {
 #if !(defined(G__DICTIONARY) || defined(__CLANG__) || defined(__CINT__) || defined(__MAKECINT__))
       /// Print a single particle to the output logging using the specified print level
       void print(PrintLevel level, Geant4ParticleHandle p)  const;
+      /// Print a single particle to the output logging using the specified print level
+      void print(PrintLevel level, int key, Geant4ParticleHandle p)  const;
 #endif
       /// Print the particle map to the output logging using the specified print level
       void print(PrintLevel level, const Geant4ParticleMap* parts)  const;
