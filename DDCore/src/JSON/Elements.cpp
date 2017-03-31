@@ -529,10 +529,10 @@ void DD4hep::JSON::dumpTree(Element elt)   {
 
 void DD4hep::JSON::dumpTree(const JsonElement* elt)   {
   struct Dump {
-    void operator()(const JsonElement* elt, const string& tag)   const  {
+    void operator()(const JsonElement* e, const string& tag)   const  {
       string t = tag+"   ";
-      printout(INFO,"DumpTree","+++ %s %s: %s",tag.c_str(), elt->first.c_str(), elt->second.data().c_str());
-      for(auto i=elt->second.begin(); i!=elt->second.end(); ++i)
+      printout(INFO,"DumpTree","+++ %s %s: %s",tag.c_str(), e->first.c_str(), e->second.data().c_str());
+      for(auto i=e->second.begin(); i!=e->second.end(); ++i)
         (*this)(&(*i), t);
     }
   } _dmp;

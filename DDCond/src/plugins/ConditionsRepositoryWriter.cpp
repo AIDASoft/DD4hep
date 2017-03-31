@@ -226,15 +226,15 @@ namespace {
     return v;
   }
   template <> XML::Element _convert<std::vector<void*> >(XML::Element par, Condition c)  {
-    XML::Element v = make(XML::Element(par.document(),_U(sequence)),c);
+    XML::Element v = make(XML::Element(par.document(),_UC(sequence)),c);
     return _seq(v,c,"vector","::vector<");
   }
   template <> XML::Element _convert<std::list<void*> >(XML::Element par, Condition c)  {
-    XML::Element v = make(XML::Element(par.document(),_U(sequence)),c);
+    XML::Element v = make(XML::Element(par.document(),_UC(sequence)),c);
     return _seq(v,c,"list","::list<");
   }
   template <> XML::Element _convert<std::set<void*> >(XML::Element par, Condition c)  {
-    XML::Element v = make(XML::Element(par.document(),_U(sequence)),c);
+    XML::Element v = make(XML::Element(par.document(),_UC(sequence)),c);
     return _seq(v,c,"set","::set<");
   }
 }

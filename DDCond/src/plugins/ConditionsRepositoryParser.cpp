@@ -372,10 +372,10 @@ namespace DD4hep {
     }
     xml_coll_t(e,_U(value)).for_each(Converter<value>(lcdd,param,optional));
     xml_coll_t(e,_UC(mapping)).for_each(Converter<mapping>(lcdd,param,optional));
-    xml_coll_t(e,_U(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
-    xml_coll_t(e,_U(pressure)).for_each(Converter<pressure>(lcdd,param,optional));
-    xml_coll_t(e,_U(alignment)).for_each(Converter<alignment>(lcdd,param,optional));
-    xml_coll_t(e,_U(temperature)).for_each(Converter<temperature>(lcdd,param,optional));
+    xml_coll_t(e,_UC(sequence)).for_each(Converter<sequence>(lcdd,param,optional));
+    xml_coll_t(e,_UC(pressure)).for_each(Converter<pressure>(lcdd,param,optional));
+    xml_coll_t(e,_UC(alignment)).for_each(Converter<alignment>(lcdd,param,optional));
+    xml_coll_t(e,_UC(temperature)).for_each(Converter<temperature>(lcdd,param,optional));
     xml_coll_t(e,_UC(detelement)).for_each(Converter<detelement>(lcdd,param,optional));
   }
 
