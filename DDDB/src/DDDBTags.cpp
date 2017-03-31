@@ -22,6 +22,6 @@
 
 // Define unicode tags
 #ifndef UNICODE
-#define UNICODE(x)  DECLARE_UNICODE_TAG(x)
+#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x
 #endif
 #include "DDDB/DDDBTags.h"

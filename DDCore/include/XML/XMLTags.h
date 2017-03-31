@@ -14,7 +14,7 @@
 #ifndef DD4HEP_XML_TAGS_H
 #define DD4HEP_XML_TAGS_H
 
-#define DECLARE_UNICODE_TAG(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x (#x)
+#define DECLARE_UNICODE_TAG(x)  namespace DD4hep { namespace XML { extern const Tag_t Unicode_##x (#x); }}
 
 // Framework include files
 #include "XML/XMLElements.h"

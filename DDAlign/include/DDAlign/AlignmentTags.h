@@ -26,7 +26,6 @@ namespace DD4hep {
   namespace DDAlign {
 
     // Alignment tags
-
     UNICODE(DetectorAlignment);
     UNICODE(subdetectors);
     UNICODE(subdetector);
