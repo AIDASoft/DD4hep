@@ -76,6 +76,7 @@ class DD4hepSimulation(object):
     self._errorMessages = []
     self._dumpParameter = False
     self._dumpSteeringFile = False
+    self.enableDetailedHitsAndParticleInfo = False
 
     ## objects for extended configuration option
     self.output = Output()
@@ -394,13 +395,48 @@ class DD4hepSimulation(object):
     part.MinDistToParentVertex= self.part.minDistToParentVertex
     part.OutputLevel = self.output.part
     part.enableUI()
+
+
+    if self.enableDetailedHitsAndParticleInfo:
+      #---- debug code from Markus for detailed dumps of hits and MC-truth assignement ------
+      # Add the particle dumper to associate the MC truth
+      evt = DDG4.EventAction(kernel,"Geant4ParticleDumpAction/ParticleDump")
+      kernel.eventAction().adopt(evt)
+      evt.enableUI()
+      # Add the hit dumper BEFORE any hit truth is fixed
+      evt = DDG4.EventAction(kernel,"Geant4HitDumpAction/RawDump")
+      kernel.eventAction().adopt(evt)
+      evt.enableUI()
+      # Add the hit dumper to the event action sequence
+      evt = DDG4.EventAction(kernel,"Geant4HitTruthHandler/HitTruth")
+      kernel.eventAction().adopt(evt)
+      evt.enableUI()
+      # Add the hit dumper AFTER any hit truth is fixed. We should see the reduced track references
+      evt = DDG4.EventAction(kernel,"Geant4HitDumpAction/HitDump")
+      kernel.eventAction().adopt(evt)
+      evt.enableUI()
+      
+    #----------------------------------
+
+
+
+
     user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
     try:
       user.TrackingVolume_Zmax = DDG4.tracker_region_zmax
       user.TrackingVolume_Rmax = DDG4.tracker_region_rmax
-    except AttributeError as e:
-      print "No Attribute: ", str(e)
 
+      print " *** definition of tracker region *** "
+      print "    tracker_region_zmax = " ,  user.TrackingVolume_Zmax
+      print "    tracker_region_rmax = " ,  user.TrackingVolume_Rmax
+      print " ************************************ "
+
+    except AttributeError as e:
+      print "ERROR - attribute of tracker region missing in detector model   ", str(e)
+      print "   make sure to specify the global constants tracker_region_zmax and tracker_region_rmax "
+      print "   this is needed for the MC-truth link of created sim-hits  !  "
+      exit(1)
+      
     #  user.enableUI()
     part.adopt(user)
 
