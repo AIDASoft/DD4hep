@@ -13,6 +13,18 @@ class ParticleHandler( ConfigHelper ):
     self._printEndTracking = False
     self._printStartTracking = False
     self._minDistToParentVertex = 2.2e-14*mm
+    self._enableDetailedHitsAndParticleInfo = False
+    self._enableDetailedHitsAndParticleInfo_HELP = "print out lots of info about MCHistory"
+
+  @property
+  def enableDetailedHitsAndParticleInfo(self):
+    """Enamble lots of printout on simulated hits and MC-truth inforamation"""
+    return self._enableDetailedHitsAndParticleInfo
+
+  @enableDetailedHitsAndParticleInfo.setter
+  def enableDetailedHitsAndParticleInfo( self, val ):
+    self._enableDetailedHitsAndParticleInfo = val
+
 
   @property
   def minDistToParentVertex( self ):
@@ -63,3 +75,22 @@ class ParticleHandler( ConfigHelper ):
   @printEndTracking.setter
   def printEndTracking( self, val ):
     self._printEndTracking = val
+
+  def setDumpDetailedParticleInfo( self, kernel, DDG4 ):
+    #---- debug code from Markus for detailed dumps of hits and MC-truth assignement ------
+    # Add the particle dumper to associate the MC truth
+    evt = DDG4.EventAction(kernel,"Geant4ParticleDumpAction/ParticleDump")
+    kernel.eventAction().adopt(evt)
+    evt.enableUI()
+    # Add the hit dumper BEFORE any hit truth is fixed
+    evt = DDG4.EventAction(kernel,"Geant4HitDumpAction/RawDump")
+    kernel.eventAction().adopt(evt)
+    evt.enableUI()
+    # Add the hit dumper to the event action sequence
+    evt = DDG4.EventAction(kernel,"Geant4HitTruthHandler/HitTruth")
+    kernel.eventAction().adopt(evt)
+    evt.enableUI()
+    # Add the hit dumper AFTER any hit truth is fixed. We should see the reduced track references
+    evt = DDG4.EventAction(kernel,"Geant4HitDumpAction/HitDump")
+    kernel.eventAction().adopt(evt)
+    evt.enableUI()
