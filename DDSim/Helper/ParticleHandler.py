@@ -18,7 +18,7 @@ class ParticleHandler( ConfigHelper ):
 
   @property
   def enableDetailedHitsAndParticleInfo(self):
-    """Enamble lots of printout on simulated hits and MC-truth inforamation"""
+    """Enable lots of printout on simulated hits and MC-truth information"""
     return self._enableDetailedHitsAndParticleInfo
 
   @enableDetailedHitsAndParticleInfo.setter
