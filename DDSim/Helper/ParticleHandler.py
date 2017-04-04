@@ -14,7 +14,6 @@ class ParticleHandler( ConfigHelper ):
     self._printStartTracking = False
     self._minDistToParentVertex = 2.2e-14*mm
     self._enableDetailedHitsAndParticleInfo = False
-    self._enableDetailedHitsAndParticleInfo_HELP = "print out lots of info about MCHistory"
 
   @property
   def enableDetailedHitsAndParticleInfo(self):
