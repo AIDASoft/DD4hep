@@ -137,6 +137,17 @@ namespace DD4hep {
         lc_hit->setMCParticle(lc_mcp);
         lc_hit->setPosition(pos);
         lc_hit->setMomentum(hit->momentum.x()/CLHEP::GeV,hit->momentum.y()/CLHEP::GeV,hit->momentum.z()/CLHEP::GeV);
+
+#if LCIO_VERSION_GE( 2, 8 )
+        auto particleIt = pm->particles().find(trackID);
+        if( ( particleIt != pm->particles().end()) ){
+	  // if the original track ID of the particle is not the same as the
+	  // original track ID of the hit it was produced by an MCParticle that
+	  // is no longer stored
+	  lc_hit->setProducedBySecondary( (particleIt->second->originalG4ID != t.trackID) );
+        }
+#endif
+
         lc_coll->addElement(lc_hit);
       }
       return lc_coll;

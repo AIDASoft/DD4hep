@@ -36,7 +36,7 @@ ParticleExtension::~ParticleExtension() {
 
 /// Copy constructor
 Geant4Particle::Geant4Particle(const Geant4Particle& c)
-: ref(1), id(c.id), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
+: ref(1), id(c.id), originalG4ID(c.originalG4ID), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
   steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
   status(c.status), charge(0),
   vsx(c.vsx), vsy(c.vsy), vsz(c.vsz),
@@ -57,7 +57,7 @@ Geant4Particle::Geant4Particle(const Geant4Particle& c)
 
 /// Default constructor
 Geant4Particle::Geant4Particle()
-: ref(1), id(0), g4Parent(0), reason(0), mask(0),
+: ref(1), id(0), originalG4ID(0), g4Parent(0), reason(0), mask(0),
   steps(0), secondaries(0), pdgID(0),
   status(0), charge(0),
   vsx(0.0), vsy(0.0), vsz(0.0),
@@ -74,7 +74,7 @@ Geant4Particle::Geant4Particle()
 
 /// Constructor with ID initialization
 Geant4Particle::Geant4Particle(int part_id)
-: ref(1), id(part_id), g4Parent(0), reason(0), mask(0),
+: ref(1), id(part_id), originalG4ID(part_id), g4Parent(0), reason(0), mask(0),
   steps(0), secondaries(0), pdgID(0),
   status(0), charge(0),
   vsx(0.0), vsy(0.0), vsz(0.0),
@@ -106,6 +106,7 @@ void Geant4Particle::release()  {
 Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
   if ( this != &c )  {
     id = c.id;
+    originalG4ID = c.originalG4ID;
     g4Parent    = c.g4Parent;
     reason      = c.reason;
     mask        = c.mask;
