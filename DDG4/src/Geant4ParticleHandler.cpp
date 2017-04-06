@@ -255,6 +255,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   m_currTrack.steps       = 0;
   m_currTrack.secondaries = 0;
   m_currTrack.g4Parent    = h.parent();
+  m_currTrack.originalG4ID= h.id();
   m_currTrack.process     = h.creatorProcess();
   m_currTrack.time        = h.globalTime();
   m_currTrack.vsx         = v.x();
