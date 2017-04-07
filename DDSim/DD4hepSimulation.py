@@ -481,6 +481,11 @@ class DD4hepSimulation(object):
     kernel.run()
     kernel.terminate()
 
+    userTime, sysTime,_cuTime, _csTime, _elapsedTime = os.times()
+    if self.printLevel <= 3:
+      print "DDSim            INFO  Execution Time: %3.2f s (User), %3.2f s (System)"% (userTime, sysTime)
+
+
   def __setMagneticFieldOptions(self, simple):
     """ create and configure the magnetic tracking setup """
     field = simple.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
