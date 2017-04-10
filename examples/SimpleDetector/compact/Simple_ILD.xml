@@ -25,6 +25,9 @@
       <type name="limits"       value="0"/>
       <type name="segmentation" value="0"/>
     </debug>
+    <geometry>
+      <clear name="elements"/>
+    </geometry>
  
     <includes>
         <gdmlFile  ref="elements.xml"/>

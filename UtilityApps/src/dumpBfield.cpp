@@ -54,12 +54,8 @@ static int invoke_dump_B_field(int argc, char** argv ){
   LCDD& lcdd = LCDD::getInstance();
   lcdd.fromCompact( inFile );
   
-  DetElement world = lcdd.world() ;
-  
-  
-  std::cout << "#######################################################################################################"  << std::endl  ;
-  std::cout << "       x[cm]             y[cm]           z[cm]           Bx[Tesla]        By[cm]          Bz[cm]       "  << std::endl  ;
-
+  printf("#######################################################################################################\n");
+  printf("       x[cm]             y[cm]           z[cm]           Bx[Tesla]        By[cm]          Bz[cm]       \n");
 
   for( float x = -xRange ; x <=xRange ; x += dx ){
     for( float y = -yRange ; y <=yRange ; y += dy ){
@@ -69,14 +65,14 @@ static int invoke_dump_B_field(int argc, char** argv ){
 	double bfieldV[3] ;
 	lcdd.field().magneticField( posV  , bfieldV  ) ;
 
-	printf(" %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  \n", posV[0], posV[1],  posV[2], bfieldV[0]/dd4hep::tesla , bfieldV[1]/dd4hep::tesla, bfieldV[2]/dd4hep::tesla ) ; 
+	printf(" %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  \n",
+         posV[0], posV[1],  posV[2],
+         bfieldV[0]/dd4hep::tesla , bfieldV[1]/dd4hep::tesla, bfieldV[2]/dd4hep::tesla ) ; 
 
       }
     }
   }
-
-  std::cout << "#######################################################################################################"  << std::endl  ;
-  
+  printf("#######################################################################################################\n");  
   return 0;
 }
 

@@ -1151,6 +1151,19 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     xml_elt_t steer = compact.child(_U(geometry));
     if ( steer.hasAttr(_U(open))  ) open_geometry  = steer.attr<bool>(_U(open));
     if ( steer.hasAttr(_U(close)) ) close_geometry = steer.attr<bool>(_U(close));
+    for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
+      string nam = clr.hasAttr(_U(name)) ? clr.attr<string>(_U(name)) : string();
+      if ( nam.substr(0,6) == "elemen" )   {
+        TGeoElementTable*	table = lcdd.manager().GetElementTable();
+        table->TGeoElementTable::~TGeoElementTable();
+        new(table) TGeoElementTable();
+        // This will initialize the table without filling:
+        table->AddElement("VACUUM","VACUUM"   ,0,   0, 0.0);
+        printout(INFO,"Compact",
+                 "++ Cleared default ROOT TGeoElementTable contents. "
+                 "Must now be filled from XML!");
+      }
+    }
   }
   
   xml_coll_t(compact, _U(define)).for_each(_U(include), Converter<DetElementInclude>(lcdd));
