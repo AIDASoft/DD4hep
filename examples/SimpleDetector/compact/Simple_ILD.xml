@@ -16,8 +16,8 @@
 
     <!-- Debug flags for processing the compact xml file  -->
     <debug>
-      <type name="isotopes"     value="0"/>
-      <type name="elements"     value="0"/>
+      <type name="isotopes"     value="1"/>
+      <type name="elements"     value="1"/>
       <type name="materials"    value="0"/>
       <type name="visattr"      value="0"/>
       <type name="regions"      value="0"/>

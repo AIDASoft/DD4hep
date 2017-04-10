@@ -286,23 +286,27 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
   if (!g4e) {
     g4e = G4Element::GetElement(name, false);
     if (!g4e) {
-      if (element->GetNisotopes() > 1) {
+      double a_conv = (CLHEP::g / CLHEP::mole);
+      if (element->GetNisotopes() > 0) {
         g4e = new G4Element(name, element->GetTitle(), element->GetNisotopes());
         for (int i = 0, n = element->GetNisotopes(); i < n; ++i) {
           TGeoIsotope* iso = element->GetIsotope(i);
           G4Isotope* g4iso = G4Isotope::GetIsotope(iso->GetName(), false);
           if (!g4iso) {
-            g4iso = new G4Isotope(iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
+            g4iso = new G4Isotope(iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA()*a_conv);
+            printout(ALWAYS /*m_outputLevel*/, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+                     iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
           }
           g4e->AddIsotope(g4iso, element->GetRelativeAbundance(i));
         }
       }
       else {
-        g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A() * (CLHEP::g / CLHEP::mole));
+        g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A()*a_conv);
       }
       stringstream str;
       str << (*g4e);
-      printout(m_outputLevel, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
+      printout(ALWAYS /*m_outputLevel*/, "Geant4Converter", "++ Created G4 %s No.Isotopes:%d",
+               str.str().c_str(),element->GetNisotopes());
     }
     data().g4Elements[element] = g4e;
   }
@@ -316,8 +320,8 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     mat = G4Material::GetMaterial(name, false);
     if (!mat) {
       TGeoMaterial* material = medium->GetMaterial();
-      G4State state = kStateUndefined;
-      double density = material->GetDensity() * (CLHEP::gram / CLHEP::cm3);
+      G4State state   = kStateUndefined;
+      double  density = material->GetDensity() * (CLHEP::gram / CLHEP::cm3);
       if (density < 1e-25)
         density = 1e-25;
       switch (material->GetState()) {

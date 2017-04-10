@@ -512,9 +512,6 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
       for( xml_coll_t i(elem,_U(fraction)); i; ++i)
         ++num_isotopes;
       elt = new TGeoElement(name.c_str(), formula.c_str(), num_isotopes);
-      printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
-               "++ Converting element  %-16s  [%-3s] with %d isotopes.",
-               name.c_str(), formula.c_str(), num_isotopes);
       tab->AddElement(elt);
       for( xml_coll_t i(elem,_U(fraction)); i; ++i)  {
         double frac = i.attr<double>(_U(n));
@@ -529,6 +526,9 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
                  name.c_str(), ref.c_str(), frac);
         elt->AddIsotope(iso, frac);
       }
+      printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+               "++ Converted  element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol] with %d isotopes.",
+               name.c_str(), formula.c_str(), elt->Z(), elt->A(), num_isotopes);
     }
     elt = tab->FindElement(name.c_str());
     if (!elt) {
