@@ -65,6 +65,7 @@ UNICODE (chamber);
 UNICODE (chambers);
 UNICODE (check);
 UNICODE (checksum);
+UNICODE (clear);
 UNICODE (close);
 UNICODE (cm);
 UNICODE (coefficient);
