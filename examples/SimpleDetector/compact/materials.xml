@@ -1,48 +1,4 @@
   <materials>
-    <isotope N="1" Z="1" name="H1">
-      <atom unit="g/mole" value="1.00782503081372"/>
-    </isotope>
-    <isotope N="2" Z="1" name="H2">
-      <atom unit="g/mole" value="2.01410199966617"/>
-    </isotope>
-    <element name="H">
-      <fraction n="0.999885" ref="H1"/>
-      <fraction n="0.000115" ref="H2"/>
-    </element>
-    <isotope N="12" Z="6" name="C12">
-      <atom unit="g/mole" value="12"/>
-    </isotope>
-    <isotope N="13" Z="6" name="C13">
-      <atom unit="g/mole" value="13.0034"/>
-    </isotope>
-    <element name="C">
-      <fraction n="0.9893" ref="C12"/>
-      <fraction n="0.0107" ref="C13"/>
-    </element>
-    <isotope N="14" Z="7" name="N14">
-      <atom unit="g/mole" value="14.0031"/>
-    </isotope>
-    <isotope N="15" Z="7" name="N15">
-      <atom unit="g/mole" value="15.0001"/>
-    </isotope>
-    <element name="N">
-      <fraction n="0.99632" ref="N14"/>
-      <fraction n="0.00368" ref="N15"/>
-    </element>
-    <isotope N="16" Z="8" name="O16">
-      <atom unit="g/mole" value="15.9949"/>
-    </isotope>
-    <isotope N="17" Z="8" name="O17">
-      <atom unit="g/mole" value="16.9991"/>
-    </isotope>
-    <isotope N="18" Z="8" name="O18">
-      <atom unit="g/mole" value="17.9992"/>
-    </isotope>
-    <element name="O">
-      <fraction n="0.99757" ref="O16"/>
-      <fraction n="0.00038" ref="O17"/>
-      <fraction n="0.00205" ref="O18"/>
-    </element>
     <material name="G4_KAPTON" state="solid">
       <MEE unit="eV" value="79.6"/>
       <D unit="g/cm3" value="1.42"/>
@@ -103,28 +59,6 @@
       <atom unit="g/mole" value="9.01218"/>
       <fraction n="1" ref="Be"/>
     </material>
-    <isotope N="46" Z="22" name="Ti46">
-      <atom unit="g/mole" value="45.9526"/>
-    </isotope>
-    <isotope N="47" Z="22" name="Ti47">
-      <atom unit="g/mole" value="46.9518"/>
-    </isotope>
-    <isotope N="48" Z="22" name="Ti48">
-      <atom unit="g/mole" value="47.9479"/>
-    </isotope>
-    <isotope N="49" Z="22" name="Ti49">
-      <atom unit="g/mole" value="48.9479"/>
-    </isotope>
-    <isotope N="50" Z="22" name="Ti50">
-      <atom unit="g/mole" value="49.9448"/>
-    </isotope>
-    <element name="Ti">
-      <fraction n="0.0825" ref="Ti46"/>
-      <fraction n="0.0744" ref="Ti47"/>
-      <fraction n="0.7372" ref="Ti48"/>
-      <fraction n="0.0541" ref="Ti49"/>
-      <fraction n="0.0518" ref="Ti50"/>
-    </element>
     <material name="G4_Ti" state="solid">
       <MEE unit="eV" value="233"/>
       <D unit="g/cm3" value="4.54"/>

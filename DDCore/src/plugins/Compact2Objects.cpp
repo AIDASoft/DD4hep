@@ -41,20 +41,24 @@ using namespace DD4hep::Geometry;
 
 namespace DD4hep {
   namespace Geometry {
-    struct Plugin;
-    struct Compact;
-    struct Includes;
-    struct GdmlFile;
-    struct Property;
-    struct XMLFile;
-    struct JsonFile;
-    struct AlignmentFile;
-    struct DetElementInclude {};
+    class Debug;
+    class Isotope;
+    class Plugin;
+    class Compact;
+    class Includes;
+    class GdmlFile;
+    class Property;
+    class XMLFile;
+    class JsonFile;
+    class AlignmentFile;
+    class DetElementInclude {};
   }
+  template <> void Converter<Debug>::operator()(xml_h element) const;
   template <> void Converter<Plugin>::operator()(xml_h element) const;
   template <> void Converter<Constant>::operator()(xml_h element) const;
   template <> void Converter<Material>::operator()(xml_h element) const;
   template <> void Converter<Atom>::operator()(xml_h element) const;
+  template <> void Converter<Isotope>::operator()(xml_h element) const;
   template <> void Converter<VisAttr>::operator()(xml_h element) const;
   template <> void Converter<AlignmentEntry>::operator()(xml_h element) const;
   template <> void Converter<Region>::operator()(xml_h element) const;
@@ -80,7 +84,14 @@ namespace {
     printout(ERROR, "Compact", msg.c_str());
     throw runtime_error(msg);
   }
-
+  bool s_debug_readout      = false;
+  bool s_debug_regions      = false;
+  bool s_debug_limits       = false;
+  bool s_debug_visattr      = false;
+  bool s_debug_isotopes     = false;
+  bool s_debug_elements     = false;
+  bool s_debug_materials    = false;
+  bool s_debug_segmentation = false;
 }
 
 static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e) {
@@ -220,6 +231,23 @@ static long create_Compact(lcdd_t& lcdd, xml_h element) {
 }
 DECLARE_XML_DOC_READER(lccdd,create_Compact)
 
+/** Convert parser debug flags.
+ */
+template <> void Converter<Debug>::operator()(xml_h e) const {
+  for (xml_coll_t coll(e, _U(type)); coll; ++coll) {
+    string nam = coll.attr<string>(_U(name));
+    int    val = coll.attr<int>(_U(value));
+    if      ( nam.substr(0,6) == "isotop" ) s_debug_isotopes     = (0 != val);
+    else if ( nam.substr(0,6) == "elemen" ) s_debug_elements     = (0 != val);
+    else if ( nam.substr(0,6) == "materi" ) s_debug_materials    = (0 != val);
+    else if ( nam.substr(0,6) == "visatt" ) s_debug_visattr      = (0 != val);
+    else if ( nam.substr(0,6) == "region" ) s_debug_regions      = (0 != val);
+    else if ( nam.substr(0,6) == "readou" ) s_debug_readout      = (0 != val);
+    else if ( nam.substr(0,6) == "limits" ) s_debug_limits       = (0 != val);
+    else if ( nam.substr(0,6) == "segmen" ) s_debug_segmentation = (0 != val);
+  }
+}
+  
 /** Convert/execute plugin objects from the xml (plugins)
  *
  *
@@ -317,7 +345,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       cout << " Density Value raw:" << dens_val << " normalized:" << (dens_val*dens_unit) << endl;
       dens_val *= dens_unit;
     }
-
+    printout(s_debug_materials ? ALWAYS : DEBUG, "Compact",
+             "++ Converting material %-16s  Density: %.3f.",matname, dens_val);
 #if 0
     cout << "Gev    " << XML::_toDouble(_Unicode(GeV)) << endl;
     cout << "sec    " << XML::_toDouble(_Unicode(second)) << endl;
@@ -411,30 +440,104 @@ template <> void Converter<Material>::operator()(xml_h e) const {
   }
 }
 
-/** Convert compact atom objects
+/** Convert compact isotope objects
  *
- *   <element Z="29" formula="Cu" name="Cu" >
+ *   <isotope name="C12" Z="2" N="12"/>
+ *     <atom unit="g/mole" value="12"/>
+ *   </isotope>
+ */
+template <> void Converter<Isotope>::operator()(xml_h e) const {
+  xml_dim_t isotope(e);
+  TGeoManager&      mgr  = lcdd.manager();
+  string            nam  = isotope.nameStr();
+  TGeoElementTable* tab  = mgr.GetElementTable();
+  TGeoIsotope*      iso  = tab->FindIsotope(nam.c_str());
+
+  // Create the isotope object in the event it is not yet present from the XML data
+  if ( !iso )   {
+    xml_ref_t atom(isotope.child(_U(atom)));
+    int    n     = isotope.attr<int>(_U(N));
+    int    z     = isotope.attr<int>(_U(Z));
+    double value = atom.attr<double>(_U(value));
+    string unit  = atom.attr<string>(_U(unit));
+    double a     = value * _multiply<double>(unit,"mol/g");
+    iso = new TGeoIsotope(nam.c_str(), z, n, a);
+    printout(s_debug_isotopes ? ALWAYS : DEBUG, "Compact",
+             "++ Converting isotope  %-16s  Z:%3d N:%3d A:%8.4f [g/mol]",
+             iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
+  }
+  else  {
+    printout(WARNING, "Compact",
+             "++ Isotope %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
+             iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
+  }
+}
+
+/** Convert compact atom objects (periodic elements)
+ *
+ *   <element Z="4" formula="Be" name="Be" >
+ *     <atom type="A" unit="g/mol" value="9.01218" />
+ *   </element>
+ *   or
+ *   <element name="C">
+ *     <fraction n="0.9893" ref="C12"/>
+ *     <fraction n="0.0107" ref="C13"/>
+ *   </element>
+ * 
+ *   Please note: 
+ *   Elements may consist of a mixture of isotopes!
  */
 template <> void Converter<Atom>::operator()(xml_h e) const {
-  xml_ref_t elem(e);
-  xml_tag_t eltname = elem.name();
-  TGeoManager& mgr = lcdd.manager();
-  TGeoElementTable* tab = mgr.GetElementTable();
-  TGeoElement* element = tab->FindElement(eltname.c_str());
-  if (!element) {
-    xml_ref_t atom(elem.child(_U(atom)));
-    string formula = elem.attr<string>(_U(formula));
-    double value   = atom.attr<double>(_U(value));
-    string unit    = atom.attr<string>(_U(unit));
-    int    z = elem.attr<int>(_U(Z));
-    double a = value*_multiply<double>(unit,"mol/g");
-    printout(DEBUG, "Compact", "++ Converting element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol]",
-             eltname.c_str(), formula.c_str(), z, a);
-    tab->AddElement(eltname.c_str(), formula.c_str(), z, a);
-    element = tab->FindElement(eltname.c_str());
-    if (!element) {
-      throw_print("Failed to properly insert the Element:" + eltname + " into the element table!");
+  xml_ref_t         elem(e);
+  xml_tag_t         name = elem.name();
+  TGeoManager&      mgr  = lcdd.manager();
+  TGeoElementTable* tab  = mgr.GetElementTable();
+  TGeoElement*      elt  = tab->FindElement(name.c_str());
+  if ( !elt ) {
+    if ( elem.hasChild(_U(atom)) )  {
+      xml_ref_t atom(elem.child(_U(atom)));
+      string formula = elem.attr<string>(_U(formula));
+      double value   = atom.attr<double>(_U(value));
+      string unit    = atom.attr<string>(_U(unit));
+      int    z       = elem.attr<int>(_U(Z));
+      double a       = value*_multiply<double>(unit,"mol/g");
+      printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+               "++ Converting element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol]",
+               name.c_str(), formula.c_str(), z, a);
+      tab->AddElement(name.c_str(), formula.c_str(), z, a);
     }
+    else  {
+      int num_isotopes = 0;
+      string formula   = elem.hasAttr(_U(formula)) ? elem.attr<string>(_U(formula)) : name.str();
+      for( xml_coll_t i(elem,_U(fraction)); i; ++i)
+        ++num_isotopes;
+      elt = new TGeoElement(name.c_str(), formula.c_str(), num_isotopes);
+      printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+               "++ Converting element  %-16s  [%-3s] with %d isotopes.",
+               name.c_str(), formula.c_str(), num_isotopes);
+      tab->AddElement(elt);
+      for( xml_coll_t i(elem,_U(fraction)); i; ++i)  {
+        double frac = i.attr<double>(_U(n));
+        string ref  = i.attr<string>(_U(ref));
+        TGeoIsotope* iso = tab->FindIsotope(ref.c_str());
+        if ( !iso )  {
+          except("Compact","Element %s cannot be constructed. Isotope '%s' (fraction:%f) missing!",
+                 name.c_str(), ref.c_str(), frac);
+        }
+        printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+                 "++ Converting element  %-16s  Add isotope: %-16s fraction:%.4f.",
+                 name.c_str(), ref.c_str(), frac);
+        elt->AddIsotope(iso, frac);
+      }
+    }
+    elt = tab->FindElement(name.c_str());
+    if (!elt) {
+      throw_print("Failed to properly insert the Element:"+name+" into the element table!");
+    }
+  }
+  else  {
+    printout(WARNING, "Compact", "++ Element %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
+             elt->GetName(), elt->Z(), elt->N(), elt->A());
   }
 }
 
@@ -452,7 +555,9 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   float g = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
   float b = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
 
-  printout(DEBUG, "Compact", "++ Converting VisAttr  structure: %s.",attr.name());
+  printout(s_debug_visattr ? ALWAYS : DEBUG, "Compact",
+           "++ Converting VisAttr  structure: %-16s. R=%.3f G=%.3f B=%.3f",
+           attr.name(), r, g, b);
   attr.setColor(r, g, b);
   if (e.hasAttr(_U(alpha)))
     attr.setAlpha(e.attr<float>(_U(alpha)));
@@ -528,7 +633,8 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
   xml_attr_t store_secondaries = elt.attr_nothrow(_U(store_secondaries));
   double ene = e.eunit(1.0), len = e.lunit(1.0);
 
-  printout(DEBUG, "Compact", "++ Converting region   structure: %s.",region.name());
+  printout(s_debug_regions ? ALWAYS : DEBUG, "Compact",
+           "++ Converting region   structure: %s.",region.name());
   if ( cut )  {
     region.setCut(elt.attr<double>(cut)*len);
   }
@@ -561,6 +667,8 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
   if (segment.isValid()) {
     typedef Segmentation::Parameters _PARS;
     const _PARS& pars = segment.parameters();
+    printout(s_debug_segmentation ? ALWAYS : DEBUG, "Compact",
+             "++ Converting segmentation structure: %s of type %s.",name.c_str(),type.c_str());
     for(_PARS::const_iterator it = pars.begin(); it != pars.end(); ++it) {
       Segmentation::Parameter p = *it;
       XML::Strng_t pNam(p->name());
@@ -575,7 +683,8 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
         } else if ( pType.compare("doublevec") == 0 ) {
           vector<double> valueVector;
           string par = seg.attr<string>(pNam);
-          printout(DEBUG, "Compact", "++ Converting this string structure: %s.",par.c_str());
+          printout(s_debug_segmentation ? ALWAYS : DEBUG, "Compact",
+                   "++ Converting this string structure: %s.",par.c_str());
           vector<string> elts = DDSegmentation::splitString(par);
           for (vector<string>::const_iterator j = elts.begin(); j != elts.end(); ++j) {
             if ((*j).empty()) continue;
@@ -615,7 +724,8 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
           XML::dump_tree(sub,tree);
           throw_print("Nested segmentations: Invalid key specification:"+tree.str());
         }
-        printout(DEBUG,"Compact","++ Segmentation [%s/%s]: Add sub-segmentation %s [%s]",
+        printout(s_debug_segmentation ? ALWAYS : DEBUG,"Compact",
+                 "++ Segmentation [%s/%s]: Add sub-segmentation %s [%s]",
                  name.c_str(), type.c_str(), 
                  sub_seg->segmentation->name().c_str(),
                  sub_seg->segmentation->type().c_str());
@@ -642,8 +752,6 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   std::pair<Segmentation,IDDescriptor> opt;
   Readout ro(name);
   
-  printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
-  
   if (id) {
     //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
     opt.second = IDDescriptor(id.text());
@@ -663,6 +771,10 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   if ( opt.second.isValid() )  {
     ro.setIDDescriptor(opt.second);
   }
+  
+  printout(s_debug_readout ? ALWAYS : DEBUG,
+           "Compact", "++ Converting readout  structure: %-16s. %s%s",
+           ro.name(), id ? "ID: " : "", id ? id.text().c_str() : "");
   
   for(xml_coll_t colls(e,_U(hits_collections)); colls; ++colls)   {
     string hits_key;
@@ -688,7 +800,8 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
         XML::dump_tree(e,tree);
         throw_print("Reaout: Invalid specificatrion for multiple hit collections."+tree.str());
       }
-      printout(DEBUG,"Compact","++ Readout[%s]: Add hit collection %s [%s]  %d-%d",
+      printout(s_debug_readout ? ALWAYS : DEBUG,"Compact",
+               "++ Readout[%s]: Add hit collection %s [%s]  %d-%d",
                ro.name(), coll_name.c_str(), coll_key.c_str(), key_min, key_max);
       HitCollection hits(coll_name, coll_key, key_min, key_max);
       ro->hits.push_back(hits);
@@ -705,7 +818,8 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
  */
 template <> void Converter<LimitSet>::operator()(xml_h e) const {
   LimitSet ls(e.attr<string>(_U(name)));
-  printout(DEBUG, "Compact", "++ Converting LimitSet structure: %s.",ls.name());
+  printout(s_debug_limits ? ALWAYS : DEBUG, "Compact",
+           "++ Converting LimitSet structure: %s.",ls.name());
   for (xml_coll_t c(e, _U(limit)); c; ++c) {
     Limit limit;
     limit.particles = c.attr<string>(_U(particles));
@@ -953,9 +1067,10 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
-template <> void Converter<GdmlFile>::operator()(xml_h element) const {
+template <> void Converter<GdmlFile>::operator()(xml_h element) const   {
   XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h materials = doc.root();
+  xml_coll_t(materials, _U(isotope)).for_each(Converter<Isotope>(this->lcdd,0,0));
   xml_coll_t(materials, _U(element)).for_each(Converter<Atom>(this->lcdd));
   xml_coll_t(materials, _U(material)).for_each(Converter<Material>(this->lcdd));
 }
@@ -1029,6 +1144,9 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   bool open_geometry  = true;
   bool close_geometry = true;
 
+  if (element.hasChild(_U(debug)))
+    (Converter<Debug>(lcdd))(xml_h(compact.child(_U(debug))));
+  
   if ( steer_geometry )   {
     xml_elt_t steer = compact.child(_U(geometry));
     if ( steer.hasAttr(_U(open))  ) open_geometry  = steer.attr<bool>(_U(open));

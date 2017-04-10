@@ -115,14 +115,14 @@ LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
   }
   {
     m_manager = gGeoManager;
-#if 0 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
+    //#if 0 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
     TGeoElementTable*	table = m_manager->GetElementTable();
     table->TGeoElementTable::~TGeoElementTable();
     new(table) TGeoElementTable();
     // This will initialize the table without filling:
     table->AddElement("VACUUM","VACUUM"   ,0,   0, 0.0);
     table->Print();
-#endif
+    //#endif
   }
   //if ( 0 == gGeoIdentity )
   {
