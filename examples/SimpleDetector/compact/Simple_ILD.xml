@@ -13,6 +13,18 @@
            so far only VXD and (pixel) SIT ...
 	</comment>        
     </info>
+
+    <!-- Debug flags for processing the compact xml file  -->
+    <debug>
+      <type name="isotopes"     value="0"/>
+      <type name="elements"     value="0"/>
+      <type name="materials"    value="0"/>
+      <type name="visattr"      value="0"/>
+      <type name="regions"      value="0"/>
+      <type name="readout"      value="0"/>
+      <type name="limits"       value="0"/>
+      <type name="segmentation" value="0"/>
+    </debug>
  
     <includes>
         <gdmlFile  ref="elements.xml"/>

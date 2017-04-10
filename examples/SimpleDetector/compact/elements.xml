@@ -1,4 +1,76 @@
 <materials>
+
+    <isotope N="1" Z="1" name="H1">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H2">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="H">
+      <fraction n="0.999885" ref="H1"/>
+      <fraction n="0.000115" ref="H2"/>
+    </element>
+
+    <isotope N="12" Z="6" name="C12">
+      <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C13">
+      <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="C">
+      <fraction n="0.9893" ref="C12"/>
+      <fraction n="0.0107" ref="C13"/>
+    </element>
+
+    <isotope N="14" Z="7" name="N14">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N15">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="N">
+      <fraction n="0.99632" ref="N14"/>
+      <fraction n="0.00368" ref="N15"/>
+    </element>
+
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
+    </element>
+
+    <isotope N="46" Z="22" name="Ti46">
+      <atom unit="g/mole" value="45.9526"/>
+    </isotope>
+    <isotope N="47" Z="22" name="Ti47">
+      <atom unit="g/mole" value="46.9518"/>
+    </isotope>
+    <isotope N="48" Z="22" name="Ti48">
+      <atom unit="g/mole" value="47.9479"/>
+    </isotope>
+    <isotope N="49" Z="22" name="Ti49">
+      <atom unit="g/mole" value="48.9479"/>
+    </isotope>
+    <isotope N="50" Z="22" name="Ti50">
+      <atom unit="g/mole" value="49.9448"/>
+    </isotope>
+    <element name="Ti">
+      <fraction n="0.0825" ref="Ti46"/>
+      <fraction n="0.0744" ref="Ti47"/>
+      <fraction n="0.7372" ref="Ti48"/>
+      <fraction n="0.0541" ref="Ti49"/>
+      <fraction n="0.0518" ref="Ti50"/>
+    </element>
+
  <element Z="89" formula="Ac" name="Ac" >
   <atom type="A" unit="g/mol" value="227.028" />
  </element>
@@ -125,9 +197,6 @@
   <D type="density" unit="g/cm3" value="0.0070721" />
   <composite n="1" ref="Br" />
  </material>
- <element Z="6" formula="C" name="C" >
-  <atom type="A" unit="g/mol" value="12.0107" />
- </element>
  <material formula="C" name="Carbon" state="solid" >
   <RL type="X0" unit="cm" value="21.3485" />
   <NIL type="lambda" unit="cm" value="40.1008" />
@@ -305,9 +374,6 @@
   <D type="density" unit="g/cm3" value="5.323" />
   <composite n="1" ref="Ge" />
  </material>
- <element Z="1" formula="H" name="H" >
-  <atom type="A" unit="g/mol" value="1.00794" />
- </element>
  <material formula="H" name="Hydrogen" state="gas" >
   <RL type="X0" unit="cm" value="752776" />
   <NIL type="lambda" unit="cm" value="421239" />
@@ -449,9 +515,6 @@
   <D type="density" unit="g/cm3" value="10.22" />
   <composite n="1" ref="Mo" />
  </material>
- <element Z="7" formula="N" name="N" >
-  <atom type="A" unit="g/mol" value="14.0068" />
- </element>
  <material formula="N" name="Nitrogen" state="gas" >
   <RL type="X0" unit="cm" value="32602.2" />
   <NIL type="lambda" unit="cm" value="72430.3" />
@@ -512,9 +575,6 @@
   <D type="density" unit="g/cm3" value="20.25" />
   <composite n="1" ref="Np" />
  </material>
- <element Z="8" formula="O" name="O" >
-  <atom type="A" unit="g/mol" value="15.9994" />
- </element>
  <material formula="O" name="Oxygen" state="gas" >
   <RL type="X0" unit="cm" value="25713.8" />
   <NIL type="lambda" unit="cm" value="66233.9" />
@@ -782,9 +842,6 @@
   <D type="density" unit="g/cm3" value="11.72" />
   <composite n="1" ref="Th" />
  </material>
- <element Z="22" formula="Ti" name="Ti" >
-  <atom type="A" unit="g/mol" value="47.8667" />
- </element>
  <material formula="Ti" name="Titanium" state="solid" >
   <RL type="X0" unit="cm" value="3.5602" />
   <NIL type="lambda" unit="cm" value="27.9395" />

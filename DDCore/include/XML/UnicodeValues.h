@@ -86,6 +86,7 @@ UNICODE (cut);
 UNICODE (d);
 UNICODE (D);
 UNICODE (daughter);
+UNICODE (debug);
 UNICODE (define);
 UNICODE (delta);
 UNICODE (deltaphi);
