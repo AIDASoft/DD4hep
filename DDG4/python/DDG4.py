@@ -395,9 +395,9 @@ class Geant4:
 
      \author  M.Frank
   """
-  def addDetectorConstruction(self, name_type,
-                              field=None, field_args=None,
-                              geometry=None, geometry_args=None,
+  def addDetectorConstruction(self,            name_type,
+                              field=None,      field_args=None,
+                              geometry=None,   geometry_args=None,
                               sensitives=None, sensitives_args=None,
                               allow_threads=False):
     init_seq = self.master().detectorConstruction(True)

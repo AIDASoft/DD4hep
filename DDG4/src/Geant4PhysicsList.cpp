@@ -243,7 +243,7 @@ void Geant4PhysicsList::constructParticles(G4VUserPhysicsList* physics_pointer) 
         except("Failed to create particle type '%s' result=%d", ctor.c_str(), result);
       }
     }
-    info("Constructed Geant4 particle %s",ctor.c_str());
+    info("Constructed Geant4 particle %s [using signature long (*)()]",ctor.c_str());
   }
 }
 

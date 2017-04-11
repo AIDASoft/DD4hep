@@ -394,7 +394,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       stringstream str;
       str << (*mat);
-      printout(lvl, "Geant4Converter", "++ Created G4 Material %s", str.str().c_str());
+      printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
     }
     data().g4Materials[medium] = mat;
   }

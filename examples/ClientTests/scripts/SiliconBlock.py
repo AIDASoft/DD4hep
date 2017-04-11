@@ -37,12 +37,18 @@ def run():
 
   generator_output_level = Output.INFO
 
+  # Configure G4 geometry setup
+  seq,act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+  act.DebugMaterials = True
+  act.DebugElements  = False
+  act.DebugVolumes   = False
+
   # Configure I/O
   evt_root = geant4.setupROOTOutput('RootOutput','SiliconBlock_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
   gun = geant4.setupGun("Gun",particle='mu-',energy=20*GeV,multiplicity=1)
-  gun.output_level = generator_output_level
+  gun.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
