@@ -33,7 +33,17 @@ namespace DD4hep {
      */
     class Geant4DetectorGeometryConstruction : public Geant4DetectorConstruction   {
       /// Property: Dump geometry hierarchy
-      bool m_dumpHierarchy;
+      bool m_dumpHierarchy  = false;
+      /// Property: Flag to debug materials during conversion mechanism
+      bool m_debugMaterials = false;
+      /// Property: Flag to debug elements during conversion mechanism
+      bool m_debugElements  = false;
+      /// Property: Flag to debug volumes during conversion mechanism
+      bool m_debugVolumes   = false;
+      /// Property: Flag to debug placements during conversion mechanism
+      bool m_debugPlacements= false;
+      /// Property: Flag to debug regions during conversion mechanism
+      bool m_debugRegions   = false;
       /// Property: G4 GDML dump file name (default: empty. If non empty, dump)
       std::string m_dumpGDML;
 
@@ -74,8 +84,13 @@ DECLARE_GEANT4ACTION(Geant4DetectorGeometryConstruction)
 Geant4DetectorGeometryConstruction::Geant4DetectorGeometryConstruction(Geant4Context* ctxt, const string& nam)
   : Geant4DetectorConstruction(ctxt,nam)
 {
-  declareProperty("DumpHierarchy", m_dumpHierarchy=false);
-  declareProperty("DumpGDML",      m_dumpGDML="");
+  declareProperty("DebugMaterials",   m_debugMaterials);
+  declareProperty("DebugElements",    m_debugElements);
+  declareProperty("DebugVolumes",     m_debugVolumes);
+  declareProperty("DebugPlacements",  m_debugPlacements);
+  declareProperty("DebugRegions",     m_debugRegions);
+  declareProperty("DumpHierarchy",    m_dumpHierarchy);
+  declareProperty("DumpGDML",         m_dumpGDML="");
   InstanceCount::increment(this);
 }
 
@@ -89,6 +104,12 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   Geant4Mapping& g4map = Geant4Mapping::instance();
   Geometry::DetElement world = ctxt->lcdd.world();
   Geant4Converter conv(ctxt->lcdd, outputLevel());
+  conv.debugMaterials  = m_debugMaterials;
+  conv.debugElements   = m_debugElements;
+  conv.debugVolumes    = m_debugVolumes;
+  conv.debugPlacements = m_debugPlacements;
+  conv.debugRegions    = m_debugRegions;
+
   ctxt->geometry = conv.create(world).detach();
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
