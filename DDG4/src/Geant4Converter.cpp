@@ -286,6 +286,7 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
   if (!g4e) {
     g4e = G4Element::GetElement(name, false);
     if (!g4e) {
+      PrintLevel lvl = debugElements ? ALWAYS : m_outputLevel;
       double a_conv = (CLHEP::g / CLHEP::mole);
       if (element->GetNisotopes() > 0) {
         g4e = new G4Element(name, element->GetTitle(), element->GetNisotopes());
@@ -294,18 +295,39 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
           G4Isotope* g4iso = G4Isotope::GetIsotope(iso->GetName(), false);
           if (!g4iso) {
             g4iso = new G4Isotope(iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA()*a_conv);
-            printout(ALWAYS /*m_outputLevel*/, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+            printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+                     iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
+          }
+          else  {
+            printout(lvl, "Geant4Converter", "++ Re-used G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
                      iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
           }
           g4e->AddIsotope(g4iso, element->GetRelativeAbundance(i));
         }
       }
       else {
+        // This adds in Geant4 the natural isotopes, which we normally do not want. We want to steer it outselves.
         g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A()*a_conv);
+        printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+                 element->GetName(), element->Z(), element->N(), element->A());
+#if 0  // Disabled for now!
+        g4e = new G4Element(name, element->GetTitle(), 1);
+        G4Isotope* g4iso = G4Isotope::GetIsotope(name, false);
+        if (!g4iso) {
+          g4iso = new G4Isotope(name, element->Z(), element->N(), element->A()*a_conv);
+          printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+                   element->GetName(), element->Z(), element->N(), element->A());
+        }
+        else  {
+          printout(lvl, "Geant4Converter", "++ Re-used G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+                   element->GetName(), element->Z(), element->N(), element->A());
+        }
+        g4e->AddIsotope(g4iso, 1.0);
+#endif
       }
       stringstream str;
       str << (*g4e);
-      printout(ALWAYS /*m_outputLevel*/, "Geant4Converter", "++ Created G4 %s No.Isotopes:%d",
+      printout(lvl, "Geant4Converter", "++ Created G4 %s No.Isotopes:%d",
                str.str().c_str(),element->GetNisotopes());
     }
     data().g4Elements[element] = g4e;
@@ -317,6 +339,7 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
 void* Geant4Converter::handleMaterial(const string& name, Material medium) const {
   G4Material* mat = data().g4Materials[medium];
   if (!mat) {
+    PrintLevel lvl = debugMaterials ? ALWAYS : m_outputLevel;
     mat = G4Material::GetMaterial(name, false);
     if (!mat) {
       TGeoMaterial* material = medium->GetMaterial();
@@ -371,7 +394,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       stringstream str;
       str << (*mat);
-      printout(m_outputLevel, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
+      printout(lvl, "Geant4Converter", "++ Created G4 Material %s", str.str().c_str());
     }
     data().g4Materials[medium] = mat;
   }
@@ -565,6 +588,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
   Geant4GeometryInfo& info = data();
   Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
   if (volIt == info.g4Volumes.end() ) {
+    PrintLevel lvl = debugVolumes ? ALWAYS : m_outputLevel;
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
     string n = v->GetName();
@@ -597,7 +621,6 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
                             "access Geant4 region.");
       }
     }
-    PrintLevel lvl = m_outputLevel; //string(det.name())=="SiTrackerBarrel" ? WARNING : m_outputLevel;
     printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s",
              n.c_str(), v, s->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly));
 
@@ -613,12 +636,12 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       throw runtime_error("G4Converter: No Geant4 material present for volume:" + n);
     }
     if (user_limits) {
-      printout(m_outputLevel, "Geant4Converter", "++ Volume     + Apply LIMITS settings:%-24s to volume %s.",
+      printout(lvl, "Geant4Converter", "++ Volume     + Apply LIMITS settings:%-24s to volume %s.",
                lim.name(), _v.name());
     }
     G4LogicalVolume* vol = new G4LogicalVolume(solid, medium, n, 0, 0, user_limits);
     if (region) {
-      printout(m_outputLevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %s to volume %s.",
+      printout(lvl, "Geant4Converter", "++ Volume     + Apply REGION settings: %s to volume %s.",
                reg.name(), _v.name());
       vol->SetRegion(region);
       region->AddRootLogicalVolume(vol);
@@ -627,7 +650,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       vol->SetVisAttributes(vis_attr);
     }
     info.g4Volumes[v] = vol;
-    printout(m_outputLevel, "Geant4Converter", "++ Volume     + %s converted: %p ---> G4: %p", n.c_str(), v, vol);
+    printout(lvl, "Geant4Converter", "++ Volume     + %s converted: %p ---> G4: %p", n.c_str(), v, vol);
   }
   return 0;
 }
@@ -660,6 +683,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
   Geant4AssemblyVolume* g4 = info.g4AssemblyVolumes[node];
 
   if ( !g4 )  {
+    PrintLevel lvl = debugVolumes ? ALWAYS : m_outputLevel;
     g4 = new Geant4AssemblyVolume();
     for(Int_t i=0; i < mot_vol->GetNdaughters(); ++i)   {
       TGeoNode*   d = mot_vol->GetNode(i);
@@ -674,7 +698,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
           return 0;
         }
         g4->placeAssembly(d,(*assIt).second,transform);
-        printout(m_outputLevel, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
+        printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
@@ -688,7 +712,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
                  __FILE__, __LINE__, name.c_str(), d->GetName());
         }
         g4->placeVolume(d,(*volIt).second, transform);
-        printout(m_outputLevel, "Geant4Converter", "+++ Assembly: AddPlacedVolume : dau:%s "
+        printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedVolume : dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
@@ -717,6 +741,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
              node->IsA()->GetName(), vol);
     }
     else {
+      PrintLevel lvl = debugPlacements ? ALWAYS : m_outputLevel;
       int copy = node->GetNumber();
       bool node_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
       bool mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
@@ -730,7 +755,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         // -- placed volumes were already added before in "handleAssembly"
         // -- imprint cannot be made, because this requires a logical volume as a mother
         //
-        printout(m_outputLevel, "Geant4Converter", "+++ Assembly: **** : dau:%s "
+        printout(lvl, "Geant4Converter", "+++ Assembly: **** : dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
@@ -741,7 +766,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         // Node is an assembly:
         // Imprint the assembly. The mother MUST already be transformed.
         //
-        printout(m_outputLevel, "Geant4Converter", "+++ Assembly: makeImprint: dau:%s in mother %s "
+        printout(lvl, "Geant4Converter", "+++ Assembly: makeImprint: dau:%s in mother %s "
                  "Tr:x=%8.3f y=%8.3f z=%8.3f",
                  node->GetName(), mot_vol ? mot_vol->GetName() : "<unknown>",
                  transform.dx(), transform.dy(), transform.dz());
@@ -776,6 +801,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>& /* volumes */) const {
   G4Region* g4 = data().g4Regions[region];
   if (!g4) {
+    PrintLevel lvl = debugRegions ? ALWAYS : m_outputLevel;
     Region r = Ref_t(region);
     g4 = new G4Region(r.name());
     // set production cut
@@ -795,7 +821,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     info->storeSecondaries = r.storeSecondaries();
     g4->SetUserInformation(info);
 
-    printout(m_outputLevel, "Geant4Converter", "++ Converted region settings of:%s.", r.name());
+    printout(lvl, "Geant4Converter", "++ Converted region settings of:%s.", r.name());
     vector < string > &limits = r.limits();
     for (vector<string>::const_iterator i = limits.begin(); i != limits.end(); ++i) {
       const string& nam = *i;

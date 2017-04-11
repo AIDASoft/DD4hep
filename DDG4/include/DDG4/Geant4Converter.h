@@ -31,6 +31,17 @@ namespace DD4hep {
      */
     class Geant4Converter : public Geometry::GeoHandler, public Geant4Mapping {
     public:
+      /// Property: Flag to debug materials during conversion mechanism
+      bool debugMaterials  = false;
+      /// Property: Flag to debug elements during conversion mechanism
+      bool debugElements   = false;
+      /// Property: Flag to debug volumes during conversion mechanism
+      bool debugVolumes    = false;
+      /// Property: Flag to debug placements during conversion mechanism
+      bool debugPlacements = false;
+      /// Property: Flag to debug regions during conversion mechanism
+      bool debugRegions    = false;
+
       bool m_checkOverlaps;
       PrintLevel m_outputLevel;
 
