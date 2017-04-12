@@ -1,4 +1,46 @@
-# v00-21-pre
+# v00-21
+
+* 2017-04-03 Marko Petric ([PR#142](https://github.com/AIDASoft/DD4hep/pull/142))
+  - Update to the CI system:
+    - Install directly cvmfs on base system, which removes the need for the parrot connector 
+    - Replace CernVM docker with plain docker
+    - This reduces the build run time from 50 min to 25 min
+
+* 2017-03-27 Shaojun Lu ([PR#134](https://github.com/AIDASoft/DD4hep/pull/134))
+  - Set verbose true for G4EmSaturation to printout Birks coefficient.
+
+* 2017-03-29 Frank Gaede ([PR#139](https://github.com/AIDASoft/DD4hep/pull/139))
+  - add a utility to dump the B-field for a given Volume
+          - usage: dumpBfield compact.xml x y z dx dy dz [in cm]  
+          - will dump the B-field in volume [-x:x,-y:y,-z,z] with steps [dx,dy,dz]
+
+* 2017-03-29 Joschka Lingemann ([PR#138](https://github.com/AIDASoft/DD4hep/pull/138))
+  - Direct implementation that calculates eta from cartesian coordinates
+  - Fix: Add registration of Phi-Eta segmentation
+
+* 2017-03-29 Joschka Lingemann ([PR#137](https://github.com/AIDASoft/DD4hep/pull/137))
+  - Adding GridRPhiEta a segmentation of equidistant size in R, Phi and Pseudorapidity
+  - Adding GridPhiEta a segmentation of equidistant size in Phi and Pseudorapidity
+
+* 2017-03-28 Markus Frank ([PR#135](https://github.com/AIDASoft/DD4hep/pull/135))
+  - Accidentally the Segmentations of Joschka were added in the wrong place of the hierarchy.
+     I removed them. He will later add them to the proper location.
+  - Some C++ warnings concerning the C++11 standard were also fixed.
+
+* 2017-03-24 Yorgos Voutsinas ([PR#132](https://github.com/AIDASoft/DD4hep/pull/132))
+  - modifying the LayeredCalorimeterData struct in order to cope with conical shaped calorimeters
+
+* 2017-03-31 Markus Frank ([PR#143](https://github.com/AIDASoft/DD4hep/pull/143))
+  - Add new test for multi segment multi collections segmentations using a calorimeter endcap.
+     See also: https://github.com/AIDASoft/DD4hep/issues/141, which is still unresolved,
+     but seems not to be directly related to the Monte-Carlo truth handling.
+  - Side effect: add Geant4EventActions to dump hits and particles
+  - Fix a linker problem for unicode tags.
+
+* 2017-03-31 Frank Gaede ([PR#140](https://github.com/AIDASoft/DD4hep/pull/140))
+  - clarify documentation for CartesianField and implementations
+  - make clear that  void fieldComponents() has to add
+     the new field to the given field vector
 
 Marko Petric 2017-03-23 
   - Convert Release notes to markdown
