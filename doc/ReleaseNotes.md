@@ -1,3 +1,9 @@
+# v00-21-pre
+
+Marko Petric 2017-03-23 
+  - Convert Release notes to markdown
+  - Add some text about WIP and issue tracking
+  - Add CONTRIBUTING.md and PULL_REQUEST_TEMPLATE
 
 Markus Frank 2017-03-17
  
