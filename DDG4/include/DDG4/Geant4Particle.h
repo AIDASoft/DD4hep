@@ -105,7 +105,9 @@ namespace DD4hep {
       typedef std::set<int> Particles;
       /// Reference counter
       int ref = 0;           //! not persistent
-      int id  = 0, originalG4ID = 0, g4Parent = 0, reason = 0, mask = 0;
+      int id  = 0;
+      int originalG4ID = 0;  //! not persistent
+      int g4Parent = 0, reason = 0, mask = 0;
       int steps  = 0, secondaries = 0, pdgID = 0;
       int status = 0, colorFlow[2] {0,0};
       char charge = 0, _spare[3] {0,0,0};
