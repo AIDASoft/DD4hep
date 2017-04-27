@@ -1213,6 +1213,7 @@ namespace DD4hep {
           xml_coll_t(element, _U(physvol)).for_each(Conv<PhysVol>(lcdd,context,vol));
           xml_coll_t(element, _LBU(paramphysvol)).for_each(Conv<ParamPhysVol>(lcdd,context,vol));
           xml_coll_t(element, _LBU(paramphysvol2D)).for_each(Conv<ParamPhysVol2D>(lcdd,context,vol));
+          xml_coll_t(element, _LBU(paramphysvol3D)).for_each(Conv<ParamPhysVol3D>(lcdd,context,vol));
         }
       }
     }

@@ -92,6 +92,7 @@ namespace DD4hep {
 
     UNICODE(paramphysvol);
     UNICODE(paramphysvol2D);
+    UNICODE(paramphysvol3D);
     UNICODE(phiAngle);
     UNICODE(paramVector);
     UNICODE(posXYZ);
