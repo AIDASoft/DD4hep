@@ -467,7 +467,7 @@ template <> void Converter<Isotope>::operator()(xml_h e) const {
              iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
   }
   else  {
-    printout(WARNING, "Compact",
+    printout(s_debug_isotopes ? WARNING : DEBUG, "Compact",
              "++ Isotope %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
              iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
   }
@@ -536,7 +536,8 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
     }
   }
   else  {
-    printout(WARNING, "Compact", "++ Element %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
+    printout(s_debug_elements ? WARNING : DEBUG, "Compact",
+             "++ Element %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
              elt->GetName(), elt->Z(), elt->N(), elt->A());
   }
 }
