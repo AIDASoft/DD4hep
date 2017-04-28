@@ -33,8 +33,11 @@ namespace DD4hep {
     class SegmentationObject;
     class SensitiveDetectorObject;
     
-    /// Handle class supporting generic Segmentation of sensitive detectors
+    /// Handle class supporting generic Segmentations of sensitive detectors
     /**
+     *   This basic segmentation implementation supports "generic" access
+     *   to specific segmentations exporting the common abstract interface.
+     *   Mostly used in simulation.
      *
      *   \author  M.Frank
      *   \version 1.0
