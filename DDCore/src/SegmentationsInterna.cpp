@@ -22,7 +22,7 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 using DD4hep::DDSegmentation::Parameter;
 using DD4hep::DDSegmentation::Parameters;
-//using DD4hep::DDSegmentation::SegmentationParameter;
+
 
 /// Standard constructor
 SegmentationObject::SegmentationObject(BaseSegmentation* s)
