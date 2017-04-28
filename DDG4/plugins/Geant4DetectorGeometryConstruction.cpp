@@ -33,17 +33,25 @@ namespace DD4hep {
      */
     class Geant4DetectorGeometryConstruction : public Geant4DetectorConstruction   {
       /// Property: Dump geometry hierarchy
-      bool m_dumpHierarchy  = false;
+      bool m_dumpHierarchy   = false;
       /// Property: Flag to debug materials during conversion mechanism
-      bool m_debugMaterials = false;
+      bool m_debugMaterials  = false;
       /// Property: Flag to debug elements during conversion mechanism
-      bool m_debugElements  = false;
+      bool m_debugElements   = false;
+      /// Property: Flag to debug shapes during conversion mechanism
+      bool m_debugShapes     = false;
       /// Property: Flag to debug volumes during conversion mechanism
-      bool m_debugVolumes   = false;
+      bool m_debugVolumes    = false;
       /// Property: Flag to debug placements during conversion mechanism
-      bool m_debugPlacements= false;
+      bool m_debugPlacements = false;
       /// Property: Flag to debug regions during conversion mechanism
-      bool m_debugRegions   = false;
+      bool m_debugRegions    = false;
+
+      /// Property: Flag to dump all placements after the conversion procedure
+      bool m_printPlacements = false;
+      /// Property: Flag to dump all sensitives after the conversion procedure
+      bool m_printSensitives = false;
+     
       /// Property: G4 GDML dump file name (default: empty. If non empty, dump)
       std::string m_dumpGDML;
 
@@ -86,9 +94,14 @@ Geant4DetectorGeometryConstruction::Geant4DetectorGeometryConstruction(Geant4Con
 {
   declareProperty("DebugMaterials",   m_debugMaterials);
   declareProperty("DebugElements",    m_debugElements);
+  declareProperty("DebugShapes",      m_debugShapes);
   declareProperty("DebugVolumes",     m_debugVolumes);
   declareProperty("DebugPlacements",  m_debugPlacements);
   declareProperty("DebugRegions",     m_debugRegions);
+
+  declareProperty("PrintPlacements",  m_printPlacements);
+  declareProperty("PrintSensitives",  m_printSensitives);
+
   declareProperty("DumpHierarchy",    m_dumpHierarchy);
   declareProperty("DumpGDML",         m_dumpGDML="");
   InstanceCount::increment(this);
@@ -106,6 +119,7 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   Geant4Converter conv(ctxt->lcdd, outputLevel());
   conv.debugMaterials  = m_debugMaterials;
   conv.debugElements   = m_debugElements;
+  conv.debugShapes     = m_debugShapes;
   conv.debugVolumes    = m_debugVolumes;
   conv.debugPlacements = m_debugPlacements;
   conv.debugRegions    = m_debugRegions;

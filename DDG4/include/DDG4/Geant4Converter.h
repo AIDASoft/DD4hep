@@ -35,6 +35,8 @@ namespace DD4hep {
       bool debugMaterials  = false;
       /// Property: Flag to debug elements during conversion mechanism
       bool debugElements   = false;
+      /// Property: Flag to debug shapes during conversion mechanism
+      bool debugShapes     = false;
       /// Property: Flag to debug volumes during conversion mechanism
       bool debugVolumes    = false;
       /// Property: Flag to debug placements during conversion mechanism
@@ -42,8 +44,15 @@ namespace DD4hep {
       /// Property: Flag to debug regions during conversion mechanism
       bool debugRegions    = false;
 
-      bool m_checkOverlaps;
-      PrintLevel m_outputLevel;
+      /// Property: Flag to dump all placements after the conversion procedure
+      bool printPlacements = false;
+      /// Property: Flag to dump all sensitives after the conversion procedure
+      bool printSensitives = false;
+
+      /// Property: Check geometrical overlaps for volume placements and G4 imprints 
+      bool       checkOverlaps;
+      /// Property: Output level for debug printing
+      PrintLevel outputLevel;
 
       /// Initializing Constructor
       Geant4Converter(LCDD& lcdd);

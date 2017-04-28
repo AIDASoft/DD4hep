@@ -41,7 +41,8 @@ def run():
   seq,act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugMaterials = True
   act.DebugElements  = False
-  act.DebugVolumes   = False
+  act.DebugVolumes   = True
+  act.DebugShapes    = True
 
   # Configure I/O
   evt_root = geant4.setupROOTOutput('RootOutput','SiliconBlock_'+time.strftime('%Y-%m-%d_%H-%M'))
