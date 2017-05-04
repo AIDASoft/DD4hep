@@ -83,6 +83,7 @@ MACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
                 #IF( EXISTS "${_current_dir}/MacroExportPackageDeps.cmake" )
                 #    INSTALL( FILES "${_current_dir}/MacroExportPackageDeps.cmake" DESTINATION cmake )
                 #ENDIF()
+                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION ./cmake )
             ENDIF()
         ENDIF()
 
@@ -94,9 +95,11 @@ MACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
     ENDFOREACH()
 
     INCLUDE( CMakePackageConfigHelpers )
-    WRITE_BASIC_PACKAGE_VERSION_FILE( ${CMAKE_INSTALL_PREFIX}/DD4hepConfigVersion.cmake
+    WRITE_BASIC_PACKAGE_VERSION_FILE( DD4hepConfigVersion.cmake
                                       VERSION ${DD4hep_VERSION}
                                       COMPATIBILITY AnyNewerVersion )
+    INSTALL( FILES "${PROJECT_BINARY_DIR}/DD4hepConfigVersion.cmake" DESTINATION . )
+    INSTALL( FILES "${PROJECT_BINARY_DIR}/DD4hepConfigVersion.cmake" DESTINATION ./cmake )
 
 ENDMACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
 
