@@ -38,3 +38,4 @@ build/
 
 # CMake config files
 *Config.cmake
+*ConfigVersion.cmake
