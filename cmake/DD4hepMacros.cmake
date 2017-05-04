@@ -77,21 +77,9 @@ MACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
                                 "${PROJECT_BINARY_DIR}/${arg}" @ONLY
                 )
                 INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION . )
-                #IF( EXISTS "${_current_dir}/MacroCheckPackageLibs.cmake" )
-                #    INSTALL( FILES "${_current_dir}/MacroCheckPackageLibs.cmake" DESTINATION cmake )
-                #ENDIF()
-                #IF( EXISTS "${_current_dir}/MacroExportPackageDeps.cmake" )
-                #    INSTALL( FILES "${_current_dir}/MacroExportPackageDeps.cmake" DESTINATION cmake )
-                #ENDIF()
                 INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION ./cmake )
             ENDIF()
         ENDIF()
-
-        IF( ${arg} MATCHES "LibDeps.cmake" )
-            EXPORT_LIBRARY_DEPENDENCIES( "${arg}" )
-            INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION lib/cmake )
-        ENDIF()
-
     ENDFOREACH()
 
     INCLUDE( CMakePackageConfigHelpers )
