@@ -152,7 +152,7 @@ display_std_variables()
 
 ##############################################################################
 # generate and install following configuration files
-generate_package_configuration_files( DD4hepConfig.cmake )
+dd4hep_generate_package_configuration_files( DD4hepConfig.cmake )
 if(APPLE)
   SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
 else()

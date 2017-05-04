@@ -67,7 +67,7 @@ ENDMACRO( DISPLAY_STD_VARIABLES )
 
 #---------------------------------------------------------------------------
 # helper macro for generating project configuration file
-MACRO( GENERATE_PACKAGE_CONFIGURATION_FILES )
+MACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
 #---------------------------------------------------------------------------
 
     FOREACH( arg ${ARGN} )
@@ -98,7 +98,7 @@ MACRO( GENERATE_PACKAGE_CONFIGURATION_FILES )
                                       VERSION ${DD4hep_VERSION}
                                       COMPATIBILITY AnyNewerVersion )
 
-ENDMACRO( GENERATE_PACKAGE_CONFIGURATION_FILES )
+ENDMACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
 
 
 ##############################################################################
