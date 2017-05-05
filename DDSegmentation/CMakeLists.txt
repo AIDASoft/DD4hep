@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(DDSegmentation)
  #fg: version number must be the same as DD4hep !!
-set(DDSegmentation_MAJOR_VERSION 0)
-set(DDSegmentation_MINOR_VERSION 19)
-set(DDSegmentation_PATCH_VERSION 0)
-set(DDSegmentation_VERSION "${DDSegmentation_MAJOR_VERSION}.${DDSegmentation_MINOR_VERSION}" )
-set(DDSegmentation_SOVERSION "${DDSegmentation_MAJOR_VERSION}.${DDSegmentation_MINOR_VERSION}")
+set(DDSegmentation_VERSION_MAJOR 0)
+set(DDSegmentation_VERSION_MINOR 19)
+set(DDSegmentation_VERSION_PATCH 0)
+set(DDSegmentation_VERSION "${DDSegmentation_VERSION_MAJOR}.${DDSegmentation_VERSION_MINOR}" )
+set(DDSegmentation_SOVERSION "${DDSegmentation_VERSION_MAJOR}.${DDSegmentation_VERSION_MINOR}")
 
 #------------- set the default installation directory to be the source directory
 
