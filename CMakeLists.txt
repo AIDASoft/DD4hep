@@ -28,10 +28,24 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #  project version (Major,minor,patch)
 #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #  !! Use the same version numbers in DDSegmentation/CMakeLists.txt    !!
-#  !! and make also sure to change in DDCore/include/DD4hep/LCDD.h     !!
 #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-dd4hep_set_version(DD4hep MAJOR 0 MINOR 20 PATCH 0)
+# project version
+SET( DD4hep_VERSION_MAJOR 0  )
+SET( DD4hep_VERSION_MINOR 22 )
+SET( DD4hep_VERSION_PATCH 0  )
+
+dd4hep_set_version(DD4hep
+  MAJOR ${DD4hep_VERSION_MAJOR}
+  MINOR ${DD4hep_VERSION_MINOR}
+  PATCH ${DD4hep_VERSION_PATCH} )
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/cmake/Version.h.in"
+  "${PROJECT_SOURCE_DIR}/DDCore/include/DD4hep/Version.h"
+  )
+
+
 dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
 #
 # Include ROOT
