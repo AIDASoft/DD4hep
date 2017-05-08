@@ -1,3 +1,81 @@
+# v00-22
+
+* 2017-04-28 Markus Frank ([PR#148](https://github.com/aidasoft/dd4hep/pull/148))
+  Improvements to the compact xml processing
+  ===========================================
+  
+  Elements may now be specified within compact in 2 ways:
+  1) old way: create an effective element:
+  `    <element Z="4" formula="Be" name="Be" >`
+  `      <atom type="A" unit="g/mol" value="9.01218" />`
+  `    </element>`
+  
+  2) create element by defining an isotope mixture:
+  `    <isotope name="C12" Z="6" N="12"/>`
+  `      <atom unit="g/mole" value="xxxx"/>`
+  `    </isotope>`
+  `.....`
+  `   <element name="C">`
+  `     <fraction n="0.9893" ref="C12"/>`
+  `     <fraction n="0.0107" ref="C13"/>`
+  `   </element>`
+  
+  Improved debugging of compact xml conversions
+  The following tags allow to enable increased prinout depending on additional tags in the compact file:
+  `    <debug>`
+  `      <type name="isotopes"     value="1"/>`
+  `      <type name="elements"     value="1"/>`
+  `      <type name="materials"    value="0"/>`
+  `      <type name="visattr"      value="0"/>`
+  `      <type name="regions"      value="0"/>`
+  `      <type name="readout"      value="0"/>`
+  `      <type name="limits"       value="0"/>`
+  `      <type name="segmentation" value="0"/>`
+  `    </debug>`
+  
+  Disable the ROOT TGeo element table from the compact xml. 
+  Note: ALL elements must then be specified in the XML material database.
+  `    <geometry>`
+  `      <clear name="elements"/>`
+  `    </geometry>`
+  
+  By default compact accepts exactly one input file (others may be included therein).
+  In order to process iteratively multiple input files, the opening and the closing of the
+  geometry steering tags may be added to the compact description. This example 
+  gives the default behaviour:
+  `    <geometry open="true" close="true"/>`
+  
+  Please note: per compact file exactly ONE geometry tag is allowed.
+  
+  
+  Debugging the DDG4 geometry conversion mechanism
+  =============================================
+  New boolean properties of the Geant4DetectorGeometryConstruction object,
+  which result in debugging printouts (defaults are OFF):
+    DebugMaterials
+    DebugElements
+    DebugShapes
+    DebugVolumes
+    DebugPlacements
+    DebugRegions
+    PrintPlacements
+    PrintSensitives
+
+* 2017-04-28 Ben Couturier ([PR#146](https://github.com/aidasoft/dd4hep/pull/146))
+  * Trivial fix for the DDDB converter to create paramphysvol3D volumes, which are otherwise ignored.
+
+* 2017-04-20 Andre Sailer ([PR#145](https://github.com/aidasoft/dd4hep/pull/145))
+  - LCIOOutput: Add setting of ProducedBySecondary bit for SimTrackerHits if the hit is produced by a particle that is not stored in the MCParticle collection, needs lcio 2.8
+
+* 2017-05-05 Andre Sailer ([PR#150](https://github.com/aidasoft/dd4hep/pull/150))
+  - Always create DD4hepConfigVersion.cmake in CMAKE_INSTALL_PREFIX and cmake folder
+  - Create DD4hepConfig.cmake also in cmake folder
+  - renamed Cmake Macro GENERATE_PACKAGE_CONFIGURATION_FILES to DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES so it does not clash with the macro of the same name in ilcutil/cmakemodules
+
+* 2017-05-07 Andre Sailer ([PR#151](https://github.com/aidasoft/dd4hep/pull/151))
+  - Use cmake to create Version.h file to contain DD4hep version information and macros
+  - Change the way DD4hep package version is defined and set standard cmake variables for this purpose
+
 # v00-21
 
 * 2017-04-03 Marko Petric ([PR#142](https://github.com/AIDASoft/DD4hep/pull/142))
