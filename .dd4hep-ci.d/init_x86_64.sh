@@ -37,10 +37,10 @@ if [ -z ${COMPILER_TYPE} ]; then
     COMPILER_TYPE="gcc"
 fi
 if [ ${COMPILER_TYPE} == "gcc" ]; then
-    COMPILER_VERSION="gcc62"
+    COMPILER_VERSION="gcc7"
 fi
 if [ ${COMPILER_TYPE} == "llvm" ]; then
-    COMPILER_VERSION="llvm39"
+    COMPILER_VERSION="llvm40"
 fi
 
 
@@ -59,24 +59,24 @@ BUILD_FLAVOUR=x86_64-${OS}-${COMPILER_VERSION}-${BUILD_TYPE}
 #--------------------------------------------------------------------------------
 
 if [ ${COMPILER_TYPE} == "gcc" ]; then
-    source ${CLICREPO}/compilers/gcc/6.2.0/x86_64-${OS}/setup.sh
+    source ${CLICREPO}/compilers/gcc/7.1.0/x86_64-${OS}/setup.sh
 fi
 if [ ${COMPILER_TYPE} == "llvm" ]; then
-    source ${CLICREPO}/compilers/llvm/3.9.0/x86_64-${OS}/setup.sh
+    source ${CLICREPO}/compilers/llvm/4.0.0/x86_64-${OS}/setup.sh
 fi
 
 #--------------------------------------------------------------------------------
 #     CMake
 #--------------------------------------------------------------------------------
 
-export CMAKE_HOME=${CLICREPO}/software/CMake/3.6.2/${BUILD_FLAVOUR}
+export CMAKE_HOME=${CLICREPO}/software/CMake/3.8.1/${BUILD_FLAVOUR}
 export PATH=${CMAKE_HOME}/bin:$PATH
 
 #--------------------------------------------------------------------------------
 #     Python
 #--------------------------------------------------------------------------------
 
-export PYTHONDIR=${CLICREPO}/software/Python/2.7.12/${BUILD_FLAVOUR}
+export PYTHONDIR=${CLICREPO}/software/Python/2.7.13/${BUILD_FLAVOUR}
 export PATH=${PYTHONDIR}/bin:$PATH
 export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 
@@ -84,7 +84,7 @@ export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 #     ROOT
 #--------------------------------------------------------------------------------
 
-export ROOTSYS=${CLICREPO}/software/ROOT/6.08.00/${BUILD_FLAVOUR}
+export ROOTSYS=${CLICREPO}/software/ROOT/6.08.06/${BUILD_FLAVOUR}
 export PYTHONPATH="$ROOTSYS/lib:$PYTHONPATH"
 export PATH="$ROOTSYS/bin:$PATH"
 export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
@@ -102,7 +102,7 @@ export LD_LIBRARY_PATH="$XercesC_HOME/lib:$LD_LIBRARY_PATH"
 #     Geant4
 #--------------------------------------------------------------------------------
 
-export G4INSTALL=${CLICREPO}/software/Geant4/10.02.p02/${BUILD_FLAVOUR}
+export G4INSTALL=${CLICREPO}/software/Geant4/10.02.p03/${BUILD_FLAVOUR}
 export G4ENV_INIT="${G4INSTALL}/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
 
@@ -110,7 +110,7 @@ export G4SYSTEM="Linux-g++"
 #--------------------------------------------------------------------------------
 #     LCIO
 #--------------------------------------------------------------------------------
-export LCIO=${CLICREPO}/software/LCIO/2.7.3/${BUILD_FLAVOUR}
+export LCIO=${CLICREPO}/software/LCIO/2.8.0/${BUILD_FLAVOUR}
 export PYTHONPATH=${LCIO}/python
 export PATH=${LCIO}/bin:$PATH
 export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
@@ -120,12 +120,12 @@ export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
 #     Boost
 #--------------------------------------------------------------------------------
 
-export BOOST_ROOT=${CLICREPO}/software/Boost/1.62.0/${BUILD_FLAVOUR}
+export BOOST_ROOT=${CLICREPO}/software/Boost/1.64.0/${BUILD_FLAVOUR}
 export LD_LIBRARY_PATH="${BOOST_ROOT}/lib:$LD_LIBRARY_PATH"
 
 #--------------------------------------------------------------------------------
 #     Ninja
 #--------------------------------------------------------------------------------
 
-export Ninja_HOME=${CLICREPO}/software/Ninja/1.7.1/${BUILD_FLAVOUR}
+export Ninja_HOME=${CLICREPO}/software/Ninja/1.7.2/${BUILD_FLAVOUR}
 export PATH="$Ninja_HOME:$PATH"
