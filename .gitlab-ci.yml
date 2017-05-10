@@ -150,7 +150,7 @@ centos7-llvm40-Geant10.3-XERCESC:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja ..
+    - cmake -GNinja -DXERCESC_ROOT_DIR=${XercesC_HOME} ..
     - ninja
     - ninja install
     - ctest --output-on-failure
