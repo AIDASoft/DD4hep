@@ -1,4 +1,4 @@
-slc6-gcc62:
+slc6-gcc7-Geant10.2:
   tags:
     - docker
   image: clicdp/slc6-base
@@ -20,7 +20,7 @@ slc6-gcc62:
     - ninja install
     - ctest --output-on-failure
 
-slc6-llvm39:
+slc6-llvm40-Geant10.2:
   tags:
     - docker
   image: clicdp/slc6-base
@@ -42,7 +42,7 @@ slc6-llvm39:
     - ninja install
     - ctest --output-on-failure
 
-slc6-gcc62-XERCESC:
+slc6-gcc7-Geant10.2-XERCESC:
   tags:
     - docker
   image: clicdp/slc6-base
@@ -64,7 +64,7 @@ slc6-gcc62-XERCESC:
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc62:
+centos7-gcc7-Geant10.2:
   tags:
     - docker
   image: clicdp/cc7-base
@@ -87,7 +87,7 @@ centos7-gcc62:
     - ctest --output-on-failure
 
 
-centos7-llvm39:
+centos7-llvm40-Geant10.2:
   tags:
     - docker
   image: clicdp/slc6-base
