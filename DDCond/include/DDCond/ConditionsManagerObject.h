@@ -14,13 +14,14 @@
 #define DDCOND_CONDITIONS_CONDITIONSMANAGEROBJECT_H
 
 // Framework include files
-#include "DD4hep/Memory.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/NamedObject.h"
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsSlice.h"
+#include "DDCond/ConditionsDataLoader.h"
 
 // C/C++ include files
+#include <memory>
 #include <vector>
 #include <set>
 
@@ -36,7 +37,6 @@ namespace DD4hep {
     // Forward declarations
     class ConditionsIOVPool;
     class ConditionsListener;
-    class ConditionsDataLoader;
     
     /// Basic conditions manager implementation
     /**
@@ -53,13 +53,13 @@ namespace DD4hep {
                                     public PropertyConfigurable
     {
     public:
-      typedef std::vector<IOVType>                 IOVTypes;
-      typedef Condition::key_type                  key_type;
-      typedef Condition::iov_type                  iov_type;
-      typedef std::pair<ConditionsListener*,void*> Listener;
-      typedef std::set<Listener>                   Listeners;
-      typedef dd4hep_ptr<ConditionsDataLoader>     Loader;
-      typedef ConditionsManager::Result            Result;
+      typedef std::vector<IOVType>                  IOVTypes;
+      typedef Condition::key_type                   key_type;
+      typedef Condition::iov_type                   iov_type;
+      typedef std::pair<ConditionsListener*,void*>  Listener;
+      typedef std::set<Listener>                    Listeners;
+      typedef std::unique_ptr<ConditionsDataLoader> Loader;
+      typedef ConditionsManager::Result             Result;
 
     protected:
       /// Reference to main detector description object

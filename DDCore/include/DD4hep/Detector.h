@@ -186,8 +186,6 @@ namespace DD4hep {
         virtual int processElement(DetElement detector) = 0;
       };
 
-      /// Internal object type
-      typedef DetElementObject         Object;
       /// Definition of the base handle type
       typedef Handle<DetElementObject> RefObject;
       typedef DetElement               Parent;
@@ -383,38 +381,10 @@ namespace DD4hep {
       /// Access to the world object. Only possible once the geometry is closed.
       DetElement world()  const;
 
-      /// Check if this DetElement has time dependent Conditions attached
-      bool hasConditions() const;
-      /// Check if this DetElement has time dependent Alignments attached
-      bool hasAlignments() const;
-
       /// Access to the constant ideal (nominal) alignment information
       Alignment nominal() const;
       /// Access to the constant survey alignment information
       Alignment survey() const;
-
-      // Deprecated functions to be removed soon:
-
-      /// Create cached matrix to transform to world coordinates
-      [[gnu::deprecated("Use _DetElement_.nominal().worldTransformation")]]
-      const TGeoHMatrix& worldTransformation() const;
-      /// Create cached matrix to transform to parent coordinates
-      [[gnu::deprecated("Use _DetElement_.nominal().parentTransformation")]]
-      const TGeoHMatrix& parentTransformation() const;
-
-      /// Transformation from local coordinates of the placed volume to the world system
-      [[gnu::deprecated("Use _DetElement_.nominal().localToWorld()")]]
-      bool localToWorld(const Position& local, Position& global) const;
-      /// Transformation from local coordinates of the placed volume to the parent system
-      [[gnu::deprecated("Use _DetElement_.nominal().localToParent")]]
-      bool localToParent(const Position& local, Position& parent) const;
-
-      /// Transformation from world coordinates of the local placed volume coordinates
-      [[gnu::deprecated("Use _DetElement_.nominal().worldToLocal")]]
-      bool worldToLocal(const Position& global, Position& local) const;
-      /// Transformation from world coordinates of the local placed volume coordinates
-      [[gnu::deprecated("Use _DetElement_.nominal().parentToLocal")]]
-      bool parentToLocal(const Position& parent, Position& local) const;
     };
 
   } /* End namespace Geometry      */

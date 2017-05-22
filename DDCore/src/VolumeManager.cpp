@@ -279,8 +279,8 @@ namespace DD4hep {
                 }
 
                 log << "Alignment:";
-                for(size_t j=0; j<e.nominal()->nodes.size(); ++j)
-                  log << " " << (void*)e.nominal()->nodes[j].ptr();
+                for(size_t j=0; j<e.nominal().nodes().size(); ++j)
+                  log << " " << (void*)e.nominal().nodes()[j].ptr();
                 log << " Nodes:";
                 for (size_t j = 0; j<nodes.size(); ++j) {
                   log << " " << (void*)nodes[j];

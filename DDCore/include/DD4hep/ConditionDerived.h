@@ -27,7 +27,7 @@ namespace DD4hep {
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
 
-    class ConditionManager;
+    /// Forward declarations
     class ConditionResolver;
     class ConditionDependency;
     class ConditionUpdateCall;

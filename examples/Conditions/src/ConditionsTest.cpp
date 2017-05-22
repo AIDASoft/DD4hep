@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "ConditionsTest.h"
-#include "DD4hep/DetConditions.h"
+#include "DD4hep/Conditions.h"
 #include "DD4hep/DetectorTools.h"
 #include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsManager.h"
@@ -208,9 +208,16 @@ void Test::TestEnv::add_xml_data_source(const string& file, const string& iov_st
 /// Dump the conditions of one detectpr element
 void Test::TestEnv::dump_detector_element(DetElement elt)
 {
+#if 0
+  if ( !elt->conditions.isValid() )
+    printout(INFO,"conditions_tree","DetElement:%s  NO CONDITIONS present",elt.path().c_str());
+  else
+
+
   DetConditions c(elt);
   Container conds = c.conditions();
   printout(INFO,"conditions","DetElement:%s # of conditons keys:%d",elt.path().c_str(),int(conds.numKeys()));
+#endif
 #if 0
   const Container::Elements& elements = conds.elements();
   for(Container::Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
@@ -224,10 +231,7 @@ void Test::TestEnv::dump_detector_element(DetElement elt)
 void Test::TestEnv::dump_conditions_tree(DetElement elt)
 {
   const DetElement::Children& children = elt.children();
-  if ( !elt->conditions.isValid() )
-    printout(INFO,"conditions_tree","DetElement:%s  NO CONDITIONS present",elt.path().c_str());
-  else
-    dump_detector_element(elt);
+  dump_detector_element(elt);
   for(DetElement::Children::const_iterator j=children.begin(); j!=children.end(); ++j)
     dump_conditions_tree((*j).second);
 }

@@ -18,24 +18,6 @@
 
 using namespace DD4hep::Geometry;
 
-/// Access the conditions loading
-World::ConditionsLoader& World::conditionsLoader() const   {
-  ConditionsLoader* loader = access()->conditionsLoader;
-  if ( !loader )   {
-    except("Conditions","+++ No ConditionsLoader registered to this World instance!");
-  }
-  return *loader;
-}
-
-/// Access to the alignment loading
-World::AlignmentsLoader& World::alignmentsLoader() const   {
-  AlignmentsLoader* loader = access()->alignmentsLoader;
-  if ( !loader )  {
-    except("Alignments","+++ No AlignmentsLoader registered to this World instance!");
-  }
-  return *loader;
-}
-
 /// Access the detector descrion tree
 LCDD& World::lcdd() const   {
   return *(access()->lcdd);

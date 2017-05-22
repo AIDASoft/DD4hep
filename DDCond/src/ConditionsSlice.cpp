@@ -19,30 +19,6 @@
 
 using namespace DD4hep::Conditions;
 
-/// Default destructor. 
-ConditionsLoadInfo::~ConditionsLoadInfo()  {
-}
-
-/// Initializing constructor
-ConditionsDescriptor::ConditionsDescriptor(const ConditionKey& k, ConditionsLoadInfo* l)
-  : key(k), loadinfo(l)
-{
-  InstanceCount::increment(this);  
-}
-
-/// Initializing constructor
-ConditionsDescriptor::ConditionsDescriptor(ConditionDependency* dep, ConditionsLoadInfo* l)
-  : key(dep->target), dependency(dep->addRef()), loadinfo(l)
-{
-  InstanceCount::increment(this);  
-}
-
-/// Default destructor. 
-ConditionsDescriptor::~ConditionsDescriptor()  {
-  releasePtr(dependency);
-  InstanceCount::decrement(this);  
-}
-
 /// Initializing constructor
 ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
 {
@@ -51,30 +27,14 @@ ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
 
 /// Copy constructor (Special, partial copy only. Hence no assignment!)
 ConditionsSlice::ConditionsSlice(const ConditionsSlice& copy)
-  : manager(copy.manager)
+  : manager(copy.manager), content(copy.content)
 {
   InstanceCount::increment(this);  
-  for(const auto& c : copy.m_conditions )  {
-    Descriptor* e = c.second->addRef();
-    m_conditions.insert(std::make_pair(e->key.hash,e));
-  }
-  for(const auto& c : copy.m_derived )  {
-    Descriptor* e = c.second->addRef();
-    m_derived.insert(std::make_pair(e->key.hash,e));
-  }
 }
 
 /// Default destructor. 
 ConditionsSlice::~ConditionsSlice()   {
-  releaseObjects(m_conditions);
-  releaseObjects(m_derived);
   InstanceCount::decrement(this);  
-}
-
-/// Clear the container. Destroys the contained stuff
-void ConditionsSlice::clear()   {
-  releaseObjects(m_conditions);
-  releaseObjects(m_derived);
 }
 
 /// Clear the conditions access and the user pool.
@@ -82,71 +42,26 @@ void ConditionsSlice::reset()   {
   if ( pool.get() ) pool->clear();
 }
 
-/// Remove a new shared conditions dependency
-bool ConditionsSlice::remove(Dependency* dependency)   {
-  if ( dependency )  {
-    ConditionsProxy::iterator i = m_derived.find(dependency->key());
-    if ( i != m_derived.end() )  {
-      delete (*i).second;
-      m_derived.erase(i);
-      return true;
-    }
-  }
-  return false;
-}
-
-/// Remove a new shared condition
-bool ConditionsSlice::remove(Condition condition)   {
+/// ConditionsMap overload: Add a condition directly to the slice
+bool ConditionsSlice::insert(DetElement detector, unsigned int key, Condition condition)   {
   if ( condition.isValid() )  {
-    ConditionsProxy::iterator i = m_conditions.find(condition->hash);
-    if ( i != m_conditions.end() )  {
-      delete (*i).second;
-      m_conditions.erase(i);
-      return true;
-    }
-  }
-  return false;
-}
-
-/// Add a new conditions dependency collection
-void ConditionsSlice::insert(const ConditionsDependencyCollection& deps)   {
-  for ( const auto& d : deps ) this->insert(d.second.get());
-}
-
-/// Add a new conditions dependency (shared)
-bool ConditionsSlice::insert(Dependency* dependency)   {
-  Descriptor* entry = new Descriptor(dependency,0);
-  if ( m_derived.insert(std::make_pair(entry->key.hash,entry->addRef())).second )  {
-    return true;
-  }
-  delete entry;
-  return false;
-}
-
-/// Add a new entry
-bool ConditionsSlice::insert_condition(Descriptor* entry)   {
-  if ( entry->dependency )   {
-    // ERROR: This call should not be invoked for derivatives!
-    DD4hep::except("ConditionsSlice",
-                   "insert_condition: Bad invokation. No dependency allowed here!");
-  }
-  if ( m_conditions.insert(std::make_pair(entry->key.hash,entry->addRef())).second )  {
-    return true;
-  }
-  releasePtr(entry);
-  return false;
-}
-
-/// Add a new condition to the user pool
-bool ConditionsSlice::insert_condition(Condition condition)   {
-  if ( condition.isValid() )  {
-    return pool->insert(condition);
+    return pool->insert(detector, key, condition);
   }
   DD4hep::except("ConditionsSlice",
                  "insert_condition: Cannot insert invalid conditions to the user pool!");
   return false;
 }
 
+/// ConditionsMap overload: Access a condition
+Condition ConditionsSlice::get(DetElement detector, unsigned int key)  const   {
+  return pool->get(detector, key);
+}
+
+/// ConditionsMap overload: Interface to scan data content of the conditions mapping
+void ConditionsSlice::scan(Condition::Processor& processor) const   {
+  pool->scan(processor);
+}
+#if 0
 namespace  {
   
   struct SliceOper  : public ConditionsSelect  {
@@ -157,7 +72,7 @@ namespace  {
     }
     bool operator()(Condition::Object* c)  const  {
       if ( 0 == (c->flags&Condition::DERIVED) )   {
-        slice->insert(ConditionKey(c->name,c->hash),ConditionsSlice::loadInfo(c->address));
+        slice->insert(ConditionKey(c->hash),ConditionsSlice::loadInfo(c->address));
         return true;
       }
       //DD4hep::printout(DD4hep::INFO,"Slice","++ Ignore dependent condition: %s",c->name.c_str());
@@ -184,3 +99,4 @@ DD4hep::Conditions::createSlice(ConditionsManager mgr, const IOVType& typ)  {
   for_each(begin(pools),end(pools),SliceOper(slice.get()));
   return slice.release();
 }
+#endif

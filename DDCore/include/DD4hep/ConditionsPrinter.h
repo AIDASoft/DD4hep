@@ -15,7 +15,7 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/ConditionsProcessor.h"
+#include "DD4hep/Conditions.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -34,7 +34,7 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class ConditionsPrinter : public ConditionsProcessor  {
+    class ConditionsPrinter : public Condition::Processor  {
     public:
       /// Printer name. Want to know who is printing what
       std::string   name;
@@ -49,9 +49,6 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      ConditionsPrinter(UserPool* pool, const std::string& prefix="", 
-                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
-      /// Initializing constructor
       ConditionsPrinter(const std::string& prefix="", 
                         int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
       /// Default destructor
@@ -62,8 +59,6 @@ namespace DD4hep {
       void setPrefix(const std::string& value)  {  prefix = value; }
       /// Callback to output conditions information
       virtual int operator()(Condition cond)  override;
-      /// Container callback for object processing
-      virtual int operator()(Container container)  override;
     };
 
   }    /* End namespace Conditions           */

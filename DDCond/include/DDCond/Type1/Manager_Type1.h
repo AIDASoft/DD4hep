@@ -15,11 +15,11 @@
 
 // Framework include files%
 #include "DD4hep/Mutex.h"
-#include "DD4hep/Memory.h"
 #include "DD4hep/ObjectExtensions.h"
 #include "DDCond/ConditionsManagerObject.h"
 
 // C/C++ include files
+#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -72,7 +72,7 @@ namespace DD4hep {
       /// Lock to protect the pool of all known conditions
       dd4hep_mutex_t          m_poolLock;
       /// Reference to update conditions pool
-      dd4hep_ptr<UpdatePool>  m_updatePool;
+      std::unique_ptr<UpdatePool>  m_updatePool;
 
     public:
       /// Managed pool of typed conditions indexed by IOV-type and IOV key
@@ -92,7 +92,7 @@ namespace DD4hep {
 
 
       /// Helper to check iov and user pool and create user pool if not present
-      void __get_checked_pool(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);
+      void __get_checked_pool(const IOV& required_validity, std::unique_ptr<UserPool>& user_pool);
       
       /** Generic interface of any concrete instance  */
       

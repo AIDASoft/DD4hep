@@ -15,7 +15,7 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/AlignmentsProcessor.h"
+#include "DD4hep/Alignments.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -34,7 +34,7 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class AlignmentsPrinter : public AlignmentsProcessor  {
+    class AlignmentsPrinter : public Alignment::Processor  {
     public:
       /// Printer name. Want to know who is printing what
       std::string   name;
@@ -48,8 +48,6 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      AlignmentsPrinter(UserPool* pool, const std::string& prefix="",int flags=0);
-      /// Initializing constructor
       AlignmentsPrinter(const std::string& prefix="",int flags=0);
       /// Default destructor
       virtual ~AlignmentsPrinter() = default;
@@ -59,23 +57,19 @@ namespace DD4hep {
       void setPrefix(const std::string& value)  {  prefix = value; }
       /// Callback to output alignments information
       virtual int operator()(Alignment cond)  override;
-      /// Container callback for object processing
-      virtual int operator()(Container container)  override;
-      /// Callback to output alignments information of an entire DetElement
-      virtual int processElement(DetElement de)  override;
     };
 
     /// Default printout of an alignment entry
     void printAlignment(PrintLevel prt_level, const std::string& prefix, Alignment alignment);
 
-    /// Default printout of a container entry
-    void printContainer(PrintLevel prt_level, const std::string& prefix, Container container, UserPool* pool);
+    void printAlignment(PrintLevel lvl, const std::string& prefix,
+                        const std::string& opt, DetElement de, Alignment alignment);
 
     /// Default printout of a detector element entry
-    void printElement(PrintLevel prt_level, const std::string& prefix, DetElement element, UserPool* pool);
+    //void printElement(PrintLevel prt_level, const std::string& prefix, DetElement element, UserPool* pool);
 
     /// PrintElement placement with/without alignment applied
-    void printElementPlacement(PrintLevel prt_level, const std::string& prefix, DetElement detector, UserPool* pool);
+    //void printElementPlacement(PrintLevel prt_level, const std::string& prefix, DetElement detector, UserPool* pool);
 
   }    /* End namespace Alignments           */
 }      /* End namespace DD4hep               */

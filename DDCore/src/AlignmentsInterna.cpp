@@ -25,148 +25,41 @@ using namespace std;
 using namespace DD4hep::Alignments;
 using namespace DD4hep::Alignments::Interna;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentConditionObject);
-DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentNamedObject);
-DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentContainer);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
 
 /// Default constructor
-AlignmentConditionObject::AlignmentConditionObject()
-  : ConditionObject(), alignment_data(0), source_key(0)
+AlignmentObject::AlignmentObject()
+  : ConditionObject(), alignment_data(0)//, source_key(0)
 {
   InstanceCount::increment(this);
-  flags = Conditions::Condition::ALIGNMENT;
-  Alignment::Data& d = Conditions::Condition(this).bind<Alignment::Data>();
-  d.condition = this;
-  alignment_data = &d;
+  flags  = Conditions::Condition::ALIGNMENT_DERIVED;
+  AlignmentData& d = data.bind<AlignmentData>();
+  alignment_data   = &d;
 }
 
 /// Standard constructor
-AlignmentConditionObject::AlignmentConditionObject(const string& nam, const string& tit)
-  : ConditionObject(nam, tit), alignment_data(0), source_key(0)
+AlignmentObject::AlignmentObject(const string& nam, const string& tit, void* p, size_t len)
+  : ConditionObject(nam, tit), alignment_data(0)//, source_key(0)
 {
   InstanceCount::increment(this);
-  flags = Conditions::Condition::ALIGNMENT;
-  Alignment::Data& d = Conditions::Condition(this).bind<Alignment::Data>();
-  d.condition = this;
-  alignment_data = &d;
+  flags  = Conditions::Condition::ALIGNMENT_DERIVED|Conditions::Condition::ONSTACK;
+  AlignmentData& d = data.bind<AlignmentData>(p,len);
+  alignment_data   = &d;
 }
 
 /// Standard Destructor
-AlignmentConditionObject::~AlignmentConditionObject()  {
+AlignmentObject::~AlignmentObject()  {
   InstanceCount::decrement(this);
 }
 
 /// Clear data content on demand.
-void AlignmentConditionObject::clear()   {
+void AlignmentObject::clear()   {
   AlignmentCondition a(this);
-  Alignment::Data& d = a.data();
+  AlignmentData& d = a.data();
   d.trToWorld = Transform3D();
   d.detectorTrafo.Clear();
   d.worldTrafo.Clear();
   d.nodes.clear();
-  flags = Conditions::Condition::ALIGNMENT;
+  flags = Conditions::Condition::ALIGNMENT_DERIVED;
 }
-
-/// Standard constructor
-AlignmentContainer::AlignmentContainer(Geometry::DetElementObject* par)
-  : NamedObject(), detector(par), keys()
-{
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-AlignmentContainer::~AlignmentContainer() {
-  InstanceCount::decrement(this);
-}
-
-/// Insert a new key to the alignments access map. Ignores already existing keys.
-bool AlignmentContainer::insertKey(const std::string& key_val)  {
-  key_type hash = Alignment::hashCode(key_val);
-  return keys.insert(make_pair(hash,make_pair(hash,key_val))).second;
-}
-
-/// Insert a new key to the alignments access map: Allow for alias if key_val != data_val
-bool AlignmentContainer::insertKey(const std::string& key_val, const std::string& data_val)  {
-  key_type key_hash = Alignment::hashCode(key_val);
-  key_type val_hash = Alignment::hashCode(data_val);
-  return keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second;
-}
-
-/// Add a new key to the alignments access map
-void AlignmentContainer::addKey(const string& key_val)  {
-  key_type hash = Alignment::hashCode(key_val);
-  if ( !keys.insert(make_pair(hash,make_pair(hash,key_val))).second )   {
-    except("AlignmentContainer","++ Key[%16llX]: %s already present. "
-           "Duplicate insertions inhibited!",hash, key_val.c_str());
-  }
-}
-
-/// Add a new key to the alignments access map: Allow for alias if key_val != data_val
-void AlignmentContainer::addKey(const string& key_val, const string& data_val)  {
-  key_type key_hash = Alignment::hashCode(key_val);
-  key_type val_hash = Alignment::hashCode(data_val);
-  if ( !keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second )   {
-    except("AlignmentContainer","++ Key[%16llX]: %s already present. "
-           "Duplicate insertions inhibited!",key_hash, key_val.c_str());
-  }
-}
-
-/// Access to alignment objects directly by their hash key. 
-Alignment AlignmentContainer::get(const string& key_val, const iov_type& iov)   {
-  AlignmentsLoader& loader = detector->world().alignmentsLoader();
-  key_type hash = Alignment::hashCode(key_val);
-  Keys::const_iterator i=keys.find(hash);
-  if ( i != keys.end() )  {
-    const key_value& k = (*i).second;
-    return loader.get(k.first, iov);
-  }
-  /// Last resort: Assume the key value is globally known:
-  return loader.get(hash, iov);
-}
-
-/// Access to alignment objects directly by their hash key. 
-Alignment AlignmentContainer::get(key_type hash_key, const iov_type& iov)   {
-  AlignmentsLoader& loader = detector->world().alignmentsLoader();
-  Keys::const_iterator i=keys.find(hash_key);
-  if ( i != keys.end() )  {
-    const key_value& k = (*i).second;
-    return loader.get(k.first, iov);
-  }
-  /// Last resort: Assume the key value is globally known:
-  return loader.get(hash_key, iov);
-}
-
-/// Access to alignment objects directly by their hash key. 
-Alignment AlignmentContainer::get(const string& key_val, const UserPool& pool)   {
-  AlignmentsLoader& loader = detector->world().alignmentsLoader();
-  key_type hash = Alignment::hashCode(key_val);
-  Keys::const_iterator i=keys.find(hash);
-  if ( i != keys.end() )  {
-    const key_value& k = (*i).second;
-    return loader.get(k.first, pool);
-  }
-  /// Last resort: Assume the key value is globally known:
-  return loader.get(hash, pool);
-}
-
-/// Access to alignment objects directly by their hash key. 
-Alignment AlignmentContainer::get(key_type hash_key, const UserPool& pool)   {
-  AlignmentsLoader& loader = detector->world().alignmentsLoader();
-  Keys::const_iterator i=keys.find(hash_key);
-  if ( i != keys.end() )  {
-    const key_value& k = (*i).second;
-    return loader.get(k.first, pool);
-  }
-  /// Last resort: Assume the key value is globally known:
-  return loader.get(hash_key, pool);
-}
-
-/// Protected destructor
-AlignmentsLoader::~AlignmentsLoader()   {
-}
-
-/// Default destructor
-AlignmentNamedObject::~AlignmentNamedObject()   {
-}
-

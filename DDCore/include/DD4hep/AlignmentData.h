@@ -106,7 +106,6 @@ namespace DD4hep {
      */
     class AlignmentData   {
     public:
-
       /// Forward definition of the geometry placement
       typedef Geometry::PlacedVolume    PlacedVolume;
       /// Forward definition of the nodelist leading to the world
@@ -117,7 +116,6 @@ namespace DD4hep {
       typedef unsigned int              BitMask;
       /// Forward declaration of the utility mask manipulator
       typedef ReferenceBitMask<BitMask> MaskManipulator;
-      
 
       enum AlignmentFlags {
         HAVE_NONE = 0,
@@ -147,8 +145,6 @@ namespace DD4hep {
       DetElement           detector;
       /// The subdetector placement corresponding to the actual detector element's volume
       PlacedVolume         placement;
-      /// Reference to the original condition object (May not be present!)
-      AlignmentCondition   condition;
       /// Flag to remember internally calculated quatities
       mutable BitMask      flag;
       /// Magic word to verify object if necessary
@@ -165,8 +161,6 @@ namespace DD4hep {
       AlignmentData& operator=(const AlignmentData& copy);
       /// Data accessor for decorator
       inline AlignmentData& data()                       {  return *this;               }
-      /// Accessor if a conditions object is behind
-      bool hasCondition()  const                         {  return condition.isValid(); }
       /// Access the ideal/nominal alignment/placement matrix
       Alignment nominal() const;
       /// Create cached matrix to transform to world coordinates

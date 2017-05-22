@@ -43,10 +43,6 @@ namespace DD4hep {
      */
     class NoSegmentation : public NoSegmentationHandle  {
     public:
-      /// Defintiion of the basic handled object
-      typedef NoSegmentationHandle::Implementation Object;
-
-    public:
       NoSegmentation() = default;
       NoSegmentation(const NoSegmentation& e) = default;
       NoSegmentation(const Segmentation& e) : Handle<Object>(e) { }

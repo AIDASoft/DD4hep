@@ -57,10 +57,6 @@ namespace DD4hep {
      */
     class CartesianGridXZ : public  CartesianGridXZHandle {
     public:
-      /// Defintiion of the basic handled object
-      typedef CartesianGridXZHandle::Implementation Object;
-
-    public:
       /// Default constructor
       CartesianGridXZ() = default;
       /// Copy constructor

@@ -58,7 +58,6 @@ namespace DD4hep {
      */
     class MultiSegmentation : public MultiSegmentationHandle  {
     public:
-      typedef MultiSegmentationHandle::Implementation Object;
       typedef DDSegmentation::MultiSegmentation::Segmentations Segmentations;
 
     public:

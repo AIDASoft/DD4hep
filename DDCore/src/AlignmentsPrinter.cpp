@@ -13,7 +13,6 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/DetAlign.h"
 #include "DD4hep/AlignmentsPrinter.h"
 #include "DD4hep/objects/AlignmentsInterna.h"
 
@@ -27,13 +26,7 @@ using namespace DD4hep::Alignments;
 
 /// Initializing constructor
 AlignmentsPrinter::AlignmentsPrinter(const string& pref, int flg)
-  : AlignmentsProcessor(0), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
-{
-}
-
-/// Initializing constructor
-AlignmentsPrinter::AlignmentsPrinter(UserPool* p, const std::string& pref,int flg)
-  : AlignmentsProcessor(p), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
+  : Alignment::Processor(), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
 {
 }
 
@@ -43,30 +36,16 @@ int AlignmentsPrinter::operator()(Alignment a)    {
   return 1;
 }
 
-/// Container callback for object processing
-int AlignmentsPrinter::operator()(Container container)   {
-  printContainer(printLevel, name, container, m_pool);
-  return 1;
-}
-
-/// Callback to output alignments information of an entire DetElement
-int AlignmentsPrinter::processElement(DetElement de)  {
-  printElement(printLevel, name, de, m_pool);
-  return 1;
-}
-
-
 /// Default printout of an alignment entry
 void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix, Alignment a)   {
   if ( a.isValid() )   {
     Alignment::Object* ptr = a.ptr();
-    const Alignment::Data& data = a.data();
-    Conditions::Condition  cond = data.condition;
+    const AlignmentData& data = a.data();
     const Delta& D = data.delta;
     string new_prefix = prefix;
     new_prefix.assign(prefix.length(),' ');
-    printout(lvl,prefix,"++ %s \tPath:%s [%p] Typ:%s",
-             new_prefix.c_str(), cond.name(), a.ptr(),
+    printout(lvl,prefix,"++ %s \t [%p] Typ:%s",
+             new_prefix.c_str(), a.ptr(),
              typeName(typeid(*ptr)).c_str());
     printout(lvl,prefix,"++ %s \tData:(%11s-%8s-%5s)",
              new_prefix.c_str(), 
@@ -80,44 +59,6 @@ void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix, Al
   }
 }
 
-/// Default printout of an container entry
-void DD4hep::Alignments::printContainer(PrintLevel prt_level, const string& prefix, Container container, UserPool* pool)   {
-  string tag = prefix+"Cont";
-  if ( pool )  {
-    for(const auto& k : container.keys() )  {
-      try {
-        Alignment align = container.get(k.first,*pool);
-        printout(prt_level,tag,"++ %s Alignment [%16llX] -> [%16llX] %s",
-                 prefix.c_str(), k.first, k.second.first, k.second.second.c_str());
-        printAlignment(prt_level, prefix,align);
-      }
-      catch(...)  {
-        printout(ERROR,tag,"++ %s %s [%16llX] -> [%16llX]",
-                 prefix.c_str(), "FAILED Alignment:", k.first, k.second.first);
-      }
-    }
-    return;
-  }
-  except(tag,"Cannot dump alignments container without valid user-pool.");
-}
-
-/// Default printout of a detector element entry
-void DD4hep::Alignments::printElement(PrintLevel prt_level, const string& prefix, DetElement de, UserPool* pool)   {
-  string tag = prefix+"Element";
-  if ( de.isValid() )  {
-    if ( pool )  {
-      DetAlign  a(de);
-      Container c = a.alignments();
-      printout(prt_level,tag,"++ Alignments of DE %s [%d entries]",
-               de.path().c_str(), int(c.keys().size()));
-      printContainer(prt_level, prefix, c, pool);
-      return;
-    }
-    except(tag,"Cannot process DetElement alignments from '%s' without valid user-pool",de.name());
-  }
-  except(tag,"Cannot process alignments of an invalid detector element");
-}
-
 
 #include "TClass.h"
 #include "DD4hep/ToStream.h"
@@ -128,7 +69,7 @@ static string replace_all(const string& in, const string& from, const string& to
     res.replace(idx,from.length(),to);
   return res;
 }
-static string _transformPoint2World(const Alignment::Data& data, const Position& local)  {
+static string _transformPoint2World(const AlignmentData& data, const Position& local)  {
   char text[256];
   Position world = data.localToWorld(local);
   ::snprintf(text,sizeof(text),"Local: (%7.3f , %7.3f , %7.3f )  -- > World:  (%7.3f , %7.3f , %7.3f )",
@@ -136,7 +77,7 @@ static string _transformPoint2World(const Alignment::Data& data, const Position&
   return text;
 }
 
-static string _transformPoint2Detector(const Alignment::Data& data, const Position& local)  {
+static string _transformPoint2Detector(const AlignmentData& data, const Position& local)  {
   char text[256];
   Position world = data.localToDetector(local);
   ::snprintf(text,sizeof(text),"Local: (%7.3f , %7.3f , %7.3f )  -- > Parent: (%7.3f , %7.3f , %7.3f )",
@@ -144,14 +85,13 @@ static string _transformPoint2Detector(const Alignment::Data& data, const Positi
   return text;
 }
 
-static void printAlignmentEx(PrintLevel lvl, const string& prefix,
-                             const string& opt, DetElement de, Alignment alignment)
+void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix,
+                                        const string& opt, DetElement de, Alignment alignment)
 {
   using Geometry::Box;
-  DetAlign      a(de);
   const string& tag = prefix;
-  const Alignment::Data& align_data = alignment.data();
-  Conditions::Condition  align_cond = align_data.condition;
+  const AlignmentData& align_data = alignment.data();
+  Conditions::Condition  align_cond;// = align_data.condition;
   const Delta& align_delta = align_data.delta;
   string par = de.parent().isValid() ? de.parent().path() : string();
   Box bbox = de.placement().volume().solid();
@@ -223,6 +163,7 @@ static void printAlignmentEx(PrintLevel lvl, const string& prefix,
   printout(PrintLevel(lvl-1),tag,"++ %s: P8(x,y,z) %s", opt.c_str(), _transformPoint2Detector(align_data, p8).c_str());
 }
 
+#if 0
 /// PrintElement placement with/without alignment applied
 void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& prefix, DetElement de, UserPool* pool)
 {
@@ -250,7 +191,7 @@ void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& pre
       for(const auto& k : container.keys() )  {
         try {
           Alignment align = container.get(k.first,*pool);
-          const Alignment::Data& align_data = align.data();
+          const AlignmentData& align_data = align.data();
           Conditions::Condition  align_cond = align_data.condition;
           if ( k.first != k.second.first )  {
             printout(lvl, tag, "++ Alignment %p [%16llX] -> [%16llX] %s (SYNONYM) ignored.",
@@ -275,3 +216,4 @@ void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& pre
   }
   except(tag, "Cannot process alignments of an invalid detector element");
 }
+#endif

@@ -93,10 +93,8 @@ namespace DD4hep {
       typedef /* DD4hep::Geometry:: */  DetElement::Extensions Extensions;
       typedef std::pair<Callback,unsigned long>    UpdateCall;
       typedef std::vector<UpdateCall>              UpdateCallbacks;
-      typedef Conditions::Container                ConditionsContainer;
       typedef Conditions::Condition                Condition;
-      typedef Alignments::Alignment                Alignment;
-      typedef Alignments::Container                AlignmentsContainer;
+      typedef Alignments::AlignmentCondition       AlignmentCondition;
 
       enum DetFlags {
         HAVE_WORLD_TRAFO        = 1<<0,
@@ -147,13 +145,9 @@ namespace DD4hep {
 
       //@{ Additional information set externally to facilitate the processing of event data */
       /// Basic ideal/nominal detector element alignment entry
-      Alignment           nominal;
+      AlignmentCondition  nominal;
       /// Basic detector element alignment entry containing the survey data
-      Alignment           survey;
-      /// The detector elements alignments access
-      AlignmentsContainer alignments;
-      /// The detector elements conditions access
-      ConditionsContainer conditions;
+      AlignmentCondition  survey;
 
       /// Global alignment data
       Ref_t               global_alignment;
@@ -199,7 +193,6 @@ namespace DD4hep {
       /// Access to the world object. Only possible once the geometry is closed.
       World world()
       {  return privateWorld.isValid() ? privateWorld : i_access_world(); }
-      ConditionsContainer assign_conditions();
       //@}
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer);
@@ -219,29 +212,8 @@ namespace DD4hep {
      */
     class WorldObject: public DetElementObject {
     public:
-      /// Forward type definition of the ConditionsLoader type
-      typedef Conditions::ConditionsLoader        ConditionsLoader;
-      /// Forward type definition of the ConditionsManagerObject type
-      typedef Conditions::ConditionsManagerObject ConditionsManagerObject;
-      /// Forward type definition of the AlignmentsLoader type
-      typedef Alignments::AlignmentsLoader        AlignmentsLoader;
-      /// Forward type definition of the AlignmentsManagerObject type
-      typedef Alignments::AlignmentsManagerObject AlignmentsManagerObject;
-
       /// Reference to the LCDD instance object
       LCDD* lcdd;
-
-      /// Conditions loader for this LCDD instance
-      ConditionsLoader*        conditionsLoader;
-
-      /// Reference to the conditions manager object
-      ConditionsManagerObject* conditionsManager;
-
-      /// Alignments loader for this LCDD instance
-      AlignmentsLoader*        alignmentsLoader;
-
-      /// Reference to the alignments manager object
-      AlignmentsManagerObject* alignmentsManager;
 
     public:
       //@{ Public methods to ease the usage of the data. */
@@ -256,11 +228,8 @@ namespace DD4hep {
    };
 
     /// Default constructor
-    inline WorldObject::WorldObject()
-      : DetElementObject(), lcdd(0), 
-      conditionsLoader(0), conditionsManager(0), alignmentsLoader(0), alignmentsManager(0)
-      {
-      }
+    inline WorldObject::WorldObject() : DetElementObject(), lcdd(0)      {
+    }
 
   } /* End namespace Geometry      */
 } /* End namespace DD4hep        */

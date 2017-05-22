@@ -51,14 +51,14 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key)  const  {
     Dependencies::const_iterator i = m_dependencies.find(key);
     if ( i != m_dependencies.end() )  {
       /// This condition is no longer valid. remove it! Will be added again afterwards.
-      const ConditionDependency* dep = (*i).second.get();
+      const ConditionDependency* dep = (*i).second;
       m_pool.remove(key);
       return do_callback(*dep);
     }
   }
   Dependencies::const_iterator i = m_dependencies.find(key);
   if ( i != m_dependencies.end() )   {
-    const ConditionDependency* dep = (*i).second.get();
+    const ConditionDependency* dep = (*i).second;
     return do_callback(*dep);
   }
   return Condition();
@@ -74,13 +74,13 @@ ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const 
     Condition          cond = (*dep.callback)(dep.target, ctxt);
     Condition::Object* obj  = cond.ptr();
     if ( obj )  {
-      if ( !obj->hash ) obj->hash = ConditionKey::hashCode(obj->name);
+      obj->hash = dep.target.hash;
       cond->setFlag(Condition::DERIVED);
       //cond->validate();
       cond->iov = m_pool.validityPtr();
       // Must IMMEDIATELY insert to handle inter-dependencies.
       ++num_callback;
-      m_pool.insert(cond);
+      m_pool.insert(dep.detector, dep.target.item_key(), cond);
       m_manager->registerUnlocked(m_iovPool, cond);
     }
     return obj;

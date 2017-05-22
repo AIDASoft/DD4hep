@@ -27,11 +27,22 @@ using namespace DD4hep::Conditions;
 Condition::Processor::Processor() {
 }
 
-/// Initializing constructor
-Condition::Condition(const string& nam,const string& typ) : Handle<Object>()  {
+/// Initializing constructor for a pure, undecorated conditions object
+Condition::Condition(const std::string& nam, const std::string& typ) : Handle<Object>()
+{
   Object* o = new Object();
   assign(o,nam,typ);
-  o->hash = ConditionKey::hashCode(nam);
+  o->hash = 0;
+}
+
+/// Initializing constructor for a pure, undecorated conditions object with payload buffer
+Condition::Condition(const string& nam,const string& typ, size_t memory)
+  : Handle<Object>()
+{
+  void* ptr = ::operator new(sizeof(Object)+memory);
+  Object* o = new(ptr) Object();
+  assign(o,nam,typ);
+  o->hash = 0;
 }
 
 /// Output method
@@ -136,85 +147,43 @@ Condition& Condition::rebind()    {
   return *this;
 }
 
-/// Default constructor
-Container::Processor::Processor() {
-}
-
-/// Access the number of conditons keys available for this detector element
-size_t Container::numKeys() const   {
-  return access()->keys.size();
-}
-
-/// Known keys of conditions in this container
-const Container::Keys& Container::keys()  const   {
-  return access()->keys;
-}
-
-/// Insert a new key to the conditions access map. Ignores already existing keys.
-bool Container::insertKey(const std::string& key_val)  {
-  return access()->insertKey(key_val);
-}
-
-/// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
-bool Container::insertKey(const std::string& key_val, const std::string& data_val)  {
-  return access()->insertKey(key_val, data_val);
-}
-
-/// Add a new key to the conditions access map
-void Container::addKey(const string& key_val)  {
-  access()->addKey(key_val);
-}
-
-/// Add a new key to the conditions access map: Allow for alias if key_val != data_val
-void Container::addKey(const string& key_val, const string& data_val)  {
-  access()->addKey(key_val, data_val);
-}
-
-/// Access to condition objects
-Condition Container::get(const string& condition_key, const iov_type& iov)  {
-  return Condition(access()->get(condition_key, iov).access());
-}
-
-/// Access to condition objects
-Condition Container::get(key_type condition_key, const iov_type& iov)  {
-  return Condition(access()->get(condition_key, iov).access());
-}
-
-/// Access to condition objects
-Condition Container::get(const string& condition_key, const UserPool& pool)  {
-  return Condition(access()->get(condition_key, pool).access());
-}
-
-/// Access to condition objects
-Condition Container::get(key_type condition_key, const UserPool& pool)  {
-  return Condition(access()->get(condition_key, pool).access());
-}
-
 /// Default destructor. 
 ConditionsSelect::~ConditionsSelect()   {
 }
 
-/// Access the key of the condition
-ConditionKey DD4hep::Conditions::make_key(Condition c) {
-  Condition::Object* p = c.access();
-  return ConditionKey(p->name,p->hash);
-}
-
 /// Constructor from string
-ConditionKey::ConditionKey(const string& value) 
-  : name(value), hash(hashCode(value))
-{
+ConditionKey::ConditionKey(DetElement detector, const string& value)  {
+  KeyMaker m(detector.key(), hash32(value));
+  hash = m.hash;
 }
 
-/// Assignment operator from the string representation
-ConditionKey& ConditionKey::operator=(const string& value)  {
-  ConditionKey key(value);
-  hash = hashCode(value);
-  name = value;
-  return *this;
+/// Constructor from detector element key and item sub-key
+ConditionKey::ConditionKey(unsigned int det_key, const string& value)    {
+  KeyMaker m(det_key, hash32(value));
+  hash = m.hash;
 }
 
-/// Operator less (for map insertions) using the string representation
-bool ConditionKey::operator<(const string& compare)  const  {  
-  return hash < hashCode(compare);
+/// Constructor from detector element key and item sub-key
+ConditionKey::ConditionKey(DetElement detector, unsigned int item_key)  {
+  hash = KeyMaker(detector.key(),item_key).hash;
+}
+
+/// Hash code generation from input string
+ConditionKey::key_type ConditionKey::hashCode(DetElement detector, const char* value)  {
+  return KeyMaker(detector.key(), hash32(value)).hash;
+}
+
+/// Hash code generation from input string
+ConditionKey::key_type ConditionKey::hashCode(DetElement detector, const string& value)  {
+  return KeyMaker(detector.key(), hash32(value)).hash;
+}
+
+      /// 32 bit hashcode of the item
+unsigned int ConditionKey::itemCode(const char* value)  {
+  return hash32(value);
+}
+
+/// 32 bit hashcode of the item
+unsigned int ConditionKey::itemCode(const std::string& value)   {
+  return hash32(value);
 }

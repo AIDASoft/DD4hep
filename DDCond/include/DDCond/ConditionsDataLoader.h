@@ -51,8 +51,8 @@ namespace DD4hep {
       typedef Condition::iov_type         iov_type;
       typedef Condition::key_type         key_type;
 
-      typedef std::map<key_type,Condition>                            LoadedItems;
-      typedef std::vector<std::pair<key_type,ConditionsDescriptor*> > RequiredItems;
+      typedef std::map<key_type,Condition>                          LoadedItems;
+      typedef std::vector<std::pair<key_type,ConditionsLoadInfo*> > RequiredItems;
 
     protected:
       /// Reference to main detector description object

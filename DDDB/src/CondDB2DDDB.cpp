@@ -43,6 +43,7 @@ namespace DD4hep {
   namespace {
 
     using Conditions::Condition;
+    using Conditions::ConditionKey;
     using Conditions::AbstractMap;
 
     typedef Alignments::Delta   AlignmentDelta;
@@ -550,7 +551,7 @@ namespace DD4hep {
       stringstream str;
 
       XML::dump_tree(element, str);
-      block.second.set<string>(str.str());
+      block.second.bind<string>(str.str());
       block.first = nam;
 
       ConditionParams* par = _option<ConditionParams>();
@@ -596,12 +597,12 @@ namespace DD4hep {
         Document*  doc     = context->locals.xml_doc;
         string     path    = object_path(context,name);
         static int num_param=0, num_vector=0, num_map=0, num_spec=0, num_align=0;
-
+        ConditionKey::KeyMaker mk(hash32(catalog->path),hash32(path));
         Condition cond(path,"DDDB");
         cond->address  = doc->name+"@"+id;
         cond->value    = path; // doc->name;
         cond->validity = "";
-        cond->hash     = Conditions::ConditionKey::hashCode(cond->value);
+        cond->hash     = mk.key;
         if ( element.hasAttr(_U(comment)) )  {
           cond->comment = element.attr<string>(_U(comment));
         }

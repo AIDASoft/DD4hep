@@ -32,14 +32,11 @@
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsDataLoader.h"
-#include "DDCond/ConditionsLoaderImp.h"
-#include "DDCond/AlignmentsLoaderImp.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
-typedef Alignments::AlignmentsLoader AlignmentsLoader;
 typedef UpdatePool::UpdateEntries Updates;
 typedef RangeConditions RC;
 
@@ -152,16 +149,7 @@ Manager_Type1::Manager_Type1(LCDD& lcdd_instance)
 
 /// Default destructor
 Manager_Type1::~Manager_Type1()   {
-  Geometry::World world(m_lcdd.world());
   for_each(m_rawPool.begin(), m_rawPool.end(), DestroyObject<ConditionsIOVPool*>());
-  if ( world.isValid() )  {
-    ConditionsLoader* cld = world->conditionsLoader;
-    AlignmentsLoader* ald = world->alignmentsLoader;
-    world->conditionsLoader = 0;
-    world->alignmentsLoader = 0;
-    if ( cld ) cld->release();
-    if ( ald ) ald->release();
-  }
   InstanceCount::decrement(this);
 }
 
@@ -170,8 +158,8 @@ void Manager_Type1::initialize()  {
     string typ = "DD4hep_Conditions_"+m_loaderType+"_Loader";
     const void* argv_loader[] = {"ConditionsDataLoader", this, 0};
     const void* argv_pool[] = {this, 0};
-    m_loader.adopt(createPlugin<ConditionsDataLoader>(typ,m_lcdd,2,argv_loader));
-    m_updatePool.adopt(createPlugin<UpdatePool>(m_updateType,m_lcdd,1,argv_pool));
+    m_loader.reset(createPlugin<ConditionsDataLoader>(typ,m_lcdd,2,argv_loader));
+    m_updatePool.reset(createPlugin<UpdatePool>(m_updateType,m_lcdd,1,argv_pool));
     if ( !m_updatePool.get() )  {
       except("ConditionsManager","+++ The update pool of type %s cannot be created. [%s]",
              m_updateType.c_str(),Errors::noSys().c_str());
@@ -179,9 +167,6 @@ void Manager_Type1::initialize()  {
     Ref_t ref(m_updatePool.get());
     ref->SetName("updates");
     ref->SetTitle("updates");
-    Geometry::World world(m_lcdd.world());
-    world->conditionsLoader = new ConditionsLoaderImp(this);
-    world->alignmentsLoader = new AlignmentsLoaderImp(this);
   }
 }
 
@@ -256,7 +241,6 @@ ConditionsIOVPool* Manager_Type1::iovPool(const IOVType& iov_type)  const    {
 /// Register new condition with the conditions store. Unlocked version, not multi-threaded
 bool Manager_Type1::registerUnlocked(ConditionsPool* pool, Condition cond)   {
   if ( pool && cond.isValid() )  {
-    cond->pool = pool;
     cond->iov  = pool->iov;
     cond->setFlag(Condition::ACTIVE);
     pool->insert(cond);
@@ -286,7 +270,6 @@ Condition Manager_Type1::__queue_update(Conditions::Entry* e)   {
     c->address = "----";
     c->validity = e->validity;
     c->iov  = p->iov;
-    c->pool = p;
     p->insert(c);
     if ( s_debug > INFO )  {
       printout(INFO,"Conditions","+++ Loaded condition: %s.%s to %s [%s] V: %s",
@@ -300,7 +283,7 @@ Condition Manager_Type1::__queue_update(Conditions::Entry* e)   {
 
 /// Helper to check iov and user pool and create user pool if not present
 void Manager_Type1::__get_checked_pool(const IOV& req_iov,
-                                       dd4hep_ptr<UserPool>& up)
+                                       std::unique_ptr<UserPool>& up)
 {
   const IOVType* typ = check_iov_type<Discrete>(this, &req_iov);
   if ( typ )  {
@@ -308,7 +291,7 @@ void Manager_Type1::__get_checked_pool(const IOV& req_iov,
     if ( 0 == up.get() )  {
       const void* argv[] = {this, pool, 0};
       UserPool* p = createPlugin<UserPool>(m_userType,m_lcdd,2,argv);
-      up.adopt(p);
+      up.reset(p);
     }
     return;
   }
@@ -355,7 +338,9 @@ void Manager_Type1::pushUpdates()   {
     if ( !ents.empty() )  {
       for(Condition c : ents )  {
         c->setFlag(Condition::ACTIVE);
-        c->pool->insert(c);
+        /// FIXME!
+        throw runtime_error("FIXME!!!");
+        //c->pool->insert(c);
       }
     }
   }

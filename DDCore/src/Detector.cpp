@@ -186,8 +186,8 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
 Alignment DetElement::nominal() const   {
   Object* o = access();
   if ( !o->nominal.isValid() )   {
-    o->nominal = Alignment("nominal");
-    o->nominal->detector = *this;
+    o->nominal = Alignments::AlignmentCondition("nominal");
+    o->nominal->values().detector = *this;
     //o->flag |= Object::HAVE_WORLD_TRAFO;
     //o->flag |= Object::HAVE_PARENT_TRAFO;
     DD4hep::Alignments::AlignmentTools::computeIdeal(o->nominal);
@@ -199,7 +199,7 @@ Alignment DetElement::nominal() const   {
 Alignment DetElement::survey() const  {
   Object* o = access();
   if ( !o->survey.isValid() )   {
-    o->survey = Alignment("survey");
+    o->survey = Alignments::AlignmentCondition("survey");
     DD4hep::Alignments::AlignmentTools::copy(nominal(), o->survey);
   }
   return o->survey;
@@ -229,22 +229,6 @@ DetElement DetElement::parent() const {
 DetElement DetElement::world()  const   {
   Object* o = ptr();
   return (o) ? o->world() : 0;
-}
-
-/// Check if conditions are at all present
-bool DetElement::hasConditions()  const   {
-  Object* o = access();
-  if ( o->conditions.isValid() && !o->conditions->keys.empty() ) 
-    return true;
-  return false;
-}
-
-/// Check if alignments are at all present
-bool DetElement::hasAlignments()  const   {
-  Object* o = access();
-  if ( o->alignments.isValid() && !o->alignments->keys.empty() ) 
-    return true;
-  return false;
 }
 
 void DetElement::check(bool cond, const string& msg) const {
@@ -339,61 +323,12 @@ DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& nam, const V
   return *this;
 }
 
-DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& vol, const string& region, const string& limits,
+DetElement& DetElement::setAttributes(const LCDD& lcdd,
+                                      const Volume& vol,
+                                      const string& region,
+                                      const string& limits,
                                       const string& vis) {
   return setRegion(lcdd, region, vol).setLimitSet(lcdd, limits, vol).setVisAttributes(lcdd, vis, vol);
-}
-
-/// Create cached matrix to transform to world coordinates
-const TGeoHMatrix& DetElement::worldTransformation() const   {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal()",__PRETTY_FUNCTION__);
-  return nominal().worldTransformation();
-}
-
-/// Create cached matrix to transform to parent coordinates
-const TGeoHMatrix& DetElement::parentTransformation() const   {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal()",__PRETTY_FUNCTION__);
-  return nominal().detectorTransformation();
-}
-
-/// Transformation from local coordinates of the placed volume to the world system
-bool DetElement::localToWorld(const Position& local, Position& global) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
-  Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
-  // If the path is unknown an exception will be thrown inside worldTransformation() !
-  nominal().worldTransformation().LocalToMaster(local_point, master_point);
-  global.SetCoordinates(master_point);
-  return true;
-}
-
-/// Transformation from local coordinates of the placed volume to the parent system
-bool DetElement::localToParent(const Position& local, Position& global) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
-  // If the path is unknown an exception will be thrown inside detectorTransformation() !
-  Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
-  nominal().detectorTransformation().LocalToMaster(local_point, master_point);
-  global.SetCoordinates(master_point);
-  return true;
-}
-
-/// Transformation from world coordinates of the local placed volume coordinates
-bool DetElement::worldToLocal(const Position& global, Position& local) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
-  // If the path is unknown an exception will be thrown inside worldTransformation() !
-  Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  nominal().worldTransformation().MasterToLocal(master_point, local_point);
-  local.SetCoordinates(local_point);
-  return true;
-}
-
-/// Transformation from parent coordinates of the local placed volume coordinates
-bool DetElement::parentToLocal(const Position& global, Position& local) const {
-  DD4HEP_DEPRECATED_CALL("DetElement","DetElement::nominal() member functions",__PRETTY_FUNCTION__);
-  // If the path is unknown an exception will be thrown inside detectorTransformation() !
-  Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  nominal().detectorTransformation().MasterToLocal(master_point, local_point);
-  local.SetCoordinates(local_point);
-  return true;
 }
 
 /// Constructor

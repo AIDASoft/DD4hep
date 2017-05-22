@@ -57,10 +57,6 @@ namespace DD4hep {
      */
     class WaferGridXY : public WaferGridXYHandle  {
     public:
-      /// Defintiion of the basic handled object
-      typedef WaferGridXYHandle::Implementation Object;
-
-    public:
       /// Default constructor
       WaferGridXY() = default;
       /// Copy constructor

@@ -92,11 +92,10 @@ ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
 
 /// Callback to process a single detector element
 int ConditionsDependencyCreator::operator()(DetElement de, int)    {
-  DetConditions     dc(de);
-  ConditionKey      key(de.path()+"#derived_data");
-  ConditionKey      target1(key.name+"/derived_1");
-  ConditionKey      target2(key.name+"/derived_2");
-  ConditionKey      target3(key.name+"/derived_3");
+  ConditionKey      key(de,"derived_data");
+  ConditionKey      target1(de,"derived_1");
+  ConditionKey      target2(de,"derived_2");
+  ConditionKey      target3(de,"derived_3");
   DependencyBuilder build_1(target1, call1);
   DependencyBuilder build_2(target2, call2);
   DependencyBuilder build_3(target3, call3);
@@ -114,15 +113,6 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)    {
   slice.insert(build_1.release());
   slice.insert(build_2.release());
   slice.insert(build_3.release());
-
-  /// Add the conditions keys to the container
-  dc.conditions().addKey(target1.name);
-  dc.conditions().addKey(target2.name);
-  dc.conditions().addKey(target3.name);
-  /// Add conditions aliases to the container
-  dc.conditions().addKey("derived_1",target1.name);
-  dc.conditions().addKey("derived_2",target2.name);
-  dc.conditions().addKey("derived_3",target3.name);
   printout(printLevel,"Example","++ Added derived conditions dependencies for %s",de.path().c_str());
   return 1;
 }
@@ -131,14 +121,14 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)    {
 int ConditionsDataAccess::processElement(DetElement de)  {
   DetConditions dc(de); // Use special facade...
   string path = de.path();
-  ConditionKey key_temperature (path+"#temperature");
-  ConditionKey key_pressure    (path+"#pressure");
-  ConditionKey key_double_table(path+"#double_table");
-  ConditionKey key_int_table   (path+"#int_table");
-  ConditionKey key_derived_data(path+"#derived_data");
-  ConditionKey key_derived1    (path+"#derived_data/derived_1");
-  ConditionKey key_derived2    (path+"#derived_data/derived_2");
-  ConditionKey key_derived3    (path+"#derived_data/derived_3");
+  ConditionKey key_temperature (de,"temperature");
+  ConditionKey key_pressure    (de,"pressure");
+  ConditionKey key_double_table(de,"double_table");
+  ConditionKey key_int_table   (de,"int_table");
+  ConditionKey key_derived_data(de,"derived_data");
+  ConditionKey key_derived1    (de,"derived_data/derived_1");
+  ConditionKey key_derived2    (de,"derived_data/derived_2");
+  ConditionKey key_derived3    (de,"derived_data/derived_3");
   Conditions::Container container = dc.conditions();
   int result = 0, count = 0;
   // Let's go for the deltas....
@@ -183,8 +173,8 @@ template<typename T> Condition ConditionsCreator::make_condition(DetElement de, 
   Condition cond(de.path()+"#"+name, name);
   T& value   = cond.bind<T>();
   value      = val;
-  cond->hash = ConditionKey::hashCode(cond->name);
-  if ( slice ) slice->insert(ConditionKey(cond->name,cond->hash),ConditionsSlice::NoLoadInfo());
+  cond->hash = ConditionKey::hashCode(de,name);
+  if ( slice ) slice->insert(ConditionKey(cond->hash),ConditionsSlice::NoLoadInfo());
   return cond;
 }
 
@@ -214,6 +204,7 @@ int ConditionsCreator::operator()(DetElement de, int)    {
 
 /// Callback to process a single detector element
 int ConditionsKeys::operator()(DetElement de, int)    {
+#if 0
   DetConditions dc(de);
   dc.conditions().addKey(de.path()+"#temperature");
   dc.conditions().addKey(de.path()+"#pressure");
@@ -221,5 +212,6 @@ int ConditionsKeys::operator()(DetElement de, int)    {
   dc.conditions().addKey(de.path()+"#int_table");
   dc.conditions().addKey(de.path()+"#derived_data");
   dc.conditions().addKey("derived",de.path()+"#derived_data");
+#endif
   return 1;
 }

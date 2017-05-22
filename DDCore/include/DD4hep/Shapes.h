@@ -68,7 +68,6 @@ namespace DD4hep {
      */
     template <typename T> class Solid_type: public Handle<T> {
     protected:
-      typedef T Implementation;
       void _setDimensions(double* param);
       /// Assign pointrs and register solid to geometry
       void _assign(T* n, const std::string& nam, const std::string& tit, bool cbbox);

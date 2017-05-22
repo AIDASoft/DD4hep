@@ -44,10 +44,6 @@ typedef Handle<SegmentationWrapper<DDSegmentation::GridRPhiEta>> GridRPhiEtaHand
  */
 class GridRPhiEta : public GridRPhiEtaHandle {
 public:
-  /// Defintiion of the basic handled object
-  typedef GridRPhiEtaHandle::Implementation Object;
-
-public:
   /// Default constructor
   GridRPhiEta() = default;
   /// Copy constructor

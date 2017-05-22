@@ -86,7 +86,8 @@ namespace DD4hep {
     enum _DataTypes  {
       PLAIN_DATA = 1<<0,
       ALLOC_DATA = 1<<1,
-      BOUND_DATA = 1<<2
+      STACK_DATA = 1<<2,
+      BOUND_DATA = 1<<3
     };
     /// Data buffer: plain data are allocated directly on this buffer
     /** Internal data buffer is sufficient to store any vector  */
@@ -111,16 +112,23 @@ namespace DD4hep {
     bool move(OpaqueDataBlock& from);
     /// Bind data value
     bool bind(const BasicGrammar* grammar,
-	      void (*ctor)(void*,const void*),
-	      void (*dtor)(void*));
+              void (*ctor)(void*,const void*),
+              void (*dtor)(void*));
+    /// Bind data value in place
+    bool bind(void* ptr, size_t len,
+              const BasicGrammar* grammar,
+              void (*ctor)(void*,const void*),
+              void (*dtor)(void*));
     /// Bind data value
     template <typename T> T& bind();
-    /// Bind data value [Equivalent to set(value)]
+    /// Bind data value
+    template <typename T> T& bind(void* ptr, size_t len);
+    /// Bind data value
     template <typename T> T& bind(const std::string& value);
+    /// Bind data value
+    template <typename T> T& bind(void* ptr, size_t len, const std::string& value);
     /// Set data value
     void assign(const void* ptr,const std::type_info& typ);
-    /// Bind grammar and assign value
-    template<typename T> T& set(const std::string& value);
   };
 
 }      /* End namespace DD4hep */

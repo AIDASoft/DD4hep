@@ -37,18 +37,12 @@ namespace DD4hep {
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
 
-    // The DetElement is a central object. We alias it here.
-    using Geometry::DetElement;
+    // LCDD and DetElement are central objects. We alias it here.
     using Geometry::LCDD;
-
-    // Forward declarations
-    class ConditionsManagerObject;
-    class ConditionsLoader;
-    class UserPool;
+    using Geometry::DetElement;
 
     /// Conditions internal namespace
     namespace Interna  {
-      class ConditionContainer;
       class ConditionObject;
     }
 
@@ -68,8 +62,6 @@ namespace DD4hep {
      */
     class Condition: public Handle<Interna::ConditionObject> {
     public:
-      /// Standard object type
-      typedef Interna::ConditionObject    Object;
       /// Forward definition of the key type
       typedef unsigned long long int      key_type;
       /// Forward definition of the iov type
@@ -93,13 +85,14 @@ namespace DD4hep {
         ACTIVE              = 1<<0,
         CHECKED             = 1<<2,
         DERIVED             = 1<<3,
+        ONSTACK             = 1<<4,
         // Flags for specific conditions
-        TEMPERATURE         = 1<<4,
+        TEMPERATURE         = 1<<5,
         TEMPERATURE_DERIVED = TEMPERATURE|DERIVED,
-        PRESSURE            = 1<<5,
+        PRESSURE            = 1<<6,
         PRESSURE_DERIVED    = PRESSURE|DERIVED,
-        ALIGNMENT           = 1<<6,
-        ALIGNMENT_DERIVED   = ALIGNMENT|DERIVED,
+        ALIGNMENT_DELTA     = 1<<7,
+        ALIGNMENT_DERIVED   = ALIGNMENT_DELTA|DERIVED,
         // Keep bit 8-15 for other generic types
         // Bit 16-31 is reserved for user classifications
         USER_FLAGS_FIRST    = 1<<16,
@@ -120,6 +113,8 @@ namespace DD4hep {
         virtual ~Processor() = default;
         /// Conditions callback for object processing
         virtual int operator()(Condition c) = 0;
+        /// Conditions callback for object processing in maps
+        virtual int operator()(const std::pair<Condition::key_type,Condition>& c) = 0;
       };
 
       /// Default constructor
@@ -132,6 +127,8 @@ namespace DD4hep {
       template <typename Q> Condition(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Initializing constructor for a pure, undecorated conditions object
       Condition(const std::string& name, const std::string& type);
+      /// Initializing constructor for a pure, undecorated conditions object with payload buffer
+      Condition(const std::string& name, const std::string& type, size_t memory);
       /// Assignment operator
       Condition& operator=(const Condition& c) = default;
 
@@ -195,94 +192,6 @@ namespace DD4hep {
     /// Initializing constructor
     inline Condition::Condition(Condition::Object* p) : Handle<Condition::Object>(p)  {
     }
-
-    /// Container class for condition handles aggregated by a detector element
-    /**
-     *  Note: The conditions container is owner by the detector element
-     *        On deletion the detector element will destroy the container
-     *        and all associated entries.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    class Container : public Handle<Interna::ConditionContainer> {
-
-    public:
-      /// Abstract base for processing callbacks to container objects
-      /**
-       *  \author  M.Frank
-       *  \version 1.0
-       *  \ingroup DD4HEP_CONDITIONS
-       */
-      class Processor {
-      public:
-        /// Default constructor
-        Processor();
-        /// Default destructor
-        virtual ~Processor() = default;
-        /// Container callback for object processing
-        virtual int operator()(Container container) = 0;
-      };
-
-      /// Standard object type
-      typedef Interna::ConditionContainer      Object;
-      /// Forward definition of the key type
-      typedef Condition::key_type              key_type;
-      /// Forward definition of the iov type
-      typedef Condition::iov_type              iov_type;
-      /// Forward definition of the mapping type
-      typedef std::pair<key_type, std::string> key_value;
-      /// Definition of the keys
-      typedef std::map<key_type, key_value>    Keys;
-
-    public:
-      /// Default constructor
-      Container() = default;
-      /// Constructor to be used when reading the already parsed object
-      Container(const Container& c) = default;
-
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> Container(const Handle<Q>& e) : Handle<Object>(e) {}
-
-      /// Assignment operator
-      Container& operator=(const Container& c) = default;
-
-      /// Access the number of conditons keys available for this detector element
-      size_t numKeys() const;
-
-      /// Known keys of conditions in this container
-      /**  Caution: This is not thread protected!  */
-      const Keys&  keys()  const;
-
-      /// Insert a new key to the conditions access map. Ignores already existing keys.
-      /**  Caution: This is not thread protected!  */
-      bool insertKey(const std::string& key_val);
-
-      /// Insert a new key to the conditions access map: Allow for alias if key_val != data_val
-      /**  Caution: This is not thread protected!  */
-      bool insertKey(const std::string& key_val, const std::string& data_val);
-
-      /// Add a new key to the conditions access map.
-      /**  Caution: This is not thread protected!  */
-      void addKey(const std::string& key_val);
-
-      /// Add a new key to the conditions access map: Allow for alias if key_val != data_val
-      /**  Caution: This is not thread protected!  */
-      void addKey(const std::string& key_val, const std::string& data_val);
-
-      /// Access to condition objects by key and IOV. 
-      Condition get(const std::string& condition_key, const iov_type& iov);
-
-      /// Access to condition objects directly by their hash key. 
-      Condition get(key_type condition_key, const iov_type& iov);
-
-      /// Access to condition objects. Only conditions in the pool are accessed.
-      Condition get(const std::string& condition_key, const UserPool& pool);
-
-      /// Access to condition objects. Only conditions in the pool are accessed.
-      Condition get(key_type condition_key, const UserPool& pool);
-    };
 
     /// Conditions selector functor. Default implementation selects everything evaluated.
     /**
@@ -379,12 +288,28 @@ namespace DD4hep {
     public:
       /// Forward definition of the key type
       typedef Condition::key_type      key_type;
-
-      /// String representation of the key object
+      /// Optional string identifier. Helps debugging a lot!
       std::string  name;
       /// Hashed key representation
       key_type     hash = 0;
 
+      union KeyMaker  {
+        key_type  hash;
+        struct {
+          unsigned int det_key;
+          unsigned int item_key;
+        } values;
+        KeyMaker()  {
+          this->hash = 0;
+        }
+        KeyMaker(key_type k)  {
+          this->hash = k;
+        }
+        KeyMaker(unsigned int det, unsigned int item)  {
+          this->values.det_key  = det;
+          this->values.item_key = item;
+        }
+      };
       /// Compare keys by the hash value
       /**
        *  \author  M.Frank
@@ -399,20 +324,36 @@ namespace DD4hep {
     public:
       /// Default constructor
       ConditionKey() = default;
+      /// Constructor from fully qualified key
+      ConditionKey(key_type key) : hash(key) {}
       /// Constructor from string
-      ConditionKey(const std::string& compare);
-      /// Constructor from string
-      ConditionKey(const std::string& s, key_type h) : name(s), hash(h) {}
+      ConditionKey(DetElement detector, const std::string& identifier);
+      /// Constructor from detector element key and item sub-key
+      ConditionKey(unsigned int det_key, const std::string& identifier);
+      /// Constructor from detector element and item sub-key
+      ConditionKey(DetElement detector, unsigned int item_key);
+      /// Constructor from detector element key and item sub-key
+      ConditionKey(unsigned int det_key, unsigned int item_key);
       /// Copy constructor
       ConditionKey(const ConditionKey& c) = default;
 
+      /// Access the detector element part of the key
+      unsigned int detector_key()  const   {
+        return KeyMaker(hash).values.det_key;
+      }
+      /// Access the detector element part of the key
+      unsigned int item_key()  const   {
+        return KeyMaker(hash).values.item_key;
+      }
       /// Hash code generation from input string
-      static key_type hashCode(const char* value);
+      static key_type hashCode(DetElement detector, const char* value);
       /// Hash code generation from input string
-      static key_type hashCode(const std::string& value);
-
-      /// Assignment operator from the string representation
-      ConditionKey& operator=(const std::string& value);
+      static key_type hashCode(DetElement detector, const std::string& value);
+      /// 32 bit hashcode of the item
+      static unsigned int itemCode(const char* value);
+      /// 32 bit hashcode of the item
+      static unsigned int itemCode(const std::string& value);
+       
       /// Assignment operator from object copy
       ConditionKey& operator=(const ConditionKey& key) = default;
       /// Equality operator using key object
@@ -420,29 +361,21 @@ namespace DD4hep {
       /// Equality operator using hash value
       bool operator==(const key_type compare)  const;
       /// Equality operator using the string representation
-      bool operator==(const std::string& compare)  const;
+      //bool operator==(const std::string& compare)  const;
 
       /// Operator less (for map insertions) using key object
       bool operator<(const ConditionKey& compare)  const;
       /// Operator less (for map insertions) using hash value
       bool operator<(const key_type compare)  const;
-      /// Operator less (for map insertions) using the string representation
-      bool operator<(const std::string& compare)  const;
-
-      /// Automatic conversion to the string representation of the key object
-      operator const std::string& ()  const  {  return name;     }
       /// Automatic conversion to the hashed representation of the key object
       operator key_type () const             {  return hash;     }
     };
 
-    /// Hash code generation from input string
-    inline ConditionKey::key_type ConditionKey::hashCode(const char* value)
-    {   return hash64(value);    }
-
-    /// Hash code generation from input string
-    inline ConditionKey::key_type ConditionKey::hashCode(const std::string& value)
-    {   return hash64(value);    }
-
+    /// Constructor from detector element key and item sub-key
+    inline ConditionKey::ConditionKey(unsigned int det_key, unsigned int item_key)  {
+      hash = KeyMaker(det_key,item_key).hash;
+    }
+    
     /// Equality operator using key object
     inline bool ConditionKey::operator==(const ConditionKey& compare)  const
     {  return hash == compare.hash;                            }
@@ -458,9 +391,6 @@ namespace DD4hep {
     /// Operator less (for map insertions) using hash value
     inline bool ConditionKey::operator<(const key_type compare)  const
     {  return hash < compare;                                  }
-
-    /// Access the key of the condition
-    ConditionKey make_key(Condition c);
 
     // Utility type definitions
     typedef std::vector<Condition>          RangeConditions;

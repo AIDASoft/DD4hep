@@ -114,7 +114,7 @@ IDDescriptor Readout::idSpec() const {
 void Readout::setSegmentation(const Segmentation& seg) const {
   if ( isValid() ) {
     Object& ro = object<Object>();
-    Segmentation::Implementation* e = ro.segmentation.ptr();
+    Segmentation::Object* e = ro.segmentation.ptr();
     if ( e && e != seg.ptr() ) {      // Remember:
       delete e;                       // The segmentation is owned by the readout!
     }                                 // Need to delete the segmentation object

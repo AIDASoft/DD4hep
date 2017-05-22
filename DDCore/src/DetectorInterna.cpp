@@ -64,7 +64,7 @@ DetElementObject::DetElementObject()
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(0), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), children(),
-    nominal(), survey(), alignments(), conditions(), worldTrafo()
+    nominal(), survey(), worldTrafo()
 {
   printout(VERBOSE,"DetElementObject","+++ Created new anonymous DetElementObject()");
   InstanceCount::increment(this);
@@ -75,7 +75,7 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(ident), combineHits(0), typeFlag(0), level(-1), key(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), children(),
-    nominal(), survey(), alignments(), conditions(), worldTrafo()
+    nominal(), survey(), worldTrafo()
 {
   SetName(nam.c_str());
   printout(VERBOSE,"DetElementObject","+++ Created new DetElementObject('%s', %d)",nam.c_str(),id);
@@ -85,12 +85,8 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 /// Internal object destructor: release extension object(s)
 DetElementObject::~DetElementObject() {
   destroyHandles(children);
-  destroyHandle (conditions);
-  conditions = ConditionsContainer();
   destroyHandle (nominal);
   destroyHandle (survey);
-  destroyHandle (alignments);
-  alignments = AlignmentsContainer();
   placement.clear();
   idealPlace.clear();
   parent.clear();
@@ -107,11 +103,9 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->key         = 0;
   obj->level       = -1;
   obj->combineHits = combineHits;
-  obj->nominal     = Alignment();
-  obj->survey      = Alignment();
-  obj->conditions  = ConditionsContainer();
-  obj->alignments  = AlignmentsContainer();
-  obj->parent = DetElement();
+  obj->nominal     = AlignmentCondition();
+  obj->survey      = AlignmentCondition();
+  obj->parent      = DetElement();
   if ( (flg & DetElement::COPY_PLACEMENT) == DetElement::COPY_PLACEMENT )  {
     obj->placement  = placement;
     obj->idealPlace = idealPlace;
@@ -211,7 +205,7 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   // Now we can assign the new placement to the object
   placement = node;
 
-  Alignments::Alignment::Data& data = det.nominal().data();
+  Alignments::AlignmentData& data = det.nominal().data();
   if ( have_trafo && print )  data.worldTransformation().Print();
 
   if ( (flag&HAVE_PARENT_TRAFO) )  {
@@ -271,17 +265,9 @@ void DetElementObject::update(unsigned int tags, void* param)   {
   }
 }
 
-Conditions::Container DetElementObject::assign_conditions()  {
-  if ( !conditions.isValid() )  {
-    conditions.assign(new Conditions::Container::Object(this),"conditions","");
-  }
-  return conditions;
-}
-
 /// Initializing constructor
 WorldObject::WorldObject(LCDD& _lcdd, const string& nam) 
-  : DetElementObject(nam,0), lcdd(&_lcdd),
-    conditionsLoader(0), conditionsManager(0), alignmentsLoader(0), alignmentsManager(0)
+  : DetElementObject(nam,0), lcdd(&_lcdd)
 {
 }
 

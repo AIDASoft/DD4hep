@@ -88,9 +88,9 @@ namespace DD4hep {
   public:
     /** Type definitions and class specific abbreviations and forward declarations */
     /// Extern accessible definition of the contained element type
-    typedef T Implementation;
+    typedef T Object;
     /// Declaration of 'self'
-    typedef Handle<Implementation> handle_t;
+    typedef Handle<Object> handle_t;
 
     /// Single and only data member: Reference to the actual element.
     T* m_element = 0;
@@ -170,7 +170,7 @@ namespace DD4hep {
     /// Access the object name (or "" if not supported by the object)
     const char* name() const;
     /// Assign a new named object. Note: object references must be managed by the user
-    void assign(Implementation* n, const std::string& nam, const std::string& title);
+    void assign(Object* n, const std::string& nam, const std::string& title);
     /// Helper routine called when unrelated types are assigned.
     static void bad_assignment(const std::type_info& from, const std::type_info& to);
   };

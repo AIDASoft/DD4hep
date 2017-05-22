@@ -20,7 +20,6 @@
 // Framework includes
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Path.h"
-#include "DD4hep/DetAlign.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
@@ -79,23 +78,15 @@ namespace  {
       try  {
         DDDB::Catalog* cat = de.extension<DDDB::Catalog>();
         if ( !cat->condition.empty() )  {
-          ConditionKey key(cat->condition);
+          ConditionKey key(de,cat->condition);
           Condition cond = slice.pool->get(key.hash);
           if ( cond.isValid() )   {
-            ConditionKey k(cat->condition+"/Tranformations");
-            //
-            // The alignment access through the DetElement object is optional!
-            // It is slow and deprecated. The access using the UserPool directly
-            // is highly favored.
-            //
-            Alignments::DetAlign align(de);
-            align.alignments()->addKey(k.name);
-            align.alignments()->addKey("Alignment",k.name);
+            ConditionKey k(de,cat->condition+"/Tranformations");
             //
             // Now add the dependency to the alignmant manager
             DependencyBuilder b(k, updateCall);
             b->detector = de;
-            b.add(ConditionKey(cond->value));
+            b.add(ConditionKey(de,cond->value));
             ConditionDependency* dep = b.release();
             dependencies.insert(dep);
             slice.insert(dep);
@@ -159,6 +150,8 @@ namespace  {
       if ( ret == 1 )  {
         const Deps& deps = dependencies;
         int count = 0;
+        throw "Fix-me!!!";
+#if 0
         for(Deps::const_iterator i=deps.begin(); i!=deps.end(); ++i)   {
           const ConditionDependency* d = (*i).second.get();
           if ( d->detector.hasAlignments() )   {
@@ -190,6 +183,7 @@ namespace  {
             }
           }
         }
+#endif
         printout(INFO,m_name,"++ Accessed %d conditions from the DetElement objects.",count);
       }
       return ret;
