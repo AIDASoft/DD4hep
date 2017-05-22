@@ -57,10 +57,6 @@ namespace DD4hep {
      */
     class PolarGridRPhi2 : public PolarGridRPhi2Handle  {
     public:
-      /// Defintiion of the basic handled object
-      typedef PolarGridRPhi2Handle::Implementation Object;
-
-    public:
       /// Default constructor
       PolarGridRPhi2() = default;
       /// Copy constructor

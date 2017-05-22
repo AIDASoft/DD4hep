@@ -25,7 +25,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Path.h"
-#include "DD4hep/DetConditions.h"
+//#include "DD4hep/DetConditions.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
@@ -870,6 +870,7 @@ namespace DD4hep {
         context->volumePaths[lp] = gv.ptr();
       }
 #endif
+#if 0
       /// Attach conditions keys to the detector element if present
       if ( !object->condition.empty() )   {
         Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
@@ -884,7 +885,7 @@ namespace DD4hep {
           conditions->addKey((*i).first, cond_name);
         }
       }
-
+#endif
       if ( context->print_detelem )  {
         printout(INFO,"CNV<Catalog>","++ Converting catalog %p -> %p [cref:%d/%d lref:%d/%d lv:%s [%p] sup:%s np:%s] %s ",
                  (void*)object, det.ptr(),

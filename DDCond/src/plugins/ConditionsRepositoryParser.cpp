@@ -21,7 +21,7 @@
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/OpaqueDataBinder.h"
-#include "DD4hep/ConditionsKeyAssign.h"
+//#include "DD4hep/ConditionsKeyAssign.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
@@ -162,11 +162,11 @@ namespace {
     cond->address  = add;
     cond->value    = "";
     cond->validity = "";
-    cond->hash     = Conditions::ConditionKey::hashCode(cond->name);
+    cond->hash     = Conditions::ConditionKey::hashCode(det,cond->name);
     if ( elt.hasAttr(_U(comment)) )  {
       cond->comment = elt.attr<string>(_U(comment));
     }
-    ConditionsKeyAssign(det).addKey(cond.name());
+    //ConditionsKeyAssign(det).addKey(cond.name());
     return cond;
   }
 
@@ -347,7 +347,7 @@ namespace DD4hep {
     Condition          con = create_condition(arg->detector, e);
     //Alignments::Delta& del = con.bind<Alignments::Delta>();
     XML::parse_delta(e, con->data);
-    con->setFlag(Condition::ALIGNMENT);
+    con->setFlag(Condition::ALIGNMENT_DELTA);
     arg->manager.registerUnlocked(arg->pool, con);
   }
 

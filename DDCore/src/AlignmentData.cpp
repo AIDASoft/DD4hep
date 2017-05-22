@@ -55,7 +55,7 @@ void Delta::clear()   {
   rotation    = RotationZYX();
 }
 
-/// print Conditions object
+/// print alignment delta object
 ostream& operator << (ostream& s, const Delta& data)   {
   string res;
   stringstream str;

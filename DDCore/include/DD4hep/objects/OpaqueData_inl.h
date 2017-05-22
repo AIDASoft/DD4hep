@@ -57,6 +57,12 @@ namespace DD4hep {
     return *(new(this->pointer) T());
   }
 
+  /// Bind data value
+  template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len)  {
+    this->bind(ptr,len,&BasicGrammar::instance<T>(),opaqueCopyObject<T>,opaqueDestructObject<T>);
+    return *(new(this->pointer) T());
+  }
+
   /// Bind grammar and assign value
   template <typename T> T& OpaqueDataBlock::bind(const std::string& value)   {
     T& ret = this->bind<T>();
@@ -68,8 +74,8 @@ namespace DD4hep {
   }
 
   /// Bind grammar and assign value
-  template <typename T> T& OpaqueDataBlock::set(const std::string& value)   {
-    T& ret = this->bind<T>();
+  template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len, const std::string& value)   {
+    T& ret = this->bind<T>(ptr, len);
     if ( !value.empty() && !this->fromString(value) )  {
       throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
                                typeName(typeid(T))+" to condition data block.");
@@ -83,7 +89,6 @@ namespace DD4hep {
   namespace DD4hep {                                                   \
     template x& OpaqueDataBlock::bind<x>();                            \
     template x& OpaqueDataBlock::bind<x>(const std::string& val);      \
-    template x& OpaqueDataBlock::set<x> (const std::string& val);      \
   }
 
 #endif    /* DD4HEP_OPAQUEDATA_INL_H    */

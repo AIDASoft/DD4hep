@@ -45,7 +45,6 @@ namespace DD4hep {
      */
     class Segmentation: public Handle<SegmentationObject> {
     public:
-      typedef SegmentationObject           Object;
       typedef DDSegmentation::Segmentation BaseSegmentation;
       typedef DDSegmentation::Parameter    Parameter;
       typedef DDSegmentation::Parameters   Parameters;

@@ -38,10 +38,6 @@ namespace DD4hep {
       typedef WorldObject                  Object;
       /// Definition of the base handle type
       typedef Handle<Object>               RefObject;
-      /// Conditions stuff
-      typedef Conditions::ConditionsLoader ConditionsLoader;
-      /// Alignment stuff
-      typedef Alignments::AlignmentsLoader AlignmentsLoader;
 
     public:
       /// Default constructor
@@ -67,10 +63,6 @@ namespace DD4hep {
 #ifndef __CINT__
       LCDD& lcdd() const;
 #endif
-      /// Access the conditions loading
-      ConditionsLoader& conditionsLoader() const;
-      /// Access to the alignment loading
-      AlignmentsLoader& alignmentsLoader() const;
     };
 
   } /* End namespace Conditions      */

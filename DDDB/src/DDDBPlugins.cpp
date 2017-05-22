@@ -22,8 +22,6 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
-#include "DD4hep/DetAlign.h"
-#include "DD4hep/DetConditions.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/objects/DetectorInterna.h"
 
@@ -275,6 +273,8 @@ namespace {
         if ( de.placement().isValid() ) {
           ++m_counters.numDetPlacements;
         }
+        throw "Fix-me!!!";
+#if 0
         if ( de.hasConditions() )  {
           Conditions::DetConditions dc(de);
           m_counters.numDetConditionKeys += dc.conditions().numKeys();
@@ -302,6 +302,7 @@ namespace {
             }
           }
         }
+#endif
       }
       /// __________________________________________________________________________________
       void printConditionInfo(int level, Catalog* cat, bool with_elements=false)   {

@@ -15,6 +15,7 @@
 
 // Framework include files
 #include "DD4hep/NamedObject.h"
+#include "DD4hep/ConditionsMap.h"
 #include "DDCond/ConditionsManager.h"
 
 // C/C++ include files
@@ -29,7 +30,6 @@ namespace DD4hep {
     class ConditionsSlice;
     class ConditionsIOVPool;
     class ConditionDependency;
-    class ConditionsDependencyCollection;
     
     /// Class implementing the conditions collection for a given IOV type
     /**
@@ -139,7 +139,7 @@ namespace DD4hep {
       /// Forward definition of the key type
       typedef Condition::key_type                  key_type;
       typedef ConditionDependency                  Dependency;
-      typedef ConditionsDependencyCollection       Dependencies;
+      typedef std::map<key_type,const Dependency*> Dependencies;
       typedef ConditionsManager::Result            Result;
 
     protected:
@@ -176,7 +176,14 @@ namespace DD4hep {
       /// Remove condition by key from pool.
       virtual bool remove(const ConditionKey& key) = 0;
       /// Register a new condition to this pool
-      virtual bool insert(Condition cond) = 0;
+      //virtual bool insert(Condition cond) = 0;
+      /// ConditionsMap overload: Add a condition directly to the slice
+      virtual bool insert(DetElement detector, unsigned int key, Condition condition) = 0;
+      /// ConditionsMap overload: Access a condition
+      virtual Condition get(DetElement detector, unsigned int key)  const = 0;
+      /// ConditionsMap overload: Interface to scan data content of the conditions mapping
+      virtual void scan(Condition::Processor& processor) const = 0;
+
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual Result prepare(const IOV&               required, 
                              ConditionsSlice&         slice,

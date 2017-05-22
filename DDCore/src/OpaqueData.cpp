@@ -147,6 +147,30 @@ bool OpaqueDataBlock::bind(const BasicGrammar* g, void (*ctor)(void*,const void*
 }
 
 /// Set data value
+bool OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g, void (*ctor)(void*,const void*), void (*dtor)(void*))   {
+  if ( !grammar )  {
+    size_t len = g->sizeOf();
+    grammar  = g;
+    destruct = dtor;
+    copy     = ctor;
+    if ( len <= size )
+      pointer=ptr, type=STACK_DATA;
+    else if ( len <= sizeof(data) )
+      pointer=data, type=PLAIN_DATA;
+    else 
+      pointer=::operator new(len),type=ALLOC_DATA;
+    return true;
+  }
+  else if ( grammar == g )  {
+    // We cannot ingore secondary requests for data bindings.
+    // This leads to memory leaks in the caller!
+    except("OpaqueData","You may not bind opaque multiple times!");
+  }
+  typeinfoCheck(grammar->type(),g->type(),"Opaque data blocks may not be assigned.");
+  return false;
+}
+
+/// Set data value
 void OpaqueDataBlock::assign(const void* ptr, const type_info& typ)  {
   if ( !grammar )   {
     except("OpaqueData","Opaque data block is unbound. Cannot copy data.");

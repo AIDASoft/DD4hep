@@ -17,11 +17,9 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
-#include "DD4hep/DetConditions.h"
 #include "DD4hep/ConditionDerived.h"
 #include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/ConditionsProcessor.h"
 
 #include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsManager.h"
@@ -40,7 +38,6 @@ namespace DD4hep {
     using Conditions::UserPool;
     using Conditions::Condition;
     using Conditions::ConditionKey;
-    using Conditions::DetConditions;
     using Conditions::ConditionsPool;
     using Conditions::ConditionsSlice;
     using Conditions::ConditionsPrinter;
@@ -179,7 +176,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct ConditionsDataAccess : public Conditions::ConditionsProcessor  {
+    struct ConditionsDataAccess : public Conditions::Condition::Processor  {
       /// IOV to be checked
       const IOV& iov;
       /// Print level

@@ -18,7 +18,6 @@
 #include "DD4hep/ConditionDerived.h"
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsDependencyCollection.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -30,7 +29,6 @@ namespace DD4hep {
     class UserPool;
     class ConditionsPool;
     class ConditionsManagerObject;
-    class ConditionsDependencyCollection;
     
     /// Callback handler to update condition dependencies.
     /** 
@@ -40,7 +38,7 @@ namespace DD4hep {
      */
     class ConditionsDependencyHandler : public ConditionResolver {
     public:
-      typedef ConditionsDependencyCollection Dependencies;
+      typedef std::map<Condition::key_type,const ConditionDependency*> Dependencies;
 
     protected:
       /// Reference to conditions manager 

@@ -76,7 +76,7 @@ void ConditionPrinter::ParamPrinter::operator()(const AbstractMap::Params::value
 
 /// Initializing constructor
 ConditionPrinter::ConditionPrinter(const string& prefix, int flg, ParamPrinter* prt)
-  : ConditionsProcessor(0), m_print(prt), m_prefix(prefix), m_flag(flg)
+  : ConditionsPrinter(), m_print(prt), m_prefix(prefix), m_flag(flg)
 {
 }
 

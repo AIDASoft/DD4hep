@@ -26,7 +26,6 @@ namespace DD4hep {
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
-    class UserPool;
     class Condition;
     class ConditionsKey;
     
@@ -43,17 +42,12 @@ namespace DD4hep {
     using Geometry::Position;
     using Geometry::DetElement;
     using Geometry::PlacedVolume;
-    using Conditions::UserPool;
-    
+
     /// Alignments internal namespace
     namespace Interna  {
       /// Forward declarations
-      class AlignmentContainer;
-      class AlignmentNamedObject;
-      class AlignmentConditionObject;
+      class AlignmentObject;
     }
-    class AlignmentsManagerObject;
-    class AlignmentsLoader;
     class AlignmentData;
     class Alignment;
     class Delta;
@@ -66,12 +60,8 @@ namespace DD4hep {
      *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_ALIGN
      */
-    class AlignmentCondition : public Handle<Interna::AlignmentConditionObject>   {
+    class AlignmentCondition : public Handle<Interna::AlignmentObject>   {
     public:
-      /// Forward definition of the base data object containing alignment data
-      typedef Interna::AlignmentConditionObject Object;
-      /// Forward definition of the base data object containing alignment data
-      typedef AlignmentData             Data;
       /// Forward definition of the geometry placement
       typedef Geometry::PlacedVolume    PlacedVolume;
       /// Forward definition of the nodelist leading to the world
@@ -93,11 +83,7 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> AlignmentCondition(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Object constructor for pure alignment objects
-#if defined(__APPLE__) || defined(__clang__)
-      AlignmentCondition(const std::string& name) ;
-#else
-      template <typename Q=Object> AlignmentCondition(const std::string& name);
-#endif
+      AlignmentCondition(const std::string& name);
       /** Interval of validity            */
       /// Access the IOV type
       const IOVType& iovType()  const;
@@ -108,9 +94,9 @@ namespace DD4hep {
 
       /** Data block (bound type)         */
       /// Data accessor for the use of decorators
-      Data& data();
+      AlignmentData& data();
       /// Data accessor for the use of decorators
-      const Data& data() const;
+      const AlignmentData& data() const;
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation()  const;
       /// Access the alignment/placement matrix with respect to the world
@@ -127,7 +113,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_ALIGN
      */
-    class Alignment : public Handle<AlignmentData>   {
+    class Alignment : public Handle<Interna::AlignmentObject>   {
     public:
       /// Abstract base for processing callbacks to container objects
       /**
@@ -145,20 +131,12 @@ namespace DD4hep {
         virtual int operator()(Alignment container) = 0;
       };
 
-      /// Forward definition of the base data object containing alignment data
-      typedef AlignmentData             Object;
-      /// Forward definition of the base data object containing alignment data
-      typedef AlignmentData             Data;
       /// Forward definition of the geometry placement
-      typedef Geometry::PlacedVolume    PlacedVolume;
+      typedef Geometry::PlacedVolume             PlacedVolume;
       /// Forward definition of the nodelist leading to the world
-      typedef std::vector<PlacedVolume> NodeList;
+      typedef std::vector<PlacedVolume>          NodeList;
       /// Forward definition of the alignment delta data
-      typedef Alignments::Delta         Delta;
-      /// Forward definition of the key type
-      typedef unsigned long long int    key_type;
-      /// Forward definition of the iov type
-      typedef IOV                       iov_type;
+      typedef Alignments::Delta                  Delta;
 
     public:
       /// Default constructor
@@ -168,29 +146,18 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Alignment(const Handle<Q>& e) : Handle<Object>(e)  {}
       /// Object constructor for pure alignment objects
-#if defined(__APPLE__) || defined(__clang__)
       Alignment(const std::string& name) ;
-#else
-      template <typename Q=Interna::AlignmentNamedObject> Alignment(const std::string& name);
-#endif
-      /// Hash code generation from input string
-      static key_type hashCode(const char* value);
-      /// Hash code generation from input string
-      static key_type hashCode(const std::string& value);
-
-      /// Access the hash identifier if the alignment is bound to a condition. Otherwise NULL.
-      key_type key()  const;
-      /// Access the bound condition if the alignment is bound to a condition. Otherwise NULL.
-      AlignmentCondition condition()  const;
       /// Data accessor for the use of decorators
-      Data& data()              {   return (*access()); }
+      AlignmentData& data();
       /// Data accessor for the use of decorators
-      const Data& data() const  {   return (*access()); }
+      const AlignmentData& data() const;
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation()  const;
       /// Access the alignment/placement matrix with respect to the world
       const TGeoHMatrix& detectorTransformation() const;
-
+      /// Access to the node list
+      const NodeList& nodes() const;
+      
       /** Aliases for the transformation from local coordinates to the world system  */
       /// Transformation from local coordinates of the placed volume to the world system
       void localToWorld(const Position& local, Position& global) const;
@@ -235,111 +202,6 @@ namespace DD4hep {
       Position detectorToLocal(const Double_t det[3]) const
       {  return detectorToLocal(Position(det[0],det[1],det[2]));                        }
     };
-
-    /// Hash code generation from input string
-    inline Alignment::key_type Alignment::hashCode(const char* value)
-    {   return hash64(value);    }
-
-    /// Hash code generation from input string
-    inline Alignment::key_type Alignment::hashCode(const std::string& value)
-    {   return hash64(value);    }
-
-    /// Container class for alignment handles aggregated by a detector element
-    /**
-     *  Note: The alignments container is owner by the detector element
-     *        On deletion the detector element will destroy the container
-     *        and all associated entries.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_ALIGNMENTS
-     */
-    class Container : public Handle<Interna::AlignmentContainer> {
-    public:
-      /// Abstract base for processing callbacks to container objects
-      /**
-       *  \author  M.Frank
-       *  \version 1.0
-       *  \ingroup DD4HEP_CONDITIONS
-       */
-      class Processor {
-      public:
-        /// Default constructor
-        Processor();
-        /// Default destructor
-        virtual ~Processor() = default;
-        /// Container callback for object processing
-        virtual int operator()(Container container) = 0;
-      };
-
-      /// Standard object type
-      typedef Interna::AlignmentContainer      Object;
-      /// Forward definition of the key type
-      typedef Alignment::key_type              key_type;
-      /// Forward definition of the iov type
-      typedef Alignment::iov_type              iov_type;
-      /// Forward definition of the mapping type
-      typedef std::pair<key_type, std::string> key_value;
-      /// Definition of the keys
-      typedef std::map<key_type, key_value>    Keys;
-
-    public:
-      /// Default constructor
-      Container();
-
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> Container(const Container& c) : Handle<Object>(c) {}
-
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> Container(const Handle<Q>& e) : Handle<Object>(e) {}
-
-      /// Access the number of conditons keys available for this detector element
-      size_t numKeys() const;
-
-      /// Known keys of conditions in this container
-      const Keys&  keys()  const;
-
-      /// Insert a new key to the alignments access map. Ignores already existing keys.
-      /**  Caution: This is not thread protected!
-       *
-       *   @return true if key was inserted. False if already present.
-       */
-      bool insertKey(const std::string& key_val);
-
-      /// Insert a new key to the alignments access map: Allow for alias if key_val != data_val
-      /**  Caution: This is not thread protected!
-       *
-       *   @return true if key was inserted. False if already present.
-       */
-      bool insertKey(const std::string& key_val, const std::string& data_val);
-      
-      /// Add a new key to the alignments access map. If key exists: exception
-      /**  Caution: This is not thread protected!  */
-      void addKey(const std::string& key_val);
-
-      /// Add a new key to the alignments access map: Allow for alias if key_val != data_val
-      /**  If key exists: exception
-       *   Caution: This is not thread protected!
-       */
-      void addKey(const std::string& key_val, const std::string& data_val);
-
-      /// Access to alignment objects by key and IOV. 
-      Alignment get(const std::string& alignment_key, const iov_type& iov);
-
-      /// Access to alignment objects directly by their hash key. 
-      Alignment get(key_type alignment_key, const iov_type& iov);
-
-      /// Access to alignment objects. Only alignments in the pool are accessed.
-      Alignment get(const std::string& alignment_key, const UserPool& iov);
-
-      /// Access to alignment objects. Only alignments in the pool are accessed.
-      Alignment get(key_type alignment_key, const UserPool& iov);
-    };
-
-    /// Default constructor
-    inline Container::Container() : Handle<Object>() {
-    }
-
   }       /* End namespace Aligments                 */
 }         /* End namespace DD4hep                    */
 #endif    /* DD4HEP_ALIGMENTS_ALIGNMENTS_H           */
