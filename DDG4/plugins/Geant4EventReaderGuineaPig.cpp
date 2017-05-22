@@ -187,13 +187,13 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
 	     >> posX    >> posY  >> posZ ;
     
 
-    if( Energy != Energy ||
-	betaX  != betaX  ||
-	betaY  != betaY  ||
-	betaZ  != betaZ  ||
-	posX   != posX   ||
-	posY   != posY   ||
-	posZ   != posZ ){
+    if( std::isnan( Energy ) ||
+	std::isnan( betaX  ) ||
+	std::isnan( betaY  ) ||
+	std::isnan( betaZ  ) ||
+	std::isnan( posX   ) ||
+	std::isnan( posY   ) ||
+	std::isnan( posZ   ) ){
 
       printout(WARNING,"EventReader","### Read line with 'nan' entries - particle will be ignored  ! " ) ;
 
