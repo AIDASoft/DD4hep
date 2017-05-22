@@ -98,9 +98,9 @@ Geant4EventReaderGuineaPig::setParameters( std::map< std::string, std::string > 
   _getParameterValue( parameters, "ParticlesPerEvent", m_part_num, -1);
   
   if( m_part_num <  0 ) 
-    printout(INFO,"EventReaderGuineaPig::setParameters"," --- Will read all particles in pairs file into one event " );
+    printout(INFO,"EventReader","--- Will read all particles in pairs file into one event " );
   else
-    printout(INFO,"EventReaderGuineaPig::setParameters"," --- Will read %d particles per event from pairs file ", m_part_num );
+    printout(INFO,"EventReader","--- Will read %d particles per event from pairs file ", m_part_num );
     
   return EVENT_READER_OK;
 }
@@ -108,14 +108,14 @@ Geant4EventReaderGuineaPig::setParameters( std::map< std::string, std::string > 
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
   
-  printout(DEBUG,"EventReaderGuineaPig::moveToEvent"," event_number: %d , m_currEvent %d",
+  printout(DEBUG,"EventReader"," move to event_number: %d , m_currEvent %d",
 	   event_number,m_currEvent ) ;
   
   if( m_currEvent == 0 && event_number > 0 ){
 
     if( m_part_num <  1 ) {
 
-      printout(ERROR,"EventReaderGuineaPig::moveToEvent"," --- Cannot skip to event %d in GuineaPig file without parameter 'ParticlesPerEvent' being set ! ", event_number );
+      printout(ERROR,"EventReader","--- Cannot skip to event %d in GuineaPig file without parameter 'ParticlesPerEvent' being set ! ", event_number );
 
       return EVENT_READER_IO_ERROR;
 
@@ -124,7 +124,7 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
 
       unsigned nSkipParticles = m_part_num * event_number ;
 
-      printout(INFO,"EventReaderGuineaPig::moveToEvent"," --- Will skip first %d events, i.e. %d particles ", event_number , nSkipParticles  );
+      printout(INFO,"EventReader","--- Will skip first %d events, i.e. %d particles ", event_number , nSkipParticles  );
 
       // First check the input file status
       if ( !m_input.good() || m_input.eof() )   {
@@ -182,10 +182,24 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
   //  Loop over particles
   for( int counter = 0; counter < m_part_num ; ++counter ){      
 
+    m_input  >> Energy
+	     >> betaX   >> betaY >> betaZ
+	     >> posX    >> posY  >> posZ ;
     
-    m_input >> Energy
-	    >> betaX   >> betaY >> betaZ
-	    >> posX    >> posY  >> posZ ;
+
+    if( Energy != Energy ||
+	betaX  != betaX  ||
+	betaY  != betaY  ||
+	betaZ  != betaZ  ||
+	posX   != posX   ||
+	posY   != posY   ||
+	posZ   != posZ ){
+
+      printout(WARNING,"EventReader","### Read line with 'nan' entries - particle will be ignored  ! " ) ;
+
+      continue ;
+    }
+
 
     if( m_input.eof() ) {
       
