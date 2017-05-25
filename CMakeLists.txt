@@ -71,13 +71,6 @@ endif()
 ##checks for xercesc or not and sets up the include_directories
 include(DD4hep_XML_setup)
 
-#---Packages------------------------------------------------------------------------
-add_subdirectory(DDSegmentation)
-add_subdirectory(DDCore)
-add_subdirectory(DDSurfaces)
-add_subdirectory(DDRec)
-add_subdirectory(DDDetectors)
-
 if(DD4HEP_USE_GEANT4)
 
   #--- create a geant4 variables for the thisdd4hep.sh script
@@ -116,6 +109,13 @@ if(DD4HEP_USE_GEANT4)
   endif()
   #----- End of treatment for Geant4 10.2.1 or before
 endif()
+
+#---Packages------------------------------------------------------------------------
+add_subdirectory(DDSegmentation)
+add_subdirectory(DDCore)
+add_subdirectory(DDSurfaces)
+add_subdirectory(DDRec)
+add_subdirectory(DDDetectors)
 
 #------- now configure DDG4 -------
 add_subdirectory(DDG4)
