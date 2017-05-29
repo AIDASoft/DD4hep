@@ -39,6 +39,10 @@ dd4hep_add_executable(test_surfaces
   USES     DDRec DDTest
   OPTIONAL [LCIO REQUIRED SOURCES src/test_surfaces.cpp])
 #-----------------------------------------------------------------------------------
+dd4hep_add_executable(test_iddecoder
+  USES     DDRec DDTest
+  OPTIONAL [LCIO REQUIRED SOURCES src/test_iddecoder.cpp])
+#-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__eve
   SOURCES src/EvNavHandler.h
   LINKDEF src/LinkDef.h )
