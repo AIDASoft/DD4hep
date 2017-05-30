@@ -3,7 +3,7 @@
 #include "DDRec/API/Exceptions.h"
 
 #include "DD4hep/LCDD.h"
-#include "DD4hep/VolumeManager.h"
+#include "DD4hep/objects/VolumeManagerInterna.h"
 
 namespace DD4hep {
   namespace DDRec {
@@ -17,8 +17,15 @@ namespace DD4hep {
     using Geometry::Volume;
     using Geometry::SensitiveDetector;
     using Geometry::Position;
+    using Geometry::Segmentation;
     using std::set;
 
+
+
+    DD4hep::Geometry::VolumeManagerContext* CellIDPositionConverter::findContext(const CellID& cellID) const{
+
+      return _volumeManager.lookupContext( cellID ) ;
+    }
 
 
     CellID CellIDPositionConverter::cellIDFromLocal(const Position& local, const VolumeID volID) const {
@@ -59,17 +66,81 @@ namespace DD4hep {
      * Returns the global position from a given cell ID
      */
     Position CellIDPositionConverter::position(const CellID& cell) const {
-      double l[3];
-      double g[3];
-      DetElement det = this->detectorElement(cell);
-      Position local = this->findReadout(det).segmentation().position(cell);
+
+      double l[3], e[3], g[3];
+
+      DD4hep::Geometry::VolumeManagerContext* context = findContext( cell ) ;
+
+      if( context == NULL)
+	return Position() ;
+
+      DetElement det = context->element ;
+      PlacedVolume pv = context->placement ;
+
+      if( ! pv.volume().isSensitive() )
+	return Position() ;
+	
+      
+      Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+      Readout r = sd.readout() ;
+      
+      Segmentation seg = r.segmentation() ;
+      Position local = seg.position(cell);
+      
       local.GetCoordinates(l);
-      // FIXME: direct lookup of transformations seems to be broken
-      //const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cell);
-      const TGeoMatrix& localToGlobal = det.nominal().worldTransformation();
-      localToGlobal.LocalToMaster(l, g);
+
+      const TGeoMatrix& volToElement = context->toElement ;
+      volToElement.LocalToMaster(l, e);
+
+      const TGeoMatrix& elementToGlobal = det.nominal().worldTransformation();
+      elementToGlobal.LocalToMaster(e, g);
+
+
+
+      std::cout << " local " << local << std::endl 
+		<< "cellid: " << std::hex << cell << std::dec
+		<< "\n  ---- volToElement: \n"  ;
+
+      volToElement.Print() ;
+
+      std::cout << "\n elementToGlobal : \n" ;
+      
+      elementToGlobal.Print() ;
+      
+
+      const TGeoMatrix& volToWorld = context->toWorld ;
+
+      std::cout << "\n volToWorld : \n" ;
+      volToWorld.Print() ;
+
+
+      //      volToWorld.LocalToMaster( l, g ) ;
+      
+
+      TGeoHMatrix myWorld = elementToGlobal ;
+      myWorld.Multiply( &volToElement ) ;
+
+      
+      std::cout << "\n myWorld : \n" ;
+      myWorld.Print() ;
+
+
+      
+
       return Position(g[0], g[1], g[2]);
     }
+    // Position CellIDPositionConverter::position(const CellID& cell) const {
+    //   double l[3];
+    //   double g[3];
+    //   DetElement det = this->detectorElement(cell);
+    //   Position local = this->findReadout(det).segmentation().position(cell);
+    //   local.GetCoordinates(l);
+    //   // FIXME: direct lookup of transformations seems to be broken
+    //   //const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cell);
+    //   const TGeoMatrix& localToGlobal = det.nominal().worldTransformation();
+    //   localToGlobal.LocalToMaster(l, g);
+    //   return Position(g[0], g[1], g[2]);
+    // }
 
     /*
      * Returns the local position from a given cell ID
@@ -195,7 +266,7 @@ namespace DD4hep {
 	  return sd.readout();
 	}
       }
-      // then return the first sensitive daughter volume's readout
+      // if not, return the first sensitive daughter volume's readout
 
       Readout r = findReadout( det.placement() ) ;
       if( r.isValid() )
