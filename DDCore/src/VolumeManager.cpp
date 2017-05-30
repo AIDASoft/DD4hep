@@ -251,6 +251,7 @@ namespace DD4hep {
             }
             //            context->volID      = ids;
             //            context->path       = nodes;
+            context->toElement = context->toWorld;
             context->toDetector = context->toWorld;
             context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
             context->toWorld.MultiplyLeft(&e.nominal().worldTransformation());
