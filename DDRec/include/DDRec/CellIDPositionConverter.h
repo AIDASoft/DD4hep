@@ -38,6 +38,8 @@ namespace DD4hep {
       /// Default constructor
       CellIDPositionConverter( Geometry::LCDD& lcdd ) {
 	_volumeManager = Geometry::VolumeManager::getVolumeManager(lcdd);
+
+	std::cout << " VolumeManager: \n"  << _volumeManager << std::endl ;
       }
 
       /// Destructor
@@ -91,13 +93,17 @@ namespace DD4hep {
       /// Checks if the given cell IDs are neighbours
       bool areNeighbours(const CellID& cellID, const CellID& otherCellID) const;
 
+      /// find the context with DetElement, placements etc for a given cellID of a sensitive volume.
+      DD4hep::Geometry::VolumeManagerContext* findContext(const CellID& cellID) const;
 
+      
     protected:
       Geometry::VolumeManager _volumeManager{} ;
 
       Geometry::Readout findReadout(const Geometry::DetElement& det) const ;
       Geometry::DetElement getClosestDaughter(const Geometry:: DetElement& det, const Geometry::Position& position) const ;
       Geometry::Readout findReadout(const Geometry::PlacedVolume& pv) const ;
+
 
     };
 
