@@ -157,7 +157,10 @@ namespace DD4hep {
       virtual void pushUpdates() = 0;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      virtual bool registerUnlocked(ConditionsPool* pool, Condition cond) = 0;
+      virtual bool registerUnlocked(ConditionsPool& pool, Condition cond) = 0;
+
+      /// Create empty user pool object
+      virtual std::unique_ptr<UserPool> createUserPool(const IOVType* iovT) const = 0;
 
       /// Prepare all updates to the clients with the defined IOV
       virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice) = 0;

@@ -26,61 +26,86 @@ dd4hep_configure_scripts ( Conditions DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------
 #
 #---Testing: Load Telescope geometry and read conditions ------------------
-dd4hep_add_test_reg( test_Conditions_Telescope_cond_dump_by_pool
+dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_pool
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy
-  -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
-  -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
+  EXEC_ARGS  geoPluginRun -volmgr -destroy 
+  -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
+  -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
   -plugin DD4hep_ConditionsDump
-  REGEX_PASS "Data:\\[\\(0,0,1\\), \\{phi\\(Z angle\\)\\: 3.14159   theta\\(Y angle\\)\\: 0   psi\\(X angle\\)\\: 0\\} , 0  0  0 \\]")
+  REGEX_PASS "Data:\\[\\(0,0,1\\), \\{phi\\(Z angle\\)\\: 3.14159   theta\\(Y angle\\)\\: 0   psi\\(X angle\\)\\: 0\\} , 0  0  0 \\]"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 #
 #---Testing: Load Telescope geometry and read conditions ------------------
-dd4hep_add_test_reg( test_Conditions_Telescope_cond_dump_by_detelement
+dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_detelement
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy
-  -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
-  -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml
+  EXEC_ARGS  geoPluginRun -volmgr -destroy 
+  -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
+  -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
   -plugin DD4hep_DetElementConditionsDump
-  REGEX_PASS "Path\\:/world/Telescope/module_9#alignment")
+  REGEX_PASS "Path\\:/world/Telescope/module_9#alignment"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 #
 #---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
-dd4hep_add_test_reg( test_Conditions_Telescope_populate
+dd4hep_add_test_reg( Conditions_Telescope_populate
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_populate
       -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml -iovs 5
-  REGEX_PASS "Total 160 conditions \\(S:100,L:0,C:60,M:0\\) of IOV run\\(0\\):\\[45-45\\]")
+  REGEX_PASS "Total 160 conditions \\(S:100,L:0,C:60,M:0\\) of IOV run\\(0\\):\\[45-45\\]"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 #
 #---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
-dd4hep_add_test_reg( test_Conditions_Telescope_stress
+dd4hep_add_test_reg( Conditions_Telescope_stress
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress 
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml -iovs 10 -runs 20
-  REGEX_PASS "Summary: # of IOV:  10  # of Runs:  20")
+  REGEX_PASS "Summary: # of IOV:  10  # of Runs:  20"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 #
 #---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
-dd4hep_add_test_reg( test_Conditions_Telescope_stress2
+dd4hep_add_test_reg( Conditions_Telescope_stress2
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress2
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress2 
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml -iovs 10
-  REGEX_PASS "Summary: # of IOV:  10")
-#
-#---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs
-dd4hep_add_test_reg( test_Conditions_CLICSiD_stress_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress
-    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 10 -runs 100
-  REGEX_PASS "Summary: # of IOV:  10  # of Runs: 100")
-#
-#---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs
-dd4hep_add_test_reg( test_Conditions_CLICSiD_stress2_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress2
-    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 20
-  REGEX_PASS "Summary: # of IOV:  20")
+  REGEX_PASS "Summary: # of IOV:  10"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 #
 #---Testing: Multi-threading test: Load CLICSiD geometry and have multiple parallel runs on IOVs
-dd4hep_add_test_reg( test_Conditions_CLICSiD_MT_LONGTEST
+dd4hep_add_test_reg( Conditions_Telescope_MT_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_MT
-    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -runs 2
-  REGEX_PASS "Total 280088 conditions \\(S:280088,L:     0,C:     0,M:0\\) of type run\\(0\\):\\[1-1\\]")
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_MT 
+    -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml -iovs 30 -runs 10 -threads 1
+  REGEX_PASS "Accessed a total of 286400 conditions \\(S:268400,L:     0,C: 18000,M:0\\) during the test"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs
+dd4hep_add_test_reg( Conditions_CLICSiD_stress_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress 
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 10 -runs 100
+  REGEX_PASS "Summary: # of IOV:  10  # of Runs: 100"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs
+dd4hep_add_test_reg( Conditions_CLICSiD_stress2_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_stress2 
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 20
+  REGEX_PASS "Summary: # of IOV:  20"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Multi-threading test: Load CLICSiD geometry and have multiple parallel runs on IOVs
+dd4hep_add_test_reg( Conditions_CLICSiD_MT_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_ConditionExample_MT 
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -runs 2 -threads 1
+  REGEX_PASS "Accessed a total of 9522992 conditions \\(S:8892794,L:     0,C:630198,M:0\\) during the test"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )

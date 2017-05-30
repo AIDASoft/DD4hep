@@ -25,6 +25,12 @@ ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
   InstanceCount::increment(this);  
 }
 
+/// Initializing constructor
+ConditionsSlice::ConditionsSlice(ConditionsManager m, Content c) : manager(m), content(c)
+{
+  InstanceCount::increment(this);  
+}
+
 /// Copy constructor (Special, partial copy only. Hence no assignment!)
 ConditionsSlice::ConditionsSlice(const ConditionsSlice& copy)
   : manager(copy.manager), content(copy.content)
@@ -42,13 +48,63 @@ void ConditionsSlice::reset()   {
   if ( pool.get() ) pool->clear();
 }
 
+/// Local optimization: Insert a set of conditions to the slice AND register them to the conditions manager.
+bool ConditionsSlice::manage(ConditionsPool* p, Condition condition, ManageFlag flg)   {
+  if ( condition.isValid() )  {
+    bool ret = false;
+    if ( flg&REGISTER_MANAGER )  {
+      if ( !p )   {
+        DD4hep::except("ConditionsSlice",
+                       "manage_condition: Cannot access conditions pool according to IOV:%s.",
+                       pool->validity().str().c_str());
+      }
+      ret = manager.registerUnlocked(*p,condition);
+      if ( !ret )  {
+        DD4hep::except("ConditionsSlice",
+                       "manage_condition: Failed to register condition %016llx according to IOV:%s.",
+                       condition->hash, pool->validity().str().c_str());
+      }
+    }
+    if ( flg&REGISTER_POOL )  {
+      ret = pool->insert(condition);
+      if ( !ret )  {
+        DD4hep::except("ConditionsSlice",
+                       "manage_condition: Failed to register condition %016llx to user pool with IOV:%s.",
+                       condition->hash, pool->validity().str().c_str());
+      }
+    }
+    return ret;
+  }
+  DD4hep::except("ConditionsSlice",
+                 "manage_condition: Cannot manage invalid condition!");
+  return false;
+}
+
+/// Insert a set of conditions to the slice AND register them to the conditions manager.
+bool ConditionsSlice::manage(Condition condition, ManageFlag flg)    {
+  ConditionsPool* p = (flg&REGISTER_MANAGER) ? manager.registerIOV(pool->validity()) : 0;
+  return manage(p, condition, flg);
+}
+
 /// ConditionsMap overload: Add a condition directly to the slice
 bool ConditionsSlice::insert(DetElement detector, unsigned int key, Condition condition)   {
   if ( condition.isValid() )  {
+    ConditionsPool* p = manager.registerIOV(pool->validity());
+    if ( !p )   {
+      DD4hep::except("ConditionsSlice",
+                     "manage_condition: Cannot access conditions pool according to IOV:%s.",
+                     pool->validity().str().c_str());
+    }
+    bool ret = manager.registerUnlocked(*p,condition);
+    if ( !ret )  {
+      DD4hep::except("ConditionsSlice",
+                     "manage_condition: Failed to register condition %016llx according to IOV:%s.",
+                     condition->hash, pool->validity().str().c_str());
+    }
     return pool->insert(detector, key, condition);
   }
   DD4hep::except("ConditionsSlice",
-                 "insert_condition: Cannot insert invalid conditions to the user pool!");
+                 "insert_condition: Cannot insert invalid condition to the user pool!");
   return false;
 }
 
@@ -61,42 +117,42 @@ Condition ConditionsSlice::get(DetElement detector, unsigned int key)  const   {
 void ConditionsSlice::scan(Condition::Processor& processor) const   {
   pool->scan(processor);
 }
-#if 0
+
+
 namespace  {
   
   struct SliceOper  : public ConditionsSelect  {
-    ConditionsSlice* slice;
-    SliceOper(ConditionsSlice* s) : slice(s) {}
+    ConditionsContent& content;
+    SliceOper(ConditionsContent& c) : content(c) {}
     void operator()(const ConditionsIOVPool::Elements::value_type& v)    {
       v.second->select_all(*this);
     }
     bool operator()(Condition::Object* c)  const  {
       if ( 0 == (c->flags&Condition::DERIVED) )   {
-        slice->insert(ConditionKey(c->hash),ConditionsSlice::loadInfo(c->address));
+        content.insertKey(c->hash,c->address);
         return true;
       }
-      //DD4hep::printout(DD4hep::INFO,"Slice","++ Ignore dependent condition: %s",c->name.c_str());
 #if 0
-      const ConditionsSlice::ConditionsProxy& cc=slice->conditions();
+      // test load info access
+      const ConditionsContent::Conditions& cc=content.conditions();
       auto i = cc.find(c->hash);
-      const ConditionsSlice::LoadInfo<std::string>* info =
-        (const ConditionsSlice::LoadInfo<std::string>*)(*i).second->loadinfo;
-      std::string* address = info->data<std::string>();
-#endif      
+      std::string* address = (*i).second->data<std::string>();
+      if ( address ) {}
+#endif
       return true;
     }
     /// Return number of conditions selected
-    virtual size_t size()  const { return slice->conditions().size(); }
+    virtual size_t size()  const { return content.conditions().size(); }
   };
 }
 
 /// Populate the conditions slice from the conditions manager (convenience)
-ConditionsSlice*
-DD4hep::Conditions::createSlice(ConditionsManager mgr, const IOVType& typ)  {
-  dd4hep_ptr<ConditionsSlice> slice(new ConditionsSlice(mgr));
+void DD4hep::Conditions::fill_content(ConditionsManager mgr,
+                                      ConditionsContent& content,
+                                      const IOVType& typ)
+{
   Conditions::ConditionsIOVPool* iovPool = mgr.iovPool(typ);
   Conditions::ConditionsIOVPool::Elements& pools = iovPool->elements;
-  for_each(begin(pools),end(pools),SliceOper(slice.get()));
-  return slice.release();
+  for_each(begin(pools),end(pools),SliceOper(content));
 }
-#endif
+

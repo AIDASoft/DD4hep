@@ -40,7 +40,13 @@ using namespace DD4hep;
 using namespace DD4hep::ConditionExamples;
 
 namespace {
-  mutex printout_lock;
+  mutex             printout_lock;
+  mutex             total_guard;
+  /// Total number of accesses
+  long              total_accesses;
+  ConditionsManager::Result totals;
+
+  /// Helper class to simuilate evetn queue
   class EventQueue  {
     vector<std::pair<long,long> > events;
     mutex                       guard;
@@ -66,6 +72,7 @@ namespace {
       return -1;
     }
   };
+  /// Helper to collect statistics
   class Statistics {
   public:
     TStatistic create, prepare, access;
@@ -80,9 +87,12 @@ namespace {
       printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
                access.GetName(), access.GetMean(), access.GetMeanErr(),
                access.GetRMS(), access.GetN());
+      printout(INFO,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld) during the test.",
+               total_accesses, totals.selected, totals.loaded, totals.computed, totals.missing);
       printout(INFO,"Statistics","+=========================================================================");
     }
   };
+
   class Executor {
   public:
     ConditionsManager manager;
@@ -90,7 +100,8 @@ namespace {
     ConditionsSlice*  slice;
     const IOVType*    iovTyp;
     Statistics&       stats;
-    int identifier;
+    int               identifier;
+    
     Executor(ConditionsManager m, const IOVType* typ, int id, EventQueue& q, Statistics& s)
       : manager(m), events(q), slice(0), iovTyp(typ), stats(s), identifier(id)
     {
@@ -100,21 +111,24 @@ namespace {
     }
     int accessConditions(const IOV& iov)  {
       TTimeStamp start;
-      ConditionsDataAccess access(iov, slice->pool.get());
-      int count = access.processElement(manager->lcdd().world());
+      ConditionsDataAccess access(iov, *slice);
+      int count = access.process(manager->lcdd().world(),0,false);
       TTimeStamp stop;
       stats.access.Fill(stop.AsDouble()-start.AsDouble());
+      lock_guard<mutex> lock(total_guard);
+      total_accesses += count;
       return count;
     }
     void run()  {
       int num_reuse = 0;
       int num_access = 0;
+      ConditionsManager::Result res;
       for(long iov_val=events.get(), last_iov=-1; iov_val>0; iov_val=events.get()) {
         IOV iov(iovTyp, iov_val);
         if ( iov_val != last_iov )  {
-          TTimeStamp start;          
+          TTimeStamp start;
           IOV pool_iov(slice->pool.get() ? slice->pool->validity() : iov);
-          ConditionsManager::Result res = manager.prepare(iov,*slice);
+          res = manager.prepare(iov,*slice);
           TTimeStamp stop;
           stats.prepare.Fill(stop.AsDouble()-start.AsDouble());
           last_iov = iov_val;
@@ -130,11 +144,17 @@ namespace {
           }
           num_access = accessConditions(iov);
           num_reuse = 0;
+          total_guard.lock();
+          totals += res;
+          total_guard.unlock();
           continue;
         }
         ++num_reuse;
         ::usleep(10000);
         num_access += accessConditions(iov);
+        total_guard.lock();
+        totals += res;
+        total_guard.unlock();
       }
     }
   };
@@ -194,9 +214,10 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
 
   /******************** Now as usual: create the slice ********************/
-  dd4hep_ptr<ConditionsSlice> slice(Conditions::createSlice(condMgr,*iov_typ));
-  ConditionsKeys(DEBUG).process(lcdd.world(),0,true);
-  ConditionsDependencyCreator(*slice,DEBUG).process(lcdd.world(),0,true);
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice> slice(new ConditionsSlice(condMgr,content));
+  ConditionsKeys(*content,INFO).process(lcdd.world(),0,true);
+  ConditionsDependencyCreator(*content,DEBUG).process(lcdd.world(),0,true);
 
   Statistics stats;
   EventQueue events;
@@ -206,8 +227,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     TTimeStamp start;
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
     ConditionsPool*   pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    ConditionsCreator creator(condMgr, pool, DEBUG);  // Use a generic creator
-    creator.slice = slice.get();
+    ConditionsCreator creator(*slice, *pool, DEBUG);  // Use a generic creator
     creator.process(lcdd.world(),0,true);             // Create conditions with all deltas
     TTimeStamp stop;
     stats.create.Fill(stop.AsDouble()-start.AsDouble());

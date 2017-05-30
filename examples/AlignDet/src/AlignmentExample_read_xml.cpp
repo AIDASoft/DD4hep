@@ -65,7 +65,6 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   installManagers(lcdd);
 
   ConditionsManager condMgr  = ConditionsManager::from(lcdd);
-  AlignmentsManager alignMgr = AlignmentsManager::from(lcdd);
   const void* delta_args[] = {delta.c_str(), 0}; // Better zero-terminate
 
   lcdd.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
@@ -75,20 +74,30 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
   }
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
-  dd4hep_ptr<ConditionsSlice> slice(createSlice(condMgr,*iov_typ));
-  ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
-    
-  // ++++++++++++++++++++++++ We need a valid set of conditions to do this!
-  registerAlignmentCallbacks(lcdd,*slice);
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(condMgr,content));
+  Conditions::fill_content(condMgr,*content,*iov_typ);
 
+  ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
+  
   // ++++++++++++++++++++++++ Compute the tranformation matrices
-  AlignmentsManager::Result ares = alignMgr.compute(*slice);
+  AlignmentsCalculator          calc;
+  Conditions::ConditionsHashMap alignments;
+
+  DetElementDeltaCollector delta_collector(slice.get());
+  DetElementProcessor<DetElementDeltaCollector> proc(delta_collector);
+  proc.process(lcdd.world(),0,true);
+  printout(INFO,"Prepare","Got a total of %ld Deltas",delta_collector.deltas.size());
+
+  slice->pool->flags |= Conditions::UserPool::PRINT_INSERT;
+  AlignmentsCalculator::Result  ares = calc.compute(delta_collector.deltas, alignments);
+  ConditionsSlice::Inserter(*slice).process(alignments.data);
 
   // What else ? let's access the data
-  Scanner().scan(AlignmentDataAccess(*slice->pool),lcdd.world());
+  Scanner().scan(AlignmentDataAccess(*slice),lcdd.world());
 
   // What else ? let's print the current selection
-  Alignments::AlignedVolumePrinter printer(slice->pool.get(),"Example");
+  Alignments::AlignedVolumePrinter printer(slice.get(),"Example");
   Scanner().scan(printer,lcdd.world());
 
   printout(INFO,"Example",

@@ -65,14 +65,18 @@ namespace DD4hep {
     template <typename T> class DetElementProcessor : virtual public DetectorProcessor  {
     public:
       /// Collection container
-      T* processor;
+      T& processor;
     public:
       /// Default constructor
       DetElementProcessor() = delete;
       /// Default constructor
-      DetElementProcessor(T* p) : processor(p) {}
+      DetElementProcessor(T& p) : processor(p) {}
       /// Default destructor
       virtual ~DetElementProcessor() = default;
+      /// Callback to output detector information of an single DetElement
+      virtual int operator()(DetElement de, int level)  {
+        return processor(de, level);
+      }
     };
 
     /// Instantiation helper

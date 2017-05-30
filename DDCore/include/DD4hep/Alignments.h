@@ -28,6 +28,7 @@ namespace DD4hep {
   namespace Conditions   {
     class Condition;
     class ConditionsKey;
+    class ConditionsMap;
     
     /// Conditions internal namespace
     namespace Interna  {
@@ -42,7 +43,8 @@ namespace DD4hep {
     using Geometry::Position;
     using Geometry::DetElement;
     using Geometry::PlacedVolume;
-
+    using Conditions::ConditionsMap;
+    
     /// Alignments internal namespace
     namespace Interna  {
       /// Forward declarations
@@ -66,8 +68,6 @@ namespace DD4hep {
       typedef Geometry::PlacedVolume    PlacedVolume;
       /// Forward definition of the nodelist leading to the world
       typedef std::vector<PlacedVolume> NodeList;
-      /// Forward definition of the alignment delta data
-      typedef Alignments::Delta         Delta;
       /// Forward definition of the key type
       typedef unsigned long long int    key_type;
       /// Forward definition of the iov type

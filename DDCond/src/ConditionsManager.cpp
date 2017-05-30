@@ -209,6 +209,14 @@ ConditionsPool* ConditionsManager::registerIOV(const string& iov_rep)  const   {
 }
       
 /// Register IOV with type and key
+ConditionsPool* ConditionsManager::registerIOV(const IOV& iov) const   {
+  if ( iov.iovType )
+    return access()->registerIOV(*iov.iovType, iov.key());
+  except("ConditionsManager","+++ Attempt to register invalid IOV [FAILED]");
+  return 0;
+}
+
+/// Register IOV with type and key
 ConditionsPool* ConditionsManager::registerIOV(const IOVType& typ, IOV::Key key)   const {
   return access()->registerIOV(typ, key);
 }
@@ -219,7 +227,7 @@ void ConditionsManager::fromString(const string& iov_str, IOV& iov)  const  {
 }
 
 /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-bool ConditionsManager::registerUnlocked(ConditionsPool* pool, Condition cond)  const  {
+bool ConditionsManager::registerUnlocked(ConditionsPool& pool, Condition cond)  const  {
   return access()->registerUnlocked(pool, cond);
 }
 
@@ -235,6 +243,11 @@ void ConditionsManager::clean(const IOVType* typ, int max_age)  const  {
 /// Full cleanup of all managed conditions.
 void ConditionsManager::clear()  const  {
   access()->clear();
+}
+
+/// Create empty user pool object
+std::unique_ptr<UserPool> ConditionsManager::createUserPool(const IOVType* iovT)  const   {
+  return access()->createUserPool(iovT);
 }
 
 /// Prepare all updates to the clients with the defined IOV

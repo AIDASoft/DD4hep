@@ -17,8 +17,10 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
+#include "DD4hep/ConditionsMap.h"
 #include "DD4hep/ConditionDerived.h"
 #include "DD4hep/ConditionsPrinter.h"
+#include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/DetectorProcessor.h"
 
 #include "DDCond/ConditionsSlice.h"
@@ -38,12 +40,14 @@ namespace DD4hep {
     using Conditions::UserPool;
     using Conditions::Condition;
     using Conditions::ConditionKey;
+    using Conditions::ConditionsMap;
     using Conditions::ConditionsPool;
     using Conditions::ConditionsSlice;
+    using Conditions::ConditionsContent;
     using Conditions::ConditionsPrinter;
     using Conditions::ConditionsManager;
     using Conditions::ConditionUpdateCall;
-
+    
     /// Specialized conditions update callback 
     /**
      *  Used by clients to update a condition.
@@ -61,7 +65,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionUpdate1()                     {    }
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const Context& context);
+      virtual Condition operator()(const ConditionKey& key, const Context& context) final;
     };
 
     /// Specialized conditions update callback 
@@ -81,7 +85,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionUpdate2()                     {    }
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const Context& context);
+      virtual Condition operator()(const ConditionKey& key, const Context& context)  final;
     };
 
     /// Specialized conditions update callback 
@@ -101,35 +105,24 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionUpdate3()                     {    }
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const Context& context);
+      virtual Condition operator()(const ConditionKey& key, const Context& context)  final;
     };
     
-    /// Example how to populate the detector description with conditions constants
+    /// This is important, otherwise the register and forward calls won't find them!
     /**
-     *  This is simply a DetElement crawler...
-     *
      *  \author  M.Frank
-     *  \version 1.0
+     *  \version 1.02
      *  \date    01/04/2016
      */
-    struct ConditionsCreator : public DetectorProcessor {
-      /// reference to the conditions manager
-      ConditionsManager manager;
-      /// Reference to the conditiosn user pool
-      ConditionsPool*   pool;
-      ConditionsSlice*  slice;
-      /// Counter
-      unsigned int      conditionCount;
+    struct ConditionsKeys : public DetectorProcessor {
+      /// Content object to be filled
+      ConditionsContent& content;
       /// Print level
       PrintLevel        printLevel;
       /// Constructor
-      ConditionsCreator(ConditionsManager& m,ConditionsPool* p,PrintLevel l)
-        : manager(m), pool(p), slice(0), conditionCount(0), printLevel(l)  {  }
-      /// Destructor
-      virtual ~ConditionsCreator();
+      ConditionsKeys(ConditionsContent& c, PrintLevel p) : content(c), printLevel(p) {}
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level);
-      template<typename T> Condition make_condition(DetElement de, const std::string& name, T val);
+      virtual int operator()(DetElement de, int level)  final;
     };
 
     /// Example how to populate the detector description with derived conditions
@@ -141,33 +134,45 @@ namespace DD4hep {
      *  \date    01/04/2016
      */
     struct ConditionsDependencyCreator : public DetectorProcessor {
-      /// Reference to the conditiosn user pool
-      ConditionsSlice&  slice;
+      /// Content object to be filled
+      ConditionsContent& content;
       /// Print level
       PrintLevel        printLevel;
       /// Three different update call types
       ConditionUpdateCall *call1, *call2, *call3;
       /// Constructor
-      ConditionsDependencyCreator(ConditionsSlice& s,PrintLevel p);
+      ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p);
       /// Destructor
       virtual ~ConditionsDependencyCreator();
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level);
+      virtual int operator()(DetElement de, int level)  final;
     };
 
-    /// This is important, otherwise the register and forward calls won't find them!
+    /// Example how to populate the detector description with conditions constants
     /**
+     *  This is simply a DetElement crawler...
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct ConditionsKeys : public DetectorProcessor {
+    struct ConditionsCreator : public DetectorProcessor {
+      /// Content object for which conditions are supposedly created
+      ConditionsSlice&   slice;
+      /// Conditions pool the created conditions are inserted to (not equals user pool!)
+      ConditionsPool&    pool;
+      /// Counter
+      unsigned int       conditionCount = 0;
       /// Print level
-      PrintLevel        printLevel;
+      PrintLevel         printLevel = DEBUG;
+
       /// Constructor
-      ConditionsKeys(PrintLevel p) : printLevel(p) {}
+      ConditionsCreator(ConditionsSlice& s, ConditionsPool& p, PrintLevel l);
+      /// Destructor
+      virtual ~ConditionsCreator();
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level);
+      virtual int operator()(DetElement de, int level)  final;
+      template<typename T> Condition make_condition(DetElement de, const std::string& name, T val);
     };
 
     /// Example how to access the conditions constants from a detector element
@@ -176,16 +181,36 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct ConditionsDataAccess : public Conditions::Condition::Processor  {
-      /// IOV to be checked
-      const IOV& iov;
+    struct ConditionsDataAccess : public DetectorProcessor  {
+      /// Reference to the IOV to be checked
+      const IOV&     iov;
+      /// Reference to the conditions map to access conditions
+      ConditionsMap& map;
       /// Print level
-      PrintLevel printLevel;
+      PrintLevel printLevel = DEBUG;
       /// Constructor
-      ConditionsDataAccess(const IOV& i, UserPool* p) :
-        ConditionsProcessor(p), iov(i), printLevel(DEBUG) {  }
+      ConditionsDataAccess(const IOV& i, ConditionsMap& m) : iov(i), map(m), printLevel(DEBUG) {}
+      /// Destructor
+      virtual ~ConditionsDataAccess();
       /// Callback to process a single detector element
-      int processElement(DetElement de);
+      virtual int operator()(DetElement de, int level);
+      /// Common call to access selected conditions
+      virtual int accessConditions(DetElement de, const std::vector<Condition>& conditions);
+    };
+
+    /// Example how to access the conditions constants from a detector element
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2016
+     */
+    struct DetectorConditionsAccess : public ConditionsDataAccess  {
+      /// Constructor
+      DetectorConditionsAccess(const IOV& i, ConditionsMap& m) : ConditionsDataAccess(i,m) {}
+      /// Destructor
+      virtual ~DetectorConditionsAccess() {}
+      /// Callback to process a single detector element
+      virtual int operator()(DetElement de, int level)  final;
     };
 
     /// Helper to run DetElement scans
@@ -197,7 +222,7 @@ namespace DD4hep {
     struct Scanner : public DetectorProcessor  {
       DetElement::Processor* proc;
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int)
+      virtual int operator()(DetElement de, int) final
       { return proc->processElement(de);                     }
       template <typename Q> Scanner& scan(Q& p, DetElement start)
       { Scanner obj; obj.proc = &p; obj.process(start, 0, true); return *this; }

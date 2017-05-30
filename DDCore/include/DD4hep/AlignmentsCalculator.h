@@ -68,6 +68,8 @@ namespace DD4hep {
       AlignmentsCalculator& operator=(const AlignmentsCalculator& mgr) = delete;
       /// Access the default alignment name
       static unsigned int alignment_item_key();
+      /// Access the default alignment name
+      static unsigned int alignment_delta_item_key();
       /// Compute all alignment conditions of the internal dependency list
       Result compute(const Deltas& deltas, Alignments& alignments)  const;
     };

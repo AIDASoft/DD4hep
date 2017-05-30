@@ -276,7 +276,7 @@ namespace DD4hep {
   template <> void Converter<value>::operator()(xml_h e) const {
     ConversionArg* arg = _param<ConversionArg>();
     Condition      con = bind_condition(ValueBinder(), arg->detector, e);
-    arg->manager.registerUnlocked(arg->pool, con);
+    arg->manager.registerUnlocked(*arg->pool, con);
   }
 
   /// Convert conditions pressure objects (scalars with unit)
@@ -291,7 +291,7 @@ namespace DD4hep {
     ConversionArg* arg = _param<ConversionArg>();
     Condition      con = bind_condition(ValueBinder(), arg->detector, e, "double");
     con->setFlag(Condition::PRESSURE);
-    arg->manager.registerUnlocked(arg->pool, con);
+    arg->manager.registerUnlocked(*arg->pool, con);
   }
 
   /// Convert conditions temperature objects (scalars with unit)
@@ -306,7 +306,7 @@ namespace DD4hep {
     ConversionArg* arg = _param<ConversionArg>();
     Condition      con = bind_condition(ValueBinder(), arg->detector, e, "double");
     con->setFlag(Condition::TEMPERATURE);
-    arg->manager.registerUnlocked(arg->pool, con);
+    arg->manager.registerUnlocked(*arg->pool, con);
   }
 
   /// Convert conditions sequence objects (unmapped containers). See XML/XMLParsers.h for details.
@@ -319,7 +319,7 @@ namespace DD4hep {
     ConversionArg* arg = _param<ConversionArg>();
     Condition      con = create_condition(arg->detector, e);
     XML::parse_sequence(e, con->data);
-    arg->manager.registerUnlocked(arg->pool, con);
+    arg->manager.registerUnlocked(*arg->pool, con);
   }
 
   /// Convert conditions STL maps. See XML/XMLParsers.h for details.
@@ -332,7 +332,7 @@ namespace DD4hep {
     ConversionArg* arg = _param<ConversionArg>();
     Condition      con = create_condition(arg->detector, e);
     XML::parse_mapping(e, con->data);
-    arg->manager.registerUnlocked(arg->pool, con);
+    arg->manager.registerUnlocked(*arg->pool, con);
   }
 
   /// Convert alignment delta objects. See XML/XMLParsers.h for details.
@@ -348,7 +348,7 @@ namespace DD4hep {
     //Alignments::Delta& del = con.bind<Alignments::Delta>();
     XML::parse_delta(e, con->data);
     con->setFlag(Condition::ALIGNMENT_DELTA);
-    arg->manager.registerUnlocked(arg->pool, con);
+    arg->manager.registerUnlocked(*arg->pool, con);
   }
 
   /// Convert detelement objects
@@ -456,11 +456,11 @@ DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryPrintLevel,setup_repository_loglevel
 static long setup_repository_Conditions(lcdd_t& lcdd, int argc, char** argv)  {
   if ( argc == 1 )  {
     DD4hepUI ui(lcdd);
-    string fname = argv[0];
-    ConditionsManager mgr = ui.conditionsMgr();
-    ConversionArg args(lcdd.world(), mgr);
+    string fname(argv[0]);
+    ConditionsManager   mgr(ui.conditionsMgr());
+    ConversionArg       arg(lcdd.world(), mgr);
     XML::DocumentHolder doc(XML::DocumentHandler().load(fname));
-    (DD4hep::Converter<conditions>(lcdd,&args))(doc.root());
+    (DD4hep::Converter<conditions>(lcdd,&arg))(doc.root());
     return 1;
   }
   except("XML_DOC_READER","Invalid number of arguments to interprete conditions: %d != %d.",argc,1);

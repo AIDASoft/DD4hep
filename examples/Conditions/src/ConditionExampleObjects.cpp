@@ -14,13 +14,16 @@
 // Framework include files
 #include "ConditionExampleObjects.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/ConditionsProcessor.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::ConditionExamples;
+using Conditions::ConditionsSlice;
 using Conditions::DependencyBuilder;
 using Conditions::ConditionsLoadInfo;
-using Conditions::ConditionsSlice;
+using Conditions::ConditionsCollector;
+using Conditions::DetElementConditionsCollector;
 
 
 /// Install the consitions and the alignment manager
@@ -31,7 +34,11 @@ void DD4hep::ConditionExamples::installManagers(LCDD& lcdd)  {
 
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate1::operator()(const ConditionKey& key, const Context& context)  {
-  printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %s",key.name.c_str());
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+  printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+#else
+  printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX",key.hash);
+#endif
   Condition    target(key.name,"derived");
   vector<int>& data  = target.bind<vector<int> >();
   Condition    cond0 = context.condition(0);
@@ -42,7 +49,11 @@ Condition ConditionUpdate1::operator()(const ConditionKey& key, const Context& c
 
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate2::operator()(const ConditionKey& key, const Context& context)  {
-  printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %s",key.name.c_str());
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+  printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+#else
+  printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX",key.hash);
+#endif
   Condition    target(key.name,"derived");
   vector<int>& data  = target.bind<vector<int> >();
   Condition    cond0 = context.condition(0);
@@ -57,7 +68,11 @@ Condition ConditionUpdate2::operator()(const ConditionKey& key, const Context& c
 
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate3::operator()(const ConditionKey& key, const Context& context)  {
-  printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %s",key.name.c_str());
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+  printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+#else
+  printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX",key.hash);
+#endif
   Condition    target(key.name,"derived");
   vector<int>& data  = target.bind<vector<int> >();
   Condition    cond0 = context.condition(0);
@@ -75,8 +90,8 @@ Condition ConditionUpdate3::operator()(const ConditionKey& key, const Context& c
 }
 
 /// Initializing constructor
-ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsSlice& s,PrintLevel p)
-  : slice(s), printLevel(p)
+ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p)
+  : content(c), printLevel(p)
 {
   call1 = new ConditionUpdate1(printLevel);
   call2 = new ConditionUpdate2(printLevel);
@@ -96,9 +111,9 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)    {
   ConditionKey      target1(de,"derived_1");
   ConditionKey      target2(de,"derived_2");
   ConditionKey      target3(de,"derived_3");
-  DependencyBuilder build_1(target1, call1);
-  DependencyBuilder build_2(target2, call2);
-  DependencyBuilder build_3(target3, call3);
+  DependencyBuilder build_1(de, target1.item_key(), call1);
+  DependencyBuilder build_2(de, target2.item_key(), call2);
+  DependencyBuilder build_3(de, target3.item_key(), call3);
 
   // Compute the derived stuff
   build_1.add(key);
@@ -110,17 +125,26 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)    {
   build_3.add(target1);
   build_3.add(target2);
 
-  slice.insert(build_1.release());
-  slice.insert(build_2.release());
-  slice.insert(build_3.release());
+  content.insertDependency(build_1.release());
+  content.insertDependency(build_2.release());
+  content.insertDependency(build_3.release());
   printout(printLevel,"Example","++ Added derived conditions dependencies for %s",de.path().c_str());
   return 1;
 }
 
+/// Destructor
+ConditionsDataAccess::~ConditionsDataAccess()   {
+}
+
 /// Callback to process a single detector element
-int ConditionsDataAccess::processElement(DetElement de)  {
-  DetConditions dc(de); // Use special facade...
-  string path = de.path();
+int ConditionsDataAccess::operator()(DetElement de, int /* level */)  {
+  ConditionsCollector select(0);
+  map.scan(select);  
+  return accessConditions(de, select.conditions);
+}
+
+/// Common call to access selected conditions
+int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Condition>& conditions)   {
   ConditionKey key_temperature (de,"temperature");
   ConditionKey key_pressure    (de,"pressure");
   ConditionKey key_double_table(de,"double_table");
@@ -129,44 +153,60 @@ int ConditionsDataAccess::processElement(DetElement de)  {
   ConditionKey key_derived1    (de,"derived_data/derived_1");
   ConditionKey key_derived2    (de,"derived_data/derived_2");
   ConditionKey key_derived3    (de,"derived_data/derived_3");
-  Conditions::Container container = dc.conditions();
   int result = 0, count = 0;
+
   // Let's go for the deltas....
-  for(const auto& k : container.keys() )  {
-    Condition cond = container.get(k.first,*m_pool);
-    ++count;
-    if ( k.first == key_temperature.hash )  {
+  for( auto cond : conditions )  {
+    if ( cond.item_key() == key_temperature.item_key() )  {
       result += int(cond.get<double>());
     }
-    else if ( k.first == key_pressure.hash )  {
+    else if ( cond.item_key() == key_pressure.item_key() )  {
       result += int(cond.get<double>());
     }
-    else if ( k.first == key_double_table.hash )  {
+    else if ( cond.item_key() == key_double_table.item_key() )  {
       result += int(cond.get<vector<double> >().size());
     }
-    else if ( k.first == key_int_table.hash )  {
+    else if ( cond.item_key() == key_int_table.item_key() )  {
       result += int(cond.get<vector<int> >().size());
     }
-    else if ( k.first == key_derived_data.hash )  {
+    else if ( cond.item_key() == key_derived_data.item_key() )  {
       result += int(cond.get<int>());
     }
-    else if ( k.first == key_derived1.hash )  {
+    else if ( cond.item_key() == key_derived1.item_key() )  {
       result += int(cond.get<vector<int> >().size());
     }
-    else if ( k.first == key_derived2.hash )  {
+    else if ( cond.item_key() == key_derived2.item_key() )  {
       result += int(cond.get<vector<int> >().size());
     }
-    else if ( k.first == key_derived3.hash )  {
+    else if ( cond.item_key() == key_derived3.item_key() )  {
       result += int(cond.get<vector<int> >().size());
     }
     if ( !IOV::key_is_contained(iov.key(),cond.iov().key()) )  {
-      printout(printLevel,"CondAccess","++ IOV mismatch:%s <> %s",
+      printout(ERROR,"CondAccess","++ IOV mismatch:%s <> %s",
                iov.str().c_str(), cond.iov().str().c_str());
+      continue;
     }
+    ++count;
   }
-  for (const auto& c : de.children() )
-    count += processElement(c.second);
   return count;
+}
+                                                         
+/// Callback to process a single detector element
+int DetectorConditionsAccess::operator()(DetElement de, int)  {
+  DetElementConditionsCollector select(de);
+  map.scan(select);
+  return accessConditions(de, select.conditions);
+}
+
+
+/// Callback to process a single detector element
+int ConditionsKeys::operator()(DetElement de, int)    {
+  content.insertKey(ConditionKey(de,"temperature").hash);
+  content.insertKey(ConditionKey(de,"pressure").hash);
+  content.insertKey(ConditionKey(de,"double_table").hash);
+  content.insertKey(ConditionKey(de,"int_table").hash);
+  content.insertKey(ConditionKey(de,"derived_data").hash);
+  return 1;
 }
 
 template<typename T> Condition ConditionsCreator::make_condition(DetElement de, const string& name, T val)  {
@@ -174,9 +214,15 @@ template<typename T> Condition ConditionsCreator::make_condition(DetElement de, 
   T& value   = cond.bind<T>();
   value      = val;
   cond->hash = ConditionKey::hashCode(de,name);
-  if ( slice ) slice->insert(ConditionKey(cond->hash),ConditionsSlice::NoLoadInfo());
   return cond;
 }
+
+/// Constructor
+ConditionsCreator::ConditionsCreator(ConditionsSlice& s, ConditionsPool& p, PrintLevel l)
+  : slice(s), pool(p), conditionCount(0), printLevel(l)
+{
+}
+
 
 /// Destructor
 ConditionsCreator::~ConditionsCreator()  {
@@ -185,33 +231,18 @@ ConditionsCreator::~ConditionsCreator()  {
 
 /// Callback to process a single detector element
 int ConditionsCreator::operator()(DetElement de, int)    {
-  DetConditions dc(de);
   Condition temperature = make_condition<double>(de,"temperature",1.222);
   Condition pressure    = make_condition<double>(de,"pressure",888.88);
   Condition derived     = make_condition<int>   (de,"derived_data",100);
   Condition dbl_table   = make_condition<vector<double> >(de,"double_table",{1.,2.,3.,4.,5.,6.,7.,8.,9.});
   Condition int_table   = make_condition<vector<int> >   (de,"int_table",{10,20,30,40,50,60,70,80,90});
 
-  manager.registerUnlocked(pool, temperature);
-  manager.registerUnlocked(pool, pressure);
-  manager.registerUnlocked(pool, derived);
-  manager.registerUnlocked(pool, dbl_table);
-  manager.registerUnlocked(pool, int_table);
+  slice.manager.registerUnlocked(pool, temperature);
+  slice.manager.registerUnlocked(pool, pressure);
+  slice.manager.registerUnlocked(pool, derived);
+  slice.manager.registerUnlocked(pool, dbl_table);
+  slice.manager.registerUnlocked(pool, int_table);
   printout(printLevel,"Creator","++ Adding manually conditions for %s",de.path().c_str());
   conditionCount += 5;
-  return 1;
-}
-
-/// Callback to process a single detector element
-int ConditionsKeys::operator()(DetElement de, int)    {
-#if 0
-  DetConditions dc(de);
-  dc.conditions().addKey(de.path()+"#temperature");
-  dc.conditions().addKey(de.path()+"#pressure");
-  dc.conditions().addKey(de.path()+"#double_table");
-  dc.conditions().addKey(de.path()+"#int_table");
-  dc.conditions().addKey(de.path()+"#derived_data");
-  dc.conditions().addKey("derived",de.path()+"#derived_data");
-#endif
   return 1;
 }

@@ -74,25 +74,25 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   condMgr["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
   condMgr.initialize();
   
-  AlignmentsManager alignMgr = AlignmentsManager::from(lcdd);
   const IOVType*  iov_typ  = condMgr.registerIOVType(0,"run").second;
   if ( 0 == iov_typ )  {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
   }
-  AlignmentKeys keys;
-  keys.process(lcdd.world(),0,true);
+
   /******************** Populate the conditions store *********************/
   // Have 10 run-slices [1001,2000] .... [9001,10000]
-  for(int i=1; i<num_iov; ++i)  {
+  for(int i=0; i<num_iov; ++i)  {
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
     ConditionsPool* iov_pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    AlignmentCreator creator(condMgr, iov_pool);   // Use a generic creator
+    AlignmentCreator creator(condMgr, *iov_pool);  // Use a generic creator
     creator.process(lcdd.world(),0,true);          // Create conditions with all deltas
   }
 
   /******************** Now as usual: create the slice ********************/
-  dd4hep_ptr<ConditionsSlice> slice(Conditions::createSlice(condMgr,*iov_typ));
-  
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice> slice(new ConditionsSlice(condMgr,content));
+  Conditions::fill_content(condMgr,*content,*iov_typ);
+
   /******************** Register alignments *******************************/
   // Note: We have to load one set of conditions in order to auto-populate
   //       because we need to see if a detector element actually has alignment
@@ -101,23 +101,43 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   //
   IOV iov(iov_typ,10+5);
   condMgr.prepare(iov,*slice);
-  registerAlignmentCallbacks(lcdd,*slice);
-  
+  slice->pool->flags |= Conditions::UserPool::PRINT_INSERT;
+
+  // Collect all the delta conditions and make proper alignment conditions out of them
+  DetElementDeltaCollector delta_collector(slice.get());
+  DetElementProcessor<DetElementDeltaCollector> proc(delta_collector);
+  proc.process(lcdd.world(),0,true);
+  printout(INFO,"Prepare","Got a total of %ld Deltas",delta_collector.deltas.size());
+
   // ++++++++++++++++++++++++ Now compute the alignments for each of these IOVs
+  ConditionsManager::Result cond_total;
+  AlignmentsCalculator::Result align_total;
   for(int i=1; i<num_iov; ++i)  {
     IOV req_iov(iov_typ,i*10+5);
+    shared_ptr<ConditionsSlice> sl(new ConditionsSlice(condMgr,content));
     // Attach the proper set of conditions to the user pool
-    ConditionsManager::Result res = condMgr.prepare(req_iov,*slice);
+    ConditionsManager::Result cres = condMgr.prepare(req_iov,*sl);
+    sl->pool->flags |= Conditions::UserPool::PRINT_INSERT;
+    cond_total += cres;
     // Now compute the tranformation matrices
-    alignMgr.compute(*slice);
-    printout(INFO,"Prepare","Total %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of type %s.",
-             slice->conditions().size(), res.total(), res.selected, res.loaded,
-             res.computed, res.missing, iov_typ->str().c_str());
+    AlignmentsCalculator calculator;
+    AlignmentsCalculator::Result ares = calculator.compute(delta_collector.deltas,*sl);
+    printout(INFO,"Prepare","Total %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of type %s. Alignments:(C:%ld,M:%ld)",
+             slice->conditions().size(), cres.total(), cres.selected, cres.loaded,
+             cres.computed, cres.missing, iov_typ->str().c_str(), ares.computed, ares.missing);
+    align_total += ares;
+    if ( ares.missing > 0 ) {
+      printout(ERROR,"Compute","Failed tro compute %ld alignments of type %s.",
+               ares.missing, iov_typ->str().c_str());
+    }
   }
   // What else ? let's access/print the current selection
-  Alignments::AlignedVolumePrinter printer(slice->pool.get(),"Example");
+  Alignments::AlignedVolumePrinter printer(slice.get(),"Example");
   Scanner().scan(printer,lcdd.world());
-  
+  printout(INFO,"Summary","Processed a total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) and (C:%ld,M:%ld) alignments",
+           cond_total.total(), cond_total.selected, cond_total.loaded,
+           cond_total.computed, cond_total.missing, align_total.computed, align_total.missing);
+   
   // All done.
   return 1;
 }

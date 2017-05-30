@@ -35,20 +35,11 @@ ConditionUpdateCall::~ConditionUpdateCall()  {
 ConditionResolver::~ConditionResolver()  {
 }
 
-/// Default constructor
-ConditionDependency::ConditionDependency(const ConditionKey& tar, 
-                                         const Dependencies deps, 
-                                         ConditionUpdateCall* call)
-  : m_refCount(0), target(tar), dependencies(deps), callback(call)
-{
-  InstanceCount::increment(this);
-  if ( callback ) callback->addRef();
-}
-
 /// Initializing constructor
-ConditionDependency::ConditionDependency(const ConditionKey& tar, 
+ConditionDependency::ConditionDependency(Geometry::DetElement de,
+                                         unsigned int         item_key,
                                          ConditionUpdateCall* call)
-  : m_refCount(0), target(tar), callback(call)
+  : m_refCount(0), detector(de), target(de, item_key), callback(call)
 {
   InstanceCount::increment(this);
   if ( callback ) callback->addRef();
@@ -61,47 +52,18 @@ ConditionDependency::ConditionDependency()
   InstanceCount::increment(this);
 }
 
-/// Copy constructor
-ConditionDependency::ConditionDependency(const ConditionDependency& c)
-  : m_refCount(0), target(c.target),
-    dependencies(c.dependencies),
-    callback(c.callback)
-{
-  InstanceCount::increment(this);
-  if ( callback ) callback->addRef();
-  except("Dependency",
-         "++ Condition: %s. Dependencies may not be assigned or copied!",
-         target.name.c_str());
-}
-
 /// Default destructor
 ConditionDependency::~ConditionDependency()  {
   InstanceCount::decrement(this);
   releasePtr(callback);
 }
 
-/// Assignment operator
-ConditionDependency& ConditionDependency::operator=(const ConditionDependency& )  {
-  except("Dependency",
-         "++ Condition: %s. Dependencies may not be assigned or copied!",
-         target.name.c_str());
-  return *this;
-}
-
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(const ConditionKey& target,
+DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
+                                     unsigned int         item_key,
                                      ConditionUpdateCall* call)
-  : m_dependency(new ConditionDependency(target,call))
+  : m_dependency(new ConditionDependency(de,item_key,call))
 {
-}
-
-/// Initializing constructor
-DependencyBuilder::DependencyBuilder(const ConditionKey& target,
-                                     ConditionUpdateCall* call,
-                                     Geometry::DetElement de)
-  : m_dependency(new ConditionDependency(target,call))
-{
-  m_dependency->detector = de;
 }
 
 /// Default destructor

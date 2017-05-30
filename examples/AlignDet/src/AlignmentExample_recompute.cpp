@@ -28,7 +28,7 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::AlignmentExamples;
-
+#if 0
 /// Plugin function: Alignment program example
 /**
  *  Factory: DD4hep_AlignmentExample_recompute
@@ -65,7 +65,6 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   installManagers(lcdd);
 
   ConditionsManager condMgr  = ConditionsManager::from(lcdd);
-  AlignmentsManager alignMgr = AlignmentsManager::from(lcdd);
   const void* delta_args[] = {delta.c_str(), 0}; // Better zero-terminate
 
   lcdd.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
@@ -75,20 +74,24 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
   }
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
-  dd4hep_ptr<ConditionsSlice> slice_align(createSlice(condMgr,*iov_typ));
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(condMgr,content));
+  Conditions::fill_content(condMgr,*content,*iov_typ);
   ConditionsManager::Result   cres_align = condMgr.prepare(req_iov,*slice_align);
 
-  // ++++++++++++++++++++++++ We need a valid set of conditions to do this!
-  registerAlignmentCallbacks(lcdd,*slice_align);
 
   // ++++++++++++++++++++++++ Compute the tranformation matrices
-  AlignmentsManager::Result ares_align = alignMgr.compute(*slice_align);
+  AlignmentsCalculator          calc;
+  AlignmentsCalculator::Deltas  deltas;
+  Conditions::ConditionsHashMap alignments;
+  AlignmentsCalculator::Result  ares = calc.compute(deltas, alignments);
+  ConditionsSlice::Inserter(*slice).process(alignments.data);
 
   // What else ? let's access the data
-  Scanner().scan(AlignmentDataAccess(*slice_align->pool),lcdd.world());
+  Scanner().scan(AlignmentDataAccess(*slice_align),lcdd.world());
 
   // What else ? let's print the current selection
-  Alignments::AlignedVolumePrinter print_align(slice_align->pool.get(),"Example");
+  Alignments::AlignedVolumePrinter print_align(*slice_align,"Example");
   Scanner().scan(print_align,lcdd.world());
 
   // What else ? let's access the data
@@ -96,9 +99,11 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   // Print again the changed values
 
   // ++++++++++++++++++++++++ Compute the tranformation matrices
-  dd4hep_ptr<ConditionsSlice> slice_reset(createSlice(condMgr,*iov_typ));
+  shared_ptr<ConditionsSlice> slice_reset(new ConditionsSlice(condMgr,content));
+
   ConditionsManager::Result   cres_reset = condMgr.prepare(req_iov,*slice_reset);
-  registerResetCallbacks(lcdd,*slice_reset);
+
+
   AlignmentsManager::Result   ares_reset = alignMgr.compute(*slice_reset);
   Alignments::AlignedVolumePrinter print_reset(slice_reset->pool.get(),"Example");
   Scanner().scan(print_reset,lcdd.world());
@@ -120,3 +125,4 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
 // first argument is the type from the xml file
 DECLARE_APPLY(DD4hep_AlignmentExample_recompute,alignment_example)
+#endif

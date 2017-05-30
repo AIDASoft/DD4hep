@@ -135,7 +135,7 @@ namespace DD4hep {
       ConditionsIOVPool* iovPool(const IOVType& type)  const  final;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      virtual bool registerUnlocked(ConditionsPool* pool, Condition cond)  final;
+      virtual bool registerUnlocked(ConditionsPool& pool, Condition cond)  final;
 
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */
@@ -156,6 +156,9 @@ namespace DD4hep {
 
       /// Retrieve a condition given a Detector Element and the conditions name (deprecated)
       virtual RangeConditions getRange(key_type key, const iov_type& req_validity)  final;
+
+      /// Create empty user pool object
+      virtual std::unique_ptr<UserPool> createUserPool(const IOVType* iovT)  const;
 
       /// Prepare all updates for the given keys to the clients with the defined IOV
       /**

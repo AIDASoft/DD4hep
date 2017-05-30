@@ -19,6 +19,7 @@
 
 // C/C++ include files
 #include <set>
+#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -64,6 +65,10 @@ namespace DD4hep {
         Result(const Result& result) = default;
         Result& operator=(const Result& result) = default;
         size_t total() const { return selected+computed+loaded; }
+        /// Add results
+        Result& operator +=(const Result& result);
+        /// Subtract results
+        Result& operator -=(const Result& result);
       };
 
     public:
@@ -130,13 +135,16 @@ namespace DD4hep {
       std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name) const;
 
       /// Register IOV with type and key
+      ConditionsPool* registerIOV(const IOV& iov) const;
+
+      /// Register IOV with type and key
       ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key) const;
 
       /// Register IOV with type and key
       ConditionsPool* registerIOV(const std::string& iov_rep)  const;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      bool registerUnlocked(ConditionsPool* pool, Condition cond) const;
+      bool registerUnlocked(ConditionsPool& pool, Condition cond) const;
       
       /// Push all pending updates to the conditions store. 
       /** Note:
@@ -149,11 +157,33 @@ namespace DD4hep {
 
       /// Full cleanup of all managed conditions.
       void clear()  const;
+      
+      /// Create empty user pool object
+      std::unique_ptr<UserPool> createUserPool(const IOVType* iovT)  const;
 
       /// Prepare all updates to the clients with the defined IOV
       Result prepare(const IOV&              required_validity,
                      ConditionsSlice&        slice)  const;
     };
+    
+    /// Add results
+    inline ConditionsManager::Result&
+    ConditionsManager::Result::operator +=(const Result& result)  {
+      selected += result.selected;
+      loaded   += result.loaded;
+      computed += result.computed;
+      missing  += result.missing;
+      return *this;
+    }
+    /// Subtract results
+    inline ConditionsManager::Result&
+    ConditionsManager::Result::operator -=(const Result& result)  {
+      selected -= result.selected;
+      loaded   -= result.loaded;
+      computed -= result.computed;
+      missing  -= result.missing;
+      return *this;
+    }
   }       /* End namespace Conditions        */
 }         /* End namespace DD4hep            */
 #endif    /* DDCOND_CONDITIONSMANAGER_H      */

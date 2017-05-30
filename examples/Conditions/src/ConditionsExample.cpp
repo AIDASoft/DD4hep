@@ -10,7 +10,7 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
+#if 0
 // Framework include files
 #include "ConditionsTest.h"
 
@@ -20,12 +20,10 @@ using namespace DD4hep::Conditions;
 using Geometry::LCDD;
 using Geometry::Position;
 using Geometry::DetElement;
-#if 0
+
 namespace  {
 
-  struct _Key : public std::string  {
-    _Key(DetElement d, const std::string& nam) : std::string(d.path()+"."+nam) {}
-  };
+  typedef ConditionKey _Key;
 
   void print_tpc_epoch_conditions(Test::TestEnv& env, const IOV& iov_epoch, bool check = true)   {
     DetConditions dc(env.detector);
@@ -213,5 +211,4 @@ DECLARE_APPLY(DD4hep_Test_ConditionsAccess,example1)
 DECLARE_APPLY(DD4hep_Test_ConditionsExample3,example3)
 DECLARE_APPLY(DD4hep_Test_ConditionsTreeDump,example2)
 DECLARE_APPLY(DD4hep_Test_CallbackInstall,DD4hep_CallbackInstallTest)
-
 #endif

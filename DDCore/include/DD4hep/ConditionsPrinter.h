@@ -15,6 +15,7 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -34,14 +35,16 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class ConditionsPrinter : public Condition::Processor  {
+    class ConditionsPrinter : public Condition::Processor, public DetElement::Processor  {
     public:
+      /// Conditionsmap to resolve things
+      ConditionsMap* mapping;
       /// Printer name. Want to know who is printing what
       std::string   name;
       /// Printout prefix
       std::string   prefix;
       /// Printout level
-      PrintLevel    printLevel;
+      PrintLevel    printLevel = INFO;
 
     protected:
       /// Printout processing and customization flag
@@ -49,18 +52,20 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      ConditionsPrinter(const std::string& prefix="", 
+      ConditionsPrinter(ConditionsMap* m,
+                        const std::string& prefix="", 
                         int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
       /// Default destructor
       virtual ~ConditionsPrinter() = default;
       /// Set name for printouts
-      void setName(const std::string& value)    {  name = value;   }
+      void setName(const std::string& value)            {  name = value;       }
       /// Set prefix for printouts
-      void setPrefix(const std::string& value)  {  prefix = value; }
-      /// Callback to output conditions information
-      virtual int operator()(Condition cond)  override;
+      void setPrefix(const std::string& value)          {  prefix = value;     }
+      /// Actual print method
+      virtual int process(Condition cond)  override;
+      /// Processing callback to print conditions of a detector element
+      virtual int processElement(DetElement de)  override;
     };
-
   }    /* End namespace Conditions           */
 }      /* End namespace DD4hep               */
 #endif /* DD4HEP_DDCORE_CONDITIONSPRINTER_H  */

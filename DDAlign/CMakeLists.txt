@@ -9,7 +9,7 @@
 #
 #==========================================================================
 dd4hep_package(    DDAlign
-  USES             DDCore DDCond
+  USES             DDCore
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDAlign)
 
