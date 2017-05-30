@@ -23,10 +23,9 @@ namespace DD4hep {
 
 
     DD4hep::Geometry::VolumeManagerContext* CellIDPositionConverter::findContext(const CellID& cellID) const{
-
       return _volumeManager.lookupContext( cellID ) ;
     }
-
+    
 
     CellID CellIDPositionConverter::cellIDFromLocal(const Position& local, const VolumeID volID) const {
       double l[3];
@@ -96,51 +95,15 @@ namespace DD4hep {
       elementToGlobal.LocalToMaster(e, g);
 
 
+      // std::cout << " local " << local << " , " 
+      //  		<< "cellid: " << cell 
+      // 		<< " : " << r.idSpec().str( cell )
+      // 		<< " pv: " << pv.name() 
+      // 		<< std::endl ; 
 
-      std::cout << " local " << local << std::endl 
-		<< "cellid: " << std::hex << cell << std::dec
-		<< "\n  ---- volToElement: \n"  ;
-
-      volToElement.Print() ;
-
-      std::cout << "\n elementToGlobal : \n" ;
-      
-      elementToGlobal.Print() ;
-      
-
-      const TGeoMatrix& volToWorld = context->toWorld ;
-
-      std::cout << "\n volToWorld : \n" ;
-      volToWorld.Print() ;
-
-
-      //      volToWorld.LocalToMaster( l, g ) ;
-      
-
-      TGeoHMatrix myWorld = elementToGlobal ;
-      myWorld.Multiply( &volToElement ) ;
-
-      
-      std::cout << "\n myWorld : \n" ;
-      myWorld.Print() ;
-
-
-      
 
       return Position(g[0], g[1], g[2]);
     }
-    // Position CellIDPositionConverter::position(const CellID& cell) const {
-    //   double l[3];
-    //   double g[3];
-    //   DetElement det = this->detectorElement(cell);
-    //   Position local = this->findReadout(det).segmentation().position(cell);
-    //   local.GetCoordinates(l);
-    //   // FIXME: direct lookup of transformations seems to be broken
-    //   //const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cell);
-    //   const TGeoMatrix& localToGlobal = det.nominal().worldTransformation();
-    //   localToGlobal.LocalToMaster(l, g);
-    //   return Position(g[0], g[1], g[2]);
-    // }
 
     /*
      * Returns the local position from a given cell ID
