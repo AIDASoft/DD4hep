@@ -109,7 +109,7 @@ namespace DD4hep {
         /// Flag operations
         void setFlag(mask_type option)        {  flags |= option;                }
         void unFlag(mask_type option)         {  flags &= ~option;               }
-        bool testFlag(mask_type option) const {  return 0 != (flags&option);     }
+        bool testFlag(mask_type option) const {  return option == (flags&option);}
       };
 
     } /* End namespace Interna    */

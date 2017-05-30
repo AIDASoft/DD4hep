@@ -81,7 +81,7 @@ ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const 
       // Must IMMEDIATELY insert to handle inter-dependencies.
       ++num_callback;
       m_pool.insert(dep.detector, dep.target.item_key(), cond);
-      m_manager->registerUnlocked(m_iovPool, cond);
+      m_manager->registerUnlocked(*m_iovPool, cond);
     }
     return obj;
   }

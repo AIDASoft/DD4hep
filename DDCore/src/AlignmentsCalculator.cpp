@@ -22,6 +22,7 @@
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
+using Conditions::ConditionKey;
 typedef AlignmentsCalculator::Result Result;
 
 /// Namespace for the AIDA detector description toolkit
@@ -33,6 +34,7 @@ namespace DD4hep {
     /// Anonymous implementation classes
     namespace {
       static unsigned int alignment_hash = 0;
+      static unsigned int alignment_delta_hash = 0;
       static Delta        identity_delta;
 
       /// Alignment calculator.
@@ -234,12 +236,13 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;
+    cond->hash = ConditionKey(e.det,alignment_hash).hash;
     context.mapping.insert(e.det, alignment_hash, cond);
   }
-  if ( s_PRINT <= INFO )  {  
-    printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%16llX IOV:%s",
+  if ( s_PRINT <= INFO )  {
+    printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%16llX",
              det.level(), det.path().c_str(), det.key(),
-             yes_no(e.delta != 0), (long long int)cond.key(), cond.iov().str().c_str());
+             yes_no(e.delta != 0), (long long int)cond.key());
     if ( s_PRINT <= DEBUG )  {  
       ::printf("DetectorTrafo: '%s' -> '%s' ",det.path().c_str(), det.parent().path().c_str());
       det.nominal().detectorTransformation().Print();
@@ -270,6 +273,15 @@ unsigned int AlignmentsCalculator::alignment_item_key()   {
   return alignment_hash;
 }
 
+/// Access the default alignment name
+unsigned int AlignmentsCalculator::alignment_delta_item_key()   {
+  if ( 0 == alignment_delta_hash )  {
+    Conditions::ConditionKey k(0,"alignment_delta");
+    alignment_delta_hash = k.item_key();
+  }
+  return alignment_delta_hash;
+}
+
 /// Compute all alignment conditions of the internal dependency list
 Result AlignmentsCalculator::compute(const Deltas& deltas, Alignments& alignments)  const  {
   Result  result;
@@ -285,6 +297,7 @@ Result AlignmentsCalculator::compute(const Deltas& deltas, Alignments& alignment
     obj.resolve(context,i.first);
   for( auto& i : context.entries )
     result += obj.compute(context, i);
+#if 0
   for( auto& i : context.entries )   {
     if ( i.created )   {
       Conditions::Condition c(i.cond);
@@ -292,5 +305,6 @@ Result AlignmentsCalculator::compute(const Deltas& deltas, Alignments& alignment
       alignments.insert(DetElement(i.det), m.values.item_key, c);
     }
   }
+#endif
   return result;
 }

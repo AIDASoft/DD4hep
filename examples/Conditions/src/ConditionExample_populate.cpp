@@ -16,7 +16,7 @@
    This plugin behaves like a main program.
    Invoke the plugin with something like this:
 
-   geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_populate \
+   geoPluginRun -volmgr -destroy -plugin DD4hep_ConditionExample_populate \
    -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
 
    Populate the conditions store by hand for a set of IOVs.
@@ -80,16 +80,18 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
 
   /******************** Now as usual: create the slice ********************/
-  dd4hep_ptr<ConditionsSlice> slice(Conditions::createSlice(condMgr,*iov_typ));
-  ConditionsKeys(INFO).process(lcdd.world(),0,true);
-  ConditionsDependencyCreator(*slice,INFO).process(lcdd.world(),0,true);
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice> slice(new ConditionsSlice(condMgr,content));
+  slice->pool = condMgr.createUserPool(iov_typ);
+  ConditionsKeys(*content,INFO).process(lcdd.world(),0,true);
+  ConditionsDependencyCreator(*content,DEBUG).process(lcdd.world(),0,true);
 
   /******************** Populate the conditions store *********************/
   // Have 10 run-slices [11,20] .... [91,100]
   for(int i=0; i<num_iov; ++i)  {
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
     ConditionsPool*   iov_pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    ConditionsCreator creator(condMgr, iov_pool, INFO);  // Use a generic creator
+    ConditionsCreator creator(*slice, *iov_pool, INFO);  // Use a generic creator
     creator.process(lcdd.world(),0,true);                // Create conditions with all deltas
   }
   
@@ -99,7 +101,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     // Attach the proper set of conditions to the user pool
     ConditionsManager::Result r = condMgr.prepare(req_iov,*slice);
     if ( 0 == i )  { // First one we print...
-      ConditionsPrinter printer(slice->pool.get(),"Example");
+      ConditionsPrinter printer(slice.get(),"Example");
       Scanner().scan(printer,lcdd.world());
     }
     // Now compute the tranformation matrices

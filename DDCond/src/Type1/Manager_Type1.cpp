@@ -239,17 +239,14 @@ ConditionsIOVPool* Manager_Type1::iovPool(const IOVType& iov_type)  const    {
 }
 
 /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-bool Manager_Type1::registerUnlocked(ConditionsPool* pool, Condition cond)   {
-  if ( pool && cond.isValid() )  {
-    cond->iov  = pool->iov;
+bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
+  if ( cond.isValid() )  {
+    cond->iov  = pool.iov;
     cond->setFlag(Condition::ACTIVE);
-    pool->insert(cond);
+    pool.insert(cond);
     __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);
     return true;
   }
-  else if ( !pool )
-    except("ConditionsManager","+++ Unknown Conditions pool to register entry. [%s]",
-           Errors::invalidArg().c_str());
   else if ( !cond.isValid() )
     except("ConditionsManager","+++ Invalid condition objects may not be registered. [%s]",
            Errors::invalidArg().c_str());
@@ -453,3 +450,18 @@ Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice)
   /// Now update/fill the user pool
   return slice.pool->prepare(req_iov, slice);
 }
+
+/// Create empty user pool object
+std::unique_ptr<UserPool> Manager_Type1::createUserPool(const IOVType* iovT)  const  {
+  if ( iovT )  {
+    ConditionsIOVPool* p = m_rawPool[iovT->type];
+    const void* argv[] = {this, p, 0};
+    std::unique_ptr<UserPool> pool(createPlugin<UserPool>(m_userType,m_lcdd,2,argv));
+    return pool;
+  }
+  // Invalid IOV type. Throw exception
+  except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
+         Errors::invalidArg().c_str());
+  return std::unique_ptr<UserPool>();
+}
+

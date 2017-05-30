@@ -85,9 +85,10 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
 
   /******************** Now as usual: create the slice ********************/
-  dd4hep_ptr<ConditionsSlice> slice(Conditions::createSlice(condMgr,*iov_typ));
-  ConditionsKeys(DEBUG).process(lcdd.world(),0,true);
-  ConditionsDependencyCreator(*slice,DEBUG).process(lcdd.world(),0,true);
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice> slice(new ConditionsSlice(condMgr,content));
+  ConditionsKeys(*content,INFO).process(lcdd.world(),0,true);
+  ConditionsDependencyCreator(*content,DEBUG).process(lcdd.world(),0,true);
 
   TStatistic cr_stat("Creation"), acc_stat("Access");
   /******************** Populate the conditions store *********************/
@@ -96,7 +97,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     TTimeStamp start;
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
     ConditionsPool*   iov_pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    ConditionsCreator creator(condMgr, iov_pool, DEBUG);  // Use a generic creator
+    ConditionsCreator creator(*slice, *iov_pool, DEBUG);  // Use a generic creator
     creator.process(lcdd.world(),0,true);                 // Create conditions with all deltas
     TTimeStamp stop;
     cr_stat.Fill(stop.AsDouble()-start.AsDouble());

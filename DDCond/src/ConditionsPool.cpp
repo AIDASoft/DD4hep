@@ -27,7 +27,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsPool);
 
 /// Default constructor
 ConditionsPool::ConditionsPool(ConditionsManager mgr)
-  : NamedObject(), m_manager(mgr), iovType(0), iov(0), age_value(AGE_NONE)
+  : NamedObject(), m_manager(mgr), iov(0), age_value(AGE_NONE)
 {
   InstanceCount::increment(this);
 }
@@ -39,9 +39,15 @@ ConditionsPool::~ConditionsPool()   {
 }
 
 /// Print pool basics
+void ConditionsPool::print()   const  {
+  printout(INFO,"ConditionsPool","+++ Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
+           iov->str().c_str(), age_value, size());
+}
+
+/// Print pool basics
 void ConditionsPool::print(const string& opt)   const  {
   printout(INFO,"ConditionsPool","+++ %s Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
-	   opt.c_str(), iov->str().c_str(), age_value, size());
+           opt.c_str(), iov->str().c_str(), age_value, size());
 }
 
 /// Listener invocation when a condition is registered to the cache

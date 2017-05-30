@@ -19,6 +19,7 @@
 // C/C++ include files
 #include <climits>
 #include <iomanip>
+#include <cstdio>
 
 using namespace std;
 using namespace DD4hep::Conditions;
@@ -117,6 +118,16 @@ Condition::key_type Condition::key()  const    {
   return access()->hash;
 }
 
+/// DetElement part of the identifier
+unsigned int Condition::detector_key()  const   {
+  return ConditionKey::KeyMaker(access()->hash).values.det_key;
+}
+
+/// Item part of the identifier
+unsigned int Condition::item_key()  const   {
+  return ConditionKey::KeyMaker(access()->hash).values.item_key;
+}
+
 /// Access to the grammar type
 const DD4hep::BasicGrammar& Condition::descriptor() const   {
   const BasicGrammar* g = access()->data.grammar;
@@ -155,17 +166,30 @@ ConditionsSelect::~ConditionsSelect()   {
 ConditionKey::ConditionKey(DetElement detector, const string& value)  {
   KeyMaker m(detector.key(), hash32(value));
   hash = m.hash;
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+  name = detector.path()+"#"+value;
+#endif
 }
 
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(unsigned int det_key, const string& value)    {
   KeyMaker m(det_key, hash32(value));
   hash = m.hash;
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+  char text[32];
+  ::snprintf(text,sizeof(text),"%08X#",det_key);
+  name = text+value;
+#endif
 }
 
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(DetElement detector, unsigned int item_key)  {
   hash = KeyMaker(detector.key(),item_key).hash;
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+  char text[32];
+  ::snprintf(text,sizeof(text),"#%08X",item_key);
+  name = detector.path()+text;
+#endif
 }
 
 /// Hash code generation from input string
@@ -178,7 +202,7 @@ ConditionKey::key_type ConditionKey::hashCode(DetElement detector, const string&
   return KeyMaker(detector.key(), hash32(value)).hash;
 }
 
-      /// 32 bit hashcode of the item
+/// 32 bit hashcode of the item
 unsigned int ConditionKey::itemCode(const char* value)  {
   return hash32(value);
 }

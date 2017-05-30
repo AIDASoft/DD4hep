@@ -60,7 +60,7 @@ static int Alignment_to_Condition (Geometry::LCDD& , int argc, char** argv)  {
   }
 
   AlignmentCondition ac("alignment");
-  ac->hash = ConditionKey::hashCode(ac.name());
+  ac->hash = ConditionKey(0,ConditionKey::itemCode(ac.name())).hash;
   
   printout(INFO,"Example","Alignment condition:  \"%s\"  Key:%016llX",ac.name(),ac->hash);
   printout(INFO,"Example","Alignment condition ptr:  %p",ac.ptr());
@@ -73,14 +73,11 @@ static int Alignment_to_Condition (Geometry::LCDD& , int argc, char** argv)  {
   printout(INFO,"Example","Computed Pointer:         %p",(void*)((char*)con.ptr()+con->offset()));
   printout(INFO,"Example","Computed payload pointer: %p",(void*)con->payload());
 
-  Alignment align(&data);
+  Alignment align(ac);
   printout(INFO,"Example","Alignment object pointer: %p",(void*)align.ptr());
-  printout(INFO,"Example","Alignment key:            %016llX",align.key());
+  printout(INFO,"Example","Alignment key:            %016llX",ac.key());
   printout(INFO,"Example","Condition key:            %016llX",con.key());
 
-  Condition c(data.condition);
-  printout(INFO,"Example","Condition ptr from alignment:  %p",(void*)c.ptr());
-  
   return 1;
 }
 

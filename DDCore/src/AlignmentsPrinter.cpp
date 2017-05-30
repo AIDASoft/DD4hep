@@ -14,6 +14,7 @@
 // Framework includes
 #include "DD4hep/Printout.h"
 #include "DD4hep/AlignmentsPrinter.h"
+#include "DD4hep/AlignmentsProcessor.h"
 #include "DD4hep/objects/AlignmentsInterna.h"
 
 // C/C++ include files
@@ -25,8 +26,8 @@ using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
 /// Initializing constructor
-AlignmentsPrinter::AlignmentsPrinter(const string& pref, int flg)
-  : Alignment::Processor(), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
+AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* m, const string& pref, int flg)
+  : Alignment::Processor(), mapping(m), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
 {
 }
 
@@ -35,6 +36,24 @@ int AlignmentsPrinter::operator()(Alignment a)    {
   printAlignment(printLevel, name, a);
   return 1;
 }
+
+
+/// Processing callback to print alignments
+int AlignmentsPrinter::processElement(DetElement de)   {
+  DetElementAlignmentsCollector select(de);
+  if ( mapping )   {
+    mapping->scan(select);
+    printout(this->printLevel, name, "++ %s %-3ld Alignments for DE %s",
+             prefix.c_str(), select.alignments.size(), de.path().c_str()); 
+    for( auto alignment : select.alignments )
+      (*this)(alignment);
+    return int(select.alignments.size());
+  }
+  except(name,"Failed to dump conditions for DetElement:%s [No slice availible]",
+         de.path().c_str());
+  return 0;
+}
+
 
 /// Default printout of an alignment entry
 void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix, Alignment a)   {
@@ -163,9 +182,23 @@ void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix,
   printout(PrintLevel(lvl-1),tag,"++ %s: P8(x,y,z) %s", opt.c_str(), _transformPoint2Detector(align_data, p8).c_str());
 }
 
-#if 0
+/// Default printout of a detector element entry
+void DD4hep::Alignments::printElement(PrintLevel prt_level, const string& prefix, DetElement de, ConditionsMap& pool)   {
+  string tag = prefix+"Element";
+  if ( de.isValid() )  {
+    DetElementAlignmentsCollector select(de);
+    pool.scan(select);
+    printout(prt_level,tag,"++ Alignments of DE %s [%d entries]",
+             de.path().c_str(), int(select.alignments.size()));
+    for(const auto& align : select.alignments )
+      printAlignment(prt_level, prefix, align);
+    return;
+  }
+  except(tag,"Cannot process alignments of an invalid detector element");
+}
+
 /// PrintElement placement with/without alignment applied
-void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& prefix, DetElement de, UserPool* pool)
+void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& prefix, DetElement de, ConditionsMap& pool)
 {
   using Geometry::Box;
   using Geometry::Solid;
@@ -173,47 +206,34 @@ void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& pre
   using Geometry::PlacedVolume;
   string tag = prefix+"Element";
   if ( de.isValid() )  {
-    if ( pool )  {
-      char text[132];
-      DetAlign     a(de);
-      Container    container = a.alignments();
-      Alignment    nominal = de.nominal();
-      Box bbox = de.placement().volume().solid();
-      ::memset(text,'=',sizeof(text));
-      text[sizeof(text)-1] = 0;
-      printout(lvl, tag, text);
-      printout(lvl, tag, "++ Alignments of DE %s [%d entries]",
-               de.path().c_str(), int(container.keys().size()));
-      printout(lvl, tag, "++ Volume: %s  BBox: x=%7.3f y=%7.3f z=%7.3f",
-               bbox.type(), bbox.x(), bbox.y(), bbox.z());
-      printAlignmentEx(lvl, tag, "NOMINAL", de, nominal);
+    char text[132];
+    Alignment    nominal = de.nominal();
+    Box bbox = de.placement().volume().solid();
+    DetElementAlignmentsCollector select(de);
 
-      for(const auto& k : container.keys() )  {
-        try {
-          Alignment align = container.get(k.first,*pool);
-          const AlignmentData& align_data = align.data();
-          Conditions::Condition  align_cond = align_data.condition;
-          if ( k.first != k.second.first )  {
-            printout(lvl, tag, "++ Alignment %p [%16llX] -> [%16llX] %s (SYNONYM) ignored.",
-                     a.ptr(), k.first, k.second.first, k.second.second.c_str());
-            continue;
-          }
-          printout(lvl, tag, "++ Alignment %p [%16llX] -> [%16llX] %s",
-                   a.ptr(), k.first, k.second.first, k.second.second.c_str());
-          if ( k.second.second != align_cond.name() )  {
-            printout(lvl, prefix, "++ \tPath:%s [%p]", align_cond.name(), a.ptr());
-          }
-          printAlignmentEx(lvl, tag, "ALIGNMENT", de, align);
-        }
-        catch(...)  {
-          printout(ERROR, tag, "++ %s %s [%16llX] -> [%16llX]",
-                   prefix.c_str(), "FAILED Alignment:", k.first, k.second.first);
-        }
+    pool.scan(select);
+    ::memset(text,'=',sizeof(text));
+    text[sizeof(text)-1] = 0;
+    printout(lvl, tag, text);
+    printout(lvl, tag, "++ Alignments of DE %s [%d entries]",
+             de.path().c_str(), int(select.alignments.size()));
+    printout(lvl, tag, "++ Volume: %s  BBox: x=%7.3f y=%7.3f z=%7.3f",
+             bbox.type(), bbox.x(), bbox.y(), bbox.z());
+    printAlignment(lvl, tag, "NOMINAL", de, nominal);
+
+    for(const auto& align : select.alignments )  {
+      AlignmentCondition cond(align);
+      try {
+        printout(lvl, tag, "++ Alignment %p [%16llX]", align.ptr(), cond.key());
+        printout(lvl, prefix, "++ \tPath:%s [%p]", cond.name(), align.ptr());
+        printAlignment(lvl, tag, "ALIGNMENT", de, align);
       }
-      return;
+      catch(...)  {
+        printout(ERROR, tag, "++ %s %s [%16llX]",
+                 prefix.c_str(), "FAILED Alignment:", cond.key());
+      }
     }
-    except(tag, "Cannot process DetElement alignments from '%s' without valid user-pool", de.name());
+    return;
   }
   except(tag, "Cannot process alignments of an invalid detector element");
 }
-#endif

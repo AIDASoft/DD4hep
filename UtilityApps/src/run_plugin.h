@@ -61,7 +61,7 @@ namespace {
       return 0;
     }
     catch(const exception& e)  {
-      except("RunPlugin","++ Exception while executing plugin %s: %s",
+      except("RunPlugin","++ Exception while executing plugin %s:\n\t\t%s",
              name ? name : "<unknown>", e.what());
     }
     catch(...)  {

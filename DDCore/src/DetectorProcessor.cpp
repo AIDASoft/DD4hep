@@ -30,10 +30,11 @@ int DetectorProcessor::operator()(DetElement de, int /* level */)    {
 /// Callback to output detector information of an entire DetElement
 int DetectorProcessor::process(DetElement de, int level, bool recursive)    {
   if ( de.isValid() )  {
-    int ret = 1;
-    (*this)(de, level);
-    for (const auto& c : de.children() )
-      ret += process(c.second,level+1,recursive);
+    int ret = (*this)(de, level);
+    if ( recursive )  {
+      for (const auto& c : de.children() )
+        ret += process(c.second,level+1,recursive);
+    }
     return ret;
   }
   except("Detector","Cannot process an invalid detector element");

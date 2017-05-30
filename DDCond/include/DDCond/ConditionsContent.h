@@ -107,21 +107,21 @@ namespace DD4hep {
       void clear();
       /// Remove a condition from the content
       bool remove(key_type condition);
-      /// Add a new shared conditions dependency
-      bool insert(ConditionDependency* dep)   {
-        bool ret = m_derived.insert(std::make_pair(dep->key(),dep)).second;
-        if ( ret ) dep->addRef();
-        return ret;
-      }
       /// Add a new conditions key representing a real (not derived) condition
-      template <typename T> bool insert(key_type key)   {
-        return m_conditions.insert(std::make_pair(key,(ConditionsLoadInfo*)0));
+      bool insertKey(key_type hash)   {
+        return m_conditions.insert(std::make_pair(hash,(ConditionsLoadInfo*)0)).second;
       }
       /// Add a new conditions key. T must inherit from class ConditionsContent::Info
-      template <typename T> bool insert(key_type key, const T& info)   {
+      template <typename T> bool insertKey(key_type hash, const T& info)   {
         ConditionsLoadInfo* i = new LoadInfo<T>(info);
-        bool ret = m_conditions.insert(std::make_pair(key,i)).second;
+        bool ret = m_conditions.insert(std::make_pair(hash,i)).second;
         if ( !ret ) delete i;
+        return ret;
+      }
+      /// Add a new shared conditions dependency
+      bool insertDependency(ConditionDependency* dep)   {
+        bool ret = m_derived.insert(std::make_pair(dep->key(),dep)).second;
+        if ( ret ) dep->addRef();
         return ret;
       }
       /// Create load-info object

@@ -64,8 +64,6 @@ namespace DD4hep {
              AGE_ANY     = 9999999,
              AGE_EXPIRED = 12345678
       };
-      /// IOV type of the conditions hosted by this pool
-      const IOVType*   iovType;
       /// The IOV of the conditions hosted
       IOV*             iov;
       /// Aging value
@@ -82,6 +80,8 @@ namespace DD4hep {
       ConditionsPool(ConditionsManager mgr);
       /// Default destructor. Note: pool must be cleared by the subclass!
       virtual ~ConditionsPool();
+      /// Print pool basics
+      void print()   const;
       /// Print pool basics
       void print(const std::string& opt)   const;
       /// Total entry count
@@ -149,6 +149,19 @@ namespace DD4hep {
       ConditionsManager   m_manager;
 
     public:
+      /// Printout flags for debugging
+      enum {
+        PRINT_NONE   = 0,
+        PRINT_INSERT = 1<<0,
+        PRINT_CLEAR  = 1<<1
+      };
+      /// Processing flags (printout etc.)
+      unsigned int flags = 0;
+
+      /// ConditionsMap overload: Add a condition directly to the slice
+      virtual bool insert(Condition condition) = 0;
+
+    public:
       /// Default constructor
       UserPool(ConditionsManager mgr);
       /// Default destructor.
@@ -175,8 +188,6 @@ namespace DD4hep {
       virtual bool remove(key_type hash_key) = 0;
       /// Remove condition by key from pool.
       virtual bool remove(const ConditionKey& key) = 0;
-      /// Register a new condition to this pool
-      //virtual bool insert(Condition cond) = 0;
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(DetElement detector, unsigned int key, Condition condition) = 0;
       /// ConditionsMap overload: Access a condition

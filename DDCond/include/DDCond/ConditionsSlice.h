@@ -55,16 +55,50 @@ namespace DD4hep {
       typedef Condition::key_type                key_type;
       typedef std::shared_ptr<ConditionsContent> Content;
 
+      enum ManageFlag {
+        REGISTER_MANAGER= 1<<0,
+        REGISTER_POOL   = 1<<1,
+        REGISTER_FULL   = REGISTER_MANAGER|REGISTER_POOL
+      };
+      
+      /// Helper to simplify the registration of new condtitions from arbitrary containers.
+      /**
+       *
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Inserter  {
+        ConditionsSlice& slice;
+        ConditionsPool*  iov_pool = 0;
+
+      public:
+        Inserter(ConditionsSlice& s) : slice(s) {
+          const IOV& iov = s.pool->validity();
+          iov_pool = s.manager.registerIOV(*iov.iovType,iov.key());
+        }
+        void operator()(Condition c) const  {
+          slice.manager.registerUnlocked(*iov_pool,c);
+          slice.pool->insert(c);
+        }
+        void operator()(const std::pair<Condition::key_type,Condition>& e) const  {
+          (*this)(e.second);
+        }
+        template <typename T> void process(const T& data)  const   {
+          std::for_each(std::begin(data), std::end(data), *this);
+        }
+      };
+
     public:
       /// Reference to the conditions manager.
       /** Not used by the object, simple for convenience.
        *  Then all actors are lumped together, which are used by the client code.
        */
-      ConditionsManager    manager;
+      ConditionsManager         manager;
       /// Reference to the user pool managing all conditions of this slice
       std::unique_ptr<UserPool> pool;
       /// Container of conditions required by this slice
-      Content              content;
+      Content                   content;
 
     protected:
       /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
@@ -75,21 +109,49 @@ namespace DD4hep {
       /// Default assignment operator
       ConditionsSlice& operator=(const ConditionsSlice& copy) = delete;
 
+      /// Local optimization: Insert a set of conditions to the slice AND register them to the conditions manager.
+      /** Note: The conditions already require a valid hash key                           */
+      virtual bool manage(ConditionsPool* pool, Condition condition, ManageFlag flg);
+
+      static Condition select_cond(Condition c)  {  return c; }
+      template <typename T>
+      static Condition select_cond(const std::pair<T,Condition>& c)  {  return c.second; }
     public:
       /// Default constructor
       ConditionsSlice() = delete;
       /// Initializing constructor
       ConditionsSlice(ConditionsManager m);
+      /// Initializing constructor
+      ConditionsSlice(ConditionsManager m, Content c);
       /// Copy constructor (Special, partial copy only. Hence no assignment!)
       ConditionsSlice(const ConditionsSlice& copy);
       /// Default destructor. 
       virtual ~ConditionsSlice();
+      size_t size() const  {  return content->conditions().size()+content->derived().size(); }
+      /// Access the map of conditions from the desired content
+      const ConditionsContent::Conditions& conditions() const { return content->conditions();}
+      /// Access the map of computational conditions from the desired content
+      const ConditionsContent::Dependencies& derived() const  { return content->derived();   }
       /// Access the map of missing conditions (only valid after preparation)
-      ConditionsContent::Conditions& missingConditions()  { return m_missingConditions; }
+      ConditionsContent::Conditions& missingConditions()      { return m_missingConditions;  }
       /// Access the map of missing computational conditions (only valid after preparation)
-      ConditionsContent::Dependencies& missingDerivations() { return m_missingDerivations;}
+      ConditionsContent::Dependencies& missingDerivations()   { return m_missingDerivations; }
       /// Clear the conditions content and the user pool.
       void reset();
+      /// Insert a set of conditions to the slice AND register them to the conditions manager.
+      /** Note: The conditions already require a valid hash key                           */
+      template <typename T> void manage(const T& conds, ManageFlag flg)  {
+        if ( !conds.empty() )  {
+          ConditionsPool* p = (flg&REGISTER_MANAGER) ? manager.registerIOV(pool->validity()) : 0;
+          for( const auto& e : conds )
+            manage(p, select_cond(e), flg);
+        }
+      }
+      /// Insert a set of conditions to the slice AND register them to the conditions manager.
+      /** Note: The conditions already require a valid hash key                           */
+      virtual bool manage(Condition condition, ManageFlag flg);
+
+      /** ConditionsMap interface implementation:                                         */
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(DetElement detector, unsigned int key, Condition condition);
       /// ConditionsMap overload: Access a condition
@@ -99,7 +161,8 @@ namespace DD4hep {
     };
 
     /// Populate the conditions slice from the conditions manager (convenience)
-    ConditionsSlice* createSlice(ConditionsManager mgr, const IOVType& typ);
+    void fill_content(ConditionsManager mgr, ConditionsContent& content, const IOVType& typ);
+
   }        /* End namespace Conditions               */
 }          /* End namespace DD4hep                   */
 #endif     /* DD4HEP_DDCOND_CONDITIONSSLICE_H        */

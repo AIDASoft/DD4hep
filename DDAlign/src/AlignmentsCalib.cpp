@@ -38,6 +38,7 @@ namespace {
 class AlignmentsCalib::Entry   {
 public:
   Delta       delta;
+  Delta       original;
   Condition   source;
   DetElement  detector;
   key_type    target = 0;
@@ -78,7 +79,7 @@ AlignmentsCalib::_set(DetElement detector, const Delta& delta)  {
     // Try to create a new condition and register it to the
     // conditions manager from the delta value.
     ConditionKey key(detector, align_delta_hash);
-    src_cond = Condition(align_delta_name,align_delta_name);
+    src_cond = Condition(detector.path()+"#"+align_delta_name,align_delta_name);
     src_cond.bind<Delta>();
     src_cond->setFlag(Condition::ALIGNMENT_DELTA);
     src_cond->hash = key.hash;
@@ -94,6 +95,7 @@ AlignmentsCalib::_set(DetElement detector, const Delta& delta)  {
   }
   // Add the entry the usual way. This should also check everything again.
   dd4hep_ptr<Entry>  entry(new Entry());
+  entry->original = src_cond.get<Delta>();
   entry->delta    = delta;
   entry->detector = detector;
   entry->source   = src_cond;
@@ -124,7 +126,10 @@ void AlignmentsCalib::clearDeltas()   {
 
 /// Clear all pending entries in the working cache
 void AlignmentsCalib::clear()   {
-  for(auto& e : used) delete e.second;
+  for(auto& e : used)   {
+    e.second->source.get<Delta>() = e.second->delta;
+    delete e.second;
+  }
   used.clear();
 }
 

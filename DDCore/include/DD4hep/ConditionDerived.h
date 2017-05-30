@@ -181,17 +181,15 @@ namespace DD4hep {
 
     protected:
       /// Copy constructor
-      ConditionDependency(const ConditionDependency& c);
+      ConditionDependency(const ConditionDependency& c) = delete;
       /// Assignment operator
-      ConditionDependency& operator=(const ConditionDependency& c);
+      ConditionDependency& operator=(const ConditionDependency& c) = delete;
       /// Default destructor
       virtual ~ConditionDependency();
 
     public:
-      /// Initializing constructor
-      ConditionDependency(const ConditionKey& tar, const Dependencies deps, ConditionUpdateCall* call);
       /// Initializing constructor used by builder
-      ConditionDependency(const ConditionKey& tar, ConditionUpdateCall* call);
+      ConditionDependency(Geometry::DetElement de, unsigned int item_key, ConditionUpdateCall* call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
@@ -216,15 +214,13 @@ namespace DD4hep {
       ConditionDependency* m_dependency;
     public:
       /// Initializing constructor
-      DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call);
-      /// Initializing constructor
-      DependencyBuilder(const ConditionKey& target, ConditionUpdateCall* call, Geometry::DetElement de);
+      DependencyBuilder(Geometry::DetElement de, unsigned int item_key, ConditionUpdateCall* call);
       /// Default destructor
       virtual ~DependencyBuilder();
       /// Access underlying object directly
-      ConditionDependency* operator->()            {   return m_dependency;   }
+      ConditionDependency* operator->()  {   return m_dependency; }
       /// Add a new dependency
-      void add(const ConditionKey& source);
+      void add(const ConditionKey& source_key);
       /// Release the created dependency and take ownership.
       ConditionDependency* release();
     };

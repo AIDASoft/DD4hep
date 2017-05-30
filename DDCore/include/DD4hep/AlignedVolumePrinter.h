@@ -10,13 +10,12 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
-#define DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
+#ifndef DD4HEP_DDCORE_ALIGNEDVOLUMEPRINTER_H
+#define DD4HEP_DDCORE_ALIGNEDVOLUMEPRINTER_H
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Alignments.h"
+#include "DD4hep/AlignmentsProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -35,10 +34,8 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class AlignmentsPrinter : public Alignment::Processor, public DetElement::Processor  {
+    class AlignedVolumePrinter : public AlignmentsProcessor  {
     public:
-      /// Conditionsmap to resolve things
-      ConditionsMap* mapping;
       /// Printer name. Want to know who is printing what
       std::string   name;
       /// Printout prefix
@@ -51,31 +48,18 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      AlignmentsPrinter(ConditionsMap* m, const std::string& prefix="",int flags=0);
+      AlignedVolumePrinter(ConditionsMap* map, const std::string& prefix="",int flags=0);
       /// Default destructor
-      virtual ~AlignmentsPrinter() = default;
+      virtual ~AlignedVolumePrinter() = default;
       /// Set name for printouts
       void setName(const std::string& value)    {  name = value;   }
       /// Set prefix for printouts
       void setPrefix(const std::string& value)  {  prefix = value; }
       /// Callback to output alignments information
       virtual int operator()(Alignment cond)  override;
-      /// Processing callback to print alignments of a detector element
+      /// Callback to output alignments information of an entire DetElement
       virtual int processElement(DetElement de)  override;
     };
-
-    /// Default printout of an alignment entry
-    void printAlignment(PrintLevel prt_level, const std::string& prefix, Alignment alignment);
-
-    void printAlignment(PrintLevel lvl, const std::string& prefix,
-                        const std::string& opt, DetElement de, Alignment alignment);
-
-    /// Default printout of a detector element entry
-    void printElement(PrintLevel prt_level, const std::string& prefix, DetElement element, ConditionsMap& pool);
-
-    /// PrintElement placement with/without alignment applied
-    void printElementPlacement(PrintLevel prt_level, const std::string& prefix, DetElement detector, ConditionsMap& pool);
-
-  }    /* End namespace Alignments           */
-}      /* End namespace DD4hep               */
-#endif /* DD4HEP_DDCORE_ALIGNMENTSPRINTER_H  */
+  }    /* End namespace Alignments              */
+}      /* End namespace DD4hep                  */
+#endif /* DD4HEP_DDCORE_ALIGNEDVOLUMEPRINTER_H  */

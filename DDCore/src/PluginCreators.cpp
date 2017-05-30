@@ -19,6 +19,7 @@
 
 // C/C++ include files
 #include <cstring>
+//#include <dlfcn.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -43,10 +44,11 @@ namespace DD4hep {
         processor = PluginService::Create<void*>(fac,&lcdd,num_arg,&args[0]);
         if ( !processor ) {
           PluginDebug dbg;
-          processor = PluginService::Create<void*>(fac, &lcdd, argc, argv);
+          processor = PluginService::Create<void*>(fac,&lcdd,num_arg,&args[0]);
           if ( !processor )  {
-            except("createProcessor","DD4hep-plugins: Failed to locate plugin %s. \n%s.",
-                   fac.c_str(), dbg.missingFactory(fac).c_str());
+            except("createProcessor","DD4hep-plugins: Failed to locate plugin %s. \n%s %s",
+                   fac.c_str(), dbg.missingFactory(fac).c_str(),
+                   /* ::dlerror() ? ::dlerror() : */ "");
           }
         }
         if ( cast )   {

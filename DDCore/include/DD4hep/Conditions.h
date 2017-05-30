@@ -21,6 +21,8 @@
 // C/C++ include files
 #include <vector>
 
+#define DD4HEP_CONDITIONKEY_HAVE_NAME 1
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
@@ -111,10 +113,14 @@ namespace DD4hep {
         Processor();
         /// Default destructor
         virtual ~Processor() = default;
+        /// Processing callback
+        virtual int process(Condition c) = 0;
         /// Conditions callback for object processing
-        virtual int operator()(Condition c) = 0;
+        virtual int operator()(Condition c)
+        {  return this->process(c);         }
         /// Conditions callback for object processing in maps
-        virtual int operator()(const std::pair<Condition::key_type,Condition>& c) = 0;
+        virtual int operator()(const std::pair<Condition::key_type,Condition>& e)
+        {  return this->process(e.second);  }
       };
 
       /// Default constructor
@@ -164,6 +170,10 @@ namespace DD4hep {
       const BasicGrammar& descriptor() const;
       /// Hash identifier
       key_type key()  const;
+      /// DetElement part of the identifier
+      unsigned int detector_key()  const;
+      /// Item part of the identifier
+      unsigned int item_key()  const;
       
       /** Conditions handling */
       /// Re-evaluate the conditions data according to the previous bound type definition
@@ -193,90 +203,6 @@ namespace DD4hep {
     inline Condition::Condition(Condition::Object* p) : Handle<Condition::Object>(p)  {
     }
 
-    /// Conditions selector functor. Default implementation selects everything evaluated.
-    /**
-     *  Please note:
-     *  This class should never be directly instantiated by the user.
-     *  A typical use-case is to do so in a wrapper class, which contains a refernce
-     *  to a counter object, which in turn allows to deduce information from the
-     *  processed objects.
-     *
-     *  See class ConditionsSelectWrapper below
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    class ConditionsSelect   {
-    protected:
-      /// Default constructor
-      ConditionsSelect() = default;
-      /// Copy constructor
-      ConditionsSelect(const ConditionsSelect& copy) = default;
-      /// Default destructor. 
-      virtual ~ConditionsSelect();
-      /// Default assignment operator
-      ConditionsSelect& operator=(const ConditionsSelect& copy) = default;
-
-    public:
-      /// Selection callback: return true if the condition should be selected
-      bool operator()(Condition cond)  const  { return (*this)(cond.ptr()); }
-      /// Selection callback: return true if the condition should be selected
-      bool operator()(std::pair<Condition::key_type,Condition::Object*> cond) const
-      /** Arg is 2 longwords. No need to pass by reference.                      */
-      { return (*this)(cond.second);            }
-      /// Selection callback: return true if the condition should be selected
-      /** Arg is 2 longwords. No need to pass by reference.                      */
-      bool operator()(std::pair<Condition::key_type,Condition> cond) const
-      { return (*this)(cond.second.ptr());      }
-
-      /// Overloadable entry: Return number of conditions selected. Default does nothing....
-      virtual size_t size()  const  { return 0; }
-      /// Overloadable entry: Selection callback: return true if the condition should be selected
-      virtual bool operator()(Condition::Object* cond) const = 0;
-    };
-
-    /// Conditions selector functor. Wraps a user defined object by reference
-    /**
-     *  Example usage for the slow ones:
-     *
-     *  class MyCounter : public ConditionsSelectWrapper<long> {
-     *    MyCounter(long& cnt) : ConditionsSelectWrapper<long>(cnt) {}
-     *    virtual bool operator()(Condition::Object* cond) const { if ( cond != 0 ) ++object; }
-     *    // Optionally overload: virtual size_t size()  const  { return object; }
-     *  };
-     *  
-     *  long counter = 0;
-     *  for_each(std::begin(conditons), std::end(conditions), MyCounter(counter));
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    template <typename OBJECT> class ConditionsSelectWrapper : public ConditionsSelect {
-    private:
-      /// Default constructor
-      ConditionsSelectWrapper() = delete;
-      /// Default assignment operator
-      bool operator==(const ConditionsSelectWrapper& compare) = delete;
-
-    public:
-      /// Information collector type
-      typedef OBJECT object_t;
-      /// Reference to the infomation collector
-      object_t& object;
-
-    public:
-      /// Default constructor
-      ConditionsSelectWrapper(object_t& o) : ConditionsSelect(), object(o) {}
-      /// Copy constructor
-      ConditionsSelectWrapper(const ConditionsSelectWrapper& copy) = default;
-      /// Default destructor. 
-      virtual ~ConditionsSelectWrapper() = default;
-      /// Default assignment operator
-      ConditionsSelectWrapper& operator=(const ConditionsSelectWrapper& copy) = default;
-    };
-
     
     /// Key definition to optimize ans simplyfy the access to conditions entities
     /**
@@ -288,8 +214,10 @@ namespace DD4hep {
     public:
       /// Forward definition of the key type
       typedef Condition::key_type      key_type;
+#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
       /// Optional string identifier. Helps debugging a lot!
       std::string  name;
+#endif
       /// Hashed key representation
       key_type     hash = 0;
 
@@ -391,6 +319,91 @@ namespace DD4hep {
     /// Operator less (for map insertions) using hash value
     inline bool ConditionKey::operator<(const key_type compare)  const
     {  return hash < compare;                                  }
+
+
+    /// Conditions selector functor. Default implementation selects everything evaluated.
+    /**
+     *  Please note:
+     *  This class should never be directly instantiated by the user.
+     *  A typical use-case is to do so in a wrapper class, which contains a refernce
+     *  to a counter object, which in turn allows to deduce information from the
+     *  processed objects.
+     *
+     *  See class ConditionsSelectWrapper below
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionsSelect   {
+    protected:
+      /// Default constructor
+      ConditionsSelect() = default;
+      /// Copy constructor
+      ConditionsSelect(const ConditionsSelect& copy) = default;
+      /// Default destructor. 
+      virtual ~ConditionsSelect();
+      /// Default assignment operator
+      ConditionsSelect& operator=(const ConditionsSelect& copy) = default;
+
+    public:
+      /// Selection callback: return true if the condition should be selected
+      bool operator()(Condition cond)  const  { return (*this)(cond.ptr()); }
+      /// Selection callback: return true if the condition should be selected
+      bool operator()(std::pair<Condition::key_type,Condition::Object*> cond) const
+      /** Arg is 2 longwords. No need to pass by reference.                      */
+      { return (*this)(cond.second);            }
+      /// Selection callback: return true if the condition should be selected
+      /** Arg is 2 longwords. No need to pass by reference.                      */
+      bool operator()(std::pair<Condition::key_type,Condition> cond) const
+      { return (*this)(cond.second.ptr());      }
+
+      /// Overloadable entry: Return number of conditions selected. Default does nothing....
+      virtual size_t size()  const  { return 0; }
+      /// Overloadable entry: Selection callback: return true if the condition should be selected
+      virtual bool operator()(Condition::Object* cond) const = 0;
+    };
+
+    /// Conditions selector functor. Wraps a user defined object by reference
+    /**
+     *  Example usage for the slow ones:
+     *
+     *  class MyCounter : public ConditionsSelectWrapper<long> {
+     *    MyCounter(long& cnt) : ConditionsSelectWrapper<long>(cnt) {}
+     *    virtual bool operator()(Condition::Object* cond) const { if ( cond != 0 ) ++object; }
+     *    // Optionally overload: virtual size_t size()  const  { return object; }
+     *  };
+     *  
+     *  long counter = 0;
+     *  for_each(std::begin(conditons), std::end(conditions), MyCounter(counter));
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    template <typename OBJECT> class ConditionsSelectWrapper : public ConditionsSelect {
+    private:
+      /// Default constructor
+      ConditionsSelectWrapper() = delete;
+      /// Default assignment operator
+      bool operator==(const ConditionsSelectWrapper& compare) = delete;
+
+    public:
+      /// Information collector type
+      typedef OBJECT object_t;
+      /// Reference to the infomation collector
+      object_t& object;
+
+    public:
+      /// Default constructor
+      ConditionsSelectWrapper(object_t& o) : ConditionsSelect(), object(o) {}
+      /// Copy constructor
+      ConditionsSelectWrapper(const ConditionsSelectWrapper& copy) = default;
+      /// Default destructor. 
+      virtual ~ConditionsSelectWrapper() = default;
+      /// Default assignment operator
+      ConditionsSelectWrapper& operator=(const ConditionsSelectWrapper& copy) = default;
+    };
 
     // Utility type definitions
     typedef std::vector<Condition>          RangeConditions;
