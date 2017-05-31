@@ -22,6 +22,7 @@
 // Framework includes
 #include "DD4hep/Printout.h"
 #include "DD4hep/ConditionsData.h"
+#include "DDCond/ConditionsSlice.h"
 #include "DD4hep/ConditionsPrinter.h"
 
 using namespace std;
@@ -89,13 +90,13 @@ namespace DD4hep {
       
     public:
       typedef Conditions::Condition Condition;
-      typedef Conditions::Container Container;
       /// No default constructor
       ConditionPrinter() = delete;
       /// No copy constructor
       ConditionPrinter(const ConditionPrinter& copy) = delete;
       /// Initializing constructor
-      ConditionPrinter(const std::string& prefix, 
+      ConditionPrinter(Conditions::ConditionsMap* m,
+                       const std::string& prefix, 
                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS,
                        ParamPrinter* prt=0);
       /// Default destructor
@@ -108,7 +109,7 @@ namespace DD4hep {
       /// Set prefix for prinouts
       void setPrefix(const std::string& value)  {  m_prefix = value; }
       /// Callback to output conditions information
-      virtual int operator()(Condition condition);
+      virtual int process(Condition condition);
     };
 
   } /* End namespace DDDB    */

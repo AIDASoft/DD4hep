@@ -38,8 +38,9 @@ namespace {
   PrintLevel s_PrintLevel = INFO;
 }
 
+//==========================================================================
 /// Plugin function
-static long dddb_plugin_print_level(LCDD& /* lcdd */, int argc, char** argv) {
+static long dddb_plugin_print_level(Geometry::LCDD& /* lcdd */, int argc, char** argv) {
   for(int i=0; i<argc; ++i)  {
     if ( ::strcmp(argv[i],"--print")==0 )  {
       s_PrintLevel = DD4hep::printLevel(argv[++i]);
@@ -51,79 +52,7 @@ static long dddb_plugin_print_level(LCDD& /* lcdd */, int argc, char** argv) {
 }
 DECLARE_APPLY(DDDB_PluginLevel,dddb_plugin_print_level)
 
-/// Plugin function
-static long dddb_dump_conditions(LCDD& lcdd, int , char** ) {
-  const void* args[] = { "-processor", "DDDB_ConditionsPrinter", "-prefix", "DDDB", "-printlevel", "INFO", "-end-processor", 0};
-  lcdd.apply("DD4hep_ConditionsDump", 7, (char**)args);
-  return 1;
-}
-DECLARE_APPLY(DDDB_ConditionsDump,dddb_dump_conditions)
 //==========================================================================
-/// Plugin function
-static long dddb_dump_conditions_summary(LCDD& lcdd, int , char** ) {
-  const void* args[] = { "-processor", "DDDB_ConditionsPrinter", "-prefix", "DDDB", "-printlevel", "DEBUG", "-end-processor", 0};
-  lcdd.apply("DD4hep_ConditionsDump", 7, (char**)args);
-  return 1;
-}
-DECLARE_APPLY(DDDB_ConditionsSummary,dddb_dump_conditions_summary)
-//==========================================================================
-
-
-/// Anonymous namespace for plugins
-namespace {
-
-  /// Basic entry point to print out the detector element hierarchy
-  /**
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
-   */
-  long dddb_map_condition_keys2detelements(LCDD& lcdd, int /* argc */, char** /* argv */) {
-
-    using DDDB::Catalog;
-    using Geometry::DetElement;
-
-    /// Callback object to recursively register all conditions to detector elements.
-    /** Register all conditions to the corresponding detector elements
-     *  in the geometry to the Conditons manager object.
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    01/04/2014
-     */
-    struct Actor {
-
-      /// Recursive callback
-      long operator()(DetElement de)  {
-        const DetElement::Children& c = de.children();
-        Conditions::DetConditions dc(de);
-        Conditions::Container::Object* conditions = dc.conditions().ptr();
-        try  {
-          Catalog* cat = de.extension<Catalog>();
-          if ( !cat->condition.empty() )  {
-            conditions->addKey(cat->condition);
-            conditions->addKey("Alignment", cat->condition);
-          }
-          for(const auto& i : cat->conditioninfo )  {
-            const string& cond_name = i.second;
-            conditions->addKey(cond_name);
-            conditions->addKey(i.first, cond_name);
-          }
-        }
-        catch(...)   {
-        }
-        for (const auto& i : c )
-          (*this)(i.second);
-        return 1;
-      }
-    };
-    return Actor()(lcdd.world());
-  }
-} /* End anonymous namespace  */
-
-DECLARE_APPLY(DDDB_AssignConditionsKeys,dddb_map_condition_keys2detelements)
-//==========================================================================
-
 /// Anonymous namespace for plugins
 namespace {
 
@@ -184,7 +113,7 @@ namespace {
 
       /// Standard constructor
       DumpActor(LCDD& l, int flg, bool sens, bool dmp)
-        : m_printer("DDDBDetectors"), m_condPrinter("DDDBConditions"), m_alignPrinter("DDDBAlignments"),
+        : m_printer(0,"DDDBDetectors"), m_condPrinter(0,"DDDBConditions"), m_alignPrinter(0,"DDDBAlignments"),
           m_flag(flg), m_sensitivesOnly(sens), m_dumpConditions(dmp), m_lcdd(l), m_iov(0)
       {
         m_printer.setPrintLevel(s_PrintLevel);
@@ -260,9 +189,9 @@ namespace {
       }
       /// __________________________________________________________________________________
       void printDetElement(int level, DetElement de,
-                           bool with_placement=false,
-                           bool with_keys=false,
-                           bool with_values=false)
+                           bool with_placement = false,
+                           bool with_keys      = false,
+                           bool with_values    =false)
       {
         char fmt[128];
         const DetElement::Children& c = de.children();
@@ -273,7 +202,7 @@ namespace {
         if ( de.placement().isValid() ) {
           ++m_counters.numDetPlacements;
         }
-        throw "Fix-me!!!";
+        throw runtime_error("Fix-me:"+de.path());
 #if 0
         if ( de.hasConditions() )  {
           Conditions::DetConditions dc(de);

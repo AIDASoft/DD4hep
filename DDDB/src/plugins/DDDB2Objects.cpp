@@ -232,7 +232,7 @@ namespace DD4hep {
         _K::second_type until = doc->context.valid_until;
         _K iov_key(since,until);
         ConditionsPool* pool = context->manager.registerIOV(*(context->epoch), iov_key);
-        context->manager.registerUnlocked(pool, cond);
+        context->manager.registerUnlocked(*pool, cond);
         //context->manager.registerKey(cond->hash, cond->name);
       }
       return obj;

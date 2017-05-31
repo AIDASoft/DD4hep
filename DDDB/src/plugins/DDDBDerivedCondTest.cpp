@@ -28,7 +28,6 @@
 #include "DD4hep/Alignments.h"
 
 #include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsAccess.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsOperators.h"
@@ -84,7 +83,7 @@ namespace  {
     long              numNoCatalogs = 0;
     PrintLevel        level = INFO;
     DDDB::ConditionPrinter printer;
-    CallContext() : printer("") {}
+    CallContext() : printer(0,"") {}
   };
   
   /// Specialized conditions update callback for alignments
@@ -222,27 +221,28 @@ namespace  {
    */
   class ConditionsSelector  {
   public:
-    typedef ConditionsDependencyCollection Dependencies;
+    typedef std::shared_ptr<ConditionsContent> Content;
     string            m_name;
     RangeConditions   m_allConditions;
-    Dependencies      m_allDependencies;
     ConditionsManager m_manager;
-    PrintLevel        m_level;
+    PrintLevel        m_level = INFO;
     CallContext       m_context;
-    
+    Content           content;
+
     /// Default constructor
     ConditionsSelector() = delete;
     /// Initializing constructor
-    ConditionsSelector(ConditionsAccess mgr, PrintLevel lvl)
+    ConditionsSelector(ConditionsManager mgr, PrintLevel lvl)
       : m_manager(mgr), m_level(lvl)
     {
       m_context.level = lvl;
+      content.reset(new ConditionsContent());
       Operators::collectAllConditions(mgr, m_allConditions);
     }
     /// Default destructor
     virtual ~ConditionsSelector()   {
-      printout(INFO,"Conditions","+++ Total number of conditions:   %ld", m_allConditions.size());
-      printout(INFO,"Conditions","+++ Total number of dependencies: %ld", m_allDependencies.size());
+      printout(INFO,"Conditions","+++ Total number of conditions:   %ld", content->conditions().size());
+      printout(INFO,"Conditions","+++ Total number of dependencies: %ld", content->derived().size());
       printout(INFO,"Conditions","+++ Number of Type1 instances:    %ld", m_context.numCall1);
       printout(INFO,"Conditions","+++ Number of Type1 callbacks:    %ld", m_context.numBuild1);
       printout(INFO,"Conditions","+++ Number of Type1 failures:     %ld", m_context.numFail1);
@@ -258,7 +258,7 @@ namespace  {
                m_context.numBuild1+m_context.numBuild2+m_context.numBuild3);
       printout(INFO,"Conditions","+++ Total Number of failures:     %ld",
                m_context.numFail1+m_context.numFail2+m_context.numFail3);
-      m_allDependencies.clear();
+      content.reset();
     }
 
     RangeConditions findCond(const string& match)   {
@@ -302,19 +302,16 @@ namespace  {
           printout(m_level,m_name,fmt,"","Alignment:    ", 
                    rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
           if ( !rc.empty() )   {
-            ConditionKey target1(cat->condition+"/derived_1");
-            ConditionKey target2(cat->condition+"/derived_2");
-            ConditionKey target3(cat->condition+"/derived_3");
-            DependencyBuilder build_1(target1, new ConditionUpdate1(m_context));
-            DependencyBuilder build_2(target2, new ConditionUpdate2(m_context));
-            DependencyBuilder build_3(target3, new ConditionUpdate3(m_context));
+            ConditionKey target1(de,cat->condition+"/derived_1");
+            ConditionKey target2(de,cat->condition+"/derived_2");
+            ConditionKey target3(de,cat->condition+"/derived_3");
+            DependencyBuilder build_1(de, target1.item_key(), new ConditionUpdate1(m_context));
+            DependencyBuilder build_2(de, target2.item_key(), new ConditionUpdate2(m_context));
+            DependencyBuilder build_3(de, target3.item_key(), new ConditionUpdate3(m_context));
 
-            build_1->detector = de;
-            build_2->detector = de;
-            build_3->detector = de;
             for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
               Condition    cond = *ic;
-              ConditionKey key(cond->value);
+              ConditionKey key(de, cond->value);
               build_1.add(key);
 
               build_2.add(key);
@@ -324,9 +321,9 @@ namespace  {
               build_3.add(target1);
               build_3.add(target2);
             }
-            m_allDependencies.insert(build_1.release());
-            m_allDependencies.insert(build_2.release());
-            m_allDependencies.insert(build_3.release());
+            content->insertDependency(build_1.release());
+            content->insertDependency(build_2.release());
+            content->insertDependency(build_3.release());
           }
           ++m_context.numAlignments;
         }
@@ -343,11 +340,9 @@ namespace  {
     }
 
     int computeDependencies(long time)  {
-      const ConditionsDependencyCollection& deps = m_allDependencies;
       const IOVType* iovType = m_manager.iovType("epoch");
-      dd4hep_ptr<ConditionsSlice> slice(createSlice(m_manager,*iovType));
+      shared_ptr<ConditionsSlice> slice(new ConditionsSlice(m_manager,content));
       IOV  iov(iovType, IOV::Key(time,time));
-      slice->insert(deps);
       m_manager.prepare(iov, *slice);
       printout(m_level,"Conditions",
                "+++ ConditionsUpdate: Updated %ld conditions... IOV:%s",

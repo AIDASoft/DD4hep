@@ -18,17 +18,21 @@
 //==========================================================================
 
 // Framework includes
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBConditionPrinter.h"
+#include "DD4hep/PluginTester.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::DDDB;
 
-using Conditions::AbstractMap;
 using Conditions::Condition;
+using Conditions::AbstractMap;
+using Conditions::ConditionsMap;
+using Conditions::ConditionsSlice;
 
 /// Initializing constructor
 ConditionPrinter::ParamPrinter::ParamPrinter(ConditionPrinter* p)  : m_parent(p)  {
@@ -75,8 +79,8 @@ void ConditionPrinter::ParamPrinter::operator()(const AbstractMap::Params::value
 }
 
 /// Initializing constructor
-ConditionPrinter::ConditionPrinter(const string& prefix, int flg, ParamPrinter* prt)
-  : ConditionsPrinter(), m_print(prt), m_prefix(prefix), m_flag(flg)
+ConditionPrinter::ConditionPrinter(ConditionsMap* m, const string& prefix, int flg, ParamPrinter* prt)
+  : ConditionsPrinter(m), m_print(prt), m_prefix(prefix), m_flag(flg)
 {
 }
 
@@ -95,7 +99,7 @@ void ConditionPrinter::setPrintLevel(PrintLevel lvl)   {
 }
 
 /// Callback to output conditions information
-int ConditionPrinter::operator()(Condition cond)    {
+int ConditionPrinter::process(Condition cond)    {
   if ( cond.isValid() )   {
     printout(m_printLevel,"Condition","++ %s%s",m_prefix.c_str(),cond.str(m_flag).c_str());
     const AbstractMap& data = cond.get<AbstractMap>();
@@ -118,25 +122,3 @@ int ConditionPrinter::operator()(Condition cond)    {
   }
   return 1;
 }
-
-/// Plugin function
-static void* create_dddb_conditions_printer(Geometry::LCDD& /* lcdd */, int argc, char** argv)  {
-  int        flags = 0;
-  string     prefix = "";
-  PrintLevel prtLevel = INFO;
-  for(int i=0; i<argc && argv[i]; ++i)  {
-    if ( 0 == ::strncmp("-prefix",argv[i],6) )
-      prefix = argv[++i];
-    else if ( 0 == ::strncmp("-flags",argv[i],6) )
-      flags = ::atol(argv[++i]);
-    else if ( 0 == ::strncmp("-printlevel",argv[i],6) )
-      prtLevel = DD4hep::printLevel(argv[++i]);
-  }
-  DDDB::ConditionPrinter* printer = flags
-    ? new DDDB::ConditionPrinter(prefix,flags)
-    : new DDDB::ConditionPrinter(prefix);
-  printer->setPrintLevel(prtLevel);
-  DetElement::Processor* proc = printer;
-  return proc;
-}
-DECLARE_LCDD_CONSTRUCTOR(DDDB_ConditionsPrinter,create_dddb_conditions_printer)

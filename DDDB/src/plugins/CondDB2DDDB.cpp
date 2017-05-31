@@ -597,12 +597,12 @@ namespace DD4hep {
         Document*  doc     = context->locals.xml_doc;
         string     path    = object_path(context,name);
         static int num_param=0, num_vector=0, num_map=0, num_spec=0, num_align=0;
-        ConditionKey::KeyMaker mk(hash32(catalog->path),hash32(path));
+        ConditionKey::KeyMaker mk(hash32(path),hash32(path));
         Condition cond(path,"DDDB");
         cond->address  = doc->name+"@"+id;
         cond->value    = path; // doc->name;
         cond->validity = "";
-        cond->hash     = mk.key;
+        cond->hash     = mk.hash;
         if ( element.hasAttr(_U(comment)) )  {
           cond->comment = element.attr<string>(_U(comment));
         }
