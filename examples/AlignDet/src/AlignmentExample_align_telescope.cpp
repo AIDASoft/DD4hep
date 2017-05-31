@@ -109,8 +109,9 @@ static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, cha
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(condMgr,content));
-  Conditions::fill_content(condMgr,*content,*iov_typ);
   ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
+  Conditions::fill_content(condMgr,*content,*iov_typ);
+
   // Collect all the delta conditions and make proper alignment conditions out of them
   DetElementDeltaCollector delta_collector(slice.get());
   DetElementProcessor<DetElementDeltaCollector> proc(delta_collector);

@@ -26,12 +26,9 @@
 
 // Other DD4hep includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
 #include "DD4hep/Operators.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsManagerObject.h"
-
-// C/C++ include files
 
 // Forward declartions
 using namespace std;
@@ -43,19 +40,8 @@ using Conditions::ConditionsSlice;
 using Conditions::ConditionsListener;
 using Conditions::ConditionsDescriptor;
 using Conditions::ConditionsManagerObject;
-
+using Conditions::ConditionsLoadInfo;
 using DDDB::DDDBConditionsLoader;
-
-namespace {
-  void* create_dddb_loader(LCDD& lcdd, int argc, char** argv)   {
-    using Conditions::ConditionsManager;
-    using Conditions::ConditionsManagerObject;
-    const char* name = argc>0 ? argv[0] : "DDDBLoader";
-    ConditionsManagerObject* m = (ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
-    return new DDDBConditionsLoader(lcdd,ConditionsManager(m),name);
-  }
-}
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_Conditions_dddb_Loader,create_dddb_loader)
 
 namespace {
   enum CMD {
@@ -291,16 +277,10 @@ size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
   // Since one file contains many conditions, we have
   // to create a unique set
   for(const auto& i : work )  {
-    ConditionsDescriptor* e = i.second;
-    if ( e->dependency )  {
-      printout(INFO,"DDDBLoader","++ CANNOT update derived: %-40s [%16llX]",
-               e->dependency->target.name.c_str(), e->dependency->target.hash);
-      continue;
-    }
-    std::string* addr = e->loadinfo->data<std::string>();
+    ConditionsLoadInfo* e = i.second;
+    std::string* addr = e->data<std::string>();
     if ( !addr )  {
-      printout(INFO,"DDDBLoader","++ CANNOT update condition: %-40s [%16llX]",
-               e->key.name.c_str(), e->key.hash);
+      printout(INFO,"DDDBLoader","++ CANNOT update condition: [%16llX] [No load info]]",i.first);
       continue;
     }
     size_t idx     = addr->find('@');
@@ -308,8 +288,6 @@ size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
     string doc_url = addr->substr(idx+1);
     if ( (idx=doc_url.find('#')) != string::npos )
       doc_url = doc_url.substr(0,idx);
-    //printout(DEBUG,"DDDBLoader","++ Need to update: %-40s [%16llX] --> %s",
-    //         e->key.name.c_str(), e->key.hash, doc_url.c_str());
     urls.insert(make_pair(doc_url,doc_nam));
   }
 
