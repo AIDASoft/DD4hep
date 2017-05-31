@@ -46,7 +46,7 @@ namespace DD4hep {
       DetElement det = context->element ;
       
 
-#if 0  // this uses the deprected VolumeManagerContext::placement
+#if 0  // this uses the deprecated VolumeManagerContext::placement
       
       PlacedVolume pv = context->placement ;
 
@@ -85,10 +85,147 @@ namespace DD4hep {
 
     CellID CellIDPositionConverter::cellID(const Position& global) const {
 
-      //FIXME: how to best implement this ?
+      CellID result(0) ;
+      
+      DetElement motherDet = _lcdd->world()  ; // could also start from an arbitrary DetElement here !?
 
-      return 0 ;
+      DetElement det = findDetElement( global , motherDet ) ;
+
+      if( ! det.isValid() )
+	return result ;
+
+      double g[3], e[3] , l[3] ;
+      global.GetCoordinates( g ) ;
+      det.nominal().worldTransformation().MasterToLocal( g, e );
+     
+      PlacedVolume pv = findPlacement( Position( e[0], e[1] , e[2] ) , det.placement() , l ) ;
+      
+      if(  pv.isValid() && pv.volume().isSensitive() ) {
+
+	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+	Readout r = sd.readout() ;
+	VolumeID volID = det.volumeID() ;
+
+	result = r.segmentation().cellID( Position( l[0], l[1], l[2] ) , global, volID );
+
+      } else {
+	
+	std::cout << " *** ERROR : found non-sensitive Placement " << pv.name()
+		  << "  for point " << global << std::endl ;
+      }
+
+      
+      return result ;
     }
+
+
+    namespace {
+      
+      bool containsPoint( const DetElement& det, const Geometry::Position& global ) {
+	
+	if( det.volume().isValid() and det.volume().solid().isValid() ) {
+	  
+	  double g[3], l[3] ;
+	  global.GetCoordinates( g ) ;
+	  
+	  det.nominal().worldTransformation().MasterToLocal( g, l );
+	  
+	  return det.volume().solid()->Contains( l ) ;
+	}
+	
+	return false ;
+      }
+      
+    }
+
+    DetElement CellIDPositionConverter::findDetElement(const Geometry::Position& global,
+						       const DetElement& d) const {
+
+      DetElement det = ( d.isValid() ? d : _lcdd->world() ) ;
+      
+      //      std::cout << " --- " << global << det.name() << std::endl ;
+
+      if( containsPoint( det, global ) ) {
+	
+	if( det.children().empty() )  // no children -> we are done 
+	  return det ;
+	
+	// see if we have a child DetElement that contains the point ...
+
+	DetElement result ;
+	for( auto it : det.children() ){
+	  // std::cout << " -   " << global << it.second.name()  << " " << containsPoint( it.second , global )
+	  // 	    << " nChild: " << it.second.children().size() << " isValid: " <<  it.second.isValid()
+	  // 	    << std::endl ;
+
+	  if( containsPoint( it.second , global ) ){
+	    result = it.second ;
+	    break ;
+	  }
+	}  
+	if( result.isValid() ){  // ... yes, we have
+
+	  if( result.children().empty() )  // no more children -> done
+	    return result ;
+	  else
+	    return findDetElement( global, result ) ; // keep searching in children
+	}
+	
+      }
+      
+      // point not contained 
+      return DetElement() ;
+    } 
+
+    Geometry::PlacedVolume CellIDPositionConverter::findPlacement(const Geometry::Position& pos, const  Geometry::PlacedVolume& pv , double locPos[3]) const {
+
+      
+      double l[3] ;
+      pos.GetCoordinates( l ) ;
+
+      std::cout << " --- " << pos << " " << pv.name() << " loc: (" << locPos[0] << "," << locPos[1] << "," << locPos[2] << ")" << std::endl ;
+
+      if( pv.volume().solid()->Contains( l ) ) {
+	
+	int ndau = pv->GetNdaughters() ;
+
+	if( ndau == 0 ) // no daughter volumes -> we are done
+	  return pv ;
+	
+	// see if we have a daughter volume that contains the point ...
+
+	PlacedVolume result ;
+	for (int i = 0 ; i < ndau; ++i) {
+	  
+	  PlacedVolume pvDau = pv->GetDaughter( i );
+	  pvDau->MasterToLocal( l , locPos ) ;  // transform point to daughter's local frame
+
+	  std::cout << "   - " << pos << " " << pvDau.name()
+		    << " loc: (" << locPos[0] << "," << locPos[1] << "," << locPos[2] << ")"
+		    <<  pvDau.volume().solid()->Contains( locPos )
+		    << " ndau: " << pvDau->GetNdaughters()
+		    << std::endl ;
+
+
+	  if( pvDau.volume().solid()->Contains( locPos ) ) { // point is contained in daughter node
+	    result = pvDau ;
+	    break ;
+	  }
+	}
+
+	if( result.isValid() ){  // ... yes, we have
+
+	  if( result->GetNdaughters() == 0 ){  // no more children -> done
+	    return result ;
+	  } else
+	    return findPlacement( Position( locPos[0], locPos[1] , locPos[2]  ), result , locPos ) ; // keep searching in daughter volumes
+	}
+	
+      }
+	  
+      return  PlacedVolume() ;
+    } 
+
 
 
     Readout CellIDPositionConverter::findReadout(const Geometry::DetElement& det) const {
@@ -120,13 +257,9 @@ namespace DD4hep {
 	}
       }
 
-      // traverse the daughter nodes:
-      const TGeoNode* node = pv.ptr();
-      
-      for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
+      for (Int_t idau = 0, ndau = pv->GetNdaughters(); idau < ndau; ++idau) {
 	  
-	TGeoNode* daughter = node->GetDaughter(idau);
-	PlacedVolume dpv( daughter );
+	PlacedVolume dpv = pv->GetDaughter(idau);
 	Readout r = findReadout( dpv ) ;
 	if( r.isValid() )
 	  return r ;

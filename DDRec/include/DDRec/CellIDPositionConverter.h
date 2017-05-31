@@ -33,7 +33,7 @@ namespace DD4hep {
     public:
       
       /// The constructor - takes the main lcdd object.
-      CellIDPositionConverter( Geometry::LCDD& lcdd ) {
+      CellIDPositionConverter( Geometry::LCDD& lcdd ) : _lcdd( &lcdd )  {
 	_volumeManager = Geometry::VolumeManager::getVolumeManager(lcdd);
       }
 
@@ -61,6 +61,21 @@ namespace DD4hep {
       const Geometry::VolumeManagerContext* findContext(const CellID& cellID) const;
 
 
+
+      /** Find the DetElement that contains the given point - if no DetElement is found, an
+       *  invalid DetElement is returned. Uses the optionally given DetElement as start for the search.
+       */ 
+      Geometry::DetElement findDetElement(const Geometry::Position& global,
+					  const Geometry::DetElement& det=Geometry::DetElement() ) const; 
+
+
+      /** Find the lowest daughter Placement in the Placement that
+       *  contains the point (in the coordinate system of the mother placement) the local coordintates 
+       *  in this placement are also returned.
+       */
+      Geometry::PlacedVolume findPlacement(const Geometry::Position& point, const  Geometry::PlacedVolume& mother, double locPos[3]) const ; 
+
+
       /** Find the readout object for the given DetElement. If the DetElement is sensitive the corresondig 
        *  Readout is returned, else a recursive search in the daughter volumes (nodes) of this DetElement's
        *  volume is performed and the first Readout object is returned. 
@@ -77,6 +92,7 @@ namespace DD4hep {
 
     protected:
       Geometry::VolumeManager _volumeManager{} ;
+      const Geometry::LCDD* _lcdd ;
 
     };
 
