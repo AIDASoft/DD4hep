@@ -40,6 +40,8 @@ static DDTest test( "cellid_position_converter" ) ;
 //=============================================================================
 
 const double epsilon = dd4hep::micrometer ;
+const int maxHit = 10 ;
+
 
 double dist( const Position& p0, const Position& p1 ){
   Position p2 = p1 - p0 ;
@@ -77,7 +79,7 @@ int main_wrapper(int argc, char** argv ){
 
   // use only hits from these collections
   std::set< std::string > subset = {} ;
-  //{"BeamCalCollection" } ; //EcalBarrelCollection" } ; //"HcalBarrelRegCollection"} ; 
+  //{"BeamCalCollection" } ; //{"EcalBarrelCollection" } ; //{"HcalBarrelRegCollection"} ; 
 
 
   // ignore all hits from these collections
@@ -107,9 +109,11 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      DD4hep::BitField64 idDecoder( cellIDEcoding ) ;
+      DD4hep::BitField64 idDecoder0( cellIDEcoding ) ;
+      DD4hep::BitField64 idDecoder1( cellIDEcoding ) ;
 
-      int nHit = col->getNumberOfElements() ;
+      int nHit = std::min( col->getNumberOfElements(), maxHit )  ;
+     
       
       for(int i=0 ; i< nHit ; ++i){
 	
@@ -119,25 +123,34 @@ int main_wrapper(int argc, char** argv ){
         DD4hep::long64 id1 = sHit->getCellID1() ;
 	DD4hep::long64 id = ( id1 << 32 | id0 ) ;
 	
-        idDecoder.setValue( id ) ;
+        idDecoder0.setValue( id ) ;
 	
 
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
 	
 
 	// ====== test cellID to position and positio to cellID conversion  ================================
+	DetElement det = idposConv.findDetElement( point ) ;
 	
-	//	CellID idFromDecoder = idposConv.cellID( point ) ;
+	CellID idFromDecoder = idposConv.cellID( point ) ;
+
+        idDecoder1.setValue( idFromDecoder ) ;
+
+	
+	std::stringstream sst ;
+	sst << " compare ids: " << det.name() << " " <<  idDecoder0.valueString() << "  -  " << idDecoder1.valueString() ;
+
+	test( id, idFromDecoder,  sst.str() ) ;
+
 
 	Position pointFromDecoder = idposConv.position( id ) ;
 
-	//	test( idFromDecoder , id  , " compare ids:  " ) ;
-
 	double d = dist(pointFromDecoder, point)  ;
-	std::stringstream sst ;
-	sst << " dist " << d << " ( " <<  pointFromDecoder << " ) - ( " << point << " )" ;
+	std::stringstream sst1 ;
+	sst1 << " dist " << d << " ( " <<  point << " ) - ( " << pointFromDecoder << " )  - detElement: "
+	    << det.name() ;
 
-	test( d < epsilon , true  , sst.str()  ) ;
+	test( d < epsilon , true  , sst1.str()  ) ;
 	
       }
     }
