@@ -40,13 +40,27 @@ static DDTest test( "cellid_position_converter" ) ;
 //=============================================================================
 
 const double epsilon = dd4hep::micrometer ;
-const int maxHit = 10 ;
+const int maxHit = 100 ;
 
 
 double dist( const Position& p0, const Position& p1 ){
   Position p2 = p1 - p0 ;
   return p2.r() ;
 } 
+
+
+struct TestCounter{
+  unsigned passed{} ;
+  unsigned failed{} ;
+} ;
+
+struct TestCounters{
+  TestCounter position{} ;
+  TestCounter cellid{} ;
+};
+
+typedef std::map<std::string, TestCounters > TestMap ;
+
 
 
 int main_wrapper(int argc, char** argv ){
@@ -83,9 +97,10 @@ int main_wrapper(int argc, char** argv ){
 
 
   // ignore all hits from these collections
-  std::set< std::string > subsetIgnore = {} ;
-  //{"HCalBarrelRPCHits","HCalECRingRPCHits","HCalEndcapRPCHits" } ;
+  std::set< std::string > subsetIgnore = {"HCalBarrelRPCHits","HCalECRingRPCHits","HCalEndcapRPCHits" } ;
   
+  TestMap tMap ;
+
   while( ( evt = rdr->readNextEvent() ) != 0 ){
 
     const std::vector< std::string >& colNames = *evt->getCollectionNames() ;
@@ -129,7 +144,7 @@ int main_wrapper(int argc, char** argv ){
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
 	
 
-	// ====== test cellID to position and positio to cellID conversion  ================================
+	// ====== test cellID to position and position to cellID conversion  ================================
 	DetElement det = idposConv.findDetElement( point ) ;
 	
 	CellID idFromDecoder = idposConv.cellID( point ) ;
@@ -141,8 +156,12 @@ int main_wrapper(int argc, char** argv ){
 	sst << " compare ids: " << det.name() << " " <<  idDecoder0.valueString() << "  -  " << idDecoder1.valueString() ;
 
 	test( id, idFromDecoder,  sst.str() ) ;
-
-
+	
+	if( ! strcmp( test.last_test_status() , "PASSED" ) )
+	  tMap[ colNames[icol] ].cellid.passed++ ;
+	else
+	  tMap[ colNames[icol] ].cellid.failed++ ;
+	  
 	Position pointFromDecoder = idposConv.position( id ) ;
 
 	double d = dist(pointFromDecoder, point)  ;
@@ -152,10 +171,36 @@ int main_wrapper(int argc, char** argv ){
 
 	test( d < epsilon , true  , sst1.str()  ) ;
 	
+	if( ! strcmp( test.last_test_status() , "PASSED" ) )
+	  tMap[ colNames[icol] ].position.passed++ ;
+	else
+	  tMap[ colNames[icol] ].position.failed++ ;
+
       }
     }
     
   }
+
+  // print summary
+
+  std::cout << "\n ----------------------- summary  ----------------------   " << std::endl ;
+
+  
+  for( auto res : tMap ){
+    
+    std::string name = res.first ;
+    unsigned total = res.second.position.passed+res.second.position.failed ;
+    unsigned pos_failed = res.second.position.failed ;
+    unsigned id_failed = res.second.cellid.failed ;
+
+    
+    printf(" %-30s \t  failed position: %5d  failed cellID:  %5d    of total: %5d   \n",
+	   name.c_str(), pos_failed , id_failed, total ) ;
+
+  }
+  std::cout << "\n -------------------------------------------------------- " << std::endl ;
+
+  
   return 0;
 }
 
