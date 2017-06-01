@@ -64,8 +64,6 @@ namespace DD4hep {
 
 #endif
 
-
-
       Segmentation seg = r.segmentation() ;
       Position local = seg.position(cell);
       
@@ -85,37 +83,40 @@ namespace DD4hep {
 
 
     CellID CellIDPositionConverter::cellID(const Position& global) const {
-
+      
       CellID result(0) ;
       
       DetElement motherDet = _lcdd->world()  ; // could also start from an arbitrary DetElement here !?
-
+      
       DetElement det = findDetElement( global , motherDet ) ;
-
+      
       if( ! det.isValid() )
 	return result ;
-
+      
       double g[3], e[3] , l[3] ;
       global.GetCoordinates( g ) ;
       det.nominal().worldTransformation().MasterToLocal( g, e );
-     
-      PlacedVolume pv = findPlacement( Position( e[0], e[1] , e[2] ) , det.placement() , l ) ;
+      
+      PlacedVolume::VolIDs volIDs ;
+      
+      PlacedVolume pv = findPlacement( Position( e[0], e[1] , e[2] ) , det.placement() , l , volIDs ) ;
       
       if(  pv.isValid() && pv.volume().isSensitive() ) {
-
+	
 	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
 	Readout r = sd.readout() ;
-	VolumeID volID = det.volumeID() ;
-
-	result = r.segmentation().cellID( Position( l[0], l[1], l[2] ) , global, volID );
-
-      } else {
 	
-	std::cout << " *** ERROR : found non-sensitive Placement " << pv.name()
-		  << "  for point " << global << std::endl ;
+	VolumeID volIDElement = det.volumeID() ;
+	// add the placed volumes volIDs:
+	VolumeID volIDPVs = r.idSpec().encode( volIDs ) ;
+	
+	result = r.segmentation().cellID( Position( l[0], l[1], l[2] ) , global, ( volIDElement | volIDPVs  ) );
+	
+	// } else {
+	// 	std::cout << " *** ERROR : found non-sensitive Placement " << pv.name()
+	// 		  << "  for point " << global << std::endl ;
       }
-
-      
+	
       return result ;
     }
 
@@ -178,15 +179,18 @@ namespace DD4hep {
       return DetElement() ;
     } 
 
-    Geometry::PlacedVolume CellIDPositionConverter::findPlacement(const Geometry::Position& pos, const  Geometry::PlacedVolume& pv , double locPos[3]) const {
+    Geometry::PlacedVolume CellIDPositionConverter::findPlacement(const Geometry::Position& pos, const  Geometry::PlacedVolume& pv , double locPos[3], Geometry::PlacedVolume::VolIDs& volIDs) const {
 
       
       double l[3] ;
       pos.GetCoordinates( l ) ;
 
-      std::cout << " --- " << pos << " " << pv.name() << " loc: (" << locPos[0] << "," << locPos[1] << "," << locPos[2] << ")" << std::endl ;
+      //      std::cout << " --- " << pos << " " << pv.name() << " loc: (" << locPos[0] << "," << locPos[1] << "," << locPos[2] << ")" << std::endl ;
 
       if( pv.volume().solid()->Contains( l ) ) {
+	
+	// copy the volIDs
+	volIDs.insert( std::end(volIDs), std::begin(pv.volIDs()), std::end(pv.volIDs()));
 	
 	int ndau = pv->GetNdaughters() ;
 
@@ -201,15 +205,16 @@ namespace DD4hep {
 	  PlacedVolume pvDau = pv->GetDaughter( i );
 	  pvDau->MasterToLocal( l , locPos ) ;  // transform point to daughter's local frame
 
-	  std::cout << "   - " << pos << " " << pvDau.name()
-		    << " loc: (" << locPos[0] << "," << locPos[1] << "," << locPos[2] << ")"
-		    <<  pvDau.volume().solid()->Contains( locPos )
-		    << " ndau: " << pvDau->GetNdaughters()
-		    << std::endl ;
+	  // std::cout << "   - " << pos << " " << pvDau.name()
+	  // 	    << " loc: (" << locPos[0] << "," << locPos[1] << "," << locPos[2] << ")"
+	  // 	    <<  pvDau.volume().solid()->Contains( locPos )
+	  // 	    << " ndau: " << pvDau->GetNdaughters()
+	  // 	    << std::endl ;
 
 
 	  if( pvDau.volume().solid()->Contains( locPos ) ) { // point is contained in daughter node
 	    result = pvDau ;
+	    volIDs.insert( std::end(volIDs), std::begin(pvDau.volIDs()), std::end(pvDau.volIDs()) );
 	    break ;
 	  }
 	}
@@ -219,7 +224,7 @@ namespace DD4hep {
 	  if( result->GetNdaughters() == 0 ){  // no more children -> done
 	    return result ;
 	  } else
-	    return findPlacement( Position( locPos[0], locPos[1] , locPos[2]  ), result , locPos ) ; // keep searching in daughter volumes
+	    return findPlacement( Position( locPos[0], locPos[1] , locPos[2]  ), result , locPos , volIDs) ; // keep searching in daughter volumes
 	}
 	
       }

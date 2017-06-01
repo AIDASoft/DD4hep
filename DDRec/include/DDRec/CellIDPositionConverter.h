@@ -69,11 +69,12 @@ namespace DD4hep {
 					  const Geometry::DetElement& det=Geometry::DetElement() ) const; 
 
 
-      /** Find the lowest daughter Placement in the Placement that
-       *  contains the point (in the coordinate system of the mother placement) the local coordintates 
-       *  in this placement are also returned.
+      /** Find the lowest daughter Placement in the given Placement that
+       *  contains the point (in the coordinate system of the mother placement).
+       *  Return the local coordinates in this daughter Placement and collect all volIDs 
+       *  on the way.
        */
-      Geometry::PlacedVolume findPlacement(const Geometry::Position& point, const  Geometry::PlacedVolume& mother, double locPos[3]) const ; 
+      Geometry::PlacedVolume findPlacement(const Geometry::Position& point, const  Geometry::PlacedVolume& mother, double locPos[3], Geometry::PlacedVolume::VolIDs& volIDs) const ; 
 
 
       /** Find the readout object for the given DetElement. If the DetElement is sensitive the corresondig 
