@@ -83,6 +83,7 @@ namespace DD4hep {
 
 
 
+
     CellID CellIDPositionConverter::cellID(const Position& global) const {
 
       CellID result(0) ;
