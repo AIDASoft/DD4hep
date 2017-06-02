@@ -354,6 +354,7 @@ static int maker(int op, stack<double> & val)
     errno = 0;
     val.top() = pow(val1,val2);
     if (errno == 0) return EVAL::OK;
+    [[fallthrough]];
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }
