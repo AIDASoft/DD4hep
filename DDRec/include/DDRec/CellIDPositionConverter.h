@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-class TGeoManager;
 
 namespace DD4hep {
   namespace DDRec {
@@ -40,9 +39,6 @@ namespace DD4hep {
       /// Destructor
       virtual ~CellIDPositionConverter(){} ;
       
-      /// returns the global cell ID from a given global position
-      CellID cellID(const Geometry::Position& global) const;
-      
       /** Return the nominal global position for a given cellID of a sensitive volume.
        *  No Alignment corrections are applied.
        *  If no sensitive volume is found, (0,0,0) is returned.
@@ -54,6 +50,15 @@ namespace DD4hep {
        *  If no sensitive volume is found, (0,0,0) is returned.
        */
       Geometry::Position position(const CellID& cellID) const;
+
+
+      /** Return the global cellID for the given global position.
+       *  Note: this call is rather slow - only use it when really needed !
+       *  
+       */
+      CellID cellID(const Geometry::Position& global) const;
+
+
 
       /** Find the context with DetElement, placements etc for a given cellID of a sensitive volume.
        *  Returns NULL if not found (e.g. if the cellID does not correspond to a sensitive volume).

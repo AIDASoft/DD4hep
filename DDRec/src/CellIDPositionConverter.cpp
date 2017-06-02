@@ -4,6 +4,8 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/objects/VolumeManagerInterna.h"
 
+#include "TGeoManager.h"
+
 namespace DD4hep {
   namespace DDRec {
 
@@ -83,42 +85,106 @@ namespace DD4hep {
 
 
     CellID CellIDPositionConverter::cellID(const Position& global) const {
-      
+
       CellID result(0) ;
       
-      DetElement motherDet = _lcdd->world()  ; // could also start from an arbitrary DetElement here !?
+      TGeoManager *geoManager = _lcdd->world().volume()->GetGeoManager() ;
       
-      DetElement det = findDetElement( global , motherDet ) ;
-      
-      if( ! det.isValid() )
-	return result ;
-      
-      double g[3], e[3] , l[3] ;
-      global.GetCoordinates( g ) ;
-      det.nominal().worldTransformation().MasterToLocal( g, e );
-      
-      PlacedVolume::VolIDs volIDs ;
-      
-      PlacedVolume pv = findPlacement( Position( e[0], e[1] , e[2] ) , det.placement() , l , volIDs ) ;
+      PlacedVolume pv = geoManager->FindNode( global.x() , global.y() , global.z() ) ;
       
       if(  pv.isValid() && pv.volume().isSensitive() ) {
-	
+
+	TGeoHMatrix*  m = geoManager->GetCurrentMatrix() ;
+      
+	double g[3], l[3] ;
+	global.GetCoordinates( g ) ;
+	m->MasterToLocal( g, l );
+
 	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
 	Readout r = sd.readout() ;
 	
-	VolumeID volIDElement = det.volumeID() ;
-	// add the placed volumes volIDs:
+	// collect all volIDs for the current path
+	PlacedVolume::VolIDs volIDs ;
+	volIDs.insert( std::end(volIDs), std::begin(pv.volIDs()), std::end(pv.volIDs())) ;
+
+	TGeoPhysicalNode pN( geoManager->GetPath() ) ; 
+	
+	unsigned motherCount = 0 ;
+
+	while( pN.GetMother( motherCount ) != NULL   ){
+
+	    PlacedVolume mPv = pN.GetMother( motherCount++ ) ;
+	    
+	    if( mPv.isValid() &&  pN.GetMother( motherCount ) != NULL )  // world has no volIDs
+	      volIDs.insert( std::end(volIDs), std::begin(mPv.volIDs()), std::end(mPv.volIDs())) ;
+	}
+	
 	VolumeID volIDPVs = r.idSpec().encode( volIDs ) ;
 	
-	result = r.segmentation().cellID( Position( l[0], l[1], l[2] ) , global, ( volIDElement | volIDPVs  ) );
-	
-	// } else {
-	// 	std::cout << " *** ERROR : found non-sensitive Placement " << pv.name()
-	// 		  << "  for point " << global << std::endl ;
+	result = r.segmentation().cellID( Position( l[0], l[1], l[2] ) , global, volIDPVs  );
       }
 	
       return result ;
     }
+
+    // CellID CellIDPositionConverter::cellID(const Position& global) const {
+      
+    //   CellID result(0) ;
+      
+    //   DetElement motherDet = _lcdd->world()  ; // could also start from an arbitrary DetElement here !?
+      
+    //   DetElement det = findDetElement( global , motherDet ) ;
+      
+    //   if( ! det.isValid() )
+    // 	return result ;
+      
+    //   double g[3], e[3] , l[3] ;
+    //   global.GetCoordinates( g ) ;
+    //   det.nominal().worldTransformation().MasterToLocal( g, e );
+      
+    //   PlacedVolume::VolIDs volIDs ;
+      
+    //   PlacedVolume pv = findPlacement( Position( e[0], e[1] , e[2] ) , det.placement() , l , volIDs ) ;
+      
+    //   TGeoManager *geoManager = det.volume()->GetGeoManager() ;
+    //   // TGeoManager *geoManager = _lcdd->world().volume()->GetGeoManager() ;
+      
+    //   PlacedVolume pv1 = geoManager->FindNode( global.x() , global.y() , global.z() ) ;
+
+    //   // std::cout << " -> TGM : " << pv1.name() << "  valid: " << pv1.isValid() << " sensitive: "
+    //   // 		<<  (pv1.isValid() ? pv1.volume().isSensitive() : false ) << std::endl ;
+    //   // std::cout << " -> FG :  " << pv.name() << "  valid: " << pv.isValid() << " sensitive: "
+    //   // 		<<  (pv.isValid() ? pv.volume().isSensitive() : false ) << std::endl ;
+
+
+
+    // 	if(  pv.isValid() && pv.volume().isSensitive() ) {
+	
+    // 	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+    // 	Readout r = sd.readout() ;
+	
+    // 	VolumeID volIDElement = det.volumeID() ;
+    // 	// add the placed volumes volIDs:
+    // 	VolumeID volIDPVs = r.idSpec().encode( volIDs ) ;
+	
+    // 	result = r.segmentation().cellID( Position( l[0], l[1], l[2] ) , global, ( volIDElement | volIDPVs  ) );
+	
+    //   // } else {
+    //   // 	std::cout << " *** ERROR : found no sensitive Placement " << pv.name()
+    //   // 		  << "  for point " << global << " try with TGeoManager ... " << std::endl ;
+	
+    //   // 	TGeoManager *geoManager = det.volume()->GetGeoManager() ;
+    //   // 	// TGeoManager *geoManager = _lcdd->world().volume()->GetGeoManager() ;
+
+    //   // 	PlacedVolume p = geoManager->FindNode( global.x() , global.y() , global.z() ) ;
+
+    //   // 	std::cout << " -> found: " << p.name() << "  valid: " << p.isValid() << " sensitive: "
+    //   // 		  <<  (p.isValid() ? p.volume().isSensitive() : false ) << std::endl ;
+	
+    //   }
+	
+    //   return result ;
+    // }
 
 
     namespace {
@@ -232,8 +298,7 @@ namespace DD4hep {
       return  PlacedVolume() ;
     } 
 
-
-
+    
     Readout CellIDPositionConverter::findReadout(const Geometry::DetElement& det) const {
 
       // first check if top level is a sensitive detector
