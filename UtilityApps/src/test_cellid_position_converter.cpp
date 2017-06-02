@@ -136,9 +136,10 @@ int main_wrapper(int argc, char** argv ){
 	
         DD4hep::long64 id0 = sHit->getCellID0() ;
         DD4hep::long64 id1 = sHit->getCellID1() ;
-	DD4hep::long64 id = ( id1 << 32 | id0 ) ;
-	
-        idDecoder0.setValue( id ) ;
+
+	idDecoder0.setValue( id0 , id1 ) ;
+
+	DD4hep::long64 id = idDecoder0.getValue() ;
 	
 
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;

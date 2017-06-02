@@ -17,7 +17,7 @@ namespace DD4hep {
     typedef DDSegmentation::CellID CellID;
     typedef DDSegmentation::VolumeID VolumeID;
 
-    /** Utility for position to cell ID and cell ID to position conversions.
+    /** Utility for position to cellID and cellID to position conversions.
      *  (Correctly re-implements some of the functionality of the deprecated IDDecoder).
      *
      * @author F.Gaede, DESY
