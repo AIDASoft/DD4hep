@@ -37,7 +37,12 @@ find_package(Threads REQUIRED)
 macro(dd4hep_set_compiler_flags)
   include(CheckCXXCompilerFlag)
 
-  SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Winconsistent-missing-override)
+  SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto)
+
+  # AppleClang/Clang specific warning flags
+  if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
+    set ( COMPILER_FLAGS ${COMPILER_FLAGS} -Winconsistent-missing-override -Wno-c++1z-extensions)
+  endif()
 
   FOREACH( FLAG ${COMPILER_FLAGS} )
     ## meed to replace the minus or plus signs from the variables, because it is passed
