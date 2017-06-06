@@ -77,6 +77,10 @@ namespace DD4hep {
       DetElementProcessor() = delete;
       /// Default constructor
       DetElementProcessor(T& p) : processor(p) {}
+      /// Default move constructor is disabled
+      DetElementProcessor(T&& p) = delete;
+      /// R-value copy from a temporary (Since processor is reference)
+      DetElementProcessor(DetElementProcessor&& copy) = default;
       /// Default copy constructor
       DetElementProcessor(const DetElementProcessor& copy) = default;
       /// Default destructor
@@ -92,11 +96,9 @@ namespace DD4hep {
     };
 
     /// Instantiation helper
-    template <typename T> DetElementProcessor<const T> detectorProcessor(const T& proc)
-    { return DetElementProcessor<const T>(proc); }
-    /// Instantiation helper
-    template <typename T> DetElementProcessor<T> detectorProcessor(T& proc)
-    { return DetElementProcessor<T>(proc); }
+    template <typename T> DetElementProcessor<typename std::remove_reference<T>::type>
+    detectorProcessor(T&& proc)
+    { return DetElementProcessor<typename std::remove_reference<T>::type>(std::forward<T>(proc)); }
 
     /// Wrapper to call objects in the form of a detector element processor.
     /**
