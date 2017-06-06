@@ -222,6 +222,8 @@ template class DD4hep::Handle<TNamed>;
 
 #pragma link C++ class DD4hep::Conditions::Condition+;
 #pragma link C++ class vector<DD4hep::Conditions::Condition>+;
+#pragma link C++ class DD4hep::Conditions::ConditionKey+;
+#pragma link C++ class vector<DD4hep::Conditions::ConditionKey>+;
 #pragma link C++ class DD4hep::Conditions::Interna::ConditionObject+;
 #pragma link C++ class DD4hep::Handle<DD4hep::Conditions::Interna::ConditionObject>+;
 

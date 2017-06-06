@@ -138,10 +138,14 @@ def import_geometry():
 
   #// Readout.h
   import_namespace_item('Geo','Readout')
+
+  #// Alignments.h
   import_namespace_item('Alignments','Alignment')
-  import_namespace_item('Alignments','Container')
+  import_namespace_item('Alignments','AlignmentCondition')
+
+  #// Conditions.h
   import_namespace_item('Conditions','Condition')
-  import_namespace_item('Conditions','Container')
+  import_namespace_item('Conditions','ConditionKey')
 
   #// DetElement.h
   import_namespace_item('Geo','World')

@@ -38,13 +38,23 @@ int ConditionsCollector<T>::operator()(DetElement de, int)  const  {
   except("Conditions","Cannot process conditions of an invalid detector element");
   return 0;  
 }
-//template class ConditionsCollector<ConditionsMap>;
-template class ConditionsCollector<list<Condition> >;
-template class ConditionsCollector<vector<Condition> >;
-template class ConditionsCollector<map<DetElement,Condition> >;
-template class ConditionsCollector<vector<pair<DetElement,Condition> > >;
-template class ConditionsCollector<vector<pair<string,Condition> > >;
 
-template class ConditionsCollector<multimap<DetElement,Condition> >;
-template class ConditionsCollector<map<string,Condition> >;
-template class ConditionsCollector<multimap<string,Condition> >;
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the conditions part of the AIDA detector description toolkit
+  namespace Conditions   {
+
+    //template class ConditionsCollector<ConditionsMap>;
+    template class ConditionsCollector<list<Condition> >;
+    template class ConditionsCollector<vector<Condition> >;
+    template class ConditionsCollector<map<DetElement,Condition> >;
+    template class ConditionsCollector<vector<pair<DetElement,Condition> > >;
+    template class ConditionsCollector<vector<pair<string,Condition> > >;
+
+    template class ConditionsCollector<multimap<DetElement,Condition> >;
+    template class ConditionsCollector<map<string,Condition> >;
+    template class ConditionsCollector<multimap<string,Condition> >;
+  }       /* End namespace Conditions               */
+}         /* End namespace DD4hep                   */

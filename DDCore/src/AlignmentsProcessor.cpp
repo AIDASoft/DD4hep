@@ -39,15 +39,6 @@ template <typename T> int DeltaCollector<T>::operator()(DetElement de, int level
   except("Alignments","Cannot process alignments of an invalid detector element");
   return 0;  
 }
-template class DeltaCollector<list<Delta> >;
-template class DeltaCollector<vector<Delta> >;
-template class DeltaCollector<map<DetElement,Delta> >;
-template class DeltaCollector<vector<pair<DetElement,Delta> > >;
-template class DeltaCollector<vector<pair<string,Delta> > >;
-
-template class DeltaCollector<multimap<DetElement,Delta> >;
-template class DeltaCollector<map<string,Delta> >;
-template class DeltaCollector<multimap<string,Delta> >;
 
 /// Callback to output alignments information
 template <typename T>
@@ -68,12 +59,34 @@ int AlignmentsCollector<T>::operator()(DetElement de, int level)  const  {
   except("Alignments","Cannot process alignments of an invalid detector element");
   return 0;  
 }
-template class AlignmentsCollector<list<Alignment> >;
-template class AlignmentsCollector<vector<Alignment> >;
-template class AlignmentsCollector<map<DetElement,Alignment> >;
-template class AlignmentsCollector<vector<pair<DetElement,Alignment> > >;
-template class AlignmentsCollector<vector<pair<string,Alignment> > >;
 
-template class AlignmentsCollector<multimap<DetElement,Alignment> >;
-template class AlignmentsCollector<map<string,Alignment> >;
-template class AlignmentsCollector<multimap<string,Alignment> >;
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
+  namespace Alignments {
+
+    template class DeltaCollector<list<Delta> >;
+    template class DeltaCollector<vector<Delta> >;
+    template class DeltaCollector<map<DetElement,Delta> >;
+    template class DeltaCollector<vector<pair<DetElement,Delta> > >;
+    template class DeltaCollector<vector<pair<string,Delta> > >;
+
+    template class DeltaCollector<multimap<DetElement,Delta> >;
+    template class DeltaCollector<map<string,Delta> >;
+    template class DeltaCollector<multimap<string,Delta> >;
+
+
+    template class AlignmentsCollector<list<Alignment> >;
+    template class AlignmentsCollector<vector<Alignment> >;
+    template class AlignmentsCollector<map<DetElement,Alignment> >;
+    template class AlignmentsCollector<vector<pair<DetElement,Alignment> > >;
+    template class AlignmentsCollector<vector<pair<string,Alignment> > >;
+
+    template class AlignmentsCollector<multimap<DetElement,Alignment> >;
+    template class AlignmentsCollector<map<string,Alignment> >;
+    template class AlignmentsCollector<multimap<string,Alignment> >;
+
+  }    /* End namespace Alignments  */
+}      /* End namespace DD4hep      */
