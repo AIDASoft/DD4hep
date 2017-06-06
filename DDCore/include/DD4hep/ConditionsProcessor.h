@@ -43,11 +43,15 @@ namespace DD4hep {
       T& processor;
     public:
       /// Default constructor
-      ConditionsProcessor() = default;
+      ConditionsProcessor() = delete;
       /// Initializing constructor
       ConditionsProcessor(T& p) : processor(p) {}
+      /// Default move constructor is disabled
+      ConditionsProcessor(T&& p) = delete;
       /// Copy constructor
       ConditionsProcessor(const ConditionsProcessor& copy) = default;
+      /// R-value copy from a temporary (Since processor is reference)
+      ConditionsProcessor(ConditionsProcessor&& copy) = default;
       /// Default destructor
       virtual ~ConditionsProcessor() = default;
       /// Assignment operator

@@ -116,6 +116,8 @@ namespace DD4hep {
     public:
       /// Default constructor
       DeltaCollector(ConditionsMap& m, T& d) : mapping(m), deltas(d) {}
+      /// Default move constructor is disabled
+      DeltaCollector(ConditionsMap& m, T&& p) = delete;
       /// Copy constructor
       DeltaCollector(const DeltaCollector& copy) = default;
       /// Default destructor
@@ -133,8 +135,11 @@ namespace DD4hep {
        */
       virtual int operator()(DetElement de, int level=0)  const final;
     };
-    template <typename T> inline DeltaCollector<T> deltaCollector(ConditionsMap& m, T& deltas)  {
-      return DeltaCollector<T>(m, deltas);
+
+    /// Creator function for alignment collector objects
+    template <typename T> inline DeltaCollector<typename std::remove_reference<T>::type>
+    deltaCollector(ConditionsMap& m, T&& deltas)   {
+      return DeltaCollector<typename std::remove_reference<T>::type>(m, deltas);
     }
 
     /// Generic alignment collector keyed by detector elements
@@ -155,6 +160,8 @@ namespace DD4hep {
     public:
       /// Default constructor
       AlignmentsCollector(ConditionsMap& m, T& d) : mapping(m), alignments(d) {}
+      /// Default move constructor is disabled
+      AlignmentsCollector(ConditionsMap& m, T&& p) = delete;
       /// Copy constructor
       AlignmentsCollector(const AlignmentsCollector& copy) = default;
       /// Default destructor
@@ -172,8 +179,11 @@ namespace DD4hep {
        */
       virtual int operator()(DetElement de, int level=0)  const final;
     };
-    template <typename T> inline AlignmentsCollector<T> alignmentsCollector(ConditionsMap& m, T& alignments)  {
-      return AlignmentsCollector<T>(m, alignments);
+
+    /// Creator function for alignment collector objects
+    template <typename T> inline AlignmentsCollector<typename std::remove_reference<T>::type>
+    alignmentsCollector(ConditionsMap& m, T&& alignments)   {
+      return AlignmentsCollector<typename std::remove_reference<T>::type>(m, alignments);
     }
 
   }    /* End namespace Alignments  */

@@ -112,10 +112,13 @@ static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, cha
 
   // Collect all the delta conditions and make proper alignment conditions out of them
   AlignmentsCalculator::Deltas deltas;
-  auto proc = detectorProcessor(deltaCollector(*slice,deltas));
+
+  const auto coll = deltaCollector(*slice,deltas);
+  auto proc = detectorProcessor(coll);
+  //auto proc = detectorProcessor(deltaCollector(*slice,deltas));
   proc.process(lcdd.world(),0,true);
   printout(INFO,"Prepare","Got a total of %ld deltas for processing alignments.",deltas.size());
-
+  
   // ++++++++++++++++++++++++ Compute the tranformation matrices
   AlignmentsCalculator alignCalc;
   AlignmentsCalculator::Result ares = alignCalc.compute(deltas,*slice);
