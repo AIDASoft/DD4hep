@@ -35,10 +35,54 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class AlignmentsPrinter : public Alignment::Processor, public DetElement::Processor  {
+    class AlignmentsPrinter /* : public Alignment::Processor , public DetElement::Processor  */ {
     public:
       /// Conditionsmap to resolve things
       ConditionsMap* mapping;
+      /// Printer name. Want to know who is printing what
+      std::string    name;
+      /// Printout prefix
+      std::string    prefix;
+      /// Printout level
+      PrintLevel     printLevel;
+    protected:
+      /// Printout processing and customization flag
+      int            m_flag;
+
+    public:
+      /// No default constructor
+      AlignmentsPrinter() = delete;
+      /// Initializing constructor
+      AlignmentsPrinter(ConditionsMap* m, const std::string& prefix="",int flags=0);
+      /// Default destructor
+      virtual ~AlignmentsPrinter() = default;
+      /// Set name for printouts
+      void setName(const std::string& value)    {  name = value;   }
+      /// Set prefix for printouts
+      void setPrefix(const std::string& value)  {  prefix = value; }
+      /// Callback to output alignments information of an entire DetElement
+      virtual int operator()(DetElement de, int level) const;
+      /// Callback to output alignments information
+      virtual int operator()(Alignment alignment)  const;
+      /// Processing callback to print alignments of a detector element
+      //virtual int processElement(DetElement de)  override;
+    };
+
+    
+    /// Generic Alignments data dumper.
+    /**
+     *   Please note that the principle of locality applies:
+     *   The object is designed for stack allocation and configuration.
+     *   It may NOT be shared across threads!
+     *
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \date    31/03/2016
+     *   \ingroup DD4HEP_DDDB
+     */
+    class AlignedVolumePrinter : public AlignmentsPrinter {
+#if 0
+    public:
       /// Printer name. Want to know who is printing what
       std::string   name;
       /// Printout prefix
@@ -48,20 +92,25 @@ namespace DD4hep {
     protected:
       /// Printout processing and customization flag
       int           m_flag;
-
+#endif
     public:
+      /// No default constructor
+      AlignedVolumePrinter() = delete;
       /// Initializing constructor
-      AlignmentsPrinter(ConditionsMap* m, const std::string& prefix="",int flags=0);
+      AlignedVolumePrinter(ConditionsMap* map, const std::string& prefix="",int flags=0);
       /// Default destructor
-      virtual ~AlignmentsPrinter() = default;
+      virtual ~AlignedVolumePrinter() = default;
       /// Set name for printouts
-      void setName(const std::string& value)    {  name = value;   }
+      //void setName(const std::string& value)    {  name = value;   }
       /// Set prefix for printouts
-      void setPrefix(const std::string& value)  {  prefix = value; }
+      //void setPrefix(const std::string& value)  {  prefix = value; }
+      /// Callback to output alignments information of an entire DetElement
+      virtual int operator()(DetElement de, int level) const override
+      { return this->AlignmentsPrinter::operator()(de,level);        }
       /// Callback to output alignments information
-      virtual int operator()(Alignment cond)  override;
-      /// Processing callback to print alignments of a detector element
-      virtual int processElement(DetElement de)  override;
+      virtual int operator()(Alignment cond)  const  override;
+      /// Callback to output alignments information of an entire DetElement
+      //virtual int processElement(DetElement de)  override;
     };
 
     /// Default printout of an alignment entry

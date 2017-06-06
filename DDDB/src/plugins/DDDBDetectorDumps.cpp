@@ -23,15 +23,20 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/ConditionsData.h"
-#include "DD4hep/objects/DetectorInterna.h"
-
+#include "DD4hep/ConditionsProcessor.h"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/AlignmentsProcessor.h"
 #include "DDCond/ConditionsOperators.h"
+#include "DDCond/ConditionsManager.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBConditionPrinter.h"
 
+// C/C++ include files
+#include <memory>
+
 using namespace std;
 using namespace DD4hep;
-using DD4hep::Geometry::LCDD;
+using Geometry::LCDD;
 
 /// Anonymous namespace for plugins
 namespace {
@@ -56,28 +61,27 @@ DECLARE_APPLY(DDDB_PluginLevel,dddb_plugin_print_level)
 /// Anonymous namespace for plugins
 namespace {
 
+  using namespace Conditions;
+  
   /// Basic entry point to print out the detector element hierarchy
   /**
-   *  @author  M.Frank
-   *  @version 1.0
-   *  @date    01/04/2014
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
    */
   long dump_det_tree(LCDD& lcdd, int flag, int argc, char** argv) {
 
-    using Conditions::RangeConditions;
-    using Conditions::AbstractMap;
-    using Conditions::Condition;
-    using Geometry::DetElement;
-
+    using Alignments::deltaCollector;    
+    using Alignments::Delta;
     using DDDB::ConditionPrinter;
     using DDDB::Catalog;
 
 
     /// Callback object to print selective information
     /**
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    01/04/2014
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2014
      */
     struct DumpActor {
       struct Counters  final {
@@ -99,26 +103,34 @@ namespace {
       };
 
       /// Container with all known conditions
-      vector<pair<int,Condition> >  m_allConditions;
-      ConditionPrinter m_printer;
-      ConditionPrinter m_condPrinter;
-      ConditionPrinter m_alignPrinter;
-      Counters         m_counters;
-      int              m_flag;
-      bool             m_sensitivesOnly;
-      bool             m_dumpConditions;
-      string           m_name;
-      LCDD&            m_lcdd;
-      IOV              m_iov;
+      vector<pair<int,Condition> > m_allConditions;
+      shared_ptr<ConditionsSlice>  m_slice;
+      ConditionsManager            m_manager;
+      ConditionPrinter             m_detElementPrinter;
+      ConditionPrinter             m_catalogPrinter;
+      ConditionPrinter             m_alignPrinter;
+      Counters                     m_counters;
+      int                          m_flag;
+      bool                         m_sensitivesOnly;
+      bool                         m_dumpConditions;
+      string                       m_name;
+      LCDD&                        m_lcdd;
 
       /// Standard constructor
       DumpActor(LCDD& l, int flg, bool sens, bool dmp)
-        : m_printer(0,"DDDBDetectors"), m_condPrinter(0,"DDDBConditions"), m_alignPrinter(0,"DDDBAlignments"),
-          m_flag(flg), m_sensitivesOnly(sens), m_dumpConditions(dmp), m_lcdd(l), m_iov(0)
+        : m_detElementPrinter(0,"DDDBDetectors"), m_catalogPrinter(0,"DDDBConditions"),
+          m_alignPrinter(0,"DDDBAlignments"),
+          m_flag(flg), m_sensitivesOnly(sens), m_dumpConditions(dmp), m_lcdd(l)
       {
-        m_printer.setPrintLevel(s_PrintLevel);
-        m_condPrinter.setPrintLevel(s_PrintLevel);
-        m_alignPrinter.setPrintLevel(s_PrintLevel);
+        m_manager = ConditionsManager::from(m_lcdd);
+        m_slice.reset(new ConditionsSlice(m_manager,shared_ptr<ConditionsContent>(new ConditionsContent())));
+        m_detElementPrinter.printLevel   = s_PrintLevel;
+        m_detElementPrinter.name         = "DetElement-Info";
+        m_catalogPrinter.printLevel      = s_PrintLevel;
+        m_catalogPrinter.name            = "Cat.condition";
+        m_alignPrinter.printLevel        = s_PrintLevel;
+        m_alignPrinter.name              = "Cat.alignment";
+        m_alignPrinter.lineLength        = 80;
       }
 
       /// Standard destructor
@@ -132,6 +144,9 @@ namespace {
           printout(INFO,m_name,"++ DDDB: Number of attached conditions:         %8ld",m_counters.numConditions);
           printout(INFO,m_name,"++ DDDB: Number of attached alignments:         %8ld",m_counters.numAlignments);
           if ( m_flag > 2 )  {
+            printout(INFO,m_name,"++ DDDB: Total number of parameters:            %8ld",
+                     m_catalogPrinter.numParam+m_alignPrinter.numParam);
+            printout(INFO,m_name,"++ DDDB: Total number of DetElement parameters: %8ld",m_detElementPrinter.numParam);
             printout(INFO,m_name,"++ DDDB: Total number of conditions:            %8ld",m_counters.totConditions);
           }
         }
@@ -140,25 +155,37 @@ namespace {
 
       /// Initialization
       DumpActor& init()  {
+        RangeConditions rc;
+        const IOVType*  iov_typ  = m_manager.registerIOVType(0,"epoch").second;
+        IOV iov(iov_typ);
+        if ( 0 == iov_typ )  {
+          except(m_name,"++ Unknown IOV type 'epoch' supplied.");
+        }
         m_counters.reset();
         m_allConditions.clear();
+        Operators::collectAllConditions(m_lcdd, rc);
+        iov.reset().invert();
+        iov.iovType = 0;
+        for ( Condition cond : rc )   {
+          m_allConditions.push_back(make_pair(0,cond));
+          if ( !iov.iovType ) iov = cond.iov();
+          else  iov.iov_intersection(cond.iov());
+        }
+        iov.set(iov.keyData.first);
 
-        if ( m_flag >= 3 )   {
-          RangeConditions rc;
-          Conditions::Operators::collectAllConditions(m_lcdd, rc);
-          m_iov.reset().invert();
-          m_iov.iovType = 0;
-          for ( Condition cond : rc )   {
-            m_allConditions.push_back(make_pair(0,cond));
-            if ( !m_iov.iovType ) m_iov = cond.iov();
-            else  m_iov.iov_intersection(cond.iov());
-          }
-          m_iov.set(m_iov.keyData.first);
-          if ( m_dumpConditions )   {
-            printout(INFO,m_name,"**************** DDDB Detector dump: ALL Conditions *****************************");
-            for(Condition cond : rc ) m_printer(cond);
-            printout(INFO,m_name,"*********************************************************************************");
-          }
+        IOV req_iov(iov.iovType, iov.keyData.first);
+
+        Conditions::fill_content(m_manager,*m_slice->content,*iov_typ);
+        ConditionsManager::Result r = m_manager.prepare(req_iov,*m_slice);
+        // Now compute the tranformation matrices
+        printout(INFO,m_name,"Prepare: Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
+                 r.total(), r.selected, r.loaded, r.computed, r.missing,
+                 req_iov.str().c_str());
+
+        if ( m_dumpConditions )   {
+          printout(INFO,m_name,"**************** DDDB Detector dump: ALL Conditions *****************************");
+          for(Condition cond : rc ) m_detElementPrinter(cond);
+          printout(INFO,m_name,"*********************************************************************************");
         }
         return *this;
       }
@@ -191,50 +218,43 @@ namespace {
       void printDetElement(int level, DetElement de,
                            bool with_placement = false,
                            bool with_keys      = false,
-                           bool with_values    =false)
+                           bool with_values    = false)
       {
         char fmt[128];
         const DetElement::Children& c = de.children();
         ++m_counters.numDetElements;
         ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p Place:%%p",level+1,2*level+1);
-        printout(s_PrintLevel, m_name, fmt, "", de.path().c_str(), int(c.size()),
+        printout(s_PrintLevel, m_detElementPrinter.name, fmt, "", de.path().c_str(), int(c.size()),
                  (void*)de.volumeID(), (void*)de.placement().ptr());
         if ( de.placement().isValid() ) {
           ++m_counters.numDetPlacements;
         }
-        throw runtime_error("Fix-me:"+de.path());
-#if 0
-        if ( de.hasConditions() )  {
-          Conditions::DetConditions dc(de);
-          m_counters.numDetConditionKeys += dc.conditions().numKeys();
-        }
-        if ( de.hasAlignments() )  {
-          Alignments::DetAlign da(de);
-          m_counters.numDetAlignmentKeys += da.alignments().numKeys();
-        }
+        std::vector<Condition> conditions;
+        conditionsCollector(*m_slice,conditions)(de);
+        m_counters.numDetConditionKeys += conditions.size();
+
+        std::vector<Delta> deltas;
+        deltaCollector(*m_slice,deltas)(de);
+        m_counters.numDetAlignmentKeys += deltas.size();
         if ( with_placement )  {
           ::sprintf(fmt,"%03d %%-%ds Placement: %%s",level+1,2*level+3);
-          printout(s_PrintLevel,m_name,fmt,"",de.placementPath().c_str());
+          printout(s_PrintLevel,m_detElementPrinter.name,fmt,"",de.placementPath().c_str());
         }
-        if ( (with_keys || with_values) && de.hasConditions() )  {
-          Conditions::DetConditions dc(de);
-          Conditions::Container cont = dc.conditions();
-          ::sprintf(fmt,"%03d %%-%ds Key: %%16llX -> %%16llX -> %%s",level+1,2*level+3);
-          for(const auto& i : cont->keys )  {
+        if ( (with_keys || with_values) && !conditions.empty() )  {
+          ::sprintf(fmt,"%03d %%-%ds Key: %%16llX -> %%s # %%s",level+1,2*level+3);
+          for(const auto cond : conditions )  {
             if ( with_keys )   {
-              printout(s_PrintLevel,m_name,fmt,"",i.first,i.second.first, i.second.second.c_str());
+              printout(s_PrintLevel,m_detElementPrinter.name,fmt,"",cond->hash, de.path().c_str(), cond->name.c_str());
             }
             if ( with_values )   {
-              Condition::key_type key = i.second.first;
-              Condition cond = dc.get(key, m_iov);
-              m_printer(cond);
+              m_detElementPrinter(cond);
             }
           }
         }
-#endif
       }
       /// __________________________________________________________________________________
-      void printConditionInfo(int level, Catalog* cat, bool with_elements=false)   {
+      void printCatalog_ConditionInfo(int level, DetElement de, bool with_elements=false)   {
+        Catalog* cat = de.extension<Catalog>();
         if ( cat && !cat->conditioninfo.empty() )   {
           char fmt[128];
           ++m_counters.numConditions;
@@ -243,30 +263,29 @@ namespace {
             const string& cond_name = i.second;
             if ( with_elements )  {
               RangeConditions rc = findCond(cond_name);
-              printout(s_PrintLevel,m_name,fmt,"",i.first.c_str(), 
+              printout(s_PrintLevel,m_catalogPrinter.name,fmt,"",i.first.c_str(), 
                        rc.empty() ? (cond_name+"  !!!UNRESOLVED!!!").c_str() : cond_name.c_str());
-              for(Condition cond : rc ) m_condPrinter(cond);
+              for(Condition cond : rc ) m_catalogPrinter(cond);
               continue;
             }
-            printout(s_PrintLevel,m_name,fmt,"",i.first.c_str(),cond_name.c_str());
+            printout(s_PrintLevel,m_catalogPrinter.name,fmt,"",i.first.c_str(),cond_name.c_str());
           }
         }
       }
       /// __________________________________________________________________________________
-      void printAlignment(int level, Catalog* cat, bool with_values=false)   {
+      void printCatalog_Alignment(int level, Catalog* cat, bool with_values=false)   {
         if ( cat && !cat->condition.empty() )  {
           char fmt[128];
           ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s",level+1,2*level+3);
           ++m_counters.numAlignments;
           if ( with_values )  {
             RangeConditions rc = findCond(cat->condition);
-            printout(s_PrintLevel,m_name,fmt,"","Alignment:", 
+            printout(s_PrintLevel,m_alignPrinter.name,fmt,"","Alignment:", 
                      rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
-            for(const auto& i : rc)
-              m_printer(i);
+            for(const auto& cond : rc) m_alignPrinter(cond);
             return;
           }
-          printout(s_PrintLevel,m_name,fmt,"","Alignment:",cat->condition.c_str());
+          printout(s_PrintLevel,m_alignPrinter.name,fmt,"","Alignment:",cat->condition.c_str());
         }
       }
       /// __________________________________________________________________________________
@@ -276,7 +295,7 @@ namespace {
         const DetElement::Children& c = de.children();
         ::snprintf(fmt,sizeof(fmt),"%%-%ds-> ",2*level+5);
         ::snprintf(text,sizeof(text),fmt,"");
-        m_printer.setPrefix(text);
+        m_detElementPrinter.setPrefix(text);
         try  {
           if ( !m_sensitivesOnly || 0 != de.volumeID() )  {
             switch(m_flag)  {
@@ -286,28 +305,34 @@ namespace {
             case 1:
               printDetElement(level, de, false, false);
               cat = de.extension<Catalog>();
-              printAlignment(level, cat, false);
-              printConditionInfo(level, cat, false);
+              printCatalog_Alignment(level, cat, false);
+              printCatalog_ConditionInfo(level, de, false);
               break;
             case 2:
               printDetElement(level, de, true, true);
               cat = de.extension<Catalog>();
-              printAlignment(level, cat, false);
-              printConditionInfo(level, cat, false);
+              printCatalog_Alignment(level, cat, false);
+              printCatalog_ConditionInfo(level, de, false);
               break;
             case 3:
               printDetElement(level, de, false, false);
               cat = de.extension<Catalog>();
-              printAlignment(level, cat, true);
+              printCatalog_Alignment(level, cat, true);
               break;
             case 4:
               printDetElement(level, de, true, true);
               cat = de.extension<Catalog>();
-              printAlignment(level, cat, true);
-              printConditionInfo(level, cat, true);
+              printCatalog_Alignment(level, cat, true);
+              printCatalog_ConditionInfo(level, de, true);
               break;
             case 5:
               printDetElement(level, de, true, true, true);
+              break;
+            case 6:
+              printDetElement(level, de, true, true, true);
+              cat = de.extension<Catalog>();
+              printCatalog_Alignment(level, cat, true);
+              printCatalog_ConditionInfo(level, de, true);
               break;
             default:
               break;
@@ -315,12 +340,12 @@ namespace {
           }
         }
         catch(const exception& e)  {
-          ::sprintf(fmt,"%03d %%-%ds Exception from: %%s %%-20s %%s",level+1,2*level+3);
+          ::sprintf(fmt,"%03d %%-%ds WARNING from: %%s %%-20s %%s",level+1,2*level+3);
           printout(INFO, m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]",e.what());
           ++m_counters.numNoCatalogs;
         }
         catch(...)  {
-          ::sprintf(fmt,"%03d %%-%ds Exception from: %%s %%-20s",level+1,2*level+3);
+          ::sprintf(fmt,"%03d %%-%ds WARNING from: %%s %%-20s",level+1,2*level+3);
           printout(INFO, m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]");
           ++m_counters.numNoCatalogs;
         }
@@ -358,6 +383,8 @@ namespace {
       actor.m_name = "DDDBDetectorDump";
     else if ( flag == 5 )
       actor.m_name = "DetElementConditionDump";
+    else if ( flag == 5 )
+      actor.m_name = "DDDBDetectorDumpAll";
     printout(INFO,actor.m_name,"**************** DDDB Detector dump *****************************");
     return actor.init().dump(lcdd.world(), 0);
   }
@@ -372,4 +399,5 @@ DECLARE_APPLY(DDDB_DetectorConditionKeysDump,dump_detelement_tree<2>)
 DECLARE_APPLY(DDDB_DetectorAlignmentDump,dump_detelement_tree<3>)
 DECLARE_APPLY(DDDB_DetectorConditionDump,dump_detelement_tree<4>)
 DECLARE_APPLY(DDDB_DetElementConditionDump,dump_detelement_tree<5>)
+DECLARE_APPLY(DDDB_DetectorDumpAll,dump_detelement_tree<6>)
 //==========================================================================

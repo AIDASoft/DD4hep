@@ -27,8 +27,8 @@
 // Other DD4hep includes
 #include "DD4hep/Printout.h"
 #include "DD4hep/Operators.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsManagerObject.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 // Forward declartions
 using namespace std;

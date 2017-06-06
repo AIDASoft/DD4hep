@@ -19,7 +19,7 @@
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/objects/VolumeManagerInterna.h"
+#include "DD4hep/detail/VolumeManagerInterna.h"
 
 // C/C++ include files
 #include <stdexcept>

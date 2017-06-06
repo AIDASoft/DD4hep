@@ -14,15 +14,16 @@
 // Framework include files
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsManagerObject.h"
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/Handle.inl"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 using std::string;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
+DD4HEP_INSTANTIATE_HANDLE_NAMED(UpdatePool);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsPool);
 
 /// Default constructor

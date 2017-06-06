@@ -22,7 +22,7 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 
 using namespace std;
 using namespace DD4hep;

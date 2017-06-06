@@ -67,20 +67,7 @@ namespace DD4hep {
 
       typedef set<string> StringSet;
 
-      Context(LCDD& l, dddb* g)
-        : lcdd(l), geo(g), helper(0), epoch(0),
-          max_volume_depth(9999),
-          print_materials(false), 
-          print_volumes(false), 
-          print_logvol(false), 
-          print_shapes(false), 
-          print_physvol(false), 
-          print_params(false), 
-          print_detelem(false),
-          print_conditions(false),
-          print_vis(false),
-          conditions_only(false)
-      {
+      Context(LCDD& l, dddb* g) : lcdd(l), geo(g)      {
       }
       ~Context()  {
         //printout(INFO,"Context","Destructor calling....");
@@ -93,8 +80,8 @@ namespace DD4hep {
       template <typename T> void collect(const string& id, T* s);
       template <typename T,typename Q> void collect(const string& id, T* s, Q* c);
       LCDD&   lcdd;
-      DDDB::dddb*       geo;
-      DDDB::DDDBHelper* helper;
+      DDDB::dddb*       geo = 0;
+      DDDB::DDDBHelper* helper = 0;
       typedef std::map<Isotope*,     TGeoIsotope*>   Isotopes;
       typedef std::map<Element*,     TGeoElement*>   Elements;
       typedef std::map<Material*,    TGeoMedium*>    Materials;
@@ -117,18 +104,20 @@ namespace DD4hep {
       DetectorElements  detelements;
       GeoVolume         lvDummy;
       ConditionsManager manager;
-      const IOVType*    epoch;
-      int               max_volume_depth;
-      bool              print_materials;
-      bool              print_volumes;
-      bool              print_logvol;
-      bool              print_shapes;
-      bool              print_physvol;
-      bool              print_params;
-      bool              print_detelem;
-      bool              print_conditions;
-      bool              print_vis;
-      bool              conditions_only;
+      const IOVType*    epoch = 0;
+      int               max_volume_depth = 9999;
+      int               matched_conditions = 0;
+      int               unmatched_conditions = 0;
+      bool              print_materials = false;
+      bool              print_volumes = false;
+      bool              print_logvol = false;
+      bool              print_shapes = false;
+      bool              print_physvol = false;
+      bool              print_params = false;
+      bool              print_detelem = false;
+      bool              print_conditions = false;
+      bool              print_vis = false;
+      bool              conditions_only = false;
 
       static GeoPlacement placement(DetElement de)   {
         if ( de.isValid() )  {
@@ -222,15 +211,32 @@ namespace DD4hep {
 
     /// Convert single condition objects
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
-      Context* context = _param<Context>();
-      if ( obj )   {
+       if ( obj )   {
         typedef IOV::Key _K;
+        Context* context = _param<Context>();
+        dddb*    geo     = context->geo;
         Conditions::Condition cond = obj;
         AbstractMap&        d = cond.get<AbstractMap>();
         Document*         doc = d.option<Document>();
         _K::first_type  since = doc->context.valid_since;
         _K::second_type until = doc->context.valid_until;
         _K iov_key(since,until);
+        auto it = geo->detCond.find(obj->value);
+        bool resolved = false;
+        if ( it != geo->detCond.end() )    {
+          DetElement det((*it).second.first);
+          cond->SetName((*it).second.second.c_str());
+          obj->hash = Conditions::ConditionKey::KeyMaker(det.key(),hash32(cond.name())).hash;
+          ++context->matched_conditions;
+          resolved = true;
+        }
+        else if ( obj->value.find("/dd/Conditions/Alignment/") == 0 )  {
+          //printout(WARNING,"DDDB","Cannot match alignment %s to detector element!",cond.name());
+        }
+        if ( !resolved )  {
+          //printout(WARNING,"DDDB","Cannot match condition %s to detector element!",cond.name());
+          ++context->unmatched_conditions;
+        }
         ConditionsPool* pool = context->manager.registerIOV(*(context->epoch), iov_key);
         context->manager.registerUnlocked(*pool, cond);
         //context->manager.registerKey(cond->hash, cond->name);
@@ -870,22 +876,17 @@ namespace DD4hep {
         context->volumePaths[lp] = gv.ptr();
       }
 #endif
-#if 0
       /// Attach conditions keys to the detector element if present
       if ( !object->condition.empty() )   {
-        Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
-        conditions->addKey(object->condition);
-        conditions->addKey("Alignment", object->condition);
+        printout(DEBUG,"DDDB","+ Match Align %s -> %s",object->condition.c_str(), object->path.c_str());
+        geo->detCond[object->condition] = make_pair(det,"alignment_delta");
       }
       if ( !object->conditioninfo.empty() )  {
-        Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
-        for(Catalog::StringMap::const_iterator i=object->conditioninfo.begin(); i!=object->conditioninfo.end(); ++i)  {
-          const string& cond_name = (*i).second;
-          conditions->addKey(cond_name);
-          conditions->addKey((*i).first, cond_name);
+        for( const auto& i : object->conditioninfo )   {
+          printout(DEBUG,"DDDB","+ Match Cond  %s -> %s",i.second.c_str(), object->path.c_str());
+          geo->detCond[i.second] = make_pair(det,i.first);
         }
       }
-#endif
       if ( context->print_detelem )  {
         printout(INFO,"CNV<Catalog>","++ Converting catalog %p -> %p [cref:%d/%d lref:%d/%d lv:%s [%p] sup:%s np:%s] %s ",
                  (void*)object, det.ptr(),
@@ -898,19 +899,17 @@ namespace DD4hep {
                  object->support.empty() ? "--" : object->support.c_str(),
                  object->npath.empty()   ? "--" : object->npath.c_str(),
                  object->path.c_str());
-        int cnt;
-        cnt = 0;
-        for(Catalog::CatRefs::const_iterator i=object->catalogrefs.begin(); i!=object->catalogrefs.end(); ++i,++cnt)   {
-          const Catalog::CatRefs::value_type& v = *i;
+        int cnt = 0;
+        for( const auto& v : object->catalogrefs )  {
           if ( v.second )
             printout(INFO,"CNV<DE>:cref","++ DE:%s ref[%2d]: %p -> %s",
                      object->path.c_str(), cnt, v.second, v.second->c_name());
           else
             printout(INFO,"CNV<DE>:cref","++ DE:%s ref[%2d]: ??????", object->path.c_str(), cnt);
+          ++cnt;
         }
         cnt = 0;
-        for(Catalog::LvRefs::const_iterator i=object->logvolrefs.begin(); i!=object->logvolrefs.end(); ++i,++cnt)   {
-          const Catalog::LvRefs::value_type& v = *i;
+        for( const auto& v : object->logvolrefs )  {
           LogVol* lv = v.second;
           GeoVolume geoVol = Context::find(context->volumes, lv);
           if ( lv )
@@ -919,10 +918,10 @@ namespace DD4hep {
                      (void*)geoVol.ptr(), geoVol.isValid() ? geoVol->GetName() : "????");
           else
             printout(INFO,"CNV<DE>:lref","++ DE:%s ref[%2d]: ??????", object->path.c_str(), cnt);
+          ++cnt;
         }
         cnt = 0;
-        for(Catalog::LvRefs::const_iterator i=object->logvols.begin(); i!=object->logvols.end(); ++i,++cnt)   {
-          const Catalog::LvRefs::value_type& v = *i;
+        for( const auto& v : object->logvols )  {
           LogVol* lv = v.second;
           if ( lv )  {
             GeoVolume geoVol = Context::find(context->volumes, lv);
@@ -932,6 +931,7 @@ namespace DD4hep {
           }
           else
             printout(INFO,"CNV<DE>:lvol","++ DE:%s ref[%2d]: ??????", object->path.c_str(), cnt);
+          ++cnt;
         }
         if ( vol && !object->npath.empty() )   {
           for(int i=0; i<vol->GetNdaughters(); ++i)  {
@@ -1041,6 +1041,8 @@ namespace DD4hep {
         printout(INFO,"DDDB","++ Converted %8d detector elements.",int(context.detelements.size()));
         printout(INFO,"DDDB","++ Converted %8d conditions.",
                  context.geo ? int(context.geo->conditions.size()) : 0);
+        printout(INFO,"DDDB","++ MATCHED   %8d conditions.",       context.matched_conditions);
+        printout(INFO,"DDDB","++ UNMATCHED %8d conditions.",       context.unmatched_conditions);
         helper->setDetectorDescription(0);
         return 1;
       }

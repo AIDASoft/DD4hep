@@ -1,0 +1,40 @@
+
+Access mechaisms of DD4hep conditions for utilities
+===================================================
+
+Access to conditions is solely supported using the interface class DDCore/ConditionsMap.
+-- All utilities must use this interface.
+-- Any concrete implementation using conditions/alignment utilities
+   must implement this interface
+-- Basic implmentation using STL map, multimap and unordered_map are provided.
+-- A special no-op implementation of this interface shall be provided to access
+   "default" alignment conditions.
+   This implementation shall fall-back internally to the DetElement::nominal() alignment.
+   Known clients: VolumeManager (hence: DDG4, DDRec, etc.)
+
+Naming conventions for detector conditions
+==========================================
+
+-- Condition are logically attached to DetElements
+   --> Condition names are: DetElement.path()+"#"+condition-name
+       Example: /world/LHCb/DownstreamRegion/Muon/M5/M5ASide/R3ASide/Cham046#alignment
+
+-- Condition keys are a int64 compound of two int32:
+   union {
+     int64 key;
+     struct {
+       int32 det_key;
+       int32 item_key;
+     } values;
+   };
+   det_key  = hash32(DetElement.path())
+   item_key = hash32(condition-name)
+   Condition keys must be unique throughout the detector description.
+
+-- Alignment conditions naming conventions:
+   --> Alignment-delta conditions are called           "alignment_delta".
+   --> Fully qualified alignment conditions are called "alignment".
+   DD4hep provided alignment utilities rely on this convention.
+
+-- Other conditions can be named freely.
+

@@ -13,7 +13,7 @@
 
 // Framework includes
 #include "DD4hep/NamedObject.h"
-#include "DD4hep/Handle.inl"
+#include "DD4hep/detail/Handle.inl"
 #include "TObject.h"
 
 using namespace std;

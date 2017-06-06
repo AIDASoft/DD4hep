@@ -17,7 +17,7 @@
 // Framework includes
 #include "DD4hep/LCDD.h"
 #include "DD4hep/ObjectExtensions.h"
-#include "DD4hep/objects/VolumeManagerInterna.h"
+#include "DD4hep/detail/VolumeManagerInterna.h"
 
 // C/C++ include files
 #include <stdexcept>

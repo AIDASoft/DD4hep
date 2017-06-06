@@ -21,7 +21,7 @@
 #include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/AlignmentsProcessor.h"
-#include "DD4hep/AlignedVolumePrinter.h"
+#include "DD4hep/AlignmentsPrinter.h"
 #include "DD4hep/AlignmentsCalculator.h"
 
 #include "DDCond/ConditionsSlice.h"
@@ -35,8 +35,7 @@ namespace DD4hep {
     using Geometry::LCDD;
     using Geometry::RotationZYX;
     using Geometry::DetElement;
-    using Geometry::DetectorProcessor;
-    using Geometry::DetElementProcessor;
+    using Geometry::detectorProcessor;
     
     using Conditions::Condition;
     using Conditions::ConditionKey;
@@ -45,14 +44,16 @@ namespace DD4hep {
     using Conditions::ConditionsSlice;
     using Conditions::ConditionsContent;
     using Conditions::ConditionsManager;
-    using Conditions::DetElementConditionsCollector;
+    using Conditions::conditionsCollector;
 
     using Alignments::Delta;
     using Alignments::Alignment;
     using Alignments::AlignmentData;
     using Alignments::AlignmentsCalculator;
-    using Alignments::DetElementDeltaCollector;
-    using Alignments::DetElementAlignmentsCollector;
+    using Alignments::AlignedVolumePrinter;
+    using Alignments::DeltaCollector;
+    using Alignments::deltaCollector;
+    using Alignments::alignmentsCollector;
     
     /// Example how to populate the detector description with alignment constants
     /**
@@ -62,7 +63,8 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct AlignmentCreator : public DetectorProcessor {
+    class AlignmentCreator {
+    public:
       /// Reference to the conditions manager
       ConditionsManager manager;
       /// Reference to the used conditions pool
@@ -70,10 +72,10 @@ namespace DD4hep {
       /// Print level
       PrintLevel        printLevel;
       /// Constructor
-      AlignmentCreator(ConditionsManager m,ConditionsPool& p)
+      AlignmentCreator(ConditionsManager m, ConditionsPool& p)
         : manager(m), pool(p), printLevel(DEBUG) {}
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level);
+      int operator()(DetElement de, int level)  const;
     };
 
     /// Example how to access the alignment constants from a detector element
@@ -82,43 +84,22 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct AlignmentDataAccess : public Alignments::AlignmentsProcessor  {
+    class AlignmentDataAccess {
+    public:
+      ConditionsMap& mapping;
       /// Print level
       PrintLevel printLevel;
       /// Constructor
-      AlignmentDataAccess(ConditionsMap& p) : AlignmentsProcessor(&p), printLevel(DEBUG) {}
+      AlignmentDataAccess(ConditionsMap& m) : mapping(m), printLevel(DEBUG) {}
       /// Callback to process a single detector element
-      int processElement(DetElement de);
+      int operator()(DetElement de, int level)  const;
     };
 
     /// Helper to run DetElement scans
-    /**
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \date    01/04/2016
-     */
-    struct Scanner : public DetectorProcessor  {
-      DetElement::Processor* proc;
-      /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int)      {
-        return proc->processElement(de);
-      }
-      template <typename Q> Scanner& scan(Q& p, DetElement start)      {
-        Scanner obj;
-        obj.proc = &p;
-        obj.process(start, 0, true);
-        return *this;
-      }
-      template <typename Q> Scanner& scan(const Q& p, DetElement start)  {
-        Scanner obj;
-        Q* q = const_cast<Q*>(&p);
-        obj.proc = q;
-        obj.process(start, 0, true); return *this;
-      }
-    };
+    typedef Geometry::DetectorScanner Scanner;
 
     /// Install the consitions and the alignment manager
-    void installManagers(LCDD& lcdd);
+    ConditionsManager installManager(LCDD& lcdd);
   }       /* End namespace AlignmentExamples           */
 }         /* End namespace DD4hep                      */
 #endif    /* DD4HEP_ALIGNDET_ALIGNMENTEXAMPLEOBJECTS_H */

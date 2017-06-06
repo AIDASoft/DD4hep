@@ -71,37 +71,31 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
   // First we load the geometry
   lcdd.fromXML(input);
-  installManagers(lcdd);
 
   /******************** Initialize the conditions manager *****************/
-  ConditionsManager condMgr = ConditionsManager::from(lcdd);
-  condMgr["PoolType"]       = "DD4hep_ConditionsLinearPool";
-  condMgr["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
-  condMgr["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-  condMgr.initialize();
-  
-  const IOVType*  iov_typ  = condMgr.registerIOVType(0,"run").second;
-  if ( 0 == iov_typ )  {
+  ConditionsManager manager = installManager(lcdd);
+  const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
+  if ( 0 == iov_typ )
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
-  }
-  TStatistic cr_stat("Creation"), comp_stat("Computation"), access_stat("Access");
 
+  TStatistic cr_stat("Creation"), comp_stat("Computation"), access_stat("Access");
+  size_t total_created = 0;
   /******************** Populate the conditions store *********************/
   // Have num_iov possible run-slices [11,20] .... [n*10+1,(n+1)*10]
   for(int i=0; i<num_iov; ++i)  {
     TTimeStamp start;
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
-    ConditionsPool* iov_pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    AlignmentCreator creator(condMgr, *iov_pool);   // Use a generic creator
-    creator.process(lcdd.world(),0,true);           // Create conditions with all deltas
+    ConditionsPool* iov_pool = manager.registerIOV(*iov.iovType, iov.key());
+    // Create conditions with all deltas. Use a generic creator
+    total_created += Scanner().scan(AlignmentCreator(manager, *iov_pool),lcdd.world());
     TTimeStamp stop;
     cr_stat.Fill(stop.AsDouble()-start.AsDouble());
   }
 
   /******************** Now as usual: create the slice ********************/
   shared_ptr<ConditionsContent> content(new ConditionsContent());
-  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(condMgr,content));
-  Conditions::fill_content(condMgr,*content,*iov_typ);
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  Conditions::fill_content(manager,*content,*iov_typ);
   
   /******************** Register alignments *******************************/
   // Note: We have to load one set of conditions in order to auto-populate
@@ -110,15 +104,13 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   //       Unfortunate, but unavoidable.
   //
   IOV iov(iov_typ,15);
-  condMgr.prepare(iov,*slice);
+  manager.prepare(iov,*slice);
   slice->pool->flags |= Conditions::UserPool::PRINT_INSERT;
 
   // Collect all the delta conditions and make proper alignment conditions out of them
-  DetElementDeltaCollector delta_collector(slice.get());
-  DetElementProcessor<DetElementDeltaCollector> proc(delta_collector);
-  proc.process(lcdd.world(),0,true);
-  printout(INFO,"Prepare","Got a total of %ld deltas for processing alignments.",
-           delta_collector.deltas.size());
+  AlignmentsCalculator::Deltas  deltas;
+  Scanner(deltaCollector(*slice,deltas),lcdd.world());
+  printout(INFO,"Prepare","Got a total of %ld deltas for processing alignments.",deltas.size());
 
   ConditionsManager::Result total_cres;
   AlignmentsCalculator::Result total_ares;
@@ -126,11 +118,11 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   for(int i=0; i<num_iov; ++i)  {
     TTimeStamp start;
     IOV req_iov(iov_typ,1+i*10);
-    shared_ptr<ConditionsSlice> sl(new ConditionsSlice(condMgr,content));
-    ConditionsManager::Result cres = condMgr.prepare(req_iov,*sl);
+    shared_ptr<ConditionsSlice> sl(new ConditionsSlice(manager,content));
+    ConditionsManager::Result cres = manager.prepare(req_iov,*sl);
     // Now compute the tranformation matrices
     AlignmentsCalculator calculator;
-    AlignmentsCalculator::Result ares = calculator.compute(delta_collector.deltas,*sl);
+    AlignmentsCalculator::Result ares = calculator.compute(deltas,*sl);
     TTimeStamp stop;
     total_cres += cres;
     total_ares += ares;
@@ -139,7 +131,8 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     printout(INFO,"ComputedDerived",
              "Setup %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (D:%ld,A:%ld,M:%ld) for IOV:%-12s [%8.3f sec]",
              cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
-             delta_collector.deltas.size(),ares.computed, ares.missing, req_iov.str().c_str(), stop.AsDouble()-start.AsDouble());
+             deltas.size(),ares.computed, ares.missing, req_iov.str().c_str(),
+             stop.AsDouble()-start.AsDouble());
   }
 
   // ++++++++++++++++++++++++ Now access the conditions for every IOV....
@@ -149,7 +142,7 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
     unsigned int rndm = 1+random.Integer(num_iov*10);
     IOV req_iov(iov_typ,rndm);
     // Attach the proper set of conditions to the user pool
-    ConditionsManager::Result res = condMgr.prepare(req_iov,*slice);
+    ConditionsManager::Result res = manager.prepare(req_iov,*slice);
     TTimeStamp stop;
     total_cres += res;
     access_stat.Fill(stop.AsDouble()-start.AsDouble());
@@ -165,11 +158,10 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
            comp_stat.GetName(), comp_stat.GetMean(), comp_stat.GetMeanErr(), comp_stat.GetRMS(), comp_stat.GetN());
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            access_stat.GetName(), access_stat.GetMean(), access_stat.GetMeanErr(), access_stat.GetRMS(), access_stat.GetN());
-    printout(INFO,"Statistics",
-             "+  Summary: Total %ld conditions used (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld).",
-             total_cres.total(), total_cres.selected, total_cres.loaded,
-             total_cres.computed, total_cres.missing, 
-             total_ares.computed, total_ares.missing);
+  printout(INFO,"Statistics",
+           "+  Summary: Total %ld conditions used (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld). Created:%ld",
+           total_cres.total(), total_cres.selected, total_cres.loaded, total_cres.computed, total_cres.missing, 
+           total_ares.computed, total_ares.missing, total_created);
 
   printout(INFO,"Statistics","+==========================================================================");
   // All done.

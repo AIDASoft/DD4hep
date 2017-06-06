@@ -14,9 +14,9 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Errors.h"
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/detail/Handle.inl"
 
 #include "DD4hep/ConditionsListener.h"
 #include "DDCond/ConditionsManager.h"

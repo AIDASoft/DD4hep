@@ -35,20 +35,20 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class ConditionsPrinter : public Condition::Processor, public DetElement::Processor  {
+    class ConditionsPrinter  {
     public:
       /// Conditionsmap to resolve things
       ConditionsMap* mapping;
       /// Printer name. Want to know who is printing what
-      std::string   name;
+      std::string    name;
       /// Printout prefix
-      std::string   prefix;
+      std::string    prefix;
       /// Printout level
-      PrintLevel    printLevel = INFO;
+      PrintLevel     printLevel = INFO;
 
     protected:
       /// Printout processing and customization flag
-      int           m_flag;
+      int            m_flag;
 
     public:
       /// Initializing constructor
@@ -61,10 +61,10 @@ namespace DD4hep {
       void setName(const std::string& value)            {  name = value;       }
       /// Set prefix for printouts
       void setPrefix(const std::string& value)          {  prefix = value;     }
-      /// Actual print method
-      virtual int process(Condition cond)  override;
-      /// Processing callback to print conditions of a detector element
-      virtual int processElement(DetElement de)  override;
+      /// Callback to output conditions information of an entire DetElement
+      virtual int operator()(DetElement de, int level) const;
+      /// Callback to output conditions information
+      virtual int operator()(Condition condition)  const;
     };
   }    /* End namespace Conditions           */
 }      /* End namespace DD4hep               */

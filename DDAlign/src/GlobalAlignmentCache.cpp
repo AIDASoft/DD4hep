@@ -16,7 +16,7 @@
 #include "DD4hep/Printout.h"
 #include "DDAlign/GlobalAlignmentCache.h"
 #include "DDAlign/GlobalAlignmentOperators.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 
 // ROOT include files
 #include "TGeoManager.h"

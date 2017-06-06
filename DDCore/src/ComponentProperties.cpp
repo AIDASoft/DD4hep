@@ -254,8 +254,8 @@ namespace DD4hep {
 #include <set>
 #include <map>
 
-#include "DD4hep/BasicGrammar_inl.h"
-#include "DD4hep/ComponentProperties_inl.h"
+#include "DD4hep/detail/BasicGrammar_inl.h"
+#include "DD4hep/detail/ComponentProperties_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
 
 namespace DD4hep {

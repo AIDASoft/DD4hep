@@ -14,109 +14,168 @@
 #define DD4HEP_DDALIGN_ALIGNMENTSPROCESSOR_H
 
 // Framework includes
-#include "DD4hep/ConditionsProcessor.h"
+#include "DD4hep/ConditionsMap.h"
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/Alignments.h"
+#include "DD4hep/Printout.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace Alignments {
-
-    /// Generic Alignments processor
+    
+    /// Generic alignment processor facade for the Conditons::Processor object
     /**
-     *   Please note that the principle of locality applies:
-     *   The object is designed for stack allocation and configuration.
-     *   It may NOT be shared across threads!
-     *
-     *   If applied to alignments container or detector elements,
-     *   it is the user responsibility to beforehand set a valid
-     *   alignments user pool containing the alignments registered
-     *   to the detector element(s).  
-     *
-     *   \author  M.Frank
-     *   \version 1.0
-     *   \date    31/03/2016
-     *   \ingroup DD4HEP_ALIGNMENTS
+     *  This wrapper converts any object, which has the signature
+     *  int operator()(Alignment cond) const
+     *  The object is automatically wrapped to a Alignment::Processor object
+     *  and allows to scan trees using e.g. DetElementProcessors etc.
+     *  
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2016
      */
-    class AlignmentsProcessor
-      : public Alignment::Processor, public DetElement::Processor
-    {
-    protected:
-      /// Reference to the user pool
-      ConditionsMap* mapping;
-
-    public:
-      /// Initializing constructor
-      AlignmentsProcessor(ConditionsMap* p) : mapping(p) {}
-      /// Default destructor
-      virtual ~AlignmentsProcessor() = default;
-      /// Callback to output alignments information
-      virtual int operator()(Alignment cond) override;
-      /// Callback to output alignments information of an entire DetElement
-      virtual int processElement(DetElement de) override;
-    };
-
-    /// Generic Alignment object collector
-    /**
-     *   Please see the documentation of the
-     *   AlignmentsProcessor base class for further information.
-     *
-     */
-    class AlignmentsCollector : virtual public AlignmentsProcessor  {
-    public:
-      /// Collection container
-      std::vector<Alignment> alignments;
+    template <typename T> class AlignmentsProcessor : public Alignment::Processor  {
+      T& processor;
     public:
       /// Default constructor
-      AlignmentsCollector(ConditionsMap* p) : AlignmentsProcessor(p) {}
+      AlignmentsProcessor() = default;
+      /// Initializing constructor
+      AlignmentsProcessor(T& p) : processor(p) {}
+      /// Copy constructor
+      AlignmentsProcessor(const AlignmentsProcessor& copy) = default;
       /// Default destructor
-      virtual ~AlignmentsCollector() = default;
-      /// Callback to output alignments information
-      virtual int operator()(Alignment cond)  final  {
-        alignments.push_back(cond);
-        return 1;
+      virtual ~AlignmentsProcessor() = default;
+      /// Assignment operator
+      AlignmentsProcessor& operator=(const AlignmentsProcessor& copy) = default;
+      /// Processing callback
+      virtual int operator()(Alignment alignment)  const override  {
+        return (processor)(alignment);
       }
     };
+    /// Creator utility function for AlignmentsProcessor objects
+    template <typename T> inline AlignmentsProcessor<T> alignmentsProcessor(T* obj)  {
+      return AlignmentsProcessor<T>(obj);
+    }
+
+    /// Generic alignment processor facade for the Conditons::Processor object
+    /**
+     *  This wrapper converts any object, which has the signature
+     *  int operator()(Alignment cond) const
+     *  The object is automatically wrapped to a Alignment::Processor object
+     *  and allows to scan trees using e.g. DetElementProcessors etc.
+     *
+     *  
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2016
+     */
+    template <typename T> class AlignmentsProcessorWrapper : public Alignment::Processor  {
+      std::unique_ptr<T> processor;
+    public:
+      /// Default constructor
+      AlignmentsProcessorWrapper() = default;
+      /// Initializing constructor
+      AlignmentsProcessorWrapper(T* p) : processor(p) {}
+      /// Copy constructor
+      AlignmentsProcessorWrapper(const AlignmentsProcessorWrapper& copy) = default;
+      /// Default destructor
+      virtual ~AlignmentsProcessorWrapper() = default;
+      /// Assignment operator
+      AlignmentsProcessorWrapper& operator=(const AlignmentsProcessorWrapper& copy) = default;
+      /// Processing callback
+      virtual int operator()(Alignment c)  const override  {
+        return (*(processor.get()))(c);
+      }
+    };
+    /// Creator utility function for AlignmentsProcessorWrapper objects
+    template <typename T> inline AlignmentsProcessorWrapper<T>* createProcessorWrapper(T* obj)  {
+      return new AlignmentsProcessorWrapper<T>(obj);
+    }
+    /// Creator utility function for AlignmentsProcessorWrapper objects
+    template <typename T> inline AlignmentsProcessorWrapper<T> processorWrapper(T* obj)  {
+      return AlignmentsProcessorWrapper<T>(obj);
+    }
 
     /// Generic Alignment-Delta collector keyed by detector elements
     /**
      *   To be used with utilities like DetElementProcessor etc.
      *
-     */
-    class DetElementDeltaCollector  {
-    public:
-      /// Reference to the user pool
-      ConditionsMap* mapping;
-      /// Collection container
-      std::map<DetElement,Delta> deltas;
-    public:
-      /// Default constructor
-      DetElementDeltaCollector(ConditionsMap* p) : mapping(p) {}
-      /// Default destructor
-      virtual ~DetElementDeltaCollector() = default;
-      /// Callback to output alignments information
-      virtual int operator()(DetElement de, int level)  final;
-    };
-    
-    /// Helper to select all alignments, which belong to a single DetElement structure
-    /**
+     *  
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_ALIGNMENTS
+     *  \date    01/04/2016
      */
-    class DetElementAlignmentsCollector : public Conditions::Condition::Processor  {
+    template <typename T> class DeltaCollector  {
     public:
-      Conditions::ConditionKey       key;
-      mutable std::vector<Alignment> alignments;
+      /// Reference to the user pool
+      ConditionsMap& mapping;
+      /// Collection container
+      T&             deltas;
     public:
-      /// Standard constructor
-      DetElementAlignmentsCollector(DetElement de) : key(de.key(),0)   {}
-      /// Overloadable entry: Selection callback: return true if the alignment should be selected
-      virtual int process(Conditions::Condition cond)  final;
+      /// Default constructor
+      DeltaCollector(ConditionsMap& m, T& d) : mapping(m), deltas(d) {}
+      /// Copy constructor
+      DeltaCollector(const DeltaCollector& copy) = default;
+      /// Default destructor
+      ~DeltaCollector() = default;
+      /// Assignment operator
+      DeltaCollector& operator=(const DeltaCollector& copy) = default;
+      /// Callback to output alignments information
+      /** Note: Valid implementations exist for the container types:
+       *        std::list<Delta>
+       *        std::vector<Delta>
+       *        std::map<DetElement,Delta>
+       *        std::multimap<DetElement,Delta>
+       *        std::map<std::string,Delta>        key = DetElement.path()
+       *        std::multimap<std::string,Delta>   key = DetElement.path()
+       */
+      virtual int operator()(DetElement de, int level=0)  const final;
     };
-    
+    template <typename T> inline DeltaCollector<T> deltaCollector(ConditionsMap& m, T& deltas)  {
+      return DeltaCollector<T>(m, deltas);
+    }
+
+    /// Generic alignment collector keyed by detector elements
+    /**
+     *   To be used with utilities like DetElementProcessor etc.
+     *
+     *  
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2016
+     */
+    template <typename T> class AlignmentsCollector  {
+    public:
+      /// Reference to the user pool
+      ConditionsMap& mapping;
+      /// Collection container
+      T&             alignments;
+    public:
+      /// Default constructor
+      AlignmentsCollector(ConditionsMap& m, T& d) : mapping(m), alignments(d) {}
+      /// Copy constructor
+      AlignmentsCollector(const AlignmentsCollector& copy) = default;
+      /// Default destructor
+      ~AlignmentsCollector() = default;
+      /// Assignment operator
+      AlignmentsCollector& operator=(const AlignmentsCollector& copy) = default;
+      /// Callback to output alignments information
+      /** Note: Valid implementations exist for the container types:
+       *        std::list<Alignment>
+       *        std::vector<Alignment>
+       *        std::map<DetElement,Alignment>
+       *        std::multimap<DetElement,Alignment>
+       *        std::map<std::string,Alignment>        key = DetElement.path()
+       *        std::multimap<std::string,Alignment>   key = DetElement.path()
+       */
+      virtual int operator()(DetElement de, int level=0)  const final;
+    };
+    template <typename T> inline AlignmentsCollector<T> alignmentsCollector(ConditionsMap& m, T& alignments)  {
+      return AlignmentsCollector<T>(m, alignments);
+    }
+
   }    /* End namespace Alignments  */
 }      /* End namespace DD4hep      */
 #endif /* DD4HEP_DDALIGN_ALIGNMENTSPROCESSOR_H  */

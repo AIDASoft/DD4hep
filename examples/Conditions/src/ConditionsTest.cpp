@@ -204,14 +204,14 @@ void TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
 /// Dump the conditions of one detectpr element
 void TestEnv::dump_detector_element(DetElement elt, ConditionsMap& map)
 {
-  DetElementConditionsCollector scanner(elt);
-  map.scan(scanner);
-  if ( scanner.conditions.empty() )  {
+  vector<Conditions::Condition> conditions;
+  conditionsCollector(map,conditions)(elt);
+  if ( conditions.empty() )  {
     printout(INFO,"conditions_tree","DetElement:%s  NO CONDITIONS present",elt.path().c_str());
   }
   else  {
-    printout(INFO,"conditions","DetElement:%s # of conditons:%ld",elt.path().c_str(),scanner.conditions.size());
-    for(const auto& c : scanner.conditions )
+    printout(INFO,"conditions","DetElement:%s # of conditons:%ld",elt.path().c_str(),conditions.size());
+    for(const auto& c : conditions )
       print_condition<void>(c);
   }
 }

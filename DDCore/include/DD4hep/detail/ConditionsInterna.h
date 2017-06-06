@@ -26,7 +26,7 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/BasicGrammar.h"
 #include "DD4hep/NamedObject.h"
-#include "DD4hep/objects/OpaqueData_inl.h"
+#include "DD4hep/detail/OpaqueData_inl.h"
 
 // C/C++ include files
 #include <map>

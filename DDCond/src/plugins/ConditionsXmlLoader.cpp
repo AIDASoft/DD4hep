@@ -69,7 +69,7 @@ namespace DD4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/PluginCreators.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 #include "XML/XMLElements.h"
 #include "XML/DocumentHandler.h"

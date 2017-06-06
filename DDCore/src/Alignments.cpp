@@ -13,8 +13,8 @@
 
 // Framework include files
 #include "DD4hep/AlignmentData.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 // C/C++ include files
 #include <sstream>

@@ -1,5 +1,5 @@
 #include "DDRec/Surface.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/Memory.h"
 
 #include "DDRec/MaterialManager.h"

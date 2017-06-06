@@ -45,6 +45,16 @@ ConditionDependency::ConditionDependency(Geometry::DetElement de,
   if ( callback ) callback->addRef();
 }
 
+/// Initializing constructor
+ConditionDependency::ConditionDependency(Geometry::DetElement de,
+                                         const std::string&   item, 
+                                         ConditionUpdateCall* call)
+  : m_refCount(0), detector(de), target(de, item), callback(call)
+{
+  InstanceCount::increment(this);
+  if ( callback ) callback->addRef();
+}
+
 /// Default constructor
 ConditionDependency::ConditionDependency()
   : m_refCount(0), target(0), callback(0)
@@ -63,6 +73,14 @@ DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
                                      unsigned int         item_key,
                                      ConditionUpdateCall* call)
   : m_dependency(new ConditionDependency(de,item_key,call))
+{
+}
+
+/// Initializing constructor
+DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
+                                     const std::string&   item,
+                                     ConditionUpdateCall* call)
+  : m_dependency(new ConditionDependency(de,item,call))
 {
 }
 

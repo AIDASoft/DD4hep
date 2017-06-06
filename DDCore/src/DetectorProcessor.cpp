@@ -18,17 +18,8 @@
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-/// Callback to output detector information of an single DetElement
-int DetectorProcessor::operator()(DetElement de, int /* level */)    {
-  if ( de.isValid() )  {
-    return 1;
-  }
-  except("Detector","Cannot process an invalid detector element");
-  return 0;
-}
-
 /// Callback to output detector information of an entire DetElement
-int DetectorProcessor::process(DetElement de, int level, bool recursive)    {
+int DetectorProcessor::process(DetElement de, int level, bool recursive)  const  {
   if ( de.isValid() )  {
     int ret = (*this)(de, level);
     if ( recursive )  {
@@ -36,16 +27,6 @@ int DetectorProcessor::process(DetElement de, int level, bool recursive)    {
         ret += process(c.second,level+1,recursive);
     }
     return ret;
-  }
-  except("Detector","Cannot process an invalid detector element");
-  return 0;
-}
-
-/// Callback to output detector information of an single DetElement
-int DetectorCollector::operator()(DetElement de, int level)    {
-  if ( de.isValid() )  {
-    detectors.push_back(std::make_pair(level,de));
-    return 1;
   }
   except("Detector","Cannot process an invalid detector element");
   return 0;

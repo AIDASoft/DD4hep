@@ -26,7 +26,8 @@ ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
 }
 
 /// Initializing constructor
-ConditionsSlice::ConditionsSlice(ConditionsManager m, Content c) : manager(m), content(c)
+ConditionsSlice::ConditionsSlice(ConditionsManager m, const std::shared_ptr<ConditionsContent>& c)
+  : manager(m), content(c)
 {
   InstanceCount::increment(this);  
 }
@@ -86,6 +87,18 @@ bool ConditionsSlice::manage(Condition condition, ManageFlag flg)    {
   return manage(p, condition, flg);
 }
 
+/// Access all conditions from a given detector element
+std::vector<Condition> ConditionsSlice::get(DetElement detector)  const  {
+  return pool->get(detector,FIRST_ITEM,LAST_ITEM);
+}
+
+/// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
+std::vector<Condition> ConditionsSlice::get(DetElement detector,
+                                            itemkey_type lower,
+                                            itemkey_type upper)  const  {
+  return pool->get(detector, lower, upper);
+}
+
 /// ConditionsMap overload: Add a condition directly to the slice
 bool ConditionsSlice::insert(DetElement detector, unsigned int key, Condition condition)   {
   if ( condition.isValid() )  {
@@ -114,10 +127,17 @@ Condition ConditionsSlice::get(DetElement detector, unsigned int key)  const   {
 }
 
 /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-void ConditionsSlice::scan(Condition::Processor& processor) const   {
+void ConditionsSlice::scan(const Processor& processor) const   {
   pool->scan(processor);
 }
 
+/// ConditionsMap overload: Interface to partially scan data content of the conditions mapping
+void ConditionsSlice::scan(DetElement         detector,
+                           itemkey_type       lower,
+                           itemkey_type       upper,
+                           const Processor&   processor) const  {
+  pool->scan(detector, lower, upper, processor);
+}
 
 namespace  {
   

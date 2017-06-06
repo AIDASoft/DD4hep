@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/Plugins.h"
 #if defined(DD4HEP_ROOT_VERSION_5)
-#include "DD4hep/Plugins.inl"
+#include "DD4hep/detail/Plugins.inl"
 #endif
 #include <cstdlib>
 

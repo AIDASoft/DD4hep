@@ -20,6 +20,7 @@
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/PluginCreators.h"
+#include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "XML/DocumentHandler.h"
 #include "XML/XMLElements.h"
@@ -664,41 +665,15 @@ DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
  *  \date    18/11/2016
  */
 static int detelement_processor(LCDD& lcdd, int argc, char** argv)   {
-  struct Actor {
-    DetElement::Processor*  processor;
-
-    /// Standard constructor
-    Actor(DetElement::Processor* p) : processor(p)  {    }
-    /// Default destructor
-    ~Actor()   {    }
-    /// Dump method.
-    long process(DetElement de)   {
-      if ( de.isValid() )  {
-        int result = 1;
-        (*processor).processElement(de);
-        for (const auto& c : de.children() )  {
-          int ret = process(c.second);
-          if ( 1 != ret )  {
-            printout(ERROR,"DetectorProcessor","++ Failed to process detector element %s.",c.second.name());
-            result = ret;
-          }
-        }
-        return result;
-      }
-      printout(ERROR,"DetectorProcessor","++ Failed to process invalid detector element.");
-      return 0;
-    }
-  };
   DetElement det = lcdd.world();
-  DetElement::Processor* proc =
-    DD4hep::createProcessor<DetElement::Processor>(lcdd, argc, argv);
+  unique_ptr<DetectorProcessor> proc(DD4hep::createProcessor<DetectorProcessor>(lcdd, argc, argv));
   for(int i=0, num=std::min(argc,3); i<num; ++i)  {
     if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
       det = DetectorTools::findElement(lcdd, argv[++i]);
       break;
     }
   }
-  return Actor(proc).process(det);
+  return DetectorScanner().scan(*proc,det);
 }
 DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
 

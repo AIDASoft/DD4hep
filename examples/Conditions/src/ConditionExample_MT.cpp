@@ -41,15 +41,11 @@ using namespace DD4hep::ConditionExamples;
 
 namespace {
   mutex             printout_lock;
-  mutex             total_guard;
-  /// Total number of accesses
-  long              total_accesses;
-  ConditionsManager::Result totals;
 
   /// Helper class to simuilate evetn queue
   class EventQueue  {
     vector<std::pair<long,long> > events;
-    mutex                       guard;
+    mutex                         guard;
   public:
     EventQueue() = default;
     ~EventQueue() = default;
@@ -75,6 +71,13 @@ namespace {
   /// Helper to collect statistics
   class Statistics {
   public:
+    /// Protection mutex for thread safe updates.
+    mutex             total_guard;
+    /// Total number of accesses
+    long              total_accesses = 0;
+    /// Total number of conditions created
+    long              total_created = 0;
+    ConditionsManager::Result totals;
     TStatistic create, prepare, access;
     Statistics() : create("Creation"), prepare("Prepare"), access("Access")    {    }
     void print() const  {
@@ -87,8 +90,8 @@ namespace {
       printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
                access.GetName(), access.GetMean(), access.GetMeanErr(),
                access.GetRMS(), access.GetN());
-      printout(INFO,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld) during the test.",
-               total_accesses, totals.selected, totals.loaded, totals.computed, totals.missing);
+      printout(INFO,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld) during the test. Created:%ld",
+               total_accesses, totals.selected, totals.loaded, totals.computed, totals.missing, total_created);
       printout(INFO,"Statistics","+=========================================================================");
     }
   };
@@ -111,12 +114,11 @@ namespace {
     }
     int accessConditions(const IOV& iov)  {
       TTimeStamp start;
-      ConditionsDataAccess access(iov, *slice);
-      int count = access.process(manager->lcdd().world(),0,false);
+      int count = Scanner().scan(ConditionsDataAccess(iov,*slice),manager->lcdd().world());
       TTimeStamp stop;
       stats.access.Fill(stop.AsDouble()-start.AsDouble());
-      lock_guard<mutex> lock(total_guard);
-      total_accesses += count;
+      lock_guard<mutex> lock(stats.total_guard);
+      stats.total_accesses += count;
       return count;
     }
     void run()  {
@@ -144,17 +146,17 @@ namespace {
           }
           num_access = accessConditions(iov);
           num_reuse = 0;
-          total_guard.lock();
-          totals += res;
-          total_guard.unlock();
+          stats.total_guard.lock();
+          stats.totals += res;
+          stats.total_guard.unlock();
           continue;
         }
         ++num_reuse;
         ::usleep(10000);
         num_access += accessConditions(iov);
-        total_guard.lock();
-        totals += res;
-        total_guard.unlock();
+        stats.total_guard.lock();
+        stats.totals += res;
+        stats.total_guard.unlock();
       }
     }
   };
@@ -199,25 +201,18 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
   // First we load the geometry
   lcdd.fromXML(input);
-  installManagers(lcdd);
 
   /******************** Initialize the conditions manager *****************/
-  ConditionsManager condMgr = ConditionsManager::from(lcdd);
-  condMgr["PoolType"]       = "DD4hep_ConditionsLinearPool";
-  condMgr["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
-  condMgr["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-  condMgr.initialize();
-  
-  const IOVType*  iov_typ  = condMgr.registerIOVType(0,"run").second;
-  if ( 0 == iov_typ )  {
+  ConditionsManager manager = installManager(lcdd);
+  const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
+  if ( 0 == iov_typ )
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
-  }
 
   /******************** Now as usual: create the slice ********************/
   shared_ptr<ConditionsContent> content(new ConditionsContent());
-  shared_ptr<ConditionsSlice> slice(new ConditionsSlice(condMgr,content));
-  ConditionsKeys(*content,INFO).process(lcdd.world(),0,true);
-  ConditionsDependencyCreator(*content,DEBUG).process(lcdd.world(),0,true);
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  Scanner(ConditionsKeys(*content,INFO),lcdd.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG),lcdd.world());
 
   Statistics stats;
   EventQueue events;
@@ -226,14 +221,14 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   for(int i=0; i<num_iov; ++i)  {
     TTimeStamp start;
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
-    ConditionsPool*   pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    ConditionsCreator creator(*slice, *pool, DEBUG);  // Use a generic creator
-    creator.process(lcdd.world(),0,true);             // Create conditions with all deltas
+    ConditionsPool*   pool = manager.registerIOV(*iov.iovType, iov.key());
+    // Create conditions with all deltas using a generic conditions creator
+    int count = Scanner().scan(ConditionsCreator(*slice, *pool, DEBUG),lcdd.world());
     TTimeStamp stop;
     stats.create.Fill(stop.AsDouble()-start.AsDouble());
     printout(INFO,"Example", "Setup %ld conditions for IOV:%s [%8.3f sec]",
-             creator.conditionCount, iov.str().c_str(),
-             stop.AsDouble()-start.AsDouble());
+             count, iov.str().c_str(),stop.AsDouble()-start.AsDouble());
+    stats.total_created += count;
     // Fill the event queue with 10 evt per run
     for(int j=0; j<6; ++j)   {
       events.push(make_pair((i*10)+j,num_run));
@@ -243,7 +238,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
   vector<thread*> threads;
   for(int i=0; i<num_threads; ++i)  {
-    Executor* exec = new Executor(condMgr, iov_typ, i, events, stats);
+    Executor* exec = new Executor(manager, iov_typ, i, events, stats);
     exec->slice = new ConditionsSlice(*slice);
     thread* t = new thread( [exec]{ exec->run(); delete exec; });
     threads.push_back(t);

@@ -24,7 +24,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/AlignmentsCalculator.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 #include "DDCond/ConditionsSlice.h"
 
 #include "DDDB/DDDBConversion.h"

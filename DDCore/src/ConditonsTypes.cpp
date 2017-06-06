@@ -13,8 +13,8 @@
 
 // Framework include files
 #include "DD4hep/Primitives.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-#include "DD4hep/ComponentProperties_inl.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/ComponentProperties_inl.h"
 
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"

@@ -15,7 +15,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Conditions.h"
-#include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/Printout.h"
 
 // C/C++ include files

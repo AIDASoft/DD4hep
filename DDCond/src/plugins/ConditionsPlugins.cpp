@@ -28,12 +28,15 @@
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsRepository.h"
 #include "DDCond/ConditionsManagerObject.h"
+#include <memory>
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 using Geometry::DetElement;
 using Geometry::PlacedVolume;
+using Geometry::DetectorProcessor;
+using Geometry::DetectorProcessorShared;
 
 /// Plugin function: Install the alignment manager as an extension to the central LCDD object
 /**
@@ -143,15 +146,15 @@ static int ddcond_conditions_pool_processor(lcdd_t& lcdd, bool process_pool, boo
   typedef std::vector<const IOVType*> _T;
   typedef ConditionsIOVPool::Elements _E;
   typedef RangeConditions _R;
-  DetElement::Processor* p = createProcessor<DetElement::Processor>(lcdd,argc,argv);
-  Condition::Processor*  processor = dynamic_cast<Condition::Processor*>(p);
-  dd4hep_ptr<Condition::Processor> proc(processor);
+  unique_ptr<Condition::Processor> proc(createProcessor<Condition::Processor>(lcdd,argc,argv));
   ConditionsManager manager = ConditionsManager::from(lcdd);
   const _T types = manager.iovTypesUsed();
 
-  if ( p && !proc.get() )  {
-    printout(WARNING,"Conditions",
-             "+++ Conditions processor of type %s is invalid!",argv[0]);
+  if ( !proc.get() )  {
+    printout(WARNING,"Conditions","+++ Conditions processor of type %s is invalid!",argv[0]);
+  }
+  if ( process_conditions && !proc.get() )  {
+    except("Conditions","+++ Conditions processor of type %s is invalid!",argv[0]);
   }
   for( _T::const_iterator i = types.begin(); i != types.end(); ++i )    {
     const IOVType* type = *i;
@@ -241,13 +244,13 @@ static int ddcond_detelement_dump(LCDD& lcdd, int argc, char** argv)   {
    *  \date    01/12/2016
    */
   struct Actor : public Geometry::DetectorProcessor   {
-    ConditionsPrinter printer;
+    ConditionsPrinter& printer;
     /// Standard constructor
-    Actor(ConditionsMap& s) : printer(&s,"")  {    }
+    Actor(ConditionsPrinter& p) : printer(p)  {    }
     /// Default destructor
     virtual ~Actor()   {    }
     /// Dump method.
-    virtual int operator()(DetElement de,int level)   {
+    virtual int operator()(DetElement de,int level)  const  {
       const DetElement::Children& children = de.children();
       PlacedVolume place = de.placement();
       char sens = place.volume().isSensitive() ? 'S' : ' ';
@@ -257,14 +260,15 @@ static int ddcond_detelement_dump(LCDD& lcdd, int argc, char** argv)   {
       printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
                (unsigned long)de.volumeID(), sens);
       printer.prefix = string(tmp)+de.name();
-      printer.processElement(de);
+      (printer)(de, level);
       return 1;
     }
   };
   dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(lcdd,"run",1500,argc,argv));
+  ConditionsPrinter printer(slice.get(),"");
   UserPool* pool = slice->pool.get();
   pool->print("User pool");
-  Actor actor(*slice);
+  Actor actor(printer);
   int ret = actor.process(lcdd.world(),0,true);
   slice->manager.clean(pool->validity().iovType, 20);
   return ret;
@@ -311,7 +315,7 @@ static int ddcond_detelement_processor(LCDD& lcdd, int argc, char** argv)   {
     /// Default destructor
     virtual ~Actor()   {    }
     /// Dump method.
-    virtual int operator()(DetElement de, int)
+    virtual int operator()(DetElement de, int)  
     {  return de.hasConditions() ? processor->processElement(de) : 1;    }
   };
   ConditionsProcessor* processor = 0;
@@ -395,7 +399,7 @@ DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
  *  \date    17/11/2016
  */
 #include "DD4hep/PluginTester.h"
-template <typename PRINTER>
+template <typename WRAPPER,typename PRINTER>
 static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
   PrintLevel print_level = INFO;
   string prefix = "", name = "";
@@ -431,23 +435,24 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
   }
   DetElement world = lcdd.world();
   printout(INFO,"Printer","World=%s [%p]",world.path().c_str(),world.ptr());
-  PRINTER* p = 0;
   ConditionsSlice* slice = 0;
-  if ( have_pool != 0 )  {
+  if ( have_pool )   {
     PluginTester*    test  = lcdd.extension<PluginTester>();
     slice = test->extension<ConditionsSlice>("ConditionsTestSlice");
   }
-  p = (flags) ? new PRINTER(slice, prefix, flags) : new PRINTER(slice, prefix);
+  PRINTER* p = (flags) ? new PRINTER(slice, prefix, flags) : new PRINTER(slice, prefix);
   p->printLevel = print_level;
   if ( !name.empty() ) p->name = name;
-  return (void*)dynamic_cast<DetElement::Processor*>(p);
+  return (void*)dynamic_cast<WRAPPER*>(createProcessorWrapper(p));
 }
 #include "DD4hep/ConditionsPrinter.h"
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrinter,create_printer<Conditions::ConditionsPrinter>)
 #include "DD4hep/AlignmentsPrinter.h"
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_AlignmentsPrinter,create_printer<Alignments::AlignmentsPrinter>)
-#include "DD4hep/AlignedVolumePrinter.h"
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_AlignedVolumePrinter,create_printer<Alignments::AlignedVolumePrinter>)
+static void* create_cond_printer(Geometry::LCDD& lcdd, int argc,char** argv)
+{  return create_printer<Condition::Processor,ConditionsPrinter>(lcdd,argc,argv);  }
+                                                                        
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsPrinter,create_cond_printer)
+//DECLARE_LCDD_CONSTRUCTOR(DD4hep_AlignmentsPrinter,create_printer<Alignments::AlignmentsPrinter>)
+//DECLARE_LCDD_CONSTRUCTOR(DD4hep_AlignedVolumePrinter,create_printer<Alignments::AlignedVolumePrinter>)
 
 // ======================================================================================
 /// Plugin entry point: Create repository csv file from loaded conditions

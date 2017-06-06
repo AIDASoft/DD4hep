@@ -17,8 +17,8 @@
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/LCDDHelper.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/VolumeManagerInterna.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/VolumeManagerInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 #include "LCDDImp.h"
 
 // C/C++ include files

@@ -95,33 +95,30 @@ static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, cha
 
   // First we load the geometry
   lcdd.fromXML(input);
-  installManagers(lcdd);
-
-  ConditionsManager condMgr  = ConditionsManager::from(lcdd);
-  const void* setup_args[] = {setup.c_str(), 0}; // Better zero-terminate
+  ConditionsManager manager = installManager(lcdd);
+  const void* setup_args[]  = {setup.c_str(), 0}; // Better zero-terminate
 
   lcdd.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)setup_args);
   // Now the deltas are stored in the conditions manager in the proper IOV pools
-  const IOVType* iov_typ = condMgr.iovType("run");
+  const IOVType* iov_typ = manager.iovType("run");
   if ( 0 == iov_typ )  {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
   }
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
   shared_ptr<ConditionsContent> content(new ConditionsContent());
-  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(condMgr,content));
-  ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
-  Conditions::fill_content(condMgr,*content,*iov_typ);
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  ConditionsManager::Result cres = manager.prepare(req_iov,*slice);
+  Conditions::fill_content(manager,*content,*iov_typ);
 
   // Collect all the delta conditions and make proper alignment conditions out of them
-  DetElementDeltaCollector delta_collector(slice.get());
-  DetElementProcessor<DetElementDeltaCollector> proc(delta_collector);
+  AlignmentsCalculator::Deltas deltas;
+  auto proc = detectorProcessor(deltaCollector(*slice,deltas));
   proc.process(lcdd.world(),0,true);
-  printout(INFO,"Prepare","Got a total of %ld deltas for processing alignments.",
-           delta_collector.deltas.size());
+  printout(INFO,"Prepare","Got a total of %ld deltas for processing alignments.",deltas.size());
 
   // ++++++++++++++++++++++++ Compute the tranformation matrices
   AlignmentsCalculator alignCalc;
-  AlignmentsCalculator::Result ares = alignCalc.compute(delta_collector.deltas,*slice);
+  AlignmentsCalculator::Result ares = alignCalc.compute(deltas,*slice);
   printout(INFO,"Example",
            "Setup %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
            slice->conditions().size(),

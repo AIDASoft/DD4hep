@@ -19,7 +19,7 @@ dd4hep_package(    DDCore
 #---Generate ROOT dictionary------------------------------------------------------
 dd4hep_add_dictionary( G__DD4hep
   SOURCES include/DD4hep/*.h 
-  include/DD4hep/objects/*.h 
+  include/DD4hep/detail/*.h 
   include/XML/*.h 
   ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/BitField64.h
   ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/Segmentation.h

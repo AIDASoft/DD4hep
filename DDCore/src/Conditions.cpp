@@ -12,9 +12,8 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 // C/C++ include files
 #include <climits>
@@ -119,12 +118,12 @@ Condition::key_type Condition::key()  const    {
 }
 
 /// DetElement part of the identifier
-unsigned int Condition::detector_key()  const   {
+Condition::detkey_type Condition::detector_key()  const   {
   return ConditionKey::KeyMaker(access()->hash).values.det_key;
 }
 
 /// Item part of the identifier
-unsigned int Condition::item_key()  const   {
+Condition::itemkey_type Condition::item_key()  const   {
   return ConditionKey::KeyMaker(access()->hash).values.item_key;
 }
 
@@ -172,7 +171,7 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 }
 
 /// Constructor from detector element key and item sub-key
-ConditionKey::ConditionKey(unsigned int det_key, const string& value)    {
+ConditionKey::ConditionKey(detkey_type det_key, const string& value)    {
   KeyMaker m(det_key, hash32(value));
   hash = m.hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
@@ -183,7 +182,7 @@ ConditionKey::ConditionKey(unsigned int det_key, const string& value)    {
 }
 
 /// Constructor from detector element key and item sub-key
-ConditionKey::ConditionKey(DetElement detector, unsigned int item_key)  {
+ConditionKey::ConditionKey(DetElement detector, itemkey_type item_key)  {
   hash = KeyMaker(detector.key(),item_key).hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   char text[32];

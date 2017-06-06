@@ -65,11 +65,15 @@ namespace DD4hep {
     class Condition: public Handle<Interna::ConditionObject> {
     public:
       /// Forward definition of the key type
-      typedef unsigned long long int      key_type;
+      typedef unsigned long long int   key_type;
+      /// High part of the key identifies the detector element
+      typedef unsigned int             detkey_type;
+      /// Low part of the key identifies the item identifier
+      typedef unsigned int             itemkey_type;
       /// Forward definition of the iov type
-      typedef IOV                         iov_type;
+      typedef IOV                      iov_type;
       /// Forward definition of the object properties
-      typedef unsigned int                mask_type;
+      typedef unsigned int             mask_type;
 
     public:
       enum StringFlags  {
@@ -114,13 +118,13 @@ namespace DD4hep {
         /// Default destructor
         virtual ~Processor() = default;
         /// Processing callback
-        virtual int process(Condition c) = 0;
+        virtual int process(Condition c)  const = 0;
         /// Conditions callback for object processing
-        virtual int operator()(Condition c)
-        {  return this->process(c);         }
+        virtual int operator()(Condition c)  const
+        {  return this->process(c);                   }
         /// Conditions callback for object processing in maps
-        virtual int operator()(const std::pair<Condition::key_type,Condition>& e)
-        {  return this->process(e.second);  }
+        virtual int operator()(const std::pair<Condition::key_type,Condition>& e)  const
+        {  return this->process(e.second);            }
       };
 
       /// Default constructor
@@ -130,7 +134,7 @@ namespace DD4hep {
       /// Initializing constructor
       Condition(Object* p);
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Condition(const Handle<Q>& e) : Handle<Object>(e) {}
+      template <typename Q> Condition(const Handle<Q>& e);
       /// Initializing constructor for a pure, undecorated conditions object
       Condition(const std::string& name, const std::string& type);
       /// Initializing constructor for a pure, undecorated conditions object with payload buffer
@@ -171,9 +175,9 @@ namespace DD4hep {
       /// Hash identifier
       key_type key()  const;
       /// DetElement part of the identifier
-      unsigned int detector_key()  const;
+      detkey_type  detector_key()  const;
       /// Item part of the identifier
-      unsigned int item_key()  const;
+      itemkey_type item_key()  const;
       
       /** Conditions handling */
       /// Re-evaluate the conditions data according to the previous bound type definition
@@ -200,8 +204,12 @@ namespace DD4hep {
     };
 
     /// Initializing constructor
-    inline Condition::Condition(Condition::Object* p) : Handle<Condition::Object>(p)  {
-    }
+    inline Condition::Condition(Condition::Object* p)
+      : Handle<Condition::Object>(p)  {}
+
+    /// Constructor to be used when reading the already parsed object
+    template <typename Q> inline Condition::Condition(const Handle<Q>& e)
+      : Handle<Condition::Object>(e) {}
 
     
     /// Key definition to optimize ans simplyfy the access to conditions entities
@@ -214,6 +222,8 @@ namespace DD4hep {
     public:
       /// Forward definition of the key type
       typedef Condition::key_type      key_type;
+      typedef Condition::detkey_type   detkey_type;
+      typedef Condition::itemkey_type  itemkey_type;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
       /// Optional string identifier. Helps debugging a lot!
       std::string  name;
@@ -223,9 +233,13 @@ namespace DD4hep {
 
       union KeyMaker  {
         key_type  hash;
+        /** Note: The memory layout is important here to have properly
+         *        ordered maps. The detector key MUST be on the high end 
+         *        of the resulting int64 'hash'.
+         */
         struct {
-          unsigned int det_key;
-          unsigned int item_key;
+          itemkey_type item_key;
+          detkey_type  det_key;
         } values;
         KeyMaker()  {
           this->hash = 0;
@@ -233,7 +247,7 @@ namespace DD4hep {
         KeyMaker(key_type k)  {
           this->hash = k;
         }
-        KeyMaker(unsigned int det, unsigned int item)  {
+        KeyMaker(detkey_type det, itemkey_type item)  {
           this->values.det_key  = det;
           this->values.item_key = item;
         }
@@ -257,20 +271,20 @@ namespace DD4hep {
       /// Constructor from string
       ConditionKey(DetElement detector, const std::string& identifier);
       /// Constructor from detector element key and item sub-key
-      ConditionKey(unsigned int det_key, const std::string& identifier);
+      ConditionKey(detkey_type det_key, const std::string& identifier);
       /// Constructor from detector element and item sub-key
-      ConditionKey(DetElement detector, unsigned int item_key);
+      ConditionKey(DetElement detector, itemkey_type item_key);
       /// Constructor from detector element key and item sub-key
-      ConditionKey(unsigned int det_key, unsigned int item_key);
+      ConditionKey(detkey_type det_key, itemkey_type item_key);
       /// Copy constructor
       ConditionKey(const ConditionKey& c) = default;
 
       /// Access the detector element part of the key
-      unsigned int detector_key()  const   {
+      detkey_type detector_key()  const   {
         return KeyMaker(hash).values.det_key;
       }
       /// Access the detector element part of the key
-      unsigned int item_key()  const   {
+      itemkey_type item_key()  const   {
         return KeyMaker(hash).values.item_key;
       }
       /// Hash code generation from input string
@@ -278,9 +292,9 @@ namespace DD4hep {
       /// Hash code generation from input string
       static key_type hashCode(DetElement detector, const std::string& value);
       /// 32 bit hashcode of the item
-      static unsigned int itemCode(const char* value);
+      static itemkey_type itemCode(const char* value);
       /// 32 bit hashcode of the item
-      static unsigned int itemCode(const std::string& value);
+      static itemkey_type itemCode(const std::string& value);
        
       /// Assignment operator from object copy
       ConditionKey& operator=(const ConditionKey& key) = default;
@@ -300,7 +314,7 @@ namespace DD4hep {
     };
 
     /// Constructor from detector element key and item sub-key
-    inline ConditionKey::ConditionKey(unsigned int det_key, unsigned int item_key)  {
+    inline ConditionKey::ConditionKey(detkey_type det_key, itemkey_type item_key)  {
       hash = KeyMaker(det_key,item_key).hash;
     }
     

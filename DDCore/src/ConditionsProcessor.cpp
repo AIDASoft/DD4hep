@@ -14,38 +14,37 @@
 // Framework includes
 #include "DD4hep/Printout.h"
 #include "DD4hep/ConditionsProcessor.h"
+#include "DD4hep/detail/ContainerHelpers.h"
 
+using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
 /// Callback to output conditions information
-int ConditionsProcessor::process(Condition /* cond */)    {
-  return 1;
-}
-
-/// Callback to output conditions information of an entire DetElement
-int ConditionsProcessor::processElement(DetElement de)    {
+template <typename T>
+int ConditionsCollector<T>::operator()(DetElement de, int)  const  {
+  struct Collector : public Condition::Processor  {
+    DetElement det;
+    T&         container;
+    /// Constructor
+    Collector(DetElement d, T& c) : det(d), container(c) {}
+    /// Processing callback
+    virtual int process(Condition c)  const override { insert_item(container, det, c); return 1; }
+  };
   if ( de.isValid() )  {
-    if ( mapping )   {
-      int count = 0;
-      DetElementConditionsCollector select(de);
-      mapping->scan(select);
-      for(const auto& c : select.conditions )
-        count += process(c);
-      return count;
-    }
-    except("Conditions","Failed to process alignments for DetElement:%s [No slice availible]",
-           de.path().c_str());
+    mapping.scan(de, ConditionsMap::FIRST_ITEM, ConditionsMap::LAST_ITEM, Collector(de,conditions));
+    return (int)conditions.size();
   }
   except("Conditions","Cannot process conditions of an invalid detector element");
-  return 0;
+  return 0;  
 }
+//template class ConditionsCollector<ConditionsMap>;
+template class ConditionsCollector<list<Condition> >;
+template class ConditionsCollector<vector<Condition> >;
+template class ConditionsCollector<map<DetElement,Condition> >;
+template class ConditionsCollector<vector<pair<DetElement,Condition> > >;
+template class ConditionsCollector<vector<pair<string,Condition> > >;
 
-/// Overloadable entry: Selection callback: return true if the condition should be selected
-int DetElementConditionsCollector::process(Condition cond)   {
-  if ( key.detector_key() == cond.detector_key() )  {
-    conditions.push_back(cond);
-    return 1;
-  }
-  return 0;
-}
+template class ConditionsCollector<multimap<DetElement,Condition> >;
+template class ConditionsCollector<map<string,Condition> >;
+template class ConditionsCollector<multimap<string,Condition> >;

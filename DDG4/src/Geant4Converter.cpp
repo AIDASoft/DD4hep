@@ -17,8 +17,8 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/objects/ObjectsInterna.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 
 #include "DDG4/Geant4Field.h"
 #include "DDG4/Geant4Converter.h"

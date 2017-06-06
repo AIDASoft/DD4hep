@@ -33,9 +33,9 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
-#include "DD4hep/objects/SegmentationsInterna.h"
-#include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/detail/SegmentationsInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 
 // C/C++ include files
 #include <iostream>

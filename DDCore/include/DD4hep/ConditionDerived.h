@@ -16,7 +16,7 @@
 // Framework include files
 #include "DD4hep/Memory.h"
 #include "DD4hep/Conditions.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -190,6 +190,8 @@ namespace DD4hep {
     public:
       /// Initializing constructor used by builder
       ConditionDependency(Geometry::DetElement de, unsigned int item_key, ConditionUpdateCall* call);
+      /// Initializing constructor used by builder
+      ConditionDependency(Geometry::DetElement de, const std::string& item, ConditionUpdateCall* call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
@@ -215,6 +217,8 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       DependencyBuilder(Geometry::DetElement de, unsigned int item_key, ConditionUpdateCall* call);
+      /// Initializing constructor
+      DependencyBuilder(Geometry::DetElement de, const std::string& item, ConditionUpdateCall* call);
       /// Default destructor
       virtual ~DependencyBuilder();
       /// Access underlying object directly

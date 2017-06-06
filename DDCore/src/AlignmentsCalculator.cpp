@@ -18,7 +18,7 @@
 #include "DD4hep/ConditionsMap.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Alignments;

@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 #include "DD4hep/AlignmentTools.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/Printout.h"

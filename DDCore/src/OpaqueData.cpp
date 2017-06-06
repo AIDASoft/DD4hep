@@ -16,7 +16,7 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/OpaqueData.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/OpaqueData_inl.h"
+#include "DD4hep/detail/OpaqueData_inl.h"
 
 // C/C++ header files
 #include <cstring>

@@ -16,7 +16,7 @@
 
 // Framework include files
 #include "DD4hep/Conditions.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
