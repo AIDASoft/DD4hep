@@ -141,9 +141,10 @@ namespace DD4hep {
       this->ConditionsMap::scan(detector, lower, upper, proc);
     }
 
+
+    template class ConditionsMapping<std::map<Condition::key_type,Condition> >;
+    template class ConditionsMapping<std::multimap<Condition::key_type,Condition> >;
+    template class ConditionsMapping<std::unordered_map<Condition::key_type,Condition> >;
+
   }       /* End namespace Conditions               */
 }         /* End namespace DD4hep                   */
-
-template class ConditionsMapping<std::map<Condition::key_type,Condition> >;
-template class ConditionsMapping<std::multimap<Condition::key_type,Condition> >;
-template class ConditionsMapping<std::unordered_map<Condition::key_type,Condition> >;
