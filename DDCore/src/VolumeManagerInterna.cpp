@@ -13,8 +13,8 @@
 
 // Framework include files
 #include "DD4hep/Printout.h"
-#include "DD4hep/Handle.inl"
-#include "DD4hep/objects/VolumeManagerInterna.h"
+#include "DD4hep/detail/Handle.inl"
+#include "DD4hep/detail/VolumeManagerInterna.h"
 
 using namespace DD4hep;
 using namespace DD4hep::Geometry;

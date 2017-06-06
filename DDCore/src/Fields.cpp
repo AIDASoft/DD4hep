@@ -11,9 +11,9 @@
 //
 //==========================================================================
 
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Fields.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/detail/Handle.inl"
 
 using namespace std;
 using namespace DD4hep::Geometry;

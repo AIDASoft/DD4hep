@@ -22,29 +22,35 @@ using namespace DD4hep;
 using namespace DD4hep::AlignmentExamples;
 
 /// Install the consitions and the alignment manager
-void DD4hep::AlignmentExamples::installManagers(LCDD& lcdd)  {
+ConditionsManager DD4hep::AlignmentExamples::installManager(LCDD& lcdd)  {
   // Now we instantiate the conditions manager
   lcdd.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
+  ConditionsManager manager = ConditionsManager::from(lcdd);
+  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
+  manager.initialize();
+  return manager;
 }
 
 /// Callback to process a single detector element
-int AlignmentDataAccess::processElement(DetElement de)  {
-  DetElementAlignmentsCollector select(de);
-  mapping->scan(select);
+int AlignmentDataAccess::operator()(DetElement de, int) const {
+  vector<Alignment> alignments;
+  alignmentsCollector(mapping,alignments)(de);
 
   // Let's go for the deltas....
-  for(const auto& align : select.alignments )  {
+  for(const auto& align : alignments )  {
     const Delta& delta = align.data().delta;
     if ( delta.hasTranslation() || delta.hasPivot() || delta.hasRotation() )  {}
   }
   // Keep it simple. To know how to access stuff,
   // simply look in DDDCore/src/AlignmentsPrinter.cpp...
-  Alignments::printElementPlacement(printLevel,"Example",de,*mapping);
+  Alignments::printElementPlacement(printLevel,"Example",de,mapping);
   return 1;
 }
 
 /// Callback to process a single detector element
-int AlignmentCreator::operator()(DetElement de, int)    {
+int AlignmentCreator::operator()(DetElement de, int)  const  {
   if ( de.ptr() != de.world().ptr() )  {
     Condition     cond(de.path()+"#alignment_delta", "alignment_delta");
     Delta&        delta = cond.bind<Delta>();

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/objects/SegmentationsInterna.h"
+#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DD4hep/Factories.h"
 
 using namespace DD4hep::Geometry;

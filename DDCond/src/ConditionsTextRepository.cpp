@@ -16,7 +16,7 @@
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsTags.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 #include "XML/DocumentHandler.h"
 #include "XML/XMLTags.h"
 

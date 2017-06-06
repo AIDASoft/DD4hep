@@ -36,7 +36,7 @@ namespace DD4hep {
     using Geometry::RotationZYX;
     using Geometry::DetElement;
     using Geometry::DetectorProcessor;
-    
+
     using Conditions::UserPool;
     using Conditions::Condition;
     using Conditions::ConditionKey;
@@ -47,6 +47,24 @@ namespace DD4hep {
     using Conditions::ConditionsPrinter;
     using Conditions::ConditionsManager;
     using Conditions::ConditionUpdateCall;
+
+    /// Helper to reduce the number of lines of code
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class OutputLevel {
+    public:
+      /// Output level
+      PrintLevel printLevel = DEBUG;
+      /// Default constructor
+      OutputLevel() = default;
+      /// Initializing constructor
+      OutputLevel(PrintLevel p) : printLevel(p) {}
+      /// Default destructor
+      virtual ~OutputLevel() = default;
+    };
     
     /// Specialized conditions update callback 
     /**
@@ -56,14 +74,12 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionUpdate1 : public ConditionUpdateCall  {
-      /// Output level
-      PrintLevel printLevel;
+    class ConditionUpdate1 : public ConditionUpdateCall, public OutputLevel  {
     public:
       /// Initializing constructor
-      ConditionUpdate1(PrintLevel p) : printLevel(p) {    }
+      ConditionUpdate1(PrintLevel p) : OutputLevel(p) {    }
       /// Default destructor
-      virtual ~ConditionUpdate1()                     {    }
+      virtual ~ConditionUpdate1() = default;
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& key, const Context& context) final;
     };
@@ -76,14 +92,12 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionUpdate2 : public ConditionUpdateCall  {
-      /// Output level
-      PrintLevel printLevel;
+    class ConditionUpdate2 : public ConditionUpdateCall, public OutputLevel  {
     public:
       /// Initializing constructor
-      ConditionUpdate2(PrintLevel p) : printLevel(p) {    }
+      ConditionUpdate2(PrintLevel p) : OutputLevel(p) {    }
       /// Default destructor
-      virtual ~ConditionUpdate2()                     {    }
+      virtual ~ConditionUpdate2() = default;
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& key, const Context& context)  final;
     };
@@ -96,14 +110,12 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionUpdate3 : public ConditionUpdateCall  {
-      /// Output level
-      PrintLevel printLevel;
+    class ConditionUpdate3 : public ConditionUpdateCall, public OutputLevel  {
     public:
       /// Initializing constructor
-      ConditionUpdate3(PrintLevel p) : printLevel(p) {    }
+      ConditionUpdate3(PrintLevel p) : OutputLevel(p) {    }
       /// Default destructor
-      virtual ~ConditionUpdate3()                     {    }
+      virtual ~ConditionUpdate3() = default;
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& key, const Context& context)  final;
     };
@@ -114,15 +126,14 @@ namespace DD4hep {
      *  \version 1.02
      *  \date    01/04/2016
      */
-    struct ConditionsKeys : public DetectorProcessor {
+    class ConditionsKeys : public OutputLevel {
+    public:
       /// Content object to be filled
       ConditionsContent& content;
-      /// Print level
-      PrintLevel        printLevel;
       /// Constructor
-      ConditionsKeys(ConditionsContent& c, PrintLevel p) : content(c), printLevel(p) {}
+      ConditionsKeys(ConditionsContent& c, PrintLevel p) : OutputLevel(p), content(c) {}
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level)  final;
+      virtual int operator()(DetElement de, int level) const final;
     };
 
     /// Example how to populate the detector description with derived conditions
@@ -133,11 +144,9 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct ConditionsDependencyCreator : public DetectorProcessor {
+    struct ConditionsDependencyCreator : public OutputLevel  {
       /// Content object to be filled
-      ConditionsContent& content;
-      /// Print level
-      PrintLevel        printLevel;
+      ConditionsContent&   content;
       /// Three different update call types
       ConditionUpdateCall *call1, *call2, *call3;
       /// Constructor
@@ -145,7 +154,7 @@ namespace DD4hep {
       /// Destructor
       virtual ~ConditionsDependencyCreator();
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level)  final;
+      virtual int operator()(DetElement de, int level) const final;
     };
 
     /// Example how to populate the detector description with conditions constants
@@ -156,23 +165,21 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct ConditionsCreator : public DetectorProcessor {
+    struct ConditionsCreator  : public OutputLevel  {
       /// Content object for which conditions are supposedly created
-      ConditionsSlice&   slice;
+      ConditionsSlice& slice;
       /// Conditions pool the created conditions are inserted to (not equals user pool!)
-      ConditionsPool&    pool;
-      /// Counter
-      unsigned int       conditionCount = 0;
-      /// Print level
-      PrintLevel         printLevel = DEBUG;
-
+      ConditionsPool&  pool;
       /// Constructor
-      ConditionsCreator(ConditionsSlice& s, ConditionsPool& p, PrintLevel l);
+      ConditionsCreator(ConditionsSlice& s, ConditionsPool& p, PrintLevel l=DEBUG)
+        : OutputLevel(l), slice(s), pool(p)  {}
       /// Destructor
-      virtual ~ConditionsCreator();
+      virtual ~ConditionsCreator() = default;
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level)  final;
-      template<typename T> Condition make_condition(DetElement de, const std::string& name, T val);
+      virtual int operator()(DetElement de, int level)  const final;
+      template<typename T> Condition make_condition(DetElement de,
+                                                    const std::string& name,
+                                                    T val)  const;
     };
 
     /// Example how to access the conditions constants from a detector element
@@ -181,57 +188,28 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2016
      */
-    struct ConditionsDataAccess : public DetectorProcessor  {
+    struct ConditionsDataAccess : public OutputLevel   {
       /// Reference to the IOV to be checked
       const IOV&     iov;
       /// Reference to the conditions map to access conditions
       ConditionsMap& map;
-      /// Print level
-      PrintLevel printLevel = DEBUG;
       /// Constructor
-      ConditionsDataAccess(const IOV& i, ConditionsMap& m) : iov(i), map(m), printLevel(DEBUG) {}
+      ConditionsDataAccess(const IOV& i, ConditionsMap& m, PrintLevel l=DEBUG)
+        : OutputLevel(l), iov(i), map(m) {}
       /// Destructor
-      virtual ~ConditionsDataAccess();
+      virtual ~ConditionsDataAccess() = default;
       /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level);
+      virtual int operator()(DetElement de, int level)  const;
       /// Common call to access selected conditions
-      virtual int accessConditions(DetElement de, const std::vector<Condition>& conditions);
-    };
-
-    /// Example how to access the conditions constants from a detector element
-    /**
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \date    01/04/2016
-     */
-    struct DetectorConditionsAccess : public ConditionsDataAccess  {
-      /// Constructor
-      DetectorConditionsAccess(const IOV& i, ConditionsMap& m) : ConditionsDataAccess(i,m) {}
-      /// Destructor
-      virtual ~DetectorConditionsAccess() {}
-      /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int level)  final;
+      virtual int accessConditions(DetElement de,
+                                   const std::vector<Condition>& conditions)  const;
     };
 
     /// Helper to run DetElement scans
-    /**
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \date    01/04/2016
-     */
-    struct Scanner : public DetectorProcessor  {
-      DetElement::Processor* proc;
-      /// Callback to process a single detector element
-      virtual int operator()(DetElement de, int) final
-      { return proc->processElement(de);                     }
-      template <typename Q> Scanner& scan(Q& p, DetElement start)
-      { Scanner obj; obj.proc = &p; obj.process(start, 0, true); return *this; }
-      template <typename Q> Scanner& scan2(const Q& p, DetElement start)
-      { Scanner obj; obj.proc = const_cast<Q*>(&p); obj.process(start, 0, true); return *this; }
-    };
-
+    typedef Geometry::DetectorScanner Scanner;
+    
     /// Install the consitions and the conditions manager
-    void installManagers(LCDD& lcdd);
+    ConditionsManager installManager(LCDD& lcdd);
   }       /* End namespace ConditionsExamples             */
 }         /* End namespace DD4hep                         */
 #endif    /* DD4HEP_CONDITIONS_CONDITIONSEXAMPLEOBJECTS_H */

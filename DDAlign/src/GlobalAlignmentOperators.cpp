@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 #include "DDAlign/GlobalAlignmentOperators.h"
 #include "DDAlign/GlobalDetectorAlignment.h"
 

@@ -98,8 +98,8 @@ namespace DD4hep {
 #include "DD4hep/OpaqueDataBinder.h"
 #include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/objects/ConditionsInterna.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 
 #include "DDCond/ConditionsTags.h"
 #include "DDCond/ConditionsSlice.h"
@@ -332,20 +332,20 @@ size_t ConditionsXMLRepositoryWriter::collect(XML::Element root,
 {
   size_t count = 0;
   if ( detector.isValid() )  {
-    DetElementConditionsCollector select(detector);
-    slice.scan(select);
-    if ( !select.conditions.empty() )   {
+    std::vector<Conditions::Condition> conds;
+    conditionsCollector(slice,conds)(detector);
+    if ( !conds.empty() )   {
       stringstream comment;
       Condition cond_align, cond_delta;
       XML::Element conditions = XML::Element(root.document(),_UC(detelement));
       conditions.setAttr(_U(path),detector.path());
       printout(s_printLevel,"Writer","++ Conditions of DE %s [%d entries]",
-               detector.path().c_str(), int(select.conditions.size()));
+               detector.path().c_str(), int(conds.size()));
       comment << " DDCond conditions for DetElement " << detector.path()
-              << " Total of " << int(select.conditions.size()) << " Entries.  ";
+              << " Total of " << int(conds.size()) << " Entries.  ";
       root.addComment(comment.str());
       root.append(conditions);
-      for(const auto& c : select.conditions )   {
+      for(const auto& c : conds )   {
         std::string nam = c.name();
         std::string cn  = nam.substr(nam.find('#')+1);
         ReferenceBitMask<Condition::mask_type> msk(c->flags);

@@ -15,6 +15,7 @@
 
 // C/C++ include files
 #include <map>
+#include <list>
 #include <vector>
 #include <string>
 #include <limits>

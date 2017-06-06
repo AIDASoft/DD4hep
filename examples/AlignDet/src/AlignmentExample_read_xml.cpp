@@ -62,49 +62,46 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
   // First we load the geometry
   lcdd.fromXML(input);
-  installManagers(lcdd);
 
-  ConditionsManager condMgr  = ConditionsManager::from(lcdd);
-  const void* delta_args[] = {delta.c_str(), 0}; // Better zero-terminate
+  ConditionsManager manager  = installManager(lcdd);
+  const void*  delta_args[] = {delta.c_str(), 0}; // Better zero-terminate
 
   lcdd.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
   // Now the deltas are stored in the conditions manager in the proper IOV pools
-  const IOVType* iov_typ = condMgr.iovType("run");
-  if ( 0 == iov_typ )  {
+  const IOVType* iov_typ = manager.iovType("run");
+  if ( 0 == iov_typ )
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
-  }
+
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
   shared_ptr<ConditionsContent> content(new ConditionsContent());
-  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(condMgr,content));
-  Conditions::fill_content(condMgr,*content,*iov_typ);
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  Conditions::fill_content(manager,*content,*iov_typ);
 
-  ConditionsManager::Result cres = condMgr.prepare(req_iov,*slice);
-  
+  ConditionsManager::Result cres = manager.prepare(req_iov,*slice);
   // ++++++++++++++++++++++++ Compute the tranformation matrices
   AlignmentsCalculator          calc;
   Conditions::ConditionsHashMap alignments;
 
-  DetElementDeltaCollector delta_collector(slice.get());
-  DetElementProcessor<DetElementDeltaCollector> proc(delta_collector);
-  proc.process(lcdd.world(),0,true);
-  printout(INFO,"Prepare","Got a total of %ld Deltas",delta_collector.deltas.size());
+  AlignmentsCalculator::Deltas deltas;
+  Scanner(deltaCollector(*slice, deltas),lcdd.world());
+  printout(INFO,"Prepare","Got a total of %ld Deltas",deltas.size());
 
   slice->pool->flags |= Conditions::UserPool::PRINT_INSERT;
-  AlignmentsCalculator::Result  ares = calc.compute(delta_collector.deltas, alignments);
-  ConditionsSlice::Inserter(*slice).process(alignments.data);
+  AlignmentsCalculator::Result  ares = calc.compute(deltas, alignments);
+  ConditionsSlice::Inserter(*slice,alignments.data);
 
   // What else ? let's access the data
-  Scanner().scan(AlignmentDataAccess(*slice),lcdd.world());
+  size_t total_accessed = Scanner().scan(AlignmentDataAccess(*slice),lcdd.world());
 
   // What else ? let's print the current selection
-  Alignments::AlignedVolumePrinter printer(slice.get(),"Example");
-  Scanner().scan(printer,lcdd.world());
+  Scanner(AlignedVolumePrinter(slice.get(),"Example"),lcdd.world());
 
   printout(INFO,"Example",
-           "Setup %ld/%ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) (A:%ld,M:%ld) for IOV:%-12s",
+           "%ld conditions in slice. (T:%ld,S:%ld,L:%ld,C:%ld,M:%ld) "
+           "Alignments accessed: %ld (A:%ld,M:%ld) for IOV:%-12s",
            slice->conditions().size(),
            cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
-           ares.computed, ares.missing, iov_typ->str().c_str());
+           total_accessed, ares.computed, ares.missing, iov_typ->str().c_str());
 
   // ++++++++++++++++++++++++ All done.
   return 1;

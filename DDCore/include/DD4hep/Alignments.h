@@ -128,7 +128,7 @@ namespace DD4hep {
         /// Default destructor
         virtual ~Processor() = default;
         /// Container callback for object processing
-        virtual int operator()(Alignment container) = 0;
+        virtual int operator()(Alignment alignment) const = 0;
       };
 
       /// Forward definition of the geometry placement

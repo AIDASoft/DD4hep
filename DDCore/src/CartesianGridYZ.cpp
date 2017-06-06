@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DD4hep/CartesianGridYZ.h"
-#include "DD4hep/objects/SegmentationsInterna.h"
+#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DDSegmentation/CartesianGridYZ.h"
 
 // C/C++ include files

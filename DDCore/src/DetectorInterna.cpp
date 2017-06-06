@@ -12,16 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/objects/ConditionsInterna.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/Handle.inl"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/DetectorTools.h"
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "TGeoVolume.h"
 #include "TGeoMatrix.h"
 #include "TGeoManager.h"
-#include "DD4hep/objects/DetectorInterna.h"
 
 using namespace std;
 using namespace DD4hep;

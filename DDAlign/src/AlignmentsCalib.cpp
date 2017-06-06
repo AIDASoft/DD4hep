@@ -17,7 +17,7 @@
 #include "DD4hep/Memory.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -66,7 +66,7 @@ DetElement AlignmentsCalib::detector(const string& path)  const   {
 
 /// Implementation: Add a new entry to the transaction stack.
 pair<key_type,AlignmentsCalib::Entry*>
-AlignmentsCalib::_set(DetElement detector, const Delta& delta)  {
+AlignmentsCalib::_set(DetElement detector, const Delta& delta)   {
   ConditionKey tar_key(detector.key(),AlignmentsCalculator::alignment_item_key());
   UsedConditions::iterator i = used.find(tar_key.hash);
   if ( i != used.end() )   {
@@ -75,7 +75,7 @@ AlignmentsCalib::_set(DetElement detector, const Delta& delta)  {
   }
 
   Condition src_cond  = slice.get(detector,align_delta_hash);
-  if ( !src_cond.isValid() )  {
+  if ( !src_cond.isValid() )   {
     // Try to create a new condition and register it to the
     // conditions manager from the delta value.
     ConditionKey key(detector, align_delta_hash);

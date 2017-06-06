@@ -16,7 +16,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 
 #include "TMap.h"
 #include "TROOT.h"

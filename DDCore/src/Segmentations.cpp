@@ -16,8 +16,8 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
-#include "DD4hep/Handle.inl"
-#include "DD4hep/objects/SegmentationsInterna.h"
+#include "DD4hep/detail/Handle.inl"
+#include "DD4hep/detail/SegmentationsInterna.h"
 
 // C/C++ include files
 #include <iostream>

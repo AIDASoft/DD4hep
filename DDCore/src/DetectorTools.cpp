@@ -16,7 +16,7 @@
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 
 // C/C++ include files
 #include <stdexcept>

@@ -65,49 +65,46 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
 
   // First we load the geometry
   lcdd.fromXML(input);
-  installManagers(lcdd);
 
   /******************** Initialize the conditions manager *****************/
-  ConditionsManager condMgr = ConditionsManager::from(lcdd);
-  condMgr["PoolType"]       = "DD4hep_ConditionsLinearPool";
-  condMgr["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
-  condMgr["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-  condMgr.initialize();
-  
-  const IOVType*  iov_typ  = condMgr.registerIOVType(0,"run").second;
-  if ( 0 == iov_typ )  {
+  ConditionsManager manager = installManager(lcdd);
+  const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
+  if ( 0 == iov_typ )
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
-  }
 
   /******************** Now as usual: create the slice ********************/
   shared_ptr<ConditionsContent> content(new ConditionsContent());
-  shared_ptr<ConditionsSlice> slice(new ConditionsSlice(condMgr,content));
-  slice->pool = condMgr.createUserPool(iov_typ);
-  ConditionsKeys(*content,INFO).process(lcdd.world(),0,true);
-  ConditionsDependencyCreator(*content,DEBUG).process(lcdd.world(),0,true);
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  Scanner(ConditionsKeys(*content,INFO),lcdd.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG),lcdd.world());
 
   /******************** Populate the conditions store *********************/
   // Have 10 run-slices [11,20] .... [91,100]
   for(int i=0; i<num_iov; ++i)  {
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
-    ConditionsPool*   iov_pool = condMgr.registerIOV(*iov.iovType, iov.key());
-    ConditionsCreator creator(*slice, *iov_pool, INFO);  // Use a generic creator
-    creator.process(lcdd.world(),0,true);                // Create conditions with all deltas
+    ConditionsPool*   iov_pool = manager.registerIOV(*iov.iovType, iov.key());
+    // Create conditions with all deltas. Use a generic creator
+    Scanner(ConditionsCreator(*slice, *iov_pool, INFO),lcdd.world(),0,true);
   }
   
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
+  ConditionsManager::Result total;
   for(int i=0; i<num_iov; ++i)  {
     IOV req_iov(iov_typ,i*10+5);
-    // Attach the proper set of conditions to the user pool
-    ConditionsManager::Result r = condMgr.prepare(req_iov,*slice);
+    // Select the proper set of conditions and attach them to the user pool
+    ConditionsManager::Result r = manager.prepare(req_iov,*slice);
+    total += r;
     if ( 0 == i )  { // First one we print...
-      ConditionsPrinter printer(slice.get(),"Example");
-      Scanner().scan(printer,lcdd.world());
+      Scanner(ConditionsPrinter(slice.get(),"Example"),lcdd.world());
     }
     // Now compute the tranformation matrices
     printout(INFO,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
              r.total(), r.selected, r.loaded, r.computed, r.missing, req_iov.str().c_str());
   }  
+  printout(INFO,"Statistics","+=========================================================================");
+  printout(INFO,"Statistics","+  Accessed Total %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld)",
+           total.total(), total.selected, total.loaded, total.computed, total.missing);
+  printout(INFO,"Statistics","+=========================================================================");
   // All done.
   return 1;
 }

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/objects/SegmentationsInterna.h"
+#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DD4hep/InstanceCount.h"
 
 // C/C++ include files

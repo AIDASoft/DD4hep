@@ -83,7 +83,7 @@ namespace  {
     long              numNoCatalogs = 0;
     PrintLevel        level = INFO;
     DDDB::ConditionPrinter printer;
-    CallContext() : printer(0,"") {}
+    CallContext() : printer(0,"Conditions") {}
   };
   
   /// Specialized conditions update callback for alignments
@@ -285,7 +285,7 @@ namespace  {
     long collectDependencies(DetElement de, int level)  {
       char fmt[64], text[256];
       DDDB::Catalog* cat = 0;
-      string pref = m_context.printer.prefix();
+      string pref = m_context.printer.prefix;
       const DetElement::Children& c = de.children();
 
       ::snprintf(fmt,sizeof(fmt),"%%-%ds-> ",2*level+5);
@@ -297,21 +297,24 @@ namespace  {
         printout(m_level,m_name,fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
         cat = de.extension<DDDB::Catalog>();
         ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s", level+1, 2*level+3);
+        //
+        // We use here the alignment entry from the DDDB catalog:
+        // This ensures, that we are only bound by the name and not by any other means!
+        //
         if ( !cat->condition.empty() )  {
           RangeConditions rc = findCond(cat->condition);
           printout(m_level,m_name,fmt,"","Alignment:    ", 
                    rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
           if ( !rc.empty() )   {
-            ConditionKey target1(de,cat->condition+"/derived_1");
-            ConditionKey target2(de,cat->condition+"/derived_2");
-            ConditionKey target3(de,cat->condition+"/derived_3");
-            DependencyBuilder build_1(de, target1.item_key(), new ConditionUpdate1(m_context));
-            DependencyBuilder build_2(de, target2.item_key(), new ConditionUpdate2(m_context));
-            DependencyBuilder build_3(de, target3.item_key(), new ConditionUpdate3(m_context));
-
             for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
               Condition    cond = *ic;
-              ConditionKey key(de, cond->value);
+              ConditionKey key(de, cond->name);
+              ConditionKey target1(de,cond->name+"/derived_1");
+              ConditionKey target2(de,cond->name+"/derived_2");
+              ConditionKey target3(de,cond->name+"/derived_3");
+              DependencyBuilder build_1(de, cond->name+"/derived_1", new ConditionUpdate1(m_context));
+              DependencyBuilder build_2(de, cond->name+"/derived_2", new ConditionUpdate2(m_context));
+              DependencyBuilder build_3(de, cond->name+"/derived_3", new ConditionUpdate3(m_context));
               build_1.add(key);
 
               build_2.add(key);
@@ -320,10 +323,12 @@ namespace  {
               build_3.add(key);
               build_3.add(target1);
               build_3.add(target2);
+              printout(INFO,m_name,"Building [%ld] condition dependencies for: %s [%s # %s] -> %lld [%016llX]",
+                       rc.size(), cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash, cond->hash);
+              content->insertDependency(build_1.release());
+              content->insertDependency(build_2.release());
+              content->insertDependency(build_3.release());
             }
-            content->insertDependency(build_1.release());
-            content->insertDependency(build_2.release());
-            content->insertDependency(build_3.release());
           }
           ++m_context.numAlignments;
         }

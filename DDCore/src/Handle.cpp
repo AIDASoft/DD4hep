@@ -13,7 +13,7 @@
 
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/Handle.inl"
+#include "DD4hep/detail/Handle.inl"
 #include "XML/Evaluator.h"
 #include <iostream>
 #include <iomanip>

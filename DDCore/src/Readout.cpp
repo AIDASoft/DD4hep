@@ -13,12 +13,12 @@
 
 // Framework include files
 #include "DD4hep/Readout.h"
-#include "DD4hep/objects/SegmentationsInterna.h"
-#include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/detail/SegmentationsInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
+#include "DD4hep/detail/Handle.inl"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/LCDD.h"
-#include "DD4hep/Handle.inl"
 
 using namespace std;
 using namespace DD4hep;

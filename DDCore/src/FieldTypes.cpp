@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#include "DD4hep/Handle.inl"
 #include "DD4hep/FieldTypes.h"
+#include "DD4hep/detail/Handle.inl"
 #include <cmath>
 
 using namespace std;

@@ -214,7 +214,7 @@ namespace DD4hep {
 
 typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 
 using namespace std;
 using namespace DD4hep;

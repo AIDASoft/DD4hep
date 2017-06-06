@@ -17,8 +17,8 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Segmentations.h"
-#include "DD4hep/objects/ObjectsInterna.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
 #include "XML/DocumentHandler.h"
 #include "LCDDConverter.h"
 

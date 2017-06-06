@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Plugins.inl"
+#include "DD4hep/detail/Plugins.inl"
 #include "DDG4/Factories.h"
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4PhysicsList.h"

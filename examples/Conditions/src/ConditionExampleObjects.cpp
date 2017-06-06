@@ -22,14 +22,17 @@ using namespace DD4hep::ConditionExamples;
 using Conditions::ConditionsSlice;
 using Conditions::DependencyBuilder;
 using Conditions::ConditionsLoadInfo;
-using Conditions::ConditionsCollector;
-using Conditions::DetElementConditionsCollector;
-
 
 /// Install the consitions and the alignment manager
-void DD4hep::ConditionExamples::installManagers(LCDD& lcdd)  {
+ConditionsManager DD4hep::ConditionExamples::installManager(LCDD& lcdd)  {
   // Now we instantiate the conditions manager
   lcdd.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
+  ConditionsManager manager = ConditionsManager::from(lcdd);
+  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
+  manager.initialize();
+  return manager;
 }
 
 /// Interface to client Callback in order to update the condition
@@ -91,7 +94,7 @@ Condition ConditionUpdate3::operator()(const ConditionKey& key, const Context& c
 
 /// Initializing constructor
 ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p)
-  : content(c), printLevel(p)
+  : OutputLevel(p), content(c)
 {
   call1 = new ConditionUpdate1(printLevel);
   call2 = new ConditionUpdate2(printLevel);
@@ -106,7 +109,7 @@ ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
 }
 
 /// Callback to process a single detector element
-int ConditionsDependencyCreator::operator()(DetElement de, int)    {
+int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   ConditionKey      key(de,"derived_data");
   ConditionKey      target1(de,"derived_1");
   ConditionKey      target2(de,"derived_2");
@@ -132,19 +135,15 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)    {
   return 1;
 }
 
-/// Destructor
-ConditionsDataAccess::~ConditionsDataAccess()   {
-}
-
 /// Callback to process a single detector element
-int ConditionsDataAccess::operator()(DetElement de, int /* level */)  {
-  ConditionsCollector select(0);
-  map.scan(select);  
-  return accessConditions(de, select.conditions);
+int ConditionsDataAccess::operator()(DetElement de, int level)  const  {
+  vector<Condition> conditions;
+  conditionsCollector(map,conditions)(de, level);
+  return accessConditions(de, conditions);
 }
 
 /// Common call to access selected conditions
-int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Condition>& conditions)   {
+int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Condition>& conditions)  const  {
   ConditionKey key_temperature (de,"temperature");
   ConditionKey key_pressure    (de,"pressure");
   ConditionKey key_double_table(de,"double_table");
@@ -190,17 +189,9 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
   }
   return count;
 }
-                                                         
-/// Callback to process a single detector element
-int DetectorConditionsAccess::operator()(DetElement de, int)  {
-  DetElementConditionsCollector select(de);
-  map.scan(select);
-  return accessConditions(de, select.conditions);
-}
-
 
 /// Callback to process a single detector element
-int ConditionsKeys::operator()(DetElement de, int)    {
+int ConditionsKeys::operator()(DetElement de, int)  const   {
   content.insertKey(ConditionKey(de,"temperature").hash);
   content.insertKey(ConditionKey(de,"pressure").hash);
   content.insertKey(ConditionKey(de,"double_table").hash);
@@ -209,7 +200,7 @@ int ConditionsKeys::operator()(DetElement de, int)    {
   return 1;
 }
 
-template<typename T> Condition ConditionsCreator::make_condition(DetElement de, const string& name, T val)  {
+template<typename T> Condition ConditionsCreator::make_condition(DetElement de, const string& name, T val)  const {
   Condition cond(de.path()+"#"+name, name);
   T& value   = cond.bind<T>();
   value      = val;
@@ -217,20 +208,8 @@ template<typename T> Condition ConditionsCreator::make_condition(DetElement de, 
   return cond;
 }
 
-/// Constructor
-ConditionsCreator::ConditionsCreator(ConditionsSlice& s, ConditionsPool& p, PrintLevel l)
-  : slice(s), pool(p), conditionCount(0), printLevel(l)
-{
-}
-
-
-/// Destructor
-ConditionsCreator::~ConditionsCreator()  {
-  printout(printLevel,"Creator","++ Added a total of %d conditions",conditionCount);
-}
-
 /// Callback to process a single detector element
-int ConditionsCreator::operator()(DetElement de, int)    {
+int ConditionsCreator::operator()(DetElement de, int)  const  {
   Condition temperature = make_condition<double>(de,"temperature",1.222);
   Condition pressure    = make_condition<double>(de,"pressure",888.88);
   Condition derived     = make_condition<int>   (de,"derived_data",100);
@@ -243,6 +222,5 @@ int ConditionsCreator::operator()(DetElement de, int)    {
   slice.manager.registerUnlocked(pool, dbl_table);
   slice.manager.registerUnlocked(pool, int_table);
   printout(printLevel,"Creator","++ Adding manually conditions for %s",de.path().c_str());
-  conditionCount += 5;
-  return 1;
+  return 5;
 }

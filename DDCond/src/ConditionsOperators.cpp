@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsOperators.h"

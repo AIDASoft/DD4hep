@@ -13,9 +13,9 @@
 
 // Framework include files
 #include "DD4hep/OpaqueDataBinder.h"
-#include "DD4hep/objects/OpaqueData_inl.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 #include "DD4hep/Conditions.h"
+#include "DD4hep/detail/OpaqueData_inl.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 // C/C++ include files
 #include <set>

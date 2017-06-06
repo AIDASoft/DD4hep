@@ -15,45 +15,57 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/AlignmentsPrinter.h"
 #include "DD4hep/AlignmentsProcessor.h"
-#include "DD4hep/objects/AlignmentsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 
 // C/C++ include files
 #include <sstream>
+#include "TClass.h"
+#include "DD4hep/ToStream.h"
 
-using std::string;
-using std::stringstream;
+using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
 /// Initializing constructor
 AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* m, const string& pref, int flg)
-  : Alignment::Processor(), mapping(m), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
+  : mapping(m), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
 {
 }
 
 /// Callback to output alignments information
-int AlignmentsPrinter::operator()(Alignment a)    {
+int AlignmentsPrinter::operator()(Alignment a)  const  {
   printAlignment(printLevel, name, a);
   return 1;
 }
 
-
-/// Processing callback to print alignments
-int AlignmentsPrinter::processElement(DetElement de)   {
-  DetElementAlignmentsCollector select(de);
+/// Callback to output alignments information of an entire DetElement
+int AlignmentsPrinter::operator()(DetElement de, int level)  const   {
   if ( mapping )   {
-    mapping->scan(select);
-    printout(this->printLevel, name, "++ %s %-3ld Alignments for DE %s",
-             prefix.c_str(), select.alignments.size(), de.path().c_str()); 
-    for( auto alignment : select.alignments )
+    vector<Alignment> alignments;
+    alignmentsCollector(*mapping,alignments)(de, level);
+    printout(printLevel, name, "++ %s %-3ld Alignments for DE %s",
+             prefix.c_str(), alignments.size(), de.path().c_str()); 
+    for( auto alignment : alignments )
       (*this)(alignment);
-    return int(select.alignments.size());
+    return int(alignments.size());
   }
   except(name,"Failed to dump conditions for DetElement:%s [No slice availible]",
          de.path().c_str());
   return 0;
 }
 
+/// Initializing constructor
+AlignedVolumePrinter::AlignedVolumePrinter(ConditionsMap* m, const string& pref,int flg)
+  : AlignmentsPrinter(m, pref, flg)
+{
+  name = "Alignmant";
+}
+
+/// Callback to output alignments information
+int AlignedVolumePrinter::operator()(Alignment a)  const  {
+  printAlignment(printLevel, name, a);
+  return 1;
+}
 
 /// Default printout of an alignment entry
 void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix, Alignment a)   {
@@ -78,9 +90,6 @@ void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix, Al
   }
 }
 
-
-#include "TClass.h"
-#include "DD4hep/ToStream.h"
 static string replace_all(const string& in, const string& from, const string& to)  {
   string res = in;
   size_t idx;
@@ -186,11 +195,11 @@ void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix,
 void DD4hep::Alignments::printElement(PrintLevel prt_level, const string& prefix, DetElement de, ConditionsMap& pool)   {
   string tag = prefix+"Element";
   if ( de.isValid() )  {
-    DetElementAlignmentsCollector select(de);
-    pool.scan(select);
+    vector<Alignment> alignments;
+    alignmentsCollector(pool,alignments)(de);
     printout(prt_level,tag,"++ Alignments of DE %s [%d entries]",
-             de.path().c_str(), int(select.alignments.size()));
-    for(const auto& align : select.alignments )
+             de.path().c_str(), int(alignments.size()));
+    for(const auto& align : alignments )
       printAlignment(prt_level, prefix, align);
     return;
   }
@@ -209,19 +218,19 @@ void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& pre
     char text[132];
     Alignment    nominal = de.nominal();
     Box bbox = de.placement().volume().solid();
-    DetElementAlignmentsCollector select(de);
+    vector<Alignment> alignments;
 
-    pool.scan(select);
+    alignmentsCollector(pool,alignments)(de);
     ::memset(text,'=',sizeof(text));
     text[sizeof(text)-1] = 0;
     printout(lvl, tag, text);
     printout(lvl, tag, "++ Alignments of DE %s [%d entries]",
-             de.path().c_str(), int(select.alignments.size()));
+             de.path().c_str(), int(alignments.size()));
     printout(lvl, tag, "++ Volume: %s  BBox: x=%7.3f y=%7.3f z=%7.3f",
              bbox.type(), bbox.x(), bbox.y(), bbox.z());
     printAlignment(lvl, tag, "NOMINAL", de, nominal);
 
-    for(const auto& align : select.alignments )  {
+    for(const auto& align : alignments )  {
       AlignmentCondition cond(align);
       try {
         printout(lvl, tag, "++ Alignment %p [%16llX]", align.ptr(), cond.key());

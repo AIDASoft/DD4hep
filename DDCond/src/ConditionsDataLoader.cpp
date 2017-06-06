@@ -14,7 +14,7 @@
 // Framework include files
 #include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsManagerObject.h"
-#include "DD4hep/Handle.inl"
+#include "DD4hep/detail/Handle.inl"
 #include "DD4hep/Printout.h"
 
 using std::string;

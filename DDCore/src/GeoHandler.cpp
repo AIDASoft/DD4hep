@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/GeoHandler.h"
-#include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 
 // ROOT includes
 #include "TGeoManager.h"

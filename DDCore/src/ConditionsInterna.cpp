@@ -13,12 +13,12 @@
 
 // Framework includes
 #include "DD4hep/IOV.h"
-#include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/ConditionsListener.h"
-#include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/Handle.inl"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 using namespace std;
 using namespace DD4hep::Conditions;

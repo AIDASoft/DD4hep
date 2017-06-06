@@ -134,10 +134,11 @@ namespace DD4hep {
      *  \author  M.Frank
      *  \version 1.0
      */
-    class UserPool  {
+    class UserPool : public ConditionsMap {
     public:
       /// Forward definition of the key type
-      typedef Condition::key_type                  key_type;
+      //typedef Condition::key_type                  key_type;
+      typedef Condition::itemkey_type              itemkey_type;
       typedef ConditionDependency                  Dependency;
       typedef std::map<key_type,const Dependency*> Dependencies;
       typedef ConditionsManager::Result            Result;
@@ -190,10 +191,25 @@ namespace DD4hep {
       virtual bool remove(const ConditionKey& key) = 0;
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(DetElement detector, unsigned int key, Condition condition) = 0;
-      /// ConditionsMap overload: Access a condition
+
+      /// ConditionsMap overload: Access a single condition
       virtual Condition get(DetElement detector, unsigned int key)  const = 0;
+      /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
+      virtual std::vector<Condition> get(key_type lower, key_type upper)  const = 0;
+      /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
+      virtual std::vector<Condition> get(DetElement detector,
+                                         itemkey_type lower,
+                                         itemkey_type upper)  const = 0;
+
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(Condition::Processor& processor) const = 0;
+      virtual void scan(const Processor& processor) const = 0;
+      /// No ConditionsMap overload: Interface to scan data content of the conditions mapping
+      virtual void scan(key_type lower, key_type upper, const Processor& processor) const = 0;
+      /// No ConditionsMap overload: Interface to scan data content of the conditions mapping
+      virtual void scan(DetElement detector,
+                        itemkey_type lower,
+                        itemkey_type upper,
+                        const Processor& processor) const = 0;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual Result prepare(const IOV&               required, 

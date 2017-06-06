@@ -15,8 +15,8 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/VolumeManagerInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/VolumeManagerInterna.h"
 
 // C/C++ includes
 #include <set>

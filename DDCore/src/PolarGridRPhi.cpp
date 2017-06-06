@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DD4hep/PolarGridRPhi.h"
-#include "DD4hep/objects/SegmentationsInterna.h"
+#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DDSegmentation/PolarGridRPhi.h"
 
 // C/C++ include files

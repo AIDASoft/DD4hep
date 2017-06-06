@@ -53,7 +53,6 @@ namespace DD4hep {
     class ConditionsSlice : public ConditionsMap  {
     public:
       typedef Condition::key_type                key_type;
-      typedef std::shared_ptr<ConditionsContent> Content;
 
       enum ManageFlag {
         REGISTER_MANAGER= 1<<0,
@@ -77,6 +76,11 @@ namespace DD4hep {
           const IOV& iov = s.pool->validity();
           iov_pool = s.manager.registerIOV(*iov.iovType,iov.key());
         }
+        template <typename T> Inserter(ConditionsSlice& s, const T& data) : slice(s) {
+          const IOV& iov = s.pool->validity();
+          iov_pool = s.manager.registerIOV(*iov.iovType,iov.key());
+          std::for_each(std::begin(data), std::end(data), *this);
+        }
         void operator()(Condition c) const  {
           slice.manager.registerUnlocked(*iov_pool,c);
           slice.pool->insert(c);
@@ -98,7 +102,7 @@ namespace DD4hep {
       /// Reference to the user pool managing all conditions of this slice
       std::unique_ptr<UserPool> pool;
       /// Container of conditions required by this slice
-      Content                   content;
+      std::shared_ptr<ConditionsContent> content;
 
     protected:
       /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
@@ -122,7 +126,7 @@ namespace DD4hep {
       /// Initializing constructor
       ConditionsSlice(ConditionsManager m);
       /// Initializing constructor
-      ConditionsSlice(ConditionsManager m, Content c);
+      ConditionsSlice(ConditionsManager m, const std::shared_ptr<ConditionsContent>& c);
       /// Copy constructor (Special, partial copy only. Hence no assignment!)
       ConditionsSlice(const ConditionsSlice& copy);
       /// Default destructor. 
@@ -151,13 +155,25 @@ namespace DD4hep {
       /** Note: The conditions already require a valid hash key                           */
       virtual bool manage(Condition condition, ManageFlag flg);
 
+      /// Access all conditions from a given detector element
+      std::vector<Condition> get(DetElement detector)  const;
+      
       /** ConditionsMap interface implementation:                                         */
       /// ConditionsMap overload: Add a condition directly to the slice
-      virtual bool insert(DetElement detector, unsigned int key, Condition condition);
+      virtual bool insert(DetElement detector, unsigned int key, Condition condition)  override;
       /// ConditionsMap overload: Access a condition
-      virtual Condition get(DetElement detector, unsigned int key)  const;
+      virtual Condition get(DetElement detector, unsigned int key)  const override;
+      /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
+      virtual std::vector<Condition> get(DetElement detector,
+                                         itemkey_type lower,
+                                         itemkey_type upper)  const  override;
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(Condition::Processor& processor) const;
+      virtual void scan(const Processor& processor) const  override;
+      /// ConditionsMap overload: Interface to partially scan data content of the conditions mapping
+      virtual void scan(DetElement       detector,
+                        itemkey_type     lower,
+                        itemkey_type     upper,
+                        const Processor& processor) const  override;
     };
 
     /// Populate the conditions slice from the conditions manager (convenience)

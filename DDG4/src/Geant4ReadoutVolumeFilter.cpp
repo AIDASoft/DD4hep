@@ -15,7 +15,7 @@
 // Framework include files
 #include "DD4hep/Readout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/ObjectsInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 #include "DDG4/Geant4Mapping.h"
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4VolumeManager.h"

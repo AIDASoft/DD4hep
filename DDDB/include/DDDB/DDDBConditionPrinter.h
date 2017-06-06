@@ -57,6 +57,9 @@ namespace DD4hep {
         /// Parent object
         ConditionPrinter* m_parent = 0;
       public:
+        std::string       prefix;
+        PrintLevel        printLevel;
+      public:
         /// Copy constructor
         ParamPrinter(const ParamPrinter& copy) = default;
         /// Initializing constructor
@@ -71,45 +74,39 @@ namespace DD4hep {
 
     protected:
       friend class ParamPrinter;
-      
+      typedef Geometry::DetElement DetElement;
       /// Sub-printer
-      ParamPrinter* m_print = 0;
-      /// Printout prefix
-      std::string   m_prefix;
-      /// Flags to steer output processing
-      int           m_flag = 0;
-      /// Printout level
-      PrintLevel    m_printLevel = INFO;
-
-      /// Counter: number of parameters
-      size_t        m_numParam = 0;
-      /// Counter: number of conditions
-      size_t        m_numCondition = 0;
-      /// Counter: number of empty conditions
-      size_t        m_numEmptyCondition = 0;
+      ParamPrinter*  m_print = 0;
       
     public:
+      /// Line length
+      size_t         lineLength = 80;
+      /// Counter: number of parameters
+      size_t         numParam = 0;
+      /// Counter: number of conditions
+      mutable size_t numCondition = 0;
+      /// Counter: number of empty conditions
+      mutable size_t numEmptyCondition = 0;
+
       typedef Conditions::Condition Condition;
       /// No default constructor
       ConditionPrinter() = delete;
       /// No copy constructor
       ConditionPrinter(const ConditionPrinter& copy) = delete;
       /// Initializing constructor
-      ConditionPrinter(Conditions::ConditionsMap* m,
+      ConditionPrinter(Conditions::ConditionsMap* mapping,
                        const std::string& prefix, 
                        int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS,
                        ParamPrinter* prt=0);
+      /// No assignment
+      ConditionPrinter& operator=(const ConditionPrinter& copy) = delete;
       /// Default destructor
       virtual ~ConditionPrinter();
-      
-      /// Set printout level for prinouts
-      void setPrintLevel(PrintLevel lvl);
-      /// Access the prefix value
-      const std::string& prefix() const         { return m_prefix;   }
-      /// Set prefix for prinouts
-      void setPrefix(const std::string& value)  {  m_prefix = value; }
       /// Callback to output conditions information
-      virtual int process(Condition condition);
+      virtual int operator()(Condition condition)  const override;
+      /// Callback to output alignments information of an entire DetElement
+      virtual int operator()(DetElement de, int level) const
+      {  return this->Conditions::ConditionsPrinter::operator()(de,level); }
     };
 
   } /* End namespace DDDB    */

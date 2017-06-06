@@ -21,6 +21,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
+#include "DD4hep/ConditionsProcessor.h"
 #include "DDDB/DDDBConditionPrinter.h"
 #include "DDDB/DDDBConditionsLoader.h"
 #include "DD4hep/PluginTester.h"
@@ -54,6 +55,8 @@ DECLARE_APPLY(DDDB_ConditionsSummary,dddb_dump_conditions_summary)
 //==========================================================================
 /// Plugin function
 static void* create_dddb_conditions_printer(Geometry::LCDD& lcdd, int argc, char** argv)  {
+  using namespace Conditions;
+  typedef ConditionsProcessorWrapper<DDDB::ConditionPrinter> Wrapper;
   int        flags = 0, have_pool = 0;
   string     prefix = "";
   PrintLevel prtLevel = INFO;
@@ -67,27 +70,26 @@ static void* create_dddb_conditions_printer(Geometry::LCDD& lcdd, int argc, char
     else if ( 0 == ::strncmp("-printlevel",argv[i],6) )
       prtLevel = DD4hep::printLevel(argv[++i]);
   }
-  Conditions::ConditionsSlice* slice = 0;
-  if ( have_pool != 0 )  {
+  ConditionsSlice* slice = 0;
+  if ( have_pool )   {
     PluginTester* test = lcdd.extension<PluginTester>();
-    slice = test->extension<Conditions::ConditionsSlice>("ConditionsTestSlice");
+    slice = test->extension<ConditionsSlice>("ConditionsTestSlice");
   }
-  DDDB::ConditionPrinter* printer = flags
-    ? new DDDB::ConditionPrinter(slice,prefix,flags)
-    : new DDDB::ConditionPrinter(slice,prefix);
-  printer->setPrintLevel(prtLevel);
-  Geometry::DetElement::Processor* proc = printer;
-  return proc;
+  DDDB::ConditionPrinter* p(flags
+                            ? new DDDB::ConditionPrinter(slice,prefix,flags)
+                            : new DDDB::ConditionPrinter(slice,prefix));
+  p->printLevel = prtLevel;
+  Wrapper* wrap = createProcessorWrapper(p);
+  return (void*)dynamic_cast<Condition::Processor*>(wrap);
 }
 DECLARE_LCDD_CONSTRUCTOR(DDDB_ConditionsPrinter,create_dddb_conditions_printer)
 
 //==========================================================================
 /// Plugin function
 static void* create_dddb_loader(Geometry::LCDD& lcdd, int argc, char** argv)   {
-  using Conditions::ConditionsManager;
   using Conditions::ConditionsManagerObject;
   const char* name = argc>0 ? argv[0] : "DDDBLoader";
-  Conditions::ConditionsManagerObject* m = (Conditions::ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
-  return new DDDB::DDDBConditionsLoader(lcdd,ConditionsManager(m),name);
+  ConditionsManagerObject* m = (ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
+  return new DDDB::DDDBConditionsLoader(lcdd,m,name);
 }
 DECLARE_LCDD_CONSTRUCTOR(DD4hep_Conditions_dddb_Loader,create_dddb_loader)
