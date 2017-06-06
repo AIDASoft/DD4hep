@@ -17,8 +17,8 @@
 #include "DD4hep/DetectorTools.h"
 #include "DDCond/ConditionsDataLoader.h"
 #include "DDCond/ConditionsManager.h"
-#include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 // C/C++ include files
 #include <vector>
