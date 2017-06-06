@@ -19,7 +19,7 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionsMap.h"
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 #include "DD4hep/ConditionsProcessor.h"
 
 #include "DDCond/ConditionsIOVPool.h"
