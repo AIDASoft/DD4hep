@@ -175,7 +175,7 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     /// Pre-Process Parameters
     if ( !params.empty() )    {
       const void* args[] = {0, params.c_str(), 0};
-      printout(INFO,"DDDBExecutor","++ Processing parameters: %s",params.c_str());
+      printout(INFO,"DDDBExecutor","+++ Processing parameters: %s",params.c_str());
       result = lcdd.apply("DDDB_Loader", 2, (char**)args);
       check_result(result);
     }

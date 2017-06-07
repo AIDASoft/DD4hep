@@ -22,13 +22,14 @@
 #include "DDDB/DDDBConversion.h"
 
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::DDDB;
 
 namespace {
   struct ByName {
     const string& n;
     ByName(const string& s) : n(s) {}
-    bool operator() (const pair<string, DD4hep::Geometry::VisAttr>& o) const  {
+    bool operator() (const pair<string, Geometry::VisAttr>& o) const  {
       return o.first == n;
     }
   };
@@ -53,7 +54,7 @@ void DDDBHelper::setDetectorDescription(dddb* geo)   {
 }
 
 /// Access visualization attribute for a given volume by path
-DD4hep::Geometry::VisAttr DDDBHelper::visAttr(const std::string& path)  const   {
+Geometry::VisAttr DDDBHelper::visAttr(const std::string& path)  const   {
   VisAttrs::const_iterator i = std::find_if(m_visAttrs.begin(), m_visAttrs.end(), ByName(path));
   if ( i == m_visAttrs.end() )  {
     for( i=m_visAttrs.begin(); i != m_visAttrs.end(); ++i)  {
@@ -76,11 +77,24 @@ void DDDBHelper::addVisAttr(const std::string& path, const std::string attr_name
 }
 
 /// Add visualization attribute
-void DDDBHelper::addVisAttr(const std::string& path, DD4hep::Geometry::VisAttr attr)    {
+void DDDBHelper::addVisAttr(const std::string& path, Geometry::VisAttr attr)    {
   if ( attr.isValid() )   {
     VisAttrs::const_iterator i = std::find_if(m_visAttrs.begin(), m_visAttrs.end(), ByName(path));
     if ( i == m_visAttrs.end() )  {
       m_visAttrs.push_back(make_pair(path, attr));
     }
   }
+}
+
+/// Add new conditions entry
+bool DDDBHelper::addConditionEntry(const std::string& key, Geometry::DetElement det, const std::string& item)    {
+  return m_detCond.insert(make_pair(key,make_pair(det,item))).second;
+}
+
+/// Access conditions entry
+std::pair<Geometry::DetElement,std::string> DDDBHelper::getConditionEntry(const std::string& key)  const    {
+  Det_Conditions::const_iterator i=m_detCond.find(key);
+  if ( i != m_detCond.end() )
+    return (*i).second;
+  return make_pair(DetElement(0),"");
 }

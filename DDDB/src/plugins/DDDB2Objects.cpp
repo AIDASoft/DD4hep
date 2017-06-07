@@ -108,6 +108,7 @@ namespace DD4hep {
       int               max_volume_depth = 9999;
       int               matched_conditions = 0;
       int               unmatched_conditions = 0;
+      int               badassigned_conditions = 0;
       bool              print_materials = false;
       bool              print_volumes = false;
       bool              print_logvol = false;
@@ -214,27 +215,24 @@ namespace DD4hep {
        if ( obj )   {
         typedef IOV::Key _K;
         Context* context = _param<Context>();
-        dddb*    geo     = context->geo;
         Conditions::Condition cond = obj;
         AbstractMap&        d = cond.get<AbstractMap>();
         Document*         doc = d.option<Document>();
         _K::first_type  since = doc->context.valid_since;
         _K::second_type until = doc->context.valid_until;
         _K iov_key(since,until);
-        auto it = geo->detCond.find(obj->value);
-        bool resolved = false;
-        if ( it != geo->detCond.end() )    {
-          DetElement det((*it).second.first);
-          cond->SetName((*it).second.second.c_str());
-          obj->hash = Conditions::ConditionKey::KeyMaker(det.key(),hash32(cond.name())).hash;
+        auto e = context->helper->getConditionEntry(obj->value);
+        if ( e.first.isValid() )  {
+          cond->SetName(e.second.c_str());
+          obj->hash = Conditions::ConditionKey::KeyMaker(e.first.key(),hash32(cond.name())).hash;
+          printout(DEBUG,"DDDB","Insert condition: %s # %s --> %16llX",
+                   e.first.path().c_str(),cond.name(),obj->hash);
+          printout(DEBUG,"DDDB","       %s -> %s",obj->value.c_str(),obj->address.c_str());
           ++context->matched_conditions;
-          resolved = true;
         }
-        else if ( obj->value.find("/dd/Conditions/Alignment/") == 0 )  {
-          //printout(WARNING,"DDDB","Cannot match alignment %s to detector element!",cond.name());
-        }
-        if ( !resolved )  {
+        else   {
           //printout(WARNING,"DDDB","Cannot match condition %s to detector element!",cond.name());
+          //printout(WARNING,"DDDB","      %s -> %s",obj->value.c_str(),obj->address.c_str());
           ++context->unmatched_conditions;
         }
         ConditionsPool* pool = context->manager.registerIOV(*(context->epoch), iov_key);
@@ -757,7 +755,6 @@ namespace DD4hep {
       Catalog*   support = 0;
       DetElement det(0), parent_element(0);
       if ( context->print_detelem )  {
-        support = context->detelements[parent_element];
         printout(INFO,"CNV<Catalog>","++ Starting catalog %p %s [cref:%d/%d lref:%d/%d lv:%s sup:%s np:%s] Cond:%s ",
                  (void*)object,
                  object->path.c_str(),
@@ -837,10 +834,12 @@ namespace DD4hep {
           if ( !object->npath.empty() )  {
             GeoPlacement place = context->supportPlacement(parent_element, object->npath);
             if ( !place.isValid() )   {
-#if 0
-              printout(ERROR,"CNV<DetElem>","++ %s Placement %s -> %s INVALID!",
-                       object->path.c_str(), object->logvol.c_str(), object->npath.c_str());
-#endif
+              char txt[64];
+              ::snprintf(txt,sizeof(txt),"++ %%%ds %%s %%s",object->path.length());
+              printout(WARNING,"CNV<DetElem>",txt,
+                       object->path.c_str(), "Placement: ", object->logvol.c_str());
+              printout(WARNING,"CNV<DetElem>",txt,"    --> INVALID PLACEMENT...",
+                       "Vol.N-path:", object->npath.c_str());
             }
             else   {
               det.setPlacement(place);
@@ -850,7 +849,7 @@ namespace DD4hep {
             GeoPlacement par_place = context->placement(parent_element);
             GeoVolume    par_vol   = par_place.volume();
             if ( context->volumePlaced(par_vol, vol) )  {
-              printout(ERROR,"CNV<DetElem>","++ %s : Volume already placed %s -> %s",
+              printout(WARNING,"CNV<DetElem>","++ %s : Volume already placed %s -> %s",
                        det.path().c_str(), par_vol->GetTitle(), vol->GetTitle());
             }
             GeoPlacement det_place = par_vol.placeVolume(vol);
@@ -878,13 +877,28 @@ namespace DD4hep {
 #endif
       /// Attach conditions keys to the detector element if present
       if ( !object->condition.empty() )   {
+        bool res;
+        char text[64];
+        ::snprintf(text,sizeof(text),"              %%%ds -> %%s",object->condition.length());
         printout(DEBUG,"DDDB","+ Match Align %s -> %s",object->condition.c_str(), object->path.c_str());
-        geo->detCond[object->condition] = make_pair(det,"alignment_delta");
+        printout(DEBUG,"DDDB",text,"",det.path().c_str());
+        res = context->helper->addConditionEntry(object->condition,det,"alignment_delta");
+        if ( !res )  {
+          printout(DEBUG,"DDDB","++ Conditions entry with key:%s already exists!",
+                   object->condition.c_str());
+          ++context->badassigned_conditions;
+        }
       }
       if ( !object->conditioninfo.empty() )  {
+        bool res;
         for( const auto& i : object->conditioninfo )   {
           printout(DEBUG,"DDDB","+ Match Cond  %s -> %s",i.second.c_str(), object->path.c_str());
-          geo->detCond[i.second] = make_pair(det,i.first);
+          res = context->helper->addConditionEntry(i.second, det, i.first);
+          if ( !res )  {
+            printout(DEBUG,"DDDB","++ Conditions entry with key:%s already exists!",
+                     i.second.c_str());
+            ++context->badassigned_conditions;
+          }
         }
       }
       if ( context->print_detelem )  {
@@ -1032,6 +1046,7 @@ namespace DD4hep {
 
         CNV<dddb> cnv(lcdd,&context);
         cnv(make_pair(string("World"),context.geo));
+        printout(INFO,"DDDB","+========================= Conversion summary =========================+");
         printout(INFO,"DDDB","++ Converted %8d isotopes.",         int(context.isotopes.size()));
         printout(INFO,"DDDB","++ Converted %8d elements.",         int(context.elements.size()));
         printout(INFO,"DDDB","++ Converted %8d materials.",        int(context.materials.size()));
@@ -1042,7 +1057,11 @@ namespace DD4hep {
         printout(INFO,"DDDB","++ Converted %8d conditions.",
                  context.geo ? int(context.geo->conditions.size()) : 0);
         printout(INFO,"DDDB","++ MATCHED   %8d conditions.",       context.matched_conditions);
-        printout(INFO,"DDDB","++ UNMATCHED %8d conditions.",       context.unmatched_conditions);
+        printout(INFO,"DDDB","++ UNMATCHED %8d conditions. [Could not determine DetElement]",
+                 context.unmatched_conditions);
+        printout(INFO,"DDDB","++ BADASSIGN %8d conditions. [Could not determine DetElement]",
+                 context.badassigned_conditions);
+        printout(INFO,"DDDB","+======================================================================+");
         helper->setDetectorDescription(0);
         return 1;
       }

@@ -42,7 +42,6 @@ ConditionDependency::ConditionDependency(Geometry::DetElement de,
   : m_refCount(0), detector(de), target(de, item_key), callback(call)
 {
   InstanceCount::increment(this);
-  if ( callback ) callback->addRef();
 }
 
 /// Initializing constructor
@@ -52,7 +51,6 @@ ConditionDependency::ConditionDependency(Geometry::DetElement de,
   : m_refCount(0), detector(de), target(de, item), callback(call)
 {
   InstanceCount::increment(this);
-  if ( callback ) callback->addRef();
 }
 
 /// Default constructor

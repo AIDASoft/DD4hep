@@ -692,7 +692,7 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
       if ( !sensitive_only || 0 != de.volumeID() )  {
         PlacedVolume place = de.placement();
         const TGeoNode* node = place.ptr();
-        char sens = place.volume().isSensitive() ? 'S' : ' ';
+        char sens = node ? place.volume().isSensitive() ? 'S' : ' ' : ' ';
         char fmt[128];
         switch(flag)  {
         case 0:
@@ -702,14 +702,14 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
                      (unsigned long)de.volumeID(), (void*)node, sens);
             break;
           }
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",level+1,2*level+1);
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
+                     level+1,2*level+1);
           printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
                    (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(), (void*)node, sens);
           break;
         case 1:
           ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",level+1,2*level+1);
-          printout(INFO,"DetectorDump", fmt, "", de.path().c_str(),
-                   int(c.size()), (void*)de.volumeID());
+          printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(c.size()), (void*)de.volumeID());
           if ( de.placement() == de.idealPlacement() )  {
             ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s  %%c",level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);

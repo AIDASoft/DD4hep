@@ -117,7 +117,7 @@ namespace  {
       }
       else  {
         ++context.numFail1;
-        printout(context.level,"ConditionUpdate1","++ Failed to access Delta from %s",
+        printout(WARNING,"ConditionUpdate1","++ Failed to access Delta from %s",
                  cond0->value.c_str());
         context.printer(cond0);
       }
@@ -159,8 +159,7 @@ namespace  {
       }
       else  {
         ++context.numFail2;
-        printout(context.level,"ConditionUpdate2","++ Failed to access Delta from %s",
-                 cond0->value.c_str());
+        printout(WARNING,"ConditionUpdate2","++ Failed to access Delta from %s",cond0->value.c_str());
         context.printer(cond0);
       }
       //data.condition   = target;
@@ -203,7 +202,7 @@ namespace  {
       }
       else  {
         ++context.numFail3;
-        printout(context.level,"ConditionUpdate2","++ Failed to access Delta from %s",
+        printout(WARNING,"ConditionUpdate2","++ Failed to access Delta from %s",
                  cond0->value.c_str());
         context.printer(cond0);
       }
@@ -223,8 +222,8 @@ namespace  {
   public:
     typedef std::shared_ptr<ConditionsContent> Content;
     string            m_name;
-    RangeConditions   m_allConditions;
     ConditionsManager m_manager;
+    RangeConditions   m_allConditions;
     PrintLevel        m_level = INFO;
     CallContext       m_context;
     Content           content;
@@ -232,8 +231,8 @@ namespace  {
     /// Default constructor
     ConditionsSelector() = delete;
     /// Initializing constructor
-    ConditionsSelector(ConditionsManager mgr, PrintLevel lvl)
-      : m_manager(mgr), m_level(lvl)
+    ConditionsSelector(const string& nam, ConditionsManager mgr, PrintLevel lvl)
+      : m_name(nam), m_manager(mgr), m_level(lvl)
     {
       m_context.level = lvl;
       content.reset(new ConditionsContent());
@@ -241,22 +240,22 @@ namespace  {
     }
     /// Default destructor
     virtual ~ConditionsSelector()   {
-      printout(INFO,"Conditions","+++ Total number of conditions:   %ld", content->conditions().size());
-      printout(INFO,"Conditions","+++ Total number of dependencies: %ld", content->derived().size());
-      printout(INFO,"Conditions","+++ Number of Type1 instances:    %ld", m_context.numCall1);
-      printout(INFO,"Conditions","+++ Number of Type1 callbacks:    %ld", m_context.numBuild1);
-      printout(INFO,"Conditions","+++ Number of Type1 failures:     %ld", m_context.numFail1);
-      printout(INFO,"Conditions","+++ Number of Type2 instances:    %ld", m_context.numCall2);
-      printout(INFO,"Conditions","+++ Number of Type2 callbacks:    %ld", m_context.numBuild2);
-      printout(INFO,"Conditions","+++ Number of Type2 failures:     %ld", m_context.numFail2);
-      printout(INFO,"Conditions","+++ Number of Type3 instances:    %ld", m_context.numCall3);
-      printout(INFO,"Conditions","+++ Number of Type3 callbacks:    %ld", m_context.numBuild3);
-      printout(INFO,"Conditions","+++ Number of Type3 failures:     %ld", m_context.numFail3);
-      printout(INFO,"Conditions","+++ Total Number of instances:    %ld",
+      printout(INFO,"Conditions","++ DDDB: Total number of conditions:   %ld", content->conditions().size());
+      printout(INFO,"Conditions","++ DDDB: Total number of dependencies: %ld", content->derived().size());
+      printout(INFO,"Conditions","++ DDDB: Number of Type1 instances:    %ld", m_context.numCall1);
+      printout(INFO,"Conditions","++ DDDB: Number of Type1 callbacks:    %ld", m_context.numBuild1);
+      printout(INFO,"Conditions","++ DDDB: Number of Type1 failures:     %ld", m_context.numFail1);
+      printout(INFO,"Conditions","++ DDDB: Number of Type2 instances:    %ld", m_context.numCall2);
+      printout(INFO,"Conditions","++ DDDB: Number of Type2 callbacks:    %ld", m_context.numBuild2);
+      printout(INFO,"Conditions","++ DDDB: Number of Type2 failures:     %ld", m_context.numFail2);
+      printout(INFO,"Conditions","++ DDDB: Number of Type3 instances:    %ld", m_context.numCall3);
+      printout(INFO,"Conditions","++ DDDB: Number of Type3 callbacks:    %ld", m_context.numBuild3);
+      printout(INFO,"Conditions","++ DDDB: Number of Type3 failures:     %ld", m_context.numFail3);
+      printout(INFO,"Conditions","++ DDDB: Total Number of instances:    %ld",
                m_context.numCall1+m_context.numCall2+m_context.numCall3);
-      printout(INFO,"Conditions","+++ Total Number of callbacks:    %ld",
+      printout(INFO,"Conditions","++ DDDB: Total Number of callbacks:    %ld",
                m_context.numBuild1+m_context.numBuild2+m_context.numBuild3);
-      printout(INFO,"Conditions","+++ Total Number of failures:     %ld",
+      printout(INFO,"Conditions","++ DDDB: Total Number of failures:     %ld",
                m_context.numFail1+m_context.numFail2+m_context.numFail3);
       content.reset();
     }
@@ -323,8 +322,8 @@ namespace  {
               build_3.add(key);
               build_3.add(target1);
               build_3.add(target2);
-              printout(INFO,m_name,"Building [%ld] condition dependencies for: %s [%s # %s] -> %lld [%016llX]",
-                       rc.size(), cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash, cond->hash);
+              printout(m_context.level,m_name,"Build [%ld] cond.deps: %s [%s # %s] -> %016llX",
+                       rc.size(), cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash);
               content->insertDependency(build_1.release());
               content->insertDependency(build_2.release());
               content->insertDependency(build_3.release());
@@ -383,7 +382,7 @@ namespace  {
       }
     }
 
-    ConditionsSelector selector(ConditionsManager::from(lcdd), level);
+    ConditionsSelector selector("DDDB_Derived",ConditionsManager::from(lcdd), level);
     int ret = selector.collectDependencies(lcdd.world(), 0);
     if ( ret == 1 )  {
       ret = selector.computeDependencies(time);

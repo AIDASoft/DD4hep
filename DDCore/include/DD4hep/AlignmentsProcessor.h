@@ -43,6 +43,10 @@ namespace DD4hep {
       AlignmentsProcessor() = default;
       /// Initializing constructor
       AlignmentsProcessor(T& p) : processor(p) {}
+      /// Default move constructor is disabled
+      AlignmentsProcessor(T&& p) = delete;
+      /// R-value copy from a temporary (Since processor is reference)
+      AlignmentsProcessor(AlignmentsProcessor&& copy) = default;
       /// Copy constructor
       AlignmentsProcessor(const AlignmentsProcessor& copy) = default;
       /// Default destructor
@@ -55,9 +59,9 @@ namespace DD4hep {
       }
     };
     /// Creator utility function for AlignmentsProcessor objects
-    template <typename T> inline AlignmentsProcessor<T> alignmentsProcessor(T* obj)  {
-      return AlignmentsProcessor<T>(obj);
-    }
+    template <typename T> inline
+    AlignmentsProcessor<typename std::remove_reference<T>::type> alignmentsProcessor(T&& obj)
+    {  return AlignmentsProcessor<typename std::remove_reference<T>::type>(obj);    }
 
     /// Generic alignment processor facade for the Conditons::Processor object
     /**
@@ -118,6 +122,8 @@ namespace DD4hep {
       DeltaCollector(ConditionsMap& m, T& d) : mapping(m), deltas(d) {}
       /// Default move constructor is disabled
       DeltaCollector(ConditionsMap& m, T&& p) = delete;
+      /// R-value copy from a temporary
+      DeltaCollector(DeltaCollector&& copy) = default;
       /// Copy constructor
       DeltaCollector(const DeltaCollector& copy) = default;
       /// Default destructor
@@ -137,10 +143,9 @@ namespace DD4hep {
     };
 
     /// Creator function for alignment collector objects
-    template <typename T> inline DeltaCollector<typename std::remove_reference<T>::type>
-    deltaCollector(ConditionsMap& m, T&& deltas)   {
-      return DeltaCollector<typename std::remove_reference<T>::type>(m, deltas);
-    }
+    template <typename T> inline
+    DeltaCollector<typename std::remove_reference<T>::type> deltaCollector(ConditionsMap& m, T&& deltas)
+    {    return DeltaCollector<typename std::remove_reference<T>::type>(m, deltas);    }
 
     /// Generic alignment collector keyed by detector elements
     /**
@@ -181,10 +186,9 @@ namespace DD4hep {
     };
 
     /// Creator function for alignment collector objects
-    template <typename T> inline AlignmentsCollector<typename std::remove_reference<T>::type>
-    alignmentsCollector(ConditionsMap& m, T&& alignments)   {
-      return AlignmentsCollector<typename std::remove_reference<T>::type>(m, alignments);
-    }
+    template <typename T> inline
+    AlignmentsCollector<typename std::remove_reference<T>::type> alignmentsCollector(ConditionsMap& m, T&& alignments)
+    { return AlignmentsCollector<typename std::remove_reference<T>::type>(m, alignments); }
 
   }    /* End namespace Alignments  */
 }      /* End namespace DD4hep      */

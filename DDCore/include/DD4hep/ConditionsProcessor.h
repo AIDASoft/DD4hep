@@ -40,18 +40,19 @@ namespace DD4hep {
      *  \date    01/04/2016
      */
     template <typename T> class ConditionsProcessor : public Condition::Processor  {
+      /// Reference to the actual processor
       T& processor;
     public:
       /// Default constructor
       ConditionsProcessor() = delete;
       /// Initializing constructor
       ConditionsProcessor(T& p) : processor(p) {}
-      /// Default move constructor is disabled
+      /// Default move constructor is disabled. Disabled to void temporary references.
       ConditionsProcessor(T&& p) = delete;
+      /// R-value copy from a temporary copy (Since processor is reference)
+      ConditionsProcessor(ConditionsProcessor&& copy) = default;
       /// Copy constructor
       ConditionsProcessor(const ConditionsProcessor& copy) = default;
-      /// R-value copy from a temporary (Since processor is reference)
-      ConditionsProcessor(ConditionsProcessor&& copy) = default;
       /// Default destructor
       virtual ~ConditionsProcessor() = default;
       /// Assignment operator
@@ -62,9 +63,9 @@ namespace DD4hep {
       }
     };
     /// Creator utility function for ConditionsProcessor objects
-    template <typename T> inline ConditionsProcessor<T> conditionsProcessor(T* obj)  {
-      return ConditionsProcessor<T>(obj);
-    }
+    template <typename T> inline
+    ConditionsProcessor<typename std::remove_reference<T>::type> conditionsProcessor(T&& obj)
+    { return ConditionsProcessor<typename std::remove_reference<T>::type>(obj);   }
 
     /// Generic condition processor facade for the Conditons::Processor object
     /**
@@ -123,6 +124,10 @@ namespace DD4hep {
     public:
       /// Default constructor
       ConditionsCollector(ConditionsMap& m, T& d) : mapping(m), conditions(d) {}
+      /// Default move constructor is disabled
+      ConditionsCollector(ConditionsMap& m, T&& p) = delete;
+      /// R-value copy from a temporary
+      ConditionsCollector(ConditionsCollector&& copy) = default;
       /// Copy constructor
       ConditionsCollector(const ConditionsCollector& copy) = default;
       /// Default destructor
@@ -141,9 +146,9 @@ namespace DD4hep {
       virtual int operator()(DetElement de, int level=0)  const final;
     };
     /// Creator utility function for ConditionsCollector objects
-    template <typename T> inline ConditionsCollector<T> conditionsCollector(ConditionsMap& m, T& conditions)  {
-      return ConditionsCollector<T>(m, conditions);
-    }
+    template <typename T> inline
+    ConditionsCollector<typename std::remove_reference<T>::type> conditionsCollector(ConditionsMap& m, T&& conditions)
+    {  return ConditionsCollector<typename std::remove_reference<T>::type>(m, conditions); }
 
   }       /* End namespace Conditions               */
 }         /* End namespace DD4hep                   */

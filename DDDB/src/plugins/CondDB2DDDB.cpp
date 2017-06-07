@@ -605,21 +605,34 @@ namespace DD4hep {
           cond->comment = element.attr<string>(_U(comment));
         }
 
-        AbstractMap& d = cond.bind<AbstractMap>();
-        d.clientData = doc->addRef();
-        d.classID = -1;
+        int cls_id = -1;
         if ( element.hasAttr(_LBU(classID)) )  {
-          d.classID = element.attr<int>(_LBU(classID));
+          cls_id = element.attr<int>(_LBU(classID));
         }
-        if ( d.classID == AbstractMap::ALIGNMENT )   {
-          pair<string,OpaqueDataBlock>  block;
-          AlignmentDelta&      align = block.second.bind<AlignmentDelta>();
-          Conv<AlignmentDelta> conv(lcdd,context,&align);
-          block.first = name;
+#if 0
+        if ( cls_id == AbstractMap::ALIGNMENT )   {
+          Conv<AlignmentDelta> conv(lcdd,context,&cond.bind<AlignmentDelta>());
           xml_coll_t(element,_LBU(paramVector)).for_each(conv);
+          cond->setFlag(Condition::ALIGNMENT_DELTA);
+          ++num_align;
+        }
+#endif
+        if ( cls_id == AbstractMap::ALIGNMENT )   {
+          AbstractMap& d = cond.bind<AbstractMap>();
+          pair<string,OpaqueDataBlock>  block;
+          AlignmentDelta&  align = block.second.bind<AlignmentDelta>();
+          d.clientData = doc->addRef();
+          d.classID    = cls_id;
+          block.first  = "alignment_delta";
+
+          Conv<AlignmentDelta> conv(lcdd,context,&align);
+          xml_coll_t(element,_LBU(paramVector)).for_each(conv);
+          cond->setFlag(Condition::ALIGNMENT_DELTA);
           pair<ConditionParams::iterator,bool> res = d.params.insert(block);
           if ( !res.second )  {
-            printout(INFO,"Condition","++ Failed to insert condition parameter:%s",name.c_str());
+            printout(INFO,"Condition",
+                     "++ Failed to insert condition parameter:%s",
+                     name.c_str());
           }
           if ( d.size() > 1 )  {
             printout(WARNING,"Condition",
@@ -628,7 +641,12 @@ namespace DD4hep {
           }
           ++num_align;
         }
-        else   {
+        else
+        {
+          AbstractMap& d = cond.bind<AbstractMap>();
+          d.clientData = doc->addRef();
+          d.classID    = cls_id;
+
           Conv<ConditionParam>         object_cnv(lcdd,context,&d.params);
           xml_coll_t(element,_U(param)).for_each(object_cnv);
 
@@ -640,26 +658,26 @@ namespace DD4hep {
 
           Conv<ConditionParamSpecific> specific_cnv(lcdd,context,&d.params);
           xml_coll_t(element,_LBU(specific)).for_each(specific_cnv);
-        }
-        for(xml_coll_t iter(element,_U(star)); iter; ++iter)  {
-          string tag = iter.tag();
-          string nam = iter.hasAttr(_U(name)) ? iter.attr<string>(_U(name)) : string();
-          if ( context->print_condition )  {
-            printout(INFO,"ParamMap","++ Condition:%s -> %s",path.c_str(),nam.c_str());
+          for(xml_coll_t iter(element,_U(star)); iter; ++iter)  {
+            string tag = iter.tag();
+            string nam = iter.hasAttr(_U(name)) ? iter.attr<string>(_U(name)) : string();
+            if ( context->print_condition )  {
+              printout(INFO,"ParamMap","++ Condition:%s -> %s",path.c_str(),nam.c_str());
+            }
+            if ( d.classID == AbstractMap::ALIGNMENT ) { continue; }
+            if ( tag == "param"       )  { ++num_param;  continue; }
+            if ( tag == "paramVector" )  { ++num_vector; continue; }
+            if ( tag == "map"         )  { ++num_map;    continue; }
+            if ( tag == "specific"    )  { ++num_spec;   continue; }
+            printout(INFO,"Condition","++ Unknown conditions tag:%s obj:%s id:%s",
+                     tag.c_str(), path.c_str(), id.c_str());
           }
-          if ( d.classID == AbstractMap::ALIGNMENT ) { continue; }
-          if ( tag == "param"       )  { ++num_param;  continue; }
-          if ( tag == "paramVector" )  { ++num_vector; continue; }
-          if ( tag == "map"         )  { ++num_map;    continue; }
-          if ( tag == "specific"    )  { ++num_spec;   continue; }
-          printout(INFO,"Condition","++ Unknown conditions tag:%s obj:%s id:%s",
-                   tag.c_str(), path.c_str(), id.c_str());
+          num_param += int(d.params.size());
         }
         context->collect(id, cond);
         if ( catalog )  {
           context->collectPath(path, cond);
         }
-        num_param += int(d.params.size());
         if ( (context->geo->conditions.size()%500) == 0 )  {
           printout(INFO,"Condition","++ Processed %d conditions....last:%s Number of Params: %d Vec:%d Map:%d Spec:%d Align:%d", 
                    int(context->geo->conditions.size()), path.c_str(), num_param, num_vector, num_map, num_spec, num_align);
@@ -1406,6 +1424,7 @@ namespace DD4hep {
           Context::PreservedLocals locals(context);
           context->locals.obj_path = det->path;
           xml_coll_t(element, _LBU(geometryinfo)).for_each(Conv<GeometryInfo>(lcdd,context,det));
+          xml_coll_t(element, _LBU(detelem)).for_each(Conv<DetElem>(lcdd,context,det));
           xml_coll_t(element, _LBU(detelemref)).for_each(Conv<DetElemRef>(lcdd,context,det));
         }
         det->path = det->support + "/" + det->name;
@@ -1453,7 +1472,7 @@ namespace DD4hep {
         Catalog* catalog = new Catalog();
         catalog->name          = name;
         catalog->path          = object_path(context,name);
-        //printout(INFO,"Catalog","PROCESSING:        xid:%s -> %s",id.c_str(),catalog->path.c_str());
+        printout(DEBUG,"Catalog","PROCESSING:        xid:%s -> %s",id.c_str(),catalog->path.c_str());
         catalog->level         = Increment<Catalog>::counter();
         catalog->type          = "Logical";
         catalog->support       = "";
