@@ -32,7 +32,7 @@ dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_pool
   -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
   -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
   -plugin DD4hep_ConditionsDump
-  REGEX_PASS "Data:\\[\\(0,0,1\\), \\{phi\\(Z angle\\)\\: 3.14159   theta\\(Y angle\\)\\: 0   psi\\(X angle\\)\\: 0\\} , 0  0  0 \\]"
+  REGEX_PASS "Data\\(Translation-Rotation-Pivot\\): \\[\\( 0 , 0 , 1 \\), \\{phi\\(Z angle\\): 3.14159   theta\\(Y angle\\): 0   psi\\(X angle\\): 0\\}, \\( 0 , 0 , 0 \\)\\]"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
