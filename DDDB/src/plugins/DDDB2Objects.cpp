@@ -106,6 +106,8 @@ namespace DD4hep {
       ConditionsManager manager;
       const IOVType*    epoch = 0;
       int               max_volume_depth = 9999;
+      int               unmatched_deltas = 0;
+      int               delta_conditions = 0;
       int               matched_conditions = 0;
       int               unmatched_conditions = 0;
       int               badassigned_conditions = 0;
@@ -212,22 +214,41 @@ namespace DD4hep {
 
     /// Convert single condition objects
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
-       if ( obj )   {
+      if ( obj )   {
         typedef IOV::Key _K;
+        using Conditions::Condition;
         Context* context = _param<Context>();
-        Conditions::Condition cond = obj;
+        Condition cond = obj;
         AbstractMap&        d = cond.get<AbstractMap>();
         Document*         doc = d.option<Document>();
         _K::first_type  since = doc->context.valid_since;
         _K::second_type until = doc->context.valid_until;
         _K iov_key(since,until);
         auto e = context->helper->getConditionEntry(obj->value);
+        /// We automatically convert here alignment deltas to the proper format...
+        /// This will allow us to re-use all alignment utilities for DDDB.
+        if ( obj->testFlag(Condition::ALIGNMENT_DELTA) )  {
+          const pair<string,OpaqueDataBlock>& block = *(d.params.begin());
+          Alignments::Delta delta = block.second.get<Alignments::Delta>();
+          string typ = obj->type, add = obj->address, val = obj->value;
+          int flg = obj->flags;
+          // In-place replacement with Delta condition...
+          obj->~ConditionObject();
+          new(obj) Condition::Object(e.second,typ);
+          cond.setFlag(flg);
+          cond->address = add;
+          cond->value   = val;
+          cond.bind<Alignments::Delta>() = delta;
+          ++context->delta_conditions;
+          if ( !e.first.isValid() )
+            ++context->unmatched_deltas;
+        }
         if ( e.first.isValid() )  {
           cond->SetName(e.second.c_str());
-          obj->hash = Conditions::ConditionKey::KeyMaker(e.first.key(),hash32(cond.name())).hash;
+          cond->hash = Conditions::ConditionKey::KeyMaker(e.first.key(),hash32(cond.name())).hash;
           printout(DEBUG,"DDDB","Insert condition: %s # %s --> %16llX",
-                   e.first.path().c_str(),cond.name(),obj->hash);
-          printout(DEBUG,"DDDB","       %s -> %s",obj->value.c_str(),obj->address.c_str());
+                   e.first.path().c_str(),cond.name(),cond.key());
+          printout(DEBUG,"DDDB","       %s -> %s",cond->value.c_str(),cond->address.c_str());
           ++context->matched_conditions;
         }
         else   {
@@ -1061,6 +1082,8 @@ namespace DD4hep {
                  context.unmatched_conditions);
         printout(INFO,"DDDB","++ BADASSIGN %8d conditions. [Could not determine DetElement]",
                  context.badassigned_conditions);
+        printout(INFO,"DDDB","++ DELTAS    %8d conditions.",       context.delta_conditions);
+        printout(INFO,"DDDB","++ DELTAS    %8d (unmatched).",      context.unmatched_deltas);
         printout(INFO,"DDDB","+======================================================================+");
         helper->setDetectorDescription(0);
         return 1;

@@ -38,7 +38,7 @@ static long dddb_dump_conditions(Geometry::LCDD& lcdd, int argc, char** argv) {
   const void* args[] = { "-processor", "DD4hep_ConditionsPrinter",
                          "-name", "DDDB",
                          "-prefix", "DDDB",
-                         "-printlevel", prt_level,
+                         "-print", prt_level,
                          "-end-processor", 0};
   lcdd.apply("DD4hep_ConditionsDump", 9, (char**)args);
   return 1;
@@ -51,7 +51,7 @@ static long dddb_dump_conditions_summary(Geometry::LCDD& lcdd, int , char** ) {
   const void* args[] = { "-processor", "DD4hep_ConditionsPrinter",
                          "-name", "DDDB",
                          "-prefix", "DDDB",
-                         "-printlevel", "DEBUG",
+                         "-print", "DEBUG",
                          "-end-processor", 0};
   lcdd.apply("DD4hep_ConditionsDump", 9, (char**)args);
   return 1;

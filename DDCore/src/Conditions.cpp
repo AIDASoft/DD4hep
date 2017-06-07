@@ -127,6 +127,21 @@ Condition::itemkey_type Condition::item_key()  const   {
   return ConditionKey::KeyMaker(access()->hash).values.item_key;
 }
 
+/// Flag operations: Set a conditons flag
+void Condition::setFlag(mask_type option)   {
+  access()->setFlag(option);
+}
+
+/// Flag operations: UN-Set a conditons flag
+void Condition::unFlag(mask_type option)   {
+  access()->unFlag(option);
+}
+
+/// Flag operations: Test for a given a conditons flag
+bool Condition::testFlag(mask_type option) const {
+  return access()->testFlag(option);
+}
+
 /// Access to the grammar type
 const DD4hep::BasicGrammar& Condition::descriptor() const   {
   const BasicGrammar* g = access()->data.grammar;

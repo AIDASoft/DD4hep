@@ -23,11 +23,19 @@ using namespace DD4hep::Conditions;
 std::ostream& operator << (std::ostream& s, const AbstractMap& data)   {
   struct _Print {
     void operator()(const AbstractMap::Params::value_type& obj)  const {
-      const AbstractMap& d= obj.second.get<AbstractMap>();
-      DD4hep::printout(DD4hep::INFO,"Condition","++ %-16s [%d] %-8s -> %s",
-                       obj.first.c_str(), d.classID,
-                       obj.second.dataType().c_str(), 
-                       obj.second.str().c_str());
+      if ( obj.second.typeInfo() == typeid(AbstractMap) )  {
+        const AbstractMap& d= obj.second.get<AbstractMap>();
+        DD4hep::printout(DD4hep::INFO,"Condition","++ %-16s [%d] %-8s -> %s",
+                         obj.first.c_str(), d.classID,
+                         obj.second.dataType().c_str(), 
+                         obj.second.str().c_str());
+      }
+      else   {
+        DD4hep::printout(DD4hep::INFO,"Condition","++ %-16s %-8s -> %s",
+                         obj.first.c_str(),
+                         obj.second.dataType().c_str(), 
+                         obj.second.str().c_str());
+      }
     }
   };
   if ( !data.params.empty() )  {
