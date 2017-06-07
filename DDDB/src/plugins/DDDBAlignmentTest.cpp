@@ -23,12 +23,12 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/AlignmentsCalculator.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
 #include "DDCond/ConditionsSlice.h"
 
 #include "DDDB/DDDBConversion.h"
-#include "DDDB/DDDBConditionPrinter.h"
 
 #include "TStatistic.h"
 #include "TTimeStamp.h"
@@ -53,7 +53,6 @@ namespace  {
   class AlignmentSelector  {
   public:
     typedef std::shared_ptr<ConditionsContent>   Content;
-    typedef DDDB::ConditionPrinter               Printer;
     std::map<DetElement,Condition::itemkey_type> deltas;
     LCDD&                lcdd;
     string               name;
@@ -64,7 +63,7 @@ namespace  {
     long                 accessCount    = 0;
     TStatistic           load_stat, comp_stat;
     Content              content;
-    Printer              printer;
+    ConditionsPrinter    printer;
     /// Initializing constructor
     AlignmentSelector(LCDD& l, PrintLevel p)
       : lcdd(l), name("DDDBAlignments"), printLevel(p),

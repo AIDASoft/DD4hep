@@ -25,6 +25,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/ConditionDerived.h"
+#include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/Alignments.h"
 
 #include "DDCond/ConditionsSlice.h"
@@ -34,7 +35,6 @@
 
 #include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
-#include "DDDB/DDDBConditionPrinter.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -60,7 +60,6 @@ namespace  {
     typedef Params::value_type::second_type  Param;
     typedef Alignments::AlignmentData        Data;
     typedef Alignments::Delta                Delta;
-    typedef DDDB::ConditionPrinter           _Printer;
   };
 
   /// Helper containing shared context
@@ -82,7 +81,7 @@ namespace  {
     long              numAlignments = 0;
     long              numNoCatalogs = 0;
     PrintLevel        level = INFO;
-    DDDB::ConditionPrinter printer;
+    ConditionsPrinter printer;
     CallContext() : printer(0,"Conditions") {}
   };
   
