@@ -12,10 +12,14 @@
 //==========================================================================
 
 // Framework includes
+#include "DD4hep/ToStream.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/ConditionsProcessor.h"
+
+// C/C++ include files
+#include <sstream>
 
 using namespace std;
 using namespace DD4hep;
@@ -23,9 +27,11 @@ using namespace DD4hep::Conditions;
 
 namespace {
   /// C++ version: replace all occurrences of a string
-  void str_replace(std::string& res, const std::string& pattern, const std::string& replacement) {
+  string str_replace(const std::string& str, const std::string& pattern, const std::string& replacement) {
+    string res = str;
     for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
       res.replace(id,pattern.length(),replacement);
+    return res;
   }
 }
 
@@ -158,26 +164,53 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       }
     }
     else if ( type == typeid(Alignments::Delta) )  {
+      string piv;
+      stringstream str_tr, str_rot, str_piv;
       const Alignments::Delta& D = cond.get<Alignments::Delta>();
-      printout(printLevel,name,"++ %s \t [%p] Typ:%s",
+      if ( D.hasTranslation() ) Utils::toStream(D.translation, str_tr);
+      if ( D.hasRotation()    ) Utils::toStream(D.rotation, str_rot);
+      if ( D.hasPivot()       ) {
+        Utils::toStream(D.pivot, str_piv);
+        piv = str_replace(str_piv.str(),"\n","");
+        piv =  "( "+str_replace(piv,"  "," , ")+" )";
+      }
+      printout(printLevel,name,"++ %s \t[%p] Typ:%s",
                prefix.c_str(), cond.ptr(),
                typeName(typeid(*ptr)).c_str());
-      printout(printLevel,name,"++ %s \tData:(%11s-%8s-%5s)",
+      printout(printLevel,name,"++ %s \tData(%11s-%8s-%5s): [%s, %s, %s]",
                prefix.c_str(), 
                D.hasTranslation() ? "Translation" : "",
                D.hasRotation() ? "Rotation" : "",
-               D.hasPivot() ? "Pivot" : "");
+               D.hasPivot() ? "Pivot" : "",
+               str_replace(str_tr.str(),"\n","").c_str(),
+               str_replace(str_rot.str(),"\n","").c_str(),
+               piv.c_str()
+               );
     }
     else if ( type == typeid(Alignments::AlignmentData) )  {
+      string piv;
+      stringstream str_tr, str_rot, str_piv;
       const Alignments::Delta& D = cond.get<Alignments::AlignmentData>().delta;
-      printout(printLevel,name,"++ %s \t [%p] Typ:%s",
+      if ( D.hasTranslation() ) Utils::toStream(D.translation, str_tr);
+      if ( D.hasRotation()    ) Utils::toStream(D.rotation, str_rot);
+      if ( D.hasPivot()       ) {
+        Utils::toStream(D.pivot, str_piv);
+        piv = str_replace(str_piv.str(),"\n","");
+        piv =  "( "+str_replace(piv,"  "," , ")+" )";
+      }
+      
+      printout(printLevel,name,"++ %s \t[%p] Typ:%s",
                prefix.c_str(), cond.ptr(),
                typeName(typeid(*ptr)).c_str());
-      printout(printLevel,name,"++ %s \tData:(%11s-%8s-%5s)",
+      printout(printLevel,name,"++ %s \tData(%11s-%8s-%5s): [%s, %s, %s]",
                prefix.c_str(), 
                D.hasTranslation() ? "Translation" : "",
                D.hasRotation() ? "Rotation" : "",
-               D.hasPivot() ? "Pivot" : "");
+               D.hasPivot() ? "Pivot" : "",
+               str_replace(str_tr.str(),"\n","").c_str(),
+               str_replace(str_rot.str(),"\n","").c_str(),
+               piv.c_str()
+               );
     }
     else if ( type == typeid(string) )  {
       string value = cond.get<string>().c_str();
@@ -185,7 +218,7 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       if ( len > lineLength ) {
         value = value.substr(0,lineLength);
         value += "...";
-        str_replace(value,"\n","");
+        value = str_replace(value,"\n","");
       }
       printout(printLevel,name,"++ %s \tString [%s]: %s",
                prefix.c_str(),
@@ -198,7 +231,7 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       if ( len > lineLength ) {
         value = value.substr(0,lineLength);
         value += "...";
-        str_replace(value,"\n","");
+        value = str_replace(value,"\n","");
       }
       printout(printLevel,name,"++ %s \t[%s]: %s",
                prefix.c_str(),
