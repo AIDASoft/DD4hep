@@ -106,9 +106,11 @@ namespace DD4hep {
         /// Check if object is already bound....
         bool is_bound()  const                {  return data.is_bound();         }
         bool is_traced()  const               {  return true;                    }
-        /// Flag operations
+        /// Flag operations: Set a conditons flag
         void setFlag(mask_type option)        {  flags |= option;                }
+        /// Flag operations: UN-Set a conditons flag
         void unFlag(mask_type option)         {  flags &= ~option;               }
+        /// Flag operations: Test for a given a conditons flag
         bool testFlag(mask_type option) const {  return option == (flags&option);}
       };
 

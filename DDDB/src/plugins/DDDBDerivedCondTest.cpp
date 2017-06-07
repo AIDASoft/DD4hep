@@ -23,15 +23,12 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
-#include "DD4hep/ConditionsData.h"
-#include "DD4hep/ConditionDerived.h"
-#include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/Alignments.h"
+#include "DD4hep/ConditionDerived.h"
 
 #include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsOperators.h"
+#include "DDCond/ConditionsManagerObject.h"
 
 #include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
@@ -55,9 +52,6 @@ namespace  {
    */
   class DataTypes  {
   public:
-    typedef AbstractMap                      Map;
-    typedef Map::Params                      Params;
-    typedef Params::value_type::second_type  Param;
     typedef Alignments::AlignmentData        Data;
     typedef Alignments::Delta                Delta;
   };
@@ -81,8 +75,7 @@ namespace  {
     long              numAlignments = 0;
     long              numNoCatalogs = 0;
     PrintLevel        level = INFO;
-    ConditionsPrinter printer;
-    CallContext() : printer(0,"Conditions") {}
+    CallContext() = default;
   };
   
   /// Specialized conditions update callback for alignments
@@ -104,23 +97,19 @@ namespace  {
     virtual Condition operator()(const ConditionKey& key, const Context& ctxt)  {
       printout(context.level,"ConditionUpdate1","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
-      Data&        data  = target.bind<Data>();
-      Condition    cond0 = ctxt.condition(0);
-      const Map&   src0  = cond0.get<Map>();
-      const Param& par0  = src0.firstParam().second;
-      if ( par0.typeInfo() == typeid(Delta) )  {
-        const Delta& delta = src0.first<Delta>();
+      try  {
+        Data&        data  = target.bind<Data>();
+        Condition    cond0 = ctxt.condition(0);
+        const Delta& delta = cond0.get<Delta>();
         data.delta         = delta;
         data.flag          = Data::HAVE_NONE;
         ++context.numBuild1;
       }
-      else  {
+      catch(const exception& exc)   {
         ++context.numFail1;
-        printout(WARNING,"ConditionUpdate1","++ Failed to access Delta from %s",
-                 cond0->value.c_str());
-        context.printer(cond0);
+        printout(ERROR,"ConditionUpdate2","++ Failed to build condition %s: %s",
+                 key.name.c_str(), exc.what());
       }
-      //data.condition   = target;
       return target;
     }
   };
@@ -143,25 +132,21 @@ namespace  {
     virtual Condition operator()(const ConditionKey& key, const Context& ctxt)  {
       printout(context.level,"ConditionUpdate2","++ Building dependent condition: %s",key.name.c_str());
       Condition     target(key.name,"Alignment");
-      Data&         data  = target.bind<Data>();
-      Condition     cond0 = ctxt.condition(0);
-      const Map&    src0  = cond0.get<Map>();      
-      const Param&  par0  = src0.firstParam().second;
-
-      if ( par0.typeInfo() == typeid(Delta) )  {
-        const Delta& delta0 = src0.first<Delta>();
-        const Data&  delta1 = ctxt.get<Data>(1);
-        data.delta          = delta0;
-        data.delta          = delta1.delta;
-        data.flag           = Data::HAVE_NONE;
+      try  {
+        Data&         data   = target.bind<Data>();
+        Condition     cond0  = ctxt.condition(0);
+        const Delta&  delta0 = cond0.get<Delta>();
+        const Data&   data1  = ctxt.get<Data>(1);   // Equivalent to ctxt.condition(1).get<Data>()
+        data.delta           = delta0;
+        data.delta           = data1.delta;
+        data.flag            = Data::HAVE_NONE;
         ++context.numBuild2;
       }
-      else  {
+      catch(const exception& exc)   {
         ++context.numFail2;
-        printout(WARNING,"ConditionUpdate2","++ Failed to access Delta from %s",cond0->value.c_str());
-        context.printer(cond0);
+        printout(ERROR,"ConditionUpdate2","++ Failed to build condition %s: %s",
+                 key.name.c_str(), exc.what());
       }
-      //data.condition   = target;
       return target;
     }
   };
@@ -184,28 +169,23 @@ namespace  {
     virtual Condition operator()(const ConditionKey& key, const Context& ctxt)  {
       printout(context.level,"ConditionUpdate3","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
-      Data&        data  = target.bind<Data>();
-      Condition    cond0 = ctxt.condition(0);
-      const Map&   src0  = cond0.get<Map>();
-      const Param& par0  = src0.firstParam().second;
-
-      if ( par0.typeInfo() == typeid(Delta) )  {
-        const Delta& delta0 = src0.first<Delta>();
-        const Data&  delta1 = ctxt.get<Data>(1);
-        const Data&  delta2 = ctxt.get<Data>(2);
+      try  {
+        Data&        data   = target.bind<Data>();
+        Condition    cond0  = ctxt.condition(0);
+        const Delta& delta0 = cond0.get<Delta>();
+        const Data&  data1  = ctxt.get<Data>(1);
+        const Data&  data2  = ctxt.get<Data>(2);
         data.delta          = delta0;
-        data.delta          = delta1.delta;
-        data.delta          = delta2.delta;
+        data.delta          = data1.delta;
+        data.delta          = data2.delta;
         data.flag           = Data::HAVE_NONE;
         ++context.numBuild3;
       }
-      else  {
+      catch(const exception& exc)   {
         ++context.numFail3;
-        printout(WARNING,"ConditionUpdate2","++ Failed to access Delta from %s",
-                 cond0->value.c_str());
-        context.printer(cond0);
+        printout(ERROR,"ConditionUpdate3","++ Failed to build condition %s: %s",
+                 key.name.c_str(), exc.what());
       }
-      //data.condition = target;
       return target;
     }
   };
@@ -281,15 +261,11 @@ namespace  {
       return result;
     }
     long collectDependencies(DetElement de, int level)  {
-      char fmt[64], text[256];
+      char fmt[64];
       DDDB::Catalog* cat = 0;
-      string pref = m_context.printer.prefix;
       const DetElement::Children& c = de.children();
 
       ::snprintf(fmt,sizeof(fmt),"%%-%ds-> ",2*level+5);
-      ::snprintf(text,sizeof(text),fmt,"");
-      m_context.printer.setPrefix(text);
-
       try  {
         ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
         printout(m_level,m_name,fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
@@ -307,25 +283,32 @@ namespace  {
             for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
               Condition    cond = *ic;
               ConditionKey key(de, cond->name);
-              ConditionKey target1(de,cond->name+"/derived_1");
-              ConditionKey target2(de,cond->name+"/derived_2");
-              ConditionKey target3(de,cond->name+"/derived_3");
-              DependencyBuilder build_1(de, cond->name+"/derived_1", new ConditionUpdate1(m_context));
-              DependencyBuilder build_2(de, cond->name+"/derived_2", new ConditionUpdate2(m_context));
-              DependencyBuilder build_3(de, cond->name+"/derived_3", new ConditionUpdate3(m_context));
-              build_1.add(key);
+              if ( key.hash == cond.key() && cond.typeInfo() == typeid(Alignments::Delta) )  {
+                ConditionKey target1(de,cond->name+"/derived_1");
+                ConditionKey target2(de,cond->name+"/derived_2");
+                ConditionKey target3(de,cond->name+"/derived_3");
+                DependencyBuilder build_1(de, cond->name+"/derived_1", new ConditionUpdate1(m_context));
+                DependencyBuilder build_2(de, cond->name+"/derived_2", new ConditionUpdate2(m_context));
+                DependencyBuilder build_3(de, cond->name+"/derived_3", new ConditionUpdate3(m_context));
+                build_1.add(key);
 
-              build_2.add(key);
-              build_2.add(target1);
+                build_2.add(key);
+                build_2.add(target1);
 
-              build_3.add(key);
-              build_3.add(target1);
-              build_3.add(target2);
-              printout(m_context.level,m_name,"Build [%ld] cond.deps: %s [%s # %s] -> %016llX",
-                       rc.size(), cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash);
-              content->insertDependency(build_1.release());
-              content->insertDependency(build_2.release());
-              content->insertDependency(build_3.release());
+                build_3.add(key);
+                build_3.add(target1);
+                build_3.add(target2);
+                printout(m_context.level,m_name,"Build [%ld] cond.deps: %s [%s # %s] -> %016llX",
+                         rc.size(), cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash);
+                content->insertDependency(build_1.release());
+                content->insertDependency(build_2.release());
+                content->insertDependency(build_3.release());
+              }
+              else  { // These conditions cannot be handled....
+                printout(INFO,m_name,"Ignore condition: %s [%s # %s] -> Hash: %016llX Key: %016llX Type: %s",
+                         cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash,
+                         key.hash, cond.data().dataType().c_str());
+              }
             }
           }
           ++m_context.numAlignments;
@@ -336,7 +319,6 @@ namespace  {
         printout(m_level,m_name, fmt, "", de.path().c_str(), "NO CATALOG availible!", "");
         ++m_context.numNoCatalogs;
       }
-      m_context.printer.setPrefix(pref);
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
         collectDependencies((*i).second,level+1);
       return 1;

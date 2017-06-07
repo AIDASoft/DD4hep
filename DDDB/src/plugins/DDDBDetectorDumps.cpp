@@ -24,9 +24,10 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/ConditionsPrinter.h"
+#include "DD4hep/AlignmentsProcessor.h"
 #include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/AlignmentsProcessor.h"
+
 #include "DDCond/ConditionsOperators.h"
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsSlice.h"

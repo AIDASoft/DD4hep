@@ -627,7 +627,7 @@ namespace DD4hep {
 
           Conv<AlignmentDelta> conv(lcdd,context,&align);
           xml_coll_t(element,_LBU(paramVector)).for_each(conv);
-          cond->setFlag(Condition::ALIGNMENT_DELTA);
+          cond.setFlag(Condition::ALIGNMENT_DELTA);
           pair<ConditionParams::iterator,bool> res = d.params.insert(block);
           if ( !res.second )  {
             printout(INFO,"Condition",

@@ -14,9 +14,9 @@
 #define DD4HEP_CONDITIONS_CONDITIONS_H
 
 // Framework include files
-#include "DD4hep/OpaqueData.h"
-#include "DD4hep/Handle.h"
 #include "DD4hep/IOV.h"
+#include "DD4hep/Handle.h"
+#include "DD4hep/OpaqueData.h"
 
 // C/C++ include files
 #include <vector>
@@ -166,6 +166,13 @@ namespace DD4hep {
       const std::string& value()  const;
       /// Access the address string [e.g. database identifier]
       const std::string& address()  const;
+
+      /// Flag operations: Set a conditons flag
+      void setFlag(mask_type option);
+      /// Flag operations: UN-Set a conditons flag
+      void unFlag(mask_type option);
+      /// Flag operations: Test for a given a conditons flag
+      bool testFlag(mask_type option) const;
 
       /** Conditions meta-data   */
       /// Access to the type information

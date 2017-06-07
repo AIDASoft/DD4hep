@@ -67,7 +67,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -exec DDDB_ConditionsSummary
-    REGEX_PASS "\\+ DDDB Total Number of parameters:    19057  " 
+    REGEX_PASS "\\+ DDDB Total Number of parameters:    13650  " 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -77,7 +77,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller  -end-plugin
     -plugin   DDDB_DetectorDump -print DEBUG   -end-plugin
-    REGEX_PASS "\\+ DDDB: Number of DetElements in the geometry:     3060" 
+    REGEX_PASS "\\+ DDDB: Number of DetElements in the geometry:     6261" 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -87,7 +87,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DetectorVolumeDump -print DEBUG
-    REGEX_PASS "\\+ DDDB: Number of DetElement placements:           3056" 
+    REGEX_PASS "\\+ DDDB: Number of DetElement placements:           6253" 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -97,7 +97,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DetectorConditionKeysDump -print DEBUG
-    REGEX_PASS "\\+ DDDB: Number of DetElement condition keys:       4267"
+    REGEX_PASS "\\+ DDDB: Number of DetElement condition keys:       9043"
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -107,7 +107,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DetectorConditionDump -print DEBUG
-    REGEX_PASS "\\+ DDDBConditions Total Number of parameters:    14408"
+    REGEX_PASS "\\+ DDDBConditions Total Number of parameters:   346312 "
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -117,7 +117,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DetectorAlignmentDump -print DEBUG
-    REGEX_PASS "\\+ DDDBAlignments Total Number of parameters:     2502"
+    REGEX_PASS "\\+ DDDB: Number of attached alignments:             5408"
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -127,7 +127,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DetElementConditionDump -print DEBUG
-    REGEX_PASS "\\+ DDDB: Total number of DetElement parameters:     8709"
+    REGEX_PASS "\\+ DDDB: Total number of DetElement parameters:    13144"
   )
   #
   #---Testing: Load the geometry + conditions + conditions derives
@@ -136,7 +136,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DerivedCondTest -print DEBUG
-    REGEX_PASS "\\+ DDDB: Total Number of callbacks:    16218"
+    REGEX_PASS "\\+ DDDB: Total Number of callbacks:    16215"
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -146,7 +146,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_DerivedAlignmentsTest -print DEBUG -turns 1 -access 3
-    REGEX_PASS "\\+ DDDB: AlignmentManager:    9353 conditions \\(S:0,L:9353,C:0,M:0\\) alignments: \\(A:6200,M:0\\) for IOV:epoch\\(0\\)" 
+    REGEX_PASS "\\+ DDDB: AlignmentManager:    9352 conditions \\(S:0,L:9352,C:0,M:0\\) alignments: \\(A:6200,M:0\\) for IOV:epoch\\(0\\)" 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -156,7 +156,7 @@ if (DD4HEP_USE_XERCESC)
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
     -config DD4hep_ConditionsManagerInstaller
     -plugin DDDB_AlignmentsAccessTest -print DEBUG
-    REGEX_PASS "\\+ DDDB: Accessed 5408 alignments from 5408 DetElement objects" 
+    REGEX_PASS "\\+ DDDB: Accessed 5405 alignments from 5405 DetElement objects" 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #

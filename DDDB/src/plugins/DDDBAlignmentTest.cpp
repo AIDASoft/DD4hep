@@ -23,9 +23,10 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/ConditionsPrinter.h"
+#include "DD4hep/AlignmentsProcessor.h"
 #include "DD4hep/AlignmentsCalculator.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
 #include "DDCond/ConditionsSlice.h"
 
 #include "DDDB/DDDBConversion.h"
@@ -38,6 +39,7 @@ using namespace DD4hep;
 using namespace DD4hep::Conditions;
 using Alignments::Delta;
 using Alignments::Alignment;
+using Alignments::deltaCollector;    
 using Alignments::AlignmentsCalculator;
 
 /// Anonymous namespace for plugins
@@ -53,14 +55,11 @@ namespace  {
   class AlignmentSelector  {
   public:
     typedef std::shared_ptr<ConditionsContent>   Content;
-    std::map<DetElement,Condition::itemkey_type> deltas;
     LCDD&                lcdd;
     string               name;
     PrintLevel           printLevel     = INFO;
     unsigned int         alignmentKey   = 0;
     unsigned int         alignDeltaKey  = 0;
-    long                 installCount   = 0;
-    long                 accessCount    = 0;
     TStatistic           load_stat, comp_stat;
     Content              content;
     ConditionsPrinter    printer;
@@ -77,55 +76,19 @@ namespace  {
 
     /// Default destructor
     virtual ~AlignmentSelector()   {
-      printout(INFO,name,"++ DDDB: Installed alignment calls:     %ld", installCount);
-      printout(INFO,name,"++ DDDB: Number of accessed alignments: %ld", accessCount);
       content.reset();
-    }
-
-    /// Recursive alignment collector
-    long collect(DetElement de, ConditionsSlice& slice, int level)    {
-      char fmt[64];
-      try  {
-        DDDB::Catalog* cat = de.extension<DDDB::Catalog>();
-        if ( !cat->condition.empty() )  {
-          ConditionKey key(de, alignDeltaKey);
-          Condition    cond = slice.pool->get(key.hash);
-          if ( cond.isValid() )   {
-            deltas.insert(make_pair(de,cond.item_key()));
-            ++installCount;
-          }
-          else  {
-            ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s",level+1,2*level+3);
-            printout(printLevel,name,fmt,"","Alignment:    ", 
-                     !cond.isValid() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cond.name());
-          }
-        }
-      }
-      catch(const exception& e)  {
-        ::sprintf(fmt,"%03d %%-%ds %%s: %%-20s  WARNING: %%s",level+1,2*level+3);
-        printout(ERROR,name, fmt, "", de.path().c_str(), "[NO CATALOG availible]", e.what());
-      }
-      catch(...)  {
-        ::sprintf(fmt,"%03d %%-%ds %%s: WARNING: %%-20s",level+1,2*level+3);
-        printout(ERROR,name, fmt, "", de.path().c_str(), "[NO CATALOG availible]");
-      }
-      const DetElement::Children& c = de.children();
-      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-        collect((*i).second, slice, level+1);
-      return 1;
     }
     /// Initial collector call
     long collect(ConditionsManager manager, const IOV& iov)  {
       shared_ptr<ConditionsSlice> slice(new ConditionsSlice(manager,content));
-      Conditions::fill_content(manager,*content,*iov.iovType);
-
       ConditionsManager::Result cres = manager.prepare(iov, *slice);
       printout(INFO,name,
                "++ DDDB: Initial prepare: %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) for IOV:%-12s",
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, iov.str().c_str());
-      long res = collect(lcdd.world(), *slice, 0);
-      printout(INFO,name,"++ DDDB: Collected %ld deltas for re-alignment.",deltas.size());
-      return res;
+      Conditions::fill_content(manager,*content,*iov.iovType);
+      printout(INFO,name,"++ DDDB: Content: %ld conditions, %ld derived conditions.",
+               content->conditions().size(), content->derived().size());
+      return 1;
     }
     /// Compute dependent alignment conditions
     int computeDependencies(shared_ptr<ConditionsSlice>& slice,
@@ -143,27 +106,9 @@ namespace  {
       printout(INFO,name,
                "++ DDDB: Prepared %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) for IOV:%-12s",
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, iov.str().c_str());
-      for ( const auto& e : deltas )  {
-        Condition c = slice->get(e.first, e.second);
-        try {
-          //printer(c);
-          if ( c->testFlag(Condition::ALIGNMENT_DELTA) )  {
-#if 0
-            const Delta& delta = c.get<Delta>();
-#endif
-            AbstractMap& d = c.get<AbstractMap>();
-            const pair<string,OpaqueDataBlock>& block = *(d.params.begin());
-            const Delta& delta = block.second.get<Delta>();            
-            align_deltas.insert(make_pair(e.first, delta));
-          }
-          else {
-            printout(WARNING,name,"++ DDDB: Ignore condition: %s -> %s",c.name(), c->value.c_str());
-          }
-        }
-        catch(const exception& exc)  {
-          printout(WARNING,name,"++ DDDB: Invalid alignment for %s: %s",e.first.path().c_str(),exc.what());
-        }
-      }
+
+      Geometry::DetectorScanner(deltaCollector(*slice,align_deltas),lcdd.world(),0,true);
+
       TTimeStamp comp_start;
       AlignmentsCalculator::Result ares = align.compute(align_deltas,*slice);
       TTimeStamp comp_stop;
@@ -173,9 +118,8 @@ namespace  {
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
                ares.computed, ares.missing, iov.str().c_str());
       if ( access )   {
-        int count = 0;
         set<DetElement> detectors;
-        for ( const auto& e : deltas )  {
+        for ( const auto& e : align_deltas )  {
           Condition               c = slice->get(e.first,alignmentKey);
           Alignment               a = c;
           const Delta&            D = a.data().delta;
@@ -188,11 +132,9 @@ namespace  {
                    e.first.path().c_str(),
                    c.name());
           detectors.insert(e.first);
-          ++count;
-          ++accessCount;
         }
         printout(INFO,name,"++ DDDB: Accessed %ld alignments from %ld DetElement objects.",
-                 count, detectors.size());
+                 align_deltas.size(), detectors.size());
       }
       return 1;
     }

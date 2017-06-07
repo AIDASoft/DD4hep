@@ -21,6 +21,15 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 
+namespace {
+  /// C++ version: replace all occurrences of a string
+  void str_replace(std::string& res, const std::string& pattern, const std::string& replacement) {
+    for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
+      res.replace(id,pattern.length(),replacement);
+  }
+}
+
+
 /// DDDB Conditions data dumper helper to output parameter maps.
 /**
  *   \author  M.Frank
@@ -113,23 +122,24 @@ ConditionsPrinter::~ConditionsPrinter()   {
 
 /// Actual print method
 int ConditionsPrinter::operator()(Condition cond)   const   {
+  m_print->printLevel = printLevel;
   if ( cond.isValid() )   {
     string repr = cond.str(m_flag);
-    Condition::Object* ptr  = cond.ptr();
-    const type_info&   type = cond.typeInfo();
+    Condition::Object* ptr    = cond.ptr();
+    const type_info&   type   = cond.typeInfo();
     const OpaqueData&  opaque = cond.data();
 
     if ( repr.length() > lineLength )
       repr = repr.substr(0,lineLength)+"...";
     printout(this->printLevel,name, "++ %s%s", prefix.c_str(), repr.c_str());
 
-    string values = opaque.str();
-    if ( values.length() > lineLength ) values = values.substr(0,130)+"...";
     string new_prefix = prefix;
     new_prefix.assign(prefix.length(),' ');
     printout(this->printLevel,name,"++ %s \tPath:%s Key:%16llX Type:%s",
              new_prefix.c_str(), cond.name(), cond.key(), opaque.dataType().c_str());
-    printout(this->printLevel,name,"++ %s \tData:%s", new_prefix.c_str(), values.c_str());
+    //string values = opaque.str();
+    //if ( values.length() > lineLength ) values = values.substr(0,130)+"...";
+    //printout(this->printLevel,name,"++ %s \tData:%s", new_prefix.c_str(), values.c_str());
     if ( type == typeid(AbstractMap) )  {
       const AbstractMap& data = cond.get<AbstractMap>();
       printout(printLevel,name,"++ %s Path:%s Class:%d [%s]",
@@ -173,8 +183,9 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       string value = cond.get<string>().c_str();
       size_t len = value.length();
       if ( len > lineLength ) {
-        value.erase(lineLength);
+        value = value.substr(0,lineLength);
         value += "...";
+        str_replace(value,"\n","");
       }
       printout(printLevel,name,"++ %s \tString [%s]: %s",
                prefix.c_str(),
@@ -185,8 +196,9 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       string value = cond.str();
       size_t len = value.length();
       if ( len > lineLength ) {
-        value.erase(lineLength);
+        value = value.substr(0,lineLength);
         value += "...";
+        str_replace(value,"\n","");
       }
       printout(printLevel,name,"++ %s \t[%s]: %s",
                prefix.c_str(),
