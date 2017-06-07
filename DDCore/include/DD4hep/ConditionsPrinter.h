@@ -36,19 +36,36 @@ namespace DD4hep {
      *   \ingroup DD4HEP_DDDB
      */
     class ConditionsPrinter  {
-    public:
+    protected:
+      /// Internal param printer class
+      class ParamPrinter;
+      friend class ParamPrinter;
+
+      /// Sub-printer
+      ParamPrinter*  m_print = 0;
       /// Conditionsmap to resolve things
-      ConditionsMap* mapping;
+      ConditionsMap* mapping = 0;
+
+    protected:
+      /// Printout processing and customization flag
+      int            m_flag = 0;
+
+    public:
+      /** Setup parameters to configure printout */
       /// Printer name. Want to know who is printing what
       std::string    name;
       /// Printout prefix
       std::string    prefix;
       /// Printout level
       PrintLevel     printLevel = INFO;
-
-    protected:
-      /// Printout processing and customization flag
-      int            m_flag;
+      /// Line length
+      size_t         lineLength = 80;
+      /// Counter: number of parameters
+      size_t         numParam = 0;
+      /// Counter: number of conditions
+      mutable size_t numCondition = 0;
+      /// Counter: number of empty conditions
+      mutable size_t numEmptyCondition = 0;
 
     public:
       /// Initializing constructor
@@ -56,7 +73,7 @@ namespace DD4hep {
                         const std::string& prefix="", 
                         int flag=Condition::NO_NAME|Condition::WITH_IOV|Condition::WITH_ADDRESS);
       /// Default destructor
-      virtual ~ConditionsPrinter() = default;
+      virtual ~ConditionsPrinter();
       /// Set name for printouts
       void setName(const std::string& value)            {  name = value;       }
       /// Set prefix for printouts

@@ -23,13 +23,14 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/ConditionsData.h"
+#include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/AlignmentsProcessor.h"
 #include "DDCond/ConditionsOperators.h"
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsSlice.h"
 #include "DDDB/DDDBConversion.h"
-#include "DDDB/DDDBConditionPrinter.h"
 
 // C/C++ include files
 #include <memory>
@@ -73,7 +74,6 @@ namespace {
 
     using Alignments::deltaCollector;    
     using Alignments::Delta;
-    using DDDB::ConditionPrinter;
     using DDDB::Catalog;
 
 
@@ -106,9 +106,9 @@ namespace {
       vector<pair<int,Condition> > m_allConditions;
       shared_ptr<ConditionsSlice>  m_slice;
       ConditionsManager            m_manager;
-      ConditionPrinter             m_detElementPrinter;
-      ConditionPrinter             m_catalogPrinter;
-      ConditionPrinter             m_alignPrinter;
+      ConditionsPrinter            m_detElementPrinter;
+      ConditionsPrinter            m_catalogPrinter;
+      ConditionsPrinter            m_alignPrinter;
       Counters                     m_counters;
       int                          m_flag;
       bool                         m_sensitivesOnly;

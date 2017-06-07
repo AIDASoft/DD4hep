@@ -429,7 +429,7 @@ static void* create_printer(Geometry::LCDD& lcdd, int argc,char** argv)  {
       "     -flags  <number>         Printout processing flags.                      \n"
       "     -pool                    Attach conditions user pool from                \n"
       "                              PluginTester's slice instance attached.       \n\n"
-      "     -print                   Printout level for the printer object.          \n"
+      "     -print <value>           Printout level for the printer object.          \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }

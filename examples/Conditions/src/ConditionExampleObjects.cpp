@@ -114,9 +114,9 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   ConditionKey      target1(de,"derived_1");
   ConditionKey      target2(de,"derived_2");
   ConditionKey      target3(de,"derived_3");
-  DependencyBuilder build_1(de, target1.item_key(), call1);
-  DependencyBuilder build_2(de, target2.item_key(), call2);
-  DependencyBuilder build_3(de, target3.item_key(), call3);
+  DependencyBuilder build_1(de, target1.item_key(), call1->addRef());
+  DependencyBuilder build_2(de, target2.item_key(), call2->addRef());
+  DependencyBuilder build_3(de, target3.item_key(), call3->addRef());
 
   // Compute the derived stuff
   build_1.add(key);
