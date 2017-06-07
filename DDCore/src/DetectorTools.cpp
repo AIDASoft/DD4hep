@@ -253,7 +253,7 @@ DetElement DetectorTools::topElement(DetElement child)   {
 }
 
 static void DetectorTools::makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes)   {
-  for (size_t i = 0, n = det_nodes.size(); i < n-1; ++i)   {
+  for (size_t i = 0, n = det_nodes.size(); n > 0 && i < n-1; ++i)   {
     if (!findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
       throw runtime_error("DD4hep: DetElement cannot determine placement path of "
                           + string(det_nodes[i].name()) + " [internal error]");

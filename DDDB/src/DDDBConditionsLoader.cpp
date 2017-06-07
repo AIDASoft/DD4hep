@@ -295,10 +295,21 @@ size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
   // In the callbacks we can check if we got all required conditions
   GroupCollector listener(req_iov, loaded);
   try  {
+    size_t loaded_len    = loaded.size();
+    bool   print_results = isActivePrintLevel(DEBUG);
     m_mgr->callOnRegister(make_pair(&listener,&listener),true);
     listener.iov.reset().invert();
     for(const auto& url : urls )  {
       loadDocument(local_reader, url.first, url.second);
+      if ( !print_results ) continue;
+      printout(DEBUG,"DDDBLoader","++ Loaded %3ld conditions from %s.",loaded.size()-loaded_len,url.first.c_str());
+      loaded_len = loaded.size();
+    }
+    if ( print_results )  {
+      for(const auto& e : loaded )  {
+        const Condition& cond = e.second;
+        printout(INFO,"DDDBLoader","++ %16llX: %s -> %s",cond.key(),cond->value.c_str(),cond.name());
+      }
     }
     conditions_validity = listener.iov;
   }

@@ -96,8 +96,8 @@ namespace DD4hep {
     };
 
     /// Instantiation helper
-    template <typename T> DetElementProcessor<typename std::remove_reference<T>::type>
-    detectorProcessor(T&& proc)
+    template <typename T> inline
+    DetElementProcessor<typename std::remove_reference<T>::type> detectorProcessor(T&& proc)
     { return DetElementProcessor<typename std::remove_reference<T>::type>(std::forward<T>(proc)); }
 
     /// Wrapper to call objects in the form of a detector element processor.

@@ -52,6 +52,7 @@ namespace DD4hep {
     class DDDBHelper   {
     public:
       typedef std::vector<std::pair<std::string, Geometry::VisAttr> > VisAttrs;
+      typedef std::map<std::string,std::pair<Geometry::DetElement,std::string> > Det_Conditions;
 
     public:
       /// Standard constructor
@@ -73,7 +74,11 @@ namespace DD4hep {
       void addVisAttr(const std::string& path, const std::string attr_name);
       /// Add visualization attribute
       void addVisAttr(const std::string& path, Geometry::VisAttr attr);
-
+      /// Add new conditions entry
+      bool addConditionEntry(const std::string& val, Geometry::DetElement det, const std::string& item);
+      /// Access conditions entry
+      std::pair<Geometry::DetElement,std::string> getConditionEntry(const std::string& item)  const;
+      
     public:
       /// Reference to main detector description instance
       Geometry::LCDD& m_lcdd;
@@ -83,6 +88,8 @@ namespace DD4hep {
       dddb*           m_detDesc;
       /// Optional container of visualization attributes
       VisAttrs        m_visAttrs;
+      /// The inventory mapping of conditions items to Detector elements.
+      Det_Conditions  m_detCond;
     };
 
   }    /* End namespace DDDB        */

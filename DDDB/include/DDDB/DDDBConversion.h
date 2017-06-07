@@ -581,7 +581,6 @@ namespace DD4hep {
       typedef std::map<std::string,Shape*>        Shapes;
       typedef std::map<std::string,TabProperty*>  TabProperties;
       typedef std::map<std::string,Conditions::Condition::Object*>     Conditions;
-      typedef std::map<std::string,std::pair<DetElement,std::string> > Det_Conditions;
 
       /// Default constructor
       dddb();
@@ -612,7 +611,6 @@ namespace DD4hep {
       Catalogs   catalogs, catalogPaths;
       /// Detector element hierarchy
       Catalog    *top, *structure, *geometry;
-      Det_Conditions detCond;
     };
     class dddb_conditions {};
 

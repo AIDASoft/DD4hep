@@ -484,17 +484,17 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
   CondMissing::iterator last_cond = set_difference(begin(slice_cond),   end(slice_cond),
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(cond_missing), COMP());
-  int num_cond_miss = int(last_cond-begin(cond_missing));
+  long num_cond_miss = last_cond-begin(cond_missing);
   printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing conditions out of %ld conditions.",
-           num_cond_miss, m_conditions.size());
+           num_cond_miss, slice_cond.size());
   CalcMissing::iterator last_calc = set_difference(begin(slice_calc),   end(slice_calc),
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(calc_missing), COMP());
-  int num_calc_miss = int(last_calc-begin(calc_missing));
+  long num_calc_miss = last_calc-begin(calc_missing);
   printout(num_calc_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing derived conditions out of %ld conditions.",
-           num_calc_miss, m_conditions.size());
+           num_calc_miss, slice_calc.size());
 
   result.loaded   = 0;
   result.computed = 0;
@@ -514,10 +514,10 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
         CondMissing::iterator load_last = set_difference(begin(cond_missing), last_cond,
                                                          begin(loaded), end(loaded),
                                                          begin(load_missing), COMP());
-        int num_load_miss = int(load_last-begin(load_missing));
+        long num_load_miss = load_last-begin(load_missing);
         printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
-                 "Found %ld out of %d conditions, which CANNOT be loaded...",
-                 num_load_miss, int(loaded.size()));
+                 "Found %ld out of %ld conditions, which CANNOT be loaded...",
+                 num_load_miss, loaded.size());
         if ( do_output_miss )  {
           copy(begin(load_missing), load_last, inserter(slice_miss_cond, slice_miss_cond.begin()));
         }
@@ -526,6 +526,8 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
         result.missing = num_load_miss+num_calc_miss;
         if ( cond_missing.size() != loaded.size() )  {
           // ERROR!
+          printout(WARNING,"UserPool","Could not load %ld out of %ld conditions. "
+                   "[Unhandled error]",cond_missing.size(), slice_cond.size());
         }
       }
     }
@@ -555,7 +557,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
       result.missing -= handler.num_callback;
       if ( do_output_miss && result.computed < deps.size() )  {
         // Is this cheaper than an intersection ?
-        for(auto i=calc_missing.begin(); i != last_calc; ++i)   {
+        for( auto i = calc_missing.begin(); i != last_calc; ++i)   {
           typename MAPPING::iterator j = m_conditions.find((*i).first);
           if ( j == m_conditions.end() )
             slice_miss_calc.insert(*i);
@@ -596,10 +598,10 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&              required,
   CondMissing::iterator last_cond = set_difference(begin(slice_cond),   end(slice_cond),
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(cond_missing), COMP());
-  int num_cond_miss = int(last_cond-begin(cond_missing));
+  long num_cond_miss = last_cond-begin(cond_missing);
   printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing conditions out of %ld conditions.",
-           num_cond_miss, m_conditions.size());
+           num_cond_miss, slice_cond.size());
   result.loaded   = 0;
   result.computed = 0;
   result.missing  = num_cond_miss;
@@ -618,10 +620,10 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&              required,
         CondMissing::iterator load_last = set_difference(begin(cond_missing), last_cond,
                                                          begin(loaded), end(loaded),
                                                          begin(load_missing), COMP());
-        int num_load_miss = int(load_last-begin(load_missing));
+        long num_load_miss = load_last-begin(load_missing);
         printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
-                 "+++ %ld out of %d conditions CANNOT be loaded... [Not found by loader]",
-                 num_load_miss, int(loaded.size()));
+                 "+++ %ld out of %ld conditions CANNOT be loaded... [Not found by loader]",
+                 num_load_miss, loaded.size());
         if ( do_output_miss )  {
           copy(begin(load_missing), load_last, inserter(slice_miss_cond, slice_miss_cond.begin()));
         }
@@ -664,7 +666,7 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required,
   CalcMissing::iterator last_calc = set_difference(begin(slice_calc),   end(slice_calc),
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(calc_missing), COMP());
-  int num_calc_miss = int(last_calc-begin(calc_missing));
+  long num_calc_miss = last_calc-begin(calc_missing);
   printout(num_calc_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing derived conditions out of %ld conditions.",
            num_calc_miss, m_conditions.size());

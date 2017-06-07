@@ -21,6 +21,8 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
+#include "DD4hep/Alignments.h"
+#include "DD4hep/AlignmentData.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBConditionPrinter.h"
 #include "DD4hep/PluginTester.h"
@@ -99,21 +101,71 @@ ConditionPrinter::~ConditionPrinter()   {
 /// Callback to output conditions information
 int ConditionPrinter::operator()(Condition cond)  const  {
   if ( cond.isValid() )   {
+    Condition::Object*    ptr = cond.ptr();
+    const std::type_info& type = cond.typeInfo();
     printout(printLevel,name,"++ %s%s",prefix.c_str(),cond.str(m_flag).c_str());
-    const AbstractMap& data = cond.get<AbstractMap>();
-    printout(printLevel,name,"++ %s Path:%s Class:%d [%s]",
-             prefix.c_str(),
-             cond.name(),
-             data.classID, 
-             cond.data().dataType().c_str());
-    ++numCondition;
-    if ( !data.params.empty() )  {
-      m_print->printLevel = printLevel;
-      m_print->prefix.assign(prefix.length(),' ');
-      for_each(data.params.begin(), data.params.end(),*m_print);
+    if ( type == typeid(AbstractMap) )  {
+      const AbstractMap& data = cond.get<AbstractMap>();
+      printout(printLevel,name,"++ %s Path:%s Class:%d [%s]",
+               prefix.c_str(),
+               cond.name(),
+               data.classID, 
+               cond.data().dataType().c_str());
+      ++numCondition;
+      if ( !data.params.empty() )  {
+        m_print->printLevel = printLevel;
+        m_print->prefix.assign(prefix.length(),' ');
+        for_each(data.params.begin(), data.params.end(),*m_print);
+      }
+      else  {
+        ++numEmptyCondition;
+      }
     }
-    else  {
-      ++numEmptyCondition;
+    else if ( type == typeid(Alignments::Delta) )  {
+      const Alignments::Delta& D = cond.get<Alignments::Delta>();
+      printout(printLevel,name,"++ %s \t [%p] Typ:%s",
+               prefix.c_str(), cond.ptr(),
+               typeName(typeid(*ptr)).c_str());
+      printout(printLevel,name,"++ %s \tData:(%11s-%8s-%5s)",
+               prefix.c_str(), 
+               D.hasTranslation() ? "Translation" : "",
+               D.hasRotation() ? "Rotation" : "",
+               D.hasPivot() ? "Pivot" : "");
+    }
+    else if ( type == typeid(Alignments::AlignmentData) )  {
+      const Alignments::Delta& D = cond.get<Alignments::AlignmentData>().delta;
+      printout(printLevel,name,"++ %s \t [%p] Typ:%s",
+               prefix.c_str(), cond.ptr(),
+               typeName(typeid(*ptr)).c_str());
+      printout(printLevel,name,"++ %s \tData:(%11s-%8s-%5s)",
+               prefix.c_str(), 
+               D.hasTranslation() ? "Translation" : "",
+               D.hasRotation() ? "Rotation" : "",
+               D.hasPivot() ? "Pivot" : "");
+    }
+    else if ( type == typeid(std::string) )  {
+      string value = cond.get<string>().c_str();
+      size_t len = value.length();
+      if ( len > lineLength ) {
+        value.erase(lineLength);
+        value += "...";
+      }
+      printout(printLevel,name,"++ %s \tString [%s]: %s",
+               prefix.c_str(),
+               cond.data().dataType().c_str(), 
+               value.c_str());
+    }
+    else {
+      string value = cond.str();
+      size_t len = value.length();
+      if ( len > lineLength ) {
+        value.erase(lineLength);
+        value += "...";
+      }
+      printout(printLevel,name,"++ %s \t[%s]: %s",
+               prefix.c_str(),
+               cond.data().dataType().c_str(), 
+               value.c_str());	
     }
   }
   return 1;
