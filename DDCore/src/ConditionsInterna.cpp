@@ -25,6 +25,17 @@ using namespace DD4hep::Conditions;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionObject);
 
+namespace {
+  /// Simple cast union to perform pointer arithmetic on raw byte based memory
+  union  _P {
+    const char* character;
+    const void* p_void;
+    void**      pp_void;
+    const Interna::ConditionObject* o;
+    _P(const void* val) { p_void = val; }
+  };
+}
+
 /// Default constructor
 Interna::ConditionObject::ConditionObject()
   : NamedObject(), value(), validity(), address(), comment(), data()
@@ -46,19 +57,14 @@ Interna::ConditionObject::~ConditionObject()  {
 
 /// Data offset from the opaque data block pointer to the condition
 size_t Interna::ConditionObject::offset()   {
-  union  _P {
-    const char* c; const void* v; const ConditionObject* o;
-    _P(const void* val) { v = val; }
-  };
-  static _P p((void*)0x1000), q(&p.o->data.grammar);
-  static size_t off = q.c - p.c + sizeof(p.o->data.grammar);
+  static _P p((void*)0x1000);
+  static size_t off = _P(&p.o->data.grammar).character - p.character + sizeof(p.o->data.grammar);
   return off;
 }
 
 /// Access the bound data payload. Exception id object is unbound
 void* Interna::ConditionObject::payload() const   {
-  void** p = (void**)(((char*)this)+offset());
-  return *p;
+  return *(_P(_P(this).character+offset()).pp_void);
 }
 
 /// Move data content: 'from' will be reset to NULL

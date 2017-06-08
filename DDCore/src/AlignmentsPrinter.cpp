@@ -58,7 +58,7 @@ int AlignmentsPrinter::operator()(DetElement de, int level)  const   {
 AlignedVolumePrinter::AlignedVolumePrinter(ConditionsMap* m, const string& pref,int flg)
   : AlignmentsPrinter(m, pref, flg)
 {
-  name = "Alignmant";
+  name = "Alignment";
 }
 
 /// Callback to output alignments information
