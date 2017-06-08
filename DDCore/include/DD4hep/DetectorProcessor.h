@@ -17,9 +17,7 @@
 #include "DD4hep/Detector.h"
 
 // C/C++ include files
-#include <vector>
 #include <memory>
-#include <algorithm>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -35,27 +33,25 @@ namespace DD4hep {
      *
      *   \author  M.Frank
      *   \version 1.0
-     *   \date    31/03/2016
+     *   \date    31/05/2017
      *   \ingroup DD4HEP_GEOMETRY
      */
     class DetectorProcessor {
     public:
-      /// Self type definition
-      typedef DetectorProcessor  self_type;
-    public:
-      struct Internal {
-        virtual ~Internal() {}
-      };
       /// Initializing constructor
       DetectorProcessor() = default;
+      /// R-value copy from a temporary (Since processor is reference)
+      DetectorProcessor(DetectorProcessor&& copy) = default;
+      /// Default copy constructor
+      DetectorProcessor(const DetectorProcessor& copy) = default;
       /// Default destructor
-      virtual ~DetectorProcessor() = default;
+      virtual ~DetectorProcessor();
+      /// Default assignment
+      DetectorProcessor& operator=(const DetectorProcessor& copy) = default;
       /// Callback to output detector information of an single DetElement
       virtual int operator()(DetElement de, int level)  const = 0;
       /// Callback to output detector information of an entire DetElement
       virtual int process(DetElement de, int level, bool recursive)  const;
-      /// Pointer conversion to underlying object
-      virtual Internal* internal()  const  {  return 0; }
     };
 
     /// Detector scanner using a Processor object
@@ -65,7 +61,7 @@ namespace DD4hep {
      *
      *   \author  M.Frank
      *   \version 1.0
-     *   \date    31/03/2016
+     *   \date    31/05/2017
      *   \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class DetElementProcessor : virtual public DetectorProcessor  {
@@ -90,9 +86,6 @@ namespace DD4hep {
       /// Callback to output detector information of an single DetElement
       virtual int operator()(DetElement de, int level)  const final
       {   return (processor)(de, level);         }
-      /// Pointer conversion to underlying object
-      virtual Internal* internal()  const  final
-      {  return (Internal*)&processor;           }
     };
 
     /// Instantiation helper
@@ -102,11 +95,13 @@ namespace DD4hep {
 
     /// Wrapper to call objects in the form of a detector element processor.
     /**
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \date    31/05/2017
+     *   \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class DetectorProcessorShared : public DetectorProcessor {
+    public:
       /// Reference to execution object implementing operator()(DetElement de, int level)
       std::shared_ptr<T> processor;
     public:
@@ -123,22 +118,20 @@ namespace DD4hep {
       /// Callback to output detector information of an single DetElement
       virtual int operator()(DetElement de, int level)  const final
       {  return (*processor)(de, level);                 }
-      /// Pointer conversion to underlying object
-      virtual Internal* internal()  const  final
-      {  return (Internal*)processor.get();              }
     };
 
     /// Helper to run DetElement scans
     /**
-     *  This wrapper converts any object, which has the signature
-     *  int operator()(DetElement de, int level) const
-     *  The object is automatically wrapped to a DetectorProcessor
-     *  and the detector tree is scanned depending on the scanning
-     *  arguments.
+     *   This wrapper converts any object, which has the signature
+     *   int operator()(DetElement de, int level) const
+     *   The object is automatically wrapped to a DetectorProcessor
+     *   and the detector tree is scanned depending on the scanning
+     *   arguments.
      *  
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \date    01/04/2016
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \date    01/04/2016
+     *   \ingroup DD4HEP_GEOMETRY
      */
     class DetectorScanner  {
     public:

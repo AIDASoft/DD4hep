@@ -68,9 +68,10 @@ namespace DD4hep {
 
       /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
       /** Note: This default implementation uses 
-       *        std::vector<Condition> get(DetElement detector,
-       *                                  itemkey_type lower,
-       *                                  itemkey_type upper)
+       *        void scan(DetElement detector,
+       *                  itemkey_type lower,
+       *                  itemkey_type upper,
+       *                  const Processor& collector)
        *        The performance depends on the concrete implementation of the scan method!
        */
       virtual std::vector<Condition> get(DetElement detector,
@@ -82,6 +83,12 @@ namespace DD4hep {
        *        not the most efficient implementation!
        *        Internally it uses "scan(Processor& processor)"
        *        the subselection hence is linearly depending of the number of elements.
+       *
+       *        This default implementation uses 
+       *        std::vector<Condition> get(DetElement detector,
+       *                                  itemkey_type lower,
+       *                                  itemkey_type upper)
+       *        The performance depends on the concrete implementation of the scan method!
        *        
        *        Using ordered maps with "lower_bound(key)" this can be greatly improved.
        *        See the concrete implementations below.
