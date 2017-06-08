@@ -856,7 +856,7 @@ namespace DD4hep {
             GeoPlacement place = context->supportPlacement(parent_element, object->npath);
             if ( !place.isValid() )   {
               char txt[64];
-              ::snprintf(txt,sizeof(txt),"++ %%%ds %%s %%s",object->path.length());
+              ::snprintf(txt,sizeof(txt),"++ %%%lus %%s %%s",object->path.length());
               printout(WARNING,"CNV<DetElem>",txt,
                        object->path.c_str(), "Placement: ", object->logvol.c_str());
               printout(WARNING,"CNV<DetElem>",txt,"    --> INVALID PLACEMENT...",
@@ -900,7 +900,7 @@ namespace DD4hep {
       if ( !object->condition.empty() )   {
         bool res;
         char text[64];
-        ::snprintf(text,sizeof(text),"              %%%ds -> %%s",object->condition.length());
+        ::snprintf(text,sizeof(text),"              %%%lus -> %%s",object->condition.length());
         printout(DEBUG,"DDDB","+ Match Align %s -> %s",object->condition.c_str(), object->path.c_str());
         printout(DEBUG,"DDDB",text,"",det.path().c_str());
         res = context->helper->addConditionEntry(object->condition,det,"alignment_delta");

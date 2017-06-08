@@ -18,6 +18,10 @@
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
+/// Default destructor
+DetectorProcessor::~DetectorProcessor()   {
+}
+
 /// Callback to output detector information of an entire DetElement
 int DetectorProcessor::process(DetElement de, int level, bool recursive)  const  {
   if ( de.isValid() )  {
