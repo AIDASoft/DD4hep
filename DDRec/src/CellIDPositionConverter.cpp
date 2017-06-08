@@ -2,7 +2,7 @@
 #include "DDRec/CellIDPositionConverter.h"
 
 #include "DD4hep/LCDD.h"
-#include "DD4hep/objects/VolumeManagerInterna.h"
+#include "DD4hep/detail/VolumeManagerInterna.h"
 
 #include "TGeoManager.h"
 
