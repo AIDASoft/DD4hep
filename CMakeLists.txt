@@ -32,7 +32,7 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
 # project version
 SET( DD4hep_VERSION_MAJOR 0  )
-SET( DD4hep_VERSION_MINOR 22 )
+SET( DD4hep_VERSION_MINOR 23 )
 SET( DD4hep_VERSION_PATCH 0  )
 
 dd4hep_set_version(DD4hep
