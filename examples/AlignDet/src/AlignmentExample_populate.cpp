@@ -123,9 +123,11 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
       printout(ERROR,"Compute","Failed tro compute %ld alignments of type %s.",
                ares.missing, iov_typ->str().c_str());
     }
+    if ( i == 0 )  {
+      // What else ? let's access/print the current selection
+      Scanner(AlignedVolumePrinter(sl.get(),"Example"),lcdd.world());
+    }
   }
-  // What else ? let's access/print the current selection
-  Scanner(AlignedVolumePrinter(slice.get(),"Example"),lcdd.world());
   printout(INFO,"Summary","Processed a total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) and (C:%ld,M:%ld) alignments. Created:%ld.",
            cond_total.total(), cond_total.selected, cond_total.loaded, cond_total.computed, cond_total.missing,
            align_total.computed, align_total.missing, total_created);
