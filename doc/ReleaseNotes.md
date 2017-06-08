@@ -1,3 +1,30 @@
+# v00-23
+
+* 2017-05-12 Marko Petric ([PR#152](https://github.com/aidasoft/dd4hep/pull/152))
+  - Update CI to GCC 7.1 and LLVM 4.0 and include Geant4 10.3
+
+* 2017-05-22 Frank Gaede ([PR#154](https://github.com/aidasoft/dd4hep/pull/154))
+  - protect against NANs in Guineapig pairs files in Geant4EventReaderGuineaPig
+  - make INFO printout more consistent  with DD4hep style
+
+* 2017-06-07 Frank Gaede ([PR#157](https://github.com/aidasoft/dd4hep/pull/157))
+  -  bug fix in test_cellid_position_converter
+       - with this no tests for position from cellID lookup should fail
+  - re-implement ```CellIDPositionConverter::cellID(pos)```
+
+* 2017-06-08 Marko Petric ([PR#156](https://github.com/aidasoft/dd4hep/pull/156))
+  - Mark all fallthroughs in case statements with attributes to suppress warning
+
+* 2017-06-01 Frank Gaede ([PR#155](https://github.com/aidasoft/dd4hep/pull/155))
+  - add new class DDRec::CellIDPositionConverter
+        - replaces DDRec::IDDecoder
+        - implement positionNominal(CellID id) and cellID(position)
+       - prepare for using alignment map by separating transforms to DetElement and daughter volume
+       - do not use deprecated methods/members in VolumeManager
+  - add test_cellid_position_converter.cpp
+  - add VolumeManagerContext::toElement
+       - transform from sensitive volume to next DetElement
+
 # v00-22
 
 * 2017-04-28 Markus Frank ([PR#148](https://github.com/aidasoft/dd4hep/pull/148))
