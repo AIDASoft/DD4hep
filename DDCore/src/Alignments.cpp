@@ -61,6 +61,11 @@ const AlignmentData& Alignment::data() const  {
   return access()->values();
 }
 
+/// Access the delta value of the object
+const Delta& Alignment::delta() const   {
+  return access()->values().delta;
+}
+
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& Alignment::worldTransformation()  const  {
   return access()->values().worldTransformation();
@@ -160,6 +165,12 @@ AlignmentData& AlignmentCondition::data()              {
 const AlignmentData& AlignmentCondition::data() const  {
   Object* o = access();
   return o->alignment_data ? *o->alignment_data : o->values();
+}
+
+/// Access the delta value of the object
+const Delta& AlignmentCondition::delta() const   {
+  Object* o = access();
+  return (o->alignment_data ? *o->alignment_data : o->values()).delta;
 }
 
 /// Check if object is already bound....

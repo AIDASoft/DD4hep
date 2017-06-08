@@ -86,7 +86,7 @@ AlignmentsCalib::_set(DetElement detector, const Delta& delta)   {
     if ( !src_cond.isValid() )   {
       except("AlignmentsCalib",
              "++ The SOURCE alignment condition [%016llX]: %s#%s is invalid.",
-             key.hash, detector.path().c_str(), Keys::deltaName);
+             key.hash, detector.path().c_str(), Keys::deltaName.c_str());
     }
   }
   // Add the entry the usual way. This should also check everything again.

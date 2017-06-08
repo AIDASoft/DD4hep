@@ -46,8 +46,12 @@ Interna::ConditionObject::~ConditionObject()  {
 
 /// Data offset from the opaque data block pointer to the condition
 size_t Interna::ConditionObject::offset()   {
-  ConditionObject* o = (ConditionObject*)(0x1000);
-  size_t off = ((char*)&o->data.grammar) - ((char*)o) + sizeof(o->data.grammar);
+  union  _P {
+    const char* c; const void* v; const ConditionObject* o;
+    _P(const void* val) { v = val; }
+  };
+  static _P p((void*)0x1000), q(&p.o->data.grammar);
+  static size_t off = q.c - p.c + sizeof(p.o->data.grammar);
   return off;
 }
 
