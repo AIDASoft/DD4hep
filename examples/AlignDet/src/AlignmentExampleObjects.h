@@ -49,6 +49,7 @@ namespace DD4hep {
     using Alignments::Delta;
     using Alignments::Alignment;
     using Alignments::AlignmentData;
+    using Alignments::AlignmentsPrinter;
     using Alignments::AlignmentsCalculator;
     using Alignments::AlignedVolumePrinter;
     using Alignments::DeltaCollector;

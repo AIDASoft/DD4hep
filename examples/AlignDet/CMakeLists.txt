@@ -105,12 +105,30 @@ dd4hep_add_test_reg( AlignDet_Telescope_align_new
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
+#---Testing: Load Telescope geometry and read and print alignments --------
+dd4hep_add_test_reg( AlignDet_Telescope_align_nominal
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
+     -input  file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
+  REGEX_PASS "Printed 20, scanned 20 and computed a total of 20 alignments \\(C:20,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
 #---Testing: Extended stress: Load CLICSiD geometry and have multiple runs on IOVs
 dd4hep_add_test_reg( AlignDet_CLICSiD_stress_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_AlignmentExample_stress 
       -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 10 -runs 100
   REGEX_PASS "Summary: Total 7352100 conditions used \\(S:7352100,L:0,C:0,M:0\\) \\(A:350100,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Load Telescope geometry and read and print alignments --------
+dd4hep_add_test_reg( AlignDet_CLICSiD_align_nominal
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
+     -input  file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml
+  REGEX_PASS "Printed 35011, scanned 35011 and computed a total of 35011 alignments \\(C:35011,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
