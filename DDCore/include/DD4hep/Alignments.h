@@ -115,6 +115,8 @@ namespace DD4hep {
       AlignmentData& data();
       /// Data accessor for the use of decorators
       const AlignmentData& data() const;
+      /// Access the delta value of the object
+      const Delta& delta() const;
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation()  const;
       /// Access the alignment/placement matrix with respect to the world
@@ -169,6 +171,8 @@ namespace DD4hep {
       AlignmentData& data();
       /// Data accessor for the use of decorators
       const AlignmentData& data() const;
+      /// Access the delta value of the object
+      const Delta& delta() const;
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation()  const;
       /// Access the alignment/placement matrix with respect to the world

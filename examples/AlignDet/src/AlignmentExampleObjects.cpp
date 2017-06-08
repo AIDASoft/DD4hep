@@ -52,9 +52,9 @@ int AlignmentDataAccess::operator()(DetElement de, int) const {
 /// Callback to process a single detector element
 int AlignmentCreator::operator()(DetElement de, int)  const  {
   if ( de.ptr() != de.world().ptr() )  {
-    Condition     cond(de.path()+"#alignment_delta", "alignment_delta");
-    Delta&        delta = cond.bind<Delta>();
-    cond->hash = ConditionKey::hashCode(de,"alignment_delta");
+    Condition cond(de.path()+"#"+Alignments::Keys::deltaName,Alignments::Keys::deltaName);
+    Delta&    delta = cond.bind<Delta>();
+    cond->hash = Alignments::Keys::deltaKey;
     cond->setFlag(Condition::ACTIVE|Condition::ALIGNMENT_DELTA);
     /// Simply move everything by 1 mm in z. Not physical, but this is just an example...
     delta.translation.SetZ(delta.translation.Z()+0.1*dd4hep::cm);
