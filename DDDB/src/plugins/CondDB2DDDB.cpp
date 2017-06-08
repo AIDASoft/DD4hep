@@ -623,7 +623,7 @@ namespace DD4hep {
           AlignmentDelta&  align = block.second.bind<AlignmentDelta>();
           d.clientData = doc->addRef();
           d.classID    = cls_id;
-          block.first  = "alignment_delta";
+          block.first  = Alignments::Keys::deltaName;
 
           Conv<AlignmentDelta> conv(lcdd,context,&align);
           xml_coll_t(element,_LBU(paramVector)).for_each(conv);

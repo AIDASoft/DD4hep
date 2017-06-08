@@ -903,7 +903,7 @@ namespace DD4hep {
         ::snprintf(text,sizeof(text),"              %%%lds -> %%s",long(object->condition.length()));
         printout(DEBUG,"DDDB","+ Match Align %s -> %s",object->condition.c_str(), object->path.c_str());
         printout(DEBUG,"DDDB",text,"",det.path().c_str());
-        res = context->helper->addConditionEntry(object->condition,det,"alignment_delta");
+        res = context->helper->addConditionEntry(object->condition,det,Alignments::Keys::deltaName);
         if ( !res )  {
           printout(DEBUG,"DDDB","++ Conditions entry with key:%s already exists!",
                    object->condition.c_str());

@@ -29,12 +29,32 @@ namespace DD4hep {
 
     /// ConditionsMap class.
     /**
+     *  Access mechanisms of DD4hep conditions for utilities
+     *  ===================================================
+     *
      *  The conditions map class is the basic interface to manage/access conditions
      *  in DD4hep. It's main use is to provide a common interface to utilities using
      *  DD4hep conditions, such as scanners, selectors, printers etc.
      *  Such utilities often require access to conditions sets based on individual 
      *  DetElement instances.
      *  
+     *  Access to conditions is solely supported using this interface
+     *  -- All utilities must use this interface.
+     *  -- Any concrete implementation using conditions/alignment utilities
+     *     must implement this interface
+     *  -- Basic implmentation using STL map, multimap and unordered_map are provided.
+     *  -- A special no-op implementation of this interface shall be provided to access
+     *     "default" alignment conditions.
+     *     This implementation shall fall-back internally to the DetElement::nominal() alignment.
+     *     Known clients: VolumeManager (hence: DDG4, DDRec, etc.)
+     *
+     *  Though this sounds like a trivial change, the consequences concern the entire conditions
+     *  and alignment handling. This interface decouples entirely the core part of DD4hep
+     *  from the conditons cache handling and the alignment handling.
+     *
+     *  Based on this interface most utilities used to handle conditions, detectors scans
+     *  to visit DetElement related condition sets, alignment and conditions printers etc.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
