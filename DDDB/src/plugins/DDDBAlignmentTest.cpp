@@ -58,11 +58,10 @@ namespace  {
     LCDD&                lcdd;
     string               name;
     PrintLevel           printLevel     = INFO;
-    unsigned int         alignmentKey   = 0;
-    unsigned int         alignDeltaKey  = 0;
     TStatistic           load_stat, comp_stat;
     Content              content;
     ConditionsPrinter    printer;
+
     /// Initializing constructor
     AlignmentSelector(LCDD& l, PrintLevel p)
       : lcdd(l), name("DDDBAlignments"), printLevel(p),
@@ -70,8 +69,6 @@ namespace  {
     {
       printer.printLevel = DEBUG;
       content.reset(new ConditionsContent());
-      alignmentKey  = ConditionKey::itemCode("alignment");
-      alignDeltaKey = ConditionKey::itemCode("alignment_delta");
     }
 
     /// Default destructor
@@ -120,7 +117,7 @@ namespace  {
       if ( access )   {
         set<DetElement> detectors;
         for ( const auto& e : align_deltas )  {
-          Condition               c = slice->get(e.first,alignmentKey);
+          Condition               c = slice->get(e.first,Alignments::Keys::alignmentKey);
           Alignment               a = c;
           const Delta&            D = a.data().delta;
           printout(PrintLevel(printLevel+1),"Alignment",

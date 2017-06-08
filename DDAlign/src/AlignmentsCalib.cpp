@@ -24,12 +24,8 @@ using namespace DD4hep;
 using namespace DD4hep::Alignments;
 typedef Conditions::Condition::key_type key_type;
 
-namespace {
-  static const char*  align_delta_name = "alignment_delta";
-  static unsigned int align_delta_hash = Conditions::ConditionKey::itemCode(align_delta_name);
-}
-      
-/**
+/**  Implementation details: Alignment context entry
+ *
  *   \author  M.Frank
  *   \version 1.0
  *   \date    31/01/2017
@@ -67,30 +63,30 @@ DetElement AlignmentsCalib::detector(const string& path)  const   {
 /// Implementation: Add a new entry to the transaction stack.
 pair<key_type,AlignmentsCalib::Entry*>
 AlignmentsCalib::_set(DetElement detector, const Delta& delta)   {
-  ConditionKey tar_key(detector.key(),AlignmentsCalculator::alignment_item_key());
+  ConditionKey tar_key(detector.key(),Keys::alignmentKey);
   UsedConditions::iterator i = used.find(tar_key.hash);
   if ( i != used.end() )   {
     (*i).second->delta = delta;
     return (*i);
   }
 
-  Condition src_cond  = slice.get(detector,align_delta_hash);
+  Condition src_cond  = slice.get(detector,Keys::deltaKey);
   if ( !src_cond.isValid() )   {
     // Try to create a new condition and register it to the
     // conditions manager from the delta value.
-    ConditionKey key(detector, align_delta_hash);
-    src_cond = Condition(detector.path()+"#"+align_delta_name,align_delta_name);
+    ConditionKey key(detector, Keys::deltaKey);
+    src_cond = Condition(detector.path()+"#"+Keys::deltaName,Keys::deltaName);
     src_cond.bind<Delta>();
     src_cond->setFlag(Condition::ALIGNMENT_DELTA);
     src_cond->hash = key.hash;
-    if ( !slice.insert(detector, align_delta_hash, src_cond) )   {
+    if ( !slice.insert(detector, Keys::deltaKey, src_cond) )   {
       destroyHandle(src_cond);
     }
     /// Now check again if we succeeded.
     if ( !src_cond.isValid() )   {
       except("AlignmentsCalib",
              "++ The SOURCE alignment condition [%016llX]: %s#%s is invalid.",
-             key.hash, detector.path().c_str(), align_delta_name);
+             key.hash, detector.path().c_str(), Keys::deltaName);
     }
   }
   // Add the entry the usual way. This should also check everything again.

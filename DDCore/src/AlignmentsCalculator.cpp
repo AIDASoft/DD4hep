@@ -33,8 +33,6 @@ namespace DD4hep {
 
     /// Anonymous implementation classes
     namespace {
-      static unsigned int alignment_hash = 0;
-      static unsigned int alignment_delta_hash = 0;
       static Delta        identity_delta;
 
       /// Alignment calculator.
@@ -147,7 +145,7 @@ Result Calculator::to_world(Context&      context,
     // Mapping update mode:
     // Check if there is already a transformation in the cache. If yes, take it.
     // We assume it is a good one, because higher level changes are already processed.
-    AlignmentCondition cond = context.mapping.get(par,alignment_hash);
+    AlignmentCondition cond = context.mapping.get(par,Keys::alignmentKey);
     if ( cond.isValid() )  {
       AlignmentData&     align(cond.data());
       if ( s_PRINT <= INFO )  {
@@ -216,7 +214,7 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
     printout(DEBUG,"ComputeAlignment","================ IGNORE %s (already valid)",det.path().c_str());
     return result;
   }
-  AlignmentCondition c = context.mapping.get(e.det, alignment_hash);
+  AlignmentCondition c = context.mapping.get(e.det, Keys::alignmentKey);
   AlignmentCondition cond = c.isValid() ? c : AlignmentCondition("alignment");
   AlignmentData&     align = cond.data();
   const Delta*       delta = e.delta ? e.delta : &identity_delta;
@@ -236,8 +234,8 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;
-    cond->hash = ConditionKey(e.det,alignment_hash).hash;
-    context.mapping.insert(e.det, alignment_hash, cond);
+    cond->hash = ConditionKey(e.det,Keys::alignmentKey).hash;
+    context.mapping.insert(e.det, Keys::alignmentKey, cond);
   }
   if ( s_PRINT <= INFO )  {
     printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%16llX",
@@ -264,33 +262,11 @@ void Calculator::resolve(Context& context, DetElement detector) const   {
     resolve(context, c.second);
 }
 
-/// Access the default alignment name
-unsigned int AlignmentsCalculator::alignment_item_key()   {
-  if ( 0 == alignment_hash )  {
-    Conditions::ConditionKey k(0,"alignment");
-    alignment_hash = k.item_key();
-  }
-  return alignment_hash;
-}
-
-/// Access the default alignment name
-unsigned int AlignmentsCalculator::alignment_delta_item_key()   {
-  if ( 0 == alignment_delta_hash )  {
-    Conditions::ConditionKey k(0,"alignment_delta");
-    alignment_delta_hash = k.item_key();
-  }
-  return alignment_delta_hash;
-}
-
 /// Compute all alignment conditions of the internal dependency list
 Result AlignmentsCalculator::compute(const Deltas& deltas, Alignments& alignments)  const  {
   Result  result;
   Calculator obj;
   Calculator::Context context(alignments);
-  if ( 0 == alignment_hash )  {
-    Conditions::ConditionKey k(0,"alignment");
-    alignment_hash = k.item_key();
-  }
   for( const auto& i : deltas )
     context.insert(i.first, &(i.second));
   for( const auto& i : deltas )

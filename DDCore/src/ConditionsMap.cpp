@@ -116,6 +116,7 @@ void ConditionsMapping<T>::scan(DetElement   detector,
     typename T::const_iterator first = data.lower_bound(low);
     for(; first != data.end() && (*first).first <= up; ++first )
       processor((*first).second);
+    return;
   }
   DD4hep::except("ConditionsMap","Cannot scan conditions map for conditions of an invalid detector element!");
 }

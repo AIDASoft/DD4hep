@@ -26,8 +26,8 @@ namespace DD4hep {
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
-    class Condition;
-    class ConditionsKey;
+
+    /// Forward declarations
     class ConditionsMap;
     
     /// Conditions internal namespace
@@ -54,12 +54,30 @@ namespace DD4hep {
     class Alignment;
     class Delta;
 
+    /// Alignment and Delta item key 
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_ALIGN
+     */
+    class Keys  {
+    public:
+      /// Key name  of a delta condition "alignment_delta".
+      static const std::string                         deltaName;
+      /// Key value of a delta condition "alignment_delta".
+      static const Conditions::Condition::itemkey_type deltaKey;
+      /// Key name  of an alignment condition object "alignment".
+      static const std::string                         alignmentName;
+      /// Key value of an alignment condition object "alignment".
+      static const Conditions::Condition::itemkey_type alignmentKey;
+    };
+    
     /// Main handle class to hold an alignment conditions object
     /**
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_ALIGN
      */
     class AlignmentCondition : public Handle<Interna::AlignmentObject>   {

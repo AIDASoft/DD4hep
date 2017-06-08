@@ -19,8 +19,17 @@
 // C/C++ include files
 #include <sstream>
 
+
 using namespace std;
 using namespace DD4hep::Alignments;
+
+const std::string DD4hep::Alignments::Keys::deltaName("alignment_delta");
+const DD4hep::Conditions::Condition::itemkey_type  DD4hep::Alignments::Keys::deltaKey =
+  DD4hep::Conditions::ConditionKey::itemCode("alignment_delta");
+
+const std::string DD4hep::Alignments::Keys::alignmentName("alignment");
+const DD4hep::Conditions::Condition::itemkey_type DD4hep::Alignments::Keys::alignmentKey =
+  DD4hep::Conditions::ConditionKey::itemCode("alignment");
 
 /// Default constructor
 Alignment::Processor::Processor() {

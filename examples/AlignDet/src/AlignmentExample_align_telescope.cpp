@@ -45,7 +45,7 @@ using Geometry::Position;
 
 static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  {
   DetElement d(calib.detector(path));
-  Alignment  a = calib.slice.get(d,AlignmentsCalculator::alignment_item_key());
+  Alignment  a = calib.slice.get(d,Alignments::Keys::alignmentKey);
   if ( a.isValid() )  {
     const double* tr = a.worldTransformation().GetTranslation();
     printout(INFO,"Example","++ World transformation of: %-32s  Tr:(%8.2g,%8.2g,%8.2g [cm])",
@@ -53,7 +53,7 @@ static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  
     a.worldTransformation().Print();
     return;
   }
-  Condition c = calib.slice.get(d,AlignmentsCalculator::alignment_delta_item_key());
+  Condition c = calib.slice.get(d,Alignments::Keys::deltaKey);
   printout(WARNING,"Example",
            "++ Detector element:%s No alignment conditions present. Delta:%s",
            path.c_str(), c.isValid() ? "Present" : "Not availible");
