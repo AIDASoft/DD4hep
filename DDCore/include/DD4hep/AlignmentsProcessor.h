@@ -19,6 +19,8 @@
 #include "DD4hep/Alignments.h"
 #include "DD4hep/Printout.h"
 
+#include <memory>
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
