@@ -12,10 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/dd4hep.h"
 #include "DD4hep/DDTest.h"
 
-#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/BitField64.h"
 #include "DDRec/CellIDPositionConverter.h"
 
@@ -28,11 +27,8 @@
 #include <sstream>
 
 using namespace std ;
-using namespace DD4hep ;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::DDRec ;
-
 using namespace lcio;
+using namespace dd4hep ;
 
 
 static DDTest test( "cellid_position_converter" ) ; 
@@ -72,11 +68,11 @@ int main_wrapper(int argc, char** argv ){
   
   std::string inFile =  argv[1] ;
 
-  LCDD& lcdd = LCDD::getInstance();
+  dd4hep::DetDescription& detDesc = dd4hep::DetDescription::getInstance();
 
-  lcdd.fromCompact( inFile );
+  detDesc.fromCompact( inFile );
 
-  CellIDPositionConverter idposConv( lcdd )  ;
+  CellIDPositionConverter idposConv( detDesc )  ;
 
   
   //---------------------------------------------------------------------
@@ -124,8 +120,8 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      DD4hep::BitField64 idDecoder0( cellIDEcoding ) ;
-      DD4hep::BitField64 idDecoder1( cellIDEcoding ) ;
+      BitField64 idDecoder0( cellIDEcoding ) ;
+      BitField64 idDecoder1( cellIDEcoding ) ;
 
       int nHit = std::min( col->getNumberOfElements(), maxHit )  ;
      
@@ -134,12 +130,12 @@ int main_wrapper(int argc, char** argv ){
 	
         SimCalorimeterHit* sHit = (SimCalorimeterHit*) col->getElementAt(i) ;
 	
-        DD4hep::long64 id0 = sHit->getCellID0() ;
-        DD4hep::long64 id1 = sHit->getCellID1() ;
+        long64 id0 = sHit->getCellID0() ;
+        long64 id1 = sHit->getCellID1() ;
 
 	idDecoder0.setValue( id0 , id1 ) ;
 
-	DD4hep::long64 id = idDecoder0.getValue() ;
+	long64 id = idDecoder0.getValue() ;
 	
 
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
