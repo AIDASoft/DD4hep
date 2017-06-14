@@ -25,13 +25,13 @@ namespace DD4hep{
     */
 
 
-    static long createSurfaceManager(LCDD& lcdd, int /*argc*/, char** /*argv*/) {
+    static long createSurfaceManager(LCDD& theDetector, int /*argc*/, char** /*argv*/) {
 
       printout(INFO,"InstallSurfaceManager","**** running plugin InstallSurfaceManager ! " );
 
-      lcdd.addExtension<SurfaceManager>(  new SurfaceManager() ) ;
+      theDetector.addExtension<SurfaceManager>(  new SurfaceManager(theDetector) ) ;
 
-      printout(INFO,"InstallSurfaceManager","%s" , lcdd.extension<SurfaceManager>()->toString().c_str() );
+      printout(INFO,"InstallSurfaceManager","%s" , theDetector.extension<SurfaceManager>()->toString().c_str() );
 
       return 1;
     }

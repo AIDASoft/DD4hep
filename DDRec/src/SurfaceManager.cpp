@@ -2,6 +2,7 @@
 
 #include "DDRec/SurfaceHelper.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/VolumeManager.h"
 
 #include <sstream>
 
@@ -13,9 +14,15 @@ namespace DD4hep {
   namespace DDRec {
     
 
-    SurfaceManager::SurfaceManager(){
 
-      initialize() ;
+    SurfaceManager::SurfaceManager(DD4hep::Geometry::LCDD& theDetector){
+
+      // have to make sure the volume manager is populated once in order to have
+      // the volumeIDs attached to the DetElements
+
+      VolumeManager::getVolumeManager(theDetector);
+
+      initialize(theDetector) ;
     }
     
     SurfaceManager::~SurfaceManager(){
@@ -35,15 +42,13 @@ namespace DD4hep {
       return 0 ;
     }
 
-    void SurfaceManager::initialize() {
+    void SurfaceManager::initialize(DD4hep::Geometry::LCDD& theDetector) {
       
-      LCDD& lcdd = LCDD::getInstance();
-
-      const std::vector<std::string>& types = lcdd.detectorTypes() ;
+      const std::vector<std::string>& types = theDetector.detectorTypes() ;
 
       for(unsigned i=0,N=types.size();i<N;++i){
 
-	const std::vector<DetElement>& dets = lcdd.detectors( types[i] ) ;  
+	const std::vector<DetElement>& dets = theDetector.detectors( types[i] ) ;  
 
 	for(unsigned j=0,M=dets.size();j<M;++j){
 
