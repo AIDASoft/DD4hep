@@ -5,6 +5,7 @@
 #include "DDSurfaces/Vector3D.h"
 #include "DDRec/Material.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/Volumes.h"
 
 #include <vector>
 
@@ -31,6 +32,11 @@ namespace DD4hep {
 
     public:
 
+      /// Instantiate the MaterialManager for this (world) volume
+      MaterialManager(DD4hep::Geometry::Volume world);
+
+      /// default c'tor
+      [[gnu::deprecated("use MaterialManager(Volume world) instead")]]
       MaterialManager();
       
       ~MaterialManager();
