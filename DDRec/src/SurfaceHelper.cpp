@@ -3,7 +3,6 @@
 #include "DDRec/DetectorSurfaces.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/LCDD.h"
-#include "DD4hep/VolumeManager.h"
 
 namespace DD4hep {
   
@@ -20,14 +19,9 @@ namespace DD4hep {
     SurfaceHelper::~SurfaceHelper(){
       // nothing to do
     }
-    
-    
+
+
     void SurfaceHelper::initialize() {
-      
-      // have to populate the volume manager once in order to have 
-      // the volumeIDs attached to the DetElements
-      LCDD& lcdd = LCDD::getInstance();
-      /* VolumeManager volMgr = */ VolumeManager::getVolumeManager(lcdd);
 
       //------------------ breadth first tree traversal ---------
       std::list< DetElement > dets ;

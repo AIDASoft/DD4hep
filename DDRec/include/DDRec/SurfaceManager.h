@@ -6,6 +6,11 @@
 #include <map>
 
 namespace DD4hep {
+
+  namespace Geometry{
+    class LCDD ;
+  }
+
   namespace DDRec {
 
     /// typedef for surface maps, keyed by the cellID 
@@ -24,8 +29,11 @@ namespace DD4hep {
       typedef std::map< std::string,  SurfaceMap > SurfaceMapsMap ;
 
     public:
-      /// Default constructor
-      SurfaceManager();
+      /// The constructor
+      SurfaceManager(DD4hep::Geometry::LCDD& theDetector);
+
+      /// No default constructor
+      SurfaceManager() = delete ;
 
       /// No copy constructor
       SurfaceManager(const SurfaceManager& copy) = delete;
@@ -50,7 +58,7 @@ namespace DD4hep {
 
 
       /// initialize all known surface maps
-      void initialize() ;
+      void initialize(DD4hep::Geometry::LCDD& theDetector) ;
 
       SurfaceMapsMap _map ;
     };
