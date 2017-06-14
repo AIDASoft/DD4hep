@@ -13,6 +13,12 @@ namespace DD4hep {
   namespace DDRec {
 
 
+    MaterialManager::MaterialManager(DD4hep::Geometry::Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
+
+      _tgeoMgr = world->GetGeoManager();
+    }
+
+
     MaterialManager::MaterialManager() : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
 
       _tgeoMgr = Geometry::LCDD::getInstance().world().volume()->GetGeoManager();
