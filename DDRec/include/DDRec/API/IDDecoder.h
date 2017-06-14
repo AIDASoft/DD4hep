@@ -29,8 +29,10 @@ typedef DDSegmentation::VolumeID VolumeID;
  * high level interface for position to cell ID and cell ID to position conversions
  * and related information.
  */
-class IDDecoder {
-public:
+  
+  class [[gnu::deprecated(" replaced with CellIDPositionConverter ")]]  IDDecoder{
+     
+  public:
 	class BarrelEndcapFlag {
 	public:
 		enum BarrelEncapID {

@@ -22,7 +22,7 @@ namespace DDRec {
  * Values can be set manually which will superseed the information from
  * the DetElement.
  */
-class SubdetectorExtensionImpl: public SubdetectorExtension {
+class  [[gnu::deprecated(" unmaintained code ")]] SubdetectorExtensionImpl: public SubdetectorExtension {
 public:
 	/// Default constructor using a top level DetElement
 	SubdetectorExtensionImpl(const Geometry::DetElement& det);

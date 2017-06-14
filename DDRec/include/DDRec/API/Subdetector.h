@@ -16,7 +16,7 @@
 namespace DD4hep {
 namespace DDRec {
 
-class Subdetector: public virtual Geometry::DetElement {
+class  [[gnu::deprecated(" unmaintained code ")]] Subdetector: public virtual Geometry::DetElement {
 public:
 	/// Default constructor
 	Subdetector(const Geometry::DetElement& det) :

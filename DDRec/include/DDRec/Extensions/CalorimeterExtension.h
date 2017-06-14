@@ -13,7 +13,7 @@
 namespace DD4hep {
 namespace DDRec {
 
-class CalorimeterExtension {
+class  [[gnu::deprecated(" unmaintained code ")]] CalorimeterExtension {
 public:
 	CalorimeterExtension();
 	virtual ~CalorimeterExtension();

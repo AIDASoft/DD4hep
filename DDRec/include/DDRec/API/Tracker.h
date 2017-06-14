@@ -17,7 +17,7 @@
 namespace DD4hep {
 namespace DDRec {
 
-class Tracker: public LayeredSubdetector {
+class  [[gnu::deprecated(" unmaintained code ")]] Tracker: public LayeredSubdetector {
 public:
 	Tracker(const Geometry::DetElement& det) :
 	Geometry::DetElement(det) {

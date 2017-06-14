@@ -25,7 +25,7 @@ class TGeoManager;
 namespace DD4hep {
 namespace DDRec {
 
-class LayeringExtensionImpl: public LayeringExtension {
+class  [[gnu::deprecated(" unmaintained code ")]] LayeringExtensionImpl: public LayeringExtension {
 public:
   /// Shortcut to use geometrical positions
   typedef Geometry::Position Position;
