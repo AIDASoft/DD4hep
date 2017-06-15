@@ -59,7 +59,7 @@ int main_wrapper(int argc, char** argv ){
   Vector3D p0( x0, y0, z0 ) ;
   Vector3D p1( x1, y1, z1 ) ;
 
-  MaterialManager matMgr ;
+  MaterialManager matMgr( lcdd.world().volume() ) ;
 
   const MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
 	
