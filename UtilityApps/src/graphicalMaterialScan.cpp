@@ -138,7 +138,7 @@ int main_wrapper(int argc, char** argv)   {
 
   Vector3D p0, p1; // the two points between which material is calculated
 
-  MaterialManager matMgr;
+  MaterialManager matMgr( lcdd.world().volume() ) ;
 
   for (unsigned int isl=0; isl<nslice; isl++) { // loop over slices
 
