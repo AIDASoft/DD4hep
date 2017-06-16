@@ -19,22 +19,6 @@ if(CMAKE_INSTALL_PREFIX)
 endif()
 
 #---------------------------------------------------------------------------------------------------
-#  Need this fix, since the cmake name is Geant4 and on GEANT4
-if(DD4HEP_USE_GEANT4)
-  set ( DD4HEP_USE_BOOST ON )    # Boost is required !
-endif()
-#---------------------------------------------------------------------------------------------------
-if(DD4HEP_USE_BOOST)
-  #message(FATAL_ERROR "Boost is required   ${DD4HEP_USE_BOOST}")
-  if ( "${Boost_INCLUDE_DIRS}" STREQUAL "" )
-    find_package( Boost REQUIRED ) 
-    ##include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
-  endif()
-  add_definitions( -DDD4HEP_USE_BOOST )
-  add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
-else()
-  set ( DD4HEP_USE_BOOST OFF )
-endif()
 # Main functional include file
 if ( "${DD4hepBuild_included}" STREQUAL "" )
   include ( DD4hepBuild )
