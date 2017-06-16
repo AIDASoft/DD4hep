@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifdef DD4HEP_USE_BOOST
 
 /**
    Note:
@@ -157,6 +156,3 @@ static long handle_json(Detector& description, int argc, char** argv) {
   return 1;
 }
 DECLARE_APPLY(DD4hep_JsonProcessor,handle_json)
-
-#endif  // DD4HEP_USE_BOOST
-
