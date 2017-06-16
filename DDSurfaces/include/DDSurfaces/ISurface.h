@@ -11,6 +11,8 @@ namespace DDSurfaces {
 
   using DD4hep::DDRec::ISurface ;
   using DD4hep::DDRec::SurfaceType ;
+  using DD4hep::DDRec::ICylinder ;
+  using DD4hep::DDRec::ICone ;
  
 }
 
