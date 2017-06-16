@@ -10,7 +10,7 @@
 
 #include "DDSegmentation/Segmentation.h"
 
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation {
 
     /** This class exists to provide a segmenation when it is need but doesn't exist. */
@@ -29,5 +29,5 @@ namespace DD4hep {
 
 
   } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_NoSegmentation */

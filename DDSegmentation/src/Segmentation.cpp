@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <iomanip>
 
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation {
 
     using std::cerr;
@@ -201,4 +201,4 @@ namespace DD4hep {
     }
 
   } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */

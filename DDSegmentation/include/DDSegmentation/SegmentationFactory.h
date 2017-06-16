@@ -16,7 +16,7 @@
 #include <vector>
 #include <string>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 /// Forward declaration required because of circular dependency
@@ -73,5 +73,5 @@ private:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_SEGMENTATIONFACTORY_H_ */

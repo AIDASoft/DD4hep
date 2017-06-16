@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,42 +27,37 @@
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
+  class Detector;
   class NamedObject;
   template <typename T> class Handle;
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry  {
-    class LCDD;
-  }
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML  {
-    class Handle_t;
-    class Collection_t;
-    class Document;
-    class Element;
+  namespace xml  {
+    //class Handle;
+    //class Collection_t;
+    //class Document;
+    //class Element;
   }
 
   /// Factory base class implementing some utilities
   struct PluginFactoryBase  {
-    typedef Geometry::LCDD lcdd_t;
-    typedef Handle<NamedObject> ref_t;
-    typedef XML::Handle_t xml_h;
-    typedef XML::Element  xml_e;
+    //typedef xml::Handle_t xml_h;
+    //typedef xml::Element  xml_e;
     typedef std::string   str_t;
 
-    template <typename T> static T* ptr(const T* p)     { return (T*)p;  }
-    template <typename T> static T& ref(const T* p)     { return *(T*)p; }
-    template <typename T> static T  val(const T* p)     { return T(*p);  }
-    template <typename T> static T value(const void* p) { return (T)p;   }
-    static const char*  value(const void* p) { return (const char*)(p);  }
-    template <typename T> static T make_return(const T& p) { return p;      }
+    template <typename T> static T* ptr(const T* _p)     { return (T*)_p;  }
+    template <typename T> static T& ref(const T* _p)     { return *(T*)_p; }
+    template <typename T> static T  val(const T* _p)     { return T(*_p);  }
+    template <typename T> static T value(const void* _p) { return (T)_p;   }
+    static const char*  value(const void* _p) { return (const char*)(_p);  }
+    template <typename T> static T make_return(const T& _p) { return _p;      }
   };
-  template <> inline int PluginFactoryBase::value<int>(const void* p) { return *(int*)(p); }
-  template <> inline long PluginFactoryBase::value<long>(const void* p) { return *(long*)(p); }
-  template <> inline std::string PluginFactoryBase::value<std::string>(const void* p) { return *(std::string*)(p); }
-  template <> inline const std::string& PluginFactoryBase::value<const std::string&>(const void* p) { return *(std::string*)(p); }
+  template <> inline int PluginFactoryBase::value<int>(const void* _p) { return *(int*)(_p); }
+  template <> inline long PluginFactoryBase::value<long>(const void* _p) { return *(long*)(_p); }
+  template <> inline std::string PluginFactoryBase::value<std::string>(const void* _p) { return *(std::string*)(_p); }
+  template <> inline const std::string& PluginFactoryBase::value<const std::string&>(const void* _p) { return *(std::string*)(_p); }
 
   /// Helper to debug plugin manager calls
   /**
@@ -93,13 +88,13 @@ namespace DD4hep {
     template <typename FUNCTION> struct FuncPointer {
       union { void* ptr; FUNCTION fcn; } fptr;
       FuncPointer()                      {  fptr.ptr = 0;           }
-      FuncPointer(const FuncPointer& c)  {  fptr.ptr = c.fptr.ptr;  }
+      FuncPointer(const FuncPointer& _c) {  fptr.ptr = _c.fptr.ptr; }
       FuncPointer(FUNCTION func)         {  fptr.fcn = func;        }
-      FuncPointer(void* p)               {  fptr.ptr = p;           }
+      FuncPointer(void* _p)              {  fptr.ptr = _p;          }
       void* ptr() const                  {  return fptr.ptr;        }
       FUNCTION function() const          {  return fptr.func;       }
-      FuncPointer& operator=(const FuncPointer& c)  { 
-        fptr.ptr = c.fptr.ptr; return *this;
+      FuncPointer& operator=(const FuncPointer& copy)  { 
+        fptr.ptr = copy.fptr.ptr; return *this;
       }
     };
     template <typename FUNCTION> static FuncPointer<FUNCTION> function(FUNCTION func)  {
@@ -156,7 +151,7 @@ namespace DD4hep {
     }
 #endif
   };
-} /* End namespace DD4hep      */
+} /* End namespace dd4hep      */
 
 namespace {
   /// Base factory template
@@ -164,16 +159,17 @@ namespace {
 }
 
 #if defined(DD4HEP_ROOT_VERSION_5)
-#define DD4HEP_FACTORY_CALL(type,name,signature) DD4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::wrapper);
+#define DD4HEP_FACTORY_CALL(type,name,signature) dd4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::wrapper);
 #else
-namespace DD4hep {
-  template <> inline long PluginFactoryBase::make_return(const long& p) { static long s=p; return (long)&s; }  
+namespace dd4hep {
+  template <> inline long PluginFactoryBase::make_return(const long& value)
+  { static long stored=value; return (long)&stored; }  
 }
-#define DD4HEP_FACTORY_CALL(type,name,signature) DD4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::call)
+#define DD4HEP_FACTORY_CALL(type,name,signature) dd4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::call)
 #define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(X,Y)
 #endif
 
-#define DD4HEP_OPEN_PLUGIN(ns,name)  namespace ns { namespace { struct name {}; } } namespace DD4hep
+#define DD4HEP_OPEN_PLUGIN(ns,name)  namespace ns { namespace { struct name {}; } } namespace dd4hep
 #define DD4HEP_PLUGINSVC_CNAME(name, serial)  name##_dict_##serial
 #define DD4HEP_PLUGINSVC_FACTORY(type,name,signature,serial)            \
   namespace {                                                           \
@@ -185,7 +181,7 @@ namespace DD4hep {
 
 #define DD4HEP_PLUGIN_FACTORY_ARGS_0(R)                                 \
   template <typename P> class Factory<P, R()>                           \
-    : public DD4hep::PluginFactoryBase {                                \
+    : public dd4hep::PluginFactoryBase {                                \
   public:                                                               \
     static void wrapper(void *ret,void*,const std::vector<void*>& ,void*) { \
       *(void**)ret = (void*)call();                                     \
@@ -196,7 +192,7 @@ namespace DD4hep {
   
 #define DD4HEP_PLUGIN_FACTORY_ARGS_1(R,A0)                              \
   template <typename P> class Factory<P, R(A0)>                         \
-    : public DD4hep::PluginFactoryBase  {                               \
+    : public dd4hep::PluginFactoryBase  {                               \
   public:                                                               \
     static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
       *(void**)ret = (void*)call(value<A0>(a[0]));                      \
@@ -207,7 +203,7 @@ namespace DD4hep {
 
 #define DD4HEP_PLUGIN_FACTORY_ARGS_2(R,A0,A1)                           \
   template <typename P> class Factory<P, R(A0,A1)>                      \
-    : public DD4hep::PluginFactoryBase  {                               \
+    : public dd4hep::PluginFactoryBase  {                               \
   public:                                                               \
     static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
       *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]));      \
@@ -218,7 +214,7 @@ namespace DD4hep {
   
 #define DD4HEP_PLUGIN_FACTORY_ARGS_3(R,A0,A1,A2)                        \
     template <typename P> class Factory<P, R(A0,A1,A2)>                 \
-      : public DD4hep::PluginFactoryBase  {                             \
+      : public dd4hep::PluginFactoryBase  {                             \
     public:                                                             \
       static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
         *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]),value<A2>(a[2])); \
@@ -229,7 +225,7 @@ namespace DD4hep {
 
 #define DD4HEP_PLUGIN_FACTORY_ARGS_4(R,A0,A1,A2,A3)                     \
     template <typename P> class Factory<P, R(A0,A1,A2,A3)>              \
-      : public DD4hep::PluginFactoryBase  {                             \
+      : public dd4hep::PluginFactoryBase  {                             \
     public:                                                             \
       static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
         *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]),value<A2>(a[2]),value<A3>(a[3])); \
@@ -240,7 +236,7 @@ namespace DD4hep {
   
 #define DD4HEP_PLUGIN_FACTORY_ARGS_5(R,A0,A1,A2,A3,A4)                  \
     template <typename P> class Factory<P, R(A0,A1,A2,A3,A4)>           \
-      : public DD4hep::PluginFactoryBase  {                             \
+      : public dd4hep::PluginFactoryBase  {                             \
     public:                                                             \
       static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
         *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]),value<A2>(a[2]),value<A3>(a[3]),value<A4>(a[4])); \

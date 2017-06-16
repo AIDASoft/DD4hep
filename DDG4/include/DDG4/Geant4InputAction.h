@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,10 +28,10 @@
 class G4Event;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep  {
+namespace dd4hep  {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation  {
+  namespace sim  {
 
     /// Basic geant4 event reader class. This interface/base-class must be implemented by concrete readers.
     /**
@@ -76,7 +76,7 @@ namespace DD4hep  {
 			       T& parameter, T defaultValue ) {
 
 	if( parameters.find( parameterName ) != parameters.end() ) {
-	  DD4hep::Parsers::parse( parameter, parameters.at( parameterName ) );
+	  dd4hep::Parsers::parse( parameter, parameters.at( parameterName ) );
 	  parameters.erase( parameterName );
 	} else {
 	  parameter = defaultValue;
@@ -171,6 +171,6 @@ namespace DD4hep  {
       /// Callback to generate primary particles
       virtual void operator()(G4Event* event);
     };
-  }     /* End namespace Simulation   */
-}       /* End namespace DD4hep */
+  }     /* End namespace sim   */
+}       /* End namespace dd4hep */
 #endif  /* DD4HEP_DDG4_GEANT4INPUTACTION_H  */

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,8 +21,8 @@
 #include "G4SDManager.hh"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Helper: Assign sensitive detector to logical volume
 void Geant4DetectorConstructionContext::setSensitiveDetector(G4LogicalVolume* vol, G4VSensitiveDetector* sd)   {
@@ -100,7 +100,7 @@ void Geant4DetectorConstructionSequence::constructSensitives(Geant4DetectorConst
 }
 
 /// Access to the converted regions
-const Geant4GeometryMaps::RegionMap& Geant4DetectorConstructionSequence::regions() const   {
+const map<Region, G4Region*>& Geant4DetectorConstructionSequence::regions() const   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   if ( p ) return p->g4Regions;
   throw runtime_error("+++ Geant4DetectorConstructionSequence::regions: Access not possible. Geometry is not yet converted!");
@@ -114,35 +114,35 @@ const Geant4GeometryMaps::SensDetMap& Geant4DetectorConstructionSequence::sensit
 }
 #endif
 /// Access to the converted volumes
-const Geant4GeometryMaps::VolumeMap& Geant4DetectorConstructionSequence::volumes() const   {
+const map<Volume, G4LogicalVolume*>& Geant4DetectorConstructionSequence::volumes() const   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   if ( p ) return p->g4Volumes;
   throw runtime_error("+++ Geant4DetectorConstructionSequence::volumes: Access not possible. Geometry is not yet converted!");
 }
 
 /// Access to the converted shapes
-const Geant4GeometryMaps::SolidMap& Geant4DetectorConstructionSequence::shapes() const   {
+const map<const TGeoShape*, G4VSolid*>& Geant4DetectorConstructionSequence::shapes() const   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   if ( p ) return p->g4Solids;
   throw runtime_error("+++ Geant4DetectorConstructionSequence::shapes: Access not possible. Geometry is not yet converted!");
 }
 
 /// Access to the converted limit sets
-const Geant4GeometryMaps::LimitMap& Geant4DetectorConstructionSequence::limits() const   {
+const map<LimitSet, G4UserLimits*>& Geant4DetectorConstructionSequence::limits() const   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   if ( p ) return p->g4Limits;
   throw runtime_error("+++ Geant4DetectorConstructionSequence::limits: Access not possible. Geometry is not yet converted!");
 }
 
 /// Access to the converted assemblies
-const Geant4GeometryMaps::AssemblyMap& Geant4DetectorConstructionSequence::assemblies() const   {
+const map<PlacedVolume, Geant4AssemblyVolume*>& Geant4DetectorConstructionSequence::assemblies() const   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   if ( p ) return p->g4AssemblyVolumes;
   throw runtime_error("+++ Geant4DetectorConstructionSequence::assemblies: Access not possible. Geometry is not yet converted!");
 }
 
 /// Access to the converted placements
-const Geant4GeometryMaps::PlacementMap& Geant4DetectorConstructionSequence::placements() const   {
+const map<PlacedVolume, G4VPhysicalVolume*>& Geant4DetectorConstructionSequence::placements() const   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   if ( p ) return p->g4Placements;
   throw runtime_error("+++ Geant4DetectorConstructionSequence::placements: Access not possible. Geometry is not yet converted!");

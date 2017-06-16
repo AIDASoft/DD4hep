@@ -20,7 +20,7 @@ option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
-option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
+option(DD4HEP_USE_CXX14   "Build dd4hep using c++14" OFF)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
 #-----------------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
 dd4hep_set_compiler_flags()
 
 add_subdirectory ( GaudiPluginService)
-#---DD4hep functions and macros -------------------------------------------------------
+#---dd4hep functions and macros -------------------------------------------------------
 include(DD4hep)
 include(DD4hepMacros) 
 
@@ -138,7 +138,7 @@ OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" OFF )
 IF( INSTALL_DOC )
   INSTALL( CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_BUILD_TOOL} doc)" )
   include ( GlobalSVNRevision )
-  include ( DD4hepDoxygen )
+  include ( dd4hepDoxygen )
 ENDIF()
 
 #---Configuration-------------------------------------------------------------------

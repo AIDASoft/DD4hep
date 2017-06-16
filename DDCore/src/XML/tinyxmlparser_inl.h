@@ -1161,7 +1161,7 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
         return 0;
       }
 
-      // Handle the strange case of double attributes:
+      // Handle_t the strange case of double attributes:
 #ifdef TIXML_USE_STL
       TiXmlAttribute* node = attributeSet.Find( attrib->NameTStr() );
 #else

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 #include "boost/property_tree/ptree.hpp"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting JSON utilities
-  namespace JSON {
+  namespace json {
 
     typedef char                                    XmlChar;
     typedef boost::property_tree::ptree             ptree;
@@ -29,6 +29,6 @@ namespace DD4hep {
     typedef boost::property_tree::ptree::value_type JsonAttr;
     typedef boost::property_tree::ptree::value_type JsonElement;
 
-  }       /* End namespace JSON              */
-}         /* End namespace DD4hep            */
+  }       /* End namespace json              */
+}         /* End namespace dd4hep            */
 #endif    /* DD4HEP_DDCORE_JSON_CONFIG_H  */

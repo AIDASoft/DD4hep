@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/IDDescriptor.h"
@@ -25,11 +25,11 @@
 #include <algorithm>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-typedef DetectorTools::ElementPath   ElementPath;
-typedef DetectorTools::PlacementPath PlacementPath;
+typedef detail::tools::ElementPath   ElementPath;
+typedef detail::tools::PlacementPath PlacementPath;
 
 namespace  {
   /** @class GeometryWalk
@@ -41,52 +41,51 @@ namespace  {
    *  @version 1.0
    */
   struct GeometryWalk  {
-    typedef vector<PlacedVolume::VolID> VolIDs;
     /// Helper to scan volume ids
     struct FND {
       const string& test;
       FND(const string& c) : test(c) {}
-      bool operator()(const VolIDs::value_type& c) const { return c.first == test; }
+      bool operator()(const PlacedVolume::VolIDs::value_type& c) const { return c.first == test; }
     };
     VolumeManager m_mgr;
     DetElement    m_det;
 
     /// Initializing constructor
-    GeometryWalk(LCDD& lcdd, DetElement sdet);
+    GeometryWalk(Detector& description, DetElement sdet);
     /// Default destructor
     virtual ~GeometryWalk() {}
     /// Walk through tree of detector elements
-    void walk(DetElement de, VolIDs ids)  const;
+    void walk(DetElement de, PlacedVolume::VolIDs ids)  const;
     /// Printout volume information
-    void print(DetElement e, PlacedVolume pv, const VolIDs& child_ids)  const;
+    void print(DetElement e, PlacedVolume pv, const PlacedVolume::VolIDs& child_ids)  const;
     /// Action routine to execute the test
-    static long run(LCDD& lcdd,int argc,char** argv);
+    static long run(Detector& description,int argc,char** argv);
   };
 }
 
 typedef DetElement::Children _C;
 
 /// Initializing constructor
-GeometryWalk::GeometryWalk(LCDD& lcdd, DetElement sdet) : m_det(sdet) {
-  m_mgr = lcdd.volumeManager();
+GeometryWalk::GeometryWalk(Detector& description, DetElement sdet) : m_det(sdet) {
+  m_mgr = description.volumeManager();
   if ( !m_det.isValid() )   {
     stringstream err;
     err << "The subdetector " << m_det.name() << " is not known to the geometry.";
     printout(INFO,"GeometryWalk",err.str().c_str());
     throw runtime_error(err.str());
   }
-  walk(m_det,VolIDs());
+  walk(m_det,PlacedVolume::VolIDs());
 }
 
 /// Printout volume information
-void GeometryWalk::print(DetElement e, PlacedVolume pv, const VolIDs& /* child_ids */)  const {
+void GeometryWalk::print(DetElement e, PlacedVolume pv, const PlacedVolume::VolIDs& /* child_ids */)  const {
   stringstream log;
   PlacementPath all_nodes;
   ElementPath   det_elts;
-  DetectorTools::elementPath(e,det_elts);
-  DetectorTools::placementPath(e,all_nodes);
-  string elt_path  = DetectorTools::elementPath(det_elts);
-  string node_path = DetectorTools::placementPath(all_nodes);
+  detail::tools::elementPath(e,det_elts);
+  detail::tools::placementPath(e,all_nodes);
+  string elt_path  = detail::tools::elementPath(det_elts);
+  string node_path = detail::tools::placementPath(all_nodes);
   log << "Lookup " << left << setw(32) << pv.name() << " Detector[" << det_elts.size() << "]: " << elt_path;
   printout(INFO,m_det.name(),log.str());
   log.str("");
@@ -102,10 +101,10 @@ void GeometryWalk::print(DetElement e, PlacedVolume pv, const VolIDs& /* child_i
 }
 
 /// Walk through tree of volume placements
-void GeometryWalk::walk(DetElement e, VolIDs ids)  const   {
+void GeometryWalk::walk(DetElement e, PlacedVolume::VolIDs ids)  const   {
   const _C& children = e.children();
   PlacedVolume pv = e.placement();
-  VolIDs child_ids(ids);
+  PlacedVolume::VolIDs child_ids(ids);
   print(e,pv,ids);
   child_ids.insert(child_ids.end(),pv.volIDs().begin(),pv.volIDs().end());
   for (_C::const_iterator i=children.begin(); i!=children.end(); ++i)  {
@@ -114,28 +113,28 @@ void GeometryWalk::walk(DetElement e, VolIDs ids)  const   {
 }
 
 /// Action routine to execute the test
-long GeometryWalk::run(LCDD& lcdd,int argc,char** argv)    {
+long GeometryWalk::run(Detector& description,int argc,char** argv)    {
   cout << "++ Processing plugin....GeometryWalker.." << endl;
   for(int in=1; in < argc; ++in)  {
     string name = argv[in]+1;
     if ( name == "all" || name == "All" || name == "ALL" )  {
-      const _C& children = lcdd.world().children();
+      const _C& children = description.world().children();
       for (_C::const_iterator i=children.begin(); i!=children.end(); ++i)  {
         DetElement sdet = (*i).second;
         cout << "++ Processing subdetector: " << sdet.name() << endl;
-        GeometryWalk test(lcdd,sdet);
+        GeometryWalk test(description,sdet);
       }
       return 1;
     }
     cout << "++ Processing subdetector: " << name << endl;
-    GeometryWalk test(lcdd,lcdd.detector(name));
+    GeometryWalk test(description,description.detector(name));
   }
   return 1;
 }
 
 
-namespace DD4hep {
-  namespace Geometry {
+namespace dd4hep {
+  namespace detail {
     using ::GeometryWalk;
   }
 }

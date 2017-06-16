@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -30,7 +30,7 @@
 
 #include <limits>
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 ClassImp(CaloLego)
 DECLARE_VIEW_FACTORY(CaloLego)

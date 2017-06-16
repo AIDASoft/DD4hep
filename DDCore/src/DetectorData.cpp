@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDDData.h"
+#include "DD4hep/DetectorData.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
@@ -20,29 +20,29 @@
 // ROOT include files
 #include "TGeoManager.h"
 
-namespace DD4hep {  namespace Geometry {    class LCDDImp;  }}
+namespace dd4hep {  namespace detail {    class DetectorImp;  }}
 
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep;
 
 /// Default constructor
-LCDDData::LCDDData()
+DetectorData::DetectorData()
   : m_manager(0), m_world(), m_trackers(), m_worldVol(),
     m_trackingVol(), m_field("global"),
-    m_buildType(BUILD_DEFAULT), m_extensions(typeid(LCDDData)), m_volManager(),
+    m_buildType(BUILD_DEFAULT), m_extensions(typeid(DetectorData)), m_volManager(),
     m_inhibitConstants(false)
 {
   InstanceCount::increment(this);
 }
 
 /// Standard destructor
-LCDDData::~LCDDData() {
+DetectorData::~DetectorData() {
   clearData();
   InstanceCount::decrement(this);
 }
 
 /// Clear data content: releases all allocated resources
-void LCDDData::destroyData(bool destroy_mgr)   {
+void DetectorData::destroyData(bool destroy_mgr)   {
   m_extensions.clear();
   m_motherVolumes.clear();
 
@@ -53,7 +53,6 @@ void LCDDData::destroyData(bool destroy_mgr)   {
   destroyHandles(m_idDict);
   destroyHandles(m_limits);
   destroyHandles(m_regions);
-  destroyHandles(m_alignments);
   destroyHandles(m_sensitive);
   destroyHandles(m_display);
   destroyHandles(m_fields);
@@ -78,7 +77,7 @@ void LCDDData::destroyData(bool destroy_mgr)   {
 
 
 /// Clear data content: releases all allocated resources
-void LCDDData::clearData()   {
+void DetectorData::clearData()   {
   m_extensions.clear(false);
   m_motherVolumes.clear();
   m_world.clear();
@@ -89,7 +88,6 @@ void LCDDData::clearData()   {
   m_idDict.clear();
   m_limits.clear();
   m_regions.clear();
-  m_alignments.clear();
   m_sensitive.clear();
   m_display.clear();
   m_fields.clear();
@@ -106,7 +104,7 @@ void LCDDData::clearData()   {
 }
 
 /// Adopt all data from source structure
-void LCDDData::adoptData(LCDDData& source)   {
+void DetectorData::adoptData(DetectorData& source)   {
   m_inhibitConstants = source.m_inhibitConstants;
   m_extensions.move(source.m_extensions);
   m_motherVolumes  = source.m_motherVolumes;
@@ -118,7 +116,6 @@ void LCDDData::adoptData(LCDDData& source)   {
   m_idDict         = source.m_idDict;
   m_limits         = source.m_limits;
   m_regions        = source.m_regions;
-  m_alignments     = source.m_alignments;
   m_sensitive      = source.m_sensitive;
   m_display        = source.m_display;
   m_fields         = source.m_fields;

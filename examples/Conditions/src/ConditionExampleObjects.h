@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_CONDITIONS_CONDITIONSEXAMPLEOBJECTS_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionsMap.h"
@@ -27,27 +27,21 @@
 #include "DDCond/ConditionsManager.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for conditions examples
   namespace ConditionExamples {
 
-    using Geometry::LCDD;
-    using Geometry::RotationZYX;
-    using Geometry::DetElement;
-    using Geometry::DetectorProcessor;
-
-    using Conditions::UserPool;
-    using Conditions::Condition;
-    using Conditions::ConditionKey;
-    using Conditions::ConditionsMap;
-    using Conditions::ConditionsPool;
-    using Conditions::ConditionsSlice;
-    using Conditions::ConditionsContent;
-    using Conditions::ConditionsPrinter;
-    using Conditions::ConditionsManager;
-    using Conditions::ConditionUpdateCall;
-
+    using cond::UserPool;
+    using cond::ConditionsPool;
+    using cond::ConditionsSlice;
+    using cond::ConditionsContent;
+    using cond::ConditionsPrinter;
+    using cond::ConditionsManager;
+    using cond::ConditionUpdateCall;
+    using cond::ConditionUpdateContext;
+    using cond::conditionsCollector;
+    
     /// Helper to reduce the number of lines of code
     /**
      *  \author  M.Frank
@@ -81,7 +75,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionUpdate1() = default;
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const Context& context) final;
+      virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& context) final;
     };
 
     /// Specialized conditions update callback 
@@ -99,7 +93,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionUpdate2() = default;
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const Context& context)  final;
+      virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& context)  final;
     };
 
     /// Specialized conditions update callback 
@@ -117,7 +111,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionUpdate3() = default;
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const Context& context)  final;
+      virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& context)  final;
     };
     
     /// This is important, otherwise the register and forward calls won't find them!
@@ -206,10 +200,10 @@ namespace DD4hep {
     };
 
     /// Helper to run DetElement scans
-    typedef Geometry::DetectorScanner Scanner;
+    typedef DetectorScanner Scanner;
     
     /// Install the consitions and the conditions manager
-    ConditionsManager installManager(LCDD& lcdd);
-  }       /* End namespace ConditionsExamples             */
-}         /* End namespace DD4hep                         */
+    ConditionsManager installManager(Detector& description);
+  }       /* End namespace condExamples             */
+}         /* End namespace dd4hep                         */
 #endif    /* DD4HEP_CONDITIONS_CONDITIONSEXAMPLEOBJECTS_H */

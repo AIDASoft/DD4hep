@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,11 +23,11 @@
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail {
 
-  } /* End namespace Geometry  */
-} /*   End namespace DD4hep    */
+  } /* End namespace detail  */
+} /*   End namespace dd4hep    */
 #endif    /* DD4HEP_CONFIG_H         */

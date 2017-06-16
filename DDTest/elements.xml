@@ -3,7 +3,7 @@
     <!--
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       ++++   Linear collider detector description in C++       ++++
-      ++++   DD4hep Detector description generator.            ++++
+      ++++   dd4hep Detector description generator.            ++++
       ++++                                                     ++++
       ++++   Parser: TinyXML DOM mini-parser                   ++++
       ++++                                                     ++++

@@ -2,12 +2,12 @@
 #include "DDG4/Geant4Config.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation::Setup;
+using namespace dd4hep;
+using namespace dd4hep::sim::Setup;
 
 int setupG4_CINT()  {
-  typedef DD4hep::Simulation::Geant4Kernel Kernel;
-  Kernel& kernel = Kernel::instance(DD4hep::Geometry::LCDD::getInstance());
+  typedef dd4hep::sim::Geant4Kernel Kernel;
+  Kernel& kernel = Kernel::instance(dd4hep::Detector::getInstance());
   string install_dir = getenv("DD4hepINSTALL");
   string ddg4_examples = install_dir+"/examples/DDG4/examples";
   char text[256];

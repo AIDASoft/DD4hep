@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,7 +26,7 @@
 
 namespace {
   struct __Init {
-    typedef std::map<std::string,DD4hep::XML::Tag_t*> Inventory_t;
+    typedef std::map<std::string,dd4hep::xml::Tag_t*> Inventory_t;
     Inventory_t m_inventory;
     __Init() {
 #ifndef __TIXML__
@@ -46,10 +46,10 @@ namespace {
       xercesc::XMLPlatformUtils::Terminate();
 #endif
     }
-    static void register_tag(const std::string& name, DD4hep::XML::Tag_t* tag);
+    static void register_tag(const std::string& name, dd4hep::xml::Tag_t* tag);
   };
   __Init  __In__;
-  void __Init::register_tag(const std::string& name, DD4hep::XML::Tag_t* tag)  {
+  void __Init::register_tag(const std::string& name, dd4hep::xml::Tag_t* tag)  {
     Inventory_t::const_iterator i = __In__.m_inventory.find(name);
     if ( i !=  __In__.m_inventory.end() )  {
       std::string err = "XMLTags: Failed to register XML tag: "+name+". [Tag already exists]";
@@ -62,16 +62,16 @@ namespace {
 
 #define UNICODE(x)        extern const Tag_t Unicode_##x (#x, #x, __Init::register_tag)
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML {
+  namespace xml {
 #include "XML/UnicodeValues.h"
   }
 }
 
-namespace DD4hep {
-  namespace XML {
+namespace dd4hep {
+  namespace xml {
 
     extern const Tag_t Unicode_NULL("NULL", "0", __Init::register_tag);
     extern const Tag_t Unicode_empty("", "", __Init::register_tag);

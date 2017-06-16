@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,13 +18,13 @@
 #include "DD4hep/Printout.h"
 
 using std::string;
-using namespace DD4hep::Conditions;
+using namespace dd4hep::cond;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsDataLoader);
 
 /// Default constructor
-ConditionsDataLoader::ConditionsDataLoader(LCDD& lcdd, ConditionsManager mgr, const string nam) 
-  : NamedObject(nam,"ConditionsDataLoader"), m_lcdd(lcdd), m_mgr(mgr)
+ConditionsDataLoader::ConditionsDataLoader(Detector& description, ConditionsManager mgr, const string nam) 
+  : NamedObject(nam,"ConditionsDataLoader"), m_detDesc(description), m_mgr(mgr)
 {
   if ( m_mgr.isValid() ) return;
   except("ConditionsDataLoader","+++ Cannot create loader without a valid conditions manager handle!");

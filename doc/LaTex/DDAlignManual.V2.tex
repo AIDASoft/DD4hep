@@ -1,7 +1,7 @@
 %=============================================================================
 \documentclass[10pt,a4paper]{article}
 %
-\input{DD4hep-setup.tex}
+\input{dd4hep-setup.tex}
 %
 \pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{DDAlign User Manual}}}
 %
@@ -13,7 +13,7 @@ DDAlign
 }{
 Alignment Support for the \\
 \vspace{0.5cm}
-DD4hep Geometry Description \\
+dd4hep Geometry Description \\
 \vspace{0.5cm}
 Toolkit
 \vspace{2cm}
@@ -139,7 +139,7 @@ document the support for alignment with its programming interfaces.
 %=============================================================================
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=90mm] {DD4hep_classes.png}
+    \includegraphics[height=90mm] {dd4hep_classes.png}
     \caption{Class diagram with the main classes and their relations 
              for the Generic Detector Description Model. The implementing
              ROOT classes are shown in brackets.}
@@ -153,12 +153,12 @@ document the support for alignment with its programming interfaces.
 %=============================================================================
 
 \noindent
-This is the heart of the DD4hep detector description toolkit. Its purpose is 
+This is the heart of the dd4hep detector description toolkit. Its purpose is 
 to build in memory a model of the detector including its geometrical aspects
 as well as structural and functional aspects. The design reuses the elements 
 from the ROOT geometry package and extends them in case required functionality 
 is not available. Figure~\ref{fig:dd4hep-detector-model} illustrates the main
-players and their relationships~\cite{bib:DD4hep}.
+players and their relationships~\cite{bib:dd4hep}.
 Any detector is modeled as a tree of $Detector$ $Elements$, the entity 
 central to this design, which is represented in the implementation by 
 the $DetElement$ class~\cite{bib:LHCb-geometry}. It offers all
@@ -173,7 +173,7 @@ the all TPC geometrical dimensions, the alignment and calibration constants
 and other slow varying conditions such as the gas pressure, end-plate 
 temperatures etc. The $Detector$ $Element$ acts as a data concentrator. 
 Applications may access the full experiment geometry and all connected data
-through a singleton object called $LCDD$, which provides 
+through a singleton object called $Detector$, which provides 
 management, bookkeeping and ownership to the model instances.
 
 \noindent
@@ -188,7 +188,7 @@ is described in the following.
 %=============================================================================
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=75mm] {DD4hep_detelement_tree.png}
+    \includegraphics[height=75mm] {dd4hep_detelement_tree.png}
     \caption{The object diagram of a hypothetical TPC detector showing in
     parallel the $Detector$ $Element$ and the $Geometry$ hierarchy and the 
     relationships between the objects.}
@@ -456,7 +456,7 @@ The simulation of such a geometry with applied alignment parameters can
 rather easily be realized using using the \DDhep, \DDA and the \DDG frameworks:
 \begin{itemize}\itemcompact
 \item The ideal geometry is constructed using the standard procedures
-    of \DDhep~\cite{bib:DD4hep}.
+    of \DDhep~\cite{bib:dd4hep}.
 \item Then the alignment parameters are applied and finally
 \item the corrected geometry is translated to $Geant4$~\cite{bib:geant4}
     using the \DDG~\cite{bib:DDG4} package.
@@ -499,7 +499,7 @@ code snippet:
 
 \begin{code}
   /// First install the global alignment cache to build proper transactions
-  GlobalAlignmentCache* cache = GlobalAlignmentCache::install(lcdd);
+  GlobalAlignmentCache* cache = GlobalAlignmentCache::install(description);
   
   /// Now create the tranaction context. There may only be one context present
   GlobalAlignmentStack::create();
@@ -508,7 +508,7 @@ code snippet:
   /// Now we can push any number of global alignment entries to the stack:
   DetElement        elt       = ...detector element containing the volume to be re-aligned ...;
   string            placement = "/full/path/to/the/volume/to/be/realigned";  
-  Alignments::Delta delta     = ...;
+  Delta delta     = ...;
   double            ovl       = allowed_overlap_in cm; // e.g. 0.001;
 
   // Create the new stack entry and insert it to the stack
@@ -525,7 +525,7 @@ code snippet:
 \begin{tabular} {l||p{0cm}}
 \docline{Line}{}
 \docline{2}{Install the $GlobalAlignmentCache$. Required to be done
-once. The object is registered to the LCDD instance and kept there.}
+once. The object is registered to the Detector instance and kept there.}
 \docline{2-7}{The fact that the classes $GlobalAlignmentCache$ and 
 $GlobalAlignmentStack$ are singletons is not a fundamental issue.
 However, we want to call the XML parser (or other database sources)
@@ -543,10 +543,10 @@ once the transaction is committed.}
 In this section we describe how to load geometry imperfections and to apply them
 to an existing geometry. Loading the XML file is done automatically using the 
 standard XML loader plugin provided by \DDhep. This plugin is interfaced to 
-the {\tt LCDD} instance and invoked from code as follows:
+the {\tt Detector} instance and invoked from code as follows:
 \begin{code}
-    LCDD& lcdd = ....;
-    lcdd.fromXML("file:AlepTPC_alignment.xml");
+    Detector& description = ....;
+    description.fromXML("file:AlepTPC_alignment.xml");
 \end{code}
 To fully exploit the capabilities it is important to understand the interpreted 
 structure of the XML file being processed. At the top level of the primary 
@@ -611,7 +611,7 @@ The structure of the alignment file explained quickly:
 \docline{5}{The first subdetector: {\tt TPC}. The subdetector tag is {\tt detelement}
         Each {\tt detelement} may recursively contain other {\tt detelement} tags.
         as they were defined in the {\tt DetElement} hierarchy.
-        Internal {\tt detelement} elements are processed in the context of the outer
+        detaill {\tt detelement} elements are processed in the context of the outer
         element i.e. pathes may be specified relative to the parent or as absolute pathes
         with respect to the world (starting with a '/').}
 \docline{7}{Global movement of the TPC}
@@ -679,10 +679,10 @@ In this section we describe how to export geometry imperfections to an XML file.
 A small helper class {\tt AlignmentWriter} achieves this task as shown in 
 the snippet:
 \begin{code}
-  LCDD& lcdd = ....;
+  Detector& description = ....;
   DetElement top = ....;
   if ( top.isValid() )   {
-    AlignmentWriter wr(lcdd);
+    AlignmentWriter wr(description);
     return wr.write(top,output,enable\_transactions);
   }
 \end{code}
@@ -822,7 +822,7 @@ user caches it is mandatory to provide a user defined update callback to the $De
 
 \noindent
 The interface of the $Alignment$ structure to access detector 
-alignment parameters is as follows (see also the corresponding header file DD4hep/Alignment.h):
+alignment parameters is as follows (see also the corresponding header file dd4hep/Alignment.h):
 \begin{code}
       /// Number of nodes in this branch (=depth of the placement hierarchy from the top level volume)
       int numNodes() const;
@@ -906,7 +906,7 @@ There are multiple possibilities to apply alignment parameters:
 In this section we describe how to apply geometry imperfections to an existing 
 detector geometry in memory using {\tt C++}. To apply misalignment to an existing
 geometry two classes are collaborating, the {\tt AlignmentCache} attached to
-the geometry container {\tt LCDD} and a temporary structure the {\tt AlignmentStack}.
+the geometry container {\tt Detector} and a temporary structure the {\tt AlignmentStack}.
 The {\tt AlignmentCache} allows to access all existing alignment entries 
 based on their subdetector.
 The {\tt AlignmentStack} may exist in exactly one instance and is used to
@@ -931,8 +931,8 @@ opening and closing a transaction:
 // Required include file(s)
 #include "DDAlign/AlignmentCache.h"
 
-    LCDD& lcdd = ....;
-    AlignmentCache* cache = lcdd.extension<Geometry::AlignmentCache>();
+    Detector& description = ....;
+    AlignmentCache* cache = description.extension<AlignmentCache>();
 
     // First things first: open the transaction.
     cache->openTransaction();
@@ -1039,20 +1039,20 @@ the geometry. For further shortcuts in the calling sequence please consult the
 \newpage
 %=============================================================================
 \begin{thebibliography}{9}
-\bibitem{bib:DD4hep} M. Frank et al, "DD4hep: A Detector Description Toolkit 
+\bibitem{bib:dd4hep} M. Frank et al, "dd4hep: A Detector Description Toolkit 
                 for High Energy Physics Experiments",
-                International Conference on Computing in High Energy and Nuclear Physics  
+                detailtional Conference on Computing in High Energy and Nuclear Physics  
                 (CHEP 2013), \\
                 Amsterdam, Netherlands, 2013, proceedings.
 
 \bibitem{bib:LHCb-geometry} S. Ponce et al., 
                 "Detector Description Framework in LHCb", 
-                International Conference on Computing in High Energy and Nuclear Physics  (CHEP 2003), 
+                detailtional Conference on Computing in High Energy and Nuclear Physics  (CHEP 2003), 
                 La Jolla, CA, 2003, proceedings. 
 \bibitem{bib:chris-parkes-priv-comm} C. Parkes, private communications.
 \bibitem{bib:DDG4} M.Frank, "DDG4 - A Simulation Toolkit for High Energy 
                 Physics Experiments using Geant4 \\
-                and the DD4hep Geometry Description".
+                and the dd4hep Geometry Description".
 \bibitem{bib:ROOT-tgeo} R.Brun, A.Gheata, M.Gheata, "The ROOT geometry package",\\
                     Nuclear Instruments and Methods {\bf{A}} 502 (2003) 676-680.
 \bibitem{bib:geant4}  S. Agostinelli et al., 

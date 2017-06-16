@@ -1,15 +1,15 @@
 %=============================================================================
 \documentclass[10pt,a4paper]{article}
 %
-\input{DD4hep-setup.tex}
+\input{dd4hep-setup.tex}
 %
-\pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{DD4hep User Manual}}}
+\pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{dd4hep User Manual}}}
 %
 %
 \begin{document}   
 %
 \mytitle{
-DD4hep
+dd4hep
 }{
 A Detector Description Toolkit\\
 for High Energy Physics\\
@@ -27,7 +27,7 @@ Experiments
 
 \begin{abstract}
 \normalsize
-\input{DD4hep-abstract.tex}
+\input{dd4hep-abstract.tex}
 \end{abstract}
 
 \vspace{8cm}
@@ -61,7 +61,7 @@ version          & Date & Author \\[0.2cm] \hline
 %==  Introduction  ===========================================================
 \pagenumbering{arabic}
 \setcounter{page}{1}
-\input{DD4hep-Overview.tex}
+\input{dd4hep-Overview.tex}
 
 \noindent
 The alignment support will be subject to a separate development line of the
@@ -97,7 +97,7 @@ This includes a discussion of the features of the \DDhep detector description
 and of its structure. 
 
 %=============================================================================
-\subsection{Building DD4hep}
+\subsection{Building dd4hep}
 \label{sec:dd4hep-user-manual-building}
 %=============================================================================
 
@@ -123,7 +123,7 @@ to ROOT's TGeom classes.
 \label{sec:dd4hep-user-manual-platforms}
 %=============================================================================
 \noindent
-Supported platforms for DD4hep are the CERN Linux operating systems:
+Supported platforms for dd4hep are the CERN Linux operating systems:
 \begin{itemize}
 \item \tw{Scientic} \tw{Linux} \tw{CERN} \tw{6}
 \item \tw{Scientic} \tw{Linux} \tw{CERN} \tw{7} - once approved.
@@ -136,7 +136,7 @@ be actively supported by users who submit the necessary patches.
 \label{sec:dd4hep-user-manual-prerequisites}
 %=============================================================================
 \noindent
-DD4hep depends on a number of $external$ packages. 
+dd4hep depends on a number of $external$ packages. 
 The user will need to install these in his/her 
 system before building and running the examples
 \begin{itemize}\itemcompact
@@ -154,7 +154,7 @@ in the future.}
 
 \newpage
 %=============================================================================
-\subsubsection{CMake Build Options for DD4hep}
+\subsubsection{CMake Build Options for dd4hep}
 \label{sec:dd4hep-user-manual-building}
 %=============================================================================
 \noindent
@@ -238,7 +238,7 @@ The following steps are necessary to build \DDhep:
 
 \item First checkout code from the repository:
     \begin{unnumberedcode}
-      svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk DD4hep
+      svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk dd4hep
     \end{unnumberedcode}
     \vspace{-0.6cm}
 
@@ -305,7 +305,7 @@ Users must be aware of this fact.
 
 \newpage
 %=============================================================================
-\subsection{DD4hep Handles}
+\subsection{dd4hep Handles}
 \label{sec:dd4hep-user-manual-handles}
 %=============================================================================
 \noindent
@@ -377,8 +377,8 @@ The handles to these objects serve two purposes:
 \item Enable the creation of new objects using specialized constructors
     within sub-classes. To ensure memory integrity and avoid resource 
     leaks these created objects should always be stored in the 
-    detector description data hub $LCDD$ described in 
-    section~\ref{sec:dd4hep-user-manual-LCDD-hub}.
+    detector description data hub $Detector$ described in 
+    section~\ref{sec:dd4hep-user-manual-Detector-hub}.
 \end{itemize}
 
 \newpage
@@ -443,8 +443,8 @@ cache the pointer withing the client code if the usage is very frequent.
 \noindent
 There are currently three object types present which support this mechanism:
 \begin{itemize}\itemcompact
-\item the central object of \DDhep, the \tw{LCDD} class discussed in 
-        section~\ref{sec:dd4hep-user-manual-LCDD-hub}.
+\item the central object of \DDhep, the \tw{Detector} class discussed in 
+        section~\ref{sec:dd4hep-user-manual-Detector-hub}.
 \item the object describing subdetectors or parts thereof, the 
         \tw{DetElement} class discussed in 
         section~\ref{sec:dd4hep-user-manual-detector-elements}.
@@ -519,7 +519,7 @@ looks very similar:
 In the above code snippet an XML (sub-)tree is passed to the executing 
 function as a handle to an XML element ({\tt{xml\_h}}). Such handles may seamlessly be
 assigned to any supporting helper class inheriting from the
-class {\tt{XML::Element}}, which encapsulates the functionality required to 
+class {\tt{xml::Element}}, which encapsulates the functionality required to 
 interpret the XML structures.
 Effectively the various XML attributes and child nodes 
 are accessed using functions with the same
@@ -533,7 +533,7 @@ Note the macros $\tt{\_U(layer)}$ and $\tt{\_U(slice)}$:
 When using Xerces-C as an XML parser, 
 it will expand to the reference to an object containing the unicode value 
 of the string "layer". The full list of predefined tag names can be found in the
-include file \detdesc{html/_unicode_values_8h.html}{DD4hep/UnicodeValues.h}.
+include file \detdesc{html/_unicode_values_8h.html}{dd4hep/UnicodeValues.h}.
 If a user tag is not part in the precompiled tag list, the corresponding Unicode
 string may be created with the macro \tw{\_Unicode(layer)} or the function
 \tw{Unicode("layer")}.
@@ -550,29 +550,29 @@ of defining new attribute names.
 There exist several utility classes to extract data from predefined XML tags:
 \begin{itemize}\itemcompact
 \item Any XML element is described by an XML handle
-       \detdesc{html/struct_d_d4hep_1_1_geometry_1_1_handle.html}{\tt{XML::Handle\_t}} 
+       \detdesc{html/struct_d_d4hep_1_1_geometry_1_1_handle.html}{\tt{xml::Handle_t\_t}} 
        ({\tt{xml\_t}}). Handles are the basic structure for the support
        of higher level interfaces described above. The assignment of a handle
        to any of the interfaces below is possible.
-\item The class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_element.html}{\tt{XML::Element}} 
+\item The class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_element.html}{\tt{xml::Element}} 
        ({\tt{xml\_elt\_t}})
        supports in a simple way the navigation through the hierarchy of the 
        XML tree accessing child nodes and attributes. Attributes at this
        level are named entities and the tag name must be supplied.
-\item The class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_dimension.html}{\tt{XML::Dimension}} 
+\item The class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_dimension.html}{\tt{xml::Dimension}} 
        with the type definition {\tt{xml\_dim\_t}}, 
        supports numerous access functions named identical to the
        XML attribute names. Such helper classes simplify the tedious
        string handling required by the 
-\item The class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_component.html}{\tt{XML::Component}} 
+\item The class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_component.html}{\tt{xml::Component}} 
        ({\tt{xml\_comp\_t}}) and \\
-       the class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_det_element.html}{\tt{XML::Detector}}
+       the class \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_det_element.html}{\tt{xml::Detector}}
        ({\tt{xml\_det\_t}}) resolving other issues useful to construct detectors.
 \item Sequences of XML elements with an identical tag name may be handled
        as iterations as shown in the Figure above using the class
-       \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_collection__t.html}{\tt{XML::Collection\_t}}.
+       \detdesc{html/struct_d_d4hep_1_1_x_m_l_1_1_collection__t.html}{\tt{xml::Collection\_t}}.
 \item Convenience classes, which allow easy access to element attributes 
-       may easily be constructed using the methods of the {\tt{XML::Element}}
+       may easily be constructed using the methods of the {\tt{xml::Element}}
        class. This allows to construct very flexible thou non-intrusive 
        extensions to \DDhep. Hence there is a priori no need to modify
        these helpers for the benefit of only one single client.
@@ -583,7 +583,7 @@ from an XML element, which exist. If an attribute, a child node etc. is not
 found within the element an exception is thrown.
 
 \noindent
-The basic interface of the \tw{XML::Element} class allows to access tags
+The basic interface of the \tw{xml::Element} class allows to access tags
 and child nodes not exposed by the convenience wrappers:
 \begin{code}
   /// Access the tag name of this DOM element
@@ -607,32 +607,32 @@ and child nodes not exposed by the convenience wrappers:
   /// Check the existence of a child with a given tag name
   bool hasChild(const XmlChar* tag) const;
   /// Access child by tag name. Thow an exception if required in case the child is not present
-  Handle_t child(const Strng_t& tag, bool except = true) const;
+  Handle child(const Strng_t& tag, bool except = true) const;
   /// Add a new child to the DOM node
-  Handle_t addChild(const XmlChar* tag) const;
+  Handle addChild(const XmlChar* tag) const;
   /// Check if a child with the required tag exists - if not create it and add it to the current node
-  Handle_t setChild(const XmlChar* tag) const;
+  Handle setChild(const XmlChar* tag) const;
 \end{code}
 
 %=============================================================================
-\subsection{The Detector Description Data Hub: LCDD}
-\label{sec:dd4hep-user-manual-LCDD-hub}
+\subsection{The Detector Description Data Hub: Detector}
+\label{sec:dd4hep-user-manual-Detector-hub}
 %=============================================================================
 \noindent
 As shown in Figure~\ref{fig:dd4hep-detector-model}, any access to the detector 
-description data is done using a standardized interface called \tw{LCDD}.
+description data is done using a standardized interface called \tw{Detector}.
 During the configuration phase of the detector the interface is used to populate
 the internal data structures.
 Data structures present in the memory layout of the detector description
 may be retrieved by clients at any time using the 
-\detdesc{html/struct_d_d4hep_1_1_geometry_1_1_l_c_d_d.html}{\tw{LCDD} interface class}.
+\detdesc{html/struct_d_d4hep_1_1_geometry_1_1_l_c_d_d.html}{\tw{Detector} interface class}.
 This includes of course, the access during the actual detector construction.
 The following code listing shows the accessor method to retrieve 
 detector description entities from the interface. Not shown are access methods
 for groups of these entities and the methods to add objects:
 
 \begin{code}
-struct LCDD {
+struct Detector {
 
   ///+++ Shortcuts to access often used quantities
 
@@ -695,7 +695,7 @@ struct LCDD {
 \end{code}
 
 \noindent
-As shown in the above listing, the \tw{LCDD} interface is the main access point to access
+As shown in the above listing, the \tw{Detector} interface is the main access point to access
 a whole set 
 \begin{itemize}\itemcompact
 \item often used predefined values such as the material "air" or "vacuum" (line 5-10).
@@ -748,7 +748,7 @@ actually very similar to other geometry description languages based
 on XML. For example the material description is nearly identical
 to the material description in \tw{GDML}~\cite{bib:GDML}.
 The syntactic structure of the compact XML description was taken from
-the SiD detector description~\cite{bib:LCDD}.
+the SiD detector description~\cite{bib:Detector}.
 The following listing shows the basic layout of any
 the compact detector description file with its different sections:
 
@@ -994,13 +994,13 @@ description of the material's finish.}.
 Materials are not constructed by any client. Materials and elements are 
 either already present in the the corresponding tables of the ROOT geometry
 package or they are added during the interpretation of the XML input.
-Clients access the description of material using the \tw{LCDD} interface.
+Clients access the description of material using the \tw{Detector} interface.
 
 
 \newpage
 \begin{figure}[t]
   \begin{center}
-    \includegraphics[width=160mm] {DD4hep-solids.png}
+    \includegraphics[width=160mm] {dd4hep-solids.png}
     \caption{Extensions may be attached to common Detector Elements which 
              extend the functionality of the common DetElement 
              class and support e.g. caching of precomputed values.}
@@ -1278,7 +1278,7 @@ mother volume:
 \begin{code}
   Volume       mother = ....ampercent
 
-  Material     mat    (lcdd.material("Iron"));
+  Material     mat    (description.material("Iron"));
   Tube         tub    (rmin, rmax, zhalf);
   Volume       vol    (name, tub, mat);
   Transform3D  tr     (RotationZYX(rotz,roty,rotx),Position(x,y,z));
@@ -1290,7 +1290,7 @@ The volume has the shape of a tube and consists of iron.
 Before being placed, the daughter volume is transformed within
 the mother coordinate system according to the requested transformation.
 The example also illustrates how to access $Material$ objects from the
-$LCDD$ interface.
+$Detector$ interface.
 
 \noindent
 The {\tt{Volume}} class provides several possibilities to declare
@@ -1344,7 +1344,7 @@ are placed.
 %=============================================================================
 \begin{figure}[b]
   \begin{center}
-    \includegraphics[width=160mm] {DD4hep-detelement-drawing.png}
+    \includegraphics[width=160mm] {dd4hep-detelement-drawing.png}
     \caption{The basic layout of the \tw{DetElement} class aggregating
         all data entities necessary to process data.}
     \label{fig:dd4hep-user-manual-detelement-drawing}
@@ -1451,7 +1451,7 @@ a \tw{DetElement} instance has the means to provide to clients information about
 
 \noindent
 Though the concept of sensitive detectors comes from Geant4 and simulation 
-activities, in DD4hep the sensitive detectors are the client interface to 
+activities, in dd4hep the sensitive detectors are the client interface to 
 access the readout description (class \tw{Readout}) with its 
 segmentation of sensitive elements (class \tw{Segmentation}) and
 the description of hit decoders (class \tw{IDDescriptors}).
@@ -1488,8 +1488,8 @@ information~\footnote{The methods to set the data are not shown here.}:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=140mm] {DD4hep-sensitive-detectors.png}
-    \caption{The structure of DD4hep sensitive detectors.}
+    \includegraphics[width=140mm] {dd4hep-sensitive-detectors.png}
+    \caption{The structure of dd4hep sensitive detectors.}
     \label{fig:dd4hep-sensitive-detectors}
   \end{center}
   \vspace{-0.6cm}
@@ -1530,7 +1530,7 @@ encoded using the \tw{IDDescriptor} object.
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=100mm] {DD4hep-readout.png}
+    \includegraphics[width=100mm] {dd4hep-readout.png}
     \caption{The basic components to describe the \tw{Readout} structure
     of a subdetector. }
     \label{fig:dd4hep-sensitive-detectors}
@@ -1571,7 +1571,7 @@ the energy deposits in a subdetector. For technical reasons and partial
 religious reasons are the segmentation implementation not part of the \DDhep 
 toolkit, but an independent package call 
 \tw{DDSegmentation}~\cite{bib:DDSegmentations}. Though the usage is an 
-integral part of DD4hep.
+integral part of dd4hep.
 
 \subsubsection{Volume Manager}
 %=============================================================================
@@ -1591,7 +1591,7 @@ geometrical location.
 Figure~\ref{fig:dd4hep-user-manual-volmgr} shows the design diagram of this component:
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=170mm] {DD4hep-volmgr.png}
+    \includegraphics[width=170mm] {dd4hep-volmgr.png}
     \caption{Extensions may be attached to common Detector Elements which 
              extend the functionality of the common DetElement 
              class and support e.g. caching of precomputed values.}
@@ -1790,10 +1790,10 @@ The C++ code snippet interpreting the XML data and expanding the geometry:
 #include "XML/Layering.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t  x_det     = e;
   string     det_name  = x_det.nameStr();
   bool       reflect   = x_det.reflect();
@@ -1803,7 +1803,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double     rmax      = dim.outer_r();
   double     totWidth  = Layering(x_det).totalThickness();
   double     z         = zmin;
-  Material   air       = lcdd.air();
+  Material   air       = description.air();
   Tube       envelope   (rmin,rmax,totWidth,0,2*M_PI);
   Volume     envelopeVol(det_name+"_envelope",envelope,air);
   int        layer_num = 1;
@@ -1825,19 +1825,19 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         xml_comp_t x_slice = l;
         double     w = x_slice.thickness();
         string     slice_name = layer_name + _toString(m+1,"slice%d");
-        Material   slice_mat  = lcdd.material(x_slice.materialStr());
+        Material   slice_mat  = description.material(x_slice.materialStr());
         Volume     slice_vol (slice_name,Tube(rmin,rmax,w),slice_mat);
           
         if ( x_slice.isSensitive() )  {
           sens.setType("calorimeter");
           slice_vol.setSensitiveDetector(sens);
         }
-        slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+        slice_vol.setAttributes(description,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
         pv = layer_vol.placeVolume(slice_vol,Position(0,0,z-zlayer-layerWidth/2+w/2));
         pv.addPhysVolID("slice",m+1);
         z += w;
       }
-      layer_vol.setVisAttributes(lcdd,x_layer.visStr());
+      layer_vol.setVisAttributes(description,x_layer.visStr());
       Position layer_pos(0,0,zlayer-zmin-totWidth/2+layerWidth/2);
       pv = envelopeVol.placeVolume(layer_vol,layer_pos);
       pv.addPhysVolID("layer",layer_num);
@@ -1845,10 +1845,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
   }
   // Set attributes of slice
-  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  envelopeVol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   DetElement   sdet(det_name,x_det.id());
-  Volume       motherVol = lcdd.pickMotherVolume(sdet);
+  Volume       motherVol = description.pickMotherVolume(sdet);
   PlacedVolume phv = motherVol.placeVolume(envelopeVol,Position(0,0,zmin+totWidth/2));
   phv.addPhysVolID("system",sdet.id())
      .addPhysVolID("barrel",1);
@@ -1880,7 +1880,7 @@ DECLARE_DETELEMENT(CylindricalEndcapCalorimeter,create_detector);
 \docline{10,11}{Extracting the sub-detector name and properties from the xml handle.}
 \docline{12-17}{Access the $dimension$ child-element from the XML subtree, access the element's 
     attributes and precompute values used later.}
-\docline{18}{Retrieve a reference to the "air" material from LCDD.}
+\docline{18}{Retrieve a reference to the "air" material from Detector.}
 \docline{19-20}{Construct the envelope volume shaped as a tube made out of air.}
 \docline{25}{Now the detector can be built: We loop over all layers types and over
               each layer type as often as necessary (attribute: repeat).
@@ -1889,7 +1889,7 @@ DECLARE_DETELEMENT(CylindricalEndcapCalorimeter,create_detector);
 \docline{25}{Note the macro $\tt{\_U(layer)}$: When using Xerces-C as an XML parser, 
     it will expand to the reference to an object containing the unicode value 
     of the string "layer". The full list of predefined tag names can be found in the
-    include file \detdesc{html/_unicode_values_8h.html}{DD4hep/UnicodeValues.h}.
+    include file \detdesc{html/_unicode_values_8h.html}{dd4hep/UnicodeValues.h}.
     If a user tag is not part in the precompiled tag list, the corresponding Unicode
     string may be created with the macro \tw{\_Unicode(layer)} or \tw{Unicode("layer")}.
     }
@@ -1962,8 +1962,8 @@ discussed in section~\ref{sec:dd4hep-manual-detector-constructors}.
 \begin{figure}[h]
   \begin{center}
     \begin{tabular}{l r}
-      \includegraphics[width=80mm] {DD4hep-Lumical.png} &
-      \includegraphics[width=80mm] {DD4hep-Lumical-detailed.png} \\
+      \includegraphics[width=80mm] {dd4hep-Lumical.png} &
+      \includegraphics[width=80mm] {dd4hep-Lumical-detailed.png} \\
     \end{tabular}
     \caption{Geometry visualization using the ROOT OpenGL plugin.
         To the left the entire luminosity calorimeter is shown,
@@ -1974,18 +1974,18 @@ discussed in section~\ref{sec:dd4hep-manual-detector-constructors}.
 \end{figure}
 
 \noindent
-The command to create the display is part of the DD4hep release:
+The command to create the display is part of the dd4hep release:
 \begin{code}
 $> geoDisplay -compact <path to the XML file containing the detector description>
 
- DD4hepGeometryDisplay -opt [-opt]                                                  
+ dd4hepGeometryDisplay -opt [-opt]                                                  
         -compact       <file>       Specify the compact geometry file              
                      [REQUIRED]     At least one compact geo file is required!     
         -build_type <number/string> Specify the build type                         
                      [OPTIONAL]     MUST come immediately after the -compact input.
                                     Default for each file is: BUILD_DEFAULT [=1]   
                                     Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]
-        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         
+        -destroy     [OPTIONAL]     Force destruction of the Detector instance         
                                     before exiting the application                 
         -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       
                                     check the volume ids for duplicates etc.       
@@ -2006,7 +2006,7 @@ $> geoDisplay -compact <path to the XML file containing the detector description
 Other applications may require other representation. In particular two other
 are worth mentioning:
 \begin{itemize}\itemcompact
-\item \tw{LCDD}~\cite{bib:LCDD} the geometry representation used to 
+\item \tw{Detector}~\cite{bib:Detector} the geometry representation used to 
     simulate the ILC detector design with the \tw{slic} application.
 \item \tw{GDML}~\cite{bib:GDML} a geometry markup language understood
     by Geant4 and \tw{ROOT}.
@@ -2015,7 +2015,7 @@ Both conversions are supported in \DDhep with the geoConverter application:
 \begin{code}
   geoConverter -opt [-opt]                                                
         Action flags:               Usage is exclusive, 1 required!           
-        -compact2lcdd               Convert compact xml geometry to lcdd.     
+        -compact2description               Convert compact xml geometry to description.     
         -compact2gdml               Convert compact xml geometry to gdml.     
         -compact2vis                Convert compact xml to visualisation attrs
 
@@ -2068,7 +2068,7 @@ please refer to the ROOT documentation of the class {\tt{TGeoManager}}:
 \end{itemize}
 
 \begin{code}
-    python <install>DD4hep/bin/checkGeometry.py --help
+    python <install>dd4hep/bin/checkGeometry.py --help
     Usage: checkGeometry.py [options]
 
     TGeo Geometry checking.
@@ -2140,7 +2140,7 @@ program are:
                      [OPTIONAL]     MUST come immediately after the -compact input.
                                     Default for each file is: BUILD_DEFAULT [=1]   
                                     Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]
-        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         
+        -destroy     [OPTIONAL]     Force destruction of the Detector instance         
                                     before exiting the application                 
         -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       
                                     check the volume ids for duplicates etc.       
@@ -2155,10 +2155,10 @@ program are:
 %=============================================================================
 \newpage
 \begin{thebibliography}{9}
-\input{DD4hep-bibliography.tex}
+\input{dd4hep-bibliography.tex}
 \bibitem{bib:DDAlign} M.Frank,
                    "DDAlign User Manual: 
-                   Alignment Support for the DD4hep Geometry Description Toolkit".
+                   Alignment Support for the dd4hep Geometry Description Toolkit".
 \bibitem{bib:DDSegmentations} C.Grefe et al.,
                    "The DDSegmentation package", 
                    Non existing documentation to be written.

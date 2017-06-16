@@ -42,7 +42,7 @@
   <detectors>
     <comment>No comment so far</comment>
 
-    <detector name="Telescope" type="DD4hep_Example_Telescope"  vis="DetVis" id ="3" readout="TelescopeHits">
+    <detector name="Telescope" type="dd4hep_Example_Telescope"  vis="DetVis" id ="3" readout="TelescopeHits">
       <!-- Front arm -->
       <module z="0.0*cm" id="1" vis="ModVis">
         <sensor thickness="3*mm" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>

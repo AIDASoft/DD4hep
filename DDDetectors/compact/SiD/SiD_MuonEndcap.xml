@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="MuonEndcap_ID" name="MuonEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
+  <detector id="MuonEndcap_ID" name="MuonEndcap" type="dd4hep_PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
 
     <comment>Muon Calorimeter Endcaps</comment>
 

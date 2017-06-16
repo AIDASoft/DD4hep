@@ -1,4 +1,4 @@
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +21,7 @@
 
 #define IMPLEMENT(x,y) std::string x () { return ::strerror( errno = y ); }
 
-namespace DD4hep { namespace Errors  {
+namespace dd4hep { namespace Errors  {
     IMPLEMENT(noPermission,EPERM)       //  1
     IMPLEMENT(noEntry,ENOENT)           //  2
     IMPLEMENT(ioError,EIO)              //  5

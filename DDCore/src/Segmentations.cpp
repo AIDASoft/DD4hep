@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,8 +24,8 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationObject);
 
@@ -53,12 +53,12 @@ bool Segmentation::useForHitPosition() const {
 }
 
 /// Access to the parameters
-Segmentation::Parameters Segmentation::parameters() const {
+DDSegmentation::Parameters Segmentation::parameters() const {
   return data<Object>()->parameters();
 }
 
 /// Access to parameter by name
-Segmentation::Parameter  Segmentation::parameter(const std::string& parameterName) const   {
+DDSegmentation::Parameter  Segmentation::parameter(const std::string& parameterName) const   {
   return data<Object>()->parameter(parameterName);
 }
 
@@ -93,12 +93,12 @@ std::vector<double> Segmentation::cellDimensions(const CellID& cell) const  {
 }
 
 /// Access to the base DDSegmentation object. WARNING: Deprecated call!
-Segmentation::BaseSegmentation* Segmentation::segmentation() const  {
+DDSegmentation::Segmentation* Segmentation::segmentation() const  {
   return data<Object>()->segmentation;
 }
 
 /// Access the underlying decoder
-BitField64* Segmentation::decoder()  const {
+const BitField64* Segmentation::decoder()  const {
   return data<Object>()->segmentation->decoder();
 }
 

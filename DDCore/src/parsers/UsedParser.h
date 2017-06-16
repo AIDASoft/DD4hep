@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,12 +14,12 @@
 
 #if defined(DD4HEP_PARSER_HEADER)
 // This is the case, if the parsers are externalized
-// and the DD4hep namespace is renamed!
+// and the dd4hep namespace is renamed!
 #include DD4HEP_PARSER_HEADER
 
 #else
 
-// Standard DD4hep parser handling
+// Standard dd4hep parser handling
 #include "DD4hep/Parsers.h"
 #include "DD4hep/ToStream.h"
 

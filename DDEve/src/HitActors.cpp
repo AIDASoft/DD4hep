@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,12 +24,12 @@
 #include "TEveCompound.h"
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 
 /// Action callback of this functor: 
 void EtaPhiHistogramActor::operator()(const DDEveHit& hit)   {
-  const Geometry::Position pos(hit.x/MM_2_CM,hit.y/MM_2_CM,hit.z/MM_2_CM);
+  const Position pos(hit.x/MM_2_CM,hit.y/MM_2_CM,hit.z/MM_2_CM);
   histogram->Fill(pos.Eta(),pos.Phi(),hit.deposit);
 }
 

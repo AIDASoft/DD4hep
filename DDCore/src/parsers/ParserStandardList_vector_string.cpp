@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,6 +10,6 @@
 //==========================================================================
 
 #include "ParsersStandardListCommon.h"
-namespace DD4hep{ namespace Parsers{
+namespace dd4hep{ namespace Parsers{
 IMPLEMENT_STL_PARSER(std::vector,std::string)
   }}

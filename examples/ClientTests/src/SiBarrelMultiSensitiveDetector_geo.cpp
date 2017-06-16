@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,13 +19,13 @@
 #include "DD4hep/Printout.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   typedef vector<PlacedVolume> Placements;
   xml_det_t   x_det     = e;
-  Material    air       = lcdd.air();
+  Material    air       = description.air();
   int         det_id    = x_det.id();
   string      det_name  = x_det.nameStr();
   DetElement  sdet       (det_name,det_id);
@@ -47,7 +47,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       throw runtime_error("Logics error in building modules.");
     }
     volumes[m_nam] = m_vol;
-    m_vol.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
+    m_vol.setVisAttributes(description.visAttributes(x_mod.visStr()));
     printout(INFO,"Detector","++ Building module: %s",m_nam.c_str());
     for(xml_coll_t ci(x_mod,_U(module_component)); ci; ++ci, ++ncomponents)  {
       xml_comp_t x_comp = ci;
@@ -55,7 +55,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       xml_comp_t x_rot  = x_comp.rotation(false);        
       string     c_nam  = _toString(ncomponents,"component%d");
       Box        c_box(x_comp.width()/2,x_comp.length()/2,x_comp.thickness()/2);
-      Volume     c_vol(c_nam,c_box,lcdd.material(x_comp.materialStr()));
+      Volume     c_vol(c_nam,c_box,description.material(x_comp.materialStr()));
 
       if ( x_pos && x_rot ) {
         Position    c_pos(x_pos.x(0),x_pos.y(0),x_pos.z(0));
@@ -71,9 +71,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       else {
         pv = m_vol.placeVolume(c_vol);
       }
-      c_vol.setRegion(lcdd, x_comp.regionStr());
-      c_vol.setLimitSet(lcdd, x_comp.limitsStr());
-      c_vol.setVisAttributes(lcdd, x_comp.visStr());
+      c_vol.setRegion(description, x_comp.regionStr());
+      c_vol.setLimitSet(description, x_comp.limitsStr());
+      c_vol.setVisAttributes(description, x_comp.visStr());
       if ( x_comp.isSensitive() ) {
         pv.addPhysVolID(_U(sensor),sensor_number++);
         c_vol.setSensitiveDetector(sens);
@@ -167,16 +167,16 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // Create the PhysicalVolume for the layer.
     pv = assembly.placeVolume(lay_vol); // Place layer in mother
     pv.addPhysVolID("layer", lay_id);       // Set the layer ID.
-    lay_elt.setAttributes(lcdd,lay_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
+    lay_elt.setAttributes(description,lay_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
     lay_elt.setPlacement(pv);
   }
-  sdet.setAttributes(lcdd,assembly,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
-  assembly.setVisAttributes(lcdd.invisible());
-  pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  sdet.setAttributes(description,assembly,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  assembly.setVisAttributes(description.invisible());
+  pv = description.pickMotherVolume(sdet).placeVolume(assembly);
   pv.addPhysVolID("system", det_id);      // Set the subdetector system ID.
   pv.addPhysVolID("barrel", 0);           // Flag this as a barrel subdetector.
   sdet.setPlacement(pv);
   return sdet;
 }
 
-DECLARE_DETELEMENT(DD4hep_SiBarrelMultiSensitiveDetector,create_detector)
+DECLARE_DETELEMENT(dd4hep_SiBarrelMultiSensitiveDetector,create_detector)

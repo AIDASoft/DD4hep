@@ -1,6 +1,5 @@
-// $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +20,7 @@
 #include "DDG4/Geant4VolumeManager.h"
 #include "DDG4/Geant4ReadoutVolumeFilter.h"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4ReadoutVolumeFilter::Geant4ReadoutVolumeFilter(Geant4Context* ctxt, 
@@ -32,7 +31,7 @@ Geant4ReadoutVolumeFilter::Geant4ReadoutVolumeFilter(Geant4Context* ctxt,
 {
   InstanceCount::increment(this);
   for(size_t i=0; i<ro->hits.size(); ++i)  {
-    const Collection& c = ro->hits[i];
+    const HitCollection& c = ro->hits[i];
     if ( c.name == coll )   {
       m_collection = &c;
       m_key = ro.idSpec().field(c.key);

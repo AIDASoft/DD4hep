@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,10 +19,10 @@
 #define DDG4_GEANT4CONFIG_H
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     template <typename TYPE> class Geant4Handle;
@@ -87,8 +87,8 @@ namespace DD4hep {
       typedef Geant4Handle<Geant4DetectorConstructionSequence> DetectorConstructionSeq;
     }
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Handle.h"
@@ -107,6 +107,6 @@ namespace DD4hep {
 #include "DDG4/Geant4UserInitialization.h"
 #include "DDG4/Geant4UserParticleHandler.h"
 #include "DDG4/ComponentUtils.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #endif // DDG4_GEANT4CONFIG_H

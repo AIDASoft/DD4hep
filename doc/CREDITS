@@ -1,5 +1,5 @@
 
-This file lists the most important contributors to the DD4hep project.
+This file lists the most important contributors to the dd4hep project.
 It is sorted by name and formatted to allow easy grepping and beautification
 by scripts. The fields are: name (N), email (E), description (D).
 
@@ -27,11 +27,11 @@ D: Boost Spirit adapation taken from Gaudi
 
 N: Markus FRANK
 E: Markus.Frank@cern.ch
-D: Main author of the DD4hep packages DDCore, DDG4, DDAlign, DDCond, DDEve. Project leader
+D: Main author of the dd4hep packages DDCore, DDG4, DDAlign, DDCond, DDEve. Project leader
 
 N: Frank GAEDE
 E: Frank.Gaede@desy.de
-D: Main author of the DD4hep package DDRec
+D: Main author of the dd4hep package DDRec
 
 N. Alexander MAZUROV
 E: Alexander.Mazurov@gmail.com

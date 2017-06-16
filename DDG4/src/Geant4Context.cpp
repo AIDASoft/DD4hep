@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,8 +22,8 @@
 #include <algorithm>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Intializing constructor
 Geant4Run::Geant4Run(const G4Run* run_pointer)
@@ -86,14 +86,14 @@ Geant4Event& Geant4Context::event()  const   {
 }
 
 /// Access to detector description
-Geometry::LCDD& Geant4Context::lcdd() const {
-  return m_kernel->lcdd();
+Detector& Geant4Context::detectorDescription() const {
+  return m_kernel->detectorDescription();
 }
 
 /// Create a user trajectory
 G4VTrajectory* Geant4Context::createTrajectory(const G4Track* /* track */) const {
-  string err = DD4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
-  DD4hep::printout(DD4hep::FATAL, "Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
+  string err = dd4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
+  dd4hep::printout(dd4hep::FATAL, "Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
   throw runtime_error(err);
 }
 

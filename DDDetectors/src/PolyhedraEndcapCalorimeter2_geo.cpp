@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,16 +18,16 @@
 #include "XML/Layering.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det     = e;
   xml_dim_t   dim       = x_det.dimensions();
   int         det_id    = x_det.id();
   bool        reflect   = x_det.reflect(true);
   string      det_name  = x_det.nameStr();
-  Material    air       = lcdd.air();
+  Material    air       = description.air();
   int         numsides  = dim.numsides();
   double      rmin      = dim.rmin();
   double      rmax      = dim.rmax()*std::cos(M_PI/numsides);
@@ -41,7 +41,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   int layerType   = 0;
   double layerZ   = -totalThickness/2;
 
-  endcapVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  endcapVol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t       x_layer  = c;
@@ -57,10 +57,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       xml_comp_t x_slice = s;
       string     s_name  = _toString(s_num,"slice%d");
       double     s_thick = x_slice.thickness();
-      Material   s_mat   = lcdd.material(x_slice.materialStr());
+      Material   s_mat   = description.material(x_slice.materialStr());
       Volume     s_vol(s_name,PolyhedraRegular(numsides,rmin,rmax,s_thick),s_mat);
         
-      s_vol.setVisAttributes(lcdd.visAttributes(x_slice.visStr()));
+      s_vol.setVisAttributes(description.visAttributes(x_slice.visStr()));
       sliceZ += s_thick/2;
       PlacedVolume s_phv = l_vol.placeVolume(s_vol,Position(0,0,sliceZ));
       s_phv.addPhysVolID("slice",s_num);
@@ -72,7 +72,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       sliceZ += s_thick/2;
       s_num++;
     }
-    l_vol.setVisAttributes(lcdd.visAttributes(x_layer.visStr()));
+    l_vol.setVisAttributes(description.visAttributes(x_layer.visStr()));
     if ( l_repeat <= 0 ) throw std::runtime_error(x_det.nameStr()+"> Invalid repeat value");
     for(int j=0; j<l_repeat; ++j) {
       string phys_lay = _toString(l_num,"layer%d");
@@ -98,7 +98,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   if ( reflect )  {
     Assembly    assembly(det_name);
     DetElement  both_endcaps(det_name,det_id);
-    Volume      motherVol = lcdd.pickMotherVolume(both_endcaps);
+    Volume      motherVol = description.pickMotherVolume(both_endcaps);
     DetElement  sdetA = endcap;
     Ref_t(sdetA)->SetName((det_name+"_A").c_str());
     DetElement  sdetB = endcap.clone(det_name+"_B",x_det.id());
@@ -120,7 +120,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     both_endcaps.add(sdetB);
     return both_endcaps;
   }
-  Volume motherVol = lcdd.pickMotherVolume(endcap);
+  Volume motherVol = description.pickMotherVolume(endcap);
   pv = motherVol.placeVolume(endcapVol,Transform3D(RotationZYX(M_PI/numsides,0,0),
 						 Position(0,0,z_pos)));
   pv.addPhysVolID("system", det_id);
@@ -130,5 +130,5 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return endcap;
 }
 
-DECLARE_DETELEMENT(DD4hep_PolyhedraEndcapCalorimeter2,create_detector)
+DECLARE_DETELEMENT(dd4hep_PolyhedraEndcapCalorimeter2,create_detector)
 DECLARE_DEPRECATED_DETELEMENT(PolyhedraEndcapCalorimeter2,create_detector)

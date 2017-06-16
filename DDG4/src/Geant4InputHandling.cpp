@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -31,14 +31,14 @@
 #include <cmath>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
-typedef ReferenceBitMask<int> PropertyMask;
+typedef detail::ReferenceBitMask<int> PropertyMask;
 
 
 /// Create a vertex object from the Geant4 primary vertex
-Geant4Vertex* DD4hep::Simulation::createPrimary(const G4PrimaryVertex* g4)      {        
+Geant4Vertex* dd4hep::sim::createPrimary(const G4PrimaryVertex* g4)      {        
   Geant4Vertex* v = new Geant4Vertex();
   v->x = g4->GetX0();
   v->y = g4->GetY0();
@@ -49,7 +49,7 @@ Geant4Vertex* DD4hep::Simulation::createPrimary(const G4PrimaryVertex* g4)      
 
 /// Create a particle object from the Geant4 primary particle
 Geant4Particle* 
-DD4hep::Simulation::createPrimary(int particle_id, 
+dd4hep::sim::createPrimary(int particle_id, 
                                   const Geant4Vertex* v,
                                   const G4PrimaryParticle* g4p)
 {
@@ -119,7 +119,7 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
 
 /// Import a Geant4 interaction defined by a primary vertex into a DDG4 interaction record
 Geant4PrimaryInteraction* 
-DD4hep::Simulation::createPrimary(int mask,
+dd4hep::sim::createPrimary(int mask,
                                   Geant4PrimaryMap* pm,
                                   const G4PrimaryVertex* gv)
 {
@@ -137,7 +137,7 @@ DD4hep::Simulation::createPrimary(int mask,
 }
 
 /// Initialize the generation of one event
-int DD4hep::Simulation::generationInitialization(const Geant4Action* /* caller */,
+int dd4hep::sim::generationInitialization(const Geant4Action* /* caller */,
                                                  const Geant4Context* context)
 {
   /**
@@ -219,7 +219,7 @@ static void rebaseVertices(Geant4PrimaryInteraction::VertexMap& vertices, int pa
   }
 }
 /// Merge all interactions present in the context
-int DD4hep::Simulation::mergeInteractions(const Geant4Action* caller,
+int dd4hep::sim::mergeInteractions(const Geant4Action* caller,
                                           const Geant4Context* context)
 {
   typedef Geant4PrimaryEvent::Interaction  Interaction;
@@ -250,7 +250,7 @@ int DD4hep::Simulation::mergeInteractions(const Geant4Action* caller,
 }
 
 /// Boost particles of one interaction identified by its mask
-int DD4hep::Simulation::boostInteraction(const Geant4Action* caller,
+int dd4hep::sim::boostInteraction(const Geant4Action* caller,
                                          Geant4PrimaryEvent::Interaction* inter,
                                          double alpha)
 {
@@ -306,7 +306,7 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* caller,
 }
 
 /// Smear the primary vertex of an interaction
-int DD4hep::Simulation::smearInteraction(const Geant4Action* caller,
+int dd4hep::sim::smearInteraction(const Geant4Action* caller,
                                          Geant4PrimaryEvent::Interaction* inter,
                                          double dx, double dy, double dz, double dt)
 {
@@ -415,7 +415,7 @@ getRelevant(set<int>& visited,
 }
 
 /// Generate all primary vertices corresponding to the merged interaction
-int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
+int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
                                           const Geant4Context* context,
                                           G4Event* event)
 {

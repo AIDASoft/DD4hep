@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,6 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
 
 // C/C++ include files
 #include <cstring>
@@ -36,7 +35,7 @@
   }
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep  {
+namespace dd4hep  {
 
   using namespace std;
   using namespace DDDB;
@@ -49,61 +48,61 @@ namespace DD4hep  {
   /// Default destructor
   dddb::~dddb()   {
     // need to release heare all allocated resources.
-    releaseObjects(isotopes);
-    releaseObjects(elements);
-    releaseObjects(elementPaths);
+    detail::releaseObjects(isotopes);
+    detail::releaseObjects(elements);
+    detail::releaseObjects(elementPaths);
 
-    releaseObjects(materials);
-    releaseObjects(materialPaths);
+    detail::releaseObjects(materials);
+    detail::releaseObjects(materialPaths);
 
-    releaseObjects(shapes);
+    detail::releaseObjects(shapes);
 
-    releaseObjects(volumes);
-    releaseObjects(volumePaths);
+    detail::releaseObjects(volumes);
+    detail::releaseObjects(volumePaths);
 
-    releaseObjects(placements);
-    releaseObjects(placementPaths);
+    detail::releaseObjects(placements);
+    detail::releaseObjects(placementPaths);
 
-    releaseObjects(tabproperties);
-    releaseObjects(tabpropertyPaths);
+    detail::releaseObjects(tabproperties);
+    detail::releaseObjects(tabpropertyPaths);
 
     conditions.clear();
     conditionPaths.clear();
-    //releaseObjects(conditions);
-    //releaseObjects(conditionPaths);
-    releaseObjects(catalogs);
-    releaseObjects(catalogPaths);
-    releaseObjects(documents);
+    //detail::releaseObjects(conditions);
+    //detail::releaseObjects(conditionPaths);
+    detail::releaseObjects(catalogs);
+    detail::releaseObjects(catalogPaths);
+    detail::releaseObjects(documents);
     printout(DEBUG,"dddb","++ All intermediate objects deleted!");
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  Named::Named()
+  DDDBNamed::DDDBNamed()
     : name(), id(), document(0), refCount(0)
   {
   }
 
   /// Initializing constructor
-  Named::Named(const std::string& c)
+  DDDBNamed::DDDBNamed(const std::string& c)
     : name(c), id(), document(0), refCount(0)
   {
   }
 
   /// Copy constructor
-  Named::Named(const Named& c)
+  DDDBNamed::DDDBNamed(const DDDBNamed& c)
     : name(c.name), id(c.id), document(c.document), refCount(0)
   {
     if ( document ) document->addRef();
   }
 
   /// Default destructor
-  Named::~Named() {
+  DDDBNamed::~DDDBNamed() {
     if ( document ) document->release();
   }
 
   /// Assignment operator
-  Named& Named::operator=(const Named& c) {
+  DDDBNamed& DDDBNamed::operator=(const DDDBNamed& c) {
     if ( this != &c )  {
       setDocument(c.document);
       name = c.name;
@@ -113,41 +112,41 @@ namespace DD4hep  {
   }
 
   /// Assign document
-  void Named::setDocument(Document* doc)   {
+  void DDDBNamed::setDocument(DDDBDocument* doc)   {
     if ( doc ) doc->addRef();
     if ( document ) document->release();
     document = doc;
   }
 
   /// Default constructor
-  Document::Document() : Named(), context()  {
+  DDDBDocument::DDDBDocument() : DDDBNamed(), context()  {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  Document::~Document()   {
+  DDDBDocument::~DDDBDocument()   {
     //printout(INFO,"Document","Delete doc %s",c_id());
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  Isotope::Isotope() : Named() {
+  DDDBIsotope::DDDBIsotope() : DDDBNamed() {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  Isotope::~Isotope()   {
+  DDDBIsotope::~DDDBIsotope()   {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  Element::Element() : Named(), density(0), ionization(0), state(UNKNOWN) {
+  DDDBElement::DDDBElement() : DDDBNamed(), density(0), ionization(0), state(UNKNOWN) {
     InstanceCount::increment(this);
   }
 
   /// Copy constructor
-  Element::Element(const Element& e) 
-    : Named(e), isotopes(e.isotopes), path(e.path), symbol(e.symbol), 
+  DDDBElement::DDDBElement(const DDDBElement& e) 
+    : DDDBNamed(e), isotopes(e.isotopes), path(e.path), symbol(e.symbol), 
       atom(e.atom), density(e.density), 
       ionization(e.ionization), state(e.state)
   {
@@ -155,58 +154,58 @@ namespace DD4hep  {
   }
 
   /// Default destructor
-  Element::~Element()  {
+  DDDBElement::~DDDBElement()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  Material::Material() : density(0), pressure(-1), temperature(-1), radlen(0), lambda(0) {
+  DDDBMaterial::DDDBMaterial() : density(0), pressure(-1), temperature(-1), radlen(0), lambda(0) {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  Material::~Material()  {
+  DDDBMaterial::~DDDBMaterial()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  LogVol::LogVol() : Named(), material(), shape(), physvols() {
+  DDDBLogVol::DDDBLogVol() : DDDBNamed(), material(), shape(), physvols() {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  LogVol::~LogVol()  {
+  DDDBLogVol::~DDDBLogVol()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  PhysVol::PhysVol() : type(PHYSVOL_REGULAR), logvol(), path(), trafo() {
+  DDDBPhysVol::DDDBPhysVol() : type(PHYSVOL_REGULAR), logvol(), path(), trafo() {
     InstanceCount::increment(this);
   }
 
   /// Copy constructor
-  PhysVol::PhysVol(const PhysVol& c) 
-    : Named(c), type(c.type), logvol(c.logvol), path(c.path), trafo(c.trafo) {
+  DDDBPhysVol::DDDBPhysVol(const DDDBPhysVol& c) 
+    : DDDBNamed(c), type(c.type), logvol(c.logvol), path(c.path), trafo(c.trafo) {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  PhysVol::~PhysVol()  {
+  DDDBPhysVol::~DDDBPhysVol()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  Shape::Shape() : type(0), zplanes(), boolean_ops() {
+  DDDBShape::DDDBShape() : type(0), zplanes(), boolean_ops() {
     ::memset(&s,0,sizeof(s));
     InstanceCount::increment(this);
   }
   
   /// Default destructor
-  Shape::~Shape()   {
-    if ( type == BooleanUnion::type() ||
-         type == BooleanSubtraction::type() ||
-         type == BooleanIntersection::type() )   {
-      Shape* shape = s.boolean.first;
+  DDDBShape::~DDDBShape()   {
+    if ( type == DDDBBooleanUnion::type() ||
+         type == DDDBBooleanSubtraction::type() ||
+         type == DDDBBooleanIntersection::type() )   {
+      DDDBShape* shape = s.boolean.first;
       if ( shape ) delete shape;
       for(Operations::iterator i=boolean_ops.begin(); i!=boolean_ops.end(); ++i)
         delete (*i).shape;
@@ -216,28 +215,28 @@ namespace DD4hep  {
   }
  
   /// Default constructor
-  Catalog::Catalog() : Named(), level(0), typeID(0) {
+  DDDBCatalog::DDDBCatalog() : DDDBNamed(), level(0), typeID(0) {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  Catalog::~Catalog()   {
+  DDDBCatalog::~DDDBCatalog()   {
     InstanceCount::decrement(this);
   }
 
 
   /// Default constructor
-  TabProperty::TabProperty()    {
+  DDDBTabProperty::DDDBTabProperty()    {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  TabProperty::~TabProperty()    {
+  DDDBTabProperty::~DDDBTabProperty()    {
     InstanceCount::decrement(this);
   }
 
-  pair<const Catalog*,string> Catalog::parent(const string& nam)  const  {
-    const Catalog* cat = this;
+  pair<const DDDBCatalog*,string> DDDBCatalog::parent(const string& nam)  const  {
+    const DDDBCatalog* cat = this;
     string rest = nam.substr(cat->path.length()+1);
     size_t idx = rest.find('/');
     string sub = rest.substr(0,idx);
@@ -275,7 +274,7 @@ namespace DD4hep  {
     if ( dot_pos>1e-10 ) dddb_print(&pos);
   }
 
-  template <> void dddb_print(const Isotope* i)   {
+  template <> void dddb_print(const DDDBIsotope* i)   {
     CHECK_OBJECT(i);
     printout(INFO,"Isotope","++ %-20s A=%6.0f Z=%3.0f Density=%8.2g  id=%s",
              i->c_name(), i->A, i->Z, i->density,i->c_id());
@@ -287,7 +286,7 @@ namespace DD4hep  {
              i->GetName(), i->GetN(), i->GetZ(), i->GetA());
   }
 
-  template <> void dddb_print(const Element* e)   {
+  template <> void dddb_print(const DDDBElement* e)   {
     CHECK_OBJECT(e);
     printout(INFO,"Element","++ %-20s A=%6.0f Z=%3.0f Density=%8g ioni:%8.2g (%d isotopes) id=%s",
              (e->name+"/"+e->symbol).c_str(), e->atom.A, e->atom.Zeff, 
@@ -300,7 +299,7 @@ namespace DD4hep  {
              e->GetName(), e->N(), e->Z(), e->A());
   }
 
-  template <> void dddb_print(const Material* m)   {
+  template <> void dddb_print(const DDDBMaterial* m)   {
     CHECK_OBJECT(m);
     printout(INFO,"Material","++ %-20s Density=%8g P=%f T=%f %d components id:%s",
              ("'"+m->path+"'").c_str(), m->density, m->pressure, m->temperature, 
@@ -318,37 +317,37 @@ namespace DD4hep  {
              mat->GetNelements());
   }
 
-  template <> void dddb_print(const Shape* s)   {
+  template <> void dddb_print(const DDDBShape* s)   {
     CHECK_OBJECT(s);
-    if (s-> type == Box::type() )  {
+    if (s-> type == DDDBBox::type() )  {
       printout(INFO,"Box","++ %3d/%-12s: x=%f y=%f z=%f",
                s->type,s->c_name(),
                s->s.box.x,s->s.box.y,s->s.box.z);
     }
-    else if (s-> type == Cons::type() )  {
+    else if (s-> type == DDDBCons::type() )  {
       printout(INFO,"Cons","++ %3d/%-12s: z=%f innerMZ=%f innerPZ=%f outerMZ=%f outerPZ=%f",
                s->type,s->c_name(),s->s.cons.sizeZ,
                s->s.cons.innerRadiusMZ,s->s.cons.innerRadiusPZ,
                s->s.cons.outerRadiusMZ,s->s.cons.outerRadiusPZ);
     }
-    else if (s-> type == Tubs::type() )  {
+    else if (s-> type == DDDBTubs::type() )  {
       printout(INFO,"Tubs","++ %3d/%-12s: z=%f innerR=%f outerR=%f",
                s->type,s->c_name(),s->s.tubs.sizeZ,
                s->s.tubs.innerRadius,s->s.tubs.outerRadius);
     }
-    else if (s-> type == Polycone::type() )  {
+    else if (s-> type == DDDBPolycone::type() )  {
       printout(INFO,"Polycone","++ %3d/%-12s: %d zplanes",
                s->type,s->c_name(),int(s->zplanes.size()));
     }
-    else if (s-> type == BooleanUnion::type() )  {
+    else if (s-> type == DDDBBooleanUnion::type() )  {
       printout(INFO,"union","++ %3d/%-12s: %d modifications",
                s->type,s->c_name(),int(s->boolean_ops.size()));
     }
-    else if (s-> type == BooleanSubtraction::type() )  {
+    else if (s-> type == DDDBBooleanSubtraction::type() )  {
       printout(INFO,"subtraction","++ %3d/%-12s: %d modifications",
                s->type,s->c_name(),int(s->boolean_ops.size()));
     }
-    else if (s-> type == BooleanIntersection::type() )  {
+    else if (s-> type == DDDBBooleanIntersection::type() )  {
       printout(INFO,"intersection","++ %3d%-12s: %d modifications",
                s->type,s->path.c_str(),int(s->boolean_ops.size()));
     }
@@ -356,7 +355,7 @@ namespace DD4hep  {
              "", s->path.c_str(), s->c_id());
   }
 
-  template <> void dddb_print(const PhysVol* obj)   {
+  template <> void dddb_print(const DDDBPhysVol* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"PhysVol","++ %-12s: logvol:%s",
              obj->path.c_str(),obj->logvol.c_str());
@@ -364,7 +363,7 @@ namespace DD4hep  {
              "",obj->c_name(),obj->c_id());
   }
 
-  template <> void dddb_print(const LogVol* obj)   {
+  template <> void dddb_print(const DDDBLogVol* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"LogVol", "++ %-12s: Material:%s Shape:%s",
              obj->path.c_str(),obj->material.c_str(),
@@ -373,7 +372,7 @@ namespace DD4hep  {
              "",obj->c_name(),obj->c_id());
   }
 
-  template <> void dddb_print(const TabProperty* obj)   {
+  template <> void dddb_print(const DDDBTabProperty* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"Detector", "++ %-12s: [%s] xunit:%s xaxis:%s yunit:%s yaxis:%s siz:%d",
              obj->path.c_str(), obj->type.c_str(), 
@@ -382,7 +381,7 @@ namespace DD4hep  {
 	     int(obj->data.size()));
   }
 
-  template <> void dddb_print(const Catalog* obj)   {
+  template <> void dddb_print(const DDDBCatalog* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"Detector", "++ %-12s: [%s] %d children support:%s geo:%s",
              obj->path.c_str(), obj->type.c_str(), int(obj->catalogrefs.size()),
@@ -390,7 +389,7 @@ namespace DD4hep  {
     printout(INFO,"Detector", "++ %-12s  name:%s id:%s",
              "",obj->c_name(),obj->c_id());
   }
-  template <> void dddb_print(const Document* obj)   {
+  template <> void dddb_print(const DDDBDocument* obj)   {
     CHECK_OBJECT(obj);
     char c_since[64], c_until[64], c_evt[64];
     struct tm since, until, evt;

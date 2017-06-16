@@ -1,6 +1,6 @@
 // $Id$
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : A.Muennich
@@ -11,7 +11,7 @@
 
 #include <exception> 
 
-namespace DD4hep {
+namespace dd4hep {
   
 
   //define some exception to throw

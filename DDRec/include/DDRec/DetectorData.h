@@ -1,12 +1,12 @@
-#ifndef DDRec_DetectorData_H_
-#define DDRec_DetectorData_H_
+#ifndef rec_DetectorData_H_
+#define rec_DetectorData_H_
 
 #include <map>
 #include <bitset>
 #include <ostream>
 
-#include "DD4hep/LCDD.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
+#include "DDRec/tempdefs.h"
 
 namespace dd4hep {
   namespace rec {
@@ -193,7 +193,7 @@ namespace dd4hep {
 	};
       } ;
 
-      /** Internal helper struct for defining the layer layout. Layers are defined 
+      /** detaill helper struct for defining the layer layout. Layers are defined 
        *  with a sensitive part and a support part.
        */      
       struct LayerLayout{
@@ -464,13 +464,13 @@ namespace dd4hep {
     struct NeighbourSurfacesStruct {
 
       /// map of all neighbours in the same layer
-      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > sameLayer ; 
+      std::map<dd4hep::long64 , std::vector<dd4hep::long64 > > sameLayer ; 
 
       /// map of all neighbours in the previous layer
-      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > prevLayer ;
+      std::map<dd4hep::long64 , std::vector<dd4hep::long64 > > prevLayer ;
 
       /// map of all neighbours in the next layer
-      std::map<DD4hep::long64 , std::vector<DD4hep::long64 > > nextLayer ;
+      std::map<dd4hep::long64 , std::vector<dd4hep::long64 > > nextLayer ;
 
     } ;
     typedef StructExtension<NeighbourSurfacesStruct> NeighbourSurfacesData ;
@@ -481,4 +481,4 @@ namespace dd4hep {
   } /* namespace rec */
 } /* namespace dd4hep */
 
-#endif // DDRec_DetectorData_H_
+#endif // rec_DetectorData_H_

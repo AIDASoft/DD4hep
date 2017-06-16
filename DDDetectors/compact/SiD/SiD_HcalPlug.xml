@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="HcalPlug_ID" name="HcalPlug" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
+  <detector id="HcalPlug_ID" name="HcalPlug" type="dd4hep_PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
 
     <comment>Hadron Calorimeter Plug</comment>
 

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,7 +25,7 @@
 #include "XML/XMLDimension.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace DDDB {
@@ -55,15 +55,15 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_XML
      */
-    struct dddb_dim_t : public XML::Dimension {
+    struct dddb_dim_t : public xml::Dimension {
       /// Default constructor
-      dddb_dim_t() : XML::Dimension(0) {
+      dddb_dim_t() : xml::Dimension(0) {
       }
       /// Constructor from Handle
-      dddb_dim_t(XML::Handle_t e) : XML::Dimension(e) {
+      dddb_dim_t(xml::Handle_t e) : xml::Dimension(e) {
       }
       /// Constructor from Element
-      dddb_dim_t(const XML::Element& e) : XML::Dimension(e) {
+      dddb_dim_t(const xml::Element& e) : xml::Dimension(e) {
       }
       double alp1() const;
       double alp1(double default_value) const;
@@ -150,5 +150,5 @@ namespace DD4hep {
       std::string zaxis() const;
     };
   } /* End namespace DDDB    */
-} /* End namespace DD4hep    */
+} /* End namespace dd4hep    */
 #endif    /* DD4HEP_DDDB_XMLDIMENSION_H   */

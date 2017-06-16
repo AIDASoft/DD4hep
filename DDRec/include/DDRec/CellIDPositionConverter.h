@@ -6,6 +6,7 @@
 #include "DD4hep/VolumeManager.h"
 
 #include "DDSegmentation/Segmentation.h"
+#include "DDRec/tempdefs.h"
 
 #include <set>
 #include <string>
@@ -13,9 +14,9 @@
 
 namespace dd4hep {
   namespace rec {
-    
-    typedef DD4hep::DDSegmentation::CellID CellID;
-    typedef DD4hep::DDSegmentation::VolumeID VolumeID;
+
+    typedef DDSegmentation::CellID CellID;
+    typedef DDSegmentation::VolumeID VolumeID;
 
     /** Utility for position to cellID and cellID to position conversions.
      *  (Correctly re-implements some of the functionality of the deprecated IDDecoder).
@@ -32,9 +33,9 @@ namespace dd4hep {
       
     public:
       
-      /// The constructor - takes the main lcdd object.
-      CellIDPositionConverter( LCDD& lcdd ) : _lcdd( &lcdd )  {
-	_volumeManager = VolumeManager::getVolumeManager(lcdd);
+      /// The constructor - takes the main description object.
+      CellIDPositionConverter( Detector& description ) : _description( &description )  {
+        _volumeManager = VolumeManager::getVolumeManager(description);
       }
 
       /// Destructor
@@ -72,9 +73,9 @@ namespace dd4hep {
        *  invalid DetElement is returned. Uses the optionally given DetElement as start for the search.
        */ 
       DetElement findDetElement(const Position& global,
-				const DetElement& det=DetElement() ) const; 
-      
-      
+                                const DetElement& det=DetElement() ) const; 
+
+
       /** Find the lowest daughter Placement in the given Placement that
        *  contains the point (in the coordinate system of the mother placement).
        *  Return the local coordinates in this daughter Placement and collect all volIDs 
@@ -99,7 +100,7 @@ namespace dd4hep {
 
     protected:
       VolumeManager _volumeManager{} ;
-      const LCDD* _lcdd ;
+      const Detector* _description ;
 
     };
 

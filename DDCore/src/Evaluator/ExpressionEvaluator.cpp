@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 
 #include "XML/Evaluator.h"
 #include "DD4hep/DD4hepUnits.h"
-
+namespace units = dd4hep;
 
 namespace {
   void _init(XmlTools::Evaluator& e) {
@@ -35,14 +35,14 @@ namespace {
 
     //    e.setSystemOfUnits(1.e+2, 1./1.60217733e-6, 1.0, 1./1.60217733e-19, 1.0, 1.0, 1.0);
     // use the units as defined in DD4hepUnits.h:
-    e.setSystemOfUnits( dd4hep::meter,
-                        dd4hep::kilogram,
-                        dd4hep::second,
-                        dd4hep::ampere,
-                        dd4hep::kelvin,
-                        dd4hep::mole,
-                        dd4hep::candela,
-                        dd4hep::rad );
+    e.setSystemOfUnits( units::meter,
+                        units::kilogram,
+                        units::second,
+                        units::ampere,
+                        units::kelvin,
+                        units::mole,
+                        units::candela,
+                        units::rad );
   }
   void _g4Units(XmlTools::Evaluator& e) {
     // ===================================================================================
@@ -52,7 +52,7 @@ namespace {
   }
 }
 
-namespace DD4hep {
+namespace dd4hep {
   XmlTools::Evaluator& evaluator() {
     static XmlTools::Evaluator* e = 0;
     if ( !e )   {

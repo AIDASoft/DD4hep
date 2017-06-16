@@ -17,7 +17,7 @@
 namespace dd4hep {
   namespace rec {
  
-    using namespace Geometry ;
+    using namespace detail ;
 
 
       //======================================================================================================
@@ -254,7 +254,7 @@ namespace dd4hep {
     }
    //======================================================================================================
 
-    VolCylinderImpl::VolCylinderImpl( Geometry::Volume vol, SurfaceType typ, 
+    VolCylinderImpl::VolCylinderImpl( Volume vol, SurfaceType typ, 
 				      double thickness_inner ,double thickness_outer,  Vector3D o ) :
 
       VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , Vector3D() , Vector3D() , o , vol, 0) {
@@ -318,7 +318,7 @@ namespace dd4hep {
     }
     
     //================================================================================================================
-    VolConeImpl::VolConeImpl( Geometry::Volume vol, SurfaceType typ, 
+    VolConeImpl::VolConeImpl( Volume vol, SurfaceType typ, 
                               double thickness_inner ,double thickness_outer, Vector3D v_val,  Vector3D o_val ) :
       
       VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , v_val ,  Vector3D() , Vector3D() , vol, 0) {
@@ -594,7 +594,7 @@ namespace dd4hep {
 
     //======================================================================================================================
 
-    Surface::Surface( Geometry::DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), 
+    Surface::Surface( DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), 
                                                                        _wtM(0) , _id( 0) , _type( _volSurf.type() )  {
 
       initialize() ;
@@ -621,7 +621,7 @@ namespace dd4hep {
       
       if( ! ( mat.Z() > 0 ) ) {
 	
-        MaterialManager matMgr( _det.volume() )  ;
+        MaterialManager matMgr ;
         
 	Vector3D p = _o - innerThickness() * _n  ;
 
@@ -640,7 +640,7 @@ namespace dd4hep {
       
       if( ! ( mat.Z() > 0 ) ) {
 	
-        MaterialManager matMgr( _det.volume() ) ;
+        MaterialManager matMgr ;
         
 	Vector3D p = _o + outerThickness() * _n  ;
 

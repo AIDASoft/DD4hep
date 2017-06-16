@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_GEANT4SENSITIVEDETECTOR_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDG4/Geant4Hits.h"
 
 // Geant 4 include files
@@ -27,10 +27,10 @@
 #include <algorithm>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     class Geant4StepHandler;
@@ -45,7 +45,6 @@ namespace DD4hep {
      */
     class Geant4SensitiveDetector : public G4VSensitiveDetector  {
     public:
-      typedef Geometry::SensitiveDetector  SensitiveDetector;
       typedef G4THitsCollection<Geant4Hit> HitCollection;
       typedef Geant4Hit::Contribution      HitContribution;
       typedef Geant4StepHandler            StepHandler;
@@ -53,7 +52,7 @@ namespace DD4hep {
     protected:
 
       /// Reference to the detector description object
-      LCDD&             m_lcdd;
+      Detector&             m_detDesc;
       /// Reference to the detector element describing this sensitive element
       DetElement        m_detector;
       /// Reference to the sensitive detector element
@@ -73,7 +72,7 @@ namespace DD4hep {
     public:
 
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4SensitiveDetector(const std::string& name, LCDD& lcdd);
+      Geant4SensitiveDetector(const std::string& name, Detector& description);
 
       /// Initialize the sensitive detector for the usage of a single hit collection
       virtual bool defineCollection(const std::string& coll_name);
@@ -143,7 +142,7 @@ namespace DD4hep {
       T   userData;
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4GenericSD(const std::string& name, LCDD& lcdd);
+      Geant4GenericSD(const std::string& name, Detector& description);
 
       /// Initialize the sensitive detector for the usage of a single hit collection
       virtual bool defineCollection(const std::string& coll_name);
@@ -172,7 +171,7 @@ namespace DD4hep {
       virtual bool buildHits(G4Step* step,G4TouchableHistory* history);
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_GEANT4SENSITIVEDETECTOR_H

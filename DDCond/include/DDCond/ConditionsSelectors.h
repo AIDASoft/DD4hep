@@ -1,6 +1,6 @@
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,10 +19,10 @@
 #include "DD4hep/detail/ConditionsInterna.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Namespace for condition operators to avoid clashes
     namespace Operators {
@@ -241,6 +241,6 @@ namespace DD4hep {
       { return ConditionsOperation<KeyFind>(KeyFind(key)); }
 
     }        /* End namespace Operators            */
-  }          /* End namespace Conditions           */
-}            /* End namespace DD4hep               */
+  }          /* End namespace cond           */
+}            /* End namespace dd4hep               */
 #endif       /* DDCOND_CONDITIONSSELECTORS_H       */

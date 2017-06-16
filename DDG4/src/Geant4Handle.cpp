@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 
@@ -38,14 +38,14 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 namespace {
   G4Mutex creation_mutex=G4MUTEX_INITIALIZER;
 }
 
-namespace DD4hep {
-  namespace Simulation {
+namespace dd4hep {
+  namespace sim {
 
 
     template <typename TYPE> static inline TYPE* checked_value(TYPE* p) {
@@ -215,11 +215,11 @@ namespace DD4hep {
       return *this;
     }
 
-    //namespace DD4hep {
-    //  namespace Simulation {
+    //namespace dd4hep {
+    //  namespace sim {
 
     KernelHandle::KernelHandle()  {
-      value = &Geant4Kernel::instance(Geometry::LCDD::getInstance());
+      value = &Geant4Kernel::instance(Detector::getInstance());
     }
     KernelHandle::KernelHandle(Geant4Kernel* k) : value(k)  {
     }
@@ -237,67 +237,67 @@ namespace DD4hep {
     template <> 
     Geant4Handle<Geant4RunAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::runAction,type_name,
-                            "Geant4SharedRunAction",shared,(handled_type*)0);
+                            "Geant4SharedRunAction",shared,null());
     }
     template <> 
     Geant4Handle<Geant4RunAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::runAction,type_name,
-                            "Geant4SharedRunAction",shared,(handled_type*)0);
+                            "Geant4SharedRunAction",shared,null());
     }
 
     template <> 
     Geant4Handle<Geant4EventAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::eventAction,type_name,
-                            "Geant4SharedEventAction",shared,(handled_type*)0);
+                            "Geant4SharedEventAction",shared,null());
     }
     template <> 
     Geant4Handle<Geant4EventAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::eventAction,type_name,
-                            "Geant4SharedEventAction",shared,(handled_type*)0);
+                            "Geant4SharedEventAction",shared,null());
     }
 
     template <> 
     Geant4Handle<Geant4GeneratorAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::generatorAction,type_name,
-                            "Geant4SharedGeneratorAction",shared,(handled_type*)0);
+                            "Geant4SharedGeneratorAction",shared,null());
     }
     template <> 
     Geant4Handle<Geant4GeneratorAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::generatorAction,type_name,
-                            "Geant4SharedGeneratorAction",shared,(handled_type*)0);
+                            "Geant4SharedGeneratorAction",shared,null());
     }
 
     template <> 
     Geant4Handle<Geant4TrackingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::trackingAction,type_name,
-                            "Geant4SharedTrackingAction",shared,(handled_type*)0);
+                            "Geant4SharedTrackingAction",shared,null());
     }
     template <> 
     Geant4Handle<Geant4TrackingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::trackingAction,type_name,
-                            "Geant4SharedTrackingAction",shared,(handled_type*)0);
+                            "Geant4SharedTrackingAction",shared,null());
     }
 
     template <> 
     Geant4Handle<Geant4SteppingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::steppingAction,type_name,
-                            "Geant4SharedSteppingAction",shared,(handled_type*)0);
+                            "Geant4SharedSteppingAction",shared,null());
     }
     template <> 
     Geant4Handle<Geant4SteppingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::steppingAction,type_name,
-                            "Geant4SharedSteppingAction",shared,(handled_type*)0);
+                            "Geant4SharedSteppingAction",shared,null());
     }
 
     template <> 
     Geant4Handle<Geant4StackingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::stackingAction,type_name,
-                            "Geant4SharedStackingAction",shared,(handled_type*)0);
+                            "Geant4SharedStackingAction",shared,null());
     }
     template <> 
     Geant4Handle<Geant4StackingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
       value = _create_share(kernel,&Geant4ActionContainer::stackingAction,type_name,
-                            "Geant4SharedStackingAction",shared,(handled_type*)0);
+                            "Geant4SharedStackingAction",shared,null());
     }
 
     template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(Geant4Kernel& kernel, const string& type_name,
@@ -305,9 +305,9 @@ namespace DD4hep {
       try {
         Geant4Context* ctxt = kernel.workerContext();
         TypeName typ = TypeName::split(type_name);
-        Geometry::LCDD& lcdd = kernel.lcdd();
-        Geometry::DetElement det = lcdd.detector(detector);
-        Geant4Sensitive* object = PluginService::Create<Geant4Sensitive*>(typ.first, ctxt, typ.second, &det, &lcdd);
+        Detector& description = kernel.detectorDescription();
+        DetElement det = description.detector(detector);
+        Geant4Sensitive* object = PluginService::Create<Geant4Sensitive*>(typ.first, ctxt, typ.second, &det, &description);
         if (object) {
           value = object;
           return;

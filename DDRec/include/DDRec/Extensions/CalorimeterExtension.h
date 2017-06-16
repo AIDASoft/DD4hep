@@ -7,18 +7,18 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_CALORIMETEREXTENSION_H_
-#define DDRec_CALORIMETEREXTENSION_H_
+#ifndef rec_CALORIMETEREXTENSION_H_
+#define rec_CALORIMETEREXTENSION_H_
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] CalorimeterExtension {
+class CalorimeterExtension {
 public:
 	CalorimeterExtension();
 	virtual ~CalorimeterExtension();
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDRec_CALORIMETEREXTENSION_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* rec_CALORIMETEREXTENSION_H_ */

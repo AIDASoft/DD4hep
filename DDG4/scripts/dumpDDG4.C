@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,7 +15,7 @@
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Data.h"
 #include <vector>
@@ -29,12 +29,12 @@
 
 using namespace std;
 using namespace CLHEP;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-typedef DD4hep::Simulation::Geant4Tracker Geant4Tracker;
-typedef DD4hep::Simulation::Geant4Calorimeter Geant4Calorimeter;
-typedef DD4hep::Simulation::Geant4Particle Geant4Particle;
+typedef dd4hep::sim::Geant4Tracker Geant4Tracker;
+typedef dd4hep::sim::Geant4Calorimeter Geant4Calorimeter;
+typedef dd4hep::sim::Geant4Particle Geant4Particle;
 
 namespace {
   static const char* line = "+-------------------------------------------------------------+";
@@ -59,16 +59,16 @@ namespace {
     }
     else if ( have_geometry )  {
       string det_name = container;
-      LCDD& lcdd = LCDD::getInstance();
+      Detector& description = Detector::getInstance();
       det_name = det_name.substr(0,det_name.length()-4);
-      DetElement det(lcdd.detector(det_name));
-      SensitiveDetector sd(lcdd.sensitiveDetector(det_name));
+      DetElement det(description.detector(det_name));
+      SensitiveDetector sd(description.sensitiveDetector(det_name));
       Segmentation seg = sd.readout().segmentation();
-      VolumeManager vm = lcdd.volumeManager();
+      VolumeManager vm = description.volumeManager();
       for(_H::const_iterator i=hits->begin(); i!=hits->end(); ++i)  {
         const Geant4Tracker::Hit* h = *i;
-        const Geometry::Position& pos = h->position;
-        Geometry::Position pos_cell = seg.position(h->cellID);
+        const Position& pos = h->position;
+        Position pos_cell = seg.position(h->cellID);
         PlacedVolume pv = vm.lookupPlacement(h->cellID);
         printout(ALWAYS,container,
                  "+++ Track:%3d PDG:%6d Pos:(%+.2e,%+.2e,%+.2e)[mm] Pixel:(%+.2e,%+.2e,%+.2e)[mm] %s Deposit:%7.3f MeV CellID:%16lX",
@@ -83,7 +83,7 @@ namespace {
     else  {
       for(_H::const_iterator i=hits->begin(); i!=hits->end(); ++i)  {
         const Geant4Tracker::Hit* h = *i;
-        const Geometry::Position& pos = h->position;
+        const Position& pos = h->position;
         printout(ALWAYS,container,
                  "+++ Track:%3d PDG:%6d Pos:(%+.2e,%+.2e,%+.2e)[mm] Deposit:%7.3f MeV CellID:%16lX",
                  h->truth.trackID,h->truth.pdgID,
@@ -105,16 +105,16 @@ namespace {
     }
     else   {
       string det_name = container;
-      LCDD& lcdd = LCDD::getInstance();
+      Detector& description = Detector::getInstance();
       det_name = det_name.substr(0,det_name.length()-4);
-      DetElement det(lcdd.detector(det_name));
-      SensitiveDetector sd(lcdd.sensitiveDetector(det_name));
+      DetElement det(description.detector(det_name));
+      SensitiveDetector sd(description.sensitiveDetector(det_name));
       Segmentation seg = sd.readout().segmentation();
-      VolumeManager vm = lcdd.volumeManager();
+      VolumeManager vm = description.volumeManager();
       for(_H::const_iterator i=hits->begin(); i!=hits->end(); ++i)  {
         const Geant4Calorimeter::Hit* h = *i;
-        const Geometry::Position& pos = h->position;
-        Geometry::Position pos_cell = seg.position(h->cellID);
+        const Position& pos = h->position;
+        Position pos_cell = seg.position(h->cellID);
         PlacedVolume pv = vm.lookupPlacement(h->cellID);
         printout(ALWAYS,container,
                  "+++ Pos:(%+.2e,%+.2e,%+.2e)[mm] Pixel:(%+.2e,%+.2e,%+.2e)[mm] %s Deposit:%7.3f MeV CellID:%16lX",
@@ -138,7 +138,7 @@ namespace {
     }
     else   {
       for(_P::const_iterator i=particles->begin(); i!=particles->end(); ++i)  {
-        DD4hep::Simulation::Geant4ParticleHandle p(*i);
+        dd4hep::sim::Geant4ParticleHandle p(*i);
         char text[256];
         text[0]=0;
         if ( p->parents.size() == 1 )
@@ -187,15 +187,15 @@ int dumpDDG4(const char* fname, int event_num)  {
         }
         string br_name = b->GetName();
         string cl_name = b->GetClassName();
-        if ( cl_name.find("DD4hep::Simulation::Geant4Tracker::Hit") != string::npos )  {
+        if ( cl_name.find("dd4hep::sim::Geant4Tracker::Hit") != string::npos )  {
           typedef vector<Geant4Tracker::Hit*> _H;
           printHits(br_name,(_H*)e);
         }
-        else if ( cl_name.find("DD4hep::Simulation::Geant4Calorimeter::Hit") != string::npos )  {
+        else if ( cl_name.find("dd4hep::sim::Geant4Calorimeter::Hit") != string::npos )  {
           typedef vector<Geant4Calorimeter::Hit*> _H;
           printHits(br_name,(_H*)e);
         }
-        else if ( cl_name.find("DD4hep::Simulation::Geant4Particle") != string::npos )  {
+        else if ( cl_name.find("dd4hep::sim::Geant4Particle") != string::npos )  {
           typedef vector<Geant4Particle*> _H;
           ::printf("%s\n+    Particle Dump of event %8d  [%8d bytes]        +\n%s\n",
                    line,event,nbytes,line);
@@ -213,8 +213,8 @@ int dumpddg4_load_geometry(const char* fname)   {
   if ( !have_geometry )  {
     have_geometry = true;
     gSystem->Load("libDDG4Plugins");
-    LCDD& lcdd = LCDD::getInstance();
-    lcdd.fromXML(fname);
+    Detector& description = Detector::getInstance();
+    description.fromXML(fname);
     VolumeManager::getVolumeManager();
   }
   return 1;

@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,7 +27,7 @@ void DDEve(const char* xmlConfig=0)  {
   const char* dd4hep = gSystem->Getenv("DD4hepINSTALL");
   if ( 0 == dd4hep )   {
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    Error("DDEve","+++ Your DD4hep installation seems incomplete. The environment DD4hepINSTALL is not defined!   +++");
+    Error("DDEve","+++ Your dd4hep installation seems incomplete. The environment DD4hepINSTALL is not defined!   +++");
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     gSystem->Exit(EINVAL);
   }
@@ -56,7 +56,7 @@ void DDEve(const char* xmlConfig=0)  {
   result = gSystem->Load("libDDEve");
   if ( 0 != result )  {
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    Error("DDEve","+++ Your DD4hep installation seems incomplete. FAILED to load the library 'libDD4hepEve'!      +++");
+    Error("DDEve","+++ Your dd4hep installation seems incomplete. FAILED to load the library 'libdd4hepEve'!      +++");
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     gSystem->Exit(EINVAL);
   }
@@ -76,8 +76,8 @@ void DDEve(const char* xmlConfig=0)  {
   }
 #endif
   if ( xmlConfig )
-    ::snprintf(text,sizeof(text),"DD4hep::DDEve::run(\"%s\")",xmlConfig);
+    ::snprintf(text,sizeof(text),"dd4hep::DDEve::run(\"%s\")",xmlConfig);
   else 
-    ::snprintf(text,sizeof(text),"DD4hep::DDEve::run(0)");
+    ::snprintf(text,sizeof(text),"dd4hep::DDEve::run(0)");
   gInterpreter->ProcessLine(text);
 }

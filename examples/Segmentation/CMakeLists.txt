@@ -33,8 +33,8 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 find_package( DD4hep ) 
 
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake ) 
-include( DD4hep )
+set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${dd4hep_ROOT}/cmake ) 
+include( dd4hep )
 
 find_package( ROOT REQUIRED )
 #find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
@@ -47,7 +47,7 @@ set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 #-------------------------------------------------------------
 
 include_directories( ${CMAKE_SOURCE_DIR}/include
-  ${DD4hep_INCLUDE_DIRS}
+  ${dd4hep_INCLUDE_DIRS}
   ${ROOT_INCLUDE_DIR}
   )
 
@@ -63,7 +63,7 @@ endif()
 
 add_executable(Segmentation SegmentationTest.cpp ${sources})
 
-target_link_libraries(Segmentation ${DD4hep_LIBRARIES} )
+target_link_libraries(Segmentation ${dd4hep_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
 #
@@ -75,7 +75,7 @@ target_link_libraries(Segmentation ${DD4hep_LIBRARIES} )
 
 
 #---- configure run environment ---------------
-configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+configure_file( ${dd4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/this${PackageName}.sh
   DESTINATION bin

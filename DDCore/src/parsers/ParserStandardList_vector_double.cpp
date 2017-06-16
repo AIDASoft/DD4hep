@@ -1,6 +1,6 @@
 // $Id: ParserStandardList_vector_double.cpp 2166 2016-03-17 16:37:06Z /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=sailer/CN=683529/CN=Andre Sailer $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -11,6 +11,6 @@
 //==========================================================================
 
 #include "ParsersStandardListCommon.h"
-namespace DD4hep{ namespace Parsers{
+namespace dd4hep{ namespace Parsers{
 IMPLEMENT_STL_PARSER(std::vector,double)
   }}

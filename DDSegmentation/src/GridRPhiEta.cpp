@@ -1,7 +1,7 @@
 #include "DDSegmentation/GridRPhiEta.h"
 #include "DDSegmentation/SegmentationUtil.h"
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 GridRPhiEta::GridRPhiEta(const std::string& cellEncoding) :

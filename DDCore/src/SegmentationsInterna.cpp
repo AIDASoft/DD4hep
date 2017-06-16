@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,17 +15,11 @@
 #include "DD4hep/detail/SegmentationsInterna.h"
 #include "DD4hep/InstanceCount.h"
 
-// C/C++ include files
-
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
-using DD4hep::DDSegmentation::Parameter;
-using DD4hep::DDSegmentation::Parameters;
-
+using namespace dd4hep;
 
 /// Standard constructor
-SegmentationObject::SegmentationObject(BaseSegmentation* s)
+SegmentationObject::SegmentationObject(DDSegmentation::Segmentation* s)
   : magic(magic_word()), useForHitPosition(0),
     detector(0), sensitive(0), segmentation(s)
 {
@@ -65,7 +59,7 @@ const string& SegmentationObject::description() const {
 }
 
 /// Access the underlying decoder
-BitField64* SegmentationObject::decoder() const {
+const BitField64* SegmentationObject::decoder() const {
   return segmentation->decoder();
 }
 
@@ -75,17 +69,17 @@ void SegmentationObject::setDecoder(BitField64* ptr_decoder) const {
 }
 
 /// Access to parameter by name
-Parameter SegmentationObject::parameter(const string& parameterName) const {
+DDSegmentation::Parameter SegmentationObject::parameter(const string& parameterName) const {
   return segmentation->parameter(parameterName);
 }
 
 /// Access to all parameters
-Parameters SegmentationObject::parameters() const {
+DDSegmentation::Parameters SegmentationObject::parameters() const {
   return segmentation->parameters();
 }
 
 /// Set all parameters from an existing set of parameters
-void SegmentationObject::setParameters(const Parameters& params) {
+void SegmentationObject::setParameters(const DDSegmentation::Parameters& params) {
   segmentation->setParameters(params);
 }
 

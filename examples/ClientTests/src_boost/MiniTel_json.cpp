@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,14 +14,14 @@
 // Include files
 #include "JSON/Helper.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include <iostream>
 #include <map>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 namespace  {
 
@@ -48,7 +48,7 @@ namespace  {
 }
 typedef MyDetExtension DetectorExtension;
 
-static Ref_t create_detector(LCDD &lcdd, json_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector &description, json_h e, SensitiveDetector sens)  {
   json_det_t x_det = e;             	//json-detelemnt of the detector taken as an argument
   string det_name = x_det.nameStr();	//det_name is the name of the json-detelement
   Assembly assembly (det_name);
@@ -73,9 +73,9 @@ static Ref_t create_detector(LCDD &lcdd, json_h e, SensitiveDetector sens)  {
   double dim_y = det_dim.y();    // det_y is the y dimension of the json-detelement
   double dim_z = det_dim.z();    // det_z is the z dimension of the json-detelement
 
-  Material mat = lcdd.material("Silicon");
+  Material mat = description.material("Silicon");
 
-  Volume motherVol = lcdd.pickMotherVolume(sdet); //the mothers volume of our detector
+  Volume motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
 
   PlacedVolume pv;	//struct of Handle giving the volume id(ayto pou 8a kanw volume kai 8a to steilw me setplacement),dld o detector mou
   json_comp_t dtc_mod = x_det.child(_U(module));	    // considering the module-pixel of the detector
@@ -97,7 +97,7 @@ static Ref_t create_detector(LCDD &lcdd, json_h e, SensitiveDetector sens)  {
 
 
   Volume m_volume(det_name, Box(dim_x, dim_y, dim_z), mat);	//as parameters it needs name,solid,material
-  m_volume.setVisAttributes(lcdd.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
+  m_volume.setVisAttributes(description.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
   pv = motherVol.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
 
   json_comp_t dtctr = x_det;
@@ -107,8 +107,8 @@ static Ref_t create_detector(LCDD &lcdd, json_h e, SensitiveDetector sens)  {
     m_volume.setSensitiveDetector(sens);
   }
   sdet.setPlacement(pv);
-  // Support additional test if LCDD_InhibitConstants is set to TRUE
-  lcdd.constant<double>("world_side");
+  // Support additional test if Detector_InhibitConstants is set to TRUE
+  description.constant<double>("world_side");
   return sdet;
 }
 

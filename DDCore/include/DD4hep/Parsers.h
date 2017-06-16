@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,23 +26,23 @@
 
 // ============================================================================
 #define PARSERS_DECL_FOR_SINGLE(Type)                                   \
-  namespace DD4hep { namespace Parsers {                                \
+  namespace dd4hep { namespace Parsers {                                \
       int parse(Type& result, const std::string& input);                \
     }}
 
 #define DD4HEP_DEFINE_PARSER_DUMMY(Type)                                \
   PARSERS_DECL_FOR_SINGLE(Type)                                         \
-  namespace DD4hep   {   namespace Parsers   {                          \
+  namespace dd4hep   {   namespace Parsers   {                          \
       int parse(Type&, const std::string&)     {  return 1;  }          \
     }}
 
 #define PARSERS_DECL_FOR_PAIR(FirstType, SecondType)                    \
-  namespace DD4hep { namespace Parsers {                                \
+  namespace dd4hep { namespace Parsers {                                \
       int parse(std::pair<FirstType, SecondType >& result,const std::string& input); }}
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define PARSERS_DECL_FOR_LIST(InnerType)                                \
-  namespace DD4hep { namespace Parsers {                                \
+  namespace dd4hep { namespace Parsers {                                \
       int parse(std::vector<InnerType >& result,const std::string& input); \
       int parse(std::list<InnerType >& result,const std::string& input); \
       int parse(std::set<InnerType >& result,const std::string& input); \
@@ -57,7 +57,7 @@
 #else
 
 #define PARSERS_DECL_FOR_LIST(InnerType)                                \
-  namespace DD4hep { namespace Parsers {                                \
+  namespace dd4hep { namespace Parsers {                                \
       int parse(std::vector<InnerType >& result,const std::string& input); \
       int parse(std::list<InnerType >& result,const std::string& input); \
       int parse(std::set<InnerType >& result,const std::string& input); \
@@ -94,7 +94,7 @@
  *
  *  @endcode
  *
- *  @see DD4hep::Parsers::parse
+ *  @see dd4hep::Parsers::parse
  *  @see Property
  *
  *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
@@ -105,7 +105,7 @@
 
 // ========================================================================
 /// parse the <c>bool</c> value
-/**  @see DD4hep::Parsers::BoolGrammar
+/**  @see dd4hep::Parsers::BoolGrammar
  *  @param result (output) boolean result
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -118,7 +118,7 @@ PARSERS_DECL_FOR_SINGLE(bool)
 // ========================================================================
 /// parse the <c>char</c> value
 /**
- *  @see DD4hep::Parsers::CharGrammar
+ *  @see dd4hep::Parsers::CharGrammar
  *  @param result (output) boolean result
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -129,15 +129,15 @@ PARSERS_DECL_FOR_SINGLE(bool)
  */
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 PARSERS_DECL_FOR_SINGLE(char)
-/// @see DD4hep::Parsers::parser(char&,std::string&)
+/// @see dd4hep::Parsers::parser(char&,std::string&)
 PARSERS_DECL_FOR_SINGLE(unsigned char)
-/// @see DD4hep::Parsers::parser(char&,std::string&)
+/// @see dd4hep::Parsers::parser(char&,std::string&)
 PARSERS_DECL_FOR_SINGLE(signed char)
 #endif
 // ========================================================================
 /// parse the <c>int</c> value
 /**
- *  @see DD4hep::Parsers::IntGrammar
+ *  @see dd4hep::Parsers::IntGrammar
  *  @param result (output) integer result
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -146,27 +146,27 @@ PARSERS_DECL_FOR_SINGLE(signed char)
  *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
  *  @date 2006-05-14
  */
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(int)
 PARSERS_DECL_FOR_SINGLE(long)
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(short)
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(unsigned short)
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(unsigned int)
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(unsigned long)
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(long long)
-/// @see DD4hep::Parsers::parser( int&, const std::string& )
+/// @see dd4hep::Parsers::parser( int&, const std::string& )
   PARSERS_DECL_FOR_SINGLE(unsigned long long)
 #endif
 // ========================================================================
 /// parse the <c>double</c> value
 /**
- *  @see DD4hep::Parsers::RealGrammar
+ *  @see dd4hep::Parsers::RealGrammar
  *  @param result (output) double result
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -176,16 +176,16 @@ PARSERS_DECL_FOR_SINGLE(long long)
  *  @date 2006-05-14
  */
 PARSERS_DECL_FOR_SINGLE(double)
-/// @see DD4hep::Parsers::parser( double&, const std::string& )
+/// @see dd4hep::Parsers::parser( double&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(float)
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-/// @see DD4hep::Parsers::parser( double&, const std::string& )
+/// @see dd4hep::Parsers::parser( double&, const std::string& )
 PARSERS_DECL_FOR_SINGLE(long double)
 #endif
 // ========================================================================
 /** parse the <c>std::string</c> value
  *
- *  @see DD4hep::Parsers::StringGrammar
+ *  @see dd4hep::Parsers::StringGrammar
  *  @param result (output) string result
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -222,8 +222,8 @@ PARSERS_DECL_FOR_LIST(long double)
 // ========================================================================
 /// parse the <c>std::pair\<double,double\></c> value
 /**
- *  @see DD4hep::Parsers::PairGrammar
- *  @see DD4hep::Parsers::RealGrammar
+ *  @see dd4hep::Parsers::PairGrammar
+ *  @see dd4hep::Parsers::RealGrammar
  *  @param result (output) pair of doubles
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -236,8 +236,8 @@ PARSERS_DECL_FOR_PAIR(double, double)
 // ========================================================================
 /** parse the <c>std::pair\<int,int\></c> value
  *
- *  @see DD4hep::Parsers::PairGrammar
- *  @see DD4hep::Parsers::IntGrammar
+ *  @see dd4hep::Parsers::PairGrammar
+ *  @see dd4hep::Parsers::IntGrammar
  *  @param result (output) pair of integers
  *  @param input  (input) the string to be parsed
  *  @return status code
@@ -250,15 +250,15 @@ PARSERS_DECL_FOR_PAIR(int, int)
 // ========================================================================
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
 
     /// parse the <c>std::vector\<std::pair\<double,double\> \></c> value
     /**
-     *  @see DD4hep::Parsers::VectorGrammar
-     *  @see DD4hep::Parsers::PairGrammar
-     *  @see DD4hep::Parsers::RealGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::PairGrammar
+     *  @see dd4hep::Parsers::RealGrammar
      *  @param result (output) vector with pairs of doubles
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -271,9 +271,9 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::vector\<std::pair\<int,int\> \></c> value
     /**
-     *  @see DD4hep::Parsers::VectorGrammar
-     *  @see DD4hep::Parsers::PairGrammar
-     *  @see DD4hep::Parsers::IntGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::PairGrammar
+     *  @see dd4hep::Parsers::IntGrammar
      *  @param result (output) vector with pairs of int
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -288,8 +288,8 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::vector\<std::vector\<std::string\> \></c> value
     /**
-     *  @see DD4hep::Parsers::VectorGrammar
-     *  @see DD4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::StringGrammar
      *  @param result (output) vector with vectors of strings
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -302,8 +302,8 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::vector\<std::vector\<double\> \></c> value
     /**
-     *  @see DD4hep::Parsers::VectorGrammar
-     *  @see DD4hep::Parsers::RealGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::RealGrammar
      *  @param result (output) vector with vectors of doubles
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -318,8 +318,8 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<int , int\></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::IntGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::IntGrammar
      *  @param result (output) map with integer key and double value
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -332,9 +332,9 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<int , double\></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::IntGrammar
-     *  @see DD4hep::Parsers::RealGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::IntGrammar
+     *  @see dd4hep::Parsers::RealGrammar
      *  @param result (output) map with integer key and double value
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -347,8 +347,8 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<std::string , std::string\></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::StringGrammar
      *  @param result (output) map with string key and value
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -361,9 +361,9 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<std::string , int\></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::StringGrammar
-     *  @see DD4hep::Parsers::IntGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::IntGrammar
      *  @param result (output) map with string key and integer value
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -376,9 +376,9 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<std::string , double\></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::StringGrammar
-     *  @see DD4hep::Parsers::RealGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::RealGrammar
      *  @param result (output) map with string key and integer value
      *  @param input  (input) the string to be parsed
      *  @return status code
@@ -391,9 +391,9 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<std::string , std::vector\<std::string\> \></c>  value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::StringGrammar
-     *  @see DD4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
      *  @param result (output) map with string value and
      *                 vector of strings as value
      *  @param input  (input) the string to be parsed
@@ -407,10 +407,10 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<std::string , std::vector\<int\> \></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::StringGrammar
-     *  @see DD4hep::Parsers::VectorGrammar
-     *  @see DD4hep::Parsers::IntGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::IntGrammar
      *  @param result (output) map with string value and
      *                 vector of integers as value
      *  @param input  (input) the string to be parsed
@@ -424,10 +424,10 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<std::string , std::vector\<double\> \></c> value
     /**
-     *  @see DD4hep::Parsers::MapGrammar
-     *  @see DD4hep::Parsers::StringGrammar
-     *  @see DD4hep::Parsers::VectorGrammar
-     *  @see DD4hep::Parsers::RealGrammar
+     *  @see dd4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::StringGrammar
+     *  @see dd4hep::Parsers::VectorGrammar
+     *  @see dd4hep::Parsers::RealGrammar
      *  @param result (output) map with string value and
      *                 vector of doubles as value
      *  @param input  (input) the string to be parsed
@@ -441,7 +441,7 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<int,std::string\> \></c> objects
     /**
-     *  @see DD4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::MapGrammar
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-12-06
@@ -451,7 +451,7 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<unsigned int,std::string\> \></c> objects
     /**
-     *  @see DD4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::MapGrammar
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-12-06
@@ -462,7 +462,7 @@ namespace DD4hep {
     // ========================================================================
     /// parse the <c>std::map\<unsigned int,std::string\> \></c> objects
     /**
-     *  @see DD4hep::Parsers::MapGrammar
+     *  @see dd4hep::Parsers::MapGrammar
      */
     int parse(std::map<std::string, unsigned int>& result, const std::string& input);
 #endif
@@ -472,10 +472,10 @@ namespace DD4hep {
     /**
      *  @code
      *
-     *  const std::string input = "'PackageName':DD4hepKernel" ;
+     *  const std::string input = "'PackageName':dd4hepKernel" ;
      *  std::string name  ;
      *  std::string value ;
-     *  int sc = DD4hep::Parsers::parse ( name , value , input ) ;
+     *  int sc = dd4hep::Parsers::parse ( name , value , input ) ;
      *  if ( sc.isFailure() ) { ... }
      *  std::cout <<  "\tParsed name  is " << name
      *            <<  "\tParsed value is " << value << std::endl
@@ -566,7 +566,7 @@ namespace DD4hep {
       return 1;                            //  RETURN
     }
   }                                        //  end of namespace Parsers
-}                                          //  end of namespace DD4hep
+}                                          //  end of namespace dd4hep
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 
@@ -586,7 +586,7 @@ namespace ROOT {
 }
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
 
@@ -737,7 +737,7 @@ namespace DD4hep {
      */
     int parse(ROOT::Math::PxPyPzEVector& result, const std::string& input);
   }                                        //  end of namespace Parsers
-}                                          //  end of namespace DD4hep
+}                                          //  end of namespace dd4hep
 
 
 // ========================================================================

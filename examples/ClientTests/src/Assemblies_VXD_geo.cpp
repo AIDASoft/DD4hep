@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,17 +15,17 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
   string       name  = x_det.nameStr();
   Assembly     assembly(name+"_assembly");
   DetElement   vxd(name, x_det.typeStr(), x_det.id());
   PlacedVolume pv;
 
-  assembly.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  assembly.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
     xml_comp_t  x_layer  (c);
     xml_comp_t  x_support (x_layer.child(_U(support)));
@@ -37,7 +37,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // --- create an assembly and DetElement for the layer 
     Assembly     layer_assembly(layername);
     //Box          layer_box(1,1,1);
-    //Volume       layer_assembly(layername,layer_box,lcdd.air());
+    //Volume       layer_assembly(layername,layer_box,description.air());
 
     DetElement   layerDE( vxd , _toString(layer_id,"layer_%d"), x_det.id() );
     double      zhalf      = x_ladder.zhalf();
@@ -50,14 +50,14 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double      width      =  x_ladder.width();
 
     //Box         ladderbox ((sens_thick+supp_thick)/2., width/2., zhalf );
-    //Volume    laddervol(layername+"_ladder",ladderbox,lcdd.air());
+    //Volume    laddervol(layername+"_ladder",ladderbox,description.air());
     Assembly    laddervol (layername+"_ladder");
 
     Box         sensbox   (sens_thick/2.,  width/2.,   zhalf);
-    Volume      sensvol   (layername+"_ladder_sens",sensbox,lcdd.material(x_ladder.materialStr()));
+    Volume      sensvol   (layername+"_ladder_sens",sensbox,description.material(x_ladder.materialStr()));
 
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
-    Volume      suppvol   (layername+"_ladder_supp",suppbox,lcdd.material(x_support.materialStr()));
+    Volume      suppvol   (layername+"_ladder_supp",suppbox,description.material(x_support.materialStr()));
 
     // --- position the sensitive on top of the support !
     Position    senspos   ( (sens_thick+supp_thick)/2. - sens_thick/2., 0, 0 );
@@ -65,15 +65,15 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       
     sens.setType("tracker");
 
-    layer_assembly.setAttributes(lcdd,x_layer.regionStr(),x_layer.limitsStr(),"invisible");
+    layer_assembly.setAttributes(description,x_layer.regionStr(),x_layer.limitsStr(),"invisible");
     pv = assembly.placeVolume(layer_assembly).addPhysVolID("layer",layer_id);  
     layerDE.setPlacement( pv ) ;
 
-    laddervol.setAttributes(lcdd,x_ladder.regionStr(),x_ladder.limitsStr(),"invisible");
-    suppvol.setAttributes(lcdd,x_support.regionStr(),x_support.limitsStr(),x_support.visStr());
+    laddervol.setAttributes(description,x_ladder.regionStr(),x_ladder.limitsStr(),"invisible");
+    suppvol.setAttributes(description,x_support.regionStr(),x_support.limitsStr(),x_support.visStr());
 
     sensvol.setSensitiveDetector(sens);
-    sensvol.setAttributes(lcdd,x_ladder.regionStr(),x_ladder.limitsStr(),x_layer.visStr());
+    sensvol.setAttributes(description,x_ladder.regionStr(),x_ladder.limitsStr(),x_layer.visStr());
 
     laddervol.placeVolume(sensvol,senspos);
     laddervol.placeVolume(suppvol,supppos);
@@ -100,7 +100,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       ladderDEnegZ.setPlacement( pv ) ;
     }
   }
-  Volume mother =  lcdd.pickMotherVolume(vxd) ;
+  Volume mother =  description.pickMotherVolume(vxd) ;
   pv = mother.placeVolume(assembly);
   pv.addPhysVolID( "system", x_det.id());
   vxd.setPlacement(pv);

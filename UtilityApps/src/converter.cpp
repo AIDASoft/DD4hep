@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,7 @@ namespace {
   void usage() {
     cout << "geoConverter -opt [-opt]                                                \n"
       "        Action flags:               Usage is exclusive, 1 required!           \n"
-      "        -compact2lcdd               Convert compact xml geometry to lcdd.     \n"
+      "        -compact2description               Convert compact xml geometry to description.     \n"
       "        -compact2gdml               Convert compact xml geometry to gdml.     \n"
       "        -compact2pandora            Convert compact xml to pandora xml        \n"
       "        -compact2vis                Convert compact xml to visualisation attrs\n\n"
@@ -32,7 +32,7 @@ namespace {
       "                                    device is stdout.                         \n"
       "        -ascii          [OPTIONAL]  Dump visualisation attrs in csv format.   \n"
       "                                    [Only valid for -compact2vis]             \n"
-      "        -destroy        [OPTIONAL]  Force destruction of the LCDD instance    \n"
+      "        -destroy        [OPTIONAL]  Force destruction of the Detector instance    \n"
       "                                    before exiting the application            \n"
       "        -volmgr         [OPTIONAL]  Load and populate phys.volume manager to  \n"
       "                                    check the volume ids for duplicates etc.  \n"
@@ -46,7 +46,7 @@ namespace {
     bool ascii = false;
     bool volmgr = false;
     bool destroy      = false;
-    bool compact2lcdd = false;
+    bool compact2description = false;
     bool compact2gdml = false;
     bool compact2pand = false;
     bool compact2vis  = false;
@@ -54,8 +54,8 @@ namespace {
     vector<char*> geo_files;
     for(int i=1; i<argc;++i) {
       if ( argv[i][0]=='-' ) {
-        if ( strncmp(argv[i],"-compact2lcdd",12)==0 )
-          compact2lcdd = true;
+        if ( strncmp(argv[i],"-compact2description",12)==0 )
+          compact2description = true;
         else if ( strncmp(argv[i],"-compact2gdml",12)==0 )
           compact2gdml = true;
         else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
@@ -79,29 +79,29 @@ namespace {
         usage();
       }
     }
-    if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand && !compact2vis))
+    if ( geo_files.empty() || (!compact2description && !compact2gdml && !compact2pand && !compact2vis))
       usage();
 
-    LCDD& lcdd = dd4hep_instance();
+    Detector& description = dd4hep_instance();
     // Load compact files
     for(size_t i=0; i<geo_files.size(); ++i)  {
       const char* plugin_argv[] = {geo_files[i], 0};
-      run_plugin(lcdd,"DD4hepCompactLoader",1,(char**)plugin_argv);
+      run_plugin(description,"dd4hepCompactLoader",1,(char**)plugin_argv);
     }
     // Create volume manager and populate it required
-    if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+    if ( volmgr  ) run_plugin(description,"dd4hepVolumeManager",0,0);
     // Execute data converter.
-    if ( compact2lcdd )
-      run_plugin(lcdd,"DD4hepGeometry2LCDD",output,&argv[output]);
+    if ( compact2description )
+      run_plugin(description,"dd4hepGeometry2Detector",output,&argv[output]);
     else if ( compact2gdml )
-      run_plugin(lcdd,"DD4hepGeometry2GDML",output,&argv[output]);
+      run_plugin(description,"dd4hepGeometry2GDML",output,&argv[output]);
     else if ( compact2pand )
-      run_plugin(lcdd,"DD4hepGeometry2PANDORA",output,&argv[output]);
+      run_plugin(description,"dd4hepGeometry2PANDORA",output,&argv[output]);
     else if ( compact2vis && ascii )
-      run_plugin(lcdd,"DD4hepGeometry2VISASCII",output,&argv[output]);
+      run_plugin(description,"dd4hepGeometry2VISASCII",output,&argv[output]);
     else if ( compact2vis )
-      run_plugin(lcdd,"DD4hepGeometry2VIS",output,&argv[output]);
-    if ( destroy ) delete &lcdd;
+      run_plugin(description,"dd4hepGeometry2VIS",output,&argv[output]);
+    if ( destroy ) delete &description;
     return 0;
   }
 }

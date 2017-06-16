@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 // Geant4 include files
 #include "G4TrackingManager.hh"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4TrackingPreAction::Geant4TrackingPreAction(Geant4Context* ctxt, const std::string& nam)

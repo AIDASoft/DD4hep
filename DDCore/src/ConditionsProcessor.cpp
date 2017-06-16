@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,8 +17,8 @@
 #include "DD4hep/detail/ContainerHelpers.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 /// Callback to output conditions information
 template <typename T>
@@ -41,10 +41,10 @@ int ConditionsCollector<T>::operator()(DetElement de, int)  const  {
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
-  namespace Conditions   {
+  namespace cond   {
 
     //template class ConditionsCollector<ConditionsMap>;
     template class ConditionsCollector<list<Condition> >;
@@ -56,5 +56,5 @@ namespace DD4hep {
     template class ConditionsCollector<multimap<DetElement,Condition> >;
     template class ConditionsCollector<map<string,Condition> >;
     template class ConditionsCollector<multimap<string,Condition> >;
-  }       /* End namespace Conditions               */
-}         /* End namespace DD4hep                   */
+  }       /* End namespace cond               */
+}         /* End namespace dd4hep                   */

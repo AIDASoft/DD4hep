@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,12 +26,12 @@
 #include "G4Event.hh"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
-typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+using namespace dd4hep;
+using namespace dd4hep::sim;
+typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
 // Neede for backwards compatibility:
-namespace DD4hep{namespace Simulation{typedef Geant4InputAction LCIOInputAction;}}
+namespace dd4hep{namespace sim{typedef Geant4InputAction LCIOInputAction;}}
 DECLARE_GEANT4ACTION(LCIOInputAction)
 
 

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -145,14 +145,14 @@ namespace {
 }
 
 /// Convert volumeID to string format (016X)
-std::string DD4hep::volumeID(VolumeID vid)   {
+std::string dd4hep::volumeID(VolumeID vid)   {
   char text[32];
   ::snprintf(text,sizeof(text),"%016llx",vid);
   return text;
 }
 
 /// We need it so often: one-at-time 64 bit hash function
-unsigned long long int DD4hep::hash64(const char* key)   {
+unsigned long long int dd4hep::detail::hash64(const char* key)   {
   //return murmur_hash_64(key, strlen(key));
   unsigned char* str = (unsigned char*)key;
   unsigned long long int hash = FNV1a_64::hashinit;
@@ -160,12 +160,12 @@ unsigned long long int DD4hep::hash64(const char* key)   {
   return hash;
 }
 
-unsigned long long int DD4hep::hash64(const std::string& key)  {
+unsigned long long int dd4hep::detail::hash64(const std::string& key)  {
   //return murmur_hash_64(key.data(), key.length());
   return std::accumulate(begin(key),end(key),FNV1a_64::hashinit,FNV1a_64::doByte);
 }
 
-long int DD4hep::makeTime(int year, int month, int day,
+long int dd4hep::detail::makeTime(int year, int month, int day,
                           int hour, int minutes, int seconds)
 {
   struct tm tm_init;
@@ -179,23 +179,23 @@ long int DD4hep::makeTime(int year, int month, int day,
   tm_init.tm_isdst = -1;
   long int ti = ::mktime(&tm_init);
   if ( ti >= 0 ) return ti;
-  except("DD4hep","Invalid time data given for conversion to epoch: %d-%d-%d %02d:%02d:%02d",
+  except("dd4hep","Invalid time data given for conversion to epoch: %d-%d-%d %02d:%02d:%02d",
          year, month, day, hour, minutes, seconds);
   return ti;
 }
 
 /// Convert date into epoch time (seconds since 1970)
-long int DD4hep::makeTime(const std::string& date, const char* fmt)  {
+long int dd4hep::detail::makeTime(const std::string& date, const char* fmt)  {
   struct tm tm;
   char* c = ::strptime(date.c_str(),fmt,&tm);
   if ( 0 == c )   {
-    except("DD4hep",
+    except("dd4hep",
            "Invalid time format given for update:%s should be: %s",
            date.c_str(), fmt);
   }
   long ti = ::mktime(&tm);
   if ( ti >= 0 ) return ti;
-  except("DD4hep",
+  except("dd4hep",
          "Invalid time string given for conversion to epoch: %s (fmt='%s')",
          date.c_str(), fmt);
   return ti;
@@ -319,16 +319,16 @@ static const std::string __typeinfoName(const std::type_info& tinfo) {
   return result;
 }
 
-std::string DD4hep::typeName(const std::type_info& typ) {
+std::string dd4hep::typeName(const std::type_info& typ) {
   return __typeinfoName(typ);
 }
 
-void DD4hep::invalidHandleError(const std::type_info& type)
+void dd4hep::invalidHandleError(const std::type_info& type)
 {
   throw invalid_handle_exception("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
 }
 
-void DD4hep::invalidHandleAssignmentError(const std::type_info& from, 
+void dd4hep::invalidHandleAssignmentError(const std::type_info& from, 
                                           const std::type_info& to)
 {
   std::string msg = "Wrong assingment from ";
@@ -340,76 +340,78 @@ void DD4hep::invalidHandleAssignmentError(const std::type_info& from,
 }
 
 /// Throw exception when handles are check for validity
-void DD4hep::notImplemented(const std::string& msg)
+void dd4hep::notImplemented(const std::string& msg)
 {
   std::string m = "The requested feature " + msg + " is not implemented!";
   throw std::runtime_error(m);
 }
 
-void DD4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text)
+void dd4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text)
 {
   if (typ1 != typ2) {
     throw unrelated_type_error(typ1, typ2, text);
   }
 }
 
-namespace DD4hep   {
-  template<> const char* Primitive<bool>::default_format()           { return "%d"; }
-  template<> const char* Primitive<char>::default_format()           { return "%c"; }
-  template<> const char* Primitive<unsigned char>::default_format()  { return "%02X"; }
-  template<> const char* Primitive<short>::default_format()          { return "%d"; }
-  template<> const char* Primitive<unsigned short>::default_format() { return "%04X"; }
-  template<> const char* Primitive<int>::default_format()            { return "%d"; }
-  template<> const char* Primitive<unsigned int>::default_format()   { return "%08X"; }
-  template<> const char* Primitive<long>::default_format()           { return "%ld"; }
-  template<> const char* Primitive<unsigned long>::default_format()  { return "%016X"; }
-  template<> const char* Primitive<float>::default_format()          { return "%f"; }
-  template<> const char* Primitive<double>::default_format()         { return "%g"; }
-  template<> const char* Primitive<char*>::default_format()          { return "%s"; }
-  template<> const char* Primitive<const char*>::default_format()    { return "%s"; }
-  template<> const char* Primitive<std::string>::default_format()    { return "%s"; }
+namespace dd4hep   {
+  namespace detail  {
+    template<> const char* Primitive<bool>::default_format()           { return "%d"; }
+    template<> const char* Primitive<char>::default_format()           { return "%c"; }
+    template<> const char* Primitive<unsigned char>::default_format()  { return "%02X"; }
+    template<> const char* Primitive<short>::default_format()          { return "%d"; }
+    template<> const char* Primitive<unsigned short>::default_format() { return "%04X"; }
+    template<> const char* Primitive<int>::default_format()            { return "%d"; }
+    template<> const char* Primitive<unsigned int>::default_format()   { return "%08X"; }
+    template<> const char* Primitive<long>::default_format()           { return "%ld"; }
+    template<> const char* Primitive<unsigned long>::default_format()  { return "%016X"; }
+    template<> const char* Primitive<float>::default_format()          { return "%f"; }
+    template<> const char* Primitive<double>::default_format()         { return "%g"; }
+    template<> const char* Primitive<char*>::default_format()          { return "%s"; }
+    template<> const char* Primitive<const char*>::default_format()    { return "%s"; }
+    template<> const char* Primitive<std::string>::default_format()    { return "%s"; }
 
-  /// Generic function to convert to string
-  template <typename T> std::string Primitive<T>::toString(T value) {
-    char text[1024];
-    ::snprintf(text,sizeof(text),default_format(),value);
-    return text;
-  }
+    /// Generic function to convert to string
+    template <typename T> std::string Primitive<T>::toString(T value) {
+      char text[1024];
+      ::snprintf(text,sizeof(text),default_format(),value);
+      return text;
+    }
 
-  /// Convert string to string
-  template <> std::string Primitive<const char*>::toString(const char* value) {
-    if ( value )  {
+    /// Convert string to string
+    template <> std::string Primitive<const char*>::toString(const char* value) {
+      if ( value )  {
+        return value;
+      }
+      throw std::runtime_error("Failed to convert (char*)NULL to std::string!");
+    }
+    /// Convert string to string
+    template <> std::string Primitive<char*>::toString(char* value) {
+      if ( value )  {
+        return value;
+      }
+      throw std::runtime_error("Failed to convert (char*)NULL to std::string!");
+    }
+    /// Convert string to string
+    template <> std::string Primitive<std::string>::toString(std::string value) {
       return value;
     }
-    throw std::runtime_error("Failed to convert (char*)NULL to std::string!");
-  }
-  /// Convert string to string
-  template <> std::string Primitive<char*>::toString(char* value) {
-    if ( value )  {
-      return value;
-    }
-    throw std::runtime_error("Failed to convert (char*)NULL to std::string!");
-  }
-  /// Convert string to string
-  template <> std::string Primitive<std::string>::toString(std::string value) {
-    return value;
-  }
 
-  template std::string Primitive<bool>::toString(bool value);
-  template std::string Primitive<char>::toString(char value);
-  template std::string Primitive<unsigned char>::toString(unsigned char value);
-  template std::string Primitive<short>::toString(short value);
-  template std::string Primitive<unsigned short>::toString(unsigned short value);
-  template std::string Primitive<int>::toString(int value);
-  template std::string Primitive<unsigned int>::toString(unsigned int value);
-  template std::string Primitive<long>::toString(long value);
-  template std::string Primitive<unsigned long>::toString(unsigned long value);
-  template std::string Primitive<float>::toString(float value);
-  template std::string Primitive<double>::toString(double value);
+    template std::string Primitive<bool>::toString(bool value);
+    template std::string Primitive<char>::toString(char value);
+    template std::string Primitive<unsigned char>::toString(unsigned char value);
+    template std::string Primitive<short>::toString(short value);
+    template std::string Primitive<unsigned short>::toString(unsigned short value);
+    template std::string Primitive<int>::toString(int value);
+    template std::string Primitive<unsigned int>::toString(unsigned int value);
+    template std::string Primitive<long>::toString(long value);
+    template std::string Primitive<unsigned long>::toString(unsigned long value);
+    template std::string Primitive<float>::toString(float value);
+    template std::string Primitive<double>::toString(double value);
+  }
 }
 
 /// Initializing Constructor
-DD4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
+dd4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
   : type(t), destroy(d), cast(c) {
 #ifdef __APPLE__
   abi_class = 0;
@@ -422,7 +424,7 @@ DD4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_
 }
 
 /// Defautl destructor
-DD4hep::ComponentCast::~ComponentCast() {
+dd4hep::ComponentCast::~ComponentCast() {
 }
 
 #if 0
@@ -452,7 +454,7 @@ static inline void* cast_wrap(const void* p,
 #endif
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* DD4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const
+void* dd4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const
 {
   if (&to == this) {
     return (void*) ptr;
@@ -492,7 +494,7 @@ void* DD4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* 
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const
+void* dd4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const
 {
   if (&to == this) {
     return (void*) ptr;
@@ -501,7 +503,7 @@ void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* p
 }
   
 /// Apply cast using typeinfo instead of dynamic_cast
-void* DD4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const
+void* dd4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const
 {
   if (&to == this) {
     return (void*) ptr;

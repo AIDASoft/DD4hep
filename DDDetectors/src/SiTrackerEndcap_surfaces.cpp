@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,16 +15,16 @@
 // 
 //==========================================================================
 // Framework include files
-#define  DD4HEP_USE_SURFACEINSTALL_HELPER  DD4hep_SiTrackerEndcapSurfacePlugin
+#define  DD4HEP_USE_SURFACEINSTALL_HELPER  dd4hep_SiTrackerEndcapSurfacePlugin
 #include "DD4hep/SurfaceInstaller.h"
 
 /// Install measurement surfaces
 template <typename UserData> 
-void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
-  Volume comp_vol = pv.volume();
+void Installer<UserData>::install(dd4hep::DetElement component, dd4hep::PlacedVolume pv)   {
+  dd4hep::Volume comp_vol = pv.volume();
   if ( comp_vol.isSensitive() )  {  
-    Volume mod_vol = parentVolume(component);
-    DD4hep::Geometry::Trapezoid comp_shape(comp_vol.solid()), mod_shape(mod_vol.solid());
+    dd4hep::Volume mod_vol = parentVolume(component);
+    dd4hep::Trapezoid comp_shape(comp_vol.solid()), mod_shape(mod_vol.solid());
 
     if ( !comp_shape.isValid() || !mod_shape.isValid() )   {
       invalidInstaller("Components and/or modules are not Trapezoid -- invalid shapes");

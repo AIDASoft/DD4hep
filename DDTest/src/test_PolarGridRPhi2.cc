@@ -8,7 +8,7 @@
 #include <exception>
 
 
-static DD4hep::DDTest test( "PolarGridRPhi2" ) ;
+static dd4hep::DDTest test( "PolarGridRPhi2" ) ;
 
 class TestTuple {
 public:
@@ -22,7 +22,7 @@ public:
 int main() {
   try{
 
-    DD4hep::DDSegmentation::PolarGridRPhi2 seg("system:8,layer:8,barrel:3,layer:8,slice:5,r:16,phi:16");
+    dd4hep::DDSegmentation::PolarGridRPhi2 seg("system:8,layer:8,barrel:3,layer:8,slice:5,r:16,phi:16");
     const int rBitOffset   = 32; //sum of all the others before
     const int phiBitOffset = 16+32; //sum of all the others before
 
@@ -97,7 +97,7 @@ int main() {
     tests.push_back( TestTuple( 160.0, -179*DegToRad,    14,   0 ) );
 
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     //Test from position to cellID
     for(std::vector<TestTuple>::const_iterator it = tests.begin(); it != tests.end(); ++it) {
@@ -107,10 +107,10 @@ int main() {
       const long long rB = (*it)._rB;
       const long long pB = (*it)._pB;
 
-      DD4hep::DDSegmentation::Vector3D locPos ( r*cos(phi), r*sin(phi), 0.0);
-      DD4hep::DDSegmentation::Vector3D globPos( r*cos(phi), r*sin(phi), 0.0);
+      dd4hep::DDSegmentation::Vector3D locPos ( r*cos(phi), r*sin(phi), 0.0);
+      dd4hep::DDSegmentation::Vector3D globPos( r*cos(phi), r*sin(phi), 0.0);
 
-      DD4hep::DDSegmentation::CellID cid = seg.cellID(locPos, globPos, volID);
+      dd4hep::DDSegmentation::CellID cid = seg.cellID(locPos, globPos, volID);
 
       const long long phiShifted(pB << phiBitOffset);
       const long long rShifted  (rB << rBitOffset);
@@ -167,11 +167,11 @@ int main() {
       (*seg.decoder())["r"] = rB;
       (*seg.decoder())["phi"] = pB;
 
-      DD4hep::DDSegmentation::CellID cellID = (*seg.decoder()).getValue();
+      dd4hep::DDSegmentation::CellID cellID = (*seg.decoder()).getValue();
       std::cout << "CellID: " << cellID  << std::endl;
 
-      DD4hep::DDSegmentation::Vector3D expectedPosition( r*cos(phi), r*sin(phi), 0.0);
-      DD4hep::DDSegmentation::Vector3D calculatedPosition = seg.position(cellID);
+      dd4hep::DDSegmentation::Vector3D expectedPosition( r*cos(phi), r*sin(phi), 0.0);
+      dd4hep::DDSegmentation::Vector3D calculatedPosition = seg.position(cellID);
 
       test( fabs(expectedPosition.x() - calculatedPosition.x())  < 1e-11, " Test get Position from ID: X" );
       test( fabs(expectedPosition.y() - calculatedPosition.y())  < 1e-11, " Test get Position from ID: Y" );

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
-#include "DD4hep/LCDDLoad.h"
+#include "DD4hep/Detector.h"
+#include "DD4hep/DetectorLoad.h"
 #include "DD4hep/Printout.h"
 #include "XML/Conversions.h"
 #include "XML/XMLElements.h"
@@ -27,10 +27,10 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 
-namespace DD4hep  {  namespace   {
+namespace dd4hep  {  namespace   {
     /// Some utility class to specialize the convetrers:
     class ddeve;
     class view;
@@ -60,7 +60,7 @@ namespace DD4hep  {  namespace   {
   template <> void Converter<detelement>::operator()(xml_h seq)  const;
 }
 
-#define DECL_TAG(x) XML::Strng_t u_##x(#x)
+#define DECL_TAG(x) xml::Strng_t u_##x(#x)
 namespace {
   DECL_TAG(clone);
   DECL_TAG(load_geo);
@@ -159,10 +159,10 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
   c.name  = e.attr<string>(_U(name));
   printout(INFO,"DisplayConfiguration","+++ View: %s sensitive:%d structure:%d.",
            c.name.c_str(), c.show_sensitive, c.show_structure);
-  xml_coll_t(e,_Unicode(panel)).for_each(Converter<panel>(lcdd,&c.subdetectors));
-  xml_coll_t(e,_Unicode(detelement)).for_each(Converter<detelement>(lcdd,&c.subdetectors));
-  xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata_configs>(lcdd,&c.subdetectors));
-  xml_coll_t(e,_Unicode(collection)).for_each(Converter<collection_configs>(lcdd,&c.subdetectors));
+  xml_coll_t(e,_Unicode(panel)).for_each(Converter<panel>(description,&c.subdetectors));
+  xml_coll_t(e,_Unicode(detelement)).for_each(Converter<detelement>(description,&c.subdetectors));
+  xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata_configs>(description,&c.subdetectors));
+  xml_coll_t(e,_Unicode(collection)).for_each(Converter<collection_configs>(description,&c.subdetectors));
   configs->push_back(c);
 }
 
@@ -246,12 +246,12 @@ template <> void Converter<collection>::operator()(xml_h e)  const  {
  */
 template <> void Converter<include>::operator()(xml_h e)  const  {
   if ( e )  {
-    LCDDLoad* load = dynamic_cast<LCDDLoad*>(&this->lcdd);
+    DetectorLoad* load = dynamic_cast<DetectorLoad*>(&this->description);
     if ( load )   {
       load->processXML(e,e.attr<string>(_U(ref)));
       return;
     }
-    except("DisplayConfiguration","++ Invalid LCDDLoad instance in XML converter <include>");
+    except("DisplayConfiguration","++ Invalid DetectorLoad instance in XML converter <include>");
   }
   except("DisplayConfiguration","++ Attempt to parse invalid include statement [Invalid XML element]");
 }
@@ -289,11 +289,11 @@ template <> void Converter<ddeve>::operator()(xml_h e)  const  {
   Display* disp = (Display*)param;
   DisplayConfiguration cfg(disp);
   /// Now we process all allowed elements within this tag
-  xml_coll_t(e,_Unicode(display)).for_each(Converter<display>(lcdd,disp));
-  xml_coll_t(e,_Unicode(include)).for_each(Converter<include>(lcdd,disp));
-  xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata>(lcdd,&cfg.calodata));
-  xml_coll_t(e,_Unicode(collection)).for_each(Converter<collection>(lcdd,&cfg.collections));
-  xml_coll_t(e,_Unicode(view)).for_each(Converter<view>(lcdd,&cfg.views));
+  xml_coll_t(e,_Unicode(display)).for_each(Converter<display>(description,disp));
+  xml_coll_t(e,_Unicode(include)).for_each(Converter<include>(description,disp));
+  xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata>(description,&cfg.calodata));
+  xml_coll_t(e,_Unicode(collection)).for_each(Converter<collection>(description,&cfg.collections));
+  xml_coll_t(e,_Unicode(view)).for_each(Converter<view>(description,&cfg.views));
   disp->ImportConfiguration(cfg);
 }
 
@@ -304,12 +304,12 @@ template <> void Converter<ddeve>::operator()(xml_h e)  const  {
  *  @version 1.0
  *  @date    01/06/2014
  */
-static long setup_DDEve(lcdd_t& lcdd, const xml_h& e) {
-  Display* display = lcdd.extension<Display>();
+static long setup_DDEve(Detector& description, const xml_h& e) {
+  Display* display = description.extension<Display>();
   static bool first = true;
   if ( first )   {
     first = false;
-#define add_root_enum(x) XML::_toDictionary(XML::Strng_t(#x),int(x))
+#define add_root_enum(x) xml::_toDictionary(xml::Strng_t(#x),int(x))
     add_root_enum(kOrange);
     add_root_enum(kBlue);
     add_root_enum(kAzure);
@@ -355,7 +355,7 @@ static long setup_DDEve(lcdd_t& lcdd, const xml_h& e) {
     add_root_enum(TEveProjection::kGM_Polygons);
     add_root_enum(TEveProjection::kGM_Segments);
   }
-  (DD4hep::Converter<DD4hep::ddeve>(lcdd,display))(e);
+  (dd4hep::Converter<dd4hep::ddeve>(description,display))(e);
   return 1;
 }
 DECLARE_XML_DOC_READER(ddeve,setup_DDEve)

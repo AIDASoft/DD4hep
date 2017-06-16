@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +15,7 @@
 #define DD4HEP_DDG4_GEANT4SENSDETACTION_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDG4/Geant4Action.h"
 #include "DDG4/Geant4HitCollection.h"
 
@@ -32,17 +31,15 @@ class G4VHitsCollection;
 class G4VReadOutGeometry;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
-  namespace Geometry  {
-    class LCDD;
-    class DetElement;
-    class SensitiveDetector;
-  }
+  class Detector;
+  class DetElement;
+  class SensitiveDetector;
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     class Geant4StepHandler;
@@ -64,9 +61,6 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4ActionSD();
     public:
-      /// Definition: Sensitive detector type
-      typedef Geometry::SensitiveDetector SensitiveDetector;
-
       /// Initialize the usage of a hit collection. Returns the collection identifier
       virtual size_t defineCollection(const std::string& name) = 0;
       /// Access to the readout geometry of the sensitive detector
@@ -75,7 +69,7 @@ namespace DD4hep {
       virtual G4int GetCollectionID(G4int i) = 0;
       /// Is the detector active?
       virtual bool isActive() const = 0;
-      /// Access to the LCDD sensitive detector handle
+      /// Access to the Detector sensitive detector handle
       virtual SensitiveDetector sensitiveDetector() const = 0;
       /// G4VSensitiveDetector internals: Access to the detector path name
       virtual std::string path() const = 0;
@@ -95,10 +89,8 @@ namespace DD4hep {
     protected:
       /// Inhibit copy constructor
       Geant4Filter() = default;
-
       /// Inhibit copy constructor
       Geant4Filter(const Geant4Filter& copy) = delete;
-
       /// Inhibit assignment operator
       Geant4Filter& operator=(const Geant4Filter& copy) = delete;
 
@@ -119,16 +111,6 @@ namespace DD4hep {
      */
     class Geant4Sensitive: public Geant4Action {
     public:
-      typedef Geometry::LCDD LCDD;
-      typedef Geometry::Readout Readout;
-      typedef Geometry::DetElement DetElement;
-      typedef Geometry::Segmentation Segmentation;
-      /// Definition: Sensitive detector type
-      typedef Geometry::SensitiveDetector SensitiveDetector;
-
-      typedef Geant4StepHandler StepHandler;
-      typedef Geant4HitCollection HitCollection;
-
       enum HitCreationFlags {
         SIMPLE_MODE = 0,
         MEDIUM_MODE = 1<<0,
@@ -145,7 +127,7 @@ namespace DD4hep {
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
       int  m_hitCreationMode = 0;
       /// Reference to the detector description object
-      LCDD& m_lcdd;
+      Detector& m_detDesc;
       /// Reference to the detector element describing this sensitive element
       DetElement m_detector;
       /// Reference to the sensitive detector element
@@ -159,17 +141,14 @@ namespace DD4hep {
 
       /// Protect the default constructor
       Geant4Sensitive() = default;
-
       /// Inhibit copy constructor
       Geant4Sensitive(const Geant4Sensitive& copy) = delete;
-
       /// Inhibit assignment operator
       Geant4Sensitive& operator=(const Geant4Sensitive& copy) = delete;
 
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4Sensitive(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd);
-
+      Geant4Sensitive(Geant4Context* context, const std::string& name, DetElement det, Detector& description);
       /// Standard destructor
       virtual ~Geant4Sensitive();
 
@@ -204,7 +183,7 @@ namespace DD4hep {
         return detector().isActive();
       }
 
-      /// Access the DD4hep sensitive detector
+      /// Access the dd4hep sensitive detector
       SensitiveDetector sensitiveDetector() const  {
         return m_sensitive;
       }
@@ -247,10 +226,10 @@ namespace DD4hep {
       const std::string& hitCollectionName(size_t which) const;
 
       /// Retrieve the hits collection associated with this detector by its serial number
-      HitCollection* collection(size_t which);
+      Geant4HitCollection* collection(size_t which);
 
       /// Retrieve the hits collection associated with this detector by its collection identifier
-      HitCollection* collectionByID(size_t id);
+      Geant4HitCollection* collectionByID(size_t id);
 
       /// Define collections created by this sensitivie action object
       virtual void defineCollections();
@@ -300,8 +279,6 @@ namespace DD4hep {
      */
     class Geant4SensDetActionSequence: public Geant4Action {
     public:
-
-      typedef Geometry::SensitiveDetector SensitiveDetector;
       typedef Geant4HitCollection* (*create_t)(const std::string&, const std::string&, Geant4Sensitive*);
       typedef std::pair<std::string, std::pair<Geant4Sensitive*,create_t> > HitCollection;
       typedef std::vector<HitCollection> HitCollections;
@@ -518,8 +495,8 @@ namespace DD4hep {
       /// Standard , initializing constructor
       Geant4SensitiveAction(Geant4Context* context,
                             const std::string& name,
-                            Geometry::DetElement det,
-                            Geometry::LCDD& lcdd);
+                            DetElement det,
+                            Detector& description);
 
       /// Default destructor
       virtual ~Geant4SensitiveAction();
@@ -559,7 +536,7 @@ namespace DD4hep {
     };
 
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4RUNACTION_H

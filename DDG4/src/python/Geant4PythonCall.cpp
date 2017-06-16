@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,8 +21,8 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Standard constructor, initializes variables
 Geant4PythonCall::Geant4PythonCall()
@@ -51,7 +51,7 @@ void Geant4PythonCall::set(PyObject* callable)   {
   DDPython::assignObject(m_arguments,0);
 }
 
-namespace DD4hep { namespace Simulation {
+namespace dd4hep { namespace sim {
 
     /// Execute command in the python interpreter.
     template <typename RETURN> RETURN Geant4PythonCall::execute() const   {

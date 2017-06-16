@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,11 +15,11 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
-#include "DD4hep/LCDDHelper.h"
+#include "DD4hep/DetectorHelper.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
-#include "LCDDImp.h"
+#include "DetectorImp.h"
 
 // C/C++ include files
 #include <iostream>
@@ -41,29 +41,28 @@
 #endif
 #ifndef __TIXML__
 #include "xercesc/dom/DOMException.hpp"
-namespace DD4hep {
-  namespace XML {
+namespace dd4hep {
+  namespace xml {
     typedef xercesc::DOMException XmlException;
   }
 }
 #endif
 
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep;
 using namespace std;
 namespace {
   struct TypePreserve {
-    LCDDBuildType& m_t;
-    TypePreserve(LCDDBuildType& t)
+    DetectorBuildType& m_t;
+    TypePreserve(DetectorBuildType& t)
       : m_t(t) {
     }
     ~TypePreserve() {
       m_t = BUILD_NONE;
     }
   };
-  static LCDD* s_lcdd = 0;
+  static Detector* s_description = 0;
 
-  void lcdd_unexpected()    {
+  void description_unexpected()    {
     try  {
       throw;
     }  catch( exception& e )  {
@@ -83,35 +82,35 @@ namespace {
   }
 }
 
-string DD4hep::versionString(){
+string dd4hep::versionString(){
   string vs("vXX-YY") ;
   sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
   return vs;
 }
 
-LCDD& LCDD::getInstance() {
-  if (!s_lcdd)
-    s_lcdd = new LCDDImp();
-  return *s_lcdd;
+Detector& Detector::getInstance() {
+  if (!s_description)
+    s_description = new DetectorImp();
+  return *s_description;
 }
 
 /// Destroy the instance
-void LCDD::destroyInstance() {
-  if (s_lcdd)
-    delete s_lcdd;
-  s_lcdd = 0;
+void Detector::destroyInstance() {
+  if (s_description)
+    delete s_description;
+  s_description = 0;
 }
 
 /// Default constructor
-LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
+DetectorImp::DetectorImp() : DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
 
-  set_unexpected( lcdd_unexpected ) ;
-  set_terminate( lcdd_unexpected ) ;
+  set_unexpected( description_unexpected ) ;
+  set_terminate( description_unexpected ) ;
 
   InstanceCount::increment(this);
   if (0 == gGeoManager) {
-    gGeoManager = new TGeoManager("world", "LCDD Geometry");
+    gGeoManager = new TGeoManager("world", "Detector Geometry");
   }
   {
     m_manager = gGeoManager;
@@ -140,7 +139,7 @@ LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
 }
 
 /// Standard destructor
-LCDDImp::~LCDDImp() {
+DetectorImp::~DetectorImp() {
   if ( m_manager == gGeoManager ) gGeoManager = 0;
   destroyData(false);
   m_extensions.clear();
@@ -149,28 +148,28 @@ LCDDImp::~LCDDImp() {
 
 
 // Load volume manager
-void LCDDImp::imp_loadVolumeManager()   {
-  destroyHandle(m_volManager);
+void DetectorImp::imp_loadVolumeManager()   {
+  detail::destroyHandle(m_volManager);
   m_volManager = VolumeManager(*this, "World", world(), Readout(), VolumeManager::TREE);
 }
 
-/// Add an extension object to the LCDD instance
-void* LCDDImp::addUserExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
+/// Add an extension object to the Detector instance
+void* DetectorImp::addUserExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
   return m_extensions.addExtension(ptr,info,destruct);
 }
 
-/// Remove an existing extension object from the LCDD instance
-void* LCDDImp::removeUserExtension(const type_info& info, bool destroy)  {
+/// Remove an existing extension object from the Detector instance
+void* DetectorImp::removeUserExtension(const type_info& info, bool destroy)  {
   return m_extensions.removeExtension(info,destroy);
 }
 
-/// Access an existing extension object from the LCDD instance
-void* LCDDImp::userExtension(const type_info& info, bool alert) const {
+/// Access an existing extension object from the Detector instance
+void* DetectorImp::userExtension(const type_info& info, bool alert) const {
   return m_extensions.extension(info,alert);
 }
 
 /// Register new mother volume using the detector name.
-void LCDDImp::declareMotherVolume(const string& detector_name, const Volume& vol)  {
+void DetectorImp::declareMotherVolume(const string& detector_name, const Volume& vol)  {
   if ( !detector_name.empty() )  {
     if ( vol.isValid() )  {
       HandleMap::const_iterator i = m_motherVolumes.find(detector_name);
@@ -178,15 +177,15 @@ void LCDDImp::declareMotherVolume(const string& detector_name, const Volume& vol
         m_motherVolumes.insert(make_pair(detector_name,vol));
         return;
       }
-      throw runtime_error("LCDD: A mother volume to the detector "+detector_name+" was already registered.");
+      throw runtime_error("Detector: A mother volume to the detector "+detector_name+" was already registered.");
     }
-    throw runtime_error("LCDD: Attempt to register invalid mother volume for detector:"+detector_name+" [Invalid-Handle].");
+    throw runtime_error("Detector: Attempt to register invalid mother volume for detector:"+detector_name+" [Invalid-Handle].");
   }
-  throw runtime_error("LCDD: Attempt to register mother volume to invalid detector [Invalid-detector-name].");
+  throw runtime_error("Detector: Attempt to register mother volume to invalid detector [Invalid-detector-name].");
 }
 
 /// Access mother volume by detector element
-Volume LCDDImp::pickMotherVolume(const DetElement& de) const {
+Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
   if ( de.isValid() )   {
     string de_name = de.name();
     HandleMap::const_iterator i = m_motherVolumes.find(de_name);
@@ -195,21 +194,21 @@ Volume LCDDImp::pickMotherVolume(const DetElement& de) const {
     }
     return (*i).second;
   }
-  throw runtime_error("LCDD: Attempt access mother volume of invalid detector [Invalid-handle]");
+  throw runtime_error("Detector: Attempt access mother volume of invalid detector [Invalid-handle]");
 }
 
-LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
+Detector& DetectorImp::addDetector(const Ref_t& ref_det) {
   DetElement det_element(ref_det);
-  LCDDHelper helper(this);
+  DetectorHelper helper(this);
   DetElement existing_det = helper.detectorByID(det_element.id());
 
   if ( existing_det.isValid() )   {
     SensitiveDetector sd = helper.sensitiveDetector(existing_det);
     if ( sd.isValid() )   {
       stringstream str;
-      str << "LCDD: The sensitive sub-detectors " << det_element.name() << " and "
+      str << "Detector: The sensitive sub-detectors " << det_element.name() << " and "
           << existing_det.name() << " have the identical ID:" << det_element.id() << ".";
-      printout(ERROR,"LCDD",str.str());
+      printout(ERROR,"Detector",str.str());
       throw runtime_error(str.str());
     }
   }
@@ -217,7 +216,7 @@ LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
   det_element->flag |= DetElement::Object::IS_TOP_LEVEL_DETECTOR;
   Volume volume = det_element.placement()->GetMotherVolume();
   if ( volume == m_worldVol )  {
-    printout(DEBUG,"LCDD","Added detector %s to the world instance.",det_element.name());
+    printout(DEBUG,"Detector","Added detector %s to the world instance.",det_element.name());
     m_world.add(det_element);
     return *this;
   }
@@ -226,17 +225,17 @@ LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
     DetElement parent((*i).second);
     Volume vol = parent.placement().volume();
     if ( vol == volume )  {
-      printout(INFO,"LCDD","Added detector %s to the parent:%s.",det_element.name(),parent.name());
+      printout(INFO,"Detector","Added detector %s to the parent:%s.",det_element.name(),parent.name());
       parent.add(det_element);
       return *this;
     }
   }
-  throw runtime_error("LCDD: The detector " + string(det_element.name()) + " has no known parent.");
+  throw runtime_error("Detector: The detector " + string(det_element.name()) + " has no known parent.");
 }
 
 /// Add a new constant by named reference to the detector description
-LCDD& LCDDImp::addConstant(const Ref_t& x) {
-  if ( strcmp(x.name(),"LCDD_InhibitConstants") == 0 )   {
+Detector& DetectorImp::addConstant(const Ref_t& x) {
+  if ( strcmp(x.name(),"Detector_InhibitConstants") == 0 )   {
     const char* title = x->GetTitle();
     char c = ::toupper(title[0]);
     m_inhibitConstants = (c=='Y' || c=='T' || c=='1');
@@ -246,49 +245,49 @@ LCDD& LCDDImp::addConstant(const Ref_t& x) {
 }
 
 /// Retrieve a constant by it's name from the detector description
-Constant LCDDImp::constant(const string& name) const {
+Constant DetectorImp::constant(const string& name) const {
   if ( !m_inhibitConstants )   {
     return getRefChild(m_define, name);
   }
-  throw runtime_error("LCDD:constant("+name+"): Access to global constants is inhibited.");
+  throw runtime_error("Detector:constant("+name+"): Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: access string values
-string LCDDImp::constantAsString(const string& name) const {
+string DetectorImp::constantAsString(const string& name) const {
   if ( !m_inhibitConstants )   {
     Ref_t c = constant(name);
     if (c.isValid())
       return c->GetTitle();
-    throw runtime_error("LCDD:constantAsString: The constant " + name + " is not known to the system.");
+    throw runtime_error("Detector:constantAsString: The constant " + name + " is not known to the system.");
   }
-  throw runtime_error("LCDD:constantAsString("+name+"):: Access to global constants is inhibited.");
+  throw runtime_error("Detector:constantAsString("+name+"):: Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: long values
-long LCDDImp::constantAsLong(const string& name) const {
+long DetectorImp::constantAsLong(const string& name) const {
   if ( !m_inhibitConstants )   {
     return _toLong(constantAsString(name));
   }
-  throw runtime_error("LCDD:constantAsLong("+name+"): Access to global constants is inhibited.");
+  throw runtime_error("Detector:constantAsLong("+name+"): Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: double values
-double LCDDImp::constantAsDouble(const string& name) const {
+double DetectorImp::constantAsDouble(const string& name) const {
   if ( !m_inhibitConstants )   {
     return _toDouble(constantAsString(name));
   }
-  throw runtime_error("LCDD:constantAsDouble("+name+"): Access to global constants is inhibited.");
+  throw runtime_error("Detector:constantAsDouble("+name+"): Access to global constants is inhibited.");
 }
 
 /// Add a field component by named reference to the detector description
-LCDD& LCDDImp::addField(const Ref_t& x) {
+Detector& DetectorImp::addField(const Ref_t& x) {
   m_field.add(x);
   m_fields.append(x);
   return *this;
 }
 
 /// Retrieve a matrial by it's name from the detector description
-Material LCDDImp::material(const string& name) const {
+Material DetectorImp::material(const string& name) const {
   TGeoMedium* mat = m_manager->GetMedium(name.c_str());
   if (mat) {
     return Material(Ref_t(mat));
@@ -296,10 +295,10 @@ Material LCDDImp::material(const string& name) const {
   throw runtime_error("Cannot find a material referenced by name:" + name);
 }
 
-/// Internal helper to map detector types once the geometry is closed
-void LCDDImp::mapDetectorTypes()  {
-  for(HandleMap::const_iterator i=m_detectors.begin(); i!=m_detectors.end(); ++i)   {
-    DetElement det((*i).second);
+/// detaill helper to map detector types once the geometry is closed
+void DetectorImp::mapDetectorTypes()  {
+  for( const auto& i : m_detectors )   {
+    DetElement det(i.second);
     if ( det.parent().isValid() )  { // Exclude 'world'
       HandleMap::const_iterator j=m_sensitive.find(det.name());
       if ( j != m_sensitive.end() )  {
@@ -317,7 +316,7 @@ void LCDDImp::mapDetectorTypes()  {
 }
 
 /// Access the availible detector types
-vector<string> LCDDImp::detectorTypes() const  {
+vector<string> DetectorImp::detectorTypes() const  {
   if ( m_manager->IsClosed() ) {
     vector<string> v;
     for(DetectorTypeMap::const_iterator i=m_detectorTypes.begin(); i!=m_detectorTypes.end(); ++i)  
@@ -328,7 +327,7 @@ vector<string> LCDDImp::detectorTypes() const  {
 }
 
 /// Access a set of subdetectors according to the sensitive type.
-const vector<DetElement>& LCDDImp::detectors(const string& type, bool throw_exc)  {
+const vector<DetElement>& DetectorImp::detectors(const string& type, bool throw_exc)  {
   if ( m_manager->IsClosed() ) {
     if ( throw_exc )  {
       DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
@@ -341,7 +340,7 @@ const vector<DetElement>& LCDDImp::detectors(const string& type, bool throw_exc)
   throw runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
 }
 
-vector<DetElement> LCDDImp::detectors(unsigned int includeFlag, unsigned int excludeFlag ) const  {
+vector<DetElement> DetectorImp::detectors(unsigned int includeFlag, unsigned int excludeFlag ) const  {
   if( ! m_manager->IsClosed() ) {
     throw runtime_error("detectors(typeFlag): Detectors can only selected by typeFlag once the geometry is closed!");
   }
@@ -364,7 +363,7 @@ vector<DetElement> LCDDImp::detectors(unsigned int includeFlag, unsigned int exc
 }
 
 /// Access a set of subdetectors according to several sensitive types.
-vector<DetElement> LCDDImp::detectors(const string& type1,
+vector<DetElement> DetectorImp::detectors(const string& type1,
                                       const string& type2,
                                       const string& type3,
                                       const string& type4,
@@ -387,7 +386,7 @@ vector<DetElement> LCDDImp::detectors(const string& type1,
   throw runtime_error("detectors("+type1+","+type2+",...): Detectors can only selected by type once the geometry is closed!");
 }
 
-Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
+Handle<TObject> DetectorImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
   HandleMap::const_iterator i = e.find(name);
   if (i != e.end()) {
     return (*i).second;
@@ -404,21 +403,19 @@ Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, boo
 }
 
 namespace {
-  struct ShapePatcher: public GeoScan {
+  struct ShapePatcher: public detail::GeoScan {
     VolumeManager m_volManager;
     DetElement m_world;
     ShapePatcher(VolumeManager m, DetElement e)
-      : GeoScan(e), m_volManager(m), m_world(e) {
+      : detail::GeoScan(e), m_volManager(m), m_world(e) {
     }
     void patchShapes() {
-      GeoHandler::Data& data = *m_data;
-      char text[32];
+      auto&  data = *m_data;
+      char   text[32];
       string nam;
-      printout(INFO,"LCDD","+++ Patching names of anonymous shapes....");
-      for (GeoHandler::Data::const_reverse_iterator i = data.rbegin(); i != data.rend(); ++i) {
-        const GeoHandler::Data::mapped_type& v = (*i).second;
-        for (GeoHandler::Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
-          const TGeoNode* n = *j;
+      printout(INFO,"Detector","+++ Patching names of anonymous shapes....");
+      for (auto i = data.rbegin(); i != data.rend(); ++i) {
+        for( const TGeoNode* n : (*i).second )  {
           TGeoVolume* vol = n->GetVolume();
           TGeoShape*  s   = vol->GetShape();
           const char* sn  = s->GetName();
@@ -466,7 +463,7 @@ namespace {
 
 }
 
-void LCDDImp::endDocument() {
+void DetectorImp::endDocument() {
   TGeoManager* mgr = m_manager;
   if (!mgr->IsClosed()) {
 #if 0
@@ -490,11 +487,11 @@ void LCDDImp::endDocument() {
   }
 }
 
-void LCDDImp::init() {
+void DetectorImp::init() {
   if (!m_world.isValid()) {
     TGeoManager* mgr = m_manager;
     Box worldSolid("world_x", "world_y", "world_z");
-    printout(INFO,"LCDD"," *********** created World volume with size : %7.0f %7.0f %7.0f",
+    printout(INFO,"Detector"," *********** created World volume with size : %7.0f %7.0f %7.0f",
              worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
 
     m_materialAir = material("Air");
@@ -522,23 +519,22 @@ void LCDDImp::init() {
     Volume tracking("tracking_volume",trackingSolid, m_materialAir);
     m_trackers = TopDetElement("tracking");
     m_trackingVol = tracking;
-    PlacedVolume pv = m_worldVol.placeVolume(tracking);
-    m_trackers.setPlacement(pv);
+    m_trackers.setPlacement(m_worldVol.placeVolume(tracking));
     m_world.add(m_trackers);
 #endif
     m_detectors.append(m_world);
     m_manager->SetTopVolume(m_worldVol.ptr());
-    m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
+    m_world.setPlacement(mgr->GetTopNode());
   }
 }
 
 /// Read any geometry description or alignment file
-void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
+void DetectorImp::fromXML(const string& xmlfile, DetectorBuildType build_type) {
   TypePreserve build_type_preserve(m_buildType = build_type);
 #if DD4HEP_USE_PYROOT
   string cmd;
-  TPython::Exec("import lcdd");
-  cmd = "lcdd.fromXML('" + xmlfile + "')";
+  TPython::Exec("import description");
+  cmd = "description.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());
 #else
   processXML(xmlfile,0);
@@ -546,12 +542,12 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
 }
 
 /// Read any geometry description or alignment file with external XML entity resolution
-void LCDDImp::fromXML(const string& fname, UriReader* entity_resolver, LCDDBuildType build_type)  {
+void DetectorImp::fromXML(const string& fname, xml::UriReader* entity_resolver, DetectorBuildType build_type)  {
   TypePreserve build_type_preserve(m_buildType = build_type);
   processXML(fname,entity_resolver);
 }
 
-void LCDDImp::dump() const {
+void DetectorImp::dump() const {
   TGeoManager* mgr = m_manager;
   mgr->SetVisLevel(4);
   mgr->SetVisOption(1);
@@ -559,29 +555,29 @@ void LCDDImp::dump() const {
 }
 
 /// Manipulate geometry using facroy converter
-long LCDDImp::apply(const char* factory_type, int argc, char** argv) {
+long DetectorImp::apply(const char* factory_type, int argc, char** argv) {
   string fac = factory_type;
   try {
-    long result = PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
+    long result = PluginService::Create<long>(fac, (Detector*) this, argc, argv);
     if (0 == result) {
       PluginDebug dbg;
-      result = PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
+      result = PluginService::Create<long>(fac, (Detector*) this, argc, argv);
       if ( 0 == result )  {
-        throw runtime_error("DD4hep: apply-plugin: Failed to locate plugin " +
+        throw runtime_error("dd4hep: apply-plugin: Failed to locate plugin " +
                             fac + ". " + dbg.missingFactory(fac));
       }
     }
     result = *(long*) result;
     if (result != 1) {
-      throw runtime_error("DD4hep: apply-plugin: Failed to execute plugin " + fac);
+      throw runtime_error("dd4hep: apply-plugin: Failed to execute plugin " + fac);
     }
     return result;
   }
-  catch (const XML::XmlException& e) {
-    throw runtime_error(XML::_toString(e.msg) + "\nDD4hep: XML-DOM Exception with plugin:" + fac);
+  catch (const xml::XmlException& e) {
+    throw runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception with plugin:" + fac);
   }
   catch (const exception& e) {
-    throw runtime_error(string(e.what()) + "\nDD4hep: with plugin:" + fac);
+    throw runtime_error(string(e.what()) + "\ndd4hep: with plugin:" + fac);
   }
   catch (...) {
     throw runtime_error("UNKNOWN exception from plugin:" + fac);

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
 #include <cmath>
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
 
 #ifndef INFINITY
 #define INFINITY (numeric_limits<double>::max())
@@ -36,7 +36,8 @@ void ConstantField::fieldComponents(const double* /* pos */, double* field) {
 
 /// Initializing constructor
 SolenoidField::SolenoidField()
-  : innerField(0), outerField(0), minZ(-INFINITY), maxZ(INFINITY), innerRadius(0), outerRadius(INFINITY) {
+  : innerField(0), outerField(0), minZ(-INFINITY), maxZ(INFINITY), innerRadius(0), outerRadius(INFINITY)
+{
   type = CartesianField::MAGNETIC;
 }
 
@@ -54,8 +55,7 @@ void SolenoidField::fieldComponents(const double* pos, double* field) {
 }
 
 /// Initializing constructor
-DipoleField::DipoleField()
-  : zmax(INFINITY), zmin(-INFINITY), rmax(INFINITY) {
+DipoleField::DipoleField() : zmax(INFINITY), zmin(-INFINITY), rmax(INFINITY) {
   type = CartesianField::MAGNETIC;
 }
 

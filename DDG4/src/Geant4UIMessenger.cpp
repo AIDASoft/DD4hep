@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,8 +24,8 @@
 #include <algorithm>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 namespace {
   struct InstallProperties {
@@ -55,8 +54,8 @@ Geant4UIMessenger::Geant4UIMessenger(const string& name, const string& path)
 
 /// Default destructor
 Geant4UIMessenger::~Geant4UIMessenger() {
-  destroyFirst(m_propertyCmd);
-  destroyFirst(m_actionCmd);
+  detail::destroyFirst(m_propertyCmd);
+  detail::destroyFirst(m_actionCmd);
 }
 
 /// Add a new callback structure

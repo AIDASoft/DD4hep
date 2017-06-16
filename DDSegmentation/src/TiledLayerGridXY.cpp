@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <cmath>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 /// default constructor using an encoding string
@@ -23,7 +23,7 @@ TiledLayerGridXY::TiledLayerGridXY(const std::string& cellEncoding) :
 	_type = "TiledLayerGridXY";
 	_description = "Cartesian segmentation in the local XY-plane using optimal tiling depending on the layer dimensions";
     
-	std::cout << " ######### DD4hep::DDSegmentation::TiledLayerGridXY() " << std::endl ; 
+	std::cout << " ######### dd4hep::DDSegmentation::TiledLayerGridXY() " << std::endl ; 
       
 	// register all necessary parameters
 	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
@@ -45,7 +45,7 @@ TiledLayerGridXY::TiledLayerGridXY(BitField64* decode) : CartesianGrid(decode) {
 	_type = "TiledLayerGridXY";
 	_description = "Cartesian segmentation in the local XY-plane using optimal tiling depending on the layer dimensions";
     
-	std::cout << " ######### DD4hep::DDSegmentation::TiledLayerGridXY() " << std::endl ; 
+	std::cout << " ######### dd4hep::DDSegmentation::TiledLayerGridXY() " << std::endl ; 
       
 	// register all necessary parameters
 	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
@@ -125,4 +125,4 @@ std::vector<double> TiledLayerGridXY::cellDimensions(const CellID&) const {
 REGISTER_SEGMENTATION(TiledLayerGridXY)
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,8 +21,8 @@
 #include "DD4hep/detail/AlignmentsInterna.h"
 
 using namespace std;
-using namespace DD4hep::Alignments;
-using namespace DD4hep::Alignments::Interna;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
@@ -32,7 +32,7 @@ AlignmentObject::AlignmentObject()
   : ConditionObject(), alignment_data(0)//, source_key(0)
 {
   InstanceCount::increment(this);
-  flags  = Conditions::Condition::ALIGNMENT_DERIVED;
+  flags  = Condition::ALIGNMENT_DERIVED;
   AlignmentData& d = data.bind<AlignmentData>();
   alignment_data   = &d;
 }
@@ -42,7 +42,7 @@ AlignmentObject::AlignmentObject(const string& nam, const string& tit, void* p, 
   : ConditionObject(nam, tit), alignment_data(0)//, source_key(0)
 {
   InstanceCount::increment(this);
-  flags  = Conditions::Condition::ALIGNMENT_DERIVED|Conditions::Condition::ONSTACK;
+  flags  = Condition::ALIGNMENT_DERIVED|Condition::ONSTACK;
   AlignmentData& d = data.bind<AlignmentData>(p,len);
   alignment_data   = &d;
 }
@@ -60,5 +60,5 @@ void AlignmentObject::clear()   {
   d.detectorTrafo.Clear();
   d.worldTrafo.Clear();
   d.nodes.clear();
-  flags = Conditions::Condition::ALIGNMENT_DERIVED;
+  flags = Condition::ALIGNMENT_DERIVED;
 }

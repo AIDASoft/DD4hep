@@ -4,7 +4,7 @@
   <subdetectors>
     <!--
 	Note: The subdetector name MUST be in the list of top level
-	detector elements attached to the LCDD structure.
+	detector elements attached to the Detector structure.
 
 A generic alignment transformation is defined by
 - a translation in 3D space identified in XML as a

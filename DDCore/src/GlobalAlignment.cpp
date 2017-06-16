@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,25 +23,17 @@
 
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
+using namespace dd4hep::align;
 
 namespace  {
   struct CheckHandle  {
     CheckHandle(const GlobalAlignment& a)  {
       if ( a.isValid() ) return;
-      throw runtime_error("DD4hep: Attempt to access invalid alignment object. [Invalid Handle]");
+      throw runtime_error("dd4hep: Attempt to access invalid alignment object. [Invalid Handle]");
     }
     ~CheckHandle() {}
   };
-}
-
-/// Default constructor
-GlobalAlignment::GlobalAlignment() : Handle<TGeoPhysicalNode>() {
-}
-
-/// Copy constructor
-GlobalAlignment::GlobalAlignment(const GlobalAlignment& c) : Handle<TGeoPhysicalNode>(c) {
 }
 
 /// Initializing constructor to create a new object
@@ -49,14 +41,6 @@ GlobalAlignment::GlobalAlignment(const string& path) {
   //cout << "GlobalAlignment: path=" << path << endl;
   //m_element = gGeoManager->MakePhysicalNode(path.c_str());
   m_element = new TGeoPhysicalNode(path.c_str());
-}
-
-/// Assignment operator
-GlobalAlignment& GlobalAlignment::operator=(const GlobalAlignment& c)  {
-  if ( &c != this )  {
-    m_element = c.ptr();
-  }
-  return *this;
 }
 
 /// Number of nodes in this branch
@@ -68,15 +52,15 @@ int GlobalAlignment::numNodes() const  {
 /// Access the placement of this node
 PlacedVolume GlobalAlignment::placement()   const   {
   CheckHandle verify_handle(*this);
-  return PlacedVolume(ptr()->GetNode(0));
+  return ptr()->GetNode(0);
 }
 
 /// Access the placement of a node in the chain of placements for this branch
 PlacedVolume GlobalAlignment::nodePlacement(int level)   const   {
   CheckHandle verify_handle(*this);
-  PlacedVolume pv = PlacedVolume(ptr()->GetNode(level));
-  if ( pv.isValid() ) return pv;
-  throw runtime_error("DD4hep: The object chain of "+string(placement().name())+
+  TGeoNode* n = ptr()->GetNode(level);
+  if ( n ) return n;
+  throw runtime_error("dd4hep: The object chain of "+string(placement().name())+
                       " is too short. [Invalid index]");
 }
 
@@ -85,19 +69,19 @@ PlacedVolume GlobalAlignment::motherPlacement(int level_up)   const    {
   CheckHandle verify_handle(*this);
   Int_t ind = ptr()->GetLevel()-level_up;
   if ( ind >= 0 )  {
-    return PlacedVolume(ptr()->GetMother(level_up));
+    return ptr()->GetMother(level_up);
   }
-  throw runtime_error("DD4hep: This object "+string(placement().name())+" has not enough mothers. [Invalid index]");
+  throw runtime_error("dd4hep: This object "+string(placement().name())+" has not enough mothers. [Invalid index]");
 }
 
 /// Access the currently applied alignment/placement matrix
-GlobalAlignment::Transform3D GlobalAlignment::toGlobal(int level) const   {
+Transform3D GlobalAlignment::toGlobal(int level) const   {
   CheckHandle verify_handle(*this);
-  return Geometry::_transform(ptr()->GetMatrix(level));
+  return Matrices::_transform(ptr()->GetMatrix(level));
 }
 
 /// Transform a point from local coordinates of a given level to global coordinates
-GlobalAlignment::Position GlobalAlignment::toGlobal(const Position& localPoint, int level) const   {
+Position GlobalAlignment::toGlobal(const Position& localPoint, int level) const   {
   CheckHandle verify_handle(*this);
   Position result;
   TGeoHMatrix* m = ptr()->GetMatrix(level);
@@ -106,7 +90,7 @@ GlobalAlignment::Position GlobalAlignment::toGlobal(const Position& localPoint, 
 }
 
 /// Transform a point from local coordinates of a given level to global coordinates
-GlobalAlignment::Position GlobalAlignment::globalToLocal(const Position& globalPoint, int level) const   {
+Position GlobalAlignment::globalToLocal(const Position& globalPoint, int level) const   {
   CheckHandle verify_handle(*this);
   Position result;
   TGeoHMatrix* m = ptr()->GetMatrix(level);
@@ -115,35 +99,35 @@ GlobalAlignment::Position GlobalAlignment::globalToLocal(const Position& globalP
 }
 
 /// Access the currently applied alignment/placement matrix
-GlobalAlignment::Transform3D GlobalAlignment::toMother(int level) const   {
+Transform3D GlobalAlignment::toMother(int level) const   {
   CheckHandle verify_handle(*this);
-  return Geometry::_transform(ptr()->GetNode(level)->GetMatrix());
+  return Matrices::_transform(ptr()->GetNode(level)->GetMatrix());
 }
 
 /// Access the currently applied alignment/placement matrix
-GlobalAlignment::Transform3D GlobalAlignment::nominal() const   {
+Transform3D GlobalAlignment::nominal() const   {
   CheckHandle verify_handle(*this);
-  return Geometry::_transform(ptr()->GetOriginalMatrix());
+  return Matrices::_transform(ptr()->GetOriginalMatrix());
 }
 
 /// Access the currently applied correction matrix (delta)
-GlobalAlignment::Transform3D GlobalAlignment::delta() const   {
+Transform3D GlobalAlignment::delta() const   {
   // It may be useful at some point to cache some of these matrices....
   CheckHandle verify_handle(*this);
   TGeoPhysicalNode* n = ptr();
   // T = T_0 * Delta -> Delta = T_0^-1 * T
   TGeoHMatrix mat(n->GetOriginalMatrix()->Inverse());
   mat.Multiply(n->GetNode()->GetMatrix());
-  return Geometry::_transform(&mat);
+  return Matrices::_transform(&mat);
 }
 
 /// Access the inverse of the currently applied correction matrix (delta) (mother to daughter)
-GlobalAlignment::Transform3D GlobalAlignment::invDelta() const   {
+Transform3D GlobalAlignment::invDelta() const   {
   // It may be useful at some point to cache some of these matrices....
   CheckHandle verify_handle(*this);
   TGeoPhysicalNode* n = ptr();
   // T = T_0 * Delta -> Delta^-1 = T^-1 * T_0
   TGeoHMatrix mat(n->GetNode()->GetMatrix()->Inverse());
   mat.Multiply(n->GetOriginalMatrix());
-  return Geometry::_transform(&mat);
+  return Matrices::_transform(&mat);
 }

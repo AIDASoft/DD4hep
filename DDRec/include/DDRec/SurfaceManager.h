@@ -1,5 +1,5 @@
-#ifndef DDRec_SurfaceManager_H_
-#define DDRec_SurfaceManager_H_
+#ifndef rec_SurfaceManager_H_
+#define rec_SurfaceManager_H_
 
 #include "DDRec/ISurface.h"
 #include "DD4hep/LCDD.h"
@@ -26,7 +26,7 @@ namespace dd4hep {
 
     public:
       /// The constructor
-      SurfaceManager(LCDD& theDetector);
+      SurfaceManager(Detector& theDetector);
 
       /// No default constructor
       SurfaceManager() = delete ;
@@ -54,7 +54,7 @@ namespace dd4hep {
 
 
       /// initialize all known surface maps
-      void initialize(LCDD& theDetector) ;
+      void initialize(Detector& theDetector) ;
 
       SurfaceMapsMap _map ;
     };
@@ -65,4 +65,4 @@ namespace dd4hep {
 namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 namespace DDSurfaces { using namespace dd4hep::rec  ;  }  // bwd compatibility for old namsepaces
 
-#endif // DDRec_SurfaceManager_H_
+#endif // rec_SurfaceManager_H_

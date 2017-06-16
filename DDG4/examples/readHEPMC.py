@@ -1,6 +1,6 @@
 """
 
-DD4hep simulation example setup using the python configuration
+dd4hep simulation example setup using the python configuration
 
 @author  M.Frank
 @version 1.0
@@ -10,7 +10,7 @@ def run(input_file):
   import DDG4
   from DDG4 import OutputLevel as Output
   kernel = DDG4.Kernel()
-  lcdd = kernel.lcdd()
+  description = kernel.detectorDescription()
   gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/Input")
   kernel.generatorAction().adopt(gen)
   gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/hepmc_geant4.dat"
@@ -18,7 +18,7 @@ def run(input_file):
   gen.Input = "Geant4EventReaderHepMC|"+input_file
   gen.OutputLevel = Output.DEBUG
   gen.HaveAbort = False
-  prim_vtx = DDG4.std_vector('DD4hep::Simulation::Geant4Vertex*')()
+  prim_vtx = DDG4.std_vector('dd4hep::sim::Geant4Vertex*')()
   parts = gen.new_particles()
   ret = 1
   while ret:

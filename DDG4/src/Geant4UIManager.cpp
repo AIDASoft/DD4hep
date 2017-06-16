@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,7 +25,7 @@
 #include "G4UIExecutive.hh"
 #include "G4RunManager.hh"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 using namespace std;
 
 namespace   {
@@ -147,6 +146,6 @@ void Geant4UIManager::start() {
 
 /// Stop and release resources
 void Geant4UIManager::stop() {
-  deletePtr(m_vis);
-  deletePtr(m_ui);
+  detail::deletePtr(m_vis);
+  detail::deletePtr(m_ui);
 }

@@ -1,12 +1,12 @@
 <plugins>
 
-  <plugin name="DD4hepXMLLoader">
+  <plugin name="dd4hepXMLLoader">
     <arg value="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC.xml"/>
   </plugin>
 
-  <plugin name="DD4hepVolumeManager"/>
-  <plugin name="DD4hepConditionsManagerInstaller"/>
-  <plugin name="DD4hep_Test_CallbackInstall"/>
-  <plugin name="DD4hep_Test_ConditionsExample3"/>
+  <plugin name="dd4hepVolumeManager"/>
+  <plugin name="dd4hepConditionsManagerInstaller"/>
+  <plugin name="dd4hep_Test_CallbackInstall"/>
+  <plugin name="dd4hep_Test_ConditionsExample3"/>
 
 </plugins>

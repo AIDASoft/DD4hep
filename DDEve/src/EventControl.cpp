@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -30,7 +30,7 @@
 #include <libgen.h>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 ClassImp(EventControl)
 
@@ -184,7 +184,7 @@ void EventControl::OnBuild()   {
   // -----------------------------------------------------------------------------------------
   top->AddFrame(new TGLabel(top,"Open event file:"), new TGLayoutHints(kLHintsLeft|kLHintsCenterY, 2, 2, 2, 2));
   m_open = b = new TGPictureButton(top, LoadPicture((icondir+"bld_open.png")));
-  b->Connect("Clicked()", "DD4hep::EventControl", this, "Open()");
+  b->Connect("Clicked()", "dd4hep::EventControl", this, "Open()");
   b->SetSize(TGDimension(32,32));
   top->AddFrame(b, new TGLayoutHints(kLHintsRight, 2, 2, 2, 2));
   group->AddFrame(top, new TGLayoutHints(kLHintsExpandX|kLHintsCenterX, 2, 2, 2, 2));
@@ -192,14 +192,14 @@ void EventControl::OnBuild()   {
   top = new TGHorizontalFrame(group);
   top->AddFrame(new TGLabel(top,"Previous:"), new TGLayoutHints(kLHintsLeft|kLHintsCenterY, 2, 2, 2, 2));
   m_prev = b = new TGPictureButton(top, LoadPicture((icondir+"bld_undo.png")));
-  b->Connect("Clicked()", "DD4hep::EventControl", this, "PreviousEvent()");
+  b->Connect("Clicked()", "dd4hep::EventControl", this, "PreviousEvent()");
   b->SetSize(TGDimension(32,32));
   top->AddFrame(b, new TGLayoutHints(kLHintsLeft, 2, 2, 2, 2));
 
   top->AddFrame(new TGLabel(top,""), new TGLayoutHints(kLHintsExpandX|kLHintsCenterY, 2, 2, 2, 2));
   top->AddFrame(new TGLabel(top,"Next:"), new TGLayoutHints(kLHintsLeft|kLHintsCenterY, 2, 2, 2, 2));
   m_next = b = new TGPictureButton(top, LoadPicture((icondir+"bld_redo.png")));
-  b->Connect("Clicked()", "DD4hep::EventControl", this, "NextEvent()");
+  b->Connect("Clicked()", "dd4hep::EventControl", this, "NextEvent()");
   b->SetSize(TGDimension(32,32));
   top->AddFrame(b, new TGLayoutHints(kLHintsRight, 2, 2, 2, 2));
   group->AddFrame(top,new TGLayoutHints(kLHintsExpandX|kLHintsCenterX, 2, 2, 2, 2));
@@ -207,7 +207,7 @@ void EventControl::OnBuild()   {
   top = new TGHorizontalFrame(group);
   top->AddFrame(new TGLabel(top,"Goto event:"), new TGLayoutHints(kLHintsLeft|kLHintsCenterY, 2, 2, 2, 2));
   m_goto = b = new TGPictureButton(top, LoadPicture((icondir+"ed_goto.png")));
-  b->Connect("Clicked()", "DD4hep::EventControl", this, "GotoEvent()");
+  b->Connect("Clicked()", "dd4hep::EventControl", this, "GotoEvent()");
   b->SetSize(TGDimension(32,32));
   top->AddFrame(b, new TGLayoutHints(kLHintsRight, 2, 2, 2, 2));
   group->AddFrame(top,new TGLayoutHints(kLHintsExpandX|kLHintsCenterX, 2, 2, 2, 2));

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 #include <set>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// DDEve event classes: Basic hit
   /** 
@@ -71,6 +71,6 @@ namespace DD4hep {
     DDEveParticle& operator=(const DDEveParticle& c);
   };
   typedef std::vector<DDEveParticle> DDEveParticles;
-}      /* End namespace DD4hep     */
+}      /* End namespace dd4hep     */
 #endif /* DD4HEP_DDEVE_DDEVEHIT_H  */
 

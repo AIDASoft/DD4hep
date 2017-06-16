@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,7 +23,7 @@
 // ROOT include files
 #include "TFile.h"
 
-using namespace DD4hep;
+using namespace dd4hep;
 
 namespace {
   /// Anonymous cast class to get access to protected members of TFile ;-)
@@ -41,7 +41,7 @@ namespace {
   };
 }
 
-namespace DD4hep {
+namespace dd4hep {
 
   /// Specialization for standard file descriptor files according to the posix standard
   template<> void dd4hep_file<int>::open(const char* path, BOOST_IOS::openmode mode)  {

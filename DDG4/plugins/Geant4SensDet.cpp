@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,10 +27,10 @@
 #include "G4Run.hh"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Private helper to support sequence reference counting
     /**
@@ -40,7 +40,6 @@ namespace DD4hep {
      */
     template <typename T> class RefCountedSequence  {
     public:
-      typedef RefCountedSequence<T> Base;
       T* m_sequence;
       /// Default constructor
       RefCountedSequence() : m_sequence(0) {                 }
@@ -54,7 +53,7 @@ namespace DD4hep {
         m_sequence->addRef();
       }
       void _release()  {
-        releasePtr(m_sequence);
+        detail::releasePtr(m_sequence);
         InstanceCount::decrement(this);
       }
     };
@@ -75,13 +74,14 @@ namespace DD4hep {
       SensitiveDetector m_sensitive;
     public:
       /// Constructor. The detector element is identified by the name
-      Geant4SensDet(const std::string& nam, Geometry::LCDD& lcdd)
+      Geant4SensDet(const std::string& nam, Detector& description)
         : G4VSensitiveDetector(nam), G4VSDFilter(nam),
-          Geant4Action(0,nam), Geant4ActionSD(nam), Base()
+          Geant4Action(0,nam), Geant4ActionSD(nam),
+          RefCountedSequence<Geant4SensDetActionSequence>()
       {
-        Geant4Kernel& master = Geant4Kernel::instance(lcdd);
+        Geant4Kernel& master = Geant4Kernel::instance(description);
         Geant4Kernel& kernel = master.worker(Geant4Kernel::thread_self());
-        m_sensitive   = lcdd.sensitiveDetector(nam);
+        m_sensitive   = description.sensitiveDetector(nam);
         m_context     = kernel.workerContext();
         m_outputLevel = kernel.getOutputLevel(nam);
         _aquire(kernel.sensitiveAction(nam));
@@ -110,7 +110,7 @@ namespace DD4hep {
       /// Access to the readout geometry of the sensitive detector
       virtual G4VReadOutGeometry* readoutGeometry() const
       {  return this->G4VSensitiveDetector::GetROgeometry();            }
-      /// Access to the LCDD sensitive detector handle
+      /// Access to the Detector sensitive detector handle
       virtual SensitiveDetector sensitiveDetector() const
       {  return m_sensitive;                                            }
       /// Access to the sensitive type of the detector
@@ -141,15 +141,15 @@ namespace DD4hep {
       }
 
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 
 #include "DDG4/Factories.h"
 
-typedef DD4hep::Simulation::Geant4SensDet Geant4SensDet;
-typedef DD4hep::Simulation::Geant4SensDet Geant4tracker;
-typedef DD4hep::Simulation::Geant4SensDet Geant4calorimeter;
+typedef dd4hep::sim::Geant4SensDet Geant4SensDet;
+typedef dd4hep::sim::Geant4SensDet Geant4tracker;
+typedef dd4hep::sim::Geant4SensDet Geant4calorimeter;
 
 DECLARE_GEANT4SENSITIVEDETECTOR(Geant4SensDet)
 DECLARE_GEANT4SENSITIVEDETECTOR(Geant4tracker)

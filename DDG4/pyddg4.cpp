@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -55,9 +55,9 @@ int main(int argc, char** argv)   {
   if ( !have_prompt && args.size()>0 )  {
     libs.push_back((char*)"libDDG4Python");
     if ( 0 == (ret=load_libs(libs)) )   {
-      DD4hep::DDPython::instance().setArgs(args.size(), &args[0]);
-      DD4hep::DDPython::instance().setMainThread();
-      DD4hep::DDPython::instance().runFile(args[0]);
+      dd4hep::DDPython::instance().setArgs(args.size(), &args[0]);
+      dd4hep::DDPython::instance().setMainThread();
+      dd4hep::DDPython::instance().runFile(args[0]);
       if ( do_execute )
         return gInterpreter->ProcessLine("PyDDG4::execute()");
       else 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)   {
   }
   if ( 0 == (ret=load_libs(libs)) )   {
     ::printf("+++ Calling now Py_Main...\n");
-    ret = DD4hep::DDPython::run_interpreter(args.size(), &args[0]);
+    ret = dd4hep::DDPython::run_interpreter(args.size(), &args[0]);
     //::printf("+++ Return code Py_Main=%d\n",ret);
   }
   return ret;

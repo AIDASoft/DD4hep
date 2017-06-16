@@ -1,13 +1,13 @@
 // $Id: Geant4Converter.cpp 788 2013-09-20 17:04:50Z gaede $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
 //
 //====================================================================
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
@@ -79,9 +79,9 @@
 #include <iomanip>
 #include <sstream>
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep::detail;
+using namespace dd4hep;
 using namespace std;
 
 #define private public
@@ -225,8 +225,8 @@ namespace {
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter( LCDD& lcdd ) 
-  : Geant4Mapping(lcdd), m_checkOverlaps(true)
+Geant4Converter::Geant4Converter( Detector& description ) 
+  : Geant4Mapping(description), m_checkOverlaps(true)
 {
   this->Geant4Mapping::init();
 }
@@ -659,7 +659,7 @@ void* Geant4Converter::handleRegion(const TNamed* region, const set<const TGeoVo
     vector<string>& limits = r.limits();
     for(vector<string>::const_iterator i=limits.begin(); i!=limits.end(); ++i) {
       const string& nam = *i;
-      LimitSet ls = m_lcdd.limitSet(nam);
+      LimitSet ls = m_detDesc.limitSet(nam);
       if ( ls.isValid() ) {
 	bool found = false;
 	const LimitMap& lm = data().g4Limits;
@@ -713,15 +713,15 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
   if ( !g4 )   {
     SensitiveDetector sd = Ref_t(sens_det);
     string type = sd.type(), name = sd.name();
-    g4 = PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+    g4 = PluginService::Create<G4VSensitiveDetector*>(type,name,&m_detDesc);
     if ( !g4 ) {
       string tmp = type;
       tmp[0] = ::toupper(tmp[0]);
       type = "Geant4"+tmp;
-      g4 = PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+      g4 = PluginService::Create<G4VSensitiveDetector*>(type,name,&m_detDesc);
       if ( !g4 )  {
 	PluginDebug dbg;
-	g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+	g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type,name,&m_detDesc);
 	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
 			    "create Geant4 sensitive detector factory "+name+" of type "+type+".");
       }
@@ -761,15 +761,15 @@ void* Geant4Converter::handleVis(const string& /* name */, const TNamed* vis) co
 }
 
 /// Handle the geant 4 specific properties
-void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
+void Geant4Converter::handleProperties(Detector::Properties& prp)   const {
   map<string,string> processors;
   static int s_idd = 9999999;
   string id;
-  for(LCDD::Properties::const_iterator i=prp.begin(); i!=prp.end(); ++i) {
+  for(Detector::Properties::const_iterator i=prp.begin(); i!=prp.end(); ++i) {
     const string& nam = (*i).first;
-    const LCDD::PropertyValues& vals = (*i).second;
+    const Detector::PropertyValues& vals = (*i).second;
     if ( nam.substr(0,6) == "geant4" ) {
-      LCDD::PropertyValues::const_iterator id_it = vals.find("id");
+      Detector::PropertyValues::const_iterator id_it = vals.find("id");
       if ( id_it != vals.end() )  {
 	id= (*id_it).second;
       }
@@ -784,10 +784,10 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
   for(map<string,string>::const_iterator i=processors.begin(); i!=processors.end(); ++i) {
     const Geant4Converter* ptr = this;
     string nam = (*i).second;
-    const LCDD::PropertyValues& vals = prp[nam];
+    const Detector::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;
     string tag  = type + "_Geant4_action";
-    long result = ROOT::Reflex::PluginService::Create<long>(tag,&m_lcdd,ptr,&vals);
+    long result = ROOT::Reflex::PluginService::Create<long>(tag,&m_detDesc,ptr,&vals);
     if ( 0 == result ) {
       throw runtime_error("Failed to locate plugin to interprete files of type"
 			  " \""+tag+"\" - no factory:"+type);
@@ -907,9 +907,9 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
-  Material mat = m_lcdd.material("Argon");
+  Material mat = m_detDesc.material("Argon");
   handleMaterial(mat.name(),mat.ptr());
-  mat = m_lcdd.material("Silicon");
+  mat = m_detDesc.material("Silicon");
   handleMaterial(mat.name(),mat.ptr());
 
   handle(this, geo.volumes,   &Geant4Converter::collectVolume);
@@ -928,7 +928,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   // Now place all this stuff appropriately
   handleRMap(this, *m_data, &Geant4Converter::handlePlacement);
   //==================== Fields
-  handleProperties(m_lcdd.properties());
+  handleProperties(m_detDesc.properties());
 
   //handleMap(this, geo.sensitives, &Geant4Converter::printSensitive);
   //handleRMap(this, *m_data, &Geant4Converter::printPlacement);

@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -11,6 +11,6 @@
 //==========================================================================
 #include "ParsersStandardMiscCommon.h"
 
-int DD4hep::Parsers::parse(std::vector<std::vector<double> >& result, const std::string& input) {
-  return DD4hep::Parsers::parse_(result, input);
+int dd4hep::Parsers::parse(std::vector<std::vector<double> >& result, const std::string& input) {
+  return dd4hep::Parsers::parse_(result, input);
 }

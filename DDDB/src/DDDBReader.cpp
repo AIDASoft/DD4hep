@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,27 +26,27 @@
 #include <cstring>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::DDDB;
+using namespace dd4hep;
+using namespace dd4hep::DDDB;
 
 /// Standard constructor
 DDDBReader::DDDBReader(const std::string& dir)
   : m_directory(dir), m_match("conddb:")
 {
-	m_context.valid_since = makeTime(1970,1,1);
-	m_context.valid_until = makeTime(2030,1,1);
-	m_context.event_time  = makeTime(2015,7,1,12,0,0);
+	m_context.valid_since = detail::makeTime(1970,1,1);
+	m_context.valid_until = detail::makeTime(2030,1,1);
+	m_context.event_time  = detail::makeTime(2015,7,1,12,0,0);
 }
 
 /// Resolve a given URI to a string containing the data
 bool DDDBReader::load(const string& system_id, string& buffer)   {
-  return XML::UriReader::load(system_id, buffer);
+  return xml::UriReader::load(system_id, buffer);
 }
 
 /// Resolve a given URI to a string containing the data
 bool DDDBReader::load(const string& system_id,
-                          UserContext*  ctxt,
-                          string& buffer)
+                      UserContext*  ctxt,
+                      string& buffer)
 {
   if ( system_id.substr(0,m_match.length()) == m_match )  {
     string mm = m_match + "//";
@@ -71,7 +71,7 @@ bool DDDBReader::load(const string& system_id,
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
 void DDDBReader::parserLoaded(const std::string& system_id)  {
-  return XML::UriReader::parserLoaded(system_id);
+  return xml::UriReader::parserLoaded(system_id);
 }
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load

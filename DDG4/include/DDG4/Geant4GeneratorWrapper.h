@@ -1,6 +1,6 @@
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,10 +22,10 @@ class G4VPrimaryGenerator;
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Geant4Action to merge several independent interaction to one
     /** Wrap native G4 particle ganerators like the generic particle source etc.
@@ -54,7 +54,7 @@ namespace DD4hep {
       /// Event generation action callback
       virtual void operator()(G4Event* event);
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4GENERATORWRAPPER_H

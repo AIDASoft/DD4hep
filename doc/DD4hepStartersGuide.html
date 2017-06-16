@@ -10,7 +10,7 @@
  <tr>
   <td id="projectlogo"><img alt="Logo" src="LaTex/CERN-logo.png" height="72"/></td>
   <td id="projectlogo"><img alt="Logo" src="LaTex/DD4hep-AIDA-logo.png" height="72"/></td>
-  <td id="projectbrief">DD4hep<br>The AIDA detector description toolkit</br>
+  <td id="projectbrief">dd4hep<br>The AIDA detector description toolkit</br>
                 for high energy physics experiments</br></td>
  </tr>
  </tbody>
@@ -22,7 +22,7 @@
 <div class="space"></div>
 
 <div class="title">
-DD4hep 
+dd4hep 
 <br>
 <br>
 Starter's Guide
@@ -35,10 +35,10 @@ Starter's Guide
 <div class="space"></div>
 
 <div class="abstract">
-This starter's guide contains the basic information about <it>DD4hep</it>.
+This starter's guide contains the basic information about <it>dd4hep</it>.
 This is the license information, instruction to obtain and build 
 the software as well as suggestions of further reading concerning
-the various <it>DD4hep</it> subpackages.
+the various <it>dd4hep</it> subpackages.
 </div>
 
 <div class="space"></div>
@@ -49,29 +49,29 @@ the various <it>DD4hep</it> subpackages.
 
 <hr />
 
-<h1><em>DD4hep</em> Project Information</h1>
+<h1><em>dd4hep</em> Project Information</h1>
 
 <hr />
 
-<h2>The <em>DD4hep</em> Project Web</h2>
+<h2>The <em>dd4hep</em> Project Web</h2>
 
 <p>The project's welcome page can be found under the folling URL:
 <a href="http://aidasoft.web.cern.ch/DD4hep">http://aidasoft.web.cern.ch/DD4hep</a></p>
 
 <p><strong><em>Please note:</em></strong>
-To access the CERN intranet, to create new bugs in the <em>DD4hep</em> bug
+To access the CERN intranet, to create new bugs in the <em>dd4hep</em> bug
 tracker etc, you require a CERN account, but you can create an
 external account very easily following 
 <a href="https://account.cern.ch/account/Externals/RegisterAccount.aspx">these instructions</a>.</p>
 
-<h2>The <em>DD4hep</em> Developers Mailing List</h2>
+<h2>The <em>dd4hep</em> Developers Mailing List</h2>
 
 <p>Mailing list to contact developers is: <strong>dd4hep-developers@cern.ch</strong>.</p>
 
 <p>The mailing list archives can be consulted using the following 
-<a href="https://groups.cern.ch/group/dd4hep-developers/Lists/Archive/100.aspx">URL</a>.</p>
+<a href="https://groups.cern.ch/group/DD4hep-developers/Lists/Archive/100.aspx">URL</a>.</p>
 
-<h2>The <em>DD4hep</em> Issue Tracker</h2>
+<h2>The <em>dd4hep</em> Issue Tracker</h2>
 
 <p>Bug tracking and issue solving as well as feature requests may
 be addressed to the developers using the following 
@@ -83,18 +83,18 @@ nano-seconds. Most of the contributors also have other assignments!</p>
 
 <h2>License</h2>
 
-<p><em>DD4hep</em> is made available under the GPL license. 
-For full details see the file LICENSE in the <em>DD4hep</em> distribution or
+<p><em>dd4hep</em> is made available under the GPL license. 
+For full details see the file LICENSE in the <em>dd4hep</em> distribution or
 at the following
 <a href="http://svnsrv.desy.de/viewvc/aidasoft/DD4hep/trunk/LICENCE?view=markup">URL</a>.</p>
 
 <hr />
 
-<h1>Building and Installing <em>DD4hep</em></h1>
+<h1>Building and Installing <em>dd4hep</em></h1>
 
 <hr />
 
-<p>The <em>DD4hep</em> software is distributed for each release in the form of </p>
+<p>The <em>dd4hep</em> software is distributed for each release in the form of </p>
 
 <pre><code>* Precompiled tar-balls, where users only untar the downloaded
   software.
@@ -104,7 +104,7 @@ at the following
 
 <h2>Release Versioning</h2>
 
-<p>Currently <em>DD4hep</em> is released several times a year depending on the 
+<p>Currently <em>dd4hep</em> is released several times a year depending on the 
 importance of new functionality.
 The versioning schema consists of two digits in the form:</p>
 
@@ -115,7 +115,7 @@ We currently do not support patches, since the project is still
 quite young and the binary compatibility is broken with each release.</p>
 
 <p>Code changes, which require clients to modify existing code are getting
-rare, since the main package <em>DD4hep</em> is maturing.</p>
+rare, since the main package <em>dd4hep</em> is maturing.</p>
 
 <h2>Supported Platforms</h2>
 
@@ -130,9 +130,9 @@ rare, since the main package <em>DD4hep</em> is maturing.</p>
 <pre><code>  - Microsoft Windows.
 </code></pre>
 
-<p>In principle <em>DD4hep</em> does not depend dramatically on specific 
+<p>In principle <em>dd4hep</em> does not depend dramatically on specific 
 operating systems. In principle any compiler modern enough to support
-<strong>C++11</strong> may should be capable of building <em>DD4hep</em>.
+<strong>C++11</strong> may should be capable of building <em>dd4hep</em>.
 There are some <strong><em>C++ABI</em></strong> issues, which may have to be sorted 
 out for non-gcc platforms, but most of this work was done for MacOS
 and it should be feasible to solve these problems for other platforms
@@ -145,38 +145,38 @@ as well.</p>
 
 <h2>Prerequisites</h2>
 
-<p><em>DD4hep</em> depends on a number of "external" packages. The user will need to 
+<p><em>dd4hep</em> depends on a number of "external" packages. The user will need to 
 install these in his/her system before building and running the examples.
-Depending on the usage of <em>DD4hep</em> and it's subpackages software of other 
+Depending on the usage of <em>dd4hep</em> and it's subpackages software of other 
 projects is used. The configuration options are described later in this
 document.</p>
 
 <ul>
-<li><em>DD4hep</em> uses the <em>CMake</em> build system. A recent version 
+<li><em>dd4hep</em> uses the <em>CMake</em> build system. A recent version 
 (version 2.8 or higher) of <a href="#bib_cmake"><em>CMake</em></a> must be installed.</li>
-<li><em>DD4hep</em> itself depends on the 
+<li><em>dd4hep</em> itself depends on the 
 <a href="#bib_ROOT-tgeo">ROOT geometry package</a> <strong>Tgeo</strong> and 
 in turn on the basic <a href="#bib_ROOT">ROOT libraries</a>. 
 Version 5.30 or higher is required.</li>
-<li><em>DD4hep</em> uses the <a href="#bib_boost"><em>Boost-Spirit</em></a>
+<li><em>dd4hep</em> uses the <a href="#bib_boost"><em>Boost-Spirit</em></a>
 implementation to interprete
 input and options.</li>
-<li>Optionally <em>DD4hep</em> can use <a href="#bib_xerces"><em>Xerces-C</em></a> as a 
+<li>Optionally <em>dd4hep</em> can use <a href="#bib_xerces"><em>Xerces-C</em></a> as a 
 parser for XML input.
 By default it uses <a href="#bib_tinyxml"><em>TinyXML</em></a>, 
-which is included in the <em>DD4hep</em> release.</li>
+which is included in the <em>dd4hep</em> release.</li>
 <li>The subpackages for alignment DDAlign, conditions data \DDC and event
 display <em>DDEve</em> do not require additional external libraries.</li>
 <li>The simulation extensions extension <em>DDG4</em> in addition depends on a valid
 <a href="#bib_geant4"><em>Geant4</em></a> installation. Version 9 and 10 of Geant4 is supported.</li>
 </ul>
 
-<p>If <em>DD4hep</em> is not installed in the system name-space (/usr/bin, /usr/lib, etc.) 
-any number of <em>DD4hep</em> versions can exist in parallel.</p>
+<p>If <em>dd4hep</em> is not installed in the system name-space (/usr/bin, /usr/lib, etc.) 
+any number of <em>dd4hep</em> versions can exist in parallel.</p>
 
 <h2>Package Contents</h2>
 
-<p>The <em>DD4hep</em> project consists of several packages. 
+<p>The <em>dd4hep</em> project consists of several packages. 
 The idea has been to separate the common parts of 
 the detector description toolkit from concrete detector examples. </p>
 
@@ -188,20 +188,20 @@ The package provides the basic mechanisms for constructing the
 "Generic Detector Description Model"  in memory from XML compact detector definition files.</p>
 
 <p><strong>DDG4</strong>:
-Is the package that contains the conversion of <em>DD4hep</em> geometry into
+Is the package that contains the conversion of <em>dd4hep</em> geometry into
 Geant4 geometry to be used for simulation.</p>
 
 <p><strong>DDAlign</strong>:
 The DDAlign toolkit implements a modular and flexible approach to
-introduce and access the alignment parameters in <em>DD4hep</em> geometry
+introduce and access the alignment parameters in <em>dd4hep</em> geometry
 descruptions.</p>
 
 <p><strong>DDCond</strong>:
-Support for conditions data for <em>DD4hep</em>.</p>
+Support for conditions data for <em>dd4hep</em>.</p>
 
 <p><strong>DDEve</strong>:
 <em>DDEve</em> provides an event display for detector geometries
-implemented using <em>DD4hep</em>. 
+implemented using <em>dd4hep</em>. 
 <em>DDEve</em> hereby takes advantage of the TEve toolkit naturally provided by
 the ROOT framework like the ROOT geometry toolkit TGeo. </p>
 
@@ -214,14 +214,14 @@ dependencies. For instance, the simulation application example will
 require to compiler and link 
 against Geant4 but not the reconstruction application.</p>
 
-<h2>Installing <em>DD4hep</em> from Precompiled Binaries</h2>
+<h2>Installing <em>dd4hep</em> from Precompiled Binaries</h2>
 
 <p>The binaries are available for downloading from afs under the following
 location: <strong>to be done, currently not available....</strong>. </p>
 
 <p>Once downloaded you need to unzip and 
 de-tar the file. For example, if you have downloaded the debug 
-version of <em>DD4hep</em> v00-13  for Linux-SLC6:
+version of <em>dd4hep</em> v00-13  for Linux-SLC6:
 <code>
 % gunzip dd4hep-v00-13-slc6-gcc4.8-dbg.tar.gz
 % tar xvf dd4hep-v00-13-slc6-gcc4.8-dbg.tar.gz
@@ -233,10 +233,10 @@ the directory structure.</p>
 
 <p><strong>TO BE DONE !!!</strong></p>
 
-<h2>Access and Build <em>DD4hep</em> from the Repository</h2>
+<h2>Access and Build <em>dd4hep</em> from the Repository</h2>
 
 <p>The following sections explain how to obtain a usable binary
-build of the <em>DD4hep</em> software.</p>
+build of the <em>dd4hep</em> software.</p>
 
 <h3>Downloading the Code from the Repository</h3>
 
@@ -245,21 +245,21 @@ check out the most recent source. The compressed file is a one time only
 choice; every time you would like to upgrade you will need to download 
 the entire new version.</p>
 
-<p>The <em>DD4hep</em> code is accessible in anonymous read-only mode by anybody
+<p>The <em>dd4hep</em> code is accessible in anonymous read-only mode by anybody
 from the svn repository at <strong>Desy</strong>:
 <code>
 % svn co https://svnsrv.desy.de/basic/aidasoft/DD4hep/trunk
-% mv trunk DD4hep_src
+% mv trunk dd4hep_src
 </code></p>
 
 <h3>Installing the Source from Subversion</h3>
 
-<p>This paragraph describes how to checkout and build <em>DD4hep</em> from a checkout using subversion for Unix-like systems:
+<p>This paragraph describes how to checkout and build <em>dd4hep</em> from a checkout using subversion for Unix-like systems:
 <code>
-% mkdir DD4hep_install
-% mkdir DD4hep_build
+% mkdir dd4hep_install
+% mkdir dd4hep_build
 % export DD4hepINSTALL=<code>pwd</code>/DD4hep_install
-% cd DD4hep_build
+% cd dd4hep_build
 % cmake -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=\${DD4hepINSTALL} \
         [option [option]] ...
@@ -279,11 +279,11 @@ libraries in the shared lib search path (this will vary with OS, shell, etc.) e.
 
 <h3>CMake Configuration Options</h3>
 
-<p>We describe in the following only options, which are unique to the build of <em>DD4hep</em>. Boolean values are either <strong>ON</strong> or <strong>OFF</strong> to enable or disable a feature.</p>
+<p>We describe in the following only options, which are unique to the build of <em>dd4hep</em>. Boolean values are either <strong>ON</strong> or <strong>OFF</strong> to enable or disable a feature.</p>
 
 <table class="cmake_var">
-<tr><td colspan=2 class="cmake_desc">DD4hep_ROOT=&lt;directory&gt;</td></tr>
-<tr><td class="item">Function: </td><td> Location of the *DD4hep* installation directory.</td></tr>
+<tr><td colspan=2 class="cmake_desc">dd4hep_ROOT=&lt;directory&gt;</td></tr>
+<tr><td class="item">Function: </td><td> Location of the *dd4hep* installation directory.</td></tr>
 </table>
 
 <table class="cmake_var">
@@ -326,7 +326,7 @@ libraries in the shared lib search path (this will vary with OS, shell, etc.) e.
 <table class="cmake_var">
 <tr><td colspan=2 class="cmake_desc">BUILD_TESTING=&lt;boolean&gt;    </td></tr>
 <tr><td class="item">Default:  </td><td> OFF  </td></tr>
-<tr><td class="item">Function: </td><td> Build *DD4hep* tests. </td></tr>
+<tr><td class="item">Function: </td><td> Build *dd4hep* tests. </td></tr>
 </table>
 
 <table class="cmake_var">
@@ -339,7 +339,7 @@ libraries in the shared lib search path (this will vary with OS, shell, etc.) e.
 <table class="cmake_var">
 <tr><td colspan=2 class="cmake_desc">DD4HEP_USE_PYROOT=&lt;boolean&gt;                         </td></tr>
 <tr><td class="item">Default:  </td><td> OFF                                                                </td></tr>
-<tr><td class="item">Function: </td><td> Steer the usage of <bf>PyROOT</bf> *DD4hep* detector construction. </td></tr>
+<tr><td class="item">Function: </td><td> Steer the usage of <bf>PyROOT</bf> *dd4hep* detector construction. </td></tr>
 <tr><td class="item">Remark:   </td><td> <bf>DEPRECATED</bf>. Purely historical and unsupported.            </td></tr>
 </table>
 
@@ -348,11 +348,11 @@ libraries in the shared lib search path (this will vary with OS, shell, etc.) e.
 <p>During the build a shell script is generated and copied to the
 installation area called "thisdd4hep.(c)sh".
 To setup the runtime and build environment for layered software
-using <em>DD4hep</em> this script musty be source'd.</p>
+using <em>dd4hep</em> this script musty be source'd.</p>
 
-<h3>Using <em>DD4hep</em> in Layered Software as a Client</h3>
+<h3>Using <em>dd4hep</em> in Layered Software as a Client</h3>
 
-<p>It is necessary to setup the <em>DD4hep</em> runtime environment before 
+<p>It is necessary to setup the <em>dd4hep</em> runtime environment before 
 the configuration of the client software.
 In the installation directory the cmake build instructions 
 <strong>DD4hepConfig.cmake</strong> are generated,
@@ -361,7 +361,7 @@ Cmake should pick-up the build instructions automatically.</p>
 
 <h3>Relocation of the Installation directory</h3>
 
-<p>Once build, <em>DD4hep</em> can be tar'ed and/or moved to any other 
+<p>Once build, <em>dd4hep</em> can be tar'ed and/or moved to any other 
 directory. The instructions for the usage by layered client software
 stay intact.</p>
 
@@ -369,7 +369,7 @@ stay intact.</p>
 
 <h3>Example Build Script</h3>
 
-<p>The following commands may be used to build <em>DD4hep</em> from the
+<p>The following commands may be used to build <em>dd4hep</em> from the
 <a href="http://svnsrv.desy.de/viewvc/aidasoft/DD4hep/trunk/doc/example_build_script.sh">script in the svn repository</a>.</p>
 
 <pre>
@@ -429,24 +429,24 @@ python examples/DDG4/examples/CLICSidSimu.py
 
 <hr />
 
-<h1><em>DD4hep</em> Documentation</h1>
+<h1><em>dd4hep</em> Documentation</h1>
 
 <hr />
 
 <p>General build information is provided by 
 <a href="http://svnsrv.desy.de/viewvc/aidasoft/DD4hep/trunk/doc/DD4hepStarter.pdf">this document</a>:
-In addition all sub-packages of the <em>DD4hep</em> toolkit provide documentation in the form of manuals.</p>
+In addition all sub-packages of the <em>dd4hep</em> toolkit provide documentation in the form of manuals.</p>
 
 <p>Suggestions (or better improvements) of user documentation of 
 packages being validated are highly welcome. Please contact the
-developers using the <em>DD4hep</em> mailing list.
+developers using the <em>dd4hep</em> mailing list.
 If a package is under development and not offered to the public,
 please ignore the package and it's errors unless you are eager to
 contribute.</p>
 
-<h2><em>DD4hep</em> User's Guide</h2>
+<h2><em>dd4hep</em> User's Guide</h2>
 
-<p>The <em>DD4hep</em> guide is part of the distribution and the 
+<p>The <em>dd4hep</em> guide is part of the distribution and the 
 <a href="http://svnsrv.desy.de/viewvc/aidasoft/DD4hep/trunk/doc/DD4hepManual.pdf">svn repository</a>.
 <br>Author: M.Frank</p>
 
@@ -470,7 +470,7 @@ contribute.</p>
 <p>The DDEve guide is part of the distribution and the 
 <a href="http://svnsrv.desy.de/viewvc/aidasoft/DD4hep/trunk/doc/DDEveManual.pdf">svn repository</a>.</p>
 
-<p><strong>Note:</strong> This package is not officially part of <em>DD4hep</em> and in addition 
+<p><strong>Note:</strong> This package is not officially part of <em>dd4hep</em> and in addition 
 under development. The guide is very rudimentary.</p>
 
 <h2><em>DDG4</em> User's Guide</h2>
@@ -503,7 +503,7 @@ provides daily information about the the current status of the software in the s
 
 <hr />
 
-<p><em>DD4hep</em> was started by me in the year 2012 in response of the 
+<p><em>dd4hep</em> was started by me in the year 2012 in response of the 
 needs of the linear collider community (ILD, CLIC) for a flexible
 detector geometry usable to develop tracking code. 
 This development relatively quickly emerged into desire to actually
@@ -524,7 +524,7 @@ are more then welcome. If your changes affect the basic design
 I would appreciate to be contacted in advance for a brief discussion
 of your plans.</p>
 
-<p><em>DD4hep</em> is supposed to quickly enable users to develop test and
+<p><em>dd4hep</em> is supposed to quickly enable users to develop test and
 simulate the physics response of new detector models and concepts.
 Although a certain palette of such subdetectors concepts is 
 provided in the <strong>DDDetectors</strong> package, the palette is
@@ -539,7 +539,7 @@ or more detailed sensitive detector concepts for the <em>DDG4</em> package.</p>
 <h2>Contributors</h2>
 
 <p>In the <a href="http://svnsrv.desy.de/viewvc/aidasoft/DD4hep/trunk/doc/CREDITS">CREDITS file</a>
-the most important contributors to the <em>DD4hep</em> project and a 
+the most important contributors to the <em>dd4hep</em> project and a 
 short description of their work can be found. If you think you should
 be part of this list, but somehow got forgotten, please contact us.</p>
 
@@ -556,7 +556,7 @@ be part of this list, but somehow got forgotten, please contact us.</p>
 <h2>References</h2>
 
 <table>
-<tr><td>[1]</td><td> <div id="bib_DD4hep"><a href="http://aidasoft.web.cern.ch/DD4hep">DD4hep web page</a>.</div>
+<tr><td>[1]</td><td> <div id="bib_dd4hep"><a href="http://aidasoft.web.cern.ch/DD4hep">dd4hep web page</a>.</div>
 </td></tr>
 <tr><td>[2]</td><td> <div id="bib_ROOT-tgeo">R.Brun, A.Gheata, M.Gheata, "The ROOT geometry package",<br>
                     Nuclear Instruments and Methods A 502 (2003) 676-680.</div>

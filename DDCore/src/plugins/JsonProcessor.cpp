@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -47,8 +47,8 @@ namespace {
 }
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 static void setChildTitles(const pair<string, DetElement>& e) {
   DetElement parent = e.second.parent();
@@ -59,7 +59,7 @@ static void setChildTitles(const pair<string, DetElement>& e) {
   for_each(children.begin(), children.end(), setChildTitles);
 }
 
-namespace DD4hep  {
+namespace dd4hep  {
     template <> void Converter<detector>::operator()(json_h element) const;
 }
 
@@ -75,9 +75,9 @@ template <> void Converter<detector>::operator()(json_h element) const {
     if (attr_par) {
       // We have here a nested detector. If the mother volume is not yet registered
       // it must be done here, so that the detector constructor gets the correct answer from
-      // the call to LCDD::pickMotherVolume(DetElement).
+      // the call to Detector::pickMotherVolume(DetElement).
       string par_name = element.attr<string>(attr_par);
-      DetElement parent_detector = lcdd.detector(par_name);
+      DetElement parent_detector = description.detector(par_name);
       if ( !parent_detector.isValid() )  {
         except("Compact","Failed to access valid parent detector of %s",name.c_str());
       }
@@ -86,13 +86,13 @@ template <> void Converter<detector>::operator()(json_h element) const {
         except("Compact","Failed to access valid parent volume of %s from %s",
                name.c_str(), par_name.c_str());
       }
-      lcdd.declareMotherVolume(name, parent_volume);
+      description.declareMotherVolume(name, parent_volume);
     }
     json_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
     Segmentation seg;
     if ( attr_ro )   {
-      Readout ro = lcdd.readout(element.attr<string>(attr_ro));
+      Readout ro = description.readout(element.attr<string>(attr_ro));
       if (!ro.isValid()) {
         throw runtime_error("No Readout structure present for detector:" + name);
       }
@@ -100,10 +100,10 @@ template <> void Converter<detector>::operator()(json_h element) const {
       sd = SensitiveDetector(name, "sensitive");
       sd.setHitsCollection(ro.name());
       sd.setReadout(ro);
-      lcdd.addSensitiveDetector(sd);
+      description.addSensitiveDetector(sd);
     }
     Ref_t sens = sd;
-    DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens)));
+    DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &description, &element, &sens)));
     if (det.isValid()) {
       setChildTitles(make_pair(name, det));
       if ( sd.isValid() )  {
@@ -120,10 +120,10 @@ template <> void Converter<detector>::operator()(json_h element) const {
 
     if (!det.isValid()) {
       PluginDebug dbg;
-      PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens);
+      PluginService::Create<NamedObject*>(type, &description, &element, &sens);
       throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
-    lcdd.addDetector(det);
+    description.addDetector(det);
     return;
   }
   catch (const exception& e) {
@@ -136,9 +136,9 @@ template <> void Converter<detector>::operator()(json_h element) const {
   }
 }
 
-static long handle_json(lcdd_t& lcdd, int argc, char** argv) {
+static long handle_json(Detector& description, int argc, char** argv) {
   if ( argc < 1 || (argc<2 && argv[0][0] != '/') )  {
-    ::printf("DD4hep_JsonProcessor <file> <directory>                \n"
+    ::printf("dd4hep_JsonProcessor <file> <directory>                \n"
              "  If file is an absolute path (does NOT start with '/')\n"
              "  the directory path is mandatory.                     \n"
              "  The file name is then assumed to be relative.        \n"
@@ -149,14 +149,14 @@ static long handle_json(lcdd_t& lcdd, int argc, char** argv) {
   if ( file[0] != '/' ) file = string(argv[1]) + "/" + file;
 
   printout(INFO,"JsonProcessor","++ Processing JSON input: %s",file.c_str());
-  JSON::DocumentHolder doc(JSON::DocumentHandler().load(file.c_str()));
-  JSON::Element elt = doc.root();
+  json::DocumentHolder doc(json::DocumentHandler().load(file.c_str()));
+  json::Element elt = doc.root();
 
-  json_coll_t(elt,_U(detector)).for_each(Converter<detector>(lcdd));
+  json_coll_t(elt,_U(detector)).for_each(Converter<detector>(description));
   printout(INFO,"JsonProcessor","++ ... Successfully processed JSON input: %s",file.c_str());
   return 1;
 }
-DECLARE_APPLY(DD4hep_JsonProcessor,handle_json)
+DECLARE_APPLY(dd4hep_JsonProcessor,handle_json)
 
 #endif  // DD4HEP_USE_BOOST
 

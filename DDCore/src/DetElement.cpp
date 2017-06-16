@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,11 +19,11 @@
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/World.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 using namespace std;
-using namespace DD4hep::Geometry;
-using DD4hep::Alignments::Alignment;
+using namespace dd4hep;
+using dd4hep::Alignment;
     
 namespace {
   static string s_empty_string;
@@ -39,7 +39,7 @@ DetElement::Processor::~Processor()   {
 
 /// Clone constructor
 DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
-  : RefObject(det_data)
+  : Handle<DetElementObject>(det_data)
 {
   this->assign(det_data, det_name, det_type);
 }
@@ -64,8 +64,11 @@ DetElement::DetElement(DetElement det_parent, const string& det_name, int det_id
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(void* ext_ptr, const type_info& info, copy_t ctor, destruct_t dtor) const {
-  return access()->addExtension(ext_ptr, info, ObjectExtensions::copy_t(ctor), dtor);
+void* DetElement::i_addExtension(void* ext_ptr, const type_info& info,
+                                 void* (*ctor)(const void*, DetElement),
+                                 void  (*dtor)(void*) ) const
+{
+  return access()->addExtension(ext_ptr, info, (void* (*)(const void*, void*))(ctor), dtor);
 }
 
 /// Access an existing extension object from the detector element
@@ -73,7 +76,7 @@ void* DetElement::i_extension(const type_info& info) const {
   return access()->extension(info);
 }
 
-/// Internal call to extend the detector element with an arbitrary structure accessible by the type
+/// detaill call to extend the detector element with an arbitrary structure accessible by the type
 void DetElement::i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const  {
   access()->updateCalls.push_back(make_pair(callback,callback_type));
 }
@@ -88,7 +91,7 @@ const string& DetElement::placementPath() const {
   Object* o = ptr();
   if ( o ) {
     if (o->placementPath.empty()) {
-      o->placementPath = DetectorTools::placementPath(*this);
+      o->placementPath = detail::tools::placementPath(*this);
     }
     return o->placementPath;
   }
@@ -127,7 +130,7 @@ namespace {
       o->path = "/" + o->name;
       o->level = 0;
     }
-    o->key = DD4hep::hash32(o->path);
+    o->key = dd4hep::detail::hash32(o->path);
   }
 }
 
@@ -186,11 +189,11 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
 Alignment DetElement::nominal() const   {
   Object* o = access();
   if ( !o->nominal.isValid() )   {
-    o->nominal = Alignments::AlignmentCondition("nominal");
+    o->nominal = AlignmentCondition("nominal");
     o->nominal->values().detector = *this;
     //o->flag |= Object::HAVE_WORLD_TRAFO;
     //o->flag |= Object::HAVE_PARENT_TRAFO;
-    DD4hep::Alignments::AlignmentTools::computeIdeal(o->nominal);
+    dd4hep::detail::tools::computeIdeal(o->nominal);
   }
   return o->nominal;
 }
@@ -199,8 +202,8 @@ Alignment DetElement::nominal() const   {
 Alignment DetElement::survey() const  {
   Object* o = access();
   if ( !o->survey.isValid() )   {
-    o->survey = Alignments::AlignmentCondition("survey");
-    DD4hep::Alignments::AlignmentTools::copy(nominal(), o->survey);
+    o->survey = AlignmentCondition("survey");
+    dd4hep::detail::tools::copy(nominal(), o->survey);
   }
   return o->survey;
 }
@@ -233,7 +236,7 @@ DetElement DetElement::world()  const   {
 
 void DetElement::check(bool cond, const string& msg) const {
   if (cond) {
-    throw runtime_error("DD4hep: " + msg);
+    throw runtime_error("dd4hep: " + msg);
   }
 }
 
@@ -244,10 +247,10 @@ DetElement& DetElement::add(DetElement sdet) {
       sdet.access()->parent = *this;
       return *this;
     }
-    throw runtime_error("DD4hep: DetElement::add: Element " + string(sdet.name()) + 
+    throw runtime_error("dd4hep: DetElement::add: Element " + string(sdet.name()) + 
                         " is already present in path " + path() + " [Double-Insert]");
   }
-  throw runtime_error("DD4hep: DetElement::add: Self is not defined [Invalid Handle]");
+  throw runtime_error("dd4hep: DetElement::add: Self is not defined [Invalid Handle]");
 }
 
 DetElement DetElement::clone(const string& new_name) const {
@@ -288,11 +291,11 @@ DetElement& DetElement::setPlacement(const PlacedVolume& pv) {
     }
     return *this;
   }
-  throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
+  throw runtime_error("dd4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
 }
 
 /// The cached VolumeID of this subdetector element
-DD4hep::VolumeID DetElement::volumeID() const   {
+dd4hep::VolumeID DetElement::volumeID() const   {
   if (isValid()) {
     return object<Object>().volumeID;
   }
@@ -304,31 +307,32 @@ Volume DetElement::volume() const {
   return access()->placement.volume();
 }
 
-DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& nam, const Volume& vol) {
-  vol.setVisAttributes(lcdd, nam);
+DetElement& DetElement::setVisAttributes(const Detector& description, const string& nam, const Volume& vol) {
+  vol.setVisAttributes(description, nam);
   return *this;
 }
 
-DetElement& DetElement::setRegion(const LCDD& lcdd, const string& nam, const Volume& vol) {
+DetElement& DetElement::setRegion(const Detector& description, const string& nam, const Volume& vol) {
   if (!nam.empty()) {
-    vol.setRegion(lcdd.region(nam));
+    vol.setRegion(description.region(nam));
   }
   return *this;
 }
 
-DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& nam, const Volume& vol) {
+DetElement& DetElement::setLimitSet(const Detector& description, const string& nam, const Volume& vol) {
   if (!nam.empty()) {
-    vol.setLimitSet(lcdd.limitSet(nam));
+    vol.setLimitSet(description.limitSet(nam));
   }
   return *this;
 }
 
-DetElement& DetElement::setAttributes(const LCDD& lcdd,
+DetElement& DetElement::setAttributes(const Detector& description,
                                       const Volume& vol,
                                       const string& region,
                                       const string& limits,
-                                      const string& vis) {
-  return setRegion(lcdd, region, vol).setLimitSet(lcdd, limits, vol).setVisAttributes(lcdd, vis, vol);
+                                      const string& vis)
+{
+  return setRegion(description, region, vol).setLimitSet(description, limits, vol).setVisAttributes(description, vis, vol);
 }
 
 /// Constructor
@@ -435,7 +439,10 @@ LimitSet SensitiveDetector::limits() const {
 }
 
 /// Add an extension object to the detector element
-void* SensitiveDetector::i_addExtension(void* ext_ptr, const type_info& info, destruct_t dtor)  {
+void* SensitiveDetector::i_addExtension(void* ext_ptr,
+                                        const type_info& info,
+                                        void (*dtor)(void*))
+{
   return access()->addExtension(ext_ptr, info, dtor);
 }
 

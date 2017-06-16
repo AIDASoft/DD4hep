@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,10 +19,10 @@
 #include "DDAlign/GlobalAlignmentCache.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Alignments {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace align {
 
     /// Base class for alignment functors
     /**
@@ -104,6 +104,6 @@ namespace DD4hep {
     template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_delete>::operator()(Nodes::value_type& n)  const;
     template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::operator() (Nodes::value_type& n)  const;
     template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_align>::operator() (Nodes::value_type& n)  const;
-  }       /* End namespace Alignments                    */
-}         /* End namespace DD4hep                        */
+  }       /* End namespace align                    */
+}         /* End namespace dd4hep                        */
 #endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H */

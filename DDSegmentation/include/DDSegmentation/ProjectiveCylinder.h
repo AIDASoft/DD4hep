@@ -10,7 +10,7 @@
 
 #include "CylindricalSegmentation.h"
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 class ProjectiveCylinder: public CylindricalSegmentation {
@@ -101,5 +101,5 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* PROJECTIVECYLINDER_H_ */

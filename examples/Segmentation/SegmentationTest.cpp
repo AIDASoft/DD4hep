@@ -5,7 +5,7 @@
  *      Author: Christian Grefe, CERN
  */
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include "DDSegmentation/SegmentationFactory.h"
 #include "DDSegmentation/SegmentationParameter.h"
@@ -13,8 +13,8 @@
 #include <set>
 
 using namespace std;
-using namespace DD4hep;
-using namespace Geometry;
+using namespace dd4hep;
+using namespace detail;
 using namespace DDSegmentation;
 
 int main(int argc, char** argv) {

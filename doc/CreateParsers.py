@@ -14,7 +14,7 @@ import os
 
 LICENSE ="""// $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -63,7 +63,7 @@ def createMappedFile( typ ):
   filename="ParserStandardList_Mapped_%s.cpp" % ( tName.replace(" ", "") )
   fileContent= """
 #include "ParsersStandardListCommon.h"
-namespace DD4hep{ namespace Parsers{
+namespace dd4hep{ namespace Parsers{
 IMPLEMENT_MAPPED_PARSERS(pair,%(type)s)
   }}
 """ % { "type":typ }
@@ -80,7 +80,7 @@ def createContainerFile( typ, cont ):
   filename="ParserStandardList_%s_%s.cpp" % ( cont[5:], tName.replace(" ", ""))
   fileContent= """
 #include "ParsersStandardListCommon.h"
-namespace DD4hep{ namespace Parsers{
+namespace dd4hep{ namespace Parsers{
 IMPLEMENT_STL_PARSER(%(cont)s,%(type)s)
   }}
 """ % { "cont": cont, "type":typ }
@@ -98,7 +98,7 @@ def createMapFile( typ, mtype ):
   filename="ParserStandardList_Map%s_%s.cpp" % ( mName.replace(" ", "") , tName.replace(" ", ""))
   fileContent= """
 #include "ParsersStandardListCommon.h"
-namespace DD4hep{ namespace Parsers{
+namespace dd4hep{ namespace Parsers{
 IMPLEMENT_STL_MAP_PARSER(std::map,%(mtype)s,%(type)s)
   }}
 """ % { "mtype": mtype, "type":typ }

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,16 +26,14 @@ class G4VTrajectory;
 class G4TrackingManager;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
-  namespace Geometry {
-    class LCDD;
-    class DetElement;
-  }
+  class Detector;
+  class DetElement;
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     class Geant4Run;
     class Geant4Event;
@@ -86,12 +84,12 @@ namespace DD4hep {
        *  To add an extension, which should NOT be deleted,
        *  set 'dtor' to ObjectExtensions::_noDelete or 0.
        */
-      void* addExtension(void* ptr, const std::type_info& info, destruct_t dtor)    {
+      void* addExtension(void* ptr, const std::type_info& info, void (*dtor)(void*))    {
         return ObjectExtensions::addExtension(ptr,info,dtor);
       }
       /// Add user extension object. Ownership is transferred!
       template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
-        destruct_t dt = ObjectExtensions::_delete<T>;
+        void  (*dt)(void*) = ObjectExtensions::_delete<T>;
         return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
@@ -144,12 +142,12 @@ namespace DD4hep {
        *  To add an extension, which should NOT be deleted,
        *  set 'dtor' to ObjectExtensions::_noDelete or 0.
        */
-      void* addExtension(void* ptr, const std::type_info& info, destruct_t dtor)    {
+      void* addExtension(void* ptr, const std::type_info& info, void (*dtor)(void*))    {
         return ObjectExtensions::addExtension(ptr,info,dtor);
       }
       /// Add user extension object. Ownership is transferred and object deleted at the end of the event.
       template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
-        destruct_t dt = ObjectExtensions::_delete<T>;
+        void  (*dt)(void*) = ObjectExtensions::_delete<T>;
         return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
@@ -166,12 +164,6 @@ namespace DD4hep {
      */
     class Geant4Context  {
       friend class Geant4Kernel;
-    public:
-#ifdef R__DICTIONARY_FILENAME
-      /// ROOT does not know how to process the nested ns otherwise
-    public:
-      typedef Geometry::LCDD LCDD;
-#endif
     protected:
       Geant4Kernel* m_kernel;
       Geant4Run*    m_run;
@@ -196,7 +188,7 @@ namespace DD4hep {
       /// Access to the kernel object
       Geant4Kernel& kernel()  const   { return *m_kernel;   }
       /// Access to detector description
-      Geometry::LCDD& lcdd() const;
+      Detector& detectorDescription() const;
       /// Access the tracking manager
       G4TrackingManager* trackMgr() const;
       /// Create a user trajectory
@@ -217,7 +209,7 @@ namespace DD4hep {
       Geant4SensDetSequences& sensitiveActions() const;
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4CONTEXT_H

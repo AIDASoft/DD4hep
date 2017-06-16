@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +21,7 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 namespace {
   G4Mutex action_mutex=G4MUTEX_INITIALIZER;
@@ -48,7 +47,7 @@ Geant4SharedGeneratorAction::Geant4SharedGeneratorAction(Geant4Context* ctxt, co
 
 /// Default destructor
 Geant4SharedGeneratorAction::~Geant4SharedGeneratorAction()   {
-  releasePtr(m_action);
+  detail::releasePtr(m_action);
   InstanceCount::decrement(this);
 }
 

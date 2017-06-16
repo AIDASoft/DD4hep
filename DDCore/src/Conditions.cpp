@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +21,7 @@
 #include <cstdio>
 
 using namespace std;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
 
 /// Default constructor
 Condition::Processor::Processor() {
@@ -73,17 +73,17 @@ int Condition::dataType() const   {
 }
 
 /// Access the IOV block
-DD4hep::OpaqueData& Condition::data() const   {
+dd4hep::OpaqueData& Condition::data() const   {
   return access()->data;
 }
 
 /// Access the IOV type
-const DD4hep::IOVType& Condition::iovType() const   {
+const dd4hep::IOVType& Condition::iovType() const   {
   return *(access()->iovType());
 }
 
 /// Access the IOV block
-const DD4hep::IOV& Condition::iov() const   {
+const dd4hep::IOV& Condition::iov() const   {
   return *(access()->iovData());
 }
 
@@ -143,7 +143,7 @@ bool Condition::testFlag(mask_type option) const {
 }
 
 /// Access to the grammar type
-const DD4hep::BasicGrammar& Condition::descriptor() const   {
+const dd4hep::BasicGrammar& Condition::descriptor() const   {
   const BasicGrammar* g = access()->data.grammar;
   if ( !g ) {
     invalidHandleError<Condition>();
@@ -178,7 +178,7 @@ ConditionsSelect::~ConditionsSelect()   {
 
 /// Constructor from string
 ConditionKey::ConditionKey(DetElement detector, const string& value)  {
-  KeyMaker m(detector.key(), hash32(value));
+  KeyMaker m(detector.key(), detail::hash32(value));
   hash = m.hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   name = detector.path()+"#"+value;
@@ -186,8 +186,8 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 }
 
 /// Constructor from detector element key and item sub-key
-ConditionKey::ConditionKey(detkey_type det_key, const string& value)    {
-  KeyMaker m(det_key, hash32(value));
+ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value)    {
+  KeyMaker m(det_key, detail::hash32(value));
   hash = m.hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   char text[32];
@@ -197,7 +197,7 @@ ConditionKey::ConditionKey(detkey_type det_key, const string& value)    {
 }
 
 /// Constructor from detector element key and item sub-key
-ConditionKey::ConditionKey(DetElement detector, itemkey_type item_key)  {
+ConditionKey::ConditionKey(DetElement detector, Condition::itemkey_type item_key)  {
   hash = KeyMaker(detector.key(),item_key).hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   char text[32];
@@ -207,21 +207,21 @@ ConditionKey::ConditionKey(DetElement detector, itemkey_type item_key)  {
 }
 
 /// Hash code generation from input string
-ConditionKey::key_type ConditionKey::hashCode(DetElement detector, const char* value)  {
-  return KeyMaker(detector.key(), hash32(value)).hash;
+Condition::key_type ConditionKey::hashCode(DetElement detector, const char* value)  {
+  return KeyMaker(detector.key(), detail::hash32(value)).hash;
 }
 
 /// Hash code generation from input string
-ConditionKey::key_type ConditionKey::hashCode(DetElement detector, const string& value)  {
-  return KeyMaker(detector.key(), hash32(value)).hash;
+Condition::key_type ConditionKey::hashCode(DetElement detector, const string& value)  {
+  return KeyMaker(detector.key(), detail::hash32(value)).hash;
 }
 
 /// 32 bit hashcode of the item
-unsigned int ConditionKey::itemCode(const char* value)  {
-  return hash32(value);
+Condition::itemkey_type ConditionKey::itemCode(const char* value)  {
+  return detail::hash32(value);
 }
 
 /// 32 bit hashcode of the item
-unsigned int ConditionKey::itemCode(const std::string& value)   {
-  return hash32(value);
+Condition::itemkey_type ConditionKey::itemCode(const std::string& value)   {
+  return detail::hash32(value);
 }

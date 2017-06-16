@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
@@ -37,8 +37,7 @@
 #include <memory>
 
 using namespace std;
-using namespace DD4hep;
-using Geometry::LCDD;
+using namespace dd4hep;
 
 /// Anonymous namespace for plugins
 namespace {
@@ -47,10 +46,10 @@ namespace {
 
 //==========================================================================
 /// Plugin function
-static long dddb_plugin_print_level(Geometry::LCDD& /* lcdd */, int argc, char** argv) {
+static long dddb_plugin_print_level(Detector& /* description */, int argc, char** argv) {
   for(int i=0; i<argc; ++i)  {
     if ( ::strcmp(argv[i],"--print")==0 )  {
-      s_PrintLevel = DD4hep::printLevel(argv[++i]);
+      s_PrintLevel = dd4hep::printLevel(argv[++i]);
       printout(INFO,"DDDB","Setting print level for %s to %s [%d]",__FILE__,argv[i-1],s_PrintLevel);
       return 1;
     }
@@ -63,7 +62,7 @@ DECLARE_APPLY(DDDB_PluginLevel,dddb_plugin_print_level)
 /// Anonymous namespace for plugins
 namespace {
 
-  using namespace Conditions;
+  using namespace dd4hep::cond;
   
   /// Basic entry point to print out the detector element hierarchy
   /**
@@ -71,11 +70,10 @@ namespace {
    *  \version 1.0
    *  \date    01/04/2014
    */
-  long dump_det_tree(LCDD& lcdd, int flag, int argc, char** argv) {
+  long dump_det_tree(Detector& description, int flag, int argc, char** argv) {
 
-    using Alignments::deltaCollector;    
-    using Alignments::Delta;
-    using DDDB::Catalog;
+    using align::deltaCollector;    
+    using DDDB::DDDBCatalog;
 
 
     /// Callback object to print selective information
@@ -115,15 +113,15 @@ namespace {
       bool                         m_sensitivesOnly;
       bool                         m_dumpConditions;
       string                       m_name;
-      LCDD&                        m_lcdd;
+      Detector&                        m_detDesc;
 
       /// Standard constructor
-      DumpActor(LCDD& l, int flg, bool sens, bool dmp)
+      DumpActor(Detector& l, int flg, bool sens, bool dmp)
         : m_detElementPrinter(0,"DDDBDetectors"), m_catalogPrinter(0,"DDDBConditions"),
           m_alignPrinter(0,"DDDBAlignments"),
-          m_flag(flg), m_sensitivesOnly(sens), m_dumpConditions(dmp), m_lcdd(l)
+          m_flag(flg), m_sensitivesOnly(sens), m_dumpConditions(dmp), m_detDesc(l)
       {
-        m_manager = ConditionsManager::from(m_lcdd);
+        m_manager = ConditionsManager::from(m_detDesc);
         m_slice.reset(new ConditionsSlice(m_manager,shared_ptr<ConditionsContent>(new ConditionsContent())));
         m_detElementPrinter.printLevel   = s_PrintLevel;
         m_detElementPrinter.name         = "DetElement-Info";
@@ -164,7 +162,7 @@ namespace {
         }
         m_counters.reset();
         m_allConditions.clear();
-        Operators::collectAllConditions(m_lcdd, rc);
+        Operators::collectAllConditions(m_detDesc, rc);
         iov.reset().invert();
         iov.iovType = 0;
         for ( Condition cond : rc )   {
@@ -176,7 +174,7 @@ namespace {
 
         IOV req_iov(iov.iovType, iov.keyData.first);
 
-        Conditions::fill_content(m_manager,*m_slice->content,*iov_typ);
+        cond::fill_content(m_manager,*m_slice->content,*iov_typ);
         ConditionsManager::Result r = m_manager.prepare(req_iov,*m_slice);
         // Now compute the tranformation matrices
         printout(INFO,m_name,"Prepare: Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
@@ -255,7 +253,7 @@ namespace {
       }
       /// __________________________________________________________________________________
       void printCatalog_ConditionInfo(int level, DetElement de, bool with_elements=false)   {
-        Catalog* cat = de.extension<Catalog>();
+        DDDBCatalog* cat = de.extension<DDDBCatalog>();
         if ( cat && !cat->conditioninfo.empty() )   {
           char fmt[128];
           ++m_counters.numConditions;
@@ -274,7 +272,7 @@ namespace {
         }
       }
       /// __________________________________________________________________________________
-      void printCatalog_Alignment(int level, Catalog* cat, bool with_values=false)   {
+      void printCatalog_Alignment(int level, DDDBCatalog* cat, bool with_values=false)   {
         if ( cat && !cat->condition.empty() )  {
           char fmt[128];
           ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s",level+1,2*level+3);
@@ -292,7 +290,7 @@ namespace {
       /// __________________________________________________________________________________
       long dump(DetElement de, int level)  {
         char fmt[64], text[512];
-        Catalog* cat = 0;
+        DDDBCatalog* cat = 0;
         const DetElement::Children& c = de.children();
         ::snprintf(fmt,sizeof(fmt),"%%-%ds-> ",2*level+5);
         ::snprintf(text,sizeof(text),fmt,"");
@@ -305,24 +303,24 @@ namespace {
               break;
             case 1:
               printDetElement(level, de, false, false);
-              cat = de.extension<Catalog>();
+              cat = de.extension<DDDBCatalog>();
               printCatalog_Alignment(level, cat, false);
               printCatalog_ConditionInfo(level, de, false);
               break;
             case 2:
               printDetElement(level, de, true, true);
-              cat = de.extension<Catalog>();
+              cat = de.extension<DDDBCatalog>();
               printCatalog_Alignment(level, cat, false);
               printCatalog_ConditionInfo(level, de, false);
               break;
             case 3:
               printDetElement(level, de, false, false);
-              cat = de.extension<Catalog>();
+              cat = de.extension<DDDBCatalog>();
               printCatalog_Alignment(level, cat, true);
               break;
             case 4:
               printDetElement(level, de, true, true);
-              cat = de.extension<Catalog>();
+              cat = de.extension<DDDBCatalog>();
               printCatalog_Alignment(level, cat, true);
               printCatalog_ConditionInfo(level, de, true);
               break;
@@ -331,7 +329,7 @@ namespace {
               break;
             case 6:
               printDetElement(level, de, true, true, true);
-              cat = de.extension<Catalog>();
+              cat = de.extension<DDDBCatalog>();
               printCatalog_Alignment(level, cat, true);
               printCatalog_ConditionInfo(level, de, true);
               break;
@@ -360,7 +358,7 @@ namespace {
       if ( ::strcmp(argv[i],"-sensitive")==0 )   { dump_sensitive_only = true; }
       else if ( ::strcmp(argv[i],"-dump")==0 )   { dump_all_cond = true;       }
       else if ( ::strcmp(argv[i],"-print")==0 )  {
-        s_PrintLevel = DD4hep::printLevel(argv[++i]);
+        s_PrintLevel = dd4hep::printLevel(argv[++i]);
         printout(INFO,"DDDB","Setting print level for %s to %s [%d]",__FILE__,argv[i-1],s_PrintLevel);
       }
       else if ( ::strcmp(argv[i],"--help")==0 )      {
@@ -372,7 +370,7 @@ namespace {
         return 0;
       }
     }
-    DumpActor actor(lcdd, flag, dump_sensitive_only, dump_all_cond);
+    DumpActor actor(description, flag, dump_sensitive_only, dump_all_cond);
     actor.m_name = "DDDBDetectorDump";
     if ( flag == 1 )
       actor.m_name = "DDDBDetVolumeDump";
@@ -387,11 +385,11 @@ namespace {
     else if ( flag == 5 )
       actor.m_name = "DDDBDetectorDumpAll";
     printout(INFO,actor.m_name,"**************** DDDB Detector dump *****************************");
-    return actor.init().dump(lcdd.world(), 0);
+    return actor.init().dump(description.world(), 0);
   }
   
-  template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
-  {  return dump_det_tree(lcdd,flag,argc,argv);    }
+  template <int flag> long dump_detelement_tree(Detector& description, int argc, char** argv)
+  {  return dump_det_tree(description,flag,argc,argv);    }
 } /* End anonymous namespace  */
 
 DECLARE_APPLY(DDDB_DetectorDump,dump_detelement_tree<0>)

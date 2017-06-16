@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,16 +20,15 @@
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
 
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
-using Conditions::ConditionKey;
+using namespace dd4hep;
+using namespace dd4hep::align;
 typedef AlignmentsCalculator::Result Result;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the alignment part of the AIDA detector description toolkit
-  namespace Alignments {
+  namespace align {
 
     /// Anonymous implementation classes
     namespace {
@@ -78,7 +77,6 @@ namespace DD4hep {
           bool operator()(const DetElement& a, const DetElement& b) const
           { return a.path() < b.path(); }
         };
-        typedef Conditions::ConditionsMap                 ConditionsMap;
         typedef std::map<DetElement,size_t,PathOrdering>  DetectorMap;
         typedef std::map<unsigned int,size_t>             Keys;
         typedef std::vector<Entry>                        Entries;
@@ -105,8 +103,8 @@ namespace DD4hep {
         }
       };
     }
-  }       /* End namespace Alignments */
-}         /* End namespace DD4hep     */
+  }       /* End namespace align */
+}         /* End namespace dd4hep     */
 
 static PrintLevel s_PRINT = WARNING;
 //static PrintLevel s_PRINT = INFO;
@@ -186,19 +184,19 @@ void Calculator::computeDelta(const Delta& delta,
 
   switch(delta.flags)   {
   case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
-    Geometry::_transform(tr_delta, Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse())));
+    Matrices::_transform(tr_delta, Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse())));
     break;
   case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION:
-    Geometry::_transform(tr_delta, Transform3D(rot,pos));
+    Matrices::_transform(tr_delta, Transform3D(rot,pos));
     break;
   case Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
-    Geometry::_transform(tr_delta, Transform3D(piv*rot*(piv.Inverse())));
+    Matrices::_transform(tr_delta, Transform3D(piv*rot*(piv.Inverse())));
     break;
   case Delta::HAVE_ROTATION:
-    Geometry::_transform(tr_delta, rot);
+    Matrices::_transform(tr_delta, rot);
     break;
   case Delta::HAVE_TRANSLATION:
-    Geometry::_transform(tr_delta, pos);
+    Matrices::_transform(tr_delta, pos);
     break;
   default:
     break;
@@ -230,7 +228,7 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
   result += to_world(context, det, align.worldDelta);
   align.worldTrafo    = det.nominal().worldTransformation()*align.worldDelta;
   align.detectorTrafo = det.nominal().detectorTransformation()*tr_delta;
-  align.trToWorld     = Geometry::_transform(&align.worldDelta);
+  align.trToWorld     = Matrices::_transform(&align.worldDelta);
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;
@@ -263,7 +261,9 @@ void Calculator::resolve(Context& context, DetElement detector) const   {
 }
 
 /// Compute all alignment conditions of the internal dependency list
-Result AlignmentsCalculator::compute(const Deltas& deltas, Alignments& alignments)  const  {
+Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
+                                     ConditionsMap& alignments)  const
+{
   Result  result;
   Calculator obj;
   Calculator::Context context(alignments);
@@ -273,14 +273,5 @@ Result AlignmentsCalculator::compute(const Deltas& deltas, Alignments& alignment
     obj.resolve(context,i.first);
   for( auto& i : context.entries )
     result += obj.compute(context, i);
-#if 0
-  for( auto& i : context.entries )   {
-    if ( i.created )   {
-      Conditions::Condition c(i.cond);
-      Conditions::ConditionKey::KeyMaker m(c.key());
-      alignments.insert(DetElement(i.det), m.values.item_key, c);
-    }
-  }
-#endif
   return result;
 }

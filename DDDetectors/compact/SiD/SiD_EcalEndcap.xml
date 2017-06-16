@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="EcalEndcap_ID" name="EcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
+  <detector id="EcalEndcap_ID" name="EcalEndcap" type="dd4hep_PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
 
     <comment>Electromagnetic Calorimeter Endcaps</comment>
 

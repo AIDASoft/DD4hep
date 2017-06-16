@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,51 +10,38 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DDG4_GEANT4MAPPING_H
 #define DD4HEP_DDG4_GEANT4MAPPING_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
+#include "DD4hep/Volumes.h"
 #include "DD4hep/GeoHandler.h"
 #include "DDG4/Geant4GeometryInfo.h"
 #include "DDG4/Geant4VolumeManager.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
-    /// Geometry mapping from DD4hep to Geant 4.
+    /// Geometry mapping from dd4hep to Geant 4.
     /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4Mapping: public Geometry::GeoHandlerTypes {
-    public:
-      typedef Geometry::LCDD LCDD;
-      typedef Geometry::DetElement DetElement;
-      typedef Geometry::SensitiveDetector SensitiveDetector;
-      typedef Geometry::Solid Solid;
-      typedef Geometry::Volume Volume;
-      typedef Geometry::PlacedVolume PlacedVolume;
-      typedef Geometry::Atom Atom;
-      typedef Geometry::Material Material;
-      typedef Geometry::Region Region;
-      typedef Geometry::VisAttr VisAttr;
-      typedef Geometry::LimitSet LimitSet;
-
+    class Geant4Mapping: public detail::GeoHandlerTypes {
     protected:
-      LCDD& m_lcdd;
+      Detector& m_detDesc;
       Geant4GeometryInfo* m_dataPtr;
 
       /// When resolving pointers, we must check for the validity of the data block
       void checkValidity() const;
     public:
       /// Initializing Constructor
-      Geant4Mapping(LCDD& lcdd);
+      Geant4Mapping(Detector& description);
 
       /// Standard destructor
       virtual ~Geant4Mapping();
@@ -62,9 +49,9 @@ namespace DD4hep {
       /// Possibility to define a singleton instance
       static Geant4Mapping& instance();
 
-      /// Accesor to the LCDD instance
-      LCDD& lcdd() const {
-        return m_lcdd;
+      /// Accesor to the Detector instance
+      Detector& detectorDescription() const {
+        return m_detDesc;
       }
 
       /// Access to the data pointer
@@ -92,7 +79,7 @@ namespace DD4hep {
       /// Accessor to resolve geometry placements
       PlacedVolume placement(const G4VPhysicalVolume* node) const;
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4MAPPING_H

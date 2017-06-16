@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,24 +24,24 @@ using namespace std;
 
 namespace {
   string print_fmt = "%-16s %5s %s";
-  DD4hep::PrintLevel print_lvl = DD4hep::INFO;
-  const char* print_level(DD4hep::PrintLevel lvl)   {
+  dd4hep::PrintLevel print_lvl = dd4hep::INFO;
+  const char* print_level(dd4hep::PrintLevel lvl)   {
     switch(lvl)   {
-    case DD4hep::NOLOG:     return "NOLOG";
-    case DD4hep::VERBOSE:   return "VERB ";
-    case DD4hep::DEBUG:     return "DEBUG";
-    case DD4hep::INFO:      return "INFO ";
-    case DD4hep::WARNING:   return "WARN ";
-    case DD4hep::ERROR:     return "ERROR";
-    case DD4hep::FATAL:     return "FATAL";
-    case DD4hep::ALWAYS:    return "     ";
+    case dd4hep::NOLOG:     return "NOLOG";
+    case dd4hep::VERBOSE:   return "VERB ";
+    case dd4hep::DEBUG:     return "DEBUG";
+    case dd4hep::INFO:      return "INFO ";
+    case dd4hep::WARNING:   return "WARN ";
+    case dd4hep::ERROR:     return "ERROR";
+    case dd4hep::FATAL:     return "FATAL";
+    case dd4hep::ALWAYS:    return "     ";
     default:
-      if ( lvl> DD4hep::ALWAYS )
-        return print_level(DD4hep::ALWAYS);
-      return print_level(DD4hep::NOLOG);
+      if ( lvl> dd4hep::ALWAYS )
+        return print_level(dd4hep::ALWAYS);
+      return print_level(dd4hep::NOLOG);
     }
   }
-  size_t print_out(DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
+  size_t print_out(dd4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
     char text[4096];
     ::snprintf(text,sizeof(text),print_fmt.c_str(),src,print_level(lvl),fmt);
     size_t len = ::vfprintf(stdout, text, args);
@@ -51,14 +51,14 @@ namespace {
 }
 
 /// Set new print level. Returns the old print level
-DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level) {
+dd4hep::PrintLevel dd4hep::setPrintLevel(PrintLevel new_level) {
   PrintLevel old = print_lvl;
   print_lvl = new_level;
   return old;
 }
 
 /// Access the current printer level
-DD4hep::PrintLevel DD4hep::printLevel()  {
+dd4hep::PrintLevel dd4hep::printLevel()  {
   return print_lvl;
 }
 
@@ -69,7 +69,7 @@ DD4hep::PrintLevel DD4hep::printLevel()  {
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...) {
+int dd4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
@@ -85,7 +85,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, ...) {
+int dd4hep::printout(PrintLevel severity, const string& src, const char* fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
@@ -100,7 +100,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, ..
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::except(const char* src, const char* fmt, ...) {
+int dd4hep::except(const char* src, const char* fmt, ...) {
   char str[4096];
   va_list args;
   va_start(args, fmt);

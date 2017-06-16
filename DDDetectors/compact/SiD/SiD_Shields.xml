@@ -32,28 +32,28 @@
 
     <comment>Masks and Shielding</comment>
 
-    <detector name="LumiShielding_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="LumiShielding_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="LumiCal_zmax"/>
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="LumiCal_zmax+ForwardShielding_thickness"/>
     </detector>
-    <detector name="LumiShielding_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="LumiShielding_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="-LumiCal_zmax"/>
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="-(LumiCal_zmax+ForwardShielding_thickness)"/>
     </detector>
-    <detector name="ECalShielding_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ECalShielding_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="HcalEndcap_zmin"/>
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="HcalEndcap_zmin+ForwardShielding_thickness"/>
     </detector>
-    <detector name="ECalShielding_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ECalShielding_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="-HcalEndcap_zmin"/>
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="-(HcalEndcap_zmin+ForwardShielding_thickness)"/>
     </detector>
 
-    <detector name="ShieldingTube_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ShieldingTube_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="HcalEndcap_rmin - SupportTube_thickness - ForwardShielding_thickness - 1.0*cm"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness - 1.0*cm"
@@ -63,7 +63,7 @@
 	      z="HcalEndcap_zmax"/>
     </detector>
 
-    <detector name="ShieldingTube_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ShieldingTube_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="HcalEndcap_rmin - SupportTube_thickness - ForwardShielding_thickness - 1.0*cm"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness - 1.0*cm"
@@ -73,7 +73,7 @@
 	      z="-HcalEndcap_zmax"/>
     </detector>
 
-    <detector name="SupportTube_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
+    <detector name="SupportTube_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin - 2*SupportTube_thickness"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness"
@@ -83,7 +83,7 @@
 	      z="MuonEndcap_zmax"/>
     </detector>
 
-    <detector name="SupportTube_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
+    <detector name="SupportTube_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin - 2*SupportTube_thickness"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness"
@@ -93,7 +93,7 @@
 	      z="-MuonEndcap_zmax"/>
     </detector>
 
-    <detector name="ForwardLowZ" type="DD4hep_ForwardDetector" vis="TungstenShieldingVis" reflect="true">
+    <detector name="ForwardLowZ" type="dd4hep_ForwardDetector" vis="TungstenShieldingVis" reflect="true">
       <dimensions outer_r="BeamCal_rmax" inner_r="0.0*cm" inner_z="ForwardMask_zmin" />
       <beampipe crossing_angle="CrossingAngle" outgoing_r="OutgoingBP_radius + 0.05*cm" incoming_r="IncomingBP_radius + 0.05*cm" />
       <layer repeat="1">

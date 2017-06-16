@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,14 +13,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDG4/Python/PyDDG4.h"
 #include "DDG4/Python/DDPython.h"
 #include "DDG4/Geant4Kernel.h"
 
 int PyDDG4::run(Kernel& kernel)  {
   int ret;
-  DD4hep::DDPython::AllowThreads allow(0);
+  dd4hep::DDPython::AllowThreads allow(0);
   if ( 1 != (ret=kernel.configure()) )
     return ret;
   else if ( 1 != (ret=kernel.initialize()) )
@@ -29,21 +29,21 @@ int PyDDG4::run(Kernel& kernel)  {
     return ret;
   else if ( 1 != (ret=kernel.terminate()) )
     return ret;
-    //DD4hep::DDPython::shutdown();
+    //dd4hep::DDPython::shutdown();
   return ret;
 }
 
 int PyDDG4::execute()  {
-  Kernel& k = Kernel::instance(DD4hep::Geometry::LCDD::getInstance());
+  Kernel& k = Kernel::instance(dd4hep::Detector::getInstance());
   return run(k);
 }
 
 int PyDDG4::process(const char* fname)  {
-  return DD4hep::DDPython::instance().runFile(fname);
+  return dd4hep::DDPython::instance().runFile(fname);
 }
 
 int PyDDG4::run(const char* fname)  {
-  int ret = DD4hep::DDPython::instance().runFile(fname);
+  int ret = dd4hep::DDPython::instance().runFile(fname);
   if ( 1 != ret ) return ret;
   return execute();
 }

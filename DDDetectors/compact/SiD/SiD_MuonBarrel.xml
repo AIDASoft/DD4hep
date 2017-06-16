@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="MuonBarrel_ID" name="MuonBarrel" type="DD4hep_PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
+  <detector id="MuonBarrel_ID" name="MuonBarrel" type="dd4hep_PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
 
     <comment>Muon Calorimeter Barrel</comment>
 

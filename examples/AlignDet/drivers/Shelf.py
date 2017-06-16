@@ -1,4 +1,4 @@
-def detector_Shelf(lcdd, det):
+def detector_Shelf(description, det):
 
   plane  = det.find('planes')
   mat    = det.find('material')
@@ -7,17 +7,17 @@ def detector_Shelf(lcdd, det):
   book   = det.find('books')
   
   #---Construct the ensamble plane+books volume-------------------------------------------------------------
-  e_vol  = Volume(lcdd, 'ensemble', Box(lcdd,'box', plane.x, plane.y+book.y, plane.z), lcdd.material('Air'))
-  e_vol.setVisAttributes(lcdd,'InvisibleWithDaughters')
+  e_vol  = Volume(description, 'ensemble', Box(description,'box', plane.x, plane.y+book.y, plane.z), description.material('Air'))
+  e_vol.setVisAttributes(description,'InvisibleWithDaughters')
   
   #---Construct the plane and place it----------------------------------------------------------------------
-  p_vol   = Volume(lcdd, 'plane', Box(lcdd, 'plane', plane.x, plane.y, plane.z), lcdd.material(mat.name))
-  p_vol.setVisAttributes(lcdd, plane.vis)
+  p_vol   = Volume(description, 'plane', Box(description, 'plane', plane.x, plane.y, plane.z), description.material(mat.name))
+  p_vol.setVisAttributes(description, plane.vis)
   e_vol.placeVolume(p_vol, Position(0,-book.y,0))
   
   #---Construct a book and place it number of times---------------------------------------------------------
-  b_vol = Volume(lcdd, 'book',Box(lcdd, 'book', book.x, book.y, book.z), lcdd.material('Carbon'))
-  b_vol.setVisAttributes(lcdd, book.vis)
+  b_vol = Volume(description, 'book',Box(description, 'book', book.x, book.y, book.z), description.material('Carbon'))
+  b_vol.setVisAttributes(description, book.vis)
   x,y,z = plane.x-book.x, plane.y, -plane.z+book.z
   for n in range(book.number):
     e_vol.placeVolume(b_vol, Position(x,y,z))
@@ -25,10 +25,10 @@ def detector_Shelf(lcdd, det):
   
   #--Construct the overal envelope and Detector element-----------------------------------------------------
   g_x, g_y, g_z = plane.x, plane.number*plane.getF('dy'), plane.z
-  g_vol  = Volume(lcdd, det.name, Box(lcdd,'box', g_x, g_y, g_z), lcdd.material('Air'))
-  g_vol.setVisAttributes(lcdd,'InvisibleWithDaughters')
-  de     = DetElement(lcdd, det.name, det.type, det.id)
-  phv = lcdd.worldVolume().placeVolume(g_vol, Position(g_x,g_y,g_z))
+  g_vol  = Volume(description, det.name, Box(description,'box', g_x, g_y, g_z), description.material('Air'))
+  g_vol.setVisAttributes(description,'InvisibleWithDaughters')
+  de     = DetElement(description, det.name, det.type, det.id)
+  phv = description.worldVolume().placeVolume(g_vol, Position(g_x,g_y,g_z))
   phv.addPhysVolID('id',det.id)
   de.addPlacement(phv)
   x,y,z = 0,book.y+plane.y-2*plane.getF('dy'),0

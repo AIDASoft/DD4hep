@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,23 +18,22 @@
 #include "DD4hep/detail/AlignmentsInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 
-using namespace DD4hep;
-using namespace Conditions;
-using Alignments::Keys;
+using namespace dd4hep;
+using align::Keys;
 
 /// Standard constructor
 AlignmentsNominalMap::AlignmentsNominalMap(DetElement wrld) : world(wrld) {
 }
 
 /// Insert a new entry to the map
-bool AlignmentsNominalMap::insert(DetElement   /* detector  */,
-                                  unsigned int /* key       */,
-                                  Condition    /* condition */)   {
+bool AlignmentsNominalMap::insert(DetElement              /* detector  */,
+                                  Condition::itemkey_type /* key       */,
+                                  Condition               /* condition */)   {
   return false;
 }
 
 /// Interface to access conditions by hash value
-Condition AlignmentsNominalMap::get(DetElement detector, unsigned int key) const   {
+Condition AlignmentsNominalMap::get(DetElement detector, Condition::itemkey_type key) const   {
   if ( key == Keys::alignmentKey )  {
     return Condition(detector.nominal().ptr());
   }
@@ -42,12 +41,12 @@ Condition AlignmentsNominalMap::get(DetElement detector, unsigned int key) const
 }
 
 /// Interface to scan data content of the conditions mapping
-void AlignmentsNominalMap::scan(const Processor& processor) const  {
+void AlignmentsNominalMap::scan(const Condition::Processor& processor) const  {
   /// Heklper to implement partial scans.
   struct Scanner  {
-    const Processor& proc;
+    const Condition::Processor& proc;
     /// Constructor
-    Scanner(const Processor& p) : proc(p){}
+    Scanner(const Condition::Processor& p) : proc(p){}
     /// Conditions callback for object processing
     int operator()(DetElement de, int /* level */)  const  {
       Condition c = de.nominal();
@@ -56,18 +55,18 @@ void AlignmentsNominalMap::scan(const Processor& processor) const  {
   } scanner(processor);
   // We emulate here a full detector scan, access the nominal alignments and process them by the processor.
   if ( world.isValid() )  {
-    Geometry::DetectorScanner().scan(scanner,world,0,true);
+    DetectorScanner().scan(scanner,world,0,true);
     return;
   }
-  DD4hep::except("AlignmentsNominalMap",
+  dd4hep::except("AlignmentsNominalMap",
                  "Cannot scan conditions map for conditions of an invalid top level detector element!");
 }
 
 /// Interface to partially scan data content of the conditions mapping
 void AlignmentsNominalMap::scan(DetElement   detector,
-                                itemkey_type lower,
-                                itemkey_type upper,
-                                const Processor&   processor) const   {
+                                Condition::itemkey_type lower,
+                                Condition::itemkey_type upper,
+                                const Condition::Processor&   processor) const   {
   if ( detector.isValid() )   {
     if ( lower <= Keys::alignmentKey && upper >= Keys::alignmentKey )  {
       Condition c(detector.nominal().ptr());
@@ -75,6 +74,6 @@ void AlignmentsNominalMap::scan(DetElement   detector,
     }
     return;
   }
-  DD4hep::except("AlignmentsNominalMap",
+  dd4hep::except("AlignmentsNominalMap",
                  "Cannot scan conditions map for conditions of an invalid detector element!");
 }

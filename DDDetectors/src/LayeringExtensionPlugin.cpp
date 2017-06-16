@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,8 +17,8 @@
 
 #include <map>
 #include "DDRec/Extensions/LayeringExtensionImpl.h"
-using namespace DD4hep::DDRec;
-using namespace DD4hep::Geometry;
+using namespace dd4hep::rec;
+using namespace dd4hep;
 
 namespace  {
   struct  LayeringContext {

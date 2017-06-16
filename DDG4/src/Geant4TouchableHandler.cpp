@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,7 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Default constructor. Takes the step's pre-touchable
 Geant4TouchableHandler::Geant4TouchableHandler(const G4Step* step, bool use_post_step_point)  {
@@ -60,6 +60,6 @@ Geant4TouchableHandler::Geant4PlacementPath Geant4TouchableHandler::placementPat
 
 /// Helper: Access the placement path of a Geant4 touchable object as a string
 std::string Geant4TouchableHandler::path()  const   {
-  return Geant4GeometryMaps::placementPath(this->placementPath());
+  return Geant4GeometryInfo::placementPath(this->placementPath());
 }
 

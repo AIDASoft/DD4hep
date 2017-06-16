@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,12 +21,12 @@
 #include "G4VProcess.hh"
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep::detail;
 
 /*
- *   DD4hep::Simulation namespace declaration
+ *   dd4hep::sim namespace declaration
  */
-namespace DD4hep {  namespace Simulation {
+namespace dd4hep {  namespace sim {
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<Calorimeter>
@@ -51,14 +51,14 @@ namespace DD4hep {  namespace Simulation {
       return true;
     }
     typedef  Geant4GenericSD<Calorimeter> Geant4Calorimeter;
-  }}    // End namespace DD4hep::Simulation
+  }}    // End namespace dd4hep::sim
 
-DECLARE_GEANT4SENSITIVEDETECTOR_NS(DD4hep::Simulation,Geant4Calorimeter)
+DECLARE_GEANT4SENSITIVEDETECTOR_NS(dd4hep::sim,Geant4Calorimeter)
 
 /*
- *   DD4hep::Simulation namespace declaration
+ *   dd4hep::sim namespace declaration
  */
-namespace DD4hep {  namespace Simulation {
+namespace dd4hep {  namespace sim {
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<OpticalCalorimeter>
@@ -68,8 +68,8 @@ namespace DD4hep {  namespace Simulation {
     template <> class Geant4GenericSD<OpticalCalorimeter> : public Geant4GenericSD<Calorimeter>  {
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4GenericSD(const string& nam, LCDD& lcdd_ref)
-        : Geant4GenericSD<Calorimeter>(nam,lcdd_ref) {          }
+      Geant4GenericSD(const string& nam, Detector& description_ref)
+        : Geant4GenericSD<Calorimeter>(nam,description_ref) {          }
 
       /// Initialize the sensitive detector for the usage of a single hit collection
       bool defineCollection(const string& coll_name) {
@@ -107,6 +107,6 @@ namespace DD4hep {  namespace Simulation {
       }
     };
     typedef Geant4GenericSD<OpticalCalorimeter>  Geant4OpticalCalorimeter;
-  }}    // End namespace DD4hep::Simulation
+  }}    // End namespace dd4hep::sim
 
-DECLARE_GEANT4SENSITIVEDETECTOR_NS(DD4hep::Simulation,Geant4OpticalCalorimeter)
+DECLARE_GEANT4SENSITIVEDETECTOR_NS(dd4hep::sim,Geant4OpticalCalorimeter)

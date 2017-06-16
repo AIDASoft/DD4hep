@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,13 +19,14 @@
 #include "DD4hep/Alignments.h"
 #include "DD4hep/Printout.h"
 
+// C/C++ include files
 #include <memory>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace Alignments {
+  namespace align {
     
     /// Generic alignment processor facade for the Conditons::Processor object
     /**
@@ -192,6 +193,6 @@ namespace DD4hep {
     AlignmentsCollector<typename std::remove_reference<T>::type> alignmentsCollector(ConditionsMap& m, T&& alignments)
     { return AlignmentsCollector<typename std::remove_reference<T>::type>(m, alignments); }
 
-  }    /* End namespace Alignments  */
-}      /* End namespace DD4hep      */
+  }    /* End namespace align  */
+}      /* End namespace dd4hep      */
 #endif /* DD4HEP_DDALIGN_ALIGNMENTSPROCESSOR_H  */

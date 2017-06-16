@@ -13,7 +13,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation {
 
     /// default constructor using an encoding string
@@ -180,4 +180,4 @@ namespace DD4hep {
     REGISTER_SEGMENTATION(MegatileLayerGridXY)
 
   } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,7 @@
 #include "DDDB/DDDBHelper.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Path.h"
 
 // C/C++ include files
@@ -36,8 +36,8 @@
 #include "TRint.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::DDDB;
+using namespace dd4hep;
+using namespace dd4hep::DDDB;
 
 static void check_result(long result)   {
   if ( 0 == result )
@@ -57,7 +57,7 @@ static void usage_load_xml_dddb()   {
     "  -input  <file-name>   Directory containing DDDB                       \n"
     "  -config <plugin>      Execute config plugin initializing the helper.  \n"
     "  -match  <string>      Match string for entity resolver e.g.'conddb:'  \n"
-    "  -xml    <file-name>   Parse additional XML files using LCDD.          \n"
+    "  -xml    <file-name>   Parse additional XML files using Detector.          \n"
     "  -setup  <plugin>      Add setup plugin after dddb parsing.            \n"
     "  -exec   <plugin>      Add execution plugin after setup.               \n"
     "  -attr   <file-name>   Optional XML parsing for visualization attrs.   \n"
@@ -69,12 +69,12 @@ static void usage_load_xml_dddb()   {
   ::exit(EINVAL);
 }
 
-static long run_plugin(Geometry::LCDD& lcdd, const std::string& plugin, std::vector<char*>& args)  {
+static long run_plugin(Detector& description, const std::string& plugin, std::vector<char*>& args)  {
   args.push_back(0);
-  return lcdd.apply(plugin.c_str(), args.size()-1, &args[0]);
+  return description.apply(plugin.c_str(), args.size()-1, &args[0]);
 }
 
-static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
+static long load_xml_dddb(Detector& description, int argc, char** argv) {
   if ( argc > 0 )   {
     string sys_id, params, match="conddb:", attr="", loader_name="DDDB_FileReader";
     std::vector<string> setup, xmlFiles, executors, config;
@@ -157,12 +157,12 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
 
     /// Install helper
     {
-      lcdd.apply("DDDB_InstallHelper", 0, 0);
+      description.apply("DDDB_InstallHelper", 0, 0);
     }
 
-    DDDBHelper* helper = lcdd.extension<DDDBHelper>();
+    DDDBHelper* helper = description.extension<DDDBHelper>();
     if ( !loader_name.empty() )  {
-      DDDBReader* resolver = (DDDBReader*)DD4hep::PluginService::Create<void*>(loader_name,(const char*)0);
+      DDDBReader* resolver = (DDDBReader*)dd4hep::PluginService::Create<void*>(loader_name,(const char*)0);
       resolver->setMatch(match);
       resolver->setDirectory(path.parent_path().c_str());
       helper->setXmlReader(resolver);
@@ -170,13 +170,13 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
 
     /// Execute config plugins without arguments
     for(size_t i=0; i<config.size(); ++i)
-      run_plugin(lcdd, config[i], c_args[config[i]]);
+      run_plugin(description, config[i], c_args[config[i]]);
     
     /// Pre-Process Parameters
     if ( !params.empty() )    {
       const void* args[] = {0, params.c_str(), 0};
       printout(INFO,"DDDBExecutor","+++ Processing parameters: %s",params.c_str());
-      result = lcdd.apply("DDDB_Loader", 2, (char**)args);
+      result = description.apply("DDDB_Loader", 2, (char**)args);
       check_result(result);
     }
 
@@ -184,23 +184,23 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     if ( !attr.empty() )  {
       const void* args[] = {attr.c_str(), 0};
       printout(INFO,"DDDBExecutor","+++ Processing visualization attributes: %s", attr.c_str());
-      result = lcdd.apply("DD4hepXMLLoader", 1, (char**)args);
+      result = description.apply("dd4hepXMLLoader", 1, (char**)args);
       check_result(result);
     }
 
     /// Process XML
     if ( !sys_id.empty() )   {
-      long long int init_time = makeTime(2016,4,1,12);
+      long long int init_time = detail::makeTime(2016,4,1,12);
       const void* args[] = {0, sys_id.c_str(), "/", &init_time, 0};
       printout(INFO,"DDDBExecutor","+++ Processing DDDB: %s", sys_id.c_str());
-      result = lcdd.apply("DDDB_Loader", 4, (char**)args);
+      result = description.apply("DDDB_Loader", 4, (char**)args);
       check_result(result);
       printout(INFO,"DDDBExecutor","                         .... done");
     }
 
     /// Convert local database to TGeo
     {
-      result = lcdd.apply("DDDB_2DD4hep", 0, 0);
+      result = description.apply("DDDB_2dd4hep", 0, 0);
       check_result(result);
     }
 
@@ -208,29 +208,29 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     if ( !xmlFiles.empty() )  {
       for(size_t i=0; i<xmlFiles.size(); ++i)  {
         const void* args[] = {xmlFiles[i].c_str(), 0};
-        lcdd.apply("DD4hepXMLLoader", 1, (char**)args);
+        description.apply("dd4hepXMLLoader", 1, (char**)args);
       }
     }
 
     /// Execute further setup plugins without arguments
     for(size_t i=0; i<setup.size(); ++i)
-      run_plugin(lcdd, setup[i], s_args[setup[i]]);
+      run_plugin(description, setup[i], s_args[setup[i]]);
 
     /// Call executors
     for(size_t i=0; i<executors.size(); ++i)
-      run_plugin(lcdd, executors[i], e_args[executors[i]]);
+      run_plugin(description, executors[i], e_args[executors[i]]);
 
     if ( dump )    {
       printout(INFO,"DDDBExecutor","------------------> Conditions dump:");
-      lcdd.apply("DDDB_DetectorConditionDump", 0, 0);
+      description.apply("DDDB_DetectorConditionDump", 0, 0);
     }
     if ( visualize )   { /// Fire off display
       pair<int, char**> a(0,0);
       TRint app("DDDB", &a.first, a.second);
-      TGeoManager& mgr = lcdd.manager();
+      TGeoManager& mgr = description.manager();
       mgr.SetVisLevel(999);
       mgr.SetVisOption(1);
-      lcdd.worldVolume()->Draw("ogl");
+      description.worldVolume()->Draw("ogl");
       app.Run();
     }
   }

@@ -1,6 +1,5 @@
-// $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -29,15 +28,13 @@ class G4LogicalVolume;
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
-  namespace Geometry {
-    class LCDD;
-  }
+  class Detector;
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     class Geant4Kernel;
@@ -62,9 +59,9 @@ namespace DD4hep {
     public:
       /// Reference to geometry object
 #ifdef __CINT__
-      Geometry::LCDD*     lcdd;
+      Detector*     description;
 #else
-      Geometry::LCDD&     lcdd;
+      Detector&     description;
 #endif
       /// Reference to the world after construction
       G4VPhysicalVolume*  world;
@@ -73,9 +70,8 @@ namespace DD4hep {
       /// G4 User detector initializer
       G4VUserDetectorConstruction* detector;
       /// Initializing Constructor
-      Geant4DetectorConstructionContext(Geometry::LCDD& l,
-                                        G4VUserDetectorConstruction* d)
-        : lcdd(l), world(0), geometry(0), detector(d)  { }
+      Geant4DetectorConstructionContext(Detector& l,G4VUserDetectorConstruction* d)
+        : description(l), world(0), geometry(0), detector(d)  { }
       /// Default destructor
       ~Geant4DetectorConstructionContext()             { }
       /// Helper: Assign sensitive detector to logical volume
@@ -155,28 +151,28 @@ namespace DD4hep {
       //@{ Accessor to the various geant4 maps after construction
 
       /// Access to the converted materials
-      const Geant4GeometryMaps::MaterialMap& materials() const;
+      const std::map<Material, G4Material*>& materials() const;
       /// Access to the converted elements
-      const Geant4GeometryMaps::ElementMap& elements() const;
+      const std::map<Atom, G4Element*>& elements() const;
       /// Access to the converted shapes
-      const Geant4GeometryMaps::SolidMap& shapes() const;
+      const std::map<const TGeoShape*, G4VSolid*>& shapes() const;
       /// Access to the converted volumes
-      const Geant4GeometryMaps::VolumeMap& volumes() const;
+      const std::map<Volume, G4LogicalVolume*>& volumes() const;
       /// Access to the converted placements
-      const Geant4GeometryMaps::PlacementMap& placements() const;
+      const std::map<PlacedVolume, G4VPhysicalVolume*>& placements() const;
       /// Access to the converted assemblys
-      const Geant4GeometryMaps::AssemblyMap& assemblies() const;
+      const std::map<PlacedVolume, Geant4AssemblyVolume*>& assemblies() const;
 
       /// Access to the converted limit sets
-      const Geant4GeometryMaps::LimitMap& limits() const;
+      const std::map<LimitSet, G4UserLimits*>& limits() const;
       /// Access to the converted regions
-      const Geant4GeometryMaps::RegionMap& regions() const;
+      const std::map<Region, G4Region*>& regions() const;
 #endif
 
       //@}
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4DETECTORCONSTRUCTION_H

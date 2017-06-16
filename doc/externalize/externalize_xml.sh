@@ -1,6 +1,6 @@
 #!/bin/bash
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -40,8 +40,8 @@ if test "" = "${TARGET}"; then
     cat <<EOF
  Usage:  bash ${0} <scp-target-directory>
              e.g. ${USER}/cmtuser/Online_vxry/Online/Dataflow
-         This script extracts the DD4hep XML interface so that
-         it can be used without DD4hep.
+         This script extracts the dd4hep XML interface so that
+         it can be used without dd4hep.
 EOF
     exit 1;
 fi;

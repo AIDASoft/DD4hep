@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
@@ -60,9 +59,8 @@
 #include <iomanip>
 #include <sstream>
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 using namespace std;
 
 static const char* _T(const std::string& s) {
@@ -82,8 +80,7 @@ enum {
 static unsigned long m_flags = ~0x0UL;
 
 /// Initializing Constructor
-Geant4HierarchyDump::Geant4HierarchyDump(LCDD& lcdd)
-: m_lcdd(lcdd) {
+Geant4HierarchyDump::Geant4HierarchyDump(Detector& description) : m_detDesc(description) {
 }
 
 /// Standard destructor

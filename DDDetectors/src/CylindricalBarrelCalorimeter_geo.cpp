@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,13 +18,13 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)   {
   xml_det_t  x_det     = e;
   xml_dim_t  dim       = x_det.dimensions();
-  Material   air       = lcdd.air();
+  Material   air       = description.air();
   string     det_name  = x_det.nameStr();
   DetElement sdet       (det_name,x_det.id());
   double     z         = dim.outer_z();
@@ -45,7 +45,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
         xml_comp_t x_slice = l;
         double     router = r + x_slice.thickness();
-        Material   slice_mat  = lcdd.material(x_slice.materialStr());
+        Material   slice_mat  = description.material(x_slice.materialStr());
         string     slice_name = layer_name + _toString(m,"slice%d");
         Tube       slice_tube(r,router,z*2);
         Volume     slice_vol (slice_name,slice_tube,slice_mat);
@@ -55,11 +55,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
           slice_vol.setSensitiveDetector(sens);
         }
         r = router;
-        slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+        slice_vol.setAttributes(description,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
         // Instantiate physical volume
         layer_vol.placeVolume(slice_vol);
       }
-      layer_vol.setVisAttributes(lcdd,x_layer.visStr());
+      layer_vol.setVisAttributes(description,x_layer.visStr());
       layer_tub.setDimensions(rlayer,r,z*2,0,2*M_PI);
         
       PlacedVolume layer_physvol = envelopeVol.placeVolume(layer_vol);
@@ -69,13 +69,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   }
   envelope.setDimensions(rmin,r,2*z);
   // Set region of slice
-  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  envelopeVol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     
-  PlacedVolume physvol = lcdd.pickMotherVolume(sdet).placeVolume(envelopeVol);
+  PlacedVolume physvol = description.pickMotherVolume(sdet).placeVolume(envelopeVol);
   physvol.addPhysVolID("system",sdet.id()).addPhysVolID(_U(barrel),0);
   sdet.setPlacement(physvol);
   return sdet;
 }
 
-DECLARE_DETELEMENT(DD4hep_CylindricalBarrelCalorimeter,create_detector)
+DECLARE_DETELEMENT(dd4hep_CylindricalBarrelCalorimeter,create_detector)
 DECLARE_DEPRECATED_DETELEMENT(CylindricalBarrelCalorimeter,create_detector)

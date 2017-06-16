@@ -1,8 +1,8 @@
 #ifndef DDGear_H
 #define DDGear_H
 
-#include "DD4hep/LCDD.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
 #include "gear/GEAR.h"
 #include "gearimpl/GearParametersImpl.h"
@@ -33,7 +33,7 @@ namespace dd4hep {
     std::vector< gear::SimpleMaterialImpl > _materials ;
     
   public :
-    /** Default c'tor  - only used by DD4hep extenbsion mechanism.*/ 
+    /** Default c'tor  - only used by dd4hep extenbsion mechanism.*/ 
     GearHandle() : _gObj( 0 ) , _name( "UNKNOWN" ) {}
     
     /** User c'tor - specify a name (should be the canonical name used in gear, eg. TPCParameters, SITParameters, etc.) and
@@ -79,11 +79,11 @@ namespace dd4hep {
   //===============================================================================================================
 
   /** Factory method that creates a GearMgr object pobulated with the GearParametersImpl objects from
-      all (top level) DetElements in the lcdd object
+      all (top level) DetElements in the description object
       @author  F.Gaede, DESY
       @version $Id$
   */
-  gear::GearMgr* createGearMgr( LCDD& lcdd , const std::string& pluginName="GearForILD" ) ;
+  gear::GearMgr* createGearMgr( Detector& description , const std::string& pluginName="GearForILD" ) ;
 
   }}
 

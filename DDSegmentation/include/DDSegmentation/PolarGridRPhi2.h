@@ -12,7 +12,7 @@
 #include <cmath>
 #include <vector>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 
@@ -144,5 +144,5 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_PolarGridRPhi2_H_ */

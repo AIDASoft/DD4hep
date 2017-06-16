@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,7 +28,7 @@
 #include <G4Run.hh>
 #include <G4Event.hh>
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4EventSeed::Geant4EventSeed(Geant4Context* c, const std::string& typ) : Geant4RunAction(c, typ),
@@ -57,7 +57,7 @@ void Geant4EventSeed::begin(const G4Run* run) {
 
   m_runID = run->GetRunID();
 
-  DD4hep::printout( DD4hep::INFO, m_type, "Get RunID: runID=%u", m_runID );
+  dd4hep::printout( dd4hep::INFO, m_type, "Get RunID: runID=%u", m_runID );
 
 }
 
@@ -69,13 +69,13 @@ void Geant4EventSeed::beginEvent(const G4Event* evt) {
   unsigned int eventID = evt->GetEventID();
   unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
 
-  DD4hep::printout( DD4hep::INFO, m_type,
+  dd4hep::printout( dd4hep::INFO, m_type,
 		    "At beginEvent: eventID=%u, runID=%u initialSeed=%u, newSeed=%u" ,
 		    evt->GetEventID(),  m_runID, m_initialSeed, newSeed );
 
   rndm->setSeed( newSeed );
 
-  if ( DD4hep::printLevel() <= DD4hep::DEBUG ) {
+  if ( dd4hep::printLevel() <= dd4hep::DEBUG ) {
     rndm->showStatus();
   }
 

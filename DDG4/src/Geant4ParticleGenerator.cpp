@@ -1,6 +1,6 @@
 // $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -26,7 +26,7 @@
 using CLHEP::MeV;
 using CLHEP::GeV;
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* ctxt, const string& nam)

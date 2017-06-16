@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,7 +25,7 @@ class TGPicture;
 class TGCompositeFrame;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// class FrameControl  FrameControl.h DDEve/FrameControl.h
   /*
@@ -65,6 +65,6 @@ namespace DD4hep {
 
     ClassDefOverride(FrameControl,0)  // Top level window frame
   };
-}      /* End namespace DD4hep        */
+}      /* End namespace dd4hep        */
 #endif /* DD4HEP_DDEVE_FRAMECONTROL_H */
 

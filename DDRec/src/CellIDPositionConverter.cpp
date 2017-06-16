@@ -1,13 +1,15 @@
 
 #include "DDRec/CellIDPositionConverter.h"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
 
 #include "TGeoManager.h"
 
 namespace dd4hep {
   namespace rec {
+
+    using std::set;
 
     const VolumeManagerContext*
     CellIDPositionConverter::findContext(const CellID& cellID) const {
@@ -57,7 +59,7 @@ namespace dd4hep {
       
       local.GetCoordinates(l);
 
-      const TGeoMatrix& volToElement = context->toElement ;
+      const TGeoMatrix& volToElement = context->toElement();
       volToElement.LocalToMaster(l, e);
 
       const TGeoMatrix& elementToGlobal = det.nominal().worldTransformation();
@@ -74,7 +76,7 @@ namespace dd4hep {
 
       CellID result(0) ;
       
-      TGeoManager *geoManager = _lcdd->world().volume()->GetGeoManager() ;
+      TGeoManager *geoManager = _description->world().volume()->GetGeoManager() ;
       
       PlacedVolume pv = geoManager->FindNode( global.x() , global.y() , global.z() ) ;
       
@@ -117,7 +119,7 @@ namespace dd4hep {
       
     //   CellID result(0) ;
       
-    //   DetElement motherDet = _lcdd->world()  ; // could also start from an arbitrary DetElement here !?
+    //   DetElement motherDet = _description->world()  ; // could also start from an arbitrary DetElement here !?
       
     //   DetElement det = findDetElement( global , motherDet ) ;
       
@@ -133,7 +135,7 @@ namespace dd4hep {
     //   PlacedVolume pv = findPlacement( Position( e[0], e[1] , e[2] ) , det.placement() , l , volIDs ) ;
       
     //   TGeoManager *geoManager = det.volume()->GetGeoManager() ;
-    //   // TGeoManager *geoManager = _lcdd->world().volume()->GetGeoManager() ;
+    //   // TGeoManager *geoManager = _description->world().volume()->GetGeoManager() ;
       
     //   PlacedVolume pv1 = geoManager->FindNode( global.x() , global.y() , global.z() ) ;
 
@@ -146,7 +148,7 @@ namespace dd4hep {
 
     // 	if(  pv.isValid() && pv.volume().isSensitive() ) {
 	
-    // 	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+    // 	SensitiveDetector sd = pv.volume().sensitiveDetector();
     // 	Readout r = sd.readout() ;
 	
     // 	VolumeID volIDElement = det.volumeID() ;
@@ -160,7 +162,7 @@ namespace dd4hep {
     //   // 		  << "  for point " << global << " try with TGeoManager ... " << std::endl ;
 	
     //   // 	TGeoManager *geoManager = det.volume()->GetGeoManager() ;
-    //   // 	// TGeoManager *geoManager = _lcdd->world().volume()->GetGeoManager() ;
+    //   // 	// TGeoManager *geoManager = _description->world().volume()->GetGeoManager() ;
 
     //   // 	PlacedVolume p = geoManager->FindNode( global.x() , global.y() , global.z() ) ;
 
@@ -195,7 +197,7 @@ namespace dd4hep {
     DetElement CellIDPositionConverter::findDetElement(const Position& global,
 						       const DetElement& d) const {
 
-      DetElement det = ( d.isValid() ? d : _lcdd->world() ) ;
+      DetElement det = ( d.isValid() ? d : _description->world() ) ;
       
       //      std::cout << " --- " << global << det.name() << std::endl ;
 

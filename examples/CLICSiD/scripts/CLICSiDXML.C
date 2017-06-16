@@ -23,12 +23,12 @@
 #include <iostream>
 
 using namespace std;
-using namespace DD4hep::Simulation::Setup;
+using namespace dd4hep::sim::Setup;
 
 int setupG4_XML(bool interactive)  {
   string install_dir = getenv("DD4hepINSTALL");
   string prefix = "file:"+install_dir+"/examples/";
-  Kernel& kernel = Kernel::instance(Kernel::LCDD::getInstance());
+  Kernel& kernel = Kernel::instance(dd4hep::Detector::getInstance());
   kernel.loadGeometry((prefix+"CLICSiD/compact/compact.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/field.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/sequences.xml").c_str());

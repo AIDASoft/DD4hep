@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 #include "XML/Conversions.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
@@ -26,8 +26,8 @@
 #include <iomanip>
 
 using namespace std;
-namespace DD4hep {
-  using namespace Geometry;
+namespace dd4hep {
+  using namespace detail;
 
   void dumpNode(TGeoNode* n, int level) {
     TGeoMatrix* mat = n->GetMatrix();
@@ -78,7 +78,7 @@ namespace DD4hep {
     }
   }
 
-  void dumpTopVolume(const LCDD& lcdd) {
-    dumpVolume(lcdd.manager().GetTopVolume(), 0);
+  void dumpTopVolume(const Detector& description) {
+    dumpVolume(description.manager().GetTopVolume(), 0);
   }
 }

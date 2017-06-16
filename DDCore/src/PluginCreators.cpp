@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,14 +22,14 @@
 //#include <dlfcn.h>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   static inline ComponentCast* component(void* p) { return (ComponentCast*)p; }
 
-  void* createProcessor(Geometry::LCDD& lcdd, int argc, char** argv, void* (*cast)(void*))  {
+  void* createProcessor(Detector& description, int argc, char** argv, void* (*cast)(void*))  {
     void* processor = 0;
     if ( argc < 2 )   {
-      except("createProcessor","++ DD4hep-plugins: No processor creator name given!");
+      except("createProcessor","++ dd4hep-plugins: No processor creator name given!");
     }
     for(int i=0; i<argc; ++i)  {
       if ( 0 == ::strncmp(argv[i],"-processor",4) )  {
@@ -41,12 +41,12 @@ namespace DD4hep {
           args.push_back(argv[j]);
         int num_arg = int(args.size());
         args.push_back(0);
-        processor = PluginService::Create<void*>(fac,&lcdd,num_arg,&args[0]);
+        processor = PluginService::Create<void*>(fac,&description,num_arg,&args[0]);
         if ( !processor ) {
           PluginDebug dbg;
-          processor = PluginService::Create<void*>(fac,&lcdd,num_arg,&args[0]);
+          processor = PluginService::Create<void*>(fac,&description,num_arg,&args[0]);
           if ( !processor )  {
-            except("createProcessor","DD4hep-plugins: Failed to locate plugin %s. \n%s %s",
+            except("createProcessor","dd4hep-plugins: Failed to locate plugin %s. \n%s %s",
                    fac.c_str(), dbg.missingFactory(fac).c_str(),
                    /* ::dlerror() ? ::dlerror() : */ "");
           }
@@ -61,19 +61,19 @@ namespace DD4hep {
     }
     if ( !processor )  {
       except("createProcessor",
-             "DD4hep-plugins: Found arguments in plugin call, but could not make any sense of them: %s",
+             "dd4hep-plugins: Found arguments in plugin call, but could not make any sense of them: %s",
              arguments(argc,argv).c_str());
     }
     return processor;
   }
 
-  void* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, int argc, char** argv, void* (*cast)(void*))  {
-    void* object = PluginService::Create<void*>(factory, &lcdd, argc, argv);
+  void* createPlugin(const std::string& factory, Detector& description, int argc, char** argv, void* (*cast)(void*))  {
+    void* object = PluginService::Create<void*>(factory, &description, argc, argv);
     if ( !object ) {
       PluginDebug dbg;
-      object = PluginService::Create<void*>(factory, &lcdd, argc, argv);
+      object = PluginService::Create<void*>(factory, &description, argc, argv);
       if ( !object )  {
-        except("ConditionsManager","DD4hep-plugins: Failed to locate plugin %s. \n%s.",
+        except("ConditionsManager","dd4hep-plugins: Failed to locate plugin %s. \n%s.",
                factory.c_str(), dbg.missingFactory(factory).c_str());
       }
     }
@@ -87,19 +87,19 @@ namespace DD4hep {
   }
 
   /// Handler for factories of type: ConstructionFactory
-  void* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, void* (*cast)(void*))  {
+  void* createPlugin(const std::string& factory, Detector& description, void* (*cast)(void*))  {
     char* argv[] = {0};
     int   argc = 0;
-    return createPlugin(factory, lcdd, argc, argv, cast);
+    return createPlugin(factory, description, argc, argv, cast);
   }
   /// Handler for factories of type: ConstructionFactory
   void* createPlugin(const std::string& factory, 
-                     Geometry::LCDD& lcdd, 
+                     Detector& description, 
                      const std::string& arg,
                      void* (*cast)(void*))   {
     char* argv[] = { (char*)arg.c_str(), 0 };
     int   argc = 1;
-    return createPlugin(factory, lcdd, argc, argv, cast);
+    return createPlugin(factory, description, argc, argv, cast);
   }
 
 }

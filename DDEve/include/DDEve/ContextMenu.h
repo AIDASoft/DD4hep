@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,9 +23,9 @@
 #include <string>
 
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep {
+namespace dd4hep {
 
   /** @class ContextMenuHandler  ContextMenu.h DDEve/ContextMenu.h
    *
@@ -87,7 +87,7 @@ namespace DD4hep {
   };
 
 
-} /* End namespace DD4hep   */
+} /* End namespace dd4hep   */
 
 
 #endif /* DD4HEP_DDEVE_CONTEXTMENU_H */

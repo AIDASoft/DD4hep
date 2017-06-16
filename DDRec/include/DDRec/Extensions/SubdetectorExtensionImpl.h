@@ -7,14 +7,14 @@
  *      Author: Christian Grefe, Bonn University
  */
 
-#ifndef DDRec_SUBDETECTOREXTENSIONIMPL_H_
-#define DDRec_SUBDETECTOREXTENSIONIMPL_H_
+#ifndef rec_SUBDETECTOREXTENSIONIMPL_H_
+#define rec_SUBDETECTOREXTENSIONIMPL_H_
 
 #include "DDRec/Extensions/SubdetectorExtension.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
 /**
  * Class describing general parameters of a subdetector.
@@ -22,13 +22,13 @@ namespace DDRec {
  * Values can be set manually which will superseed the information from
  * the DetElement.
  */
-class  [[gnu::deprecated(" unmaintained code ")]] SubdetectorExtensionImpl: public SubdetectorExtension {
+class SubdetectorExtensionImpl: public SubdetectorExtension {
 public:
 	/// Default constructor using a top level DetElement
-	SubdetectorExtensionImpl(const Geometry::DetElement& det);
+	SubdetectorExtensionImpl(const DetElement& det);
 
 	/// Copy constructor
-	SubdetectorExtensionImpl(const SubdetectorExtensionImpl& e, const Geometry::DetElement& d);
+	SubdetectorExtensionImpl(const SubdetectorExtensionImpl& e, const DetElement& d);
 
 	/// Destructor
 	virtual ~SubdetectorExtensionImpl();
@@ -58,7 +58,7 @@ public:
 	virtual int getNSides() const;
 
 	/// Sets the top level detector element used to determine shape information
-	void setDetectorElement(const Geometry::DetElement& det);
+	void setDetectorElement(const DetElement& det);
 
 	/// Sets the isBarrel flag
 	void setIsBarrel(bool value);
@@ -82,7 +82,7 @@ public:
 	void setNSides(int value);
 
 protected:
-	Geometry::DetElement det;
+	DetElement det;
 	bool _isBarrel;
 	bool _setIsBarrel;
 	bool _isEndcap;
@@ -101,6 +101,6 @@ protected:
 	void resetAll();
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDRec_SUBDETECTOREXTENSIONIMPL_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* rec_SUBDETECTOREXTENSIONIMPL_H_ */

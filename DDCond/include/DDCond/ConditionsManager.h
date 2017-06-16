@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,10 +22,10 @@
 #include <memory>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     // Forward declarations
     class UserPool;
@@ -84,7 +84,7 @@ namespace DD4hep {
       template <typename T> static ConditionsManager from(T& host);
 
       /// Initializing constructor
-      ConditionsManager(LCDD& lcdd);
+      ConditionsManager(Detector& description);
 
       /// Default constructor
       ConditionsManager() = default;
@@ -184,6 +184,6 @@ namespace DD4hep {
       missing  -= result.missing;
       return *this;
     }
-  }       /* End namespace Conditions        */
-}         /* End namespace DD4hep            */
+  }       /* End namespace cond        */
+}         /* End namespace dd4hep            */
 #endif    /* DDCOND_CONDITIONSMANAGER_H      */

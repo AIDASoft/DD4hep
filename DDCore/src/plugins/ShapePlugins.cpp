@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,22 +16,22 @@
 #include "TGeoShapeAssembly.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_Assembly(lcdd_t&, xml_h e)   {
+static Ref_t create_Assembly(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   return Ref_t(new TGeoShapeAssembly());
 }
 DECLARE_XMLELEMENT(Assembly__shape_constructor,create_Assembly)
 
-static Ref_t create_Box(lcdd_t&, xml_h e)   {
+static Ref_t create_Box(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   return Box(dim.dx(),dim.dy(),dim.dz());
 }
 DECLARE_XMLELEMENT(Box__shape_constructor,create_Box)
 
-static Ref_t create_HalfSpace(lcdd_t&, xml_h e)   {
+static Ref_t create_HalfSpace(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   xml_dim_t point  = e.child(_U(point));
   xml_dim_t normal = e.child(_U(normal));
@@ -41,7 +41,7 @@ static Ref_t create_HalfSpace(lcdd_t&, xml_h e)   {
 }
 DECLARE_XMLELEMENT(HalfSpace__shape_constructor,create_HalfSpace)
 
-static Ref_t create_Polycone(lcdd_t&, xml_h element)   {
+static Ref_t create_Polycone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   int num = 0;
   vector<double> rmin,rmax,z;
@@ -59,32 +59,32 @@ static Ref_t create_Polycone(lcdd_t&, xml_h element)   {
 }
 DECLARE_XMLELEMENT(Polycone__shape_constructor,create_Polycone)
 
-static Ref_t create_ConeSegment(lcdd_t&, xml_h element)   {
+static Ref_t create_ConeSegment(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return ConeSegment(e.rmin(0.0),e.rmax(),e.dz(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
 }
 DECLARE_XMLELEMENT(ConeSegment__shape_constructor,create_ConeSegment)
 
-static Ref_t create_Tube(lcdd_t&, xml_h element)   {
+static Ref_t create_Tube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
 }
 DECLARE_XMLELEMENT(Tube__shape_constructor,create_Tube)
 
-static Ref_t create_EllipticalTube(lcdd_t&, xml_h element)   {
+static Ref_t create_EllipticalTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return EllipticalTube(e.a(),e.b(),e.dz());
 }
 DECLARE_XMLELEMENT(EllipticalTube__shape_constructor,create_EllipticalTube)
 
-static Ref_t create_Cone(lcdd_t&, xml_h element)   {
+static Ref_t create_Cone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
   return Cone(e.z(0.0),rmi1,rma1,e.rmin2(rmi1),e.rmax2(rma1));
 }
 DECLARE_XMLELEMENT(Cone__shape_constructor,create_Cone)
 
-static Ref_t create_Trap(lcdd_t&, xml_h element)   {
+static Ref_t create_Trap(Detector&, xml_h element)   {
   xml_dim_t e(element);
   if ( e.hasAttr(_U(dz)) )
     return Trap(e.dz(),e.dy(),e.dx(),_toDouble(_Unicode(pLTX)));
@@ -92,43 +92,43 @@ static Ref_t create_Trap(lcdd_t&, xml_h element)   {
 }
 DECLARE_XMLELEMENT(Trap__shape_constructor,create_Trap)
 
-static Ref_t create_Trapezoid(lcdd_t&, xml_h element)   {
+static Ref_t create_Trapezoid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return Trapezoid(e.x1(),e.x2(),e.y1(),e.y2(),e.z(0.0));
 }
 DECLARE_XMLELEMENT(Trapezoid__shape_constructor,create_Trapezoid)
 
-static Ref_t create_Torus(lcdd_t&, xml_h element)   {
+static Ref_t create_Torus(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return Torus(e.r(),e.rmin(),e.rmax(),e.phi(M_PI),e.deltaphi(2.*M_PI));
 }
 DECLARE_XMLELEMENT(Torus__shape_constructor,create_Torus)
 
-static Ref_t create_Sphere(lcdd_t&, xml_h element)   {
+static Ref_t create_Sphere(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return Sphere(e.rmin(),e.rmax(),e.theta(0e0),e.deltatheta(M_PI),e.phi(0e0),e.deltaphi(2.*M_PI));
 }
 DECLARE_XMLELEMENT(Sphere__shape_constructor,create_Sphere)
 
-static Ref_t create_Paraboloid(lcdd_t&, xml_h element)   {
+static Ref_t create_Paraboloid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return Paraboloid(e.rmin(0.0),e.rmax(),e.dz());
 }
 DECLARE_XMLELEMENT(Paraboloid__shape_constructor,create_Paraboloid)
 
-static Ref_t create_Hyperboloid(lcdd_t&, xml_h element)   {
+static Ref_t create_Hyperboloid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return Hyperboloid(e.rmin(), e.inner_stereo(), e.rmax(), e.outer_stereo(), e.dz());
 }
 DECLARE_XMLELEMENT(Hyperboloid__shape_constructor,create_Hyperboloid)
 
-static Ref_t create_PolyhedraRegular(lcdd_t&, xml_h element)   {
+static Ref_t create_PolyhedraRegular(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return PolyhedraRegular(e.numsides(),e.rmin(),e.rmax(),e.dz());
 }
 DECLARE_XMLELEMENT(PolyhedraRegular__shape_constructor,create_PolyhedraRegular)
 
-static Ref_t create_EightPointSolid(lcdd_t&, xml_h element)   {
+static Ref_t create_EightPointSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double v[8][2];
   int num = 0;
@@ -152,7 +152,7 @@ DECLARE_XMLELEMENT(EightPointSolid__shape_constructor,create_EightPointSolid)
  * @date 03/2015
  * @author F.Gaede, CERN/DESY
  */
-static Ref_t create_BooleanShape(lcdd_t&, xml_h element)   {
+static Ref_t create_BooleanShape(Detector&, xml_h element)   {
 
   xml_det_t e(element);
 
@@ -167,7 +167,7 @@ static Ref_t create_BooleanShape(lcdd_t&, xml_h element)   {
   Solid solid2( xml_comp_t( x_shape2 ).createShape())  ;
 
 
-  std::string op = e.attr<std::string>( DD4hep::XML::Strng_t("operation") ) ;
+  std::string op = e.attr<std::string>( dd4hep::xml::Strng_t("operation") ) ;
   std::transform( op.begin(), op.end(), op.begin(), ::tolower);
   
   Solid resultSolid ;

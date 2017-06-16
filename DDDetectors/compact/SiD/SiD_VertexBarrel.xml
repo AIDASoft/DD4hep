@@ -30,7 +30,7 @@
 <!-- ==================================================================== -->
 
 <detectors>
-  <detector id="VertexBarrel_ID" name="SiVertexBarrel" type="DD4hep_SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
+  <detector id="VertexBarrel_ID" name="SiVertexBarrel" type="dd4hep_SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
 
     <comment>Vertex Detector Barrel</comment>
 

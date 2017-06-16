@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="EcalBarrel_ID" name="EcalBarrel" type="DD4hep_EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
+  <detector id="EcalBarrel_ID" name="EcalBarrel" type="dd4hep_EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
 
     <comment>Electromagnetic Calorimeter Barrel</comment>
 

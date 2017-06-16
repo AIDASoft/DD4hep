@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,7 +17,7 @@
 #include "DDG4/Geant4ActionPhase.h"
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4PhaseAction::Geant4PhaseAction(Geant4Context* ctxt, const std::string& nam)
@@ -33,7 +33,7 @@ Geant4PhaseAction::~Geant4PhaseAction()   {
 void Geant4PhaseAction::operator()() {
 }
 
-DD4hep::Callback Geant4PhaseAction::callback()    {
+dd4hep::Callback Geant4PhaseAction::callback()    {
   return Callback(this).make(&Geant4PhaseAction::operator());
 }
 
@@ -98,8 +98,8 @@ class G4TouchableHistory;
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4SteppingAction.h"
 #include "DDG4/Geant4GeneratorAction.h"
-namespace DD4hep {
-  namespace Simulation {
+namespace dd4hep {
+  namespace sim {
     /// Callback in Begin stacking action
     void Geant4ActionPhase::call() {
       this->execute(0);

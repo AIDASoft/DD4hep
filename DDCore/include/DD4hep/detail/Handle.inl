@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,7 +15,7 @@
 #include "DD4hep/Handle.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
     /// Helper routine called when unrelated types are assigned.
     template <typename T> void Handle<T>::bad_assignment(const std::type_info& from, const std::type_info& to) 
@@ -46,7 +46,7 @@ namespace DD4hep {
       return 0; // We have thrown an exception before - does not harm!
     }
 
-}   /* End namespace DD4hep      */
+}   /* End namespace dd4hep      */
 
 #if 0
 #include <iostream>
@@ -62,17 +62,17 @@ namespace DD4hep {
 #endif
 
 #define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
-  namespace DD4hep {                                                    \
+  namespace dd4hep {                                                    \
     template <> void Handle<X>::verifyObject() const  {                 \
       increment_object_validations();					\
       if (m_element && dynamic_cast<X*>(m_element) == 0) {	        \
         bad_assignment(typeid(*m_element), typeid(X));		        \
       }                                                                 \
   }}                                                                    \
-  template class DD4hep::Handle<X>
+  template class dd4hep::Handle<X>
 
 #define DD4HEP_INSTANTIATE_HANDLE_NAMED(X)                              \
-  namespace DD4hep {                                                    \
+  namespace dd4hep {                                                    \
     template <> const char* Handle<X>::name() const			\
     { return this->m_element ? this->m_element->name.c_str() : ""; }	\
     template <> void							\
@@ -87,10 +87,10 @@ namespace DD4hep {
         bad_assignment(typeid(*m_element), typeid(X));		        \
       }                                                                 \
     }}                                                                  \
-  template class DD4hep::Handle<X>
+  template class dd4hep::Handle<X>
 
 #define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(X)                            \
-  namespace DD4hep {                                                    \
+  namespace dd4hep {                                                    \
     template <> void		                                        \
     Handle<X>::assign(X* n, const std::string&, const std::string&)     \
     { this->m_element = n;}	                                        \

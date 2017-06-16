@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,12 +28,12 @@
 #include <deque>
 
 using namespace std;
-using namespace DD4hep::ConditionExamples;
+using namespace dd4hep::ConditionExamples;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
+  /// Namespace for implementation details of the AIDA detector description toolkit
   namespace ConditionExamples {
 
     template <typename T> void print_bound_condition(Condition /* c */, const char* /* norm */)   {}
@@ -44,12 +44,12 @@ namespace DD4hep {
       if ( norm )  {
         T val = _multiply(c.get<T>(),norm);
         ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s [%s] Type: %%s",
-                   Primitive<T>::default_format(),Primitive<T>::default_format());
+                   detail::Primitive<T>::default_format(),detail::Primitive<T>::default_format());
         printout(INFO,"Cond_Value",text_format, c.name(), value, val, typeName(c.typeInfo()).c_str());
         return;
       }
       ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s Type: %%s",
-                 Primitive<T>::default_format());
+                 detail::Primitive<T>::default_format());
       printout(INFO,"Cond_Value",text_format, c.name(), value, typeName(c.typeInfo()).c_str());
     }
     template <> void __print_bound_val<string>(Condition c, const char*)   {
@@ -76,14 +76,14 @@ namespace DD4hep {
     { __print_bound_container<container >(c, norm); } 
        
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-#define TEMPLATE_TYPE(x,f)                                \
-    TEMPLATE_SIMPLE_TYPE(x)                               \
-    TEMPLATE_CONTAINER_TYPE(vector<x>,x)                  \
-    TEMPLATE_CONTAINER_TYPE(list<x>,x)                    \
-    TEMPLATE_CONTAINER_TYPE(set<x>,x)                     \
-    TEMPLATE_CONTAINER_TYPE(Primitive<x>::int_map_t,x)    \
-    TEMPLATE_CONTAINER_TYPE(Primitive<x>::size_map_t,x)   \
-    TEMPLATE_CONTAINER_TYPE(Primitive<x>::string_map_t,x)
+#define TEMPLATE_TYPE(x,f)                                        \
+    TEMPLATE_SIMPLE_TYPE(x)                                       \
+    TEMPLATE_CONTAINER_TYPE(vector<x>,x)                          \
+    TEMPLATE_CONTAINER_TYPE(list<x>,x)                            \
+    TEMPLATE_CONTAINER_TYPE(set<x>,x)                             \
+    TEMPLATE_CONTAINER_TYPE(detail::Primitive<x>::int_map_t,x)    \
+    TEMPLATE_CONTAINER_TYPE(detail::Primitive<x>::size_map_t,x)   \
+    TEMPLATE_CONTAINER_TYPE(detail::Primitive<x>::string_map_t,x)
 
     TEMPLATE_TYPE(char,"%c")
     TEMPLATE_TYPE(unsigned char,"%02X")
@@ -92,13 +92,13 @@ namespace DD4hep {
     TEMPLATE_TYPE(unsigned int,"%08X")
     TEMPLATE_TYPE(unsigned long,"%016X")
 #else
-#define TEMPLATE_TYPE(x,f)                                \
-    TEMPLATE_SIMPLE_TYPE(x)                               \
-    TEMPLATE_CONTAINER_TYPE(vector<x>,x)                  \
-    TEMPLATE_CONTAINER_TYPE(list<x>,x)                    \
-    TEMPLATE_CONTAINER_TYPE(set<x>,x)                     \
-    TEMPLATE_CONTAINER_TYPE(Primitive<x>::int_map_t,x)    \
-    TEMPLATE_CONTAINER_TYPE(Primitive<x>::string_map_t,x)
+#define TEMPLATE_TYPE(x,f)                                        \
+    TEMPLATE_SIMPLE_TYPE(x)                                       \
+    TEMPLATE_CONTAINER_TYPE(vector<x>,x)                          \
+    TEMPLATE_CONTAINER_TYPE(list<x>,x)                            \
+    TEMPLATE_CONTAINER_TYPE(set<x>,x)                             \
+    TEMPLATE_CONTAINER_TYPE(detail::Primitive<x>::int_map_t,x)    \
+    TEMPLATE_CONTAINER_TYPE(detail::Primitive<x>::string_map_t,x)
 #endif // DD4HEP_HAVE_ALL_PARSERS
 
     TEMPLATE_TYPE(int,"%d")
@@ -143,8 +143,8 @@ namespace DD4hep {
     }
 
     template <typename T> void print_conditions(const RangeConditions& rc)   {
-      for(RangeConditions::const_iterator k=rc.begin(); k != rc.end(); ++k) 
-        print_condition<T>(*k);
+      for(Condition cond : rc)
+        print_condition<T>(cond);
     }
 
     template void print_conditions<void>(const RangeConditions& rc);
@@ -165,16 +165,16 @@ namespace DD4hep {
   }
 }
 
-TestEnv::TestEnv(LCDD& _lcdd, const string& detector_name) 
-  : lcdd(_lcdd), detector(), manager()
+TestEnv::TestEnv(Detector& _description, const string& detector_name) 
+  : description(_description), detector(), manager()
 {
-  manager = ConditionsManager::from(lcdd);
+  manager = ConditionsManager::from(description);
   manager["LoaderType"]     = "multi";
-  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
-  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-  manager["UserPoolType"]   = "DD4hep_ConditionsLinearUserPool";
+  manager["PoolType"]       = "dd4hep_ConditionsLinearPool";
+  manager["UpdatePoolType"] = "dd4hep_ConditionsLinearUpdatePool";
+  manager["UserPoolType"]   = "dd4hep_ConditionsLinearUserPool";
   manager.initialize();
-  detector = lcdd.detector(detector_name);
+  detector = description.detector(detector_name);
   if ( detector.isValid() )  {
     pair<bool, const IOVType*> e = manager.registerIOVType(0, "epoch");
     pair<bool, const IOVType*> r = manager.registerIOVType(1, "run");
@@ -190,8 +190,8 @@ TestEnv::TestEnv(LCDD& _lcdd, const string& detector_name)
 }
 
 /// Find daughter element of the detector object
-DetElement TestEnv::daughter(const string& sub_path)  const  {
-  return DD4hep::Geometry::DetectorTools::findDaughterElement(detector,sub_path);
+dd4hep::DetElement TestEnv::daughter(const string& sub_path)  const  {
+  return dd4hep::detail::tools::findDaughterElement(detector,sub_path);
 }
 
 void TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
@@ -204,7 +204,7 @@ void TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
 /// Dump the conditions of one detectpr element
 void TestEnv::dump_detector_element(DetElement elt, ConditionsMap& map)
 {
-  vector<Conditions::Condition> conditions;
+  vector<Condition> conditions;
   conditionsCollector(map,conditions)(elt);
   if ( conditions.empty() )  {
     printout(INFO,"conditions_tree","DetElement:%s  NO CONDITIONS present",elt.path().c_str());

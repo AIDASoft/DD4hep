@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,15 +15,15 @@
 #define DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H 1
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDG4/Geant4ActionPhase.h"
 #include "DDG4/Geant4DetectorConstruction.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Generic Setup component to perform the magnetic field tracking in Geant4
     /** Geant4FieldTrackingSetup.
@@ -65,7 +65,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4FieldTrackingSetup();
       /// Perform the setup of the magnetic field tracking in Geant4
-      virtual int execute(Geometry::LCDD& lcdd);
+      virtual int execute(Detector& description);
     };
 
     /// Phase action to perform the setup of the Geant4 tracking in magnetic fields
@@ -85,13 +85,10 @@ namespace DD4hep {
     public:
       /// Standard constructor
       Geant4FieldTrackingSetupAction(Geant4Context* context, const std::string& nam);
-
       /// Default destructor
       virtual ~Geant4FieldTrackingSetupAction() {}
-
       /// Phase action callback
       void operator()();
-
     };
 
     /// Detector construction action to perform the setup of the Geant4 tracking in magnetic fields
@@ -119,14 +116,14 @@ namespace DD4hep {
       void operator()();
 
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H
 
 
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -154,9 +151,8 @@ namespace DD4hep {
 
 using namespace std;
 using namespace CLHEP;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
-typedef DD4hep::Geometry::LCDD lcdd_t;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Local declaration in anonymous namespace
 namespace {
@@ -170,7 +166,7 @@ namespace {
   };
   
   string Geant4SetupPropertyMap::value(const string& key) const {
-    lcdd_t::PropertyValues::const_iterator iV = vals.find(key);
+    Detector::PropertyValues::const_iterator iV = vals.find(key);
     return iV == vals.end() ? "" : (*iV).second;
   }
 
@@ -196,9 +192,9 @@ Geant4FieldTrackingSetup::~Geant4FieldTrackingSetup()   {
 }
 
 /// Perform the setup of the magnetic field tracking in Geant4
-int Geant4FieldTrackingSetup::execute(Geometry::LCDD& lcdd)   {
-  Geometry::OverlayedField fld  = lcdd.field();
-  G4MagneticField*         mag_field    = new Simulation::Geant4Field(fld);
+int Geant4FieldTrackingSetup::execute(Detector& description)   {
+  OverlayedField fld  = description.field();
+  G4MagneticField*         mag_field    = new sim::Geant4Field(fld);
   G4Mag_EqRhs*             mag_equation = PluginService::Create<G4Mag_EqRhs*>(eq_typ,mag_field);
   G4MagIntegratorStepper*  fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_equation);
   G4ChordFinder*           chordFinder  = new G4ChordFinder(mag_field,min_chord_step,fld_stepper);
@@ -228,11 +224,11 @@ int Geant4FieldTrackingSetup::execute(Geometry::LCDD& lcdd)   {
   return 1;
 }
 
-static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cnv */, const map<string,string>& vals) {
+static long setup_fields(Detector& description, const dd4hep::detail::GeoHandler& /* cnv */, const map<string,string>& vals) {
   struct XMLFieldTrackingSetup : public Geant4FieldTrackingSetup {
     XMLFieldTrackingSetup(const map<string,string>& values) : Geant4FieldTrackingSetup() {
       Geant4SetupPropertyMap pm(values);
-      lcdd_t::PropertyValues::const_iterator iV = values.find("min_chord_step");
+      Detector::PropertyValues::const_iterator iV = values.find("min_chord_step");
       eq_typ      = pm.value("equation");
       stepper_typ = pm.value("stepper");
       min_chord_step = _toDouble((iV==values.end()) ? string("1e-2 * mm") : (*iV).second);
@@ -245,7 +241,7 @@ static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cn
     }
     virtual ~XMLFieldTrackingSetup() {}
   } setup(vals);
-  return setup.execute(lcdd);
+  return setup.execute(description);
 }
 
 /// Standard constructor
@@ -265,7 +261,7 @@ Geant4FieldTrackingSetupAction::Geant4FieldTrackingSetupAction(Geant4Context* ct
 
 /// Post-track action callback
 void Geant4FieldTrackingSetupAction::operator()()   {
-  execute(context()->lcdd());
+  execute(context()->detectorDescription());
   printout( INFO, "FieldSetup", "Geant4 magnetic field tracking configured.");
   printout( INFO, "FieldSetup", "G4MagIntegratorStepper:%s G4Mag_EqRhs:%s",
 	    stepper_typ.c_str(), eq_typ.c_str());
@@ -292,7 +288,7 @@ Geant4FieldTrackingConstruction::Geant4FieldTrackingConstruction(Geant4Context* 
 
 /// Post-track action callback
 void Geant4FieldTrackingConstruction::operator()()   {
-  execute(context()->lcdd());
+  execute(context()->detectorDescription());
   printout( INFO, "FieldSetup", "Geant4 magnetic field tracking configured.");
   printout( INFO, "FieldSetup", "G4MagIntegratorStepper:%s G4Mag_EqRhs:%s",
 	    stepper_typ.c_str(), eq_typ.c_str());

@@ -30,7 +30,7 @@
 
   <detectors>
     <comment>Boxes</comment>
-    <detector id="3" name="B3" type="DD4hep_BoxSegment" readout="SiliconHits" sensitive="true">
+    <detector id="3" name="B3" type="dd4hep_BoxSegment" readout="SiliconHits" sensitive="true">
       <comment>Vertical box</comment>
       <material name="Steel235"/>
       <sensitive type="calo"/>
@@ -38,7 +38,7 @@
       <position x="-10" y="30"   z="10"/>
       <rotation x="0"   y="0"    z="0"/>
     </detector>
-    <detector id="3" name="B4" type="DD4hep_BoxSegment" readout="SiliconHits" sensitive="true">
+    <detector id="3" name="B4" type="dd4hep_BoxSegment" readout="SiliconHits" sensitive="true">
       <comment>Vertical box</comment>
       <material name="Steel235"/>
       <sensitive type="calo"/>

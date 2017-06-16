@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -41,7 +41,7 @@
 class TFile;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   template <typename T> class dd4hep_file_source;
@@ -52,7 +52,7 @@ namespace DD4hep {
     close_handle = 3
   };
 
-  /// DD4hep file handling extension to boost::iostreams
+  /// dd4hep file handling extension to boost::iostreams
   /**
    *  Basic file handling for data sources and data sinks.
    *  Please see boost::iostreams for details.
@@ -113,7 +113,7 @@ namespace DD4hep {
   };
 
 
-  /// DD4hep file source extension to boost::iostreams
+  /// dd4hep file source extension to boost::iostreams
   /**
    *  Basic data sources implementation.
    *  Please see boost::iostreams for details.
@@ -177,7 +177,7 @@ namespace DD4hep {
     {     open(detail_path(path), mode);                           }
   };
 
-  /// DD4hep file sink extension to boost::iostreams
+  /// dd4hep file sink extension to boost::iostreams
   /**
    *  Basic data sink implementation.
    *  Please see boost::iostreams for details.

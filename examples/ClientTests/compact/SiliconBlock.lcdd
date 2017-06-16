@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<lcdd xmlns:lcdd="http://www.lcsim.org/schemas/lcdd/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/lcdd/1.0/lcdd.xsd">
+<description xmlns:description="http://www.lcsim.org/schemas/description/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/description/1.0/description.xsd">
 
   <!--
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      ++++   Linear collider detector description LCDD in C++  ++++
-      ++++   DD4hep Detector description generator.            ++++
+      ++++   Linear collider detector description Detector in C++  ++++
+      ++++   dd4hep Detector description generator.            ++++
       ++++                                                     ++++
       ++++   Parser: Apache Xerces-C DOM Parser                ++++
       ++++                                                     ++++
@@ -14,7 +14,7 @@
 
   <header>
     <detector name="SiliconBlock"/>
-    <generator checksum="0" file="http://www.cern.ch/lhcb" name="LCDDConverter" version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $"/>
+    <generator checksum="0" file="http://www.cern.ch/lhcb" name="DetectorConverter" version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $"/>
     <author name="Markus Frank"/>
     <comment>Alignment test with 2 simple boxes</comment>
   </header>
@@ -135,4 +135,4 @@
     <solenoid funit="tesla" inner_field="5.00000000e+00" inner_radius="3.00000000e+03" lunit="mm" name="GlobalSolenoid" outer_field="-1.50000000e+00" outer_radius="3.00000000e+04" zmax="2.00000000e+02" zmin="-2.00000000e+02"/>
   </fields>
 
-</lcdd>
+</description>

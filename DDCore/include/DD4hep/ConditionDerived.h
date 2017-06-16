@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,13 +19,13 @@
 #include "DD4hep/detail/ConditionsInterna.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Grammar definition for type binding
   class BasicGrammar;
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
-  namespace Conditions   {
+  namespace cond   {
 
     /// Forward declarations
     class ConditionResolver;
@@ -47,9 +47,9 @@ namespace DD4hep {
       /// Interface to access conditions by hash value
       virtual Condition get(Condition::key_type key) const = 0;
       /// Access to the conditions manager
-      virtual Ref_t manager() const = 0;
+      virtual Handle<NamedObject> manager() const = 0;
       /// Access to the detector description instance
-      virtual Geometry::LCDD& lcdd() const = 0;
+      virtual Detector& detectorDescription() const = 0;
       /// Required IOV value for update cycle
       virtual const IOV& requiredValidity()  const = 0;
     };
@@ -64,13 +64,13 @@ namespace DD4hep {
     public:
       const ConditionResolver&   resolver;
       const ConditionDependency& dependency;
-      Condition::iov_type*       iov;
+      IOV*                       iov;
       void*                      parameter;
       /// Initializing constructor
       ConditionUpdateContext(const ConditionResolver& r,
                              const ConditionDependency& d,
                              void* parameter,
-                             Condition::iov_type& iov);
+                             IOV& iov);
       /// Access to dependency keys
       const ConditionKey& key(size_t which)  const;
       /// Access to condition object by dependency index
@@ -122,8 +122,6 @@ namespace DD4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionUpdateCall  {
-    public:
-      typedef ConditionUpdateContext Context;
     protected:
       /// Reference count
       int  m_refCount;
@@ -147,7 +145,8 @@ namespace DD4hep {
           delete this;
       }
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& target, const Context& ctxt) = 0;
+      virtual Condition operator()(const ConditionKey& target,
+                                   const ConditionUpdateContext& ctxt) = 0;
     };
 
     /// Condition dependency definition
@@ -162,20 +161,13 @@ namespace DD4hep {
     protected:
       /// Reference count
       int                                m_refCount;
-
     public:
-      typedef Geometry::DetElement       DetElement;
-      /// Defintion of the depencency container
-      typedef std::vector<ConditionKey>  Dependencies;
-      /// Forward definition of the key type
-      typedef Condition::key_type        key_type;
-
       /// Reference to the target's detector element
       DetElement                         detector;
       /// Key to the condition to be updated
       ConditionKey                       target;
       /// Dependency keys this condition depends on
-      Dependencies                       dependencies;
+      std::vector<ConditionKey>          dependencies;
       /// Reference to the update callback. No auto pointer. callback may be shared
       ConditionUpdateCall*               callback;
 
@@ -189,19 +181,19 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor used by builder
-      ConditionDependency(Geometry::DetElement de, unsigned int item_key, ConditionUpdateCall* call);
+      ConditionDependency(DetElement de, Condition::itemkey_type item_key, ConditionUpdateCall* call);
       /// Initializing constructor used by builder
-      ConditionDependency(Geometry::DetElement de, const std::string& item, ConditionUpdateCall* call);
+      ConditionDependency(DetElement de, const std::string& item, ConditionUpdateCall* call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
-      key_type key()  const           {  return target.hash;         }
+      Condition::key_type key()  const           {  return target.hash;         }
       /// Access the dependency key
-      const char* name()  const       {  return target.name.c_str(); }
+      const char* name()  const                  {  return target.name.c_str(); }
       /// Add use count to the object
-      ConditionDependency* addRef()   {  ++m_refCount; return this;  }
+      ConditionDependency* addRef()              {  ++m_refCount; return this;  }
       /// Release object. May not be used any longer
-      void release()  {  if ( --m_refCount <= 0 ) delete this;       }
+      void release()                             {  if ( --m_refCount <= 0 ) delete this; }
     };
 
     /// Condition dependency builder
@@ -216,9 +208,9 @@ namespace DD4hep {
       ConditionDependency* m_dependency;
     public:
       /// Initializing constructor
-      DependencyBuilder(Geometry::DetElement de, unsigned int item_key, ConditionUpdateCall* call);
+      DependencyBuilder(DetElement de, Condition::itemkey_type item_key, ConditionUpdateCall* call);
       /// Initializing constructor
-      DependencyBuilder(Geometry::DetElement de, const std::string& item, ConditionUpdateCall* call);
+      DependencyBuilder(DetElement de, const std::string& item, ConditionUpdateCall* call);
       /// Default destructor
       virtual ~DependencyBuilder();
       /// Access underlying object directly
@@ -233,7 +225,7 @@ namespace DD4hep {
     inline ConditionUpdateContext::ConditionUpdateContext(const ConditionResolver& resolv,
                                                           const ConditionDependency& dep,
                                                           void* user_param,
-                                                          Condition::iov_type& iov_ref)
+                                                          IOV&  iov_ref)
       : resolver(resolv), dependency(dep), iov(&iov_ref), parameter(user_param)
     {
     }
@@ -256,6 +248,6 @@ namespace DD4hep {
       return this->condition(key_value);
     }
 
-  }       /* End namespace Conditions               */
-}         /* End namespace DD4hep                   */
+  }       /* End namespace cond               */
+}         /* End namespace dd4hep                   */
 #endif    /* DD4HEP_GEOMETRY_CONDITIONDERIVED_H     */

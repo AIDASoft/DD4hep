@@ -1,6 +1,6 @@
 <gear>
     <global detectorName="Simple_CLIC" />
-    <!--Gear XML file automatically created with GearXML::createXMLFile ....-->
+    <!--Gear XML file automatically created with Gearxml::createXMLFile ....-->
     <BField type="ConstantBField" x="6.940990173e-297" y="1.976262583e-310" z="3.500000000e+00" />
     <detectors>
         <detector name="VXD" geartype="ZPlanarParameters">

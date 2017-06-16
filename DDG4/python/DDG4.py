@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -9,7 +9,7 @@
 #
 #==========================================================================
 
-from DD4hep import *
+from dd4hep import *
 
 def loadDDG4():
   ## import ROOT ## done in import * above
@@ -30,7 +30,7 @@ def loadDDG4():
   result = gSystem.Load("libDDG4Plugins")
   if 0 != result:
     raise Exception('DDG4.py: Failed to load the DDG4 library libDDG4Plugins: '+gSystem.GetErrorStr())
-  from ROOT import DD4hep as module
+  from ROOT import dd4hep as module
   return module
 
 # We are nearly there ....
@@ -42,7 +42,7 @@ def _import_class(ns,nam):
 #---------------------------------------------------------------------------
 #
 try:
-  DD4hep     = loadDDG4() 
+  dd4hep     = loadDDG4() 
 except Exception as X:
   print '+--%-100s--+'%(100*'-',)
   print '|  %-100s  |'%('Failed to load DDG4 library:',)
@@ -51,25 +51,25 @@ except Exception as X:
   exit(1)
 
 from ROOT import CLHEP as CLHEP
-Core       = DD4hep
-Sim        = DD4hep.Simulation
-Simulation = DD4hep.Simulation
+Core       = dd4hep
+Sim        = dd4hep.sim
+Simulation = dd4hep.sim
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
-LCDD       = Geo.LCDD
-from DD4hep import std, std_vector, std_list, std_map, std_pair
+Detector   = Core.Detector
+from dd4hep import std, std_vector, std_list, std_map, std_pair
 
 #---------------------------------------------------------------------------
 def _constant(self,name):
   return self.constantAsString(name)
 
-LCDD.globalVal = _constant
+Detector.globalVal = _constant
 #---------------------------------------------------------------------------
 
 """
-  Import the LCDD constants into the DDG4 namespace
+  Import the Detector constants into the DDG4 namespace
 """
-def importConstants(lcdd,namespace=None,debug=False):
+def importConstants(description,namespace=None,debug=False):
   scope = current
   ns = current
   if namespace is not None and not hasattr(current,namespace):
@@ -77,12 +77,12 @@ def importConstants(lcdd,namespace=None,debug=False):
     m = imp.new_module('DDG4.'+namespace)
     setattr(current,namespace,m)
     ns = m
-  evaluator = DD4hep.g4Evaluator()
+  evaluator = dd4hep.g4Evaluator()
   cnt = 0
   num = 0
   todo = {}
   strings = {}
-  for c in lcdd.constants():
+  for c in description.constants():
     if c.second.dataType == 'string':
       strings[c.first] = c.second.GetTitle()
     else:
@@ -331,7 +331,7 @@ class Geant4:
     self._kernel = kernel
     if kernel is None:
       self._kernel = Kernel()
-    self.lcdd = self._kernel.lcdd()
+    self.description = self._kernel.detectorDescription()
     self.sensitive_types = {}
     self.sensitive_types['tracker'] = tracker
     self.sensitive_types['calorimeter'] = calo
@@ -490,10 +490,10 @@ class Geant4:
 
   def printDetectors(self):
     print '+++  List of sensitive detectors:'
-    for i in self.lcdd.detectors():
+    for i in self.description.detectors():
       #print i.second.ptr().GetName()
       o = DetElement(i.second.ptr())
-      sd = self.lcdd.sensitiveDetector(o.name())
+      sd = self.description.sensitiveDetector(o.name())
       if sd.isValid():
         typ = sd.type()
         sdtyp = 'Unknown'
@@ -524,7 +524,7 @@ class Geant4:
     seq.enableUI()
     acts = []
     if collections is None:
-      sd = self.lcdd.sensitiveDetector(name)
+      sd = self.description.sensitiveDetector(name)
       ro = sd.readout()
       #print dir(ro)
       collections = ro.collectionNames()
@@ -564,13 +564,13 @@ class Geant4:
     return (seq,acts[0])
 
   def setupCalorimeter(self,name,type=None,collections=None):
-    sd = self.lcdd.sensitiveDetector(name)
+    sd = self.description.sensitiveDetector(name)
     sd.setType('calorimeter')
     if type is None: type = self.sensitive_types['calorimeter']
     return self.setupDetector(name,type,collections)
 
   def setupTracker(self,name,type=None,collections=None):
-    sd = self.lcdd.sensitiveDetector(name)
+    sd = self.description.sensitiveDetector(name)
     sd.setType('tracker')
     if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type,collections)

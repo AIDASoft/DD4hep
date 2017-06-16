@@ -1,9 +1,9 @@
 #include "DD4hep/DDTest.h"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Volumes.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
 #include "DDRec/Surface.h"
 #include "STR.h"
@@ -16,7 +16,7 @@
 using namespace std ;
 using namespace dd4hep ;
 using namespace dd4hep::rec ;
-
+using namespace detail;
 
 // this should be the first line in your test
 static DDTest test( "surface" ) ; 
@@ -35,16 +35,16 @@ int main(int argc, char** argv ){
     
     // ----- write your tests in here -------------------------------------
 
-    LCDD& lcdd = LCDD::getInstance();
+    Detector& description = Detector::getInstance();
 
-    lcdd.fromCompact( argv[1] );
+    description.fromCompact( argv[1] );
 
     // --- test a planar surface
     double thick  = 0.005 ;
     double width  = 1.0  ;
     double length = 10.0 ;
 
-    Material    mat    = lcdd.material( "Silicon" );
+    Material    mat    = description.material( "Silicon" );
     Box         box   ( thick/2.,  width/2.,  length/2. );
     Volume      vol   ( "test_box", box, mat);
     
@@ -150,7 +150,7 @@ int main(int argc, char** argv ){
     length = 100.0 ;
     double radius = 42.0  ;
 
-    mat    = lcdd.material( "Air" );
+    mat    = description.material( "Air" );
     Tube    tube  ( radius - thick/2., radius + thick/2. , length/2. );
     vol = Volume( "test_tube", tube , mat);
 

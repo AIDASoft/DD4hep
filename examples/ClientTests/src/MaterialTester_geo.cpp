@@ -1,6 +1,6 @@
 // $Id: ILDExVXD_geo.cpp 673 2013-08-05 10:01:33Z gaede $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -14,10 +14,10 @@
 #include "TGeoElement.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_element(LCDD& lcdd, xml_h xml_det, SensitiveDetector /* sens */)  {
+static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetector /* sens */)  {
   xml_det_t    x_det = xml_det;
   string       det_name = x_det.nameStr();
   Assembly     assembly(det_name+"_assembly");
@@ -25,7 +25,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h xml_det, SensitiveDetector /* sens
 
   for(xml_coll_t k(x_det,_Unicode(test)); k; ++k)  {	
     xml_comp_t c = k;
-    Material mat = lcdd.material(c.nameStr());
+    Material mat = description.material(c.nameStr());
     TGeoMaterial* m = mat->GetMaterial();
     printout(INFO,det_name,"+++ Material:%s [%p, %p] Z=%6.2f A=%6.2f D=%9.4f [g/cm3]",
 	     m->GetName(), mat.ptr(), m, m->GetZ(), m->GetA(), m->GetDensity());
@@ -51,7 +51,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h xml_det, SensitiveDetector /* sens
   }
 
 
-  PlacedVolume pv = lcdd.pickMotherVolume(det).placeVolume(assembly);
+  PlacedVolume pv = description.pickMotherVolume(det).placeVolume(assembly);
   pv.addPhysVolID("system",x_det.id());
   det.setPlacement(pv);
   return det;

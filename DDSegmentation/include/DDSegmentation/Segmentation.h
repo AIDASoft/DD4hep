@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 typedef SegmentationParameter* Parameter;
@@ -171,5 +171,5 @@ private:
 	static const SegmentationCreator<classname> classname##_creator(#classname);
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_SEGMENTATION_H_ */
