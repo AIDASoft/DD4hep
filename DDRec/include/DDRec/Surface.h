@@ -15,8 +15,6 @@ class TGeoMatrix ;
 namespace DD4hep {
   namespace DDRec {
   
-    using namespace DDSurfaces ;
-    
     //-------------------------------------------------------------------------------------------
 
     class VolSurface  ;

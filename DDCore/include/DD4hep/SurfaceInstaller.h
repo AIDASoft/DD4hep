@@ -22,12 +22,6 @@
 #include <map>
 #include <algorithm>
 
-/// Namespace for the tracking surfaces of the AIDA detector description toolkit
-namespace DDSurfaces  {
-  /// Class describing the surface types
-  class SurfaceType;
-}
-
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
   
@@ -36,7 +30,8 @@ namespace DD4hep  {
     /// Class describing surface data
     //    class SurfaceData;
     class VolSurfaceBase;
-  }
+    class SurfaceType;
+ }
   
   /** Base class to implement surface installers for known detector patterns
    *
@@ -57,7 +52,7 @@ namespace DD4hep  {
     typedef Geometry::DetectorTools::ElementPath   ElementPath;
     typedef Geometry::DetectorTools::PlacementPath PlacementPath;
     typedef DDRec::VolSurfaceBase      SurfaceData;
-    typedef DDSurfaces::SurfaceType SurfaceType;
+    typedef DDRec::SurfaceType SurfaceType;
 
     typedef std::map<TGeoVolume*, SurfaceData* > Surfaces;
     /// Reference to the LCDD instance
