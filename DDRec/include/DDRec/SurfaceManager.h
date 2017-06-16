@@ -1,7 +1,7 @@
 #ifndef DDRec_SurfaceManager_H_
 #define DDRec_SurfaceManager_H_
 
-#include "DDSurfaces/ISurface.h"
+#include "DDRec/ISurface.h"
 #include "DD4hep/LCDD.h"
 #include <string>
 #include <map>
@@ -10,7 +10,7 @@ namespace dd4hep {
   namespace rec {
 
     /// typedef for surface maps, keyed by the cellID 
-    typedef std::multimap< unsigned long, DDSurfaces::ISurface*> SurfaceMap ;
+    typedef std::multimap< unsigned long, ISurface*> SurfaceMap ;
 
     /** Surface manager class that holds maps of surfaces for all known 
      *  sensitive detector types and  individual sub detectors. 

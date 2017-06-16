@@ -28,7 +28,7 @@ namespace dd4hep {
       
     }
     
-    const MaterialVec&MaterialManager:: materialsBetween(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 , double epsilon) {
+    const MaterialVec&MaterialManager:: materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
       
       if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {
 	
@@ -100,7 +100,7 @@ namespace dd4hep {
 	  //	printf( " --  step length :  %1.8e %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   - %s \n" , length ,
 	  //		position[0], position[1], position[2], previouspos[0], previouspos[1], previouspos[2] , node1->GetMedium()->GetMaterial()->GetName() ) ;
 	  
-	  DDSurfaces::Vector3D posV( position ) ;
+	  Vector3D posV( position ) ;
 	  
 	  double currDistance = ( posV - p0 ).r() ;
 	  
@@ -153,7 +153,7 @@ namespace dd4hep {
     }
 
     
-    const Geometry::Material& MaterialManager::materialAt(const DDSurfaces::Vector3D& pos ){
+    const Geometry::Material& MaterialManager::materialAt(const Vector3D& pos ){
 
       if( pos != _pos ) {
 	

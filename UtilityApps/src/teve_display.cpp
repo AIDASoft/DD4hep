@@ -58,10 +58,8 @@
 #include "TGLScenePad.h"
 
 
-using namespace DD4hep ;
-using namespace DDRec ;
-using namespace Geometry ;
-using namespace DDSurfaces ;
+using namespace dd4hep ;
+using namespace dd4hep::rec ;
 
 //=====================================================================================
 // function declarations: 
@@ -177,14 +175,14 @@ TEveStraightLineSet* getSurfaceVectors(bool addO, bool addU, bool addV, bool add
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
 
     ISurface* surf = *it ;
-    const DDSurfaces::Vector3D& u = surf->u() ;
-    const DDSurfaces::Vector3D& v = surf->v() ;
-    const DDSurfaces::Vector3D& n = surf->normal() ;
-    const DDSurfaces::Vector3D& o = surf->origin() ;
+    const Vector3D& u = surf->u() ;
+    const Vector3D& v = surf->v() ;
+    const Vector3D& n = surf->normal() ;
+    const Vector3D& o = surf->origin() ;
 
-    DDSurfaces::Vector3D ou = o + u ;
-    DDSurfaces::Vector3D ov = o + v ;
-    DDSurfaces::Vector3D on = o + n ;
+    Vector3D ou = o + u ;
+    Vector3D ov = o + v ;
+    Vector3D on = o + n ;
  
     if (addU) ls->AddLine( o.x(), o.y(), o.z(), ou.x() , ou.y() , ou.z()  );
     

@@ -6,8 +6,6 @@
 #include <sstream>
 
 namespace dd4hep {
-  
-  using namespace DDSurfaces ;
 
   namespace rec {
     

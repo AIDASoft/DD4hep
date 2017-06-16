@@ -5,7 +5,7 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Detector.h"
 
-#include "DDSurfaces/ISurface.h"
+#include "DDRec/ISurface.h"
 #include "DDRec/Material.h"
 
 #include <list>
@@ -455,7 +455,7 @@ namespace dd4hep {
       /** Convert the local position (u,v) on the surface to the global position  - v runs along the axis of the cone, u is r*phi*/
       virtual Vector3D localToGlobal( const Vector2D& point) const ;
 
-      virtual std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> > getLines(unsigned nMax=100) ;
+      virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
   } ;
 
 
