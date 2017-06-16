@@ -56,7 +56,7 @@ message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
 #
 # Include Boost
 #
-find_package( Boost REQUIRED )
+find_package( Boost 1.49 REQUIRED )
 add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
