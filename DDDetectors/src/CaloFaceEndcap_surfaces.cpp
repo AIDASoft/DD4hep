@@ -37,7 +37,7 @@ namespace {
 namespace{
   
   /// helper class for a planar surface placed into a polyhedral calorimeter endcap 
-  class CaloEndcapPlaneImpl : public  DD4hep::DDRec::VolPlaneImpl{
+  class CaloEndcapPlaneImpl : public  dd4hep::rec::VolPlaneImpl{
     double  _r ;
     double  _phi0 ;
     unsigned _sym ;
@@ -48,7 +48,7 @@ namespace{
                          DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
                          DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
                          DD4hep::Geometry::Volume vol, int id_val ) :
-      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
+      dd4hep::rec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _r(0),_phi0(0),_sym(0) {}
     
     void setData( double radius, double phi0, unsigned symmetry){
@@ -85,7 +85,7 @@ namespace{
     }
   };
   
-  typedef DD4hep::DDRec::VolSurfaceHandle<CaloEndcapPlaneImpl> CaloEndcapPlane ;
+  typedef dd4hep::rec::VolSurfaceHandle<CaloEndcapPlaneImpl> CaloEndcapPlane ;
 
   
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {

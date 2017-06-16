@@ -4,8 +4,8 @@
 
 #include "DDRec/SurfaceManager.h"
 
-namespace DD4hep{
-  namespace DDRec{
+namespace dd4hep{
+  namespace rec{
     
     using namespace Geometry ;
 

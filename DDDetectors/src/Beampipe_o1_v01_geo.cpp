@@ -36,19 +36,19 @@ using DD4hep::Geometry::Volume;
 using DD4hep::Geometry::Solid;
 using DD4hep::Geometry::Tube;
 
-using DD4hep::DDRec::Vector3D;
-using DD4hep::DDRec::VolCylinder;
-using DD4hep::DDRec::VolCone;
-using DD4hep::DDRec::SurfaceType;
+using dd4hep::rec::Vector3D;
+using dd4hep::rec::VolCylinder;
+using dd4hep::rec::VolCone;
+using dd4hep::rec::SurfaceType;
 
 /// helper class for a simple cylinder surface parallel to z with a given length - used as IP layer
-class SimpleCylinderImpl : public  DD4hep::DDRec::VolCylinderImpl{
+class SimpleCylinderImpl : public  dd4hep::rec::VolCylinderImpl{
   double _half_length ;
 public:
   /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
   SimpleCylinderImpl( DD4hep::Geometry::Volume vol, DDSurfaces::SurfaceType type,
 		      double thickness_inner ,double thickness_outer,  DDSurfaces::Vector3D origin ) :
-    DD4hep::DDRec::VolCylinderImpl( vol,  type, thickness_inner, thickness_outer,   origin ),
+    dd4hep::rec::VolCylinderImpl( vol,  type, thickness_inner, thickness_outer,   origin ),
     _half_length(0){
   }
   void setHalfLength( double half_length){
@@ -92,11 +92,11 @@ public:
   }
 };
 
-class SimpleCylinder : public DD4hep::DDRec::VolSurface{
+class SimpleCylinder : public dd4hep::rec::VolSurface{
 public:
-  SimpleCylinder( DD4hep::Geometry::Volume vol, DD4hep::DDRec::SurfaceType type, double thickness_inner ,
+  SimpleCylinder( DD4hep::Geometry::Volume vol, dd4hep::rec::SurfaceType type, double thickness_inner ,
 		  double thickness_outer,  Vector3D origin ) :
-    DD4hep::DDRec::VolSurface( new SimpleCylinderImpl( vol,  type,  thickness_inner , thickness_outer, origin ) ) {
+    dd4hep::rec::VolSurface( new SimpleCylinderImpl( vol,  type,  thickness_inner , thickness_outer, origin ) ) {
   }
   SimpleCylinderImpl* operator->() { return static_cast<SimpleCylinderImpl*>( _surf ) ; }
 } ;
@@ -126,7 +126,7 @@ static DD4hep::Geometry::Ref_t create_element(DD4hep::Geometry::LCDD& lcdd,
   //-----------------------------------------------------------------------------------
 
 
-  DD4hep::DDRec::ConicalSupportData* beampipeData = new DD4hep::DDRec::ConicalSupportData ;
+  dd4hep::rec::ConicalSupportData* beampipeData = new dd4hep::rec::ConicalSupportData ;
 
   //DD4hep/TGeo seems to need rad (as opposed to the manual)
   const double phi1 = 0 ;
@@ -169,7 +169,7 @@ static DD4hep::Geometry::Ref_t create_element(DD4hep::Geometry::LCDD& lcdd,
     printout(DD4hep::INFO, "DD4hep_Beampipe", pipeInfo.str() );
 
     if( crossType == ODH::kCenter ) { // store only the central sections !
-      DD4hep::DDRec::ConicalSupportData::Section section ;
+      dd4hep::rec::ConicalSupportData::Section section ;
       section.rInner = rInnerStart ;
       section.rOuter = rOuterStart ;
       section.zPos   = zStart ;
@@ -237,8 +237,8 @@ static DD4hep::Geometry::Ref_t create_element(DD4hep::Geometry::LCDD& lcdd,
 	    VolCylinder cylSurf1( wallLog , SurfaceType( SurfaceType::Helper ) , 0.5*thickness  , 0.5*thickness , ocyl );
 	    VolCylinder cylSurf2( wallLog2, SurfaceType( SurfaceType::Helper ) , 0.5*thickness  , 0.5*thickness , ocyl );
 
-	    DD4hep::DDRec::volSurfaceList( tube )->push_back( cylSurf1 );
-	    DD4hep::DDRec::volSurfaceList( tube )->push_back( cylSurf2 );
+	    dd4hep::rec::volSurfaceList( tube )->push_back( cylSurf1 );
+	    dd4hep::rec::volSurfaceList( tube )->push_back( cylSurf2 );
 
 	  }else{   // cone
 
@@ -252,8 +252,8 @@ static DD4hep::Geometry::Ref_t create_element(DD4hep::Geometry::LCDD& lcdd,
 	    VolCone conSurf1( wallLog , SurfaceType( SurfaceType::Helper ) , 0.5*thickness  , 0.5*thickness , v, ocon );
 	    VolCone conSurf2( wallLog2, SurfaceType( SurfaceType::Helper ) , 0.5*thickness  , 0.5*thickness , v, ocon );
 
-	    DD4hep::DDRec::volSurfaceList( tube )->push_back( conSurf1 );
-	    DD4hep::DDRec::volSurfaceList( tube )->push_back( conSurf2 );
+	    dd4hep::rec::volSurfaceList( tube )->push_back( conSurf1 );
+	    dd4hep::rec::volSurfaceList( tube )->push_back( conSurf2 );
 
 	  }
 
@@ -607,9 +607,9 @@ static DD4hep::Geometry::Ref_t create_element(DD4hep::Geometry::LCDD& lcdd,
   SimpleCylinder ipCylSurf( envelope , SurfaceType( SurfaceType::Helper ) , 1.e-5  , 1e-5 , oIPCyl ) ;
   // the length does not really matter here as long as it is long enough for all tracks ...
   ipCylSurf->setHalfLength(  100*dd4hep::cm ) ;
-  DD4hep::DDRec::volSurfaceList( tube )->push_back( ipCylSurf ) ;
+  dd4hep::rec::volSurfaceList( tube )->push_back( ipCylSurf ) ;
 
-  tube.addExtension< DD4hep::DDRec::ConicalSupportData >( beampipeData ) ;
+  tube.addExtension< dd4hep::rec::ConicalSupportData >( beampipeData ) ;
 
   //--------------------------------------
 

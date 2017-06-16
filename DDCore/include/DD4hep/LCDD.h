@@ -37,6 +37,14 @@
 // Forward declarations
 class TGeoManager;
 
+
+//fg: for the transition period we define the old namespaces also in the new ones:
+namespace dd4hep {
+  using namespace DD4hep ;
+  using namespace DD4hep::Geometry ;
+}
+
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 

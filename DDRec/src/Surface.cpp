@@ -14,8 +14,8 @@
 //TGeoTrd1 is apparently not included by defautl
 #include "TGeoTrd1.h"
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
  
     using namespace Geometry ;
 

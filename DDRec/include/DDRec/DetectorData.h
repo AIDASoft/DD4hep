@@ -5,10 +5,11 @@
 #include <bitset>
 #include <ostream>
 
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Detector.h"
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
     
     /** Wrapper class for adding structs or pods as extensions to DetElements.
      *  Provides default implementations of the c'tors required by the extension mechamism.
@@ -24,8 +25,8 @@ namespace DD4hep {
       StructExtension() : T()  { } 
       StructExtension(const StructExtension<T>& t) : T(t) {} 
       StructExtension(const T& t) : T(t) {} 
-      StructExtension(const Geometry::DetElement&) : T()  {}
-      StructExtension(const StructExtension<T>& t, const Geometry::DetElement&) : T(t) {}
+      StructExtension(const DetElement&) : T()  {}
+      StructExtension(const StructExtension<T>& t, const DetElement&) : T(t) {}
     };
 
     /** Simple data structure with key parameters for
@@ -477,7 +478,7 @@ namespace DD4hep {
     std::ostream& operator<<( std::ostream& io , const NeighbourSurfacesData& d ) ;
 
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
 
 #endif // DDRec_DetectorData_H_

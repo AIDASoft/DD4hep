@@ -9,8 +9,8 @@
 
 #define MINSTEP 1.e-5
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
 
 
     MaterialManager::MaterialManager(DD4hep::Geometry::Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
@@ -230,5 +230,5 @@ namespace DD4hep {
 
     }
     
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */

@@ -1,7 +1,7 @@
 #ifndef DDRec_Vector2D_h
 #define DDRec_Vector2D_h 1
 
-namespace DD4hep { namespace DDRec {
+namespace dd4hep { namespace rec {
   
   /** Simple 2D vector helper class; moved out of ISurface definition.
    *
@@ -30,5 +30,8 @@ namespace DD4hep { namespace DDRec {
 
     };
   } } // namespace
+
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif 

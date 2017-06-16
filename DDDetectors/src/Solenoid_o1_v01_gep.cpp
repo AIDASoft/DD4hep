@@ -45,10 +45,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   int n = 0;
 
   //added code by Thorben Quast for event display
-  DDRec::LayeredCalorimeterData* solenoidData = new DDRec::LayeredCalorimeterData;
+  dd4hep::rec::LayeredCalorimeterData* solenoidData = new dd4hep::rec::LayeredCalorimeterData;
   solenoidData->inner_symmetry = 0;
   solenoidData->outer_symmetry = 0;
-  solenoidData->layoutType = DDRec::LayeredCalorimeterData::BarrelLayout ;
+  solenoidData->layoutType = dd4hep::rec::LayeredCalorimeterData::BarrelLayout ;
 
   double inner_radius= std::numeric_limits<double>::max();
   double outer_radius= 0;
@@ -75,7 +75,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       //NN: These probably need to be fixed and ced modified to read the extent, rather than the layer
       //added code by Thorben Quast for event display
-      DDRec::LayeredCalorimeterData::Layer solenoidLayer;
+      dd4hep::rec::LayeredCalorimeterData::Layer solenoidLayer;
       solenoidLayer.distance = r;
 
       solenoidLayer.inner_thickness = thickness/2.;
@@ -127,7 +127,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   solenoidData->extent[3] = detZ;
 
   //added code by Thorben Quast for event display
-  sdet.addExtension< DDRec::LayeredCalorimeterData >( solenoidData ) ;
+  sdet.addExtension< dd4hep::rec::LayeredCalorimeterData >( solenoidData ) ;
 
 
   return sdet;

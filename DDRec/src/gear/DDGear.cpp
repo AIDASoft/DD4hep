@@ -20,9 +20,8 @@
 #include "geartgeo/TGeoGearDistanceProperties.h"
 
 
-namespace DD4hep{
-
-  using namespace Geometry ;
+namespace dd4hep{
+  namespace rec{
 
 
   gear::GearMgr* createGearMgr( Geometry::LCDD& lcdd , const std::string& pluginName ){
@@ -68,11 +67,11 @@ namespace DD4hep{
     
     for( unsigned i=0, N= dets.size() ; i<N ; ++i){
       
-      DD4hep::GearHandle* gearH = 0 ;
+      GearHandle* gearH = 0 ;
       
       try{
       
-	gearH = dets[i].extension<DD4hep::GearHandle>() ;
+	gearH = dets[i].extension<GearHandle>() ;
 
 	std::cout << " *** subdetector " << dets[i].name() << " - found gear object : " << gearH->name() << std::endl ; 
 
@@ -145,5 +144,6 @@ namespace DD4hep{
     return gearMgr ;
 
   }
-}
+
+ }}
  

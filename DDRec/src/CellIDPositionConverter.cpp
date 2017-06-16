@@ -6,24 +6,10 @@
 
 #include "TGeoManager.h"
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
 
-    using Geometry::DetElement;
-    using Geometry::LCDD;
-    using Geometry::PlacedVolume;
-    using Geometry::Readout;
-    using Geometry::Solid;
-    using Geometry::VolumeManager;
-    using Geometry::Volume;
-    using Geometry::SensitiveDetector;
-    using Geometry::Position;
-    using Geometry::Segmentation;
-    using std::set;
-
-
-
-    const DD4hep::Geometry::VolumeManagerContext*
+    const VolumeManagerContext*
     CellIDPositionConverter::findContext(const CellID& cellID) const {
       return _volumeManager.lookupContext( cellID ) ;
     }
@@ -40,7 +26,7 @@ namespace DD4hep {
 
       double l[3], e[3], g[3];
 
-      const Geometry::VolumeManagerContext* context = findContext( cell ) ;
+      const VolumeManagerContext* context = findContext( cell ) ;
 
       if( context == NULL)
 	return Position() ;
@@ -55,7 +41,7 @@ namespace DD4hep {
       if( ! pv.volume().isSensitive() )
 	return Position() ;
 	
-      Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+      SensitiveDetector sd = pv.volume().sensitiveDetector();
       Readout r = sd.readout() ;
 
 #else
@@ -100,7 +86,7 @@ namespace DD4hep {
 	global.GetCoordinates( g ) ;
 	m->MasterToLocal( g, l );
 
-	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+	SensitiveDetector sd = pv.volume().sensitiveDetector();
 	Readout r = sd.readout() ;
 	
 	// collect all volIDs for the current path
@@ -189,7 +175,7 @@ namespace DD4hep {
 
     namespace {
       
-      bool containsPoint( const DetElement& det, const Geometry::Position& global ) {
+      bool containsPoint( const DetElement& det, const Position& global ) {
 	
 	if( det.volume().isValid() and det.volume().solid().isValid() ) {
 	  
@@ -206,7 +192,7 @@ namespace DD4hep {
       
     }
 
-    DetElement CellIDPositionConverter::findDetElement(const Geometry::Position& global,
+    DetElement CellIDPositionConverter::findDetElement(const Position& global,
 						       const DetElement& d) const {
 
       DetElement det = ( d.isValid() ? d : _lcdd->world() ) ;
@@ -245,7 +231,7 @@ namespace DD4hep {
       return DetElement() ;
     } 
 
-    Geometry::PlacedVolume CellIDPositionConverter::findPlacement(const Geometry::Position& pos, const  Geometry::PlacedVolume& pv , double locPos[3], Geometry::PlacedVolume::VolIDs& volIDs) const {
+    PlacedVolume CellIDPositionConverter::findPlacement(const Position& pos, const  PlacedVolume& pv , double locPos[3], PlacedVolume::VolIDs& volIDs) const {
 
       
       double l[3] ;
@@ -299,11 +285,11 @@ namespace DD4hep {
     } 
 
     
-    Readout CellIDPositionConverter::findReadout(const Geometry::DetElement& det) const {
+    Readout CellIDPositionConverter::findReadout(const DetElement& det) const {
 
       // first check if top level is a sensitive detector
       if (det.volume().isValid() and det.volume().isSensitive()) {
-	Geometry::SensitiveDetector sd = det.volume().sensitiveDetector();
+	SensitiveDetector sd = det.volume().sensitiveDetector();
 	if (sd.isValid() and sd.readout().isValid()) {
 	  return sd.readout();
 	}
@@ -318,11 +304,11 @@ namespace DD4hep {
       return Readout();
     }
 
-    Readout CellIDPositionConverter::findReadout(const Geometry::PlacedVolume& pv) const {
+    Readout CellIDPositionConverter::findReadout(const PlacedVolume& pv) const {
       
       // first check if we are in a sensitive volume
       if( pv.volume().isSensitive() ){
-	Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+	SensitiveDetector sd = pv.volume().sensitiveDetector();
       	if (sd.isValid() and sd.readout().isValid()) {
 	  return sd.readout();
 	}
@@ -342,5 +328,5 @@ namespace DD4hep {
 
 
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */

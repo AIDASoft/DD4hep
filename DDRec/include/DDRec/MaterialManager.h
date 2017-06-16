@@ -1,6 +1,7 @@
 #ifndef DDRec_MaterialManager_H_
 #define DDRec_MaterialManager_H_
 
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
 #include "DDSurfaces/Vector3D.h"
 #include "DDRec/Material.h"
@@ -12,11 +13,8 @@
 
 class TGeoManager ;
 
-namespace DD4hep {
-  namespace DDRec {
-
-    //  export Geometry::Material to this namespace ;
-    using  Geometry::Material ;
+namespace dd4hep {
+  namespace rec {
 
     typedef std::vector< std::pair< Material, double > > MaterialVec ;
     
@@ -33,7 +31,7 @@ namespace DD4hep {
     public:
 
       /// Instantiate the MaterialManager for this (world) volume
-      MaterialManager(DD4hep::Geometry::Volume world);
+      MaterialManager(Volume world);
 
       /// default c'tor
       [[gnu::deprecated("use MaterialManager(Volume world) instead")]]
@@ -90,7 +88,9 @@ namespace DD4hep {
       return os ;
     }
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif // DDRec_MaterialManager_H_

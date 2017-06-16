@@ -4,7 +4,7 @@
 #include <string>
 #include <ostream>
 
-namespace DD4hep { namespace DDRec {
+namespace dd4hep { namespace rec {
   
   /** Interface for material description for tracking. 
    *
@@ -53,6 +53,8 @@ namespace DD4hep { namespace DDRec {
     return os ;
   }
 
-  } } /* namespace DDRec */
+  } } /* namespace rec */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif /* DDRec_MATERIAL_H_ */

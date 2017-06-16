@@ -38,7 +38,7 @@ namespace {
 namespace{
   
   /// helper class for a planar surface placed into a polyhedral calorimeter barrel 
-  class CaloBarrelPlaneImpl : public  DD4hep::DDRec::VolPlaneImpl   {
+  class CaloBarrelPlaneImpl : public  dd4hep::rec::VolPlaneImpl   {
     double _length, _width ;
 
   public:
@@ -48,7 +48,7 @@ namespace{
                          DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
                          DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
                          DD4hep::Geometry::Volume vol, int id_val ) :
-      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
+      dd4hep::rec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _length(0),_width(0) {}
     
     void setData( double length, double width){
@@ -80,7 +80,7 @@ namespace{
     }
   };
   
-  typedef DD4hep::DDRec::VolSurfaceHandle<CaloBarrelPlaneImpl> CaloBarrelPlane ;
+  typedef dd4hep::rec::VolSurfaceHandle<CaloBarrelPlaneImpl> CaloBarrelPlane ;
 
   
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {

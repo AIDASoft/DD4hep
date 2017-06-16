@@ -9,7 +9,7 @@
 #include <bitset>
 #include <cmath>
 
-namespace DD4hep { namespace DDRec {
+namespace dd4hep { namespace rec {
   
   class SurfaceType ;
 
@@ -313,6 +313,8 @@ namespace DD4hep { namespace DDRec {
   }
 
 
-} } /* namespace DDRec */
+} } /* namespace rec */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif /* DDRec_ISurface_H */
