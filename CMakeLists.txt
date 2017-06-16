@@ -53,7 +53,11 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG)
 include(${ROOT_USE_FILE})
 message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
-
+#
+# Include Boost
+#
+find_package( Boost REQUIRED )
+add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
 dd4hep_set_compiler_flags()
