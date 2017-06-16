@@ -40,3 +40,7 @@ build/
 *Config.cmake
 *ConfigVersion.cmake
 Version.h
+
+# emacs backup files
+*~
+
