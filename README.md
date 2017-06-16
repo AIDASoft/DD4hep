@@ -39,7 +39,7 @@ system before building and running the examples
 
 - **Mandatory**
 
-  CMake (version 2.8 or higher), ROOT (version 5.30 or higher) and Boost installations are mandatory.
+  CMake (version 3.3 or higher), ROOT (version 6.08 or higher) and Boost (version 1.49 or higher) installations are mandatory.
 
 - **Optional**
 
