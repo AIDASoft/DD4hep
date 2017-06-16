@@ -3,7 +3,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
-#include "DDSurfaces/Vector3D.h"
+#include "DDRec/Vector3D.h"
 #include "DDRec/Material.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Volumes.h"
@@ -44,11 +44,11 @@ namespace dd4hep {
        *  are ignored. Avoid calling this method in inner loops as the computation is not cheap. Ideally the result should be cached,
        *  for example as an averaged material @see createAveragedMaterial().
        */
-      const MaterialVec& materialsBetween(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 , double epsilon=1e-4 ) ;
+      const MaterialVec& materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 ) ;
 
       /** Get the material at the given position.
        */
-      const Material& materialAt(const DDSurfaces::Vector3D& pos );
+      const Material& materialAt(const Vector3D& pos );
 
 
       /** Create a material with averaged properties from all materials in the list. 
@@ -64,7 +64,7 @@ namespace dd4hep {
       Material _m ;
 
       // cached last points
-      DDSurfaces::Vector3D _p0 , _p1, _pos ;
+      Vector3D _p0 , _p1, _pos ;
 
       TGeoManager* _tgeoMgr ;
     };

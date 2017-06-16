@@ -25,9 +25,8 @@
 #include "DDRec/MaterialManager.h"
 #include "main.h"
 
-using namespace DD4hep;
-using namespace DDRec;
-using DDSurfaces::Vector3D;
+using namespace dd4hep;
+using namespace dd4hep::rec;
 
 int main_wrapper(int argc, char** argv)   {
   struct Handler  {

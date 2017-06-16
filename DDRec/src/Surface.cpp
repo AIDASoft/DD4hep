@@ -66,9 +66,9 @@ namespace dd4hep {
 
     double VolSurfaceBase::length_along_u() const {
       
-      const DDSurfaces::Vector3D& o = this->origin() ;
-      const DDSurfaces::Vector3D& u_val = this->u( o ) ;      
-      DDSurfaces::Vector3D  um = -1. * u_val ;
+      const Vector3D& o = this->origin() ;
+      const Vector3D& u_val = this->u( o ) ;      
+      Vector3D  um = -1. * u_val ;
       
       double dist_p = 0. ;
       double dist_m = 0. ;
@@ -107,8 +107,8 @@ namespace dd4hep {
 	// 	  << " dist_m " <<    dist_m
 	// 	  << std::endl ;
 
-	DDSurfaces::Vector3D o_1 = this->origin() + dist_p * u_val ;
-	DDSurfaces::Vector3D o_2 = this->origin() + dist_m * um ;
+	Vector3D o_1 = this->origin() + dist_p * u_val ;
+	Vector3D o_2 = this->origin() + dist_m * um ;
 
 	dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
 							const_cast<double*> ( u_val.const_array() ) ) ;
@@ -129,9 +129,9 @@ namespace dd4hep {
     
     double VolSurfaceBase::length_along_v() const {
 
-      const DDSurfaces::Vector3D& o = this->origin() ;
-      const DDSurfaces::Vector3D& v_val = this->v( o ) ;      
-      DDSurfaces::Vector3D  vm = -1. * v_val ;
+      const Vector3D& o = this->origin() ;
+      const Vector3D& v_val = this->v( o ) ;      
+      Vector3D  vm = -1. * v_val ;
       
       double dist_p = 0. ;
       double dist_m = 0. ;
@@ -170,8 +170,8 @@ namespace dd4hep {
 	// 	  << " dist_m " <<    dist_m
 	// 	  << std::endl ;
 
-	DDSurfaces::Vector3D o_1 = this->origin() + dist_p * v_val ;
-	DDSurfaces::Vector3D o_2 = this->origin() + dist_m * vm ;
+	Vector3D o_1 = this->origin() + dist_p * v_val ;
+	Vector3D o_2 = this->origin() + dist_m * vm ;
 
 	dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
 							const_cast<double*> ( v_val.const_array() ) ) ;
@@ -444,9 +444,9 @@ namespace dd4hep {
     }
     
     /// create outer bounding lines for the given symmetry of the polyhedron
-    std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> >  VolConeImpl::getLines(unsigned nMax){
+    std::vector< std::pair<Vector3D, Vector3D> >  VolConeImpl::getLines(unsigned nMax){
       
-      std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> >  lines ;
+      std::vector< std::pair<Vector3D, Vector3D> >  lines ;
       
       lines.reserve( nMax ) ;
       
@@ -839,7 +839,7 @@ namespace dd4hep {
 	
 	for( unsigned i=0;i<n;++i){
 	  
-	  DDSurfaces::Vector3D av,bv;
+	  Vector3D av,bv;
 	  _wtM->LocalToMaster( local_lines[i].first ,  av.array() ) ;
 	  _wtM->LocalToMaster( local_lines[i].second , bv.array() ) ;
 	  
@@ -852,10 +852,10 @@ namespace dd4hep {
 
 
       // get local and global surface vectors
-      const DDSurfaces::Vector3D& lu = _volSurf.u() ;
-      //      const DDSurfaces::Vector3D& lv = _volSurf.v() ;
-      const DDSurfaces::Vector3D& ln = _volSurf.normal() ;
-      DDSurfaces::Vector3D lo = _volSurf.origin() ;
+      const Vector3D& lu = _volSurf.u() ;
+      //      const Vector3D& lv = _volSurf.v() ;
+      const Vector3D& ln = _volSurf.normal() ;
+      Vector3D lo = _volSurf.origin() ;
       
       Volume vol = volume() ; 
       const TGeoShape* shape = vol->GetShape() ;
@@ -867,7 +867,7 @@ namespace dd4hep {
 	  
           TGeoBBox* box = ( TGeoBBox* ) shape  ;
 	  
-          DDSurfaces::Vector3D boxDim(  box->GetDX() , box->GetDY() , box->GetDZ() ) ;  
+          Vector3D boxDim(  box->GetDX() , box->GetDY() , box->GetDZ() ) ;  
 	  
 	  
           bool isYZ = std::fabs(  ln.x() - 1.0 ) < epsilon  ; // normal parallel to x
@@ -881,8 +881,8 @@ namespace dd4hep {
             unsigned uidx = 1 ;
             unsigned vidx = 2 ;
 	    
-            DDSurfaces::Vector3D ubl(  0., 1., 0. ) ; 
-            DDSurfaces::Vector3D vbl(  0., 0., 1. ) ;
+            Vector3D ubl(  0., 1., 0. ) ; 
+            Vector3D vbl(  0., 0., 1. ) ;
 	    
             if( isXZ ) {
 	      
@@ -899,8 +899,8 @@ namespace dd4hep {
               vidx = 1 ;
             }
 	    
-            DDSurfaces::Vector3D ub ;
-            DDSurfaces::Vector3D vb ;
+            Vector3D ub ;
+            Vector3D vb ;
             _wtM->LocalToMasterVect( ubl , ub.array() ) ;
             _wtM->LocalToMasterVect( vbl , vb.array() ) ;
 	    
@@ -1004,12 +1004,12 @@ namespace dd4hep {
 
           //according to the TGeoTrap definition, the lengths are given such that the normal vector of the surface
           //points in the e_z direction.
-          DDSurfaces::Vector3D ubl(  1., 0., 0. ) ; 
-          DDSurfaces::Vector3D vbl(  0., 1., 0. ) ; 
+          Vector3D ubl(  1., 0., 0. ) ; 
+          Vector3D vbl(  0., 1., 0. ) ; 
 
           //the local span vectors are transformed into the main coordinate system (in LocalToMasterVect())
-          DDSurfaces::Vector3D ub ;
-          DDSurfaces::Vector3D vb ;
+          Vector3D ub ;
+          Vector3D vb ;
           _wtM->LocalToMasterVect( ubl , ub.array() ) ;
           _wtM->LocalToMasterVect( vbl , vb.array() ) ;
 
@@ -1035,12 +1035,12 @@ namespace dd4hep {
           //the normal vector is parallel to e_y for all geometry cases in CLIC
           //if that is at some point not the case anymore, then local plane vectors ubl, vbl
           //must be initialized like it is done for the boxes (line 674 following)
-          DDSurfaces::Vector3D ubl(  1., 0., 0. ) ; 
-          DDSurfaces::Vector3D vbl(  0., 0., 1. ) ; 
+          Vector3D ubl(  1., 0., 0. ) ; 
+          Vector3D vbl(  0., 0., 1. ) ; 
           
           //the local span vectors are transformed into the main coordinate system (in LocalToMasterVect())
-          DDSurfaces::Vector3D ub ;
-          DDSurfaces::Vector3D vb ;
+          Vector3D ub ;
+          Vector3D vb ;
           _wtM->LocalToMasterVect( ubl , ub.array() ) ;
           _wtM->LocalToMasterVect( vbl , vb.array() ) ;
 
@@ -1067,12 +1067,12 @@ namespace dd4hep {
           //the normal vector is parallel to e_y for all geometry cases in CLIC
           //if that is at some point not the case anymore, then local plane vectors ubl, vbl
           //must be initialized like it is done for the boxes (line 674 following)
-          DDSurfaces::Vector3D ubl(  1., 0., 0. ) ; 
-          DDSurfaces::Vector3D vbl(  0., 0., 1. ) ; 
+          Vector3D ubl(  1., 0., 0. ) ; 
+          Vector3D vbl(  0., 0., 1. ) ; 
           
           //the local span vectors are transformed into the main coordinate system (in LocalToMasterVect())
-          DDSurfaces::Vector3D ub ;
-          DDSurfaces::Vector3D vb ;
+          Vector3D ub ;
+          Vector3D vb ;
           _wtM->LocalToMasterVect( ubl , ub.array() ) ;
           _wtM->LocalToMasterVect( vbl , vb.array() ) ;
 
@@ -1102,7 +1102,7 @@ namespace dd4hep {
         TVector3 norm( ln.x() , ln.y() , ln.z() ) ;
 
 	
-        DDSurfaces::Vector3D first, previous ;
+        Vector3D first, previous ;
 
         for(unsigned i=0 ; i< nMax ; ++i ){ 
 	  
@@ -1115,15 +1115,15 @@ namespace dd4hep {
 	
           TVector3 vecR = rot * vec ;
 	  
-          DDSurfaces::Vector3D luRot ;
+          Vector3D luRot ;
           luRot.fill( vecR ) ;
  	  
           double dist = shape->DistFromInside( const_cast<double*> (lo.const_array()) , const_cast<double*> (luRot.const_array())  , 3, 0.1 ) ;
 	  
           // local point at volume boundary
-          DDSurfaces::Vector3D lp = lo + dist * luRot ;
+          Vector3D lp = lo + dist * luRot ;
 
-          DDSurfaces::Vector3D gp ;
+          Vector3D gp ;
 	  
           _wtM->LocalToMaster( lp , gp.array() ) ;
 
@@ -1202,7 +1202,7 @@ namespace dd4hep {
  
       Vector3D lp , u_val ;
       _wtM->MasterToLocal( point , lp.array() ) ;
-      const DDSurfaces::Vector3D& lu = _volSurf.u( lp  ) ;
+      const Vector3D& lu = _volSurf.u( lp  ) ;
       _wtM->LocalToMasterVect( lu , u_val.array() ) ;
       return u_val ; 
     }
@@ -1210,7 +1210,7 @@ namespace dd4hep {
     Vector3D CylinderSurface::v(const Vector3D& point ) const {  
       Vector3D lp , v_val ;
       _wtM->MasterToLocal( point , lp.array() ) ;
-      const DDSurfaces::Vector3D& lv =  _volSurf.v( lp  ) ;
+      const Vector3D& lv =  _volSurf.v( lp  ) ;
       _wtM->LocalToMasterVect( lv , v_val.array() ) ;
       return v_val ; 
     }
@@ -1218,7 +1218,7 @@ namespace dd4hep {
     Vector3D CylinderSurface::normal(const Vector3D& point ) const {  
       Vector3D lp , n ;
       _wtM->MasterToLocal( point , lp.array() ) ;
-      const DDSurfaces::Vector3D& ln =  _volSurf.normal( lp  ) ;
+      const Vector3D& ln =  _volSurf.normal( lp  ) ;
       _wtM->LocalToMasterVect( ln , n.array() ) ;
       return n ; 
     }

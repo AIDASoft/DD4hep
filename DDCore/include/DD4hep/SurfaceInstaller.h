@@ -145,7 +145,7 @@ namespace {
     typedef DD4hep::DDRec::Vector3D     Vector3D;
     typedef DD4hep::DDRec::VolSurface   VolSurface;
     typedef DD4hep::DDRec::VolPlane     VolPlane;
-    typedef DDSurfaces::SurfaceType     Type;
+    typedef SurfaceType     Type;
     UserData data;
 
     /// Default (empty argument handler

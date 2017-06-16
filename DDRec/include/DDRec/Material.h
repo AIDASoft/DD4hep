@@ -2,7 +2,7 @@
 #define DDRec_Material_H
 
 #include "DD4hep/LCDD.h"
-#include "DDSurfaces/IMaterial.h"
+#include "DDRec/IMaterial.h"
 
 #include <list>
 
@@ -10,14 +10,14 @@ namespace dd4hep {
   namespace rec {
     
     
-    /** Simple data class that implements the DDSurfaces::IMaterial interface
+    /** Simple data class that implements the IMaterial interface
      *  and is used in the Surface implementation.
      *
      * @author F.Gaede, DESY
      * @date May, 20 2014
      * @version $Id$
      */
-    class MaterialData : public DDSurfaces::IMaterial{
+    class MaterialData : public IMaterial{
       
     protected:
       std::string _name ;
