@@ -8,7 +8,7 @@ cd build_doc;
 cmake -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=${TARGET}/DD4hep \
     -DCMAKE_MODULE_PATH=:${TARGET}/DD4hep \
-    -DDD4hep_INCLUDE_DIRS=${TARGET}/DD4hep/include \
+    -Ddd4hep_INCLUDE_DIRS=${TARGET}/DD4hep/include \
     -DDD4HEP_USE_XERCESC=ON \
     -DXERCESC_ROOT_DIR=${SW}/xercesc \
     -DDD4HEP_USE_BOOST=ON \

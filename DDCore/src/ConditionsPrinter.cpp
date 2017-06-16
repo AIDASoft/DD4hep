@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,8 +22,8 @@
 #include <sstream>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 namespace {
   /// C++ version: replace all occurrences of a string
@@ -60,7 +60,7 @@ public:
   /// Assignment operator
   ParamPrinter& operator=(const ParamPrinter& copy) = default;
   /// Callback to output conditions information
-  virtual void operator()(const Conditions::AbstractMap::Params::value_type& obj)  const;
+  virtual void operator()(const cond::AbstractMap::Params::value_type& obj)  const;
 };
 
 
@@ -123,7 +123,7 @@ ConditionsPrinter::~ConditionsPrinter()   {
            prefix.c_str(), numCondition, numEmptyCondition);
   printout(INFO,name,"++ %s Total Number of parameters: %8ld  [%7.3f Parameters/Condition]",
            prefix.c_str(), numParam, double(numParam)/std::max(double(numCondition),1e0));
-  deletePtr(m_print);
+  detail::deletePtr(m_print);
 }
 
 /// Actual print method
@@ -163,10 +163,10 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
         ++numEmptyCondition;
       }
     }
-    else if ( type == typeid(Alignments::Delta) )  {
+    else if ( type == typeid(Delta) )  {
       string piv;
       stringstream str_tr, str_rot, str_piv;
-      const Alignments::Delta& D = cond.get<Alignments::Delta>();
+      const Delta& D = cond.get<Delta>();
       if ( D.hasTranslation() ) Utils::toStream(D.translation, str_tr);
       if ( D.hasRotation()    ) Utils::toStream(D.rotation, str_rot);
       if ( D.hasPivot()       ) {
@@ -187,10 +187,10 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
                piv.c_str()
                );
     }
-    else if ( type == typeid(Alignments::AlignmentData) )  {
+    else if ( type == typeid(AlignmentData) )  {
       string piv;
       stringstream str_tr, str_rot, str_piv;
-      const Alignments::Delta& D = cond.get<Alignments::AlignmentData>().delta;
+      const Delta& D = cond.get<AlignmentData>().delta;
       if ( D.hasTranslation() ) Utils::toStream(D.translation, str_tr);
       if ( D.hasRotation()    ) Utils::toStream(D.rotation, str_rot);
       if ( D.hasPivot()       ) {

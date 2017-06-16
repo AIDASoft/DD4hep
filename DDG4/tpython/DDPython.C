@@ -1,6 +1,6 @@
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,15 +19,15 @@
 // FRamework include files
 #include "DDG4/Python/DDPython.h"
 
-struct DD4hepPython {
+struct dd4hepPython {
   static void setMainThread()   {
-    DD4hep::DDPython::setMainThread();
+    dd4hep::DDPython::setMainThread();
   }
 };
 
 // CINT configuration
 #if defined(__MAKECINT__)
-#pragma link C++ namespace DD4hep;
-#pragma link C++ class DD4hep::DDPython;
-#pragma link C++ class DD4hepPython;
+#pragma link C++ namespace dd4hep;
+#pragma link C++ class dd4hep::DDPython;
+#pragma link C++ class dd4hepPython;
 #endif

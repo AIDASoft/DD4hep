@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +21,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 ClassImp(MultiView)
 DECLARE_VIEW_FACTORY(MultiView)
@@ -73,11 +73,11 @@ View& MultiView::Build(TEveWindow* slot)   {
   /// First panel
   if ( panels.size()>0)   {
     const DisplayConfiguration::Config& cfg = panels[0];
-    string typ = "DD4hep__"+cfg.use;
+    string typ = "dd4hep__"+cfg.use;
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {
-    v = PluginService::Create<View*>("DD4hep_DDEve_RhoZProjection",m_eve,(m_name+" - RhoZ View").c_str());
+    v = PluginService::Create<View*>("dd4hep_DDEve_RhoZProjection",m_eve,(m_name+" - RhoZ View").c_str());
   }
   (new_slot = pack->NewSlot())->MakeCurrent();
   _build(m_eve,v,new_slot);
@@ -85,11 +85,11 @@ View& MultiView::Build(TEveWindow* slot)   {
   /// Second panel
   if ( panels.size()>1)   {
     const DisplayConfiguration::Config& cfg = panels[1];
-    string typ = "DD4hep__"+cfg.use;
+    string typ = "dd4hep__"+cfg.use;
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {
-    v = PluginService::Create<View*>("DD4hep_DDEve_RhoPhiProjection",m_eve,(m_name+" - RPhi View").c_str());
+    v = PluginService::Create<View*>("dd4hep_DDEve_RhoPhiProjection",m_eve,(m_name+" - RPhi View").c_str());
   }
   (new_slot = pack->NewSlot())->MakeCurrent();
   _build(m_eve,v,new_slot);

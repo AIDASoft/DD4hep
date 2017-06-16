@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,14 +19,14 @@
 #include "XML/Layering.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   static double tolerance = 0e0;
   Layering      layering (e);
   xml_det_t     x_det     = e;
-  Material      air       = lcdd.air();
+  Material      air       = description.air();
   int           det_id    = x_det.id();
   string        det_name  = x_det.nameStr();
   xml_comp_t    x_staves  = x_det.staves();
@@ -39,7 +39,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double        outer_r   = inner_r + mod_z;
   double        totThick  = mod_z;
   DetElement    sdet      (det_name,det_id);
-  Volume        motherVol = lcdd.pickMotherVolume(sdet);
+  Volume        motherVol = description.pickMotherVolume(sdet);
   PolyhedraRegular hedra  (nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
   Volume        envelope  (det_name,hedra,air);
   PlacedVolume  env_phv   = motherVol.placeVolume(envelope,RotationZYX(0,0,M_PI/nsides));
@@ -68,7 +68,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume mod_vol("stave",trd,air);
 
   sens.setType("calorimeter");
-  { // =====  buildBarrelStave(lcdd, sens, module_volume) =====
+  { // =====  buildBarrelStave(description, sens, module_volume) =====
     // Parameters for computing the layer X dimension:
     double stave_z  = trd_y1/2;
     double l_dim_x  = trd_x1/2;                            // Starting X dimension for the layer.
@@ -103,13 +103,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
           string     s_name  = _toString(s_num,"slice%d");
           double     s_thick = x_slice.thickness();
           Box        s_box(l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
-          Volume     s_vol(s_name,s_box,lcdd.material(x_slice.materialStr()));
+          Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
           DetElement slice(layer,s_name,det_id);
 
           if ( x_slice.isSensitive() ) {
             s_vol.setSensitiveDetector(sens);
           }
-          slice.setAttributes(lcdd,s_vol,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+          slice.setAttributes(description,s_vol,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
           // Slice placement.
           PlacedVolume slice_phv = l_vol.placeVolume(s_vol,Position(0,0,s_pos_z+s_thick/2));
@@ -123,7 +123,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         }        
 
         // Set region, limitset, and vis of layer.
-        layer.setAttributes(lcdd,l_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
+        layer.setAttributes(description,l_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
 
         PlacedVolume layer_phv = mod_vol.placeVolume(l_vol,l_pos);
         layer_phv.addPhysVolID("layer", l_num);
@@ -137,7 +137,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   // Set stave visualization.
   if ( x_staves )   {
-    mod_vol.setVisAttributes(lcdd.visAttributes(x_staves.visStr()));
+    mod_vol.setVisAttributes(description.visAttributes(x_staves.visStr()));
   }
   // Phi start for a stave.
   double phi = M_PI / nsides;
@@ -160,9 +160,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }
 
   // Set envelope volume attributes.
-  envelope.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  envelope.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   return sdet;
 }
 
-DECLARE_DETELEMENT(DD4hep_EcalBarrel,create_detector)
+DECLARE_DETELEMENT(dd4hep_EcalBarrel,create_detector)
 DECLARE_DEPRECATED_DETELEMENT(EcalBarrel,create_detector)

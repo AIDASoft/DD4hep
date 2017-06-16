@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,12 +16,12 @@
 
 #define DD4HEP_NEED_EVALUATOR
 // This is the case, if the parsers are externalized
-// and the DD4hep namespace is renamed!
+// and the dd4hep namespace is renamed!
 #include DD4HEP_PARSER_HEADER
 
 #else
 
-// Standard DD4hep parser handling
+// Standard dd4hep parser handling
 #include "DD4hep/ToStream.h"
 
 #endif
@@ -30,15 +30,15 @@
 // C/C++ include files
 #include <stdexcept>
 
-namespace DD4hep {
+namespace dd4hep {
   XmlTools::Evaluator& g4Evaluator();
 }
 namespace {
-  XmlTools::Evaluator& eval(DD4hep::g4Evaluator());
+  XmlTools::Evaluator& eval(dd4hep::g4Evaluator());
 }
 
 //==============================================================================
-namespace DD4hep {  namespace Parsers {
+namespace dd4hep {  namespace Parsers {
     template <typename T> T evaluate_string(const std::string& /* value */)   {
       throw "Bad undefined call";
     }
@@ -48,7 +48,7 @@ namespace DD4hep {  namespace Parsers {
       if (eval.status() != XmlTools::Evaluator::OK) {
         std::cerr << value << ": ";
         eval.print_error();
-        throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
+        throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + value);
       }
       return result;
     }
@@ -57,7 +57,7 @@ namespace DD4hep {  namespace Parsers {
       if (eval.status() != XmlTools::Evaluator::OK) {
         std::cerr << value << ": ";
         eval.print_error();
-        throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
+        throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + value);
       }
       return (float) result;
     }

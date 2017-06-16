@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,16 +13,16 @@
 
 // Framework include files
 #include "DD4hep/DetectorSelector.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
 
 /// Access a set of subdetectors according to the sensitive type.
 const DetectorSelector::Result& 
 DetectorSelector::detectors(const string& type)
 {
-  return lcdd.detectors(type);
+  return description.detectors(type);
 }
 
 /// Access a set of subdetectors according to several sensitive types.
@@ -37,7 +37,7 @@ DetectorSelector::detectors(const string& type1,
   for(size_t i=0; i<sizeof(types)/sizeof(types[0]); ++i)  {
     try  {
       if ( !types[i]->empty() )  {
-        const vector<DetElement>& v = lcdd.detectors(*(types[i]));
+        const vector<DetElement>& v = description.detectors(*(types[i]));
         result.insert(end(result),begin(v),end(v));
       }
     }
@@ -52,9 +52,9 @@ DetectorSelector::detectors(const string& type1,
 DetectorSelector::Result
 DetectorSelector::detectors(unsigned int includeFlag, unsigned int excludeFlag ) const  {
   Result result;
-  const LCDD::HandleMap& entries = lcdd.detectors();
+  const Detector::HandleMap& entries = description.detectors();
   result.reserve( entries.size() ) ;
-  lcdd.detectors(""); // Just to ensure the geometry is closed....
+  description.detectors(""); // Just to ensure the geometry is closed....
   for(const auto& i : entries )  {
     DetElement det(i.second);
     if ( det.parent().isValid() )  { // Exclude 'world'

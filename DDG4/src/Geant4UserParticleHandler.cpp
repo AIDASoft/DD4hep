@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 #include "DDG4/Geant4UserParticleHandler.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4UserParticleHandler::Geant4UserParticleHandler(Geant4Context* ctxt, const std::string& nam)

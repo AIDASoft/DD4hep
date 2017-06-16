@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -31,10 +31,10 @@
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML {
+  namespace xml {
 
     typedef const XmlAttr* Attribute;
 
@@ -234,7 +234,7 @@ namespace DD4hep {
      *  -- unicode
      *  -- std::string
      *  -- const char*.
-     *  Internally a copy representation as an std::string is kept.
+     *  detaillly a copy representation as an std::string is kept.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -682,7 +682,7 @@ namespace DD4hep {
     /// User abstraction class to manipulate XML elements within a document
     /**
      *  User class encapsulating a DOM element
-     *  using the Handle helper.
+     *  using the Handle_t helper.
      *  This is the main class we interact with when
      *  analysing the xml documents for constructing
      *  sub-detectors etc.
@@ -898,5 +898,5 @@ namespace DD4hep {
     void dump_tree(Document doc, std::ostream& os);
 
   }
-} /* End namespace DD4hep   */
+} /* End namespace dd4hep   */
 #endif    /* DD4HEP_XMLELEMENTS_H   */

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -42,7 +42,7 @@
 #include <boost/spirit/repository/include/qi_confix.hpp>
 
 //==============================================================================
-namespace DD4hep {  namespace Parsers {
+namespace dd4hep {  namespace Parsers {
     //==============================================================================
     // Namespace aliases:
     //==============================================================================
@@ -371,7 +371,7 @@ namespace DD4hep {  namespace Parsers {
     }; // END KeyValueGrammar
     // We don't register KeyalueGrammar because it's a special parser
     // ============================================================================
-  }} //   DD4hep::Parsers
+  }} //   dd4hep::Parsers
 
 
 //==============================================================================
@@ -380,7 +380,7 @@ namespace DD4hep {  namespace Parsers {
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
 
-namespace DD4hep {  namespace Parsers {
+namespace dd4hep {  namespace Parsers {
 
     // ============================================================================
     template< typename Iterator, typename PointT, typename Skipper>
@@ -496,7 +496,7 @@ namespace DD4hep {  namespace Parsers {
       typedef Pnt4DGrammar<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> Grammar;
     };
     // ============================================================================
-  }} //   DD4hep::Parsers
+  }} //   dd4hep::Parsers
 #endif
 //============================================================================
 #endif

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,7 +20,7 @@
 #include "DDG4/Python/Geant4PythonDetectorConstruction.h"
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4PythonDetectorConstruction)

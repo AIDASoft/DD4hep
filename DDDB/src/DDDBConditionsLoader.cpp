@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,7 +24,7 @@
 #include "DDDB/DDDBReaderContext.h"
 #include "DDDB/DDDBHelper.h"
 
-// Other DD4hep includes
+// Other dd4hep includes
 #include "DD4hep/Printout.h"
 #include "DD4hep/Operators.h"
 #include "DDCond/ConditionsManagerObject.h"
@@ -32,15 +32,13 @@
 
 // Forward declartions
 using namespace std;
-using namespace DD4hep;
-using Geometry::LCDD;
-using Conditions::Condition;
-using Conditions::RangeConditions;
-using Conditions::ConditionsSlice;
-using Conditions::ConditionsListener;
-using Conditions::ConditionsDescriptor;
-using Conditions::ConditionsManagerObject;
-using Conditions::ConditionsLoadInfo;
+using namespace dd4hep;
+using namespace dd4hep::cond;
+using cond::ConditionsSlice;
+using cond::ConditionsListener;
+using cond::ConditionsDescriptor;
+using cond::ConditionsManagerObject;
+using cond::ConditionsLoadInfo;
 using DDDB::DDDBConditionsLoader;
 
 namespace {
@@ -49,8 +47,8 @@ namespace {
     REPLACE=2,
     NONE
   };
-  typedef Conditions::ConditionsDataLoader::RequiredItems Entries;
-  typedef Conditions::ConditionsDataLoader::LoadedItems   Loaded;
+  typedef ConditionsDataLoader::RequiredItems Entries;
+  typedef ConditionsDataLoader::LoadedItems   Loaded;
 
   /// Loader callback for Item loaders: load_single(...), load_range(...)
   /** 
@@ -60,18 +58,17 @@ namespace {
    */
   struct ItemCollector : public ConditionsListener  {
   private:
-    typedef Conditions::RangeConditions RC;
     CMD                        cmd;
     Condition::key_type        key;
-    RC&                        rc;
-    const Condition::iov_type& req_iov;
+    RangeConditions&           rc;
+    const IOV&                 req_iov;
 
   public:
-    Condition::iov_type        iov;
+    IOV                        iov;
 
   public:
     /// Initializing constructor
-    ItemCollector(CMD c, Condition::key_type k, const Condition::iov_type& i, RC& r)
+    ItemCollector(CMD c, Condition::key_type k, const IOV& i, RangeConditions& r)
       : cmd(c), key(k), rc(r), req_iov(i), iov(i.iovType)  {}
     /// ConditionsListener overload: onRegister new condition
     virtual void onRegisterCondition(Condition cond, void* param )  {
@@ -81,7 +78,7 @@ namespace {
            IOV::key_is_contained(c->iov->keyData,req_iov.keyData) )
       {
         if ( cmd == REPLACE )  {
-          RC::iterator i=std::find_if(rc.begin(),rc.end(),byName(cond));
+          auto i=std::find_if(rc.begin(),rc.end(),byName(cond));
           if ( i != rc.end() ) {
             (*i) = cond;
             printout(DEBUG,"DDDB","++ Got  MATCH: %-40s [%16llX] --> %s.",
@@ -108,15 +105,15 @@ namespace {
    */
   struct GroupCollector : public ConditionsListener  {
   private:
-    Loaded&                    loaded;
-    const Condition::iov_type& req_iov;
+    Loaded&    loaded;
+    const IOV& req_iov;
 
   public:
-    Condition::iov_type        iov;
+    IOV        iov;
 
   public:
     /// Initializing constructor
-    GroupCollector(const Condition::iov_type& i, Loaded& l)
+    GroupCollector(const IOV& i, Loaded& l)
       : loaded(l), req_iov(i), iov(req_iov.iovType)  {}
     /// ConditionsListener overload: onRegister new condition
     virtual void onRegisterCondition(Condition cond, void* param)  {
@@ -132,18 +129,18 @@ namespace {
 }
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
+  /// Namespace for implementation details of the AIDA detector description toolkit
   namespace DDDB  {
     /// Plugin entry points.
-    long load_dddb_conditions_from_uri(LCDD& lcdd, int argc, char** argv);
-    long dddb_conditions_2_dd4hep(LCDD& lcdd, int argc, char** argv);
+    long load_dddb_conditions_from_uri(Detector& description, int argc, char** argv);
+    long dddb_conditions_2_dd4hep(Detector& description, int argc, char** argv);
 
-    long load_dddb_from_uri(LCDD& lcdd, int argc, char** argv);
-    long dddb_2_dd4hep(LCDD& lcdd, int argc, char** argv);
+    long load_dddb_from_uri(Detector& description, int argc, char** argv);
+    long dddb_2_dd4hep(Detector& description, int argc, char** argv);
   } /* End namespace DDDB                    */
-} /* End namespace DD4hep                    */
+} /* End namespace dd4hep                    */
 
 
 /// Initializing constructor
@@ -151,7 +148,7 @@ DDDBConditionsLoader::KeyCollector::KeyCollector() : call(this,0)   {
 }
 
 /// ConditionsListener overload: onRegister new condition
-void DDDBConditionsLoader::KeyCollector::onRegisterCondition(Conditions::Condition cond, void*)  {
+void DDDBConditionsLoader::KeyCollector::onRegisterCondition(Condition cond, void*)  {
   Condition::Object* c = cond.ptr();
   // Register address key
   if ( (0==(c->flags&Condition::DERIVED)) && !c->address.empty() )   {
@@ -169,10 +166,10 @@ void DDDBConditionsLoader::KeyCollector::onRegisterCondition(Conditions::Conditi
 }
 
 /// Standard constructor, initializes variables
-DDDBConditionsLoader::DDDBConditionsLoader(LCDD& lcdd, ConditionsManager mgr, const string& nam) 
-  : Conditions::ConditionsDataLoader(lcdd, mgr, nam)
+DDDBConditionsLoader::DDDBConditionsLoader(Detector& description, ConditionsManager mgr, const string& nam) 
+  : ConditionsDataLoader(description, mgr, nam)
 {
-  DDDBHelper* helper = lcdd.extension<DDDBHelper>(); // Ensures object existence!
+  DDDBHelper* helper = description.extension<DDDBHelper>(); // Ensures object existence!
   // It is UGLY to listen on conditions appearing to know from which file they origin
   // but we do not have a better way as of now....
   m_mgr->callOnRegister(m_keys.call,true);
@@ -185,23 +182,23 @@ DDDBConditionsLoader::~DDDBConditionsLoader() {
 } 
 
 /// Load single conditions document
-void DDDBConditionsLoader::loadDocument(XML::UriContextReader& rdr, const Key& k)
+void DDDBConditionsLoader::loadDocument(xml::UriContextReader& rdr, const Key& k)
 {
   loadDocument(rdr, k.first, k.second);
 }
 
 /// Load single conditions document
-void DDDBConditionsLoader::loadDocument(XML::UriContextReader& rdr, 
+void DDDBConditionsLoader::loadDocument(xml::UriContextReader& rdr, 
                                         const string& sys_id,
                                         const string& obj_id)
 {
   const void* argv_conddb[] = {&rdr, sys_id.c_str(), obj_id.c_str(), 0};
-  long result = load_dddb_conditions_from_uri(m_lcdd, 3, (char**)argv_conddb);
+  long result = load_dddb_conditions_from_uri(m_detDesc, 3, (char**)argv_conddb);
   if ( 0 == result )  {
     except("DDDB","++ Failed to load conditions from URI:%s",sys_id.c_str());
   }
   const void* argv_dddb[] = {"conditions_only", 0};
-  result = dddb_conditions_2_dd4hep(m_lcdd, 1, (char**)argv_dddb);
+  result = dddb_conditions_2_dd4hep(m_detDesc, 1, (char**)argv_dddb);
   if ( 0 == result )  {
     except("DDDBLoader","++ Failed to process conditions from URI:%s",sys_id.c_str());
   }
@@ -209,7 +206,7 @@ void DDDBConditionsLoader::loadDocument(XML::UriContextReader& rdr,
 
 /// Load  a condition set given a Detector Element and the conditions name according to their validity
 size_t DDDBConditionsLoader::load_range(key_type key,
-                                        const iov_type& req_iov,
+                                        const IOV& req_iov,
                                         RangeConditions& conditions)   {
   KeyMap::const_iterator k = m_keys.keys.find(key);
   if ( k != m_keys.keys.end() )   {
@@ -217,7 +214,7 @@ size_t DDDBConditionsLoader::load_range(key_type key,
     DDDBReaderContext           local;
     const Key&                  url_key = (*k).second;
     long                        start = req_iov.keyData.first;
-    XML::UriContextReader       local_reader(m_resolver, &local);
+    xml::UriContextReader       local_reader(m_resolver, &local);
     ItemCollector               listener(INSERT, key, req_iov, conditions);
 
     m_mgr->callOnRegister(make_pair(&listener,&listener), true);  
@@ -237,14 +234,14 @@ size_t DDDBConditionsLoader::load_range(key_type key,
 
 /// Access single conditions from the persistent medium
 size_t DDDBConditionsLoader::load_single(key_type key,
-                                         const iov_type& req_iov,
+                                         const IOV& req_iov,
                                          RangeConditions& conditions)  {
   KeyMap::const_iterator k = m_keys.keys.find(key);
   if ( k != m_keys.keys.end() )   {
     size_t                      len = conditions.size();
     DDDBReaderContext           local;
     ItemCollector               listener(INSERT, key, req_iov, conditions);
-    XML::UriContextReader       local_reader(m_resolver, &local);
+    xml::UriContextReader       local_reader(m_resolver, &local);
 
     local.valid_since = 0;
     local.valid_until = 0;
@@ -258,10 +255,10 @@ size_t DDDBConditionsLoader::load_single(key_type key,
 }
 
 /// Optimized update using conditions slice data
-size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
+size_t DDDBConditionsLoader::load_many(const IOV&      req_iov,
                                        RequiredItems&  work,
                                        LoadedItems&    loaded,
-                                       iov_type&       conditions_validity)
+                                       IOV&            conditions_validity)
 {
   DDDBReaderContext  local;
   size_t len = loaded.size();
@@ -271,7 +268,7 @@ size_t DDDBConditionsLoader::load_many(const iov_type& req_iov,
   local.valid_since = 0;
   local.valid_until = 0;
 
-  XML::UriContextReader local_reader(m_resolver, &local);
+  xml::UriContextReader local_reader(m_resolver, &local);
 
   // First collect all required URIs which need loading.
   // Since one file contains many conditions, we have

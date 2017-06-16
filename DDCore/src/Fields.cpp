@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
 #include "DD4hep/detail/Handle.inl"
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
 
 typedef CartesianField::Object CartesianFieldObject;
 DD4HEP_INSTANTIATE_HANDLE(CartesianFieldObject);

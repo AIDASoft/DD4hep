@@ -7,18 +7,18 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_TRACKEREXTENSION_H_
-#define DDRec_TRACKEREXTENSION_H_
+#ifndef rec_TRACKEREXTENSION_H_
+#define rec_TRACKEREXTENSION_H_
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] TrackerExtension {
+class TrackerExtension {
 public:
 	TrackerExtension();
 	virtual ~TrackerExtension();
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDRec_TRACKEREXTENSION_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* rec_TRACKEREXTENSION_H_ */

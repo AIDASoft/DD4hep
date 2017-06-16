@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -11,12 +11,12 @@
 #include "ParsersStandardMiscCommon.h"
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-int DD4hep::Parsers::parse(std::map<unsigned int, std::string>& result, const std::string& input) {
-  return DD4hep::Parsers::parse_(result, input);
+int dd4hep::Parsers::parse(std::map<unsigned int, std::string>& result, const std::string& input) {
+  return dd4hep::Parsers::parse_(result, input);
 }
 #endif
 
-int DD4hep::Parsers::parse(std::string& name, std::string& value, const std::string& input ) {
+int dd4hep::Parsers::parse(std::string& name, std::string& value, const std::string& input ) {
   Skipper skipper;
   KeyValueGrammar<IteratorT, Skipper> g;
   KeyValueGrammar<IteratorT, Skipper>::ResultT result;
@@ -30,6 +30,6 @@ int DD4hep::Parsers::parse(std::string& name, std::string& value, const std::str
   return parse_result;
 }
 
-int DD4hep::Parsers::parse(std::map<std::string, std::pair<double, double> >& result, const std::string& input) {
-  return DD4hep::Parsers::parse_(result, input);
+int dd4hep::Parsers::parse(std::map<std::string, std::pair<double, double> >& result, const std::string& input) {
+  return dd4hep::Parsers::parse_(result, input);
 }

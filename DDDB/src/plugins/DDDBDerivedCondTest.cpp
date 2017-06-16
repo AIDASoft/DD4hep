@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Path.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
@@ -34,27 +34,13 @@
 #include "DDDB/DDDBConversion.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
-using DDDB::Document;
-using Geometry::LCDD;
-using Geometry::DetElement;
+using DDDB::DDDBDocument;
 
 /// Anonymous namespace for plugins
 namespace  {
-
-  /// Helper containing shared typedefs
-  /**
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP_CONDITIONS
-   */
-  class DataTypes  {
-  public:
-    typedef Alignments::AlignmentData        Data;
-    typedef Alignments::Delta                Delta;
-  };
 
   /// Helper containing shared context
   /**
@@ -86,7 +72,7 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  class ConditionUpdate1 : public ConditionUpdateCall, public DataTypes  {
+  class ConditionUpdate1 : public ConditionUpdateCall {
   public:
     CallContext& context;
     ConditionUpdate1(CallContext& c) : context(c)  {
@@ -94,15 +80,15 @@ namespace  {
     }
     virtual ~ConditionUpdate1() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& ctxt)  {
+    virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& ctxt)  {
       printout(context.level,"ConditionUpdate1","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
       try  {
-        Data&        data  = target.bind<Data>();
-        Condition    cond0 = ctxt.condition(0);
-        const Delta& delta = cond0.get<Delta>();
-        data.delta         = delta;
-        data.flag          = Data::HAVE_NONE;
+        AlignmentData& data = target.bind<AlignmentData>();
+        Condition    cond0  = ctxt.condition(0);
+        const Delta& delta  = cond0.get<Delta>();
+        data.delta          = delta;
+        data.flag           = AlignmentData::HAVE_NONE;
         ++context.numBuild1;
       }
       catch(const exception& exc)   {
@@ -121,7 +107,7 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  class ConditionUpdate2 : public ConditionUpdateCall, public DataTypes  {
+  class ConditionUpdate2 : public ConditionUpdateCall {
   public:
     CallContext& context;
     ConditionUpdate2(CallContext& c) : context(c)  {
@@ -129,17 +115,17 @@ namespace  {
     }
     virtual ~ConditionUpdate2() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& ctxt)  {
+    virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& ctxt)  {
       printout(context.level,"ConditionUpdate2","++ Building dependent condition: %s",key.name.c_str());
       Condition     target(key.name,"Alignment");
       try  {
-        Data&         data   = target.bind<Data>();
+        AlignmentData& data  = target.bind<AlignmentData>();
         Condition     cond0  = ctxt.condition(0);
         const Delta&  delta0 = cond0.get<Delta>();
-        const Data&   data1  = ctxt.get<Data>(1);   // Equivalent to ctxt.condition(1).get<Data>()
+        const AlignmentData&   data1  = ctxt.get<AlignmentData>(1);   // Equivalent to ctxt.condition(1).get<AlignmentData>()
         data.delta           = delta0;
         data.delta           = data1.delta;
-        data.flag            = Data::HAVE_NONE;
+        data.flag            = AlignmentData::HAVE_NONE;
         ++context.numBuild2;
       }
       catch(const exception& exc)   {
@@ -158,7 +144,7 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  class ConditionUpdate3 : public ConditionUpdateCall, public DataTypes  {
+  class ConditionUpdate3 : public ConditionUpdateCall {
   public:
     CallContext& context;
     ConditionUpdate3(CallContext& c) : context(c)  {
@@ -166,19 +152,19 @@ namespace  {
     }
     virtual ~ConditionUpdate3() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& ctxt)  {
+    virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& ctxt)  {
       printout(context.level,"ConditionUpdate3","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
       try  {
-        Data&        data   = target.bind<Data>();
-        Condition    cond0  = ctxt.condition(0);
+        AlignmentData& data = target.bind<AlignmentData>();
+        Condition    cond0 = ctxt.condition(0);
         const Delta& delta0 = cond0.get<Delta>();
-        const Data&  data1  = ctxt.get<Data>(1);
-        const Data&  data2  = ctxt.get<Data>(2);
+        const AlignmentData&  data1  = ctxt.get<AlignmentData>(1);
+        const AlignmentData&  data2  = ctxt.get<AlignmentData>(2);
         data.delta          = delta0;
         data.delta          = data1.delta;
         data.delta          = data2.delta;
-        data.flag           = Data::HAVE_NONE;
+        data.flag           = AlignmentData::HAVE_NONE;
         ++context.numBuild3;
       }
       catch(const exception& exc)   {
@@ -242,8 +228,7 @@ namespace  {
     RangeConditions findCond(const string& match)   {
       RangeConditions result;
       if ( !match.empty() )  {
-        for(RangeConditions::iterator ic=m_allConditions.begin(); ic!=m_allConditions.end(); ++ic)  {
-          Condition cond = (*ic);
+        for( Condition cond : m_allConditions )  {
           size_t idx = cond->value.find(match);
           if ( idx == 0 )  {
             if (cond->value.length() == match.length() )   {
@@ -262,14 +247,14 @@ namespace  {
     }
     long collectDependencies(DetElement de, int level)  {
       char fmt[64];
-      DDDB::Catalog* cat = 0;
+      DDDB::DDDBCatalog* cat = 0;
       const DetElement::Children& c = de.children();
 
       ::snprintf(fmt,sizeof(fmt),"%%-%ds-> ",2*level+5);
       try  {
         ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
         printout(m_level,m_name,fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
-        cat = de.extension<DDDB::Catalog>();
+        cat = de.extension<DDDB::DDDBCatalog>();
         ::sprintf(fmt,"%03d %%-%ds %%-20s -> %%s", level+1, 2*level+3);
         //
         // We use here the alignment entry from the DDDB catalog:
@@ -280,10 +265,9 @@ namespace  {
           printout(m_level,m_name,fmt,"","Alignment:    ", 
                    rc.empty() ? (cat->condition+"  !!!UNRESOLVED!!!").c_str() : cat->condition.c_str());
           if ( !rc.empty() )   {
-            for(RangeConditions::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)   {
-              Condition    cond = *ic;
+            for( Condition cond : rc )  {
               ConditionKey key(de, cond->name);
-              if ( key.hash == cond.key() && cond.typeInfo() == typeid(Alignments::Delta) )  {
+              if ( key.hash == cond.key() && cond.typeInfo() == typeid(Delta) )  {
                 ConditionKey target1(de,cond->name+"/derived_1");
                 ConditionKey target2(de,cond->name+"/derived_2");
                 ConditionKey target3(de,cond->name+"/derived_3");
@@ -340,17 +324,17 @@ namespace  {
   //========================================================================
   /// Plugin function
   /// Load, compute and access derived conditions
-  long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
+  long dddb_derived_alignments(Detector& description, int argc, char** argv) {
     PrintLevel level = INFO;
-    long time = makeTime(2016,4,1,12);
+    long time = detail::makeTime(2016,4,1,12);
     for(int i=0; i<argc; ++i)  {
       if ( ::strcmp(argv[i],"-time")==0 )  {
-        time = makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
+        time = detail::makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
         printout(level,"DDDB","Setting event time in %s to %s [%ld]",
                  Path(__FILE__).filename().c_str(), argv[i-1], time);
       }
       else if ( ::strcmp(argv[i],"-print")==0 )  {
-        level = DD4hep::printLevel(argv[++i]);
+        level = dd4hep::printLevel(argv[++i]);
         printout(level,"DDDB","Setting print level in %s to %s [%d]",
                  Path(__FILE__).filename().c_str(), argv[i-1], level);
       }
@@ -363,8 +347,8 @@ namespace  {
       }
     }
 
-    ConditionsSelector selector("DDDB_Derived",ConditionsManager::from(lcdd), level);
-    int ret = selector.collectDependencies(lcdd.world(), 0);
+    ConditionsSelector selector("DDDB_Derived",ConditionsManager::from(description), level);
+    int ret = selector.collectDependencies(description.world(), 0);
     if ( ret == 1 )  {
       ret = selector.computeDependencies(time);
     }

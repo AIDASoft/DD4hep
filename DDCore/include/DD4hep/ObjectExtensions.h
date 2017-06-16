@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Implementation of an object supporting arbitrary user extensions
   /**
@@ -30,32 +30,21 @@ namespace DD4hep {
    */
   class ObjectExtensions   {
   public:
-    /// Definition of the extension type
-    typedef std::map<const std::type_info*, void*> Extensions;
-    /// Extensions copy constructor type
-    typedef void* (*copy_t)(const void*, void* arg);
-    /// Extensions destructor type
-    typedef void (*destruct_t)(void*);
     /// Defintiion of the extension entry
     struct Entry {
-      copy_t copy;
-      destruct_t destruct;
+      void* (*copy)(const void*, void*);
+      void  (*destruct)(void*);
       int id;
     };
-    typedef std::map<const std::type_info*, Entry> ExtensionMap;
-
     /// The extensions object
-    Extensions    extensions; //!
+    std::map<const std::type_info*, void*>    extensions; //!
     /// Pointer to the extension map
-    ExtensionMap* extensionMap; //!
+    std::map<const std::type_info*, Entry>*   extensionMap; //!
 
     /// Function to be passed as dtor if object should NOT be deleted!
     static void _noDelete(void*) {}
-
     /// Templated destructor function
-    template <typename T> static void _delete(void* ptr) {
-      delete (T*) (ptr);
-    }
+    template <typename T> static void _delete(void* ptr) { delete (T*) (ptr); }
 
   public:
     /// Default constructor
@@ -71,11 +60,13 @@ namespace DD4hep {
     /// Clear all extensions
     void clear(bool destroy=true);
     /// Copy object extensions from another object. Hosting type must be identical!
-    void copyFrom(const Extensions& ext, void* arg);
+    void copyFrom(const std::map<const std::type_info*, void*>& ext, void* arg);
     /// Add an extension object to the detector element
-    void* addExtension(void* ptr, const std::type_info& info, copy_t ctor, destruct_t dtor);
+    void* addExtension(void* ptr, const std::type_info& info,
+                       void* (*ctor)(const void*, void* arg),
+                       void  (*dtor)(void*));
     /// Add an extension object to the detector element
-    void* addExtension(void* ptr, const std::type_info& info, destruct_t dtor);
+    void* addExtension(void* ptr, const std::type_info& info, void  (*dtor)(void*));
     /// Remove an existing extension object from the instance
     void* removeExtension(const std::type_info& info, bool destroy);
     /// Access an existing extension object from the detector element
@@ -84,5 +75,5 @@ namespace DD4hep {
     void* extension(const std::type_info& info) const;
   };
 
-} /* End namespace DD4hep        */
+} /* End namespace dd4hep        */
 #endif    /* DD4HEP_GEOMETRY_OBJECTEXTENSIONS_H */

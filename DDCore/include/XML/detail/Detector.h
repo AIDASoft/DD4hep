@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,7 +20,7 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class NamedObject;
@@ -28,7 +28,7 @@ namespace DD4hep {
   /// Namespace for the AIDA detector description toolkit supporting JSON utilities
   namespace DD4HEP_DIMENSION_NS {
 
-    /// Generic Handle class extending the generic handle Dimension
+    /// Generic Handle_t class extending the generic handle Dimension
     /**
      *  Helper class to access any field in a xml tag.
      *  Specialized for attributes of a detector sub-element.
@@ -38,7 +38,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_XML
      */
     struct Component: public Dimension {
-      /// Constructor from Handle
+      /// Constructor from Handle_t
       Component(Handle_t e)
         : Dimension(e) {
       }
@@ -58,7 +58,7 @@ namespace DD4hep {
       NamedObject* createShape() const;
     };
 
-    /// XML Handle class extending the XML handle Dimension
+    /// XML Handle_t class extending the XML handle Dimension
     /**
      *  Helper class to access any field in a xml tag.
      *  Specialized for some of the attributes of a detector element.
@@ -68,7 +68,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_XML
      */
     struct DetElement: public Dimension {
-      /// Constructor from Handle
+      /// Constructor from Handle_t
       DetElement(Handle_t e)
         : Dimension(e) {
       }
@@ -98,4 +98,4 @@ namespace DD4hep {
     };
 
   }       /* End namespace DD4HEP_DIMENSION_NS       */
-}         /* End namespace DD4hep                    */
+}         /* End namespace dd4hep                    */

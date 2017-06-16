@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,17 +16,17 @@
 
 // Framework include files
 #include "DD4hep/ComponentProperties.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 // C/C++ include files
 #include <string>
 #include <memory>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Forward declarations
     class Geant4Kernel;
@@ -41,17 +41,17 @@ namespace DD4hep {
     template <typename TYPE> class Geant4Handle {
     protected:
       void checked_assign(TYPE* p);
+      TYPE* null()  { return 0; }
     public:
-      typedef TYPE handled_type;
       /// Pointer to referenced object
-      mutable handled_type* value = 0;
+      mutable TYPE* value = 0;
       /// Default constructor
       explicit Geant4Handle() = default;
       /// Construction initialized with object pointer
-      Geant4Handle(handled_type* typ);
+      Geant4Handle(TYPE* typ);
       /// Cross type initialization
       template <typename T> Geant4Handle(T* typ) : value(0) {
-        checked_assign(dynamic_cast<handled_type*>(typ));
+        checked_assign(dynamic_cast<TYPE*>(typ));
       }
       /// Copy constructor
       Geant4Handle(const Geant4Handle& handle);
@@ -72,19 +72,19 @@ namespace DD4hep {
       /// Move assignment operator
       Geant4Handle& operator=(Geant4Handle&& handle);
       /// Assignment operator
-      Geant4Handle& operator=(handled_type* ptr);
+      Geant4Handle& operator=(TYPE* ptr);
       /// Validity check
       bool operator!() const;
       /// Access to the underlying object
       Geant4Action* action() const;
       /// Access to the underlying object
-      handled_type* operator->() const;
+      TYPE* operator->() const;
       /// Conversion operator
-      operator handled_type*() const;
+      operator TYPE*() const;
       /// Access to the underlying object
-      handled_type* get() const;
+      TYPE* get() const;
       /// Release the underlying object
-      handled_type* release();
+      TYPE* release();
     };
 
     /// Handle to Geant4 actions with built-in creation mechanism
@@ -95,9 +95,8 @@ namespace DD4hep {
      */
     class KernelHandle {
     public:
-      typedef Geant4Kernel handled_type;
       /// Pointer to referenced object
-      mutable handled_type* value;
+      mutable Geant4Kernel* value;
       /// Default constructor
       explicit KernelHandle();
       /// Construction initialized with object pointer
@@ -107,18 +106,18 @@ namespace DD4hep {
       /// Default destructor
       ~KernelHandle()                  {               }
       /// Conversion operator
-      operator handled_type*() const   { return value; }
+      operator Geant4Kernel*() const   { return value; }
       /// Access to the underlying object
-      handled_type* get() const        { return value; }
+      Geant4Kernel* get() const        { return value; }
       /// Access to the underlying object
-      handled_type* operator->() const { return value; }
+      Geant4Kernel* operator->() const { return value; }
       /// Access to worker thread
       KernelHandle worker();
       /// Destroy referenced object (program termination)
       void destroy();
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4SETUP_H

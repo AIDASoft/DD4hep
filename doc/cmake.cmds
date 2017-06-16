@@ -1,11 +1,11 @@
 #
-#  ++++ Build DD4hep (simplest)
+#  ++++ Build dd4hep (simplest)
 #
 cmake -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_USE_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF \
 -DCMAKE_INSTALL_PREFIX=../DD4hep \
 ../DD4hep
 #
-#  ++++ Build DD4hep with XERCES
+#  ++++ Build dd4hep with XERCES
 #
 cmake -DCMAKE_BUILD_TYPE=Debug \
 -DDD4HEP_USE_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF         \
@@ -14,7 +14,7 @@ cmake -DCMAKE_BUILD_TYPE=Debug \
 ../DD4hep
 #
 #
-#  ++++ Build DD4hep with XERCES and GEANT4
+#  ++++ Build dd4hep with XERCES and GEANT4
 #
 cmake -DCMAKE_BUILD_TYPE=Debug \
 -DDD4HEP_USE_GEANT4=ON  -DGeant4_ROOT_DIR=${G4SYS} -DCLHEP_ROOT_DIR=${CLHEPSYS} \
@@ -24,7 +24,7 @@ cmake -DCMAKE_BUILD_TYPE=Debug \
 ../DD4hep
 #
 #
-#  ++++ Build DD4hep with GEANT4  (no Xerces)
+#  ++++ Build dd4hep with GEANT4  (no Xerces)
 #
 cmake -DCMAKE_BUILD_TYPE=Debug \
 -DDD4HEP_USE_GEANT4=ON  -DGeant4_ROOT_DIR=${G4SYS} \
@@ -62,7 +62,7 @@ export ROOTSYS=${location}/ROOT/5.34.19/${CONFIG};
 Geant4=${location}/Geant4/9.6.p03/${CONFIG};
 ROOTlibs=${location}/ROOT/5.34.19/${CONFIG}/lib;
 XERCESClibs=${location}/XercesC/3.1.1p1/${CONFIG}/lib;
-DD4hepLibs=${location}/DD4hep/v00-09/${CONFIG}/lib;
+dd4hepLibs=${location}/DD4hep/v00-09/${CONFIG}/lib;
 CLHEPlibs=${location}/clhep/2.1.4.1/${CONFIG}/lib;
 Geant4libs=${Geant4}/lib64;
 Pythonlibs=${location}/Python/2.7.6/${CONFIG}/lib;

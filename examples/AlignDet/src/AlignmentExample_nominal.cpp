@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -34,8 +34,8 @@
 #include "DD4hep/Factories.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::AlignmentExamples;
+using namespace dd4hep;
+using namespace dd4hep::AlignmentExamples;
 
 /// Plugin function: Alignment program example
 /**
@@ -45,16 +45,16 @@ using namespace DD4hep::AlignmentExamples;
  *  \version 1.0
  *  \date    01/12/2016
  */
-static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
+static int alignment_example (Detector& description, int argc, char** argv)  {
   class Collector  {
   public:
-    AlignmentsCalculator::Deltas& deltas;
-    ConditionsMap&                mapping;
-    Collector(AlignmentsCalculator::Deltas& d, ConditionsMap& m)
+    map<DetElement, Delta>& deltas;
+    ConditionsMap&          mapping;
+    Collector(map<DetElement, Delta>& d, ConditionsMap& m)
       : deltas(d), mapping(m) {}
     // Here we test the ConditionsMap interface of the AlignmentsNominalMap
     int operator()(DetElement de, int )  const    {
-      Alignment a = mapping.get(de, Alignments::Keys::alignmentKey);
+      Alignment a = mapping.get(de, align::Keys::alignmentKey);
       deltas.insert(make_pair(de,a.delta()));
       return 1;
     }
@@ -78,23 +78,23 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
 
   // First we load the geometry
-  lcdd.fromXML(input);
+  description.fromXML(input);
 
 
   // ++++++++++++++++++++++++ Try scam with the fake AlignmentsNominalMap
-  Conditions::AlignmentsNominalMap nominal(lcdd.world());
+  AlignmentsNominalMap nominal(description.world());
   
   // Collect all the delta conditions and make proper alignment conditions out of them
-  AlignmentsCalculator::Deltas deltas;
+  map<DetElement, Delta> deltas;
   // Show that the access interface works:
-  int num_delta = Scanner().scan(Collector(deltas,nominal),lcdd.world());
+  int num_delta = Scanner().scan(Collector(deltas,nominal),description.world());
   /// Show that utilities can work with this one:
-  int num_printed = Scanner().scan(AlignmentsPrinter(&nominal),lcdd.world());
+  int num_printed = Scanner().scan(AlignmentsPrinter(&nominal),description.world());
   printout(INFO,"Prepare","Got a total of %ld Deltas (Nominals: %d , Printed: %d)",
            deltas.size(), num_delta, num_printed);
 
   // ++++++++++++++++++++++++ Now compute the alignments for a generic slice
-  Conditions::ConditionsTreeMap slice;
+  ConditionsTreeMap slice;
   // Now compute the tranformation matrices
   AlignmentsCalculator calculator;
   AlignmentsCalculator::Result ares = calculator.compute(deltas,slice);  

@@ -1,6 +1,6 @@
 #!/bin/python
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -26,9 +26,9 @@ def materialScan(opts):
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
   geant4.setupCshUI(ui=None)
-  for i in geant4.lcdd.detectors():
+  for i in geant4.description.detectors():
     o = DDG4.DetElement(i.second.ptr())
-    sd = geant4.lcdd.sensitiveDetector(o.name())
+    sd = geant4.description.sensitiveDetector(o.name())
     if sd.isValid():
       typ = sd.type()
       if geant4.sensitive_types.has_key(typ):
@@ -77,7 +77,7 @@ parser.add_option('-c', '--compact', dest='compact', default=None,
 		  metavar='<FILE>')
 parser.add_option('-P', '--print',
 		  dest='print_level', default=2,
-                  help='Set DD4hep print level.',
+                  help='Set dd4hep print level.',
 		  metavar='<int>')
 parser.add_option('-p', '--position',
 		  dest='position', default='0.0,0.0,0.0',

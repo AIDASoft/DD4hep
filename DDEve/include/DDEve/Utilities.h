@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_DDEVE_UTILITIES_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 // ROOT include files
 #include "TGeoMatrix.h"
@@ -22,7 +22,7 @@
 #include "TNamed.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   namespace Utilities {
     int findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, std::string* sub_path=0);
@@ -32,7 +32,7 @@ namespace DD4hep {
                    TGeoHMatrix& mat, const std::string& node_name);
 
     std::pair<bool,TEveElement*> 
-    LoadDetElement(Geometry::DetElement element,int levels, TEveElement* parent);
+    LoadDetElement(DetElement element,int levels, TEveElement* parent);
 
     /// Make a set of nodes starting from a top element (in-)visible with a given depth
     void MakeNodesVisible(TEveElement* e, bool visible, int level);
@@ -47,6 +47,6 @@ namespace DD4hep {
       return n ? n->GetName() : "???";
     }
   }
-}      /* End namespace DD4hep     */
+}      /* End namespace dd4hep     */
 #endif /* DD4HEP_DDEVE_UTILITIES_H */
 

@@ -1,6 +1,6 @@
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,7 +17,7 @@
 #include "DDSegmentation/Segmentation.h"
 
 /// Main handle class to hold a TGeo alignment object of type TGeoPhysicalNode
-namespace DD4hep {
+namespace dd4hep {
 
   namespace DDSegmentation {
 
@@ -94,6 +94,6 @@ namespace DD4hep {
     };
 
   } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 
 #endif /* DDSegmentation_MULITSEGMENTATION_H_ */

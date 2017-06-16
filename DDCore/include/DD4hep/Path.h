@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,7 +23,7 @@
 // Forward declartions
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
 
   /// Path handling class.
@@ -45,48 +45,48 @@ namespace DD4hep {
   class Path : public std::string {
   public:
     /// Default constructor
-    Path() : std::string()                      {                    }
+    Path() : std::string()                            {                    }
     /// Initializing constructor
-    Path(const std::string& c) : std::string(c) {                    }
+    Path(const std::string& copy) : std::string(copy) {                    }
     /// Copy constructor
-    Path(const Path& c) : std::string(c)        {                    }
+    Path(const Path& copy) : std::string(copy)        {                    }
     /// Move constructor
-    Path(Path&& c) : std::string(c)             {                    }
+    Path(Path&& copy) : std::string(copy)             {                    }
     /// Assigning constructor
-    template <class Iter> Path(Iter _begin,Iter _end)  {
+    template <class Iter> Path(Iter _begin,Iter _end) {
       if ( _begin != _end )  {
-        std::string s(_begin, _end);
-        this->std::string::operator=(s);
+        std::string str(_begin, _end);
+        this->std::string::operator=(str);
       }
     }
     /// Default destructor
     ~Path() {}
     /// Assignment operator from Path object
-    Path& operator=(const Path& c)          {
-      this->std::string::operator=(c);
+    Path& operator=(const Path& copy)          {
+      this->std::string::operator=(copy);
       return *this;
     }
     /// Assignment operator from string object
-    Path& operator=(const std::string& c)   {
-      this->std::string::operator=(c);
+    Path& operator=(const std::string& copy)   {
+      this->std::string::operator=(copy);
       return *this;
     }
     /// Move assignment operator from Path object
-    Path& operator=(Path&& c)          {
-      this->std::string::operator=(c);
+    Path& operator=(Path&& copy)          {
+      this->std::string::operator=(copy);
       return *this;
     }
     /// Assignment operator from string object
-    Path& operator=(std::string&& c)   {
-      this->std::string::operator=(c);
+    Path& operator=(std::string&& copy)   {
+      this->std::string::operator=(copy);
       return *this;
     }
     /// Append operation
-    Path& append(const std::string& c);
+    Path& append(const std::string& copy);
     /// Append operation
-    Path& operator/=(const Path& c)         {    return append(c);   }
+    Path& operator/=(const Path& copy)         {    return append(copy);   }
     /// Append operation
-    Path& operator/=(const std::string& c)  {    return append(c);   }
+    Path& operator/=(const std::string& copy)  {    return append(copy);   }
     /// Normalize path name
     Path  normalize()  const;
     /// Parent's path
@@ -113,5 +113,5 @@ namespace DD4hep {
       static const Path& dot_dot_path();
     };
   };
-}         /* End namespace DD4hep           */
+}         /* End namespace dd4hep           */
 #endif    /* DD4HEP_DDCORE_PATH_H           */

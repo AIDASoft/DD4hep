@@ -1,4 +1,4 @@
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 
@@ -7,7 +7,7 @@
 namespace dd4hep{
   namespace rec{
     
-    using namespace Geometry ;
+    using namespace detail ;
 
 
     /**
@@ -15,7 +15,7 @@ namespace dd4hep{
     @{
     \package SurfaceManager
 
-    *  \brief Plugin that creates a SurfaceManager object and attaches it to lcdd as a user extension object.
+    *  \brief Plugin that creates a SurfaceManager object and attaches it to description as a user extension object.
     *
     @}
     *
@@ -25,19 +25,19 @@ namespace dd4hep{
     */
 
 
-    static long createSurfaceManager(LCDD& theDetector, int /*argc*/, char** /*argv*/) {
+    static long createSurfaceManager(Detector& description, int /*argc*/, char** /*argv*/) {
 
       printout(INFO,"InstallSurfaceManager","**** running plugin InstallSurfaceManager ! " );
 
-      theDetector.addExtension<SurfaceManager>(  new SurfaceManager(theDetector) ) ;
+      description.addExtension<SurfaceManager>(  new SurfaceManager() ) ;
 
-      printout(INFO,"InstallSurfaceManager","%s" , theDetector.extension<SurfaceManager>()->toString().c_str() );
+      printout(INFO,"InstallSurfaceManager","%s" , description.extension<SurfaceManager>()->toString().c_str() );
 
       return 1;
     }
   }
 }
 
-DECLARE_APPLY( InstallSurfaceManager, DD4hep::DDRec::createSurfaceManager )
+DECLARE_APPLY( InstallSurfaceManager, dd4hep::rec::createSurfaceManager )
 
 

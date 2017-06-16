@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,33 +27,33 @@
 using namespace std;
 
 namespace {
-  size_t _the_printer_1(void*, DD4hep::PrintLevel lvl, const char* src, const char* text);
-  size_t _the_printer_2(void* par, DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args);
+  size_t _the_printer_1(void*, dd4hep::PrintLevel lvl, const char* src, const char* text);
+  size_t _the_printer_2(void* par, dd4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args);
 
   std::string print_fmt = "%-16s %5s %s";
-  DD4hep::PrintLevel print_lvl = DD4hep::INFO;
+  dd4hep::PrintLevel print_lvl = dd4hep::INFO;
   void* print_arg = 0;
-  DD4hep::output_function1_t print_func_1 = 0;
-  DD4hep::output_function2_t print_func_2 = _the_printer_2;
+  dd4hep::output_function1_t print_func_1 = 0;
+  dd4hep::output_function2_t print_func_2 = _the_printer_2;
 
-  const char* print_level(DD4hep::PrintLevel lvl)   {
+  const char* print_level(dd4hep::PrintLevel lvl)   {
     switch(lvl)   {
-    case DD4hep::NOLOG:     return "NOLOG";
-    case DD4hep::VERBOSE:   return "VERB ";
-    case DD4hep::DEBUG:     return "DEBUG";
-    case DD4hep::INFO:      return "INFO ";
-    case DD4hep::WARNING:   return "WARN ";
-    case DD4hep::ERROR:     return "ERROR";
-    case DD4hep::FATAL:     return "FATAL";
-    case DD4hep::ALWAYS:    return "     ";
+    case dd4hep::NOLOG:     return "NOLOG";
+    case dd4hep::VERBOSE:   return "VERB ";
+    case dd4hep::DEBUG:     return "DEBUG";
+    case dd4hep::INFO:      return "INFO ";
+    case dd4hep::WARNING:   return "WARN ";
+    case dd4hep::ERROR:     return "ERROR";
+    case dd4hep::FATAL:     return "FATAL";
+    case dd4hep::ALWAYS:    return "     ";
     default:
-      if ( lvl> DD4hep::ALWAYS )
-        return print_level(DD4hep::ALWAYS);
-      return print_level(DD4hep::NOLOG);
+      if ( lvl> dd4hep::ALWAYS )
+        return print_level(dd4hep::ALWAYS);
+      return print_level(dd4hep::NOLOG);
     }
   }
 
-  size_t _the_printer_1(void*, DD4hep::PrintLevel lvl, const char* src, const char* text) {
+  size_t _the_printer_1(void*, dd4hep::PrintLevel lvl, const char* src, const char* text) {
     ::fflush(stdout);
     ::fflush(stderr);
     cout << flush;
@@ -63,7 +63,7 @@ namespace {
     return len;
   }
 
-  size_t _the_printer_2(void* par, DD4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
+  size_t _the_printer_2(void* par, dd4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
     if ( !print_func_1 )  {
       char text[4096];
       ::fflush(stdout);
@@ -93,7 +93,7 @@ namespace {
  *  \arg argv       [char**,read-only]   Argument strings
  *  \return String containing the concatenated arguments
  */
-string DD4hep::arguments(int argc, char** argv)   {
+string dd4hep::arguments(int argc, char** argv)   {
   stringstream str;
   for(int i=0; i<argc;)  {
     str << argv[i];
@@ -108,7 +108,7 @@ string DD4hep::arguments(int argc, char** argv)   {
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...) {
+int dd4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
@@ -124,7 +124,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, ...) {
+int dd4hep::printout(PrintLevel severity, const string& src, const char* fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
@@ -140,7 +140,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, ..
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const string& fmt, ...) {
+int dd4hep::printout(PrintLevel severity, const char* src, const string& fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, &fmt);
@@ -156,7 +156,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const string& fmt, ..
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, ...) {
+int dd4hep::printout(PrintLevel severity, const string& src, const string& fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, &fmt);
@@ -172,7 +172,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, 
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_list& args) {
+int dd4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_list& args) {
   if (severity >= print_lvl) {
     print_func_2(print_arg, severity,src,fmt,args);
   }
@@ -185,7 +185,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_l
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, va_list& args) {
+int dd4hep::printout(PrintLevel severity, const string& src, const char* fmt, va_list& args) {
   return printout(severity, src.c_str(), fmt, args);
 }
 
@@ -195,7 +195,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, va
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const string& fmt, va_list& args) {
+int dd4hep::printout(PrintLevel severity, const char* src, const string& fmt, va_list& args) {
   return printout(severity, src, fmt.c_str(), args);
 }
 
@@ -205,7 +205,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const string& fmt, va
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, va_list& args) {
+int dd4hep::printout(PrintLevel severity, const string& src, const string& fmt, va_list& args) {
   return printout(severity, src.c_str(), fmt.c_str(), args);
 }
 
@@ -214,7 +214,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, 
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::except(const string& src, const string& fmt, ...) {
+int dd4hep::except(const string& src, const string& fmt, ...) {
   va_list args;
   va_start(args, &fmt);
   return except(src.c_str(),fmt.c_str(), args);
@@ -225,7 +225,7 @@ int DD4hep::except(const string& src, const string& fmt, ...) {
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-int DD4hep::except(const char* src, const char* fmt, ...) {
+int dd4hep::except(const char* src, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
   return except(src, fmt, args);
@@ -237,7 +237,7 @@ int DD4hep::except(const char* src, const char* fmt, ...) {
  *  \arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  \return Status code indicating success or failure
  */
-int DD4hep::except(const string& src, const string& fmt, va_list& args) {
+int dd4hep::except(const string& src, const string& fmt, va_list& args) {
   string msg = __format(fmt.c_str(), args);
   va_end(args);
   printout(ERROR, src.c_str(), "%s", msg.c_str());
@@ -251,7 +251,7 @@ int DD4hep::except(const string& src, const string& fmt, va_list& args) {
  *  \arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  \return Status code indicating success or failure
  */
-int DD4hep::except(const char* src, const char* fmt, va_list& args) {
+int dd4hep::except(const char* src, const char* fmt, va_list& args) {
   string msg = __format(fmt, args);
   va_end(args);
   printout(ERROR, src, "%s", msg.c_str());
@@ -264,7 +264,7 @@ int DD4hep::except(const char* src, const char* fmt, va_list& args) {
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-string DD4hep::format(const string& src, const string& fmt, ...) {
+string dd4hep::format(const string& src, const string& fmt, ...) {
   va_list args;
   va_start(args, &fmt);
   string str = format(src, fmt, args);
@@ -277,7 +277,7 @@ string DD4hep::format(const string& src, const string& fmt, ...) {
  *  \arg fmt        [string,read-only]   Format string for ellipsis args
  *  \return Status code indicating success or failure
  */
-string DD4hep::format(const char* src, const char* fmt, ...) {
+string dd4hep::format(const char* src, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
   string str = format(src, fmt, args);
@@ -291,7 +291,7 @@ string DD4hep::format(const char* src, const char* fmt, ...) {
  *  \arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  \return Status code indicating success or failure
  */
-string DD4hep::format(const string& src, const string& fmt, va_list& args) {
+string dd4hep::format(const string& src, const string& fmt, va_list& args) {
   return format(src.c_str(), fmt.c_str(), args);
 }
 
@@ -301,7 +301,7 @@ string DD4hep::format(const string& src, const string& fmt, va_list& args) {
  *  \arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  \return Status code indicating success or failure
  */
-string DD4hep::format(const char* src, const char* fmt, va_list& args) {
+string dd4hep::format(const char* src, const char* fmt, va_list& args) {
   char str[4096];
   size_t len1 = ::snprintf(str, sizeof(str), "%s: ", src);
   size_t len2 = ::vsnprintf(str + len1, sizeof(str) - len1, fmt, args);
@@ -313,67 +313,67 @@ string DD4hep::format(const char* src, const char* fmt, va_list& args) {
 }
 
 /// Set new print level. Returns the old print level
-DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level) {
+dd4hep::PrintLevel dd4hep::setPrintLevel(PrintLevel new_level) {
   PrintLevel old = print_lvl;
   print_lvl = new_level;
   return old;
 }
 
 /// Access the current printer level
-DD4hep::PrintLevel DD4hep::printLevel()  {
+dd4hep::PrintLevel dd4hep::printLevel()  {
   return print_lvl;
 }
 
 /// Translate the printer level from string to value
-DD4hep::PrintLevel DD4hep::printLevel(const char* value)  {
+dd4hep::PrintLevel dd4hep::printLevel(const char* value)  {
   if ( !value ) except("Printout","Invalid printlevel requested [EINVAL: Null-pointer argument]");
   // Explicit values
-  if ( strcmp(value,"NOLOG")   == 0 ) return DD4hep::NOLOG;
-  if ( strcmp(value,"VERBOSE") == 0 ) return DD4hep::VERBOSE;
-  if ( strcmp(value,"DEBUG")   == 0 ) return DD4hep::DEBUG;
-  if ( strcmp(value,"INFO")    == 0 ) return DD4hep::INFO;
-  if ( strcmp(value,"WARNING") == 0 ) return DD4hep::WARNING;
-  if ( strcmp(value,"ERROR")   == 0 ) return DD4hep::ERROR;
-  if ( strcmp(value,"FATAL")   == 0 ) return DD4hep::FATAL;
-  if ( strcmp(value,"ALWAYS")  == 0 ) return DD4hep::ALWAYS;
+  if ( strcmp(value,"NOLOG")   == 0 ) return dd4hep::NOLOG;
+  if ( strcmp(value,"VERBOSE") == 0 ) return dd4hep::VERBOSE;
+  if ( strcmp(value,"DEBUG")   == 0 ) return dd4hep::DEBUG;
+  if ( strcmp(value,"INFO")    == 0 ) return dd4hep::INFO;
+  if ( strcmp(value,"WARNING") == 0 ) return dd4hep::WARNING;
+  if ( strcmp(value,"ERROR")   == 0 ) return dd4hep::ERROR;
+  if ( strcmp(value,"FATAL")   == 0 ) return dd4hep::FATAL;
+  if ( strcmp(value,"ALWAYS")  == 0 ) return dd4hep::ALWAYS;
   // Numeric values
-  if ( strcmp(value,"0")       == 0 ) return DD4hep::NOLOG;
-  if ( strcmp(value,"1")       == 0 ) return DD4hep::VERBOSE;
-  if ( strcmp(value,"2")       == 0 ) return DD4hep::DEBUG;
-  if ( strcmp(value,"3")       == 0 ) return DD4hep::INFO;
-  if ( strcmp(value,"4")       == 0 ) return DD4hep::WARNING;
-  if ( strcmp(value,"5")       == 0 ) return DD4hep::ERROR;
-  if ( strcmp(value,"6")       == 0 ) return DD4hep::FATAL;
-  if ( strcmp(value,"7")       == 0 ) return DD4hep::ALWAYS;
+  if ( strcmp(value,"0")       == 0 ) return dd4hep::NOLOG;
+  if ( strcmp(value,"1")       == 0 ) return dd4hep::VERBOSE;
+  if ( strcmp(value,"2")       == 0 ) return dd4hep::DEBUG;
+  if ( strcmp(value,"3")       == 0 ) return dd4hep::INFO;
+  if ( strcmp(value,"4")       == 0 ) return dd4hep::WARNING;
+  if ( strcmp(value,"5")       == 0 ) return dd4hep::ERROR;
+  if ( strcmp(value,"6")       == 0 ) return dd4hep::FATAL;
+  if ( strcmp(value,"7")       == 0 ) return dd4hep::ALWAYS;
   except("Printout","Unknown printlevel requested:%s",value);
-  return DD4hep::ALWAYS;
+  return dd4hep::ALWAYS;
 }
 
 /// Translate the printer level from string to value
-DD4hep::PrintLevel DD4hep::printLevel(const std::string& value)  {
+dd4hep::PrintLevel dd4hep::printLevel(const std::string& value)  {
   return printLevel(value.c_str());
 }
 
 /// Check if this print level would result in some output
-bool DD4hep::isActivePrintLevel(int severity)   {
+bool dd4hep::isActivePrintLevel(int severity)   {
   return severity >= print_lvl;
 }
 
 /// Set new printout format for the 3 fields: source-level-message. All 3 are strings
-string DD4hep::setPrintFormat(const string& new_format) {
+string dd4hep::setPrintFormat(const string& new_format) {
   string old = print_fmt;
   print_fmt  = new_format;
   return old;
 }
 
 /// Customize printer function
-void DD4hep::setPrinter(void* arg, output_function1_t fcn) {
+void dd4hep::setPrinter(void* arg, output_function1_t fcn) {
   print_arg  = arg;
   print_func_1 = fcn ? fcn : _the_printer_1;
 }
 
 /// Customize printer function
-void DD4hep::setPrinter2(void* arg, output_function2_t fcn) {
+void dd4hep::setPrinter2(void* arg, output_function2_t fcn) {
   print_arg = arg;
   print_func_2 = fcn ? fcn : _the_printer_2;
 }

@@ -11,7 +11,7 @@
 #include "DDSegmentation/PolarGrid.h"
 #include <math.h>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 class PolarGridRPhi: public PolarGrid {
@@ -102,5 +102,5 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_POLARGRIDRPHI_H_ */

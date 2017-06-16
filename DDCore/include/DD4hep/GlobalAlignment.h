@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +20,10 @@
 #include "TGeoPhysicalNode.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Alignments {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace align {
 
     /// Main handle class to hold a TGeo alignment object of type TGeoPhysicalNode
     /**
@@ -36,20 +36,13 @@ namespace DD4hep {
      *  \ingroup DD4HEP_ALIGN
      */
     class GlobalAlignment : public Handle<TGeoPhysicalNode> {
-
-      typedef Geometry::RotationZYX RotationZYX;
-      typedef Geometry::Transform3D Transform3D;
-      typedef Geometry::Position    Position;
-      
     public:
       /// Default constructor
-      GlobalAlignment();
+      GlobalAlignment() = default;
       /// Default constructor
-      GlobalAlignment(TGeoPhysicalNode* p)
-        : Handle<TGeoPhysicalNode>(p)  {
-      }
+      GlobalAlignment(TGeoPhysicalNode* p) : Handle<TGeoPhysicalNode>(p)  {}
       /// Copy constructor
-      GlobalAlignment(const GlobalAlignment& c);
+      GlobalAlignment(const GlobalAlignment& c) = default;
       /// Constructor to be used when reading the already parsed object
       template <typename Q> GlobalAlignment(const Handle<Q>& e)
         : Handle<TGeoPhysicalNode>(e) {
@@ -57,7 +50,7 @@ namespace DD4hep {
       /// Initializing constructor
       GlobalAlignment(const std::string& path);
       /// Assignment operator
-      GlobalAlignment& operator=(const GlobalAlignment& c);
+      GlobalAlignment& operator=(const GlobalAlignment& c) = default;
       /// Number of nodes in this branch (=depth of the placement hierarchy from the top level volume)
       int numNodes() const;
       /// Access the placement of this node
@@ -89,7 +82,7 @@ namespace DD4hep {
       Transform3D invDelta() const;
     };
 
-  }       /* End namespace Alignments                */
-}         /* End namespace DD4hep                    */
+  }       /* End namespace align                */
+}         /* End namespace dd4hep                    */
 #endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENT_H      */
       

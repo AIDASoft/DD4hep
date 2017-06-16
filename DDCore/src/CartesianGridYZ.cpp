@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 // C/C++ include files
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
 
 /// determine the position based on the cell ID
 Position CartesianGridYZ::position(const CellID& id) const   {
@@ -27,7 +27,7 @@ Position CartesianGridYZ::position(const CellID& id) const   {
 }
 
 /// determine the cell ID based on the position
-DD4hep::CellID CartesianGridYZ::cellID(const Position& local,
+dd4hep::CellID CartesianGridYZ::cellID(const Position& local,
                                        const Position& global,
                                        const VolumeID& volID) const
 {

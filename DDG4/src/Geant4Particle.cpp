@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,9 +26,9 @@
 
 #include <iostream>
 
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
-typedef ReferenceBitMask<int> PropertyMask;
+using namespace dd4hep;
+using namespace dd4hep::sim;
+typedef detail::ReferenceBitMask<int> PropertyMask;
 
 /// Default destructor
 ParticleExtension::~ParticleExtension() {
@@ -139,7 +139,7 @@ Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
 #else
     extension   = c.extension;
 #endif
-    //dd4hep_ptr<ParticleExtension>(c.extension.release());
+    //DD4hep_ptr<ParticleExtension>(c.extension.release());
   }
   return *this;
 }
@@ -244,7 +244,7 @@ void Geant4ParticleHandle::dump1(int level, const std::string& src, const char* 
     for(std::set<int>::const_iterator i=p->parents.begin(); i!=p->parents.end(); ++i)
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
-  printout((DD4hep::PrintLevel)level,src,
+  printout((dd4hep::PrintLevel)level,src,
            "+++ %s %4d def [%-11s,%8s] reason:%8d E:%+.2e %3s #Dau:%3d #Par:%3d%-5s",
            tag, p->id,
            p.particleName().c_str(),
@@ -263,7 +263,7 @@ void Geant4ParticleHandle::dump2(int level, const std::string& src, const char* 
   if ( p->parents.size() == 0 ) text[0]=0;
   else if ( p->parents.size() == 1 ) ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 ) ::snprintf(text,sizeof(text),"/%d..",*(p->parents.begin()));
-  printout((DD4hep::PrintLevel)level,src,
+  printout((dd4hep::PrintLevel)level,src,
            "+++ %s %4d G4:%4d [%-12s,%8s] reason:%8d "
            "E:%+.2e in record:%s  #Par:%3d%-5s #Dau:%3d",
            tag, p->id, g4id,
@@ -288,7 +288,7 @@ void Geant4ParticleHandle::dumpWithVertex(int level, const std::string& src, con
     for(std::set<int>::const_iterator i=p->parents.begin(); i!=p->parents.end(); ++i)
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
-  printout((DD4hep::PrintLevel)level,src,
+  printout((dd4hep::PrintLevel)level,src,
            "+++ %s ID:%3d %-12s status:%08X PDG:%6d Vtx:(%+.2e,%+.2e,%+.2e)[mm] "
            "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
            tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
@@ -311,7 +311,7 @@ void Geant4ParticleHandle::dumpWithMomentum(int level, const std::string& src, c
     for(std::set<int>::const_iterator i=p->parents.begin(); i!=p->parents.end(); ++i)
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
-  printout((DD4hep::PrintLevel)level,src,
+  printout((dd4hep::PrintLevel)level,src,
            "+++%s ID:%3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
            "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
            tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
@@ -333,7 +333,7 @@ void Geant4ParticleHandle::dumpWithMomentumAndVertex(int level, const std::strin
     for(std::set<int>::const_iterator i=p->parents.begin(); i!=p->parents.end(); ++i)
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
-  printout((DD4hep::PrintLevel)level,src,
+  printout((dd4hep::PrintLevel)level,src,
            "+++%s %3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
            "Vtx:(%+.2e,%+.2e,%+.2e)[mm] #Dau:%3d #Par:%1d%-6s",
            tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
@@ -357,7 +357,7 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
   if ( p->parents.end() == p->parents.find(p->g4Parent) )  {
     ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
   }
-  printout((DD4hep::PrintLevel)level,src,
+  printout((dd4hep::PrintLevel)level,src,
            "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c -- %c%c%c%c%c%c%c",
            tag,
            p->id,
@@ -398,7 +398,7 @@ Geant4ParticleMap::~Geant4ParticleMap()    {
 
 /// Clear particle maps
 void Geant4ParticleMap::clear()    {
-  releaseObjects(particleMap);
+  detail::releaseObjects(particleMap);
   particleMap.clear();
   equivalentTracks.clear();
 }

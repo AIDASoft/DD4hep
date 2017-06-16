@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,8 +25,8 @@
 #include "DDEve/HitActors.h"
 #include "DDEve/ParticleActors.h"
 
-#include "DD4hep/LCDD.h"
-#include "DD4hep/LCDDData.h"
+#include "DD4hep/Detector.h"
+#include "DD4hep/DetectorData.h"
 #include "DD4hep/Printout.h"
 
 // ROOT include files
@@ -54,13 +54,13 @@
 #include <climits>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 
 ClassImp(Display)
 
-namespace DD4hep {
+namespace dd4hep {
   void EveDisplay(const char* xmlConfig = 0, const char* eventFileName = 0)  {
     Display* display = new Display(TEveManager::Create(true,"VI"));
     if ( xmlConfig != 0 )   {
@@ -108,7 +108,7 @@ Display::CalodataContext& Display::CalodataContext::operator=(const CalodataCont
 
 /// Standard constructor
 Display::Display(TEveManager* eve) 
-  : m_eve(eve), m_lcdd(0), m_evtHandler(0), m_geoGlobal(0), m_eveGlobal(0),
+  : m_eve(eve), m_detDesc(0), m_evtHandler(0), m_geoGlobal(0), m_eveGlobal(0),
     m_viewMenu(0), m_dd4Menu(0), m_visLevel(7), m_loadLevel(1)
 {
   TEveBrowser* br = m_eve->GetBrowser();
@@ -116,10 +116,10 @@ Display::Display(TEveManager* eve)
   EveShapeContextMenu::install(this);
   EvePgonSetProjectedContextMenu::install(this);
   ElementListContextMenu::install(this);
-  m_lcdd = &Geometry::LCDD::getInstance();
+  m_detDesc = &Detector::getInstance();
   m_evtHandler = new GenericEventHandler();
   m_evtHandler->Subscribe(this);
-  m_lcdd->addExtension<Display>(this);
+  m_detDesc->addExtension<Display>(this);
   br->ShowCloseTab(kFALSE);
   m_eve->GetViewers()->SwitchColorSet();
   TFile::SetCacheFileDir(".");
@@ -130,7 +130,7 @@ Display::Display(TEveManager* eve)
 /// Default destructor
 Display::~Display()   {
   TRootBrowser* br = m_eve->GetBrowser();
-  m_lcdd->removeExtension<Display>(false);
+  m_detDesc->removeExtension<Display>(false);
   m_viewConfigs.clear();
   deletePtr(m_evtHandler);
   deletePtr(m_eveGlobal);
@@ -140,18 +140,18 @@ Display::~Display()   {
   deletePtr(m_viewMenu);
   deletePtr(m_eve);
   //br->ReallyDelete();
-  LCDDData* data = dynamic_cast<LCDDData*>(m_lcdd);
+  DetectorData* data = dynamic_cast<DetectorData*>(m_detDesc);
   if ( data ) data->destroyData(false);
-  deletePtr(m_lcdd);
+  deletePtr(m_detDesc);
   gGeoManager = 0;
   gEve = 0;
 }
 
 /// Load geometry from compact xml file
 void Display::LoadXML(const char* xmlFile)     {
-  TGeoManager& mgr = m_lcdd->manager();
+  TGeoManager& mgr = m_detDesc->manager();
   bool has_geo = !m_geoTopics.empty();
-  m_lcdd->fromXML(xmlFile);
+  m_detDesc->fromXML(xmlFile);
   if ( !has_geo )  {
     LoadGeoChildren(0,m_loadLevel,false);
     mgr.SetVisLevel(m_visLevel);
@@ -175,8 +175,8 @@ void Display::ChooseGeometry()   {
 }
 
 /// Access to geometry hub
-Geometry::LCDD& Display::lcdd() const  {
-  return *m_lcdd;
+Detector& Display::detectorDescription() const  {
+  return *m_detDesc;
 }
 
 /// Access to X-client
@@ -355,7 +355,7 @@ void Display::BuildMenus(TGMenuBar* bar)   {
     bar = m_eve->GetBrowser()->GetMenuBar();
   }
   if ( 0 == m_dd4Menu )  {
-    m_dd4Menu = new DD4hepMenu(this);
+    m_dd4Menu = new dd4hepMenu(this);
     AddMenu(bar, m_dd4Menu);
   }
   if ( 0 == m_viewMenu && !m_viewConfigs.empty() )  {
@@ -534,8 +534,8 @@ void Display::ImportEvent(TEveElement* el)  {
 
 /// Load 'levels' Children into the geometry scene
 void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
-  using namespace DD4hep::Geometry;
-  DetElement world = m_lcdd->world();
+  using namespace dd4hep::detail;
+  DetElement world = m_detDesc->world();
   if ( world.children().size() == 0 )   {
     MessageBox(INFO,"It looks like there is no\nGeometry loaded.\nNo event display availible.\n");
   }
@@ -549,7 +549,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
                world.placement().name(), levels);
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
         DetElement de = (*i).second;
-        SensitiveDetector sd = m_lcdd->sensitiveDetector(de.name());
+        SensitiveDetector sd = m_detDesc->sensitiveDetector(de.name());
         TEveElementList& parent = sd.isValid() ? sens : struc;
         pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
         if ( e.second && e.first )  {
@@ -563,7 +563,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
       if ( 0 != n )   {
         TGeoHMatrix mat;
         const char* node_name = n->GetName();
-        int level = Utilities::findNodeWithMatrix(lcdd().world().placement().ptr(),n,&mat);
+        int level = Utilities::findNodeWithMatrix(detectorDescription().world().placement().ptr(),n,&mat);
         if ( level > 0 )   {
           pair<bool,TEveElement*> e(false,0);
           const DetElement::Children& c = world.children();

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,9 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
-#ifndef DD4HEP_GEOMETRY_VOLUMES_H
-#define DD4HEP_GEOMETRY_VOLUMES_H
+#ifndef DD4HEP_DDCORE_VOLUMES_H
+#define DD4HEP_DDCORE_VOLUMES_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -44,344 +43,296 @@ public:
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  class  Detector;
+  class  Region;
+  class  LimitSet;
+  class  Material;
+  class  VisAttr;
+  class  DetElement;
+  class  SensitiveDetector;
 
-    // Forward declarations
-    class  LCDD;
-    class  Region;
-    class  LimitSet;
-    class  Material;
-    class  VisAttr;
-    class  Volume;
-    class  DetElement;
-    class  PlacedVolume;
-    class  SensitiveDetector;
+  // Forward declarations
+  class  Volume;
+  class  PlacedVolume;
 
-    /// Implementation class extending the ROOT placed volume
+  /// Implementation class extending the ROOT placed volume
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoExtension.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_GEOMETRY
+   */
+  class PlacedVolumeExtension : public TGeoExtension  {
+  public:
+    typedef std::pair<std::string, int> VolID;
+    /// Volume ID container
     /**
-     *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoExtension.html
-     *
      *   \author  M.Frank
      *   \version 1.0
      *   \ingroup DD4HEP_GEOMETRY
      */
-    class PlacedVolumeExtension : public TGeoExtension  {
+    class VolIDs: public std::vector<VolID> {
     public:
-      typedef std::pair<std::string, int> VolID;
-      /// Volume ID container
-      /**
-       *   \author  M.Frank
-       *   \version 1.0
-       *   \ingroup DD4HEP_GEOMETRY
-       */
-      class VolIDs: public std::vector<VolID> {
-      public:
-        typedef std::vector<VolID> Base;
-        /// Default constructor
-        VolIDs() : std::vector<VolID>() {}
-        /// Copy constructor
-        VolIDs(const VolIDs& c) : std::vector<VolID>(c) {}
-        /// Destructor
-        ~VolIDs() {}
-        /// Assignment operator        
-        VolIDs& operator=(const VolIDs& c) {
-          if ( &c != this ) this->std::vector<VolID>::operator=(c);
-          return *this;
-        }
-        /// Find entry
-        std::vector<VolID>::const_iterator find(const std::string& name) const;
-        /// Insert new entry
-        std::pair<std::vector<VolID>::iterator, bool> insert(const std::string& name, int value);
-        /// Insert bunch of entries
-        template< class InputIt>
-        iterator insert(InputIt first, InputIt last)
-        {  return this->Base::insert(this->Base::end(), first, last);    }
-        /// Insert bunch of entries
-        template< class InputIt>
-        iterator insert(std::vector<VolID>::const_iterator pos, InputIt first, InputIt last)
-        {  return this->Base::insert(pos, first, last);    }
-        /// String representation for debugging
-        std::string str()  const;
-      };
-      /// Magic word to detect memory corruptions
-      unsigned long magic;
-      /// Reference count on object (used to implement Grab/Release)
-      long   refCount;
-      /// ID container
-      VolIDs volIDs;
+      typedef std::vector<VolID> Base;
       /// Default constructor
-      PlacedVolumeExtension();
+      VolIDs() = default;
       /// Copy constructor
-      PlacedVolumeExtension(const PlacedVolumeExtension& c);
-      /// Default destructor
-      virtual ~PlacedVolumeExtension();
-      /// Assignment operator
-      PlacedVolumeExtension& operator=(const PlacedVolumeExtension& c) {
-        magic = c.magic;
-        volIDs = c.volIDs;
-        return *this;
-      }
-      /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-      virtual TGeoExtension *Grab()  override;
-      /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-      virtual void Release() const  override;
-      /// Enable ROOT persistency
-      ClassDefOverride(PlacedVolumeExtension,1);
+      VolIDs(const VolIDs& c) = default;
+      /// Destructor
+      ~VolIDs() {}
+      /// Assignment operator        
+      VolIDs& operator=(const VolIDs& c) = default;
+      /// Find entry
+      std::vector<VolID>::const_iterator find(const std::string& name) const;
+      /// Insert new entry
+      std::pair<std::vector<VolID>::iterator, bool> insert(const std::string& name, int value);
+      /// Insert bunch of entries
+      template< class InputIt>
+      iterator insert(InputIt first, InputIt last)
+      {  return this->Base::insert(this->Base::end(), first, last);    }
+      /// Insert bunch of entries
+      template< class InputIt>
+      iterator insert(std::vector<VolID>::const_iterator pos, InputIt first, InputIt last)
+      {  return this->Base::insert(pos, first, last);    }
+      /// String representation for debugging
+      std::string str()  const;
     };
+    /// Magic word to detect memory corruptions
+    unsigned long magic;
+    /// Reference count on object (used to implement Grab/Release)
+    long   refCount;
+    /// ID container
+    VolIDs volIDs;
+    /// Default constructor
+    PlacedVolumeExtension();
+    /// Copy constructor
+    PlacedVolumeExtension(const PlacedVolumeExtension& c);
+    /// Default destructor
+    virtual ~PlacedVolumeExtension();
+    /// Assignment operator
+    PlacedVolumeExtension& operator=(const PlacedVolumeExtension& c) {
+      magic = c.magic;
+      volIDs = c.volIDs;
+      return *this;
+    }
+    /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+    virtual TGeoExtension *Grab()  override;
+    /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+    virtual void Release() const  override;
+    /// Enable ROOT persistency
+    ClassDefOverride(PlacedVolumeExtension,1);
+  };
 
-    /// Handle class holding a placed volume (also called physical volume)
-    /**
-     *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoNode.html
-     *
-     *   \author  M.Frank
-     *   \version 1.0
-     *   \ingroup DD4HEP_GEOMETRY
-     */
-    class PlacedVolume : public Handle<TGeoNode> {
-    public:
-      typedef PlacedVolumeExtension Object;
-      typedef Object::VolIDs VolIDs;
-      typedef Object::VolID  VolID;
+  /// Handle class holding a placed volume (also called physical volume)
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoNode.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_GEOMETRY
+   */
+  class PlacedVolume : public Handle<TGeoNode> {
+  public:
+    typedef PlacedVolumeExtension         Object;
+    typedef PlacedVolumeExtension::VolIDs VolIDs;
 
-      /// Constructor to be used when reading the already parsed DOM tree
-      PlacedVolume(const TGeoNode* e)
-        : Handle<TGeoNode>(e) {
-      }
-      /// Default constructor
-      PlacedVolume()
-        : Handle<TGeoNode>() {
-      }
-      /// Copy assignment
-      PlacedVolume(const PlacedVolume& e)
-        : Handle<TGeoNode>(e) {
-      }
-      /// Copy assignment from other handle type
-      template <typename T> PlacedVolume(const Handle<T>& e)
-        : Handle<TGeoNode>(e) {
-      }
-      /// Assignment operator (must match copy constructor)
-      PlacedVolume& operator=(const PlacedVolume& v) {
-        m_element = v.m_element;
-        return *this;
-      }
-      /// Check if placement is properly instrumented
-      Object* data() const;
-      /// Add identifier
-      PlacedVolume& addPhysVolID(const std::string& name, int value);
-      /// Volume material
-      Material material() const;
-      /// Logical volume of this placement
-      Volume volume() const;
-      /// Parent volume (envelope)
-      Volume motherVol() const;
-      /// Access to the volume IDs
-      const VolIDs& volIDs() const;
-      /// String dump
-      std::string toString() const;
-    };
+    /// Default constructor
+    PlacedVolume() = default;
+    /// Copy assignment
+    PlacedVolume(const PlacedVolume& e) = default;
+    /// Copy assignment from other handle type
+    template <typename T> PlacedVolume(const Handle<T>& e) : Handle<TGeoNode>(e) {  }
+    /// Constructor to be used when reading the already parsed DOM tree
+    PlacedVolume(const TGeoNode* e) : Handle<TGeoNode>(e) {  }
+    /// Assignment operator (must match copy constructor)
+    PlacedVolume& operator=(const PlacedVolume& v)  = default;
+    /// Check if placement is properly instrumented
+    Object* data() const;
+    /// Add identifier
+    PlacedVolume& addPhysVolID(const std::string& name, int value);
+    /// Volume material
+    Material material() const;
+    /// Logical volume of this placement
+    Volume volume() const;
+    /// Parent volume (envelope)
+    Volume motherVol() const;
+    /// Access to the volume IDs
+    const PlacedVolumeExtension::VolIDs& volIDs() const;
+    /// String dump
+    std::string toString() const;
+  };
 
-    /// Implementation class extending the ROOT volume (TGeoVolume)
-    /**
-     *   Internal data structure optional to TGeo data.
-     *
-     *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoExtension.html
-     *
-     *   \author  M.Frank
-     *   \version 1.0
-     *   \ingroup DD4HEP_GEOMETRY
-     */
-    class VolumeExtension : public TGeoExtension {
-    public:
-      /// Magic word to detect memory corruptions
-      unsigned long magic;
-      /// Reference count on object (used to implement Grab/Release)
-      long          refCount;
-      /// Region reference
-      Region        region;
-      /// Limit sets used for simulation
-      LimitSet      limits;
-      /// Reference to visualization attributes
-      VisAttr       vis;
-      /// Reference to the sensitive detector
-      Ref_t         sens_det;
+  /// Implementation class extending the ROOT volume (TGeoVolume)
+  /**
+   *   detaill data structure optional to TGeo data.
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoExtension.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_GEOMETRY
+   */
+  class VolumeExtension : public TGeoExtension {
+  public:
+    /// Magic word to detect memory corruptions
+    unsigned long       magic;
+    /// Reference count on object (used to implement Grab/Release)
+    long                refCount;
+    /// Region reference
+    Region              region;
+    /// Limit sets used for simulation
+    LimitSet            limits;
+    /// Reference to visualization attributes
+    VisAttr             vis;
+    /// Reference to the sensitive detector
+    Handle<NamedObject> sens_det;
 
-      int           referenced;
-      /// Default constructor
-      VolumeExtension();
-      /// Default destructor
-      virtual ~VolumeExtension();
-      /// Copy the object
-      void copy(const VolumeExtension& c) {
-        magic = c.magic;
-        region = c.region;
-        limits = c.limits;
-        vis = c.vis;
-        sens_det = c.sens_det;
-        referenced = c.referenced;
-      }
-      /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-      virtual TGeoExtension *Grab()  override;
-      /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-      virtual void Release() const  override;
-      /// Enable ROOT persistency
-      ClassDefOverride(VolumeExtension,1);
-    };
+    int                 referenced;
+    /// Default constructor
+    VolumeExtension();
+    /// Default destructor
+    virtual ~VolumeExtension();
+    /// Copy the object
+    void copy(const VolumeExtension& c) {
+      magic      = c.magic;
+      region     = c.region;
+      limits     = c.limits;
+      vis        = c.vis;
+      sens_det   = c.sens_det;
+      referenced = c.referenced;
+    }
+    /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+    virtual TGeoExtension *Grab()  override;
+    /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+    virtual void Release() const  override;
+    /// Enable ROOT persistency
+    ClassDefOverride(VolumeExtension,1);
+  };
 
-    /// Handle class holding a placed volume (also called physical volume)
-    /**
-     *   Handle describing a Volume
-     *
-     *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoVolume.html
-     *
-     *   \author  M.Frank
-     *   \version 1.0
-     *   \ingroup DD4HEP_GEOMETRY
-     */
-    class Volume: public Handle<TGeoVolume> {
+  /// Handle class holding a placed volume (also called physical volume)
+  /**
+   *   Handle describing a Volume
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoVolume.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_GEOMETRY
+   */
+  class Volume: public Handle<TGeoVolume> {
+  public:
+    typedef VolumeExtension Object;
 
-    public:
-      typedef Handle<TGeoVolume> Base;
-      typedef VolumeExtension Object;
+  public:
+    /// Default constructor
+    Volume() = default;
+    /// Copy from handle
+    Volume(const Volume& v) = default;
+    /// Copy from handle
+    Volume(const TGeoVolume* v) : Handle<TGeoVolume>(v) { }
+    /// Copy from arbitrary Element
+    template <typename T> Volume(const Handle<T>& v) : Handle<TGeoVolume>(v) {  }
 
-    public:
-      /// Default constructor
-      Volume()
-        : Base(0) {
-      }
+    /// Constructor to be used when creating a new geometry tree.
+    Volume(const std::string& name);
 
-      /// Copy from handle
-      Volume(const TGeoVolume* v)
-        : Base(v) {
-      }
+    /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
+    Volume(const std::string& name, const Solid& s, const Material& m);
 
-      /// Copy from handle
-      Volume(const Volume& v)
-        : Base(v) {
-      }
+    /// Assignment operator (must match copy constructor)
+    Volume& operator=(const Volume& a)  = default;
 
-      /// Copy from arbitrary Element
-      template <typename T> Volume(const Handle<T>& v)
-        : Base(v) {
-      }
+    /// Check if placement is properly instrumented
+    Object* data() const;
+    /// Place daughter volume. The position and rotation are the identity
+    PlacedVolume placeVolume(const Volume& vol) const;
+    /// Place daughter volume according to a generic Transform3D
+    PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr) const;
+    /// Place un-rotated daughter volume at the given position.
+    PlacedVolume placeVolume(const Volume& vol, const Position& pos) const;
+    /// Place rotated daughter volume. The position is automatically the identity position
+    PlacedVolume placeVolume(const Volume& vol, const RotationZYX& rot) const;
+    /// Place rotated daughter volume. The position is automatically the identity position
+    PlacedVolume placeVolume(const Volume& vol, const Rotation3D& rot) const;
 
-      /// Constructor to be used when creating a new geometry tree.
-      Volume(const std::string& name);
+    /// Attach attributes to the volume
+    const Volume& setAttributes(const Detector& description, const std::string& region, const std::string& limits,
+                                const std::string& vis) const;
 
-      /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-      Volume(const std::string& name, const Solid& s, const Material& m);
+    /// Set the regional attributes to the volume. Note: If the name string is empty, the action is ignored.
+    const Volume& setRegion(const Detector& description, const std::string& name) const;
+    /// Set the regional attributes to the volume
+    const Volume& setRegion(const Region& obj) const;
+    /// Access to the handle to the region structure
+    Region region() const;
 
-      /// Assignment operator (must match copy constructor)
-      Volume& operator=(const Volume& a) {
-        m_element = a.m_element;
-        return *this;
-      }
+    /// Set the limits to the volume. Note: If the name string is empty, the action is ignored.
+    const Volume& setLimitSet(const Detector& description, const std::string& name) const;
+    /// Set the limits to the volume
+    const Volume& setLimitSet(const LimitSet& obj) const;
+    /// Access to the limit set
+    LimitSet limitSet() const;
 
-      /// Check if placement is properly instrumented
-      Object* data() const;
-      /// Place daughter volume. The position and rotation are the identity
-      PlacedVolume placeVolume(const Volume& vol) const;
-      /// Place daughter volume according to a generic Transform3D
-      PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr) const;
-      /// Place un-rotated daughter volume at the given position.
-      PlacedVolume placeVolume(const Volume& vol, const Position& pos) const;
-      /// Place rotated daughter volume. The position is automatically the identity position
-      PlacedVolume placeVolume(const Volume& vol, const RotationZYX& rot) const;
-      /// Place rotated daughter volume. The position is automatically the identity position
-      PlacedVolume placeVolume(const Volume& vol, const Rotation3D& rot) const;
+    /// Set Visualization attributes to the volume
+    const Volume& setVisAttributes(const VisAttr& obj) const;
+    /// Set Visualization attributes to the volume. Note: If the name string is empty, the action is ignored.
+    const Volume& setVisAttributes(const Detector& description, const std::string& name) const;
+    /// Access the visualisation attributes
+    VisAttr visAttributes() const;
 
-      /// Attach attributes to the volume
-      const Volume& setAttributes(const LCDD& lcdd, const std::string& region, const std::string& limits,
-                                  const std::string& vis) const;
+    /// Assign the sensitive detector structure
+    const Volume& setSensitiveDetector(const SensitiveDetector& obj) const;
+    /// Access to the handle to the sensitive detector
+    Handle<NamedObject> sensitiveDetector() const;
+    /// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
+    bool isSensitive() const;
 
-      /// Set the regional attributes to the volume. Note: If the name string is empty, the action is ignored.
-      const Volume& setRegion(const LCDD& lcdd, const std::string& name) const;
-      /// Set the regional attributes to the volume
-      const Volume& setRegion(const Region& obj) const;
-      /// Access to the handle to the region structure
-      Region region() const;
+    /// Set the volume's solid shape
+    const Volume& setSolid(const Solid& s) const;
+    /// Access to Solid (Shape)
+    Solid solid() const;
 
-      /// Set the limits to the volume. Note: If the name string is empty, the action is ignored.
-      const Volume& setLimitSet(const LCDD& lcdd, const std::string& name) const;
-      /// Set the limits to the volume
-      const Volume& setLimitSet(const LimitSet& obj) const;
-      /// Access to the limit set
-      LimitSet limitSet() const;
+    /// Set the volume's material
+    const Volume& setMaterial(const Material& m) const;
+    /// Access to the Volume material
+    Material material() const;
 
-      /// Set Visualization attributes to the volume
-      const Volume& setVisAttributes(const VisAttr& obj) const;
-      /// Set Visualization attributes to the volume. Note: If the name string is empty, the action is ignored.
-      const Volume& setVisAttributes(const LCDD& lcdd, const std::string& name) const;
-      /// Access the visualisation attributes
-      VisAttr visAttributes() const;
+    /// Auto conversion to underlying ROOT object
+    operator TGeoVolume*() const {
+      return m_element;
+    }
+  };
 
-      /// Assign the sensitive detector structure
-      const Volume& setSensitiveDetector(const SensitiveDetector& obj) const;
-      /// Access to the handle to the sensitive detector
-      Ref_t sensitiveDetector() const;
-      /// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
-      bool isSensitive() const;
-
-      /// Set the volume's solid shape
-      const Volume& setSolid(const Solid& s) const;
-      /// Access to Solid (Shape)
-      Solid solid() const;
-
-      /// Set the volume's material
-      const Volume& setMaterial(const Material& m) const;
-      /// Access to the Volume material
-      Material material() const;
-
-      /// Auto conversion to underlying ROOT object
-      operator TGeoVolume*() const {
-        return m_element;
-      }
-    };
-
-    /// Implementation class extending the ROOT assembly volumes (TGeoVolumeAsembly)
-    /**
-     *  Handle describing a volume assembly.
-     *
-     *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoVolumeAssembly.html
-     *
-     *   \author  M.Frank
-     *   \version 1.0
-     *   \ingroup DD4HEP_GEOMETRY
-     */
-    class Assembly: public Volume {
-    public:
-      /// Default constructor
-      Assembly()
-        : Volume() {
-      }
-
-      /// Copy from handle
-      Assembly(const Assembly& v)
-        : Volume(v) {
-      }
-
-      /// Copy from arbitrary Element
-      template <typename T> Assembly(const Handle<T>& v)
-        : Volume(v) {
-      }
-
-      /// Constructor to be used when creating a new geometry tree.
-      Assembly(const std::string& name);
-
-      /// Assignment operator (must match copy constructor)
-      Assembly& operator=(const Assembly& a) {
-        m_element = a.m_element;
-        return *this;
-      }
-    };
-
-  } /* End namespace Geometry          */
-}   /* End namespace DD4hep            */
-#endif    /* DD4HEP_GEOMETRY_VOLUMES_H       */
+  /// Implementation class extending the ROOT assembly volumes (TGeoVolumeAsembly)
+  /**
+   *  Handle describing a volume assembly.
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoVolumeAssembly.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_GEOMETRY
+   */
+  class Assembly: public Volume {
+  public:
+    /// Default constructor
+    Assembly() = default;
+    /// Copy from handle
+    Assembly(const Assembly& v) = default;
+    /// Copy from arbitrary Element
+    template <typename T> Assembly(const Handle<T>& v) : Volume(v) {  }
+    /// Constructor to be used when creating a new geometry tree.
+    Assembly(const std::string& name);
+    /// Assignment operator (must match copy constructor)
+    Assembly& operator=(const Assembly& a) = default;
+  };
+}         /* End namespace dd4hep          */
+#endif    /* DD4HEP_DDCORE_VOLUMES_H       */

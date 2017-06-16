@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,12 +16,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DD4hepUnits.h"
 
 using namespace std ;
-using namespace DD4hep ;
-using namespace DD4hep::Geometry;
+using namespace dd4hep ;
+using namespace dd4hep::detail;
 
 //=============================================================================
 
@@ -51,8 +51,8 @@ static int invoke_dump_B_field(int argc, char** argv ){
   
   
   
-  LCDD& lcdd = LCDD::getInstance();
-  lcdd.fromCompact( inFile );
+  Detector& description = Detector::getInstance();
+  description.fromCompact( inFile );
   
   printf("#######################################################################################################\n");
   printf("       x[cm]             y[cm]           z[cm]           Bx[Tesla]        By[cm]          Bz[cm]       \n");
@@ -63,7 +63,7 @@ static int invoke_dump_B_field(int argc, char** argv ){
 
 	double posV[3] = { x, y, z }  ;
 	double bfieldV[3] ;
-	lcdd.field().magneticField( posV  , bfieldV  ) ;
+	description.field().magneticField( posV  , bfieldV  ) ;
 
 	printf(" %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  \n",
          posV[0], posV[1],  posV[2],

@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,13 +21,13 @@
 
 // Forward declarations
 
-using namespace DD4hep;
+using namespace dd4hep;
 
 ClassImp(PopupMenu)
 
 /// Standard constructor
 PopupMenu::PopupMenu(const TGWindow *parent) : m_popup(parent), m_cmd(0)  {
-  m_popup.Connect("Activated(int)", "DD4hep::PopupMenu", this, "HandleMenu(int)");
+  m_popup.Connect("Activated(int)", "dd4hep::PopupMenu", this, "HandleMenu(int)");
   InstanceCount::increment(this);
 }
 

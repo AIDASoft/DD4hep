@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,17 +19,18 @@
 #include "DD4hep/detail/ConditionsInterna.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
+using namespace dd4hep::align;
 
 /// Callback to output alignments information
-template <typename T> int DeltaCollector<T>::operator()(DetElement de, int level)  const {
+template <typename T>
+int DeltaCollector<T>::operator()(DetElement de, int level)  const  {
   if ( de.isValid() )  {
     int count = 0;
-    vector<Conditions::Condition> conditions;
-    conditionsCollector(mapping,conditions)(de,level);
+    vector<Condition> conditions;
+    cond::conditionsCollector(mapping,conditions)(de,level);
     for( auto cond : conditions )   {
-      if ( cond->testFlag(Conditions::Condition::ALIGNMENT_DELTA) )  {
+      if ( cond->testFlag(Condition::ALIGNMENT_DELTA) )  {
         insert_item(deltas, de, cond.get<Delta>());
         ++count;
       }
@@ -45,10 +46,10 @@ template <typename T>
 int AlignmentsCollector<T>::operator()(DetElement de, int level)  const  {
   if ( de.isValid() )  {
     int count = 0;
-    vector<Conditions::Condition> conditions;
-    conditionsCollector(mapping,conditions)(de,level);
+    vector<Condition> conditions;
+    cond::conditionsCollector(mapping,conditions)(de,level);
     for( auto cond : conditions )   {
-      if ( cond->testFlag(Conditions::Condition::ALIGNMENT_DERIVED) )  {
+      if ( cond->testFlag(Condition::ALIGNMENT_DERIVED) )  {
         Alignment align = cond;
         insert_item(alignments, de, align);
         ++count;
@@ -62,10 +63,10 @@ int AlignmentsCollector<T>::operator()(DetElement de, int level)  const  {
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace Alignments {
+  namespace align {
 
     template class DeltaCollector<list<Delta> >;
     template class DeltaCollector<vector<Delta> >;
@@ -88,5 +89,5 @@ namespace DD4hep {
     template class AlignmentsCollector<map<string,Alignment> >;
     template class AlignmentsCollector<multimap<string,Alignment> >;
 
-  }    /* End namespace Alignments  */
-}      /* End namespace DD4hep      */
+  }    /* End namespace align  */
+}      /* End namespace dd4hep      */

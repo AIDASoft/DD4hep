@@ -1,5 +1,5 @@
 
-Access mechaisms of DD4hep conditions for utilities
+Access mechaisms of dd4hep conditions for utilities
 ===================================================
 
 Access to conditions is solely supported using the interface class DDCore/ConditionsMap.
@@ -34,7 +34,7 @@ Naming conventions for detector conditions
 -- Alignment conditions naming conventions:
    --> Alignment-delta conditions are called           "alignment_delta".
    --> Fully qualified alignment conditions are called "alignment".
-   DD4hep provided alignment utilities rely on this convention.
+   dd4hep provided alignment utilities rely on this convention.
 
 -- Other conditions can be named freely.
 

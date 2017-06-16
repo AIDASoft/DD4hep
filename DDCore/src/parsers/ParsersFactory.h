@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,13 +24,13 @@
 #include <boost/mpl/assert.hpp>
 #include <boost/type_traits.hpp>
 // ============================================================================
-// DD4hep
+// dd4hep
 // ============================================================================
 #include "UsedParser.h"
 #include "GrammarsV2.h"
 // ============================================================================
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
 
@@ -61,15 +61,15 @@ namespace DD4hep {
     //=========================================================================
 
   }                                        //  end of namespace Parsers
-}                                          //  end of namespace DD4hep
+}                                          //  end of namespace dd4hep
 
 //=============================================================================
 
 // ============================================================================
 #define PARSERS_DEF_FOR_SINGLE(Type)                                  \
   PARSERS_DECL_FOR_SINGLE(Type)                                       \
-  int DD4hep::Parsers::parse(Type& result, const std::string& input)  \
-  {  return DD4hep::Parsers::parse_(result, input);  }
+  int dd4hep::Parsers::parse(Type& result, const std::string& input)  \
+  {  return dd4hep::Parsers::parse_(result, input);  }
 // ============================================================================
 
 #endif // DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H

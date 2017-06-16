@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -30,56 +30,50 @@
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the alignments part of the AIDA detector description toolkit
-  namespace Alignments   {
+  // Forward declarations
+  class Alignment;
 
-    // Forward declarations
-    class Alignment;
+  /// Alignments internal namespace declaration
+  /** detaillly defined datastructures are not presented to the
+   *  user directly, but are used by dedicated views.
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_ALIGNMENTS
+   */
+  namespace detail {
 
-    /// Alignments internal namespace declaration
-    /** Internally defined datastructures are not presented to the
-     *  user directly, but are used by dedicated views.
+    /// The data class behind an alignments handle.
+    /**
+     *  See AlignmentsInterna.cpp for the implementation.
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_ALIGNMENTS
      */
-    namespace Interna {
+    class AlignmentObject : public detail::ConditionObject    {
+    public:
+      /// Cached pointer to the bound conditions data, since these may be accessed very frequently
+      AlignmentData* alignment_data = 0;
 
-      /// The data class behind an alignments handle.
-      /**
-       *  See AlignmentsInterna.cpp for the implementation.
-       *
-       *  \author  M.Frank
-       *  \version 1.0
-       *  \ingroup DD4HEP_ALIGNMENTS
-       */
-      class AlignmentObject : public Conditions::Interna::ConditionObject    {
-      public:
-        /// Cached pointer to the bound conditions data, since these may be accessed very frequently
-        AlignmentData* alignment_data = 0;
-        /// Reference to the source conditions object
-        //key_type       source_key = 0;
-
-      public:
-        /// Default constructor. Alignment data wuill be bound to the heap.
-        AlignmentObject();
-        /// Copy constructor
-        AlignmentObject(const AlignmentObject& copy) = delete;
-        /// Standard constructor with user provided payload pointer to bind alignment data
-        AlignmentObject(const std::string& nam,const std::string& tit,void* payload,size_t len);
-        /// Standard Destructor
-        virtual ~AlignmentObject();
-        /// Assignment operator
-        AlignmentObject& operator=(const AlignmentObject& copy) = delete;
-        /// Clear data
-        void clear();
-        /// Accessor to the alignment data. Cannot be NULL. Initialized in the constructor(s)
-        AlignmentData& values()  {  return *alignment_data;  }
-      };
-    }     /* End namespace Interna                     */
-  }       /* End namespace Alignments                  */
-}         /* End namespace DD4hep                      */
+    public:
+      /// Default constructor. Alignment data wuill be bound to the heap.
+      AlignmentObject();
+      /// Copy constructor
+      AlignmentObject(const AlignmentObject& copy) = delete;
+      /// Standard constructor with user provided payload pointer to bind alignment data
+      AlignmentObject(const std::string& nam,const std::string& tit,void* payload,size_t len);
+      /// Standard Destructor
+      virtual ~AlignmentObject();
+      /// Assignment operator
+      AlignmentObject& operator=(const AlignmentObject& copy) = delete;
+      /// Clear data
+      void clear();
+      /// Accessor to the alignment data. Cannot be NULL. Initialized in the constructor(s)
+      AlignmentData& values()  {  return *alignment_data;  }
+    };
+  }       /* End namespace detail                     */
+}         /* End namespace dd4hep                      */
 #endif    /* DD4HEP_ALIGNMENTS_ALIGNMENTSINTERNA_H     */

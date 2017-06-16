@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -218,7 +218,7 @@ UNICODE (label);
 UNICODE (ladder);
 UNICODE (layer);
 UNICODE (layers);
-UNICODE (lcdd);
+UNICODE (description);
 UNICODE (lccdd);
 UNICODE (length);
 UNICODE (limit);

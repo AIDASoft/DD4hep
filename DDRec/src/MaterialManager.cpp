@@ -1,6 +1,6 @@
 #include "DDRec/MaterialManager.h"
 #include "DD4hep/Exceptions.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include "TGeoVolume.h"
 #include "TGeoManager.h"
@@ -13,7 +13,7 @@ namespace dd4hep {
   namespace rec {
 
 
-    MaterialManager::MaterialManager(DD4hep::Geometry::Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
+    MaterialManager::MaterialManager(Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
 
       _tgeoMgr = world->GetGeoManager();
     }
@@ -21,7 +21,7 @@ namespace dd4hep {
 
     MaterialManager::MaterialManager() : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
 
-      _tgeoMgr = Geometry::LCDD::getInstance().world().volume()->GetGeoManager();
+      _tgeoMgr = Detector::getInstance().world().volume()->GetGeoManager();
    }
     
     MaterialManager::~MaterialManager(){
@@ -153,7 +153,7 @@ namespace dd4hep {
     }
 
     
-    const Geometry::Material& MaterialManager::materialAt(const Vector3D& pos ){
+    const Material& MaterialManager::materialAt(const Vector3D& pos ){
 
       if( pos != _pos ) {
 	

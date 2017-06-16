@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 #ifndef DD4HEP_GEOHANDLER_H
 #define DD4HEP_GEOHANDLER_H
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include <set>
 #include <map>
 #include <vector>
@@ -26,20 +26,19 @@ class TGeoShape;
 class TGeoNode;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
+  class  Detector;
   class  NamedObject;
+  class  DetElement;
+  class  SensitiveDetector;
+  class  VisAttrObject;
+  class  Volume;
+  class  PlacedVolume;
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-
-    class  LCDD;
-    class  Volume;
-    class  PlacedVolume;
-    class  DetElement;
-    class  SensitiveDetector;
-    class  VisAttrObject;
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail {
 
     /// Defintion of the object types used by generic geometry handlers
     /**
@@ -49,24 +48,17 @@ namespace DD4hep {
      */
     class GeoHandlerTypes {
     public:
-      typedef std::set<Volume> VolumeSet;
-      typedef std::vector<Volume> VolumeVector;
+#if 0
       typedef std::set<const TGeoVolume*> ConstVolumeSet;
-      typedef std::vector<std::pair<std::string, TGeoMatrix*> > TransformSet;
-      typedef std::set<TGeoShape*> SolidSet;
-      typedef std::set<Material> MaterialSet;
       typedef std::map<SensitiveDetector, ConstVolumeSet> SensitiveVolumes;
-      typedef std::map<Region,   ConstVolumeSet> RegionVolumes;
-      typedef std::map<LimitSet, ConstVolumeSet> LimitVolumes;
-      typedef std::map<int, std::set<const TGeoNode*> > Data;
-      typedef std::set<VisAttr> VisRefs;
-      typedef std::set<SensitiveDetector> SensitiveDetectorSet;
-      typedef std::set<Region>            RegionSet;
-      typedef std::set<LimitSet>          LimitSetSet;
-      typedef std::set<Ref_t>             Fields;
-      typedef std::set<TNamed*> ObjectSet;
-      typedef LCDD::HandleMap             DefinitionSet;
-
+      typedef std::map<Region,   ConstVolumeSet>          RegionVolumes;
+      typedef std::map<LimitSet, ConstVolumeSet>          LimitVolumes;
+      typedef std::map<int, std::set<const TGeoNode*> >   Data;
+      typedef std::set<SensitiveDetector>                 SensitiveDetectorSet;
+      typedef std::set<Region>                            RegionSet;
+      typedef std::set<LimitSet>                          LimitSetSet;
+      typedef std::set<TNamed*>                           ObjectSet;
+#endif
       /// Data container
       /**
        *  \author  M.Frank
@@ -75,19 +67,19 @@ namespace DD4hep {
        */
       class GeometryInfo {
       public:
-        SolidSet solids;
-        VolumeSet volumeSet;
-        VolumeVector volumes;
-        TransformSet trafos;
-        VisRefs vis;
-        Fields fields;
-        MaterialSet materials;
+        std::set<TGeoShape*>  solids;
+        std::set<Volume>      volumeSet;
+        std::vector<Volume>   volumes;
+        std::vector<std::pair<std::string, TGeoMatrix*> > trafos;
+        std::set<VisAttr>      vis;
+        std::set<Ref_t>        fields;
+        std::set<Material>     materials;
         std::set<TGeoMedium*>  media;
         std::set<TGeoElement*> elements;
       };
     };
 
-    /// The base class for all DD4hep geometry crawlers
+    /// The base class for all dd4hep geometry crawlers
     /**
      *  Geometry crawlers are used for multiple purposes, whenever entire
      *  geometries must be traversed like e.g. to create a new geometry
@@ -103,9 +95,9 @@ namespace DD4hep {
 
     protected:
       bool  m_propagateRegions;
-      Data* m_data;
+      std::map<int, std::set<const TGeoNode*> >* m_data;
 
-      /// Internal helper to collect geometry information from traversal
+      /// detaill helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* node, int level, Region rg, LimitSet ls);
 
     private:
@@ -121,7 +113,7 @@ namespace DD4hep {
       /// Default constructor
       GeoHandler();
       /// Initializing constructor
-      GeoHandler(Data* ptr);
+      GeoHandler(std::map<int, std::set<const TGeoNode*> >* ptr);
       /// Default destructor
       virtual ~GeoHandler();
       /// Propagate regions. Returns the previous value
@@ -131,7 +123,7 @@ namespace DD4hep {
       /// Collect geometry information from traversal with aggregated information
       GeoHandler& collect(DetElement top, GeometryInfo& info);
       /// Access to collected node list
-      Data* release();
+      std::map<int, std::set<const TGeoNode*> >* release();
     };
 
     /// Geometry scanner (handle object)
@@ -143,7 +135,7 @@ namespace DD4hep {
     class GeoScan {
     protected:
       /// Data holder
-      GeoHandler::Data* m_data;
+      std::map<int, std::set<const TGeoNode*> >* m_data;
     public:
       /// Initializing constructor
       GeoScan(DetElement e);
@@ -154,7 +146,7 @@ namespace DD4hep {
       /// Work callback
       virtual GeoScan& operator()();
     };
-  }    // End namespace Geometry
-}      // End namespace DD4hep
+  }    // End namespace detail
+}      // End namespace dd4hep
 
 #endif // DD4HEP_GEOHANDLER_H

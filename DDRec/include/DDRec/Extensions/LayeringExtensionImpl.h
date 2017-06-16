@@ -7,14 +7,14 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_LAYERINGEXTENSIONIMPL_H_
-#define DDRec_LAYERINGEXTENSIONIMPL_H_
+#ifndef rec_LAYERINGEXTENSIONIMPL_H_
+#define rec_LAYERINGEXTENSIONIMPL_H_
 
-// DDRec
+// rec
 #include "DDRec/Extensions/LayeringExtension.h"
 
-// DD4hep
-#include "DD4hep/Detector.h"
+// dd4hep
+#include "DD4hep/DetElement.h"
 
 // C++
 #include <map>
@@ -22,19 +22,16 @@
 
 class TGeoManager;
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] LayeringExtensionImpl: public LayeringExtension {
+class LayeringExtensionImpl: public LayeringExtension {
 public:
-  /// Shortcut to use geometrical positions
-  typedef Geometry::Position Position;
-  
 	/// Default constructor
 	LayeringExtensionImpl();
 
 	/// Copy constructor
-  LayeringExtensionImpl(const LayeringExtensionImpl& /*e*/, const Geometry::DetElement& /*d*/) {};
+  LayeringExtensionImpl(const LayeringExtensionImpl& /*e*/, const DetElement& /*d*/) {};
 
 	 /// Destructor
 	 virtual ~LayeringExtensionImpl();
@@ -46,13 +43,13 @@ public:
 	 virtual int numberOfSensors(int layerIndex) const;
 
 	 /// Access to the layer DetElement for the given index
-	 virtual Geometry::DetElement layer(int layerIndex) const;
+	 virtual DetElement layer(int layerIndex) const;
 
 	/// Access to the sensitive DetElements of a given layer index
-	virtual const std::vector<Geometry::DetElement>& sensors(int layerIndex) const;
+	virtual const std::vector<DetElement>& sensors(int layerIndex) const;
 
 	/// Access to the non-sensitive DetElements of a given layer index
-	virtual const std::vector<Geometry::DetElement>& absorbers(int layerIndex) const;
+	virtual const std::vector<DetElement>& absorbers(int layerIndex) const;
 
 	/// Access the total thickness of the sub detector
 	virtual double totalThickness() const;
@@ -91,16 +88,16 @@ public:
 	virtual double sensorInteractionLength(int layerIndex) const;
 
 	/// Stores the layer information for the given layer index
-	void setLayer(int layerIndex, Geometry::DetElement layer, const Position& normal);
+	void setLayer(int layerIndex, DetElement layer, const Position& normal);
 
 protected:
 	/// Helper class to store layer attributes
 	struct LayerAttributes {
 		LayerAttributes();
-		Geometry::DetElement layer;
+		DetElement layer;
 		Position normal;
-		std::vector<Geometry::DetElement> sensors;
-		std::vector<Geometry::DetElement> absorbers;
+		std::vector<DetElement> sensors;
+		std::vector<DetElement> absorbers;
 		double thickness;
 		double radiationLength;
 		double interactionLength;
@@ -114,7 +111,7 @@ protected:
 		/// Helper method to calculate attributes from layer
 		void calculate();
 	private:
-		double addElement(const Geometry::DetElement& det);
+		double addElement(const DetElement& det);
 		TGeoManager* _tgeoManager;
 	};
 
@@ -124,7 +121,7 @@ protected:
 	void checkMap(int layerIndex) const;
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
+} /* namespace rec */
+} /* namespace dd4hep */
 
-#endif /* DDReconstruction_LAYERINGEXTENSIONIMPL_H_ */
+#endif /* reconstruction_LAYERINGEXTENSIONIMPL_H_ */

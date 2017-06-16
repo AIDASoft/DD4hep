@@ -7,20 +7,21 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_LAYERINGEXTENSION_H_
-#define DDRec_LAYERINGEXTENSION_H_
+#ifndef rec_LAYERINGEXTENSION_H_
+#define rec_LAYERINGEXTENSION_H_
 
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
+#include "DDRec/tempdefs.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
 /**
  * Class describing the layer structure of a sub detector.
  * The information for one layer corresponds to a typical module
  * if, for example, a layer consists of multiple modules.
  */
-class  [[gnu::deprecated(" unmaintained code ")]] LayeringExtension {
+class LayeringExtension {
 public:
 	/// Destructor
 	virtual ~LayeringExtension() {
@@ -33,13 +34,13 @@ public:
 	virtual int numberOfSensors(int layerIndex) const = 0;
 
 	/// Access to the layer DetElement for the given index
-	virtual Geometry::DetElement layer(int layerIndex) const = 0;
+	virtual DetElement layer(int layerIndex) const = 0;
 
 	/// Access to the sensitive DetElements of a given layer index
-	virtual const std::vector<Geometry::DetElement>& sensors(int layerIndex) const = 0;
+	virtual const std::vector<DetElement>& sensors(int layerIndex) const = 0;
 
 	/// Access to the non-sensitive DetElements of a given layer index
-	virtual const std::vector<Geometry::DetElement>& absorbers(int layerIndex) const = 0;
+	virtual const std::vector<DetElement>& absorbers(int layerIndex) const = 0;
 
 	/// Access the total thickness of the sub detector
 	virtual double totalThickness() const = 0;
@@ -82,6 +83,6 @@ protected:
 	}
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDRec_LAYERINGEXTENSION_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* rec_LAYERINGEXTENSION_H_ */

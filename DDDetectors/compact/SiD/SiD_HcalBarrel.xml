@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="HcalBarrel_ID" name="HcalBarrel" type="DD4hep_PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
+  <detector id="HcalBarrel_ID" name="HcalBarrel" type="dd4hep_PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
 
     <comment>Hadron Calorimeter Barrel</comment>
 

@@ -2,7 +2,7 @@ import os, sys, time, DDG4
 from SystemOfUnits import *
 #
 """
-   DD4hep example setup using the python configuration
+   dd4hep example setup using the python configuration
 
    \author  M.Frank
    \version 1.0

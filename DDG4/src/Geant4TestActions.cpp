@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,8 +24,8 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep::Simulation;
-using namespace DD4hep::Simulation::Test;
+using namespace dd4hep::sim;
+using namespace dd4hep::sim::Test;
 
 namespace {
   struct TestHit {
@@ -187,8 +186,8 @@ void Geant4TestStepAction::operator()(const G4Step*, G4SteppingManager*) {
 }
 
 /// Standard constructor with initializing arguments
-Geant4TestSensitive::Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, LCDD& lcdd)
-  : Geant4Sensitive(c, n, det, lcdd), Geant4TestBase(this, "Geant4TestSensitive") {
+Geant4TestSensitive::Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, Detector& description)
+  : Geant4Sensitive(c, n, det, description), Geant4TestBase(this, "Geant4TestSensitive") {
   InstanceCount::increment(this);
   m_collectionID = defineCollection < TestHit > (n);
   PRINT("%s> Collection ID is %d", m_type.c_str(), int(m_collectionID));

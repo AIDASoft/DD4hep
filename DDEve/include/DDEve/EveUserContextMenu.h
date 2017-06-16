@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,7 +20,7 @@
 class TEveManager;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class Display;
@@ -73,5 +73,5 @@ namespace DD4hep {
     /// Root implementation macro
     ClassDef(EveUserContextMenu,0);
   };
-}      /* End namespace DD4hep              */
+}      /* End namespace dd4hep              */
 #endif /* DD4HEP_DDEVE_EVEUSERCONTEXTMENU_H */

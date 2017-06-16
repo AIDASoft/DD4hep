@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 
 // CINT configuration
 #if defined(__MAKECINT__) || defined(__CINT__) || defined(__CLING__) || defined(__ROOTCLING__)
-namespace DD4hep { namespace Simulation {
+namespace dd4hep { namespace sim {
     typedef Geant4Tracker SimpleTracker;
     typedef Geant4Calorimeter SimpleCalorimeter;
     typedef Geant4HitData SimpleHit;
@@ -34,14 +34,14 @@ namespace DD4hep { namespace Simulation {
 #include "TClass.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 namespace {
   template <typename T> T* _fill(Geant4HitData* ptr, DDEveHit* target)   {
     T* s = dynamic_cast<T*>(ptr);
     if ( s )   {
-      Simulation::Position* p = &s->position;
+      sim::Position* p = &s->position;
       target->x = p->X();
       target->y = p->Y();
       target->z = p->Z();
@@ -106,7 +106,7 @@ namespace {
 }
 
 #include "DD4hep/Factories.h"
-using namespace DD4hep::Geometry;
+using namespace dd4hep::detail;
 DECLARE_CONSTRUCTOR(DDEve_DDG4HitAccess,_convertHit)
 DECLARE_CONSTRUCTOR(DDEve_DDG4ParticleAccess,_convertParticle)
 #endif

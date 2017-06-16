@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,13 +26,13 @@
 #include <set>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class IOVType;
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     // Forward declarations
     class ConditionsIOVPool;
@@ -55,7 +55,6 @@ namespace DD4hep {
     public:
       typedef std::vector<IOVType>                  IOVTypes;
       typedef Condition::key_type                   key_type;
-      typedef Condition::iov_type                   iov_type;
       typedef std::pair<ConditionsListener*,void*>  Listener;
       typedef std::set<Listener>                    Listeners;
       typedef std::unique_ptr<ConditionsDataLoader> Loader;
@@ -63,7 +62,7 @@ namespace DD4hep {
 
     protected:
       /// Reference to main detector description object
-      LCDD&                  m_lcdd;
+      Detector&                  m_detDesc;
       /// Conditions listeners on registration of new conditions
       Listeners              m_onRegister;
       /// Conditions listeners on de-registration of new conditions
@@ -81,13 +80,13 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-      ConditionsManagerObject(LCDD& lcdd);
+      ConditionsManagerObject(Detector& description);
 
       /// Default destructor
       virtual ~ConditionsManagerObject();
 
       /// Access to the detector description instance
-      LCDD& lcdd() const                    {  return m_lcdd;              }
+      Detector& detectorDescription() const                    {  return m_detDesc;              }
 
       /// Access to the data loader
       ConditionsDataLoader* loader()  const {  return m_loader.get();      }
@@ -145,10 +144,10 @@ namespace DD4hep {
       virtual ConditionsIOVPool* iovPool(const IOVType& type)  const = 0;
 
       /// Retrieve a condition set given a Detector Element and the conditions name according to their validity
-      virtual Condition get(key_type key, const iov_type& req_validity) = 0;
+      virtual Condition get(key_type key, const IOV& req_validity) = 0;
 
       /// Retrieve a condition given a Detector Element and the conditions name
-      virtual RangeConditions getRange(key_type key, const iov_type& req_validity) = 0;
+      virtual RangeConditions getRange(key_type key, const IOV& req_validity) = 0;
 
       /// Push all pending updates to the conditions store. 
       /** Note:
@@ -174,6 +173,6 @@ namespace DD4hep {
       virtual std::pair<int,int> clear() = 0;
 
     };
-  }    /* End namespace Geometry                       */
-}      /* End namespace DD4hep                         */
+  }    /* End namespace detail                       */
+}      /* End namespace dd4hep                         */
 #endif /* DDCOND_CONDITIONS_CONDITIONSMANAGEROBJECT_H  */

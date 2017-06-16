@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,21 +15,13 @@
 #define DDG4_DEFS_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
-
-    using Geometry::Transform3D;
-    using Geometry::RotationZYX;
-    using Geometry::Position;
-    using Geometry::LCDD;
-    using Geometry::Readout;
-    using Geometry::DetElement;
-    
+  namespace sim {
     // Forward declarations;
     typedef Position Direction;
     typedef Position Momentum;
@@ -41,6 +33,6 @@ namespace DD4hep {
     class Geant4SensitiveDetector;
     template <class T> class Geant4GenericSD;
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 #endif // DDG4_DEFS_H

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,17 +24,17 @@
 #include <iostream>
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace DD4HEP_CONVERSION_NS {
     class Handle_t;
   }
 
-  /// Basic conversion objects for handling DD4hep XML files.
+  /// Basic conversion objects for handling dd4hep XML files.
   /**
    *  \author   M.Frank
    *  \version  1.0
@@ -44,16 +44,16 @@ namespace DD4hep {
     typedef T to_type;
     typedef void* user_param;
     /// Reference to the detector description object
-    Geometry::LCDD& lcdd;
+    Detector& description;
     /// Reference to optional user defined parameter
     user_param param;
     user_param optional;
     /// Initializing constructor of the functor
-    Converter(Geometry::LCDD& l) : lcdd(l), param(0), optional(0) { }
+    Converter(Detector& l) : description(l), param(0), optional(0) { }
     /// Initializing constructor of the functor with initialization of the user parameter
-    Converter(Geometry::LCDD& l, user_param p) : lcdd(l), param(p), optional(0) { }
+    Converter(Detector& l, user_param p) : description(l), param(p), optional(0) { }
     /// Initializing constructor of the functor with initialization of the user parameter
-    Converter(Geometry::LCDD& l, user_param p, user_param o) : lcdd(l), param(p), optional(o)  { }
+    Converter(Detector& l, user_param p, user_param o) : description(l), param(p), optional(o)  { }
     /// Callback operator to be specialized depending on the element type
     void operator()(ARG handle) const;
     /// Typed access to the 1rst. user parameter (unchecked)
@@ -63,4 +63,4 @@ namespace DD4hep {
     /// Typed access to the 2nd. user parameter (unchecked)
     template <typename TYPE> TYPE* _option() const {    return (TYPE*) optional;  }
   };
-} /* End namespace DD4hep           */
+} /* End namespace dd4hep           */

@@ -9,7 +9,7 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 // ROOT include files
 #include "TGeoManager.h"
@@ -26,19 +26,19 @@
 #define private public
 #include "TEveManager.h"
 
-using namespace DD4hep::Geometry;
+using namespace dd4hep::detail;
 
 void TEve()    {
-  LCDD& lcdd = LCDD::getInstance();
+  Detector& description = Detector::getInstance();
   const char* fname = "file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml";
-  lcdd.apply("DD4hepCompactLoader",1,(char**)&fname);
+  description.apply("dd4hepCompactLoader",1,(char**)&fname);
 
   TEveManager::Create();
   //TFile::SetCacheFileDir(".");
   //gGeoManager = gEve->GetGeometry("LHCb.gdml");
   //gGeoManager = gEve->GetGeometry("lhcbfull_v1.root");
 
-  gEve->fGeometries->Add(new TObjString(fname),&lcdd.manager());
+  gEve->fGeometries->Add(new TObjString(fname),&description.manager());
   //gGeoManager->DefaultColors();
 
   TEveGeoTopNode* tn = new TEveGeoTopNode(gGeoManager, gGeoManager->GetTopNode());

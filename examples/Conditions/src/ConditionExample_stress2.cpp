@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -30,8 +30,8 @@
 #include "TTimeStamp.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::ConditionExamples;
+using namespace dd4hep;
+using namespace dd4hep::ConditionExamples;
 
 /// Plugin function: Condition program example
 /**
@@ -41,7 +41,7 @@ using namespace DD4hep::ConditionExamples;
  *  \version 1.0
  *  \date    01/12/2016
  */
-static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
+static int condition_example (Detector& description, int argc, char** argv)  {
   string input;
   int    num_iov = 10;
   bool   arg_error = false;
@@ -65,10 +65,10 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
 
   // First we load the geometry
-  lcdd.fromXML(input);
+  description.fromXML(input);
 
   /******************** Initialize the conditions manager *****************/
-  ConditionsManager manager = installManager(lcdd);
+  ConditionsManager manager = installManager(description);
   const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
   if ( 0 == iov_typ )
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
@@ -76,8 +76,8 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   /******************** Now as usual: create the slice ********************/
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice> slice(new ConditionsSlice(manager,content));
-  Scanner(ConditionsKeys(*content,INFO),lcdd.world());
-  Scanner(ConditionsDependencyCreator(*content,DEBUG),lcdd.world());
+  Scanner(ConditionsKeys(*content,INFO),description.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
 
   size_t total_created = 0;
   ConditionsManager::Result total;
@@ -89,7 +89,7 @@ static int condition_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
       IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
       ConditionsPool*   iov_pool = manager.registerIOV(*iov.iovType, iov.key());
       // Create conditions with all deltas. Use a generic creator
-      int count = Scanner().scan(ConditionsCreator(*slice, *iov_pool, DEBUG),lcdd.world());
+      int count = Scanner().scan(ConditionsCreator(*slice, *iov_pool, DEBUG),description.world());
       TTimeStamp stop;
       total_created += count;
       cr_stat.Fill(stop.AsDouble()-start.AsDouble());

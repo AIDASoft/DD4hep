@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DDCOND_CONDITIONSTEST_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionsMap.h"
@@ -27,22 +27,22 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
+  /// Namespace for implementation details of the AIDA detector description toolkit
   namespace ConditionExamples {
 
-    using namespace Conditions;
+    using namespace cond;
 
     struct TestEnv {
-      LCDD& lcdd;
+      Detector& description;
       DetElement detector;
       ConditionsManager manager;
       Handle<ConditionsDataLoader> loader;
       const IOVType* epoch;
       const IOVType* run;
 
-      TestEnv(LCDD& _lcdd, const std::string& detector_name);
+      TestEnv(Detector& _description, const std::string& detector_name);
       /// Find daughter element of the detector object
       DetElement daughter(const std::string& sub_path)  const;
 

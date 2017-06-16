@@ -31,7 +31,7 @@
 
     <comment>Solenoid</comment>
 
-    <detector name="SolenoidCoilBarrel" type="DD4hep_MultiLayerTracker" insideTrackingVolume="false" reflect="true">
+    <detector name="SolenoidCoilBarrel" type="dd4hep_MultiLayerTracker" insideTrackingVolume="false" reflect="true">
       <layer id="1" inner_r="SolenoidBarrelInnerRadius" outer_z="SolenoidBarrelOuterZ" vis="SolenoidBarrelLayerVis">
 	<slice material="Steel235" thickness="SolenoidBarrelInnerCryostatThickness" />
 	<slice material="Vacuum"   thickness="SolenoidBarrelInnerAirgapThickness" />
@@ -46,13 +46,13 @@
       </layer>
     </detector>
 
-    <detector name="SolenoidCoilEnds" type="DD4hep_DiskTracker" reflect="true" insideTrackingVolume="false">
+    <detector name="SolenoidCoilEnds" type="dd4hep_DiskTracker" reflect="true" insideTrackingVolume="false">
       <layer id="1" inner_r="SolenoidBarrelInnerRadius" inner_z="SolenoidBarrelOuterZ" outer_r="SolenoidBarrelOuterRadius" vis="SolenoidCoilEndsVis">
 	<slice material="Steel235" thickness="SolenoidEndcapCryostatThickness" />
       </layer>
     </detector>
 
-    <detector name="AntiSolenoid_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
+    <detector name="AntiSolenoid_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin + 1.0*cm"
 	      rmax="MuonEndcap_rmin - 1.0*cm"
@@ -61,7 +61,7 @@
 	      rmax="MuonEndcap_rmin - 1.0*cm"
 	      z="MuonEndcap_zmax"/>
     </detector>
-    <detector name="AntiSolenoid_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
+    <detector name="AntiSolenoid_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin + 1.0*cm"
 	      rmax="MuonEndcap_rmin - 1.0*cm"

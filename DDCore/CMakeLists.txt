@@ -1,6 +1,6 @@
 #=================================================================================
 #
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #---------------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -17,7 +17,7 @@ dd4hep_package(    DDCore
   INSTALL_INCLUDES include/DD4hep include/XML  include/JSON)
 
 #---Generate ROOT dictionary------------------------------------------------------
-dd4hep_add_dictionary( G__DD4hep
+dd4hep_add_dictionary( G__dd4hep
   SOURCES include/DD4hep/*.h 
   include/DD4hep/detail/*.h 
   include/XML/*.h 
@@ -44,7 +44,7 @@ dd4hep_add_package_library ( DDParsers
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/XML/*.cpp
   OPTIONAL       [BOOST SOURCES src/JSON/*.cpp]
-  GENERATED      G__DD4hep.cxx 
+  GENERATED      G__dd4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
   LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}
   )

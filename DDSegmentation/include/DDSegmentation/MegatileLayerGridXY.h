@@ -31,7 +31,7 @@
 */
 
 
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation {
 
     class MegatileLayerGridXY: public CartesianGrid {
@@ -147,5 +147,5 @@ namespace DD4hep {
     };
 
   }    /* namespace DDSegmentation              */
-}      /* namespace DD4hep                      */
+}      /* namespace dd4hep                      */
 #endif /* DDSegmentation_MEGATILELAYERGRIDXY_H_ */

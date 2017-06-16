@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +20,10 @@
 using namespace CLHEP;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation   {
+  namespace sim   {
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //               Geant4SensitiveAction<Geant4Tracker>
@@ -47,7 +47,7 @@ namespace DD4hep {
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<Geant4Tracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
       typedef Geant4Tracker::Hit Hit;
-      StepHandler h(step);
+      Geant4StepHandler h(step);
       Position prePos    = h.prePos();
       Position postPos   = h.postPos();
       Position direction = postPos - prePos;
@@ -103,9 +103,9 @@ namespace DD4hep {
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<Geant4Calorimeter>::process(G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
-      StepHandler h(step);
+      Geant4StepHandler h(step);
       HitContribution contrib = Hit::extractContribution(step);
-      HitCollection*  coll    = collection(m_collectionID);
+      Geant4HitCollection*  coll    = collection(m_collectionID);
       VolumeID cell = 0;
 
       try {
@@ -191,8 +191,8 @@ namespace DD4hep {
       }
       else {
         typedef Geant4Calorimeter::Hit Hit;
-        StepHandler h(step);
-        HitCollection*  coll    = collection(m_collectionID);
+        Geant4StepHandler h(step);
+        Geant4HitCollection*  coll    = collection(m_collectionID);
         HitContribution contrib = Hit::extractContribution(step);
         Position        pos     = h.prePos();
         Hit* hit = coll->find<Hit>(PositionCompare<Hit,Position>(pos));
@@ -243,9 +243,9 @@ namespace DD4hep {
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
-      StepHandler h(step);
+      Geant4StepHandler h(step);
       HitContribution contrib = Hit::extractContribution(step,true);
-      HitCollection*  coll    = collection(m_collectionID);
+      Geant4HitCollection*  coll    = collection(m_collectionID);
       VolumeID cell = 0;
       try {
         cell = cellID(step);
@@ -315,7 +315,6 @@ namespace DD4hep {
 
 
     struct TrackerCombine {
-      typedef Geant4HitCollection HitCollection;
       Geant4Tracker::Hit  pre, post;
       Position          mean_pos;
       Geant4Sensitive*  sensitive;
@@ -486,7 +485,7 @@ namespace DD4hep {
   }
 }
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 #include "DDG4/Factories.h"
 DECLARE_GEANT4SENSITIVE(Geant4TrackerAction)

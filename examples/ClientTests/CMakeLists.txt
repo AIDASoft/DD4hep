@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -33,7 +33,7 @@ dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #  Test JSON based parser
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -destroy -plugin DD4hep_JsonDumper
+  EXEC_ARGS  geoPluginRun -destroy -plugin dd4hep_JsonDumper
   ${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.json
   REGEX_PASS "Successfully dumped json input"
   REGEX_FAIL "Exception"
@@ -43,7 +43,7 @@ dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
 #  Test JSON based detector construction
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Detector
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hepCompactLoader
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin dd4hepCompactLoader
   file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel_json.xml
   REGEX_PASS "Successfully processed JSON input"
   REGEX_FAIL "Exception"
@@ -53,7 +53,7 @@ dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Detector
 #  Test readout strings of the form: <id>system:8,barrel:-2</id>
 dd4hep_add_test_reg( ClientTests_DumpElements
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -plugin DD4hepElementTable -type xml
+  EXEC_ARGS  geoPluginRun -plugin dd4hepElementTable -type xml
   REGEX_PASS "formula=\"UUB\" name=\"UUB\"" )
 #
 #  Test long volume IDs Detector setups with placements of
@@ -62,7 +62,7 @@ dd4hep_add_test_reg( ClientTests_MultiPlace
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
-  -plugin DD4hepVolumeMgrTest SiTrackerBarrel
+  -plugin dd4hepVolumeMgrTest SiTrackerBarrel
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
   REGEX_FAIL "FAILED: World transformation DIFFER"
@@ -73,7 +73,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
-  -plugin DD4hepVolumeMgrTest SiTrackerBarrel
+  -plugin dd4hepVolumeMgrTest SiTrackerBarrel
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
   REGEX_FAIL "FAILED: World transformation DIFFER"
@@ -84,9 +84,9 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Bitfield_SidesTest.xml -volmgr -destroy
-  -plugin DD4hepDetectorVolumeDump
-  -plugin DD4hepVolumeDump volids
-  -plugin DD4hepVolumeMgrTest all
+  -plugin dd4hepDetectorVolumeDump
+  -plugin dd4hepVolumeDump volids
+  -plugin dd4hepVolumeMgrTest all
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000000102 system:0002 barrel:0001")
 #
 #  Test readout strings of the form: <id>system:16,barrel:16:-5</id>
@@ -94,9 +94,9 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Bitfield_SidesTest2.xml -volmgr -destroy
-  -plugin DD4hepDetectorVolumeDump
-  -plugin DD4hepVolumeDump volids
-  -plugin DD4hepVolumeMgrTest all
+  -plugin dd4hepDetectorVolumeDump
+  -plugin dd4hepVolumeDump volids
+  -plugin dd4hepVolumeMgrTest all
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000010002 system:0002 barrel:0001")
 #
 #
@@ -104,7 +104,7 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
               MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
               MultiCollections MultiSegmentations )
   # Test format conversions
-  foreach( type lcdd gdml vis )
+  foreach( type description gdml vis )
     dd4hep_add_test_reg( ClientTests_${test}_converter_${type}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}

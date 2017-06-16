@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,17 +17,17 @@
 #include "XML/XMLElements.h"
 
 #ifndef UNICODE 
-#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x 
+#define UNICODE(x)  extern const ::dd4hep::xml::Tag_t Unicode_##x 
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities 
-  namespace XML {
+  namespace xml {
     
     /// Namespace of conditions unicode tags
-    namespace Conditions  {
+    namespace cond  {
 
       UNICODE(address);
       UNICODE(condition);
@@ -53,12 +53,12 @@ namespace DD4hep {
       UNICODE(repository);
     }
     // User must ensure there are no clashes. If yes, then the clashing entry is unnecessary.
-    //using namespace ::DD4hep::XML::Conditions;
+    //using namespace ::dd4hep::xml::Conditions;
   }
 }
 #undef UNICODE // Do not miss this one!
 
 #include "XML/XMLTags.h"
-#define _UC(x) ::DD4hep::XML::Conditions::Unicode_##x
+#define _UC(x) ::dd4hep::xml::cond::Unicode_##x
 
 #endif /* DD4HEP_CONDITIONS_CONDITIONSTAGS_H  */

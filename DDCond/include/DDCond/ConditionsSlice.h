@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,10 +26,10 @@
 #include <memory>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     // Forward declarations
     class UserPool;
@@ -160,25 +160,25 @@ namespace DD4hep {
       
       /** ConditionsMap interface implementation:                                         */
       /// ConditionsMap overload: Add a condition directly to the slice
-      virtual bool insert(DetElement detector, unsigned int key, Condition condition)  override;
+      virtual bool insert(DetElement detector, Condition::itemkey_type key, Condition condition)  override;
       /// ConditionsMap overload: Access a condition
-      virtual Condition get(DetElement detector, unsigned int key)  const override;
+      virtual Condition get(DetElement detector, Condition::itemkey_type key)  const override;
       /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
       virtual std::vector<Condition> get(DetElement detector,
-                                         itemkey_type lower,
-                                         itemkey_type upper)  const  override;
+                                         Condition::itemkey_type lower,
+                                         Condition::itemkey_type upper)  const  override;
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(const Processor& processor) const  override;
+      virtual void scan(const Condition::Processor& processor) const  override;
       /// ConditionsMap overload: Interface to partially scan data content of the conditions mapping
       virtual void scan(DetElement       detector,
-                        itemkey_type     lower,
-                        itemkey_type     upper,
-                        const Processor& processor) const  override;
+                        Condition::itemkey_type     lower,
+                        Condition::itemkey_type     upper,
+                        const Condition::Processor& processor) const  override;
     };
 
     /// Populate the conditions slice from the conditions manager (convenience)
     void fill_content(ConditionsManager mgr, ConditionsContent& content, const IOVType& typ);
 
-  }        /* End namespace Conditions               */
-}          /* End namespace DD4hep                   */
+  }        /* End namespace cond               */
+}          /* End namespace dd4hep                   */
 #endif     /* DD4HEP_DDCOND_CONDITIONSSLICE_H        */

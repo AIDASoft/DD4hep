@@ -1,4 +1,4 @@
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 #include "DDG4/Geant4EventAction.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /** @class Geant4SurfaceTest Geant4SurfaceTest.h reco/Geant4SurfaceTest.h
      */
@@ -42,13 +42,13 @@ namespace DD4hep {
     private:
 
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4SURFACETEST_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/InstanceCount.h"
 
@@ -74,9 +74,9 @@ namespace DD4hep {
 #include <sstream>
 
 using namespace std;
-using namespace DD4hep::DDRec;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::DDRec;
+using namespace dd4hep::detail;
+using namespace dd4hep::sim;
 
 DECLARE_GEANT4ACTION(Geant4SurfaceTest)
 
@@ -101,8 +101,8 @@ void Geant4SurfaceTest::begin(const G4Event* event)  {
 /// End-of-event callback
 void Geant4SurfaceTest::end(const G4Event* evt)  {
   stringstream sst;
-  LCDD& lcdd = context()->lcdd();
-  SurfaceManager& surfMan = *lcdd.extension< SurfaceManager >() ;
+  Detector& description = context()->detectorDescription();
+  SurfaceManager& surfMan = *description.extension< SurfaceManager >() ;
   const SurfaceMap& surfMap = *surfMan.map( "world" ) ;
   G4HCofThisEvent*  hce = evt->GetHCofThisEvent();
 

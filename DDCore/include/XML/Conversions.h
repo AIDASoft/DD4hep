@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 #ifndef DD4HEP_COMPACT_CONVERSION_H
 #define DD4HEP_COMPACT_CONVERSION_H
 
-#define DD4HEP_CONVERSION_NS XML
+#define DD4HEP_CONVERSION_NS xml
 #include "XML/detail/Conversions.h"
 #undef  DD4HEP_CONVERSION_NS
 

@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,11 +17,11 @@
 // Framework include files
 #include "XML/XMLElements.h"
 #ifndef UNICODE
-#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x 
+#define UNICODE(x)  extern const ::dd4hep::xml::Tag_t Unicode_##x 
 #endif
 
 // Unicode tags known to the alignment section
-namespace DD4hep {
+namespace dd4hep {
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace DDAlign {
 
@@ -48,6 +48,6 @@ namespace DD4hep {
 #undef UNICODE // Do not miss this one!
 #include "XML/XMLTags.h"
 
-#define _ALU(a) ::DD4hep::DDAlign::Unicode_##a
+#define _ALU(a) ::dd4hep::DDAlign::Unicode_##a
 
 #endif /* DD4HEP_ALIGNMENT_ALIGNMENT_TAGS_H  */

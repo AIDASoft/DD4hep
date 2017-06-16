@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -11,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DDG4_GEANT4HIERARCHYDUMP_H
 #define DD4HEP_DDG4_GEANT4HIERARCHYDUMP_H
 
@@ -19,15 +17,13 @@
 #include "G4VPhysicalVolume.hh"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
-  namespace Geometry {
-    class LCDD;
-  }
+  class Detector;
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Helper to dump Geant4 volume hierarchy
     /**
@@ -37,12 +33,11 @@ namespace DD4hep {
      */
     class Geant4HierarchyDump {
     public:
-      typedef Geometry::LCDD LCDD;
-      LCDD& m_lcdd;
+      Detector& m_detDesc;
 
     public:
       /// Initializing Constructor
-      Geant4HierarchyDump(LCDD& lcdd);
+      Geant4HierarchyDump(Detector& description);
       /// Standard destructor
       virtual ~Geant4HierarchyDump();
       /// Dump the volume hierarchy as it is known to geant 4

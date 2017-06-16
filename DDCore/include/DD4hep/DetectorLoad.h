@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,58 +10,54 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_LCDDLOAD_H
-#define DD4HEP_DDCORE_LCDDLOAD_H
+#ifndef DD4HEP_DDCORE_DetectorLOAD_H
+#define DD4HEP_DDCORE_DetectorLOAD_H
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 // C/C++ include files
 #include <stdexcept>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML  { 
+  namespace xml  { 
     class Handle_t;
     class UriReader;
   }
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-    class LCDD;
-  }
+  class Detector;
 
-  /// Data implementation class of the LCDD interface
-  /** @class LCDDLoad   LCDDLoad.h  DD4hep/LCDDLoad.h
+  /// Data implementation class of the Detector interface
+  /** @class DetectorLoad   DetectorLoad.h  dd4hep/DetectorLoad.h
    *
    * @author  M.Frank
    * @version 1.0
    */
-  class LCDDLoad  {
+  class DetectorLoad  {
   public:
-    friend class Geometry::LCDD;
+    friend class Detector;
 
   protected:
-    /// Reference to the LCDD instance
-    Geometry::LCDD* m_lcdd;
+    /// Reference to the Detector instance
+    Detector* m_detDesc;
     /// Default constructor
-    LCDDLoad(Geometry::LCDD* lcdd);
+    DetectorLoad(Detector* description);
     /// Default destructor
-    virtual ~LCDDLoad();
+    virtual ~DetectorLoad();
 
   public:
     /// Process XML unit and adopt all data from source structure.
-    virtual void processXML(const std::string& fname, XML::UriReader* entity_resolver=0);
+    virtual void processXML(const std::string& fname, xml::UriReader* entity_resolver=0);
     /// Process XML unit and adopt all data from source structure.
-    virtual void processXML(const XML::Handle_t& base, const std::string& fname, XML::UriReader* entity_resolver=0);
+    virtual void processXML(const xml::Handle_t& base, const std::string& fname, xml::UriReader* entity_resolver=0);
     /// Process a given DOM (sub-) tree
-    virtual void processXMLElement(const std::string& msg_source, const XML::Handle_t& root);
+    virtual void processXMLElement(const std::string& msg_source, const xml::Handle_t& root);
     /// Process a given DOM (sub-) tree
-    virtual void processXMLElement(const XML::Handle_t& root, LCDDBuildType type);
-
+    virtual void processXMLElement(const xml::Handle_t& root, DetectorBuildType type);
   };
 
-}         /* End namespace DD4hep     */
-#endif    /* DD4HEP_DDCORE_LCDDLOAD_H */
+}         /* End namespace dd4hep     */
+#endif    /* DD4HEP_DDCORE_DetectorLOAD_H */

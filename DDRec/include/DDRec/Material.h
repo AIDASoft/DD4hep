@@ -1,8 +1,9 @@
-#ifndef DDRec_Material_H
-#define DDRec_Material_H
+#ifndef rec_Material_H
+#define rec_Material_H
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDRec/IMaterial.h"
+#include "DD4hep/Objects.h"
 
 #include <list>
 
@@ -167,4 +168,4 @@ namespace dd4hep {
 
 namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
-#endif /* DDRec_Material_H */
+#endif /* rec_Material_H */

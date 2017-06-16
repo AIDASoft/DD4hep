@@ -1,6 +1,6 @@
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -32,7 +32,7 @@
 #include <stdexcept>
 #include <set>
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 using namespace std;
 
 /// Standard constructor
@@ -46,7 +46,7 @@ Geant4GeneratorWrapper::Geant4GeneratorWrapper(Geant4Context* ctxt, const string
   
 /// Default destructor
 Geant4GeneratorWrapper::~Geant4GeneratorWrapper()  {
-  deletePtr(m_generator);
+  detail::deletePtr(m_generator);
   InstanceCount::decrement(this);
 }
 

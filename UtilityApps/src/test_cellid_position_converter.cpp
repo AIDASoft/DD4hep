@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/DD4hepUnits.h"
@@ -28,9 +28,9 @@
 #include <sstream>
 
 using namespace std ;
-using namespace DD4hep ;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::DDRec ;
+using namespace dd4hep ;
+using namespace dd4hep::detail;
+using namespace dd4hep::rec ;
 
 using namespace lcio;
 
@@ -72,11 +72,11 @@ int main_wrapper(int argc, char** argv ){
   
   std::string inFile =  argv[1] ;
 
-  LCDD& lcdd = LCDD::getInstance();
+  Detector& description = Detector::getInstance();
 
-  lcdd.fromCompact( inFile );
+  description.fromCompact( inFile );
 
-  CellIDPositionConverter idposConv( lcdd )  ;
+  CellIDPositionConverter idposConv( description )  ;
 
   
   //---------------------------------------------------------------------
@@ -124,8 +124,8 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      DD4hep::BitField64 idDecoder0( cellIDEcoding ) ;
-      DD4hep::BitField64 idDecoder1( cellIDEcoding ) ;
+      dd4hep::BitField64 idDecoder0( cellIDEcoding ) ;
+      dd4hep::BitField64 idDecoder1( cellIDEcoding ) ;
 
       int nHit = std::min( col->getNumberOfElements(), maxHit )  ;
      
@@ -134,12 +134,12 @@ int main_wrapper(int argc, char** argv ){
 	
         SimCalorimeterHit* sHit = (SimCalorimeterHit*) col->getElementAt(i) ;
 	
-        DD4hep::long64 id0 = sHit->getCellID0() ;
-        DD4hep::long64 id1 = sHit->getCellID1() ;
+        dd4hep::long64 id0 = sHit->getCellID0() ;
+        dd4hep::long64 id1 = sHit->getCellID1() ;
 
 	idDecoder0.setValue( id0 , id1 ) ;
 
-	DD4hep::long64 id = idDecoder0.getValue() ;
+	dd4hep::long64 id = idDecoder0.getValue() ;
 	
 
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;

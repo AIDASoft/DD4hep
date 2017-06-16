@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -30,8 +30,8 @@ dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_pool
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy 
   -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
-  -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
-  -plugin DD4hep_ConditionsDump
+  -plugin dd4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
+  -plugin dd4hep_ConditionsDump
   REGEX_PASS "Data\\(Translation-Rotation-Pivot\\): \\[\\( 0 , 0 , 1 \\), \\{phi\\(Z angle\\): 3.14159   theta\\(Y angle\\): 0   psi\\(X angle\\): 0\\}, \\( 0 , 0 , 0 \\)\\]"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -41,8 +41,8 @@ dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_detelement
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy 
   -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
-  -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
-  -plugin DD4hep_DetElementConditionsDump
+  -plugin dd4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
+  -plugin dd4hep_DetElementConditionsDump
   REGEX_PASS "Path\\:/world/Telescope/module_9#alignment"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,10 +25,10 @@
 #include <unordered_map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Class implementing the conditions collection for a given IOV type
     /**
@@ -49,7 +49,6 @@ namespace DD4hep {
       typedef BASE                               Base;
       typedef MAPPING                            Mapping;
       typedef ConditionsMappedPool<Mapping,Base> Self;
-      typedef typename BASE::key_type            key_type;
       
     protected:
       Mapping          m_entries;
@@ -135,7 +134,6 @@ namespace DD4hep {
     {
     public:
       typedef ConditionsMappedPool<MAPPING,BASE>                    Self;
-      typedef typename ConditionsMappedPool<MAPPING,BASE>::key_type key_type;
     public:
       /// Default constructor
       ConditionsMappedUpdatePool(ConditionsManager mgr)
@@ -146,14 +144,14 @@ namespace DD4hep {
 
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
       virtual size_t popEntries(UpdatePool::UpdateEntries& entries)  final   {
-        ClearOnReturn<MAPPING> clr(this->Self::m_entries);
-        return this->Self::loop(entries, [&entries](const std::pair<key_type,Condition::Object*>& o) {
+        detail::ClearOnReturn<MAPPING> clr(this->Self::m_entries);
+        return this->Self::loop(entries, [&entries](const std::pair<Condition::key_type,Condition::Object*>& o) {
             entries[o.second->iov].push_back(Condition(o.second));});
       }
 
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select_range(Condition::key_type key,
-                                const Condition::iov_type& req, 
+                                const IOV& req, 
                                 RangeConditions& result)  final
       {
         //return this->Self::loop(entries, [&entries](const std::pair<key_type,Condition::Object*>& o) {
@@ -183,12 +181,12 @@ namespace DD4hep {
         }
       }
     };
-  }    /* End namespace Conditions               */
-}      /* End namespace DD4hep                   */
+  }    /* End namespace cond               */
+}      /* End namespace dd4hep                   */
 #endif /* DDCOND_CONDITIONSMAPPEDPOOL_H          */
 
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -204,8 +202,8 @@ namespace DD4hep {
 //#include "DDCond/ConditionsMappedPool.h"
 #include "DD4hep/InstanceCount.h"
 
-using DD4hep::Handle;
-using namespace DD4hep::Conditions;
+using dd4hep::Handle;
+using namespace dd4hep::cond;
 
 /// Default constructor
 template<typename MAPPING, typename BASE>
@@ -222,17 +220,17 @@ ConditionsMappedPool<MAPPING,BASE>::~ConditionsMappedPool()  {
 
 #include "DD4hep/Factories.h"
 namespace {
-  typedef Condition::key_type key_type;
+  using namespace dd4hep;
   ConditionsManager _mgr(int argc, char** argv)  {
     if ( argc > 0 )  {
       ConditionsManagerObject* m = (ConditionsManagerObject*)argv[0];
       return m;
     }
-    DD4hep::except("ConditionsMappedPool","++ Insufficient arguments: arg[0] = ConditionManager!");
+    dd4hep::except("ConditionsMappedPool","++ Insufficient arguments: arg[0] = ConditionManager!");
     return ConditionsManager(0);
   }
-#define _CR(fun,x,b,y) void* fun(DD4hep::Geometry::LCDD&, int argc, char** argv) \
-  {  return new b<x<key_type,Condition::Object*>,y>(_mgr(argc,argv));  }
+#define _CR(fun,x,b,y) void* fun(dd4hep::Detector&, int argc, char** argv) \
+  {  return new b<x<Condition::key_type,Condition::Object*>,y>(_mgr(argc,argv));  }
 
   /// Create a conditions pool based on STL maps
   _CR(create_map_pool,std::map,ConditionsMappedPool,ConditionsPool)
@@ -243,7 +241,7 @@ namespace {
   /// Create a conditions update pool based on STL hash-maps (unordered_map)
   _CR(create_unordered_map_update_pool,std::unordered_map,ConditionsMappedUpdatePool,UpdatePool)
 }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsMappedPool,            create_map_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsHashedPool,            create_unordered_map_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsMappedUpdatePool,      create_map_update_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsHashedUpdatePool,      create_unordered_map_update_pool)
+DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsMappedPool,            create_map_pool)
+DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsHashedPool,            create_unordered_map_pool)
+DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsMappedUpdatePool,      create_map_update_pool)
+DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsHashedUpdatePool,      create_unordered_map_update_pool)

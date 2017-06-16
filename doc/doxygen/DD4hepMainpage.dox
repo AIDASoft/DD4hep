@@ -1,10 +1,10 @@
 /**
 
-\mainpage DD4hep - Main page
+\mainpage dd4hep - Main page
 
 <A href="#UsefulLinks">Useful links</A>
 
-\section MAIN DD4hep - A Detector Description Toolkit for High Energy Physics Experiments
+\section MAIN dd4hep - A Detector Description Toolkit for High Energy Physics Experiments
 
 \section INTRO Introduction
 The development of a coherent set of software tools for the description of 
@@ -18,7 +18,7 @@ materials used in the apparatus, but all parameters describing e.g. the
 detection techniques, constants required by alignment and calibration, 
 description of the readout structures, conditions data, etc. 
 
-The design of the DD4hep toolkit
+The design of the dd4hep toolkit
 is shaped on the experience of detector description 
 systems, which were implemented for the LHC experiments, in particular 
 the LHCb experiment,
@@ -28,7 +28,7 @@ the Linear Collider.
 Designing a coherent set of tools, with most of the basic components 
 already existing in one form or another, is an opportunity for getting 
 the best of all existing solutions. 
-DD4hep aims to widely reuse used existing software components, in particular
+dd4hep aims to widely reuse used existing software components, in particular
 the ROOT geometry, part of the ROOT project, a tool for 
 building, browsing, navigating and visualizing detector geometries. The
 code is designed to optimize particle transport through complex 
@@ -38,9 +38,9 @@ sophisticated 3D visualization functionality, which is ideal for building
 detector and event displays. The second component is 
 the Geant4 simulation toolkit, which is used to 
 simulate the detector response from particle collisions in complex designs.
-In DD4hep the geometrical
+In dd4hep the geometrical
 representation provided by ROOT is the main source of information.
-In addition DD4hep provides the automatic conversions to other geometrical 
+In addition dd4hep provides the automatic conversions to other geometrical 
 representations, such as Geant4, and the convenient usage of these 
 components without the reinvention of the existing functionality.
 
@@ -97,7 +97,7 @@ The following main requirements influenced the design of the toolkit:
 .
 
 <img src="../LaTex/DD4hep_big_picture.png" height="400"/>
-<b>The components of the DD4hep detector geometry toolkit.</b>
+<b>The components of the dd4hep detector geometry toolkit.</b>
 
 \section DESIGN Toolkit Design
 
@@ -125,7 +125,7 @@ with deviations from the ideal would be needed by the experiment.
 
 In the compact description the detector is parametrized in minimalistic terms
 with user provided parameters in XML.
-XML is an open format, the DD4hep parsers do not validate against a fix schema
+XML is an open format, the dd4hep parsers do not validate against a fix schema
 and hence allow to easily introduce new elements and attributes to describe 
 detectors. This feature minimizes the burden on the end-user while still 
 supporting flexibility.
@@ -161,8 +161,8 @@ The compact description together with the detector constructors are sufficient
 to build the detector model and to visualize it. If during the lifetime of the
 experiment the detector model changes, the corresponding constructors will 
 need to be adapted accordingly. 
-DD4hep provides already a palette of basic pre-implemented geometrical detector 
-concepts to design experiments. In view of usage of DD4hep as a detector 
+dd4hep provides already a palette of basic pre-implemented geometrical detector 
+concepts to design experiments. In view of usage of dd4hep as a detector 
 description toolkit, this library may in the future also adopt
 generic designs of detector components created by end users e.g. during the design 
 phase of future experiments.
@@ -176,7 +176,7 @@ phase of future experiments.
 
 \section DETDESCMODEL Generic Detector Description Model
 
-This is the heart of the DD4hep detector description toolkit. Its purpose is 
+This is the heart of the dd4hep detector description toolkit. Its purpose is 
 to build in memory a model of the detector including its geometrical aspects
 as well as structural and functional aspects. The design reuses the elements 
 from the ROOT geometry package and extends them in case required functionality 
@@ -196,7 +196,7 @@ the all TPC geometrical dimensions, the alignment and calibration constants
 and other slow varying conditions such as the gas pressure, end-plate 
 temperatures etc. The $Detector$ $Element$ acts as a data concentrator. 
 Applications may access the full experiment geometry and all connected data
-through a singleton object called $LCDD$, which provides 
+through a singleton object called $Detector$, which provides 
 management, bookkeeping and ownership to the model instances.
 
 The geometry is implemented using the ROOT geometry classes, which are used
@@ -212,24 +212,24 @@ notation to end-users building custom $Detector$ $Constructors$.
 
 Here you can find the manuals:
 
-- The basic <A href="../DD4hepManual.pdf">DD4hep manual</A>.
+- The basic <A href="../DD4hepManual.pdf">dd4hep manual</A>.
 - The <A href="../DDG4Manual.pdf">DDG4 manual</A> to invoke the simulation toolkit Geant4 taking advantage of
-  detector descriptions implemented in DD4hep.
+  detector descriptions implemented in dd4hep.
 - The DDAlign manual. A Geometry alignment toolkit to handle geometrical imperfections.
-- The DDCond manual to handle detector conditions for DD4hep based deytector descriptions.
+- The DDCond manual to handle detector conditions for dd4hep based deytector descriptions.
   (Under construction though).
-- The <A href="../DDEveManual.pdf">DDEve manual</A> to visualize DD4hep geometries.
+- The <A href="../DDEveManual.pdf">DDEve manual</A> to visualize dd4hep geometries.
   (Under construction though).
 - <A href="../DD4hep_Diagrams.pdf">UML diagrams</A> from the design phase
 - <A href="../refman.pdf">Doxygen Manual</A> in pdf format
 - <A href="../DD4hep_Tutorial.pdf">Tutorial</A>. Relatively old...
 - <A href="http://cds.cern.ch/record/1473120/files/AIDA-D2_3.pdf">Design document</A>
-- <A href="https://sft.its.cern.ch/jira/browse/DDFORHEP">DD4hep bug tracker</A>
+- <A href="https://sft.its.cern.ch/jira/browse/DDFORHEP">dd4hep bug tracker</A>
 .
 
 CERN intra-web:
-- DD4hep mails <A href="https://groups.cern.ch/group/dd4hep-developers/Lists/Archive/100.aspx">archive</A>.
-- <A href="http://aidasoft.web.cern.ch/DD4hep">DD4hep AIDA software page</A>
+- dd4hep mails <A href="https://groups.cern.ch/group/DD4hep-developers/Lists/Archive/100.aspx">archive</A>.
+- <A href="http://aidasoft.web.cern.ch/DD4hep">dd4hep AIDA software page</A>
 .
 
 Desy:

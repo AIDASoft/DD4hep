@@ -6,7 +6,7 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="9" name="HcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
+  <detector id="9" name="HcalEndcap" type="dd4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
 
     <comment>Hadron Calorimeter Endcaps</comment>
 

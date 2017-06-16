@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +20,10 @@
 class G4LogicalVolume;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation   {
+  namespace sim   {
 
     /// Class to perform directional material scans using Geantinos.
     /**
@@ -77,7 +77,7 @@ namespace DD4hep {
 
 // $Id: $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -96,7 +96,7 @@ namespace DD4hep {
 #include "G4Material.hh"
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4MaterialScanner)
@@ -152,7 +152,7 @@ void Geant4MaterialScanner::operator()(const G4Step* step, G4SteppingManager*) {
 
 /// Registered callback on Begin-event
 void Geant4MaterialScanner::beginEvent(const G4Event* /* event */)   {
-  for_each(m_steps.begin(),m_steps.end(),DestroyObject<StepInfo*>());
+  for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
   m_steps.clear();
   m_sumX0 = 0;
   m_sumLambda = 0;
@@ -162,7 +162,7 @@ void Geant4MaterialScanner::beginEvent(const G4Event* /* event */)   {
 /// Begin-of-tracking callback
 void Geant4MaterialScanner::begin(const G4Track* track) {
   printP2("Starting tracking action for track ID=%d",track->GetTrackID());
-  for_each(m_steps.begin(),m_steps.end(),DestroyObject<StepInfo*>());
+  for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
   m_steps.clear();
   m_sumX0 = 0;
   m_sumLambda = 0;
@@ -215,7 +215,7 @@ void Geant4MaterialScanner::end(const G4Track* track) {
                postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm);
       //cout << *m << endl;
     }
-    for_each(m_steps.begin(),m_steps.end(),DestroyObject<StepInfo*>());
+    for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
     m_steps.clear();
   }
 }

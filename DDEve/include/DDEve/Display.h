@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_DDEVE_DISPLAY_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DDEve/PopupMenu.h"
 #include "DDEve/EventHandler.h"
@@ -35,12 +35,12 @@ class TGClient;
 class TFile;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class View;
   class ViewMenu;
-  class DD4hepMenu;
+  class dd4hepMenu;
   class EventHandler;
   class ViewConfiguration;
   class CalodataConfiguration;
@@ -80,13 +80,13 @@ namespace DD4hep {
     /// Reference to TEve manager
     TEveManager* m_eve;
     /// Reference to geometry hub
-    Geometry::LCDD* m_lcdd;
+    Detector* m_detDesc;
     /// Reference to the event reader object
     GenericEventHandler* m_evtHandler;
     TEveElementList* m_geoGlobal;
     TEveElementList* m_eveGlobal;
     ViewMenu* m_viewMenu;
-    DD4hepMenu* m_dd4Menu;
+    dd4hepMenu* m_dd4Menu;
     Topics m_geoTopics;
     Topics m_eveTopics;
     Views  m_eveViews;
@@ -109,7 +109,7 @@ namespace DD4hep {
     virtual ~Display();
 
     /// Access to geometry hub
-    Geometry::LCDD& lcdd() const;
+    Detector& detectorDescription() const;
     /// Access to the EVE manager
     TEveManager& manager() const                         { return *m_eve;             }
     /// Access View configurations
@@ -201,6 +201,6 @@ namespace DD4hep {
 
     ClassDefOverride(Display,0);
   };
-}      /* End namespace DD4hep   */
+}      /* End namespace dd4hep   */
 #endif /* DD4HEP_DDEVE_DISPLAY_H */
 

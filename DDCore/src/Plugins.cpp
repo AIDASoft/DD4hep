@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 #include <cstdlib>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 namespace {
   inline int* s_debug_value()   {
@@ -102,7 +102,7 @@ namespace   {
     if ( !fp.fptr.ptr ) fp.fptr.ptr = ::dlsym(0, entry);
 #endif
     if ( 0 == fp.fptr.ptr )      {
-      string err = "DD4hep:PluginService: Failed to access symbol "
+      string err = "dd4hep:PluginService: Failed to access symbol "
         "\""+string(entry)+"\" in plugin library "+string(plugin)+
         " ["+string(::strerror(errno))+"]";
       throw runtime_error(err);
@@ -169,19 +169,19 @@ void PluginService::addFactory(const std::string& id, stub_t stub,
 #endif
 
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Handle.h"
 #include "DD4hep/GeoHandler.h"
 #include "XML/XMLElements.h"
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*,XML::Handle_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*,XML::Handle_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*,XML::Handle_t const*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, int, char**))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, const Geometry::GeoHandler*, const std::map<std::string,std::string>*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*,xml::Handle_t*,Ref_t*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*,xml::Handle_t*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*,xml::Handle_t*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*,xml::Handle_t const*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*, int, char**))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*, const GeoHandler*, const std::map<std::string,std::string>*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, ())
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (const char*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (Geometry::LCDD*,int,char**))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (Detector*,int,char**))
 #endif

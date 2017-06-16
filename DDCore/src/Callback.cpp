@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,7 +15,7 @@
 #include "DD4hep/Callback.h"
 #include "DD4hep/Exceptions.h"
 
-using namespace DD4hep;
+using namespace dd4hep;
 
 /// Check the compatibility of two typed objects. The test is the result of a dynamic_cast
 void CallbackSequence::checkTypes(const std::type_info& typ1, const std::type_info& typ2, void* test) {

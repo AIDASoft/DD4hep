@@ -1,5 +1,5 @@
 #if 0
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 #include "DDG4/Geant4UserInitialization.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Base class to initialize a multi-threaded or single threaded Geant4 application
     /**
@@ -41,12 +41,12 @@ namespace DD4hep {
       /// Callback function to build setup for the MT master thread
       virtual void buildMaster();
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4USERACTIONINITIALIZATION_H
 
 
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -68,7 +68,7 @@ namespace DD4hep {
 // C/C++ include files
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 //DECLARE_GEANT4ACTION(Geant4UserActionInitialization)
 

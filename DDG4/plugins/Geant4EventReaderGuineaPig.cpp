@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 #include <fstream>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /**
      *  Reader for ascii files with e+e- pairs created from GuineaPig.
@@ -52,8 +52,8 @@ namespace DD4hep {
       virtual EventReaderStatus skipEvent() override  { return EVENT_READER_OK; }
       virtual EventReaderStatus setParameters( std::map< std::string, std::string > & parameters ) override ;
     };
-  }     /* End namespace Simulation   */
-}       /* End namespace DD4hep       */
+  }     /* End namespace sim   */
+}       /* End namespace dd4hep       */
 
 
 // Framework include files
@@ -67,8 +67,8 @@ namespace DD4hep {
 
 using namespace std;
 using namespace CLHEP;
-using namespace DD4hep::Simulation;
-typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+using namespace dd4hep::sim;
+typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
 // Factory entry
 DECLARE_GEANT4_EVENT_READER(Geant4EventReaderGuineaPig)
@@ -109,7 +109,7 @@ Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
   
   printout(DEBUG,"EventReader"," move to event_number: %d , m_currEvent %d",
-	   event_number,m_currEvent ) ;
+           event_number,m_currEvent ) ;
   
   if( m_currEvent == 0 && event_number > 0 ){
 
@@ -128,15 +128,15 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
 
       // First check the input file status
       if ( !m_input.good() || m_input.eof() )   {
-	return EVENT_READER_IO_ERROR;
+        return EVENT_READER_IO_ERROR;
       }
 
       for (unsigned i = 0; i<nSkipParticles; ++i){
-	if (m_input.ignore(numeric_limits<streamsize>::max(), m_input.widen('\n'))){
-	  //just skipping the line
-	}
-	else
-	  return EVENT_READER_IO_ERROR ;
+        if (m_input.ignore(numeric_limits<streamsize>::max(), m_input.widen('\n'))){
+          //just skipping the line
+        }
+        else
+          return EVENT_READER_IO_ERROR ;
       }
     }
   }
@@ -148,8 +148,8 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::readParticles(int /* event_number */, 
-					  Vertices& vertices,
-					  vector<Particle*>& particles)   {
+                                          Vertices& vertices,
+                                          vector<Particle*>& particles)   {
 
 
   // if no number of particles per event set, we will read the whole file
@@ -183,17 +183,17 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
   for( int counter = 0; counter < m_part_num ; ++counter ){      
 
     m_input  >> Energy
-	     >> betaX   >> betaY >> betaZ
-	     >> posX    >> posY  >> posZ ;
+             >> betaX   >> betaY >> betaZ
+             >> posX    >> posY  >> posZ ;
     
 
     if( std::isnan( Energy ) ||
-	std::isnan( betaX  ) ||
-	std::isnan( betaY  ) ||
-	std::isnan( betaZ  ) ||
-	std::isnan( posX   ) ||
-	std::isnan( posY   ) ||
-	std::isnan( posZ   ) ){
+        std::isnan( betaX  ) ||
+        std::isnan( betaY  ) ||
+        std::isnan( betaZ  ) ||
+        std::isnan( posX   ) ||
+        std::isnan( posY   ) ||
+        std::isnan( posZ   ) ){
 
       printout(WARNING,"EventReader","### Read line with 'nan' entries - particle will be ignored  ! " ) ;
 
@@ -204,12 +204,12 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     if( m_input.eof() ) {
       
       if( counter==0 ) { 
-	return EVENT_READER_IO_ERROR ;  // reading first particle of event failed 
+        return EVENT_READER_IO_ERROR ;  // reading first particle of event failed 
 
       } else{
 
-	++m_currEvent;
-	return EVENT_READER_OK ; // simply EOF
+        ++m_currEvent;
+        return EVENT_READER_OK ; // simply EOF
       }
     }
     

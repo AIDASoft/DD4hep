@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -11,22 +11,22 @@
 //
 //==========================================================================
 
-#ifndef DD4hep_XML_XMLUTILITIES_H
-#define DD4hep_XML_XMLUTILITIES_H
+#ifndef dd4hep_XML_XMLUTILITIES_H
+#define dd4hep_XML_XMLUTILITIES_H
 
 // Framework include files
 #include "XML/Conversions.h"
 #include "XML/XMLElements.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML {
+  namespace xml {
 
     /// Create a solid shape using the plugin mechanism from the attributes of the XML element
-    Geometry::Solid createShape(Geometry::LCDD& lcdd, const std::string& shape_type, XML::Element element);
+    Solid createShape(Detector& description, const std::string& shape_type, xml::Element element);
 
 
     /** Create an envelope volume that is placed into the world volume (the parent volume of sdet) from an xml
@@ -42,8 +42,8 @@ namespace DD4hep {
      @endverbatim
      *  @author S.Lu DESY, F. Gaede CERN/DESY 
      */
-    Geometry::Volume createPlacedEnvelope( DD4hep::Geometry::LCDD& lcdd, DD4hep::XML::Handle_t e , 
-                                           DD4hep::Geometry::DetElement sdet ) ;
+    Volume createPlacedEnvelope( dd4hep::Detector& description, dd4hep::xml::Handle_t e , 
+                                           dd4hep::DetElement sdet ) ;
     
 
 
@@ -54,8 +54,8 @@ namespace DD4hep {
 	@endverbatim
      *  @author F.Gaede, DESY
      */
-    void setDetectorTypeFlag( DD4hep::XML::Handle_t e, DD4hep::Geometry::DetElement sdet ) ; 
+    void setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElement sdet ) ; 
 
-  }  /* End namespace XML              */
-}    /* End namespace DD4hep           */
-#endif    /* DD4hep_XML_XMLUTILITIES_H */
+  }  /* End namespace xml              */
+}    /* End namespace dd4hep           */
+#endif    /* dd4hep_XML_XMLUTILITIES_H */

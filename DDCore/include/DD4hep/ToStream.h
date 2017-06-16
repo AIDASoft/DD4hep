@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,10 +28,10 @@
 #include <sstream>
 
 // ============================================================================
-/** @file DD4hep/ToStream.h
+/** @file dd4hep/ToStream.h
  *  implemenattiono fvarioud functions for streaming.
  *  this functionality is essenital for usag eof varuodu types as property for
- *  the various DD4hep components
+ *  the various dd4hep components
  *  @attention the implemenation of the specific specializations must be done
  *                    before the inclusion of this file
  *  @todo ToStream.h : reimplement in terms of functors, to allow
@@ -40,7 +40,7 @@
 // ============================================================================
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
   // ==========================================================================
   /// Utility namespace to support boost::spirit
   namespace Utils {
@@ -290,7 +290,7 @@ namespace DD4hep {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-05-12
-     *  @see DD4hep::Utils::toStream
+     *  @see dd4hep::Utils::toStream
      *  @todo need to be compared with boost::lexical_cast
      */
     template <class TYPE>
@@ -303,16 +303,16 @@ namespace DD4hep {
       return s.str();
     }
     // ========================================================================
-  }//                                            end of namespace DD4hep::Utils
+  }//                                            end of namespace dd4hep::Utils
   // ==========================================================================
-}//                                                     end of namespace DD4hep
+}//                                                     end of namespace dd4hep
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
   // ==========================================================================
   /// Utility namespace to support boost::spirit
   namespace Utils {
@@ -324,9 +324,9 @@ namespace DD4hep {
     /// print Lorentz vector
     std::ostream& toStream(const ROOT::Math::PxPyPzEVector& obj, std::ostream& s);
     // ========================================================================
-  }//                                            end of namespace DD4hep::Utils
+  }//                                            end of namespace dd4hep::Utils
   // ==========================================================================
-}//                                                     end of namespace DD4hep
+}//                                                     end of namespace dd4hep
 #endif
 // ============================================================================
 // The END

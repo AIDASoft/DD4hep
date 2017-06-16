@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,37 +23,37 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class OpaqueDataBlock;
   
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace XML  {
+  namespace xml  {
 
     /// Set debug print level for this module. Default is OFF
     bool setXMLParserDebug(bool new_value);
     
-    /// Convert rotation XML objects to DD4hep::Geometry::RotationZYX
-    /**    <rotation x="0.5" y="0"  z="0"/>  => DD4hep::Geometry::RotationZYX
+    /// Convert rotation XML objects to dd4hep::RotationZYX
+    /**    <rotation x="0.5" y="0"  z="0"/>  => dd4hep::RotationZYX
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \date    01/04/2014
      */
-    void parse(Handle_t e, Geometry::RotationZYX& rot);
+    void parse(Handle_t e, RotationZYX& rot);
 
-    /// Convert XML position objects to DD4hep::Geometry::Position
+    /// Convert XML position objects to dd4hep::Position
     /**
-     *    <position x="0.5" y="0"  z="0"/>  => DD4hep::Geometry::Position
+     *    <position x="0.5" y="0"  z="0"/>  => dd4hep::Position
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \date    01/04/2014
      */
-    void parse(Handle_t e, Geometry::Position& pos);
+    void parse(Handle_t e, Position& pos);
 
-    /// Convert XML pivot objects to DD4hep::Geometry::Translation3D objects
+    /// Convert XML pivot objects to dd4hep::Translation3D objects
     /**
      *    <pivot x="0.5" y="0"  z="0"/>
      *
@@ -61,9 +61,9 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2014
      */
-    void parse(Handle_t e, Geometry::Translation3D& tr);
+    void parse(Handle_t e, Translation3D& tr);
     
-    /// Convert alignment delta objects to Alignments::Delta
+    /// Convert alignment delta objects to Delta
     /**
      *     A generic alignment transformation is defined by
      *     - a translation in 3D space identified in XML as a
@@ -86,11 +86,11 @@ namespace DD4hep {
      *  \version 1.0
      *  \date    01/04/2014
      */
-    void parse(Handle_t e, Alignments::Delta& delta);
+    void parse(Handle_t e, Delta& delta);
 
     /// Parse delta into an opaque data block
     /**
-     *  See void parse(Handle_t e, Alignments::Delta& delta) for details.
+     *  See void parse(Handle_t e, Delta& delta) for details.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -124,6 +124,6 @@ namespace DD4hep {
     void parse_sequence(Handle_t e, OpaqueDataBlock& block);
 
     
-  }    /*   End namespace XML            */
-}      /*   End namespace DD4hep         */
+  }    /*   End namespace xml            */
+}      /*   End namespace dd4hep         */
 #endif /*   End DDCORE_XML_XMLPARSERS_H  */

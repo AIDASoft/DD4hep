@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,19 +18,19 @@
 #include "DDAlign/GlobalAlignmentStack.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Alignments {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace align {
 
     /// Forward declarations
     class GlobalAlignmentOperator;
     class GlobalAlignmentCache;
     class GlobalAlignmentStack;
 
-    /// Class caching all known alignment operations for one LCDD instance.
+    /// Class caching all known alignment operations for one Detector instance.
     /**
-     *  Internally the instances are fragmented to subdetectors defined
+     *  detaillly the instances are fragmented to subdetectors defined
      *  by the next-to-top level detector elements.
      *
      *  \author   M.Frank
@@ -38,7 +38,7 @@ namespace DD4hep {
      *  \ingroup  DD4HEP_ALIGN
      */
     class GlobalAlignmentCache  {
-      friend class LCDD;
+      friend class dd4hep::Detector;
       friend class GlobalAlignmentOperator;
 
     public:
@@ -48,7 +48,7 @@ namespace DD4hep {
       typedef std::map<std::string,GlobalAlignmentCache*> SubdetectorAlignments;
 
     protected:
-      LCDD&       m_lcdd;
+      Detector&       m_detDesc;
       /// Cache of subdetectors
       SubdetectorAlignments m_detectors;
       /// The subdetector specific map of alignments caches
@@ -65,7 +65,7 @@ namespace DD4hep {
 
     protected:
       /// Default constructor initializing variables
-      GlobalAlignmentCache(LCDD& lcdd, const std::string& sdPath, bool top);
+      GlobalAlignmentCache(Detector& description, const std::string& sdPath, bool top);
       /// Default destructor
       virtual ~GlobalAlignmentCache();
 
@@ -81,9 +81,9 @@ namespace DD4hep {
 
     public:
       /// Create and install a new instance tree
-      static GlobalAlignmentCache* install(LCDD& lcdd);
+      static GlobalAlignmentCache* install(Detector& description);
       /// Unregister and delete a tree instance
-      static void uninstall(LCDD& lcdd);
+      static void uninstall(Detector& description);
       /// Add reference count
       int addRef();
       /// Release object. If reference count goes to NULL, automatic deletion is triggered.
@@ -100,6 +100,6 @@ namespace DD4hep {
       std::vector<GlobalAlignment> matches(const std::string& path_match, bool exclude_exact=false) const;
     };
 
-  } /* End namespace Alignments                            */
-} /* End namespace DD4hep                                  */
+  } /* End namespace align                            */
+} /* End namespace dd4hep                                  */
 #endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H       */

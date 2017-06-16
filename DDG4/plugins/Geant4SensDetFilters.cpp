@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 class G4ParticleDefinition;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Geant4 sensitive detector filter base class for particle filters
     /**
@@ -124,8 +124,8 @@ namespace DD4hep {
 #include "G4Track.hh"
 #include "G4Step.hh"
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 using namespace std;
 
 //DECLARE_GEANT4ACTION()

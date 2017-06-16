@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 class TiledLayerGridXY: public CartesianGrid {
@@ -157,5 +157,5 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_TILEDLAYERGRIDXY_H_ */

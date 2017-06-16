@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,7 +23,7 @@ namespace {
 
 // Framework include files
 #define SURFACEINSTALLER_DATA UserData
-#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_SiTrackerBarrelSurfacePlugin
+#define DD4HEP_USE_SURFACEINSTALL_HELPER dd4hep_SiTrackerBarrelSurfacePlugin
 #include "DD4hep/SurfaceInstaller.h"
 
 namespace{
@@ -33,9 +32,9 @@ namespace{
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        double value = DD4hep::_toDouble(++ptr);
+        double value = dd4hep::_toDouble(++ptr);
         if( name=="dimension" ) data.dimension = value ; 
-        std::cout << "DD4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
+        std::cout << "dd4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;
       }
     }
@@ -43,11 +42,11 @@ namespace{
   
   /// Install measurement surfaces
   template <typename UserData> 
-    void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
-    Volume comp_vol = pv.volume();
+    void Installer<UserData>::install(dd4hep::DetElement component, dd4hep::PlacedVolume pv)   {
+    dd4hep::Volume comp_vol = pv.volume();
     if ( comp_vol.isSensitive() )  {  
-      Volume mod_vol  = parentVolume(component);
-      DD4hep::Geometry::Box mod_shape(mod_vol.solid()), comp_shape(comp_vol.solid());
+      dd4hep::Volume mod_vol  = parentVolume(component);
+      dd4hep::Box mod_shape(mod_vol.solid()), comp_shape(comp_vol.solid());
       
       if ( !comp_shape.isValid() || !mod_shape.isValid() )   {
         invalidInstaller("Components and/or modules are not boxes -- invalid shapes");
@@ -67,7 +66,7 @@ namespace{
         if( data.dimension == 1 ) {
           type.setProperty( Type::Measurement1D , true ) ;
         } else if( data.dimension != 2 ) {
-          throw std::runtime_error("**** DD4hep_SiTrackerBarrelSurfacePlugin: no or wrong "
+          throw std::runtime_error("**** dd4hep_SiTrackerBarrelSurfacePlugin: no or wrong "
                                    "'dimension' argument given - has to be 1 or 2") ;
         }
         VolPlane surf(comp_vol, type, inner_thickness, outer_thickness, u, v, n, o);

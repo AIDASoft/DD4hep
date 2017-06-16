@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -43,10 +43,10 @@ class G4AssemblyVolume;
 class G4VSensitiveDetector;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     class Geant4Mapping;
@@ -59,37 +59,22 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     namespace Geant4GeometryMaps  {
-      using Geometry::Atom;
-      using Geometry::Material;
-      using Geometry::VisAttr;
-      using Geometry::Volume;
-      using Geometry::PlacedVolume;
-      using Geometry::Region;
-      using Geometry::LimitSet;
-      using Geometry::SensitiveDetector;
+      //typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
+      typedef std::map<Atom, G4Element*>                      ElementMap;
+      typedef std::map<Material, G4Material*>                 MaterialMap;
+      //typedef std::map<LimitSet, G4UserLimits*>               LimitMap;
+      typedef std::map<PlacedVolume, G4VPhysicalVolume*>      PlacementMap;
+      //typedef std::map<Region, G4Region*>                     RegionMap;
+      typedef std::map<Volume, G4LogicalVolume*>              VolumeMap;
+      typedef std::map<PlacedVolume, Geant4AssemblyVolume*>   AssemblyMap;
 
-      typedef std::vector<const G4VPhysicalVolume*> Geant4PlacementPath;
-      typedef std::map<Atom, G4Element*> ElementMap;
-      typedef std::map<Material, G4Material*> MaterialMap;
-      typedef std::map<LimitSet, G4UserLimits*> LimitMap;
-      typedef std::map<PlacedVolume, G4VPhysicalVolume*> PlacementMap;
-      typedef std::map<Region, G4Region*> RegionMap;
-      typedef std::map<Volume, G4LogicalVolume*> VolumeMap;
-      typedef std::map<PlacedVolume, Geant4AssemblyVolume*>  AssemblyMap;
-
-      typedef std::vector<const TGeoNode*> VolumeChain;
+      typedef std::vector<const TGeoNode*>                    VolumeChain;
       typedef std::pair<VolumeChain,const G4VPhysicalVolume*> ImprintEntry;
-      typedef std::vector<ImprintEntry> Imprints;
-      typedef std::map<Volume,Imprints>   VolumeImprintMap;
-      typedef std::map<const TGeoShape*, G4VSolid*> SolidMap;
-      typedef std::map<VisAttr, G4VisAttributes*> VisMap;
-      typedef std::map<Geant4PlacementPath, VolumeID> Geant4PathMap;
-
-      typedef Geometry::GeoHandlerTypes::SensitiveVolumes SensitiveVolumes;
-      typedef Geometry::GeoHandlerTypes::RegionVolumes RegionVolumes;
-      typedef Geometry::GeoHandlerTypes::LimitVolumes LimitVolumes;
-      /// Assemble Geant4 volume path
-      std::string placementPath(const Geant4PlacementPath& path, bool reverse=true);
+      typedef std::vector<ImprintEntry>                       Imprints;
+      typedef std::map<Volume,Imprints>                       VolumeImprintMap;
+      typedef std::map<const TGeoShape*, G4VSolid*>           SolidMap;
+      //typedef std::map<VisAttr, G4VisAttributes*>             VisMap;
+      //typedef std::map<Geant4PlacementPath, VolumeID>         Geant4PathMap;
     }
 
     /// Concreate class holding the relation information between geant4 objects and dd4hep objects.
@@ -98,23 +83,24 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4GeometryInfo : public TNamed, public Geometry::GeoHandlerTypes::GeometryInfo {
+    class Geant4GeometryInfo : public TNamed, public detail::GeoHandlerTypes::GeometryInfo {
     public:
-      Geant4GeometryMaps::ElementMap g4Elements;
-      Geant4GeometryMaps::MaterialMap g4Materials;
-      Geant4GeometryMaps::SolidMap g4Solids;
-      Geant4GeometryMaps::VolumeMap g4Volumes;
-      Geant4GeometryMaps::PlacementMap g4Placements;
-      Geant4GeometryMaps::AssemblyMap  g4AssemblyVolumes;
+      typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
+      Geant4GeometryMaps::ElementMap       g4Elements;
+      Geant4GeometryMaps::MaterialMap      g4Materials;
+      Geant4GeometryMaps::SolidMap         g4Solids;
+      Geant4GeometryMaps::VolumeMap        g4Volumes;
+      Geant4GeometryMaps::PlacementMap     g4Placements;
+      Geant4GeometryMaps::AssemblyMap      g4AssemblyVolumes;
       Geant4GeometryMaps::VolumeImprintMap g4VolumeImprints;
-      Geant4GeometryMaps::RegionMap g4Regions;
-      Geant4GeometryMaps::VisMap g4Vis;
-      Geant4GeometryMaps::LimitMap g4Limits;
-      Geant4GeometryMaps::Geant4PathMap g4Paths;
-      Geant4GeometryMaps::SensitiveVolumes sensitives;
-      Geant4GeometryMaps::RegionVolumes regions;
-      Geant4GeometryMaps::LimitVolumes limits;
-      G4VPhysicalVolume* m_world;
+      std::map<Region, G4Region*>                              g4Regions;
+      std::map<VisAttr, G4VisAttributes*>                      g4Vis;
+      std::map<LimitSet, G4UserLimits*>                        g4Limits;
+      std::map<Geant4PlacementPath, VolumeID>                  g4Paths;
+      std::map<SensitiveDetector,std::set<const TGeoVolume*> > sensitives;
+      std::map<Region,           std::set<const TGeoVolume*> > regions;
+      std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
+      G4VPhysicalVolume*                                       m_world;
       bool valid;
     private:
       friend class Geant4Mapping;
@@ -127,9 +113,11 @@ namespace DD4hep {
       G4VPhysicalVolume* world() const;
       /// Set the world volume
       void setWorld(const TGeoNode* node);
+      /// Assemble Geant4 volume path
+      static std::string placementPath(const Geant4PlacementPath& path, bool reverse=true);
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4GEOMETRYINFO_H

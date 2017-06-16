@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,7 +17,7 @@
 #include "DDG4/Geant4InputHandling.h"
 #include "DDG4/Geant4PrimaryHandler.h"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4PrimaryHandler::Geant4PrimaryHandler(Geant4Context* ctxt, const std::string& nam)

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,12 +21,12 @@
 #include "DDDB/DDDBReader.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace of the DDDB conversion stuff
   namespace DDDB  {
 
-    /// Class supporting the interface of the LHCb conditions database to DD4hep
+    /// Class supporting the interface of the LHCb conditions database to dd4hep
     /**
      *
      *  \author   M.Frank
@@ -48,14 +48,14 @@ namespace DD4hep {
 
     };
   }    /* End namespace DDDB            */
-}      /* End namespace DD4hep          */
+}      /* End namespace dd4hep          */
 
 
 //==========================================================================
 // Framework includes
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 // C/C++ include files
 #include <sys/types.h>
@@ -63,7 +63,7 @@ namespace DD4hep {
 #include <unistd.h>
 #include <fcntl.h>
 
-int DD4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
+int dd4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
                                             UserContext* /* ctxt */,
                                             std::string& buffer)
 {
@@ -95,12 +95,12 @@ int DD4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
 }
 
 /// Resolve a given URI to a string containing the data
-bool DD4hep::DDDB::DDDBFileReader::load(const std::string& system_id, std::string& buffer)   {
-  return XML::UriReader::load(system_id, buffer);
+bool dd4hep::DDDB::DDDBFileReader::load(const std::string& system_id, std::string& buffer)   {
+  return xml::UriReader::load(system_id, buffer);
 }
 
 /// Resolve a given URI to a string containing the data
-bool DD4hep::DDDB::DDDBFileReader::load(const std::string& system_id,
+bool dd4hep::DDDB::DDDBFileReader::load(const std::string& system_id,
                                         UserContext*  ctxt,
                                         std::string& buffer)
 {
@@ -115,7 +115,7 @@ bool DD4hep::DDDB::DDDBFileReader::load(const std::string& system_id,
 
 namespace {
   void* create_dddb_xml_file_reader(const char* /* arg */) {
-    return new DD4hep::DDDB::DDDBFileReader();
+    return new dd4hep::DDDB::DDDBFileReader();
   }
 }
 DECLARE_CONSTRUCTOR(DDDB_FileReader,create_dddb_xml_file_reader)

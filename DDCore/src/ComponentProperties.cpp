@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,7 @@
 #include <cstring>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 /// Default destructor
 PropertyConfigurator::~PropertyConfigurator()   {
@@ -235,7 +235,7 @@ Property& PropertyConfigurable::property(const string& nam)   {
   return properties()[nam];
 }
 
-namespace DD4hep { 
+namespace dd4hep { 
   namespace Parsers {
     int parse(Property& result, const std::string& input) {
       result.str(input); 
@@ -258,7 +258,7 @@ namespace DD4hep {
 #include "DD4hep/detail/ComponentProperties_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
 
-namespace DD4hep {
+namespace dd4hep {
 
   template Property Property::value() const;
   template void Property::value(Property& value) const;

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,15 +18,15 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/detail/DetectorInterna.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 /// Anonymous namespace for plugins
 namespace  {
@@ -55,9 +55,9 @@ namespace  {
   };
 
   /// Plugin function
-  long dddb_dump_logical_volumes(LCDD& lcdd, int , char** ) {
+  long dddb_dump_logical_volumes(Detector& description, int , char** ) {
     VolumeScan scan;
-    Volume world_vol = lcdd.worldVolume();
+    Volume world_vol = description.worldVolume();
     int count = scan.scan_daughters(world_vol,string());
     printout(INFO,"DDDB_vol_dump","Found %d unique logical volumes.",count);
     return 1;

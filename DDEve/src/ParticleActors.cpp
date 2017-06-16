@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,7 +25,7 @@
 #include "TGeoManager.h"
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 static Color_t Colors[] = {
   kRed, kBlue, kYellow, kGreen, kPink, kAzure, kOrange, kTeal, kViolet, kSpring, kMagenta, kCyan

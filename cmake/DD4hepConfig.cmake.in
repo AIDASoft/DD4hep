@@ -40,7 +40,7 @@ set( DD4hep_INCLUDE_DIRS DD4hep_INCLUDE_DIRS-NOTFOUND )
 mark_as_advanced( DD4hep_INCLUDE_DIRS )
 
 find_path( DD4hep_INCLUDE_DIRS
-  NAMES DD4hep/Detector.h
+  NAMES DD4hep/DetElement.h
   PATHS ${DD4hep_DIR}/include
   NO_DEFAULT_PATH
 )

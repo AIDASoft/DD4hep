@@ -10,10 +10,10 @@
 #include <exception>
 #include <cmath>
 
-static DD4hep::DDTest test( "CellDimensions" ) ;
+static dd4hep::DDTest test( "CellDimensions" ) ;
 
-using DD4hep::DDSegmentation::Segmentation;
-using DD4hep::DDSegmentation::CellID;
+using dd4hep::DDSegmentation::Segmentation;
+using dd4hep::DDSegmentation::CellID;
 
 Segmentation* createPolarGridRPhi2();
 Segmentation* createPolarGridRPhi(double rSize, double phiSize);
@@ -41,7 +41,7 @@ int main() {
 
 Segmentation* createPolarGridRPhi(double rSize, double phiSize) {
 
-  DD4hep::DDSegmentation::PolarGridRPhi* seg = new DD4hep::DDSegmentation::PolarGridRPhi("system:8,barrel:3,layer:8,slice:13,r:16,phi:16");
+  dd4hep::DDSegmentation::PolarGridRPhi* seg = new dd4hep::DDSegmentation::PolarGridRPhi("system:8,barrel:3,layer:8,slice:13,r:16,phi:16");
 
   seg->setGridSizeR(rSize);
   seg->setGridSizePhi(phiSize);
@@ -51,7 +51,7 @@ Segmentation* createPolarGridRPhi(double rSize, double phiSize) {
 
 Segmentation* createPolarGridRPhi2() {
 
-  DD4hep::DDSegmentation::PolarGridRPhi2* seg = new DD4hep::DDSegmentation::PolarGridRPhi2("system:8,barrel:3,layer:8,slice:13,r:16,phi:16");
+  dd4hep::DDSegmentation::PolarGridRPhi2* seg = new dd4hep::DDSegmentation::PolarGridRPhi2("system:8,barrel:3,layer:8,slice:13,r:16,phi:16");
 
   std::vector<double> rValues, phiValues;
 
@@ -99,7 +99,7 @@ Segmentation* createPolarGridRPhi2() {
   return seg;
 }
 
-CellID getCellID(DD4hep::DDSegmentation::Segmentation* seg, long long rB, long long pB){
+CellID getCellID(dd4hep::DDSegmentation::Segmentation* seg, long long rB, long long pB){
   (*seg->decoder())["r"] = rB;
   (*seg->decoder())["phi"] = pB;
   return (*seg->decoder()).getValue();
@@ -108,7 +108,7 @@ CellID getCellID(DD4hep::DDSegmentation::Segmentation* seg, long long rB, long l
 void testRPhi2(){
   std::vector<TestTuple> tests;
 
-  DD4hep::DDSegmentation::Segmentation* seg = createPolarGridRPhi2();
+  dd4hep::DDSegmentation::Segmentation* seg = createPolarGridRPhi2();
   const double DegToRad = M_PI/180.0;
   tests.push_back( TestTuple( seg, 20.0, 20*10*DegToRad,  0,   1 ) );
   tests.push_back( TestTuple( seg, 5.0, 32.5*20*DegToRad,  1,   1 ) );
@@ -139,7 +139,7 @@ void testRPhi(){
 
   const double rSizeGrid = 10.0;
   const double phiSizeGrid = M_PI/36;
-  DD4hep::DDSegmentation::Segmentation* seg = createPolarGridRPhi(rSizeGrid, phiSizeGrid);
+  dd4hep::DDSegmentation::Segmentation* seg = createPolarGridRPhi(rSizeGrid, phiSizeGrid);
 
   tests.push_back( TestTuple( seg, rSizeGrid, rSizeGrid*(0) *phiSizeGrid,   0, 1 ) );
   tests.push_back( TestTuple( seg, rSizeGrid, rSizeGrid*(1) *phiSizeGrid,   1, 1 ) );

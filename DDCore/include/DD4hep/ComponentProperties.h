@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,7 +24,7 @@
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   class Property;
   class BasicGrammar;
@@ -269,5 +269,5 @@ namespace DD4hep {
     m_properties.add(nam, val);
   }
 
-}      // End namespace DD4hep
+}      // End namespace dd4hep
 #endif // DD4HEP_DDG4_COMPONENTPROPERTIES_H

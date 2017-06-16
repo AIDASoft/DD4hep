@@ -1,6 +1,6 @@
 // $Id: PolyhedraBarrelCalorimeter2_geo.cpp 784 2013-09-19 20:05:24Z markus.frank@cern.ch $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -11,8 +11,8 @@
 #include <limits>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 static void placeStaves(DetElement&   parent,
 			DetElement&   stave,
@@ -45,13 +45,13 @@ static void placeStaves(DetElement&   parent,
   }
 }
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det     = e;
   Layering    layering(x_det);
   //xml_comp_t  staves      = x_det.staves();
   xml_dim_t   dim         = x_det.dimensions();
   string      det_name    = x_det.nameStr();
-  Material    air         = lcdd.air();
+  Material    air         = description.air();
   double      totalThickness = layering.totalThickness();
   int         numSides    = dim.numsides();
   double      detZ        = dim.z();
@@ -59,7 +59,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      rmax        = dim.rmax();
   DetElement  sdet(det_name,x_det.id());
   DetElement  stave("stave1",x_det.id());
-  Volume      motherVol = lcdd.pickMotherVolume(sdet);
+  Volume      motherVol = description.pickMotherVolume(sdet);
   PolyhedraRegular polyhedron(numSides,0.,rmin,detZ+10);
   Tube tube(0.,rmin+totalThickness,detZ/2,0,2*M_PI);
   SubtractionSolid sub(tube,polyhedron);  
@@ -95,7 +95,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double layerR = rmin;
 
   // Set envelope volume attributes.
-  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  envelopeVol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t   x_layer = c;
@@ -119,7 +119,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	xml_comp_t x_slice = k;
 	string   slice_name      = layer_name + _toString(slice_number,"_slice%d");
 	double   slice_thickness = x_slice.thickness();
-	Material slice_material  = lcdd.material(x_slice.materialStr());
+	Material slice_material  = description.material(x_slice.materialStr());
 	DetElement slice(layer,_toString(slice_number,"slice%d"),x_det.id());
 
 	slice_pos_z += slice_thickness / 2;
@@ -131,7 +131,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	  slice_vol.setSensitiveDetector(sens);
 	}
 	// Set region, limitset, and vis.
-	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+	slice_vol.setAttributes(description,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// slice PlacedVolume
 	PlacedVolume slice_phv = layer_vol.placeVolume(slice_vol,Position(0,0,slice_pos_z));
 	slice_phv.addPhysVolID("slice",slice_number);
@@ -143,7 +143,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	++slice_number;
       }
       // Set region, limitset, and vis.
-      layer_vol.setAttributes(lcdd,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
+      layer_vol.setAttributes(description,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
 
       // Layer physical volume.
       PlacedVolume layer_phv = staveOuterVol.placeVolume(layer_vol,Position((layer_dim_x+layer_pos_x-half_polyFace),0,layer_pos_z));
@@ -165,7 +165,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // Add stave inner physical volume to outer stave volume.
 //   staveOuterVol.placeVolume(staveInnerVol); //not needed
   // Set the vis attributes of the outer stave section.
-//   stave.setVisAttributes(lcdd,staves.visStr(),staveOuterVol); //not applicable for Assembly
+//   stave.setVisAttributes(description,staves.visStr(),staveOuterVol); //not applicable for Assembly
   // Place the staves.
   placeStaves(sdet,stave,rmin,numSides,totalThickness,envelopeVol,externalAngle,staveOuterVol);
 
@@ -176,7 +176,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   env_phv.addPhysVolID("barrel", 0);
   sdet.setPlacement(env_phv);
 
-  //sdet.addExtension<LayerStack>(new Geometry::PolyhedralCalorimeterLayerStack(sdet));
+  //sdet.addExtension<LayerStack>(new PolyhedralCalorimeterLayerStack(sdet));
   return sdet;
 }
 

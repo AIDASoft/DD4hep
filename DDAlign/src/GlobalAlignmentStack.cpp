@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,15 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDAlign/GlobalAlignmentStack.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
+using namespace dd4hep::align;
 
 static dd4hep_ptr<GlobalAlignmentStack>& _stack()  {
   static dd4hep_ptr<GlobalAlignmentStack> s;
@@ -89,7 +89,7 @@ GlobalAlignmentStack::GlobalAlignmentStack()
 
 /// Default destructor
 GlobalAlignmentStack::~GlobalAlignmentStack()   {
-  destroyObjects(m_stack);
+  detail::destroyObjects(m_stack);
   InstanceCount::decrement(this);
 }
 

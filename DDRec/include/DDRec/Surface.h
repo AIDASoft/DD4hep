@@ -1,9 +1,9 @@
-#ifndef DDRec_Surface_H
-#define DDRec_Surface_H
+#ifndef rec_Surface_H
+#define rec_Surface_H
 
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
 #include "DDRec/ISurface.h"
 #include "DDRec/Material.h"

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,7 +28,7 @@ template struct std::less<ROOT::Math::XYZVector>;
 template struct std::less<ROOT::Math::PxPyPzEVector>;
 
 // ============================================================================
-namespace DD4hep {
+namespace dd4hep {
   namespace Parsers {
 
     // ==========================================================================

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,8 +17,8 @@
 #include <iomanip>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 static void printCoordinates(char /* sector_type */, const char* /* volume */, double [8][2])  {
 }
@@ -32,11 +32,11 @@ static void printCoordinates(char sector_type, const char* volume, double v[8][2
 }
 #endif
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
+static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sens_det)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
   DetElement  sdet(name,x_det.id());
-  Volume      motherVol   = lcdd.pickMotherVolume(sdet);
+  Volume      motherVol   = description.pickMotherVolume(sdet);
   xml_comp_t  x_envelope  = x_det.child(_Unicode(envelope));
   xml_comp_t  x_sectors   = x_det.child(_Unicode(sectors));
   xml_comp_t  x_inner     = x_det.child(_Unicode(inner_wall));
@@ -57,10 +57,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
 
   // the TPC mother volume
   //Tube    envTub(env.inner,env.outer,env.zhalf);
-  //Volume  envVol(name+"_envelope",envTub,lcdd.air());
+  //Volume  envVol(name+"_envelope",envTub,description.air());
   Assembly  envVol(name+"_envelope");
-  //envVol.setVisAttributes(lcdd.visAttributes(x_envelope.visStr()));
-  //envVol.setVisAttributes(lcdd.invisible());
+  //envVol.setVisAttributes(description.visAttributes(x_envelope.visStr()));
+  //envVol.setVisAttributes(description.invisible());
   //envVol->SetVisibility(kFALSE);
   //envVol->SetVisDaughters(kTRUE);
 
@@ -70,36 +70,36 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
 
   // TPC Al inner shield 
   Tube    innerTub(inner_wall.inner, inner_wall.outer, inner_wall.zhalf);
-  Volume  innerVol(name+"_inner",innerTub,lcdd.material(x_inner.materialStr()));
-  innerVol.setVisAttributes(lcdd.visAttributes(x_inner.visStr()));
+  Volume  innerVol(name+"_inner",innerTub,description.material(x_inner.materialStr()));
+  innerVol.setVisAttributes(description.visAttributes(x_inner.visStr()));
   envVol.placeVolume(innerVol);
 
   // TPC outer shield 
   Tube    outerTub(outer_wall.inner, outer_wall.outer, outer_wall.zhalf);
-  Volume  outerVol(name+"_outer",outerTub,lcdd.material(x_outer.materialStr()));
-  outerVol.setVisAttributes(lcdd.visAttributes(x_outer.visStr()));
+  Volume  outerVol(name+"_outer",outerTub,description.material(x_outer.materialStr()));
+  outerVol.setVisAttributes(description.visAttributes(x_outer.visStr()));
   envVol.placeVolume(outerVol);
 
 #if 0
   // TPC gas chamber envelope
-  Material gasMat = lcdd.material(x_gas.materialStr());
+  Material gasMat = description.material(x_gas.materialStr());
   Tube     gasTub(gas.inner,gas.outer,gas.zhalf);
   Volume   gasVol(name+"_chamber",gasTub,gasMat);
-  gasVol.setVisAttributes(lcdd.visAttributes(x_gas.visStr()));
-  //gasVol.setVisAttributes(lcdd.invisible());
+  gasVol.setVisAttributes(description.visAttributes(x_gas.visStr()));
+  //gasVol.setVisAttributes(description.invisible());
   envVol.placeVolume(gasVol);
 #endif
   
   // TPC HV plane
   Tube    hvTub(gas.inner,gas.outer,x_cathode.thickness()/2);
-  Volume  hvVol(name+"_cathode",hvTub,lcdd.material(x_cathode.materialStr()));
-  hvVol.setVisAttributes(lcdd.visAttributes(x_cathode.visStr()));
+  Volume  hvVol(name+"_cathode",hvTub,description.material(x_cathode.materialStr()));
+  hvVol.setVisAttributes(description.visAttributes(x_cathode.visStr()));
   envVol.placeVolume(hvVol);
 
   // TPC Endcap plane to see sectors and misalignments betters
   Tube    endCapPlane(env.inner,env.outer,0.0001);
-  Volume  endCapPlaneVol(name+"_plane",endCapPlane,lcdd.material("Copper"));
-  endCapPlaneVol.setVisAttributes(lcdd.visAttributes("TPCEndcapVis"));
+  Volume  endCapPlaneVol(name+"_plane",endCapPlane,description.material("Copper"));
+  endCapPlaneVol.setVisAttributes(description.visAttributes("TPCEndcapVis"));
 
   double endcap_thickness = 0;
   for(xml_coll_t c(x_sectors,_Unicode(sector)); c; ++c)  {
@@ -113,18 +113,18 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   }
 
   Tube    endCapTub(env.inner,env.outer,endcap_thickness/2);
-  Volume  endCapAVol(name+"_end_A",endCapTub,lcdd.material("Copper"));
-  endCapAVol.setVisAttributes(lcdd.invisible());
-  //endCapAVol.setVisAttributes(lcdd.visAttributes(x_outer.visStr()));
+  Volume  endCapAVol(name+"_end_A",endCapTub,description.material("Copper"));
+  endCapAVol.setVisAttributes(description.invisible());
+  //endCapAVol.setVisAttributes(description.visAttributes(x_outer.visStr()));
   endCapAVol.placeVolume(endCapPlaneVol,Position(0,0,-endcap_thickness/2));
   pv = envVol.placeVolume(endCapAVol,Position(0,0,env.zhalf+endcap_thickness/2));
   pv.addPhysVolID("side",1);
   DetElement detA(sdet,name+"_SideA",1);
   detA.setPlacement(pv);
 
-  Volume  endCapBVol(name+"_end_B",endCapTub,lcdd.material("Copper"));
-  endCapBVol.setVisAttributes(lcdd.invisible());
-  //endCapBVol.setVisAttributes(lcdd.visAttributes(x_outer.visStr()));
+  Volume  endCapBVol(name+"_end_B",endCapTub,description.material("Copper"));
+  endCapBVol.setVisAttributes(description.invisible());
+  //endCapBVol.setVisAttributes(description.visAttributes(x_outer.visStr()));
   endCapBVol.placeVolume(endCapPlaneVol,Position(0,0,-endcap_thickness/2));
 
   Transform3D trEndB(RotationY(M_PI),Position(0,0,-env.zhalf-endcap_thickness/2));
@@ -133,7 +133,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   DetElement detB(sdet,name+"_SideB",2);
   detB.setPlacement(pv);
 
-  //envVol.setVisAttributes(lcdd.invisible());
+  //envVol.setVisAttributes(description.invisible());
 
   int sector_count = 0;
   for(xml_coll_t c(x_sectors,_Unicode(sector)); c; ++c)  {
@@ -293,8 +293,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
 	  tm = UnionSolid(UnionSolid(sectorSolid,upper_boolean),lower_boolean);
       }
 
-      Volume secVol(name+"_sector_"+sector_type+_toString(i_layer,"_layer%d"),tm,lcdd.material(layer_mat));
-      secVol.setVisAttributes(lcdd.visAttributes(layer_vis));
+      Volume secVol(name+"_sector_"+sector_type+_toString(i_layer,"_layer%d"),tm,description.material(layer_mat));
+      secVol.setVisAttributes(description.visAttributes(layer_vis));
       if ( x_layer.isSensitive() ) secVol.setSensitiveDetector(sens_det);
 
       sector.placeVolume(secVol,Position(0,0,z_start+layer_thickness/2));

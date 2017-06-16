@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,11 +19,11 @@
 #include <iostream>
 #include <cerrno>
 
-using namespace DD4hep::Simulation::Setup;
+using namespace dd4hep::sim::Setup;
 
 int setupG4_XML()  {
-  DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
-  Kernel& kernel = Kernel::instance(lcdd);
+  dd4hep::Detector& description = dd4hep::Detector::getInstance();
+  Kernel& kernel = Kernel::instance(description);
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml");
   kernel.loadXML("DDG4_field.xml");
   kernel.loadXML("sequences.xml");

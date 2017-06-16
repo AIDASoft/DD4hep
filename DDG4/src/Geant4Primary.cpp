@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,8 +23,8 @@
 #include <stdexcept>
 #include <cstdio>
 
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Default destructor
 PrimaryExtension::~PrimaryExtension() {
@@ -32,7 +32,7 @@ PrimaryExtension::~PrimaryExtension() {
 
 /// Default destructor
 Geant4PrimaryMap::~Geant4PrimaryMap()   {
-  releaseObjects(m_primaryMap);
+  detail::releaseObjects(m_primaryMap);
 }
 
 /// Add a new object pair (G4 primary particle, DDG4 particle) into the maps
@@ -58,9 +58,9 @@ Geant4PrimaryInteraction::~Geant4PrimaryInteraction()   {
   Geant4PrimaryInteraction::VertexMap::iterator iv, ivend;
   for( iv=vertices.begin(), ivend=vertices.end(); iv != ivend; ++iv ){
     for( Geant4Vertex* vtx : (*iv).second ) 
-      ReleaseObject<Geant4Vertex*>()( vtx ); 
+      detail::ReleaseObject<Geant4Vertex*>()( vtx ); 
   } 
-  releaseObjects(particles);
+  detail::releaseObjects(particles);
 }
 
 /// Access a new particle identifier within the interaction
@@ -92,7 +92,7 @@ bool Geant4PrimaryInteraction::applyMask()   {
 
 /// Default destructor
 Geant4PrimaryEvent::~Geant4PrimaryEvent()   {
-  destroyObjects(m_interactions);
+  detail::destroyObjects(m_interactions);
 }
 
 /// Add a new interaction object to the event

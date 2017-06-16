@@ -7,18 +7,19 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_SUBDETECTOREXTENSION_H_
-#define DDRec_SUBDETECTOREXTENSION_H_
+#ifndef rec_SUBDETECTOREXTENSION_H_
+#define rec_SUBDETECTOREXTENSION_H_
 
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
+#include "DDRec/tempdefs.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
 /**
  * Class describing general parameters of a subdetector.
  */
-class  [[gnu::deprecated(" unmaintained code ")]] SubdetectorExtension {
+class SubdetectorExtension {
 public:
 	/// Destructor
 	virtual ~SubdetectorExtension() {
@@ -53,6 +54,6 @@ protected:
 	}
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDRec_SUBDETECTOREXTENSION_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* rec_SUBDETECTOREXTENSION_H_ */

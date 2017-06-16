@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class BasicGrammar;
@@ -90,7 +90,7 @@ namespace DD4hep {
       BOUND_DATA = 1<<3
     };
     /// Data buffer: plain data are allocated directly on this buffer
-    /** Internal data buffer is sufficient to store any vector  */
+    /** detaill data buffer is sufficient to store any vector  */
     unsigned char data[sizeof(std::vector<void*>)];
     /// Destructor function -- only set if the object is valid
     void (*destruct)(void*);
@@ -131,5 +131,5 @@ namespace DD4hep {
     void assign(const void* ptr,const std::type_info& typ);
   };
 
-}      /* End namespace DD4hep */
+}      /* End namespace dd4hep */
 #endif /* DD4HEP_OPAQUEDATA_H  */

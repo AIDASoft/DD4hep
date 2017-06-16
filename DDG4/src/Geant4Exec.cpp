@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -52,10 +51,10 @@ namespace {
 }
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Sequence handler implementing common actions to all sequences.
     template <typename T> class SequenceHdl {
@@ -85,7 +84,7 @@ namespace DD4hep {
         }
       }
       void _release() {
-        releasePtr(m_sequence);
+        detail::releasePtr(m_sequence);
         InstanceCount::decrement(this);
       }
       Geant4Context* context() const  {  
@@ -107,7 +106,7 @@ namespace DD4hep {
         Geant4Run* r = m_activeContext->runPtr();
         if ( r )  {
           m_activeContext->setRun(0);
-          deletePtr(r);
+          detail::deletePtr(r);
         }
       }
       void createClientContext(const G4Event* evt)   {
@@ -118,7 +117,7 @@ namespace DD4hep {
         Geant4Event* e = m_activeContext->eventPtr();
         if ( e )  {
           m_activeContext->setEvent(0);
-          deletePtr(e);
+          detail::deletePtr(e);
         }
       }
     };
@@ -309,7 +308,7 @@ namespace DD4hep {
       /// Standard constructor
       Geant4UserDetectorConstruction(Geant4Context* ctxt, Geant4DetectorConstructionSequence* seq)
         : G4VUserDetectorConstruction(), Base(ctxt, seq), 
-          m_ctxt(ctxt->kernel().lcdd(), this) 
+          m_ctxt(ctxt->kernel().detectorDescription(), this) 
       {
       }
       /// Default destructor
@@ -394,7 +393,7 @@ namespace DD4hep {
       updateContext(ctx);
     }
 
-    /// Construct electro magnetic field entity from the DD4hep field
+    /// Construct electro magnetic field entity from the dd4hep field
     G4VPhysicalVolume* Geant4UserDetectorConstruction::Construct()    {
       // The G4TransportationManager is thread-local. 
       // Thus, regardless of whether the field class object is global or local 
@@ -468,14 +467,14 @@ namespace DD4hep {
   }
 }
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DDG4/Geant4DetectorConstruction.h"
 #include "DDG4/Geant4Kernel.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 // Geant4 include files
 #include "G4RunManager.hh"
@@ -493,7 +492,7 @@ Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorCon
   Geant4DetectorConstructionSequence* seq = kernel.detectorConstruction(true);
   printout(WARNING, "Geant4Exec", "+++ Building default Geant4DetectorConstruction for single threaded compatibility.");
 
-  // Attach first the geometry converter from DD4hep to Geant4
+  // Attach first the geometry converter from dd4hep to Geant4
   cr = PluginService::Create<Geant4Action*>("Geant4DetectorGeometryConstruction",ctx,string("ConstructGeometry"));
   det_cr = dynamic_cast<Geant4DetectorConstruction*>(cr);
   if ( det_cr ) 
@@ -512,7 +511,7 @@ Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorCon
 
 /// Configure the simulation
 int Geant4Exec::configure(Geant4Kernel& kernel) {
-  Geometry::LCDD& lcdd = kernel.lcdd();
+  Detector& description = kernel.detectorDescription();
   Geant4Context* ctx = kernel.workerContext();
   Geant4Random* rndm = Geant4Random::instance(false);
   
@@ -528,10 +527,10 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   G4RunManager& runManager = kernel.runManager();
 
   // Check if the geometry was loaded
-  if (lcdd.sensitiveDetectors().size() <= 1) {
+  if (description.sensitiveDetectors().size() <= 1) {
     printout(WARNING, "Geant4Exec", "+++ Only %d subdetectors present. "
              "You sure you loaded the geometry properly?",
-             int(lcdd.sensitiveDetectors().size()));
+             int(description.sensitiveDetectors().size()));
   }
 
   // Get the detector constructed

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,8 +18,8 @@
 
 // C/C++ include files
 
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 /// Standard destructor
 ConditionUpdateCall::ConditionUpdateCall() : m_refCount(1)  {
@@ -36,7 +36,7 @@ ConditionResolver::~ConditionResolver()  {
 }
 
 /// Initializing constructor
-ConditionDependency::ConditionDependency(Geometry::DetElement de,
+ConditionDependency::ConditionDependency(DetElement de,
                                          unsigned int         item_key,
                                          ConditionUpdateCall* call)
   : m_refCount(0), detector(de), target(de, item_key), callback(call)
@@ -45,7 +45,7 @@ ConditionDependency::ConditionDependency(Geometry::DetElement de,
 }
 
 /// Initializing constructor
-ConditionDependency::ConditionDependency(Geometry::DetElement de,
+ConditionDependency::ConditionDependency(DetElement de,
                                          const std::string&   item, 
                                          ConditionUpdateCall* call)
   : m_refCount(0), detector(de), target(de, item), callback(call)
@@ -63,11 +63,11 @@ ConditionDependency::ConditionDependency()
 /// Default destructor
 ConditionDependency::~ConditionDependency()  {
   InstanceCount::decrement(this);
-  releasePtr(callback);
+  detail::releasePtr(callback);
 }
 
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
+DependencyBuilder::DependencyBuilder(DetElement de,
                                      unsigned int         item_key,
                                      ConditionUpdateCall* call)
   : m_dependency(new ConditionDependency(de,item_key,call))
@@ -75,7 +75,7 @@ DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
 }
 
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
+DependencyBuilder::DependencyBuilder(DetElement de,
                                      const std::string&   item,
                                      ConditionUpdateCall* call)
   : m_dependency(new ConditionDependency(de,item,call))
@@ -84,7 +84,7 @@ DependencyBuilder::DependencyBuilder(Geometry::DetElement de,
 
 /// Default destructor
 DependencyBuilder::~DependencyBuilder()   {
-  releasePtr(m_dependency);
+  detail::releasePtr(m_dependency);
 }
 
 /// Add a new dependency

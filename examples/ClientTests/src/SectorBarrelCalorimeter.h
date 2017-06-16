@@ -11,8 +11,8 @@
 #include "BarrelDetector.h"
 #include "PolyhedralCalorimeter.h"
 
-namespace DD4hep {
-namespace Geometry {
+namespace dd4hep {
+namespace detail {
 
 class SectorBarrelCalorimeter: public BarrelDetector, public PolyhedralCalorimeter {
 public:
@@ -20,6 +20,6 @@ public:
 	virtual ~SectorBarrelCalorimeter() {}
 };
 
-} /* namespace Geometry */
-} /* namespace DD4hep */
+} /* namespace detail */
+} /* namespace dd4hep */
 #endif /* SECTORBARRELCALORIMETER_H_ */

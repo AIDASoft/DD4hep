@@ -15,12 +15,12 @@ methods in order to avoid nameing clashes.
   experiment specific packages such as ddsim (for ILD).
 
 
-- Generic DD4hep detectors will have the prefix DD4hep_
+- Generic dd4hep detectors will have the prefix dd4hep_
 
 __or__   (to be discussed)
 
-- Generic DD4hep detectors will have no prefix
-- Generic DD4hep detector constructors reside in the package DDDetectors
+- Generic dd4hep detectors will have no prefix
+- Generic dd4hep detector constructors reside in the package DDDetectors
   (to be created)
 
 

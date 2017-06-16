@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,13 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/AlignmentsNominalMap.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
 
 // C/C++ include files
@@ -26,8 +27,8 @@
 #include <algorithm>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 namespace  {
   /** @class VolIDTest
@@ -39,20 +40,22 @@ namespace  {
    *  @version 1.0
    */
   struct VolIDTest  {
-    typedef DetectorTools::PlacementPath Chain;
-    typedef PlacedVolume::VolIDs         VolIDs;
+    typedef detail::tools::PlacementPath     Chain;
+    typedef PlacedVolume::VolIDs             VolIDs;
+
     /// Helper to scan volume ids
     struct FND {
       const string& test;
       FND(const string& c) : test(c) {}
       bool operator()(const VolIDs::value_type& c) const { return c.first == test; }
     };
+    AlignmentsNominalMap m_mapping;
     IDDescriptor  m_iddesc;
     VolumeManager m_mgr;
     DetElement    m_det;
 
     /// Initializing constructor
-    VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth);
+    VolIDTest(Detector& description, DetElement sdet, size_t depth);
     /// Default destructor
     virtual ~VolIDTest() {}
     /// Check volume integrity
@@ -63,20 +66,20 @@ namespace  {
     void walkVolume(DetElement e, PlacedVolume pv, VolIDs ids, const Chain& chain, size_t depth, size_t mx_depth)  const;
 
     /// Action routine to execute the test
-    static long run(LCDD& lcdd,int argc,char** argv);
+    static long run(Detector& description,int argc,char** argv);
   };
 }
 
 /// Initializing constructor
-VolIDTest::VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth) : m_det(sdet) {
-  m_mgr    = lcdd.volumeManager();
+VolIDTest::VolIDTest(Detector& description, DetElement sdet, size_t depth) : m_mapping(description.world()), m_det(sdet) {
+  m_mgr    = description.volumeManager();
   if ( !m_det.isValid() )   {
     stringstream err;
     err << "The subdetector " << m_det.name() << " is not known to the geometry.";
     printout(INFO,"VolIDTest",err.str().c_str());
     throw runtime_error(err.str());
   }
-  if ( !lcdd.sensitiveDetector(m_det.name()).isValid() )   {
+  if ( !description.sensitiveDetector(m_det.name()).isValid() )   {
     stringstream err;
     err << "The sensitive detector of subdetector " << m_det.name()
         << " is not known to the geometry.";
@@ -84,7 +87,7 @@ VolIDTest::VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth) : m_det(sdet) {
     //throw runtime_error(err.str());
     return;
   }
-  m_iddesc = lcdd.sensitiveDetector(m_det.name()).readout().idSpec();
+  m_iddesc = description.sensitiveDetector(m_det.name()).readout().idSpec();
   //walk(m_det,VolIDs(),Chain(),0,depth);
   PlacedVolume pv  = sdet.placement();
   VolIDs       ids = pv.volIDs();
@@ -100,14 +103,14 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
   VolumeID     det_vol_id = detector.volumeID();
   VolumeID     vid = det_vol_id;
   DetElement   top_sdet, det_elem;
-  VolumeManager::Context* mgr_ctxt = 0;
+  VolumeManagerContext* mgr_ctxt = 0;
   
   try {
     vid       = m_iddesc.encode(child_ids);
     top_sdet  = m_mgr.lookupDetector(vid);
     det_elem  = m_mgr.lookupDetElement(vid);
     mgr_ctxt  = m_mgr.lookupContext(vid);
-    
+
     if ( pv.volume().isSensitive() )  {
       PlacedVolume det_place = m_mgr.lookupPlacement(vid);
       if ( pv.ptr() != det_place.ptr() )   {
@@ -122,8 +125,8 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
             << " vid:" << volumeID(vid);
       }
-      // This is sort of a bit wischi-waschi....
-      else if ( !DetectorTools::isParentElement(detector,det_elem) )   {
+      else if ( !detail::tools::isParentElement(detector,det_elem) )   {
+      // This is sort of a bit wischi-waschi.... 
         err << "VolumeMgrTest: Wrong associated detector element vid="  << volumeID(vid)
             << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
@@ -163,7 +166,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
     printout(INFO,m_det.name(),"  Elt:%-64s    vid:%s %s Parent-OK:%3s",
              det_elem.path().c_str(),volumeID(det_elem.volumeID()).c_str(),
              id_desc.c_str(),
-             yes_no(DetectorTools::isParentElement(detector,det_elem)));
+             yes_no(detail::tools::isParentElement(detector,det_elem)));
 
     try  {
       if ( pv.volume().isSensitive() )  {
@@ -185,7 +188,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
                  det_elem.path().c_str(),volumeID(det_elem.volumeID()).c_str());
         det_elem.nominal().worldTransformation().Print();
         ::printf("VolumeMgr  Trafo: %s [%s]\t\t",det_elem.path().c_str(),volumeID(vid).c_str());
-        m_mgr.worldTransformation(vid).Print();
+        m_mgr.worldTransformation(m_mapping,vid).Print();
         if ( 0 == mgr_ctxt )  {
           printout(ERROR,m_det.name(),"VOLUME_MANAGER FAILED: Could not find entry for vid:%s.",
                    volumeID(vid).c_str());
@@ -193,9 +196,9 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
         if ( pv.ptr() == det_elem.placement().ptr() )   {
           // The computed transformation 'trafo' MUST be equal to:
           // m_mgr.worldTransformation(vid) AND det_elem.nominal().worldTransformation()
-          int res1 = _matrixEqual(trafo, det_elem.nominal().worldTransformation());
-          int res2 = _matrixEqual(trafo, m_mgr.worldTransformation(vid));
-          if ( res1 != MATRICES_EQUAL || res2 != MATRICES_EQUAL )  {
+          int res1 = Matrices::_matrixEqual(trafo, det_elem.nominal().worldTransformation());
+          int res2 = Matrices::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
+          if ( res1 != Matrices::MATRICES_EQUAL || res2 != Matrices::MATRICES_EQUAL )  {
             printout(ERROR,m_det.name(),"DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
           }
           else  {
@@ -207,8 +210,8 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
           // The computed transformation 'trafo' MUST be equal to:
           // m_mgr.worldTransformation(vid)
           // The det_elem.nominal().worldTransformation() however is DIFFERENT!
-          int res2 = _matrixEqual(trafo, m_mgr.worldTransformation(vid));
-          if ( res2 != MATRICES_EQUAL )  {
+          int res2 = Matrices::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
+          if ( res2 != Matrices::MATRICES_EQUAL )  {
             printout(ERROR,m_det.name(),"VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
           }
           else  {
@@ -216,18 +219,6 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
                      volumeID(vid).c_str());
           }
         }
-#if 0
-        int ii=1;
-        DetElement par = det_elem;
-        while( (par.isValid()) )  {
-          const TGeoMatrix* mat = par.placement()->GetMatrix();
-          ::printf("Element placement [%d]  VolID:%s %s\t\t",int(ii),
-                   par.placement().volIDs().str().c_str(), par.path().c_str());
-          mat->Print();
-          par = par.parent();
-          ++ii;
-        }
-#endif
       }
     }
     catch(const exception& ex) {
@@ -285,24 +276,24 @@ void VolIDTest::walk(DetElement detector, VolIDs ids, const Chain& chain, size_t
 }
 #endif
 /// Action routine to execute the test
-long VolIDTest::run(LCDD& lcdd,int argc,char** argv)    {
-  printout(ALWAYS,"DD4hepVolumeMgrTest","++ Processing plugin...");
+long VolIDTest::run(Detector& description,int argc,char** argv)    {
+  printout(ALWAYS,"dd4hepVolumeMgrTest","++ Processing plugin...");
   for(int iarg=0; iarg<argc;++iarg)  {
     if ( argv[iarg] == 0 ) break;
     string name = argv[iarg];
     if ( name == "all" || name == "All" || name == "ALL" )  {
-      const DetElement::Children& children = lcdd.world().children();
+      const DetElement::Children& children = description.world().children();
       for (DetElement::Children::const_iterator i=children.begin(); i!=children.end(); ++i)  {
         DetElement sdet = (*i).second;
-        printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",sdet.name());
-        VolIDTest test(lcdd,sdet,99);
+        printout(INFO,"dd4hepVolumeMgrTest","++ Processing subdetector: %s",sdet.name());
+        VolIDTest test(description,sdet,99);
       }
       return 1;
     }
-    printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",name.c_str());
-    VolIDTest test(lcdd,lcdd.detector(name),99);
+    printout(INFO,"dd4hepVolumeMgrTest","++ Processing subdetector: %s",name.c_str());
+    VolIDTest test(description,description.detector(name),99);
   }
   return 1;
 }
 
-DECLARE_APPLY(DD4hepVolumeMgrTest,VolIDTest::run)
+DECLARE_APPLY(dd4hepVolumeMgrTest,VolIDTest::run)

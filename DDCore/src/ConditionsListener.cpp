@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/ConditionsListener.h"
 
-using namespace DD4hep::Conditions;
+using namespace dd4hep::cond;
 
 /// Default constructor
 ConditionsListener::ConditionsListener()   {

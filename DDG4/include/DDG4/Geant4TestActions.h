@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,10 +27,10 @@
 #include "DDG4/Geant4SensDetAction.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Convenience namespace to separate test classes from the DDG4 simulation toolkit
     namespace Test {
@@ -160,7 +160,7 @@ namespace DD4hep {
         size_t m_collectionID;
       public:
         /// Standard constructor with initializing arguments
-        Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, LCDD& lcdd);
+        Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, Detector& description);
         /// Default destructor
         virtual ~Geant4TestSensitive();
         /// Begin-of-tracking callback
@@ -171,7 +171,7 @@ namespace DD4hep {
         virtual bool process(G4Step*, G4TouchableHistory*);
       };
     }   // End namespace Test
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4TESTACTIONS_H

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,7 @@ class TGMenuBar;
 class TGMenuEntry;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class View;
@@ -67,6 +67,6 @@ namespace DD4hep {
     /// ROOT implementation macro
     ClassDefOverride(ViewMenu,0);
   };
-}      /* End namespace DD4hep    */
+}      /* End namespace dd4hep    */
 #endif /* DD4HEP_DDEVE_VIEWMENU_H */
 

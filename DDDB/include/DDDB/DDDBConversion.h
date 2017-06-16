@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -30,49 +30,41 @@
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace DDDB {
 
     /// Forward declarations
-    class  Shape;
-    class  LogVol;
-    class  Catalog;
-    class  TabProperty;
-    class  Document;
-
-    using Geometry::DetElement;
-    using Geometry::Rotation3D;
-    using Geometry::RotationZYX;
-    using Geometry::Transform3D;
-    using Geometry::Translation3D;
-    using Geometry::Position;
-    using Geometry::LCDD;
+    class  DDDBShape;
+    class  DDDBLogVol;
+    class  DDDBCatalog;
+    class  DDDBTabProperty;
+    class  DDDBDocument;
 
     /// Basic named object
     /**   \ingroup DD4HEP_DDDB
      */
-    class Named : public Conditions::ClientData  {
+    class DDDBNamed : public cond::ClientData  {
     public:
       typedef std::map<std::string, std::string> StringMap;
       typedef std::map<std::string, std::pair<std::string,std::string > > StringPairMap;
       std::string  name, id;
-      Document*    document;
+      DDDBDocument*    document;
       int          refCount;
 
       /// Default constructor
-      Named();
+      DDDBNamed();
       /// Initializing constructor
-      Named(const std::string& c);
+      DDDBNamed(const std::string& c);
       /// Copy constructor
-      Named(const Named& c);
+      DDDBNamed(const DDDBNamed& c);
       /// Default destructor
-      virtual ~Named();
+      virtual ~DDDBNamed();
       /// Assignment operator
-      Named& operator=(const Named& c);
+      DDDBNamed& operator=(const DDDBNamed& c);
       /// Assign document
-      void setDocument(Document* doc);
+      void setDocument(DDDBDocument* doc);
 
       const char* c_name() const { return name.c_str(); }
       const char* c_id() const   { return id.c_str();   }
@@ -82,89 +74,89 @@ namespace DD4hep {
     /// Structure supporting basic XML document information
     /**   \ingroup DD4HEP_DDDB
      */
-    class Document : public Named  {
+    class DDDBDocument : public DDDBNamed  {
     public:
       DDDBReaderContext context;
       /// Default constructor
-      Document();
+      DDDBDocument();
       /// Default destructor
-      virtual ~Document();
+      virtual ~DDDBDocument();
       /// Reference count mechanism
-      Document* addRef()  {  ++refCount; return this;  }
+      DDDBDocument* addRef()  {  ++refCount; return this;  }
     };
 
     /// Intermediate structure representing author's data
     /**   \ingroup DD4HEP_DDDB
      */
-    class Author : public Named {
+    class DDDBAuthor : public DDDBNamed {
     public:
-      Author() : Named() {}
+      DDDBAuthor() : DDDBNamed() {}
     };
 
     /// Intermediate structure representing versioning data
     /**   \ingroup DD4HEP_DDDB
      */
-    class Version : Named {
+    class DDDBVersion : DDDBNamed {
     public:
-      Version() : Named() {}
+      DDDBVersion() : DDDBNamed() {}
     };
 
     /// Intermediate structure representing data of one atom
     /**   \ingroup DD4HEP_DDDB
      */
-    class Atom  {
+    class DDDBAtom  {
     public:
       double A = 0E0, Zeff = 0E0;
-      Atom() = default;
+      DDDBAtom() = default;
     };
 
     /// Intermediate structure representing data of a Isotope
     /**   \ingroup DD4HEP_DDDB
      */
-    class Isotope : public Named  {
+    class DDDBIsotope : public DDDBNamed  {
     public:
       double A = 0E0,Z = 0E0,density = 0E0;
       /// Default constructor
-      Isotope();
+      DDDBIsotope();
       /// Default destructor
-      virtual ~Isotope();
+      virtual ~DDDBIsotope();
       /// Reference count mechanism
-      Isotope* addRef()  {  ++refCount; return this;  }
+      DDDBIsotope* addRef()  {  ++refCount; return this;  }
     };
 
     /// Intermediate structure representing data of a Element
     /**   \ingroup DD4HEP_DDDB
      */
-    class Element : public Named {
+    class DDDBElement : public DDDBNamed {
     public:
       enum {SOLID,LIQUID,GAS,UNKNOWN};
       std::vector<std::pair<std::string,double> > isotopes;
       std::string path, symbol;
-      class Atom atom;
+      DDDBAtom atom;
       double density, ionization;
       int state;
 
       /// Default constructor
-      Element();
+      DDDBElement();
       /// Copy constructor
-      Element(const Element& e);
+      DDDBElement(const DDDBElement& e);
       /// Default destructor
-      virtual ~Element();
+      virtual ~DDDBElement();
       /// Reference count mechanism
-      Element* addRef()  {  ++refCount; return this;  }
+      DDDBElement* addRef()  {  ++refCount; return this;  }
     };
 
     /// Intermediate structure representing data of a material component
     /**   \ingroup DD4HEP_DDDB
      */
-    class MaterialComponent  {
+    class DDDBMaterialComponent  {
     public:
       std::string name;
       double fractionmass;
       int natoms;
-      MaterialComponent() : name(), fractionmass(-1), natoms(-1) {}
-      MaterialComponent(const MaterialComponent& c) : name(c.name), fractionmass(c.fractionmass), natoms(c.natoms) {}
-      MaterialComponent& operator=(const MaterialComponent& c)   {
+      DDDBMaterialComponent() : name(), fractionmass(-1), natoms(-1) {}
+      DDDBMaterialComponent(const DDDBMaterialComponent& c) : name(c.name), fractionmass(c.fractionmass), natoms(c.natoms) {}
+      DDDBMaterialComponent& operator=(const DDDBMaterialComponent& c)   {
         fractionmass = c.fractionmass;
         natoms = c.natoms;
         name   = c.name;
@@ -176,26 +168,26 @@ namespace DD4hep {
     /// Intermediate structure representing data of a material definition
     /**   \ingroup DD4HEP_DDDB
      */
-    class Material : public Named {
+    class DDDBMaterial : public DDDBNamed {
     public:
-      typedef std::vector<MaterialComponent> Components;
+      typedef std::vector<DDDBMaterialComponent> Components;
       typedef std::vector<std::string>       Properties;
       std::string path;
       Components components;
       Properties properties;
       double density, pressure, temperature, radlen, lambda;
       /// Default constructor
-      Material();
+      DDDBMaterial();
       /// Default destructor
-      virtual ~Material();
+      virtual ~DDDBMaterial();
       /// Reference count mechanism
-      Material* addRef()  {  ++refCount; return this;  }
+      DDDBMaterial* addRef()  {  ++refCount; return this;  }
     };
 
     /// Structure supporting conversion of the Box shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class Box    {
+    class DDDBBox    {
     public:
       static int type() { return 100; }
       double x,y,z; 
@@ -205,7 +197,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Cons shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class Cons                     {
+    class DDDBCons                     {
     public:
       static int type() { return 102; } 
       double innerRadiusMZ, innerRadiusPZ, outerRadiusMZ, outerRadiusPZ, sizeZ;
@@ -214,7 +206,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the ConsSegment shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class ConeSegment                     {
+    class DDDBConeSegment                     {
     public:
       static int type() { return 103; } 
       double start, delta;      
@@ -224,7 +216,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Tubs shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class Tubs                     {
+    class DDDBTubs                     {
     public:
       static int type() { return 104; }
       double innerRadius, outerRadius, sizeZ, start, delta;
@@ -233,7 +225,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the elliptical tube shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class EllipticalTube   {
+    class DDDBEllipticalTube   {
     public:
       static int type() { return 105; }
       double a, b, dz;
@@ -242,7 +234,7 @@ namespace DD4hep {
     /// Structure supporting conversion of a z-plane
     /**   \ingroup DD4HEP_DDDB
      */
-    class ZPlane                   {
+    class DDDBZPlane                   {
     public:
       static int type() { return 106; }
       double innerRadius, outerRadius, z;
@@ -251,7 +243,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Polycone shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class Polycone                 {
+    class DDDBPolycone                 {
     public:
       static int type() { return 107; }
       double start, delta;
@@ -260,7 +252,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Polycone shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class Polygon                 {
+    class DDDBPolygon                 {
     public:
       static int type() { return 108; }
       double nsides, start, innerRadius, outerRadius, z;      
@@ -269,7 +261,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the torus
     /**   \ingroup DD4HEP_DDDB
      */
-    class Torus   {
+    class DDDBTorus   {
     public:
       static int type() { return 109; }
       double rmin, rmax, r, phi, dphi;
@@ -278,7 +270,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Sphere
     /**   \ingroup DD4HEP_DDDB
      */
-    class Sphere   {
+    class DDDBSphere   {
     public:
       static int type() { return 110; }
       double rmin, rmax, theta, delta_theta, phi, delta_phi;
@@ -287,7 +279,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Ellipsoid
     /**   \ingroup DD4HEP_DDDB
      */
-    class Ellipsoid   {
+    class DDDBEllipsoid   {
     public:
       static int type() { return 111; }
       double rlow, rhigh, dz;
@@ -296,7 +288,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Trap
     /**   \ingroup DD4HEP_DDDB
      */
-    class Trap   {
+    class DDDBTrap   {
     public:
       static int type() { return 112; }
       double dz, phi, theta, h1, bl1, tl1, alpha1, h2, bl2, tl2, alpha2;
@@ -305,7 +297,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Paraboloid
     /**   \ingroup DD4HEP_DDDB
      */
-    class Paraboloid   {
+    class DDDBParaboloid   {
     public:
       static int type() { return 113; }
       double rlow, rhigh, dz;
@@ -314,7 +306,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Paraboloid
     /**   \ingroup DD4HEP_DDDB
      */
-    class Hyperboloid   {
+    class DDDBHyperboloid   {
     public:
       static int type() { return 114; }
       double rmin, rmax, stIn, stOut, dz;
@@ -323,7 +315,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the TRD
     /**   \ingroup DD4HEP_DDDB
      */
-    class TRD   {
+    class DDDBTRD   {
     public:
       static int type() { return 115; }
       double x1, x2, y1, y2, z;
@@ -332,7 +324,7 @@ namespace DD4hep {
     /// Structure supporting conversion of the Assembly
     /**   \ingroup DD4HEP_DDDB
      */
-    class Assembly  {
+    class DDDBAssembly  {
     public:
       static int type() { return 199; }
     };
@@ -340,15 +332,15 @@ namespace DD4hep {
     /// Structure supporting boolean shapes
     /**   \ingroup DD4HEP_DDDB
      */
-    class BooleanShape            {
+    class DDDBBooleanShape            {
     public:
-      class Shape* first;
+      class DDDBShape* first;
     };
 
     /// Structure supporting conversion of boolean unions
     /**   \ingroup DD4HEP_DDDB
      */
-    class BooleanUnion        : public BooleanShape  {
+    class DDDBBooleanUnion        : public DDDBBooleanShape  {
     public:
       static int type() { return 206; } 
     };
@@ -356,7 +348,7 @@ namespace DD4hep {
     /// Structure supporting conversion of boolean subtractions
     /**   \ingroup DD4HEP_DDDB
      */
-    class BooleanSubtraction  : public BooleanShape  {
+    class DDDBBooleanSubtraction  : public DDDBBooleanShape  {
     public:
       static int type() { return 207; } 
     };
@@ -364,7 +356,7 @@ namespace DD4hep {
     /// Structure supporting conversion of boolean intersections
     /**   \ingroup DD4HEP_DDDB
      */
-    class BooleanIntersection : public BooleanShape  {
+    class DDDBBooleanIntersection : public DDDBBooleanShape  {
     public:
       static int type() { return 208; } 
     };
@@ -372,18 +364,18 @@ namespace DD4hep {
     /// Structure supporting conversion of boolean operations
     /**   \ingroup DD4HEP_DDDB
      */
-    class BooleanOperation {
+    class DDDBBooleanOperation {
     public:
-      class Shape* shape;
+      class DDDBShape* shape;
       Transform3D trafo;
-      BooleanOperation() : shape(0) {}
+      DDDBBooleanOperation() : shape(0) {}
     };
 
 
     /// Structure supporting conversion of a physical volume
     /**   \ingroup DD4HEP_DDDB
      */
-    class PhysVol : public Named  {
+    class DDDBPhysVol : public DDDBNamed  {
     public:
       enum { PHYSVOL_REGULAR=1,
              PHYSVOL_PARAM1D=2,
@@ -394,14 +386,14 @@ namespace DD4hep {
       std::string    logvol, path;
       Transform3D trafo;
       /// Default constructor
-      PhysVol();
+      DDDBPhysVol();
       /// Copy constructor
-      PhysVol(const PhysVol& c);
+      DDDBPhysVol(const DDDBPhysVol& c);
       /// Default destructor
-      virtual ~PhysVol();
-      PhysVol& operator=(const PhysVol& c) {
+      virtual ~DDDBPhysVol();
+      DDDBPhysVol& operator=(const DDDBPhysVol& c) {
         if ( this != &c )  {
-          this->Named::operator=(c);
+          this->DDDBNamed::operator=(c);
           type   = c.type;
           logvol = c.logvol;
           path   = c.path;
@@ -410,23 +402,23 @@ namespace DD4hep {
         return *this;
       }
       /// Reference count mechanism
-      PhysVol* addRef()  {  ++refCount; return this;  }
+      DDDBPhysVol* addRef()  {  ++refCount; return this;  }
     };
 
     /// Structure supporting conversion of parametrized physical volumes
     /**   \ingroup DD4HEP_DDDB
      */
-    class ParamPhysVol : public PhysVol {
+    class DDDBParamPhysVol : public DDDBPhysVol {
     public:
       int number1;
       Transform3D trafo1;
       /// Default constructor
-      ParamPhysVol() : PhysVol(), number1(0) { type = PHYSVOL_PARAM1D; }
+      DDDBParamPhysVol() : DDDBPhysVol(), number1(0) { type = PHYSVOL_PARAM1D; }
       /// Copy constructor
-      ParamPhysVol(const ParamPhysVol& c) : PhysVol(c), number1(c.number1), trafo1(c.trafo1) {}
-      ParamPhysVol& operator=(const ParamPhysVol& c) {
+      DDDBParamPhysVol(const DDDBParamPhysVol& c) : DDDBPhysVol(c), number1(c.number1), trafo1(c.trafo1) {}
+      DDDBParamPhysVol& operator=(const DDDBParamPhysVol& c) {
         if ( this != &c )  {
-          this->PhysVol::operator=(c);
+          this->DDDBPhysVol::operator=(c);
           trafo1 = c.trafo1;
           number1 = c.number1;
         }
@@ -437,48 +429,48 @@ namespace DD4hep {
     /// Structure supporting conversion of 2D parametrized physical volumes
     /**   \ingroup DD4HEP_DDDB
      */
-    class ParamPhysVol2D : public ParamPhysVol  {
+    class DDDBParamPhysVol2D : public DDDBParamPhysVol  {
     public:
       int number2;
       Transform3D trafo2;
       /// Default constructor
-      ParamPhysVol2D() : ParamPhysVol(), number2(0), trafo2()  { type = PHYSVOL_PARAM2D; }
+      DDDBParamPhysVol2D() : DDDBParamPhysVol(), number2(0), trafo2()  { type = PHYSVOL_PARAM2D; }
     };
 
     /// Structure supporting conversion of 3D parametrized physical volumes
     /**   \ingroup DD4HEP_DDDB
      */
-    class ParamPhysVol3D : public ParamPhysVol2D  {
+    class DDDBParamPhysVol3D : public DDDBParamPhysVol2D  {
     public:
       int number3;
       Transform3D trafo3;
       /// Default constructor
-      ParamPhysVol3D() : ParamPhysVol2D(), number3(0), trafo3()  { type = PHYSVOL_PARAM3D; }
+      DDDBParamPhysVol3D() : DDDBParamPhysVol2D(), number3(0), trafo3()  { type = PHYSVOL_PARAM3D; }
     };
 
     /// Structure supporting conversion of a logical volume
     /**   \ingroup DD4HEP_DDDB
      */
-    class LogVol : public Named  {
+    class DDDBLogVol : public DDDBNamed  {
     public:
       std::string   material, shape, path;
-      std::vector<PhysVol*> physvols;
+      std::vector<DDDBPhysVol*> physvols;
       /// Default constructor
-      LogVol();
+      DDDBLogVol();
       /// Default destructor
-      virtual ~LogVol();
+      virtual ~DDDBLogVol();
       /// Reference count mechanism
-      LogVol* addRef()  {  ++refCount; return this;  }
+      DDDBLogVol* addRef()  {  ++refCount; return this;  }
     };
 
     /// Structure supporting conversion of a detector element or a catalog
     /**   \ingroup DD4HEP_DDDB
      */
-    class Catalog : public Named {
+    class DDDBCatalog : public DDDBNamed {
     public:
-      typedef std::map<std::string, Catalog*>      CatRefs;
-      typedef std::map<std::string, LogVol*>       LvRefs;
-      typedef std::map<std::string, TabProperty*>  PropRefs;
+      typedef std::map<std::string, DDDBCatalog*>      CatRefs;
+      typedef std::map<std::string, DDDBLogVol*>       LvRefs;
+      typedef std::map<std::string, DDDBTabProperty*>  PropRefs;
       LvRefs        logvolrefs;
       LvRefs        logvols;
       CatRefs       catalogrefs;
@@ -489,55 +481,55 @@ namespace DD4hep {
       std::string   type, path, author, version, logvol, condition, support, npath;
       int           level, typeID;
       /// Default constructor
-      Catalog();
-      Catalog(const Catalog&, const DetElement&) : level(0), typeID(0) {}
+      DDDBCatalog();
+      DDDBCatalog(const DDDBCatalog&, const DetElement&) : level(0), typeID(0) {}
       /// Default destructor
-      virtual ~Catalog();
+      virtual ~DDDBCatalog();
       /// Reference count mechanism
-      Catalog* addRef()  {  ++refCount; return this;  }
-      std::pair<const Catalog*,std::string> parent(const std::string& nam)  const;
+      DDDBCatalog* addRef()  {  ++refCount; return this;  }
+      std::pair<const DDDBCatalog*,std::string> parent(const std::string& nam)  const;
     };
 
     /// Structure supporting conversion of any arbitrary shape
     /**   \ingroup DD4HEP_DDDB
      */
-    class Shape : public Named {
+    class DDDBShape : public DDDBNamed {
     public:
-      typedef std::vector<ZPlane>           ZPlanes;
-      typedef std::vector<BooleanOperation> Operations;
-      typedef std::vector<ParamPhysVol>     ParamVolumes;
+      typedef std::vector<DDDBZPlane>           ZPlanes;
+      typedef std::vector<DDDBBooleanOperation> Operations;
+      typedef std::vector<DDDBParamPhysVol>     ParamVolumes;
       int type;
       union  {
-        class Assembly             assembly;
-        class Box                  box;
-        class Cons                 cons;
-        class Tubs                 tubs;
-        class Polycone             polycone;
-        class ConeSegment          coneSegment;
-        class EllipticalTube       ellipticalTube;
-        class Polygon              polygon;
-        class Torus                torus;
-        class Sphere               sphere;
-        class Ellipsoid            ellipsoid;
-        class Paraboloid           paraboloid;
-        class Hyperboloid          hyperboloid;
-        class TRD                  trd;
-        class Trap                 trap;
-        class BooleanShape         boolean;
-        class BooleanUnion         boolean_union;
-        class BooleanSubtraction   BooleanSubtraction;
-        class BooleanIntersection  boolean_intersection;
+        class DDDBAssembly             assembly;
+        class DDDBBox                  box;
+        class DDDBCons                 cons;
+        class DDDBTubs                 tubs;
+        class DDDBPolycone             polycone;
+        class DDDBConeSegment          coneSegment;
+        class DDDBEllipticalTube       ellipticalTube;
+        class DDDBPolygon              polygon;
+        class DDDBTorus                torus;
+        class DDDBSphere               sphere;
+        class DDDBEllipsoid            ellipsoid;
+        class DDDBParaboloid           paraboloid;
+        class DDDBHyperboloid          hyperboloid;
+        class DDDBTRD                  trd;
+        class DDDBTrap                 trap;
+        class DDDBBooleanShape         boolean;
+        class DDDBBooleanUnion         boolean_union;
+        class DDDBBooleanSubtraction   boolean_subtraction;
+        class DDDBBooleanIntersection  boolean_intersection;
       } s;
       ZPlanes zplanes;
       Operations boolean_ops;
       ParamVolumes paramVols;
       std::string path;
       /// Default constructor
-      Shape();
+      DDDBShape();
       /// Default destructor
-      ~Shape();
+      ~DDDBShape();
       /// Reference count mechanism
-      Shape* addRef()  {  ++refCount; return this;  }
+      DDDBShape* addRef()  {  ++refCount; return this;  }
     };
 
     /// Tabulated property
@@ -547,17 +539,17 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    class TabProperty : public Named  {
+    class DDDBTabProperty : public DDDBNamed  {
     public:
       typedef std::pair<double, double> Entry;
       std::string path, type, xunit, yunit, xaxis, yaxis;
       std::vector<Entry> data;
       /// Default constructor
-      TabProperty();
+      DDDBTabProperty();
       /// Default destructor
-      ~TabProperty();
+      ~DDDBTabProperty();
       /// Reference count mechanism
-      TabProperty* addRef()  {  ++refCount; return this;  }
+      DDDBTabProperty* addRef()  {  ++refCount; return this;  }
     };
 
     /// LHCb geometry description interface to the conditions database
@@ -570,17 +562,17 @@ namespace DD4hep {
     class dddb   {
     public:
       typedef std::pair<long long int, long long int> iov_t;
-      typedef std::map<std::string,std::string>   Refs;
-      typedef std::map<std::string,Document*>     Documents;
-      typedef std::map<std::string,LogVol*>       Volumes;
-      typedef std::map<std::string,PhysVol*>      Placements;
-      typedef std::map<std::string,Catalog*>      Catalogs;
-      typedef std::map<std::string,Isotope*>      Isotopes;
-      typedef std::map<std::string,Element*>      Elements;
-      typedef std::map<std::string,Material*>     Materials;
-      typedef std::map<std::string,Shape*>        Shapes;
-      typedef std::map<std::string,TabProperty*>  TabProperties;
-      typedef std::map<std::string,Conditions::Condition::Object*>     Conditions;
+      typedef std::map<std::string,std::string>          Refs;
+      typedef std::map<std::string,DDDBDocument*>        Documents;
+      typedef std::map<std::string,DDDBLogVol*>          Volumes;
+      typedef std::map<std::string,DDDBPhysVol*>         Placements;
+      typedef std::map<std::string,DDDBCatalog*>         Catalogs;
+      typedef std::map<std::string,DDDBIsotope*>         Isotopes;
+      typedef std::map<std::string,DDDBElement*>         Elements;
+      typedef std::map<std::string,DDDBMaterial*>        Materials;
+      typedef std::map<std::string,DDDBShape*>           Shapes;
+      typedef std::map<std::string,DDDBTabProperty*>     TabProperties;
+      typedef std::map<std::string,Condition::Object*>   Conditions;
 
       /// Default constructor
       dddb();
@@ -588,7 +580,7 @@ namespace DD4hep {
       virtual ~dddb();
 
       /// World dimensions
-      Box        world;
+      DDDBBox        world;
       /// Inventory of input documents
       Documents  documents;
       /// Inventory of isotopes
@@ -610,7 +602,7 @@ namespace DD4hep {
       /// Inventory of catalogs
       Catalogs   catalogs, catalogPaths;
       /// Detector element hierarchy
-      Catalog    *top, *structure, *geometry;
+      DDDBCatalog *top, *structure, *geometry;
     };
     class dddb_conditions {};
 
@@ -626,6 +618,6 @@ namespace DD4hep {
   /// Specialized printout method. Not all above object types are supported.
   template <typename T> void dddb_print(const T* object);
 
-} /* End namespace DD4hep    */
+} /* End namespace dd4hep    */
 
 #endif /* DD4HEP_DDDB_DDDBCONVERSION_H  */

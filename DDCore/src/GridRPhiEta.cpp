@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,4 +14,4 @@
 #include "DD4hep/GridRPhiEta.h"
 #include "DD4hep/detail/Handle.inl"
 
-DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DD4hep::DDSegmentation::GridRPhiEta);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(dd4hep::DDSegmentation::GridRPhiEta);

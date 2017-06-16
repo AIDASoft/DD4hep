@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Memory.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
@@ -39,11 +39,11 @@
 #include <memory>
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 namespace {
   G4Mutex kernel_mutex=G4MUTEX_INITIALIZER;
-  DD4hep::dd4hep_ptr<Geant4Kernel> s_main_instance(0);
+  dd4hep::dd4hep_ptr<Geant4Kernel> s_main_instance(0);
 }
 
 /// Standard constructor
@@ -74,12 +74,12 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 }
 
 /// Standard constructor
-Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
-  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_lcdd(&lcdd_ref), 
+Geant4Kernel::Geant4Kernel(Detector& description_ref)
+  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_detDesc(&description_ref), 
     m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0),
     m_threadContext(0), phase(this)
 {
-  m_lcdd->addExtension < Geant4Kernel > (this);
+  m_detDesc->addExtension < Geant4Kernel > (this);
   m_ident = -1;
   declareProperty("UI",m_uiName);
   declareProperty("OutputLevel",    m_outputLevel = DEBUG);
@@ -90,18 +90,18 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for named Geant4 actions");
   setContext(new Geant4Context(this));
-  //m_shared = new Geant4Kernel(lcdd_ref, this, -2);
+  //m_shared = new Geant4Kernel(description_ref, this, -2);
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(Geant4Kernel* m, unsigned long ident)
-  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_lcdd(0),
+  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_detDesc(0),
     m_numThreads(1), m_id(ident), m_master(m), m_shared(0),
     m_threadContext(0), phase(this)
 {
   char text[64];
-  m_lcdd           = m_master->m_lcdd;
+  m_detDesc           = m_master->m_detDesc;
   m_ident          = m_master->m_workers.size();
   m_numEvent       = m_master->m_numEvent;
   declareProperty("UI",m_uiName = m_master->m_uiName);
@@ -120,19 +120,19 @@ Geant4Kernel::~Geant4Kernel() {
   if ( this == s_main_instance.get() )   {
     s_main_instance.release();
   }
-  destroyObjects(m_workers);
+  detail::destroyObjects(m_workers);
   if ( isMaster() )  {
-    releaseObjects(m_globalFilters);
-    releaseObjects(m_globalActions);
+    detail::releaseObjects(m_globalFilters);
+    detail::releaseObjects(m_globalActions);
   }
   destroyPhases();
-  deletePtr(m_runManager);
+  detail::deletePtr(m_runManager);
   Geant4ActionContainer::terminate();
-  if ( m_lcdd && isMaster() )  {
+  if ( m_detDesc && isMaster() )  {
     try  {
-      m_lcdd->removeExtension < Geant4Kernel > (false);
-      m_lcdd->destroyInstance();
-      m_lcdd = 0;
+      m_detDesc->removeExtension < Geant4Kernel > (false);
+      m_detDesc->destroyInstance();
+      m_detDesc = 0;
     }
     catch(...)  {
     }
@@ -141,11 +141,11 @@ Geant4Kernel::~Geant4Kernel() {
 }
 
 /// Instance accessor
-Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
+Geant4Kernel& Geant4Kernel::instance(Detector& description) {
   if ( 0 == s_main_instance.get() )   {
     G4AutoLock protection_lock(&kernel_mutex);    {
       if ( 0 == s_main_instance.get() )   { // Need to check again!
-        s_main_instance.adopt(new Geant4Kernel(lcdd));
+        s_main_instance.adopt(new Geant4Kernel(description));
       }
     }
   }
@@ -212,7 +212,7 @@ bool Geant4Kernel::hasProperty(const std::string& name) const    {
 }
 
 /// Access single property
-DD4hep::Property& Geant4Kernel::property(const std::string& name)   {
+dd4hep::Property& Geant4Kernel::property(const std::string& name)   {
   return properties()[name];
 }
 
@@ -222,14 +222,14 @@ void Geant4Kernel::setOutputLevel(const std::string object, PrintLevel new_level
 }
 
 /// Retrieve the global output level of a named object.
-DD4hep::PrintLevel Geant4Kernel::getOutputLevel(const std::string object) const   {
+dd4hep::PrintLevel Geant4Kernel::getOutputLevel(const std::string object) const   {
   ClientOutputLevels::const_iterator i=m_clientLevels.find(object);
   if ( i != m_clientLevels.end() ) return (PrintLevel)(*i).second;
-  return DD4hep::PrintLevel(DD4hep::printLevel()-1);
+  return dd4hep::PrintLevel(dd4hep::printLevel()-1);
 }
 
 /// Set the output level; returns previous value
-DD4hep::PrintLevel Geant4Kernel::setOutputLevel(PrintLevel new_level)  {
+dd4hep::PrintLevel Geant4Kernel::setOutputLevel(PrintLevel new_level)  {
   int old = m_outputLevel;
   m_outputLevel = new_level;
   return (PrintLevel)old;
@@ -263,17 +263,17 @@ G4RunManager& Geant4Kernel::runManager() {
                              "a G4RunManager object!"));
 }
 
-/// Construct detector geometry using lcdd plugin
+/// Construct detector geometry using description plugin
 void Geant4Kernel::loadGeometry(const std::string& compact_file) {
   char* arg = (char*) compact_file.c_str();
-  m_lcdd->apply("DD4hepXMLLoader", 1, &arg);
+  m_detDesc->apply("dd4hepXMLLoader", 1, &arg);
   //return *this;
 }
 
 // Utility function to load XML files
 void Geant4Kernel::loadXML(const char* fname) {
   const char* args[] = { fname, 0 };
-  m_lcdd->apply("DD4hepXMLLoader", 1, (char**) args);
+  m_detDesc->apply("dd4hepXMLLoader", 1, (char**) args);
 }
 
 int Geant4Kernel::configure() {
@@ -309,16 +309,16 @@ int Geant4Kernel::terminate() {
     Geant4Exec::terminate(*this);
   }
   destroyPhases();
-  releaseObjects(m_globalFilters);
-  releaseObjects(m_globalActions);
+  detail::releaseObjects(m_globalFilters);
+  detail::releaseObjects(m_globalActions);
   if ( ptr == this )  {
-    deletePtr  (m_runManager);
+    detail::deletePtr  (m_runManager);
   }
   Geant4ActionContainer::terminate();
-  if ( ptr == this && m_lcdd )  {
-    m_lcdd->removeExtension < Geant4Kernel > (false);
-    m_lcdd->destroyInstance();
-    m_lcdd = 0;
+  if ( ptr == this && m_detDesc )  {
+    m_detDesc->removeExtension < Geant4Kernel > (false);
+    m_detDesc->destroyInstance();
+    m_detDesc = 0;
   }
   return 1;
 }
@@ -447,5 +447,5 @@ bool Geant4Kernel::removePhase(const std::string& nam) {
 
 /// Destroy all phases. To be called only at shutdown
 void Geant4Kernel::destroyPhases() {
-  destroyObjects(m_phases);
+  detail::destroyObjects(m_phases);
 }

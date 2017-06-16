@@ -26,7 +26,7 @@
   </display>
 
   <detectors>
-    <detector id="2" name="Shell" type="DD4hep_CylinderShell" vis="VisibleGreen" readout="ShellHits" >
+    <detector id="2" name="Shell" type="dd4hep_CylinderShell" vis="VisibleGreen" readout="ShellHits" >
       <comment>Containment shell to measure calorimeter escapes</comment>
       <material name="Air"/>
       <module name="Barrel" id="0" vis="VisibleBlue">

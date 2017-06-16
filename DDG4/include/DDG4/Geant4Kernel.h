@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,10 +25,10 @@ class G4RunManager;
 class G4UIdirectory;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     class Geant4ActionPhase;
@@ -41,11 +41,10 @@ namespace DD4hep {
      */
     class Geant4Kernel : public Geant4ActionContainer  {
     public:
-      typedef DD4hep::Geometry::LCDD LCDD;
-      typedef std::map<unsigned long, Geant4Kernel*> Workers;
+      typedef std::map<unsigned long, Geant4Kernel*>    Workers;
       typedef std::map<std::string, Geant4ActionPhase*> Phases;
-      typedef std::map<std::string, Geant4Action*> GlobalActions;
-      typedef std::map<std::string,int> ClientOutputLevels;
+      typedef std::map<std::string, Geant4Action*>      GlobalActions;
+      typedef std::map<std::string,int>                 ClientOutputLevels;
 
     protected:
       /// Reference to the run manager
@@ -55,7 +54,7 @@ namespace DD4hep {
       /// Reference to Geant4 track manager
       G4TrackingManager* m_trackMgr;
       /// Detector description object
-      LCDD*              m_lcdd;
+      Detector*              m_detDesc;
       /// Property pool
       PropertyManager    m_properties;
 
@@ -100,7 +99,7 @@ namespace DD4hep {
 
     public:
       /// Standard constructor for the master instance
-      Geant4Kernel(LCDD& lcdd);
+      Geant4Kernel(Detector& description);
 
       /// Thread's master context
       Geant4Kernel& master()  const  { return *m_master; }
@@ -144,12 +143,12 @@ namespace DD4hep {
 
 #ifndef __CINT__
       /// Instance accessor
-      static Geant4Kernel& instance(LCDD& lcdd);
+      static Geant4Kernel& instance(Detector& description);
 #endif
       /// Access phase phases
       const Phases& phases() const              {        return m_phases;          }
       /// Access to detector description
-      LCDD& lcdd() const                        {        return *m_lcdd;           }
+      Detector& detectorDescription() const                        {        return *m_detDesc;           }
       /// Access the tracking manager
       G4TrackingManager* trackMgr() const       {        return m_trackMgr;        }
       /// Access the tracking manager
@@ -233,7 +232,7 @@ namespace DD4hep {
       /// Execute phase action if it exists
       virtual bool executePhase(const std::string& name, const void** args)  const;
 
-      /// Construct detector geometry using lcdd plugin
+      /// Construct detector geometry using description plugin
       virtual void loadGeometry(const std::string& compact_file);
       /// Load XML file 
       virtual void loadXML(const char* fname);
@@ -282,6 +281,6 @@ namespace DD4hep {
       static int terminate(Geant4Kernel& kernel);
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4KERNEL_H

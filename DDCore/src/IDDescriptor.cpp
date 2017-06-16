@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,8 +21,8 @@
 #include <cstdlib>
 #include <cmath>
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 namespace {
   void _construct(IDDescriptor::Object* o, const string& dsc) {
@@ -31,7 +31,7 @@ namespace {
     o->fieldMap.clear();
     o->description = dsc;
     for (size_t i = 0; i < bf.size(); ++i) {
-      IDDescriptor::Field f = &bf[i];
+      BitFieldValue* f = &bf[i];
       o->fieldIDs.push_back(make_pair(i, f->name()));
       o->fieldMap.push_back(make_pair(f->name(), f));
     }
@@ -68,7 +68,7 @@ const IDDescriptor::FieldIDs& IDDescriptor::ids() const {
   if ( isValid() ) {
     return data<Object>()->fieldIDs;
   }
-  throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
+  throw runtime_error("dd4hep: Attempt to access an invalid IDDescriptor object.");
 }
 
 /// Access the fieldmap container
@@ -76,22 +76,22 @@ const IDDescriptor::FieldMap& IDDescriptor::fields() const {
   if ( isValid() ) {
     return data<Object>()->fieldMap;
   }
-  throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
+  throw runtime_error("dd4hep: Attempt to access an invalid IDDescriptor object.");
 }
 
 /// Get the field descriptor of one field by name
-IDDescriptor::Field IDDescriptor::field(const string& field_name) const {
+const BitFieldValue* IDDescriptor::field(const string& field_name) const {
   const FieldMap& m = fields();   // This already checks the object validity
   for (const auto& i : m )
     if (i.first == field_name)
       return i.second;
-  except("IDDescriptor","DD4hep: %s: This ID descriptor has no field with the name: %s",
+  except("IDDescriptor","dd4hep: %s: This ID descriptor has no field with the name: %s",
          name(),field_name.c_str());
-  throw runtime_error("DD4hep");  // Never called. Simply make the compiler happy!
+  throw runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Get the field descriptor of one field by its identifier
-IDDescriptor::Field IDDescriptor::field(size_t identifier) const {
+const BitFieldValue* IDDescriptor::field(size_t identifier) const {
   const FieldMap& m = fields();   // This already checks the object validity
   return m[identifier].second;
 }
@@ -102,18 +102,19 @@ size_t IDDescriptor::fieldID(const string& field_name) const {
   for (const auto& i : m )
     if (i.second == field_name)
       return i.first;
-  except("IDDescriptor","DD4hep: %s: This ID descriptor has no field with the name: %s",
+  except("IDDescriptor","dd4hep: %s: This ID descriptor has no field with the name: %s",
          name(),field_name.c_str());
-  throw runtime_error("DD4hep");  // Never called. Simply make the compiler happy!
+  throw runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
-VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
+VolumeID IDDescriptor::encode(const std::vector<std::pair<std::string, int> >& id_vector) const
+{
   VolumeID id = 0;
   //const PlacedVolume::VolIDs* ids = (const PlacedVolume::VolIDs*)&id_vector;
   //printout(INFO,"IDDescriptor","VolIDs: %s",ids->str().c_str());
   for (const auto& i : id_vector )  {
-    Field    fld = field(i.first);
+    const BitFieldValue* fld = field(i.first);
     int      off = fld->offset();
     VolumeID val = i.second;
     id |= ((fld->value(val<<off) << off)&fld->mask());
@@ -122,11 +123,13 @@ VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
 }
 
 /// Decode volume IDs and return filled descriptor with all fields
-void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& flds)  const {
+void IDDescriptor::decodeFields(VolumeID vid,
+                                vector<pair<const BitFieldValue*, VolumeID> >& flds)  const
+{
   const vector<BitFieldValue*>& v = access()->fields();
   flds.clear();
   for (auto f : v )
-    flds.push_back(VolIDField(f, f->value(vid)));
+    flds.push_back(make_pair(f, f->value(vid)));
 }
 
 /// Decode volume IDs and return string reprensentation for debugging purposes

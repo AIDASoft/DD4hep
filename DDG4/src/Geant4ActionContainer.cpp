@@ -1,6 +1,5 @@
-// $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -34,7 +33,7 @@
 #include <algorithm>
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4ActionContainer::Geant4ActionContainer(Geant4Context* ctxt)
@@ -55,16 +54,16 @@ Geant4ActionContainer::~Geant4ActionContainer() {
 
 /// Terminate all associated action instances
 int Geant4ActionContainer::terminate() {
-  releasePtr (m_physicsList);
-  releasePtr (m_constructionAction);
-  releasePtr (m_stackingAction);
-  releasePtr (m_steppingAction);
-  releasePtr (m_trackingAction);
-  releasePtr (m_eventAction);
-  releasePtr (m_generatorAction);
-  releasePtr (m_runAction);
-  deletePtr  (m_sensDetActions);
-  deletePtr  (m_context);
+  detail::releasePtr (m_physicsList);
+  detail::releasePtr (m_constructionAction);
+  detail::releasePtr (m_stackingAction);
+  detail::releasePtr (m_steppingAction);
+  detail::releasePtr (m_trackingAction);
+  detail::releasePtr (m_eventAction);
+  detail::releasePtr (m_generatorAction);
+  detail::releasePtr (m_runAction);
+  detail::deletePtr  (m_sensDetActions);
+  detail::deletePtr  (m_context);
   return 1;
 }
 

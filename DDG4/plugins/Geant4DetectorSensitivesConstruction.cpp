@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,10 +16,10 @@
 #include "DDG4/Geant4DetectorConstruction.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Class to create Geant4 detector geometry from TGeo representation in memory
     /**
@@ -41,15 +41,15 @@ namespace DD4hep {
       /// Sensitives construction callback. Called at "ConstructSDandField()"
       void constructSensitives(Geant4DetectorConstructionContext* ctxt);
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include "DDG4/Geant4Mapping.h"
 #include "DDG4/Factories.h"
@@ -62,8 +62,8 @@ namespace DD4hep {
 #include "G4VSensitiveDetector.hh"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 DECLARE_GEANT4ACTION(Geant4DetectorSensitivesConstruction)
 
@@ -81,24 +81,20 @@ Geant4DetectorSensitivesConstruction::~Geant4DetectorSensitivesConstruction() {
 
 /// Sensitive detector construction callback. Called at "ConstructSDandField()"
 void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorConstructionContext* ctxt)   {
-  typedef Geometry::GeoHandlerTypes::SensitiveVolumes _SV;
-  typedef Geometry::GeoHandlerTypes::ConstVolumeSet VolSet;
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
-  _SV& vols = p->sensitives;
-
-  for(_SV::const_iterator iv=vols.begin(); iv != vols.end(); ++iv)  {
-    Geometry::SensitiveDetector sd = (*iv).first;
+  for(const auto& iv : p->sensitives )  {
+    SensitiveDetector sd = iv.first;
     string typ = sd.type(), nam = sd.name();
     G4VSensitiveDetector* g4sd = 
-      PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->lcdd);
+      PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
     if (!g4sd) {
       string tmp = typ;
       tmp[0] = ::toupper(tmp[0]);
       typ = "Geant4" + tmp;
-      g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->lcdd);
+      g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
       if ( !g4sd ) {
         PluginDebug dbg;
-        g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->lcdd);
+        g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
         if ( !g4sd )  {
           throw runtime_error("ConstructSDandField: FATAL Failed to "
                               "create Geant4 sensitive detector " + nam + 
@@ -108,9 +104,7 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
     }
     g4sd->Activate(true);
     G4SDManager::GetSDMpointer()->AddNewDetector(g4sd);
-    const VolSet& sens_vols = (*iv).second;
-    for(VolSet::const_iterator i=sens_vols.begin(); i!= sens_vols.end(); ++i)   {
-      const TGeoVolume* vol = *i;
+    for(const TGeoVolume* vol : iv.second )  {
       G4LogicalVolume* g4v = p->g4Volumes[vol];
       if ( !g4v )  {
         throw runtime_error("ConstructSDandField: Failed to access G4LogicalVolume for SD "+
@@ -119,5 +113,5 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
       ctxt->setSensitiveDetector(g4v,g4sd);
     }
   }
-  print("Geant4Converter", "++ Handled %ld sensitive detectors.",vols.size());
+  print("Geant4Converter", "++ Handled %ld sensitive detectors.",p->sensitives.size());
 }

@@ -1,5 +1,5 @@
-//==========================================================================
-//  AIDA Detector description implementation for LCD
+\//==========================================================================
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,7 +10,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorSurfaces.h"
@@ -33,6 +33,7 @@
 
 using namespace std ;
 using namespace dd4hep ;
+using namespace dd4hep::detail;
 using namespace dd4hep::rec ;
 using namespace lcio;
 
@@ -50,21 +51,21 @@ int main_wrapper(int argc, char** argv ){
   
   std::string inFile =  argv[1] ;
 
-  LCDD& lcdd = LCDD::getInstance();
+  Detector& description = Detector::getInstance();
 
-  lcdd.fromCompact( inFile );
+  description.fromCompact( inFile );
 
 
 #if 0
   // create a list of all surfaces in the detector:
-  DetElement world = lcdd.world() ;
+  DetElement world = description.world() ;
   
   SurfaceHelper surfMan(  world ) ;
   
   const SurfaceList& sL = surfMan.surfaceList() ;
   
   // map of surfaces
-  std::map< DD4hep::long64, Surface* > surfMap ;
+  std::map< dd4hep::long64, Surface* > surfMap ;
   
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
     
@@ -79,7 +80,7 @@ int main_wrapper(int argc, char** argv ){
   }
 #else  
 
-  SurfaceManager& surfMan = *lcdd.extension< SurfaceManager >() ;
+  SurfaceManager& surfMan = *description.extension< SurfaceManager >() ;
   const SurfaceMap& surfMap = *surfMan.map( "world" ) ;
 
 #endif
@@ -113,7 +114,7 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      DD4hep::BitField64 idDecoder( cellIDEcoding ) ;
+      dd4hep::BitField64 idDecoder( cellIDEcoding ) ;
 
       int nHit = col->getNumberOfElements() ;
       
@@ -121,7 +122,7 @@ int main_wrapper(int argc, char** argv ){
 	
         SimTrackerHit* sHit = (SimTrackerHit*) col->getElementAt(i) ;
 	
-        DD4hep::long64 id = sHit->getCellID0() ;
+        dd4hep::long64 id = sHit->getCellID0() ;
 	
         idDecoder.setValue( id ) ;
         //      std::cout << " simhit with cellid : " << idDecoder << std::endl ;

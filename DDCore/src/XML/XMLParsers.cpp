@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,24 +27,24 @@
 #include <stdexcept>
 
 using std::string;
-using namespace DD4hep;
-typedef DD4hep::XML::Handle_t  xml_h;
-typedef DD4hep::XML::Dimension xml_dim_t;
-typedef DD4hep::XML::Collection_t xml_coll_t;
+using namespace dd4hep;
+typedef dd4hep::xml::Handle_t  xml_h;
+typedef dd4hep::xml::Dimension xml_dim_t;
+typedef dd4hep::xml::Collection_t xml_coll_t;
 
 namespace {
   PrintLevel s_print = DEBUG;
 }
 
 /// Set debug level for this module. Default is OFF
-bool DD4hep::XML::setXMLParserDebug(bool value)   {
+bool dd4hep::xml::setXMLParserDebug(bool value)   {
   bool old = s_print==ALWAYS;
   s_print = value ? ALWAYS : DEBUG;
   return old;
 }
 
-/// Convert rotation XML objects to DD4hep::Geometry::RotationZYX
-void DD4hep::XML::parse(xml_h e, Geometry::RotationZYX& rot)  {
+/// Convert rotation XML objects to dd4hep::RotationZYX
+void dd4hep::xml::parse(xml_h e, RotationZYX& rot)  {
   xml_dim_t r(e);
   rot.SetComponents(r.z(), r.y(), r.x());
   printout(s_print,"<rotation>",
@@ -52,28 +52,27 @@ void DD4hep::XML::parse(xml_h e, Geometry::RotationZYX& rot)  {
            r.x(), r.y(), r.z(), rot.Phi(), rot.Psi(), rot.Theta());
 }
 
-/// Convert XML position objects to DD4hep::Geometry::Position
-void DD4hep::XML::parse(xml_h e, Geometry::Position& pos)  {
+/// Convert XML position objects to dd4hep::Position
+void dd4hep::xml::parse(xml_h e, Position& pos)  {
   xml_dim_t p(e);
   pos.SetXYZ(p.x(), p.y(), p.z());
   printout(s_print,"<position>","  Position:   x=%9.3f y=%9.3f   z=%9.3f",
            pos.X(), pos.Y(), pos.Z());
 }
 
-/// Convert XML pivot objects to DD4hep::Geometry::Translation3D objects
-void DD4hep::XML::parse(xml_h e, Geometry::Translation3D& tr)   {
+/// Convert XML pivot objects to dd4hep::Translation3D objects
+void dd4hep::xml::parse(xml_h e, Translation3D& tr)   {
   xml_dim_t p(e);
   double x,y,z;
   tr.SetXYZ(x=p.x(), y=p.y(), z=p.z());
   printout(s_print,"<translation>","     Pivot:      x=%9.3f y=%9.3f   z=%9.3f",x,y,z);
 }
 
-/// Convert alignment delta objects to Alignments::Delta
-void DD4hep::XML::parse(xml_h e, Alignments::Delta& delta)  {
-  using Alignments::Delta;
-  Geometry::Position pos;
-  Geometry::RotationZYX rot;
-  Geometry::Translation3D piv;
+/// Convert alignment delta objects to Delta
+void dd4hep::xml::parse(xml_h e, Delta& delta)  {
+  Position pos;
+  RotationZYX rot;
+  Translation3D piv;
   xml_h  child_rot, child_pos, child_piv;
 
   if ( (child_pos=e.child(_U(position),false)) )
@@ -96,37 +95,37 @@ void DD4hep::XML::parse(xml_h e, Alignments::Delta& delta)  {
 }
 
 /// Parse delta into an opaque data block
-void DD4hep::XML::parse_delta(Handle_t e, OpaqueDataBlock& block)   {
-  Alignments::Delta& delta = block.bind<Alignments::Delta>();
+void dd4hep::xml::parse_delta(Handle_t e, OpaqueDataBlock& block)   {
+  Delta& delta = block.bind<Delta>();
   parse(e, delta);
 }
 
 /// Converts opaque maps to OpaqueDataBlock objects
-void DD4hep::XML::parse_mapping(xml_h e, OpaqueDataBlock& b)   {
+void dd4hep::xml::parse_mapping(xml_h e, OpaqueDataBlock& b)   {
   string    val_type = e.attr<string>(_U(value));
   string    key_type = e.attr<string>(_U(key));
-  MapBinder binder;
+  detail::MapBinder binder;
 
-  OpaqueDataBinder::bind_map(binder, b, key_type, val_type);
+  detail::OpaqueDataBinder::bind_map(binder, b, key_type, val_type);
   for(xml_coll_t i(e,_U(item)); i; ++i)  {
     // If explicit key, value data are present in attributes:
     if ( i.hasAttr(_U(key)) && i.hasAttr(_U(value)) )  {
       string key = i.attr<string>(_U(key));
       string val = i.attr<string>(_U(value));
-      OpaqueDataBinder::insert_map(binder, b, key_type, key, val_type, val);
+      detail::OpaqueDataBinder::insert_map(binder, b, key_type, key, val_type, val);
       continue;
     }
     // Otherwise interprete the data directly from the data content
-    OpaqueDataBinder::insert_map(binder, b, key_type, val_type, i.text());
+    detail::OpaqueDataBinder::insert_map(binder, b, key_type, val_type, i.text());
   }
 }
 
 /// Converts linear STL containers from their string representation.
-void DD4hep::XML::parse_sequence(xml_h e, OpaqueDataBlock& block)    {
+void dd4hep::xml::parse_sequence(xml_h e, OpaqueDataBlock& block)    {
   xml_dim_t elt(e);
   string typ = elt.typeStr();
   string val = elt.hasAttr(_U(value)) ? elt.valueStr() : elt.text();
-  if ( !OpaqueDataBinder::bind_sequence(block, typ, val) )  {
+  if ( !detail::OpaqueDataBinder::bind_sequence(block, typ, val) )  {
     except("XMLParsers",
            "++ Failed to convert unknown sequence conditions type: %s",typ.c_str());
   }

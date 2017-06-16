@@ -273,7 +273,7 @@
   <detectors>
 
     <comment>Trackers</comment> 
-    <detector id="1" name="SiVertexBarrel" type="DD4hep_SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
+    <detector id="1" name="SiVertexBarrel" type="dd4hep_SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
       <comment>Vertex Detector Barrel</comment>
       <module name="VtxBarrelModuleInner" vis="SiVertexBarrelModuleVis">
 	<module_envelope width="10.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
@@ -321,7 +321,7 @@
     </detector>
 
     <comment>Vertex Detector Endcaps</comment>
-    <detector id="2" name="SiVertexEndcap" type="DD4hep_SiTrackerEndcap2" readout="SiVertexEndcapHits" reflect="true">    
+    <detector id="2" name="SiVertexEndcap" type="dd4hep_SiTrackerEndcap2" readout="SiVertexEndcapHits" reflect="true">    
       <module name="SiVertexEndcapModule1">
 	<trd x1="VertexEndcap_rmin1 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin1) / 2" />
 	<module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
@@ -356,7 +356,7 @@
       </layer>
     </detector> 
 
-    <detector id="3" name="SiTrackerBarrel" type="DD4hep_SiTrackerBarrel" readout="SiTrackerBarrelHits">
+    <detector id="3" name="SiTrackerBarrel" type="dd4hep_SiTrackerBarrel" readout="SiTrackerBarrelHits">
       <comment>Outer Tracker Barrel</comment>
       <module name="SiTrackerModule_Layer1" vis="SiTrackerBarrelModuleVis">                
 	<module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
@@ -535,7 +535,7 @@
       </layer>
     </detector>
 
-    <detector id="4" name="SiTrackerEndcap" type="DD4hep_SiTrackerEndcap2" readout="SiTrackerEndcapHits" reflect="true">
+    <detector id="4" name="SiTrackerEndcap" type="dd4hep_SiTrackerEndcap2" readout="SiTrackerEndcapHits" reflect="true">
       <comment>Outer Tracker Endcaps</comment>
       <module name="Module1" vis="SiTrackerEndcapModuleVis">
 	<trd x1="36.112*mm" x2="46.635*mm" z="100.114/2*mm" />
@@ -607,7 +607,7 @@
       </layer>
     </detector>
     
-    <detector id="5" name="SiTrackerForward" type="DD4hep_SiTrackerEndcap2" readout="SiTrackerForwardHits">    
+    <detector id="5" name="SiTrackerForward" type="dd4hep_SiTrackerEndcap2" readout="SiTrackerForwardHits">    
       <comment>Forward Tracker inside Vertex Support Barrel</comment>
       <module name="SiTrackerForwardModule1">
 	<trd x1="ForwardTracker_rmin1 * tan(pi/(ForwardTrackerModules-0.1))" x2="ForwardTracker_rmax * sin(pi/(ForwardTrackerModules-0.1))" z="(ForwardTracker_rmax - ForwardTracker_rmin1) / 2" />
@@ -636,7 +636,7 @@
     </detector>
 
     <comment>Calorimeters</comment>
-    <detector id="6" name="EcalBarrel" type="DD4hep_EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
+    <detector id="6" name="EcalBarrel" type="dd4hep_EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
       <comment>EM Calorimeter Barrel</comment>
       <dimensions numsides="(int) CaloSides" rmin="EcalBarrel_rmin" z="EcalBarrel_zmax*2" />
       <staves vis="EcalBarrelStaveVis"/>
@@ -664,7 +664,7 @@
       </layer>
     </detector>
 
-    <detector id="7" name="EcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
+    <detector id="7" name="EcalEndcap" type="dd4hep_PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
       <comment>EM Calorimeter Endcaps</comment>
       <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
       <layer repeat="1">
@@ -691,7 +691,7 @@
       </layer>
     </detector>
 
-    <detector id="8" name="HcalBarrel" type="DD4hep_PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
+    <detector id="8" name="HcalBarrel" type="dd4hep_PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
       <comment>Hadron Calorimeter Barrel</comment>
       <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="EcalBarrel_zmax*2"/>
       <staves vis="HcalBarrelStavesVis"/>
@@ -703,7 +703,7 @@
     </detector>
 
 
-    <detector id="9" name="HcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
+    <detector id="9" name="HcalEndcap" type="dd4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
       <comment>Hadron Calorimeter Endcaps</comment>
       <dimensions numsides="(int) CaloSides" zmin="HcalEndcap_zmin" rmin="HcalEndcap_rmin" rmax="HcalEndcap_rmax" />
       <layer repeat="(int) HcalEndcap_layers">
@@ -713,7 +713,7 @@
       </layer>
     </detector>
 
-    <detector id="10" name="HcalPlug" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
+    <detector id="10" name="HcalPlug" type="dd4hep_PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
       <comment>Hadron Calorimeter Plug</comment>
       <dimensions numsides="(int) CaloSides" zmin="SolenoidCoilOuterZ" rmin="MuonEndcap_rmin" rmax="HcalEndcap_rmax" />
       <layer repeat="1" vis="MuonEndcapLayerVis">
@@ -738,7 +738,7 @@
     </detector>
 
 
-    <detector id="11" name="MuonBarrel" type="DD4hep_PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
+    <detector id="11" name="MuonBarrel" type="dd4hep_PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
       <comment>Muon Calorimeter Barrel</comment>
       <dimensions numsides="(int) MuonSides" rmin="MuonBarrel_rmin" z="MuonBarrel_zmax * 2"/>
       <staves vis="MuonBarrelStavesVis"/>
@@ -818,7 +818,7 @@
       </layer>
     </detector>
 
-    <detector id="12" name="MuonEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
+    <detector id="12" name="MuonEndcap" type="dd4hep_PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
       <comment>Muon Calorimeter Endcaps</comment>
       <dimensions numsides="(int) MuonSides" zmin="MuonEndcap_zmin" rmin="MuonEndcap_rmin" rmax="MuonEndcap_rmax" />
       <layer repeat="(int) MuonEndcap_layers" vis="MuonEndcapLayerVis">
@@ -841,7 +841,7 @@
       </layer>
     </detector>
 
-    <detector id="13" name="LumiCal" reflect="true" type="DD4hep_CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
+    <detector id="13" name="LumiCal" reflect="true" type="dd4hep_CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
       <comment>Luminosity Calorimeter</comment>
       <dimensions inner_r = "LumiCal_rmin" inner_z = "LumiCal_zmin" outer_r = "LumiCal_rmax" />
       <layer repeat="20" >
@@ -860,21 +860,21 @@
       </layer>
     </detector>
 
-    <detector name="LumiReadout_Forward" type="DD4hep_PolyconeSupport" vis="LumiCalVis">
+    <detector name="LumiReadout_Forward" type="dd4hep_PolyconeSupport" vis="LumiCalVis">
       <comment>Readout for Luminosity Calorimeter</comment>
       <material name="G10"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="LumiCal_zmin"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="LumiCal_zmin+LumiCal_thickness"/>
     </detector>
     
-    <detector name="LumiReadout_Backward" type="DD4hep_PolyconeSupport" vis="LumiCalVis">
+    <detector name="LumiReadout_Backward" type="dd4hep_PolyconeSupport" vis="LumiCalVis">
       <comment>Readout for Luminosity Calorimeter</comment>
       <material name="G10"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="-LumiCal_zmin"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="-(LumiCal_zmin+LumiCal_thickness)"/>
     </detector>
     
-    <detector id="14" name="BeamCal" reflect="true" type="DD4hep_ForwardDetector" readout="BeamCalHits" vis="LumiCalVis" calorimeterType="BEAM">
+    <detector id="14" name="BeamCal" reflect="true" type="dd4hep_ForwardDetector" readout="BeamCalHits" vis="LumiCalVis" calorimeterType="BEAM">
       <comment>Beam Calorimeter</comment>
       <dimensions outer_r="BeamCal_rmax" inner_r="0.0*cm" inner_z="BeamCal_zmin" />
       <beampipe crossing_angle="CrossingAngle" outgoing_r="OutgoingBP_radius + 0.05*cm" incoming_r="IncomingBP_radius + 0.05*cm" />
@@ -889,13 +889,13 @@
 
     <comment>Dead material and supports</comment>
     <comment>Beampipe</comment> 
-    <detector name="Beampipe" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
+    <detector name="Beampipe" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
       <comment>Central Be Beampipe</comment>
       <material name="Beryllium"/>
       <zplane rmin="CentralBeamPipe_rmin" rmax="CentralBeamPipe_rmax" z="-CentralBeamPipe_zmax"/>
       <zplane rmin="CentralBeamPipe_rmin" rmax="CentralBeamPipe_rmax" z="CentralBeamPipe_zmax" />
     </detector>
-    <detector name="SteelConeZbackward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
+    <detector name="SteelConeZbackward" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
       <material name="Iron"/>            
       <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
 	      rmax="BeamPipe_rmax"
@@ -907,7 +907,7 @@
 	      rmax="CentralBeamPipe_rmax"
 	      z="-CentralBeamPipe_zmax"/>
     </detector>
-    <detector name="SteelConeZbackward2" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="BeamPipeVis">
+    <detector name="SteelConeZbackward2" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="BeamPipeVis">
       <material name="Iron"/>            
       <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
 	      rmax="BeamPipe_rmax"
@@ -925,7 +925,7 @@
 	      rmax="LumiCal_rmin - BeamPipe_endThickness"
 	      z="- (ForwardMask_zmin - BeamPipe_endThickness)" />
     </detector>
-    <detector name="SteelConeZforward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
+    <detector name="SteelConeZforward" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
       <material name="Iron"/>
       <zplane rmin="CentralBeamPipe_rmin"
 	      rmax="CentralBeamPipe_rmax"
@@ -937,7 +937,7 @@
 	      rmax="BeamPipe_rmax"
 	      z="tracking_region_zmax" />
     </detector>
-    <detector name="SteelConeZforward2" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="BeamPipeVis">
+    <detector name="SteelConeZforward2" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="BeamPipeVis">
       <material name="Iron"/>            
       <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
 	      rmax="BeamPipe_rmax"
@@ -956,7 +956,7 @@
 	      z="ForwardMask_zmin - BeamPipe_endThickness" />
     </detector>
 
-    <detector name="NorthIncomingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+    <detector name="NorthIncomingBeampipe" type="dd4hep_TubeSegment" vis="BeamPipeVis">
       <material name="Iron" />
       <tubs rmin="IncomingBP_radius - IncomingBP_thickness" rmax="IncomingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
       <position x="-((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="(ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
@@ -964,21 +964,21 @@
     </detector>
 
 
-    <detector name="SouthIncomingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+    <detector name="SouthIncomingBeampipe" type="dd4hep_TubeSegment" vis="BeamPipeVis">
       <material name="Iron" />
       <tubs rmin="IncomingBP_radius - IncomingBP_thickness" rmax="IncomingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
       <position x="-((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="- (ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
       <rotation x="0.0" y="-CrossingAngle/2.0/rad" z="0.0" />
     </detector>
 
-    <detector name="NorthOutgoingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+    <detector name="NorthOutgoingBeampipe" type="dd4hep_TubeSegment" vis="BeamPipeVis">
       <material name="Iron" />
       <tubs rmin="OutgoingBP_radius - OutgoingBP_thickness" rmax="OutgoingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
       <position x="((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="(ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
       <rotation x="0.0" y="-CrossingAngle/2.0/rad" z="0.0" />
     </detector>
 
-    <detector name="SouthOutgoingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+    <detector name="SouthOutgoingBeampipe" type="dd4hep_TubeSegment" vis="BeamPipeVis">
       <material name="Iron" />
       <tubs rmin="OutgoingBP_radius - OutgoingBP_thickness" rmax="OutgoingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
       <position x="((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="- (ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
@@ -986,7 +986,7 @@
     </detector>
 
     <!-- Beam pipe liner is not needed, use thicker conical steel pipe instead
-	 <detector name="BeamPipeLiner" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
+	 <detector name="BeamPipeLiner" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
 	 <comment>BeamPipe Liner to shield bremsstrahlung photons</comment>
 	 <material name="Titanium"/>
 	 <zplane rmin="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness" rmax="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness" z="-tracking_region_zmax" />
@@ -998,7 +998,7 @@
 	 </detector>
     -->
 
-    <detector name="BeamPipeVacuum" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
+    <detector name="BeamPipeVacuum" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
       <comment>Vacuum inside beampipe</comment>
       <material name="Vacuum"/>
       <zplane rmin="0.*cm"
@@ -1014,7 +1014,7 @@
 	      rmax="BeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness"
 	      z="tracking_region_zmax" />
     </detector>
-    <detector name="ForwardVacuum" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="InvisibleNoDaughters">
+    <detector name="ForwardVacuum" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="InvisibleNoDaughters">
       <material name="Vacuum"/>
       <zplane rmin="0.*cm"
 	      rmax="BeamPipe_rmax - BeamPipe_thickness"
@@ -1032,7 +1032,7 @@
 	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
 	      z="ForwardMask_zmin - BeamPipe_endThickness" />
     </detector> 
-    <detector name="BackwardVacuum" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="InvisibleNoDaughters">
+    <detector name="BackwardVacuum" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="InvisibleNoDaughters">
       <material name="Vacuum"/>
       <zplane rmin="0.*cm"
 	      rmax="BeamPipe_rmax - BeamPipe_thickness"
@@ -1051,7 +1051,7 @@
 	      z="- (ForwardMask_zmin - BeamPipe_endThickness)" />
     </detector>
     <comment>Vertex Detector Supports and Readout</comment>
-    <detector name="VertexBarrelSupports" type="DD4hep_MultiLayerTracker" vis="SupportVis" reflect="true">
+    <detector name="VertexBarrelSupports" type="dd4hep_MultiLayerTracker" vis="SupportVis" reflect="true">
       <comment>Double-walled Carbon Fiber support tube</comment>
       <layer id="6" inner_r = "16.87*cm" outer_z = "89.48*cm">
 	<slice material = "CarbonFiber" thickness ="VXD_CF_support"/>
@@ -1060,7 +1060,7 @@
 	<slice material = "CarbonFiber" thickness ="VXD_CF_support"/>
       </layer>
     </detector>
-    <detector name="VertexEndSupports" type="DD4hep_DiskTracker" reflect="true" vis="SupportVis">    
+    <detector name="VertexEndSupports" type="dd4hep_DiskTracker" reflect="true" vis="SupportVis">    
       <layer id="7" inner_r = "(86.88*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexEndcap_offset" inner_z = "86.88*cm" outer_r = "16.87*cm">
 	<slice material = "CarbonFiber" thickness = "VXD_CF_support" />
       </layer>
@@ -1068,7 +1068,7 @@
 	<slice material = "CarbonFiber" thickness = "VXD_CF_support" />
       </layer>
     </detector>
-    <detector name="VertexReadout" type="DD4hep_DiskTracker" reflect="true" vis="CableVis">
+    <detector name="VertexReadout" type="dd4hep_DiskTracker" reflect="true" vis="CableVis">
       <comment>Readout and Cabling</comment>
       <layer id="1" inner_r = "VertexBarrel_r1" outer_r="VertexBarrel_r1 + 0.02*cm"  inner_z= "VertexBarrel_zmax + 0.1*cm" vis="GreenVis">
 	<slice material = "G10" thickness ="0.5*cm"/>
@@ -1122,7 +1122,7 @@
 	<slice material = "G10" thickness = "0.02*cm" />
       </layer>
     </detector>
-    <detector name="VXDcableZforwardBarrel" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZforwardBarrel" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "(CentralBeamPipe_rmax)"
 	      rmax = "(CentralBeamPipe_rmax + VertexCableThickness)"
@@ -1131,7 +1131,7 @@
 	      rmax = "(CentralBeamPipe_rmax + VertexCableThickness)"
 	      z="CentralBeamPipe_zmax"/>
     </detector>
-    <detector name="VXDcableZbackwardBarrel" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZbackwardBarrel" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "(CentralBeamPipe_rmax)"
 	      rmax = "(CentralBeamPipe_rmax + VertexCableThickness)"
@@ -1140,7 +1140,7 @@
 	      rmax = "(CentralBeamPipe_rmax + VertexCableThickness)"
 	      z="-CentralBeamPipe_zmax"/>
     </detector> 
-    <detector name="VXDcableZbackwardOuter" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZbackwardOuter" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax)" 
 	      rmax = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + 0.004*cm)" 
@@ -1149,7 +1149,7 @@
 	      rmax="(VertexService_zmax + 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + 0.01*cm"
 	      z="-(VertexService_zmax + 0.01*cm)"/>
     </detector>
-    <detector name="VXDcableZbackwardInner" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZbackwardInner" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin="CentralBeamPipe_rmax"
 	      rmax="CentralBeamPipe_rmax + VertexCableThickness"
@@ -1158,7 +1158,7 @@
 	      rmax="(VertexService_zmin - 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexCableThickness"
 	      z="-(VertexService_zmin - 0.01*cm)"/>
     </detector>
-    <detector name="VXDcableZforwardOuter" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZforwardOuter" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax)" 
 	      rmax = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + 0.004*cm)" 
@@ -1167,7 +1167,7 @@
 	      rmax="(VertexService_zmax + 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + 0.01*cm"
 	      z="VertexService_zmax + 0.01*cm"/>
     </detector>
-    <detector name="VXDcableZforwardInner" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZforwardInner" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin="(VertexService_zmin - 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
 	      rmax="(VertexService_zmin - 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexCableThickness"
@@ -1176,7 +1176,7 @@
 	      rmax="CentralBeamPipe_rmax + VertexCableThickness"
 	      z="CentralBeamPipe_zmax"/>
     </detector>
-    <detector name="VXDserviceZbackward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDserviceZbackward" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="G10"/>
       <zplane rmin = "(VertexService_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
 	      rmax="(VertexService_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexServiceThickness"
@@ -1185,7 +1185,7 @@
 	      rmax="(VertexService_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexServiceThickness"
 	      z="-VertexService_zmin"/>
     </detector>
-    <detector name="VXDserviceZforward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDserviceZforward" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="G10"/>
       <zplane rmin = "(VertexService_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
 	      rmax="(VertexService_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexServiceThickness"
@@ -1196,7 +1196,7 @@
     </detector>
 
     <comment>Outer Tracker Supports and Readout</comment>
-    <detector name="TrackerBarrelSupports" type="DD4hep_MultiLayerTracker" reflect="true">
+    <detector name="TrackerBarrelSupports" type="dd4hep_MultiLayerTracker" reflect="true">
       <comment>Barrels</comment>
       <layer id="1" inner_r="206.0*mm" outer_z="577.328*mm">
 	<slice material="CarbonFiber" thickness="0.05*cm" />
@@ -1226,175 +1226,175 @@
     </detector>
 
     <comment>Dished endcap disks</comment>
-    <detector name="SiTrackerEndcapSupport1" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport1" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="510.448*mm" rmax="510.448*mm" z="(750.417-0.001)*mm" />
       <zplane rmin="504.711*mm" rmax="510.448*mm" z="(750.919-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(777.034-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(777.535-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport2" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport2" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="510.448*mm" rmax="510.448*mm" z="750.919*mm" />
       <zplane rmin="438.449*mm" rmax="510.448*mm" z="757.218*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="777.535*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="783.834*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport3" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport3" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="510.448*mm" rmax="510.448*mm" z="(757.218+0.001)*mm" />
       <zplane rmin="504.711*mm" rmax="510.448*mm" z="(757.720+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(783.834+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(784.336+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport4" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport4" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="763.796*mm" rmax="763.796*mm" z="(1014.437-0.001)*mm" />
       <zplane rmin="758.059*mm" rmax="763.796*mm" z="(1014.939-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1063.219-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1063.721-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport5" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport5" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="763.796*mm" rmax="763.796*mm" z="1014.939*mm" />
       <zplane rmin="691.797*mm" rmax="763.796*mm" z="1021.238*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="1063.721*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="1070.020*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport6" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport6" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="763.796*mm" rmax="763.796*mm" z="(1021.238+0.001)*mm" />
       <zplane rmin="758.059*mm" rmax="763.796*mm" z="(1021.740+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1070.020+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1070.522+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport7" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport7" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(1272.885-0.001)*mm" />
       <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(1273.387-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1343.711-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1344.213-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport8" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport8" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="1273.387*mm" />
       <zplane rmin="943.753*mm" rmax="1015.748*mm" z="1279.686*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="1344.213*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="1350.512*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport9" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport9" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(1279.686+0.001)*mm" />
       <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(1280.188+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1350.512+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1351.014+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport10" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport10" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(1536.560-0.001)*mm" />
       <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(1537.062-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1629.089-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1629.591-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport11" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport11" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="1537.062*mm" />
       <zplane rmin="1191.810*mm" rmax="1263.808*mm" z="1543.361*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="1629.591*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="1635.890*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport12" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport12" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(1543.361+0.001)*mm" />
       <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(1543.863+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1635.890+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1636.392+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport1Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport1Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="510.448*mm" rmax="510.448*mm" z="(-750.417+0.001)*mm" />
       <zplane rmin="504.711*mm" rmax="510.448*mm" z="(-750.919+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-777.034+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-777.535+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport2Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport2Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919*mm" />
       <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport3Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport3Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="510.448*mm" rmax="510.448*mm" z="(-757.218-0.001)*mm" />
       <zplane rmin="504.711*mm" rmax="510.448*mm" z="(-757.720-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-783.834-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-784.336-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport4Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport4Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="763.796*mm" rmax="763.796*mm" z="(-1014.437+0.001)*mm" />
       <zplane rmin="758.059*mm" rmax="763.796*mm" z="(-1014.939+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1063.219+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1063.721+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport5Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport5Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="763.796*mm" rmax="763.796*mm" z="-1014.939*mm" />
       <zplane rmin="691.797*mm" rmax="763.796*mm" z="-1021.238*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1063.721*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1070.020*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport6Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport6Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="763.796*mm" rmax="763.796*mm" z="(-1021.238-0.001)*mm" />
       <zplane rmin="758.059*mm" rmax="763.796*mm" z="(-1021.740-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1070.020-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1070.522-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport7Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport7Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(-1272.885+0.001)*mm" />
       <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(-1273.387+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1343.711+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1344.213+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport8Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport8Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="-1273.387*mm" />
       <zplane rmin="943.753*mm" rmax="1015.748*mm" z="-1279.686*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1344.213*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1350.512*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport9Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport9Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(-1279.686-0.001)*mm" />
       <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(-1280.188-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1350.512-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1351.014-0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport10Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport10Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(-1536.560+0.001)*mm" />
       <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(-1537.062+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1629.089+0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1629.591+0.001)*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport11Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport11Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
       <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="-1537.062*mm" />
       <zplane rmin="1191.810*mm" rmax="1263.808*mm" z="-1543.361*mm" />
       <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1629.591*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1635.890*mm" />
     </detector>
-    <detector name="SiTrackerEndcapSupport12Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <detector name="SiTrackerEndcapSupport12Reflect" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
       <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(-1543.361-0.001)*mm" />
       <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(-1543.863-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1635.890-0.001)*mm" />
       <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1636.392-0.001)*mm" />
     </detector>        
-    <detector name="TrackerReadout" type="DD4hep_DiskTracker" reflect="true" vis="GreenVis">
+    <detector name="TrackerReadout" type="dd4hep_DiskTracker" reflect="true" vis="GreenVis">
       <comment>Readouts</comment>
       <layer id="1" inner_r="25.7*cm" inner_z="590.402*mm" outer_r="45.6*cm">
 	<slice material="G10" thickness="0.057*cm" />
@@ -1418,27 +1418,27 @@
       </layer>
     </detector>
     <comment>Masks and Shielding</comment>
-    <detector name="LumiShielding_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="LumiShielding_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="LumiCal_zmax"/>
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="LumiCal_zmax+ForwardShielding_thickness"/>
     </detector>
-    <detector name="LumiShielding_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="LumiShielding_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="-LumiCal_zmax"/>
       <zplane rmin="LumiCal_rmin" rmax="LumiCalElectronics_rmax" z="-(LumiCal_zmax+ForwardShielding_thickness)"/>
     </detector>
-    <detector name="ECalShielding_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ECalShielding_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="HcalEndcap_zmin"/>
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="HcalEndcap_zmin+ForwardShielding_thickness"/>
     </detector>
-    <detector name="ECalShielding_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ECalShielding_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="-HcalEndcap_zmin"/>
       <zplane rmin="LumiCalElectronics_rmax" rmax="HcalEndcap_rmin-SupportTube_thickness-1.0*cm" z="-(HcalEndcap_zmin+ForwardShielding_thickness)"/>
     </detector>
-    <detector name="ShieldingTube_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ShieldingTube_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="HcalEndcap_rmin - SupportTube_thickness - ForwardShielding_thickness - 1.0*cm"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness - 1.0*cm"
@@ -1447,7 +1447,7 @@
 	      rmax="HcalEndcap_rmin - SupportTube_thickness - 1.0*cm"
 	      z="HcalEndcap_zmax"/>
     </detector>
-    <detector name="ShieldingTube_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
+    <detector name="ShieldingTube_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="TungstenShieldingVis">
       <material name="TungstenDens24" />
       <zplane rmin="HcalEndcap_rmin - SupportTube_thickness - ForwardShielding_thickness - 1.0*cm"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness - 1.0*cm"
@@ -1456,7 +1456,7 @@
 	      rmax="HcalEndcap_rmin - SupportTube_thickness - 1.0*cm"
 	      z="-HcalEndcap_zmax"/>
     </detector>
-    <detector name="SupportTube_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
+    <detector name="SupportTube_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin - 2*SupportTube_thickness"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness"
@@ -1465,7 +1465,7 @@
 	      rmax="HcalEndcap_rmin - SupportTube_thickness"
 	      z="MuonEndcap_zmax"/>
     </detector>
-    <detector name="SupportTube_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
+    <detector name="SupportTube_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="SupportTubeVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin - 2*SupportTube_thickness"
 	      rmax="HcalEndcap_rmin - SupportTube_thickness"
@@ -1474,7 +1474,7 @@
 	      rmax="HcalEndcap_rmin - SupportTube_thickness"
 	      z="-MuonEndcap_zmax"/>
     </detector>
-    <detector name="AntiSolenoid_Forward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
+    <detector name="AntiSolenoid_Forward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin + 1.0*cm"
 	      rmax="MuonEndcap_rmin - 1.0*cm"
@@ -1483,7 +1483,7 @@
 	      rmax="MuonEndcap_rmin - 1.0*cm"
 	      z="MuonEndcap_zmax"/>
     </detector>
-    <detector name="AntiSolenoid_Backward" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
+    <detector name="AntiSolenoid_Backward" type="dd4hep_PolyconeSupport" insideTrackingVolume="false" vis="AntiSolenoidVis">
       <material name="Steel235" />
       <zplane rmin="HcalEndcap_rmin + 1.0*cm"
 	      rmax="MuonEndcap_rmin - 1.0*cm"
@@ -1493,7 +1493,7 @@
 	      z="-MuonEndcap_zmax"/>
     </detector>
 
-    <detector name="ForwardLowZ" type="DD4hep_ForwardDetector" vis="TungstenShieldingVis" reflect="true">
+    <detector name="ForwardLowZ" type="dd4hep_ForwardDetector" vis="TungstenShieldingVis" reflect="true">
       <dimensions outer_r="BeamCal_rmax" inner_r="0.0*cm" inner_z="ForwardMask_zmin" />
       <beampipe crossing_angle="CrossingAngle" outgoing_r="OutgoingBP_radius + 0.05*cm" incoming_r="IncomingBP_radius + 0.05*cm" />
       <layer repeat="1">
@@ -1502,7 +1502,7 @@
     </detector>
     
     <comment>Solenoid</comment>
-    <detector name="SolenoidCoilBarrel" type="DD4hep_MultiLayerTracker" insideTrackingVolume="false" reflect="true">
+    <detector name="SolenoidCoilBarrel" type="dd4hep_MultiLayerTracker" insideTrackingVolume="false" reflect="true">
       <layer id="1" inner_r="SolenoidBarrelInnerRadius" outer_z="SolenoidBarrelOuterZ" vis="SolenoidBarrelLayerVis">
 	<slice material="Steel235" thickness="SolenoidBarrelInnerCryostatThickness" />
 	<slice material="Vacuum"   thickness="SolenoidBarrelInnerAirgapThickness" />
@@ -1517,7 +1517,7 @@
       </layer>
     </detector>
 
-    <detector name="SolenoidCoilEnds" type="DD4hep_DiskTracker" reflect="true" insideTrackingVolume="false">
+    <detector name="SolenoidCoilEnds" type="dd4hep_DiskTracker" reflect="true" insideTrackingVolume="false">
       <layer id="1" inner_r="SolenoidBarrelInnerRadius" inner_z="SolenoidBarrelOuterZ" outer_r="SolenoidBarrelOuterRadius" vis="SolenoidCoilEndsVis">
 	<slice material="Steel235" thickness="SolenoidEndcapCryostatThickness" />
       </layer>

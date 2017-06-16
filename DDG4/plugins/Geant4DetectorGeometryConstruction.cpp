@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,14 +16,14 @@
 #include "DDG4/Geant4DetectorConstruction.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Class to create Geant4 detector geometry from TGeo representation in memory
     /**
-     *  On demand (ie. when calling "Construct") the DD4hep geometry is converted
+     *  On demand (ie. when calling "Construct") the dd4hep geometry is converted
      *  to Geant4 with all volumes, assemblies, shapes, materials etc.
      *  The actuak work is performed by the Geant4Converter class called by this method.
      *
@@ -63,14 +63,14 @@ namespace DD4hep {
       /// Geometry construction callback. Called at "Construct()"
       void constructGeo(Geant4DetectorConstructionContext* ctxt);
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include "DDG4/Geant4HierarchyDump.h"
 #include "DDG4/Geant4Converter.h"
@@ -84,8 +84,8 @@ namespace DD4hep {
 #endif
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 DECLARE_GEANT4ACTION(Geant4DetectorGeometryConstruction)
 
 /// Initializing constructor for other clients
@@ -115,8 +115,8 @@ Geant4DetectorGeometryConstruction::~Geant4DetectorGeometryConstruction() {
 /// Geometry construction callback. Called at "Construct()"
 void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstructionContext* ctxt)   {
   Geant4Mapping& g4map = Geant4Mapping::instance();
-  Geometry::DetElement world = ctxt->lcdd.world();
-  Geant4Converter conv(ctxt->lcdd, outputLevel());
+  DetElement world = ctxt->description.world();
+  Geant4Converter conv(ctxt->description, outputLevel());
   conv.debugMaterials  = m_debugMaterials;
   conv.debugElements   = m_debugElements;
   conv.debugShapes     = m_debugShapes;
@@ -130,7 +130,7 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   // Create Geant4 volume manager only if not yet available
   g4map.volumeManager();
   if ( m_dumpHierarchy )   {
-    Geant4HierarchyDump dmp(ctxt->lcdd);
+    Geant4HierarchyDump dmp(ctxt->description);
     dmp.dump("",w);
   }
 #ifdef GEANT4_HAS_GDML

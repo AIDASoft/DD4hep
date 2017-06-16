@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -36,16 +36,13 @@
 #include "DD4hep/Factories.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::AlignmentExamples;
-
-using Alignments::AlignmentsCalib;
-using Alignments::Delta;
-using Geometry::Position;
+using namespace dd4hep;
+using namespace dd4hep::AlignmentExamples;
+using align::AlignmentsCalib;
 
 static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  {
   DetElement d(calib.detector(path));
-  Alignment  a = calib.slice.get(d,Alignments::Keys::alignmentKey);
+  Alignment  a = calib.slice.get(d,align::Keys::alignmentKey);
   if ( a.isValid() )  {
     const double* tr = a.worldTransformation().GetTranslation();
     printout(INFO,"Example","++ World transformation of: %-32s  Tr:(%8.2g,%8.2g,%8.2g [cm])",
@@ -53,7 +50,7 @@ static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  
     a.worldTransformation().Print();
     return;
   }
-  Condition c = calib.slice.get(d,Alignments::Keys::deltaKey);
+  Condition c = calib.slice.get(d,align::Keys::deltaKey);
   printout(WARNING,"Example",
            "++ Detector element:%s No alignment conditions present. Delta:%s",
            path.c_str(), c.isValid() ? "Present" : "Not availible");
@@ -67,7 +64,7 @@ static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  
  *  \version 1.0
  *  \date    01/12/2016
  */
-static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, char** argv)  {
+static int AlignmentExample_align_telescope (Detector& description, int argc, char** argv)  {
   string input, setup;
   bool arg_error = false, dump = false;
 
@@ -94,11 +91,11 @@ static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, cha
   }
 
   // First we load the geometry
-  lcdd.fromXML(input);
-  ConditionsManager manager = installManager(lcdd);
+  description.fromXML(input);
+  ConditionsManager manager = installManager(description);
   const void* setup_args[]  = {setup.c_str(), 0}; // Better zero-terminate
 
-  lcdd.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)setup_args);
+  description.apply("dd4hep_ConditionsXMLRepositoryParser",1,(char**)setup_args);
   // Now the deltas are stored in the conditions manager in the proper IOV pools
   const IOVType* iov_typ = manager.iovType("run");
   if ( 0 == iov_typ )  {
@@ -108,15 +105,14 @@ static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, cha
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
   ConditionsManager::Result cres = manager.prepare(req_iov,*slice);
-  Conditions::fill_content(manager,*content,*iov_typ);
+  cond::fill_content(manager,*content,*iov_typ);
 
   // Collect all the delta conditions and make proper alignment conditions out of them
-  AlignmentsCalculator::Deltas deltas;
-
+  map<DetElement, Delta> deltas;
   const auto coll = deltaCollector(*slice,deltas);
   auto proc = detectorProcessor(coll);
   //auto proc = detectorProcessor(deltaCollector(*slice,deltas));
-  proc.process(lcdd.world(),0,true);
+  proc.process(description.world(),0,true);
   printout(INFO,"Prepare","Got a total of %ld deltas for processing alignments.",deltas.size());
   
   // ++++++++++++++++++++++++ Compute the tranformation matrices
@@ -133,7 +129,7 @@ static int AlignmentExample_align_telescope (Geometry::LCDD& lcdd, int argc, cha
   printout(INFO,"Example","=========================================================");
   if ( dump ) slice->pool->print("*");
   
-  AlignmentsCalib calib(lcdd,*slice);
+  AlignmentsCalib calib(description,*slice);
   try  {  // These are only valid if alignments got pre-loaded!
     print_world_trafo(calib,"/world/Telescope");
     print_world_trafo(calib,"/world/Telescope/module_1");

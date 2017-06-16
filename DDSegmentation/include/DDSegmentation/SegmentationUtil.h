@@ -11,7 +11,7 @@
 #include <cmath>
 #include <vector>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 namespace Util {
 
@@ -115,6 +115,6 @@ inline Vector3D positionFromREtaPhi(double ar, double aeta, double aphi) {
 
 } /* namespace Util */
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 
 #endif /* DDSegmentation_SEGMENTATIONUTIL_H_ */

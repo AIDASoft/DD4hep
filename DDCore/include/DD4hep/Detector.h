@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,386 +10,343 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DETECTOR_H
-#define DD4HEP_DETECTOR_H
+#ifndef DD4HEP_Detector_Detector_H
+#define DD4HEP_Detector_Detector_H
 
-// Framework include files
+#include "DD4hep/Version.h"
+
+// Framework includes
 #include "DD4hep/Handle.h"
-#include "DD4hep/Callback.h"
+#include "DD4hep/Fields.h"
 #include "DD4hep/Objects.h"
+#include "DD4hep/Shapes.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Readout.h"
-#include "DD4hep/Alignments.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Segmentations.h"
+#include "DD4hep/VolumeManager.h"
+#include "DD4hep/NamedObject.h"
+#include "DD4hep/BuildType.h"
 
 // C/C++ include files
 #include <map>
-#include <typeinfo>
+#include <vector>
+#include <string>
+#include <cstdio>
+
+// Forward declarations
+class TGeoManager;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  /// return a string with the current dd4hep version in the form vXX-YY.
+  std::string versionString();
+  
+  // Foward declarations
+  class NamedObject;
 
-    // Forward declarations
-    class LCDD;
-    class DetElementObject;
-    class SensitiveDetectorObject;
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
+  namespace xml {
+    class UriReader;
+  }
 
-    /// Handle class to hold the information of a sensitive detector.
+  /// The main interface to the dd4hep detector description package
+  /**
+   *  Note: The usage of the factory method:
+   *
+   *      static Detector& getInstance(void);
+   *
+   *  is DEPRECATED!
+   *
+   *  You should rather use the plugin mechanism to create a new instance.
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_GEOMETRY
+   */
+  class Detector {
+  public:
+    /// Type definition of a map of named handles
+    typedef std::map<std::string, Handle<NamedObject> > HandleMap;
+    typedef std::map<std::string, std::string>          PropertyValues;
+    typedef std::map<std::string, PropertyValues>       Properties;
+
+    /// Destructor
+    virtual ~Detector() = default;
+
+    /// Access flag to steer the detail of building of the geometry/detector description
+    virtual DetectorBuildType buildType() const = 0;
+    /// Initialize geometry
+    virtual void init() = 0;
+    /// Finalize the geometry
+    virtual void endDocument() = 0;
+
+    /// Access the geometry manager of this instance
+    virtual TGeoManager& manager() const = 0;
+    /// Access to properties map
+    virtual Properties& properties() const = 0;
+    /// Return handle to material describing air
+    virtual Material air() const = 0;
+    /// Return handle to material describing vacuum
+    virtual Material vacuum() const = 0;
+    /// Return handle to "invisible" visualization attributes
+    virtual VisAttr invisible() const = 0;
+
+    /// Return reference to the top-most (world) detector element
+    virtual DetElement world() const = 0;
+    /// Return reference to detector element with all tracker devices.
+    virtual DetElement trackers() const = 0;
+
+    /// Return handle to the world volume containing everything
+    virtual Volume worldVolume() const = 0;
+    /// Return handle to the volume containing the tracking devices
+    virtual Volume trackingVolume() const = 0;
+
+    /// Return handle to the VolumeManager
+    virtual VolumeManager volumeManager() const = 0;
+
+    /// Accessor to the map of header entries
+    virtual Header header() const = 0;
+    /// Accessor to the header entry
+    virtual void setHeader(Header h) = 0;
+
+    /// Return handle to the combined electromagentic field description.
+    virtual OverlayedField field() const = 0;
+
+    /// Accessor to the map of constants
+    virtual const HandleMap& constants() const = 0;
+    /// Accessor to the map of region settings
+    virtual const HandleMap& regions() const = 0;
+    /// Accessor to the map of sub-detectors
+    virtual const HandleMap& detectors() const = 0;
+    /// Accessor to the map of sub-detectors
+    virtual const HandleMap& sensitiveDetectors() const = 0;
+    /// Accessor to the map of readout structures
+    virtual const HandleMap& readouts() const = 0;
+    /// Accessor to the map of visualisation attributes
+    virtual const HandleMap& visAttributes() const = 0;
+    /// Accessor to the map of limit settings
+    virtual const HandleMap& limitsets() const = 0;
+    /// Accessor to the map of field entries, which together form the global field
+    virtual const HandleMap& fields() const = 0;
+    /// Accessor to the map of ID specifications
+    virtual const HandleMap& idSpecifications() const = 0;
+
+#ifndef __MAKECINT__
+    /** Access to predefined caches of subdetectors according to the sensitive type */
+    /// Access a set of subdetectors according to the sensitive type.
     /**
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+       Please note:
+       - The sensitive type of a detector is set in the 'detector constructor'.
+       - Not sensitive detector structures have the name 'passive'
+       - Compounds (ie. nested detectors) are of type 'compound'
+       - If throw_exc is set to true, an exception is thrown if the type
+       is not present. Otherwise an empty detector container is returned.
+    */
+    virtual const std::vector<DetElement>& detectors(const std::string& type,
+                                                     bool throw_exc=false) = 0;
+
+    /// Access a set of subdetectors according to several sensitive types.
+    virtual std::vector<DetElement> detectors(const std::string& type1,
+                                              const std::string& type2,
+                                              const std::string& type3="",
+                                              const std::string& type4="",
+                                              const std::string& type5="" ) = 0;
+
+    /// Access the availible detector types
+    virtual std::vector<std::string> detectorTypes() const = 0;
+
+
+    /** return a vector with all detectors that have all the type properties in
+     *  includeFlag set but none of the properties given in excludeFlag
      */
-    class SensitiveDetector: public Handle<SensitiveDetectorObject> {
-    public:
-      /// Extensions destructor type
-      typedef void (*destruct_t)(void*);
-      /// Internal object type
-      typedef SensitiveDetectorObject Object;
-      /// Definition of the base handle type
-      typedef Handle<SensitiveDetectorObject> RefObject;
-    protected:
-
-      /// Templated destructor function
-      template <typename T> static void _delete(void* ptr) {
-        delete (T*) (ptr);
-      }
-
-      /// Add an extension object to the detector element
-      void* i_addExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
-
-      /// Access an existing extension object from the detector element
-      void* i_extension(const std::type_info& info) const;
-
-    public:
-
-      /// Default constructor
-      SensitiveDetector() : RefObject() {     }
-
-      /// Constructor to copy handled object
-      SensitiveDetector(Object* obj_pointer) : RefObject(obj_pointer) {      }
-
-      /// Copy from named handle
-      SensitiveDetector(const RefObject& sd) : RefObject(sd) {      }
-
-      /// Copy from handle
-      SensitiveDetector(const SensitiveDetector& sd) = default;
-
-      /// Templated constructor for handle conversions
-      template <typename Q> SensitiveDetector(const Handle<Q>& e) : RefObject(e) { }
-
-      /// Constructor for a new sensitive detector element
-      SensitiveDetector(const std::string& name, const std::string& type = "sensitive");
-
-      /// Assignment operator
-      SensitiveDetector& operator=(const SensitiveDetector& sd)  = default;
-
-      /// Access the type of the sensitive detector
-      std::string type() const;
-
-      ///  Set detector type (structure, tracker, calorimeter, etc.).
-      SensitiveDetector& setType(const std::string& typ);
-
-      /// Set flag to handle hits collection
-      SensitiveDetector& setVerbose(bool value);
-
-      /// Access flag to combine hist
-      bool verbose() const;
-
-      /// Set flag to handle hits collection
-      SensitiveDetector& setCombineHits(bool value);
-
-      /// Access flag to combine hist
-      bool combineHits() const;
-
-      /// Assign the name of the hits collection
-      SensitiveDetector& setHitsCollection(const std::string& spec);
-
-      /// Access the hits collection name
-      const std::string& hitsCollection() const;
-
-      /// Assign the IDDescriptor reference
-      SensitiveDetector& setReadout(Readout readout);
-
-      /// Access readout structure of the sensitive detector
-      Readout readout() const;
-
-      /// Set energy cut off
-      SensitiveDetector& setEnergyCutoff(double value);
-
-      /// Access energy cut off
-      double energyCutoff() const;
-
-      /// Set the regional attributes to the sensitive detector
-      SensitiveDetector& setRegion(Region reg);
-
-      /// Access to the region setting of the sensitive detector (not mandatory)
-      Region region() const;
-
-      /// Set the limits to the sensitive detector
-      SensitiveDetector& setLimitSet(LimitSet limits);
-
-      /// Access to the limit set of the sensitive detector (not mandatory).
-      LimitSet limits() const;
-
-      /// Extend the sensitive detector element with an arbitrary structure accessible by the type
-      template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
-        return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _delete<IFACE>);
-      }
-
-      /// Access extension element by the type
-      template <typename IFACE> IFACE* extension() const {
-        return (IFACE*) i_extension(typeid(IFACE));
-      }
-    };
-
-    /// Handle class describing a detector element
-    /**
-     * Detector elements (class DetElement are entities which represent
-     * subdetectors or sizable parts of a subdetector.
-     * A DetElement instance has the means to provide to clients information about
-     *
-     *    -  the detector hierarchy by exposing its children.
-     *    -  its placement within the overall experiment if it represents an
-     *       entire subdetector or its placement with respect to its parent
-     *       if the \em DetElement represents a part of a subdetector.
-     *    -  information about the \em Readout structure if the object is
-     *       instrumented and read-out. Otherwise this link is empty.
-     *    -  information about the environmental conditions etc. \em conditons.
-     *       The access to conditions is exposed via the DetConditions interface.
-     *       See DD4hep/DetConditions.h for further details.
-     *    -  alignment information.
-     *    .
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
-     */
-    class DetElement: public Handle<DetElementObject>  {
-    public:
-      /// Abstract base for processing callbacks to DetElement objects
-      /**
-       *  \author  M.Frank
-       *  \version 1.0
-       *  \ingroup DD4HEP_GEOMETRY
-       */
-      class Processor {
-      public:
-        /// Default constructor
-        Processor();
-        /// Default destructor
-        virtual ~Processor();
-        /// Container callback for object processing
-        virtual int processElement(DetElement detector) = 0;
-      };
-
-      /// Definition of the base handle type
-      typedef Handle<DetElementObject> RefObject;
-      typedef DetElement               Parent;
-      typedef Alignments::Alignment    Alignment;
-
-      /// Extensions copy constructor type
-      typedef void* (*copy_t)(const void*, DetElement);
-      /// Extensions destructor type
-      typedef void (*destruct_t)(void*);
-
-      typedef std::map<std::string, DetElement> Children;
-      typedef std::map<const std::type_info*, void*> Extensions;
-
-      enum CopyParameters {
-        COPY_NONE = 0, COPY_PLACEMENT = 1 << 0, COPY_PARENT = 1 << 1, COPY_ALIGNMENT = 1 << 2, LAST
-      };
-
-      enum UpdateParam {
-        CONDITIONS_CHANGED = 1<<0,
-        PLACEMENT_CHANGED  = 1<<1,
-        SOMETHING_CHANGED  = 1<<2,
-        PLACEMENT_ELEMENT  = 1<<20,
-        PLACEMENT_HIGHEST  = 1<<21,
-        PLACEMENT_DETECTOR = 1<<22,
-        PLACEMENT_NONE
-      };
-
-      /// Internal assert function to check conditions
-      void check(bool condition, const std::string& msg) const;
-
-    protected:
-
-      /// Templated destructor function
-      template <typename T> static void _delete(void* ptr) {
-        delete (T*) (ptr);
-      }
-      /// Templated copy constructor
-      template <typename T> static void* _copy(const void* ptr, DetElement elt) {
-        return new T(*(dynamic_cast<const T*>((T*) ptr)), elt);
-      }
-
-      /// Add an extension object to the detector element
-      void* i_addExtension(void* ptr, const std::type_info& info, copy_t ctor, destruct_t dtor) const;
-      /// Access an existing extension object from the detector element
-      void* i_extension(const std::type_info& info) const;
-      /// Internal call to extend the detector element with an arbitrary structure accessible by the type
-      void i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const;
-
-    public:
-
-      /// Default constructor
-      DetElement() : RefObject() {  }
-
-      /// Constructor to hold handled object
-      DetElement(Object* object_ptr) : RefObject(object_ptr) { }
-
-      /// Clone constructor
-      DetElement(Object* data, const std::string& name, const std::string& type);
-
-      /// Templated constructor for handle conversions
-      template <typename Q> DetElement(const Handle<Q>& e) : RefObject(e) {}
-
-      /// Constructor to copy handle
-      DetElement(const DetElement& e) = default;
-
-#ifdef __MAKECINT__
-      /// Constructor to copy handle
-      DetElement(const Ref_t& e)
-        : RefObject(e) {
-      }
+    virtual std::vector<DetElement> detectors(unsigned int includeFlag, 
+                                              unsigned int excludeFlag=0 ) const = 0 ;
 #endif
-      /// Constructor for a new subdetector element
-      DetElement(const std::string& name, const std::string& type, int id);
 
-      /// Constructor for a new subdetector element
-      DetElement(const std::string& name, int id);
+    /** Miscaneleous accessors to the detexctor description  */
 
-      /// Constructor for a new subdetector element
-      DetElement(DetElement parent, const std::string& name, int id);
+    /// Register new mother volume using the detector name.
+    /** Volumes must be registered/declared PRIOR to be picked up!
+     *  The method throws an exception if another volume was already declared for this subdetector
+     *  The method throws an exception if the volume to be registered is invalid.
+     */
+    virtual void   declareMotherVolume(const std::string& detector_name, const Volume& vol) = 0;
 
-      /// Additional data accessor
-      Object& _data() const {
-        return object<Object>();
-      }
+    /// Access mother volume by detector element
+    /** The method uses the detector element's name for volume identification. 
+     *  Unregistered detectors are hosted by the world volume.
+     */
+    virtual Volume pickMotherVolume(const DetElement& sd) const = 0;
 
-      /// Operator less to insert into a map
-      bool operator <(const DetElement e) const {
-        return ptr() < e.ptr();
-      }
+    /// Typed access to constants: access string values
+    virtual std::string constantAsString(const std::string& name) const = 0;
+    /// Typed access to constants: long values
+    virtual long constantAsLong(const std::string& name) const = 0;
+    /// Typed access to constants: double values
+    virtual double constantAsDouble(const std::string& name) const = 0;
 
-      /// Equality operator
-      bool operator ==(const DetElement e) const {
-        return ptr() == e.ptr();
-      }
+    /// Retrieve a constant by it's name from the detector description
+    virtual Constant constant(const std::string& name) const = 0;
+    /// Typed access to constants: access any type values
+    template <class T> T constant(const std::string& name) const;
 
-      /// Assignment operator
-      DetElement& operator=(const DetElement& e) = default;
+    /// Retrieve a matrial by it's name from the detector description
+    virtual Material material(const std::string& name) const = 0;
+    /// Retrieve a id descriptor by it's name from the detector description
+    virtual IDDescriptor idSpecification(const std::string& name) const = 0;
+    /// Retrieve a region object by it's name from the detector description
+    virtual Region region(const std::string& name) const = 0;
+    /// Retrieve a visualization attribute by it's name from the detector description
+    virtual VisAttr visAttributes(const std::string& name) const = 0;
+    /// Retrieve a limitset by it's name from the detector description
+    virtual LimitSet limitSet(const std::string& name) const = 0;
+    /// Retrieve a readout object by it's name from the detector description
+    virtual Readout readout(const std::string& name) const = 0;
+    /// Retrieve a sensitive detector by it's name from the detector description
+    virtual SensitiveDetector sensitiveDetector(const std::string& name) const = 0;
+    /// Retrieve a subdetector element by it's name from the detector description
+    virtual CartesianField field(const std::string& name) const = 0;
+    /// Retrieve a field component by it's name from the detector description
+    virtual DetElement detector(const std::string& name) const = 0;
 
-      /// Clone (Deep copy) the DetElement structure with a new name
-      DetElement clone(const std::string& new_name) const;
+    /// Add a new constant to the detector description
+    virtual Detector& add(Constant constant) = 0;
+    /// Add a new visualisation attribute to the detector description
+    virtual Detector& add(VisAttr attr) = 0;
+    /// Add a new limit set to the detector description
+    virtual Detector& add(LimitSet limitset) = 0;
+    /// Add a new detector region to the detector description
+    virtual Detector& add(Region region) = 0;
+    /// Add a new id descriptor to the detector description
+    virtual Detector& add(IDDescriptor spec) = 0;
+    /// Add a new detector readout to the detector description
+    virtual Detector& add(Readout readout) = 0;
+    /// Add a new sensitive detector to the detector description
+    virtual Detector& add(SensitiveDetector entry) = 0;
+    /// Add a new subdetector to the detector description
+    virtual Detector& add(DetElement detector) = 0;
+    /// Add a field component to the detector description
+    virtual Detector& add(CartesianField entry) = 0;
 
-      /// Clone (Deep copy) the DetElement structure with a new name and new identifier
-      DetElement clone(const std::string& new_name, int new_id) const;
+    /// Add a new constant by named reference to the detector description
+    virtual Detector& addConstant(const Ref_t& element) = 0;
+    /// Add a new visualisation attribute by named reference to the detector description
+    virtual Detector& addVisAttribute(const Ref_t& element) = 0;
+    /// Add a new limit set by named reference to the detector description
+    virtual Detector& addLimitSet(const Ref_t& limset) = 0;
+    /// Add a new id descriptor by named reference to the detector description
+    virtual Detector& addIDSpecification(const Ref_t& element) = 0;
+    /// Add a new detector region by named reference to the detector description
+    virtual Detector& addRegion(const Ref_t& region) = 0;
+    /// Add a new detector readout by named reference to the detector description
+    virtual Detector& addReadout(const Ref_t& readout) = 0;
+    /// Add a new sensitive detector by named reference to the detector description
+    virtual Detector& addSensitiveDetector(const Ref_t& element) = 0;
+    /// Add a new subdetector by named reference to the detector description
+    virtual Detector& addDetector(const Ref_t& detector) = 0;
+    /// Add a field component by named reference to the detector description
+    virtual Detector& addField(const Ref_t& field) = 0;
 
-      /// Extend the detector element with an arbitrary structure accessible by the type
-      template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
-        CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
-        return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _copy<CONCRETE>, _delete<IFACE>);
-      }
-      /// Access extension element by the type
-      template <typename IFACE> IFACE* extension() const {
-        return (IFACE*) i_extension(typeid(IFACE));
-      }
-      /// Extend the detector element with an arbitrary callback
-      template <typename Q, typename T>
-      void callAtUpdate(unsigned int typ, Q* pointer,
-                        void (T::*pmf)(unsigned long typ, DetElement& det, void* opt_par)) const
-      {
-        CallbackSequence::checkTypes(typeid(T), typeid(Q), dynamic_cast<T*>(pointer));
-        i_addUpdateCall(typ, Callback(pointer).make(pmf));
-      }
-      /// Remove callback from object
-      void removeAtUpdate(unsigned int type, void* pointer) const;
+    /// Deprecated call (use fromXML): Read compact geometry description or alignment file
+    virtual void fromCompact(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) = 0;
+    /// Read any geometry description or alignment file
+    virtual void fromXML(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) = 0;
+    /// Read any geometry description or alignment file with external XML entity resolution
+    virtual void fromXML(const std::string& fname,
+                         xml::UriReader* entity_resolver,
+                         DetectorBuildType type = BUILD_DEFAULT) = 0;
 
-      /// Get the detector identifier
-      int id() const;
-      /// Setter: Combine hits attribute
-      DetElement& setCombineHits(bool value, SensitiveDetector& sens);
-      /// Getter: Combine hits attribute
-      bool combineHits() const;
+    /// Stupid legacy method
+    virtual void dump() const = 0;
+    /// Manipulate geometry using factory converter
+    virtual long apply(const char* factory, int argc, char** argv) = 0;
 
-      /** Access detector type (structure, tracker, calorimeter, etc.).
-       *  Required for determination of G4 sensitive detector.
-       */
-      std::string type() const;
-      ///  Set detector type (structure, tracker, calorimeter, etc.).
-      DetElement& setType(const std::string& typ);
+    /// Extend the sensitive detector element with an arbitrary structure accessible by the type
+    template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
+      return (IFACE*) addUserExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _delete<IFACE>);
+    }
 
-      // Return flag word encoding detector types ( ideally use DD4hep::DetType for decoding )
-      unsigned int typeFlag() const;
+    /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned
+    template <class T> T* removeExtension(bool destroy=true)  {
+      return (T*) removeUserExtension(typeid(T),destroy);
+    }
 
-      ///  Set the flag word encoding detector types ( ideally use DD4hep::DetType for encoding )
-      DetElement& setTypeFlag(unsigned int types);
+    /// Access extension element by the type
+    template <class T> T* extension(bool alert=true) const {
+      return (T*) userExtension(typeid(T),alert);
+    }
 
-      /// Access hash key of this detector element (Only valid once geometry is closed!)
-      unsigned int key()  const;
-      /// Access the hierarchical level of the detector element (Only valid once geometry is closed!)
-      int level()  const;
-      /// Path of the detector element (not necessarily identical to placement path!)
-      const std::string& path() const;
-      /// Access to the full path to the placed object
-      const std::string& placementPath() const;
+    ///---Factory method-------
+    static Detector& getInstance(void);
+    /// Destroy the instance
+    static void destroyInstance();
 
-      /// Set all attributes in one go
-      DetElement& setAttributes(const LCDD& lcdd, const Volume& volume, const std::string& region, const std::string& limits,
-                                const std::string& vis);
+  protected:
+    /// Templated destructor function
+    template <typename T> static void _delete(void* ptr) {
+      delete (T*) (ptr);
+    }
+    /// Add an extension object to the detector element
+    virtual void* addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) = 0;
+    /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned
+    virtual void* removeUserExtension(const std::type_info& info, bool destroy) = 0;
+    /// Access an existing extension object from the detector element
+    virtual void* userExtension(const std::type_info& info, bool alert=true) const = 0;
 
-      /// Set Visualization attributes to the detector element
-      DetElement& setVisAttributes(const LCDD& lcdd, const std::string& name, const Volume& volume);
-      /// Set the regional attributes to the detector element
-      DetElement& setRegion(const LCDD& lcdd, const std::string& name, const Volume& volume);
-      /// Set the limits to the detector element
-      DetElement& setLimitSet(const LCDD& lcdd, const std::string& name, const Volume& volume);
+  };
 
-      /// Access to the logical volume of the detector element's placement
-      Volume volume() const;
+  /*
+   *   The following are convenience implementations to access constants by type.
+   *   I do not think this violates the interface approach, but it is so much
+   *   more intuitiv to say constant<int>(name) than constantAsInt(name).
+   */
+#ifndef __CINT__
+  /// Typed access to constants: short values
+  template <> inline short Detector::constant<short>(const std::string& name) const {
+    return (short) constantAsLong(name);
+  }
 
-      /// Access to the physical volume of this detector element
-      /** This is the current placement value of the detector eleemnt.
-       *  A possible global re-alignment may alter the value.
-       *  Hence, it should hence not be cached.
-       */
-      PlacedVolume placement() const;
-      /// Access to the ideal physical volume of this detector element
-      /** This is the original placement set in the detector constructor.
-       *  A possible global re-alignment make this value different
-       *  from the regular placement() call.
-       */
-      PlacedVolume idealPlacement() const;
-      /// Set the physical volumes of the detector element
-      DetElement&  setPlacement(const PlacedVolume& volume);
-      /// The cached VolumeID of this subdetector element
-      VolumeID     volumeID() const;
+  /// Typed access to constants: unsigned short values
+  template <> inline unsigned short Detector::constant<unsigned short>(const std::string& name) const {
+    return (unsigned short) constantAsLong(name);
+  }
 
-      /// Add new child to the detector structure
-      DetElement&  add(DetElement sub_element);
-      /// Access to the list of children
-      const Children& children() const;
-      /// Access to individual children by name
-      DetElement child(const std::string& name) const;
-      /// Access to the detector elements's parent
-      DetElement parent() const;
-      /// Access to the world object. Only possible once the geometry is closed.
-      DetElement world()  const;
+  /// Typed access to constants: integer values
+  template <> inline int Detector::constant<int>(const std::string& name) const {
+    return (int) constantAsLong(name);
+  }
 
-      /// Access to the constant ideal (nominal) alignment information
-      Alignment nominal() const;
-      /// Access to the constant survey alignment information
-      Alignment survey() const;
-    };
+  /// Typed access to constants: unsigned integer values
+  template <> inline unsigned int Detector::constant<unsigned int>(const std::string& name) const {
+    return (unsigned int) constantAsLong(name);
+  }
 
-  } /* End namespace Geometry      */
-} /* End namespace DD4hep        */
+  /// Typed access to constants: long values
+  template <> inline long Detector::constant<long>(const std::string& name) const {
+    return constantAsLong(name);
+  }
 
-#include "DD4hep/AlignmentData.h"
+  /// Typed access to constants: unsigned long values
+  template <> inline unsigned long Detector::constant<unsigned long>(const std::string& name) const {
+    return (unsigned long) constantAsLong(name);
+  }
 
-#endif    /* DD4HEP_DETECTOR_H      */
+  /// Typed access to constants: float values
+  template <> inline float Detector::constant<float>(const std::string& name) const {
+    return (float) constantAsDouble(name);
+  }
+
+  /// Typed access to constants: double values
+  template <> inline double Detector::constant<double>(const std::string& name) const {
+    return constantAsDouble(name);
+  }
+
+  /// Typed access to constants: string values
+  template <> inline std::string Detector::constant<std::string>(const std::string& name) const {
+    return constantAsString(name);
+  }
+#endif
+} /* End namespace dd4hep   */
+#endif    /* DD4HEP_Detector_Detector_H     */

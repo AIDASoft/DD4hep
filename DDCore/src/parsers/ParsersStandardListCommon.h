@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -56,13 +56,13 @@
 
 // ============================================================================
 #define PARSERS_DEF_FOR_LIST(InnerType)                    \
-  namespace DD4hep{ namespace Parsers{                     \
+  namespace dd4hep{ namespace Parsers{                     \
       IMPLEMENT_STL_PARSERS(InnerType)                     \
       IMPLEMENT_MAPPED_PARSERS(pair,InnerType)            }}
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 // ============================================================================
-namespace DD4hep {
+namespace dd4hep {
   namespace Parsers {
     // ========================================================================
     template<typename T1, typename T2> inline int

@@ -6,7 +6,7 @@ The need of the various reconstruction programs used to create e.g. tracks
 from hits may differ significantly and may require different helper data
 to perform the required functions.
 In general the reconstruction is supported by the detector elements with
-helper objects (in DD4hep speak these are called Views). Some default views 
+helper objects (in dd4hep speak these are called Views). Some default views 
 are provided by this package for some of the detector constructors of the 
 "default subdetector palette".
 We first show how to invoke these plugins in order to attach the required 
@@ -40,19 +40,19 @@ Available plugins
 =================
 
 -- "SubdetectorExtensionPlugin"
-   argument: subdetector name as registered to LCDD
-   Adds an extension of type DD4hep::DDRec::SubdetectorExtension.
+   argument: subdetector name as registered to Detector
+   Adds an extension of type dd4hep::rec::SubdetectorExtension.
    Please see documentation in DDRec for details.
    In general applicable to any top level detector object.
 
 -- "LayeringExtensionPlugin"
-   argument: subdetector name as registered to LCDD
-   Adds an extension of the interface type DD4hep::DDRec::LayeringExtension
-   and the implementation type DD4hep::DDRec::LayeringExtensionImpl.
+   argument: subdetector name as registered to Detector
+   Adds an extension of the interface type dd4hep::rec::LayeringExtension
+   and the implementation type dd4hep::rec::LayeringExtensionImpl.
    Please see documentation in DDRec for details.
 
--- "DD4hep_SiTrackerBarrelSurfacePlugin"
-   argument: subdetector name as registered to LCDD
+-- "dd4hep_SiTrackerBarrelSurfacePlugin"
+   argument: subdetector name as registered to Detector
    This plugin adds measurement surfaces of interface type DDSurfaces::ISurface
    to each detector element which has a placement with a sensitive volume.
 
@@ -61,8 +61,8 @@ Available plugins
     - SiTrackerBarrel
     - EcalBarrel
 
--- "DD4hep_SiTrackerEndcapSurfacePlugin"
-   argument: subdetector name as registered to LCDD
+-- "dd4hep_SiTrackerEndcapSurfacePlugin"
+   argument: subdetector name as registered to Detector
    This plugin adds measurement surfaces of interface type DDSurfaces::ISurface
    to each detector element which has a placement with a sensitive volume.
 

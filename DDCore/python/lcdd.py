@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -14,36 +14,36 @@ from os import path, listdir
 from functools import partial
 import SystemOfUnits
 import math
-from ROOT import SetOwnership, DD4hep, TGeoMixture, TGeoMedium, gGeoManager, TNamed
+from ROOT import SetOwnership, dd4hep, TGeoMixture, TGeoMedium, gGeoManager, TNamed
 
-LCDD       = DD4hep.Geometry.LCDD
-Constant   = DD4hep.Geometry.Constant
-Material   = DD4hep.Geometry.Material
-VisAttr    = DD4hep.Geometry.VisAttr
-AlignmentEntry = DD4hep.Geometry.AlignmentEntry
-Limit      = DD4hep.Geometry.Limit
-DetElement = DD4hep.Geometry.DetElement
-Box        = DD4hep.Geometry.Box
-Tube       = DD4hep.Geometry.Tube
-Trapezoid  = DD4hep.Geometry.Trapezoid
-Volume     = DD4hep.Geometry.Volume
-PlacedVolume = DD4hep.Geometry.PlacedVolume
-Position   = DD4hep.Geometry.Position
-Rotation   = DD4hep.Geometry.Rotation
-Handle     = DD4hep.Geometry.Handle
-Readout    = DD4hep.Geometry.Readout
-GridXYZ = DD4hep.Geometry.GridXYZ
-GlobalGridXY = DD4hep.Geometry.GlobalGridXY
-CartesianGridXY = DD4hep.Geometry.CartesianGridXY
-NoSegmentation = DD4hep.Geometry.NoSegmentation
-GridPhiEta = DD4hep.Geometry.GridPhiEta
-GridRPhiEta = DD4hep.Geometry.GridRPhiEta
-ProjectiveCylinder = DD4hep.Geometry.ProjectiveCylinder
-NonProjectiveCylinder = DD4hep.Geometry.NonProjectiveCylinder
-ProjectiveZPlane = DD4hep.Geometry.ProjectiveZPlane
-IDDescriptor = DD4hep.Geometry.IDDescriptor
+Detector       = dd4hep.Geometry.Detector
+Constant   = dd4hep.Geometry.Constant
+Material   = dd4hep.Geometry.Material
+VisAttr    = dd4hep.Geometry.VisAttr
+AlignmentEntry = dd4hep.Geometry.AlignmentEntry
+Limit      = dd4hep.Geometry.Limit
+DetElement = dd4hep.Geometry.DetElement
+Box        = dd4hep.Geometry.Box
+Tube       = dd4hep.Geometry.Tube
+Trapezoid  = dd4hep.Geometry.Trapezoid
+Volume     = dd4hep.Geometry.Volume
+PlacedVolume = dd4hep.Geometry.PlacedVolume
+Position   = dd4hep.Geometry.Position
+Rotation   = dd4hep.Geometry.Rotation
+Handle     = dd4hep.Geometry.Handle
+Readout    = dd4hep.Geometry.Readout
+GridXYZ = dd4hep.Geometry.GridXYZ
+GlobalGridXY = dd4hep.Geometry.GlobalGridXY
+CartesianGridXY = dd4hep.Geometry.CartesianGridXY
+NoSegmentation = dd4hep.Geometry.NoSegmentation
+GridPhiEta = dd4hep.Geometry.GridPhiEta
+GridRPhiEta = dd4hep.Geometry.GridRPhiEta
+ProjectiveCylinder = dd4hep.Geometry.ProjectiveCylinder
+NonProjectiveCylinder = dd4hep.Geometry.NonProjectiveCylinder
+ProjectiveZPlane = dd4hep.Geometry.ProjectiveZPlane
+IDDescriptor = dd4hep.Geometry.IDDescriptor
 
-_toDictionary = DD4hep.Geometry._toDictionary
+_toDictionary = dd4hep.Geometry._toDictionary
 
 import xml.etree.ElementTree as xml
 unique_mat_id = 0x7FFEFEED
@@ -55,7 +55,7 @@ constants.update(SystemOfUnits.__dict__)
 constants.update(math.__dict__)
 drivers = {}
 drivers.update(math.__dict__)
-drivers.update(DD4hep.Geometry.__dict__)
+drivers.update(dd4hep.Geometry.__dict__)
 
 
 #---Enhancing the Element class with dedicated accessors--------------------------
@@ -133,7 +133,7 @@ def load_drivers(*args):
 
 
 #---------------------------------------------------------------------------------
-def process_xmlfile(lcdd, file):
+def process_xmlfile(description, file):
   global current_xmlfile
   file = file.replace('file:','')
   root = xml.parse(file).getroot()
@@ -141,39 +141,39 @@ def process_xmlfile(lcdd, file):
   tags = ('includes', 'define', 'materials', 'properties', 'limits', 'display',
           'readouts', 'detectors', 'alignments', 'fields', 'sensitive_detectors')
   if root.tag in tags :
-    process_tag(lcdd, root)
+    process_tag(description, root)
   else :
     for tag in tags:
       for e in root.findall(tag):
-        process_tag(lcdd, e)
+        process_tag(description, e)
   current_xmlfile = last_xmlfile
 
-def process_tag(lcdd, elem):
+def process_tag(description, elem):
   if elem.tag == 'detectors' :
-    lcdd.init() # call init before processing 'detectors' (need world volume)
+    description.init() # call init before processing 'detectors' (need world volume)
   procs = globals().get('process_%s'% elem.tag, None)
   if not procs :
     procs = drivers.get('process_%s'% elem.tag, None)
   if procs :
-    apply(procs,(lcdd, elem))
+    apply(procs,(description, elem))
   else : print 'XML tag %s not processed!!! No function found.' % elem.tag
 
 
 #--------------------------------------------------------------------------------
 def fromXML(xmlfile):
   print 'Converting Compact file: ', xmlfile
-  lcdd = LCDD.getInstance()
-  #lcdd.create()
-  process_xmlfile(lcdd, xmlfile)
-  return lcdd
+  description = Detector.getInstance()
+  #description.create()
+  process_xmlfile(description, xmlfile)
+  return description
 
 #---------------------------------------------------------------------------------
-def process_includes(lcdd, elem):
+def process_includes(description, elem):
   for c in elem.findall('gdmlFile'):
     print 'Adding Gdml file ...', c.get('ref')
     fname = c.get('ref').replace('file:','')
     if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
-    process_xmlfile(lcdd, fname)
+    process_xmlfile(description, fname)
   for c in elem.findall('pyBuilder'):
     print 'Adding PyBuilder ...', c.get('ref')
     fname = c.get('ref')
@@ -183,22 +183,22 @@ def process_includes(lcdd, elem):
     print 'Adding Alignment file ...', c.get('ref')
     fname = c.get('ref').replace('file:','')
     if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
-    process_xmlfile(lcdd, fname)
+    process_xmlfile(description, fname)
 
 #---------------------------------------------------------------------------------
-def process_info(lcdd, elem):
+def process_info(description, elem):
   pass
 
 #---------------------------------------------------------------------------------
-def process_define(lcdd, elem):
+def process_define(description, elem):
   for c in elem.findall('constant'):
     #print 'Adding constant ...', c.get('name')
-    lcdd.addConstant(Constant(c.get('name'),c.get('value')))
+    description.addConstant(Constant(c.get('name'),c.get('value')))
     _toDictionary(c.get('name'),c.get('value')) #-- Make it known to the evaluator
     constants[c.get('name')] = c.getF('value')
 
 #---------------------------------------------------------------------------------
-def process_element(lcdd, elem):
+def process_element(description, elem):
   #print 'Adding element ...', elem.get('name')
   ename = elem.get('name')
   tab = gGeoManager.GetElementTable()
@@ -208,9 +208,9 @@ def process_element(lcdd, elem):
     tab.AddElement(atom.get('name'), atom.get('formula'), atom.getI('Z'), atom.getI('value'))
 
 #---------------------------------------------------------------------------------
-def process_materials(lcdd, elem):
+def process_materials(description, elem):
   for m in elem.findall('material'):
-    process_material(lcdd, m)
+    process_material(description, m)
 
 #---------------------------------------------------------------------------------
 # <material formula="Ac" name="Actinium" state="solid" >
@@ -227,7 +227,7 @@ def process_materials(lcdd, elem):
 #</material>
 
 
-def process_material(lcdd, m):
+def process_material(description, m):
   #print 'Adding material ...', m.get('name')
   density = m.find('D')
   radlen  = m.find('RL')
@@ -261,11 +261,11 @@ def process_material(lcdd, m):
     SetOwnership(medium, False)
     medium.SetTitle('material')
     medium.SetUniqueID(unique_mat_id)
-  lcdd.addMaterial(Handle(medium))
+  description.addMaterial(Handle(medium))
 
 
 #----------------------------------------------------------------------------------
-def process_display(lcdd, elem):
+def process_display(description, elem):
   for v in elem.findall('vis'):
     #print 'Adding vis ...', v.name
     visattr = VisAttr(v.name)
@@ -287,35 +287,35 @@ def process_display(lcdd, elem):
       ds = v.get('drawingStyle')
       if ds == 'wireframe' : visattr.setDrawingStyle(VisAttr.WIREFRAME)
     #print visattr.toString()
-    lcdd.addVisAttribute(visattr)
+    description.addVisAttribute(visattr)
 
-def process_limits(lcdd, elem):
+def process_limits(description, elem):
   # <limit name="step_length_max" particles="*" value="5.0" unit="mm" />    
   for l in elem.findall('limit'):
-    limit = Limit(lcdd.document(), l.get('name'))
+    limit = Limit(description.document(), l.get('name'))
     limit.setParticles(l.get('particles'))
     limit.setValue(l.getF('value'))
     limit.setUnit(l.get('unit'))
-    lcdd.addLimit(limit)
+    description.addLimit(limit)
 
 #-----------------------------------------------------------------------------------
-def process_detectors(lcdd, elem):
+def process_detectors(description, elem):
   for d in elem.findall('detector'):
     procs = drivers.get('detector_%s'% d.get('type'), None)
     if procs : 
-      detector = apply(procs,(lcdd, d))
-      lcdd.addDetector(detector)
+      detector = apply(procs,(description, d))
+      description.addDetector(detector)
     else : 
       print 'Detector type %s not found' % d.get('type')
 
 #-----------------------------------------------------------------------------------
-def process_alignments(lcdd, elem):
+def process_alignments(description, elem):
   for a in elem.findall('alignment'):
-    process_alignment(lcdd, a)
+    process_alignment(description, a)
 
 #-----------------------------------------------------------------------------------
-def process_alignment(lcdd, elem):
-  alignment = AlignmentEntry(lcdd, elem.name)
+def process_alignment(description, elem):
+  alignment = AlignmentEntry(description, elem.name)
   pos = getPosition(elem.find('position'))
   rot = getRotation(elem.find('rotation'))
   print pos.isNull(), rot.isNull()
@@ -323,12 +323,12 @@ def process_alignment(lcdd, elem):
   return alignment
 
 #-----------------------------------------------------------------------------------
-def process_readouts(lcdd, elem):
+def process_readouts(description, elem):
   for a in elem.findall('readout'):
-    process_readout(lcdd, a)
+    process_readout(description, a)
 
 #-----------------------------------------------------------------------------------
-def process_readout(lcdd, elem):
+def process_readout(description, elem):
   readout = Readout(elem.name)
   seg = elem.find('segmentation')
   if seg is not None:
@@ -336,7 +336,7 @@ def process_readout(lcdd, elem):
     if not procs :
       procs = drivers.get('create_%s'% seg.get('type'), None)
     if procs :
-      segment = apply(procs,(lcdd, seg))
+      segment = apply(procs,(description, seg))
       readout.setSegmentation(segment)
     else :
       print 'Segmentation type %s not found' % seg.get('type')
@@ -345,58 +345,58 @@ def process_readout(lcdd, elem):
     idSpec = IDDescriptor(id.text)
     idSpec.SetName(elem.name)
     readout.setIDDescriptor(idSpec)
-    lcdd.addIDSpecification(idSpec)
-  lcdd.addReadout(readout)
+    description.addIDSpecification(idSpec)
+  description.addReadout(readout)
 
 #---Segmentations--------------------------------------------------------------------
-def create_GridXYZ(lcdd, elem) :
+def create_GridXYZ(description, elem) :
   obj = GridXYZ()
   if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
   if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
   if 'gridSizeZ' in elem.keys() : obj.setGridSizeZ(elem.getF('gridSizeZ'))
   return obj
 
-def create_GlobalGridXY(lcdd, elem) :
+def create_GlobalGridXY(description, elem) :
   obj = GlobalGridXY()
   if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
   if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
   return obj
 
-def create_CartesianGridXY(lcdd, elem) :
+def create_CartesianGridXY(description, elem) :
   obj = CartesianGridXY()
   if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
   if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
   return obj
 
-def create_NoSegmentation(lcdd, elem) :
+def create_NoSegmentation(description, elem) :
   obj = NoSegmentation()
   return obj
 
-def create_ProjectiveCylinder(lcdd, elem) :
+def create_ProjectiveCylinder(description, elem) :
   obj = ProjectiveCylinder()
   if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
   if 'thetaBins' in elem.keys() : obj.setThetaBins(elem.getI('thetaBins'))
   return obj
 
-def create_NonProjectiveCylinder(lcdd, elem) :
+def create_NonProjectiveCylinder(description, elem) :
   obj = NonProjectiveCylinder()
   if 'gridSizePhi' in elem.keys() : obj.setThetaBinSize(elem.getF('gridSizePhi'))
   if 'gridSizeZ' in elem.keys() : obj.setPhiBinSize(elem.getI('gridSizeZ'))
   return obj
 
-def create_ProjectiveZPlane(lcdd, elem) :
+def create_ProjectiveZPlane(description, elem) :
   obj = ProjectiveZPlaner()
   if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
   if 'thetaBins' in elem.keys() : obj.setThetaBins(elem.getI('thetaBins'))
   return obj
 
-def create_GridPhiEta(lcdd, elem) :
+def create_GridPhiEta(description, elem) :
   obj = GridPhiEta()
   if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
   if 'gridSizeEta' in elem.keys() : obj.setGridSizeEta(elem.getI('gridSizeEta'))
   return obj
 
-def create_GridRPhiEta(lcdd, elem) :
+def create_GridRPhiEta(description, elem) :
   obj = GridRPhiEta()
   if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('gridSizeR'))
   if 'gridSizeEta' in elem.keys() : obj.setGridSizeEta(elem.getI('gridSizeEta'))

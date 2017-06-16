@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,49 +12,49 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
-#include "DD4hep/LCDDHelper.h"
+#include "DD4hep/DetectorHelper.h"
 
 // C/C++ include files
 #include <stdexcept>
 #include <algorithm>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 
 namespace  {
 
-  /** @class LCDDHelperTest
+  /** @class DetectorHelperTest
    *
-   * Test LCDDHelper handle object to easily access the sensitive detector object of a detector
+   * Test DetectorHelper handle object to easily access the sensitive detector object of a detector
    * using either the subdetector name or the detector element (or one of its children).
    *
    * This helper recusively searches for all children of a subdetector the sensitive detector.
    * 
-   * See: DD4hep/LCDDHelper.h
+   * See: dd4hep/DetectorHelper.h
    * Test: geoPluginRun -input file:../DD4hep.trunk/examples/CLICSiD/compact/compact.xml \
-   *                    -plugin CLICSiD_LCDDHelperTest			\
+   *                    -plugin CLICSiD_DetectorHelperTest			\
    *         optional:  -<detector-name (default:SiVertexEndcap)>  [Note the '-'!!!]
    *
    *  @author  M.Frank
    *  @version 1.0
    */
-  struct LCDDHelperTest  {
+  struct DetectorHelperTest  {
     /// Initializing constructor
-    LCDDHelperTest(LCDD& lcdd, int argc, char** argv)   {
-      LCDDHelper h(&lcdd);
+    DetectorHelperTest(Detector& description, int argc, char** argv)   {
+      DetectorHelper h(&description);
       const char* nam = argc>1 ? argv[1]+1 : "SiVertexEndcap";
       printSD(h,nam);
-      walkSD(h,lcdd.detector(nam));
+      walkSD(h,description.detector(nam));
     }
     /// Default destructor
-    virtual ~LCDDHelperTest() {}
+    virtual ~DetectorHelperTest() {}
 
-    void walkSD(LCDDHelper h, DetElement de)  const {
+    void walkSD(DetectorHelper h, DetElement de)  const {
       printSD(h,de);
       for(DetElement::Children::const_iterator i=de.children().begin(); i!=de.children().end(); ++i)  {
         DetElement child = (*i).second;
@@ -62,27 +62,27 @@ namespace  {
         if ( child.children().size() > 0 ) walkSD(h,child);
       }
     }
-    void printSD(LCDDHelper h, DetElement de)  const {
+    void printSD(DetectorHelper h, DetElement de)  const {
       SensitiveDetector sd = h.sensitiveDetector(de);
-      printout(INFO,"LCDDHelperTest","Sensitive detector[%s]: %p  --> %s",de.path().c_str(),(void*)sd.ptr(),
+      printout(INFO,"DetectorHelperTest","Sensitive detector[%s]: %p  --> %s",de.path().c_str(),(void*)sd.ptr(),
                sd.ptr() ? sd.name() : "????");
 
     }
-    void printSD(LCDDHelper h, const char* nam)  const {
+    void printSD(DetectorHelper h, const char* nam)  const {
       SensitiveDetector sd = h.sensitiveDetector(nam);
-      printout(INFO,"LCDDHelperTest","Sensitive detector[%s]: %p  --> %s",nam,(void*)sd.ptr(),
+      printout(INFO,"DetectorHelperTest","Sensitive detector[%s]: %p  --> %s",nam,(void*)sd.ptr(),
                sd.ptr() ? sd.name() : "????");
 
     }
     /// Action routine to execute the test
-    static long run(LCDD& lcdd,int argc,char** argv)   {
-      LCDDHelperTest test(lcdd,argc,argv);
+    static long run(Detector& description,int argc,char** argv)   {
+      DetectorHelperTest test(description,argc,argv);
       return 1;
     }
   };
 }
 
-namespace DD4hep {
-  using ::LCDDHelperTest;
+namespace dd4hep {
+  using ::DetectorHelperTest;
 }
-DECLARE_APPLY(CLICSiD_LCDDHelperTest,LCDDHelperTest::run)
+DECLARE_APPLY(CLICSiD_DetectorHelperTest,DetectorHelperTest::run)

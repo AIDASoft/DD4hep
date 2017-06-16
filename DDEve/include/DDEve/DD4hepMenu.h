@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,19 +22,19 @@ class TGMenuBar;
 class TGMenuEntry;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class View;
   class EventControl;
 
-  /// DD4hep Menu for the ROOT browser
+  /// dd4hep Menu for the ROOT browser
   /*
    * \author  M.Frank
    * \version 1.0
    * \ingroup DD4HEP_EVE
    */
-  class DD4hepMenu : public PopupMenu {
+  class dd4hepMenu : public PopupMenu {
   public:
 
   protected:
@@ -43,9 +43,9 @@ namespace DD4hep {
     EventControl* m_evtCtrl;
   public:
     /// Standard constructor
-    DD4hepMenu(Display* eve);
+    dd4hepMenu(Display* eve);
     /// Default destructor
-    virtual ~DD4hepMenu();
+    virtual ~dd4hepMenu();
 
     /// Add the menu to the menu bar
     virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal)  override;
@@ -67,9 +67,9 @@ namespace DD4hep {
     /// Callback when the geometry was loaded
     void OnGeometryLoaded();
     /// ROOT implementation macro
-    ClassDefOverride(DD4hepMenu,0);
+    ClassDefOverride(dd4hepMenu,0);
   };
 
-}      /* End namespace DD4hep      */
+}      /* End namespace dd4hep      */
 #endif /* DD4HEP_DDEVE_DD4HEPMENU_H */
 

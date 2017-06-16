@@ -4,38 +4,38 @@ Describing the SiD detector concept using the standard detector palette
 
 
 This XML description mimics the SiD detector concept using the 
-standard DD4hep supplied detector palette.
+standard dd4hep supplied detector palette.
 
 System	Subdetector		Palette Type				Sensitive type
 ---------------------------------------------------------------------------------------
-Vertex:	SiVertexBarrel		DD4hep_SiTrackerBarrel			[tracker]
-	SiVertexEndcap		DD4hep_SiTrackerEndcap2 		[tracker]
-	SUPPORTS of type:	DD4hep_MultiLayerTracker 
-				DD4hep_DiskTracker 
-				DD4hep_PolyconeSupport 
-Tracker:SiTrackerEndcap		DD4hep_SiTrackerEndcap2			[tracker]
-	SiTrackerBarrel		DD4hep_SiTrackerBarrel 			[tracker]
-	SiTrackerForward	DD4hep_SiTrackerEndcap2 		[tracker]
-	SUPPORTS of type:	DD4hep_MultiLayerTracker 
-				DD4hep_PolyconeSupport 
-				DD4hep_DiskTracker 
-Ecal:	EcalBarrel		DD4hep_EcalBarrel			[calorimeter]
-	EcalEndcap		DD4hep_PolyhedraEndcapCalorimeter2 	[calorimeter]
-Hcal:	HcalBarrel		DD4hep_PolyhedraBarrelCalorimeter2 	[calorimeter]
-	HcalEndcap		DD4hep_PolyhedraEndcapCalorimeter2 	[calorimeter]
-Muon:	MuonBarrel		DD4hep_PolyhedraBarrelCalorimeter2 	[calorimeter]
-	MuonEndcap		DD4hep_PolyhedraEndcapCalorimeter2 	[calorimeter]
-LumiCal:LumiCal			DD4hep_CylindricalEndcapCalorimeter 	[calorimeter]
-	SUPPORTS of type:	DD4hep_PolyconeSupport 
-BeamCal:BeamCal			DD4hep_ForwardDetector			[calorimeter]
-Magnet:	SolenoidCoilBarrel	DD4hep_MultiLayerTracker 
-	SolenoidCoilEnds	DD4hep_DiskTracker 
-	AntiSolenoid_Forward	DD4hep_PolyconeSupport 
-	AntiSolenoid_Backward	DD4hep_PolyconeSupport 
+Vertex:	SiVertexBarrel		dd4hep_SiTrackerBarrel			[tracker]
+	SiVertexEndcap		dd4hep_SiTrackerEndcap2 		[tracker]
+	SUPPORTS of type:	dd4hep_MultiLayerTracker 
+				dd4hep_DiskTracker 
+				dd4hep_PolyconeSupport 
+Tracker:SiTrackerEndcap		dd4hep_SiTrackerEndcap2			[tracker]
+	SiTrackerBarrel		dd4hep_SiTrackerBarrel 			[tracker]
+	SiTrackerForward	dd4hep_SiTrackerEndcap2 		[tracker]
+	SUPPORTS of type:	dd4hep_MultiLayerTracker 
+				dd4hep_PolyconeSupport 
+				dd4hep_DiskTracker 
+Ecal:	EcalBarrel		dd4hep_EcalBarrel			[calorimeter]
+	EcalEndcap		dd4hep_PolyhedraEndcapCalorimeter2 	[calorimeter]
+Hcal:	HcalBarrel		dd4hep_PolyhedraBarrelCalorimeter2 	[calorimeter]
+	HcalEndcap		dd4hep_PolyhedraEndcapCalorimeter2 	[calorimeter]
+Muon:	MuonBarrel		dd4hep_PolyhedraBarrelCalorimeter2 	[calorimeter]
+	MuonEndcap		dd4hep_PolyhedraEndcapCalorimeter2 	[calorimeter]
+LumiCal:LumiCal			dd4hep_CylindricalEndcapCalorimeter 	[calorimeter]
+	SUPPORTS of type:	dd4hep_PolyconeSupport 
+BeamCal:BeamCal			dd4hep_ForwardDetector			[calorimeter]
+Magnet:	SolenoidCoilBarrel	dd4hep_MultiLayerTracker 
+	SolenoidCoilEnds	dd4hep_DiskTracker 
+	AntiSolenoid_Forward	dd4hep_PolyconeSupport 
+	AntiSolenoid_Backward	dd4hep_PolyconeSupport 
 
-Shields and dead material:	DD4hep_PolyconeSupport 
-		(all SUPPORTS)	DD4hep_ForwardDetector 
-				DD4hep_TubeSegment 
+Shields and dead material:	dd4hep_PolyconeSupport 
+		(all SUPPORTS)	dd4hep_ForwardDetector 
+				dd4hep_TubeSegment 
 
 Note:
 The palette drivers allow for many other designs. This explicit design is only an example

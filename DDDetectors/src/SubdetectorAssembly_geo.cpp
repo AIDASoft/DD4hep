@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +20,10 @@
 #include "XML/Utilities.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
+static Ref_t create_element(Detector& description, xml_h e, Ref_t)  {
   xml_det_t  x_det  (e);
   string     det_name = x_det.nameStr();
   DetElement sdet(det_name, x_det.id());
@@ -35,7 +35,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   RotationZYX rot;
 
   sdet.setType("compound");
-  XML::setDetectorTypeFlag( e, sdet ) ;
+  xml::setDetectorTypeFlag( e, sdet ) ;
 
   if( usePos ) {
     pos = Position(x_det.position().x(), x_det.position().y(), x_det.position().z());
@@ -47,8 +47,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   if ( x_det.hasChild(_U(shape)) )  {
     xml_comp_t x_shape = x_det.child(_U(shape));
     string     type  = x_shape.typeStr();
-    Solid      solid = XML::createShape(lcdd, type, x_shape);
-    Material   mat   = lcdd.material(x_shape.materialStr());
+    Solid      solid = xml::createShape(description, type, x_shape);
+    Material   mat   = description.material(x_shape.materialStr());
     printout(DEBUG,det_name,"+++ Creating detector assembly with shape of type:%s",type.c_str());
     vol = Volume(det_name,solid,mat);
   }
@@ -60,12 +60,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   for(xml_coll_t c(x_det,_U(composite)); c; ++c)  {
     xml_dim_t component = c;
     string nam = component.nameStr();
-    lcdd.declareMotherVolume(nam, vol);
+    description.declareMotherVolume(nam, vol);
   }
 
-  vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
-  Volume mother = lcdd.pickMotherVolume(sdet);
+  Volume mother = description.pickMotherVolume(sdet);
   PlacedVolume pv;
   if( useRot && usePos ){
     pv =  mother.placeVolume(vol, Transform3D(rot, pos));
@@ -81,4 +81,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(DD4hep_SubdetectorAssembly,create_element)
+DECLARE_DETELEMENT(dd4hep_SubdetectorAssembly,create_element)

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/detail/ObjectsInterna.h"
@@ -28,14 +28,13 @@ using namespace std;
 #include "TROOT.h"
 #include "TColor.h"
 using namespace std;
-namespace DD4hep {
-  using namespace Geometry;
-  using Conditions::Condition;
+namespace dd4hep {
+  using namespace detail;
 
   template <typename T> void PrintMap<T>::operator()() const {
-    Printer < T > p(lcdd, os);
+    Printer < T > p(description, os);
     os << "++" << endl << "++          " << text << endl << "++" << endl;
-    for (LCDD::HandleMap::const_iterator i = cont.begin(); i != cont.end(); ++i)
+    for (Detector::HandleMap::const_iterator i = cont.begin(); i != cont.end(); ++i)
       p((*i).second);
   }
 
@@ -125,17 +124,17 @@ namespace DD4hep {
       }
       const DetElement::Children& ch = sd.children();
       for (DetElement::Children::const_iterator i = ch.begin(); i != ch.end(); ++i)
-        Printer < DetElement > (lcdd, os, prefix + "| ")((*i).second);
+        Printer < DetElement > (description, os, prefix + "| ")((*i).second);
       return;
     }
   }
 #endif
-  template <> void Printer<const LCDD*>::operator()(const LCDD* const &) const {
-    //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
-    PrintMap < Constant > (lcdd, os, lcdd->constants(), "List of Constants")();
-    //PrintMap < VisAttr > (lcdd, os, lcdd->visAttributes(), "List of Visualization attributes")();
-    //PrintMap < LimitSet > (lcdd, os, lcdd->readouts(), "List of Readouts")();
-    //PrintMap < Region > (lcdd, os, lcdd->regions(), "List of Regions")();
-    //PrintMap < DetElement > (lcdd, os, lcdd->detectors(), "List of DetElements")();
+  template <> void Printer<const Detector*>::operator()(const Detector* const &) const {
+    //Header(description.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
+    PrintMap < Constant > (description, os, description->constants(), "List of Constants")();
+    //PrintMap < VisAttr > (description, os, description->visAttributes(), "List of Visualization attributes")();
+    //PrintMap < LimitSet > (description, os, description->readouts(), "List of Readouts")();
+    //PrintMap < Region > (description, os, description->regions(), "List of Regions")();
+    //PrintMap < DetElement > (description, os, description->detectors(), "List of DetElements")();
   }
 }

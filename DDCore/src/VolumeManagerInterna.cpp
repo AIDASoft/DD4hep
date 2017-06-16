@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,24 +16,10 @@
 #include "DD4hep/detail/Handle.inl"
 #include "DD4hep/detail/VolumeManagerInterna.h"
 
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
-
-/// Default constructor
-VolumeManagerContext::VolumeManagerContext()
- : identifier(0), mask(~0x0ULL) {
-}
-
-/// Default destructor
-VolumeManagerContext::~VolumeManagerContext() {
-}
-
-/// Default constructor
-VolumeManagerObject::VolumeManagerObject()
-  : top(0), system(0), sysID(0), detMask(~0x0ULL), flags(VolumeManager::NONE) {
-}
 
 /// Default destructor
 VolumeManagerObject::~VolumeManagerObject() {
@@ -51,22 +37,13 @@ void VolumeManagerObject::update(unsigned long tags, DetElement& det, void* para
     printout(DEBUG,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
   if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )
     printout(DEBUG,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
-
-  for(Volumes::iterator i=volumes.begin(); i != volumes.end(); ++i)  {
-    Context* c = (*i).second;
-    printout(DEBUG,"VolumeManager","+++ Alignment update %s",c->placement.name());
-
-  }
+  
+  for(const auto& i : volumes )
+    printout(DEBUG,"VolumeManager","+++ Alignment update %s",i.second->placement().name());
 }
 
 /// Search the locally cached volumes for a matching ID
-VolumeManager::Context* VolumeManagerObject::search(const VolumeID& vol_id) const {
-  Context* context = 0;
-  VolumeID volume_id(vol_id);
-  volume_id &= detMask;
-  Volumes::const_iterator i = volumes.find(volume_id);
-  if (i != volumes.end())  {
-    context = (*i).second;
-  }
-  return context;
+VolumeManagerContext* VolumeManagerObject::search(const VolumeID& vol_id) const {
+  auto i = volumes.find(vol_id&detMask);
+  return (i == volumes.end()) ? 0 : (*i).second;
 }

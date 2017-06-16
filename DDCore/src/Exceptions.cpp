@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
 #include "DD4hep/Primitives.h"
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 string unrelated_type_error::msg(const type_info& typ1, const type_info& typ2, const string& text) {
   string m = "The types " + typeName(typ1) + " and " + typeName(typ2) + " are not related. " + text;

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,11 +15,8 @@
 #include "ConditionsTest.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
-using Geometry::LCDD;
-using Geometry::Position;
-using Geometry::DetElement;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 namespace  {
 
@@ -102,17 +99,17 @@ namespace  {
     }
   }
 
-  int example1(LCDD& lcdd, int, char** )  {
+  int example1(Detector& description, int, char** )  {
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     printout(INFO,"Example1","+++ Executing Conditions example No. 1: Test conditions access.    ");
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    Test::TestEnv env(lcdd, "TPC");
+    Test::TestEnv env(description, "TPC");
 
     env.add_xml_data_source("/examples/Conditions/xml/TPC.xml","1396887257,1396887257#epoch");
     env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml","563543#run");
     env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml","234567#run");
     print_tpc_discrete_conditions(env);
-    lcdd.apply("DD4hep_ConditionsDump",0,0);
+    description.apply("dd4hep_ConditionsDump",0,0);
 
     print_tpc_range_conditions(env,234567,563543);  // Should fail !
     print_tpc_range_conditions(env,123456,563543);  // Should fail !
@@ -123,11 +120,11 @@ namespace  {
     return 1;
   }
 
-  int example2(LCDD& lcdd, int argc, char** argv)  {
+  int example2(Detector& description, int argc, char** argv)  {
     printout(INFO,"Example2","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     printout(INFO,"Example2","+++ Executing Conditions example No. 2: Dump conditions tree.      ");
     printout(INFO,"Example2","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    DetElement det = lcdd.world();
+    DetElement det = description.world();
     string args = "";
     for(int i=0; i<argc; ++i) { args += argv[i], args += " "; };
     printout(INFO,"Example2","Args: %s",args.c_str());
@@ -135,11 +132,11 @@ namespace  {
     return 1;
   }
 
-  int example3(LCDD& lcdd, int, char** )  {
+  int example3(Detector& description, int, char** )  {
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     printout(INFO,"Example1","+++ Executing Conditions example No. 3: Conditions registration    ");
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    Test::TestEnv env(lcdd, "TPC");
+    Test::TestEnv env(description, "TPC");
     
     env.add_xml_data_source("/examples/Conditions/xml/TPC.xml","1396887257,1396887257#epoch");
     env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml","563543#run");
@@ -193,22 +190,22 @@ namespace  {
       callback_install((*j).second,c);
   }
 
-  int DD4hep_CallbackInstallTest(LCDD& lcdd, int argc, char** argv)  {
+  int dd4hep_CallbackInstallTest(Detector& description, int argc, char** argv)  {
     printout(INFO,"Example3","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example3","+++ Executing DD4hepCallbackInstallTest: Install user callbacks.   ");
+    printout(INFO,"Example3","+++ Executing dd4hepCallbackInstallTest: Install user callbacks.   ");
     printout(INFO,"Example3","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     string args = "";
     for(int i=0; i<argc; ++i) { args += argv[i], args += " "; };
     printout(INFO,"Example3","Args: %s",args.c_str());
-    DetElement det = lcdd.world();
+    DetElement det = description.world();
     callback_install(det, new Callee());
     return 1;
   }
 }
 
 
-DECLARE_APPLY(DD4hep_Test_ConditionsAccess,example1)
-DECLARE_APPLY(DD4hep_Test_ConditionsExample3,example3)
-DECLARE_APPLY(DD4hep_Test_ConditionsTreeDump,example2)
-DECLARE_APPLY(DD4hep_Test_CallbackInstall,DD4hep_CallbackInstallTest)
+DECLARE_APPLY(dd4hep_Test_ConditionsAccess,example1)
+DECLARE_APPLY(dd4hep_Test_ConditionsExample3,example3)
+DECLARE_APPLY(dd4hep_Test_ConditionsTreeDump,example2)
+DECLARE_APPLY(dd4hep_Test_CallbackInstall,dd4hep_CallbackInstallTest)
 #endif

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,8 +20,8 @@
 #include "DD4hep/detail/ConditionsInterna.h"
 
 using std::string;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(UpdatePool);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsPool);

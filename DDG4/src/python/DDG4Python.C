@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,11 +24,11 @@
 
 // CINT configuration
 #if defined(__MAKECINT__)
-#pragma link C++ namespace DD4hep;
-#pragma link C++ namespace DD4hep::Simulation;
-#pragma link C++ class DD4hep::Simulation::Geant4PythonCall;
-#pragma link C++ class DD4hep::Simulation::Geant4PythonAction;
-#pragma link C++ class DD4hep::Simulation::Geant4PythonInitialization;
-#pragma link C++ class DD4hep::Simulation::Geant4PythonDetectorConstruction;
+#pragma link C++ namespace dd4hep;
+#pragma link C++ namespace dd4hep::sim;
+#pragma link C++ class dd4hep::sim::Geant4PythonCall;
+#pragma link C++ class dd4hep::sim::Geant4PythonAction;
+#pragma link C++ class dd4hep::sim::Geant4PythonInitialization;
+#pragma link C++ class dd4hep::sim::Geant4PythonDetectorConstruction;
 #pragma link C++ class PyDDG4;
 #endif

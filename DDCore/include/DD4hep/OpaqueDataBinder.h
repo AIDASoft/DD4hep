@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,84 +20,88 @@
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Helper class to bind string values to C++ data objects (primitive or complex)
-  /**
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP
-   */
-  struct ValueBinder   {  };
+  /// DD4hep internal namespace declaration for utilities and implementation details
+  namespace detail  {
 
-  /// Helper class to bind string values to a STL vector of data objects (primitive or complex)
-  /**
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP
-   */
-  struct VectorBinder  {  };
+    /// Helper class to bind string values to C++ data objects (primitive or complex)
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
+     */
+    struct ValueBinder   {  };
 
-  /// Helper class to bind string values to a STL list of data objects (primitive or complex)
-  /**
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP
-   */
-  struct ListBinder   {  };
+    /// Helper class to bind string values to a STL vector of data objects (primitive or complex)
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
+     */
+    struct VectorBinder  {  };
 
-  /// Helper class to bind string values to a STL set of data objects (primitive or complex)
-  /**
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP
-   */
-  struct SetBinder   {  };
+    /// Helper class to bind string values to a STL list of data objects (primitive or complex)
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
+     */
+    struct ListBinder   {  };
 
-  /// Helper class to bind STL map objects
-  /**
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP
-   */
-  struct MapBinder   {  };
+    /// Helper class to bind string values to a STL set of data objects (primitive or complex)
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
+     */
+    struct SetBinder   {  };
 
-  /// Helper class to bind string values to C++ data items
-  /**
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP
-   */
-  class OpaqueDataBinder  {
-  public:
-    /// Default constructor
-    OpaqueDataBinder() = default;
-    /// Default destructor
-    ~OpaqueDataBinder() = default;
+    /// Helper class to bind STL map objects
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
+     */
+    struct MapBinder   {  };
 
-    /// Binding function for scalar items. See the implementation function for the concrete instantiations
-    template <typename BINDER, typename OBJECT> static
-    bool bind(const BINDER& b, OBJECT& object, const std::string& typ, const std::string& val);
+    /// Helper class to bind string values to C++ data items
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
+     */
+    class OpaqueDataBinder  {
+    public:
+      /// Default constructor
+      OpaqueDataBinder() = default;
+      /// Default destructor
+      ~OpaqueDataBinder() = default;
 
-    /// Binding function for sequences (unmapped STL containers)
-    template <typename OBJECT> static
-    bool bind_sequence(OBJECT& object, const std::string& typ, const std::string& val);
+      /// Binding function for scalar items. See the implementation function for the concrete instantiations
+      template <typename BINDER, typename OBJECT> static
+      bool bind(const BINDER& b, OBJECT& object, const std::string& typ, const std::string& val);
 
-    /// Binding function for STL maps. Does not fill data!
-    template <typename BINDER, typename OBJECT> static
-    bool bind_map(const BINDER& b, OBJECT& o, const std::string& key_type, const std::string& val_type);
+      /// Binding function for sequences (unmapped STL containers)
+      template <typename OBJECT> static
+      bool bind_sequence(OBJECT& object, const std::string& typ, const std::string& val);
 
-    /// Filling function for STL maps.
-    template <typename BINDER, typename OBJECT> static
-    bool insert_map(const BINDER& b, OBJECT& o,
-                    const std::string& key_type, const std::string& key,
-                    const std::string& val_type, const std::string& val);
-    /// Filling function for STL maps.
-    template <typename BINDER, typename OBJECT> static
-    bool insert_map(const BINDER& b, OBJECT& o,
-                    const std::string& key_type, const std::string& val_type,
-                    const std::string& pair_data);
-  };
-} /* End namespace DD4hep                   */
+      /// Binding function for STL maps. Does not fill data!
+      template <typename BINDER, typename OBJECT> static
+      bool bind_map(const BINDER& b, OBJECT& o, const std::string& key_type, const std::string& val_type);
+
+      /// Filling function for STL maps.
+      template <typename BINDER, typename OBJECT> static
+      bool insert_map(const BINDER& b, OBJECT& o,
+                      const std::string& key_type, const std::string& key,
+                      const std::string& val_type, const std::string& val);
+      /// Filling function for STL maps.
+      template <typename BINDER, typename OBJECT> static
+      bool insert_map(const BINDER& b, OBJECT& o,
+                      const std::string& key_type, const std::string& val_type,
+                      const std::string& pair_data);
+    };
+  }
+}         /* End namespace dd4hep      */
 #endif    /* DD4HEP_OPAQUEDATABINDER_H */

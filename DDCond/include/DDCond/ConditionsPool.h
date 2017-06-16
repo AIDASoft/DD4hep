@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,10 +21,10 @@
 // C/C++ include files
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     // Forward declarations
     class ConditionsSlice;
@@ -57,17 +57,14 @@ namespace DD4hep {
       ConditionsManager m_manager;
       
     public:
-      /// Forward definition of the key type
-      typedef Condition::key_type key_type;
-
       enum { AGE_NONE    = 0, 
              AGE_ANY     = 9999999,
              AGE_EXPIRED = 12345678
       };
       /// The IOV of the conditions hosted
-      IOV*             iov;
+      IOV* iov;
       /// Aging value
-      int              age_value;
+      int  age_value;
 
     public:
       /// Listener invocation when a condition is registered to the cache
@@ -125,7 +122,7 @@ namespace DD4hep {
       virtual size_t popEntries(UpdateEntries& entries) = 0;
       /// Select the conditions matching the key
       virtual void select_range(Condition::key_type key, 
-                                const Condition::iov_type& req_validity,
+                                const IOV& req_validity,
                                 RangeConditions& result) = 0;
     };
 
@@ -137,11 +134,7 @@ namespace DD4hep {
     class UserPool : public ConditionsMap {
     public:
       /// Forward definition of the key type
-      //typedef Condition::key_type                  key_type;
-      typedef Condition::itemkey_type              itemkey_type;
-      typedef ConditionDependency                  Dependency;
-      typedef std::map<key_type,const Dependency*> Dependencies;
-      typedef ConditionsManager::Result            Result;
+      typedef std::map<Condition::key_type,const ConditionDependency*> Dependencies;
 
     protected:
       /// The pool's interval of validity
@@ -178,49 +171,52 @@ namespace DD4hep {
       /// Full cleanup of all managed conditions.
       virtual void clear() = 0;
       /// Check a condition for existence
-      virtual bool exists(key_type key)  const = 0;
+      virtual bool exists(Condition::key_type key)  const = 0;
       /// Check a condition for existence
       virtual bool exists(const ConditionKey& key)  const = 0;
       /// Check if a condition exists in the pool and return it to the caller
-      virtual Condition get(key_type key)  const = 0;
+      virtual Condition get(Condition::key_type key)  const = 0;
       /// Check if a condition exists in the pool and return it to the caller
       virtual Condition get(const ConditionKey& key)  const = 0;
       /// Remove condition by key from pool.
-      virtual bool remove(key_type hash_key) = 0;
+      virtual bool remove(Condition::key_type hash_key) = 0;
       /// Remove condition by key from pool.
       virtual bool remove(const ConditionKey& key) = 0;
       /// ConditionsMap overload: Add a condition directly to the slice
-      virtual bool insert(DetElement detector, unsigned int key, Condition condition) = 0;
+      virtual bool insert(DetElement detector, Condition::itemkey_type key, Condition condition) = 0;
 
       /// ConditionsMap overload: Access a single condition
-      virtual Condition get(DetElement detector, unsigned int key)  const = 0;
+      virtual Condition get(DetElement detector, Condition::itemkey_type key)  const = 0;
       /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
-      virtual std::vector<Condition> get(key_type lower, key_type upper)  const = 0;
+      virtual std::vector<Condition> get(Condition::key_type lower,
+                                         Condition::key_type upper)  const = 0;
       /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
       virtual std::vector<Condition> get(DetElement detector,
-                                         itemkey_type lower,
-                                         itemkey_type upper)  const = 0;
+                                         Condition::itemkey_type lower,
+                                         Condition::itemkey_type upper)  const = 0;
 
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(const Processor& processor) const = 0;
+      virtual void scan(const Condition::Processor& processor) const = 0;
       /// No ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(key_type lower, key_type upper, const Processor& processor) const = 0;
+      virtual void scan(Condition::key_type lower,
+                        Condition::key_type upper,
+                        const Condition::Processor& processor) const = 0;
       /// No ConditionsMap overload: Interface to scan data content of the conditions mapping
       virtual void scan(DetElement detector,
-                        itemkey_type lower,
-                        itemkey_type upper,
-                        const Processor& processor) const = 0;
+                        Condition::itemkey_type lower,
+                        Condition::itemkey_type upper,
+                        const Condition::Processor& processor) const = 0;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual Result prepare(const IOV&               required, 
-                             ConditionsSlice&         slice,
-                             void*                    user_param = 0) = 0;
+      virtual ConditionsManager::Result prepare(const IOV&               required, 
+                                                ConditionsSlice&         slice,
+                                                void*                    user_param = 0) = 0;
 
       /// Evaluate and register all derived conditions from the dependency list
       virtual size_t compute(const Dependencies& dependencies,
                              void* user_param,
                              bool force) = 0;
     };
-  }        /* End namespace Conditions               */
-}          /* End namespace DD4hep                   */
+  }        /* End namespace cond               */
+}          /* End namespace dd4hep                   */
 #endif     /* DDCOND_CONDITIONSPOOL_H                */

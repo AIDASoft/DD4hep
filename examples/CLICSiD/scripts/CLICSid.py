@@ -4,7 +4,7 @@ from SystemOfUnits import *
 class CLICSid:
   def __init__(self,tracker='Geant4TrackerCombineAction'):
     self.kernel = DDG4.Kernel()
-    self.lcdd   = self.kernel.lcdd()
+    self.description   = self.kernel.detectorDescription()
     self.geant4 = DDG4.Geant4(self.kernel,tracker=tracker)
     self.kernel.UI = ""
     self.noPhysics()

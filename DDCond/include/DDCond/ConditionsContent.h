@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,10 +19,10 @@
 #include "DD4hep/ConditionDerived.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Base class for data loading information.
     /**
@@ -78,9 +78,8 @@ namespace DD4hep {
         virtual const void*           ptr()  const { return &info;     }
       };
      
-      typedef Condition::key_type                      key_type;
-      typedef std::map<key_type,ConditionDependency* > Dependencies;
-      typedef std::map<key_type,ConditionsLoadInfo* >  Conditions;
+      typedef std::map<Condition::key_type,ConditionDependency* > Dependencies;
+      typedef std::map<Condition::key_type,ConditionsLoadInfo* >  Conditions;
 
     protected:
       /// Container of conditions required by this content
@@ -106,13 +105,13 @@ namespace DD4hep {
       /// Clear the conditions content definitions
       void clear();
       /// Remove a condition from the content
-      bool remove(key_type condition);
+      bool remove(Condition::key_type condition);
       /// Add a new conditions key representing a real (not derived) condition
-      bool insertKey(key_type hash)   {
+      bool insertKey(Condition::key_type hash)   {
         return m_conditions.insert(std::make_pair(hash,(ConditionsLoadInfo*)0)).second;
       }
       /// Add a new conditions key. T must inherit from class ConditionsContent::Info
-      template <typename T> bool insertKey(key_type hash, const T& info)   {
+      template <typename T> bool insertKey(Condition::key_type hash, const T& info)   {
         ConditionsLoadInfo* i = new LoadInfo<T>(info);
         bool ret = m_conditions.insert(std::make_pair(hash,i)).second;
         if ( !ret ) delete i;
@@ -127,6 +126,6 @@ namespace DD4hep {
       /// Create load-info object
       template <typename T> static LoadInfo<T> loadInfo(const T& t) { return LoadInfo<T>(t);  }
     };
-  }        /* End namespace Conditions               */
-}          /* End namespace DD4hep                   */
+  }        /* End namespace cond               */
+}          /* End namespace dd4hep                   */
 #endif     /* DD4HEP_DDCOND_CONDITIONSCONTENT_H      */

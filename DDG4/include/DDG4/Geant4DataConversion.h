@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,14 +16,14 @@
 
 // Framework include files
 #include "DD4hep/VolumeManager.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include <typeinfo>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Helper class for data conversion
     /**
@@ -39,11 +38,11 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4ConversionHelper();
       /// Access to the data encoding using the volume manager and a specified volume id
-      static std::string encoding(Geometry::VolumeManager vm, Geometry::VolumeManager::VolumeID vid);
+      static std::string encoding(VolumeManager vm, VolumeID vid);
       /// Access to the hit encoding in this sensitive detector
-      static std::string encoding(Geometry::Handle<Geometry::SensitiveDetectorObject> sd);
+      static std::string encoding(Handle<SensitiveDetectorObject> sd);
       /// Access to the hit encoding in this readout object
-      static std::string encoding(Geometry::Readout ro);
+      static std::string encoding(Readout ro);
     };
 
     /// Data conversion class
@@ -58,7 +57,7 @@ namespace DD4hep {
       typedef OUTPUT output_t;
       typedef Geant4Conversion<output_t, arg_t> self_t;
       typedef std::map<const std::type_info*, Geant4Conversion*> Converters;
-      static Converters& conversions();
+      static  Converters& conversions();
       static const Geant4Conversion& converter(const std::type_info& typ);
       /// Default constructor
       Geant4Conversion();
@@ -66,21 +65,21 @@ namespace DD4hep {
       virtual ~Geant4Conversion();
       virtual OUTPUT* operator()(const ARGS& args) const = 0;
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #if defined(DDG4_MAKE_INSTANTIATIONS)
 #include <stdexcept>
 
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep {
+namespace dd4hep {
 
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation {
+  namespace sim {
 
     template <typename OUTPUT,typename ARGS>
     Geant4Conversion<OUTPUT,ARGS>::Geant4Conversion()
@@ -136,12 +135,12 @@ namespace DD4hep {
       virtual OUTPUT* operator()(const ARGS& args) const;
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #define GEANT4_CNAME(a,b) a ## _instance_ ## b
 #define DECLARE_GEANT4_DATACONVERTER(output_type,args_type,tag,serial)  \
-  DD4hep::Simulation::Geant4DataConversion<output_type,args_type,tag> GEANT4_CNAME(s_g4_data_cnv,serial) (0);
+  dd4hep::sim::Geant4DataConversion<output_type,args_type,tag> GEANT4_CNAME(s_g4_data_cnv,serial) (0);
 
 #define DECLARE_GEANT4_HITCONVERTER(output_type,args_type,tag) DECLARE_GEANT4_DATACONVERTER(output_type,args_type,tag,__LINE__)
 
