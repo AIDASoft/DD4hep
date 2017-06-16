@@ -151,9 +151,12 @@ endif()
 
 configure_file(cmake/thisdd4hep.csh bin/thisdd4hep.csh @ONLY)
 configure_file(cmake/thisdd4hep.sh  bin/thisdd4hep.sh @ONLY)
+configure_file(cmake/thisdd4hep_only.csh bin/thisdd4hep_only.csh @ONLY)
+configure_file(cmake/thisdd4hep_only.sh  bin/thisdd4hep_only.sh @ONLY)
 configure_file(cmake/run_test.sh    bin/run_test.sh @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/bin/thisdd4hep.csh ${CMAKE_BINARY_DIR}/bin/thisdd4hep.sh DESTINATION bin )
+install(FILES ${CMAKE_BINARY_DIR}/bin/thisdd4hep_only.csh ${CMAKE_BINARY_DIR}/bin/thisdd4hep_only.sh DESTINATION bin )
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/run_test.sh DESTINATION bin )
 
 install(DIRECTORY cmake
