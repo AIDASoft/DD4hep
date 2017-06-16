@@ -1,7 +1,7 @@
 #include "DDRec/DetectorSurfaces.h"
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
     
 
 

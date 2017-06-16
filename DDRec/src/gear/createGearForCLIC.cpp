@@ -17,8 +17,8 @@
 
 #include <iostream>
 
-namespace DD4hep{
-  namespace DDRec{
+namespace dd4hep{
+  namespace rec{
     
     using namespace Geometry ;
     //    using namespace gear ;

@@ -15,7 +15,7 @@ namespace DD4hep {
   
 
   //define some exception to throw
-  class OutsideGeometryException : public std::exception{
+  class [[gnu:deprecated("unused class - to be removed ...")]] OutsideGeometryException : public std::exception{
     
   protected:
     std::string message;

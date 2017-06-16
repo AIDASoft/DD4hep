@@ -6,8 +6,8 @@
 #include <cassert>
 
 
-namespace DD4hep { namespace DDRec {
-  
+namespace dd4hep{ namespace rec {
+
   /** Simple three dimensional vector providing the components for cartesian, 
    *  cylindrical and spherical coordinate  systems - internal reperesentation is
    *  cartesian. (copy of original version from gear).
@@ -358,6 +358,11 @@ namespace DD4hep { namespace DDRec {
 
   
 
-  }} // namespace
+}} // namespace
+
+
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
+
 
 #endif 

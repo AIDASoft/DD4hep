@@ -2,16 +2,12 @@
 #define DDRec_SurfaceManager_H_
 
 #include "DDSurfaces/ISurface.h"
+#include "DD4hep/LCDD.h"
 #include <string>
 #include <map>
 
-namespace DD4hep {
-
-  namespace Geometry{
-    class LCDD ;
-  }
-
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
 
     /// typedef for surface maps, keyed by the cellID 
     typedef std::multimap< unsigned long, DDSurfaces::ISurface*> SurfaceMap ;
@@ -30,7 +26,7 @@ namespace DD4hep {
 
     public:
       /// The constructor
-      SurfaceManager(DD4hep::Geometry::LCDD& theDetector);
+      SurfaceManager(LCDD& theDetector);
 
       /// No default constructor
       SurfaceManager() = delete ;
@@ -58,12 +54,14 @@ namespace DD4hep {
 
 
       /// initialize all known surface maps
-      void initialize(DD4hep::Geometry::LCDD& theDetector) ;
+      void initialize(LCDD& theDetector) ;
 
       SurfaceMapsMap _map ;
     };
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif // DDRec_SurfaceManager_H_

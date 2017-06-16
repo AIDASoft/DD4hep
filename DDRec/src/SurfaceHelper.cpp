@@ -4,11 +4,11 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/LCDD.h"
 
-namespace DD4hep {
+namespace dd4hep {
   
   using namespace Geometry ;
 
-  namespace DDRec {
+  namespace rec {
     
 
     SurfaceHelper::SurfaceHelper(DD4hep::Geometry::DetElement const& e) : _det(e) {
