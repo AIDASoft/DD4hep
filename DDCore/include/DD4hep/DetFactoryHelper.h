@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef dd4hep_DETECTOR_DETFACTORYHELPER_H
-#define dd4hep_DETECTOR_DETFACTORYHELPER_H
+#ifndef DD4HEP_DETECTOR_DETFACTORYHELPER_H
+#define DD4HEP_DETECTOR_DETFACTORYHELPER_H
 
 /** Obsolete header. Better use XML/Helper.h instead !  */
 
