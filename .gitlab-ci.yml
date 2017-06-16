@@ -7,7 +7,7 @@ slc6-gcc7-Geant10.2:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON  -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON  -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -29,7 +29,7 @@ slc6-llvm40-Geant10.2:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -52,7 +52,7 @@ slc6-ggc7-Geant10.3:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.3.1 -D DD4HEP_USE_CXX14=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.3.1 -D DD4HEP_USE_CXX14=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -74,7 +74,7 @@ slc6-gcc7-Geant10.2-XERCESC:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -96,7 +96,7 @@ centos7-gcc7-Geant10.2:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -119,7 +119,7 @@ centos7-llvm40-Geant10.2:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -142,7 +142,7 @@ centos7-llvm40-Geant10.3-XERCESC:
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.3.1 -D DD4HEP_USE_CXX14=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.3.1 -D DD4HEP_USE_CXX14=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -162,7 +162,7 @@ mac1012-clang80:
     - source .dd4hep-ci.d/init_mac.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -182,7 +182,7 @@ mac1012-clang80-XERCESC:
     - source .dd4hep-ci.d/init_mac.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D Geant4_DIR=$G4INSTALL/lib/Geant4-10.2.2 -D DD4HEP_USE_CXX11=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
