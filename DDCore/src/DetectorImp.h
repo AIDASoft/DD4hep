@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef dd4hep_DetectorGEOIMP_H
-#define dd4hep_DetectorGEOIMP_H
+#ifndef DD4HEP_DetectorGEOIMP_H
+#define DD4HEP_DetectorGEOIMP_H
 
 // Framework include files
 #include "DD4hep/DetectorData.h"

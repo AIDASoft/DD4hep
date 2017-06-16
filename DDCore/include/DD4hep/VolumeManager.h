@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef dd4hep_GEOMETRY_VOLUMEMANAGER_H
-#define dd4hep_GEOMETRY_VOLUMEMANAGER_H
+#ifndef DD4HEP_GEOMETRY_VOLUMEMANAGER_H
+#define DD4HEP_GEOMETRY_VOLUMEMANAGER_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"

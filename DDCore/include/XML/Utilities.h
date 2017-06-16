@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef dd4hep_XML_XMLUTILITIES_H
-#define dd4hep_XML_XMLUTILITIES_H
+#ifndef DD4HEP_XML_XMLUTILITIES_H
+#define DD4HEP_XML_XMLUTILITIES_H
 
 // Framework include files
 #include "XML/Conversions.h"

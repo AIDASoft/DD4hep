@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef dd4hep_GEOMETRY_READOUT_H
-#define dd4hep_GEOMETRY_READOUT_H
+#ifndef DD4HEP_GEOMETRY_READOUT_H
+#define DD4HEP_GEOMETRY_READOUT_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
