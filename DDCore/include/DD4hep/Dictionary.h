@@ -26,7 +26,7 @@
 #endif
 
 // Framework include files
-#include "XML/Evaluator.h"
+#include "DDParsers/Evaluator.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"

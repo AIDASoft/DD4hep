@@ -18,7 +18,7 @@
 #include "DDG4/Geant4Vertex.h"
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4GeneratorAction.h"
-#include "DD4hep/Parsers.h"
+#include "DDParsers/Parsers.h"
 
 // C/C++ include files
 #include <vector>

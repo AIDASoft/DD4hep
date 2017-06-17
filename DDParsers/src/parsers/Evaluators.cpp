@@ -22,10 +22,10 @@
 #else
 
 // Standard dd4hep parser handling
-#include "DD4hep/ToStream.h"
+#include "DDParsers/ToStream.h"
 
 #endif
-#include "XML/Evaluator.h"
+#include "DDParsers/Evaluator.h"
 
 // C/C++ include files
 #include <stdexcept>

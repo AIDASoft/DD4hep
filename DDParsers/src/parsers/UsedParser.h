@@ -20,8 +20,8 @@
 #else
 
 // Standard dd4hep parser handling
-#include "DD4hep/Parsers.h"
-#include "DD4hep/ToStream.h"
+#include "DDParsers/Parsers.h"
+#include "DDParsers/ToStream.h"
 
 #endif
 

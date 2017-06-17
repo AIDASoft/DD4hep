@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#include "XML/Evaluator.h"
-#include "DD4hep/DD4hepUnits.h"
+#include "DDParsers/Evaluator.h"
+#include "DDParsers/DD4hepUnits.h"
 namespace units = dd4hep;
 
 namespace {

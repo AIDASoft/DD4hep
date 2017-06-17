@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/ToStream.h"
+#include "DDParsers/ToStream.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/ConditionsPrinter.h"
