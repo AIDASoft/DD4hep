@@ -170,9 +170,9 @@ TestEnv::TestEnv(Detector& _description, const string& detector_name)
 {
   manager = ConditionsManager::from(description);
   manager["LoaderType"]     = "multi";
-  manager["PoolType"]       = "dd4hep_ConditionsLinearPool";
-  manager["UpdatePoolType"] = "dd4hep_ConditionsLinearUpdatePool";
-  manager["UserPoolType"]   = "dd4hep_ConditionsLinearUserPool";
+  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsLinearUserPool";
   manager.initialize();
   detector = description.detector(detector_name);
   if ( detector.isValid() )  {

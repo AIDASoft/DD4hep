@@ -46,14 +46,14 @@
   </regions>
 
   <detectors>
-    <detector id="1" name="SiliconBlockUpper" type="dd4hep_BoxSegment" readout="SiliconUpperHits" vis="VisibleGreen" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
+    <detector id="1" name="SiliconBlockUpper" type="DD4hep_BoxSegment" readout="SiliconUpperHits" vis="VisibleGreen" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
       <material name="Silicon"/>
       <sensitive type="tracker"/>
       <box      x="20*mm" y="20*cm" z="20*cm"/>
       <position x="4*cm"  y="0"  z="0"/>
       <rotation x="0"     y="0"     z="0"/>
     </detector>
-    <detector id="2" name="SiliconBlockDown" type="dd4hep_BoxSegment" readout="SiliconDownHits" vis="VisibleRed" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
+    <detector id="2" name="SiliconBlockDown" type="DD4hep_BoxSegment" readout="SiliconDownHits" vis="VisibleRed" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
       <material name="Silicon"/>
       <sensitive type="tracker"/>
       <box      x="20*mm" y="20*cm" z="20*cm"/>

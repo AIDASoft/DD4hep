@@ -31,7 +31,7 @@ using namespace dd4hep::detail;
 void TEve()    {
   Detector& description = Detector::getInstance();
   const char* fname = "file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml";
-  description.apply("dd4hepCompactLoader",1,(char**)&fname);
+  description.apply("DD4hepCompactLoader",1,(char**)&fname);
 
   TEveManager::Create();
   //TFile::SetCacheFileDir(".");

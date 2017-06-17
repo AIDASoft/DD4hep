@@ -86,21 +86,21 @@ namespace {
     // Load compact files
     for(size_t i=0; i<geo_files.size(); ++i)  {
       const char* plugin_argv[] = {geo_files[i], 0};
-      run_plugin(description,"dd4hepCompactLoader",1,(char**)plugin_argv);
+      run_plugin(description,"DD4hepCompactLoader",1,(char**)plugin_argv);
     }
     // Create volume manager and populate it required
-    if ( volmgr  ) run_plugin(description,"dd4hepVolumeManager",0,0);
+    if ( volmgr  ) run_plugin(description,"DD4hepVolumeManager",0,0);
     // Execute data converter.
     if ( compact2description )
-      run_plugin(description,"dd4hepGeometry2Detector",output,&argv[output]);
+      run_plugin(description,"DD4hepGeometry2Detector",output,&argv[output]);
     else if ( compact2gdml )
-      run_plugin(description,"dd4hepGeometry2GDML",output,&argv[output]);
+      run_plugin(description,"DD4hepGeometry2GDML",output,&argv[output]);
     else if ( compact2pand )
-      run_plugin(description,"dd4hepGeometry2PANDORA",output,&argv[output]);
+      run_plugin(description,"DD4hepGeometry2PANDORA",output,&argv[output]);
     else if ( compact2vis && ascii )
-      run_plugin(description,"dd4hepGeometry2VISASCII",output,&argv[output]);
+      run_plugin(description,"DD4hepGeometry2VISASCII",output,&argv[output]);
     else if ( compact2vis )
-      run_plugin(description,"dd4hepGeometry2VIS",output,&argv[output]);
+      run_plugin(description,"DD4hepGeometry2VIS",output,&argv[output]);
     if ( destroy ) delete &description;
     return 0;
   }

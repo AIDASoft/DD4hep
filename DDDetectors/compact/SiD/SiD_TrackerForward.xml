@@ -6,7 +6,7 @@
 <!-- ==================================================================== -->
 
 <detectors>
-  <detector id="ForwardTracker_ID" name="SiTrackerForward" type="dd4hep_SiTrackerEndcap2" readout="SiTrackerForwardHits" reflect="true">    
+  <detector id="ForwardTracker_ID" name="SiTrackerForward" type="DD4hep_SiTrackerEndcap2" readout="SiTrackerForwardHits" reflect="true">    
 
     <comment>Forward Tracker inside Vertex Support Barrel</comment>
 

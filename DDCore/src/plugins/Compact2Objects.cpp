@@ -1039,7 +1039,7 @@ template <> void Converter<JsonFile>::operator()(xml_h element) const {
   string base = xml::DocumentHandler::system_directory(element);
   string file = element.attr<string>(_U(ref));
   vector<char*>  argv{&file[0],&base[0]};
-  description.apply("dd4hep_JsonProcessor",int(argv.size()), &argv[0]);
+  description.apply("DD4hep_JsonProcessor",int(argv.size()), &argv[0]);
 }
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry

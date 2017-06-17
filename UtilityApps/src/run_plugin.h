@@ -241,7 +241,7 @@ namespace {
     // Load all compact files
     for(size_t i=0; i<args.geo_files.size(); ++i)  {
       const char* argv[] = {args.geo_files[i], args.build_types[i], 0};
-      run_plugin(description,"dd4hepCompactLoader",2,(char**)argv);
+      run_plugin(description,"DD4hepCompactLoader",2,(char**)argv);
     }
   }
 
@@ -266,9 +266,9 @@ namespace {
     Detector& description = dd4hep_instance();
     // Load all compact files
     load_compact(description, args);
-    if ( args.ui ) run_plugin(description,"dd4hepInteractiveUI",0,0);
+    if ( args.ui ) run_plugin(description,"DD4hepInteractiveUI",0,0);
     // Create volume manager and populate it required
-    if ( args.volmgr ) run_plugin(description,"dd4hepVolumeManager",0,0);
+    if ( args.volmgr ) run_plugin(description,"DD4hepVolumeManager",0,0);
 
     // Create an interactive ROOT application
     if ( !args.dry_run ) {

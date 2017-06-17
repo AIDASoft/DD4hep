@@ -66,7 +66,7 @@ static int alignment_example (Detector& description, int argc, char** argv)  {
   ConditionsManager manager  = installManager(description);
   const void*  delta_args[] = {delta.c_str(), 0}; // Better zero-terminate
 
-  description.apply("dd4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
+  description.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
   // Now the deltas are stored in the conditions manager in the proper IOV pools
   const IOVType* iov_typ = manager.iovType("run");
   if ( 0 == iov_typ )

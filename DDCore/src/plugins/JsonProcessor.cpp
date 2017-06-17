@@ -138,7 +138,7 @@ template <> void Converter<detector>::operator()(json_h element) const {
 
 static long handle_json(Detector& description, int argc, char** argv) {
   if ( argc < 1 || (argc<2 && argv[0][0] != '/') )  {
-    ::printf("dd4hep_JsonProcessor <file> <directory>                \n"
+    ::printf("DD4hep_JsonProcessor <file> <directory>                \n"
              "  If file is an absolute path (does NOT start with '/')\n"
              "  the directory path is mandatory.                     \n"
              "  The file name is then assumed to be relative.        \n"

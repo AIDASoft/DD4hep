@@ -266,14 +266,14 @@ G4RunManager& Geant4Kernel::runManager() {
 /// Construct detector geometry using description plugin
 void Geant4Kernel::loadGeometry(const std::string& compact_file) {
   char* arg = (char*) compact_file.c_str();
-  m_detDesc->apply("dd4hepXMLLoader", 1, &arg);
+  m_detDesc->apply("DD4hepXMLLoader", 1, &arg);
   //return *this;
 }
 
 // Utility function to load XML files
 void Geant4Kernel::loadXML(const char* fname) {
   const char* args[] = { fname, 0 };
-  m_detDesc->apply("dd4hepXMLLoader", 1, (char**) args);
+  m_detDesc->apply("DD4hepXMLLoader", 1, (char**) args);
 }
 
 int Geant4Kernel::configure() {

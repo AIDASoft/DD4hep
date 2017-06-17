@@ -51,7 +51,7 @@ Available plugins
    and the implementation type dd4hep::rec::LayeringExtensionImpl.
    Please see documentation in DDRec for details.
 
--- "dd4hep_SiTrackerBarrelSurfacePlugin"
+-- "DD4hep_SiTrackerBarrelSurfacePlugin"
    argument: subdetector name as registered to Detector
    This plugin adds measurement surfaces of interface type DDSurfaces::ISurface
    to each detector element which has a placement with a sensitive volume.
@@ -61,7 +61,7 @@ Available plugins
     - SiTrackerBarrel
     - EcalBarrel
 
--- "dd4hep_SiTrackerEndcapSurfacePlugin"
+-- "DD4hep_SiTrackerEndcapSurfacePlugin"
    argument: subdetector name as registered to Detector
    This plugin adds measurement surfaces of interface type DDSurfaces::ISurface
    to each detector element which has a placement with a sensitive volume.

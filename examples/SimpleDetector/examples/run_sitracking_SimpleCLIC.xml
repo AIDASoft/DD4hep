@@ -35,7 +35,7 @@
   <parameter name="SkipNEvents" value="0" />  
   <parameter name="SupressCheck" value="false" />  
   <parameter name="GearXMLFile" value="gear_Simple_CLIC.xml"/>
-  <parameter name="dd4hepXMLFile" value="/Users/gaede/DD4hep/trunk/examples/SimpleDetector/compact/Simple_CLIC.xml"/>
+  <parameter name="DD4hepXMLFile" value="/Users/gaede/DD4hep/trunk/examples/SimpleDetector/compact/Simple_CLIC.xml"/>
 
   <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE DEBUG0 </parameter> 
   <parameter name="RandomSeed" value="1234567890" />
@@ -47,7 +47,7 @@
  <processor name="Initdd4hep" type="Initializedd4hep">
  <!--Initializedd4hep reads a compact xml file and initializes the dd4hep::Detector object-->
   <!--Name of the dd4hep compact xml file to load-->
-  <parameter name="dd4hepXMLFile" type="string">Simple_ClIC.xml </parameter>
+  <parameter name="DD4hepXMLFile" type="string">Simple_ClIC.xml </parameter>
 </processor>
 
  <processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">

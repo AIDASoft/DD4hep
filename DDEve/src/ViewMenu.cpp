@@ -55,13 +55,13 @@ ViewMenu::~ViewMenu()  {
 void ViewMenu::Build(TGMenuBar* bar, int hints)    {
   pair<string,string>* p = 0;
   PopupMenu* view_menu = this;
-  view_menu->AddEntry("3&D View", this, &ViewMenu::CreateView, p=new pair<string,string>("dd4hep_DDEve_View3D","3D"));
-  view_menu->AddEntry("Rho-&Z Projection", this, &ViewMenu::CreateView, p=new pair<string,string>("dd4hep_DDEve_RhoZProjection","Rho-Z"));
-  view_menu->AddEntry("Rho-&Phi Projection",this, &ViewMenu::CreateView, p=new pair<string,string>("dd4hep_DDEve_RhoPhiProjection","Rho-Phi"));
+  view_menu->AddEntry("3&D View", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep_DDEve_View3D","3D"));
+  view_menu->AddEntry("Rho-&Z Projection", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep_DDEve_RhoZProjection","Rho-Z"));
+  view_menu->AddEntry("Rho-&Phi Projection",this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep_DDEve_RhoPhiProjection","Rho-Phi"));
   const Display::ViewConfigurations& vc = m_display->viewConfigurations();
   for(Display::ViewConfigurations::const_iterator i=vc.begin(); i!=vc.end(); ++i)  {
     const Display::ViewConfig& v = (*i).second;
-    view_menu->AddEntry(v.name.c_str(), this, &ViewMenu::CreateView,p=new pair<string,string>("dd4hep_DDEve_"+v.type,v.name));
+    view_menu->AddEntry(v.name.c_str(), this, &ViewMenu::CreateView,p=new pair<string,string>("DD4hep_DDEve_"+v.type,v.name));
   }
   bar->AddPopup(m_title.c_str(),*view_menu, new TGLayoutHints(hints, 0, 4, 0, 0));
 }
@@ -73,7 +73,7 @@ void ViewMenu::CreateView(TGMenuEntry*, void* ud)   {
 }
 
 View* ViewMenu::CreateView(const std::string& type, const std::string& title)   {
-  pair<string,string> args("dd4hep_DDEve_"+type,title);
+  pair<string,string> args("DD4hep_DDEve_"+type,title);
   View* v = PluginService::Create<View*>(type.c_str(),m_display,title.c_str());
   BuildView(v);
   return v;
@@ -81,17 +81,17 @@ View* ViewMenu::CreateView(const std::string& type, const std::string& title)   
 
 /// Create a new 3D view
 View* ViewMenu::CreateView3D(const std::string& title)   {
-  return CreateView("dd4hep_DDEve_View3D",title.c_str());
+  return CreateView("DD4hep_DDEve_View3D",title.c_str());
 }
 
 /// Create a new R-Z view
 View* ViewMenu::CreateRhoZProjection(const std::string& title )  {
-  return CreateView("dd4hep_DDEve_RhoZProjection",title.c_str());
+  return CreateView("DD4hep_DDEve_RhoZProjection",title.c_str());
 }
 
 /// Create a new R-Phi view
 View* ViewMenu::CreateRhoPhiProjection(const std::string& title )  {
-  return CreateView("dd4hep_DDEve_RhoPhiProjection",title.c_str());
+  return CreateView("DD4hep_DDEve_RhoPhiProjection",title.c_str());
 }
 
 /// Import Geometry data

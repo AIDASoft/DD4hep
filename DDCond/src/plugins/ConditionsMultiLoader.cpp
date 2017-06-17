@@ -127,7 +127,7 @@ ConditionsMultiLoader::load_source(const std::string& nam,
     Loaders::iterator ild = m_loaders.find(ident);
     ConditionsDataLoader* loader = 0;
     if ( ild == m_loaders.end() )  {
-      string typ = "dd4hep_Conditions_"+ident+"_Loader";
+      string typ = "DD4hep_Conditions_"+ident+"_Loader";
       string fac = ident+"_ConditionsDataLoader";
       const void* argv[] = {fac.c_str(), m_mgr.ptr(), 0};
       loader = createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv);

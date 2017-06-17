@@ -34,7 +34,7 @@
  * plugin for the VertexEndcap detector, put this snippet in the relevant compact file:
  * \verbatim 
 <plugins>
-      <plugin name="dd4hep_GenericSurfaceInstallerPlugin">
+      <plugin name="DD4hep_GenericSurfaceInstallerPlugin">
           <argument value="VertexEndcap"/>
           <argument value="dimension=2"/>
           <argument value="u_x=-1."/>
@@ -97,7 +97,7 @@ namespace{
             if ( ptr )  {
                 std::string name( argv[i] , ptr ) ;
                 value = dd4hep::_toDouble(++ptr);
-                std::cout << "dd4hep_GenericSurfaceInstallerPlugin: argument[" << i << "] = " << name 
+                std::cout << "DD4hep_GenericSurfaceInstallerPlugin: argument[" << i << "] = " << name 
                 << " = " << value << std::endl;
                 if( name=="dimension" ) data.dimension = value ; 
                 if( name=="u_x" ) data.uvector[0]=value ; 
@@ -115,7 +115,7 @@ namespace{
             }
         }
     
-        std::cout <<"dd4hep_GenericSurfaceInstallerPlugin: vectors: ";
+        std::cout <<"DD4hep_GenericSurfaceInstallerPlugin: vectors: ";
         std::cout <<"u( "<<data.uvector[0]<<" , "<<data.uvector[1]<<" , "<<data.uvector[2]<<") ";
         std::cout <<"v( "<<data.vvector[0]<<" , "<<data.vvector[1]<<" , "<<data.vvector[2]<<") ";
         std::cout <<"n( "<<data.nvector[0]<<" , "<<data.nvector[1]<<" , "<<data.nvector[2]<<") ";
@@ -133,7 +133,7 @@ namespace{
             dd4hep::Box mod_shape(mod_vol.solid()), comp_shape(comp_vol.solid());
             
             if ( !comp_shape.isValid() || !mod_shape.isValid() )   {
-                invalidInstaller("dd4hep_GenericSurfaceInstallerPlugin: Components and/or modules are not boxes -- invalid shapes");
+                invalidInstaller("DD4hep_GenericSurfaceInstallerPlugin: Components and/or modules are not boxes -- invalid shapes");
 
             }else if ( !handleUsingCache(component,comp_vol) )  {
                 const double* trans = placementTranslation(component);

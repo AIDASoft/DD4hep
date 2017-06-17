@@ -1019,10 +1019,10 @@ namespace dd4hep {
           /// Now configure the conditions manager
           if ( !context->manager.isValid() )  {
             ConditionsManager manager = ConditionsManager::from(description);
-            manager["PoolType"]       = "dd4hep_ConditionsLinearPool";
+            manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
             manager["LoaderType"]     = "dddb";
-            manager["UserPoolType"]   = "dd4hep_ConditionsMapUserPool";
-            manager["UpdatePoolType"] = "dd4hep_ConditionsLinearUpdatePool";
+            manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+            manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
             manager.initialize();
             pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
             context->manager = manager;

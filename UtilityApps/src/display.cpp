@@ -16,5 +16,5 @@
 
 //______________________________________________________________________________
 int main(int argc,char** argv)  {
-  return main_default("dd4hepGeometryDisplay",argc,argv);
+  return main_default("DD4hepGeometryDisplay",argc,argv);
 }

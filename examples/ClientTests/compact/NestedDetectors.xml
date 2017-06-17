@@ -52,7 +52,7 @@
 
   <comment>Tracking detectors</comment>
   <detectors>
-    <detector id="99" name="SiTrackers" type="dd4hep_SubdetectorAssembly" vis="BlueVisTrans">
+    <detector id="99" name="SiTrackers" type="DD4hep_SubdetectorAssembly" vis="BlueVisTrans">
       <shape name="SiTrackersEnv" type="Tube" rmin="0*mm" rmax="2500*mm" dz="2200*mm" material="Air">
       </shape>
       <comment>Silicon Tracker Assembly</comment>

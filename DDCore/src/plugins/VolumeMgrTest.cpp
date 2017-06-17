@@ -277,7 +277,7 @@ void VolIDTest::walk(DetElement detector, VolIDs ids, const Chain& chain, size_t
 #endif
 /// Action routine to execute the test
 long VolIDTest::run(Detector& description,int argc,char** argv)    {
-  printout(ALWAYS,"dd4hepVolumeMgrTest","++ Processing plugin...");
+  printout(ALWAYS,"DD4hepVolumeMgrTest","++ Processing plugin...");
   for(int iarg=0; iarg<argc;++iarg)  {
     if ( argv[iarg] == 0 ) break;
     string name = argv[iarg];
@@ -285,12 +285,12 @@ long VolIDTest::run(Detector& description,int argc,char** argv)    {
       const DetElement::Children& children = description.world().children();
       for (DetElement::Children::const_iterator i=children.begin(); i!=children.end(); ++i)  {
         DetElement sdet = (*i).second;
-        printout(INFO,"dd4hepVolumeMgrTest","++ Processing subdetector: %s",sdet.name());
+        printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",sdet.name());
         VolIDTest test(description,sdet,99);
       }
       return 1;
     }
-    printout(INFO,"dd4hepVolumeMgrTest","++ Processing subdetector: %s",name.c_str());
+    printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",name.c_str());
     VolIDTest test(description,description.detector(name),99);
   }
   return 1;

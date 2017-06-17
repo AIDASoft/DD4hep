@@ -37,7 +37,7 @@
   
   <!--  Includes for sensitives and support                -->
   <detectors>
-    <detector id="14" name="BeamCal" reflect="true" type="dd4hep_ForwardDetector" readout="BeamCalHits" vis="BeamCalVis" calorimeterType="BEAM">
+    <detector id="14" name="BeamCal" reflect="true" type="DD4hep_ForwardDetector" readout="BeamCalHits" vis="BeamCalVis" calorimeterType="BEAM">
 
       <comment>Beam Calorimeter</comment>
 

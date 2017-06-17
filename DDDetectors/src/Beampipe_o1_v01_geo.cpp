@@ -106,7 +106,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 					      xml_h element,
 					      dd4hep::SensitiveDetector /*sens*/) {
 
-  printout(dd4hep::DEBUG,"dd4hep_Beampipe", "Creating Beampipe" ) ;
+  printout(dd4hep::DEBUG,"DD4hep_Beampipe", "Creating Beampipe" ) ;
 
   //Access to the XML File
   xml_det_t xmlBeampipe = element;
@@ -166,7 +166,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	     << std::setw(35) << volName
 	     << std::setw(15) << sectionMat.name();
 
-    printout(dd4hep::INFO, "dd4hep_Beampipe", pipeInfo.str() );
+    printout(dd4hep::INFO, "DD4hep_Beampipe", pipeInfo.str() );
 
     if( crossType == ODH::kCenter ) { // store only the central sections !
       dd4hep::rec::ConicalSupportData::Section section ;

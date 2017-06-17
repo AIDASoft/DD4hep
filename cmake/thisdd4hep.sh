@@ -37,7 +37,7 @@ dd4hep_add_path()   {
 	path_value=${path_prefix};
     fi; 
     eval export ${path_name}=${path_value};
-    ## echo "dd4hep_add_path: ${path_name}=${path_value}";
+    ## echo "DD4hep_add_path: ${path_name}=${path_value}";
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {

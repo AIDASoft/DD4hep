@@ -109,7 +109,7 @@ namespace  {
     env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml","563543#run");
     env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml","234567#run");
     print_tpc_discrete_conditions(env);
-    description.apply("dd4hep_ConditionsDump",0,0);
+    description.apply("DD4hep_ConditionsDump",0,0);
 
     print_tpc_range_conditions(env,234567,563543);  // Should fail !
     print_tpc_range_conditions(env,123456,563543);  // Should fail !

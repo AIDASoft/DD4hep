@@ -47,7 +47,7 @@ static int ddcond_install_cond_mgr (Detector& description, int argc, char** argv
   Handle<ConditionsManagerObject> mgr(description.extension<ConditionsManagerObject>(false));
   if ( !mgr.isValid() )  {
     bool arg_error = false;
-    string factory = "dd4hep_ConditionsManager_Type1";
+    string factory = "DD4hep_ConditionsManager_Type1";
     for(int i = 0; i < argc && argv[i]; ++i)  {
       if ( 0 == ::strncmp("-type",argv[i],4) )
         factory = argv[++i];
@@ -204,7 +204,7 @@ static int ddcond_conditions_pool_print(Detector& description, bool print_condit
     printout(WARNING,"DDCondProcessor","++ Found arguments in plugin call, "
              "but could not make any sense of them....");
   }
-  const void* args[] = { "-processor", "dd4hep_ConditionsPrinter", 0};
+  const void* args[] = { "-processor", "DD4hep_ConditionsPrinter", 0};
   return ddcond_conditions_pool_processor(description,true,print_conditions,2,(char**)args);
 }
 
@@ -314,7 +314,7 @@ static int ddcond_detelement_processor(Detector& description, int argc, char** a
     processor = createProcessor<ConditionsProcessor>(description, argc, argv);
   }
   else  {
-    const void* args[] = { "-processor", "dd4hepConditionsPrinter", 0};
+    const void* args[] = { "-processor", "DD4hep_ConditionsPrinter", 0};
     processor = createProcessor<ConditionsProcessor>(description, 2, (char**)args);
   }
   dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(description,"run",1500,argc,argv));
@@ -383,7 +383,7 @@ DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 // ======================================================================================
 /// Basic entry point to instantiate the basic dd4hep conditions/alignmants printer
 /**
- *  Factory: dd4hepConditionsPrinter, dd4hepAlignmentsPrinter 
+ *  Factory: DD4hep_ConditionsPrinter, dd4hepAlignmentsPrinter 
  *
  *  \author  M.Frank
  *  \version 1.0

@@ -184,7 +184,7 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
     if ( !attr.empty() )  {
       const void* args[] = {attr.c_str(), 0};
       printout(INFO,"DDDBExecutor","+++ Processing visualization attributes: %s", attr.c_str());
-      result = description.apply("dd4hepXMLLoader", 1, (char**)args);
+      result = description.apply("DD4hepXMLLoader", 1, (char**)args);
       check_result(result);
     }
 
@@ -208,7 +208,7 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
     if ( !xmlFiles.empty() )  {
       for(size_t i=0; i<xmlFiles.size(); ++i)  {
         const void* args[] = {xmlFiles[i].c_str(), 0};
-        description.apply("dd4hepXMLLoader", 1, (char**)args);
+        description.apply("DD4hepXMLLoader", 1, (char**)args);
       }
     }
 

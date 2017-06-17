@@ -9,7 +9,7 @@
 
     <comment>Vertex Detector Supports and Readout</comment>
 
-    <detector name="VertexBarrelSupports" type="dd4hep_MultiLayerTracker" vis="SupportVis" reflect="true">
+    <detector name="VertexBarrelSupports" type="DD4hep_MultiLayerTracker" vis="SupportVis" reflect="true">
 
       <comment>Double-walled Carbon Fiber support tube</comment>
 
@@ -20,7 +20,7 @@
 	<slice material = "CarbonFiber" thickness ="VXD_CF_support"/>
       </layer>
     </detector>
-    <detector name="VertexEndSupports" type="dd4hep_DiskTracker" reflect="true" vis="SupportVis">    
+    <detector name="VertexEndSupports" type="DD4hep_DiskTracker" reflect="true" vis="SupportVis">    
       <layer id="7" inner_r = "(86.88*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexEndcap_offset" inner_z = "86.88*cm" outer_r = "16.87*cm">
 	<slice material = "CarbonFiber" thickness = "VXD_CF_support" />
       </layer>
@@ -29,7 +29,7 @@
       </layer>
     </detector>
 
-    <detector name="VertexReadout" type="dd4hep_DiskTracker" reflect="true" vis="CableVis">
+    <detector name="VertexReadout" type="DD4hep_DiskTracker" reflect="true" vis="CableVis">
 
       <comment>Readout and Cabling</comment>
 
@@ -86,7 +86,7 @@
       </layer>
     </detector>
 
-    <detector name="VXDcableZforwardBarrel" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZforwardBarrel" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "(CentralBeamPipe_rmax)"
 	      rmax = "(CentralBeamPipe_rmax + VertexCableThickness)"
@@ -96,7 +96,7 @@
 	      z="CentralBeamPipe_zmax"/>
     </detector>
 
-    <detector name="VXDcableZbackwardBarrel" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZbackwardBarrel" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "(CentralBeamPipe_rmax)"
 	      rmax = "(CentralBeamPipe_rmax + VertexCableThickness)"
@@ -106,7 +106,7 @@
 	      z="-CentralBeamPipe_zmax"/>
     </detector> 
 
-    <detector name="VXDcableZbackwardOuter" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZbackwardOuter" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax)" 
 	      rmax = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + 0.004*cm)" 
@@ -116,7 +116,7 @@
 	      z="-(VertexService_zmax + 0.01*cm)"/>
     </detector>
 
-    <detector name="VXDcableZbackwardInner" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZbackwardInner" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin="CentralBeamPipe_rmax"
 	      rmax="CentralBeamPipe_rmax + VertexCableThickness"
@@ -126,7 +126,7 @@
 	      z="-(VertexService_zmin - 0.01*cm)"/>
     </detector>
 
-    <detector name="VXDcableZforwardOuter" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZforwardOuter" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax)" 
 	      rmax = "((tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + 0.004*cm)" 
@@ -136,7 +136,7 @@
 	      z="VertexService_zmax + 0.01*cm"/>
     </detector>
 
-    <detector name="VXDcableZforwardInner" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDcableZforwardInner" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="Copper"/>
       <zplane rmin="(VertexService_zmin - 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
 	      rmax="(VertexService_zmin - 0.01*cm - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexCableThickness"
@@ -146,7 +146,7 @@
 	      z="CentralBeamPipe_zmax"/>
     </detector>
 
-    <detector name="VXDserviceZbackward" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDserviceZbackward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="G10"/>
       <zplane rmin = "(VertexService_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
 	      rmax="(VertexService_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexServiceThickness"
@@ -156,7 +156,7 @@
 	      z="-VertexService_zmin"/>
     </detector>
 
-    <detector name="VXDserviceZforward" type="dd4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
+    <detector name="VXDserviceZforward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="CableVis">
       <material name="G10"/>
       <zplane rmin = "(VertexService_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
 	      rmax="(VertexService_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexServiceThickness"

@@ -351,7 +351,7 @@ VolumeManager::VolumeManager(DetElement sub_detector, Readout ro)  {
 
 VolumeManager VolumeManager::getVolumeManager(Detector& description) {
   if( not description.volumeManager().isValid() ) {
-    description.apply("dd4hepVolumeManager", 0, 0);
+    description.apply("DD4hepVolumeManager", 0, 0);
   }
   return description.volumeManager();
 }
