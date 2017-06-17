@@ -1,11 +1,16 @@
-// $Id: PolyhedraBarrelCalorimeter2_geo.cpp 784 2013-09-19 20:05:24Z markus.frank@cern.ch $
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation 
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/Layering.h"
 #include <limits>
