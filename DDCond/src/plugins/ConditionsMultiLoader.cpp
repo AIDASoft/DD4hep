@@ -101,7 +101,7 @@ namespace {
     return new ConditionsMultiLoader(description,ConditionsManager(mgr),name);
   }
 }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_Conditions_multi_Loader,create_loader)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Conditions_multi_Loader,create_loader)
 
 /// Standard constructor, initializes variables
 ConditionsMultiLoader::ConditionsMultiLoader(Detector& description, ConditionsManager mgr, const string& nam) 

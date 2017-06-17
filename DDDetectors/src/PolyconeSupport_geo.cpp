@@ -59,5 +59,5 @@ static Ref_t create_detector(Detector& description, xml_h e, Ref_t sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(dd4hep_PolyconeSupport,create_detector)
+DECLARE_DETELEMENT(DD4hep_PolyconeSupport,create_detector)
 DECLARE_DEPRECATED_DETELEMENT(PolyconeSupport,create_detector)

@@ -1316,7 +1316,7 @@ static long create_visASCII(Detector& description, int /* argc */, char** argv) 
   return 1;
 }
 
-DECLARE_APPLY(dd4hepGeometry2VIS, create_vis)
-DECLARE_APPLY(dd4hepGeometry2VISASCII, create_visASCII)
-DECLARE_APPLY(dd4hepGeometry2GDML, create_gdml)
-DECLARE_APPLY(dd4hepGeometry2Detector, create_description)
+DECLARE_APPLY(DD4hepGeometry2VIS, create_vis)
+DECLARE_APPLY(DD4hepGeometry2VISASCII, create_visASCII)
+DECLARE_APPLY(DD4hepGeometry2GDML, create_gdml)
+DECLARE_APPLY(DD4hepGeometry2Detector, create_description)

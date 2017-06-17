@@ -90,7 +90,7 @@ namespace {
     return new ConditionsXmlLoader(description,ConditionsManager(mgr),name);
   }
 }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_Conditions_xml_Loader,create_loader)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Conditions_xml_Loader,create_loader)
 
 /// Standard constructor, initializes variables
 ConditionsXmlLoader::ConditionsXmlLoader(Detector& description, ConditionsManager mgr, const std::string& nam) 

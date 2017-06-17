@@ -149,7 +149,7 @@ static long teve_display(Detector& description, int /* argc */, char** /* argv *
 
   return 1;
 }
-DECLARE_APPLY(dd4hepTEveDisplay,teve_display)
+DECLARE_APPLY(DD4hepTEveDisplay,teve_display)
 
 
 //=====================================================================================================================

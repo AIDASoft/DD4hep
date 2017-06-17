@@ -65,4 +65,4 @@ static void* create_dddb_loader(Detector& description, int argc, char** argv)   
   cond::ConditionsManagerObject* m = (cond::ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
   return new DDDB::DDDBConditionsLoader(description,m,name);
 }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_Conditions_dddb_Loader,create_dddb_loader)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Conditions_dddb_Loader,create_dddb_loader)

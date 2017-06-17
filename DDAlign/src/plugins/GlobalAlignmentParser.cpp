@@ -277,4 +277,4 @@ static long install_Alignment(Detector& description, int, char**) {
   GlobalAlignmentCache::install(description);
   return 1;
 }
-DECLARE_APPLY(dd4hep_GlobalAlignmentInstall,install_Alignment)
+DECLARE_APPLY(DD4hep_GlobalAlignmentInstall,install_Alignment)

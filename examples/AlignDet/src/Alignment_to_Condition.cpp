@@ -76,4 +76,4 @@ static int Alignment_to_Condition (Detector& , int argc, char** argv)  {
   return 1;
 }
 
-DECLARE_APPLY(dd4hep_Alignment2Condition,Alignment_to_Condition)
+DECLARE_APPLY(DD4hep_Alignment2Condition,Alignment_to_Condition)

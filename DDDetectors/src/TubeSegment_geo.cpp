@@ -51,5 +51,5 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(dd4hep_TubeSegment,create_element)
+DECLARE_DETELEMENT(DD4hep_TubeSegment,create_element)
 DECLARE_DEPRECATED_DETELEMENT(TubeSegment,create_element)

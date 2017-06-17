@@ -81,4 +81,4 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(dd4hep_SubdetectorAssembly,create_element)
+DECLARE_DETELEMENT(DD4hep_SubdetectorAssembly,create_element)

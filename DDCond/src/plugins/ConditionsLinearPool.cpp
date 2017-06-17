@@ -239,10 +239,10 @@ namespace {
   _CR(create_list_update_pool,std::list,ConditionsLinearUpdatePool,UpdatePool)
 }
 
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsLinearPool,            create_vector_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsLinearVectorPool,      create_vector_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsLinearUpdatePool,      create_vector_update_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsLinearVectorUpdatePool,create_vector_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearPool,            create_vector_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearVectorPool,      create_vector_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearUpdatePool,      create_vector_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearVectorUpdatePool,create_vector_update_pool)
 
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsLinearListPool,        create_list_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsLinearListUpdatePool,  create_list_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearListPool,        create_list_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearListUpdatePool,  create_list_update_pool)

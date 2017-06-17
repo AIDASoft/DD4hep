@@ -130,5 +130,5 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   return endcap;
 }
 
-DECLARE_DETELEMENT(dd4hep_PolyhedraEndcapCalorimeter2,create_detector)
+DECLARE_DETELEMENT(DD4hep_PolyhedraEndcapCalorimeter2,create_detector)
 DECLARE_DEPRECATED_DETELEMENT(PolyhedraEndcapCalorimeter2,create_detector)

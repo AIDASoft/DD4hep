@@ -51,5 +51,5 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
 }
 
 // first argument is the type from the xml file
-DECLARE_DETELEMENT(dd4hep_BoxSegment,create_element)
+DECLARE_DETELEMENT(DD4hep_BoxSegment,create_element)
 DECLARE_DEPRECATED_DETELEMENT(BoxSegment,create_element)

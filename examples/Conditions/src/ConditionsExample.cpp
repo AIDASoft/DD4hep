@@ -204,8 +204,8 @@ namespace  {
 }
 
 
-DECLARE_APPLY(dd4hep_Test_ConditionsAccess,example1)
-DECLARE_APPLY(dd4hep_Test_ConditionsExample3,example3)
-DECLARE_APPLY(dd4hep_Test_ConditionsTreeDump,example2)
-DECLARE_APPLY(dd4hep_Test_CallbackInstall,dd4hep_CallbackInstallTest)
+DECLARE_APPLY(DD4hep_Test_ConditionsAccess,example1)
+DECLARE_APPLY(DD4hep_Test_ConditionsExample3,example3)
+DECLARE_APPLY(DD4hep_Test_ConditionsTreeDump,example2)
+DECLARE_APPLY(DD4hep_Test_CallbackInstall,dd4hep_CallbackInstallTest)
 #endif

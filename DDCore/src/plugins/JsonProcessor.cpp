@@ -156,7 +156,7 @@ static long handle_json(Detector& description, int argc, char** argv) {
   printout(INFO,"JsonProcessor","++ ... Successfully processed JSON input: %s",file.c_str());
   return 1;
 }
-DECLARE_APPLY(dd4hep_JsonProcessor,handle_json)
+DECLARE_APPLY(DD4hep_JsonProcessor,handle_json)
 
 #endif  // DD4HEP_USE_BOOST
 

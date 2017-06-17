@@ -31,6 +31,6 @@ static long json_dump(Detector& /* description */, int argc, char** argv)   {
   printout(INFO,"JsonDumper","+++ Successfully dumped json input: %s.",fname.c_str());
   return 1;
 }
-DECLARE_APPLY(dd4hep_JsonDumper,json_dump)
+DECLARE_APPLY(DD4hep_JsonDumper,json_dump)
 
 #endif
