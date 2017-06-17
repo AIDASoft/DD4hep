@@ -33,7 +33,7 @@ dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #  Test JSON based parser
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -destroy -plugin dd4hep_JsonDumper
+  EXEC_ARGS  geoPluginRun -destroy -plugin DD4hep_JsonDumper
   ${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.json
   REGEX_PASS "Successfully dumped json input"
   REGEX_FAIL "Exception"

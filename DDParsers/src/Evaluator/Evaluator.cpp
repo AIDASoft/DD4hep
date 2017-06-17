@@ -1,7 +1,7 @@
 // -*- C++ -*-
 // ---------------------------------------------------------------------------
 
-#include "XML/Evaluator.h"
+#include "DDParsers/Evaluator.h"
 
 #include <iostream>
 #include <cmath>        // for pow()

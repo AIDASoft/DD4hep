@@ -22,12 +22,12 @@
 #else
 
 // Standard dd4hep parser handling
-#include "DD4hep/ToStream.h"
+#include "DDParsers/ToStream.h"
 
 #endif
 
-#ifndef DD4HEP_PARSERS_NO_ROOT
 
+#ifndef DD4HEP_PARSERS_NO_ROOT
 // ============================================================================
 // print XYZ-point
 std::ostream& dd4hep::Utils::toStream(const ROOT::Math::XYZPoint&  obj, std::ostream& s)  {

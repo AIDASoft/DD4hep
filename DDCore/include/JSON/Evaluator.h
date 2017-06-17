@@ -19,6 +19,6 @@
  *
  *  See the externalized header in doc/externalize for details.
  */
-#include "XML/Evaluator.h"
+#include "DDParsers/Evaluator.h"
 
 #endif   /* DD4HEP_DDCORE_JSON_EVALUATOR_H  */

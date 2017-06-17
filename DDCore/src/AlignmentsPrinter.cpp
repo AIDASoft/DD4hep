@@ -20,7 +20,7 @@
 // C/C++ include files
 #include <sstream>
 #include "TClass.h"
-#include "DD4hep/ToStream.h"
+#include "DDParsers/ToStream.h"
 
 using namespace std;
 using namespace dd4hep;

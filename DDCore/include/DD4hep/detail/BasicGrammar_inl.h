@@ -35,9 +35,9 @@
 
 #else
 
-#include "XML/Evaluator.h"
-#include "DD4hep/Parsers.h"
-#include "DD4hep/ToStream.h"
+#include "DDParsers/Parsers.h"
+#include "DDParsers/ToStream.h"
+#include "DDParsers/Evaluator.h"
 namespace dd4hep { XmlTools::Evaluator& g4Evaluator();  }
 #endif
 #endif

@@ -11,7 +11,7 @@
 #=================================================================================
 dd4hep_package(    DDCore
   USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
-                   DDSegmentation
+                   DDSegmentation DDParsers
   OPTIONAL         XERCESC
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DD4hep include/XML  include/JSON)
@@ -33,12 +33,6 @@ dd4hep_add_dictionary( G__dd4hep
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h )
 
-dd4hep_add_package_library ( DDParsers
-  INCLUDE_DIRS  
-  LINK_LIBRARIES
-  SOURCES        src/Evaluator/*.cpp 
-  OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
-  )
 
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
@@ -50,4 +44,4 @@ dd4hep_add_package_library ( DDCore
   )
 
 # Generate DDCore plugins---------------------------------------------------------
-dd4hep_add_plugin ( DDCorePlugins  SOURCES src/plugins/*.cpp )
+dd4hep_add_plugin ( DDCorePlugins SOURCES src/plugins/*.cpp )

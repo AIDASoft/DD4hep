@@ -1,7 +1,7 @@
 // -*- C++ -*-
 // ----------------------------------------------------------------------
 
-#include "XML/Evaluator.h"
+#include "DDParsers/Evaluator.h"
 
 #ifdef DD4HEP_NONE
 /// Utility namespace to support TGeo units.
@@ -12,7 +12,7 @@ namespace dd4hep {
   //}
 }
 #else
-#include "DD4hep/DD4hepUnits.h"
+#include "DDParsers/DD4hepUnits.h"
 #endif
 namespace units = dd4hep;
 
