@@ -219,4 +219,4 @@ static void* setup_global_Conditions(Detector& description, int argc, char** arg
   except("XML_DOC_READER","Invalid number of arguments to interprete conditions: %d != %d.",argc,2);
   return 0;
 }
-DECLARE_Detector_CONSTRUCTOR(XMLConditionsParser,setup_global_Conditions)
+DECLARE_DD4HEP_CONSTRUCTOR(XMLConditionsParser,setup_global_Conditions)

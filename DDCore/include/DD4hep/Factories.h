@@ -235,7 +235,7 @@ namespace {
     DD4HEP_PLUGINSVC_FACTORY(name,name,void*(const char*),__LINE__) }
 
 // Call function of the type [void* (*func)(dd4hep::Detector& description, int argc,char** argv)]
-#define DECLARE_Detector_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(dd4hep,name) { \
+#define DECLARE_DD4HEP_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(dd4hep,name) { \
     template <> void* DetectorConstructionFactory<name>::create(dd4hep::Detector& l, int n,char** a) { return func(l,n,a);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,void*(dd4hep::Detector*,int,char**),__LINE__) }
 
