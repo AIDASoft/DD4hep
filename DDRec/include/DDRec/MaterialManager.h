@@ -1,8 +1,9 @@
 #ifndef DDRec_MaterialManager_H_
 #define DDRec_MaterialManager_H_
 
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
-#include "DDSurfaces/Vector3D.h"
+#include "DDRec/Vector3D.h"
 #include "DDRec/Material.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Volumes.h"
@@ -12,11 +13,8 @@
 
 class TGeoManager ;
 
-namespace DD4hep {
-  namespace DDRec {
-
-    //  export Geometry::Material to this namespace ;
-    using  Geometry::Material ;
+namespace dd4hep {
+  namespace rec {
 
     typedef std::vector< std::pair< Material, double > > MaterialVec ;
     
@@ -33,7 +31,7 @@ namespace DD4hep {
     public:
 
       /// Instantiate the MaterialManager for this (world) volume
-      MaterialManager(DD4hep::Geometry::Volume world);
+      MaterialManager(Volume world);
 
       /// default c'tor
       [[gnu::deprecated("use MaterialManager(Volume world) instead")]]
@@ -46,11 +44,11 @@ namespace DD4hep {
        *  are ignored. Avoid calling this method in inner loops as the computation is not cheap. Ideally the result should be cached,
        *  for example as an averaged material @see createAveragedMaterial().
        */
-      const MaterialVec& materialsBetween(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 , double epsilon=1e-4 ) ;
+      const MaterialVec& materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 ) ;
 
       /** Get the material at the given position.
        */
-      const Material& materialAt(const DDSurfaces::Vector3D& pos );
+      const Material& materialAt(const Vector3D& pos );
 
 
       /** Create a material with averaged properties from all materials in the list. 
@@ -66,7 +64,7 @@ namespace DD4hep {
       Material _m ;
 
       // cached last points
-      DDSurfaces::Vector3D _p0 , _p1, _pos ;
+      Vector3D _p0 , _p1, _pos ;
 
       TGeoManager* _tgeoMgr ;
     };
@@ -90,7 +88,9 @@ namespace DD4hep {
       return os ;
     }
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif // DDRec_MaterialManager_H_

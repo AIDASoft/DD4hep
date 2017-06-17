@@ -14,10 +14,8 @@
 #include <cmath>
 
 using namespace std ;
-using namespace DD4hep ;
-using namespace Geometry;
-using namespace DDRec ;
-using namespace DDSurfaces ;
+using namespace dd4hep ;
+using namespace dd4hep::rec ;
 
 
 // this should be the first line in your test

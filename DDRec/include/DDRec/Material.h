@@ -1,23 +1,23 @@
 #ifndef DDRec_Material_H
 #define DDRec_Material_H
 
-#include "DD4hep/Objects.h"
-#include "DDSurfaces/IMaterial.h"
+#include "DD4hep/LCDD.h"
+#include "DDRec/IMaterial.h"
 
 #include <list>
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
     
     
-    /** Simple data class that implements the DDSurfaces::IMaterial interface
+    /** Simple data class that implements the IMaterial interface
      *  and is used in the Surface implementation.
      *
      * @author F.Gaede, DESY
      * @date May, 20 2014
      * @version $Id$
      */
-    class MaterialData : public DDSurfaces::IMaterial{
+    class MaterialData : public IMaterial{
       
     protected:
       std::string _name ;
@@ -29,8 +29,8 @@ namespace DD4hep {
 
     public:
 
-      /** Instantiate from Geometry::Material - default initialization if handle is not valid */
-      MaterialData( Geometry::Material m ) : 
+      /** Instantiate from Material - default initialization if handle is not valid */
+      MaterialData( Material m ) : 
 
         _name("unknown"),
         _Z( -1. ),
@@ -97,7 +97,7 @@ namespace DD4hep {
         return *this ;
       }
 
-     /// assignment from Geometry::Material
+     /// assignment from Material
       MaterialData& operator=(const IMaterial& m){
         if ( this != &m )  {
           _name = m.name() ;
@@ -110,8 +110,8 @@ namespace DD4hep {
         return *this ;
       }
 
-      /// assignment from Geometry::Material
-      MaterialData& operator=(const Geometry::Material& m){
+      /// assignment from Material
+      MaterialData& operator=(const Material& m){
       
         if( m.isValid() ) {
 
@@ -164,5 +164,7 @@ namespace DD4hep {
 
   } /* namespace */
 } /* namespace */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif /* DDRec_Material_H */

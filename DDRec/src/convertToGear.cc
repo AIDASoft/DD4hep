@@ -18,9 +18,8 @@
 #include "DDRec/DDGear.h"
 
 using namespace std ;
-using namespace DD4hep ;
-using namespace DD4hep::Geometry;
 using namespace dd4hep ;
+using namespace dd4hep::rec ;
 
 //=============================================================================
 

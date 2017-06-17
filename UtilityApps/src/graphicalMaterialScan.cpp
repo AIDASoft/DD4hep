@@ -41,8 +41,7 @@
 #include <cassert>
 
 using namespace DD4hep;
-using namespace DDRec;
-using DDSurfaces::Vector3D;
+using namespace dd4hep::rec;
 
 using std::cout;
 using std::endl;

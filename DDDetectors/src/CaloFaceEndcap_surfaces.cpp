@@ -37,18 +37,18 @@ namespace {
 namespace{
   
   /// helper class for a planar surface placed into a polyhedral calorimeter endcap 
-  class CaloEndcapPlaneImpl : public  DD4hep::DDRec::VolPlaneImpl{
+  class CaloEndcapPlaneImpl : public  dd4hep::rec::VolPlaneImpl{
     double  _r ;
     double  _phi0 ;
     unsigned _sym ;
   public:
     /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
-    CaloEndcapPlaneImpl( DDSurfaces::SurfaceType typ,
+    CaloEndcapPlaneImpl( dd4hep::rec::SurfaceType typ,
                          double thickness_inner ,double thickness_outer, 
-                         DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
-                         DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
+                         dd4hep::rec::Vector3D u_val ,dd4hep::rec::Vector3D v_val ,
+                         dd4hep::rec::Vector3D n_val , dd4hep::rec::Vector3D o_val, 
                          DD4hep::Geometry::Volume vol, int id_val ) :
-      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
+      dd4hep::rec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _r(0),_phi0(0),_sym(0) {}
     
     void setData( double radius, double phi0, unsigned symmetry){
@@ -59,7 +59,7 @@ namespace{
     void setID( DD4hep::long64 id_val ) { _id = id_val; }
     
     // overwrite to include points inside the inner radius of the endcap 
-    bool insideBounds(const DDSurfaces::Vector3D& point, double epsilon) const {
+    bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {
       
       double ri = _r * cos(  2.* M_PI / _sym ) ;
       
@@ -69,23 +69,23 @@ namespace{
     }
 
     /// create outer bounding lines for the given symmetry of the polyhedron
-    virtual std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> > getLines(unsigned){
+    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned){
       
-      std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> >  lines ;
+      std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
       
       double alpha = ( _sym ? 2.* M_PI / _sym : 0. ) ;
       
       for(unsigned i=0 ; i < _sym ; ++i){
         double gam0 =    i  * alpha + _phi0 ;
         double gam1 = (i+1) * alpha + _phi0 ;
-        lines.push_back( std::make_pair( DDSurfaces::Vector3D( _r*cos(gam0), _r*sin(gam0), origin().z()  ), 
-                                         DDSurfaces::Vector3D( _r*cos(gam1), _r*sin(gam1), origin().z()  ) ) ) ;
+        lines.push_back( std::make_pair( dd4hep::rec::Vector3D( _r*cos(gam0), _r*sin(gam0), origin().z()  ), 
+                                         dd4hep::rec::Vector3D( _r*cos(gam1), _r*sin(gam1), origin().z()  ) ) ) ;
       }
       return lines; 
     }
   };
   
-  typedef DD4hep::DDRec::VolSurfaceHandle<CaloEndcapPlaneImpl> CaloEndcapPlane ;
+  typedef dd4hep::rec::VolSurfaceHandle<CaloEndcapPlaneImpl> CaloEndcapPlane ;
 
   
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {
@@ -139,7 +139,7 @@ namespace{
     
 
     // shift position of origin of helper plane to pick up Air instead of vacuum 
-    Vector3D u(1.,0.,0.), v(0.,1.,0.), n(0.,0.,1.), o(0., 0.5*radius , zpos );
+    dd4hep::rec::Vector3D u(1.,0.,0.), v(0.,1.,0.), n(0.,0.,1.), o(0., 0.5*radius , zpos );
     
     CaloEndcapPlane surf_pz(comp_vol,Type(Type::Helper,Type::Sensitive), inner_thickness, outer_thickness, u, v, n, o);
 

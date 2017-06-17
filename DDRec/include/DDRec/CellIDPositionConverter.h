@@ -1,6 +1,7 @@
 #ifndef CellIDPositionConverter_H_
 #define CellIDPositionConverter_H_
 
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Readout.h"
 #include "DD4hep/VolumeManager.h"
 
@@ -10,11 +11,11 @@
 #include <string>
 
 
-namespace DD4hep {
-  namespace DDRec {
-
-    typedef DDSegmentation::CellID CellID;
-    typedef DDSegmentation::VolumeID VolumeID;
+namespace dd4hep {
+  namespace rec {
+    
+    typedef DD4hep::DDSegmentation::CellID CellID;
+    typedef DD4hep::DDSegmentation::VolumeID VolumeID;
 
     /** Utility for position to cellID and cellID to position conversions.
      *  (Correctly re-implements some of the functionality of the deprecated IDDecoder).
@@ -32,8 +33,8 @@ namespace DD4hep {
     public:
       
       /// The constructor - takes the main lcdd object.
-      CellIDPositionConverter( Geometry::LCDD& lcdd ) : _lcdd( &lcdd )  {
-	_volumeManager = Geometry::VolumeManager::getVolumeManager(lcdd);
+      CellIDPositionConverter( LCDD& lcdd ) : _lcdd( &lcdd )  {
+	_volumeManager = VolumeManager::getVolumeManager(lcdd);
       }
 
       /// Destructor
@@ -43,43 +44,43 @@ namespace DD4hep {
        *  No Alignment corrections are applied.
        *  If no sensitive volume is found, (0,0,0) is returned.
        */
-      Geometry::Position positionNominal(const CellID& cellID) const;
+      Position positionNominal(const CellID& cellID) const;
       
       /** Return the global position for a given cellID of a sensitive volume.
        *  Alignment corrections are applied (TO BE DONE).
        *  If no sensitive volume is found, (0,0,0) is returned.
        */
-      Geometry::Position position(const CellID& cellID) const;
+      Position position(const CellID& cellID) const;
 
 
       /** Return the global cellID for the given global position.
        *  Note: this call is rather slow - only use it when really needed !
        *  
        */
-      CellID cellID(const Geometry::Position& global) const;
+      CellID cellID(const Position& global) const;
 
 
 
       /** Find the context with DetElement, placements etc for a given cellID of a sensitive volume.
        *  Returns NULL if not found (e.g. if the cellID does not correspond to a sensitive volume).
        */
-      const Geometry::VolumeManagerContext* findContext(const CellID& cellID) const;
+      const VolumeManagerContext* findContext(const CellID& cellID) const;
 
 
 
       /** Find the DetElement that contains the given point - if no DetElement is found, an
        *  invalid DetElement is returned. Uses the optionally given DetElement as start for the search.
        */ 
-      Geometry::DetElement findDetElement(const Geometry::Position& global,
-					  const Geometry::DetElement& det=Geometry::DetElement() ) const; 
-
-
+      DetElement findDetElement(const Position& global,
+				const DetElement& det=DetElement() ) const; 
+      
+      
       /** Find the lowest daughter Placement in the given Placement that
        *  contains the point (in the coordinate system of the mother placement).
        *  Return the local coordinates in this daughter Placement and collect all volIDs 
        *  on the way.
        */
-      Geometry::PlacedVolume findPlacement(const Geometry::Position& point, const  Geometry::PlacedVolume& mother, double locPos[3], Geometry::PlacedVolume::VolIDs& volIDs) const ; 
+      PlacedVolume findPlacement(const Position& point, const  PlacedVolume& mother, double locPos[3], PlacedVolume::VolIDs& volIDs) const ; 
 
 
       /** Find the readout object for the given DetElement. If the DetElement is sensitive the corresondig 
@@ -87,21 +88,28 @@ namespace DD4hep {
        *  volume is performed and the first Readout object is returned. 
        *  
        */
-      Geometry::Readout findReadout(const Geometry::DetElement& det) const ;
+      Readout findReadout(const DetElement& det) const ;
 
 
       /** Return this PlacedVolume's Readout or, if the volume is not sensitive, recursively search for 
        * a Readout object in the daughter nodes (volumes).
        */
-      Geometry::Readout findReadout(const Geometry::PlacedVolume& pv) const ;
+      Readout findReadout(const PlacedVolume& pv) const ;
 
 
     protected:
-      Geometry::VolumeManager _volumeManager{} ;
-      const Geometry::LCDD* _lcdd ;
+      VolumeManager _volumeManager{} ;
+      const LCDD* _lcdd ;
 
     };
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
+
+
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
+
+
+
 #endif /* CellIDPositionConverter_H_ */

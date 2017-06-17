@@ -38,17 +38,17 @@ namespace {
 namespace{
   
   /// helper class for a planar surface placed into a polyhedral calorimeter barrel 
-  class CaloBarrelPlaneImpl : public  DD4hep::DDRec::VolPlaneImpl   {
+  class CaloBarrelPlaneImpl : public  dd4hep::rec::VolPlaneImpl   {
     double _length, _width ;
 
   public:
     /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
-    CaloBarrelPlaneImpl( DDSurfaces::SurfaceType typ,
+    CaloBarrelPlaneImpl( dd4hep::rec::SurfaceType typ,
                          double thickness_inner ,double thickness_outer, 
-                         DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
-                         DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
+                         dd4hep::rec::Vector3D u_val ,dd4hep::rec::Vector3D v_val ,
+                         dd4hep::rec::Vector3D n_val , dd4hep::rec::Vector3D o_val, 
                          DD4hep::Geometry::Volume vol, int id_val ) :
-      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
+      dd4hep::rec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _length(0),_width(0) {}
     
     void setData( double length, double width){
@@ -59,17 +59,17 @@ namespace{
     void setID( DD4hep::long64 id_val ) { _id = id_val ; }
     
     // overwrite to include points inside the inner radius of the barrel 
-    bool insideBounds(const DDSurfaces::Vector3D& point, double epsilon) const {
-      DDSurfaces::Vector2D uvVec = globalToLocal( point ) ;
+    bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {
+      dd4hep::rec::Vector2D uvVec = globalToLocal( point ) ;
       
       return ( std::abs ( distance( point ) ) < epsilon )  &&  
         std::abs( uvVec[0] ) < _width/2. &&  std::abs( uvVec[1] ) < _length/2. ; 
     }
     
     /// create outer bounding lines for the given symmetry of the polyhedron
-    virtual std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> > getLines(unsigned){
+    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned){
       
-      std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> >  lines ;
+      std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
       
       lines.push_back( std::make_pair( origin()+_width/2.*u()+_length/2.*v(), origin()-_width/2.*u()+_length/2.*v() ) ) ;
       lines.push_back( std::make_pair( origin()-_width/2.*u()+_length/2.*v(), origin()-_width/2.*u()-_length/2.*v() ) ) ;
@@ -80,7 +80,7 @@ namespace{
     }
   };
   
-  typedef DD4hep::DDRec::VolSurfaceHandle<CaloBarrelPlaneImpl> CaloBarrelPlane ;
+  typedef dd4hep::rec::VolSurfaceHandle<CaloBarrelPlaneImpl> CaloBarrelPlane ;
 
   
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {
@@ -141,7 +141,7 @@ namespace{
 
       double gam = phi0 + alpha/2. + i*alpha;
 
-      Vector3D 
+      dd4hep::rec::Vector3D 
         u( cos(gam+M_PI/2.), sin(gam+M_PI/2.), 0. ),
         v(          0.     ,        0.       , 1. ), 
         n(        cos(gam) ,        sin(gam) , 0. ),

@@ -2,8 +2,8 @@
 
 #include <boost/io/ios_state.hpp>
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
 
 
     std::ostream& operator<<( std::ostream& io , const FixedPadSizeTPCData& d ){

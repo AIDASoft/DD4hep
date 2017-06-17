@@ -21,11 +21,9 @@
 #include "DDRec/MaterialManager.h"
 
 using namespace std ;
-using namespace DD4hep ;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::DDRec;
-using namespace DDSurfaces ;
 using namespace dd4hep ;
+using namespace dd4hep::rec;
+
 
 //=============================================================================
 #include "main.h"

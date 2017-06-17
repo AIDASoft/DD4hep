@@ -41,7 +41,7 @@ macro(dd4hep_set_compiler_flags)
 
   # AppleClang/Clang specific warning flags
   if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
-    set ( COMPILER_FLAGS ${COMPILER_FLAGS} -Winconsistent-missing-override -Wno-c++1z-extensions)
+    set ( COMPILER_FLAGS ${COMPILER_FLAGS} -Winconsistent-missing-override -Wno-c++1z-extensions -Wheader-hygiene )
   endif()
 
   FOREACH( FLAG ${COMPILER_FLAGS} )

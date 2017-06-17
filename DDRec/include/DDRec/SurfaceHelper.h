@@ -3,8 +3,8 @@
 
 #include "DDRec/Surface.h"
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
 
     /** Surface helper class that allows to access all surfaces
      *  assigned to a DetElement and all its daughters.
@@ -18,7 +18,7 @@ namespace DD4hep {
 
     public:
 
-      SurfaceHelper(const Geometry::DetElement& e);
+      SurfaceHelper(const DetElement& e);
       
       ~SurfaceHelper();
       
@@ -29,14 +29,16 @@ namespace DD4hep {
 
     protected :
       SurfaceList  _sL ;
-      const Geometry::DetElement& _det ;
+      const DetElement& _det ;
 
       /// initializes surfaces from VolSurfaces assigned to this DetElement in detector construction
       void initialize() ;
 
     };
 
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif // DDRec_SurfaceHelper_H_

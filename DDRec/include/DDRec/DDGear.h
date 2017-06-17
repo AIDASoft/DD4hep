@@ -1,6 +1,7 @@
 #ifndef DDGear_H
 #define DDGear_H
 
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Detector.h"
 
 #include "gear/GEAR.h"
@@ -13,8 +14,9 @@ namespace gear{
   class GearMgr ;
 }
 
-namespace DD4hep {
-
+namespace dd4hep {
+  namespace rec {
+    
   /**
      Simple wrapper class for objects of type GearParametersImpl that
      can be added to DetElements with the extension mechanism.
@@ -23,7 +25,7 @@ namespace DD4hep {
      @version $Id$
   */
 
-  class GearHandle  { //: public gear::GearParametersImpl {
+  class GearHandle  { 
     
   protected:
     gear::GearParametersImpl* _gObj ;
@@ -69,8 +71,8 @@ namespace DD4hep {
 
 
     /** dummy implementation of required c'tors to allow using the extension mechanism */
-    GearHandle(const Geometry::DetElement& /*d*/) : _gObj(0) {}
-    GearHandle(const GearHandle& /*c*/,const Geometry::DetElement& /*det*/) : _gObj(0)  {}
+    GearHandle(const DetElement& /*d*/) : _gObj(0) {}
+    GearHandle(const GearHandle& /*c*/,const DetElement& /*det*/) : _gObj(0)  {}
   } ;
   
 
@@ -81,8 +83,10 @@ namespace DD4hep {
       @author  F.Gaede, DESY
       @version $Id$
   */
-  gear::GearMgr* createGearMgr( Geometry::LCDD& lcdd , const std::string& pluginName="GearForILD" ) ;
+  gear::GearMgr* createGearMgr( LCDD& lcdd , const std::string& pluginName="GearForILD" ) ;
 
-}
+  }}
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
 #endif

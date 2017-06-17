@@ -9,8 +9,8 @@
 
 #define MINSTEP 1.e-5
 
-namespace DD4hep {
-  namespace DDRec {
+namespace dd4hep {
+  namespace rec {
 
 
     MaterialManager::MaterialManager(DD4hep::Geometry::Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
@@ -28,7 +28,7 @@ namespace DD4hep {
       
     }
     
-    const MaterialVec&MaterialManager:: materialsBetween(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 , double epsilon) {
+    const MaterialVec&MaterialManager:: materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
       
       if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {
 	
@@ -100,7 +100,7 @@ namespace DD4hep {
 	  //	printf( " --  step length :  %1.8e %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   - %s \n" , length ,
 	  //		position[0], position[1], position[2], previouspos[0], previouspos[1], previouspos[2] , node1->GetMedium()->GetMaterial()->GetName() ) ;
 	  
-	  DDSurfaces::Vector3D posV( position ) ;
+	  Vector3D posV( position ) ;
 	  
 	  double currDistance = ( posV - p0 ).r() ;
 	  
@@ -153,7 +153,7 @@ namespace DD4hep {
     }
 
     
-    const Geometry::Material& MaterialManager::materialAt(const DDSurfaces::Vector3D& pos ){
+    const Geometry::Material& MaterialManager::materialAt(const Vector3D& pos ){
 
       if( pos != _pos ) {
 	
@@ -230,5 +230,5 @@ namespace DD4hep {
 
     }
     
-  } /* namespace DDRec */
-} /* namespace DD4hep */
+  } /* namespace rec */
+} /* namespace dd4hep */
