@@ -56,11 +56,11 @@ namespace dd4hep {
       int                     m_maxIOVTypes;
       /// Property: ConditionsPool constructor type (default: empty. MUST BE SET!)
       std::string             m_poolType;
-      /// Property: UpdatePool constructor type (default: dd4hep_ConditionsLinearUpdatePool)
+      /// Property: UpdatePool constructor type (default: DD4hep_ConditionsLinearUpdatePool)
       std::string             m_updateType;
-      /// Property: UserPool constructor type (default: dd4hep_ConditionsLinearUserPool)
+      /// Property: UserPool constructor type (default: DD4hep_ConditionsLinearUserPool)
       std::string             m_userType;
-      /// Property: Conditions loader type (default: "multi" -> dd4hep_Conditions_multi_Loader)
+      /// Property: Conditions loader type (default: "multi" -> DD4hep_Conditions_multi_Loader)
       std::string             m_loaderType;
 
       /// Collection of IOV types managed

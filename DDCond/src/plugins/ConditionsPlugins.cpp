@@ -36,7 +36,7 @@ using namespace dd4hep::cond;
 
 /// Plugin function: Install the alignment manager as an extension to the central Detector object
 /**
- *  Factory: dd4hep_ConditionsManagerInstaller
+ *  Factory: DD4hep_ConditionsManagerInstaller
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -60,7 +60,7 @@ static int ddcond_install_cond_mgr (Detector& description, int argc, char** argv
       /// Help printout describing the basic command line interface
       cout <<
         "Usage: -plugin <name> -arg [-arg]                                             \n"
-        "     name:   factory name     dd4hep_ConditionsManagerInstaller               \n"
+        "     name:   factory name     DD4hep_ConditionsManagerInstaller               \n"
         "     -type   <string>         Manager type.                                   \n"
         "                              Default: ConditionsManagerObject_Type1_t        \n"
         "     -handle <pointer>        Pointer to Handle<NamedObject> to pass pointer  \n"
@@ -132,7 +132,7 @@ static ConditionsSlice* ddcond_prepare(Detector& description, const string& iov_
 // ======================================================================================
 /// Plugin function: Dump of all Conditions pool with or without conditions
 /**
- *  Factory: dd4hep_ConditionsPoolProcessor
+ *  Factory: DD4hep_ConditionsPoolProcessor
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -183,8 +183,8 @@ DECLARE_APPLY(DD4hep_ConditionsPoolProcessor,ddcond_conditions_pool_process)
 // ======================================================================================
 /// Plugin function: Dump of all Conditions pool with or without conditions
 /**
- *  Factory: dd4hep_ConditionsPoolDump: Dump pools only
- *  Factory: dd4hep_ConditionsDump: Dump pools and conditions
+ *  Factory: DD4hep_ConditionsPoolDump: Dump pools only
+ *  Factory: DD4hep_ConditionsDump: Dump pools and conditions
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -331,7 +331,7 @@ DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
 // ======================================================================================
 /// Plugin entry point: Synchronize conditions according to new IOV value
 /**
- *  Factory: dd4hep_ConditionsSynchronize
+ *  Factory: DD4hep_ConditionsSynchronize
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -357,7 +357,7 @@ DECLARE_APPLY(DD4hep_ConditionsSynchronize,ddcond_synchronize_conditions)
 // ======================================================================================
 /// Plugin entry point: Clean conditions reposiory according to maximum age
 /**
- *  Factory: dd4hep_ConditionsClean
+ *  Factory: DD4hep_ConditionsClean
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -413,7 +413,7 @@ static void* create_printer(Detector& description, int argc,char** argv)  {
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name(s)  dd4hep_ConditionsPrinter,                       \n"
+      "     name:   factory name(s)  DD4hep_ConditionsPrinter,                       \n"
       "                              dd4hep_AlignmentsPrinter                        \n"
       "                              dd4hep_AlignedVolumePrinter                     \n"
       "     -prefix <string>         Printout prefix for user customized output.     \n"
@@ -448,7 +448,7 @@ DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsPrinter,create_cond_printer)
 // ======================================================================================
 /// Plugin entry point: Create repository csv file from loaded conditions
 /**
- *  Factory: dd4hep_ConditionsCreateRepository
+ *  Factory: DD4hep_ConditionsCreateRepository
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -467,7 +467,7 @@ static long ddcond_create_repository(Detector& description, int argc, char** arg
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     dd4hep_ConditionsCreateRepository             \n\n"
+      "     name:   factory name     DD4hep_ConditionsCreateRepository             \n\n"
       "     -output <string>         Output file name.                             \n\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
@@ -483,7 +483,7 @@ DECLARE_APPLY(DD4hep_ConditionsCreateRepository,ddcond_create_repository)
 // ======================================================================================
 /// Plugin entry point: Dump conditions repository csv file
 /**
- *  Factory: dd4hep_ConditionsDumpRepository
+ *  Factory: DD4hep_ConditionsDumpRepository
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -504,7 +504,7 @@ static long ddcond_dump_repository(Detector& /* description */, int argc, char**
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     dd4hep_ConditionsDumpRepository               \n\n"
+      "     name:   factory name     DD4hep_ConditionsDumpRepository               \n\n"
       "     -input <string>          Input file name.                              \n\n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
@@ -527,7 +527,7 @@ DECLARE_APPLY(DD4hep_ConditionsDumpRepository,ddcond_dump_repository)
 // ======================================================================================
 /// Plugin entry point: Load conditions repository csv file into conditions manager
 /**
- *  Factory: dd4hep_ConditionsDumpRepository
+ *  Factory: DD4hep_ConditionsDumpRepository
  *
 
 TO BE DONE!!!
