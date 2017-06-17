@@ -38,7 +38,7 @@ namespace dd4hep {
   class IOVType;
 
   /// DD4hep internal namespace declaration for utilities and implementation details
-  /** detaillly defined datastructures are not presented to the
+  /** Internaly defined datastructures are not presented to the
    *  user directly, but are used by dedicated views.
    *
    *  \author  M.Frank

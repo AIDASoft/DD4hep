@@ -295,7 +295,7 @@ Material DetectorImp::material(const string& name) const {
   throw runtime_error("Cannot find a material referenced by name:" + name);
 }
 
-/// detaill helper to map detector types once the geometry is closed
+/// Internal helper to map detector types once the geometry is closed
 void DetectorImp::mapDetectorTypes()  {
   for( const auto& i : m_detectors )   {
     DetElement det(i.second);

@@ -193,7 +193,7 @@ namespace dd4hep {
 	};
       } ;
 
-      /** detaill helper struct for defining the layer layout. Layers are defined 
+      /** Internal helper struct for defining the layer layout. Layers are defined 
        *  with a sensitive part and a support part.
        */      
       struct LayerLayout{

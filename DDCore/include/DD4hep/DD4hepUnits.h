@@ -292,7 +292,7 @@ namespace dd4hep {
     //              steradian
     //
     // Below is a non exhaustive list of Physical CONSTANTS,
-    // computed in the detaill HEP System Of Units.
+    // computed in the Internal HEP System Of Units.
     //
     // Most of them are extracted from the Particle Data Book :
     //        Phys. Rev. D  volume 50 3-1 (1994) page 1233

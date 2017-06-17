@@ -50,7 +50,7 @@ SensitiveDetectorObject::SensitiveDetectorObject(const std::string& nam)
   InstanceCount::increment(this);
 }
 
-/// detaill object destructor: release extension object(s)
+/// Internal object destructor: release extension object(s)
 SensitiveDetectorObject::~SensitiveDetectorObject() {
   readout.clear();
   region.clear();
@@ -82,7 +82,7 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
   InstanceCount::increment(this);
 }
 
-/// detaill object destructor: release extension object(s)
+/// Internal object destructor: release extension object(s)
 DetElementObject::~DetElementObject() {
   destroyHandles(children);
   destroyHandle (nominal);
@@ -212,6 +212,6 @@ WorldObject::WorldObject(Detector& _description, const string& nam)
 {
 }
 
-/// detaill object destructor: release extension object(s)
+/// Internal object destructor: release extension object(s)
 WorldObject::~WorldObject()  {
 }

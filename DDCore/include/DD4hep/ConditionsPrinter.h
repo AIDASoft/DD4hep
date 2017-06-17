@@ -37,7 +37,7 @@ namespace dd4hep {
      */
     class ConditionsPrinter  {
     protected:
-      /// detaill param printer class
+      /// Internal param printer class
       class ParamPrinter;
       friend class ParamPrinter;
 

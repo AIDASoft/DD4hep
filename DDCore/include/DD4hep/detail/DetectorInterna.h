@@ -66,7 +66,7 @@ namespace dd4hep {
     SensitiveDetectorObject();
     /// Initializing constructor
     SensitiveDetectorObject(const std::string& nam);
-    /// detaill object destructor: release extension object(s)
+    /// Internal object destructor: release extension object(s)
     virtual ~SensitiveDetectorObject();
   };
 
@@ -155,7 +155,7 @@ namespace dd4hep {
 
   private:
     //@{ Private methods used internally by the object itself. */
-    /// Resolve the world object. detaill use ONLY.
+    /// Resolve the world object. Internal use ONLY.
     World i_access_world();
 
   public:
@@ -164,7 +164,7 @@ namespace dd4hep {
     DetElementObject(const std::string& nam, int ident);
     /// Default constructor
     DetElementObject();
-    /// detaill object destructor: release extension object(s)
+    /// Internal object destructor: release extension object(s)
     virtual ~DetElementObject();
     /// Deep object copy to replicate DetElement trees e.g. for reflection
     virtual DetElementObject* clone(int new_id, int flag) const;
@@ -201,7 +201,7 @@ namespace dd4hep {
     /// Initializing constructor
     WorldObject(Detector& description, const std::string& nam);
 #endif
-    /// detaill object destructor: release extension object(s)
+    /// Internal object destructor: release extension object(s)
     virtual ~WorldObject();
   };
 

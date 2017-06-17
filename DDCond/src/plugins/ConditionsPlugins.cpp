@@ -228,7 +228,7 @@ DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
  */
 static int ddcond_detelement_dump(Detector& description, int argc, char** argv)   {
 
-  /// detaill class to perform recursive printout
+  /// Internal class to perform recursive printout
   /*
    *  \author  M.Frank
    *  \version 1.0
@@ -293,7 +293,7 @@ DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare_plugin)
  */
 static int ddcond_detelement_processor(Detector& description, int argc, char** argv)   {
 
-  /// detaill class to perform recursive printout
+  /// Internal class to perform recursive printout
   /*
    *  \author  M.Frank
    *  \version 1.0

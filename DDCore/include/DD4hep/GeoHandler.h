@@ -97,7 +97,7 @@ namespace dd4hep {
       bool  m_propagateRegions;
       std::map<int, std::set<const TGeoNode*> >* m_data;
 
-      /// detaill helper to collect geometry information from traversal
+      /// Internal helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* node, int level, Region rg, LimitSet ls);
 
     private:

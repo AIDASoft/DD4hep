@@ -65,7 +65,7 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key)  const  {
 }
 
 
-/// detaill call to trigger update callback
+/// Internal call to trigger update callback
 Condition::Object* 
 ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const {
   try  {

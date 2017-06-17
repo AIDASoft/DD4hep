@@ -46,7 +46,7 @@ namespace dd4hep {
       bool findChild(PlacedVolume parent, PlacedVolume child, PlacementPath& path);
 
 
-      // detaill helper
+      // Internal helper
       static void makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes);
     }}
 }

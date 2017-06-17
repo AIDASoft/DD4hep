@@ -169,7 +169,7 @@ namespace dd4hep {
 
   /// Implementation class extending the ROOT volume (TGeoVolume)
   /**
-   *   detaill data structure optional to TGeo data.
+   *   Internal data structure optional to TGeo data.
    *
    *   For any further documentation please see the following ROOT documentation:
    *   \see http://root.cern.ch/root/html/TGeoExtension.html

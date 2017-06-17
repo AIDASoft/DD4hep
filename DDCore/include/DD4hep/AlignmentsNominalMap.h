@@ -74,7 +74,7 @@ namespace dd4hep {
     /// Interface to partially scan data content of the alignments mapping
     /** Note: This default implementation assumes unordered containers and hence is
      *        not the most efficient implementation!
-     *        detaillly it uses "scan(Processor& processor)"
+     *        Internaly it uses "scan(Processor& processor)"
      *        the subselection hence is linearly depending of the number of elements.
      *        
      *        Using ordered maps with "lower_bound(key)" this can be greatly improved.

@@ -51,7 +51,7 @@ namespace dd4hep {
     /// Disable assignment operator
     DetectorImp& operator=(const DetectorImp& copy) = delete;
 
-    /// detaill helper to map detector types once the geometry is closed
+    /// Internal helper to map detector types once the geometry is closed
     void mapDetectorTypes();
   public:
 

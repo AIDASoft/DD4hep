@@ -234,7 +234,7 @@ namespace dd4hep {
      *  -- unicode
      *  -- std::string
      *  -- const char*.
-     *  detaillly a copy representation as an std::string is kept.
+     *  Internaly a copy representation as an std::string is kept.
      *
      *  \author  M.Frank
      *  \version 1.0

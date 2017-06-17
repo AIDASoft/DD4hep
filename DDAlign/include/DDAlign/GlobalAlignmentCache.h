@@ -30,7 +30,7 @@ namespace dd4hep {
 
     /// Class caching all known alignment operations for one Detector instance.
     /**
-     *  detaillly the instances are fragmented to subdetectors defined
+     *  Internaly the instances are fragmented to subdetectors defined
      *  by the next-to-top level detector elements.
      *
      *  \author   M.Frank
