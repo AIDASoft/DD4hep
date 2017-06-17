@@ -248,7 +248,7 @@ static long setup_Alignment(Detector& description, const xml_h& e) {
   }
   if ( !GlobalAlignmentStack::exists() )  {
     printout(ERROR,"GlobalAlignment","Request process global alignments without cache.");
-    printout(ERROR,"GlobalAlignment","Call plugin dd4hep_GlobalAlignmentInstall first OR add XML tag <open_transaction/>");
+    printout(ERROR,"GlobalAlignment","Call plugin DD4hep_GlobalAlignmentInstall first OR add XML tag <open_transaction/>");
     except("GlobalAlignment","Request process global alignments without cache.");
   }
   GlobalAlignmentStack& stack = GlobalAlignmentStack::get();
