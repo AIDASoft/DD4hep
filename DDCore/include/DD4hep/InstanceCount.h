@@ -39,7 +39,7 @@ namespace dd4hep {
       ALL      = STRING | TYPEINFO
     };
 
-    /// detaill class to could object constructions and destructions
+    /// Internal class to could object constructions and destructions
     /**
      * Small class to enable object construction/destruction tracing.
      *

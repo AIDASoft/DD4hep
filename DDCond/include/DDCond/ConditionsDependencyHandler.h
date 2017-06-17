@@ -57,7 +57,7 @@ namespace dd4hep {
       mutable size_t           num_callback;
 
     protected:
-      /// detaill call to trigger update callback
+      /// Internal call to trigger update callback
       Condition::Object* do_callback(const ConditionDependency& dep) const;
 
     public:

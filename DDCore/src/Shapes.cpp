@@ -207,7 +207,7 @@ double Box::z() const {
   return this->ptr()->GetDZ();
 }
 
-/// detaill helper method to support object construction
+/// Internal helper method to support object construction
 void HalfSpace::make(const double* const point, const double* const normal)   {
   _assign(new TGeoHalfSpace("",(Double_t*)point, (Double_t*)normal), "", "halfspace",true);
 }

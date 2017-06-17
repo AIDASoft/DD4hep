@@ -76,7 +76,7 @@ void* DetElement::i_extension(const type_info& info) const {
   return access()->extension(info);
 }
 
-/// detaill call to extend the detector element with an arbitrary structure accessible by the type
+/// Internal call to extend the detector element with an arbitrary structure accessible by the type
 void DetElement::i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const  {
   access()->updateCalls.push_back(make_pair(callback,callback_type));
 }

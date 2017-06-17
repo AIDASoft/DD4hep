@@ -44,7 +44,7 @@ namespace dd4hep {
     };
     typedef std::map<std::string, std::map<std::string, std::string> > Properties;
 
-    /// detaill data class shared by all handles of a given type
+    /// Internal data class shared by all handles of a given type
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -131,7 +131,7 @@ namespace dd4hep {
     typedef std::map<std::string, std::string> PropertyValues;
     typedef std::map<std::string, PropertyValues> Properties;
 
-    /// detaill data class shared by all handles
+    /// Internal data class shared by all handles
     /**
      *  \author  M.Frank
      *  \version 1.0

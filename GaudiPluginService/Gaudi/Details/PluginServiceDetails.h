@@ -193,7 +193,7 @@ namespace Gaudi { namespace PluginService {
       /// Flag recording if the registry has been initialized or not.
       bool m_initialized;
 
-      /// detaill storage for factories.
+      /// Internal storage for factories.
       FactoryMap m_factories;
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L

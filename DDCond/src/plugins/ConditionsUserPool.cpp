@@ -52,10 +52,10 @@ namespace dd4hep {
       /// The loader to access non-existing conditions
       ConditionsDataLoader* m_loader = 0;
 
-      /// detaill helper to find conditions
+      /// Internal helper to find conditions
       Condition::Object* i_findCondition(Condition::key_type key)  const;
 
-      /// detaill insertion helper
+      /// Internal insertion helper
       bool i_insert(Condition::Object* o);
 
     public:

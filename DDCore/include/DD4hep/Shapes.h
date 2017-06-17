@@ -113,7 +113,7 @@ namespace dd4hep {
    */
   class Box: public Solid_type<TGeoBBox> {
   protected:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double x_val, double y_val, double z_val);
 
   public:
@@ -156,7 +156,7 @@ namespace dd4hep {
    */
   class HalfSpace: public Solid_type<TGeoHalfSpace> {
   protected:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(const double* const point, const double* const normal);
 
   public:
@@ -270,7 +270,7 @@ namespace dd4hep {
    */
   class Tube: public Solid_type< /*TGeoTubeSeg */MyConeSeg> {
   protected:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(const std::string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi);
 
   public:
@@ -321,7 +321,7 @@ namespace dd4hep {
    */
   class EllipticalTube: public Solid_type<TGeoEltu> {
   protected:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double a, double b, double dz);
 
   public:
@@ -356,7 +356,7 @@ namespace dd4hep {
    */
   class Cone: public Solid_type<TGeoCone> {
   protected:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double z, double rmin1, double rmax1, double rmin2, double rmax2);
   public:
     /// Default constructor
@@ -390,7 +390,7 @@ namespace dd4hep {
    */
   class Trap: public Solid_type<TGeoTrap> {
   private:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double pz, double py, double px, double pLTX);
   public:
     /// Default constructor
@@ -430,7 +430,7 @@ namespace dd4hep {
    */
   class Trapezoid: public Solid_type<TGeoTrd2> {
   private:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double x1, double x2, double y1, double y2, double z);
 
   public:
@@ -465,7 +465,7 @@ namespace dd4hep {
    */
   class Torus: public Solid_type<TGeoTorus> {
   private:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double r, double rmin, double rmax, double phi, double delta_phi);
   public:
     /// Default constructor
@@ -616,7 +616,7 @@ namespace dd4hep {
    */
   class EightPointSolid: public Solid_type<TGeoArb8> {
   private:
-    /// detaill helper method to support object construction
+    /// Internal helper method to support object construction
     void make(double dz, const double* vtx);
   public:
     /// Default constructor

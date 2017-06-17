@@ -49,7 +49,7 @@ namespace dd4hep {
       Detector&                      description;
       /// Reference to the alignment manager object
       ConditionsMap& slice;
-      /// detaill work stack of cached deltas
+      /// Internal work stack of cached deltas
       UsedConditions             used;
 
     protected:      

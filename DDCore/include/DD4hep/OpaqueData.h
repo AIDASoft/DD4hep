@@ -90,7 +90,7 @@ namespace dd4hep {
       BOUND_DATA = 1<<3
     };
     /// Data buffer: plain data are allocated directly on this buffer
-    /** detaill data buffer is sufficient to store any vector  */
+    /** Internal data buffer is sufficient to store any vector  */
     unsigned char data[sizeof(std::vector<void*>)];
     /// Destructor function -- only set if the object is valid
     void (*destruct)(void*);

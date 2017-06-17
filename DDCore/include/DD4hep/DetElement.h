@@ -195,7 +195,7 @@ namespace dd4hep {
       PLACEMENT_NONE
     };
 
-    /// detaill assert function to check conditions
+    /// Internal assert function to check conditions
     void check(bool condition, const std::string& msg) const;
 
   protected:
@@ -215,7 +215,7 @@ namespace dd4hep {
                          void (*destruct)(void*)) const;
     /// Access an existing extension object from the detector element
     void* i_extension(const std::type_info& info) const;
-    /// detaill call to extend the detector element with an arbitrary structure accessible by the type
+    /// Internal call to extend the detector element with an arbitrary structure accessible by the type
     void i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const;
 
   public:

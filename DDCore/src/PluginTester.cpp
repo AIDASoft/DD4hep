@@ -41,7 +41,7 @@ PluginTester::~PluginTester()   {
   InstanceCount::decrement(this);
 }
 
-/// detaill object destructor: release extension object(s)
+/// Internal object destructor: release extension object(s)
 void PluginTester::clear(bool destroy)    {
   for (Extensions::iterator i = extensions.begin(); i != extensions.end(); ++i) {
     void* ptr = (*i).second;

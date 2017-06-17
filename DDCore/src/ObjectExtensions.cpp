@@ -49,7 +49,7 @@ void ObjectExtensions::move(ObjectExtensions& source)   {
   source.extensions.clear();
 }
 
-/// detaill object destructor: release extension object(s)
+/// Internal object destructor: release extension object(s)
 void ObjectExtensions::clear(bool destroy) {
   for( const auto& i : extensions )  {
     if ( i.second ) {

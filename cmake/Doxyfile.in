@@ -684,7 +684,7 @@ INPUT += @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen/DD4hepGroups.h
 #INPUT += @CMAKE_CURRENT_SOURCE_DIR@//include
 
 # This tag can be used to specify the character encoding of the source files
-# that doxygen parses. detaillly doxygen uses the UTF-8 encoding, which is
+# that doxygen parses. Internaly doxygen uses the UTF-8 encoding, which is
 # also the default input encoding. Doxygen uses libiconv (or the iconv built
 # into libc) for the transcoding. See http://www.gnu.org/software/libiconv for
 # the list of possible encodings.

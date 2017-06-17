@@ -40,7 +40,7 @@ namespace dd4hep {
       virtual void release() = 0;
     };
 
-    /// Conditions data block. detaillly maps other objects to abstract data blocks
+    /// Conditions data block. Internaly maps other objects to abstract data blocks
     /**
      *   \author  M.Frank
      *   \version 1.0

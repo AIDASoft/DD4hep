@@ -67,7 +67,7 @@ namespace dd4hep  {
   { return ROOT::Reflex::PluginService::Create<R>(name, a0, a1, a2, a3, a4, a5); }
 
 
-  /** detaill namespace -- should under no circumstances be used directly.
+  /** Internal namespace -- should under no circumstances be used directly.
     * The named namespace is necessary to trick the linker. Entries in an anonymous 
     * namespace would be oiptimized away.....
     *

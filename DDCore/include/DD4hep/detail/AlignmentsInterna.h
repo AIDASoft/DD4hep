@@ -36,7 +36,7 @@ namespace dd4hep {
   class Alignment;
 
   /// Alignments internal namespace declaration
-  /** detaillly defined datastructures are not presented to the
+  /** Internaly defined datastructures are not presented to the
    *  user directly, but are used by dedicated views.
    *
    *  \author  M.Frank
