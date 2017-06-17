@@ -47,7 +47,7 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
       printout(INFO,det_name,"+++          ELT[%02d]: %s Z=%3d N=%3d N_eff=%7.2f A=%6.2f Weight=%9.4f ",
                i, e->GetName(), e->Z(), e->N(), e->Neff(), e->A(), w);
       if ( material->IsMixture() )   {
-        TGeoMixture* mix = (TGeoMixture*)m;
+        TGeoMixture* mix = (TGeoMixture*)material;
         Int_t* nmix = mix->GetNmixt();
         Double_t* wmix = mix->GetWmixt();
         printout(INFO,det_name,"+++                   Zmix:%7.3f Nmix:%3d Amix:%7.3f Wmix:%7.3f",
