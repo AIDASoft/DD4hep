@@ -123,14 +123,14 @@ namespace   {
 #else
     handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
 #endif
-    getDebug = get_func< int (*) ()>(handle, plugin_name,"DD4hep_pluginmgr_getdebug");
-    setDebug = get_func< int (*) (int)>(handle, plugin_name,"DD4hep_pluginmgr_getdebug");
+    getDebug = get_func< int (*) ()>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
+    setDebug = get_func< int (*) (int)>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
     create   = get_func< void* (*) (const char*,
-                                    const char*)>(handle, plugin_name,"DD4hep_pluginmgr_create");
+                                    const char*)>(handle, plugin_name,"dd4hep_pluginmgr_create");
     add      = get_func< void (*) (const char* identifier, 
                                    void* creator_stub, 
                                    const char* signature, 
-                                   const char* return_type)>(handle, plugin_name,"DD4hep_pluginmgr_add_factory");
+                                   const char* return_type)>(handle, plugin_name,"dd4hep_pluginmgr_add_factory");
   }
 }
 

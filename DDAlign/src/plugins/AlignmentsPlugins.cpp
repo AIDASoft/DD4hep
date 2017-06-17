@@ -44,7 +44,7 @@ long create_global_alignment_xml_file(Detector& description, int argc, char** ar
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                      \n"
-      "     name:   factory namedd4hep_GlobalAlignmentWriter                \n\n"
+      "     name:   factory nameDD4hep_GlobalAlignmentWriter                \n\n"
       "     -output <string>         Path to the output file generated.       \n"
       "     -path   <string>         Path to the detector element for which   \n"
       "                              the alignment file should be written.    \n"
