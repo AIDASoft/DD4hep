@@ -48,7 +48,7 @@ except ImportError,X:
   sys.exit(errno.ENOENT)
 
 try:
-  import dd4hep
+  import DD4hep
 except ImportError,X:
   print 'dd4hep python interface not accessible:',X
   print parser.format_help()
@@ -56,9 +56,9 @@ except ImportError,X:
 #
 #
 opts.tolerance = float(opts.tolerance)
-dd4hep.setPrintLevel(dd4hep.OutputLevel.ERROR)
+DD4hep.setPrintLevel(DD4hep.OutputLevel.ERROR)
 print '+++%s\n+++ Loading compact geometry:%s\n+++%s'%(120*'=',opts.compact,120*'=')
-description = dd4hep.Detector.getInstance()
+description = DD4hep.Detector.getInstance()
 description.fromXML(opts.compact)
 print '+++%s\n+++ Checking overlaps of geometry:%s tolerance:%f option:%s\n+++%s'%(120*'=',opts.compact,opts.tolerance,opts.option,120*'=')
 description.manager().CheckOverlaps(opts.tolerance,opts.option)

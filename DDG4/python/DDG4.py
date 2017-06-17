@@ -9,7 +9,7 @@
 #
 #==========================================================================
 
-from dd4hep import *
+from DD4hep import *
 
 def loadDDG4():
   ## import ROOT ## done in import * above
@@ -57,7 +57,7 @@ Simulation = dd4hep.sim
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
 Detector   = Core.Detector
-from dd4hep import std, std_vector, std_list, std_map, std_pair
+from DD4hep import std, std_vector, std_list, std_map, std_pair
 
 #---------------------------------------------------------------------------
 def _constant(self,name):
