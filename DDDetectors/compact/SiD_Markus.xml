@@ -241,13 +241,13 @@
   </fields>
 
   <plugins>
-    <plugin name="dd4hep_SiTrackerEndcapSurfacePlugin">
+    <plugin name="DD4hep_SiTrackerEndcapSurfacePlugin">
       <argument value="SiVertexEndcap"/>
       <argument value="dimension=1"/>
     </plugin>
   </plugins>
   <plugins>
-    <plugin name="dd4hep_SiTrackerBarrelSurfacePlugin">
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
       <argument value="SiVertexBarrel"/>
       <argument value="dimension=1"/>
     </plugin>

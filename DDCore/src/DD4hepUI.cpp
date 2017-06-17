@@ -41,7 +41,7 @@ Detector* DD4hepUI::detectorDescription()  const   {
 Handle<NamedObject> DD4hepUI::conditionsMgr()  const  {
   if ( !m_condMgr.isValid() )  {
     const void* argv[] = {"-handle",&m_condMgr,0};
-    if ( 1 != apply("dd4hep_ConditionsManagerInstaller",2,(char**)argv) )  {
+    if ( 1 != apply("DD4hep_ConditionsManagerInstaller",2,(char**)argv) )  {
       except("DD4hepUI","Failed to install the conditions manager object.");
     }
     if ( !m_condMgr.isValid() )  {
@@ -65,7 +65,7 @@ long DD4hepUI::loadConditions(const std::string& fname)  const  {
 Handle<NamedObject> DD4hepUI::alignmentMgr()  const  {
   if ( !m_alignMgr.isValid() )  {
     const void* argv[] = {"-handle",&m_alignMgr,0};
-    if ( 1 != apply("dd4hep_AlignmentsManagerInstaller",2,(char**)argv) )  {
+    if ( 1 != apply("DD4hep_AlignmentsManagerInstaller",2,(char**)argv) )  {
       except("DD4hepUI","Failed to install the alignment manager object.");
     }
     if ( !m_alignMgr.isValid() )  {
@@ -94,12 +94,12 @@ void DD4hepUI::redraw() const   {
 long DD4hepUI::dumpVols(int argc, char** argv)  const   {
   if ( argc==0 )  {
     const void* av[] = {"-positions","-pointers",0};
-    return m_detDesc.apply("dd4hepVolumeDump",2,(char**)av);
+    return m_detDesc.apply("DD4hepVolumeDump",2,(char**)av);
   }
-  return m_detDesc.apply("dd4hepVolumeDump",argc,argv);
+  return m_detDesc.apply("DD4hepVolumeDump",argc,argv);
 }
 
 /// Dump the DetElement tree
 long DD4hepUI::dumpDet()  const   {
-  return m_detDesc.apply("dd4hepDetectorVolumeDump",0,0);
+  return m_detDesc.apply("DD4hepDetectorVolumeDump",0,0);
 }

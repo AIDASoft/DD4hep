@@ -95,7 +95,7 @@ static int AlignmentExample_align_telescope (Detector& description, int argc, ch
   ConditionsManager manager = installManager(description);
   const void* setup_args[]  = {setup.c_str(), 0}; // Better zero-terminate
 
-  description.apply("dd4hep_ConditionsXMLRepositoryParser",1,(char**)setup_args);
+  description.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)setup_args);
   // Now the deltas are stored in the conditions manager in the proper IOV pools
   const IOVType* iov_typ = manager.iovType("run");
   if ( 0 == iov_typ )  {

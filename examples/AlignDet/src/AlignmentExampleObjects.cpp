@@ -24,11 +24,11 @@ using namespace dd4hep::AlignmentExamples;
 /// Install the consitions and the alignment manager
 ConditionsManager dd4hep::AlignmentExamples::installManager(Detector& description)  {
   // Now we instantiate the conditions manager
-  description.apply("dd4hep_ConditionsManagerInstaller",0,(char**)0);
+  description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
   ConditionsManager manager = ConditionsManager::from(description);
-  manager["PoolType"]       = "dd4hep_ConditionsLinearPool";
-  manager["UserPoolType"]   = "dd4hep_ConditionsMapUserPool";
-  manager["UpdatePoolType"] = "dd4hep_ConditionsLinearUpdatePool";
+  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
   manager.initialize();
   return manager;
 }

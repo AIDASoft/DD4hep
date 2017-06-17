@@ -54,7 +54,7 @@ namespace {
       cout << "geoPluginRun: No geometry input supplied. No geometry will be loaded." << endl;
     }
     // Create volume manager and populate it required
-    if ( arguments.volmgr  ) run_plugin(description,"dd4hepVolumeManager",0,0);
+    if ( arguments.volmgr  ) run_plugin(description,"DD4hepVolumeManager",0,0);
     // Execute plugin
     for(size_t i=0; i<arguments.plugins.size(); ++i)   {
       std::vector<const char*>& plug = arguments.plugins[i];

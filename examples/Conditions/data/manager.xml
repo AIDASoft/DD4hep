@@ -4,10 +4,10 @@
 
 <conditions>
   <manager>
-    <property name="PoolType"       value="dd4hep_ConditionsLinearPool"/>
+    <property name="PoolType"       value="DD4hep_ConditionsLinearPool"/>
     <property name="LoaderType"     value="xml"/>
-    <property name="UserPoolType"   value="dd4hep_ConditionsMapUserPool"/>
-    <property name="UpdatePoolType" value="dd4hep_ConditionsLinearUpdatePool"/>
+    <property name="UserPoolType"   value="DD4hep_ConditionsMapUserPool"/>
+    <property name="UpdatePoolType" value="DD4hep_ConditionsLinearUpdatePool"/>
   </manager>
   <iov_type name="epoch" id="0"/>
   <iov_type name="run"   id="1"/>

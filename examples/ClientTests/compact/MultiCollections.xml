@@ -35,7 +35,7 @@
   <!--     Simple calorimeter with a couple of layers                     -->
   <!-- ================================================================== -->
   <detectors>
-    <detector id="13" name="TestCal" reflect="true" type="dd4hep_CylindricalEndcapCalorimeter" readout="TestCalHits" vis="BlueVis">
+    <detector id="13" name="TestCal" reflect="true" type="DD4hep_CylindricalEndcapCalorimeter" readout="TestCalHits" vis="BlueVis">
       <comment>Test Calorimeter</comment>
       <dimensions inner_r = "0.1*m" outer_r="2*m" inner_z = "2*m"/>
       <layer repeat="15" >

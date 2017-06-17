@@ -140,8 +140,8 @@ Manager_Type1::Manager_Type1(Detector& description_instance)
   InstanceCount::increment(this);
   declareProperty("MaxIOVTypes",         m_maxIOVTypes=32);
   declareProperty("PoolType",            m_poolType   = "");
-  declareProperty("UpdatePoolType",      m_updateType = "dd4hep_ConditionsLinearUpdatePool");
-  declareProperty("UserPoolType",        m_userType   = "dd4hep_ConditionsMapUserPool");
+  declareProperty("UpdatePoolType",      m_updateType = "DD4hep_ConditionsLinearUpdatePool");
+  declareProperty("UserPoolType",        m_userType   = "DD4hep_ConditionsMapUserPool");
   declareProperty("LoaderType",          m_loaderType = "multi");
   m_iovTypes.resize(m_maxIOVTypes,IOVType());
   m_rawPool.resize(m_maxIOVTypes,0);
@@ -155,7 +155,7 @@ Manager_Type1::~Manager_Type1()   {
 
 void Manager_Type1::initialize()  {
   if ( !m_updatePool.get() )  {
-    string typ = "dd4hep_Conditions_"+m_loaderType+"_Loader";
+    string typ = "DD4hep_Conditions_"+m_loaderType+"_Loader";
     const void* argv_loader[] = {"ConditionsDataLoader", this, 0};
     const void* argv_pool[] = {this, 0};
     m_loader.reset(createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv_loader));

@@ -856,7 +856,7 @@ F.Gaede
   - Compounds (ie. nested detectors) are of type 'compound'
 - Dump detector types using plugin:
 
-         geoPluginRun -plugin dd4hepDetectorTypes -input <compact-file>
+         geoPluginRun -plugin DD4hepDetectorTypes -input <compact-file>
 
 2015/03/12 Markus Frank
 - Add support for ellipsoids in gdml/description and geant4 conversion.
@@ -967,7 +967,7 @@ F.Gaede
     - example code: DDDetectors/src/SurfaceExamplePlugin.cpp
     - compact:
 ```   
-       <plugin name="dd4hep_SurfaceExamplePlugin">
+       <plugin name="DD4hep_SurfaceExamplePlugin">
           <argument value="SiTrackerBarrel"/>
           <argument value="aa=1*mm"/>
           <argument value="bb=2*cm"/>

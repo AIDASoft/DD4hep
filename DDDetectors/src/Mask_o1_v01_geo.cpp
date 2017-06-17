@@ -35,7 +35,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 					      xml_h xmlHandle,
 					      dd4hep::SensitiveDetector /*sens*/) {
 
-  printout(dd4hep::DEBUG,"dd4hep_Mask", "Creating Mask" ) ;
+  printout(dd4hep::DEBUG,"DD4hep_Mask", "Creating Mask" ) ;
 
   //Access to the XML File
   xml_det_t xmlMask = xmlHandle;
@@ -81,7 +81,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	     << std::setw(35) << volName
 	     << std::setw(15) << sectionMat.name();
 
-    printout(dd4hep::INFO, "dd4hep_Mask", pipeInfo.str() );
+    printout(dd4hep::INFO, "DD4hep_Mask", pipeInfo.str() );
 
     // things which can be calculated immediately
     const double zHalf       = fabs(zEnd - zStart) * 0.5; // half z length of the cone

@@ -34,7 +34,7 @@ namespace{
         std::string name( argv[i] , ptr ) ;
         double value = dd4hep::_toDouble(++ptr);
         if( name=="dimension" ) data.dimension = value ; 
-        std::cout << "dd4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
+        std::cout << "DD4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;
       }
     }

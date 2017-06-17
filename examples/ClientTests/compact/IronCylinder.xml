@@ -41,7 +41,7 @@
       <dimensions rmin="HcalBarrel_rmin" rmax="HcalBarrel_rmax" z="HcalBarrel_zmax" phiBins="64" />
     </detector>
 
-    <detector id="2" name="ContainmentShell" type="dd4hep_CylinderShell" vis="VisibleRed" readout="ContainmentHits" >
+    <detector id="2" name="ContainmentShell" type="DD4hep_CylinderShell" vis="VisibleRed" readout="ContainmentHits" >
       <comment>Containment shell to measure calorimeter escapes</comment>
       <material name="Air"/>
       <module name="Barrel" id="0" vis="VisibleRed">

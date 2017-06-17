@@ -35,12 +35,12 @@ static long dddb_dump_conditions(Detector& description, int argc, char** argv) {
       printout(INFO,"DDDB","Setting conditions print level to %s",prt_level);
     }
   }
-  const void* args[] = { "-processor", "dd4hep_ConditionsPrinter",
+  const void* args[] = { "-processor", "DD4hep_ConditionsPrinter",
                          "-name", "DDDB",
                          "-prefix", "DDDB",
                          "-print", prt_level,
                          "-end-processor", 0};
-  description.apply("dd4hep_ConditionsDump", 9, (char**)args);
+  description.apply("DD4hep_ConditionsDump", 9, (char**)args);
   return 1;
 }
 DECLARE_APPLY(DDDB_ConditionsDump,dddb_dump_conditions)
@@ -48,12 +48,12 @@ DECLARE_APPLY(DDDB_ConditionsDump,dddb_dump_conditions)
 //==========================================================================
 /// Plugin function
 static long dddb_dump_conditions_summary(Detector& description, int , char** ) {
-  const void* args[] = { "-processor", "dd4hep_ConditionsPrinter",
+  const void* args[] = { "-processor", "DD4hep_ConditionsPrinter",
                          "-name", "DDDB",
                          "-prefix", "DDDB",
                          "-print", "DEBUG",
                          "-end-processor", 0};
-  description.apply("dd4hep_ConditionsDump", 9, (char**)args);
+  description.apply("DD4hep_ConditionsDump", 9, (char**)args);
   return 1;
 }
 DECLARE_APPLY(DDDB_ConditionsSummary,dddb_dump_conditions_summary)

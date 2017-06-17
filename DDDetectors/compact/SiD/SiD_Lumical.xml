@@ -37,7 +37,7 @@
   
   <!--  Includes for sensitives and support                -->
   <detectors>
-    <detector id="13" name="LumiCal" reflect="true" type="dd4hep_CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
+    <detector id="13" name="LumiCal" reflect="true" type="DD4hep_CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
 
       <comment>Luminosity Calorimeter</comment>
 
@@ -58,14 +58,14 @@
       </layer>
     </detector>
 
-    <detector name="LumiReadout_Forward" type="dd4hep_PolyconeSupport" vis="LumiCalVis">
+    <detector name="LumiReadout_Forward" type="DD4hep_PolyconeSupport" vis="LumiCalVis">
       <comment>Readout for Luminosity Calorimeter</comment>
       <material name="G10"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="LumiCal_zmin"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="LumiCal_zmin+LumiCal_thickness"/>
     </detector>
     
-    <detector name="LumiReadout_Backward" type="dd4hep_PolyconeSupport" vis="LumiCalVis">
+    <detector name="LumiReadout_Backward" type="DD4hep_PolyconeSupport" vis="LumiCalVis">
       <comment>Readout for Luminosity Calorimeter</comment>
       <material name="G10"/>
       <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="-LumiCal_zmin"/>

@@ -22,7 +22,7 @@ using namespace dd4hep;
 
 static long json_dump(Detector& /* description */, int argc, char** argv)   {
   if ( argc < 1 )  {
-    ::printf("dd4hep_JsonDumper <file>                               \n");
+    ::printf("DD4hep_JsonDumper <file>                               \n");
     exit(EINVAL);
   }
   std::string fname = argv[0];

@@ -60,7 +60,7 @@ DECLARE_CONSTRUCTOR(Detector_constructor,create_description_instance)
 
 /// Basic entry point to display the currently loaded geometry using the ROOT OpenGL viewer
 /**
- *  Factory: dd4hepGeometryDisplay
+ *  Factory: DD4hepGeometryDisplay
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -105,7 +105,7 @@ DECLARE_APPLY(DD4hepRint,run_interpreter)
  *  in the interpreter with the global variable 
  *  dd4hep::DD4hepUI* gdd4hepUI;
  *
- *  Factory: dd4hepInteractiveUI
+ *  Factory: DD4hepInteractiveUI
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -127,7 +127,7 @@ DECLARE_APPLY(DD4hepInteractiveUI,root_ui)
 /**
  *  Dump the elment table to stdout or file.
  *
- *  Factory: dd4hepElementTable -format xml/text(default) -output <file-name>
+ *  Factory: DD4hepElementTable -format xml/text(default) -output <file-name>
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -176,7 +176,7 @@ static long root_elements(Detector& description, int argc, char** argv) {
       if ( c == 't' && i+1<argc ) type = argv[++i];
       else if ( c == 'o' && i+1<argc ) output = argv[++i];
       else  {
-        ::printf("dd4hepElementTable -opt [-opt]                         \n"
+        ::printf("DD4hepElementTable -opt [-opt]                         \n"
                  "  -type   <string>    Output format: text or xml       \n"
                  "  -output <file-name> Output file specifier (xml only) \n"
                  "\n");
@@ -232,7 +232,7 @@ DECLARE_APPLY(DD4hepElementTable,root_elements)
 /**
  *  Dump the elment table to stdout or file.
  *
- *  Factory: dd4hepElementTable -format xml/text(default) -output <file-name>
+ *  Factory: DD4hepElementTable -format xml/text(default) -output <file-name>
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -296,7 +296,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
       if ( c == 't' && i+1<argc ) type = argv[++i];
       else if ( c == 'o' && i+1<argc ) output = argv[++i];
       else  {
-        ::printf("dd4hepElementTable -opt [-opt]                         \n"
+        ::printf("DD4hepElementTable -opt [-opt]                         \n"
                  "  -type   <string>    Output format: text or xml       \n"
                  "  -output <file-name> Output file specifier (xml only) \n"
                  "\n");
@@ -350,7 +350,7 @@ DECLARE_APPLY(DD4hepMaterialTable,root_materials)
  *  - The processing hint (build type) is passed as optional 
  *    second argument.
  *
- *  Factory: dd4hepCompactLoader
+ *  Factory: DD4hepCompactLoader
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -384,7 +384,7 @@ DECLARE_APPLY(DD4hepCompactLoader,load_compact)
  *
  *  The root tag defines the plugin to interprete it.
  *
- *  Factory: dd4hepXMLLoader
+ *  Factory: DD4hepXMLLoader
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -418,7 +418,7 @@ DECLARE_APPLY(DD4hepXMLLoader,load_xml)
  *
  *  The root tag defines the plugin to interprete it.
  *
- *  Factory: dd4hepXMLProcessor
+ *  Factory: DD4hepXMLProcessor
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -440,7 +440,7 @@ static long process_xml_doc(Detector& description, int argc, char** argv) {
         imp->processXMLElement(input, type);
         return 1;
       }
-      except("dd4hepXMLProcessor",
+      except("DD4hepXMLProcessor",
              "++ The passed reference to the parsed XML document is invalid.");
     }
   }
@@ -450,14 +450,14 @@ DECLARE_APPLY(DD4hepXMLProcessor,process_xml_doc)
 
 /// Basic entry point to load the volume manager object
 /**
- *  Factory: dd4hepVolumeManager
+ *  Factory: DD4hepVolumeManager
  *
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/04/2014
  */
 static long load_volmgr(Detector& description, int, char**) {
-  printout(INFO,"dd4hepVolumeManager","**** running plugin dd4hepVolumeManager ! " );
+  printout(INFO,"DD4hepVolumeManager","**** running plugin DD4hepVolumeManager ! " );
   try {
     DetectorImp* imp = dynamic_cast<DetectorImp*>(&description);
     if ( imp )  {
@@ -479,7 +479,7 @@ DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
 /// Basic entry point to dump a dd4hep geometry to a ROOT file
 /**
- *  Factory: dd4hepGeometry2ROOT
+ *  Factory: DD4hepGeometry2ROOT
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -501,7 +501,7 @@ DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
 
 /// Basic entry point to load a dd4hep geometry directly from the ROOT file
 /**
- *  Factory: dd4hepRootLoader
+ *  Factory: DD4hepRootLoader
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -510,19 +510,19 @@ DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
 static long load_geometryFromroot(Detector& description, int argc, char** argv) {
   if ( argc > 0 )   {
     string input = argv[0];
-    printout(INFO,"dd4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
+    printout(INFO,"DD4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
     if ( 1 == DD4hepRootPersistency::load(description,input.c_str(),"Geometry") )  {
       return 1;
     }
   }
-  printout(ERROR,"dd4hepRootLoader","+++ No input file name given.");
+  printout(ERROR,"DD4hepRootLoader","+++ No input file name given.");
   return 0;
 }
 DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
 
 /// Basic entry point to print out the volume hierarchy
 /**
- *  Factory: dd4hepVolumeDump
+ *  Factory: DD4hepVolumeDump
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -675,7 +675,7 @@ DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
 
 /// Basic entry point to print out the detector element hierarchy
 /**
- *  Factory: dd4hepDetectorDump, dd4hepDetectorVolumeDump
+ *  Factory: DD4hepDetectorDump, DD4hepDetectorVolumeDump
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -758,7 +758,7 @@ DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)
 
 /// Basic entry point to dump the geometry tree of the description instance
 /**
- *  Factory: dd4hepGeometryTreeDump
+ *  Factory: DD4hepGeometryTreeDump
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -798,7 +798,7 @@ DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
 
 /// Basic entry point to print out detector type map
 /**
- *  Factory: dd4hepDetectorTypes
+ *  Factory: DD4hepDetectorTypes
  *
  *  \author  M.Frank
  *  \version 1.0

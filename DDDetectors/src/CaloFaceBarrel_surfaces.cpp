@@ -90,7 +90,7 @@ namespace{
         std::string name( argv[i] , ptr ) ;
         double value = dd4hep::_toDouble(++ptr);
         
-        printout(dd4hep::DEBUG,"dd4hep_CaloFaceBarrelSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
+        printout(dd4hep::DEBUG,"DD4hep_CaloFaceBarrelSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
 
         if(      name=="length"    ) data.length     = value ; 
         else if( name=="radius"  ) data.radius   = value ; 
@@ -99,7 +99,7 @@ namespace{
         else if( name=="systemID") data.systemID   = value ; 
         else if( name=="encoding") data.encoding = ptr ; 
         else {
-          printout(dd4hep::WARNING,"dd4hep_CaloFaceBarrelSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
+          printout(dd4hep::WARNING,"DD4hep_CaloFaceBarrelSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
         }
       }
     }
@@ -124,7 +124,7 @@ namespace{
     double inner_thickness = 1e-6 ;
     double outer_thickness = 1e-6 ;
     
-    printout(dd4hep::INFO,"dd4hep_CaloFaceBarrelSurfacePlugin", "install tracking surfaces for :  %s ", component.name() ) ;
+    printout(dd4hep::INFO,"DD4hep_CaloFaceBarrelSurfacePlugin", "install tracking surfaces for :  %s ", component.name() ) ;
 
 
     dd4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;
