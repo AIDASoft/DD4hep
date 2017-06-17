@@ -81,7 +81,7 @@ static long display(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(dd4hepGeometryDisplay,display)
+DECLARE_APPLY(DD4hepGeometryDisplay,display)
 
 /// Basic entry point to start the ROOT interpreter.
 /**
@@ -97,7 +97,7 @@ static long run_interpreter(Detector& /* description */, int argc, char** argv) 
   app.Run();
   return 1;
 }
-DECLARE_APPLY(dd4hepRint,run_interpreter)
+DECLARE_APPLY(DD4hepRint,run_interpreter)
 
 /// Basic entry point to start the ROOT interpreter.
 /**
@@ -121,7 +121,7 @@ static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
            "to interact with the detector description.");
   return 1;
 }
-DECLARE_APPLY(dd4hepInteractiveUI,root_ui)
+DECLARE_APPLY(DD4hepInteractiveUI,root_ui)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**
@@ -226,7 +226,7 @@ static long root_elements(Detector& description, int argc, char** argv) {
   }
   return 1;
 }
-DECLARE_APPLY(dd4hepElementTable,root_elements)
+DECLARE_APPLY(DD4hepElementTable,root_elements)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**
@@ -341,7 +341,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
   }
   return 1;
 }
-DECLARE_APPLY(dd4hepMaterialTable,root_materials)
+DECLARE_APPLY(DD4hepMaterialTable,root_materials)
 
 /// Basic entry point to interprete an XML document
 /**
@@ -373,7 +373,7 @@ static long load_compact(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(dd4hepCompactLoader,load_compact)
+DECLARE_APPLY(DD4hepCompactLoader,load_compact)
 
 /// Basic entry point to process any XML document.
 /**
@@ -407,7 +407,7 @@ static long load_xml(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(dd4hepXMLLoader,load_xml)
+DECLARE_APPLY(DD4hepXMLLoader,load_xml)
 
 /// Basic entry point to process any pre-parsed XML document.
 /**
@@ -446,7 +446,7 @@ static long process_xml_doc(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(dd4hepXMLProcessor,process_xml_doc)
+DECLARE_APPLY(DD4hepXMLProcessor,process_xml_doc)
 
 /// Basic entry point to load the volume manager object
 /**
@@ -475,7 +475,7 @@ static long load_volmgr(Detector& description, int, char**) {
   }
   return 0;
 }
-DECLARE_APPLY(dd4hepVolumeManager,load_volmgr)
+DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
 /// Basic entry point to dump a dd4hep geometry to a ROOT file
 /**
@@ -497,7 +497,7 @@ static long dump_geometry2root(Detector& description, int argc, char** argv) {
   printout(ERROR,"Geometry2ROOT","+++ No output file name given.");
   return 0;
 }
-DECLARE_APPLY(dd4hepGeometry2ROOT,dump_geometry2root)
+DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
 
 /// Basic entry point to load a dd4hep geometry directly from the ROOT file
 /**
@@ -518,7 +518,7 @@ static long load_geometryFromroot(Detector& description, int argc, char** argv) 
   printout(ERROR,"dd4hepRootLoader","+++ No input file name given.");
   return 0;
 }
-DECLARE_APPLY(dd4hepRootLoader,load_geometryFromroot)
+DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
 
 /// Basic entry point to print out the volume hierarchy
 /**
@@ -645,7 +645,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
   Actor actor(argc,argv);
   return actor.dump(description.world().placement().ptr(),pv.ptr(),0,PlacedVolume::VolIDs());
 }
-DECLARE_APPLY(dd4hepVolumeDump,dump_volume_tree)
+DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
 // ======================================================================================
 /// Plugin function: Apply arbitrary functor callback on the tree of detector elements
@@ -671,7 +671,7 @@ static int detelement_processor(Detector& description, int argc, char** argv)   
   }
   return DetectorScanner().scan(*proc,det);
 }
-DECLARE_APPLY(dd4hep_DetElementProcessor,detelement_processor)
+DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
 
 /// Basic entry point to print out the detector element hierarchy
 /**
@@ -729,8 +729,8 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
   }
   return Actor::dump(description.world(),0,sensitive_only);
 }
-DECLARE_APPLY(dd4hepDetectorDump,dump_detelement_tree<0>)
-DECLARE_APPLY(dd4hepDetectorVolumeDump,dump_detelement_tree<1>)
+DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree<0>)
+DECLARE_APPLY(DD4hepDetectorVolumeDump,dump_detelement_tree<1>)
 
 /// Basic entry point to print out the volume hierarchy
 /**
@@ -754,7 +754,7 @@ static long detelement_cache(Detector& description, int , char** ) {
   };
   return Actor::cache(description.world());
 }
-DECLARE_APPLY(dd4hepDetElementCache,detelement_cache)
+DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)
 
 /// Basic entry point to dump the geometry tree of the description instance
 /**
@@ -770,7 +770,7 @@ static long exec_GeometryTreeDump(Detector& description, int, char** ) {
   dmp.create(description.world());
   return 1;
 }
-DECLARE_APPLY(dd4hepGeometryTreeDump,exec_GeometryTreeDump)
+DECLARE_APPLY(DD4hepGeometryTreeDump,exec_GeometryTreeDump)
 
 /// Basic entry point to dump the geometry in GDML format
 /**
@@ -794,7 +794,7 @@ static long exec_SimpleGDMLWriter(Detector& description, int argc, char** argv) 
   }
   return 1;
 }
-DECLARE_APPLY(dd4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
+DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
 
 /// Basic entry point to print out detector type map
 /**
@@ -815,7 +815,7 @@ static long detectortype_cache(Detector& description, int , char** ) {
   }
   return 1;
 }
-DECLARE_APPLY(dd4hepDetectorTypes,detectortype_cache)
+DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
 
 #include "DD4hep/SurfaceInstaller.h"
 typedef SurfaceInstaller TestSurfacesPlugin;
@@ -831,5 +831,5 @@ static long install_plugin_tester(Detector& description, int , char** ) {
   }
   return 1;
 }
-DECLARE_APPLY(dd4hepPluginTester,install_plugin_tester)
+DECLARE_APPLY(DD4hepPluginTester,install_plugin_tester)
 

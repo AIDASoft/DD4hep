@@ -897,4 +897,4 @@ static long create_description(Detector& /* description */, int /* argc */, char
                                                         }
 #endif
 }
-DECLARE_APPLY(dd4hepGeometry2PANDORA,create_description)
+DECLARE_APPLY(DD4hepGeometry2PANDORA,create_description)

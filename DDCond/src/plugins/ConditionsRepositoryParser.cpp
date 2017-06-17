@@ -437,7 +437,7 @@ static long setup_repository_loglevel(Detector& /* description */, int argc, cha
          arguments(argc,argv).c_str());
   return 0;
 }
-DECLARE_APPLY(dd4hep_ConditionsXMLRepositoryPrintLevel,setup_repository_loglevel)
+DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryPrintLevel,setup_repository_loglevel)
 
 #include "DD4hep/DD4hepUI.h"
 
@@ -460,4 +460,4 @@ static long setup_repository_Conditions(Detector& description, int argc, char** 
   except("XML_DOC_READER","Invalid number of arguments to interprete conditions: %d != %d.",argc,1);
   return 0;
 }
-DECLARE_APPLY(dd4hep_ConditionsXMLRepositoryParser,setup_repository_Conditions)
+DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryParser,setup_repository_Conditions)

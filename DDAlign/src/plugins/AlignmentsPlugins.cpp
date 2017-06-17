@@ -64,4 +64,4 @@ long create_global_alignment_xml_file(Detector& description, int argc, char** ar
   except("AlignmentXmlWriter","++ Invalid top level detector element name: %s",path.c_str());
   return 1;
 }
-DECLARE_APPLY(dd4hep_GlobalAlignmentXmlWriter, create_global_alignment_xml_file)
+DECLARE_APPLY(DD4hep_GlobalAlignmentXmlWriter, create_global_alignment_xml_file)

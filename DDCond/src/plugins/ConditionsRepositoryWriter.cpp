@@ -490,7 +490,7 @@ static long write_repository_conditions(Detector& description, int argc, char** 
   writer.write(doc, output);
   return 1;
 }
-DECLARE_APPLY(dd4hep_ConditionsXMLRepositoryWriter,write_repository_conditions)
+DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryWriter,write_repository_conditions)
 
 
 // ======================================================================================
@@ -518,5 +518,5 @@ static long write_repository_manager(Detector& description, int argc, char** arg
   writer.write(doc, output);
   return 1;
 }
-DECLARE_APPLY(dd4hep_ConditionsXMLManagerWriter,write_repository_manager)
+DECLARE_APPLY(DD4hep_ConditionsXMLManagerWriter,write_repository_manager)
 // ======================================================================================

@@ -230,4 +230,4 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 
   return tube;
 }
-DECLARE_DETELEMENT(dd4hep_Mask_o1_v01,create_element)
+DECLARE_DETELEMENT(DD4hep_Mask_o1_v01,create_element)

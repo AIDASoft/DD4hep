@@ -79,4 +79,4 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sd
 }
 
 // first argument is the type from the xml file
-DECLARE_DETELEMENT(dd4hep_Example_Telescope,create_element)
+DECLARE_DETELEMENT(DD4hep_Example_Telescope,create_element)

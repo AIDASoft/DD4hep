@@ -241,7 +241,7 @@ namespace {
   /// Create a conditions update pool based on STL hash-maps (unordered_map)
   _CR(create_unordered_map_update_pool,std::unordered_map,ConditionsMappedUpdatePool,UpdatePool)
 }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsMappedPool,            create_map_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsHashedPool,            create_unordered_map_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsMappedUpdatePool,      create_map_update_pool)
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsHashedUpdatePool,      create_unordered_map_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsMappedPool,            create_map_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsHashedPool,            create_unordered_map_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsMappedUpdatePool,      create_map_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsHashedUpdatePool,      create_unordered_map_update_pool)

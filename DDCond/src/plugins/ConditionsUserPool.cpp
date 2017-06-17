@@ -765,9 +765,9 @@ namespace {
 // Factory for the user pool using a binary tree map
 void* create_map_user_pool(Detector& description, int argc, char** argv)
 {  return create_pool<map<Condition::key_type,Condition::Object*> >(description, argc, argv);  }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsMapUserPool, create_map_user_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsMapUserPool, create_map_user_pool)
 
 // Factory for the user pool using a binary tree map
 void* create_unordered_map_user_pool(Detector& description, int argc, char** argv)
 {  return create_pool<unordered_map<Condition::key_type,Condition::Object*> >(description, argc, argv);  }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsUnorderedMapUserPool, create_map_user_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsUnorderedMapUserPool, create_map_user_pool)

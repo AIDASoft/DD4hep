@@ -90,7 +90,7 @@ static int ddcond_install_cond_mgr (Detector& description, int argc, char** argv
   if ( h ) *h = mgr;
   return 1;
 }
-DECLARE_APPLY(dd4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
+DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
 
 /**
  *  Prepare the conditions manager for execution
@@ -178,7 +178,7 @@ static int ddcond_conditions_pool_processor(Detector& description, bool process_
 static int ddcond_conditions_pool_process(Detector& description, int argc, char** argv)   {
   return ddcond_conditions_pool_processor(description, false, true, argc, argv);
 }
-DECLARE_APPLY(dd4hep_ConditionsPoolProcessor,ddcond_conditions_pool_process)
+DECLARE_APPLY(DD4hep_ConditionsPoolProcessor,ddcond_conditions_pool_process)
 
 // ======================================================================================
 /// Plugin function: Dump of all Conditions pool with or without conditions
@@ -214,8 +214,8 @@ static int ddcond_dump_pools(Detector& description, int argc, char** argv)   {
 static int ddcond_dump_conditions(Detector& description, int argc, char** argv)   {
   return ddcond_conditions_pool_print(description, true, argc, argv);
 }
-DECLARE_APPLY(dd4hep_ConditionsPoolDump,ddcond_dump_pools)
-DECLARE_APPLY(dd4hep_ConditionsDump,ddcond_dump_conditions)
+DECLARE_APPLY(DD4hep_ConditionsPoolDump,ddcond_dump_pools)
+DECLARE_APPLY(DD4hep_ConditionsDump,ddcond_dump_conditions)
 
 // ======================================================================================
 /// Plugin function: Dump of all Conditions associated to the detector elements
@@ -264,7 +264,7 @@ static int ddcond_detelement_dump(Detector& description, int argc, char** argv) 
   slice->manager.clean(pool->validity().iovType, 20);
   return ret;
 }
-DECLARE_APPLY(dd4hep_DetElementConditionsDump,ddcond_detelement_dump)
+DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
   
 // ======================================================================================
 /// Plugin function: Dump of all Conditions associated to the detector elements
@@ -280,7 +280,7 @@ static void* ddcond_prepare_plugin(Detector& description, int argc, char** argv)
   UserPool* p = slice->pool.get();
   return p && p->size() > 0 ? slice.release() : 0;
 }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsPrepare,ddcond_prepare_plugin)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsPrepare,ddcond_prepare_plugin)
 #if 0
 // ======================================================================================
 /// Plugin function: Dump of all Conditions associated to the detector elements
@@ -326,7 +326,7 @@ static int ddcond_detelement_processor(Detector& description, int argc, char** a
   slice->manager.clean(pool->validity().iovType, 20);
   return ret;
 }
-DECLARE_APPLY(dd4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
+DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
 #endif
 // ======================================================================================
 /// Plugin entry point: Synchronize conditions according to new IOV value
@@ -352,7 +352,7 @@ static long ddcond_synchronize_conditions(Detector& description, int argc, char*
          arguments(argc,argv).c_str());
   return 0;
 }
-DECLARE_APPLY(dd4hep_ConditionsSynchronize,ddcond_synchronize_conditions)
+DECLARE_APPLY(DD4hep_ConditionsSynchronize,ddcond_synchronize_conditions)
 
 // ======================================================================================
 /// Plugin entry point: Clean conditions reposiory according to maximum age
@@ -378,7 +378,7 @@ static long ddcond_clean_conditions(Detector& description, int argc, char** argv
   except("Conditions","+++ Failed cleaning conditions. Insufficient arguments!");
   return 0;
 }
-DECLARE_APPLY(dd4hep_ConditionsClean,ddcond_clean_conditions)
+DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 
 // ======================================================================================
 /// Basic entry point to instantiate the basic dd4hep conditions/alignmants printer
@@ -441,9 +441,9 @@ static void* create_printer(Detector& description, int argc,char** argv)  {
 static void* create_cond_printer(Detector& description, int argc,char** argv)
 {  return create_printer<Condition::Processor,ConditionsPrinter>(description,argc,argv);  }
                                                                         
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsPrinter,create_cond_printer)
-//DECLARE_Detector_CONSTRUCTOR(dd4hep_AlignmentsPrinter,create_printer<AlignmentsPrinter>)
-//DECLARE_Detector_CONSTRUCTOR(dd4hep_AlignedVolumePrinter,create_printer<AlignedVolumePrinter>)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsPrinter,create_cond_printer)
+//DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_AlignmentsPrinter,create_printer<AlignmentsPrinter>)
+//DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_AlignedVolumePrinter,create_printer<AlignedVolumePrinter>)
 
 // ======================================================================================
 /// Plugin entry point: Create repository csv file from loaded conditions
@@ -478,7 +478,7 @@ static long ddcond_create_repository(Detector& description, int argc, char** arg
   ConditionsRepository().save(manager,output);
   return 1;
 }
-DECLARE_APPLY(dd4hep_ConditionsCreateRepository,ddcond_create_repository)
+DECLARE_APPLY(DD4hep_ConditionsCreateRepository,ddcond_create_repository)
 
 // ======================================================================================
 /// Plugin entry point: Dump conditions repository csv file
@@ -522,7 +522,7 @@ static long ddcond_dump_repository(Detector& /* description */, int argc, char**
   }
   return 1;
 }
-DECLARE_APPLY(dd4hep_ConditionsDumpRepository,ddcond_dump_repository)
+DECLARE_APPLY(DD4hep_ConditionsDumpRepository,ddcond_dump_repository)
 
 // ======================================================================================
 /// Plugin entry point: Load conditions repository csv file into conditions manager
@@ -547,5 +547,5 @@ static long ddcond_load_repository(Detector& /* description */, int argc, char**
   except("Conditions","+++ Failed loading conditions repository. Insufficient arguments!");
   return 0;
 }
-DECLARE_APPLY(dd4hep_ConditionsLoadRepository,ddcond_load_repository)
+DECLARE_APPLY(DD4hep_ConditionsLoadRepository,ddcond_load_repository)
 // ======================================================================================

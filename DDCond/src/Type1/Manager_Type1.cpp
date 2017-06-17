@@ -45,7 +45,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(Manager_Type1);
 static void* ddcond_create_manager_instance(Detector& description, int, char**)  {
   return (ConditionsManagerObject*)new Manager_Type1(description);
 }
-DECLARE_Detector_CONSTRUCTOR(dd4hep_ConditionsManager_Type1,ddcond_create_manager_instance)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsManager_Type1,ddcond_create_manager_instance)
 
 #define NO_AGE 0
 
