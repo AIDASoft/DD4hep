@@ -42,7 +42,7 @@ dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_detelement
   EXEC_ARGS  geoPluginRun -volmgr -destroy 
   -compact file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
   -plugin DD4hep_ConditionsXMLRepositoryParser file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
-  -plugin dd4hep_DetElementConditionsDump
+  -plugin DD4hep_DetElementConditionsDump
   REGEX_PASS "Path\\:/world/Telescope/module_9#alignment"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
