@@ -149,7 +149,7 @@ def run():
   kernel = DDG4.Kernel()
   lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
+  kernel.loadGeometry("file:"+install_dir+"/share/DD4hep/DDDetectors/compact/SiD_Markus.xml")
   DDG4.importConstants(lcdd)
   DDG4.Core.setPrintLevel(Output.DEBUG)
   DDG4.Core.setPrintFormat("%-32s %6s %s")
