@@ -16,8 +16,8 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
+  example_dir = install_dir+'share/DD4hep/examples/DDG4/examples';
+  kernel.loadGeometry("file:"+install_dir+"share/DD4hep/examples/CLICSiD/compact/compact.xml")
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
 
   simple = DDG4.Simple(kernel,tracker='LcioTestTrackerAction')

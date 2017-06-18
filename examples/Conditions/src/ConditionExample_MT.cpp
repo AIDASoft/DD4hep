@@ -17,7 +17,7 @@
    Invoke the plugin with something like this:
 
    geoPluginRun -volmgr -destroy -plugin DD4hep_ConditionExample_MT \
-   -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+   -input file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/AlignDet/compact/Telescope.xml
 
    Populate the conditions store by hand for a set of IOVs.
    Then compute the corresponding alignment entries....
