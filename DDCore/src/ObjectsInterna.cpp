@@ -17,6 +17,7 @@
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/SegmentationsInterna.h"
 
+
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
@@ -75,6 +76,19 @@ RegionObject::RegionObject()
 RegionObject::~RegionObject() {
   InstanceCount::decrement(this);
 }
+
+DD4HEP_INSTANTIATE_HANDLE_NAMED(MaterialPropertiesTableObject);
+
+//MaterialPropertiesTableObject::MaterialPropertiesTableObject()
+//{
+//  InstanceCount::increment(this);
+//}
+//
+//MaterialPropertiesTableObject::~MaterialPropertiesTableObject() {
+//  InstanceCount::decrement(this);
+//}
+
+
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(LimitSetObject);
 

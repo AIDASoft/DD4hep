@@ -41,6 +41,7 @@ class G4VisAttributes;
 class G4VPhysicalVolume;
 class G4AssemblyVolume;
 class G4VSensitiveDetector;
+class G4MaterialPropertiesTable;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -67,6 +68,7 @@ namespace dd4hep {
       //typedef std::map<Region, G4Region*>                     RegionMap;
       typedef std::map<Volume, G4LogicalVolume*>              VolumeMap;
       typedef std::map<PlacedVolume, Geant4AssemblyVolume*>   AssemblyMap;
+      typedef std::map<MaterialPropertiesTable, G4MaterialPropertiesTable*> MaterialPropertiesTableMap;
 
       typedef std::vector<const TGeoNode*>                    VolumeChain;
       typedef std::pair<VolumeChain,const G4VPhysicalVolume*> ImprintEntry;
@@ -92,7 +94,9 @@ namespace dd4hep {
       Geant4GeometryMaps::VolumeMap        g4Volumes;
       Geant4GeometryMaps::PlacementMap     g4Placements;
       Geant4GeometryMaps::AssemblyMap      g4AssemblyVolumes;
+      Geant4GeometryMaps::MaterialPropertiesTableMap g4MPTMap;
       Geant4GeometryMaps::VolumeImprintMap g4VolumeImprints;
+      std::map<MaterialPropertiesTable, G4MaterialPropertiesTable*> g4MaterialPropertiesTable;
       std::map<Region, G4Region*>                              g4Regions;
       std::map<VisAttr, G4VisAttributes*>                      g4Vis;
       std::map<LimitSet, G4UserLimits*>                        g4Limits;

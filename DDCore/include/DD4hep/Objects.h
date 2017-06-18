@@ -70,6 +70,7 @@ namespace dd4hep {
   class ConstantObject;
   class RegionObject;
   class LimitSetObject;
+  class MaterialPropertiesTableObject;
 
   typedef ROOT::Math::XYZVector Position;
   typedef ROOT::Math::XYZVector Direction;
@@ -435,6 +436,35 @@ namespace dd4hep {
     /// Access was_threshold_set flag
     bool wasThresholdSet() const;
   };
+
+  /** @brief The implementation of a "MaterialPropertiesTable".
+   *
+   * This class is meant to provide the means to construct a G4MaterialPropertiesTable.
+   *
+   *  \author  W.Armstrong
+   *  \date    2017/06/17
+   *  \ingroup DD4HEP_GEOMETRY
+   */
+  class MaterialPropertiesTable : public Handle<MaterialPropertiesTableObject> {
+    public:
+      MaterialPropertiesTable();
+      MaterialPropertiesTable(const MaterialPropertiesTable&) = default;
+      MaterialPropertiesTable(MaterialPropertiesTable&&) = default;
+      MaterialPropertiesTable& operator=(const MaterialPropertiesTable&) = default;
+      MaterialPropertiesTable& operator=(MaterialPropertiesTable&&) = default;
+      virtual ~MaterialPropertiesTable();
+
+      void loadFile(const char*); 
+
+      int nArrayData()  const;
+      int nConstData()  const;
+      int nStringData() const;
+
+      std::vector<double> GetArrayData( const std::string& ) const;
+      double              GetConstData( const std::string& ) const;
+      std::string         GetStringData(const std::string& ) const;
+
+    };
 
 }   /* End namespace dd4hep             */
 

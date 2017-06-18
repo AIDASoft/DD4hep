@@ -401,6 +401,39 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
   return mat;
 }
 
+/** @brief Convert the material properites table to a Geant4 material Properties Table.
+ *
+ * 
+ *
+ */
+void* Geant4Converter::handleMaterialPropertiesTable(const std::string& name, const MaterialPropertiesTable& mpt) const
+{
+  G4MaterialPropertiesTable* g4_mpt = nullptr;
+  auto mpt_it = data().g4MaterialPropertiesTable.find(mpt);
+  if (mpt_it == data().g4MaterialPropertiesTable.end())
+  {
+    // create G4MaterialPropertiesTable
+  } else {
+    g4_mpt = mpt_it->second;
+  }
+  //void AddConstProperty(const char     *key,
+  //                             G4double PropertyValue);
+  //// Add a new property to the table by giving a key-name and value 
+
+  //G4MaterialPropertyVector* AddProperty(const char     *key,
+  //                                             G4double *PhotonEnergies,
+  //                                             G4double *PropertyValues,
+  //                                             G4int     NumEntries);
+  //// Add a new property to the table by giving a key-name and the
+  //// arrays x and y of size NumEntries.
+
+  //void AddProperty(const char *key, G4MaterialPropertyVector *opv);
+  //// Add a new property to the table by giving a key-name and an
+  //// already constructed G4MaterialPropertyVector.
+
+  return g4_mpt;
+}
+
 /// Dump solid in GDML format to output stream
 void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) const {
   G4VSolid* solid = 0;

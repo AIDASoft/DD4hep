@@ -22,6 +22,9 @@
 
 // C/C++ include files
 #include <set>
+#include <map>
+#include <vector>
+#include <string>
 
 // Forward declarations
 class TColor;
@@ -207,6 +210,44 @@ namespace dd4hep {
       return _fields;
     }
 #endif
+  };
+
+  /** @brief The implementation of a "MaterialPropertiesTable".
+   *
+   * This class is meant to provide the means to construct a G4MaterialPropertiesTable
+   *
+   *  \author  W.Armstrong
+   *  \date    2017/06/17
+   *  \ingroup DD4HEP_GEOMETRY
+   */
+  class MaterialPropertiesTableObject: public NamedObject {
+    public:
+      std::string raw_json;
+      std::map<std::string, std::vector<double>> raw_array_data ;
+      std::map<std::string, double>              raw_const_data ;
+      std::map<std::string, std::string>         raw_string_data;
+
+    public:
+      MaterialPropertiesTableObject() : raw_json("") { 
+        raw_array_data.clear();
+        raw_const_data.clear();
+        raw_string_data.clear();
+      }
+      MaterialPropertiesTableObject(const MaterialPropertiesTableObject&) = default;
+      MaterialPropertiesTableObject(MaterialPropertiesTableObject&&) = default;
+      MaterialPropertiesTableObject& operator=(const MaterialPropertiesTableObject&) = default;
+      MaterialPropertiesTableObject& operator=(MaterialPropertiesTableObject&&) = default;
+      virtual ~MaterialPropertiesTableObject() = default;
+
+      int  nArrayData()  const { return raw_array_data.size();}
+      int  nConstData()  const { return raw_const_data.size();}
+      int  nStringData() const { return raw_string_data.size();}
+
+      //std::vector<double> GetArrayData( std::string& ) const{
+      //         raw_array_data
+      //};
+      //double              GetConstData( std::string& ) const;
+      //std::string         GetStringData(std::string& ) const;
   };
 }      /* End namespace dd4hep              */
 #endif /* DD4HEP_DDCORE_OBJECTSINTERNA_H  */
