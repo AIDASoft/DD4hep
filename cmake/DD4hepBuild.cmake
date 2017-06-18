@@ -328,8 +328,8 @@ macro ( dd4hep_configure_output )
     set ( CMAKE_INSTALL_PREFIX ${ARG_INSTALL} CACHE PATH "Set install prefix path." FORCE )
     dd4hep_print( "dd4hep_configure_output: set CMAKE_INSTALL_PREFIX to ${ARG_INSTALL}" )
   elseif ( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-    set( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
-      "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..."  FORCE )
+    #set( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
+    #  "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..."  FORCE )
     dd4hep_print ( "dd4hep_configure_output: CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
   elseif ( CMAKE_INSTALL_PREFIX )
     dd4hep_print( "dd4hep_configure_output: set CMAKE_INSTALL_PREFIX to ${CMAKE_INSTALL_PREFIX}" )
