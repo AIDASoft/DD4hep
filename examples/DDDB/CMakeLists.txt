@@ -32,7 +32,7 @@ if (DD4HEP_USE_XERCESC)
   #---Package installation procedure(s) -----------------------------------------
   install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)
   install ( PROGRAMS scripts/extract_dddb.sh DESTINATION bin)
-  install ( FILES    data/DDDB.tar.gz DESTINATION examples/DDDB)
+  install ( FILES    data/DDDB.tar.gz DESTINATION ${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/DDDB)
   #---Testing--------------------------------------------------------------------
   dd4hep_configure_scripts ( DDDB DEFAULT_SETUP WITH_TESTS )
   #
