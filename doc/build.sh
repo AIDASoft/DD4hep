@@ -17,7 +17,7 @@ if test -n "${ARCH_OS}";
 then 
     if test -n "${GCC_VSN}";
     then
-	svn co https://svnsrv.desy.de/basic/aidasoft/DD4hep/trunk dd4hep
+	svn co https://svnsrv.desy.de/basic/aidasoft/DD4hep/trunk DD4hep
         export BUILD_DIR=`pwd`/${ARCH_OS}-${GCC_VSN};
 	export ARCH=x86_64-${ARCH_OS};
 	if test $GCC_VSN = "gcc46";

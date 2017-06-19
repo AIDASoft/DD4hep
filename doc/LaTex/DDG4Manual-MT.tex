@@ -69,7 +69,7 @@ to basic useful quantities:
 \begin{code}
     struct Geant4DetectorConstructionContext  {
       /// Reference to geometry object
-      Detector&     description;
+      Geometry::LCDD&     lcdd;
       /// Reference to the world after construction
       G4VPhysicalVolume*  world;
       /// The cached geometry information
@@ -254,7 +254,7 @@ Any other return code is assumed to be failure.
 \begin{code}
 """
 
-   dd4hep simulation example setup DDG4
+   DD4hep simulation example setup DDG4
    in multi-threaded mode using the python configuration
 
    @author  M.Frank
@@ -315,11 +315,11 @@ def setupSensitives(geant4):
 
 def run():
   kernel = DDG4.Kernel()
-  description = kernel.detectorDescription()
+  lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
   DDG4.Core.setPrintFormat("%-32s %6s %s")
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
-  DDG4.importConstants(description)
+  DDG4.importConstants(lcdd)
 
   kernel.NumberOfThreads = 3
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')

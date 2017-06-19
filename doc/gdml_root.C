@@ -1,9 +1,9 @@
 // $Id:$
 //====================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
 //
-//  Standalone ROOT script to load geometries from dd4hep:
+//  Standalone ROOT script to load geometries from DD4hep:
 //
 //  Full GDML cycle can be tested (deplace <detector> with some meaningful identifier):
 //   a) Extract gdml information

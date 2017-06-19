@@ -15,7 +15,7 @@ detection techniques, constants required by alignment and calibration,
 description of the readout structures, conditions data, etc. 
 
 \noindent
-The design of the dd4hep toolkit\cite{bib:dd4hep} 
+The design of the DD4hep toolkit\cite{bib:DD4hep} 
 is shaped on the experience of detector description 
 systems, which were implemented for the LHC experiments, in particular 
 the LHCb experiment~\cite{bib:LHCb,bib:LHCb-geometry}, 
@@ -25,7 +25,7 @@ the Linear Collider community~\cite{bib:ILD,bib:SiD}.
 Designing a coherent set of tools, with most of the basic components 
 already existing in one form or another, is an opportunity for getting 
 the best of all existing solutions. 
-dd4hep aims to widely reuse used existing software components, in particular
+DD4hep aims to widely reuse used existing software components, in particular
 the ROOT geometry package~\cite{bib:ROOT-tgeo}, part of the 
 ROOT project\cite{bib:ROOT}, a tool for 
 building, browsing, navigating and visualizing detector geometries. The
@@ -36,15 +36,15 @@ sophisticated 3D visualization functionality, which is ideal for building
 detector and event displays. The second component is 
 the Geant4 simulation toolkit~\cite{bib:geant4}, which is used to 
 simulate the detector response from particle collisions in complex designs.
-In dd4hep the geometrical
+In DD4hep the geometrical
 representation provided by ROOT is the main source of information.
-In addition dd4hep provides the automatic conversions to other geometrical 
+In addition DD4hep provides the automatic conversions to other geometrical 
 representations, such as Geant4, and the convenient usage of these 
 components without the reinvention of the existing functionality.
 
 \noindent
 In Section~\ref{sec:architectural-concepts} the scope and the high-level 
-requirements of the dd4hep toolkit are elaborated (in the following 
+requirements of the DD4hep toolkit are elaborated (in the following 
 also called "the toolkit"). This is basically the high level vision 
 of the provided functionality to the experimental communities. 
 In Section~\ref{sec:toolkit-design} the high-level or architectural design 
@@ -110,8 +110,8 @@ The following main requirements influenced the design of the toolkit:
 %=============================================================================
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=80mm] {dd4hep_big_picture.png}
-    \caption{The components of the dd4hep detector geometry toolkit.}
+    \includegraphics[height=80mm] {DD4hep_big_picture.png}
+    \caption{The components of the DD4hep detector geometry toolkit.}
     \label{fig:dd4hep-big-picture}
   \end{center}
   \vspace{-0.4cm}
@@ -139,7 +139,7 @@ The model and its components will be described in subsequence sections.
 %=============================================================================
 \noindent
 Inspired from the work of the linear collider detector 
-simulation~\cite{bib:Detector,bib:lcsim}, the compact detector description is used
+simulation~\cite{bib:LCDD,bib:lcsim}, the compact detector description is used
 to define an ideal detector as typically used during 
 the conceptual design phase of an experiment. 
 The compact description in its minimalistic form is probably not going to 
@@ -150,7 +150,7 @@ with deviations from the ideal would be needed by the experiment.
 \noindent
 In the compact description the detector is parametrized in minimalistic terms
 with user provided parameters in XML.
-XML is an open format, the dd4hep parsers do not validate against a fix schema
+XML is an open format, the DD4hep parsers do not validate against a fix schema
 and hence allow to easily introduce new elements and attributes to describe 
 detectors. This feature minimizes the burden on the end-user while still 
 supporting flexibility.
@@ -163,7 +163,7 @@ general manner, therefore so called $Detector$ $Constructors$ are needed.
 %=============================================================================
 %\begin{figure}[h]
 %  \begin{center}
-%    \includegraphics[width=16cm] {dd4hep_compact_xml.png}
+%    \includegraphics[width=16cm] {DD4hep_compact_xml.png}
 %    \caption{An example sniplett of the compact detector description. The 
 %             example shows the description of a 2 layered silicon vertex 
 %             detector.}
@@ -199,15 +199,15 @@ The compact description together with the detector constructors are sufficient
 to build the detector model and to visualize it. If during the lifetime of the
 experiment the detector model changes, the corresponding constructors will 
 need to be adapted accordingly. 
-dd4hep provides already a palette of basic pre-implemented geometrical detector 
-concepts to design experiments. In view of usage of dd4hep as a detector 
+DD4hep provides already a palette of basic pre-implemented geometrical detector 
+concepts to design experiments. In view of usage of DD4hep as a detector 
 description toolkit, this library may in the future also adopt
 generic designs of detector components created by end users e.g. during the design 
 phase of future experiments.
 %=============================================================================
 \begin{figure}[t]
   \begin{center}
-    \includegraphics[height=110mm] {dd4hep_classes.png}
+    \includegraphics[height=110mm] {DD4hep_classes.png}
     \caption{Class diagram with the main classes and their relations 
              for the Generic Detector Description Model. The implementing
              ROOT classes are shown in brackets.}
@@ -220,7 +220,7 @@ phase of future experiments.
 %=============================================================================
 
 \noindent
-This is the heart of the dd4hep detector description toolkit. Its purpose is 
+This is the heart of the DD4hep detector description toolkit. Its purpose is 
 to build in memory a model of the detector including its geometrical aspects
 as well as structural and functional aspects. The design reuses the elements 
 from the ROOT geometry package and extends them in case required functionality 
@@ -240,7 +240,7 @@ the all TPC geometrical dimensions, the alignment and calibration constants
 and other slow varying conditions such as the gas pressure, end-plate 
 temperatures etc. The $Detector$ $Element$ acts as a data concentrator. 
 Applications may access the full experiment geometry and all connected data
-through a singleton object called $Detector$, which provides 
+through a singleton object called $LCDD$, which provides 
 management, bookkeeping and ownership to the model instances.
 
 \noindent
@@ -277,7 +277,7 @@ to daughter starting from the top-level volume.
 %=============================================================================
 \begin{figure}[t]
   \begin{center}
-    \includegraphics[height=85mm] {dd4hep_detelement_tree.png}
+    \includegraphics[height=85mm] {DD4hep_detelement_tree.png}
     \caption{The object diagram of a hypothetical TPC detector showing in
     parallel the $Detector$ $Element$ and the $Geometry$ hierarchy and the 
     relationships between the objects.}
@@ -337,7 +337,7 @@ simulation, tracking, etc.
 %=============================================================================
 \begin{figure}[t]
   \begin{center}
-    \includegraphics[width=115mm] {dd4hep-extensions.png}
+    \includegraphics[width=115mm] {DD4hep-extensions.png}
     \caption{Extensions may be attached to common Detector Elements which 
              extend the functionality of the common DetElement 
              class and support e.g. caching of precomputed values.}
@@ -368,7 +368,7 @@ This design allows to build views addressing the following use-cases:
 \noindent
 Detector-simulation depends strongly on the use of an underlying simulation toolkit, 
 the most prominent candidate nowadays being Geant4~\cite{bib:geant4}.
-dd4hep supports simulation activities with Geant4 providing
+DD4hep supports simulation activities with Geant4 providing
 an automatic translation mechanism between geometry representations.
 The simulation response in the active elements of the detector
 is not implemented by the toolkit, since it is strongly influenced by the technical 
@@ -377,7 +377,7 @@ In Geant4 this response is computed in software constructs called $Sensitive$
 $Detectors$.
 
 \noindent
-Ideally dd4hep aims to provide a generic simulation application.
+Ideally DD4hep aims to provide a generic simulation application.
 Similar to the palette of pre-implemented geometrical detector 
 concepts to design experiments, it provides a palette of $Sensitive$
 $Detectors$ to simulate the detector response in form of a component library.
