@@ -43,8 +43,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   endcapVol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
-  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
-    xml_comp_t       x_layer  = c;
+  for(xml_coll_t xc(x_det,_U(layer)); xc; ++xc)  {
+    xml_comp_t       x_layer  = xc;
     double           l_thick  = layering.layer(l_num-1)->thickness();
     string           l_name   = _toString(layerType,"layer%d");
     int              l_repeat = x_layer.repeat();
@@ -53,8 +53,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
     int s_num = 1;
     double sliceZ = -l_thick/2;
-    for(xml_coll_t s(x_layer,_U(slice)); s; ++s)  {
-      xml_comp_t x_slice = s;
+    for(xml_coll_t xs(x_layer,_U(slice)); xs; ++xs)  {
+      xml_comp_t x_slice = xs;
       string     s_name  = _toString(s_num,"slice%d");
       double     s_thick = x_slice.thickness();
       Material   s_mat   = description.material(x_slice.materialStr());

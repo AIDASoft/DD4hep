@@ -789,9 +789,9 @@ xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const
   GeometryInfo& geo = data();
   xml_h place = geo.xmlPlacements[node];
   if (!place) {
-    TGeoMatrix* m = node->GetMatrix();
-    TGeoVolume* v = node->GetVolume();
-    xml_ref_t vol = xml_h(geo.xmlVolumes[v]);
+    TGeoMatrix* matrix = node->GetMatrix();
+    TGeoVolume* volume = node->GetVolume();
+    xml_ref_t   vol    = xml_h(geo.xmlVolumes[volume]);
     xml_h mot = geo.xmlVolumes[node->GetMotherVolume()];
 
     place = xml_elt_t(geo.doc, _U(physvol));
@@ -800,10 +800,10 @@ xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const
     }
     place.setRef(_U(volumeref), vol.name());
     if (m) {
-      xml_ref_t pos = handlePosition(name+"_pos", m);
+      xml_ref_t pos = handlePosition(name+"_pos", matrix);
       place.setRef(_U(positionref), pos.name());
-      if ( m->IsRotation() )  {
-        xml_ref_t rot = handleRotation(name+"_rot", m);
+      if ( matrix->IsRotation() )  {
+        xml_ref_t rot = handleRotation(name+"_rot", matrix);
         place.setRef(_U(rotationref), rot.name());
       }
     }

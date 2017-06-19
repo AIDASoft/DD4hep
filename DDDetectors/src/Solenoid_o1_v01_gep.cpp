@@ -64,10 +64,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     DetElement layer(sdet,_toString(n,"layer%d"),x_layer.id());
     Tube    l_tub (rmin,2*rmin,z);
     Volume  l_vol(l_name,l_tub,air);
-    int m = 0;
+    int im = 0;
 
 
-    for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++m)  {
+    for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++im)  {
       xml_comp_t x_slice = j;
       Material mat = description.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
@@ -90,14 +90,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
       r += thickness;
       if ( x_slice.isSensitive() ) {
-	sens.setType("tracker");
-	s_vol.setSensitiveDetector(sens);
+        sens.setType("tracker");
+        s_vol.setSensitiveDetector(sens);
       }
       // Set Attributes
       s_vol.setAttributes(description,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
       pv = l_vol.placeVolume(s_vol);
       // Slices have no extra id. Take the ID of the layer!
-      pv.addPhysVolID("slice",m);
+      pv.addPhysVolID("slice",im);
     }
     l_tub.setDimensions(rmin,r,z);
 
