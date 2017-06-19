@@ -97,8 +97,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   //#### LayeringExtensionImpl* layeringExtension = new LayeringExtensionImpl();
   //#### Position layerNormal(0,0,1);
 
-  for (xml_coll_t c(x_det, _U(layer)); c; ++c) {
-    xml_comp_t x_layer = c;
+  for (xml_coll_t xc(x_det, _U(layer)); xc; ++xc) {
+    xml_comp_t x_layer = xc;
     int repeat = x_layer.repeat();            // Get number of times to repeat this layer.
     const Layer* lay = layering.layer(layer_num - 1); // Get the layer from the layering engine.
     // Loop over repeats for this layer.
@@ -116,8 +116,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       // Create the slices (sublayers) within the layer.
       double slice_pos_z = -(layer_thickness / 2);
       int slice_number = 1;
-      for (xml_coll_t k(x_layer, _U(slice)); k; ++k) {
-        xml_comp_t x_slice = k;
+      for (xml_coll_t xk(x_layer, _U(slice)); xk; ++xk) {
+        xml_comp_t x_slice = xk;
         string slice_name = _toString(slice_number, "slice%d");
         double slice_thickness = x_slice.thickness();
         Material slice_material = description.material(x_slice.materialStr());

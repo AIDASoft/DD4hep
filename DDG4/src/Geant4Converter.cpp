@@ -514,8 +514,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
       const TGeoBoolNode* boolean = sh->GetBoolNode();
       TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
-      TGeoMatrix* m = boolean->GetRightMatrix();
-      G4VSolid* left = (G4VSolid*) handleSolid(name + "_left", boolean->GetLeftShape());
+      TGeoMatrix* matrix = boolean->GetRightMatrix();
+      G4VSolid* left  = (G4VSolid*) handleSolid(name + "_left", boolean->GetLeftShape());
       G4VSolid* right = (G4VSolid*) handleSolid(name + "_right", boolean->GetRightShape());
 
       if (!left) {
@@ -556,8 +556,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
         }
       }
 
-      if (m->IsRotation()) {
-        MyTransform3D transform(m->GetTranslation(),m->GetRotationMatrix());
+      if (matrix->IsRotation()) {
+        MyTransform3D transform(matrix->GetTranslation(),matrix->GetRotationMatrix());
         if (oper == TGeoBoolNode::kGeoSubtraction)
           solid = new G4SubtractionSolid(name, left, right, transform);
         else if (oper == TGeoBoolNode::kGeoUnion)
@@ -566,7 +566,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
           solid = new G4IntersectionSolid(name, left, right, transform);
       }
       else {
-        const Double_t *t = m->GetTranslation();
+        const Double_t *t = matrix->GetTranslation();
         G4ThreeVector transform(t[0] * CM_2_MM, t[1] * CM_2_MM, t[2] * CM_2_MM);
         if (oper == TGeoBoolNode::kGeoSubtraction)
           solid = new G4SubtractionSolid(name, left, right, 0, transform);
