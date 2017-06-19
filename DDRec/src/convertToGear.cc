@@ -60,7 +60,7 @@ int main(int argc, char** argv ){
     outFile = "gear_"  + gearMgr->getDetectorName() + ".xml" ;
   }
     
-  gear::Gearxml::createXMLFile ( gearMgr, outFile ) ;
+  gear::GearXML::createXMLFile ( gearMgr, outFile ) ;
  
 
   std::cout << "  ************************************************************** " << std::endl ;
