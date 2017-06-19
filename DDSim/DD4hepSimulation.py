@@ -235,16 +235,16 @@ class DD4hepSimulation(object):
       exit(1)
 
   @staticmethod
-  def getDetectorLists( lcdd ):
-    ''' get lists of trackers and calorimeters that are defined in lcdd (the compact xml file)'''
+  def getDetectorLists( detectorDescription ):
+    ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
     import DDG4
   #  if len(detectorList):
   #    print " subset list of detectors given - will only instantiate these: " , detectorList
     trackers,calos = [],[]
-    for i in lcdd.detectors():
+    for i in detectorDescription.detectors():
       det = DDG4.DetElement(i.second.ptr())
       name = det.name()
-      sd =  lcdd.sensitiveDetector( name )
+      sd =  detectorDescription.sensitiveDetector( name )
       if sd.isValid():
         detType = sd.type()
   #      if len(detectorList) and not(name in detectorList):
@@ -273,9 +273,9 @@ class DD4hepSimulation(object):
     #kernel.setOutputLevel('Compact',1)
 
     kernel.loadGeometry("file:"+ self.compactFile )
-    lcdd = kernel.lcdd()
+    detectorDescription = kernel.detectorDescription()
 
-    DDG4.importConstants( lcdd )
+    DDG4.importConstants( detectorDescription )
 
   #----------------------------------------------------------------------------------
 
@@ -433,9 +433,9 @@ class DD4hepSimulation(object):
       exit(1)
 
     #=================================================================================
-    # get lists of trackers and calorimeters in lcdd
+    # get lists of trackers and calorimeters in detectorDescription
 
-    trk,cal = self.getDetectorLists( lcdd )
+    trk,cal = self.getDetectorLists( detectorDescription )
 
     # ---- add the trackers:
     try:
