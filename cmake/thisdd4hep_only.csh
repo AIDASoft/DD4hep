@@ -2,7 +2,7 @@
 # This version of the script has been modified to set up environment variables for
 # only DD4hep.
 #
-# This script if for the csh like shells, see thisdd4hep.sh for bash like shells.
+# This script if for the csh like shells, see thisdd4hep_only.sh for bash like shells.
 #
 # Author: Pere Mato
 
