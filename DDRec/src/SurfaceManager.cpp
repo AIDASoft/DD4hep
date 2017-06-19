@@ -13,8 +13,6 @@ namespace dd4hep {
   namespace rec {
     
 
-    SurfaceManager::SurfaceManager(){
-
     SurfaceManager::SurfaceManager(Detector& theDetector){
 
       // have to make sure the volume manager is populated once in order to have
@@ -42,10 +40,8 @@ namespace dd4hep {
       return 0 ;
     }
 
-    void SurfaceManager::initialize(Detector& theDetector) {
+    void SurfaceManager::initialize(Detector& description) {
       
-      Detector& description = Detector::getInstance();
-
       const std::vector<std::string>& types = description.detectorTypes() ;
 
       for(unsigned i=0,N=types.size();i<N;++i){

@@ -2,7 +2,7 @@
 #define rec_SurfaceManager_H_
 
 #include "DDRec/ISurface.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include <string>
 #include <map>
 

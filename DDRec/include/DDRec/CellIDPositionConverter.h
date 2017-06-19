@@ -1,12 +1,11 @@
 #ifndef CellIDPositionConverter_H_
 #define CellIDPositionConverter_H_
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Readout.h"
 #include "DD4hep/VolumeManager.h"
 
 #include "DDSegmentation/Segmentation.h"
-#include "DDRec/tempdefs.h"
 
 #include <set>
 #include <string>

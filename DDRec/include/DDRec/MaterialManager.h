@@ -1,7 +1,7 @@
 #ifndef rec_MaterialManager_H_
 #define rec_MaterialManager_H_
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Objects.h"
 #include "DDRec/Vector3D.h"
 #include "DDRec/Material.h"
