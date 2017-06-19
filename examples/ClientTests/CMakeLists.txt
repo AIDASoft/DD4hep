@@ -23,7 +23,7 @@ dd4hep_add_plugin( ClientTests SOURCES src/*.cpp
   OPTIONAL       [BOOST SOURCES src_boost/*.cpp]
   )
 #
-dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTests )
+dd4hep_install_dir( compact scripts DESTINATION ${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/ClientTests )
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------

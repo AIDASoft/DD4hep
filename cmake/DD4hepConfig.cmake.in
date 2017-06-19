@@ -25,9 +25,17 @@ set ( DD4HEP_USE_CXX14   "@DD4HEP_USE_CXX14@" )
 set ( Geant4_DIR         "@Geant4_DIR@" )
 set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
 
-set ( ROOTSYS            "$ENV{ROOTSYS}" )
-set ( ROOT_DIR           "$ENV{ROOTSYS}/cmake" )
-set ( ROOT_VERSION       "@ROOT_VERSION@" )
+
+if(NOT ENV{ROOTSYS})
+  # this is not ideal. Ideally ROOTSYS is not needed. Just ROOTConfig.cmake 
+  set ( ROOTSYS          "${DD4hep_DIR}")#"$ENV{ROOTSYS}" )
+  set ( ROOT_DIR           "${DD4hep_DIR}")#"$ENV{ROOTSYS}/cmake" )
+  set ( ROOT_VERSION       "${DD4hep_DIR}")#"@ROOT_VERSION@" )
+else()
+  set ( ROOTSYS            "$ENV{ROOTSYS}" )
+  set ( ROOT_DIR           "$ENV{ROOTSYS}/cmake" )
+  set ( ROOT_VERSION       "@ROOT_VERSION@" )
+endif()
 
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 

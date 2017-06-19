@@ -33,4 +33,4 @@ if(DD4HEP_USE_GEANT4)
 endif()
 
 #---Package installation procedure(s) -------------------------------------
-dd4hep_install_dir ( DDEve DESTINATION examples )
+dd4hep_install_dir ( DDEve DESTINATION share/DD4hep/examples )

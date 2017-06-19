@@ -22,7 +22,7 @@ dd4hep_package (SimpleDetector MAJOR 0 MINOR 0 PATCH 1
 
 #-----------------------------------------------------------------------------------
 dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
-dd4hep_install_dir(compact DESTINATION ${DD4hep_DIR}/examples/ClientTests)
+dd4hep_install_dir(compact DESTINATION ${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/ClientTests)
 #-----------------------------------------------------------------------------------
 dd4hep_configure_scripts(SimpleDetector DEFAULT_SETUP WITH_TESTS)
 
