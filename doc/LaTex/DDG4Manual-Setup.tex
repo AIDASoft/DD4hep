@@ -370,10 +370,10 @@ segment is discussed below line by line.
 #include <iostream>
 
 using namespace std;
-using namespace dd4hep;
-using namespace dd4hep::sim;
-using namespace dd4hep::sim::Test;
-using namespace dd4hep::sim::Setup;
+using namespace DD4hep;
+using namespace DD4hep::Simulation;
+using namespace DD4hep::Simulation::Test;
+using namespace DD4hep::Simulation::Setup;
 
 #if defined(__MAKECINT__)
 #pragma link C++ class Geant4RunActionSequence;
@@ -395,7 +395,7 @@ SensitiveSeq::handled_type* setupDetector(Kernel& kernel, const std::string& nam
 }
 
 void exampleAClick()  {
-  Geant4Kernel& kernel = Geant4Kernel::instance(Detector::getInstance());
+  Geant4Kernel& kernel = Geant4Kernel::instance(LCDD::getInstance());
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml");
   kernel.loadXML("DDG4_field.xml");
 
@@ -444,7 +444,7 @@ void exampleAClick()  {
     properties to \tts{Geant4Action} objects. These helpers and the corresponding 
     functionality are not included in the wrapped classes themselves to not 
     clutter the code with stuff only used for the setup.
-    All contained objects are in the namespace \tts{dd4hep::sim::Setup}}.
+    All contained objects are in the namespace \tts{DD4hep::Simulation::Setup}}.
 \docline{6-10}{Save yourself specifying all the namespaces objects are in....}
 \docline{13-19}{CINT processing pragmas. 
     Classes defined here will be available at the ROOT prompt
@@ -525,7 +525,7 @@ to cope with the installation paths.
 
 \noindent
 Given the reflection interface of ROOT, the setup of the simulation interface
-using dd4hep is of course also possible using the python interpreted language.
+using DD4hep is of course also possible using the python interpreted language.
 In the following code example the setup of Geant4 using the \tts{ClicSid} 
 example is shown using python~\footnote{For comparison, the same example was 
 used to illustrate the setup using XML files.}.
@@ -536,7 +536,7 @@ from SystemOfUnits import *
 
 """
 
-   dd4hep example setup using the python configuration
+   DD4hep example setup using the python configuration
 
    @author  M.Frank
    @version 1.0
@@ -547,11 +547,11 @@ def run():
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml")
   kernel.loadXML("DDG4_field.xml")
 
-  description = kernel.detectorDescription()
+  lcdd = kernel.lcdd()
   print '+++   List of sensitive detectors:'
-  for i in description.detectors(): 
+  for i in lcdd.detectors(): 
     o = DDG4.DetElement(i.second)
-    sd = description.sensitiveDetector(o.name())
+    sd = lcdd.sensitiveDetector(o.name())
     if sd.isValid():
       print '+++  %-32s type:%s'%(o.name(), sd.type(), )
 

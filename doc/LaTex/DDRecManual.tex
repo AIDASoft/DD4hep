@@ -1,7 +1,7 @@
 %=============================================================================
 \documentclass[10pt,a4paper]{article}
 %
-\input{dd4hep-setup.tex}
+\input{DD4hep-setup.tex}
 %
 \pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{DDRec User Manual}}}
 %
@@ -13,7 +13,7 @@ DDRec
 }{
 Reconstruction Interface for the \\
 \vspace{0.5cm}
-dd4hep Geometry Description \\
+DD4hep Geometry Description \\
 \vspace{0.5cm}
 Toolkit
 \vspace{2cm}
@@ -52,7 +52,7 @@ While in principle it is of course possible to extract this information from the
 detector geometry model used for simulation, doing so would tightly couple the reconstruction
 code to the specific implementation of the simulation model. 
 \DDR provides a generalized API for reconstruction that can be used to decouple the details of 
-the \DDH\cite{bib:dd4hep} detector geometry model from the reconstruction algorithms.
+the \DDH\cite{bib:DD4hep} detector geometry model from the reconstruction algorithms.
  
 \end{abstract}
 
@@ -239,7 +239,7 @@ of the volume. There are currently two concrete implementations:
 code as described in\ref{subsec:ddrec-surfaces-constructors}.
 The second hierarchy is the actual implementation of the surface concept in \DDR
 to be used by reconstruction code as described in \ref{subsec:ddrec-surfaces-reconstruction}.
-It uses the extension and views concept described in the main \DDH manual\cite{bib:dd4hepManual}.
+It uses the extension and views concept described in the main \DDH manual\cite{bib:DD4hepManual}.
 The {\em Surface} class has a {\em VolSurface} object and a {\em DetElement} and 
 uses these to establish the local to global coordinate transforms, the surface boundaries
 and the material properties. The materials on both sides of the surface are
@@ -278,24 +278,24 @@ This is demonstrated in the  following example code:
   // --- loop over layers ----
   // ...
 
-    dd4hep::Box  box( dimX/2, dimY/2, dimZ/2 ) ;
-    dd4hep::Volume vol( volumeName, description.material( x_layer.materialStr() )) ;
+    DD4hep::Geometry::Box  box( dimX/2, dimY/2, dimZ/2 ) ;
+    DD4hep::Geometry::Volume vol( volumeName, lcdd.material( x_layer.materialStr() )) ;
 
-    dd4hep::DetElement layerDetElement( parentDetElement , "layer"+_toString(i,"_%02d") , det_id ) ;
+    DD4hep::Geometry::DetElement layerDetElement( parentDetElement , "layer"+_toString(i,"_%02d") , det_id ) ;
 
     // add a measurement surface to the layer for every sensitive slice:
 
-    dd4hep::rec::VolPlane surf( vol , 
+    DD4hep::DDRec::VolPlane surf( vol , 
                           DDSurfaces::SurfaceType(DDSurfaces::SurfaceType::Sensitive),
                           dimZ, dimZ, 
                           u, v, n , o ) ; 
 
     // place the layer
-    dd4hep::PlacedVolume pv = parentVol.placeVolume(  vol, layerPlacement );
+    DD4hep::Geometry::PlacedVolume pv = parentVol.placeVolume(  vol, layerPlacement );
 
     layerDetElement.setPlacement( pv ) ;
 
-    dd4hep::rec::volSurfaceList( layerDetElement )->push_back( surf ) ;
+    DD4hep::DDRec::volSurfaceList( layerDetElement )->push_back( surf ) ;
 
   // --- end loop over layers ----
 
@@ -321,15 +321,15 @@ averaged along the thickness of the tube.
 
 \begin{code}
   //...
-  dd4hep::Tube innerWallSolid(rInner ,rInner + dr_InnerWall ,dz_Wall / 2.0 ) ;
+  DD4hep::Geometry::Tube innerWallSolid(rInner ,rInner + dr_InnerWall ,dz_Wall / 2.0 ) ;
 
-  dd4hep::Volume innerWallVol( "TPCInnerWallVol", innerWallSolid, materialAir ) ; 
+  DD4hep::Geometry::Volume innerWallVol( "TPCInnerWallVol", innerWallSolid, materialAir ) ; 
 
   pv = tpc_motherLog.placeVolume( innerWallVol ) ;
 
   DDSurfaces::Vector3D ocyl(  rInner + 0.5*dr_InnerWall , 0. , 0. ) ;
 
-  dd4hep::rec::VolCylinder surfI( innerWallVol , 
+  DD4hep::DDRec::VolCylinder surfI( innerWallVol , 
                                     SurfaceType( SurfaceType::Helper ) ,
                                     0.5*dr_InnerWall, 0.5*dr_InnerWall, 
                                     ocyl ) ;
@@ -369,23 +369,23 @@ surface.
 \begin{code}
   // ...
 
-  dd4hep::Detector& description = dd4hep::Detector::getInstance();
+  DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
 
-  description.fromCompact( inFile );
+  lcdd.fromCompact( inFile );
 
-  dd4hep::DetElement world = description.world() ;
+  DD4hep::Geometry::DetElement world = lcdd.world() ;
 
   // create a list of all surfaces in the detector:
-  dd4hep::rec::SurfaceManager surfMan(  world ) ;
+  DD4hep::DDRec::SurfaceManager surfMan(  world ) ;
 
-  const dd4hep::rec::SurfaceList& sL = surfMan.surfaceList() ;
+  const DD4hep::DDRec::SurfaceList& sL = surfMan.surfaceList() ;
 
   // map of surfaces
-  std::map< long64, dd4hep::rec::Surface* > surfMap ;
+  std::map< long64, DD4hep::DDRec::Surface* > surfMap ;
 
-  for( dd4hep::rec::SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
+  for( DD4hep::DDRec::SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
     
-    dd4hep::rec::Surface* surf =  *it ;
+    DD4hep::DDRec::Surface* surf =  *it ;
     
     std::cout << " ------------------------- " 
       	      << " surface: "  << *surf         << std::endl
@@ -403,16 +403,16 @@ for a particular detector element:
 \begin{code}
   // ...
 
-  dd4hep::DetElement ladderDE = description.detector("VXD_layer02_ladder42") ;
+  DD4hep::Geometry::DetElement ladderDE = lcdd.detector("VXD_layer02_ladder42") ;
 
   // create surfaces
-  dd4hep::rec::DetectorSurfaces ds( ladderDE ) ;
+  DD4hep::DDRec::DetectorSurfaces ds( ladderDE ) ;
 
-  const dd4hep::rec::SurfaceList& detSL = ds.surfaceList() ;
+  const DD4hep::DDRec::SurfaceList& detSL = ds.surfaceList() ;
 
-  for( dd4hep::rec::SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
+  for( DD4hep::DDRec::SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
 
-    dd4hep::rec::Surface* surf =  *it ;
+    DD4hep::DDRec::Surface* surf =  *it ;
 
     std::cout << " ------------------------- " 
       	      << " surface: "  << *surf         << std::endl
@@ -464,16 +464,16 @@ The usage of this class is simple and best demonstrated with an example:
 
 \begin{code}
 
-  dd4hep::Detector& description = dd4hep::Detector::getInstance();
+  DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
 
-  description.fromCompact( inFile );
+  lcdd.fromCompact( inFile );
 
   DDSurfaces::Vector3D p0( x0, y0, z0 ) ;
   DDSurfaces::Vector3D p1( x1, y1, z1 ) ;
 
-  dd4hep::rec::MaterialManager matMgr ;
+  DD4hep::DDRec::MaterialManager matMgr ;
 
-  const dd4hep::rec::MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
+  const DD4hep::DDRec::MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
 	
   std::cout  << std::endl  
              << " #######  materials between the two  points : " 
@@ -485,7 +485,7 @@ The usage of this class is simple and best demonstrated with an example:
   double path_length = 0 ;
   for( unsigned i=0,n=materials.size();i<n;++i){
 
-    dd4hep::rec::Material mat =  materials[i].first  ;
+    DD4hep::DDRec::Material mat =  materials[i].first  ;
     double length = materials[i].second  ;
 
     double nx0 = length / mat.radLength()  ;
@@ -511,9 +511,9 @@ Creation of an averaged material:
 
 \begin{code}
   // ...
-  const dd4hep::rec::MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
+  const DD4hep::DDRec::MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
 	
-  const dd4hep::rec::MaterialData& avMat = matMgr.createAveragedMaterial( materials ) ;
+  const DD4hep::DDRec::MaterialData& avMat = matMgr.createAveragedMaterial( materials ) ;
 
   std::cout << " averaged Material : " << " Z: " << avMat.Z() << " A: " << avMat.A() 
             << " densitiy: "           << avMat.density()
@@ -568,46 +568,46 @@ the following interface:
     IDDecoder(const std::string& collectionName);
     
      /// Default constructor using a readout object
-    IDDecoder(const Readout& readout);
+    IDDecoder(const Geometry::Readout& readout);
     
      /// Destructor
     virtual ~IDDecoder();
     
      /// Returns the cell ID from the local position in the given volume ID.
-    CellID cellIDFromLocal(const Position& local, const VolumeID volumeID) const;
+    CellID cellIDFromLocal(const Geometry::Position& local, const VolumeID volumeID) const;
     
      /// Returns the global cell ID from a given global position
-    CellID cellID(const Position& global) const;
+    CellID cellID(const Geometry::Position& global) const;
     
      /// Returns the global position from a given cell ID
-    Position position(const CellID& cellID) const;
+    Geometry::Position position(const CellID& cellID) const;
     
      /// Returns the local position from a given cell ID
-    Position localPosition(const CellID& cellID) const;
+    Geometry::Position localPosition(const CellID& cellID) const;
     
      /// Returns the volume ID of a given cell ID
     VolumeID volumeID(const CellID& cellID) const;
     
      /// Returns the volume ID of a given global position
-    VolumeID volumeID(const Position& global) const;
+    VolumeID volumeID(const Geometry::Position& global) const;
     
      /// Returns the placement for a given cell ID
-    PlacedVolume placement(const CellID& cellID) const;
+    Geometry::PlacedVolume placement(const CellID& cellID) const;
     
      /// Returns the placement for a given global position
-    PlacedVolume placement(const Position& global) const;
+    Geometry::PlacedVolume placement(const Geometry::Position& global) const;
     
      /// Returns the subdetector for a given cell ID
-    DetElement subDetector(const CellID& cellID) const;
+    Geometry::DetElement subDetector(const CellID& cellID) const;
     
      /// Returns the subdetector for a given global position
-    DetElement subDetector(const Position& global) const;
+    Geometry::DetElement subDetector(const Geometry::Position& global) const;
     
      /// Returns the closest detector element in the hierarchy for a given cell ID
-    DetElement detectorElement(const CellID& cellID) const;
+    Geometry::DetElement detectorElement(const CellID& cellID) const;
     
      /// Returns the closest detector element in the hierarchy for a given global position
-    DetElement detectorElement(const Position& global) const;
+    Geometry::DetElement detectorElement(const Geometry::Position& global) const;
     
      /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
     void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
@@ -631,14 +631,14 @@ To be done ...
 \newpage
 %=============================================================================
 \begin{thebibliography}{9}
-\bibitem{bib:dd4hep} M. Frank et al, "dd4hep: A Detector Description Toolkit 
+\bibitem{bib:DD4hep} M. Frank et al, "DD4hep: A Detector Description Toolkit 
                 for High Energy Physics Experiments",
-                detailtional Conference on Computing in High Energy and Nuclear Physics  
+                International Conference on Computing in High Energy and Nuclear Physics  
                 (CHEP 2013), \\
                 Amsterdam, Netherlands, 2013, proceedings.
                 
-\bibitem{bib:dd4hepManual} M. Frank et al, "dd4hep: A Detector Description Toolkit 
-                for High Energy Physics Experiments", Users manual (dd4hepManual.pdf).
+\bibitem{bib:DD4hepManual} M. Frank et al, "DD4hep: A Detector Description Toolkit 
+                for High Energy Physics Experiments", Users manual (DD4hepManual.pdf).
                 
 
 \bibitem{bib:ROOT-tgeo} R.Brun, A.Gheata, M.Gheata, "The ROOT geometry package",\\

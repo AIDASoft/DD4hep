@@ -1,10 +1,10 @@
 %=============================================================================
 \documentclass[10pt,a4paper]{article}
 %
-\input{dd4hep-setup.tex}
+\input{DD4hep-setup.tex}
 %
 \pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{Software Design of the Alignment 
-Extension of the dd4hep Detector Description Toolkit\\
+Extension of the DD4hep Detector Description Toolkit\\
 }}}
 %
 \begin{document}   
@@ -15,7 +15,7 @@ DDAlign
 }{
 Alignment Support for the \\
 \vspace{0.5cm}
-dd4hep Geometry Description \\
+DD4hep Geometry Description \\
 \vspace{0.5cm}
 Toolkit
 }
@@ -142,7 +142,7 @@ document the support for alignment with its programming interfaces.
 %=============================================================================
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=90mm] {dd4hep_classes.png}
+    \includegraphics[height=90mm] {DD4hep_classes.png}
     \caption{Class diagram with the main classes and their relations 
              for the Generic Detector Description Model. The implementing
              ROOT classes are shown in brackets.}
@@ -156,12 +156,12 @@ document the support for alignment with its programming interfaces.
 %=============================================================================
 
 \noindent
-This is the heart of the dd4hep detector description toolkit. Its purpose is 
+This is the heart of the DD4hep detector description toolkit. Its purpose is 
 to build in memory a model of the detector including its geometrical aspects
 as well as structural and functional aspects. The design reuses the elements 
 from the ROOT geometry package and extends them in case required functionality 
 is not available. Figure~\ref{fig:dd4hep-detector-model} illustrates the main
-players and their relationships~\cite{bib:dd4hep}.
+players and their relationships~\cite{bib:DD4hep}.
 Any detector is modeled as a tree of $Detector$ $Elements$, the entity 
 central to this design, which is represented in the implementation by 
 the $DetElement$ class~\cite{bib:LHCb-geometry}. It offers all
@@ -176,7 +176,7 @@ the all TPC geometrical dimensions, the alignment and calibration constants
 and other slow varying conditions such as the gas pressure, end-plate 
 temperatures etc. The $Detector$ $Element$ acts as a data concentrator. 
 Applications may access the full experiment geometry and all connected data
-through a singleton object called $Detector$, which provides 
+through a singleton object called $LCDD$, which provides 
 management, bookkeeping and ownership to the model instances.
 
 \noindent
@@ -190,7 +190,7 @@ is described in the following.
 %=============================================================================
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=75mm] {dd4hep_detelement_tree.png}
+    \includegraphics[height=75mm] {DD4hep_detelement_tree.png}
     \caption{The object diagram of a hypothetical TPC detector showing in
     parallel the $Detector$ $Element$ and the $Geometry$ hierarchy and the 
     relationships between the objects.}
@@ -423,7 +423,7 @@ The simulation of such a geometry with applied alignment parameters can
 rather easily be realized using using the \DDhep, \DDA and the \DDG frameworks:
 \begin{itemize}\itemcompact
 \item The ideal geometry is constructed using the standard procedures
-    of \DDhep\cite{bib:dd4hep}.
+    of \DDhep\cite{bib:DD4hep}.
 \item Then the alignment parameters are applied.
 \item Finally the corrected geometry is translated to $Geant4$~\cite{bib:geant4}
     using the \DDG\cite{bib:DDG4} package.
@@ -572,7 +572,7 @@ $DetElement$ entities.
 
 \noindent
 The interface of the $Alignment$ structure to access detector 
-alignment parameters is as follows (see also the corresponding header file dd4hep/Alignment.h):
+alignment parameters is as follows (see also the corresponding header file DD4hep/Alignment.h):
 \begin{code}
       /// Number of nodes in this branch (=depth of the placement hierarchy from the top level volume)
       int numNodes() const;
@@ -650,20 +650,20 @@ There are multiple possibilities to apply alignment parameters:
 \newpage
 %=============================================================================
 \begin{thebibliography}{9}
-\bibitem{bib:dd4hep} M. Frank et al, "dd4hep: A Detector Description Toolkit 
+\bibitem{bib:DD4hep} M. Frank et al, "DD4hep: A Detector Description Toolkit 
                 for High Energy Physics Experiments",
-                detailtional Conference on Computing in High Energy and Nuclear Physics  
+                International Conference on Computing in High Energy and Nuclear Physics  
                 (CHEP 2013), \\
                 Amsterdam, Netherlands, 2013, proceedings.
 
 \bibitem{bib:LHCb-geometry} S. Ponce et al., 
                 "Detector Description Framework in LHCb", 
-                detailtional Conference on Computing in High Energy and Nuclear Physics  (CHEP 2003), 
+                International Conference on Computing in High Energy and Nuclear Physics  (CHEP 2003), 
                 La Jolla, CA, 2003, proceedings. 
 \bibitem{bib:chris-parkes-priv-comm} C. Parkes, private communications.
 \bibitem{bib:DDG4} M.Frank, "DDG4 - A Simulation Toolkit for High Energy 
                 Physics Experiments using Geant4 \\
-                and the dd4hep Geometry Description".
+                and the DD4hep Geometry Description".
 \bibitem{bib:ROOT-tgeo} R.Brun, A.Gheata, M.Gheata, "The ROOT geometry package",\\
                     Nuclear Instruments and Methods {\bf{A}} 502 (2003) 676-680.
 \bibitem{bib:geant4}  S. Agostinelli et al., 
