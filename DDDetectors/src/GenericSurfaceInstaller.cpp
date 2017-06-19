@@ -70,7 +70,7 @@ namespace {
 
 // Framework include files
 #define SURFACEINSTALLER_DATA UserData
-#define DD4HEP_USE_SURFACEINSTALL_HELPER dd4hep_GenericSurfaceInstallerPlugin
+#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_GenericSurfaceInstallerPlugin
 #include "DD4hep/SurfaceInstaller.h"
 
 namespace{

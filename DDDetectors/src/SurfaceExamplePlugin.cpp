@@ -17,7 +17,7 @@
 // Framework include files
 namespace { struct UserData { /* int a,b,c; */ }; }
 #define SURFACEINSTALLER_DATA UserData
-#define DD4HEP_USE_SURFACEINSTALL_HELPER dd4hep_SurfaceExamplePlugin
+#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_SurfaceExamplePlugin
 #include "DD4hep/SurfaceInstaller.h"
 
 namespace {

@@ -15,7 +15,7 @@
 // 
 //==========================================================================
 // Framework include files
-#define  DD4HEP_USE_SURFACEINSTALL_HELPER  dd4hep_SiTrackerEndcapSurfacePlugin
+#define  DD4HEP_USE_SURFACEINSTALL_HELPER  DD4hep_SiTrackerEndcapSurfacePlugin
 #include "DD4hep/SurfaceInstaller.h"
 
 /// Install measurement surfaces

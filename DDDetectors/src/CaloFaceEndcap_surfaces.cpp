@@ -27,7 +27,7 @@ namespace {
 
 // Framework include files
 #define SURFACEINSTALLER_DATA UserData
-#define DD4HEP_USE_SURFACEINSTALL_HELPER dd4hep_CaloFaceEndcapSurfacePlugin
+#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_CaloFaceEndcapSurfacePlugin
 #include "DD4hep/Printout.h"
 #include "DD4hep/SurfaceInstaller.h"
 #include "DDRec/DetectorData.h"
