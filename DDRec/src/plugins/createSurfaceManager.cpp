@@ -29,7 +29,7 @@ namespace dd4hep{
 
       printout(INFO,"InstallSurfaceManager","**** running plugin InstallSurfaceManager ! " );
 
-      description.addExtension<SurfaceManager>(  new SurfaceManager() ) ;
+      description.addExtension<SurfaceManager>(  new SurfaceManager(description) ) ;
 
       printout(INFO,"InstallSurfaceManager","%s" , description.extension<SurfaceManager>()->toString().c_str() );
 
