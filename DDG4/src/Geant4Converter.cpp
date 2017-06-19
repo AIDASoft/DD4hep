@@ -416,103 +416,103 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       return solid;
     }
     else if (shape->IsA() == TGeoBBox::Class()) {
-      const TGeoBBox* s = (const TGeoBBox*) shape;
-      solid = new G4Box(name, s->GetDX() * CM_2_MM, s->GetDY() * CM_2_MM, s->GetDZ() * CM_2_MM);
+      const TGeoBBox* sh = (const TGeoBBox*) shape;
+      solid = new G4Box(name, sh->GetDX() * CM_2_MM, sh->GetDY() * CM_2_MM, sh->GetDZ() * CM_2_MM);
     }
     else if (shape->IsA() == TGeoTube::Class()) {
-      const TGeoTube* s = (const TGeoTube*) shape;
-      solid = new G4Tubs(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetDz() * CM_2_MM, 0, 2. * M_PI);
+      const TGeoTube* sh = (const TGeoTube*) shape;
+      solid = new G4Tubs(name, sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetDz() * CM_2_MM, 0, 2. * M_PI);
     }
     else if (shape->IsA() == TGeoTubeSeg::Class()) {
-      const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
-      solid = new G4Tubs(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetDz() * CM_2_MM,
-                         s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
+      const TGeoTubeSeg* sh = (const TGeoTubeSeg*) shape;
+      solid = new G4Tubs(name, sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetDz() * CM_2_MM,
+                         sh->GetPhi1() * DEGREE_2_RAD, (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoEltu::Class()) {
-      const TGeoEltu* s = (const TGeoEltu*) shape;
-      solid = new G4EllipticalTube(name,s->GetA() * CM_2_MM, s->GetB() * CM_2_MM, s->GetDz() * CM_2_MM);
+      const TGeoEltu* sh = (const TGeoEltu*) shape;
+      solid = new G4EllipticalTube(name,sh->GetA() * CM_2_MM, sh->GetB() * CM_2_MM, sh->GetDz() * CM_2_MM);
     }
     else if (shape->IsA() == TGeoTrd1::Class()) {
-      const TGeoTrd1* s = (const TGeoTrd1*) shape;
-      solid = new G4Trd(name, s->GetDx1() * CM_2_MM, s->GetDx2() * CM_2_MM, s->GetDy() * CM_2_MM, s->GetDy() * CM_2_MM,
-                        s->GetDz() * CM_2_MM);
+      const TGeoTrd1* sh = (const TGeoTrd1*) shape;
+      solid = new G4Trd(name, sh->GetDx1() * CM_2_MM, sh->GetDx2() * CM_2_MM, sh->GetDy() * CM_2_MM, sh->GetDy() * CM_2_MM,
+                        sh->GetDz() * CM_2_MM);
     }
     else if (shape->IsA() == TGeoTrd2::Class()) {
-      const TGeoTrd2* s = (const TGeoTrd2*) shape;
-      solid = new G4Trd(name, s->GetDx1() * CM_2_MM, s->GetDx2() * CM_2_MM, s->GetDy1() * CM_2_MM, s->GetDy2() * CM_2_MM,
-                        s->GetDz() * CM_2_MM);
+      const TGeoTrd2* sh = (const TGeoTrd2*) shape;
+      solid = new G4Trd(name, sh->GetDx1() * CM_2_MM, sh->GetDx2() * CM_2_MM, sh->GetDy1() * CM_2_MM, sh->GetDy2() * CM_2_MM,
+                        sh->GetDz() * CM_2_MM);
     }
     else if (shape->IsA() == TGeoHype::Class()) {
-      const TGeoHype* s = (const TGeoHype*) shape;
-      solid = new G4Hype(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM,
-                         s->GetStIn() * DEGREE_2_RAD, s->GetStOut() * DEGREE_2_RAD,
-                         s->GetDz() * CM_2_MM);
+      const TGeoHype* sh = (const TGeoHype*) shape;
+      solid = new G4Hype(name, sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM,
+                         sh->GetStIn() * DEGREE_2_RAD, sh->GetStOut() * DEGREE_2_RAD,
+                         sh->GetDz() * CM_2_MM);
     }
     else if (shape->IsA() == TGeoPgon::Class()) {
-      const TGeoPgon* s = (const TGeoPgon*) shape;
-      double phi_start = s->GetPhi1() * DEGREE_2_RAD;
-      double phi_total = (s->GetDphi() + s->GetPhi1()) * DEGREE_2_RAD;
+      const TGeoPgon* sh = (const TGeoPgon*) shape;
+      double phi_start = sh->GetPhi1() * DEGREE_2_RAD;
+      double phi_total = (sh->GetDphi() + sh->GetPhi1()) * DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
-      for (Int_t i = 0; i < s->GetNz(); ++i) {
-        rmin.push_back(s->GetRmin(i) * CM_2_MM);
-        rmax.push_back(s->GetRmax(i) * CM_2_MM);
-        z.push_back(s->GetZ(i) * CM_2_MM);
+      for (Int_t i = 0; i < sh->GetNz(); ++i) {
+        rmin.push_back(sh->GetRmin(i) * CM_2_MM);
+        rmax.push_back(sh->GetRmax(i) * CM_2_MM);
+        z.push_back(sh->GetZ(i) * CM_2_MM);
       }
-      solid = new G4Polyhedra(name, phi_start, phi_total, s->GetNedges(), s->GetNz(), &z[0], &rmin[0], &rmax[0]);
+      solid = new G4Polyhedra(name, phi_start, phi_total, sh->GetNedges(), sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
     else if (shape->IsA() == TGeoPcon::Class()) {
-      const TGeoPcon* s = (const TGeoPcon*) shape;
-      double phi_start = s->GetPhi1() * DEGREE_2_RAD;
-      double phi_total = (s->GetDphi() + s->GetPhi1()) * DEGREE_2_RAD;
+      const TGeoPcon* sh = (const TGeoPcon*) shape;
+      double phi_start = sh->GetPhi1() * DEGREE_2_RAD;
+      double phi_total = (sh->GetDphi() + sh->GetPhi1()) * DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
-      for (Int_t i = 0; i < s->GetNz(); ++i) {
-        rmin.push_back(s->GetRmin(i) * CM_2_MM);
-        rmax.push_back(s->GetRmax(i) * CM_2_MM);
-        z.push_back(s->GetZ(i) * CM_2_MM);
+      for (Int_t i = 0; i < sh->GetNz(); ++i) {
+        rmin.push_back(sh->GetRmin(i) * CM_2_MM);
+        rmax.push_back(sh->GetRmax(i) * CM_2_MM);
+        z.push_back(sh->GetZ(i) * CM_2_MM);
       }
-      solid = new G4Polycone(name, phi_start, phi_total, s->GetNz(), &z[0], &rmin[0], &rmax[0]);
+      solid = new G4Polycone(name, phi_start, phi_total, sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
     else if (shape->IsA() == TGeoCone::Class()) {
-      const TGeoCone* s = (const TGeoCone*) shape;
-      solid = new G4Cons(name, s->GetRmin1() * CM_2_MM, s->GetRmax1() * CM_2_MM, s->GetRmin2() * CM_2_MM,
-                         s->GetRmax2() * CM_2_MM, s->GetDz() * CM_2_MM, 0.0, 2.*M_PI);
+      const TGeoCone* sh = (const TGeoCone*) shape;
+      solid = new G4Cons(name, sh->GetRmin1() * CM_2_MM, sh->GetRmax1() * CM_2_MM, sh->GetRmin2() * CM_2_MM,
+                         sh->GetRmax2() * CM_2_MM, sh->GetDz() * CM_2_MM, 0.0, 2.*M_PI);
     }
     else if (shape->IsA() == TGeoConeSeg::Class()) {
-      const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
-      solid = new G4Cons(name, s->GetRmin1() * CM_2_MM, s->GetRmax1() * CM_2_MM,
-                         s->GetRmin2() * CM_2_MM, s->GetRmax2() * CM_2_MM,
-                         s->GetDz() * CM_2_MM,
-                         s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
+      const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
+      solid = new G4Cons(name, sh->GetRmin1() * CM_2_MM, sh->GetRmax1() * CM_2_MM,
+                         sh->GetRmin2() * CM_2_MM, sh->GetRmax2() * CM_2_MM,
+                         sh->GetDz() * CM_2_MM,
+                         sh->GetPhi1() * DEGREE_2_RAD, (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoParaboloid::Class()) {
-      const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
-      solid = new G4Paraboloid(name, s->GetDz() * CM_2_MM, s->GetRlo() * CM_2_MM, s->GetRhi() * CM_2_MM);
+      const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
+      solid = new G4Paraboloid(name, sh->GetDz() * CM_2_MM, sh->GetRlo() * CM_2_MM, sh->GetRhi() * CM_2_MM);
     }
 #if 0  /* Not existent */
     else if (shape->IsA() == TGeoEllisoid::Class()) {
-      const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
-      solid = new G4Paraboloid(name, s->GetDz() * CM_2_MM, s->GetRlo() * CM_2_MM, s->GetRhi() * CM_2_MM);
+      const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
+      solid = new G4Paraboloid(name, sh->GetDz() * CM_2_MM, sh->GetRlo() * CM_2_MM, sh->GetRhi() * CM_2_MM);
     }
 #endif
     else if (shape->IsA() == TGeoSphere::Class()) {
-      const TGeoSphere* s = (const TGeoSphere*) shape;
-      solid = new G4Sphere(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetPhi1() * DEGREE_2_RAD,
-                           s->GetPhi2() * DEGREE_2_RAD, s->GetTheta1() * DEGREE_2_RAD, s->GetTheta2() * DEGREE_2_RAD);
+      const TGeoSphere* sh = (const TGeoSphere*) shape;
+      solid = new G4Sphere(name, sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetPhi1() * DEGREE_2_RAD,
+                           sh->GetPhi2() * DEGREE_2_RAD, sh->GetTheta1() * DEGREE_2_RAD, sh->GetTheta2() * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoTorus::Class()) {
-      const TGeoTorus* s = (const TGeoTorus*) shape;
-      solid = new G4Torus(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetR() * CM_2_MM,
-                          s->GetPhi1() * DEGREE_2_RAD, s->GetDphi() * DEGREE_2_RAD);
+      const TGeoTorus* sh = (const TGeoTorus*) shape;
+      solid = new G4Torus(name, sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetR() * CM_2_MM,
+                          sh->GetPhi1() * DEGREE_2_RAD, sh->GetDphi() * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoTrap::Class()) {
-      const TGeoTrap* s = (const TGeoTrap*) shape;
-      solid = new G4Trap(name, s->GetDz() * CM_2_MM, s->GetTheta(), s->GetPhi(),
-                         s->GetH1() * CM_2_MM, s->GetBl1() * CM_2_MM, s->GetTl1() * CM_2_MM, s->GetAlpha1() * DEGREE_2_RAD,
-                         s->GetH2() * CM_2_MM, s->GetBl2() * CM_2_MM, s->GetTl2() * CM_2_MM, s->GetAlpha2() * DEGREE_2_RAD);
+      const TGeoTrap* sh = (const TGeoTrap*) shape;
+      solid = new G4Trap(name, sh->GetDz() * CM_2_MM, sh->GetTheta(), sh->GetPhi(),
+                         sh->GetH1() * CM_2_MM, sh->GetBl1() * CM_2_MM, sh->GetTl1() * CM_2_MM, sh->GetAlpha1() * DEGREE_2_RAD,
+                         sh->GetH2() * CM_2_MM, sh->GetBl2() * CM_2_MM, sh->GetTl2() * CM_2_MM, sh->GetAlpha2() * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoCompositeShape::Class()) {
-      const TGeoCompositeShape* s = (const TGeoCompositeShape*) shape;
-      const TGeoBoolNode* boolean = s->GetBoolNode();
+      const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
+      const TGeoBoolNode* boolean = sh->GetBoolNode();
       TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
       TGeoMatrix* m = boolean->GetRightMatrix();
       G4VSolid* left = (G4VSolid*) handleSolid(name + "_left", boolean->GetLeftShape());
@@ -598,12 +598,12 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
-    string n = v->GetName();
-    TGeoMedium* m = v->GetMedium();
-    TGeoShape* s = v->GetShape();
-    G4VSolid* solid = (G4VSolid*) handleSolid(s->GetName(), s);
+    string  n = v->GetName();
+    TGeoMedium* med = v->GetMedium();
+    TGeoShape* sh = v->GetShape();
+    G4VSolid* solid = (G4VSolid*) handleSolid(sh->GetName(), sh);
     G4Material* medium = 0;
-    bool assembly = s->IsA() == TGeoShapeAssembly::Class() || v->IsA() == TGeoVolumeAssembly::Class();
+    bool assembly = sh->IsA() == TGeoShapeAssembly::Class() || v->IsA() == TGeoVolumeAssembly::Class();
 
     LimitSet lim = _v.limitSet();
     G4UserLimits* user_limits = 0;
@@ -629,13 +629,13 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       }
     }
     printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s",
-             n.c_str(), v, s->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly));
+             n.c_str(), v, sh->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly));
 
     if (assembly) {
       //info.g4AssemblyVolumes[v] = new Geant4AssemblyVolume();
       return 0;
     }
-    medium = (G4Material*) handleMaterial(m->GetName(), Material(m));
+    medium = (G4Material*) handleMaterial(med->GetName(), Material(med));
     if (!solid) {
       throw runtime_error("G4Converter: No Geant4 Solid present for volume:" + n);
     }
@@ -884,10 +884,10 @@ void* Geant4Converter::handleVis(const string& /* name */, VisAttr attr) const {
   Geant4GeometryInfo& info = data();
   G4VisAttributes* g4 = info.g4Vis[attr];
   if (!g4) {
-    float r = 0, g = 0, b = 0;
+    float red = 0, green = 0, blue = 0;
     int style = attr.lineStyle();
-    attr.rgb(r, g, b);
-    g4 = new G4VisAttributes(attr.visible(), G4Colour(r, g, b, attr.alpha()));
+    attr.rgb(red, green, blue);
+    g4 = new G4VisAttributes(attr.visible(), G4Colour(red, green, blue, attr.alpha()));
     //g4->SetLineWidth(attr->GetLineWidth());
     g4->SetDaughtersInvisible(!attr.showDaughters());
     if (style == VisAttr::SOLID) {

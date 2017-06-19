@@ -1,4 +1,3 @@
-// $Id$
 //====================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------
@@ -55,12 +54,12 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   PlacedVolume pv;
 
   sensitive.setType("escape_counter");
-  for(xml_coll_t m(e,_U(module)); m; ++m)  {
-    xml_comp_t mod = m;
+  for(xml_coll_t xm(e,_U(module)); xm; ++xm)  {
+    xml_comp_t mod = xm;
     vector<double> rmin,rmax,z;
     string vis = mod.visStr().empty() ? x_det.visStr() : mod.visStr();
     int num = 0;
-    for(xml_coll_t c(m,_U(zplane)); c; ++c, ++num)  {
+    for(xml_coll_t c(mod,_U(zplane)); c; ++c, ++num)  {
       xml_comp_t dim(c);
       rmin.push_back(dim.rmin());
       rmax.push_back(dim.rmax());

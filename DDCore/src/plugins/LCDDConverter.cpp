@@ -161,8 +161,8 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
   xml_h mat = geo.xmlMaterials[medium];
   if (!mat) {
     xml_h obj;
-    TGeoMaterial* m = medium->GetMaterial();
-    double d = m->GetDensity();   //*(gram/cm3);
+    TGeoMaterial* geo_mat = medium->GetMaterial();
+    double d = geo_mat->GetDensity();   //*(gram/cm3);
     if (d < 1e-10) d = 1e-10;
     mat = xml_elt_t(geo.doc, _U(material));
     mat.setAttr(_U(name), medium->GetName());
@@ -173,10 +173,10 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
 
     geo.checkMaterial(name, medium);
 
-    if (m->IsMixture()) {
-      TGeoMixture *mix = (TGeoMixture*) m;
+    if (geo_mat->IsMixture()) {
+      TGeoMixture   *mix = (TGeoMixture*)geo_mat;
       const double *wmix = mix->GetWmixt();
-      const int *nmix = mix->GetNmixt();
+      const int    *nmix = mix->GetNmixt();
       double sum = 0e0;
       for (int i = 0, n = mix->GetNelements(); i < n; i++) {
         TGeoElement *elt = mix->GetElement(i);
@@ -200,15 +200,15 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
     else if ( name != "dummy" )   {  
       // Do not exactly know where dummy comes from,
       // but it causes havoc in Geant4 later
-      TGeoElement *elt = m->GetElement(0);
+      TGeoElement *elt = geo_mat->GetElement(0);
       printout(INFO,"++ Converting non mixing material: %s",name.c_str());
       xml_elt_t atom(geo.doc, _U(atom));
       handleElement(elt->GetName(), Atom(elt));
       mat.append(atom);
-      mat.setAttr(_U(Z), m->GetZ());
+      mat.setAttr(_U(Z), geo_mat->GetZ());
       atom.setAttr(_U(type), "A");
       atom.setAttr(_U(unit), "g/mol");
-      atom.setAttr(_U(value), m->GetA() /*  *(g/mole)  */);
+      atom.setAttr(_U(value), geo_mat->GetA() /*  *(g/mole)  */);
     }
     geo.doc_materials.append(mat);
     geo.xmlMaterials[medium] = mat;
@@ -486,7 +486,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       TGeoShape* rs = boolean->GetRightShape();
       xml_h left    = handleSolid(ls->GetName(), ls);
       xml_h right   = handleSolid(rs->GetName(), rs);
-      xml_h first(0), second(0);
+      xml_h first_solid(0), second_solid(0);
       if (!left) {
         throw runtime_error("G4Converter: No left Detector Solid present for composite shape:" + name);
       }
@@ -536,13 +536,13 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       string rnam = right.attr<string>(_U(name));
 
       geo.doc_solids.append(solid);
-      solid.append(first = xml_elt_t(geo.doc, _U(first)));
+      solid.append(first_solid = xml_elt_t(geo.doc, _U(first)));
       solid.setAttr(_U(name), Unicode(shape_name));
-      first.setAttr(_U(ref),  lnam);
+      first_solid.setAttr(_U(ref),  lnam);
       const double *tr = lm->GetTranslation();
 
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
-        first.append(obj = xml_elt_t(geo.doc, _U(firstposition)));
+        first_solid.append(obj = xml_elt_t(geo.doc, _U(firstposition)));
         obj.setAttr(_U(name), name+"_"+lnam+"_pos");
         obj.setAttr(_U(x), tr[0]);
         obj.setAttr(_U(y), tr[1]);
@@ -551,9 +551,9 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       }
       if (lm->IsRotation()) {
         TGeoMatrix& linv = lm->Inverse();
-        XYZRotation rot = getXYZangles(linv.GetRotationMatrix());
+        XYZRotation  rot = getXYZangles(linv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
-          first.append(obj = xml_elt_t(geo.doc, _U(firstrotation)));
+          first_solid.append(obj = xml_elt_t(geo.doc, _U(firstrotation)));
           obj.setAttr(_U(name), name+"_"+lnam+"_rot");
           obj.setAttr(_U(x), rot.X());
           obj.setAttr(_U(y), rot.Y());
@@ -562,8 +562,8 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         }
       }
       tr = rm->GetTranslation();
-      solid.append(second = xml_elt_t(geo.doc, _U(second)));
-      second.setAttr(_U(ref), rnam);
+      solid.append(second_solid = xml_elt_t(geo.doc, _U(second)));
+      second_solid.setAttr(_U(ref), rnam);
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
         xml_ref_t pos = handlePosition(rnam+"_pos", rm);
         solid.setRef(_U(positionref), pos.name());
@@ -962,7 +962,7 @@ xml_h LCDDConverter::handleVis(const string& /* name */, VisAttr attr) const {
   GeometryInfo& geo = data();
   xml_h vis = geo.xmlVis[attr];
   if (!vis) {
-    float r = 0, g = 0, b = 0;
+    float red = 0, green = 0, blue = 0;
     int style = attr.lineStyle();
     int draw = attr.drawingStyle();
 
@@ -980,11 +980,11 @@ xml_h LCDDConverter::handleVis(const string& /* name */, VisAttr attr) const {
       vis.setAttr(_U(drawing_style), "wireframe");
 
     xml_h col = xml_elt_t(geo.doc, _U(color));
-    attr.rgb(r, g, b);
+    attr.rgb(red, green, blue);
     col.setAttr(_U(alpha), attr.alpha());
-    col.setAttr(_U(R), r);
-    col.setAttr(_U(G), g);
-    col.setAttr(_U(B), b);
+    col.setAttr(_U(R), red);
+    col.setAttr(_U(B), blue);
+    col.setAttr(_U(G), green);
     vis.append(col);
     geo.xmlVis[attr] = vis;
   }
