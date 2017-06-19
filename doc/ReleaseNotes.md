@@ -1,3 +1,110 @@
+# v00-24
+
+* 2017-06-08 Markus Frank ([PR#160](https://github.com/AIDASoft/DD4hep/pull/160))
+  * Add a new class `AlignmentsNominalMap`, which behaves like a `ConditionsMap` and handles alignment entries. 
+  * The `AlignmentsNominalMap` is not a conditions cache per-se. This implementation  behaves like a `conditionsmap`, but it shall not return real conditions to the user, but rather return the default alignment objects (which at the basis are conditions as well) to the user. These alignments are taken from the `DetElement` in question `Alignment DetElement::nominal()`.
+  
+  * The basic idea is to enable users to write code "as if" there would be conditions present. This is important to ease in the lifetime of the experiment the step from the design phase (where obviously no conditions are taken into account) to a more mature phase, where alignment studies etc. actually are part of the "bread and butter work".
+  
+  * Added a corresponding example in examples/AlignDet:
+  ```
+  $>   geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal \
+           -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+  ```
+     * Access the DetElement nominal conditions using the `AlignmentNominalMap`.
+     Any use of DDCond is inhibited.
+       1) We use the generic printer, which during the detector element scan accesses the conditions map.
+       2) We use a delta scanner to extract the nominal deltas from the `DetElement`'s nominal alignments
+       3) We use a `ConditionsTreeMap` to perform the alignments re-computation.
+
+* 2017-06-08 Markus Frank ([PR#159](https://github.com/AIDASoft/DD4hep/pull/159))
+  # Implementation of the decisions made at the Conditions mini-workshop
+  
+  ## Access mechanisms of DD4hep conditions for utilities
+  
+  Access to conditions is solely supported using the interface class DDCore/ConditionsMap.
+  * All utilities must use this interface.
+  * Any concrete implementation using conditions/alignment utilities must implement this interface
+  * Basic implementation using STL `map`, `multimap` and `unordered_map` are provided.
+  * A special no-op implementation of this interface shall be provided to access "default" alignment conditions. This implementation shall fall-back internally to the `DetElement::nominal()` alignment. 
+  Known clients: `VolumeManager` (hence: DDG4, DDRec, etc.)
+  
+  Though this sounds like a trivial change, the consequences concern the entire conditions
+  and alignment handling. This interface decouples entirely the core part of DD4hep
+  from the conditions cache handling and the alignment handling.
+  
+  Based on this interface most utilities used to handle conditions, detectors scans
+  to visit `DetElement` related condition sets, alignment and conditions printers etc.
+  
+  For details, please see:
+  ```
+  DDCore/include/DD4hep/AlignmentsPrinter.h
+  DDCore/include/DD4hep/AlignmentsProcessor.h
+  DDCore/include/DD4hep/ConditionsPrinter.h
+  DDCore/include/DD4hep/ConditionsProcessor.h
+  DDCore/include/DD4hep/DetectorProcessor.h
+  ```
+  
+  ## Naming conventions for detector conditions
+  
+  * Condition are logically attached to DetElements
+     * Condition names are: `DetElement.path()+"#"+condition-name`
+         Example: `/world/LHCb/DownstreamRegion/Muon/M5/M5ASide/R3ASide/Cham046#alignment`
+  
+  * Condition keys are a `int64` compound of two `int32`:
+  ```cpp
+     union {
+       int64 key;
+       struct {
+         int32 item_key;
+         int32 det_key;     // Needs to be the high word to have a properly ordered map
+       } values;
+     };
+     det_key  = hash32(DetElement.path())
+     item_key = hash32(condition-name)
+  ```
+     **Condition keys must be unique throughout the detector description.**
+  
+  * Alignment conditions naming conventions:
+    * Alignment-delta conditions are called `alignment_delta`.
+    * Fully qualified alignment conditions are called `alignment`.
+     DD4hep provided alignment utilities rely on this convention.
+  
+  * Other conditions can be named freely.
+  
+  ## Important Notice
+  The **Alignment conditions naming conventions** are already used by several utilities involving alignments. If you plan to use these, do not freely ignore these recommendations. When the naming conventions are ignored, these utilities shall not work.
+  
+  ## Updates to DDCond
+  DDCond implements a working conditions cache following the design criteria sketched above. The `conditionsSlice` object implements (though by forwarding to the `ConditionsUserPool`) a `ConditionsMap` interface.
+  
+  The `DD4hep_ConditionsMapUserPool` plugin implements in a very efficient way this interface using an ordered map. Using the above described key definition, this implementation allows very efficient scans of conditions/alignments etc. of individual detector elements, since conditions which belong to the same detector element are contiguous.
+  
+  ## Alignment handling/computations
+  Using the conditions maps, the computation of (mis-)alignment data from deltas
+  is no longer bound to the conditions mechanisms.
+  
+  A special utility called `AlignmentsCalculator` is put in place (see `DDCore/include/DD4hep/AlignmentsCalculator.h`) to facilitate the computation of a coherent set of alignments given a set of delta-parameters. This mechanism is much simpler, easier to understand and far less code intensive than the previously designed callback mechanism where alignments are obtained using conditions derivation.
+  
+  ## Update of the existing examples
+  
+  The example sets in DDDB, `examples/Conditions, examples/AlignDet`, `examples/DDDB` were updated according to the changed mechanism of accessing conditions. Here we can see the real benefits of the new approach: keeping same functionality, the examples became way off simpler. Simply count the number of lines of code.
+
+* 2017-06-17 Marko Petric ([PR#170](https://github.com/AIDASoft/DD4hep/pull/170))
+  - Add clang flag to warn about using namespace directive in global context in header
+
+* 2017-06-17 Frank Gaede ([PR#167](https://github.com/AIDASoft/DD4hep/pull/167))
+  - renamed the namespace DD4hep::DDRec to dd4hep::rec (see #166)
+         - provide backward compatibility to outside world for now
+  - moved the interfaces in namespace DDSurfaces to dd4hep::rec
+         - provide backward compatibility to outside world for now
+
+* 2017-06-15 Frank Gaede ([PR#165](https://github.com/AIDASoft/DD4hep/pull/165))
+  - started to cleanup DDRec
+        - don't use  LCDD::getInstance() in SurfaceManager and SurfaceHelper
+        -  deprecate unused(?) classes in DDRec/API and DDRec/Extensions
+        -  deprecate MaterialManager() using LCDD::getInstance()
+
 # v00-23
 
 * 2017-05-12 Marko Petric ([PR#152](https://github.com/aidasoft/dd4hep/pull/152))
