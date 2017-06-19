@@ -481,4 +481,7 @@ namespace dd4hep {
   } /* namespace rec */
 } /* namespace dd4hep */
 
+
+namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
+
 #endif // DDRec_DetectorData_H_
