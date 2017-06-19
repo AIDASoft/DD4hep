@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -45,12 +44,12 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     double layerWidth = 0;
     for(xml_coll_t l(x_layer,_U(slice)); l; ++l)
       layerWidth += xml_comp_t(l).thickness();
-    for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i)  {
+    for(int i=0, im=0, repeat=x_layer.repeat(); i<repeat; ++i)  {
       double     zlayer = z;
       string     layer_name = det_name + _toString(layer_num,"_layer%d");
       Volume     layer_vol(layer_name,Tube(rmin,rmax,layerWidth),air);
 
-      for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
+      for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++im)  {
         xml_comp_t x_slice = l;
         double     w = x_slice.thickness();
         string     slice_name = layer_name + _toString(m+1,"slice%d");

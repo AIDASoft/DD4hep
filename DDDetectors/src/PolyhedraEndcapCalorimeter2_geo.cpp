@@ -65,9 +65,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       PlacedVolume s_phv = l_vol.placeVolume(s_vol,Position(0,0,sliceZ));
       s_phv.addPhysVolID("slice",s_num);
       if ( x_slice.isSensitive() )  {
-	sens.setType("calorimeter");
-	s_vol.setSensitiveDetector(sens);
-	sensitives.push_back(s_phv);
+        sens.setType("calorimeter");
+        s_vol.setSensitiveDetector(sens);
+        sensitives.push_back(s_phv);
       }
       sliceZ += s_thick/2;
       s_num++;
@@ -82,9 +82,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       pv.addPhysVolID("layer", l_num);
       layer_elt.setPlacement(pv);
       for(size_t ic=0; ic<sensitives.size(); ++ic)  {
-	PlacedVolume sens_pv = sensitives[ic];
-	DetElement comp_elt(layer_elt,sens_pv.volume().name(),l_num);
-	comp_elt.setPlacement(sens_pv);
+        PlacedVolume sens_pv = sensitives[ic];
+        DetElement comp_elt(layer_elt,sens_pv.volume().name(),l_num);
+        comp_elt.setPlacement(sens_pv);
       }
       layerZ += l_thick/2;
       ++l_num;
@@ -104,12 +104,12 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     DetElement  sdetB = endcap.clone(det_name+"_B",x_det.id());
 
     pv = assembly.placeVolume(endcapVol,Transform3D(RotationZYX(M_PI/numsides,0,0),
-						    Position(0,0,z_pos)));
+                                                    Position(0,0,z_pos)));
     pv.addPhysVolID("barrel", 1);
     sdetA.setPlacement(pv);
 
     pv = assembly.placeVolume(endcapVol,Transform3D(RotationZYX(M_PI/numsides,M_PI,0),
-						    Position(0,0,-z_pos)));
+                                                    Position(0,0,-z_pos)));
     pv.addPhysVolID("barrel", 2);
     sdetB.setPlacement(pv);
 
@@ -122,7 +122,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   }
   Volume motherVol = description.pickMotherVolume(endcap);
   pv = motherVol.placeVolume(endcapVol,Transform3D(RotationZYX(M_PI/numsides,0,0),
-						 Position(0,0,z_pos)));
+                                                   Position(0,0,z_pos)));
   pv.addPhysVolID("system", det_id);
   pv.addPhysVolID("barrel", 1);
   endcap.setPlacement(pv);
