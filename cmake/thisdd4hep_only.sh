@@ -8,23 +8,19 @@
 # Author: Pere Mato. F. Gaede, M.Frank
 #-------------------------------------------------------------------------------
 #
-#echo " ### thisdd4hep.sh:   initialize the environment for DD4hep ! " 
+#echo " ### thisdd4hep_only.sh:   initialize the environment for DD4hep ! " 
 #
 #-----------------------------------------------------------------------------
 dd4hep_parse_this()   {
     package=${2};
     if [ "x${1}" = "x" ]; then
-	if [ ! -f bin/this${package}.sh ]; then
-            echo ERROR: must "cd where/${package}/is" before calling ". bin/this${package}.sh" for this version of bash!;
+	if [ ! -f bin/this${package}_only.sh ]; then
+            echo ERROR: must "cd where/${package}/is" before calling ". bin/this${package}_only.sh" for this version of bash!;
             return 1;
 	fi
 	THIS="${PWD}";
     else
-	# get param to "."
 	THIS=$(dirname $(dirname ${1}));
-	#if [ ! -f ${THIS}/bin/this${package}.sh ]; then
-	#    THIS=$(dirname ${package});
-	#fi;
     fi;
     THIS=$(cd ${THIS} > /dev/null; pwd);
 }
@@ -39,7 +35,6 @@ dd4hep_add_path()   {
 	path_value=${path_prefix};
     fi; 
     eval export ${path_name}=${path_value};
-    ## echo "dd4hep_add_path: ${path_name}=${path_value}";
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {
