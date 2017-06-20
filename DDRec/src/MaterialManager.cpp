@@ -14,7 +14,6 @@ namespace dd4hep {
 
 
     MaterialManager::MaterialManager(Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
-
       _tgeoMgr = world->GetGeoManager();
     }
 
