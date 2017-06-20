@@ -18,9 +18,25 @@
 #ifndef DD4HEP_DDG4_DDG4DICT_H
 #define DD4HEP_DDG4_DDG4DICT_H
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated"
+#pragma GCC diagnostic ignored "-Wunused"
+#pragma GCC diagnostic ignored "-Woverlength-strings"
+
+#elif defined(__llvm__) || defined(__APPLE__)
+
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wunused"
+#pragma clang diagnostic ignored "-Woverlength-strings"
+#endif
+
 // FRamework include files
+#include "DD4hep/Memory.h"
 #include "DDG4/Geant4Data.h"
 #include "DDG4/Geant4Particle.h"
+
 namespace dd4hep {
   namespace DDSegmentation { }
   namespace detail   { }

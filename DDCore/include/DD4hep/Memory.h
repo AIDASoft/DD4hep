@@ -20,7 +20,11 @@
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations" // Code that causes warning goes here
+#elif defined(__llvm__) || defined(__APPLE__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations" // Code that causes warning goes here
 #endif
+
 
 // C/C++ include files
 #include <memory>
@@ -81,6 +85,8 @@ namespace dd4hep  {
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
+#elif defined(__llvm__) || defined(__APPLE__)
+#pragma clang diagnostic pop
 #endif
 
 #endif  // DD4HEP_MEMORY_H
