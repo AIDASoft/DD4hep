@@ -15,7 +15,7 @@ dd4hep_package(    DDEve
 #
 #---Add Plugin Library-----------------------------------------------------
 dd4hep_add_dictionary ( G__DDEve
-  SOURCES include/DDEve/*.h
+  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h include/DDEve/*.h
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
   )
 #
@@ -25,7 +25,7 @@ dd4hep_add_plugin ( DDEve SOURCES src/*.cpp
 
 if(DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary ( G__DDG4IO
-    SOURCES DDEve/DDG4IO.C
+    SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h DDEve/DDG4IO.C
     LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
     OPTIONAL DDG4
     )

@@ -20,7 +20,7 @@ dd4hep_add_package_library(DDG4 SOURCES src/*.cpp )
 dd4hep_add_plugin(DDG4Legacy    SOURCES legacy/*.cpp)
 #-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__DDG4
-  SOURCES python/DDG4Dict.C
+  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h python/DDG4Dict.C
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
   )
 #---------------------------  Plugin library for the simulation framework  ---------
@@ -30,12 +30,13 @@ dd4hep_add_plugin(DDG4Plugins
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 dd4hep_add_dictionary(G__DDG4Python
-  SOURCES src/python/DDG4Python.C
+  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h src/python/DDG4Python.C
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
   OPTIONAL    [PYTHON REQUIRED]
   )
 #---------------------------  Plugin library for the simulation framework  ---------
-dd4hep_add_dictionary(G__DDPython SOURCES tpython/DDPython.C
+dd4hep_add_dictionary(G__DDPython
+  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h tpython/DDPython.C
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
   OPTIONAL    [PYTHON REQUIRED]
   )
