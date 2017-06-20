@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DDEVE_DDEVEHIT_H
 #define DD4HEP_DDEVE_DDEVEHIT_H
 

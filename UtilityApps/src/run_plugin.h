@@ -22,17 +22,13 @@
 #include <cerrno>
 #include <string>
 
-using namespace std;
-using namespace dd4hep;
-using namespace dd4hep::detail;
-
 //________________________________________________________________________________
 #include "TRint.h"
 //________________________________________________________________________________
 namespace {
 
   //______________________________________________________________________________
-  Detector& dd4hep_instance(const char* /* name */ ="") {
+  dd4hep::Detector& dd4hep_instance(const char* /* name */ ="") {
 #if 0
 #include "DD4hep/PluginService.h"
     try {
@@ -41,45 +37,45 @@ namespace {
       if ( v.p )  {
         return *v.l;
       }
-      except("RunPlugin","++ Failed to locate plugin to create Detector instance");
+      dd4hep::except("RunPlugin","++ Failed to locate plugin to create Detector instance");
     }
-    catch(const exception& e)  {
-      except("RunPlugin","++ Exception: %s", e.what());
+    catch(const std::exception& e)  {
+      dd4hep::except("RunPlugin","++ Exception: %s", e.what());
     }
     catch(...)  {
-      except("RunPlugin","++ UNKNOWN Exception while creating Detector instance.");
+      dd4hep::except("RunPlugin","++ UNKNOWN Exception while creating Detector instance.");
     }
-    except("RunPlugin","++ UNKNOWN Exception while creating Detector instance.");
+    dd4hep::except("RunPlugin","++ UNKNOWN Exception while creating Detector instance.");
 #endif
-    return Detector::getInstance();
+    return dd4hep::Detector::getInstance();
   }
 
   //______________________________________________________________________________
-  long run_plugin(Detector& description, const char* name, int argc, char** argv) {
+  long run_plugin(dd4hep::Detector& description, const char* name, int argc, char** argv) {
     try {
       description.apply(name,argc,argv);
       return 0;
     }
-    catch(const exception& e)  {
-      except("RunPlugin","++ Exception while executing plugin %s:\n\t\t%s",
+    catch(const std::exception& e)  {
+      dd4hep::except("RunPlugin","++ Exception while executing plugin %s:\n\t\t%s",
              name ? name : "<unknown>", e.what());
     }
     catch(...)  {
-      except("RunPlugin","++ UNKNOWN Exception while executing plugin %s.",name ? name : "<unknown>");
+      dd4hep::except("RunPlugin","++ UNKNOWN Exception while executing plugin %s.",name ? name : "<unknown>");
     }
     ::exit(EINVAL);
     return EINVAL;
   }
 
   //______________________________________________________________________________
-  ostream& print_default_args()  {
-    cout << 
+  std::ostream& print_default_args()  {
+    std::cout << 
       "        -build_type <number/string> Specify the build type                         \n"
       "                     [OPTIONAL]     MUST come immediately after the -compact input.\n"
       "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
       "                                    Allowed: BUILD_SIMU [=1], BUILD_RECO [=2],     \n"
       "                                    BUILD_DISPLAY [=3] or BUILD_ENVELOPE [=4]      \n"
-      "        -destroy     [OPTIONAL]     Force destruction of the Detector instance         \n"
+      "        -destroy     [OPTIONAL]     Force destruction of the Detector instance     \n"
       "                                    before exiting the application                 \n"
       "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       \n"
       "                                    check the volume ids for duplicates etc.       \n"
@@ -95,27 +91,27 @@ namespace {
       "                                    'dd4hep::ROOTUI* gdd4hepUI' and allows the user\n"
       "                                    to interact with the the Detector instance from the\n"
       "                                    ROOT interactive prompt.                       \n";
-    return cout;
+    return std::cout;
   }
 
   //______________________________________________________________________________
   void usage_default(const char* name) {
-    cout << " " << name << " -opt [-opt]                                                  \n"
+    std::cout << " " << name << " -opt [-opt]                                             \n"
       "        -compact       <file>       Specify the compact geometry file              \n"
       "                     [REQUIRED]     At least one compact geo file is required!     \n";
     print_default_args() <<
-      "        -load_only   [OPTIONAL]     Dry-run to only load geometry without     \n"
-      "                                    starting the dispay.                      \n"
-                         << endl;
-    exit(EINVAL);
+      "        -load_only   [OPTIONAL]     Dry-run to only load geometry without          \n"
+      "                                    starting the dispay.                           \n"
+                         << std::endl;
+    std::exit(EINVAL);
   }
 
   //______________________________________________________________________________
   struct Args  {
     bool        volmgr, dry_run, destroy, interpreter, ui;
     int         print;
-    vector<const char*> geo_files, build_types;
-    vector<vector<const char*> > plugins;
+    std::vector<const char*> geo_files, build_types;
+    std::vector<std::vector<const char*> > plugins;
 
     //____________________________________________________________________________
     Args() {
@@ -129,9 +125,9 @@ namespace {
 
     //____________________________________________________________________________
     int handle(int& i, int argc, char** argv)    {
-      if ( strncmp(argv[i],"-compact",5)==0 || strncmp(argv[i],"-input",4)==0 )  {
+      if ( ::strncmp(argv[i],"-compact",5)==0 || ::strncmp(argv[i],"-input",4)==0 )  {
         geo_files.push_back(argv[++i]);
-        if ( argc>i+2 && strncmp(argv[i+1],"-build_type",6)==0 )  {
+        if ( argc>i+2 && ::strncmp(argv[i+1],"-build_type",6)==0 )  {
           build_types.push_back(argv[i+2]);
           i += 2;
         }
@@ -139,33 +135,33 @@ namespace {
           build_types.push_back("BUILD_DEFAULT");
         }
       }
-      else if ( strncmp(argv[i],"-load_only",5)==0 )
+      else if ( ::strncmp(argv[i],"-load_only",5)==0 )
         dry_run = true;
-      else if ( strncmp(argv[i],"-dry-run",5)==0 )
+      else if ( ::strncmp(argv[i],"-dry-run",5)==0 )
         dry_run = true;
-      else if ( strncmp(argv[i],"-print",4)==0 )
+      else if ( ::strncmp(argv[i],"-print",4)==0 )
         dd4hep::setPrintLevel(dd4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
-      else if ( strncmp(argv[i],"-destroy",5)==0 )
+      else if ( ::strncmp(argv[i],"-destroy",5)==0 )
         destroy = true;
-      else if ( strncmp(argv[i],"-no-destroy",8)==0 )
+      else if ( ::strncmp(argv[i],"-no-destroy",8)==0 )
         destroy = false;
-      else if ( strncmp(argv[i],"-volmgr",4)==0 )
+      else if ( ::strncmp(argv[i],"-volmgr",4)==0 )
         volmgr = true;
-      else if ( strncmp(argv[i],"-no-volmgr",7)==0 )
+      else if ( ::strncmp(argv[i],"-no-volmgr",7)==0 )
         volmgr = false;
-      else if ( strncmp(argv[i],"-interpreter",6)==0 )
+      else if ( ::strncmp(argv[i],"-interpreter",6)==0 )
         interpreter = true;
-      else if ( strncmp(argv[i],"-no-interpreter",7)==0 )
+      else if ( ::strncmp(argv[i],"-no-interpreter",7)==0 )
         interpreter = false;
-      else if ( strncmp(argv[i],"-ui",3)==0 )
+      else if ( ::strncmp(argv[i],"-ui",3)==0 )
         ui = true;
-      else if ( strncmp(argv[i],"-plugin",5)==0 )   {
+      else if ( ::strncmp(argv[i],"-plugin",5)==0 )   {
         // Need to interprete plugin args here locally.....
-        plugins.push_back(vector<const char*>());
+        plugins.push_back(std::vector<const char*>());
         plugins.back().push_back(argv[++i]);
         for( ++i; i < argc; ++i )   {
-          if ( strncmp(argv[i],"-plugin",5)==0 ) { --i; break; }
-          if ( strncmp(argv[i],"-end-plugin",4)==0 )  { break; }
+          if ( ::strncmp(argv[i],"-plugin",5)==0 ) { --i; break; }
+          if ( ::strncmp(argv[i],"-end-plugin",4)==0 )  { break; }
           plugins.back().push_back(argv[i]);
         }
         plugins.back().push_back(0);
@@ -176,37 +172,37 @@ namespace {
     }
 
     //____________________________________________________________________________
-    long run(Detector& description, const char* name)  {
-      pair<int, char**> a(0,0);
+    long run(dd4hep::Detector& description, const char* name)  {
+      std::pair<int, char**> a(0,0);
       long result;
       for(size_t i=0; i<plugins.size(); ++i)   {
-        vector<const char*>& plug=plugins[i];
+        std::vector<const char*>& plug = plugins[i];
         // Remove plugin name and trailing 0x0 from args.
         size_t num_args = plug.size()>2 ? plug.size()-2 : 0;
 
         result = run_plugin(description,plug[0],plug.size()-1,(char**)(num_args>0 ? &plug[1] : 0));
         if ( result == EINVAL )   {
-          cout << "FAILED to execute dd4hep plugin: '" << plug[0] 
+          std::cout << "FAILED to execute dd4hep plugin: '" << plug[0] 
                << "' with args (" << num_args << ") :[ ";
-          for(size_t j=1; j<plug.size(); ++j)   {
-            if ( plug[j] ) cout << plug[j] << " ";
+          for(size_t j = 1; j < plug.size(); ++j)   {
+            if ( plug[j] ) std::cout << plug[j] << " ";
           }
-          cout << "]" << endl;
+          std::cout << "]" << std::endl;
           usage_default(name);
         }
-        cout << "Executed dd4hep plugin: '" << plug[0]
+        std::cout << "Executed dd4hep plugin: '" << plug[0]
              << "' with args (" << num_args << ") :[ ";
         for(size_t j=1; j<plug.size(); ++j)   {
-          if ( plug[j] ) cout << plug[j] << " ";
+          if ( plug[j] ) std::cout << plug[j] << " ";
         }
-        cout << "]" << endl;
+        std::cout << "]" << std::endl;
       }
       result = run_plugin(description,name,a.first,a.second);
       return result;
     }
 
     //____________________________________________________________________________
-    int decodePrintLevel(const string& val)   {
+    int decodePrintLevel(const std::string& val)   {
       switch(::toupper(val[0]))  {
       case '1':
       case 'V':
@@ -230,14 +226,14 @@ namespace {
       case 'A':
         return dd4hep::FATAL;
       default:
-        cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << endl;
-        throw runtime_error("Invalid printLevel:"+val);
+        std::cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << std::endl;
+        throw std::runtime_error("Invalid printLevel:"+val);
       }
     }
   };
 
   //______________________________________________________________________________
-  void load_compact(Detector& description, Args& args)   {
+  void load_compact(dd4hep::Detector& description, Args& args)   {
     // Load all compact files
     for(size_t i=0; i<args.geo_files.size(); ++i)  {
       const char* argv[] = {args.geo_files[i], args.build_types[i], 0};
@@ -263,7 +259,7 @@ namespace {
     if ( args.geo_files.empty() )
       usage_default(name);
 
-    Detector& description = dd4hep_instance();
+    dd4hep::Detector& description = dd4hep_instance();
     // Load all compact files
     load_compact(description, args);
     if ( args.ui ) run_plugin(description,"DD4hepInteractiveUI",0,0);
@@ -273,7 +269,7 @@ namespace {
     // Create an interactive ROOT application
     if ( !args.dry_run ) {
       long result = 0;
-      pair<int, char**> a(0,0);
+      std::pair<int, char**> a(0,0);
       if ( args.interpreter )   {
         TRint app(name, &a.first, a.second);
         result = args.run(description,name);
@@ -284,7 +280,7 @@ namespace {
       if ( result == EINVAL ) usage_default(name);
     }
     else {
-      cout << "The geometry was loaded. Application now exiting." << endl;
+      std::cout << "The geometry was loaded. Application now exiting." << std::endl;
     }
     if ( args.destroy ) delete &description;
     return 0;
@@ -295,11 +291,11 @@ namespace {
     try {
       return main_wrapper(name,argc,argv);
     }
-    catch(const exception& e)  {
-      cout << "Got uncaught exception: " << e.what() << endl;
+    catch(const std::exception& e)  {
+      std::cout << "Got uncaught exception: " << e.what() << std::endl;
     }
     catch (...)  {
-      cout << "Got UNKNOWN uncaught exception." << endl;
+      std::cout << "Got UNKNOWN uncaught exception." << std::endl;
     }
     return EINVAL;    
   }

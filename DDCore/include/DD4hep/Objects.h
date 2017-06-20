@@ -72,6 +72,7 @@ namespace dd4hep {
   class LimitSetObject;
 
   typedef ROOT::Math::XYZVector Position;
+  typedef ROOT::Math::XYZVector Direction;
   typedef ROOT::Math::XYZVector XYZAngles;
   
   template <class V> V RotateX(const V& v, double a) {

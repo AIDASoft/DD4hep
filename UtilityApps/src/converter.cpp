@@ -20,24 +20,25 @@
 //______________________________________________________________________________
 namespace {
   void usage() {
-    cout << "geoConverter -opt [-opt]                                                \n"
-      "        Action flags:               Usage is exclusive, 1 required!           \n"
+    std::cout <<
+      "geoConverter -opt [-opt]                                                        \n"
+      "        Action flags:               Usage is exclusive, 1 required!             \n"
       "        -compact2description               Convert compact xml geometry to description.     \n"
-      "        -compact2gdml               Convert compact xml geometry to gdml.     \n"
-      "        -compact2pandora            Convert compact xml to pandora xml        \n"
+      "        -compact2gdml               Convert compact xml geometry to gdml.       \n"
+      "        -compact2pandora            Convert compact xml to pandora xml          \n"
       "        -compact2vis                Convert compact xml to visualisation attrs\n\n"
-      "        -input  <file>  [REQUIRED]  Specify input file.                       \n"
-      "        -output <file>  [OPTIONAL]  Specify output file.                      \n"
-      "                                    if no output file is specified, the output\n"
-      "                                    device is stdout.                         \n"
-      "        -ascii          [OPTIONAL]  Dump visualisation attrs in csv format.   \n"
-      "                                    [Only valid for -compact2vis]             \n"
-      "        -destroy        [OPTIONAL]  Force destruction of the Detector instance    \n"
-      "                                    before exiting the application            \n"
-      "        -volmgr         [OPTIONAL]  Load and populate phys.volume manager to  \n"
-      "                                    check the volume ids for duplicates etc.  \n"
-         << endl;
-    exit(EINVAL);
+      "        -input  <file>  [REQUIRED]  Specify input file.                         \n"
+      "        -output <file>  [OPTIONAL]  Specify output file.                        \n"
+      "                                    if no output file is specified, the output  \n"
+      "                                    device is stdout.                           \n"
+      "        -ascii          [OPTIONAL]  Dump visualisation attrs in csv format.     \n"
+      "                                    [Only valid for -compact2vis]               \n"
+      "        -destroy        [OPTIONAL]  Force destruction of the Detector instance  \n"
+      "                                    before exiting the application              \n"
+      "        -volmgr         [OPTIONAL]  Load and populate phys.volume manager to    \n"
+      "                                    check the volume ids for duplicates etc.    \n"
+              << std::endl;
+    ::exit(EINVAL);
   }
 
 
@@ -51,7 +52,7 @@ namespace {
     bool compact2pand = false;
     bool compact2vis  = false;
     int output = 0;
-    vector<char*> geo_files;
+    std::vector<char*> geo_files;
     for(int i=1; i<argc;++i) {
       if ( argv[i][0]=='-' ) {
         if ( strncmp(argv[i],"-compact2description",12)==0 )
@@ -82,7 +83,7 @@ namespace {
     if ( geo_files.empty() || (!compact2description && !compact2gdml && !compact2pand && !compact2vis))
       usage();
 
-    Detector& description = dd4hep_instance();
+    dd4hep::Detector& description = dd4hep_instance();
     // Load compact files
     for(size_t i=0; i<geo_files.size(); ++i)  {
       const char* plugin_argv[] = {geo_files[i], 0};
