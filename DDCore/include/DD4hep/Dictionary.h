@@ -37,8 +37,6 @@
 #include <map>
 #include <string>
 
-typedef dd4hep::PlacedVolumeExtension::VolID VolID;
-
 #include "TRint.h"
 namespace dd4hep {
   namespace cond {}
