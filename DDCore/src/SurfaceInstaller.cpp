@@ -92,7 +92,7 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
     log << "       " << " Places[" <<  all_nodes.size()  << "]:   " << node_path;
     printout(INFO,m_det.name(),log.str());
     log.str("");
-    log << "       " << " Matrices[" <<  all_nodes.size()  << "]: ";
+    log << "       " << " detail::matrix[" <<  all_nodes.size()  << "]: ";
     for(PlacementPath::const_reverse_iterator i=all_nodes.rbegin(); i!=all_nodes.rend(); ++i)  {
       PlacedVolume placed = *i;
       log << (void*)(placed->GetMatrix()) << " ";

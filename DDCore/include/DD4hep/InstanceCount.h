@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_INSTANCECOUNT_H
-#define DD4HEP_GEOMETRY_INSTANCECOUNT_H
+#ifndef DD4HEP_DDCORE_INSTANCECOUNT_H
+#define DD4HEP_DDCORE_INSTANCECOUNT_H
 
 // Framework include files
 #include <typeinfo>
@@ -147,4 +147,4 @@ namespace dd4hep {
   };
 
 } /* End namespace dd4hep             */
-#endif    /* DD4HEP_GEOMETRY_INSTANCECOUNT_H     */
+#endif    /* DD4HEP_DDCORE_INSTANCECOUNT_H     */

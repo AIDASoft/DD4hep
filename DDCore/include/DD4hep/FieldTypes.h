@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_FIELDTYPES_H
-#define DD4HEP_GEOMETRY_FIELDTYPES_H
+#ifndef DD4HEP_DDCORE_FIELDTYPES_H
+#define DD4HEP_DDCORE_FIELDTYPES_H
 
 // Framework include files
 #include "DD4hep/Fields.h"
@@ -27,7 +27,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class ConstantField : public CartesianField::Object {
   public:
@@ -46,7 +46,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class SolenoidField : public CartesianField::Object {
   public:
@@ -70,7 +70,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class DipoleField : public CartesianField::Object {
   public:
@@ -145,7 +145,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class MultipoleField : public CartesianField::Object {
   public:
@@ -163,4 +163,4 @@ namespace dd4hep {
   };
 
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_GEOMETRY_FIELDTYPES_H     */
+#endif    /* DD4HEP_DDCORE_FIELDTYPES_H     */

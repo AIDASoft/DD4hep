@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_SEGMENTATIONSINTERNA_H
-#define DD4HEP_GEOMETRY_SEGMENTATIONSINTERNA_H
+#ifndef DD4HEP_DDCORE_SEGMENTATIONSINTERNA_H
+#define DD4HEP_DDCORE_SEGMENTATIONSINTERNA_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -35,7 +35,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class SegmentationObject {
   public:
@@ -94,7 +94,7 @@ namespace dd4hep {
   /**
    * \author  M.Frank
    * \version 1.0
-   * \ingroup DD4HEP_GEOMETRY
+   * \ingroup DD4HEP_CORE
    */
   template <typename IMP> class SegmentationWrapper : public SegmentationObject {
   public:
@@ -118,4 +118,4 @@ namespace dd4hep {
   template <typename IMP> inline SegmentationWrapper<IMP>::~SegmentationWrapper()  {
   }
 }         /* End namespace dd4hep                       */
-#endif    /* DD4HEP_GEOMETRY_SEGMENTATIONSINTERNA_H     */
+#endif    /* DD4HEP_DDCORE_SEGMENTATIONSINTERNA_H     */

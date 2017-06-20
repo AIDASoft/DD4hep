@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDALIGN_ALIGNMENTCALCULATOR_H
-#define DD4HEP_DDALIGN_ALIGNMENTCALCULATOR_H
+#ifndef DD4HEP_DDCORE_ALIGNMENTCALCULATOR_H
+#define DD4HEP_DDCORE_ALIGNMENTCALCULATOR_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -85,4 +85,4 @@ namespace dd4hep {
 
   }       /* End namespace align                  */
 }         /* End namespace dd4hep                      */
-#endif    /* DD4HEP_DDALIGN_ALIGNMENTCALCULATOR_H      */
+#endif    /* DD4HEP_DDCORE_ALIGNMENTCALCULATOR_H      */

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_FIELDS_H
-#define DD4HEP_GEOMETRY_FIELDS_H
+#ifndef DD4HEP_DDCORE_FIELDS_H
+#define DD4HEP_DDCORE_FIELDS_H
 
 // Framework include files
 #include "DD4hep/NamedObject.h"
@@ -35,7 +35,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class CartesianField: public Handle<NamedObject> {
   public:
@@ -48,7 +48,7 @@ namespace dd4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CORE
      */
     class Object: public NamedObject {
     public:
@@ -121,7 +121,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class OverlayedField: public Handle<NamedObject> {
   public:
@@ -135,7 +135,7 @@ namespace dd4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CORE
      */
     class Object: public NamedObject {
     public:
@@ -234,4 +234,4 @@ namespace dd4hep {
     Properties& properties() const;
   };
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_GEOMETRY_FIELDS_H         */
+#endif    /* DD4HEP_DDCORE_FIELDS_H         */

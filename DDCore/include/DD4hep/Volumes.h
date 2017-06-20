@@ -64,7 +64,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class PlacedVolumeExtension : public TGeoExtension  {
   public:
@@ -73,7 +73,7 @@ namespace dd4hep {
     /**
      *   \author  M.Frank
      *   \version 1.0
-     *   \ingroup DD4HEP_GEOMETRY
+     *   \ingroup DD4HEP_CORE
      */
     class VolIDs: public std::vector<VolID> {
     public:
@@ -134,7 +134,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class PlacedVolume : public Handle<TGeoNode> {
   public:
@@ -176,7 +176,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class VolumeExtension : public TGeoExtension {
   public:
@@ -224,7 +224,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Volume: public Handle<TGeoVolume> {
   public:
@@ -319,7 +319,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Assembly: public Volume {
   public:

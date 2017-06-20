@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_READOUT_H
-#define DD4HEP_GEOMETRY_READOUT_H
+#ifndef DD4HEP_DDCORE_READOUT_H
+#define DD4HEP_DDCORE_READOUT_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -33,7 +33,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Readout: public Handle<ReadoutObject> {
   public:
@@ -69,4 +69,4 @@ namespace dd4hep {
     Segmentation segmentation() const;
   };
 } /* End namespace dd4hep                   */
-#endif    /* dd4hep_GEOMETRY_READOUT_H      */
+#endif    /* DD4HEP_DDCORE_READOUT_H      */

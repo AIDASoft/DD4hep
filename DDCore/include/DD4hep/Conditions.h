@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONS_H
-#define DD4HEP_CONDITIONS_CONDITIONS_H
+#ifndef DD4HEP_DDCORE_CONDITIONS_H
+#define DD4HEP_DDCORE_CONDITIONS_H
 
 // Framework include files
 #include "DD4hep/IOV.h"
@@ -411,4 +411,4 @@ namespace dd4hep {
   typedef std::pair<RangeConditions,bool> RangeStatus;
 
 }          /* End namespace dd4hep                   */
-#endif     /* DD4HEP_CONDITIONS_CONDITIONS_H         */
+#endif     /* DD4HEP_DDCORE_CONDITIONS_H         */

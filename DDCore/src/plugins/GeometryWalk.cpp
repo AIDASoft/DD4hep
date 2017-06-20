@@ -92,7 +92,7 @@ void GeometryWalk::print(DetElement e, PlacedVolume pv, const PlacedVolume::VolI
   log << "       " << left << setw(32) << "       " << " Places[" <<  all_nodes.size()  << "]:   " << node_path;
   printout(INFO,m_det.name(),log.str());
   log.str("");
-  log << "       " << left << setw(32) << "       " << " Matrices[" <<  all_nodes.size()  << "]: ";
+  log << "       " << left << setw(32) << "       " << " detail::matrix[" <<  all_nodes.size()  << "]: ";
   for(PlacementPath::const_iterator i=all_nodes.begin(); i!=all_nodes.end(); ++i)  {
     log << (void*)((*i)->GetMatrix()) << "  ";
     if ( i+1 == all_nodes.end() ) log << "( -> " << (*i)->GetName() << ")";

@@ -42,7 +42,7 @@ namespace dd4hep  {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   template <typename T> class dd4hep_ptr
   //#if defined(DD4HEP_NEVER) && __cplusplus >= 201103L && ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_PANDORACONVERTER_H
-#define DD4HEP_GEOMETRY_PANDORACONVERTER_H
+#ifndef DD4HEP_DDCORE_PANDORACONVERTER_H
+#define DD4HEP_DDCORE_PANDORACONVERTER_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -64,7 +64,8 @@ namespace dd4hep {
   }    // End namespace xml
 }      // End namespace dd4hep
 
-#endif // DD4HEP_GEOMETRY_PANDORACONVERTER_H
+#endif /* DD4HEP_DDCORE_PANDORACONVERTER_H   */
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------

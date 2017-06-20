@@ -178,22 +178,22 @@ const vector<GlobalAlignment>& GlobalDetectorAlignment::volumeAlignments() const
 
 /// Align the PhysicalNode of the placement of the detector element (translation only)
 GlobalAlignment GlobalDetectorAlignment::align(const Position& pos, bool chk, double overlap) {
-  return align(Matrices::_transform(pos),chk,overlap);
+  return align(detail::matrix::_transform(pos),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (rotation only)
 GlobalAlignment GlobalDetectorAlignment::align(const RotationZYX& rot, bool chk, double overlap) {
-  return align(Matrices::_transform(rot),chk,overlap);
+  return align(detail::matrix::_transform(rot),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
 GlobalAlignment GlobalDetectorAlignment::align(const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
-  return align(Matrices::_transform(pos,rot),chk,overlap);
+  return align(detail::matrix::_transform(pos,rot),chk,overlap);
 }
 
 /// Align the physical node according to a generic Transform3D
 GlobalAlignment GlobalDetectorAlignment::align(const Transform3D& transform, bool chk, double overlap)  {
-  return align(Matrices::_transform(transform),chk,overlap);
+  return align(detail::matrix::_transform(transform),chk,overlap);
 }
 
 /// Align the physical node according to a generic TGeo matrix
@@ -203,23 +203,23 @@ GlobalAlignment GlobalDetectorAlignment::align(TGeoHMatrix* matrix, bool chk, do
 
 /// Align the PhysicalNode of the placement of the detector element (translation only)
 GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, const Position& pos, bool chk, double overlap) {
-  return align(elt_path,Matrices::_transform(pos),chk,overlap);
+  return align(elt_path,detail::matrix::_transform(pos),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (rotation only)
 GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, const RotationZYX& rot, bool chk, double overlap) {
-  return align(elt_path,Matrices::_transform(rot),chk,overlap);
+  return align(elt_path,detail::matrix::_transform(rot),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
 GlobalAlignment 
 GlobalDetectorAlignment::align(const string& elt_path, const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
-  return align(elt_path,Matrices::_transform(pos,rot),chk,overlap);
+  return align(elt_path,detail::matrix::_transform(pos,rot),chk,overlap);
 }
 
 /// Align the physical node according to a generic Transform3D
 GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, const Transform3D& transform, bool chk, double overlap)  {
-  return align(elt_path,Matrices::_transform(transform),chk,overlap);
+  return align(elt_path,detail::matrix::_transform(transform),chk,overlap);
 }
 
 /// Align the physical node according to a generic TGeo matrix

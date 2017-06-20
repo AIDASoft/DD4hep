@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_OBJECTEXTENSIONS_H
-#define DD4HEP_GEOMETRY_OBJECTEXTENSIONS_H
+#ifndef DD4HEP_DDCORE_OBJECTEXTENSIONS_H
+#define DD4HEP_DDCORE_OBJECTEXTENSIONS_H
 
 // C/C++ include files
 #include <typeinfo>
@@ -26,7 +26,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class ObjectExtensions   {
   public:
@@ -76,4 +76,4 @@ namespace dd4hep {
   };
 
 } /* End namespace dd4hep        */
-#endif    /* DD4HEP_GEOMETRY_OBJECTEXTENSIONS_H */
+#endif    /* DD4HEP_DDCORE_OBJECTEXTENSIONS_H */

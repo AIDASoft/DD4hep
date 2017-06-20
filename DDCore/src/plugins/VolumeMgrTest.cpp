@@ -196,9 +196,9 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
         if ( pv.ptr() == det_elem.placement().ptr() )   {
           // The computed transformation 'trafo' MUST be equal to:
           // m_mgr.worldTransformation(vid) AND det_elem.nominal().worldTransformation()
-          int res1 = Matrices::_matrixEqual(trafo, det_elem.nominal().worldTransformation());
-          int res2 = Matrices::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
-          if ( res1 != Matrices::MATRICES_EQUAL || res2 != Matrices::MATRICES_EQUAL )  {
+          int res1 = detail::matrix::_matrixEqual(trafo, det_elem.nominal().worldTransformation());
+          int res2 = detail::matrix::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
+          if ( res1 != detail::matrix::MATRICES_EQUAL || res2 != detail::matrix::MATRICES_EQUAL )  {
             printout(ERROR,m_det.name(),"DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
           }
           else  {
@@ -210,8 +210,8 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
           // The computed transformation 'trafo' MUST be equal to:
           // m_mgr.worldTransformation(vid)
           // The det_elem.nominal().worldTransformation() however is DIFFERENT!
-          int res2 = Matrices::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
-          if ( res2 != Matrices::MATRICES_EQUAL )  {
+          int res2 = detail::matrix::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
+          if ( res2 != detail::matrix::MATRICES_EQUAL )  {
             printout(ERROR,m_det.name(),"VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
           }
           else  {

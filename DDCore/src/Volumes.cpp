@@ -505,7 +505,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
   Int_t id = a ? a->GetEntries() : 0;
-  if (transform && transform != Matrices::_identity()) {
+  if (transform && transform != detail::matrix::_identity()) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
   }
@@ -528,27 +528,27 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
 
 /// Place daughter volume according to generic Transform3D
 PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& trans) const {
-  return _addNode(m_element, volume, Matrices::_transform(trans));
+  return _addNode(m_element, volume, detail::matrix::_transform(trans));
 }
 
 /// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume) const {
-  return _addNode(m_element, volume, Matrices::_identity());
+  return _addNode(m_element, volume, detail::matrix::_identity());
 }
 
 /// Place un-rotated daughter volume at the given position.
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos) const {
-  return _addNode(m_element, volume, Matrices::_translation(pos));
+  return _addNode(m_element, volume, detail::matrix::_translation(pos));
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const RotationZYX& rot) const {
-  return _addNode(m_element, volume, Matrices::_rotationZYX(rot));
+  return _addNode(m_element, volume, detail::matrix::_rotationZYX(rot));
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation3D& rot) const {
-  return _addNode(m_element, volume, Matrices::_rotation3D(rot));
+  return _addNode(m_element, volume, detail::matrix::_rotation3D(rot));
 }
 
 /// Set the volume's material

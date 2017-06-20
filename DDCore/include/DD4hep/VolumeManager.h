@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEOMETRY_VOLUMEMANAGER_H
-#define DD4HEP_GEOMETRY_VOLUMEMANAGER_H
+#ifndef DD4HEP_DDCORE_VOLUMEMANAGER_H
+#define DD4HEP_DDCORE_VOLUMEMANAGER_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
@@ -45,7 +45,7 @@ namespace dd4hep {
    *
    * \author  M.Frank
    * \version 1.0
-   * \ingroup DD4HEP_GEOMETRY
+   * \ingroup DD4HEP_CORE
    */
   class VolumeManagerContext {
   public:
@@ -106,7 +106,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class VolumeManager: public Handle<detail::VolumeManagerObject> {
   public:
@@ -193,4 +193,4 @@ namespace dd4hep {
   /// Enable printouts for debugging
   std::ostream& operator<<(std::ostream& os, const VolumeManager& m);
 }         /* End namespace dd4hep                */
-#endif    /* dd4hep_GEOMETRY_READOUT_H           */
+#endif    /* DD4HEP_DDCORE_READOUT_H           */

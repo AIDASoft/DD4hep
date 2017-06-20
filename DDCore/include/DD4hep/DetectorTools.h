@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_DETECTORTOOLS_H
-#define DD4HEP_GEOMETRY_DETECTORTOOLS_H
+#ifndef DD4HEP_DDCORE_DETECTORTOOLS_H
+#define DD4HEP_DDCORE_DETECTORTOOLS_H
 
 // Framework include files
 #include "DD4hep/DetElement.h"
@@ -32,7 +32,7 @@ namespace dd4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CORE
      */
     namespace tools {
       typedef std::vector<DetElement>   ElementPath;
@@ -82,4 +82,4 @@ namespace dd4hep {
     }
   }
 }         /* End namespace dd4hep                   */
-#endif    /* DD4HEP_GEOMETRY_DETECTORTOOLS_H    */
+#endif    /* DD4HEP_DDCORE_DETECTORTOOLS_H    */

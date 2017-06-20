@@ -75,7 +75,7 @@ void dd4hep::detail::tools::computeIdeal(Alignment alignment)   {
     //a.worldTrafo.MultiplyLeft(&a.detectorTrafo);
     a.worldTrafo = a.detectorTrafo;
     a.worldTrafo.MultiplyLeft(&parent.nominal().worldTransformation());
-    a.trToWorld  = Matrices::_transform(&a.worldTrafo);
+    a.trToWorld  = detail::matrix::_transform(&a.worldTrafo);
     a.placement  = a.detector.placement();
     mask.clear();
     mask.set(AlignmentData::HAVE_PARENT_TRAFO);
@@ -108,7 +108,7 @@ void dd4hep::detail::tools::computeIdeal(Alignment alignment,
     a.placement = det->placement;
   }
   a.worldTrafo.MultiplyLeft(&(a.detector.nominal().worldTransformation()));
-  a.trToWorld = Matrices::_transform(&a.worldTrafo);
+  a.trToWorld = detail::matrix::_transform(&a.worldTrafo);
   mask.set(AlignmentData::IDEAL);
 }
 #endif
@@ -132,7 +132,7 @@ void dd4hep::detail::tools::computeSurvey(Alignment alignment)
     }
     a.worldTrafo = parent.survey().worldTransformation();
     a.worldTrafo.MultiplyLeft(&a.detectorTrafo);
-    a.trToWorld  = Matrices::_transform(&a.worldTrafo);
+    a.trToWorld  = detail::matrix::_transform(&a.worldTrafo);
     a.placement = a.detector.placement();
   }
   mask.set(AlignmentData::SURVEY);

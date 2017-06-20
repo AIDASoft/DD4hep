@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEOMETRY_SOLIDS_H
-#define DD4HEP_GEOMETRY_SOLIDS_H
+#ifndef DD4HEP_DDCORE_SOLIDS_H
+#define DD4HEP_DDCORE_SOLIDS_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -59,7 +59,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   template <typename T> class Solid_type: public Handle<T> {
   protected:
@@ -109,7 +109,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Box: public Solid_type<TGeoBBox> {
   protected:
@@ -152,7 +152,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class HalfSpace: public Solid_type<TGeoHalfSpace> {
   protected:
@@ -190,7 +190,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Polycone: public Solid_type<TGeoPcon> {
   public:
@@ -225,7 +225,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class ConeSegment: public Solid_type<TGeoConeSeg> {
   public:
@@ -266,7 +266,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Tube: public Solid_type< /*TGeoTubeSeg */MyConeSeg> {
   protected:
@@ -317,7 +317,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class EllipticalTube: public Solid_type<TGeoEltu> {
   protected:
@@ -352,7 +352,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Cone: public Solid_type<TGeoCone> {
   protected:
@@ -386,7 +386,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Trap: public Solid_type<TGeoTrap> {
   private:
@@ -426,7 +426,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Trapezoid: public Solid_type<TGeoTrd2> {
   private:
@@ -461,7 +461,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Torus: public Solid_type<TGeoTorus> {
   private:
@@ -497,7 +497,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Sphere: public Solid_type<TGeoSphere> {
   public:
@@ -525,7 +525,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Paraboloid: public Solid_type<TGeoParaboloid> {
   public:
@@ -553,7 +553,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Hyperboloid: public Solid_type<TGeoHype> {
   public:
@@ -580,7 +580,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class PolyhedraRegular: public Solid_type<TGeoPgon> {
   protected:
@@ -612,7 +612,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class EightPointSolid: public Solid_type<TGeoArb8> {
   private:
@@ -640,7 +640,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class BooleanSolid: public Solid_type<TGeoCompositeShape> {
   protected:
@@ -665,7 +665,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class SubtractionSolid: public BooleanSolid {
   public:
@@ -697,7 +697,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class UnionSolid: public BooleanSolid {
   public:
@@ -729,7 +729,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class IntersectionSolid: public BooleanSolid {
   public:
@@ -754,4 +754,4 @@ namespace dd4hep {
   };
 
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_GEOMETRY_SOLIDS_H         */
+#endif    /* DD4HEP_DDCORE_SOLIDS_H         */

@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEOMETRY_DetectorCONVERTER_H
-#define DD4HEP_GEOMETRY_DetectorCONVERTER_H
+#ifndef DD4HEP_DDCORE_DetectorCONVERTER_H
+#define DD4HEP_DDCORE_DetectorCONVERTER_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -45,7 +45,7 @@ namespace dd4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CORE
      */
     class LCDDConverter: public GeoHandler {
     public:
@@ -66,7 +66,7 @@ namespace dd4hep {
       /**
        *  \author  M.Frank
        *  \version 1.0
-       *  \ingroup DD4HEP_GEOMETRY
+       *  \ingroup DD4HEP_CORE
        */
       class GeometryInfo: public GeoHandler::GeometryInfo {
       public:
@@ -199,5 +199,4 @@ namespace dd4hep {
     };
   }    // End namespace xml
 }      // End namespace dd4hep
-
-#endif // DD4HEP_GEOMETRY_DetectorCONVERTER_H
+#endif /* DD4HEP_DDCORE_DetectorCONVERTER_H   */

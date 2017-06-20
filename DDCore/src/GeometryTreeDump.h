@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEOMETRYTREEDUMP_H
-#define DD4HEP_GEOMETRYTREEDUMP_H
+#ifndef DD4HEP_DDCORE_CORETREEDUMP_H
+#define DD4HEP_DDCORE_CORETREEDUMP_H
 
 #include "DD4hep/Detector.h"
 #include "DD4hep/GeoHandler.h"
@@ -32,7 +32,7 @@ namespace dd4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CORE
      */
     class GeometryTreeDump: public GeoHandler {
     public:
@@ -62,5 +62,4 @@ namespace dd4hep {
     };
   }    // End namespace detail
 }      // End namespace dd4hep
-
-#endif // DD4HEP_GEOMETRYTREEDUMP_H
+#endif /* DD4HEP_DDCORE_GEOMETRYTREEDUMP_H  */
