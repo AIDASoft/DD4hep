@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,7 +17,9 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 
-using namespace DD4hep::Conditions;
+using namespace std;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 /// Initializing constructor
 ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
@@ -26,7 +28,7 @@ ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
 }
 
 /// Initializing constructor
-ConditionsSlice::ConditionsSlice(ConditionsManager m, const std::shared_ptr<ConditionsContent>& c)
+ConditionsSlice::ConditionsSlice(ConditionsManager m, const shared_ptr<ConditionsContent>& c)
   : manager(m), content(c)
 {
   InstanceCount::increment(this);  
@@ -55,13 +57,13 @@ bool ConditionsSlice::manage(ConditionsPool* p, Condition condition, ManageFlag 
     bool ret = false;
     if ( flg&REGISTER_MANAGER )  {
       if ( !p )   {
-        DD4hep::except("ConditionsSlice",
+        dd4hep::except("ConditionsSlice",
                        "manage_condition: Cannot access conditions pool according to IOV:%s.",
                        pool->validity().str().c_str());
       }
       ret = manager.registerUnlocked(*p,condition);
       if ( !ret )  {
-        DD4hep::except("ConditionsSlice",
+        dd4hep::except("ConditionsSlice",
                        "manage_condition: Failed to register condition %016llx according to IOV:%s.",
                        condition->hash, pool->validity().str().c_str());
       }
@@ -69,14 +71,14 @@ bool ConditionsSlice::manage(ConditionsPool* p, Condition condition, ManageFlag 
     if ( flg&REGISTER_POOL )  {
       ret = pool->insert(condition);
       if ( !ret )  {
-        DD4hep::except("ConditionsSlice",
+        dd4hep::except("ConditionsSlice",
                        "manage_condition: Failed to register condition %016llx to user pool with IOV:%s.",
                        condition->hash, pool->validity().str().c_str());
       }
     }
     return ret;
   }
-  DD4hep::except("ConditionsSlice",
+  dd4hep::except("ConditionsSlice",
                  "manage_condition: Cannot manage invalid condition!");
   return false;
 }
@@ -88,54 +90,54 @@ bool ConditionsSlice::manage(Condition condition, ManageFlag flg)    {
 }
 
 /// Access all conditions from a given detector element
-std::vector<Condition> ConditionsSlice::get(DetElement detector)  const  {
+vector<Condition> ConditionsSlice::get(DetElement detector)  const  {
   return pool->get(detector,FIRST_ITEM,LAST_ITEM);
 }
 
 /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
-std::vector<Condition> ConditionsSlice::get(DetElement detector,
-                                            itemkey_type lower,
-                                            itemkey_type upper)  const  {
+vector<Condition> ConditionsSlice::get(DetElement detector,
+                                       Condition::itemkey_type lower,
+                                       Condition::itemkey_type upper)  const  {
   return pool->get(detector, lower, upper);
 }
 
 /// ConditionsMap overload: Add a condition directly to the slice
-bool ConditionsSlice::insert(DetElement detector, unsigned int key, Condition condition)   {
+bool ConditionsSlice::insert(DetElement detector, Condition::itemkey_type key, Condition condition)   {
   if ( condition.isValid() )  {
     ConditionsPool* p = manager.registerIOV(pool->validity());
     if ( !p )   {
-      DD4hep::except("ConditionsSlice",
+      dd4hep::except("ConditionsSlice",
                      "manage_condition: Cannot access conditions pool according to IOV:%s.",
                      pool->validity().str().c_str());
     }
     bool ret = manager.registerUnlocked(*p,condition);
     if ( !ret )  {
-      DD4hep::except("ConditionsSlice",
+      dd4hep::except("ConditionsSlice",
                      "manage_condition: Failed to register condition %016llx according to IOV:%s.",
                      condition->hash, pool->validity().str().c_str());
     }
     return pool->insert(detector, key, condition);
   }
-  DD4hep::except("ConditionsSlice",
+  dd4hep::except("ConditionsSlice",
                  "insert_condition: Cannot insert invalid condition to the user pool!");
   return false;
 }
 
 /// ConditionsMap overload: Access a condition
-Condition ConditionsSlice::get(DetElement detector, unsigned int key)  const   {
+Condition ConditionsSlice::get(DetElement detector, Condition::itemkey_type key)  const   {
   return pool->get(detector, key);
 }
 
 /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-void ConditionsSlice::scan(const Processor& processor) const   {
+void ConditionsSlice::scan(const Condition::Processor& processor) const   {
   pool->scan(processor);
 }
 
 /// ConditionsMap overload: Interface to partially scan data content of the conditions mapping
 void ConditionsSlice::scan(DetElement         detector,
-                           itemkey_type       lower,
-                           itemkey_type       upper,
-                           const Processor&   processor) const  {
+                           Condition::itemkey_type       lower,
+                           Condition::itemkey_type       upper,
+                           const Condition::Processor&   processor) const  {
   pool->scan(detector, lower, upper, processor);
 }
 
@@ -156,7 +158,7 @@ namespace  {
       // test load info access
       const ConditionsContent::Conditions& cc=content.conditions();
       auto i = cc.find(c->hash);
-      std::string* address = (*i).second->data<std::string>();
+      string* address = (*i).second->data<string>();
       if ( address ) {}
 #endif
       return true;
@@ -167,12 +169,12 @@ namespace  {
 }
 
 /// Populate the conditions slice from the conditions manager (convenience)
-void DD4hep::Conditions::fill_content(ConditionsManager mgr,
-                                      ConditionsContent& content,
-                                      const IOVType& typ)
+void dd4hep::cond::fill_content(ConditionsManager mgr,
+                                ConditionsContent& content,
+                                const IOVType& typ)
 {
-  Conditions::ConditionsIOVPool* iovPool = mgr.iovPool(typ);
-  Conditions::ConditionsIOVPool::Elements& pools = iovPool->elements;
+  ConditionsIOVPool* iovPool = mgr.iovPool(typ);
+  ConditionsIOVPool::Elements& pools = iovPool->elements;
   for_each(begin(pools),end(pools),SliceOper(content));
 }
 

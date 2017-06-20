@@ -1,6 +1,5 @@
-// $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,8 +15,9 @@
 #include "DDG4/Geant4StepHandler.h"
 #include "DDSegmentation/Segmentation.h"
 #include "DD4hep/DD4hepUnits.h"
-
-using namespace DD4hep::Simulation;
+namespace units = dd4hep;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Returns the step status in form of a string
 const char* Geant4StepHandler::stepStatus(G4StepStatus status) {

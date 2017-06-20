@@ -7,22 +7,22 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_LAYEREDSUBDETECTOR_H_
-#define DDRec_LAYEREDSUBDETECTOR_H_
+#ifndef rec_LAYEREDSUBDETECTOR_H_
+#define rec_LAYEREDSUBDETECTOR_H_
 
 #include "DDRec/API/Exceptions.h"
 #include "DDRec/Extensions/LayeringExtension.h"
 
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class [[gnu::deprecated(" unmaintained code ")]] LayeredSubdetector: public virtual Geometry::DetElement, public LayeringExtension {
+class LayeredSubdetector: public virtual DetElement, public LayeringExtension {
 public:
 	/// Default constructor
-	LayeredSubdetector(const Geometry::DetElement& det) :
-			Geometry::DetElement(det) {
+	LayeredSubdetector(const DetElement& det) :
+			DetElement(det) {
 		getLayeringExtension();
 	}
 
@@ -39,15 +39,15 @@ public:
 		return _layering->numberOfSensors(layerIndex);
 	}
 
-	Geometry::DetElement layer(int layerIndex) const {
+	DetElement layer(int layerIndex) const {
 		return _layering->layer(layerIndex);
 	}
 
-	const std::vector<Geometry::DetElement>& sensors(int layerIndex = 0) const {
+	const std::vector<DetElement>& sensors(int layerIndex = 0) const {
 		return _layering->sensors(layerIndex);
 	}
 
-	const std::vector<Geometry::DetElement>& absorbers(int layerIndex = 0) const {
+	const std::vector<DetElement>& absorbers(int layerIndex = 0) const {
 		return _layering->absorbers(layerIndex);
 	}
 
@@ -114,11 +114,11 @@ private:
 	void getLayeringExtension() {
 		_layering = this->isValid() ? this->extension<LayeringExtension>() : 0;
 		if (not _layering) {
-			throw invalid_detector_element("Found no extension of type \"LayeringExtension\"", Geometry::DetElement(*this));
+			throw invalid_detector_element("Found no extension of type \"LayeringExtension\"", DetElement(*this));
 		}
 	}
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDReconstruction_LAYEREDSUBDETECTOR_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* reconstruction_LAYEREDSUBDETECTOR_H_ */

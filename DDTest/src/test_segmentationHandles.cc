@@ -13,9 +13,9 @@
 #include <cmath>
 
 
-static DD4hep::DDTest test( "CellDimensions" ) ;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+static dd4hep::DDTest test( "CellDimensions" ) ;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 int main() {
   try{
@@ -30,7 +30,7 @@ int main() {
     seg.setGridSizeX(xSize);
     seg.setGridSizeY(ySize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XY: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - ySize )  < 1e-11, " CG_XY: Dimension for Y" );
@@ -76,7 +76,7 @@ int main() {
     seg.setGridSizeY(ySize);
     seg.setGridSizeZ(zSize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - ySize )  < 1e-11, " CG_YZ: Dimension for Y" );
     test( fabs(seg.cellDimensions(volID)[1] - zSize )  < 1e-11, " CG_YZ: Dimension for Z" );
@@ -101,7 +101,7 @@ int main() {
     seg.setGridSizeY(ySize);
     seg.setGridSizeZ(zSize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XYZ: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - ySize )  < 1e-11, " CG_XYZ: Dimension for Y" );

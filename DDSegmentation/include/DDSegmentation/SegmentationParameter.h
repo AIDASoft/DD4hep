@@ -15,7 +15,7 @@
 #include <typeinfo>
 #include <vector>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 
@@ -284,5 +284,5 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_SEGMENTATIONPARAMETER_H_ */

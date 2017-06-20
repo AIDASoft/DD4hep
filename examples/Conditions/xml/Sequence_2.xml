@@ -5,7 +5,7 @@
   </plugin>
 
   <plugin name="DD4hepVolumeManager"/>
-  <plugin name="DD4hepConditionsManagerInstaller"/>
+  <plugin name="DD4hep_ConditionsManagerInstaller"/>
   <plugin name="DD4hep_Test_CallbackInstall"/>
   <plugin name="DD4hep_Test_ConditionsExample3"/>
 

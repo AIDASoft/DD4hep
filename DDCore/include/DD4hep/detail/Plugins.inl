@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -31,8 +31,8 @@
 #include "Reflex/Reflex.h"
 #include "Reflex/Builder/ReflexBuilder.h"
 
-/// The DD4hep namespace declaration
-namespace DD4hep  {
+/// The dd4hep namespace declaration
+namespace dd4hep  {
 
   /** Declaration and implementation of all templated Create methods.
     * Concrete instances must be created using the instantiators below.
@@ -126,7 +126,7 @@ namespace DD4hep  {
     { return __func(PluginService::Create<R,A0,A1,A2,A3,A4,A5>).ptr; }
 
     namespace  {
-      template <typename SIGNATURE> static void reflex_plugin(const std::string& name, typename DD4hep::PluginRegistry<SIGNATURE>::stub_t stub)  {
+      template <typename SIGNATURE> static void reflex_plugin(const std::string& name, typename dd4hep::PluginRegistry<SIGNATURE>::stub_t stub)  {
         ROOT::Reflex::Type typ = ROOT::Reflex::TypeBuilder(name.c_str(),ROOT::Reflex::PUBLIC);
         ROOT::Reflex::Type sig = ROOT::Reflex::FunctionDistiller < SIGNATURE > ::Get();
         std::string fname = (std::string(PLUGINSVC_FACTORY_NS "::") + ROOT::Reflex::PluginService::FactoryName(name));
@@ -142,7 +142,7 @@ namespace DD4hep  {
   }
 }
 
-#define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(R, ARGS) namespace DD4hep {		\
+#define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(R, ARGS) namespace dd4hep {		\
   template <> void PluginRegistry< R ARGS >::add(const char* n, stub_t f) \
   {   plugin_signatures_namespace::reflex_plugin< R ARGS >(n,f);   } \
   namespace plugin_signatures_namespace { template void* instantiate_creator<R> ARGS ; }}

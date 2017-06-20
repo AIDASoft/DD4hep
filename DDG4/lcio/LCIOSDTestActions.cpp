@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,8 +27,8 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 
 /// Test namespace.
 namespace  Tests {
@@ -54,8 +53,8 @@ namespace  Tests {
   public:
     //    typedef SimpleHit::Contribution HitContribution;
     // Standard , initializing constructor
-    Geant4SensitiveAction(Geant4Context* ctxt, const std::string& nam, DetElement det, LCDD& lcdd_ref)
-      : Geant4Sensitive(ctxt,nam,det,lcdd_ref), m_collectionID(0) {
+    Geant4SensitiveAction(Geant4Context* ctxt, const std::string& nam, DetElement det, Detector& description_ref)
+      : Geant4Sensitive(ctxt,nam,det,description_ref), m_collectionID(0) {
       declareProperty("detailedHitsStoring", _detailedHitsStoring ) ;
       defineCollections();
       InstanceCount::increment(this);
@@ -104,7 +103,7 @@ namespace  Tests {
 
   /// Method for generating hit(s) using the information of G4Step object.
   template <> bool Geant4SensitiveAction<LcioTestTracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
-    StepHandler h(step);
+    Geant4StepHandler h(step);
 
     Position prePos    = h.prePos();
     Position postPos   = h.postPos();

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,10 +22,10 @@
 #include <memory>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     class Entry;
     class ConditionsPool;
@@ -82,10 +82,10 @@ namespace DD4hep {
 
     protected:
       /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
-      bool select(key_type key, const iov_type& req_validity, RangeConditions& conditions);
+      bool select(key_type key, const IOV& req_validity, RangeConditions& conditions);
 
       /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
-      bool select_range(key_type key, const iov_type& req_validity, RangeConditions& conditions);
+      bool select_range(key_type key, const IOV& req_validity, RangeConditions& conditions);
 
       /// Register a set of new managed condition for an IOV range. Called by __load_immediate
       // void __register_immediate(RangeConditions& c);
@@ -98,11 +98,11 @@ namespace DD4hep {
       
       /// Set a single conditions value to be managed.
       /// Requires EXTERNALLY held lock on update pool!
-      Condition __queue_update(Conditions::Entry* data);
+      Condition __queue_update(cond::Entry* data);
 
     public:
       /// Standard constructor
-      Manager_Type1(LCDD& lcdd);
+      Manager_Type1(Detector& description);
 
       /// Default destructor
       virtual ~Manager_Type1();
@@ -117,13 +117,13 @@ namespace DD4hep {
       /** Returns (false,pointer) if IOV existed and
        *  (true,pointer) if new IOV was registered to the manager.
        */
-      virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name) final;
+      virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_index, const std::string& iov_name) final;
       
       /// Access IOV by its type
       virtual const IOVTypes& iovTypes () const final { return  m_iovTypes;  }
 
       /// Access IOV by its type
-      virtual const IOVType* iovType (size_t iov_type) const final;
+      virtual const IOVType* iovType (size_t iov_index) const final;
 
       /// Access IOV by its name
       virtual const IOVType* iovType (const std::string& iov_name) const final;
@@ -152,10 +152,10 @@ namespace DD4hep {
       virtual void pushUpdates()  final;
  
       /// Retrieve a condition set given a Detector Element and the conditions name according to their validity  (deprecated)
-      virtual Condition get(key_type key, const iov_type& req_validity)  final;
+      virtual Condition get(key_type key, const IOV& req_validity)  final;
 
       /// Retrieve a condition given a Detector Element and the conditions name (deprecated)
-      virtual RangeConditions getRange(key_type key, const iov_type& req_validity)  final;
+      virtual RangeConditions getRange(key_type key, const IOV& req_validity)  final;
 
       /// Create empty user pool object
       virtual std::unique_ptr<UserPool> createUserPool(const IOVType* iovT)  const;
@@ -170,6 +170,6 @@ namespace DD4hep {
       Result prepare(const IOV& req_iov, ConditionsSlice& slice)  final;
 
     };
-  }        /* End namespace Conditions               */
-}          /* End namespace DD4hep                   */
+  }        /* End namespace cond               */
+}          /* End namespace dd4hep                   */
 #endif     /* DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H */

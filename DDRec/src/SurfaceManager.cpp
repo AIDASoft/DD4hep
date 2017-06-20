@@ -2,16 +2,18 @@
 
 #include "DDRec/SurfaceHelper.h"
 #include "DD4hep/VolumeManager.h"
+#include "DD4hep/Detector.h"
 
 #include <sstream>
 
 namespace dd4hep {
+  
+  using namespace detail ;
 
   namespace rec {
     
 
-
-    SurfaceManager::SurfaceManager(LCDD& theDetector){
+    SurfaceManager::SurfaceManager(Detector& theDetector){
 
       // have to make sure the volume manager is populated once in order to have
       // the volumeIDs attached to the DetElements
@@ -38,13 +40,13 @@ namespace dd4hep {
       return 0 ;
     }
 
-    void SurfaceManager::initialize(LCDD& theDetector) {
+    void SurfaceManager::initialize(Detector& description) {
       
-      const std::vector<std::string>& types = theDetector.detectorTypes() ;
+      const std::vector<std::string>& types = description.detectorTypes() ;
 
       for(unsigned i=0,N=types.size();i<N;++i){
 
-	const std::vector<DetElement>& dets = theDetector.detectors( types[i] ) ;  
+	const std::vector<DetElement>& dets = description.detectors( types[i] ) ;  
 
 	for(unsigned j=0,M=dets.size();j<M;++j){
 

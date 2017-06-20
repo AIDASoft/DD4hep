@@ -7,7 +7,7 @@
 
 #include "DDSegmentation/CartesianGridXYZ.h"
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 /// default constructor using an encoding string
@@ -75,4 +75,4 @@ std::vector<double> CartesianGridXYZ::cellDimensions(const CellID&) const {
 REGISTER_SEGMENTATION(CartesianGridXYZ)
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */

@@ -1,6 +1,6 @@
 // $Id: LhePolyconeSupport_geo.cpp 513 2013-04-05 14:31:53Z gaede $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -11,14 +11,14 @@
 #include "XML/Layering.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)    {
+static Ref_t create_detector(Detector& description, xml_h e, Ref_t)    {
   xml_det_t  x_det = e;
   string     name  = x_det.nameStr();
   DetElement sdet (name,x_det.id());
-  Material   mat  (lcdd.material(x_det.materialStr()));
+  Material   mat  (description.material(x_det.materialStr()));
 
   // multiplication factor for ellipse major radius
   double c0 = 3.5;
@@ -49,8 +49,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)    {
   
   double z_offset = x_det.hasAttr(_U(z_offset)) ? x_det.z_offset() : 0.0;
 
-  volume.setVisAttributes(lcdd, x_det.visStr());
-  PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(volume,Position(0,0,z_offset));
+  volume.setVisAttributes(description, x_det.visStr());
+  PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(volume,Position(0,0,z_offset));
   sdet.setPlacement(pv);
   
   if ( x_det.hasAttr(_U(id)) )  {

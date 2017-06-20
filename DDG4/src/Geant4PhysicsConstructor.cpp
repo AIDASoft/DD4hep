@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,7 +17,7 @@
 #include "G4VModularPhysicsList.hh"
 #include "G4Version.hh"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 namespace  {
 

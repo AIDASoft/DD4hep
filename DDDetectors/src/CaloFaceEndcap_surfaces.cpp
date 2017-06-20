@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,7 +27,7 @@ namespace {
 
 // Framework include files
 #define SURFACEINSTALLER_DATA UserData
-#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_CaloFaceEndcapSurfacePlugin
+#define DD4HEP_USE_SURFACEINSTALL_HELPER dd4hep_CaloFaceEndcapSurfacePlugin
 #include "DD4hep/Printout.h"
 #include "DD4hep/SurfaceInstaller.h"
 #include "DDRec/DetectorData.h"
@@ -47,7 +47,7 @@ namespace{
                          double thickness_inner ,double thickness_outer, 
                          dd4hep::rec::Vector3D u_val ,dd4hep::rec::Vector3D v_val ,
                          dd4hep::rec::Vector3D n_val , dd4hep::rec::Vector3D o_val, 
-                         DD4hep::Geometry::Volume vol, int id_val ) :
+                         dd4hep::Volume vol, int id_val ) :
       dd4hep::rec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _r(0),_phi0(0),_sym(0) {}
     
@@ -56,7 +56,7 @@ namespace{
       _phi0 = phi0 ;
       _sym = symmetry ;
     }
-    void setID( DD4hep::long64 id_val ) { _id = id_val; }
+    void setID( dd4hep::long64 id_val ) { _id = id_val; }
     
     // overwrite to include points inside the inner radius of the endcap 
     bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {
@@ -93,9 +93,9 @@ namespace{
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        double value = DD4hep::_toDouble(++ptr);
+        double value = dd4hep::_toDouble(++ptr);
         
-	printout(DD4hep::DEBUG,"DD4hep_CaloFaceEndcapSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
+	printout(dd4hep::DEBUG,"DD4hep_CaloFaceEndcapSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
 
         if(      name=="zpos"    ) data.zpos     = value ; 
         else if( name=="radius"  ) data.radius   = value ; 
@@ -104,7 +104,7 @@ namespace{
         else if( name=="systemID") data.systemID   = value ; 
         else if( name=="encoding") data.encoding = ptr ; 
         else {
-	  printout(DD4hep::WARNING,"DD4hep_CaloFaceEndcapSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
+	  printout(dd4hep::WARNING,"DD4hep_CaloFaceEndcapSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
         }
       }
     }
@@ -112,9 +112,9 @@ namespace{
   
   /// Install measurement surfaces
   template <typename UserData> 
-    void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
+    void Installer<UserData>::install(dd4hep::DetElement component, dd4hep::PlacedVolume pv)   {
     
-    Volume comp_vol = pv.volume();
+    dd4hep::Volume comp_vol = pv.volume();
     
 
     double zpos     = data.zpos ;
@@ -128,11 +128,11 @@ namespace{
     double inner_thickness = 1e-6 ;
     double outer_thickness = 1e-6 ;
     
-    printout(DD4hep::INFO,"DD4hep_CaloFaceEndcapSurfacePlugin", "install tracking surfaces for :  %s ", component.name() ) ;
+    printout(dd4hep::INFO,"DD4hep_CaloFaceEndcapSurfacePlugin", "install tracking surfaces for :  %s ", component.name() ) ;
 
 
-    DD4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;
-    //DD4hep::DDSegmentation::BitField64 bf( data.encoding ) ;
+    dd4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;
+    //dd4hep::DDSegmentation::BitField64 bf( data.encoding ) ;
 
     bf["system"] = data.systemID ;
     bf["side"]   =  1 ; 

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,9 +27,9 @@ class TH2F;
 #define MEV_2_GEV 0.001
 
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class EventConsumer;
@@ -133,6 +133,6 @@ namespace DD4hep {
 
     ClassDef(EventConsumer,0);
   };
-}      /* End namespace DD4hep        */
+}      /* End namespace dd4hep        */
 #endif /* DD4HEP_DDEVE_EVENTHANDLER_H */
 

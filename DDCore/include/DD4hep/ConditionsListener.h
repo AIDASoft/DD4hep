@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,14 +19,14 @@
 // C/C++ include files
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Forward declarations
   class IOV;
   class IOVType;
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Forward declarations
     class ConditionsPool;
@@ -57,7 +57,7 @@ namespace DD4hep {
       virtual void onRemovePool(ConditionsPool* /* pool */, void* /* param */)  { }
      };
 
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                   */
+  } /* End namespace detail               */
+} /* End namespace dd4hep                   */
 
 #endif /* DD4HEP_CONDITIONS_CONDITIONSLISTENER_H  */

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,15 +18,15 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 
-using namespace DD4hep;
+using namespace dd4hep;
 
-static long json_dump(Geometry::LCDD& /* lcdd */, int argc, char** argv)   {
+static long json_dump(Detector& /* description */, int argc, char** argv)   {
   if ( argc < 1 )  {
     ::printf("DD4hep_JsonDumper <file>                               \n");
     exit(EINVAL);
   }
   std::string fname = argv[0];
-  JSON::DocumentHolder doc(JSON::DocumentHandler().load(fname));
+  json::DocumentHolder doc(json::DocumentHandler().load(fname));
   dumpTree(doc.root());
   printout(INFO,"JsonDumper","+++ Successfully dumped json input: %s.",fname.c_str());
   return 1;

@@ -1,7 +1,8 @@
-#ifndef DDRec_DetectorSurfaces_H_
-#define DDRec_DetectorSurfaces_H_
+#ifndef rec_DetectorSurfaces_H_
+#define rec_DetectorSurfaces_H_
 
 #include "DDRec/Surface.h"
+#include "DDRec/tempdefs.h"
 
 namespace dd4hep {
   namespace rec {
@@ -38,4 +39,4 @@ namespace dd4hep {
 
 namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
-#endif // DDRec_DetectorSurfaces_H_
+#endif // rec_DetectorSurfaces_H_

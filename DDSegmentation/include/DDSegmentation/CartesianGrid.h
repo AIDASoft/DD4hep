@@ -10,7 +10,7 @@
 
 #include "DDSegmentation/Segmentation.h"
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 class CartesianGrid: public Segmentation {
@@ -25,5 +25,5 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_CARTESIANGRID_H_ */

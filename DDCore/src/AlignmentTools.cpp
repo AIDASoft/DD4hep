@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,12 +23,9 @@
 // ROOT include files
 #include "TGeoMatrix.h"
 
-using     DD4hep::Geometry::DetElement;
-using     DD4hep::Geometry::PlacedVolume;
-using     DD4hep::Alignments::Alignment;
-using     DD4hep::Alignments::AlignmentData;
-namespace DetectorTools = DD4hep::Geometry::DetectorTools;
-typedef   AlignmentData::MaskManipulator MaskManipulator;
+using     dd4hep::PlacedVolume;
+using     dd4hep::Alignment;
+using     dd4hep::AlignmentData;
 
 namespace {
   void reset_matrix(TGeoHMatrix* m)  {
@@ -43,7 +40,7 @@ namespace {
 }
 
 /// Copy alignment object from source object
-void DD4hep::Alignments::AlignmentTools::copy(Alignment from, Alignment to)   {
+void dd4hep::detail::tools::copy(Alignment from, Alignment to)   {
   const AlignmentData& f = from.ptr()->values();
   AlignmentData& t = to.ptr()->values();
   if ( &t != &f )   {
@@ -60,14 +57,14 @@ void DD4hep::Alignments::AlignmentTools::copy(Alignment from, Alignment to)   {
 }
 
 /// Compute the ideal/nominal to-world transformation from the detector element placement
-void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
+void dd4hep::detail::tools::computeIdeal(Alignment alignment)   {
   AlignmentData& a = alignment->values();
-  MaskManipulator mask(a.flag);
+  ReferenceBitMask<AlignmentData::BitMask> mask(a.flag);
   DetElement parent = a.detector.parent();
   reset_matrix(&a.detectorTrafo);
   if ( parent.isValid() )  {
-    DetectorTools::PlacementPath path;
-    DetectorTools::placementPath(parent, a.detector, path);
+    detail::tools::PlacementPath path;
+    detail::tools::placementPath(parent, a.detector, path);
 
     for (size_t i = 0, n=path.size(); n>0 && i < n-1; ++i)  {
       const PlacedVolume& p = path[i];
@@ -78,7 +75,7 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
     //a.worldTrafo.MultiplyLeft(&a.detectorTrafo);
     a.worldTrafo = a.detectorTrafo;
     a.worldTrafo.MultiplyLeft(&parent.nominal().worldTransformation());
-    a.trToWorld  = Geometry::_transform(&a.worldTrafo);
+    a.trToWorld  = Matrices::_transform(&a.worldTrafo);
     a.placement  = a.detector.placement();
     mask.clear();
     mask.set(AlignmentData::HAVE_PARENT_TRAFO);
@@ -91,11 +88,11 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment)   {
 }
 #if 0
 /// Compute the ideal/nominal to-world transformation from the detector element placement
-void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment, 
+void dd4hep::detail::tools::computeIdeal(Alignment alignment, 
                                                       const Alignment::NodeList& node_list)
 {
   AlignmentData& a = alignment->values();
-  MaskManipulator mask(a.flag);
+  ReferenceBitMask<AlignmentData::BitMask> mask(a.flag);
   a.nodes = node_list;
   for (size_t i = a.nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
     TGeoMatrix* m = a.nodes[i - 1]->GetMatrix();
@@ -111,21 +108,21 @@ void DD4hep::Alignments::AlignmentTools::computeIdeal(Alignment alignment,
     a.placement = det->placement;
   }
   a.worldTrafo.MultiplyLeft(&(a.detector.nominal().worldTransformation()));
-  a.trToWorld = Geometry::_transform(&a.worldTrafo);
+  a.trToWorld = Matrices::_transform(&a.worldTrafo);
   mask.set(AlignmentData::IDEAL);
 }
 #endif
 
 /// Compute the survey to-world transformation from the detector element placement with respect to the survey constants
-void DD4hep::Alignments::AlignmentTools::computeSurvey(Alignment alignment)
+void dd4hep::detail::tools::computeSurvey(Alignment alignment)
 {
   AlignmentData& a = alignment->values();
   DetElement parent = a.detector.parent();
-  MaskManipulator mask(a.flag);
+  ReferenceBitMask<AlignmentData::BitMask> mask(a.flag);
 
   if ( parent.isValid() )  {
-    DetectorTools::PlacementPath path;
-    DetectorTools::placementPath(parent, a.detector, path);
+    detail::tools::PlacementPath path;
+    detail::tools::placementPath(parent, a.detector, path);
 
     // TODO: need to take survey corrections into account!
 
@@ -135,7 +132,7 @@ void DD4hep::Alignments::AlignmentTools::computeSurvey(Alignment alignment)
     }
     a.worldTrafo = parent.survey().worldTransformation();
     a.worldTrafo.MultiplyLeft(&a.detectorTrafo);
-    a.trToWorld  = Geometry::_transform(&a.worldTrafo);
+    a.trToWorld  = Matrices::_transform(&a.worldTrafo);
     a.placement = a.detector.placement();
   }
   mask.set(AlignmentData::SURVEY);

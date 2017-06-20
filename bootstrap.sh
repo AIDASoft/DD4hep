@@ -2,7 +2,7 @@
 
 ########################################################################################################################
 #
-# Assuming you have CVMFS and run SLC6, CERN Centos7 or macOS Sierra you can bootstrap DD4hep by executing this script
+# Assuming you have CVMFS and run SLC6, CERN Centos7 or macOS Sierra you can bootstrap dd4hep by executing this script
 #
 ########################################################################################################################
 

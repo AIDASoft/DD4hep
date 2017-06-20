@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 #include <fstream>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Class to populate Geant4 primaries from StdHep files.
     /**
@@ -51,11 +51,11 @@ namespace DD4hep {
       virtual EventReaderStatus moveToEvent(int event_number);
       virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
     };
-  }     /* End namespace Simulation   */
-}       /* End namespace DD4hep       */
+  }     /* End namespace sim   */
+}       /* End namespace dd4hep       */
 
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -79,8 +79,8 @@ namespace DD4hep {
 
 using namespace std;
 using namespace CLHEP;
-using namespace DD4hep::Simulation;
-typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+using namespace dd4hep::sim;
+typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
 #define HEPEvtShort 1
 #define HEPEvtLong  2
@@ -137,8 +137,8 @@ Geant4EventReaderHepEvt::moveToEvent(int event_number) {
       std::vector<Particle*> particles;
       Vertices vertices ;
       EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
-      for_each(vertices.begin(),vertices.end(),deleteObject<Vertex>);
-      for_each(particles.begin(),particles.end(),deleteObject<Particle>);
+      for_each(vertices.begin(),vertices.end(),detail::deleteObject<Vertex>);
+      for_each(particles.begin(),particles.end(),detail::deleteObject<Particle>);
       if ( sc != EVENT_READER_OK ) return sc;
       //Current event is increased in readParticles already!
       // ++m_currEvent;

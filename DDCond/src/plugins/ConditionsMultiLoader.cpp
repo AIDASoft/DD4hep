@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +20,10 @@
 #include "DD4hep/Printout.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions  {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond  {
 
     // Forward declarations
     class ConditionsHandler;
@@ -40,36 +40,36 @@ namespace DD4hep {
 
       Loaders m_loaders;
       OpenSources m_openSources;
-      ConditionsDataLoader* load_source(const std::string& nam,const iov_type& req_validity);
+      ConditionsDataLoader* load_source(const std::string& nam,const IOV& req_validity);
 
     public:
       /// Default constructor
-      ConditionsMultiLoader(LCDD& lcdd, ConditionsManager mgr, const std::string& nam);
+      ConditionsMultiLoader(Detector& description, ConditionsManager mgr, const std::string& nam);
       /// Default destructor
       virtual ~ConditionsMultiLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_single(key_type key,
-                                 const iov_type& req_validity,
+                                 const IOV& req_validity,
                                  RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_range( key_type key,
-                                 const iov_type& req_validity,
+                                 const IOV& req_validity,
                                  RangeConditions& conditions);
       /// Optimized update using conditions slice data
-      virtual size_t load_many(  const iov_type& /* req_validity */,
+      virtual size_t load_many(  const IOV& /* req_validity */,
                                  RequiredItems&  /* work         */,
                                  LoadedItems&    /* loaded       */,
-                                 iov_type&       /* conditions_validity */)
+                                 IOV&       /* conditions_validity */)
       {
         except("ConditionsLoader","+++ update: Invalid call!");
         return 0;
       }
     };
-  }     /* End namespace Geometry                     */
-}       /* End namespace DD4hep                       */
+  }     /* End namespace detail                     */
+}       /* End namespace dd4hep                       */
 #endif  /* DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H   */
 
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -92,20 +92,20 @@ namespace DD4hep {
 
 // Forward declartions
 using std::string;
-using namespace DD4hep::Conditions;
+using namespace dd4hep::cond;
 
 namespace {
-  void* create_loader(DD4hep::Geometry::LCDD& lcdd, int argc, char** argv)   {
+  void* create_loader(dd4hep::Detector& description, int argc, char** argv)   {
     const char* name = argc>0 ? argv[0] : "MULTILoader";
     ConditionsManager::Object* mgr = (ConditionsManager::Object*)(argc>0 ? argv[1] : 0);
-    return new ConditionsMultiLoader(lcdd,ConditionsManager(mgr),name);
+    return new ConditionsMultiLoader(description,ConditionsManager(mgr),name);
   }
 }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_Conditions_multi_Loader,create_loader)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Conditions_multi_Loader,create_loader)
 
 /// Standard constructor, initializes variables
-ConditionsMultiLoader::ConditionsMultiLoader(LCDD& lcdd, ConditionsManager mgr, const string& nam) 
-: ConditionsDataLoader(lcdd, mgr, nam)
+ConditionsMultiLoader::ConditionsMultiLoader(Detector& description, ConditionsManager mgr, const string& nam) 
+: ConditionsDataLoader(description, mgr, nam)
 {
 }
 
@@ -115,7 +115,7 @@ ConditionsMultiLoader::~ConditionsMultiLoader() {
 
 ConditionsDataLoader* 
 ConditionsMultiLoader::load_source(const std::string& nam,
-                                   const iov_type& req_validity)
+                                   const IOV& req_validity)
 {
   OpenSources::iterator iop = m_openSources.find(nam);
   if ( iop == m_openSources.end() )  {
@@ -130,7 +130,7 @@ ConditionsMultiLoader::load_source(const std::string& nam,
       string typ = "DD4hep_Conditions_"+ident+"_Loader";
       string fac = ident+"_ConditionsDataLoader";
       const void* argv[] = {fac.c_str(), m_mgr.ptr(), 0};
-      loader = createPlugin<ConditionsDataLoader>(typ,m_lcdd,2,argv);
+      loader = createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv);
       if ( !loader )  {
         except("ConditionsMultiLoader",
                "Failed to create conditions loader of type: "+typ+" to read:"+nam);
@@ -149,7 +149,7 @@ ConditionsMultiLoader::load_source(const std::string& nam,
 
 /// Load  a condition set given a Detector Element and the conditions name according to their validity
 size_t ConditionsMultiLoader::load_range(key_type key,
-                                         const iov_type& req_validity,
+                                         const IOV& req_validity,
                                          RangeConditions& conditions)
 {
   size_t len = conditions.size();
@@ -169,7 +169,7 @@ size_t ConditionsMultiLoader::load_range(key_type key,
 
 
 size_t ConditionsMultiLoader::load_single(key_type key,
-                                          const iov_type& req_validity,
+                                          const IOV& req_validity,
                                           RangeConditions& conditions)
 {
   size_t len = conditions.size();

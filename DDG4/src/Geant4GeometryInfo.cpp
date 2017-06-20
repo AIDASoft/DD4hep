@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +20,10 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 
-string Geant4GeometryMaps::placementPath(const Geant4PlacementPath& path, bool reverse)   {
+string Geant4GeometryInfo::placementPath(const Geant4PlacementPath& path, bool reverse)   {
   string s;
   if ( reverse )  {
     for (Geant4PlacementPath::const_reverse_iterator pIt = path.rbegin(); pIt != path.rend(); ++pIt) {

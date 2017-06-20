@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,6 +16,6 @@
 #include "DDG4/Geant4Call.h"
 
 /// Default destructor (keep here to avoid weak linkage to vtable)
-DD4hep::Simulation::Geant4Call::~Geant4Call()   {
+dd4hep::sim::Geant4Call::~Geant4Call()   {
 }
 

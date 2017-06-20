@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 // C/C++ include files
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     namespace HepMC {  class EventStream;  }
     /// Class to populate Geant4 primaries from StdHep files.
@@ -54,11 +54,11 @@ namespace DD4hep {
       virtual EventReaderStatus skipEvent() override { return EVENT_READER_OK; }
 
     };
-  }     /* End namespace Simulation   */
-}       /* End namespace DD4hep       */
+  }     /* End namespace sim   */
+}       /* End namespace dd4hep       */
 
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //====================================================================
@@ -77,17 +77,17 @@ namespace DD4hep {
 
 using namespace std;
 using namespace CLHEP;
-using namespace DD4hep::Simulation;
-typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+using namespace dd4hep::sim;
+typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
 // Factory entry
 DECLARE_GEANT4_EVENT_READER(Geant4EventReaderHepMC)
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     namespace HepMC {
 
@@ -219,7 +219,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
     Position pos(primary_vertex->x,primary_vertex->y,primary_vertex->z);
 
     output.reserve(parts.size());
-    transform(parts.begin(),parts.end(),back_inserter(output),reference2nd(parts));
+    transform(parts.begin(),parts.end(),back_inserter(output),detail::reference2nd(parts));
     m_events->clear();
     if (pos.mag2() > numeric_limits<double>::epsilon() )  {
       for(Particles::iterator k=output.begin(); k != output.end(); ++k) {
@@ -626,8 +626,8 @@ bool HepMC::EventStream::ok()  const   {
 }
 
 void HepMC::EventStream::clear()   {
-  releaseObjects(m_vertices);
-  releaseObjects(m_particles);
+  detail::releaseObjects(m_vertices);
+  detail::releaseObjects(m_particles);
 }
 
 bool HepMC::EventStream::read()   {
@@ -636,8 +636,8 @@ bool HepMC::EventStream::read()   {
   static int num_evt = 0;
   int num_line = 0, num_line_accepted = 0;
 
-  releaseObjects(vertices());
-  releaseObjects(particles());
+  detail::releaseObjects(vertices());
+  detail::releaseObjects(particles());
 
   ++num_evt;
   if ( num_evt == 998 )  {
@@ -748,8 +748,8 @@ bool HepMC::EventStream::read()   {
     continue;
   Skip:
     printout(WARNING,"HepMC::EventStream","+++ Skip event with ID: %d",this->header.id);
-    releaseObjects(vertices());
-    releaseObjects(particles());
+    detail::releaseObjects(vertices());
+    detail::releaseObjects(particles());
     read_until_event_end(instream);
     event_read = false;
     if ( instream.eof() ) return false;
@@ -758,6 +758,6 @@ bool HepMC::EventStream::read()   {
   if( not instream.good() ) return false;
  Done:
   fix_particles(info);
-  releaseObjects(vertices());
+  detail::releaseObjects(vertices());
   return true;
 }

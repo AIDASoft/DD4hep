@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,7 +24,7 @@ class TEvePointSet;
 class TEveBoxSet;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Fill EtaPhi histograms from a hit collection
   /*
@@ -103,7 +103,7 @@ namespace DD4hep {
     virtual void operator()(const DDEveHit& hit);
   };
 
-} /* End namespace DD4hep   */
+} /* End namespace dd4hep   */
 
 
 #endif /* DD4HEP_DDEVE_HITHANDLERS_H */

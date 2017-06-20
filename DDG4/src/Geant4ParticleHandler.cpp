@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -41,10 +41,10 @@
 
 using CLHEP::MeV;
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
-typedef ReferenceBitMask<int> PropertyMask;
+typedef detail::ReferenceBitMask<int> PropertyMask;
 
 /// Standard constructor
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& nam)
@@ -86,7 +86,7 @@ Geant4ParticleHandler::Geant4ParticleHandler()
 /// Default destructor
 Geant4ParticleHandler::~Geant4ParticleHandler()  {
   clear();
-  releasePtr(m_userHandler);
+  detail::releasePtr(m_userHandler);
   InstanceCount::decrement(this);
 }
 
@@ -115,7 +115,7 @@ bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
 
 /// Clear particle maps
 void Geant4ParticleHandler::clear()  {
-  releaseObjects(m_particleMap);
+  detail::releaseObjects(m_particleMap);
   m_particleMap.clear();
   m_equivalentTracks.clear();
 }

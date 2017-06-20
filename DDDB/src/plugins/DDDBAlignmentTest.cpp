@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Path.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
@@ -35,12 +35,10 @@
 #include "TTimeStamp.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
-using Alignments::Delta;
-using Alignments::Alignment;
-using Alignments::deltaCollector;    
-using Alignments::AlignmentsCalculator;
+using namespace dd4hep;
+using namespace dd4hep::cond;
+using align::deltaCollector;    
+using align::AlignmentsCalculator;
 
 /// Anonymous namespace for plugins
 namespace  {
@@ -55,7 +53,7 @@ namespace  {
   class AlignmentSelector  {
   public:
     typedef std::shared_ptr<ConditionsContent>   Content;
-    LCDD&                lcdd;
+    Detector&                description;
     string               name;
     PrintLevel           printLevel     = INFO;
     TStatistic           load_stat, comp_stat;
@@ -63,8 +61,8 @@ namespace  {
     ConditionsPrinter    printer;
 
     /// Initializing constructor
-    AlignmentSelector(LCDD& l, PrintLevel p)
-      : lcdd(l), name("DDDBAlignments"), printLevel(p),
+    AlignmentSelector(Detector& l, PrintLevel p)
+      : description(l), name("DDDBAlignments"), printLevel(p),
         load_stat("Load"), comp_stat("Compute"), printer(0,"Alignments")
     {
       printer.printLevel = DEBUG;
@@ -82,7 +80,7 @@ namespace  {
       printout(INFO,name,
                "++ DDDB: Initial prepare: %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) for IOV:%-12s",
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, iov.str().c_str());
-      Conditions::fill_content(manager,*content,*iov.iovType);
+      cond::fill_content(manager,*content,*iov.iovType);
       printout(INFO,name,"++ DDDB: Content: %ld conditions, %ld derived conditions.",
                content->conditions().size(), content->derived().size());
       return 1;
@@ -94,7 +92,7 @@ namespace  {
                             bool access = false)
     {
       AlignmentsCalculator align;
-      AlignmentsCalculator::Deltas align_deltas;
+      std::map<DetElement, Delta> align_deltas;
       slice.reset(new ConditionsSlice(manager,content));
       TTimeStamp acc_start;
       ConditionsManager::Result cres = manager.prepare(iov, *slice);
@@ -104,7 +102,7 @@ namespace  {
                "++ DDDB: Prepared %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) for IOV:%-12s",
                cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, iov.str().c_str());
 
-      Geometry::DetectorScanner(deltaCollector(*slice,align_deltas),lcdd.world(),0,true);
+      DetectorScanner(deltaCollector(*slice,align_deltas),description.world(),0,true);
 
       TTimeStamp comp_start;
       AlignmentsCalculator::Result ares = align.compute(align_deltas,*slice);
@@ -117,7 +115,7 @@ namespace  {
       if ( access )   {
         set<DetElement> detectors;
         for ( const auto& e : align_deltas )  {
-          Condition               c = slice->get(e.first,Alignments::Keys::alignmentKey);
+          Condition               c = slice->get(e.first,align::Keys::alignmentKey);
           Alignment               a = c;
           const Delta&            D = a.data().delta;
           printout(PrintLevel(printLevel+1),"Alignment",
@@ -142,20 +140,20 @@ namespace  {
 namespace  {
 
   /// Plugin function: Load dependent alignment conditions according to time stamps.
-  long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
+  long dddb_derived_alignments(Detector& description, int argc, char** argv) {
     int turns = 1, accesses = 1;
     PrintLevel level = INFO;
-    long time = makeTime(2016,4,1,12);
+    long time = detail::makeTime(2016,4,1,12);
     string fname = Path(__FILE__).filename();
     
     for(int i=0; i<argc; ++i)  {
       if ( ::strncmp(argv[i],"-time",3)==0 )  {
-        time = makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
+        time = detail::makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
         printout(level,"DDDB","Setting event time in %s to %s [%ld]",
                  fname.c_str(), argv[i-1], time);
       }
       else if ( ::strncmp(argv[i],"-print",3)==0 )  {
-        level = DD4hep::printLevel(argv[++i]);
+        level = dd4hep::printLevel(argv[++i]);
         printout(level,"DDDB","Setting print level in %s to %s [%d]",
                  fname.c_str(), argv[i-1], level);
       }
@@ -179,8 +177,8 @@ namespace  {
     }
     int ret;
     {
-      AlignmentSelector selec(lcdd, level);
-      ConditionsManager manager(ConditionsManager::from(lcdd));
+      AlignmentSelector selec(description, level);
+      ConditionsManager manager(ConditionsManager::from(description));
       TStatistic        cr_stat("Initialize"), re_acc_stat("Reaccess");
       const IOVType*    iovType = manager.iovType("epoch");
       {
@@ -235,17 +233,17 @@ DECLARE_APPLY(DDDB_DerivedAlignmentsTest,dddb_derived_alignments)
 
 namespace  {
   /// Plugin function: Access dependent alignment conditions from DetElement object using global and local keys
-  long dddb_access_alignments(LCDD& lcdd, int argc, char** argv) {
+  long dddb_access_alignments(Detector& description, int argc, char** argv) {
     PrintLevel level = INFO;
-    long time = makeTime(2016,4,1,12);
+    long time = detail::makeTime(2016,4,1,12);
     for(int i=0; i<argc; ++i)  {
       if ( ::strcmp(argv[i],"-time")==0 )  {
-        time = makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
+        time = detail::makeTime(argv[++i],"%d-%m-%Y %H:%M:%S");
         printout(level,"DDDB","Setting event time in %s to %s [%ld]",
                  Path(__FILE__).filename().c_str(), argv[i-1], time);
       }
       else if ( ::strcmp(argv[i],"-print")==0 )  {
-        level = DD4hep::printLevel(argv[++i]);
+        level = dd4hep::printLevel(argv[++i]);
         printout(level,"DDDB","Setting print level in %s to %s [%d]",
                  Path(__FILE__).filename().c_str(), argv[i-1], level);
       }
@@ -257,8 +255,8 @@ namespace  {
         ::exit(EINVAL);
       }
     }
-    AlignmentSelector selec(lcdd,level);
-    ConditionsManager manager(ConditionsManager::from(lcdd));
+    AlignmentSelector selec(description,level);
+    ConditionsManager manager(ConditionsManager::from(description));
     const IOVType* iovType = manager.iovType("epoch");
     IOV  iov(iovType, time);
     int ret = selec.collect(manager,iov);

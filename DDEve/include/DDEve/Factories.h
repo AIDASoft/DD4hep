@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,10 +24,10 @@ namespace {
   template <typename P, typename S> class Factory;
   
   /// DDEve view factory
-  DD4HEP_PLUGIN_FACTORY_ARGS_2(DD4hep::View*,DD4hep::Display*,const char*) { return new P(a0,a1); }
+  DD4HEP_PLUGIN_FACTORY_ARGS_2(dd4hep::View*,dd4hep::Display*,const char*) { return new P(a0,a1); }
 }
 
 #define DECLARE_VIEW_FACTORY(x) \
-DD4HEP_PLUGINSVC_FACTORY(x,DD4hep_DDEve_##x,DD4hep::View*(DD4hep::Display*, const char*),__LINE__)
+DD4HEP_PLUGINSVC_FACTORY(x,dd4hep_DDEve_##x,dd4hep::View*(dd4hep::Display*, const char*),__LINE__)
 
 #endif // DD4HEP_DDEVE_FACTORIES_H

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,19 +23,19 @@
 #include "TClass.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep;
 
 typedef DetElement::Children _C;
 
 /// Initializing constructor
-SurfaceInstaller::SurfaceInstaller(LCDD& lcdd, int argc, char** argv)
-  : m_lcdd(lcdd), m_det(), m_stopScanning(false)
+SurfaceInstaller::SurfaceInstaller(Detector& description, int argc, char** argv)
+  : m_detDesc(description), m_det(), m_stopScanning(false)
 {
   if ( argc > 0 )  {
     string det_name = argv[0];
     string n = det_name[0] == '-' ? det_name.substr(1) : det_name;
-    m_det = lcdd.detector(n);
+    m_det = description.detector(n);
     if ( !m_det.isValid() )   {
       stringstream err;
       err << "The subdetector " << det_name << " is not known to the geometry.";
@@ -81,10 +81,10 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
     stringstream log;
     PlacementPath all_nodes;
     ElementPath   det_elts;
-    DetectorTools::elementPath(component,det_elts);
-    DetectorTools::placementPath(component,all_nodes);
-    string elt_path  = DetectorTools::elementPath(det_elts);
-    string node_path = DetectorTools::placementPath(all_nodes);
+    detail::tools::elementPath(component,det_elts);
+    detail::tools::placementPath(component,all_nodes);
+    string elt_path  = detail::tools::elementPath(det_elts);
+    string node_path = detail::tools::placementPath(all_nodes);
 
     log << "Lookup " << " Detector[" << det_elts.size() << "]: " << elt_path;
     printout(INFO,m_det.name(),log.str());

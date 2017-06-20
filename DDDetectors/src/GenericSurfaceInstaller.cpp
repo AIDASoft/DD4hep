@@ -7,13 +7,13 @@
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-// Author     : N. Nikiforou, adapted from DD4hep/SiTrackerBarrel_surfaces.cpp
+// Author     : N. Nikiforou, adapted from dd4hep/SiTrackerBarrel_surfaces.cpp
 //              by M. Frank. Originally part of the lcgeo package
 //==========================================================================
 
 /** \addtogroup SurfacePlugin
  * @{
- * \package DD4hep_GenericSurfaceInstallerPlugin
+ * \package dd4hep_GenericSurfaceInstallerPlugin
  * \brief Plugin to install measurement surfaces on a generic sliced detector
  * 
  * Takes up to 13 arguments:
@@ -70,7 +70,7 @@ namespace {
 
 // Framework include files
 #define SURFACEINSTALLER_DATA UserData
-#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_GenericSurfaceInstallerPlugin
+#define DD4HEP_USE_SURFACEINSTALL_HELPER dd4hep_GenericSurfaceInstallerPlugin
 #include "DD4hep/SurfaceInstaller.h"
 
 namespace{
@@ -96,7 +96,7 @@ namespace{
             char* ptr = ::strchr(argv[i],'=');
             if ( ptr )  {
                 std::string name( argv[i] , ptr ) ;
-                value = DD4hep::_toDouble(++ptr);
+                value = dd4hep::_toDouble(++ptr);
                 std::cout << "DD4hep_GenericSurfaceInstallerPlugin: argument[" << i << "] = " << name 
                 << " = " << value << std::endl;
                 if( name=="dimension" ) data.dimension = value ; 
@@ -125,12 +125,12 @@ namespace{
     
     /// Install measurement surfaces
     template <typename UserData> 
-    void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
-        Volume comp_vol = pv.volume();
+      void Installer<UserData>::install(dd4hep::DetElement component, dd4hep::PlacedVolume pv)   {
+        dd4hep::Volume comp_vol = pv.volume();
         if ( comp_vol.isSensitive() )  {  
-            Volume mod_vol  = parentVolume(component);
+            dd4hep::Volume mod_vol  = parentVolume(component);
             //FIXME: WHAT IF TRAPEZOID? Should work if trapezoid since it will fit minimal box and dy1=dy2=dy
-            DD4hep::Geometry::Box mod_shape(mod_vol.solid()), comp_shape(comp_vol.solid());
+            dd4hep::Box mod_shape(mod_vol.solid()), comp_shape(comp_vol.solid());
             
             if ( !comp_shape.isValid() || !mod_shape.isValid() )   {
                 invalidInstaller("DD4hep_GenericSurfaceInstallerPlugin: Components and/or modules are not boxes -- invalid shapes");
@@ -152,7 +152,7 @@ namespace{
                     sensitive_z_position = data.nvector[2]>0 ? trans[2] : -trans[2];
 
                 } else {
-                    throw std::runtime_error("**** DD4hep_GenericSurfaceInstallerPlugin: normal vector unsupported! It has to be "
+                    throw std::runtime_error("**** dd4hep_GenericSurfaceInstallerPlugin: normal vector unsupported! It has to be "
                     "perpenidcular to one of the box sides, i.e. only one non-zero component.") ;
                 }
 
@@ -170,7 +170,7 @@ namespace{
                 if( data.dimension == 1 ) {
                     type.setProperty( Type::Measurement1D , true ) ;
                 } else if( data.dimension != 2 ) {
-                    throw std::runtime_error("**** DD4hep_GenericSurfaceInstallerPlugin: no or wrong "
+                    throw std::runtime_error("**** dd4hep_GenericSurfaceInstallerPlugin: no or wrong "
                     "'dimension' argument given - has to be 1 or 2") ;
                 }
                 VolPlane surf(comp_vol, type, inner_thickness, outer_thickness, u, v, n, o);

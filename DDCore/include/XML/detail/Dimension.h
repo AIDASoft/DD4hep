@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,12 +20,12 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting JSON utilities
   namespace DD4HEP_DIMENSION_NS  {
 
-    /// XML Handle to xml elements with predefined attribute access
+    /// XML Handle_t to xml elements with predefined attribute access
     /**
      *  Helper class to access any field in a xml tag in a
      *  very easy way.
@@ -55,7 +55,7 @@ namespace DD4hep {
       Dimension()
         : Element(Handle_t(0)) {
       }
-      /// Constructor from Handle
+      /// Constructor from Handle_t
       Dimension(Handle_t e)
         : Element(e) {
       }
@@ -571,4 +571,4 @@ namespace DD4hep {
     };
 
   }       /* End namespace DD4HEP_DIMENSION_NS        */
-}         /* End namespace DD4hep                     */
+}         /* End namespace dd4hep                     */

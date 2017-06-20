@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Errors.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
@@ -23,31 +23,31 @@
 #include "DDCond/ConditionsManagerObject.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsManagerObject);
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
   
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Access specialization
-    template <> ConditionsManager ConditionsManager::from<LCDD>(LCDD& host)  {
+    template <> ConditionsManager ConditionsManager::from<Detector>(Detector& host)  {
       Object* obj = host.extension<Object>();
       if ( obj ) return ConditionsManager(obj);
-      except("ConditionsManager","+++ Failed to access installed manager from LCDD.");
+      except("ConditionsManager","+++ Failed to access installed manager from Detector.");
       return ConditionsManager();
     }
   }
 }
 
 /// Default constructor
-ConditionsManagerObject::ConditionsManagerObject(LCDD& ref_lcdd)
-  : NamedObject(), m_lcdd(ref_lcdd)
+ConditionsManagerObject::ConditionsManagerObject(Detector& ref_description)
+  : NamedObject(), m_detDesc(ref_description)
 {
   InstanceCount::increment(this);
   declareProperty("LoadConditions",           m_doLoad);
@@ -147,8 +147,8 @@ ConditionsPool* ConditionsManagerObject::registerIOV(const string& data)   {
 }
 
 /// Default constructor
-ConditionsManager::ConditionsManager(LCDD& lcdd)  {
-  assign(ConditionsManager::from(lcdd).ptr(), "ConditionsManager","");
+ConditionsManager::ConditionsManager(Detector& description)  {
+  assign(ConditionsManager::from(description).ptr(), "ConditionsManager","");
 }
 
 ConditionsManager& ConditionsManager::initialize()   {

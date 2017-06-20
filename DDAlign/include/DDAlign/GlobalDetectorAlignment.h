@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,17 +14,17 @@
 #define DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/GlobalAlignment.h"
 
 // Forward declarations
 class TGeoHMatrix;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Alignments {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace align {
 
     /// GlobalDetectorAlignment. DetElement Handle supporting alignment operations.
     /**
@@ -75,6 +75,6 @@ namespace DD4hep {
       GlobalAlignment align(const std::string& volume_path, TGeoHMatrix* matrix, bool check = false, double overlap = 0.001);
     };
 
-  } /* End namespace Alignments                           */
-} /* End namespace DD4hep                                 */
+  } /* End namespace align                           */
+} /* End namespace dd4hep                                 */
 #endif    /* DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H    */

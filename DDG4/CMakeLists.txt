@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -44,8 +44,8 @@ dd4hep_add_plugin(DDG4Python
 dd4hep_add_plugin(DDG4LCIO 
   OPTIONAL [LCIO REQUIRED SOURCES lcio/*.cpp] )
 #---------------------------  DDRec dependent Plugins  -----------------------------
-dd4hep_add_plugin(DDG4Reco
-  OPTIONAL [DDRec REQUIRED SOURCES reco/*.cpp] )
+#dd4hep_add_plugin(DDG4Reco
+#  OPTIONAL [DDRec REQUIRED SOURCES reco/*.cpp] )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(g4gdmlDisplay SOURCES g4gdmlDisplay.cpp)
 #-----------------------------------------------------------------------------------

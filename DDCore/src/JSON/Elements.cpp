@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,16 +24,16 @@
 #include <map>
 
 using namespace std;
-using namespace DD4hep::JSON;
+using namespace dd4hep::json;
 static const size_t INVALID_NODE = ~0U;
 
 // Forward declarations
-namespace DD4hep {
+namespace dd4hep {
   XmlTools::Evaluator& evaluator();
 }
 // Static storage
 namespace {
-  XmlTools::Evaluator& eval(DD4hep::evaluator());
+  XmlTools::Evaluator& eval(dd4hep::evaluator());
   string _checkEnviron(const string& env)  {
     string r = getEnviron(env);
     return r.empty() ? env : r;
@@ -78,7 +78,7 @@ namespace {
   }
 }
 
-string DD4hep::JSON::_toString(Attribute attr) {
+string dd4hep::json::_toString(Attribute attr) {
   if (attr)
     return _toString(attribute_value(attr));
   return "";
@@ -91,55 +91,55 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
-string DD4hep::JSON::_toString(const char* s) {
+string dd4hep::json::_toString(const char* s) {
   if ( !s || *s == 0 ) return "";
   else if ( !(*s == '$' && *(s+1) == '{') ) return s;
   return _checkEnviron(s);
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
-string DD4hep::JSON::_toString(const string& s) {
+string dd4hep::json::_toString(const string& s) {
   if ( s.length() < 3 || s[0] != '$' ) return s;
   else if ( !(s[0] == '$' && s[1] == '{') ) return s;
   return _checkEnviron(s);
 }
 
 /// Format unsigned long integer to string with arbitrary format
-string DD4hep::JSON::_toString(unsigned long v, const char* fmt) {
+string dd4hep::json::_toString(unsigned long v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format unsigned integer (32 bits) to string with arbitrary format
-string DD4hep::JSON::_toString(unsigned int v, const char* fmt) {
+string dd4hep::json::_toString(unsigned int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format signed integer (32 bits) to string with arbitrary format
-string DD4hep::JSON::_toString(int v, const char* fmt) {
+string dd4hep::json::_toString(int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format signed long integer to string with arbitrary format
-string DD4hep::JSON::_toString(long v, const char* fmt)   {
+string dd4hep::json::_toString(long v, const char* fmt)   {
   return __to_string(v, fmt);
 }
 
 /// Format single procision float number (32 bits) to string with arbitrary format
-string DD4hep::JSON::_toString(float v, const char* fmt) {
+string dd4hep::json::_toString(float v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format double procision float number (64 bits) to string with arbitrary format
-string DD4hep::JSON::_toString(double v, const char* fmt) {
+string dd4hep::json::_toString(double v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format pointer to string with arbitrary format
-string DD4hep::JSON::_ptrToString(const void* v, const char* fmt) {
+string dd4hep::json::_ptrToString(const void* v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-long DD4hep::JSON::_toLong(const char* value) {
+long dd4hep::json::_toLong(const char* value) {
   if (value) {
     string s = _toString(value);
     size_t idx = s.find("(int)");
@@ -154,14 +154,14 @@ long DD4hep::JSON::_toLong(const char* value) {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
-      throw runtime_error("DD4hep: Severe error during expression evaluation of " + s);
+      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
     }
     return (long) result;
   }
   return -1;
 }
 
-int DD4hep::JSON::_toInt(const char* value) {
+int dd4hep::json::_toInt(const char* value) {
   if (value) {
     string s = _toString(value);
     size_t idx = s.find("(int)");
@@ -173,14 +173,14 @@ int DD4hep::JSON::_toInt(const char* value) {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
-      throw runtime_error("DD4hep: Severe error during expression evaluation of " + s);
+      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
     }
     return (int) result;
   }
   return -1;
 }
 
-bool DD4hep::JSON::_toBool(const char* value) {
+bool dd4hep::json::_toBool(const char* value) {
   if (value) {
     string s = _toString(value);
     return s == "true";
@@ -188,7 +188,7 @@ bool DD4hep::JSON::_toBool(const char* value) {
   return false;
 }
 
-float DD4hep::JSON::_toFloat(const char* value) {
+float dd4hep::json::_toFloat(const char* value) {
   if (value) {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
@@ -196,28 +196,28 @@ float DD4hep::JSON::_toFloat(const char* value) {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
-      throw runtime_error("DD4hep: Severe error during expression evaluation of " + s);
+      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
     }
     return (float) result;
   }
   return 0.0;
 }
 
-double DD4hep::JSON::_toDouble(const char* value) {
+double dd4hep::json::_toDouble(const char* value) {
   if (value) {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
-      throw runtime_error("DD4hep: Severe error during expression evaluation of " + s);
+      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
     }
     return result;
   }
   return 0.0;
 }
 
-void DD4hep::JSON::_toDictionary(const char* name, const char* value) {
+void dd4hep::json::_toDictionary(const char* name, const char* value) {
   string n = _toString(name).c_str(), v = _toString(value);
   size_t idx = v.find("(int)");
   if (idx != string::npos)
@@ -228,29 +228,29 @@ void DD4hep::JSON::_toDictionary(const char* name, const char* value) {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << v << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of " + v);
+    throw runtime_error("dd4hep: Severe error during expression evaluation of " + v);
   }
   eval.setVariable(n.c_str(), result);
 }
 
 template <typename T>
-void DD4hep::JSON::_toDictionary(const char* name, T value)   {
+void dd4hep::json::_toDictionary(const char* name, T value)   {
   string item = _toString(value);
   _toDictionary(name, item.c_str());
 }
 
-template void DD4hep::JSON::_toDictionary(const char* name, const string& value);
-template void DD4hep::JSON::_toDictionary(const char* name, unsigned long value);
-template void DD4hep::JSON::_toDictionary(const char* name, unsigned int value);
-template void DD4hep::JSON::_toDictionary(const char* name, unsigned short value);
-template void DD4hep::JSON::_toDictionary(const char* name, int value);
-template void DD4hep::JSON::_toDictionary(const char* name, long value);
-template void DD4hep::JSON::_toDictionary(const char* name, short value);
-template void DD4hep::JSON::_toDictionary(const char* name, float value);
-template void DD4hep::JSON::_toDictionary(const char* name, double value);
+template void dd4hep::json::_toDictionary(const char* name, const string& value);
+template void dd4hep::json::_toDictionary(const char* name, unsigned long value);
+template void dd4hep::json::_toDictionary(const char* name, unsigned int value);
+template void dd4hep::json::_toDictionary(const char* name, unsigned short value);
+template void dd4hep::json::_toDictionary(const char* name, int value);
+template void dd4hep::json::_toDictionary(const char* name, long value);
+template void dd4hep::json::_toDictionary(const char* name, short value);
+template void dd4hep::json::_toDictionary(const char* name, float value);
+template void dd4hep::json::_toDictionary(const char* name, double value);
 
 /// Evaluate string constant using environment stored in the evaluator
-string DD4hep::JSON::getEnviron(const string& env)   {
+string dd4hep::json::getEnviron(const string& env)   {
   size_t id1 = env.find("${");
   size_t id2 = env.rfind("}");
   if ( id1 == string::npos || id2 == string::npos )   {
@@ -262,7 +262,7 @@ string DD4hep::JSON::getEnviron(const string& env)   {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << env << ": ";
       eval.print_error();
-      throw runtime_error("DD4hep: Severe error during environment lookup of " + env);
+      throw runtime_error("dd4hep: Severe error during environment lookup of " + env);
     }
     v = env.substr(0,id1);
     v += ret;
@@ -490,9 +490,9 @@ size_t Collection_t::size() const {
 /// Helper function to throw an exception
 void Collection_t::throw_loop_exception(const exception& e) const {
   if (m_node) {
-    throw runtime_error(string(e.what()) + "\n" + "DD4hep: Error interpreting XML nodes of type <" + tag() + "/>");
+    throw runtime_error(string(e.what()) + "\n" + "dd4hep: Error interpreting XML nodes of type <" + tag() + "/>");
   }
-  throw runtime_error(string(e.what()) + "\n" + "DD4hep: Error interpreting collections XML nodes.");
+  throw runtime_error(string(e.what()) + "\n" + "dd4hep: Error interpreting collections XML nodes.");
 }
 
 void Collection_t::operator++() const {
@@ -519,15 +519,15 @@ void Collection_t::operator--(int) const {
   --(*this);
 }
 
-void DD4hep::JSON::dumpTree(Handle_t elt)   {
+void dd4hep::json::dumpTree(Handle_t elt)   {
   dumpTree(elt.ptr());
 }
 
-void DD4hep::JSON::dumpTree(Element elt)   {
+void dd4hep::json::dumpTree(Element elt)   {
   dumpTree(elt.ptr());
 }
 
-void DD4hep::JSON::dumpTree(const JsonElement* elt)   {
+void dd4hep::json::dumpTree(const JsonElement* elt)   {
   struct Dump {
     void operator()(const JsonElement* e, const string& tag)   const  {
       string t = tag+"   ";

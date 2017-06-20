@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -34,7 +34,7 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace of the DDDB conversion stuff
   namespace DDDB  {
@@ -42,7 +42,7 @@ namespace DD4hep {
     /// Forward declarations
     class dddb;
 
-    /// Class supporting the interface of the LHCb conditions database to DD4hep
+    /// Class supporting the interface of the LHCb conditions database to dd4hep
     /**
      *
      *  \author   M.Frank
@@ -51,39 +51,39 @@ namespace DD4hep {
      */
     class DDDBHelper   {
     public:
-      typedef std::vector<std::pair<std::string, Geometry::VisAttr> > VisAttrs;
-      typedef std::map<std::string,std::pair<Geometry::DetElement,std::string> > Det_Conditions;
+      typedef std::vector<std::pair<std::string, VisAttr> > VisAttrs;
+      typedef std::map<std::string,std::pair<DetElement,std::string> > Det_Conditions;
 
     public:
       /// Standard constructor
-      DDDBHelper(Geometry::LCDD& lcdd);
+      DDDBHelper(Detector& description);
       /// Default destructor
       virtual ~DDDBHelper();
 
       /// Access XML reader object
-      XML::UriReader*  xmlReader() const       {  return m_xmlReader; }
+      xml::UriReader*  xmlReader() const       {  return m_xmlReader; }
       /// Set XML reader object
-      void setXmlReader(XML::UriReader* rdr)   {  m_xmlReader = rdr;  }
+      void setXmlReader(xml::UriReader* rdr)   {  m_xmlReader = rdr;  }
       /// Access local database representation
       dddb* detectorDescription() const        {  return m_detDesc;   }
       /// Set XML reader object
       void setDetectorDescription(dddb* geo);
       /// Access visualization attribute for a given volume by path
-      Geometry::VisAttr visAttr(const std::string& path)  const;
+      VisAttr visAttr(const std::string& path)  const;
       /// Add visualization attribute
       void addVisAttr(const std::string& path, const std::string attr_name);
       /// Add visualization attribute
-      void addVisAttr(const std::string& path, Geometry::VisAttr attr);
+      void addVisAttr(const std::string& path, VisAttr attr);
       /// Add new conditions entry
-      bool addConditionEntry(const std::string& val, Geometry::DetElement det, const std::string& item);
+      bool addConditionEntry(const std::string& val, DetElement det, const std::string& item);
       /// Access conditions entry
-      std::pair<Geometry::DetElement,std::string> getConditionEntry(const std::string& item)  const;
+      std::pair<DetElement,std::string> getConditionEntry(const std::string& item)  const;
       
     public:
       /// Reference to main detector description instance
-      Geometry::LCDD& m_lcdd;
+      Detector&       m_description;
       /// Reference to XML entity resolver
-      XML::UriReader* m_xmlReader;
+      xml::UriReader* m_xmlReader;
       /// Reference to extracted detector description information
       dddb*           m_detDesc;
       /// Optional container of visualization attributes
@@ -93,5 +93,5 @@ namespace DD4hep {
     };
 
   }    /* End namespace DDDB        */
-}      /* End namespace DD4hep      */
+}      /* End namespace dd4hep      */
 #endif /* DD4HEP_DDDB_DDDBHELPER_H  */

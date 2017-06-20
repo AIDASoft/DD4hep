@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,11 +21,11 @@
 
 
 #define XML_CHILDVALUE_childValue(name,type)                            \
-  m_element.child(_DD4hep_Unicode_Item(name)).attr<type>(_DD4hep_Unicode_Item(value))
+  m_element.child(_dd4hep_Unicode_Item(name)).attr<type>(_dd4hep_Unicode_Item(value))
 
 #define XML_CHILDVALUE_childValueDefault(name,type,def)                 \
-  Handle_t __h = m_element.child(_DD4hep_Unicode_Item(name),false);     \
-  if ( __h.ptr() && __h.hasAttr(_DD4hep_Unicode_Item(value)) ) return __h.attr < type > (_DD4hep_Unicode_Item(value)); \
+  Handle_t __h = m_element.child(_dd4hep_Unicode_Item(name),false);     \
+  if ( __h.ptr() && __h.hasAttr(_dd4hep_Unicode_Item(value)) ) return __h.attr < type > (_dd4hep_Unicode_Item(value)); \
   return def;
 
 #define XML_CHILDVALUE_ACCESSOR(type,name)                              \
@@ -33,9 +33,9 @@
 
 #define XML_CHILDVALUE_ACCESSOR_DEFAULT(name,type,dressing)             \
   type ChildValue::name(type default_val) const {                       \
-    Handle_t __h = m_element.child(_DD4hep_Unicode_Item(name),false);   \
+    Handle_t __h = m_element.child(_dd4hep_Unicode_Item(name),false);   \
     if ( __h.ptr() )  {                                                 \
-      const XmlChar* val = __h.attr_value_nothrow(_DD4hep_Unicode_Item(value)); \
+      const XmlChar* val = __h.attr_value_nothrow(_dd4hep_Unicode_Item(value)); \
       return val ? dressing(val) : default_val; }                       \
     return default_val; }
 

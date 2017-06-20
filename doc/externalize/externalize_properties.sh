@@ -1,6 +1,6 @@
 #!/bin/bash
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -42,8 +42,8 @@ if test "" = "${TARGET}"; then
     cat <<EOF
  Usage:  bash ${0} <scp-target-directory>
              e.g. ${USER}/cmtuser/Online_vxry/Online/Dataflow
-         This script extracts the DD4hep property mechanism so that
-         it can be used without DD4hep.
+         This script extracts the dd4hep property mechanism so that
+         it can be used without dd4hep.
 
  Note:   to use the properties and the parsers, you also MUST
          externalize the Evaluator.

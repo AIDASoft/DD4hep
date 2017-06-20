@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -104,7 +104,7 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
               MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
               MultiCollections MultiSegmentations )
   # Test format conversions
-  foreach( type lcdd gdml vis )
+  foreach( type description gdml vis )
     dd4hep_add_test_reg( ClientTests_${test}_converter_${type}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}

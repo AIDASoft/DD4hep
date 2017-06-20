@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,8 +26,8 @@
 #include "DD4hep/Factories.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::AlignmentExamples;
+using namespace dd4hep;
+using namespace dd4hep::AlignmentExamples;
 
 /// Plugin function: Alignment program example
 /**
@@ -37,7 +37,7 @@ using namespace DD4hep::AlignmentExamples;
  *  \version 1.0
  *  \date    01/12/2016
  */
-static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
+static int alignment_example (Detector& description, int argc, char** argv)  {
 
   string input, delta;
   bool arg_error = false;
@@ -61,12 +61,12 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   }
 
   // First we load the geometry
-  lcdd.fromXML(input);
+  description.fromXML(input);
 
-  ConditionsManager manager  = installManager(lcdd);
+  ConditionsManager manager  = installManager(description);
   const void*  delta_args[] = {delta.c_str(), 0}; // Better zero-terminate
 
-  lcdd.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
+  description.apply("DD4hep_ConditionsXMLRepositoryParser",1,(char**)delta_args);
   // Now the deltas are stored in the conditions manager in the proper IOV pools
   const IOVType* iov_typ = manager.iovType("run");
   if ( 0 == iov_typ )
@@ -75,26 +75,26 @@ static int alignment_example (Geometry::LCDD& lcdd, int argc, char** argv)  {
   IOV req_iov(iov_typ,1500);      // IOV goes from run 1000 ... 2000
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
-  Conditions::fill_content(manager,*content,*iov_typ);
+  cond::fill_content(manager,*content,*iov_typ);
 
   ConditionsManager::Result cres = manager.prepare(req_iov,*slice);
   // ++++++++++++++++++++++++ Compute the tranformation matrices
   AlignmentsCalculator          calc;
-  Conditions::ConditionsHashMap alignments;
+  ConditionsHashMap alignments;
 
-  AlignmentsCalculator::Deltas deltas;
-  Scanner(deltaCollector(*slice, deltas),lcdd.world());
+  map<DetElement, Delta> deltas;
+  Scanner(deltaCollector(*slice, deltas),description.world());
   printout(INFO,"Prepare","Got a total of %ld Deltas",deltas.size());
 
-  slice->pool->flags |= Conditions::UserPool::PRINT_INSERT;
+  slice->pool->flags |= cond::UserPool::PRINT_INSERT;
   AlignmentsCalculator::Result  ares = calc.compute(deltas, alignments);
   ConditionsSlice::Inserter(*slice,alignments.data);
 
   // What else ? let's access the data
-  size_t total_accessed = Scanner().scan(AlignmentDataAccess(*slice),lcdd.world());
+  size_t total_accessed = Scanner().scan(AlignmentDataAccess(*slice),description.world());
 
   // What else ? let's print the current selection
-  Scanner(AlignedVolumePrinter(slice.get(),"Example"),lcdd.world());
+  Scanner(AlignedVolumePrinter(slice.get(),"Example"),description.world());
 
   printout(INFO,"Example",
            "%ld conditions in slice. (T:%ld,S:%ld,L:%ld,C:%ld,M:%ld) "

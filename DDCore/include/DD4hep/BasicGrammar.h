@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 #include <typeinfo>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Base class describing string evaluation to C++ objects using boost::spirit
   /**
@@ -58,6 +58,6 @@ namespace DD4hep {
     /// Set value from serialized string. On successful data conversion TRUE is returned.
     virtual bool fromString(void* ptr, const std::string& value) const = 0;
   };
-}      // End namespace DD4hep
+}      // End namespace dd4hep
 
 #endif  /* DD4HEP_DDG4_BASICGRAMMAR_H */

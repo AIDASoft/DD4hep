@@ -13,13 +13,13 @@
 #include <cmath>
 
 
-static DD4hep::DDTest test( "CellDimensions" ) ;
+static dd4hep::DDTest test( "CellDimensions" ) ;
 
 
 int main() {
   try{
 
-    DD4hep::DDSegmentation::CartesianGridXY seg("system:8,barrel:3,layer:8,slice:5,x:16,y:16");
+    dd4hep::DDSegmentation::CartesianGridXY seg("system:8,barrel:3,layer:8,slice:5,x:16,y:16");
 
     const double xSize=12343.43243;
     const double ySize=M_PI;
@@ -27,7 +27,7 @@ int main() {
     seg.setGridSizeX(xSize);
     seg.setGridSizeY(ySize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XY: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - ySize )  < 1e-11, " CG_XY: Dimension for Y" );
@@ -41,7 +41,7 @@ int main() {
 
   try{
 
-    DD4hep::DDSegmentation::CartesianGridXZ seg("system:8,barrel:3,layer:8,slice:5,x:16,z:16");
+    dd4hep::DDSegmentation::CartesianGridXZ seg("system:8,barrel:3,layer:8,slice:5,x:16,z:16");
 
     const double xSize=12343.43243;
     const double zSize=M_PI;
@@ -49,7 +49,7 @@ int main() {
     seg.setGridSizeX(xSize);
     seg.setGridSizeZ(zSize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XZ: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - zSize )  < 1e-11, " CG_XZ: Dimension for Z" );
@@ -63,7 +63,7 @@ int main() {
 
   try{
 
-    DD4hep::DDSegmentation::CartesianGridYZ seg("system:8,barrel:3,layer:8,slice:5,y:16,z:16");
+    dd4hep::DDSegmentation::CartesianGridYZ seg("system:8,barrel:3,layer:8,slice:5,y:16,z:16");
 
     const double ySize=12343.43243;
     const double zSize=M_PI;
@@ -71,7 +71,7 @@ int main() {
     seg.setGridSizeY(ySize);
     seg.setGridSizeZ(zSize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - ySize )  < 1e-11, " CG_YZ: Dimension for Y" );
     test( fabs(seg.cellDimensions(volID)[1] - zSize )  < 1e-11, " CG_YZ: Dimension for Z" );
@@ -85,7 +85,7 @@ int main() {
 
   try{
 
-    DD4hep::DDSegmentation::CartesianGridXYZ seg("system:8,barrel:3,layer:8,slice:7,x:10,y:10,z:10");
+    dd4hep::DDSegmentation::CartesianGridXYZ seg("system:8,barrel:3,layer:8,slice:7,x:10,y:10,z:10");
 
     const double xSize=42.24;
     const double ySize=12343.43243;
@@ -95,7 +95,7 @@ int main() {
     seg.setGridSizeY(ySize);
     seg.setGridSizeZ(zSize);
 
-    DD4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID = 0;
 
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XYZ: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - ySize )  < 1e-11, " CG_XYZ: Dimension for Y" );

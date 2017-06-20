@@ -7,7 +7,7 @@ from SystemOfUnits import *
 #
 """
 
-   DD4hep simulation example setup using the python configuration
+   dd4hep simulation example setup using the python configuration
 
    @author  M.Frank
    @version 1.0
@@ -18,7 +18,7 @@ def run():
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/SiliconBlock.xml")
 
-  DDG4.importConstants(kernel.lcdd(),debug=False)
+  DDG4.importConstants(kernel.detectorDescription(),debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI

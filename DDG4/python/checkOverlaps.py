@@ -1,6 +1,6 @@
 #!/bin/python
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -50,7 +50,7 @@ except ImportError,X:
 try:
   import DD4hep
 except ImportError,X:
-  print 'DD4hep python interface not accessible:',X
+  print 'dd4hep python interface not accessible:',X
   print parser.format_help()
   sys.exit(errno.ENOENT)
 #
@@ -58,15 +58,15 @@ except ImportError,X:
 opts.tolerance = float(opts.tolerance)
 DD4hep.setPrintLevel(DD4hep.OutputLevel.ERROR)
 print '+++%s\n+++ Loading compact geometry:%s\n+++%s'%(120*'=',opts.compact,120*'=')
-lcdd = DD4hep.Geo.LCDD.getInstance()
-lcdd.fromXML(opts.compact)
+description = DD4hep.Detector.getInstance()
+description.fromXML(opts.compact)
 print '+++%s\n+++ Checking overlaps of geometry:%s tolerance:%f option:%s\n+++%s'%(120*'=',opts.compact,opts.tolerance,opts.option,120*'=')
-lcdd.manager().CheckOverlaps(opts.tolerance,opts.option)
+description.manager().CheckOverlaps(opts.tolerance,opts.option)
 #
 #
 if opts.print_overlaps:
   print '+++%s\n+++ Printing overlaps of geometry:%s\n+++%s'%(120*'=',opts.compact,120*'=')
-  lcdd.manager().PrintOverlaps()
+  description.manager().PrintOverlaps()
 #
 #
 print '+++ Execution finished...'

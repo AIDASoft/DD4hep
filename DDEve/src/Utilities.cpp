@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DD4hep/Objects.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
 #include "DDEve/Utilities.h"
@@ -30,8 +30,8 @@
 #include "TEveElement.h"
 #include "TEveTrans.h"
 
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 using namespace std;
 
 /// Set the rendering flags for the object and the next level children
@@ -182,7 +182,7 @@ int Utilities::findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, st
   return 0;
 }
 
-std::pair<bool,TEveElement*> Utilities::LoadDetElement(Geometry::DetElement de,int levels, TEveElement* parent)  {
+std::pair<bool,TEveElement*> Utilities::LoadDetElement(DetElement de,int levels, TEveElement* parent)  {
   if ( !strstr(de.name(),"BeamCal") )   {
     PlacedVolume pv = de.placement();
     if (pv.isValid()) {

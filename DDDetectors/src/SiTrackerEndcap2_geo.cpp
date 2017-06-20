@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,26 +19,26 @@
 #include <map>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   typedef vector<PlacedVolume> Placements;
   xml_det_t   x_det     = e;
-  Material    vacuum    = lcdd.vacuum();
+  Material    vacuum    = description.vacuum();
   int         det_id    = x_det.id();
   string      det_name  = x_det.nameStr();
   bool        reflect   = x_det.reflect(false);
   DetElement  sdet        (det_name,det_id);
   Assembly    assembly    (det_name);
   //Volume      assembly    (det_name,Box(10000,10000,10000),vacuum);
-  Volume      motherVol = lcdd.pickMotherVolume(sdet);
+  Volume      motherVol = description.pickMotherVolume(sdet);
   int         m_id=0, c_id=0, n_sensor=0;
   map<string,Volume> modules;
   map<string, Placements>  sensitives;
   PlacedVolume pv;
 
-  assembly.setVisAttributes(lcdd.invisible());
+  assembly.setVisAttributes(description.invisible());
   sens.setType("tracker");
 
   for(xml_coll_t mi(x_det,_U(module)); mi; ++mi, ++m_id)  {
@@ -56,16 +56,16 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       
     y1 = y2 = total_thickness / 2;
     Volume  m_volume(m_nam, Trapezoid(x1, x2, y1, y2, z), vacuum);      
-    m_volume.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
+    m_volume.setVisAttributes(description.visAttributes(x_mod.visStr()));
 
     for(ci.reset(), n_sensor=1, c_id=0, posY=-y1; ci; ++ci, ++c_id)  {
       xml_comp_t c       = ci;
       double     c_thick = c.thickness();
-      Material   c_mat   = lcdd.material(c.materialStr());
+      Material   c_mat   = description.material(c.materialStr());
       string     c_name  = _toString(c_id,"component%d");
       Volume     c_vol(c_name, Trapezoid(x1,x2,c_thick/2e0,c_thick/2e0,z), c_mat);
 
-      c_vol.setVisAttributes(lcdd.visAttributes(c.visStr()));
+      c_vol.setVisAttributes(description.visAttributes(c.visStr()));
       pv = m_volume.placeVolume(c_vol,Position(0,posY+c_thick/2,0));
       if ( c.isSensitive() ) {
         sdet.check(n_sensor > 2,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");

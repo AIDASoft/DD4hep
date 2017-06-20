@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_ALIGNDET_ALIGNMENTEXAMPLEOBJECTS_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/AlignmentData.h"
@@ -27,34 +27,23 @@
 #include "DDCond/ConditionsSlice.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for alignment examples
   namespace AlignmentExamples {
 
-    using Geometry::LCDD;
-    using Geometry::RotationZYX;
-    using Geometry::DetElement;
-    using Geometry::detectorProcessor;
-    
-    using Conditions::Condition;
-    using Conditions::ConditionKey;
-    using Conditions::ConditionsMap;
-    using Conditions::ConditionsPool;
-    using Conditions::ConditionsSlice;
-    using Conditions::ConditionsContent;
-    using Conditions::ConditionsManager;
-    using Conditions::conditionsCollector;
+    using cond::ConditionsPool;
+    using cond::ConditionsSlice;
+    using cond::ConditionsContent;
+    using cond::ConditionsManager;
+    using cond::conditionsCollector;
 
-    using Alignments::Delta;
-    using Alignments::Alignment;
-    using Alignments::AlignmentData;
-    using Alignments::AlignmentsPrinter;
-    using Alignments::AlignmentsCalculator;
-    using Alignments::AlignedVolumePrinter;
-    using Alignments::DeltaCollector;
-    using Alignments::deltaCollector;
-    using Alignments::alignmentsCollector;
+    using align::AlignmentsPrinter;
+    using align::AlignmentsCalculator;
+    using align::AlignedVolumePrinter;
+    using align::DeltaCollector;
+    using align::deltaCollector;
+    using align::alignmentsCollector;
     
     /// Example how to populate the detector description with alignment constants
     /**
@@ -97,10 +86,10 @@ namespace DD4hep {
     };
 
     /// Helper to run DetElement scans
-    typedef Geometry::DetectorScanner Scanner;
+    typedef DetectorScanner Scanner;
 
     /// Install the consitions and the alignment manager
-    ConditionsManager installManager(LCDD& lcdd);
+    ConditionsManager installManager(Detector& description);
   }       /* End namespace AlignmentExamples           */
-}         /* End namespace DD4hep                      */
+}         /* End namespace dd4hep                      */
 #endif    /* DD4HEP_ALIGNDET_ALIGNMENTEXAMPLEOBJECTS_H */

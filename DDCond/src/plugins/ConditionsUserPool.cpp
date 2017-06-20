@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,10 +22,10 @@
 #include <unordered_map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Forward declarations
     class ConditionsDataLoader;
@@ -53,7 +53,7 @@ namespace DD4hep {
       ConditionsDataLoader* m_loader = 0;
 
       /// Internal helper to find conditions
-      Condition::Object* i_findCondition(key_type key)  const;
+      Condition::Object* i_findCondition(Condition::key_type key)  const;
 
       /// Internal insertion helper
       bool i_insert(Condition::Object* o);
@@ -70,44 +70,47 @@ namespace DD4hep {
       /// Full cleanup of all managed conditions.
       virtual void clear()  override;
       /// Check a condition for existence
-      virtual bool exists(key_type hash)  const  override;
+      virtual bool exists(Condition::key_type hash)  const  override;
       /// Check a condition for existence
       virtual bool exists(const ConditionKey& key)  const  override;
       /// Check if a condition exists in the pool and return it to the caller
-      virtual Condition get(key_type hash)  const  override;
+      virtual Condition get(Condition::key_type hash)  const  override;
       /// Check if a condition exists in the pool and return it to the caller     
       virtual Condition get(const ConditionKey& key)  const  override;
 
       /// Remove condition by key from pool.
-      virtual bool remove(key_type hash_key)  override;
+      virtual bool remove(Condition::key_type hash_key)  override;
       /// Remove condition by key from pool.
       virtual bool remove(const ConditionKey& key)  override;
       /// Register a new condition to this pool
       virtual bool insert(Condition cond)  override;
 
       /// ConditionsMap overload: Add a condition directly to the slice
-      virtual bool insert(DetElement detector, itemkey_type key, Condition condition)  override;
+      virtual bool insert(DetElement detector, Condition::itemkey_type key, Condition condition)  override;
       /// ConditionsMap overload: Access a condition
-      virtual Condition get(DetElement detector, itemkey_type key)  const  override;
+      virtual Condition get(DetElement detector, Condition::itemkey_type key)  const  override;
       /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
       virtual std::vector<Condition> get(DetElement detector,
-                                         itemkey_type lower,
-                                         itemkey_type upper)  const override;
+                                         Condition::itemkey_type lower,
+                                         Condition::itemkey_type upper)  const override;
       /// Access all conditions within the key range of a detector element
-      virtual std::vector<Condition> get(key_type lower, key_type upper)  const  override;
+      virtual std::vector<Condition> get(Condition::key_type lower,
+                                         Condition::key_type upper)  const  override;
 
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(const Processor& processor) const  override;
+      virtual void scan(const Condition::Processor& processor) const  override;
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
-      virtual void scan(key_type lower, key_type upper, const Processor& processor) const  override;
+      virtual void scan(Condition::key_type lower,
+                        Condition::key_type upper,
+                        const Condition::Processor& processor) const  override;
       /// ConditionsMap overload: Interface to scan data content of the conditions mapping
       virtual void scan(DetElement detector,
-                        itemkey_type lower,
-                        itemkey_type upper,
-                        const Processor& processor) const  override;
+                        Condition::itemkey_type lower,
+                        Condition::itemkey_type upper,
+                        const Condition::Processor& processor) const  override;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual Result prepare(const IOV&              required,
+      virtual ConditionsManager::Result prepare(const IOV&              required,
                              ConditionsSlice&        slice,
                              void*                   user_param)  override;
 
@@ -117,20 +120,20 @@ namespace DD4hep {
                              bool                    force)  override;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual Result load   (const IOV&              required,
+      virtual ConditionsManager::Result load   (const IOV&              required,
                              ConditionsSlice&        slice);
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual Result compute(const IOV&              required,
+      virtual ConditionsManager::Result compute(const IOV&              required,
                              ConditionsSlice&        slice,
                              void*                   user_param);
     };
 
-  }    /* End namespace Conditions               */
-}      /* End namespace DD4hep                   */
+  }    /* End namespace cond               */
+}      /* End namespace dd4hep                   */
 #endif /* DDCOND_CONDITIONSMAPPEDUSERPOOL_H      */
 
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -157,8 +160,8 @@ namespace DD4hep {
 #include <mutex>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 namespace {
 
@@ -222,7 +225,7 @@ ConditionsMappedUserPool<MAPPING>::~ConditionsMappedUserPool()  {
 }
 
 template<typename MAPPING> inline Condition::Object* 
-ConditionsMappedUserPool<MAPPING>::i_findCondition(key_type key)  const {
+ConditionsMappedUserPool<MAPPING>::i_findCondition(Condition::key_type key)  const {
   typename MAPPING::const_iterator i=m_conditions.find(key);
 #if 0
   if ( i == m_conditions.end() )  {
@@ -273,7 +276,7 @@ void ConditionsMappedUserPool<MAPPING>::clear()   {
 
 /// Check a condition for existence
 template<typename MAPPING>
-bool ConditionsMappedUserPool<MAPPING>::exists(key_type hash)  const   {
+bool ConditionsMappedUserPool<MAPPING>::exists(Condition::key_type hash)  const   {
   return i_findCondition(hash) != 0;
 }
 
@@ -285,7 +288,7 @@ bool ConditionsMappedUserPool<MAPPING>::exists(const ConditionKey& key)  const  
 
 /// Check if a condition exists in the pool and return it to the caller
 template<typename MAPPING>
-Condition ConditionsMappedUserPool<MAPPING>::get(key_type hash)  const   {
+Condition ConditionsMappedUserPool<MAPPING>::get(Condition::key_type hash)  const   {
   return i_findCondition(hash);
 }
 
@@ -324,16 +327,16 @@ Condition ConditionsMappedUserPool<MAPPING>::get(DetElement detector, unsigned i
 /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
 template<typename MAPPING> std::vector<Condition>
 ConditionsMappedUserPool<MAPPING>::get(DetElement detector,
-                                       itemkey_type lower,
-                                       itemkey_type upper)  const {
-  ConditionKey::detkey_type det_key = detector.key();
+                                       Condition::itemkey_type lower,
+                                       Condition::itemkey_type upper)  const {
+  Condition::detkey_type det_key = detector.key();
   return this->get(ConditionKey::KeyMaker(det_key,lower).hash,
                    ConditionKey::KeyMaker(det_key,upper).hash);
 }
 
 /// Specialization for std::map: Access all conditions within a given key range
 template<typename MAPPING> std::vector<Condition>
-ConditionsMappedUserPool<MAPPING>::get(key_type lower, key_type upper)   const  {
+ConditionsMappedUserPool<MAPPING>::get(Condition::key_type lower, Condition::key_type upper)   const  {
   vector<Condition> result;
   typename MAPPING::const_iterator first = m_conditions.lower_bound(lower);
   for(; first != m_conditions.end() && (*first).first <= upper; ++first )
@@ -343,7 +346,7 @@ ConditionsMappedUserPool<MAPPING>::get(key_type lower, key_type upper)   const  
 
 /// ConditionsMap overload: Interface to scan data content of the conditions mapping
 template<typename MAPPING>
-void ConditionsMappedUserPool<MAPPING>::scan(const Processor& processor) const  {
+void ConditionsMappedUserPool<MAPPING>::scan(const Condition::Processor& processor) const  {
   for( const auto& i : m_conditions )
     processor(i.second);
 }
@@ -351,11 +354,11 @@ void ConditionsMappedUserPool<MAPPING>::scan(const Processor& processor) const  
 /// ConditionsMap overload: Interface to scan data content of the conditions mapping
 template<typename MAPPING>
 void ConditionsMappedUserPool<MAPPING>::scan(DetElement detector,
-                                             itemkey_type lower,
-                                             itemkey_type upper,
-                                             const Processor& processor) const
+                                             Condition::itemkey_type lower,
+                                             Condition::itemkey_type upper,
+                                             const Condition::Processor& processor) const
 {
-  ConditionKey::detkey_type det_key = detector.key();
+  Condition::detkey_type det_key = detector.key();
   scan(ConditionKey::KeyMaker(det_key,lower).hash,
        ConditionKey::KeyMaker(det_key,upper).hash,
        processor);
@@ -363,9 +366,9 @@ void ConditionsMappedUserPool<MAPPING>::scan(DetElement detector,
 
 /// ConditionsMap overload: Interface to scan data content of the conditions mapping
 template<typename MAPPING>
-void ConditionsMappedUserPool<MAPPING>::scan(key_type lower,
-                                             key_type upper,
-                                             const Processor& processor) const
+void ConditionsMappedUserPool<MAPPING>::scan(Condition::key_type lower,
+                                             Condition::key_type upper,
+                                             const Condition::Processor& processor) const
 {
   typename MAPPING::const_iterator first = m_conditions.lower_bound(lower);
   for(; first != m_conditions.end() && (*first).first <= upper; ++first )
@@ -380,7 +383,7 @@ bool ConditionsMappedUserPool<MAPPING>::remove(const ConditionKey& key)   {
 
 /// Remove condition by key from pool.
 template<typename MAPPING>
-bool ConditionsMappedUserPool<MAPPING>::remove(key_type hash_key)    {
+bool ConditionsMappedUserPool<MAPPING>::remove(Condition::key_type hash_key)    {
   typename MAPPING::iterator i = m_conditions.find(hash_key);
   if ( i != m_conditions.end() ) {
     m_conditions.erase(i);
@@ -435,7 +438,7 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
 namespace {
   struct COMP {
     typedef pair<Condition::key_type,const ConditionDependency*> Dep;
-    typedef pair<const Condition::key_type,Interna::ConditionObject*>   Cond;
+    typedef pair<const Condition::key_type,detail::ConditionObject*>   Cond;
     typedef pair<const Condition::key_type,ConditionsLoadInfo* >   Info;
     typedef pair<const Condition::key_type,Condition>   Cond2;
     
@@ -450,7 +453,7 @@ namespace {
   };
 }
 
-template<typename MAPPING> UserPool::Result
+template<typename MAPPING> ConditionsManager::Result
 ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required, 
                                            ConditionsSlice&        slice,
                                            void*                   user_param)
@@ -464,7 +467,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
   bool   do_load         = m_manager->doLoadConditions();
   bool   do_output_miss  = m_manager->doOutputUnloaded();
   IOV    pool_iov(required.iovType);
-  Result result;
+  ConditionsManager::Result result;
 
   // This is a critical operation, because we have to ensure the
   // IOV pools are ONLY manipulated by the current thread.
@@ -540,7 +543,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
   //
   if ( num_calc_miss > 0 )  {
     if ( do_load )  {
-      map<key_type,const ConditionDependency*> deps(calc_missing.begin(),last_calc);
+      map<Condition::key_type,const ConditionDependency*> deps(calc_missing.begin(),last_calc);
       ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
       for( const auto& i : deps )   {
         const ConditionDependency* d = i.second;
@@ -571,7 +574,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
   return result;
 }
 
-template<typename MAPPING> UserPool::Result
+template<typename MAPPING> ConditionsManager::Result
 ConditionsMappedUserPool<MAPPING>::load(const IOV&              required, 
                                         ConditionsSlice&        slice)
 {
@@ -581,7 +584,7 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&              required,
   bool   do_load         = m_manager->doLoadConditions();
   bool   do_output_miss  = m_manager->doOutputUnloaded();
   IOV    pool_iov(required.iovType);
-  Result result;
+  ConditionsManager::Result result;
 
   // This is a critical operation, because we have to ensure the
   // IOV pools are ONLY manipulated by the current thread.
@@ -642,7 +645,7 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&              required,
   return result;
 }
 
-template<typename MAPPING> UserPool::Result
+template<typename MAPPING> ConditionsManager::Result
 ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required, 
                                            ConditionsSlice&        slice,
                                            void*                   user_param)
@@ -653,7 +656,7 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required,
   bool   do_load         = m_manager->doLoadConditions();
   bool   do_output       = m_manager->doOutputUnloaded();
   IOV    pool_iov(required.iovType);
-  Result result;
+  ConditionsManager::Result result;
 
   // This is a critical operation, because we have to ensure the
   // IOV pools are ONLY manipulated by the current thread.
@@ -680,7 +683,7 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required,
   //
   if ( num_calc_miss > 0 )  {
     if ( do_load )  {
-      map<key_type,const ConditionDependency*> deps(calc_missing.begin(),last_calc);
+      map<Condition::key_type,const ConditionDependency*> deps(calc_missing.begin(),last_calc);
       ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
       for( const auto& i : deps )   {
         const ConditionDependency* d = i.second;
@@ -712,10 +715,10 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required,
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     typedef unordered_map<Condition::key_type,Condition::Object*> umap_t;
 
@@ -723,9 +726,9 @@ namespace DD4hep {
     /** Specialization necessary, since unordered maps have no lower bound.
      */
     template<> void
-    ConditionsMappedUserPool<umap_t>::scan(key_type lower,
-                                           key_type upper,
-                                           const Processor& processor)   const  {
+    ConditionsMappedUserPool<umap_t>::scan(Condition::key_type lower,
+                                           Condition::key_type upper,
+                                           const Condition::Processor& processor)   const  {
       for( const auto& e : m_conditions )
         if ( e.second->hash >= lower && e.second->hash <= upper )
           processor(e.second);
@@ -734,7 +737,7 @@ namespace DD4hep {
     /** Specialization necessary, since unordered maps have no lower bound.
      */
     template<> std::vector<Condition>
-    ConditionsMappedUserPool<umap_t>::get(key_type lower, key_type upper)   const  {
+    ConditionsMappedUserPool<umap_t>::get(Condition::key_type lower, Condition::key_type upper)   const  {
       vector<Condition> result;
       for( const auto& e : m_conditions )  {
         if ( e.second->hash >= lower && e.second->hash <= upper )
@@ -742,12 +745,12 @@ namespace DD4hep {
       }
       return result;
     }
-  }    /* End namespace Conditions               */
-}      /* End namespace DD4hep                   */
+  }    /* End namespace cond               */
+}      /* End namespace dd4hep                   */
 
 namespace {
   template <typename MAPPING>
-  void* create_pool(Geometry::LCDD&, int argc, char** argv)  {
+  void* create_pool(Detector&, int argc, char** argv)  {
     if ( argc > 1 )  {
       ConditionsManagerObject* m = (ConditionsManagerObject*)argv[0];
       ConditionsIOVPool* p = (ConditionsIOVPool*)argv[1];
@@ -760,11 +763,11 @@ namespace {
 }
 
 // Factory for the user pool using a binary tree map
-void* create_map_user_pool(Geometry::LCDD& lcdd, int argc, char** argv)
-{  return create_pool<map<Condition::key_type,Condition::Object*> >(lcdd, argc, argv);  }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsMapUserPool, create_map_user_pool)
+void* create_map_user_pool(Detector& description, int argc, char** argv)
+{  return create_pool<map<Condition::key_type,Condition::Object*> >(description, argc, argv);  }
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsMapUserPool, create_map_user_pool)
 
 // Factory for the user pool using a binary tree map
-void* create_unordered_map_user_pool(Geometry::LCDD& lcdd, int argc, char** argv)
-{  return create_pool<unordered_map<Condition::key_type,Condition::Object*> >(lcdd, argc, argv);  }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsUnorderedMapUserPool, create_map_user_pool)
+void* create_unordered_map_user_pool(Detector& description, int argc, char** argv)
+{  return create_pool<unordered_map<Condition::key_type,Condition::Object*> >(description, argc, argv);  }
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsUnorderedMapUserPool, create_map_user_pool)

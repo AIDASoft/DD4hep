@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,13 +18,12 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-
 #ifndef DD4HEP_GEOMETRY_VOLUMEMANAGERINTERNA_H
 #define DD4HEP_GEOMETRY_VOLUMEMANAGERINTERNA_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/VolumeManager.h"
 
@@ -32,51 +31,10 @@
 #include "TGeoMatrix.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-
-    // Forward declarations
-    class LCDD;
-    class VolumeManagerContext;
-    class VolumeManagerObject;
-
-    /// This structure describes the cached data for one placement held by the volume manager
-    /**
-     *
-     * \author  M.Frank
-     * \version 1.0
-     * \ingroup DD4HEP_GEOMETRY
-     */
-    class VolumeManagerContext {
-    public:
-      /// Placement identifier
-      VolumeID     identifier;
-      /// Ignore mask of the placement identifier
-      //[[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
-      VolumeID mask;
-      /// The placement
-      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
-      PlacedVolume placement;
-      /// Handle to the subdetector element handle
-      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
-      DetElement detector;
-      /// Handle to the closest Detector element
-      DetElement   element;
-      /// The transformation of space-points to the world corrdinate system
-      TGeoHMatrix  toWorld;
-      /// The transformation of space-points to the coordinate system of the detector element
-      [[gnu::deprecated("This member variable might get axed if it is not used, please tell us if you do")]]
-      TGeoHMatrix toDetector;
-      /// The transformation of space-points to the coordinate system of the closests detector element
-      TGeoHMatrix toElement;
-    public:
-      /// Default constructor
-      VolumeManagerContext();
-      /// Default destructor
-      virtual ~VolumeManagerContext();
-    };
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail {
 
     /// This structure describes the internal data of the volume manager object
     /**
@@ -87,44 +45,45 @@ namespace DD4hep {
      */
     class VolumeManagerObject: public NamedObject {
     public:
-      typedef IDDescriptor::Field Field;
-      typedef VolumeManager::Managers Managers;
-      typedef VolumeManager::Detectors Detectors;
-      typedef VolumeManager::Volumes Volumes;
-      typedef VolumeManager::Context Context;
-
-    public:
       /// The container of subdetector elements
-      Detectors subdetectors;
+      std::map<DetElement, VolumeManager>       subdetectors;
       /// The volume managers for the individual subdetector elements
-      Managers managers;
+      std::map<VolumeID, VolumeManager>         managers;
       /// The container of placements managed by this instance
-      Volumes volumes;
+      std::map<VolumeID, VolumeManagerContext*> volumes;
       /// The Detector element handle managed by this instance
-      DetElement detector;
+      DetElement detector{0};
       /// The ID descriptor object
       IDDescriptor id;
       /// The reference to the TOP level VolumeManager
-      VolumeManagerObject* top;
+      VolumeManagerObject* top = 0;
       /// The system field descriptor
-      Field system;
+      const BitFieldValue* system;
       /// System identifier
-      VolumeID sysID;
+      VolumeID sysID   = 0;
       /// Sub-detector mask
-      VolumeID detMask;
+      VolumeID detMask = ~0x0ULL;
       /// Population flags
-      int flags;
+      int flags        = VolumeManager::NONE;
     public:
       /// Default constructor
-      VolumeManagerObject();
+      VolumeManagerObject() = default;
+      /// No move constructor
+      VolumeManagerObject(VolumeManagerObject&& copy) = delete;
+      /// No copy constructor
+      VolumeManagerObject(const VolumeManagerObject& copy) = delete;
       /// Default destructor
       virtual ~VolumeManagerObject();
+      /// No move assignment
+      VolumeManagerObject& operator=(VolumeManagerObject&& copy) = delete;
+      /// No copy assignment
+      VolumeManagerObject& operator=(const VolumeManagerObject& copy) = delete;
       /// Search the locally cached volumes for a matching ID
-      Context* search(const VolumeID& id) const;
+      VolumeManagerContext* search(const VolumeID& id) const;
       /// Update callback when alignment has changed (called only for subdetectors....)
       void update(unsigned long tags, DetElement& det, void* param);
     };
 
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                */
-#endif    /* DD4hep_GEOMETRY_VOLUMEMANAGERINTERNA_H           */
+  } /* End namespace detail               */
+} /* End namespace dd4hep                */
+#endif    /* dd4hep_GEOMETRY_VOLUMEMANAGERINTERNA_H           */

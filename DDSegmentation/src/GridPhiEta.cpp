@@ -1,7 +1,7 @@
 #include "DDSegmentation/GridPhiEta.h"
 #include "DDSegmentation/SegmentationUtil.h"
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 GridPhiEta::GridPhiEta(const std::string& cellEncoding) :

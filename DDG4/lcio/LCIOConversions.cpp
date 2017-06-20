@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 
 // Framework include files
 #define DDG4_MAKE_INSTANTIATIONS
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4DataConversion.h"
@@ -57,17 +57,17 @@ using namespace lcio ;
 //==================================================================================
 
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep {
+namespace dd4hep {
 
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace sim   {
 
-    typedef Geometry::VolumeManager VolMgr;
-    typedef Geometry::IDDescriptor  IDDescriptor;
+    typedef VolumeManager VolMgr;
+    typedef IDDescriptor  IDDescriptor;
 
     /// Data conversion interface calling lower level explicit convetrers
     /**
@@ -319,8 +319,8 @@ namespace DD4hep {
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::SimTrackerHitImpl)
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::SimCalorimeterHitImpl)
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::ClusterImpl)
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 
 

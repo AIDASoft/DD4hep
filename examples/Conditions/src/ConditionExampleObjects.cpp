@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,17 +17,16 @@
 #include "DD4hep/ConditionsProcessor.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::ConditionExamples;
-using Conditions::ConditionsSlice;
-using Conditions::DependencyBuilder;
-using Conditions::ConditionsLoadInfo;
+using namespace dd4hep;
+using namespace dd4hep::ConditionExamples;
+using cond::DependencyBuilder;
+using cond::ConditionsLoadInfo;
 
 /// Install the consitions and the alignment manager
-ConditionsManager DD4hep::ConditionExamples::installManager(LCDD& lcdd)  {
+ConditionsManager dd4hep::ConditionExamples::installManager(Detector& description)  {
   // Now we instantiate the conditions manager
-  lcdd.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
-  ConditionsManager manager = ConditionsManager::from(lcdd);
+  description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
+  ConditionsManager manager = ConditionsManager::from(description);
   manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
   manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
   manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
@@ -36,7 +35,7 @@ ConditionsManager DD4hep::ConditionExamples::installManager(LCDD& lcdd)  {
 }
 
 /// Interface to client Callback in order to update the condition
-Condition ConditionUpdate1::operator()(const ConditionKey& key, const Context& context)  {
+Condition ConditionUpdate1::operator()(const ConditionKey& key, const ConditionUpdateContext& context)  {
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
 #else
@@ -51,7 +50,7 @@ Condition ConditionUpdate1::operator()(const ConditionKey& key, const Context& c
 }
 
 /// Interface to client Callback in order to update the condition
-Condition ConditionUpdate2::operator()(const ConditionKey& key, const Context& context)  {
+Condition ConditionUpdate2::operator()(const ConditionKey& key, const ConditionUpdateContext& context)  {
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
 #else
@@ -70,7 +69,7 @@ Condition ConditionUpdate2::operator()(const ConditionKey& key, const Context& c
 }
 
 /// Interface to client Callback in order to update the condition
-Condition ConditionUpdate3::operator()(const ConditionKey& key, const Context& context)  {
+Condition ConditionUpdate3::operator()(const ConditionKey& key, const ConditionUpdateContext& context)  {
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
 #else
@@ -103,9 +102,9 @@ ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, P
 
 /// Destructor
 ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
-  releasePtr(call1);
-  releasePtr(call2);
-  releasePtr(call3);
+  detail::releasePtr(call1);
+  detail::releasePtr(call2);
+  detail::releasePtr(call3);
 }
 
 /// Callback to process a single detector element

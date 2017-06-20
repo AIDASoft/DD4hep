@@ -3,7 +3,7 @@
   <subdetectors>
     <!--
 	Note: The subdetector name MUST be in the list of top level
-	detector elements attached to the LCDD structure.
+	detector elements attached to the Detector structure.
 
     -->
     <detelement path="TPC" reset="false">

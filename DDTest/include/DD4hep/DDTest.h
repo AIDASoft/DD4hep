@@ -2,7 +2,7 @@
 #include <sstream>
 #include <stdlib.h>
 
-namespace DD4hep{
+namespace dd4hep{
 
   /** Simple class for defining unit tests.
    *  Use in main program that is added as a test to ctest:

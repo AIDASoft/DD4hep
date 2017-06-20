@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,8 +22,8 @@
 #include "G4Event.hh"
 
 using namespace std;
-using namespace DD4hep::Simulation;
-typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+using namespace dd4hep::sim;
+typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 typedef Geant4InputAction::Vertices Vertices ;
 
 
@@ -48,7 +48,7 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
   
   ++m_currEvent;
   EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
-  for_each(particles.begin(),particles.end(),deleteObject<Particle>);
+  for_each(particles.begin(),particles.end(),detail::deleteObject<Particle>);
   return sc;
 }
 

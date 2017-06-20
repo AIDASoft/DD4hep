@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 
 // C/C++ include files
@@ -23,8 +23,8 @@
 #include <string>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 //________________________________________________________________________________
 #include "TRint.h"
@@ -32,32 +32,32 @@ using namespace DD4hep::Geometry;
 namespace {
 
   //______________________________________________________________________________
-  LCDD& dd4hep_instance(const char* /* name */ ="") {
+  Detector& dd4hep_instance(const char* /* name */ ="") {
 #if 0
 #include "DD4hep/PluginService.h"
     try {
-      union { void* p; LCDD* l; } v;
-      v.p = ::DD4hep::PluginService::Create<void*>("LCDD_constructor",name);
+      union { void* p; Detector* l; } v;
+      v.p = ::dd4hep::PluginService::Create<void*>("Detector_constructor",name);
       if ( v.p )  {
         return *v.l;
       }
-      except("RunPlugin","++ Failed to locate plugin to create LCDD instance");
+      except("RunPlugin","++ Failed to locate plugin to create Detector instance");
     }
     catch(const exception& e)  {
       except("RunPlugin","++ Exception: %s", e.what());
     }
     catch(...)  {
-      except("RunPlugin","++ UNKNOWN Exception while creating LCDD instance.");
+      except("RunPlugin","++ UNKNOWN Exception while creating Detector instance.");
     }
-    except("RunPlugin","++ UNKNOWN Exception while creating LCDD instance.");
+    except("RunPlugin","++ UNKNOWN Exception while creating Detector instance.");
 #endif
-    return LCDD::getInstance();
+    return Detector::getInstance();
   }
 
   //______________________________________________________________________________
-  long run_plugin(LCDD& lcdd, const char* name, int argc, char** argv) {
+  long run_plugin(Detector& description, const char* name, int argc, char** argv) {
     try {
-      lcdd.apply(name,argc,argv);
+      description.apply(name,argc,argv);
       return 0;
     }
     catch(const exception& e)  {
@@ -79,7 +79,7 @@ namespace {
       "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
       "                                    Allowed: BUILD_SIMU [=1], BUILD_RECO [=2],     \n"
       "                                    BUILD_DISPLAY [=3] or BUILD_ENVELOPE [=4]      \n"
-      "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         \n"
+      "        -destroy     [OPTIONAL]     Force destruction of the Detector instance         \n"
       "                                    before exiting the application                 \n"
       "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       \n"
       "                                    check the volume ids for duplicates etc.       \n"
@@ -90,10 +90,10 @@ namespace {
       "        -plugin <name> <args>       Execute plugin <name> after loading geometry.  \n"
       "                                    All arguments following until the next '-'     \n"
       "                                    are considered as arguments to the plugin.     \n"
-      "        -ui                         Install ROOT interpreter UI for DD4hep         \n"
+      "        -ui                         Install ROOT interpreter UI for dd4hep         \n"
       "                                    Will show up in the global interpreter variable\n"
-      "                                    'DD4hep::ROOTUI* gDD4hepUI' and allows the user\n"
-      "                                    to interact with the the LCDD instance from the\n"
+      "                                    'dd4hep::ROOTUI* gdd4hepUI' and allows the user\n"
+      "                                    to interact with the the Detector instance from the\n"
       "                                    ROOT interactive prompt.                       \n";
     return cout;
   }
@@ -124,7 +124,7 @@ namespace {
       dry_run = false;
       destroy = false;
       interpreter = true;
-      print   = DD4hep::INFO;
+      print   = dd4hep::INFO;
     }
 
     //____________________________________________________________________________
@@ -144,7 +144,7 @@ namespace {
       else if ( strncmp(argv[i],"-dry-run",5)==0 )
         dry_run = true;
       else if ( strncmp(argv[i],"-print",4)==0 )
-        DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
+        dd4hep::setPrintLevel(dd4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
       else if ( strncmp(argv[i],"-destroy",5)==0 )
         destroy = true;
       else if ( strncmp(argv[i],"-no-destroy",8)==0 )
@@ -176,7 +176,7 @@ namespace {
     }
 
     //____________________________________________________________________________
-    long run(LCDD& lcdd, const char* name)  {
+    long run(Detector& description, const char* name)  {
       pair<int, char**> a(0,0);
       long result;
       for(size_t i=0; i<plugins.size(); ++i)   {
@@ -184,9 +184,9 @@ namespace {
         // Remove plugin name and trailing 0x0 from args.
         size_t num_args = plug.size()>2 ? plug.size()-2 : 0;
 
-        result = run_plugin(lcdd,plug[0],plug.size()-1,(char**)(num_args>0 ? &plug[1] : 0));
+        result = run_plugin(description,plug[0],plug.size()-1,(char**)(num_args>0 ? &plug[1] : 0));
         if ( result == EINVAL )   {
-          cout << "FAILED to execute DD4hep plugin: '" << plug[0] 
+          cout << "FAILED to execute dd4hep plugin: '" << plug[0] 
                << "' with args (" << num_args << ") :[ ";
           for(size_t j=1; j<plug.size(); ++j)   {
             if ( plug[j] ) cout << plug[j] << " ";
@@ -194,14 +194,14 @@ namespace {
           cout << "]" << endl;
           usage_default(name);
         }
-        cout << "Executed DD4hep plugin: '" << plug[0]
+        cout << "Executed dd4hep plugin: '" << plug[0]
              << "' with args (" << num_args << ") :[ ";
         for(size_t j=1; j<plug.size(); ++j)   {
           if ( plug[j] ) cout << plug[j] << " ";
         }
         cout << "]" << endl;
       }
-      result = run_plugin(lcdd,name,a.first,a.second);
+      result = run_plugin(description,name,a.first,a.second);
       return result;
     }
 
@@ -210,25 +210,25 @@ namespace {
       switch(::toupper(val[0]))  {
       case '1':
       case 'V':
-        return DD4hep::VERBOSE;
+        return dd4hep::VERBOSE;
       case '2':
       case 'D':
-        return DD4hep::DEBUG;
+        return dd4hep::DEBUG;
       case '3':
       case 'I':
-        return DD4hep::INFO;
+        return dd4hep::INFO;
       case '4':
       case 'W':
-        return DD4hep::WARNING;
+        return dd4hep::WARNING;
       case '5':
       case 'E':
-        return DD4hep::ERROR;
+        return dd4hep::ERROR;
       case '6':
       case 'F':
-        return DD4hep::FATAL;
+        return dd4hep::FATAL;
       case '7':
       case 'A':
-        return DD4hep::FATAL;
+        return dd4hep::FATAL;
       default:
         cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << endl;
         throw runtime_error("Invalid printLevel:"+val);
@@ -237,11 +237,11 @@ namespace {
   };
 
   //______________________________________________________________________________
-  void load_compact(LCDD& lcdd, Args& args)   {
+  void load_compact(Detector& description, Args& args)   {
     // Load all compact files
     for(size_t i=0; i<args.geo_files.size(); ++i)  {
       const char* argv[] = {args.geo_files[i], args.build_types[i], 0};
-      run_plugin(lcdd,"DD4hepCompactLoader",2,(char**)argv);
+      run_plugin(description,"DD4hepCompactLoader",2,(char**)argv);
     }
   }
 
@@ -263,12 +263,12 @@ namespace {
     if ( args.geo_files.empty() )
       usage_default(name);
 
-    LCDD& lcdd = dd4hep_instance();
+    Detector& description = dd4hep_instance();
     // Load all compact files
-    load_compact(lcdd, args);
-    if ( args.ui ) run_plugin(lcdd,"DD4hepInteractiveUI",0,0);
+    load_compact(description, args);
+    if ( args.ui ) run_plugin(description,"DD4hepInteractiveUI",0,0);
     // Create volume manager and populate it required
-    if ( args.volmgr ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+    if ( args.volmgr ) run_plugin(description,"DD4hepVolumeManager",0,0);
 
     // Create an interactive ROOT application
     if ( !args.dry_run ) {
@@ -276,17 +276,17 @@ namespace {
       pair<int, char**> a(0,0);
       if ( args.interpreter )   {
         TRint app(name, &a.first, a.second);
-        result = args.run(lcdd,name);
+        result = args.run(description,name);
         if ( result != EINVAL ) app.Run();
       }
       else
-        result = args.run(lcdd,name);
+        result = args.run(description,name);
       if ( result == EINVAL ) usage_default(name);
     }
     else {
       cout << "The geometry was loaded. Application now exiting." << endl;
     }
-    if ( args.destroy ) delete &lcdd;
+    if ( args.destroy ) delete &description;
     return 0;
   }
 

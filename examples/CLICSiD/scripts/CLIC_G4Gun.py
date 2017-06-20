@@ -19,7 +19,7 @@ def run():
   kernel.UI = "UI"
   geant4.setupCshUI()
   sid.setupField(quiet=False)
-  DDG4.importConstants(kernel.lcdd(),debug=False)
+  DDG4.importConstants(kernel.detectorDescription(),debug=False)
 
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.INFO

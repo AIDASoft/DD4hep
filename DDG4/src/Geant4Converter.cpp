@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
@@ -91,10 +91,10 @@
 #include <iomanip>
 #include <sstream>
 
-using namespace DD4hep::Simulation;
-//using namespace DD4hep::Simulation::Geant4GeometryMaps;
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+namespace units = dd4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 using namespace std;
 
 #include "DDG4/Geant4AssemblyVolume.h"
@@ -137,13 +137,13 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
   ImprintsCountPlus();
 
   std::vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
-  //cout << " Assembly:" << DetectorTools::placementPath(chain) << endl;
+  //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
 
   for( unsigned int i = 0; i < triplets.size(); i++ )  {
     const TGeoNode* node = pAssembly->m_entries[i];
     Chain new_chain = chain;
     new_chain.push_back(node);
-    //cout << " Assembly: Entry: " << DetectorTools::placementPath(new_chain) << endl;
+    //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
 
     G4Transform3D Ta( *(triplets[i].GetRotation()),
                       triplets[i].GetTranslation() );
@@ -194,7 +194,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
 #if 0
       cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
            << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
-           << DetectorTools::placementPath(new_chain) << endl;
+           << detail::tools::placementPath(new_chain) << endl;
       cout << endl;
 #endif
 
@@ -261,16 +261,16 @@ namespace {
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter(LCDD& lcdd_ref)
-  : Geant4Mapping(lcdd_ref), checkOverlaps(true) {
+Geant4Converter::Geant4Converter(Detector& description_ref)
+  : Geant4Mapping(description_ref), checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
   outputLevel = PrintLevel(printLevel() - 1);
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter(LCDD& lcdd_ref, PrintLevel level)
-  : Geant4Mapping(lcdd_ref), checkOverlaps(true) {
+Geant4Converter::Geant4Converter(Detector& description_ref, PrintLevel level)
+  : Geant4Mapping(description_ref), checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
   outputLevel = level;
@@ -814,7 +814,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     // set production cut
     if( not r.useDefaultCut() ) {
       G4ProductionCuts* cuts = new G4ProductionCuts();
-      cuts->SetProductionCut(r.cut()*CLHEP::mm/dd4hep::mm);
+      cuts->SetProductionCut(r.cut()*CLHEP::mm/units::mm);
       g4->SetProductionCuts(cuts);
     }
 
@@ -824,21 +824,20 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     }
     G4UserRegionInformation* info = new G4UserRegionInformation();
     info->region = r;
-    info->threshold = r.threshold()*CLHEP::MeV/dd4hep::MeV;
+    info->threshold = r.threshold()*CLHEP::MeV/units::MeV;
     info->storeSecondaries = r.storeSecondaries();
     g4->SetUserInformation(info);
 
     printout(lvl, "Geant4Converter", "++ Converted region settings of:%s.", r.name());
     vector < string > &limits = r.limits();
-    for (vector<string>::const_iterator i = limits.begin(); i != limits.end(); ++i) {
-      const string& nam = *i;
-      LimitSet ls = m_lcdd.limitSet(nam);
+    for (const auto& nam : limits )  {
+      LimitSet ls = m_detDesc.limitSet(nam);
       if (ls.isValid()) {
         bool found = false;
-        const Geant4GeometryMaps::LimitMap& lm = data().g4Limits;
-        for (Geant4GeometryMaps::LimitMap::const_iterator j = lm.begin(); j != lm.end(); ++j) {
-          if (nam == (*j).first->GetName()) {
-            g4->SetUserLimits((*j).second);
+        const auto& lm = data().g4Limits;
+        for (const auto& j : lm )   {
+          if (nam == j.first->GetName()) {
+            g4->SetUserLimits(j.second);
             found = true;
             break;
           }
@@ -846,7 +845,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
         if (found)
           continue;
       }
-      throw runtime_error("G4Region: Failed to resolve user limitset:" + *i);
+      throw runtime_error("G4Region: Failed to resolve user limitset:" + nam);
     }
     data().g4Regions[region] = g4;
   }
@@ -863,13 +862,13 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
     for (LimitSet::Object::const_iterator i = limits.begin(); i != limits.end(); ++i) {
       const Limit& l = *i;
       if (l.name == "step_length_max")
-        g4->SetMaxAllowedStep(l.value*CLHEP::mm/dd4hep::mm);
+        g4->SetMaxAllowedStep(l.value*CLHEP::mm/units::mm);
       else if (l.name == "track_length_max")
-        g4->SetMaxAllowedStep(l.value*CLHEP::mm/dd4hep::mm);
+        g4->SetMaxAllowedStep(l.value*CLHEP::mm/units::mm);
       else if (l.name == "time_max")
-        g4->SetUserMaxTime(l.value*CLHEP::ns/dd4hep::ns);
+        g4->SetUserMaxTime(l.value*CLHEP::ns/units::ns);
       else if (l.name == "ekin_min")
-        g4->SetUserMinEkine(l.value*CLHEP::MeV/dd4hep::MeV);
+        g4->SetUserMinEkine(l.value*CLHEP::MeV/units::MeV);
       else if (l.name == "range_min")
         g4->SetUserMinRange(l.value);
       else
@@ -907,15 +906,15 @@ void* Geant4Converter::handleVis(const string& /* name */, VisAttr attr) const {
 }
 
 /// Handle the geant 4 specific properties
-void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
+void Geant4Converter::handleProperties(Detector::Properties& prp) const {
   map < string, string > processors;
   static int s_idd = 9999999;
   string id;
-  for (LCDD::Properties::const_iterator i = prp.begin(); i != prp.end(); ++i) {
+  for (Detector::Properties::const_iterator i = prp.begin(); i != prp.end(); ++i) {
     const string& nam = (*i).first;
-    const LCDD::PropertyValues& vals = (*i).second;
+    const Detector::PropertyValues& vals = (*i).second;
     if (nam.substr(0, 6) == "geant4") {
-      LCDD::PropertyValues::const_iterator id_it = vals.find("id");
+      Detector::PropertyValues::const_iterator id_it = vals.find("id");
       if (id_it != vals.end()) {
         id = (*id_it).second;
       }
@@ -928,12 +927,12 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
     }
   }
   for (map<string, string>::const_iterator i = processors.begin(); i != processors.end(); ++i) {
-    const Geometry::GeoHandler* hdlr = this;
+    const GeoHandler* hdlr = this;
     string nam = (*i).second;
-    const LCDD::PropertyValues& vals = prp[nam];
+    const Detector::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;
     string tag = type + "_Geant4_action";
-    long result = PluginService::Create<long>(tag, &m_lcdd, hdlr, &vals);
+    long result = PluginService::Create<long>(tag, &m_detDesc, hdlr, &vals);
     if (0 == result) {
       throw runtime_error("Failed to locate plugin to interprete files of type"
                           " \"" + tag + "\" - no factory:" + type);
@@ -948,9 +947,9 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
-  Geant4GeometryInfo& info = data();
-  ConstVolumeSet& volset = info.sensitives[sens_det];
-  SensitiveDetector sd = Ref_t(sens_det);
+  Geant4GeometryInfo&     info = data();
+  set<const TGeoVolume*>& volset = info.sensitives[sens_det];
+  SensitiveDetector       sd = Ref_t(sens_det);
   stringstream str;
 
   printout(INFO, "Geant4Converter", "++ SensitiveDetector: %-18s %-20s Hits:%-16s", sd.name(), ("[" + sd.type() + "]").c_str(),
@@ -964,8 +963,8 @@ void Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const
   str << ".";
   printout(INFO, "Geant4Converter", str.str().c_str());
 
-  for (ConstVolumeSet::iterator i = volset.begin(); i != volset.end(); ++i) {
-    map<Volume, G4LogicalVolume*>::iterator v = info.g4Volumes.find(*i);
+  for (const auto i : volset )  {
+    map<Volume, G4LogicalVolume*>::iterator v = info.g4Volumes.find(i);
     G4LogicalVolume* vol = (*v).second;
     str.str("");
     str << "                                   | " << "Volume:" << setw(24) << left << vol->GetName() << " "
@@ -1071,7 +1070,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   // Now place all this stuff appropriately
   handleRMap(this, *m_data, &Geant4Converter::handlePlacement);
   //==================== Fields
-  handleProperties(m_lcdd.properties());
+  handleProperties(m_detDesc.properties());
   if ( printSensitives )  {
     handleMap(this, geo.sensitives, &Geant4Converter::printSensitive);
   }

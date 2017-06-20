@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,10 +25,10 @@
 #include <set>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     // Forward declarations
     class Entry;
@@ -48,7 +48,6 @@ namespace DD4hep {
       typedef std::pair<std::string, IOV> Source;
       typedef std::vector<Source>         Sources;
       typedef ConditionsDataLoader        base_t;
-      typedef Condition::iov_type         iov_type;
       typedef Condition::key_type         key_type;
 
       typedef std::map<key_type,Condition>                          LoadedItems;
@@ -56,7 +55,7 @@ namespace DD4hep {
 
     protected:
       /// Reference to main detector description object
-      LCDD&             m_lcdd;
+      Detector&             m_detDesc;
       /// Reference to conditions manager used to queue update requests
       ConditionsManager m_mgr;
       /// Property: input data source definitions
@@ -70,24 +69,24 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      ConditionsDataLoader(LCDD& lcdd, ConditionsManager mgr, const std::string nam);
+      ConditionsDataLoader(Detector& description, ConditionsManager mgr, const std::string nam);
       /// Default destructor
       virtual ~ConditionsDataLoader();
       /// Add data source definition to loader
-      void addSource(const std::string& source, const iov_type& iov);
+      void addSource(const std::string& source, const IOV& iov);
       /// Load  a condition set given the conditions key according to their validity
       virtual size_t load_single(key_type         key,
-                                 const iov_type&  req_validity,
+                                 const IOV&       req_validity,
                                  RangeConditions& conditions) = 0;
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_range( key_type         key,
-                                 const iov_type&  req_validity,
+                                 const IOV&       req_validity,
                                  RangeConditions& conditions) = 0;
-      virtual size_t load_many(  const iov_type&  req_validity,
+      virtual size_t load_many(  const IOV&       req_validity,
                                  RequiredItems&   work,
                                  LoadedItems&     loaded,
-                                 iov_type&        combined_validity) = 0;
+                                 IOV&             combined_validity) = 0;
     };
-  }        /* End namespace Conditions         */
-}          /* End namespace DD4hep             */
+  }        /* End namespace cond         */
+}          /* End namespace dd4hep             */
 #endif     /* DDCOND_CONDITIONSDATALOADER_H    */

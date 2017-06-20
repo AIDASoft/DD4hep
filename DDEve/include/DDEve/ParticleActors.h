@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,7 +27,7 @@ class TEveElement;
 class TEveLine;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Fill eve particles from a MC particle collection
   /*
@@ -54,7 +54,7 @@ namespace DD4hep {
     void close();
   };
 
-} /* End namespace DD4hep   */
+} /* End namespace dd4hep   */
 
 
 #endif /* DD4HEP_DDEVE_PARTICLEHANDLERS_H */

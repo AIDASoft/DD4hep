@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -29,9 +29,9 @@
 #include "XML/UriReader.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
+  /// Namespace for implementation details of the AIDA detector description toolkit
   namespace DDDB  {
 
     /// Implementation of a stack of conditions assembled before application
@@ -40,10 +40,7 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_CONDITIONS
      */
-    class DDDBConditionsLoader : public Conditions::ConditionsDataLoader  {
-      typedef Conditions::Condition         Condition;
-      typedef Conditions::RangeConditions   RangeConditions;
-      typedef Conditions::ConditionsManager ConditionsManager;
+    class DDDBConditionsLoader : public cond::ConditionsDataLoader  {
       typedef std::pair<std::string, std::string> Key;
       typedef std::map<Condition::key_type, Key>  KeyMap;
       /** 
@@ -51,45 +48,45 @@ namespace DD4hep {
        *  \version  1.0
        *  \ingroup  DD4HEP_CONDITIONS
        */
-      class KeyCollector : public Conditions::ConditionsListener  {
+      class KeyCollector : public cond::ConditionsListener  {
       public:
-        std::pair<ConditionsListener*,void*> call;
+        std::pair<cond::ConditionsListener*,void*> call;
         KeyMap keys;
         /// Initializing constructor
         KeyCollector();
         /// ConditionsListener overload: onRegister new condition
-        virtual void onRegisterCondition(Conditions::Condition cond, void* param);
+        virtual void onRegisterCondition(Condition cond, void* param);
       };
-      XML::UriReader* m_resolver;
+      xml::UriReader* m_resolver;
       KeyCollector    m_keys;
 
       /// Load single conditions document
-      void loadDocument(XML::UriContextReader& rdr, const Key& k);
+      void loadDocument(xml::UriContextReader& rdr, const Key& k);
       /// Load single conditions document
-      void loadDocument(XML::UriContextReader& rdr, 
+      void loadDocument(xml::UriContextReader& rdr, 
                         const std::string& sys_id,
                         const std::string& obj_id);
 
     public:
       /// Default constructor
-      DDDBConditionsLoader(Geometry::LCDD& lcdd, ConditionsManager mgr, const std::string& nam);
+      DDDBConditionsLoader(Detector& description, cond::ConditionsManager mgr, const std::string& nam);
       /// Default destructor
       virtual ~DDDBConditionsLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_single(key_type key,
-                                 const iov_type& req_validity,
+                                 const IOV& req_validity,
                                  RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_range( key_type key,
-                                 const iov_type& req_validity,
+                                 const IOV& req_validity,
                                  RangeConditions& conditions);
       /// Optimized update using conditions slice data
-      virtual size_t load_many(  const iov_type& req_validity,
+      virtual size_t load_many(  const IOV& req_validity,
                                  RequiredItems&  work,
                                  LoadedItems&    loaded,
-                                 iov_type&       conditions_validity);
+                                 IOV&       conditions_validity);
     };
   } /* End namespace DDDB                    */
-} /* End namespace DD4hep                    */
+} /* End namespace dd4hep                    */
 
 #endif /* DD4HEP_DDDB_DDDBCONDITONSLOADER_H  */

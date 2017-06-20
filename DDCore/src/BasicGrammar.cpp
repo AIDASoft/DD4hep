@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,15 +20,15 @@
 #include <stdexcept>
 
 /// Default constructor
-DD4hep::BasicGrammar::BasicGrammar()  {
+dd4hep::BasicGrammar::BasicGrammar()  {
 }
 
 /// Default destructor
-DD4hep::BasicGrammar::~BasicGrammar()   {
+dd4hep::BasicGrammar::~BasicGrammar()   {
 }
 
 /// Error callback on invalid conversion
-void DD4hep::BasicGrammar::invalidConversion(const std::string& value, const std::type_info& to) {
+void dd4hep::BasicGrammar::invalidConversion(const std::string& value, const std::type_info& to) {
   std::string to_name = typeName(to);
   throw unrelated_value_error(to,
                               "Data conversion of " + value + " to type '" + 
@@ -36,7 +36,7 @@ void DD4hep::BasicGrammar::invalidConversion(const std::string& value, const std
 }
 
 /// Error callback on invalid conversion
-void DD4hep::BasicGrammar::invalidConversion(const std::type_info& from, const std::type_info& to) {
+void dd4hep::BasicGrammar::invalidConversion(const std::type_info& from, const std::type_info& to) {
   std::string to_name = typeName(to);
   std::string from_name = typeName(from);
   throw unrelated_type_error(from, to,

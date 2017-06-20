@@ -9,7 +9,7 @@
 #include <sstream>
 
 
-namespace DD4hep {
+namespace dd4hep {
 
 //fixme: do  need to do this also for 32 bit machines ?
 typedef long long int long64 ;

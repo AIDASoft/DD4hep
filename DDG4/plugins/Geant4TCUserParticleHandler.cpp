@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,10 +18,10 @@
 #include "DDG4/Geant4UserParticleHandler.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     ///  Rejects to keep particles, which are created outside a tracking cylinder.
     /** Geant4TCUserParticleHandler
@@ -55,14 +55,14 @@ namespace DD4hep {
       virtual void end(const G4Event* event);
 
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 
 // $Id: Geant4Field.cpp 888 2013-11-14 15:54:56Z markus.frank@cern.ch $
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -74,7 +74,7 @@ namespace DD4hep {
 #include "DDG4/Factories.h"
 
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 DECLARE_GEANT4ACTION(Geant4TCUserParticleHandler)
 
 /// Standard constructor
@@ -92,7 +92,7 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   double z_prod = std::fabs(p.vsz);
   bool starts_in_trk_vol = ( r_prod <= m_rTracker && z_prod <= m_zTracker )  ;
 
-  DD4hep::ReferenceBitMask<int> reason(p.reason);
+  dd4hep::detail::ReferenceBitMask<int> reason(p.reason);
 
   if( reason.isSet(G4PARTICLE_PRIMARY) ) {
     //do nothing
@@ -124,7 +124,7 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   }
 
   // Set the simulator status bits
-  DD4hep::ReferenceBitMask<int> simStatus(p.status);
+  dd4hep::detail::ReferenceBitMask<int> simStatus(p.status);
 
   if( ends_in_trk_vol ) {
     simStatus.set(G4PARTICLE_SIM_DECAY_TRACKER);

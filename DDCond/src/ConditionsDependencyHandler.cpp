@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,8 +16,8 @@
 #include "DDCond/ConditionsManagerObject.h"
 #include "DD4hep/Printout.h"
 
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 /// Default constructor
 ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
@@ -36,8 +36,8 @@ ConditionsDependencyHandler::~ConditionsDependencyHandler()   {
 }
 
 /// ConditionResolver implementation: Access to the detector description instance
-LCDD& ConditionsDependencyHandler::lcdd() const  {
-  return m_manager->lcdd();
+Detector& ConditionsDependencyHandler::detectorDescription() const  {
+  return m_manager->detectorDescription();
 }
 
 /// ConditionResolver implementation: Interface to access conditions
@@ -69,8 +69,8 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key)  const  {
 Condition::Object* 
 ConditionsDependencyHandler::do_callback(const ConditionDependency& dep)  const {
   try  {
-    Condition::iov_type iov(m_pool.validity().iovType);
-    ConditionUpdateCall::Context ctxt(*this, dep, m_userParam, iov.reset().invert());
+    IOV iov(m_pool.validity().iovType);
+    ConditionUpdateContext ctxt(*this, dep, m_userParam, iov.reset().invert());
     Condition          cond = (*dep.callback)(dep.target, ctxt);
     Condition::Object* obj  = cond.ptr();
     if ( obj )  {

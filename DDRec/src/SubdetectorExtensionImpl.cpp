@@ -8,22 +8,19 @@
 #include "DDRec/Extensions/SubdetectorExtensionImpl.h"
 #include "DDRec/API/IDDecoder.h"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
-namespace DD4hep {
-namespace DDRec {
-
-using Geometry::DetElement;
-using Geometry::Position;
+namespace dd4hep {
+namespace rec {
 
 /// Constructor using a top level DetElement
-SubdetectorExtensionImpl::SubdetectorExtensionImpl(const Geometry::DetElement& det_elt) {
+SubdetectorExtensionImpl::SubdetectorExtensionImpl(const DetElement& det_elt) {
 	this->resetAll();
 	this->det = det_elt;
 }
 
 /// Copy constructor
-SubdetectorExtensionImpl::SubdetectorExtensionImpl(const SubdetectorExtensionImpl& e, const Geometry::DetElement& d) {
+SubdetectorExtensionImpl::SubdetectorExtensionImpl(const SubdetectorExtensionImpl& e, const DetElement& d) {
 	this->resetAll();
 	this->det = d;
 	if (e._setIsBarrel) {
@@ -78,16 +75,16 @@ double SubdetectorExtensionImpl::getRMin() const {
 		return _rMin;
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
-		Geometry::Solid solid = det.volume().solid();
+		Solid solid = det.volume().solid();
 		try {
-			Geometry::Tube tube(solid);
+			Tube tube(solid);
 			if (tube.isValid()) {
 				return tube->GetRmin();
 			}
 		} catch (std::runtime_error& e) {
 		}
 		try {
-			Geometry::PolyhedraRegular polyhedra(solid);
+			PolyhedraRegular polyhedra(solid);
 			if (polyhedra.isValid()) {
 				return polyhedra->GetRmin()[0];
 			}
@@ -103,16 +100,16 @@ double SubdetectorExtensionImpl::getRMax() const {
 		return _rMax;
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
-		Geometry::Solid solid = det.volume().solid();
+		Solid solid = det.volume().solid();
 		try {
-			Geometry::Tube tube(solid);
+			Tube tube(solid);
 			if (tube.isValid()) {
 				return tube->GetRmin();
 			}
 		} catch (std::runtime_error& e) {
 		}
 		try {
-			Geometry::PolyhedraRegular polyhedra(solid);
+			PolyhedraRegular polyhedra(solid);
 			if (polyhedra.isValid()) {
 				return polyhedra->GetRmax()[0];
 			}
@@ -128,8 +125,8 @@ double SubdetectorExtensionImpl::getZMin() const {
 		return _zMin;
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
-		Geometry::Solid solid = det.volume().solid();
-		Geometry::Box box(solid);
+		Solid solid = det.volume().solid();
+		Box box(solid);
 		if (box.isValid()) {
 			Position local(0.,0.,-box->GetDZ()/2.);
 			Position global;
@@ -146,8 +143,8 @@ double SubdetectorExtensionImpl::getZMax() const {
 		return _zMax;
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
-		Geometry::Solid solid = det.volume().solid();
-		Geometry::Box box(solid);
+		Solid solid = det.volume().solid();
+		Box box(solid);
 		if (box.isValid()) {
 			Position local(0.,0.,box->GetDZ()/2.);
 			Position global;
@@ -167,9 +164,9 @@ int SubdetectorExtensionImpl::getNSides() const {
 		return _nSides;
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
-		Geometry::Solid solid = det.volume().solid();
+		Solid solid = det.volume().solid();
 		try {
-			Geometry::PolyhedraRegular polyhedra(solid);
+			PolyhedraRegular polyhedra(solid);
 			if (polyhedra.isValid()) {
 				return polyhedra->GetNedges();
 			}
@@ -181,7 +178,7 @@ int SubdetectorExtensionImpl::getNSides() const {
 }
 
 /// Sets the top level detector element used to determine shape information
-void SubdetectorExtensionImpl::setDetectorElement(const Geometry::DetElement& det_elt) {
+void SubdetectorExtensionImpl::setDetectorElement(const DetElement& det_elt) {
 	this->det = det_elt;
 }
 
@@ -242,5 +239,5 @@ void SubdetectorExtensionImpl::resetAll() {
 	_setNSides = false;
 }
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
+} /* namespace rec */
+} /* namespace dd4hep */

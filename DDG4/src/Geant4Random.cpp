@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,7 +26,7 @@
 #include <cmath>
 
 using namespace std;
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 namespace CLHEP   {
   unsigned long crc32ul(const std::string& s);
@@ -105,7 +105,7 @@ Geant4Random::~Geant4Random()  {
   // Reset instance pointer
   if (  s_instance == this ) s_instance = 0;
   // Finally delete the TRandom instance wrapper
-  deletePtr(m_rootRandom);
+  detail::deletePtr(m_rootRandom);
   InstanceCount::decrement(this);
 }
 

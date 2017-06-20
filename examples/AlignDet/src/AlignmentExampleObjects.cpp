@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,14 +18,14 @@
 #include "DD4hep/Objects.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::AlignmentExamples;
+using namespace dd4hep;
+using namespace dd4hep::AlignmentExamples;
 
 /// Install the consitions and the alignment manager
-ConditionsManager DD4hep::AlignmentExamples::installManager(LCDD& lcdd)  {
+ConditionsManager dd4hep::AlignmentExamples::installManager(Detector& description)  {
   // Now we instantiate the conditions manager
-  lcdd.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
-  ConditionsManager manager = ConditionsManager::from(lcdd);
+  description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
+  ConditionsManager manager = ConditionsManager::from(description);
   manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
   manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
   manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
@@ -45,16 +45,16 @@ int AlignmentDataAccess::operator()(DetElement de, int) const {
   }
   // Keep it simple. To know how to access stuff,
   // simply look in DDDCore/src/AlignmentsPrinter.cpp...
-  Alignments::printElementPlacement(printLevel,"Example",de,mapping);
+  align::printElementPlacement(printLevel,"Example",de,mapping);
   return 1;
 }
 
 /// Callback to process a single detector element
 int AlignmentCreator::operator()(DetElement de, int)  const  {
   if ( de.ptr() != de.world().ptr() )  {
-    Condition cond(de.path()+"#"+Alignments::Keys::deltaName,Alignments::Keys::deltaName);
+    Condition cond(de.path()+"#"+align::Keys::deltaName,align::Keys::deltaName);
     Delta&    delta = cond.bind<Delta>();
-    cond->hash = ConditionKey(de.key(),Alignments::Keys::deltaKey).hash;
+    cond->hash = ConditionKey(de.key(),align::Keys::deltaKey).hash;
     cond->setFlag(Condition::ACTIVE|Condition::ALIGNMENT_DELTA);
     /// Simply move everything by 1 mm in z. Not physical, but this is just an example...
     delta.translation.SetZ(delta.translation.Z()+0.1*dd4hep::cm);

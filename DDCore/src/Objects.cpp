@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/InstanceCount.h"
@@ -32,10 +32,10 @@
 #include <iomanip>
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
 
 /// Constructor to be used when creating a new DOM tree
-Author::Author(LCDD& /* lcdd */) {
+Author::Author(Detector& /* description */) {
   m_element = new NamedObject("", "author");
 }
 
@@ -150,7 +150,7 @@ string Constant::dataType() const   {
   if ( isValid() )  {
     return m_element->dataType;
   }
-  throw runtime_error("DD4hep: Attempt to access internals from invalid Constant handle!");
+  throw runtime_error("dd4hep: Attempt to access internals from invalid Constant handle!");
 }
 
 /// String representation of this object
@@ -180,9 +180,9 @@ double  Material::Z() const {
     TGeoMaterial* m = val->GetMaterial();
     if (m)
       return m->GetZ();
-    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
   }
-  throw runtime_error("DD4hep: Attempt to access proton number from invalid material handle!");
+  throw runtime_error("dd4hep: Attempt to access proton number from invalid material handle!");
 }
 /// atomic number of the underlying material
 double  Material::A() const {
@@ -191,9 +191,9 @@ double  Material::A() const {
     TGeoMaterial* m = val->GetMaterial();
     if (m)
       return m->GetA();
-    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
   }
-  throw runtime_error("DD4hep: Attempt to access atomic number from invalid material handle!");
+  throw runtime_error("dd4hep: Attempt to access atomic number from invalid material handle!");
 }
 
 /// density of the underlying material
@@ -203,9 +203,9 @@ double  Material::density() const {
     TGeoMaterial* m = val->GetMaterial();
     if (m)
       return m->GetDensity();
-    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
   }
-  throw runtime_error("DD4hep: Attempt to access density from invalid material handle!");
+  throw runtime_error("dd4hep: Attempt to access density from invalid material handle!");
 }
 
 /// Access the radiation length of the underlying material
@@ -215,9 +215,9 @@ double Material::radLength() const {
     TGeoMaterial* m = val->GetMaterial();
     if (m)
       return m->GetRadLen();
-    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
   }
-  throw runtime_error("DD4hep: Attempt to access radiation length from invalid material handle!");
+  throw runtime_error("dd4hep: Attempt to access radiation length from invalid material handle!");
 }
 
 /// Access the radiation length of the underlying material
@@ -350,49 +350,6 @@ string VisAttr::toString() const {
   return text;
 }
 
-/// Constructor to be used when creating a new aligment entry
-AlignmentEntry::AlignmentEntry(const string& path) {
-  TGeoPhysicalNode* obj = new TGeoPhysicalNode(path.c_str());
-  assign(obj, path, "*");
-}
-
-/// Align the PhysicalNode (translation only)
-int AlignmentEntry::align(const Position& pos, bool check, double overlap) {
-  return align(pos, RotationZYX(), check, overlap);
-}
-
-/// Align the PhysicalNode (rotation only)
-int AlignmentEntry::align(const RotationZYX& rot, bool check, double overlap) {
-  return align(Position(), rot, check, overlap);
-}
-
-/// Align the PhysicalNode (translation + rotation)
-int AlignmentEntry::align(const Position& pos, const RotationZYX& rot, bool check, double overlap) {
-
-  if (isValid()) {
-    TGeoHMatrix* new_matrix = dynamic_cast<TGeoHMatrix*>(m_element->GetOriginalMatrix()->MakeClone());
-    TGeoRotation rotation("", rot.Phi() * RAD_2_DEGREE, rot.Theta() * RAD_2_DEGREE, rot.Psi() * RAD_2_DEGREE);
-    TGeoCombiTrans m(pos.X(), pos.Y(), pos.Z(), 0);
-    m.SetRotation(rotation);
-    new_matrix->Multiply(&m);
-    m_element->Align(new_matrix, 0, check, overlap);
-    return 1;
-  }
-  throw runtime_error("DD4hep: Cannot align non existing physical node.");
-}
-
-/// Assignment operator
-Limit& Limit::operator=(const Limit& c) {
-  if (this != &c) {
-    particles = c.particles;
-    name = c.name;
-    unit = c.unit;
-    value = c.value;
-    content = c.content;
-  }
-  return *this;
-}
-
 /// Equality operator
 bool Limit::operator==(const Limit& c) const {
   return value == c.value && name == c.name && particles == c.particles;
@@ -506,11 +463,11 @@ struct IDSpec : public Ref_t {
   template <typename Q>
   IDSpec(const Handle<Q>& e) : Ref_t(e) {}
   /// Constructor to be used when creating a new DOM tree
-  IDSpec(LCDD& doc, const std::string& name, const IDDescriptor& dsc);
+  IDSpec(Detector& doc, const std::string& name, const IDDescriptor& dsc);
   void addField(const std::string& name, const std::pair<int,int>& field);
 };
 
-IDSpec::IDSpec(LCDD& lcdd, const string& name, const IDDescriptor& dsc)
+IDSpec::IDSpec(Detector& description, const string& name, const IDDescriptor& dsc)
   : RefElement(doc,Tag_idspec,name)
 {
   const IDDescriptor::FieldIDs& f = dsc.ids();

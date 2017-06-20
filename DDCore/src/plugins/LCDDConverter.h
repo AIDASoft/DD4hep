@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -11,11 +11,11 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEOMETRY_LCDDCONVERTER_H
-#define DD4HEP_GEOMETRY_LCDDCONVERTER_H
+#ifndef DD4HEP_GEOMETRY_DetectorCONVERTER_H
+#define DD4HEP_GEOMETRY_DetectorCONVERTER_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/DetFactoryHelper.h"
 
@@ -33,15 +33,15 @@ class TGeoNode;
 class TGeoMatrix;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail {
 
     // Forward declarations
     class SensitiveDetectorObject;
 
-    /// Geometry converter from DD4hep to Geant 4 in LCDD format.
+    /// Geometry converter from dd4hep to Geant 4 in Detector format.
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -49,7 +49,7 @@ namespace DD4hep {
      */
     class LCDDConverter: public GeoHandler {
     public:
-      typedef XML::XmlElement XmlElement;
+      typedef xml::XmlElement XmlElement;
       typedef std::map<Atom,              XmlElement*> ElementMap;
       typedef std::map<Material,          XmlElement*> MaterialMap;
       typedef std::map<LimitSet,          XmlElement*> LimitMap;
@@ -62,7 +62,7 @@ namespace DD4hep {
       typedef std::map<const TGeoShape*,  XmlElement*> SolidMap;
       typedef std::map<OverlayedField,    XmlElement*> FieldMap;
       typedef std::map<const TGeoMatrix*, XmlElement*> TrafoMap;
-      /// Data structure of the geometry converter from DD4hep to Geant 4 in LCDD format.
+      /// Data structure of the geometry converter from dd4hep to Geant 4 in Detector format.
       /**
        *  \author  M.Frank
        *  \version 1.0
@@ -70,22 +70,22 @@ namespace DD4hep {
        */
       class GeometryInfo: public GeoHandler::GeometryInfo {
       public:
-        ElementMap xmlElements;
-        MaterialMap xmlMaterials;
-        SolidMap xmlSolids;
-        VolumeMap xmlVolumes;
+        ElementMap   xmlElements;
+        MaterialMap  xmlMaterials;
+        SolidMap     xmlSolids;
+        VolumeMap    xmlVolumes;
         PlacementMap xmlPlacements;
-        RegionMap xmlRegions;
-        VisMap xmlVis;
-        LimitMap xmlLimits;
-        IdSpecMap xmlIdSpecs;
-        SensDetMap xmlSensDets;
-        TrafoMap xmlPositions;
-        TrafoMap xmlRotations;
-        FieldMap xmlFields;
-        SensitiveDetectorSet sensitives;
-        RegionSet regions;
-        LimitSetSet limits;
+        RegionMap    xmlRegions;
+        VisMap       xmlVis;
+        LimitMap     xmlLimits;
+        IdSpecMap    xmlIdSpecs;
+        SensDetMap   xmlSensDets;
+        TrafoMap     xmlPositions;
+        TrafoMap     xmlRotations;
+        FieldMap     xmlFields;
+        std::set<SensitiveDetector> sensitives;
+        std::set<Region> regions;
+        std::set<LimitSet> limits;
         // These we need for redundancy and checking the data integrity
         typedef std::map<std::string, const TNamed*> CheckIter;
         struct _checks {
@@ -118,7 +118,7 @@ namespace DD4hep {
       typedef std::set<std::string> NameSet;
 
       /// Reference to detector description
-      LCDD& m_lcdd;
+      Detector& m_detDesc;
       mutable NameSet m_checkNames;
       GeometryInfo* m_dataPtr;
 
@@ -130,7 +130,7 @@ namespace DD4hep {
       void checkVolumes(const std::string& name, Volume volume) const;
 
       /// Initializing Constructor
-      LCDDConverter(LCDD& lcdd);
+      LCDDConverter(Detector& description);
 
       /// Standard destructor
       virtual ~LCDDConverter();
@@ -138,13 +138,13 @@ namespace DD4hep {
       /// Create geometry conversion in GDML format
       xml_doc_t createGDML(DetElement top);
 
-      /// Create geometry conversion in LCDD format
-      xml_doc_t createLCDD(DetElement top);
+      /// Create geometry conversion in Detector format
+      xml_doc_t createDetector(DetElement top);
 
       /// Create geometry conversion in Vis format
       xml_doc_t createVis(DetElement top);
 
-      /// Add header information in LCDD format
+      /// Add header information in Detector format
       virtual void handleHeader() const;
 
       /// Convert the geometry type material into the corresponding Xml object(s).
@@ -182,7 +182,7 @@ namespace DD4hep {
       /// Convert the geometry type SensitiveDetector into the corresponding Xml object(s).
       virtual xml_h handleSensitive(const std::string& name, SensitiveDetector sens_det) const;
 
-      /// Convert the segmentation of a SensitiveDetector into the corresponding LCDD object
+      /// Convert the segmentation of a SensitiveDetector into the corresponding Detector object
       virtual xml_h handleSegmentation(Segmentation seg) const;
 
       /// Convert the Position into the corresponding Xml object(s).
@@ -195,9 +195,9 @@ namespace DD4hep {
       virtual xml_h handleField(const std::string& name, OverlayedField field) const;
 
       /// Handle the geant 4 specific properties
-      void handleProperties(LCDD::Properties& prp) const;
+      void handleProperties(Detector::Properties& prp) const;
     };
-  }    // End namespace XML
-}      // End namespace DD4hep
+  }    // End namespace xml
+}      // End namespace dd4hep
 
-#endif // DD4HEP_GEOMETRY_LCDDCONVERTER_H
+#endif // DD4HEP_GEOMETRY_DetectorCONVERTER_H

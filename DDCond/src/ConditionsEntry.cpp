@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
 #include "DDCond/ConditionsEntry.h"
 
 using std::string;
-using namespace DD4hep::Conditions;
+using namespace dd4hep::cond;
 
 /// Default constructor
 Entry::Entry()
@@ -26,7 +26,7 @@ Entry::Entry()
 }
 
 /// Initializing constructor
-Entry::Entry(const DD4hep::Geometry::DetElement& det, const string& nam, const string& typ, const string& valid, int h)
+Entry::Entry(const DetElement& det, const string& nam, const string& typ, const string& valid, int h)
   : NamedObject(nam,typ), detector(det), value(), validity(valid), hash(h)
 {
   InstanceCount::increment(this);

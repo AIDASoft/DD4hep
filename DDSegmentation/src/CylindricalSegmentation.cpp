@@ -7,7 +7,7 @@
 
 #include "DDSegmentation/CylindricalSegmentation.h"
 
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation {
 
     /// default constructor using an encoding string
@@ -26,4 +26,4 @@ namespace DD4hep {
     }
 
   } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */

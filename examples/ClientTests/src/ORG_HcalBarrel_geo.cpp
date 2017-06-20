@@ -11,31 +11,31 @@
 #include <vector>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
 
   //XML detector object: DDCore/XML/XMLDetector.h
-  DD4hep::XML::DetElement x_det = e;
+  dd4hep::xml::DetElement x_det = e;
   
-  //Create the DetElement for DD4hep
+  //Create the DetElement for dd4hep
   DetElement d_det(x_det.nameStr(),x_det.id());
   
   //Pick the mothervolume
-  Volume det_vol = lcdd.pickMotherVolume(d_det);
+  Volume det_vol = description.pickMotherVolume(d_det);
 
   //XML dimension object: DDCore/XML/XMLDimension.h
-  DD4hep::XML::Dimension x_det_dim(x_det.dimensions());
+  dd4hep::xml::Dimension x_det_dim(x_det.dimensions());
   
   //Tube: DDCore/DD4hep/Shapes.h
   Tube calo_shape(x_det_dim.rmin(),x_det_dim.rmax(),x_det_dim.z(),2*M_PI/x_det_dim.phiBins());
   
   //Create the detector mother volume
-  Volume calo_vol(x_det.nameStr()+"_envelope",calo_shape,lcdd.air());
+  Volume calo_vol(x_det.nameStr()+"_envelope",calo_shape,description.air());
 
   //Set envelope volume attributes
-  calo_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  calo_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   //Place inside the mother volume
   PlacedVolume  calo_plv = det_vol.placeVolume(calo_vol);
@@ -59,10 +59,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   while(r<x_det_dim.rmax()){
 
     //Loop over layers of type: XML Collection_t object: DDCore/XML/XMLElements.h
-    for(DD4hep::XML::Collection_t layerIt(x_det,_U(layer));layerIt; ++layerIt){
+    for(dd4hep::xml::Collection_t layerIt(x_det,_U(layer));layerIt; ++layerIt){
       
       //Build a layer volume
-      DD4hep::XML::Component x_det_layer = layerIt;
+      dd4hep::xml::Component x_det_layer = layerIt;
       
       float dr = x_det_layer.dr();
       
@@ -89,8 +89,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Trapezoid layer_shape(x1,x2,y1,y2,z);
       
       //Create a volume with trapezoid shape
-      Volume layer_vol(layer_name, layer_shape, lcdd.air());
-      layer_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det_layer.visStr());
+      Volume layer_vol(layer_name, layer_shape, description.air());
+      layer_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det_layer.visStr());
       
       //DetElement layer(layer_name,_toString(layer_num,"layer%d"),x_det.id());
       
@@ -103,9 +103,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       //Repeat slices until we reach the end of the calorimeter
       for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {
 	
-	DD4hep::XML::Component tile_xml       = k;
+	dd4hep::xml::Component tile_xml       = k;
 	string                 tile_name      = layer_name + _toString(tile_number,"_slice%d");
-	Material               tile_material  = lcdd.material(tile_xml.materialStr());
+	Material               tile_material  = description.material(tile_xml.materialStr());
 	float                  tile_thickness = tile_xml.dz();
 	float                  tile_y1        = tile_thickness;
 	float                  tile_y2        = tile_thickness;
@@ -122,7 +122,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	}
 	
 	//Set region, limitset, and visibility settings
-	tile_vol.setAttributes(lcdd,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());
+	tile_vol.setAttributes(description,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());
 	
 	tiles.push_back(tile_vol);
 	tile_number++;
@@ -134,7 +134,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	tile_number=0;
 	for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {
 	  
-	  DD4hep::XML::Component tile_xml       = k;
+	  dd4hep::xml::Component tile_xml       = k;
 	  float                  tile_thickness = tile_xml.dz();
 	  
 	  //Place the tile inside the layer

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,7 +23,7 @@
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   template <typename Q, typename T>
   void insert_item(std::vector<T>& c, Q, const T& d)  {
@@ -58,5 +58,5 @@ namespace DD4hep {
   void insert_item(std::multimap<std::string,T>& c, Q de, const T& d)  {
     c.insert(std::make_pair(de.path(),d));
   }
-}      // End namespace DD4hep
+}      // End namespace dd4hep
 #endif // DD4HEP_DD4HEP_CONTAINERHELPERS_H

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,12 +13,9 @@
 
 // Framework include files
 #include "DD4hep/World.h"
-#include "DD4hep/Printout.h"
 #include "DD4hep/detail/DetectorInterna.h"
 
-using namespace DD4hep::Geometry;
-
 /// Access the detector descrion tree
-LCDD& World::lcdd() const   {
-  return *(access()->lcdd);
+dd4hep::Detector& dd4hep::World::detectorDescription() const   {
+  return *(access()->description);
 }

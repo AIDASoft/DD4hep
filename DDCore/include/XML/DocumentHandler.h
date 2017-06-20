@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,13 +18,13 @@
 #include "XML/XMLElements.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace containing utilities to parse XML files using XercesC or TinyXML
-  namespace XML {
+  namespace xml {
 
     // Forward declarations
-    class DocumentErrorHandler;
+    class DocumentErrorHandle_tr;
     class UriReader;
 
     /// Class supporting to read and parse XML documents.
@@ -76,5 +76,5 @@ namespace DD4hep {
 
     };
   }
-} /* End namespace DD4hep            */
+} /* End namespace dd4hep            */
 #endif    /* DD4HEP_XML_DOCUMENTHANDLER_H    */

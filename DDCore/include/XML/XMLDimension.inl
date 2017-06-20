@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
 
 #include "XML/XMLDimension.h"
 
-#define DD4HEP_DIMENSION_NS XML
+#define DD4HEP_DIMENSION_NS xml
 #include "XML/detail/Dimension.inl"
 #undef  DD4HEP_DIMENSION_NS
 

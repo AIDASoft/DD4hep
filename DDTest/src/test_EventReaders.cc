@@ -12,11 +12,11 @@
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Vertex.h"
 
-//using namespace DD4hep::Simulation;
-typedef DD4hep::Simulation::Geant4Vertex   Vertex;
-typedef DD4hep::Simulation::Geant4Particle Particle;
+//using namespace dd4hep::sim;
+typedef dd4hep::sim::Geant4Vertex   Vertex;
+typedef dd4hep::sim::Geant4Particle Particle;
 
-static DD4hep::DDTest test( "EventReader" ) ;
+static dd4hep::DDTest test( "EventReader" ) ;
 
 class TestTuple {
 public:
@@ -50,7 +50,7 @@ int main(int argc, char** argv ){
       bool skipEOF =  (*it).skipEOF;
       //InputFiles are in DDTest/inputFiles, argument is cmake_source directory
       std::string inputFile = argv[1]+ std::string("/inputFiles/") + fileName;
-      DD4hep::Simulation::Geant4EventReader* thisReader = DD4hep::PluginService::Create<DD4hep::Simulation::Geant4EventReader*>(readerType, inputFile);
+      dd4hep::sim::Geant4EventReader* thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, inputFile);
       if ( not thisReader ) {
         test.log( "Plugin not found" );
         test.log( readerType );
@@ -62,16 +62,16 @@ int main(int argc, char** argv ){
       std::vector<Particle*> particles;
       std::vector<Vertex*> vertices ;
 
-      DD4hep::Simulation::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(3,vertices,particles);
-      std::for_each(particles.begin(),particles.end(),DD4hep::deleteObject<Particle>);
-      test( thisReader->currentEventNumber() == 2 && sc == DD4hep::Simulation::Geant4EventReader::EVENT_READER_OK,
+      dd4hep::sim::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(3,vertices,particles);
+      std::for_each(particles.begin(),particles.end(),dd4hep::detail::deleteObject<Particle>);
+      test( thisReader->currentEventNumber() == 2 && sc == dd4hep::sim::Geant4EventReader::EVENT_READER_OK,
             readerType + std::string("Event Number Read") );
 
       //Reset Reader to check what happens if moving to far in the file
       if (not skipEOF) {
-        thisReader = DD4hep::PluginService::Create<DD4hep::Simulation::Geant4EventReader*>(readerType, inputFile);
+        thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, inputFile);
         sc = thisReader->moveToEvent(1000000);
-        test( sc != DD4hep::Simulation::Geant4EventReader::EVENT_READER_OK , readerType + std::string("EventReader False") );
+        test( sc != dd4hep::sim::Geant4EventReader::EVENT_READER_OK , readerType + std::string("EventReader False") );
       }
     }
 

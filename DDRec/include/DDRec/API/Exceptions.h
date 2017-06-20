@@ -1,16 +1,16 @@
 /*
  * Exceptions.h
  *
- * Collection of Exception classes used in DDRec
+ * Collection of Exception classes used in rec
  *
  *  Created on: Oct 31, 2014
  *      Author: Christian Grefe, Bonn University
  */
 
-#ifndef DDRec_EXCEPTIONS_H_
-#define DDRec_EXCEPTIONS_H_
+#ifndef rec_EXCEPTIONS_H_
+#define rec_EXCEPTIONS_H_
 
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Objects.h"
 
 #include "DDSegmentation/Segmentation.h"
@@ -19,10 +19,10 @@
 #include <string>
 #include <sstream>
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] invalid_cell_id: public std::invalid_argument {
+class invalid_cell_id: public std::invalid_argument {
 public:
 	invalid_cell_id(const std::string& msg, const DDSegmentation::CellID& cellID = 0) :
 			std::invalid_argument(createMsg(msg, cellID)) {
@@ -37,26 +37,26 @@ private:
 	}
 };
 
-class  [[gnu::deprecated(" unmaintained code ")]] invalid_position: public std::invalid_argument {
+class invalid_position: public std::invalid_argument {
 public:
-	invalid_position(const std::string& msg, const Geometry::Position& position) :
+	invalid_position(const std::string& msg, const Position& position) :
 			std::invalid_argument(createMsg(msg, position)) {
 	}
 private:
-	static std::string createMsg(const std::string& msg, const Geometry::Position& position) {
+	static std::string createMsg(const std::string& msg, const Position& position) {
 		std::stringstream s;
 		s << "Invalid position: " << msg << " " << position;
 		return s.str();
 	}
 };
 
-class  [[gnu::deprecated(" unmaintained code ")]] invalid_detector_element: public std::invalid_argument {
+class invalid_detector_element: public std::invalid_argument {
 public:
-	invalid_detector_element(const std::string& msg, const Geometry::DetElement& det) :
+	invalid_detector_element(const std::string& msg, const DetElement& det) :
 			std::invalid_argument(createMsg(msg, det)) {
 	}
 private:
-	static std::string createMsg(const std::string& msg, const Geometry::DetElement& det) {
+	static std::string createMsg(const std::string& msg, const DetElement& det) {
 		std::stringstream s;
 		s << "Invalid detector element: " << msg;
 		if (det.isValid())
@@ -66,5 +66,5 @@ private:
 };
 
 } /* namespace DD4Rec */
-} /* namespace DD4hep */
-#endif /* DDRec_EXCEPTIONS_H_ */
+} /* namespace dd4hep */
+#endif /* rec_EXCEPTIONS_H_ */

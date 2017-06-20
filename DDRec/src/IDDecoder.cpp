@@ -8,20 +8,12 @@
 #include "DDRec/API/IDDecoder.h"
 #include "DDRec/API/Exceptions.h"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/VolumeManager.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-using Geometry::DetElement;
-using Geometry::LCDD;
-using Geometry::PlacedVolume;
-using Geometry::Readout;
-using Geometry::Solid;
-using Geometry::VolumeManager;
-using Geometry::Volume;
-using Geometry::Position;
 using std::set;
 
 IDDecoder& IDDecoder::getInstance() {
@@ -31,8 +23,8 @@ IDDecoder& IDDecoder::getInstance() {
 
 /// Default constructor
 IDDecoder::IDDecoder() {
-	LCDD& lcdd = LCDD::getInstance();
-	_volumeManager = VolumeManager::getVolumeManager(lcdd);
+	Detector& description = Detector::getInstance();
+	_volumeManager = VolumeManager::getVolumeManager(description);
 }
 
 /**
@@ -147,23 +139,23 @@ DetElement IDDecoder::detectorElement(const CellID& cell) const {
  * Returns the closest detector element in the hierarchy for a given global position
  */
 DetElement IDDecoder::detectorElement(const Position& pos) const {
-	DetElement world = Geometry::LCDD::getInstance().world();
+	DetElement world = Detector::getInstance().world();
 	DetElement det = getClosestDaughter(world, pos);
 	if (not det.isValid()) {
-		throw invalid_position("DD4hep::DDRec::IDDecoder::detectorElement", pos);
+		throw invalid_position("dd4hep::rec::IDDecoder::detectorElement", pos);
 	}
 	std::cout << det.name() << std::endl;
 	return det;
 }
 
 /// Access to the Readout object for a given cell ID
-Geometry::Readout IDDecoder::readout(const CellID& cell) const {
+Readout IDDecoder::readout(const CellID& cell) const {
 	DetElement det = this->detectorElement(cell);
 	return this->findReadout(det);
 }
 
 /// Access to the Readout object for a given global position
-Geometry::Readout IDDecoder::readout(const Position& global) const {
+Readout IDDecoder::readout(const Position& global) const {
 	DetElement det = this->detectorElement(global);
 	return this->findReadout(det);
 }
@@ -205,11 +197,11 @@ long int IDDecoder::systemIndex(const CellID& cell) const {
 }
 
 // helper method to find the corresponding Readout object to a DetElement
-Readout IDDecoder::findReadout(const Geometry::DetElement& det) const {
+Readout IDDecoder::findReadout(const DetElement& det) const {
 
 	// first check if top level is a sensitive detector
 	if (det.volume().isValid() and det.volume().isSensitive()) {
-		Geometry::SensitiveDetector sd = det.volume().sensitiveDetector();
+		SensitiveDetector sd = det.volume().sensitiveDetector();
 		if (sd.isValid() and sd.readout().isValid()) {
 			return sd.readout();
 		}
@@ -260,5 +252,5 @@ DetElement IDDecoder::getClosestDaughter(const DetElement& det, const Position& 
 	return result;
 }
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
+} /* namespace rec */
+} /* namespace dd4hep */

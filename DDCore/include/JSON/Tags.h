@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 #include "JSON/Elements.h"
 
 // Helpers to access tags and attributes quickly without specifying explicitly namespaces
-#define _DD4hep_Unicode_Item(a) #a
+#define _dd4hep_Unicode_Item(a) #a
 #define _U(a) #a
 #define _Unicode(a) #a
 

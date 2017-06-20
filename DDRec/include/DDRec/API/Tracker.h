@@ -7,20 +7,20 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDReconstruction_TRACKER_H_
-#define DDReconstruction_TRACKER_H_
+#ifndef reconstruction_TRACKER_H_
+#define reconstruction_TRACKER_H_
 
 #include "DDRec/API/LayeredSubdetector.h"
 #include "DDRec/Extensions/TrackerExtension.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] Tracker: public LayeredSubdetector {
+class Tracker: public LayeredSubdetector {
 public:
-	Tracker(const Geometry::DetElement& det) :
-	Geometry::DetElement(det) {
+	Tracker(const DetElement& det) :
+	DetElement(det) {
 		getTrackerExtension();
 	}
 
@@ -37,6 +37,6 @@ private:
 	}
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDReconstruction_TRACKER_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* reconstruction_TRACKER_H_ */

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,15 +20,15 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Detector description build types.
-  /** enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
+  /** enum DetectorBuildType Detector.h  dd4hep/Detector.h
    * The corresponding flag is ONLY valid while parsing the
    * compact description. If no eometry, ie. at all other times
    * the accessor to the flag returns BUILD_NONE.
    */
-  enum LCDDBuildType {
+  enum DetectorBuildType {
     BUILD_NONE = 0,
     BUILD_DEFAULT = 1,
     BUILD_SIMU = BUILD_DEFAULT,
@@ -38,10 +38,10 @@ namespace DD4hep {
   };
 
   /// Translate string representation of the geometry build type to value
-  LCDDBuildType buildType(const char* value);
+  DetectorBuildType buildType(const char* value);
 
   /// Translate string representation of the geometry build type to value
-  LCDDBuildType buildType(const std::string& value);
+  DetectorBuildType buildType(const std::string& value);
 
-} /* End namespace DD4hep             */
+} /* End namespace dd4hep             */
 #endif  // DD4HEP_BUILDTYPES_H

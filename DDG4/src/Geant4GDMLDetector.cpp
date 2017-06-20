@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,13 +25,13 @@
 #endif
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
-DD4hep::Simulation::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile)
+dd4hep::sim::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile)
   : m_fileName(gdmlFile), m_world(0) {
 }
 
-G4VPhysicalVolume* DD4hep::Simulation::Geant4GDMLDetector::Construct() {
+G4VPhysicalVolume* dd4hep::sim::Geant4GDMLDetector::Construct() {
 #ifdef GEANT4_HAS_GDML
   G4GDMLParser parser;
   parser.Read( m_fileName );

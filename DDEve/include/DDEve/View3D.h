@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 #include "DDEve/View.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// class View3D  View3D.h DDEve/View3D.h
   /*
@@ -41,5 +41,5 @@ namespace DD4hep {
     /// Root implementation macro
     ClassDefOverride(View3D,0);
   };
-}      /* End namespace DD4hep   */
+}      /* End namespace dd4hep   */
 #endif /* DD4HEP_DDEVE_VIEW3D_H  */

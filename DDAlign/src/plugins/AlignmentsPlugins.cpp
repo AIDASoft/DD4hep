@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,14 +17,13 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
+using namespace dd4hep::align;
 
 // ======================================================================================
 #include "DDAlign/GlobalAlignmentWriter.h"
-long create_global_alignment_xml_file(Geometry::LCDD& lcdd, int argc, char** argv)   {
-  namespace DetectorTools = DD4hep::Geometry::DetectorTools;
-  Geometry::DetElement top;
+long create_global_alignment_xml_file(Detector& description, int argc, char** argv)   {
+  DetElement top;
   string output, path = "/world";
   bool enable_transactions = false, arg_error = false;
   for(int i=1; i<argc;++i) {
@@ -55,11 +54,11 @@ long create_global_alignment_xml_file(Geometry::LCDD& lcdd, int argc, char** arg
   }
 
   printout(ALWAYS,"AlignmentXmlWriter",
-           "++ Writing DD4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
+           "++ Writing dd4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
            path.c_str(), output.c_str());
-  top = DetectorTools::findDaughterElement(lcdd.world(),path);
+  top = detail::tools::findDaughterElement(description.world(),path);
   if ( top.isValid() )   {
-    GlobalAlignmentWriter wr(lcdd);
+    GlobalAlignmentWriter wr(description);
     return wr.write(wr.dump(top,enable_transactions), output);
   }
   except("AlignmentXmlWriter","++ Invalid top level detector element name: %s",path.c_str());

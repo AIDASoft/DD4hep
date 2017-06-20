@@ -4,7 +4,7 @@ import platform
 if platform.system()=="Darwin":
   gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
 gSystem.Load('libDDPython')
-from ROOT import DD4hep as Core
+from ROOT import dd4hep as Core
 
 name_space = __import__(__name__)
 def import_namespace_item(ns,nam):  

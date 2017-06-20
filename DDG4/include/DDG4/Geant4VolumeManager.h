@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_DDG4_GEANT4VOLUMEMANAGER_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DDG4/Geant4Primitives.h"
 #include "DDG4/Geant4GeometryInfo.h"
@@ -23,10 +23,10 @@
 class G4VTouchable;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     // Forward declarations
     class Geant4VolumeManager;
@@ -38,20 +38,10 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4VolumeManager: public Geometry::Handle<Geant4GeometryInfo> {
-    public:
-      // Forward declarations
-      typedef Geometry::Handle<Geant4GeometryInfo> Base;
-      typedef Geometry::PlacedVolume PlacedVolume;
-      typedef Geometry::IDDescriptor IDDescriptor;
-      typedef IDDescriptor::VolIDFields VolIDFields;
-      typedef std::pair<VolumeID, VolIDFields> VolIDDescriptor;
-      typedef Geant4GeometryMaps::Geant4PlacementPath PlacementPath;
-      typedef Geant4GeometryInfo Object;
-
+    class Geant4VolumeManager : public Handle<Geant4GeometryInfo>   {
     protected:
       /// Optimization flag to shortcut object checks
-      mutable bool m_isValid;
+      mutable bool m_isValid = false;
 
       /// Check the validity of the information before accessing it.
       bool checkValidity() const;
@@ -62,44 +52,35 @@ namespace DD4hep {
       static const VolumeID NonExisting = 0ULL;
 
       /// Initializing constructor. The tree will automatically be built if possible
-      Geant4VolumeManager(Geometry::LCDD& lcdd, Geant4GeometryInfo* info);
+      Geant4VolumeManager(Detector& description, Geant4GeometryInfo* info);
       /// Default constructor
-      Geant4VolumeManager()
-        : Base(), m_isValid(false) {
-      }
+      Geant4VolumeManager() = default;
       /// Constructor to be used when reading the already parsed object
-      Geant4VolumeManager(const Base& e)
-        : Base(e), m_isValid(false) {
-      }
+      Geant4VolumeManager(const Handle<Geant4GeometryInfo>& e)
+        : Handle<Geant4GeometryInfo>(e), m_isValid(false) {  }
       /// Constructor to be used when reading the already parsed object
-      Geant4VolumeManager(const Geant4VolumeManager& e)
-        : Base(e), m_isValid(false) {
-      }
+      Geant4VolumeManager(const Geant4VolumeManager& e) = default;
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Geant4VolumeManager(const Geometry::Handle<Q>& e)
-        : Base(e), m_isValid(false) {
+      template <typename Q> Geant4VolumeManager(const Handle<Q>& e)
+        : Handle<Geant4GeometryInfo>(e), m_isValid(false) {
       }
       /// Assignment operator
-      Geant4VolumeManager& operator=(const Geant4VolumeManager& c)  {
-        if ( this != &c ) {
-          m_element = c.m_element;
-          m_isValid = c.m_isValid;
-        }
-        return *this;
-      }
-
+      Geant4VolumeManager& operator=(const Geant4VolumeManager& c) = default;
       /// Helper: Generate placement path from touchable object
-      PlacementPath placementPath(const G4VTouchable* touchable, bool exception = true) const;
+      std::vector<const G4VPhysicalVolume*>
+      placementPath(const G4VTouchable* touchable, bool exception = true) const;
       /// Access CELLID by placement path
-      VolumeID volumeID(const PlacementPath& path) const;
+      VolumeID volumeID(const std::vector<const G4VPhysicalVolume*>& path) const;
       /// Access CELLID by Geant4 touchable object
       VolumeID volumeID(const G4VTouchable* touchable) const;
       /// Accessfully decoded volume fields  by placement path
-      void volumeDescriptor(const PlacementPath& path, VolIDDescriptor& volume_desc) const;
+      void volumeDescriptor(const std::vector<const G4VPhysicalVolume*>&   path,
+                            std::pair<VolumeID,std::vector<std::pair<const BitFieldValue*, VolumeID> > >& volume_desc) const;
       /// Access fully decoded volume fields by Geant4 touchable object
-      void volumeDescriptor(const G4VTouchable* touchable, VolIDDescriptor& volume_desc) const;
+      void volumeDescriptor(const G4VTouchable* touchable,
+                            std::pair<VolumeID,std::vector<std::pair<const BitFieldValue*, VolumeID> > >& volume_desc) const;
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4VOLUMEMANAGER_H

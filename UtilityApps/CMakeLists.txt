@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -29,7 +29,7 @@ dd4hep_add_executable( graphicalMaterialScan src/graphicalMaterialScan.cpp USES 
 #-----------------------------------------------------------------------------------
 #dd4hep_add_executable( pydd4hep     
 #  USES        [ROOT   REQUIRED COMPONENTS PyROOT]
-#  OPTIONAL    [PYTHON REQUIRED SOURCES src/dd4hep_python.cpp])
+#  OPTIONAL    [PYTHON REQUIRED SOURCES src/DD4hep_python.cpp])
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( dumpdetector     
   USES DDRec

@@ -1,6 +1,6 @@
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 #include "DDG4/Geant4Hits.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 // Geant4 include files
 #include "G4Step.hh"
@@ -34,14 +34,14 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Constructor. The detector element is identified by the name
-Geant4SensitiveDetector::Geant4SensitiveDetector(const string& nam, LCDD& lcdd)
-  : G4VSensitiveDetector(nam), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
-  m_sensitive = lcdd.sensitiveDetector(nam);
-  m_detector = lcdd.detector(nam);
+Geant4SensitiveDetector::Geant4SensitiveDetector(const string& nam, Detector& description)
+  : G4VSensitiveDetector(nam), m_detDesc(description), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
+  m_sensitive = description.sensitiveDetector(nam);
+  m_detector = description.detector(nam);
   m_readout = m_sensitive.readout();
 }
 
@@ -71,8 +71,8 @@ const string& Geant4SensitiveDetector::hitCollectionName(int which) const {
 Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::createCollection(const string& coll_name) const {
   return new G4THitsCollection<Geant4Hit>(GetName(), coll_name);
 }
-namespace DD4hep {
-  namespace Simulation {
+namespace dd4hep {
+  namespace sim {
     template <> Geant4CalorimeterHit*
     Geant4SensitiveDetector::find<Geant4CalorimeterHit>(const HitCollection* c, const HitCompare<Geant4CalorimeterHit>& cmp) {
       typedef vector<Geant4CalorimeterHit*> _V;
@@ -151,12 +151,10 @@ void Geant4SensitiveDetector::clear() {
 /// Dump Step information (careful: very verbose)
 void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* history */) {
   Geant4StepHandler step(st);
-  Geant4Mapping& cnv = Geant4Mapping::instance();
-  //Geant4Converter::G4GeometryInfo& data = cnv.data();
-
-  Position pos1 = step.prePos();
-  Position pos2 = step.postPos();
-  Momentum mom = step.postMom();
+  Geant4Mapping&    cnv = Geant4Mapping::instance();
+  Position          pos1 = step.prePos();
+  Position          pos2 = step.postPos();
+  Momentum          mom = step.postMom();
 
   printout(INFO, "G4Step", "  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f", 
            long(step.track), pos1.X(),
@@ -172,16 +170,14 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   typedef Geant4GeometryMaps::PlacementMap Places;
   const Places& places = cnv.data().g4Placements;
 
-  for (Places::const_iterator i = places.begin(); i != places.end(); ++i) {
-    const G4VPhysicalVolume* pl = (*i).second;
+  for (const auto& i : places )  {
+    const G4VPhysicalVolume* pl = i.second;
     const G4VPhysicalVolume* qv = pl;
-
     if (qv == pv) {
-      const TGeoNode* tpv = (*i).first.ptr();
+      const TGeoNode* tpv = i.first.ptr();
       printf("           Found TGeoNode:%s!\n", tpv->GetName());
     }
   }
-
 }
 
 long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep) {
@@ -220,8 +216,8 @@ long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep) {
 long long Geant4SensitiveDetector::getCellID(G4Step* s) {
   StepHandler h(s);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID volID = volMgr.volumeID(h.preTouchable());
-  Geometry::Segmentation seg = m_readout.segmentation();
+  VolumeID            volID  = volMgr.volumeID(h.preTouchable());
+  Segmentation        seg    = m_readout.segmentation();
   if ( seg.isValid() )  {
     G4ThreeVector global = 0.5 * ( h.prePosG4()+h.postPosG4());
     G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -38,7 +38,7 @@
 #include "DDEve/GenericEventHandler.h"
 #include "DDEve/DDG4EventHandler.h"
 
-namespace DD4hep {
+namespace dd4hep {
   void EveDisplay(const char* xmlFile, const char* eventFileName);
   struct DDEve {
     static void run(const char* xmlFile)  {
@@ -52,48 +52,48 @@ namespace DD4hep {
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ namespace DD4hep;
+#pragma link C++ namespace dd4hep;
 
-#pragma link C++ function DD4hep::EveDisplay(const char* xmlFile, const char* eventFileName);
+#pragma link C++ function dd4hep::EveDisplay(const char* xmlFile, const char* eventFileName);
 
 
-#pragma link C++ class DD4hep::DDEve;
-#pragma link C++ class DD4hep::Display;
-#pragma link C++ class DD4hep::Annotation;
-#pragma link C++ class DD4hep::ElementList;
-#pragma link C++ class DD4hep::FrameControl;
-#pragma link C++ class DD4hep::EventHandler;
-#pragma link C++ class DD4hep::EventConsumer;
-#pragma link C++ class DD4hep::DDG4EventHandler;
-#pragma link C++ class DD4hep::GenericEventHandler;
-#pragma link C++ class DD4hep::EventControl;
+#pragma link C++ class dd4hep::DDEve;
+#pragma link C++ class dd4hep::Display;
+#pragma link C++ class dd4hep::Annotation;
+#pragma link C++ class dd4hep::ElementList;
+#pragma link C++ class dd4hep::FrameControl;
+#pragma link C++ class dd4hep::EventHandler;
+#pragma link C++ class dd4hep::EventConsumer;
+#pragma link C++ class dd4hep::DDG4EventHandler;
+#pragma link C++ class dd4hep::GenericEventHandler;
+#pragma link C++ class dd4hep::EventControl;
 
-#pragma link C++ class DD4hep::DisplayConfiguration::Config;
-//#pragma link C++ class std::list<DD4hep::DisplayConfiguration::Config>;
-#pragma link C++ class DD4hep::DisplayConfiguration::ViewConfig;
-//#pragma link C++ class std::list<DD4hep::DisplayConfiguration::ViewConfig>;
-#pragma link C++ class DD4hep::DisplayConfiguration;
+#pragma link C++ class dd4hep::DisplayConfiguration::Config;
+//#pragma link C++ class std::list<dd4hep::DisplayConfiguration::Config>;
+#pragma link C++ class dd4hep::DisplayConfiguration::ViewConfig;
+//#pragma link C++ class std::list<dd4hep::DisplayConfiguration::ViewConfig>;
+#pragma link C++ class dd4hep::DisplayConfiguration;
 
-#pragma link C++ class DD4hep::View;
-#pragma link C++ class DD4hep::View3D;
-#pragma link C++ class DD4hep::Projection;
-#pragma link C++ class DD4hep::RhoZProjection;
-#pragma link C++ class DD4hep::RhoPhiProjection;
-#pragma link C++ class DD4hep::CaloLego;
-#pragma link C++ class DD4hep::Calo2DProjection;
-#pragma link C++ class DD4hep::Calo3DProjection;
-#pragma link C++ class DD4hep::MultiView;
+#pragma link C++ class dd4hep::View;
+#pragma link C++ class dd4hep::View3D;
+#pragma link C++ class dd4hep::Projection;
+#pragma link C++ class dd4hep::RhoZProjection;
+#pragma link C++ class dd4hep::RhoPhiProjection;
+#pragma link C++ class dd4hep::CaloLego;
+#pragma link C++ class dd4hep::Calo2DProjection;
+#pragma link C++ class dd4hep::Calo3DProjection;
+#pragma link C++ class dd4hep::MultiView;
 
-#pragma link C++ class DD4hep::PopupMenu;
-#pragma link C++ class DD4hep::ViewMenu;
-#pragma link C++ class DD4hep::DD4hepMenu;
-#pragma link C++ class DD4hep::ContextMenu;
-#pragma link C++ class DD4hep::ContextMenuHandler;
-#pragma link C++ class DD4hep::EveUserContextMenu;
-#pragma link C++ class DD4hep::ElementListContextMenu;
-#pragma link C++ class DD4hep::EveShapeContextMenu;
-#pragma link C++ class DD4hep::EvePgonSetProjectedContextMenu;
-//#pragma link C++ class DD4hep::;
+#pragma link C++ class dd4hep::PopupMenu;
+#pragma link C++ class dd4hep::ViewMenu;
+#pragma link C++ class dd4hep::dd4hepMenu;
+#pragma link C++ class dd4hep::ContextMenu;
+#pragma link C++ class dd4hep::ContextMenuHandler;
+#pragma link C++ class dd4hep::EveUserContextMenu;
+#pragma link C++ class dd4hep::ElementListContextMenu;
+#pragma link C++ class dd4hep::EveShapeContextMenu;
+#pragma link C++ class dd4hep::EvePgonSetProjectedContextMenu;
+//#pragma link C++ class dd4hep::;
 
 #endif
 

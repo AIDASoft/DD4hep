@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,13 +14,13 @@
 // Framework include files
 #include "DDG4/Geant4Data.h"
 
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the DD4hep event display specializations
+  /// Namespace for the dd4hep event display specializations
   namespace DDEve  {
 
     /// SimulationHit definition
@@ -56,7 +56,7 @@ namespace DD4hep {
 
 /// Hit conversion function  \ingroup DD4HEP_EVE
 static void* _convertHitCollection(const char* source)  {
-  typedef DD4hep::DDEve::SimulationHit SimulationHit;
+  typedef dd4hep::DDEve::SimulationHit SimulationHit;
   const std::vector<SimpleHit*>* c = (std::vector<SimpleHit*>*)source;
   std::vector<SimulationHit>* pv = new std::vector<SimulationHit>();
   if ( source && c->size() > 0 )   {
@@ -77,5 +77,5 @@ static void* _convertHitCollection(const char* source)  {
 }
 
 #include "DD4hep/Factories.h"
-using namespace DD4hep::Geometry;
+using namespace dd4hep::detail;
 DECLARE_CONSTRUCTOR(DDEve_DDG4CollectionAccess,_convertHitCollection)

@@ -26,13 +26,13 @@
 #include <iostream>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
-using namespace DD4hep::Simulation::Test;
-using namespace DD4hep::Simulation::Setup;
+using namespace dd4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep::sim::Test;
+using namespace dd4hep::sim::Setup;
 
-SensitiveSeq::handled_type* setupDetector(Geant4Kernel& kernel, const std::string& name)   {
-  SensitiveSeq sd = SensitiveSeq(kernel,name);
+Geant4SensDetActionSequence* setupDetector(Geant4Kernel& kernel, const std::string& name)   {
+  SensitiveSeq sd = SensitiveSeq(kernel,"Geant4SensDetActionSequence/"+name);
   Sensitive  sens = Sensitive(kernel,"Geant4TestSensitive/"+name+"Handler",name);
   sens["OutputLevel"] = 2;
   sd->adopt(sens);
@@ -42,7 +42,7 @@ SensitiveSeq::handled_type* setupDetector(Geant4Kernel& kernel, const std::strin
 }
 
 int setupG4_CINT(bool interactive)  {
-  Geant4Kernel& kernel = Geant4Kernel::instance(Geometry::LCDD::getInstance());
+  Geant4Kernel& kernel = Geant4Kernel::instance(Detector::getInstance());
   string install_dir = getenv("DD4hepINSTALL");
   Phase p;
 

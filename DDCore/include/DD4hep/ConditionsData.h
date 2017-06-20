@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,10 +23,10 @@
 #include <stdexcept>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
-  namespace Conditions   {
+  namespace cond   {
 
     /// Client data addition
     /**
@@ -40,7 +40,7 @@ namespace DD4hep {
       virtual void release() = 0;
     };
 
-    /// Conditions data block. Internally maps other objects to abstract data blocks
+    /// Conditions data block. Internaly maps other objects to abstract data blocks
     /**
      *   \author  M.Frank
      *   \version 1.0
@@ -112,6 +112,6 @@ namespace DD4hep {
       }
     };
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
+  } /* End namespace cond             */
+} /* End namespace dd4hep                   */
 #endif    /* DD4HEP_CONDITIONS_CONDITIONSDATA_H    */

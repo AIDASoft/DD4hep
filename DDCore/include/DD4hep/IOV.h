@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 #include <algorithm>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class IOVType;
@@ -162,5 +162,5 @@ namespace DD4hep {
     {   return same_type(iov,test) && key_partially_contained(iov.keyData,test.keyData);      }
   };
     
-} /* End namespace DD4hep                   */
+} /* End namespace dd4hep                   */
 #endif    /* DD4HEP_CONDITIONS_IOV_H        */

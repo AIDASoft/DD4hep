@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,11 +22,11 @@
 
 // Framework include files
 #include "DD4hep/Plugins.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 using namespace std;
 
-namespace Geometry { class LCDD; }
+namespace detail { class Detector; }
 
 string Component::materialStr() const {
   return m_element.attr < string > (_U(material));
@@ -44,17 +44,17 @@ bool Component::isRadiator() const {
   return val == 'T' || val == 'Y';
 }
 
-DD4hep::NamedObject* Component::createShape() const {
-  using namespace DD4hep::Geometry;
+dd4hep::NamedObject* Component::createShape() const {
+  using namespace dd4hep::detail;
   Dimension child_dim(m_element);
   string typ = child_dim.typeStr();
   string fac = typ + "__shape_constructor";
   Handle_t solid_elt = m_element;
-  LCDD* lcdd = 0;
-  NamedObject* solid = PluginService::Create<NamedObject*>(fac, lcdd, &solid_elt);
+  Detector* description = 0;
+  NamedObject* solid = PluginService::Create<NamedObject*>(fac, description, &solid_elt);
   if ( !solid )  {
     PluginDebug dbg;
-    PluginService::Create<NamedObject*>(typ, lcdd, &solid_elt);
+    PluginService::Create<NamedObject*>(typ, description, &solid_elt);
     throw runtime_error("Failed to create solid of type " + typ + ". " + dbg.missingFactory(typ));
   }
   return solid;

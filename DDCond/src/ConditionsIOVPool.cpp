@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,8 +18,8 @@
 #include "DD4hep/detail/ConditionsInterna.h"
 #include "DDCond/ConditionsDataLoader.h"
 
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
+using namespace dd4hep::cond;
 
 /// Default constructor
 ConditionsIOVPool::ConditionsIOVPool(const IOVType* typ) : type(typ)  {
@@ -32,14 +32,14 @@ ConditionsIOVPool::~ConditionsIOVPool()  {
   InstanceCount::decrement(this);
 }
 
-size_t ConditionsIOVPool::select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
+size_t ConditionsIOVPool::select(Condition::key_type key, const IOV& req_validity, RangeConditions& result)
 {
   if ( !elements.empty() )  {
     size_t len = result.size();
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
-    for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
-      if ( IOV::key_contains_range((*i).first, req_key) )  {
-        (*i).second->select(key, result);
+    for( const auto& e : elements )  {
+      if ( IOV::key_contains_range(e.first, req_key) )  {
+        e.second->select(key, result);
       }
     }
     return result.size() - len;
@@ -47,21 +47,21 @@ size_t ConditionsIOVPool::select(Condition::key_type key, const Condition::iov_t
   return 0;
 }
 
-size_t ConditionsIOVPool::selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
+size_t ConditionsIOVPool::selectRange(Condition::key_type key, const IOV& req_validity, RangeConditions& result)
 {
   size_t len = result.size();
   const IOV::Key range = req_validity.key();
-  for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
-    const IOV::Key& k = (*i).first;
+  for( const auto& e : elements )  {
+    const IOV::Key& k = e.first;
     if ( IOV::key_is_contained(k,range) )
       // IOV test contained in key. Take it!
-      (*i).second->select(key, result);
+      e.second->select(key, result);
     else if ( IOV::key_overlaps_lower_end(k,range) )
       // IOV overlap on test on the lower end of key
-      (*i).second->select(key, result);
+      e.second->select(key, result);
     else if ( IOV::key_overlaps_higher_end(k,range) )
       // IOV overlap of test on the higher end of key
-      (*i).second->select(key, result);
+      e.second->select(key, result);
   }
   return result.size() - len;
 }
@@ -70,17 +70,16 @@ size_t ConditionsIOVPool::selectRange(Condition::key_type key, const Condition::
 int ConditionsIOVPool::clean(int max_age)   {
   Elements rest;
   int count = 0;
-  for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
-    ConditionsPool* pool = (*i).second;
-    if ( pool->age_value >= max_age )   {
-      count += pool->size();
-      pool->print("Remove");
-      delete pool;
+  for( const auto& e : elements )  {
+    if ( e.second->age_value >= max_age )   {
+      count += e.second->size();
+      e.second->print("Remove");
     }
-    else
-      rest.insert(make_pair(pool->iov->keyData,pool));
+    else  {
+      rest.insert(e);
+    }
   }
-  elements = rest;
+  elements = std::move(rest);
   return count;
 }
 
@@ -92,15 +91,14 @@ size_t ConditionsIOVPool::select(const IOV&        req_validity,
   size_t num_selected = 0;
   if ( !elements.empty() )  {
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
-    for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
-      ConditionsPool* pool = (*i).second;
-      if ( !IOV::key_contains_range((*i).first, req_key) )  {
-        ++pool->age_value;
+    for( const auto& i : elements )  {
+      if ( !IOV::key_contains_range(i.first, req_key) )  {
+        ++i.second->age_value;
         continue;
       }
-      cond_validity.iov_intersection((*i).first);
-      num_selected += pool->select_all(valid);
-      pool->age_value = 0;
+      cond_validity.iov_intersection(i.first);
+      num_selected += i.second->select_all(valid);
+      i.second->age_value = 0;
     }
   }
   return num_selected;
@@ -114,15 +112,14 @@ size_t ConditionsIOVPool::select(const IOV&              req_validity,
   size_t num_selected = 0;
   if ( !elements.empty() )  {
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
-    for(const auto& i : elements )  {
-      ConditionsPool* pool = i.second;
+    for( const auto& i : elements )  {
       if ( !IOV::key_contains_range(i.first, req_key) )  {
-        ++pool->age_value;
+        ++i.second->age_value;
         continue;
       }
       cond_validity.iov_intersection(i.first);
-      num_selected += pool->select_all(predicate_processor);
-      pool->age_value = 0;
+      num_selected += i.second->select_all(predicate_processor);
+      i.second->age_value = 0;
     }
   }
   return num_selected;
@@ -136,15 +133,14 @@ size_t ConditionsIOVPool::select(const IOV& req_validity,
   size_t num_selected = 0;
   if ( !elements.empty() )   {
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
-    for(const auto& i : elements )  {
-      ConditionsPool* pool = i.second;
+    for( const auto& i : elements )  {
       if ( !IOV::key_contains_range(i.first, req_key) )  {
-        ++pool->age_value;
+        ++i.second->age_value;
         continue;
       }
       cond_validity.iov_intersection(i.first);
-      valid[i.first] = pool;
-      pool->age_value = 0;
+      valid[i.first] = i.second;
+      i.second->age_value = 0;
       ++num_selected;
     }
   }
