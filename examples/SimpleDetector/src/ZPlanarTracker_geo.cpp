@@ -17,7 +17,6 @@
 using namespace dd4hep;
 using namespace dd4hep::detail;
 using namespace dd4hep::rec ;
-using namespace DDSurfaces ;
 
 static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sens)  {
   
