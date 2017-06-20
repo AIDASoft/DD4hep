@@ -16,7 +16,7 @@
 namespace dd4hep {
 namespace rec {
 
-class Calorimeter: public LayeredSubdetector, public Subdetector {
+class [[gnu::deprecated(" unmaintained code ")]] Calorimeter: public LayeredSubdetector, public Subdetector {
 public:
 	Calorimeter(const DetElement& det) :
 		DetElement(det), LayeredSubdetector(det), Subdetector(det) {

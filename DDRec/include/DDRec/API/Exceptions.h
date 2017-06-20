@@ -22,7 +22,7 @@
 namespace dd4hep {
 namespace rec {
 
-class invalid_cell_id: public std::invalid_argument {
+class [[gnu::deprecated(" unmaintained code ")]] invalid_cell_id: public std::invalid_argument {
 public:
 	invalid_cell_id(const std::string& msg, const DDSegmentation::CellID& cellID = 0) :
 			std::invalid_argument(createMsg(msg, cellID)) {
@@ -37,7 +37,7 @@ private:
 	}
 };
 
-class invalid_position: public std::invalid_argument {
+class [[gnu::deprecated(" unmaintained code ")]] invalid_position: public std::invalid_argument {
 public:
 	invalid_position(const std::string& msg, const Position& position) :
 			std::invalid_argument(createMsg(msg, position)) {
@@ -50,7 +50,7 @@ private:
 	}
 };
 
-class invalid_detector_element: public std::invalid_argument {
+class [[gnu::deprecated(" unmaintained code ")]] invalid_detector_element: public std::invalid_argument {
 public:
 	invalid_detector_element(const std::string& msg, const DetElement& det) :
 			std::invalid_argument(createMsg(msg, det)) {

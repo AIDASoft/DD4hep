@@ -18,7 +18,7 @@
 namespace dd4hep {
 namespace rec {
 
-class LayeredSubdetector: public virtual DetElement, public LayeringExtension {
+class [[gnu::deprecated(" unmaintained code ")]] LayeredSubdetector: public virtual DetElement, public LayeringExtension {
 public:
 	/// Default constructor
 	LayeredSubdetector(const DetElement& det) :
