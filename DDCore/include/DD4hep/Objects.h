@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_OBJECTS_H
-#define DD4HEP_GEOMETRY_OBJECTS_H
+#ifndef DD4HEP_DDCORE_OBJECTS_H
+#define DD4HEP_DDCORE_OBJECTS_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -116,7 +116,7 @@ namespace dd4hep {
   /**
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Author: public Ref_t {
   public:
@@ -146,7 +146,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Header: public Handle<HeaderObject> {
   public:
@@ -197,7 +197,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Constant: public Handle<ConstantObject> {
   public:
@@ -224,7 +224,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Atom: public Handle<TGeoElement> {
   public:
@@ -248,7 +248,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Material: public Handle<TGeoMedium> {
   public:
@@ -279,7 +279,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class VisAttr: public Handle<VisAttrObject> {
   public:
@@ -344,7 +344,7 @@ namespace dd4hep {
   /**
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Limit {
   public:
@@ -371,7 +371,7 @@ namespace dd4hep {
   /**
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class LimitSet: public Handle<LimitSetObject> {
   public:
@@ -399,7 +399,7 @@ namespace dd4hep {
   /**
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class Region: public Handle<RegionObject> {
   public:
@@ -469,4 +469,4 @@ namespace ROOT {
   }
 }
 
-#endif    /* DD4HEP_GEOMETRY_OBJECTS_H        */
+#endif    /* DD4HEP_DDCORE_OBJECTS_H        */

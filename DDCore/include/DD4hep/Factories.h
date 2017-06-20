@@ -52,7 +52,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class ConstructionFactory {
   public:
@@ -75,7 +75,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class ApplyFactory : public PluginFactoryBase {
   public:
@@ -89,7 +89,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class TranslationFactory : public PluginFactoryBase {
   public:
@@ -102,7 +102,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class XMLElementFactory : public PluginFactoryBase {
   public:
@@ -115,7 +115,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class XMLDocumentReaderFactory : public PluginFactoryBase {
   public:
@@ -128,7 +128,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class XMLConversionFactory : public PluginFactoryBase {
   public:
@@ -141,7 +141,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class XmlDetElementFactory : public PluginFactoryBase {
   public:
@@ -154,7 +154,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   template <typename T> class JsonDetElementFactory : public PluginFactoryBase {
   public:

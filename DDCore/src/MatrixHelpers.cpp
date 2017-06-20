@@ -19,33 +19,33 @@
 
 using namespace dd4hep;
 
-TGeoIdentity* dd4hep::Matrices::_identity() {
+TGeoIdentity* dd4hep::detail::matrix::_identity() {
   return gGeoIdentity;
 }
 
-TGeoTranslation* dd4hep::Matrices::_translation(const Position& pos) {
+TGeoTranslation* dd4hep::detail::matrix::_translation(const Position& pos) {
   return new TGeoTranslation("", pos.X(), pos.Y(), pos.Z());
 }
 
-TGeoRotation* dd4hep::Matrices::_rotationZYX(const RotationZYX& rot) {
+TGeoRotation* dd4hep::detail::matrix::_rotationZYX(const RotationZYX& rot) {
   return new TGeoRotation("", rot.Phi() * RAD_2_DEGREE, rot.Theta() * RAD_2_DEGREE, rot.Psi() * RAD_2_DEGREE);
 }
 
-TGeoRotation* dd4hep::Matrices::_rotation3D(const Rotation3D& rot3D) {
+TGeoRotation* dd4hep::detail::matrix::_rotation3D(const Rotation3D& rot3D) {
   EulerAngles rot(rot3D);
   return new TGeoRotation("", rot.Phi() * RAD_2_DEGREE, rot.Theta() * RAD_2_DEGREE, rot.Psi() * RAD_2_DEGREE);
 }
 
-/// Set a RotationZYX object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix& dd4hep::Matrices::_transform(TGeoHMatrix& tr, const RotationZYX& rot)   {
+/// Set a RotationZYX object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix& dd4hep::detail::matrix::_transform(TGeoHMatrix& tr, const RotationZYX& rot)   {
   tr.RotateZ(rot.Phi()   * RAD_2_DEGREE);
   tr.RotateY(rot.Theta() * RAD_2_DEGREE);
   tr.RotateX(rot.Psi()   * RAD_2_DEGREE);
   return tr;
 }
 
-/// Set a Position object (translation) to a TGeoHMatrix \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix& dd4hep::Matrices::_transform(TGeoHMatrix& tr, const Position& pos)   {
+/// Set a Position object (translation) to a TGeoHMatrix \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix& dd4hep::detail::matrix::_transform(TGeoHMatrix& tr, const Position& pos)   {
   double t[3];
   pos.GetCoordinates(t);
   tr.SetDx(t[0]);
@@ -54,53 +54,53 @@ TGeoHMatrix& dd4hep::Matrices::_transform(TGeoHMatrix& tr, const Position& pos) 
   return tr;
 }
 
-/// Set a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix& dd4hep::Matrices::_transform(TGeoHMatrix& tr, const Rotation3D& rot)   {
+/// Set a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix& dd4hep::detail::matrix::_transform(TGeoHMatrix& tr, const Rotation3D& rot)   {
   Double_t* r = tr.GetRotationMatrix();
   rot.GetComponents(r);
   return tr;
 }
 
-/// Set a Transform3D object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix& dd4hep::Matrices::_transform(TGeoHMatrix& tr, const Transform3D& trans) {
+/// Set a Transform3D object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix& dd4hep::detail::matrix::_transform(TGeoHMatrix& tr, const Transform3D& trans) {
   Position pos;
   RotationZYX rot;
   trans.GetDecomposition(rot, pos);
   return _transform(tr, pos, rot);
 }
 
-/// Set a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix& dd4hep::Matrices::_transform(TGeoHMatrix& tr, const Position& pos, const RotationZYX& rot) {
+/// Set a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix& dd4hep::detail::matrix::_transform(TGeoHMatrix& tr, const Position& pos, const RotationZYX& rot) {
   return _transform(_transform(tr, rot), pos);
 }
 
-/// Convert a Position object to a TGeoTranslation         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix* dd4hep::Matrices::_transform(const Position& pos)   {
+/// Convert a Position object to a TGeoTranslation         \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix* dd4hep::detail::matrix::_transform(const Position& pos)   {
   return &_transform(*(new TGeoHMatrix()), pos);
 }
 
-/// Convert a RotationZYX object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix* dd4hep::Matrices::_transform(const RotationZYX& rot)   {
+/// Convert a RotationZYX object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix* dd4hep::detail::matrix::_transform(const RotationZYX& rot)   {
   return &_transform(*(new TGeoHMatrix()), rot);
 }
 
-/// Convert a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix* dd4hep::Matrices::_transform(const Rotation3D& rot)   {
+/// Convert a Rotation3D object to a TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix* dd4hep::detail::matrix::_transform(const Rotation3D& rot)   {
   return &_transform(*(new TGeoHMatrix()), rot);
 }
 
-/// Convert a Transform3D object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix* dd4hep::Matrices::_transform(const Transform3D& trans) {
+/// Convert a Transform3D object to a TGeoHMatrix          \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix* dd4hep::detail::matrix::_transform(const Transform3D& trans) {
   return &_transform(*(new TGeoHMatrix()), trans);
 }
 
-/// Convert a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-TGeoHMatrix* dd4hep::Matrices::_transform(const Position& pos, const RotationZYX& rot) {
+/// Convert a Position followed by a RotationZYX to a TGeoHMatrix  \ingroup DD4HEP \ingroup DD4HEP_CORE
+TGeoHMatrix* dd4hep::detail::matrix::_transform(const Position& pos, const RotationZYX& rot) {
   return &_transform(*(new TGeoHMatrix()), pos, rot);
 }
 
-/// Convert a TGeoMatrix object to a generic Transform3D  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-Transform3D dd4hep::Matrices::_transform(const TGeoMatrix* matrix)    {
+/// Convert a TGeoMatrix object to a generic Transform3D  \ingroup DD4HEP \ingroup DD4HEP_CORE
+Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)    {
   const Double_t* t = matrix->GetTranslation();
   if ( matrix->IsRotation() )  {
     const Double_t* r = matrix->GetRotationMatrix();
@@ -113,11 +113,11 @@ Transform3D dd4hep::Matrices::_transform(const TGeoMatrix* matrix)    {
                      0e0,0e0,0e0,t[2]*MM_2_CM);
 }
 
-dd4hep::XYZAngles dd4hep::Matrices::_xyzAngles(const TGeoMatrix* m) {
+dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const TGeoMatrix* m) {
   return m->IsRotation() ? _xyzAngles(m->GetRotationMatrix()) : XYZAngles(0,0,0);
 }
 
-dd4hep::XYZAngles dd4hep::Matrices::_xyzAngles(const double* r) {
+dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const double* r) {
   Double_t cosb = std::sqrt(r[0]*r[0] + r[1]*r[1]);
   if (cosb > 0.00001) {
     return XYZAngles(atan2(r[5], r[8]), atan2(-r[2], cosb), atan2(r[1], r[0]));
@@ -125,28 +125,28 @@ dd4hep::XYZAngles dd4hep::Matrices::_xyzAngles(const double* r) {
   return XYZAngles(atan2(-r[7], r[4]),atan2(-r[2], cosb),0);
 }
 
-void dd4hep::Matrices::_decompose(const Transform3D& trafo, Translation3D& pos, RotationZYX& rot)   {
+void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Translation3D& pos, RotationZYX& rot)   {
   trafo.GetDecomposition(rot,pos);
 }
 
-void dd4hep::Matrices::_decompose(const Transform3D& trafo, Translation3D& pos, XYZAngles& rot)   {
+void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Translation3D& pos, XYZAngles& rot)   {
   EulerAngles r;
   trafo.GetDecomposition(r,pos);
   rot.SetXYZ(r.Psi(),r.Theta(),r.Phi());
 }
 
-void dd4hep::Matrices::_decompose(const Transform3D& trafo, Position& pos, RotationZYX& rot)  {
+void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Position& pos, RotationZYX& rot)  {
   trafo.GetDecomposition(rot,pos);
 }
 
-void dd4hep::Matrices::_decompose(const Transform3D& trafo, Position& pos, XYZAngles& rot)  {
+void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Position& pos, XYZAngles& rot)  {
   EulerAngles r;
   trafo.GetDecomposition(r,pos);
   rot.SetXYZ(r.Psi(),r.Theta(),r.Phi());
 }
 
 /// Check matrices for equality
-int dd4hep::Matrices::_matrixEqual(const TGeoMatrix& left, const TGeoMatrix& right)   {
+int dd4hep::detail::matrix::_matrixEqual(const TGeoMatrix& left, const TGeoMatrix& right)   {
   double epsilon = 1e-12;
   int result = MATRICES_EQUAL;
   const Double_t* t1 = left.GetTranslation();

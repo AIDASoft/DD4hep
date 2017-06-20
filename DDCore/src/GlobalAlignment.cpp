@@ -77,7 +77,7 @@ PlacedVolume GlobalAlignment::motherPlacement(int level_up)   const    {
 /// Access the currently applied alignment/placement matrix
 Transform3D GlobalAlignment::toGlobal(int level) const   {
   CheckHandle verify_handle(*this);
-  return Matrices::_transform(ptr()->GetMatrix(level));
+  return detail::matrix::_transform(ptr()->GetMatrix(level));
 }
 
 /// Transform a point from local coordinates of a given level to global coordinates
@@ -101,13 +101,13 @@ Position GlobalAlignment::globalToLocal(const Position& globalPoint, int level) 
 /// Access the currently applied alignment/placement matrix
 Transform3D GlobalAlignment::toMother(int level) const   {
   CheckHandle verify_handle(*this);
-  return Matrices::_transform(ptr()->GetNode(level)->GetMatrix());
+  return detail::matrix::_transform(ptr()->GetNode(level)->GetMatrix());
 }
 
 /// Access the currently applied alignment/placement matrix
 Transform3D GlobalAlignment::nominal() const   {
   CheckHandle verify_handle(*this);
-  return Matrices::_transform(ptr()->GetOriginalMatrix());
+  return detail::matrix::_transform(ptr()->GetOriginalMatrix());
 }
 
 /// Access the currently applied correction matrix (delta)
@@ -118,7 +118,7 @@ Transform3D GlobalAlignment::delta() const   {
   // T = T_0 * Delta -> Delta = T_0^-1 * T
   TGeoHMatrix mat(n->GetOriginalMatrix()->Inverse());
   mat.Multiply(n->GetNode()->GetMatrix());
-  return Matrices::_transform(&mat);
+  return detail::matrix::_transform(&mat);
 }
 
 /// Access the inverse of the currently applied correction matrix (delta) (mother to daughter)
@@ -129,5 +129,5 @@ Transform3D GlobalAlignment::invDelta() const   {
   // T = T_0 * Delta -> Delta^-1 = T^-1 * T_0
   TGeoHMatrix mat(n->GetNode()->GetMatrix()->Inverse());
   mat.Multiply(n->GetOriginalMatrix());
-  return Matrices::_transform(&mat);
+  return detail::matrix::_transform(&mat);
 }

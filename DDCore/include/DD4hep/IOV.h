@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_IOV_H
-#define DD4HEP_CONDITIONS_IOV_H
+#ifndef DD4HEP_DDCORE_IOV_H
+#define DD4HEP_DDCORE_IOV_H
 
 // C/C++ include files
 #include <string>
@@ -163,4 +163,4 @@ namespace dd4hep {
   };
     
 } /* End namespace dd4hep                   */
-#endif    /* DD4HEP_CONDITIONS_IOV_H        */
+#endif    /* DD4HEP_DDCORE_IOV_H        */

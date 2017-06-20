@@ -18,7 +18,7 @@
 
 /// dd4hep geometry components, classes and functions
 /**
- *  \defgroup DD4HEP_GEOMETRY dd4hep::detail components, classes and objects
+ *  \defgroup DD4HEP_CORE dd4hep::detail components, classes and objects
  *  @{
  */
 

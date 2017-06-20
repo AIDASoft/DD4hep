@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_SEGMENTATIONS_H
-#define DD4HEP_GEOMETRY_SEGMENTATIONS_H
+#ifndef DD4HEP_DDCORE_SEGMENTATIONS_H
+#define DD4HEP_DDCORE_SEGMENTATIONS_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -36,7 +36,7 @@ namespace dd4hep {
    *
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class Segmentation : public Handle<SegmentationObject> {
   public:
@@ -90,4 +90,4 @@ namespace dd4hep {
     DDSegmentation::Segmentation* segmentation() const;
   };
 } /* End namespace dd4hep                */
-#endif    /* DD4HEP_GEOMETRY_SEGMENTATIONS_H     */
+#endif    /* DD4HEP_DDCORE_SEGMENTATIONS_H     */

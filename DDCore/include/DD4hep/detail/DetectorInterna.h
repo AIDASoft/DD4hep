@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_DETECTORINTERNA_H
-#define DD4HEP_GEOMETRY_DETECTORINTERNA_H
+#ifndef DD4HEP_DDCORE_DETECTORINTERNA_H
+#define DD4HEP_DDCORE_DETECTORINTERNA_H
 
 // Framework include files
 #include "DD4hep/Callback.h"
@@ -49,7 +49,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *
-   *  \ingroup DD4HEP DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP        \ingroup DD4HEP_CORE
    */
   class SensitiveDetectorObject: public NamedObject, public ObjectExtensions {
   public:
@@ -76,7 +76,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *
-   *  \ingroup DD4HEP DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP        \ingroup DD4HEP_CORE
    */
   class DetElementObject : public NamedObject, public ObjectExtensions {
   public:
@@ -186,7 +186,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *
-   *  \ingroup DD4HEP DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP        \ingroup DD4HEP_CORE
    */
   class WorldObject: public DetElementObject {
   public:
@@ -209,5 +209,5 @@ namespace dd4hep {
   inline WorldObject::WorldObject() : DetElementObject(), description(0)      {
   }
 
-}         /* End namespace dd4hep        */
-#endif    /* DD4HEP_GEOMETRY_DETECTORINTERNA_H      */
+}         /* End namespace dd4hep                   */
+#endif    /* DD4HEP_DDCORE_DETECTORINTERNA_H      */

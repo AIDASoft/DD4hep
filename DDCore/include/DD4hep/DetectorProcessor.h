@@ -31,7 +31,7 @@ namespace dd4hep {
    *   \author  M.Frank
    *   \version 1.0
    *   \date    31/05/2017
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class DetectorProcessor {
   public:
@@ -59,7 +59,7 @@ namespace dd4hep {
    *   \author  M.Frank
    *   \version 1.0
    *   \date    31/05/2017
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   template <typename T> class DetElementProcessor : virtual public DetectorProcessor  {
   public:
@@ -95,7 +95,7 @@ namespace dd4hep {
    *   \author  M.Frank
    *   \version 1.0
    *   \date    31/05/2017
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   template <typename T> class DetectorProcessorShared : public DetectorProcessor {
   public:
@@ -128,7 +128,7 @@ namespace dd4hep {
    *   \author  M.Frank
    *   \version 1.0
    *   \date    01/04/2016
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class DetectorScanner  {
   public:

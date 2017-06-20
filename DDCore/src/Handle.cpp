@@ -177,7 +177,7 @@ void dd4hep::_toDictionary(const string& name, const string& value) {
   _toDictionary(name, value, "number");
 }
 
-/// Enter name value pair to the dictionary.  \ingroup DD4HEP_GEOMETRY
+/// Enter name value pair to the dictionary.  \ingroup DD4HEP_CORE
 void dd4hep::_toDictionary(const std::string& name, const std::string& value, const std::string& typ)   {
   if ( typ == "string" )  {
     eval.setEnviron(name.c_str(),value.c_str());

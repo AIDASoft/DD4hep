@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H
-#define DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H
+#ifndef DD4HEP_DDCORE_GLOBALDETECTORALIGNMENT_H
+#define DD4HEP_DDCORE_GLOBALDETECTORALIGNMENT_H
 
 // Framework include files
 #include "DD4hep/DetElement.h"
@@ -77,4 +77,4 @@ namespace dd4hep {
 
   } /* End namespace align                           */
 } /* End namespace dd4hep                                 */
-#endif    /* DD4HEP_GEOMETRY_GLOBALDETECTORALIGNMENT_H    */
+#endif    /* DD4HEP_DDCORE_GLOBALDETECTORALIGNMENT_H    */

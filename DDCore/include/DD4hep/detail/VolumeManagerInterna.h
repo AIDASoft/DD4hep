@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_VOLUMEMANAGERINTERNA_H
-#define DD4HEP_GEOMETRY_VOLUMEMANAGERINTERNA_H
+#ifndef DD4HEP_DDCORE_VOLUMEMANAGERINTERNA_H
+#define DD4HEP_DDCORE_VOLUMEMANAGERINTERNA_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
@@ -41,7 +41,7 @@ namespace dd4hep {
      *
      * \author  M.Frank
      * \version 1.0
-     * \ingroup DD4HEP_GEOMETRY
+     * \ingroup DD4HEP_CORE
      */
     class VolumeManagerObject: public NamedObject {
     public:
@@ -86,4 +86,4 @@ namespace dd4hep {
 
   } /* End namespace detail               */
 } /* End namespace dd4hep                */
-#endif    /* dd4hep_GEOMETRY_VOLUMEMANAGERINTERNA_H           */
+#endif    /* DD4HEP_DDCORE_VOLUMEMANAGERINTERNA_H           */

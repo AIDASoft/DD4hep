@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_OBJECTSINTERNA_H
-#define DD4HEP_GEOMETRY_OBJECTSINTERNA_H
+#ifndef DD4HEP_DDCORE_OBJECTSINTERNA_H
+#define DD4HEP_DDCORE_OBJECTSINTERNA_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
@@ -34,7 +34,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class HeaderObject: public NamedObject {
   public:
@@ -59,7 +59,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class ConstantObject: public NamedObject {
   public:
@@ -81,7 +81,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class VisAttrObject: public NamedObject {
   public:
@@ -101,7 +101,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class RegionObject: public NamedObject {
   public:
@@ -123,7 +123,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class LimitSetObject: public NamedObject, public std::set<Limit> {
   public:
@@ -137,7 +137,7 @@ namespace dd4hep {
   /**
    *   \author  M.Frank
    *   \version 1.0
-   *   \ingroup DD4HEP_GEOMETRY
+   *   \ingroup DD4HEP_CORE
    */
   class HitCollection   {
   public:
@@ -162,7 +162,7 @@ namespace dd4hep {
    *
    * \author  M.Frank
    * \version 1.0
-   * \ingroup DD4HEP_GEOMETRY
+   * \ingroup DD4HEP_CORE
    */
   class ReadoutObject: public NamedObject {
   public:
@@ -186,7 +186,7 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    *  \date    2012/07/31
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class IDDescriptorObject: public NamedObject, public BitField64 {
   public:
@@ -209,4 +209,4 @@ namespace dd4hep {
 #endif
   };
 }      /* End namespace dd4hep              */
-#endif /* DD4HEP_GEOMETRY_OBJECTSINTERNA_H  */
+#endif /* DD4HEP_DDCORE_OBJECTSINTERNA_H  */

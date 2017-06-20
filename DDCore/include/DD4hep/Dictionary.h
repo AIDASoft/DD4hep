@@ -13,8 +13,8 @@
 //  Created by Pere Mato on 22/1/12.
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_DICTIONARY_H
-#define DD4HEP_GEOMETRY_DICTIONARY_H
+#ifndef DD4HEP_DDCORE_DICTIONARY_H
+#define DD4HEP_DDCORE_DICTIONARY_H
 
 // Framework include files
 #include "DDParsers/Evaluator.h"
@@ -419,4 +419,4 @@ typedef dd4hep::DDSegmentation::CellID CellID;
 #endif  // __CINT__
 #endif  // __HAVE_DDSEGMENTATION__
 
-#endif // DD4HEP_GEOMETRY_DICTIONARY_H
+#endif  /* DD4HEP_DDCORE_DICTIONARY_H  */

@@ -10,9 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
-#ifndef DD4HEP_GEOMETRY_INTERNAL_NAMEDOBJECT_H
-#define DD4HEP_GEOMETRY_INTERNAL_NAMEDOBJECT_H
+#ifndef DD4HEP_DDCORE_NAMEDOBJECT_H
+#define DD4HEP_DDCORE_NAMEDOBJECT_H
 
 // C/C++ include files
 #include <string>
@@ -26,7 +25,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class NamedObject {
   public:
@@ -69,5 +68,5 @@ namespace dd4hep {
     }
   };
 
-} /* End namespace dd4hep                   */
-#endif    /*  DD4HEP_GEOMETRY_INTERNAL_NAMEDOBJECT_H   */
+}         /* End namespace dd4hep          */
+#endif    /* DD4HEP_DDCORE_NAMEDOBJECT_H   */

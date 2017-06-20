@@ -87,7 +87,7 @@ void GlobalAlignmentWriter::addNode(xml::Element elt, GlobalAlignment a)  const 
     elt.append(e);
   }
   if ( mat.IsRotation() )  {
-    XYZAngles rot = Matrices::_xyzAngles(&mat);
+    XYZAngles rot = detail::matrix::_xyzAngles(&mat);
     if ( fabs(rot.X()) > numeric_limits<double>::epsilon() ||
          fabs(rot.Y()) > numeric_limits<double>::epsilon() ||
          fabs(rot.Z()) > numeric_limits<double>::epsilon() )    {

@@ -184,19 +184,19 @@ void Calculator::computeDelta(const Delta& delta,
 
   switch(delta.flags)   {
   case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
-    Matrices::_transform(tr_delta, Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse())));
+    detail::matrix::_transform(tr_delta, Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse())));
     break;
   case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION:
-    Matrices::_transform(tr_delta, Transform3D(rot,pos));
+    detail::matrix::_transform(tr_delta, Transform3D(rot,pos));
     break;
   case Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
-    Matrices::_transform(tr_delta, Transform3D(piv*rot*(piv.Inverse())));
+    detail::matrix::_transform(tr_delta, Transform3D(piv*rot*(piv.Inverse())));
     break;
   case Delta::HAVE_ROTATION:
-    Matrices::_transform(tr_delta, rot);
+    detail::matrix::_transform(tr_delta, rot);
     break;
   case Delta::HAVE_TRANSLATION:
-    Matrices::_transform(tr_delta, pos);
+    detail::matrix::_transform(tr_delta, pos);
     break;
   default:
     break;
@@ -228,7 +228,7 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
   result += to_world(context, det, align.worldDelta);
   align.worldTrafo    = det.nominal().worldTransformation()*align.worldDelta;
   align.detectorTrafo = det.nominal().detectorTransformation()*tr_delta;
-  align.trToWorld     = Matrices::_transform(&align.worldDelta);
+  align.trToWorld     = detail::matrix::_transform(&align.worldDelta);
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;

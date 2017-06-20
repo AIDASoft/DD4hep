@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_BITFIELD64_H
-#define DD4HEP_GEOMETRY_BITFIELD64_H
+#ifndef DD4HEP_DDCORE_BITFIELD64_H
+#define DD4HEP_DDCORE_BITFIELD64_H
 
 // Framework include files
 #include "DDSegmentation/BitField64.h"
@@ -27,4 +27,4 @@ namespace dd4hep {
 
   }       /* End namespace detail           */
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_GEOMETRY_BITFIELD64_H     */
+#endif    /* DD4HEP_DDCORE_BITFIELD64_H     */

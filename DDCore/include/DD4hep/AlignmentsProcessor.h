@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDALIGN_ALIGNMENTSPROCESSOR_H
-#define DD4HEP_DDALIGN_ALIGNMENTSPROCESSOR_H
+#ifndef DD4HEP_DDCORE_ALIGNMENTSPROCESSOR_H
+#define DD4HEP_DDCORE_ALIGNMENTSPROCESSOR_H
 
 // Framework includes
 #include "DD4hep/ConditionsMap.h"
@@ -195,4 +195,4 @@ namespace dd4hep {
 
   }    /* End namespace align  */
 }      /* End namespace dd4hep      */
-#endif /* DD4HEP_DDALIGN_ALIGNMENTSPROCESSOR_H  */
+#endif /* DD4HEP_DDCORE_ALIGNMENTSPROCESSOR_H  */

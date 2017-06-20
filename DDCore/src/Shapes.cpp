@@ -440,91 +440,91 @@ void EightPointSolid::make(double dz, const double* vtx)   {
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2) {
-  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, Matrices::_identity(), Matrices::_identity());
+  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
   _assign(new TGeoCompositeShape("", sub), "", "subtraction", true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
-  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, Matrices::_identity(), Matrices::_transform(trans));
+  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
   _assign(new TGeoCompositeShape("", sub), "", "subtraction", true);
 }
 
 /// Constructor to be used when creating a new object. Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
-  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, Matrices::_identity(), Matrices::_translation(pos));
+  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
   _assign(new TGeoCompositeShape("", sub), "", "subtraction", true);
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
-  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, Matrices::_identity(), Matrices::_rotationZYX(rot));
+  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
   _assign(new TGeoCompositeShape("", sub), "", "subtraction", true);
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
-  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, Matrices::_identity(), Matrices::_rotation3D(rot));
+  TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
   _assign(new TGeoCompositeShape("", sub), "", "subtraction", true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2) {
-  TGeoUnion* uni = new TGeoUnion(shape1, shape2, Matrices::_identity(), Matrices::_identity());
+  TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
   _assign(new TGeoCompositeShape("", uni), "", "union", true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
-  TGeoUnion* uni = new TGeoUnion(shape1, shape2, Matrices::_identity(), Matrices::_transform(trans));
+  TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
   _assign(new TGeoCompositeShape("", uni), "", "union", true);
 }
 
 /// Constructor to be used when creating a new object. Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
-  TGeoUnion* uni = new TGeoUnion(shape1, shape2, Matrices::_identity(), Matrices::_translation(pos));
+  TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
   _assign(new TGeoCompositeShape("", uni), "", "union", true);
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
-  TGeoUnion *uni = new TGeoUnion(shape1, shape2, Matrices::_identity(), Matrices::_rotationZYX(rot));
+  TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
   _assign(new TGeoCompositeShape("", uni), "", "union", true);
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
-  TGeoUnion *uni = new TGeoUnion(shape1, shape2, Matrices::_identity(), Matrices::_rotation3D(rot));
+  TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
   _assign(new TGeoCompositeShape("", uni), "", "union", true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2) {
-  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, Matrices::_identity(), Matrices::_identity());
+  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
   _assign(new TGeoCompositeShape("", inter), "", "intersection", true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
-  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, Matrices::_identity(), Matrices::_transform(trans));
+  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
   _assign(new TGeoCompositeShape("", inter), "", "intersection", true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity.
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
-  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, Matrices::_identity(), Matrices::_translation(pos));
+  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
   _assign(new TGeoCompositeShape("", inter), "", "intersection", true);
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
-  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, Matrices::_identity(), Matrices::_rotationZYX(rot));
+  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
   _assign(new TGeoCompositeShape("", inter), "", "intersection", true);
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
-  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, Matrices::_identity(), Matrices::_rotation3D(rot));
+  TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
   _assign(new TGeoCompositeShape("", inter), "", "intersection", true);
 }
 

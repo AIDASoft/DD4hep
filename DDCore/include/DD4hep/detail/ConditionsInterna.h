@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONINTERNA_H
-#define DD4HEP_CONDITIONS_CONDITIONINTERNA_H
+#ifndef DD4HEP_DDCORE_CONDITIONINTERNA_H
+#define DD4HEP_DDCORE_CONDITIONINTERNA_H
 
 // Framework include files
 #include "DD4hep/DetElement.h"
@@ -174,4 +174,4 @@ namespace dd4hep {
 #define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)   DD4HEP_DEFINE_CONDITIONS_CONT(x)
 
 #endif    //  DD4HEP_HAVE_ALL_PARSERS
-#endif    /* DD4HEP_CONDITIONS_CONDITIONINTERNA_H    */
+#endif    /* DD4HEP_DDCORE_CONDITIONINTERNA_H    */
