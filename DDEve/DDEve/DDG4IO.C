@@ -20,7 +20,7 @@
 #pragma GCC diagnostic ignored "-Wunused"
 #pragma GCC diagnostic ignored "-Woverlength-strings"
 
-#elif defined(__llvm__) || defined(__APPLE__)
+#elif defined(__llvm__) || defined(__clang__) || defined(__APPLE__)
 
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #pragma clang diagnostic ignored "-Wdeprecated"
