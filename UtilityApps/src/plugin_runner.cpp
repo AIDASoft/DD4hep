@@ -20,14 +20,15 @@
 //______________________________________________________________________________
 namespace {
   void usage() {
-    cout << "geoPluginRun -opt [-opt]                                                \n"
-      "        -input  <file>  [OPTIONAL]  Specify geometry input file.              \n"
-      "        -plugin <name>  <args> [args]                                         \n"
-      "                        [REQUIRED]  Plugin to be executed and applied.        \n"
-      "        -plugin <name>  <args> [args]                                         \n"
-      "                        [OPTIONAL]  Next plugin with arguments.               \n";
-    print_default_args() << endl;
-    exit(EINVAL);
+    std::cout <<
+      "geoPluginRun -opt [-opt]                                                \n"
+      "        -input  <file>  [OPTIONAL]  Specify geometry input file.        \n"
+      "        -plugin <name>  <args> [args]                                   \n"
+      "                        [REQUIRED]  Plugin to be executed and applied.  \n"
+      "        -plugin <name>  <args> [args]                                   \n"
+      "                        [OPTIONAL]  Next plugin with arguments.         \n";
+    print_default_args() << std::endl;
+    ::exit(EINVAL);
   }
 
   //______________________________________________________________________________
@@ -45,13 +46,13 @@ namespace {
     if ( arguments.plugins.empty() )
       usage();
 
-    Detector& description = dd4hep_instance();
+    dd4hep::Detector& description = dd4hep_instance();
     // Load compact files if required by plugin
     if ( !arguments.geo_files.empty() )   {
       load_compact(description, arguments);
     }
     else  {
-      cout << "geoPluginRun: No geometry input supplied. No geometry will be loaded." << endl;
+      std::cout << "geoPluginRun: No geometry input supplied. No geometry will be loaded." << std::endl;
     }
     // Create volume manager and populate it required
     if ( arguments.volmgr  ) run_plugin(description,"DD4hepVolumeManager",0,0);

@@ -30,8 +30,8 @@
 #include "DDG4/Geant4Particle.h"
 namespace dd4hep {
   namespace DDSegmentation { }
-  namespace sim { }
   namespace detail   { }
+  namespace sim { }
 }
 
 // CINT configuration
@@ -44,8 +44,8 @@ using namespace std;
 
 /// Define namespaces
 #pragma link C++ namespace dd4hep;
-#pragma link C++ namespace dd4hep::detail;
 #pragma link C++ namespace dd4hep::sim;
+#pragma link C++ namespace dd4hep::detail;
 
 /// Simple stuff
 #pragma link C++ class dd4hep::sim::SimpleRun+;
