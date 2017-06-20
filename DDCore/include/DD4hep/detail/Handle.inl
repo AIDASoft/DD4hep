@@ -45,7 +45,10 @@ namespace dd4hep {
       invalidHandleError(typeid(T));
       return 0; // We have thrown an exception before - does not harm!
     }
-
+    template<typename T> T* check_handle_cast(T* n)  {
+      T* t = dynamic_cast<T*>(n);
+      return t;
+    }
 }   /* End namespace dd4hep      */
 
 #if 0
@@ -60,12 +63,12 @@ namespace dd4hep {
       std::cout << "cast:   "  << dynamic_cast<X*>(m_element) << std::endl;\
 
 #endif
-
-#define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
-  namespace dd4hep {                                                    \
-    template <> void Handle<X>::verifyObject() const  {                 \
+	
+#define DD4HEP_INSTANTIATE_HANDLE(X)					\
+  namespace dd4hep {                                                   	\
+    template <> void Handle<X>::verifyObject() const  {			\
       increment_object_validations();					\
-      if (m_element && dynamic_cast<X*>(m_element) == 0) {	        \
+      if (m_element && check_handle_cast<X>(m_element) == 0) {   	\
         bad_assignment(typeid(*m_element), typeid(X));		        \
       }                                                                 \
   }}                                                                    \

@@ -68,5 +68,5 @@ dd4hep_add_executable(pyddg4
   USES        [ROOT   REQUIRED COMPONENTS PyROOT]
   OPTIONAL    [PYTHON REQUIRED SOURCES pyddg4.cpp])
 #---Package installation procedure(s) ----------------------------------------------
-dd4hep_install_dir(examples DESTINATION examples/DDG4)
-dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)
+dd4hep_install_dir(examples DESTINATION ${DD4hep_DIR}/examples/DDG4)
+dd4hep_install_files(FILES python/*.py python/*.C DESTINATION ${DD4hep_DIR}/python)
