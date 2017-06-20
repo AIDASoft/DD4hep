@@ -9,10 +9,10 @@
 
 namespace DDSurfaces {
 
-  using DD4hep::DDRec::ISurface ;
-  using DD4hep::DDRec::SurfaceType ;
-  using DD4hep::DDRec::ICylinder ;
-  using DD4hep::DDRec::ICone ;
+  using dd4hep::rec::ISurface ;
+  using dd4hep::rec::SurfaceType ;
+  using dd4hep::rec::ICylinder ;
+  using dd4hep::rec::ICone ;
  
 }
 

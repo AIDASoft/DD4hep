@@ -5,7 +5,7 @@
 
 namespace DDSurfaces {
 
-  using DD4hep::DDRec::IMaterial ;
+  using dd4hep::rec::IMaterial ;
 
 }
 

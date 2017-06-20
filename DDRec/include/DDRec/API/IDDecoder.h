@@ -12,7 +12,6 @@
 #include "DD4hep/VolumeManager.h"
 
 #include "DDSegmentation/Segmentation.h"
-#include "DDRec/tempdefs.h"
 
 #include <set>
 #include <string>
@@ -30,7 +29,7 @@ typedef DDSegmentation::VolumeID VolumeID;
  * high level interface for position to cell ID and cell ID to position conversions
  * and related information.
  */
-class IDDecoder {
+class  [[gnu::deprecated(" replaced with CellIDPositionConverter ")]]  IDDecoder {
 public:
 	class BarrelEndcapFlag {
 	public:
