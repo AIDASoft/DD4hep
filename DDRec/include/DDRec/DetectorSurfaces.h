@@ -2,7 +2,6 @@
 #define rec_DetectorSurfaces_H_
 
 #include "DDRec/Surface.h"
-#include "DDRec/tempdefs.h"
 
 namespace dd4hep {
   namespace rec {
