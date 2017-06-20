@@ -14,10 +14,10 @@ dd4hep_package(    DDCore
                    DDSegmentation DDParsers
   OPTIONAL         XERCESC
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DD4hep include/XML  include/JSON)
+  INSTALL_INCLUDES include/DD4hep include/XML include/JSON)
 
 #---Generate ROOT dictionary------------------------------------------------------
-dd4hep_add_dictionary( G__dd4hep
+dd4hep_add_dictionary( G__DD4hep
   SOURCES include/DD4hep/*.h 
   include/DD4hep/detail/*.h 
   include/XML/*.h 
@@ -33,12 +33,11 @@ dd4hep_add_dictionary( G__dd4hep
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h )
 
-
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/XML/*.cpp
   OPTIONAL       [BOOST SOURCES src/JSON/*.cpp]
-  GENERATED      G__dd4hep.cxx 
+  GENERATED      G__DD4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
   LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}
   )

@@ -16,13 +16,6 @@
 //
 //====================================================================
 
-// Disable some diagnostics for ROOT dictionaries
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wdeprecated"
-#pragma GCC diagnostic ignored "-Wunused"
-#endif
-
 // Framework include files
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4Primary.h"

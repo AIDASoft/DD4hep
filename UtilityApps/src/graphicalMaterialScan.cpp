@@ -18,6 +18,7 @@
 //       average lambda/length across these paths
 //       for each material, fraction of path length which crosses that material
 //   (inspired by material scan)
+//
 //  Author     : D.Jeans, UTokyo
 //
 //==========================================================================
@@ -101,13 +102,13 @@ int main_wrapper(int argc, char** argv)   {
   }
 
   double x0,y0,z0,x1,y1,z1;
-  unsigned int nslice, nbins, mm;
+  unsigned int nslice, nbins, mm_count;
   std::stringstream sstr;
   sstr << 
     argv[3] << " " << argv[4] << " " << argv[5] << " " << 
     argv[6] << " " << argv[7] << " " << argv[8] << " " << 
     argv[9] << " " << argv[10] << " " << argv[11] << " " << "NONE";
-  sstr >> x0 >> y0 >> z0 >> x1 >> y1 >> z1 >> nslice >> nbins >> mm;
+  sstr >> x0 >> y0 >> z0 >> x1 >> y1 >> z1 >> nslice >> nbins >> mm_count;
   if ( !sstr.good() )   {
     Handler::usage();
     ::exit(EINVAL);
@@ -194,13 +195,13 @@ int main_wrapper(int argc, char** argv)   {
 
         std::map < std::string , float > materialmap;
 
-        for (unsigned int jx=0; jx<2*mm; jx++) {
-          if ( jx<mm ) {
-            double xcom = xmin + (1+jx)*( xmax - xmin )/(mm+1.);
+        for (unsigned int jx=0; jx<2*mm_count; jx++) {
+          if ( jx<mm_count ) {
+            double xcom = xmin + (1+jx)*( xmax - xmin )/(mm_count+1.);
             p0.array()[index[1]] = xcom;  p0.array()[index[2]] = ymin;
             p1.array()[index[1]] = xcom;  p1.array()[index[2]] = ymax;
           } else {
-            double ycom =  ymin + (jx-mm+1)*( ymax - ymin )/(mm+1.);
+            double ycom =  ymin + (jx-mm_count+1)*( ymax - ymin )/(mm_count+1.);
             p0.array()[index[1]] = xmin;  p0.array()[index[2]] = ycom;
             p1.array()[index[1]] = xmax;  p1.array()[index[2]] = ycom;
           }
