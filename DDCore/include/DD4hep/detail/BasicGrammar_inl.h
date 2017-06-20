@@ -25,7 +25,6 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/BasicGrammar.h"
 
-#ifdef DD4HEP_USE_BOOST
 #if defined(DD4HEP_PARSER_HEADER)
 
 #define DD4HEP_NEED_EVALUATOR
@@ -39,7 +38,6 @@
 #include "DDParsers/ToStream.h"
 #include "DDParsers/Evaluator.h"
 namespace dd4hep { XmlTools::Evaluator& g4Evaluator();  }
-#endif
 #endif
 namespace {  static XmlTools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 
@@ -115,9 +113,7 @@ namespace dd4hep {
   template <typename TYPE> bool Grammar<TYPE>::fromString(void* ptr, const std::string& string_val) const {
     int sc = 0;
     TYPE temp;
-#ifdef DD4HEP_USE_BOOST
     sc = ::dd4hep::Parsers::parse(temp,string_val);
-#endif
     if ( !sc ) sc = evaluate(&temp,string_val);
 #if 0
     std::cout << "Sc=" << sc << "  Converting value: " << string_val 
@@ -128,29 +124,15 @@ namespace dd4hep {
       *(TYPE*)ptr = temp;
       return true;
     }
-#ifndef DD4HEP_USE_BOOST
-    throw std::runtime_error("This version of DD4HEP is not compiled to use boost::spirit.\n"
-                             "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
-                             "and BOOST_INCLUDE_DIR=<boost include path>");
-#else
     BasicGrammar::invalidConversion(string_val, typeid(TYPE));
     return false;
-#endif
   }
 
   /// Serialize a property to a string
   template <typename TYPE> std::string Grammar<TYPE>::str(const void* ptr) const {
-#ifdef DD4HEP_USE_BOOST
     std::stringstream string_rep;
     Utils::toStream(*(TYPE*)ptr,string_rep);
     return string_rep.str();
-#else
-    if (ptr) {
-    }
-    throw std::runtime_error("This version of DD4HEP is not compiled to use boost::spirit.\n"
-                             "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
-                             "and BOOST_INCLUDE_DIR=<boost include path>");
-#endif
   }
 
   /// Helper function to parse data type
@@ -243,7 +225,6 @@ namespace dd4hep {
 
   /// Container evaluator
   template <typename TYPE> static int eval_container(TYPE* p, const std::string& str)  {
-#ifdef DD4HEP_USE_BOOST
     std::vector<std::string> buff;
     int sc = Parsers::parse(buff,str);
     if ( sc )  {
@@ -263,9 +244,6 @@ namespace dd4hep {
         return fill_data(p,buff);
       }
     }
-#else
-    if ( p && str.empty() ) return 0;
-#endif
     return 0;
   }
 
@@ -276,16 +254,12 @@ namespace dd4hep {
       val.erase(idx, 5);
     while (val[0] == ' ')
       val.erase(0, 1);
-#ifdef DD4HEP_USE_BOOST
     double result = s__eval.evaluate(val.c_str());
     if (s__eval.status() != XmlTools::Evaluator::OK) {
       return 0;
     }
     *ptr = (T)result;
     return 1;
-#else
-    return 0;
-#endif
   }
 
   /// String evaluator
