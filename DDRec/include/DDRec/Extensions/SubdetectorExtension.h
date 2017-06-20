@@ -18,7 +18,7 @@ namespace rec {
 /**
  * Class describing general parameters of a subdetector.
  */
-class SubdetectorExtension {
+class [[gnu::deprecated(" unmaintained code ")]] SubdetectorExtension {
 public:
 	/// Destructor
 	virtual ~SubdetectorExtension() {

@@ -16,7 +16,7 @@
 namespace dd4hep {
 namespace rec {
 
-class Subdetector: public virtual DetElement {
+class [[gnu::deprecated(" unmaintained code ")]] Subdetector: public virtual DetElement {
 public:
 	/// Default constructor
 	Subdetector(const DetElement& det) :

@@ -25,7 +25,7 @@ class TGeoManager;
 namespace dd4hep {
 namespace rec {
 
-class LayeringExtensionImpl: public LayeringExtension {
+class [[gnu::deprecated(" unmaintained code ")]] LayeringExtensionImpl: public LayeringExtension {
 public:
 	/// Default constructor
 	LayeringExtensionImpl();

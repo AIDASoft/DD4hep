@@ -20,7 +20,7 @@ namespace rec {
  * The information for one layer corresponds to a typical module
  * if, for example, a layer consists of multiple modules.
  */
-class LayeringExtension {
+class [[gnu::deprecated(" unmaintained code ")]] LayeringExtension {
 public:
 	/// Destructor
 	virtual ~LayeringExtension() {

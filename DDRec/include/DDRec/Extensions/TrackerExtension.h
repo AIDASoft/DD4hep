@@ -13,7 +13,7 @@
 namespace dd4hep {
 namespace rec {
 
-class TrackerExtension {
+class [[gnu::deprecated(" unmaintained code ")]] TrackerExtension {
 public:
 	TrackerExtension();
 	virtual ~TrackerExtension();
