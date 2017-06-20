@@ -14,7 +14,10 @@ dd4hep_package(    DDEve
   INSTALL_INCLUDES include/DDEve)
 #
 #---Add Plugin Library-----------------------------------------------------
-dd4hep_add_dictionary ( G__DDEve SOURCES include/DDEve/*.h )
+dd4hep_add_dictionary ( G__DDEve
+  SOURCES include/DDEve/*.h
+  LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
+  )
 #
 dd4hep_add_plugin ( DDEve SOURCES src/*.cpp 
   GENERATED   G__DDEve.cxx
@@ -24,6 +27,7 @@ if(DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary ( G__DDG4IO
     SOURCES DDEve/DDG4IO.C
     OPTIONAL DDG4
+    LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
     )
   dd4hep_add_regular_library ( DDG4IO 
     SOURCES   DDEve/IO.cpp
