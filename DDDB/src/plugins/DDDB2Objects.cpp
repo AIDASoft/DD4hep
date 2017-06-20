@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,7 +23,7 @@
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBConversion.h"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Path.h"
 //#include "DD4hep/DetConditions.h"
 #include "DD4hep/ConditionsData.h"
@@ -42,32 +42,27 @@
 #include <set>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::DDDB;
+using namespace dd4hep;
+using namespace dd4hep::DDDB;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Keep all in here anonymous. Does not have to be visible outside.
   namespace  {
 
-    struct DetElem  {};
+    struct DDDBDetElem;
 
-    typedef Conditions::Interna::ConditionObject GeoCondition;
-    typedef Conditions::ConditionsManager        ConditionsManager;
-    typedef Conditions::ConditionsPool           ConditionsPool;
-    typedef Conditions::AbstractMap              AbstractMap;
-    typedef Geometry::PlacedVolume               GeoPlacement;
-    typedef Geometry::Volume                     GeoVolume;
-    typedef Geometry::Material                   GeoMaterial;
-    typedef Geometry::Solid                      GeoSolid;
+    typedef detail::ConditionObject GeoCondition;
+    typedef cond::ConditionsManager ConditionsManager;
+    typedef cond::ConditionsPool    ConditionsPool;
+    typedef cond::AbstractMap       AbstractMap;
 
     /// Helper class to facilitate conversion. Purely local.
     struct Context  {
-
       typedef set<string> StringSet;
 
-      Context(LCDD& l, dddb* g) : lcdd(l), geo(g)      {
+      Context(Detector& l, dddb* g) : description(l), geo(g)      {
       }
       ~Context()  {
         //printout(INFO,"Context","Destructor calling....");
@@ -79,18 +74,18 @@ namespace DD4hep {
       }
       template <typename T> void collect(const string& id, T* s);
       template <typename T,typename Q> void collect(const string& id, T* s, Q* c);
-      LCDD&   lcdd;
+      Detector&   description;
       DDDB::dddb*       geo = 0;
       DDDB::DDDBHelper* helper = 0;
-      typedef std::map<Isotope*,     TGeoIsotope*>   Isotopes;
-      typedef std::map<Element*,     TGeoElement*>   Elements;
-      typedef std::map<Material*,    TGeoMedium*>    Materials;
-      typedef std::map<Shape*,       TGeoShape*>     Shapes;
-      typedef std::map<LogVol*,      TGeoVolume*>    Volumes;
-      typedef std::map<PhysVol*,     TGeoNode*>      Placements;
-      typedef std::map<std::string,  DetElement>     DetectorMap;
-      typedef std::map<std::string,  TGeoVolume*>    VolumeMap;
-      typedef std::map<DetElement,   Catalog*>       DetectorElements;
+      typedef std::map<DDDBIsotope*,  TGeoIsotope*>   Isotopes;
+      typedef std::map<DDDBElement*,  TGeoElement*>   Elements;
+      typedef std::map<DDDBMaterial*, TGeoMedium*>    Materials;
+      typedef std::map<DDDBShape*,    TGeoShape*>     Shapes;
+      typedef std::map<DDDBLogVol*,   TGeoVolume*>    Volumes;
+      typedef std::map<DDDBPhysVol*,  TGeoNode*>      Placements;
+      typedef std::map<std::string,   DetElement>     DetectorMap;
+      typedef std::map<std::string,   TGeoVolume*>    VolumeMap;
+      typedef std::map<DetElement,    DDDBCatalog*>   DetectorElements;
 
       Isotopes          isotopes;
       Elements          elements;
@@ -102,7 +97,7 @@ namespace DD4hep {
       DetElement        detectors;
       DetectorMap       catalogPaths;
       DetectorElements  detelements;
-      GeoVolume         lvDummy;
+      Volume         lvDummy;
       ConditionsManager manager;
       const IOVType*    epoch = 0;
       int               max_volume_depth = 9999;
@@ -122,15 +117,15 @@ namespace DD4hep {
       bool              print_vis = false;
       bool              conditions_only = false;
 
-      static GeoPlacement placement(DetElement de)   {
+      static PlacedVolume placement(DetElement de)   {
         if ( de.isValid() )  {
-          GeoPlacement p = de.placement();
+          PlacedVolume p = de.placement();
           if ( p.isValid() ) return p;
           return placement(de.parent());
         }
-        return GeoPlacement(0);
+        return PlacedVolume(0);
       }
-      static bool volumePlaced(GeoVolume par_vol, GeoVolume vol)  {
+      static bool volumePlaced(Volume par_vol, Volume vol)  {
         if ( par_vol.isValid() && vol.isValid() && par_vol.ptr() == vol.ptr() )   {
           for(int i=0; i < vol->GetNdaughters(); ++i)  {
             TGeoNode* dau = vol->GetNode(i);
@@ -161,8 +156,8 @@ namespace DD4hep {
         return 0;
       }
 
-      GeoPlacement supportPlacement(DetElement parent, const string& npath)    {
-        GeoVolume par_vol = parent.volume();
+      PlacedVolume supportPlacement(DetElement parent, const string& npath)    {
+        Volume par_vol = parent.volume();
         return par_vol.isValid() ? supportPlacement(par_vol.ptr(), npath) : 0;
       }
     };
@@ -170,11 +165,12 @@ namespace DD4hep {
     template <typename T> struct CNV : Converter<T,T*>  {
     public:
       /// Initializing constructor of the functor with initialization of the user parameter
-      CNV(LCDD& l, void* p, void* o=0) : Converter<T,T*>(l,p,o) {}
-      template<typename Q> CNV<Q> cnv() const {  return CNV<Q>(this->lcdd,this->param,this->optional);   }
+      CNV(Detector& l, void* p, void* o=0) : Converter<T,T*>(l,p,o) {}
+      template<typename Q> CNV<Q> cnv() const {  return CNV<Q>(this->description,this->param,this->optional);   }
       void* convert(T* obj) const;
       template<typename Q> Q get(const string& /* obj */) const  {
-        throw runtime_error("NOT implemented virtual call !");
+        throw runtime_error("NOT implemented virtual call ! CNV<"+
+                            typeName(typeid(T))+">::get<"+typeName(typeid(Q))+">(string)");
       }
       void operator()(T* obj) const   {	convert(obj);  }
       void operator()(const pair<string,T*>& arg) const  {
@@ -198,29 +194,28 @@ namespace DD4hep {
 
   namespace {
     template <> void* CNV<GeoCondition>::convert(GeoCondition *object) const;
-    template <> void* CNV<Isotope>::convert(Isotope *object) const;
-    template <> void* CNV<Element>::convert(Element *object) const;
-    template <> void* CNV<Material>::convert(Material *object) const;
-    template <> void* CNV<BooleanOperation>::convert(BooleanOperation *object) const;
-    template <> void* CNV<Shape>::convert(Shape *object) const;
-    template <> void* CNV<DetElem>::convert(DetElem *object) const;
-    template <> void* CNV<LogVol>::convert(LogVol *object) const;
-    template <> void* CNV<Catalog>::convert(Catalog *object) const;
+    template <> void* CNV<DDDBIsotope>::convert(DDDBIsotope *object) const;
+    template <> void* CNV<DDDBElement>::convert(DDDBElement *object) const;
+    template <> void* CNV<DDDBMaterial>::convert(DDDBMaterial *object) const;
+    template <> void* CNV<DDDBBooleanOperation>::convert(DDDBBooleanOperation *object) const;
+    template <> void* CNV<DDDBShape>::convert(DDDBShape *object) const;
+    template <> void* CNV<DDDBDetElem>::convert(DDDBDetElem *object) const;
+    template <> void* CNV<DDDBLogVol>::convert(DDDBLogVol *object) const;
+    template <> void* CNV<DDDBCatalog>::convert(DDDBCatalog *object) const;
     template <> void* CNV<dddb>::convert(dddb *obj) const;
 
-    template <> template <> GeoMaterial CNV<Material>::get<GeoMaterial>(const string& material_name) const;
-    template <> template <> LogVol*     CNV<LogVol>::get<LogVol*>(const string& obj) const;
-    template <> template <> GeoVolume   CNV<LogVol>::get<GeoVolume>(const string& obj) const;
+    template <> template <> Material CNV<DDDBMaterial>::get<Material>(const string& material_name) const;
+    template <> template <> DDDBLogVol* CNV<DDDBLogVol>::get<DDDBLogVol*>(const string& obj) const;
+    template <> template <> Volume CNV<DDDBLogVol>::get<Volume>(const string& obj) const;
 
     /// Convert single condition objects
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
       if ( obj )   {
         typedef IOV::Key _K;
-        using Conditions::Condition;
         Context* context = _param<Context>();
         Condition cond = obj;
         AbstractMap&        d = cond.get<AbstractMap>();
-        Document*         doc = d.option<Document>();
+        DDDBDocument*     doc = d.option<DDDBDocument>();
         _K::first_type  since = doc->context.valid_since;
         _K::second_type until = doc->context.valid_until;
         _K iov_key(since,until);
@@ -229,7 +224,7 @@ namespace DD4hep {
         /// This will allow us to re-use all alignment utilities for DDDB.
         if ( obj->testFlag(Condition::ALIGNMENT_DELTA) )  {
           const pair<string,OpaqueDataBlock>& block = *(d.params.begin());
-          Alignments::Delta delta = block.second.get<Alignments::Delta>();
+          Delta delta = block.second.get<Delta>();
           string typ = obj->type, add = obj->address, val = obj->value;
           int flg = obj->flags;
           // In-place replacement with Delta condition...
@@ -238,14 +233,14 @@ namespace DD4hep {
           cond.setFlag(flg);
           cond->address = add;
           cond->value   = val;
-          cond.bind<Alignments::Delta>() = delta;
+          cond.bind<Delta>() = delta;
           ++context->delta_conditions;
           if ( !e.first.isValid() )
             ++context->unmatched_deltas;
         }
         if ( e.first.isValid() )  {
           cond->SetName(e.second.c_str());
-          cond->hash = Conditions::ConditionKey::KeyMaker(e.first.key(),hash32(cond.name())).hash;
+          cond->hash = ConditionKey::KeyMaker(e.first.key(),detail::hash32(cond.name())).hash;
           printout(DEBUG,"DDDB","Insert condition: %s # %s --> %16llX",
                    e.first.path().c_str(),cond.name(),cond.key());
           printout(DEBUG,"DDDB","       %s -> %s",cond->value.c_str(),cond->address.c_str());
@@ -264,7 +259,7 @@ namespace DD4hep {
     }
 
     /// Convert single isotope objects
-    template <> void* CNV<Isotope>::convert(Isotope *o) const    {
+    template <> void* CNV<DDDBIsotope>::convert(DDDBIsotope *o) const    {
       Context* context = _param<Context>();
       TGeoIsotope* iso = Context::find(context->isotopes, o);
       if ( !iso )  {
@@ -277,7 +272,7 @@ namespace DD4hep {
     }
 
     /// Convert single element objects
-    TGeoElement* createElement(const char* nam, Context* context, Element *o)   {
+    TGeoElement* createElement(const char* nam, Context* context, DDDBElement *o)   {
       TGeoElementTable* t = TGeoElement::GetElementTable();
       TGeoElement* e = t->FindElement(nam);
       if ( !e )  {
@@ -289,9 +284,9 @@ namespace DD4hep {
             printout(ERROR,"DDDB","++ Invalid isotope: %s [Ignore Isotope]",(*i).first.c_str());
             continue;
           }
-          Isotope* isotope = (*iso).second;
+          DDDBIsotope* isotope = (*iso).second;
           TGeoIsotope* geo_iso = 
-            (TGeoIsotope*)CNV<Isotope>(context->lcdd,context).convert(isotope);
+            (TGeoIsotope*)CNV<DDDBIsotope>(context->description,context).convert(isotope);
           if ( !geo_iso )  {
             printout(ERROR,"DDDB","++ Invalid isotope: %s [Ignore Isotope]",(*iso).first.c_str());
             continue;
@@ -306,35 +301,35 @@ namespace DD4hep {
         }
         if ( context->print_materials ) dddb_print(e);
       }
-      Material* material = Context::find(context->geo->materials,string(nam));
+      DDDBMaterial* material = Context::find(context->geo->materials,string(nam));
       if ( !material )  {
-        TGeoManager& mgr = context->lcdd.manager();
+        TGeoManager& mgr = context->description.manager();
         if ( !mgr.GetMaterial(nam) || !mgr.GetMedium(nam) )  {
-          MaterialComponent comp;
-          material          = new Material;
+          DDDBMaterialComponent comp;
+          material          = new DDDBMaterial;
           material->name    = nam;
           material->density = o->density;
           comp.name         = nam;
           comp.fractionmass = 1.0;
           material->components.push_back(comp);
           context->geo->materials.insert(make_pair(nam,material));
-          CNV<Material>(context->lcdd,context)(material);
+          CNV<DDDBMaterial>(context->description,context)(material);
         }
       }
       return e;
     }
 
     /// Convert single element objects and the counterpart using the full name
-    template <> void* CNV<Element>::convert(Element *object) const    {
+    template <> void* CNV<DDDBElement>::convert(DDDBElement *object) const    {
       Context* context = _param<Context>();
       TGeoElement* e = Context::find(context->elements, object);
       if ( !e )  {
         e = createElement(object->c_name(), context, object);
         context->elements.insert(make_pair(object,e));
         if ( !object->symbol.empty() && object->symbol != object->name )  {
-          Element* esym = Context::find(context->geo->elements, object->symbol);
+          DDDBElement* esym = Context::find(context->geo->elements, object->symbol);
           if ( !esym )  {
-            esym = new Element(*object);
+            esym = new DDDBElement(*object);
             esym->name = object->symbol;
             context->geo->elements.insert(make_pair(object->symbol,esym));
           }
@@ -349,19 +344,19 @@ namespace DD4hep {
     }
 
     /// Convert single material objects
-    template <> void* CNV<Material>::convert(Material *object) const    {
+    template <> void* CNV<DDDBMaterial>::convert(DDDBMaterial *object) const    {
       Context* context = _param<Context>();
       TGeoMedium* medium = Context::find(context->materials, object);
       if ( !medium )  {
         const char*      name = object->c_name();
-        TGeoManager&      mgr = lcdd.manager();
+        TGeoManager&      mgr = description.manager();
         TGeoElementTable* tab = TGeoElement::GetElementTable();
         TGeoMaterial*     mat = mgr.GetMaterial(name);
         TGeoMixture*      mix = dynamic_cast<TGeoMixture*>(mat);
 
         medium = mgr.GetMedium(name);
         if ( 0 == mat )  {
-          Material::Components& comp = object->components;
+          DDDBMaterial::Components& comp = object->components;
           //printout(INFO, "Cnv<Material>", "++ Converting material %s", name);
           mat = mix = new TGeoMixture(name, comp.size(), object->density);
           if ( object->radlen > 0 && object->lambda > 0 )
@@ -373,7 +368,7 @@ namespace DD4hep {
           if ( object->temperature > 0 )
             mat->SetTemperature(object->temperature);
           for(auto i = comp.begin(); i != comp.end(); ++i)  {
-            MaterialComponent& c=(*i);
+            DDDBMaterialComponent& c=(*i);
             TGeoElement* e = tab->FindElement(c.c_name());
             if ( e && c.natoms>0 )  {  // Add simple elements using atomic numbers
               mix->AddElement(e, c.natoms);
@@ -384,7 +379,7 @@ namespace DD4hep {
               continue;
             }
             else if ( c.fractionmass >= 0 )  {
-              GeoMaterial mm = this->get<GeoMaterial>(c.name);
+              Material mm = this->get<Material>(c.name);
               mix->AddElement(mm->GetMaterial(), c.fractionmass);
               continue;
             }
@@ -406,9 +401,9 @@ namespace DD4hep {
 
     /// Access/on the fly convert material objects by name
     template <> template <>
-    GeoMaterial CNV<Material>::get<GeoMaterial>(const string& material_name)  const {
+    Material CNV<DDDBMaterial>::get<Material>(const string& material_name)  const {
       Context* context = _param<Context>();
-      Material* mat = Context::find(context->geo->materials,material_name);
+      DDDBMaterial* mat = Context::find(context->geo->materials,material_name);
       if ( !mat )  {
         string mat_name = material_name; // HACK! for bad material names in IT
         size_t idx;
@@ -427,111 +422,111 @@ namespace DD4hep {
           dddb_print((*im).second);
         except("Materials","++ Undefined material %s",material_name.c_str());
       }
-      TGeoMedium* medium = (TGeoMedium*)CNV<Material>(context->lcdd,context).convert(mat);
-      return GeoMaterial::handle_t(medium);
+      TGeoMedium* medium = (TGeoMedium*)CNV<DDDBMaterial>(context->description,context).convert(mat);
+      return Material(medium);
     }
 
     /// Convert shape entities
-    template <> void* CNV<Shape>::convert(Shape *object) const    {
+    template <> void* CNV<DDDBShape>::convert(DDDBShape *object) const    {
       Context* context = _param<Context>();
-      GeoSolid shape = Context::find(context->shapes, object);
+      Solid shape = Context::find(context->shapes, object);
       if ( !shape )  {
         if ( object->id == "/dd/Geometry/LHCb/lvLHCb" )  {
-          shape = lcdd.worldVolume().solid();
+          shape = description.worldVolume().solid();
         }
-        else if ( object->type == Assembly::type() )  {
+        else if ( object->type == DDDBAssembly::type() )  {
           except("Cnv<Shape>","++ Assembly shapes cannot be converted!");
         }
-        else if ( object->type == Box::type() )  {
-          shape = Geometry::Box(object->s.box.x, object->s.box.y, object->s.box.z).ptr();
+        else if ( object->type == DDDBBox::type() )  {
+          shape = Box(object->s.box.x, object->s.box.y, object->s.box.z).ptr();
         }
-        else if ( object->type == Cons::type() )  {
-          const Cons& c = object->s.cons;
-          shape = Geometry::Cone(c.sizeZ, 
+        else if ( object->type == DDDBCons::type() )  {
+          const DDDBCons& c = object->s.cons;
+          shape = Cone(c.sizeZ, 
                                  c.innerRadiusMZ, c.outerRadiusMZ,
                                  c.innerRadiusPZ, c.outerRadiusPZ).ptr();
         }
-        else if ( object->type == ConeSegment::type() )  {
-          const ConeSegment& o = object->s.coneSegment;
-          shape = Geometry::ConeSegment(o.sizeZ, 
+        else if ( object->type == DDDBConeSegment::type() )  {
+          const DDDBConeSegment& o = object->s.coneSegment;
+          shape = ConeSegment(o.sizeZ, 
                                         o.innerRadiusMZ, o.outerRadiusMZ,
                                         o.innerRadiusPZ, o.outerRadiusPZ,
                                         o.start, o.delta).ptr();
         }
-        else if ( object->type == EllipticalTube::type() )  {
-          const EllipticalTube& o = object->s.ellipticalTube;
-          shape = Geometry::EllipticalTube(o.a, o.b, o.dz).ptr();
+        else if ( object->type == DDDBEllipticalTube::type() )  {
+          const DDDBEllipticalTube& o = object->s.ellipticalTube;
+          shape = EllipticalTube(o.a, o.b, o.dz).ptr();
         }
-        else if ( object->type == Tubs::type() )  {
-          const Tubs& t = object->s.tubs;
-          shape = Geometry::Tube(t.innerRadius, t.outerRadius, t.sizeZ, t.start, t.delta);
+        else if ( object->type == DDDBTubs::type() )  {
+          const DDDBTubs& t = object->s.tubs;
+          shape = Tube(t.innerRadius, t.outerRadius, t.sizeZ, t.start, t.delta);
         }
-        else if ( object->type == Polycone::type() )  {
-          Polycone& o = object->s.polycone;
+        else if ( object->type == DDDBPolycone::type() )  {
+          DDDBPolycone& o = object->s.polycone;
           TGeoPcon* pc = new TGeoPcon(o.start, o.delta, object->zplanes.size());
           for(size_t iz=0; iz< object->zplanes.size(); ++iz)  {
-            const ZPlane& plane = object->zplanes[iz];
+            const DDDBZPlane& plane = object->zplanes[iz];
             pc->DefineSection(iz, plane.z, plane.innerRadius, plane.outerRadius);
           }
           shape = pc;
         }
-        else if ( object->type == Polygon::type() )  {
-          Polygon& o = object->s.polygon;
-          shape = Geometry::PolyhedraRegular(o.nsides, o.start, o.innerRadius, o.outerRadius, o.z);
+        else if ( object->type == DDDBPolygon::type() )  {
+          DDDBPolygon& o = object->s.polygon;
+          shape = PolyhedraRegular(o.nsides, o.start, o.innerRadius, o.outerRadius, o.z);
         }
-        else if ( object->type == Sphere::type() )  {
-          const Sphere& o = object->s.sphere;
-          shape = Geometry::Sphere(o.rmin, o.rmax, o.theta, o.theta+o.delta_theta, o.phi, o.phi+o.delta_phi);
+        else if ( object->type == DDDBSphere::type() )  {
+          const DDDBSphere& o = object->s.sphere;
+          shape = Sphere(o.rmin, o.rmax, o.theta, o.theta+o.delta_theta, o.phi, o.phi+o.delta_phi);
         }
         //else if ( object->type == Ellipsoid::type() )  {
         //  const Ellipsoid& o = object->s.ellipsoid;
-        //  shape = Geometry::Ellipsoid(o.rlow, o.rhigh, o.dz).ptr();
+        //  shape = Ellipsoid(o.rlow, o.rhigh, o.dz).ptr();
         //}
-        else if ( object->type == Paraboloid::type() )  {
-          const Paraboloid& o = object->s.paraboloid;
-          shape = Geometry::Paraboloid(o.rlow, o.rhigh, o.dz).ptr();
+        else if ( object->type == DDDBParaboloid::type() )  {
+          const DDDBParaboloid& o = object->s.paraboloid;
+          shape = Paraboloid(o.rlow, o.rhigh, o.dz).ptr();
         }
-        else if ( object->type == Hyperboloid::type() )  {
-          const Hyperboloid& o = object->s.hyperboloid;
-          shape = Geometry::Hyperboloid(o.rmin, o.rmax, o.stIn, o.stOut, o.dz).ptr();
+        else if ( object->type == DDDBHyperboloid::type() )  {
+          const DDDBHyperboloid& o = object->s.hyperboloid;
+          shape = Hyperboloid(o.rmin, o.rmax, o.stIn, o.stOut, o.dz).ptr();
         }
-        else if ( object->type == TRD::type() )  {
-          const TRD& o = object->s.trd;
-          shape = Geometry::Trapezoid(o.x1, o.x2, o.y1, o.y2, o.z).ptr();
+        else if ( object->type == DDDBTRD::type() )  {
+          const DDDBTRD& o = object->s.trd;
+          shape = Trapezoid(o.x1, o.x2, o.y1, o.y2, o.z).ptr();
         }
-        else if ( object->type == Trap::type() )  {
-          const Trap& o = object->s.trap;
-          shape = Geometry::Trap(o.dz, o.theta, o.phi,
+        else if ( object->type == DDDBTrap::type() )  {
+          const DDDBTrap& o = object->s.trap;
+          shape = Trap(o.dz, o.theta, o.phi,
                                  o.h1, o.bl1, o.tl1, o.alpha1, 
                                  o.h2, o.bl2, o.tl2, o.alpha2);
         }
-        else if ( object->type == BooleanUnion::type() ||
-                  object->type == BooleanSubtraction::type() ||
-                  object->type == BooleanIntersection::type() )   {
+        else if ( object->type == DDDBBooleanUnion::type() ||
+                  object->type == DDDBBooleanSubtraction::type() ||
+                  object->type == DDDBBooleanIntersection::type() )   {
           shape = context->lvDummy.solid();
-          Shape::Operations::const_iterator i;
-          Shape*   left_shape = object->s.boolean.first;
-          GeoSolid left_solid = (TGeoShape*)convert(left_shape);
+          DDDBShape::Operations::const_iterator i;
+          DDDBShape*   left_shape = object->s.boolean.first;
+          Solid left_solid = (TGeoShape*)convert(left_shape);
           if ( !left_solid.isValid() )  { // Error ....
             except("Cnv<Shape>","++ %s: Unknown left boolean shape creation:%s -> %d",
                    object->c_name(), left_shape->c_name(), left_shape->type);
           }
           shape = left_solid;
           for(i=object->boolean_ops.begin(); i != object->boolean_ops.end(); ++i)  {
-            Shape* right_shape = (*i).shape;
-            GeoSolid right_solid = (TGeoShape*)convert(right_shape);
+            DDDBShape* right_shape = (*i).shape;
+            Solid right_solid = (TGeoShape*)convert(right_shape);
             const Transform3D& trafo = (*i).trafo;
             if ( !right_solid.isValid() )  { // Error ....
               except("Cnv<Shape>","++ %s: Unknown right boolean shape creation:%s -> %d",
                      object->c_name(), right_shape->c_name(), right_shape->type);
             }
-            shape = GeoSolid();
-            if ( object->type == BooleanUnion::type() )
-              shape = Geometry::UnionSolid(left_solid, right_solid, trafo);
-            else if ( object->type == BooleanSubtraction::type() )
-              shape = Geometry::SubtractionSolid(left_solid, right_solid, trafo);
-            else if ( object->type == BooleanIntersection::type() )
-              shape = Geometry::IntersectionSolid(left_solid, right_solid, trafo);
+            shape = Solid();
+            if ( object->type == DDDBBooleanUnion::type() )
+              shape = UnionSolid(left_solid, right_solid, trafo);
+            else if ( object->type == DDDBBooleanSubtraction::type() )
+              shape = SubtractionSolid(left_solid, right_solid, trafo);
+            else if ( object->type == DDDBBooleanIntersection::type() )
+              shape = IntersectionSolid(left_solid, right_solid, trafo);
             if ( !shape.isValid() )  {
               except("Cnv<Shape>","++ %s: Unknown boolean shape creation:%d",
                      object->c_name(), object->type);
@@ -552,8 +547,8 @@ namespace DD4hep {
       return shape;
     }
 
-    inline GeoPlacement place_daughter(const char* pv, GeoVolume mother, GeoVolume daughter, const Transform3D& tr)  {
-      GeoPlacement place = mother.placeVolume(daughter, tr);
+    inline PlacedVolume place_daughter(const char* pv, Volume mother, Volume daughter, const Transform3D& tr)  {
+      PlacedVolume place = mother.placeVolume(daughter, tr);
       // Use title for user defined physical volume name, since TGeo sets already the name!
       place->SetTitle(pv);
       return place;
@@ -566,11 +561,11 @@ namespace DD4hep {
     }
 
     /// Convert logical volumes
-    template <> void* CNV<LogVol>::convert(LogVol *object) const    {
+    template <> void* CNV<DDDBLogVol>::convert(DDDBLogVol *object) const    {
       struct VolumeDepth {};
       Increment<VolumeDepth> depth;
       Context* context = _param<Context>();
-      GeoVolume mother = Context::find(context->volumes, object);
+      Volume mother = Context::find(context->volumes, object);
 
       if ( !mother.isValid() )  {
         if ( depth.counter() >= context->max_volume_depth )   {
@@ -581,19 +576,19 @@ namespace DD4hep {
                    depth.counter(), object->path.c_str());
           return mother;
         }
-        Shape* shape = Context::find(context->geo->shapes,object->shape);
-        if ( object->shape.empty() || shape->type == Assembly::type() )  {
-          mother = Geometry::Assembly(object->name);
+        DDDBShape* shape = Context::find(context->geo->shapes,object->shape);
+        if ( object->shape.empty() || shape->type == DDDBAssembly::type() )  {
+          mother = Assembly(object->name);
         }
         else  {
-          GeoSolid s = (TGeoShape*)cnv<Shape>().convert(shape);
+          Solid s = (TGeoShape*)cnv<DDDBShape>().convert(shape);
           if ( s.isValid() )   {
-            GeoMaterial m = cnv<Material>().get<GeoMaterial>(object->material);
-            mother = GeoVolume(object->name, s, m);
+            Material m = cnv<DDDBMaterial>().get<Material>(object->material);
+            mother = Volume(object->name, s, m);
           }
         }
         mother->SetTitle(object->path.c_str());
-        Geometry::VisAttr vis = context->helper->visAttr(object->path);
+        VisAttr vis = context->helper->visAttr(object->path);
         if ( vis.isValid() )  {
           if ( context->print_vis )  {
             printout(INFO,"Cnv<LogVol>","++ Vol:%s  Vis:%s",mother->GetTitle(), vis.name());
@@ -610,10 +605,10 @@ namespace DD4hep {
         context->volumePaths[object->path] = mother.ptr();
         // Now place all daughter volumes
         for(auto i=object->physvols.begin(); i!=object->physvols.end(); ++i)  {
-          PhysVol* pv = *i;
-          GeoPlacement place = context->find(context->placements, pv);
+          DDDBPhysVol* pv = *i;
+          PlacedVolume place = context->find(context->placements, pv);
           if ( !place.isValid() )  {
-            GeoVolume daughter = this->get<GeoVolume>(pv->logvol);
+            Volume daughter = this->get<Volume>(pv->logvol);
             if ( !daughter.isValid() )  {
               printout(WARNING,"Cnv<PhysVol>","++ Failed to convert placement: %s."
                        " Unknown daughter vol:%s.",pv->c_id(), pv->logvol.c_str());
@@ -622,13 +617,13 @@ namespace DD4hep {
             int num_places = 0;
             const char* pv_name = pv->name.c_str();
             switch(pv->type)   {
-            case PhysVol::PHYSVOL_REGULAR:   {
+            case DDDBPhysVol::PHYSVOL_REGULAR:   {
               place = place_daughter(pv_name, mother, daughter, pv->trafo);
               num_places = 1;
               break;
             }
-            case PhysVol::PHYSVOL_PARAM1D:   {
-              ParamPhysVol* pDim = (ParamPhysVol*)pv;
+            case DDDBPhysVol::PHYSVOL_PARAM1D:   {
+              DDDBParamPhysVol* pDim = (DDDBParamPhysVol*)pv;
               Transform3D   tr;
               Position      pos1, p1;
               RotationZYX   rot1, r1;
@@ -644,8 +639,8 @@ namespace DD4hep {
               }
               break;
             }
-            case PhysVol::PHYSVOL_PARAM2D:  {
-              ParamPhysVol2D* pDim = (ParamPhysVol2D*)pv;
+            case DDDBPhysVol::PHYSVOL_PARAM2D:  {
+              DDDBParamPhysVol2D* pDim = (DDDBParamPhysVol2D*)pv;
               Position        pos1, pos2, p1, p2;
               RotationZYX     rot1, rot2, r1, r2;
               Transform3D     tr;
@@ -669,8 +664,8 @@ namespace DD4hep {
               }
               break;
             }
-            case PhysVol::PHYSVOL_PARAM3D:  {
-              ParamPhysVol3D* pDim = (ParamPhysVol3D*)pv;
+            case DDDBPhysVol::PHYSVOL_PARAM3D:  {
+              DDDBParamPhysVol3D* pDim = (DDDBParamPhysVol3D*)pv;
               Position        pos1, pos2, pos3, p1, p2, p3;
               RotationZYX     rot1, rot2, rot3, r1, r2, r3;
               Transform3D     tr;
@@ -729,9 +724,9 @@ namespace DD4hep {
 
     /// Access logical volumes from string name
     template <> template <> 
-    LogVol* CNV<LogVol>::get<LogVol*>(const string& nam) const    {
+    DDDBLogVol* CNV<DDDBLogVol>::get<DDDBLogVol*>(const string& nam) const    {
       Context* context = _param<Context>();
-      LogVol* lv = Context::find(context->geo->volumes,nam);
+      DDDBLogVol* lv = Context::find(context->geo->volumes,nam);
       if ( lv )  {
         return lv;
       }
@@ -739,9 +734,9 @@ namespace DD4hep {
       if ( lv )  {
         return lv;
       }
-      pair<const Catalog*,string> cat = context->geo->geometry->parent(nam);
+      pair<const DDDBCatalog*,string> cat = context->geo->geometry->parent(nam);
       if ( cat.first )  {
-        const Catalog* c = cat.first;
+        const DDDBCatalog* c = cat.first;
         dddb::Volumes::const_iterator iv = c->logvols.find(cat.second);
         if ( iv != c->logvols.end() )  {
           lv = (*iv).second;
@@ -757,23 +752,23 @@ namespace DD4hep {
 
     /// Convert logical volumes from string
     template <> template <> 
-    GeoVolume CNV<LogVol>::get<GeoVolume>(const string& nam) const    {
-      LogVol* lv = this->get<LogVol*>(nam);
+    Volume CNV<DDDBLogVol>::get<Volume>(const string& nam) const    {
+      DDDBLogVol* lv = this->get<DDDBLogVol*>(nam);
       if ( lv )  {
         return (TGeoVolume*)this->convert(lv);
       }
-      return GeoVolume(0);
+      return Volume(0);
     }
 
-    template <> void* CNV<Catalog>::convert(Catalog *object) const    {
+    template <> void* CNV<DDDBCatalog>::convert(DDDBCatalog *object) const    {
       Context* context = _param<Context>();
       dddb*    geo     = context->geo;
       Context::DetectorMap::const_iterator j=context->catalogPaths.find(object->path);
       if ( j != context->catalogPaths.end() )  {
         return (*j).second.ptr();
       }
-      GeoVolume  vol;
-      Catalog*   support = 0;
+      Volume  vol;
+      DDDBCatalog*   support = 0;
       DetElement det(0), parent_element(0);
       if ( context->print_detelem )  {
         printout(INFO,"CNV<Catalog>","++ Starting catalog %p %s [cref:%d/%d lref:%d/%d lv:%s sup:%s np:%s] Cond:%s ",
@@ -789,14 +784,14 @@ namespace DD4hep {
                  object->condition.c_str());
       }
       if ( object->path == "/dd/Structure" )  {
-        const Box& o = geo->world;
+        const DDDBBox& o = geo->world;
         printout(WARNING,"World","World: %g %g %g",o.x,o.y,o.z);
         _toDictionary("world_x",_toString(o.x));
         _toDictionary("world_y",_toString(o.y));
         _toDictionary("world_z",_toString(o.z));
-        lcdd.init();
-        det = lcdd.world();
-        vol = lcdd.worldVolume();
+        description.init();
+        det = description.world();
+        vol = description.worldVolume();
         context->detectors = det;
       }
       else if ( object->path.find("/dd/TrackfitGeometry") == 0 )  {
@@ -807,7 +802,7 @@ namespace DD4hep {
       }
       else if ( object->path.find("/dd/Structure") == 0 )  {
         det = DetElement(object->name,object->type,0);
-        det.addExtension<Catalog>(object->addRef());
+        det.addExtension<DDDBCatalog>(object->addRef());
         if ( !object->support.empty() )  {
           try  {
             j = context->catalogPaths.find(object->support);
@@ -823,9 +818,9 @@ namespace DD4hep {
                 parent_element.add(det);
               }
               else  {
-                pair<const Catalog*,string> cat = context->geo->structure->parent(object->support);
+                pair<const DDDBCatalog*,string> cat = context->geo->structure->parent(object->support);
                 if ( cat.first )  {
-                  const Catalog* c = cat.first;
+                  const DDDBCatalog* c = cat.first;
                   dddb::Catalogs::const_iterator icc = c->catalogs.find(cat.second);
                   if ( icc != c->catalogs.end() )  {
                     support = (*icc).second;
@@ -847,13 +842,13 @@ namespace DD4hep {
       // Deal with true detector elements from /dd/Structure
       if ( det.isValid() )  { 
         if ( !object->logvol.empty() )  {
-          CNV<LogVol> conv(lcdd,param);
+          CNV<DDDBLogVol> conv(description,param);
           // Convert the logical volume, so that all daughters are present!
-          vol = conv.get<GeoVolume>(object->logvol);
+          vol = conv.get<Volume>(object->logvol);
           //printout(INFO,"CNV<DetElem>","++ Set Placement: %s :  %s -> %s",
           //         object->path.c_str(), object->logvol.c_str(), object->npath.c_str());
           if ( !object->npath.empty() )  {
-            GeoPlacement place = context->supportPlacement(parent_element, object->npath);
+            PlacedVolume place = context->supportPlacement(parent_element, object->npath);
             if ( !place.isValid() )   {
               char txt[64];
               ::snprintf(txt,sizeof(txt),"++ %%%lds %%s %%s",long(object->path.length()));
@@ -867,13 +862,13 @@ namespace DD4hep {
             }
           }
           else    {
-            GeoPlacement par_place = context->placement(parent_element);
-            GeoVolume    par_vol   = par_place.volume();
+            PlacedVolume par_place = context->placement(parent_element);
+            Volume    par_vol   = par_place.volume();
             if ( context->volumePlaced(par_vol, vol) )  {
               printout(WARNING,"CNV<DetElem>","++ %s : Volume already placed %s -> %s",
                        det.path().c_str(), par_vol->GetTitle(), vol->GetTitle());
             }
-            GeoPlacement det_place = par_vol.placeVolume(vol);
+            PlacedVolume det_place = par_vol.placeVolume(vol);
             det.setPlacement(det_place);
           }
         }
@@ -885,14 +880,14 @@ namespace DD4hep {
         context->detelements[det] = object;
         context->catalogPaths[object->path] = det;
       }
-      for_each(object->logvolrefs.begin(), object->logvolrefs.end(), CNV<LogVol>(lcdd,param,det.ptr()));
+      for_each(object->logvolrefs.begin(), object->logvolrefs.end(), CNV<DDDBLogVol>(description,param,det.ptr()));
       for_each(object->catalogrefs.begin(), object->catalogrefs.end(), *this);
 
 #if 0
-      for(Catalog::LvRefs::const_iterator i=object->logvolrefs.begin(); i!=object->logvolrefs.end(); ++i)   {
-        LogVol* lv = (*i).second;
+      for(DDDBCatalog::LvRefs::const_iterator i=object->logvolrefs.begin(); i!=object->logvolrefs.end(); ++i)   {
+        DDDBLogVol* lv = (*i).second;
         string  lp = object->path+"/"+lv->name;
-        GeoVolume gv = Context::find(context->volumes, lv);
+        Volume gv = Context::find(context->volumes, lv);
         context->volumePaths[lp] = gv.ptr();
       }
 #endif
@@ -903,7 +898,7 @@ namespace DD4hep {
         ::snprintf(text,sizeof(text),"              %%%lds -> %%s",long(object->condition.length()));
         printout(DEBUG,"DDDB","+ Match Align %s -> %s",object->condition.c_str(), object->path.c_str());
         printout(DEBUG,"DDDB",text,"",det.path().c_str());
-        res = context->helper->addConditionEntry(object->condition,det,Alignments::Keys::deltaName);
+        res = context->helper->addConditionEntry(object->condition,det,align::Keys::deltaName);
         if ( !res )  {
           printout(DEBUG,"DDDB","++ Conditions entry with key:%s already exists!",
                    object->condition.c_str());
@@ -945,8 +940,8 @@ namespace DD4hep {
         }
         cnt = 0;
         for( const auto& v : object->logvolrefs )  {
-          LogVol* lv = v.second;
-          GeoVolume geoVol = Context::find(context->volumes, lv);
+          DDDBLogVol* lv = v.second;
+          Volume geoVol = Context::find(context->volumes, lv);
           if ( lv )
             printout(INFO,"CNV<DE>:lref","++ DE:%s ref[%2d]: %p / %s  -> %p [%s]",
                      object->path.c_str(), cnt, (void*)lv, lv->c_name(), 
@@ -957,9 +952,9 @@ namespace DD4hep {
         }
         cnt = 0;
         for( const auto& v : object->logvols )  {
-          LogVol* lv = v.second;
+          DDDBLogVol* lv = v.second;
           if ( lv )  {
-            GeoVolume geoVol = Context::find(context->volumes, lv);
+            Volume geoVol = Context::find(context->volumes, lv);
             printout(INFO,"CNV<DE>:lvol","++ DE:%s ref[%2d]: %p / %s  -> %p [%s]",
                      object->path.c_str(), cnt, (void*)lv, lv->c_id(), 
                      (void*)geoVol.ptr(), geoVol.isValid() ? geoVol->GetName() : "????");
@@ -983,47 +978,47 @@ namespace DD4hep {
     template <> void* CNV<dddb>::convert(dddb *obj) const   {
       Context*  context = _param<Context>();
       if ( !context->conditions_only )  {
-        GeoVolume world   = lcdd.worldVolume();
+        Volume world   = description.worldVolume();
 
-        for_each(obj->isotopes.begin(),  obj->isotopes.end(),   cnv<Isotope>());
+        for_each(obj->isotopes.begin(),  obj->isotopes.end(),   cnv<DDDBIsotope>());
         printout(INFO,"DDDB2Object","++ Converted %d isotopes.",int(obj->isotopes.size()));
-        for_each(obj->elements.begin(),  obj->elements.end(),   cnv<Element>());
+        for_each(obj->elements.begin(),  obj->elements.end(),   cnv<DDDBElement>());
         printout(INFO,"DDDB2Object","++ Converted %d elements.",int(obj->elements.size()));
-        //for_each(obj->materials.begin(), obj->materials.end(),  cnv<Material>());
+        //for_each(obj->materials.begin(), obj->materials.end(),  cnv<DDDBMaterial>());
         //printout(INFO,"DDDB2Object","++ Converted %d materials.",int(obj->materials.size()));
-        //for_each(obj->shapes.begin(),    obj->shapes.end(),     cnv<Shape>());
+        //for_each(obj->shapes.begin(),    obj->shapes.end(),     cnv<DDDBShape>());
         //printout(INFO,"DDDB2Object","++ Converted %d shapes.",int(obj->shapes.size()));
-        //for_each(obj->volumes.begin(),   obj->volumes.end(),    cnv<LogVol>());
+        //for_each(obj->volumes.begin(),   obj->volumes.end(),    cnv<DDDBLogVol>());
         //printout(INFO,"DDDB2Object","++ Converted %d volumes.",int(obj->volumes.size()));
-        //for_each(obj->placements.begin(),obj->placements.end(), cnv<PhysVol>());
+        //for_each(obj->placements.begin(),obj->placements.end(), cnv<DDDBPhysVol>());
         //printout(INFO,"DDDB2Object","++ Converted %d placements.",int(obj->placements.size()));
 
         if ( obj->top )   {
           if ( !context->lvDummy.isValid() )   {
-            lcdd.manager().SetVisLevel(context->max_volume_depth);
-            context->lvDummy = GeoVolume("Dummy",Geometry::Box(0.0001,0.0001, 0.0001),lcdd.vacuum());
-            context->lvDummy.setVisAttributes(lcdd.invisible());
+            description.manager().SetVisLevel(context->max_volume_depth);
+            context->lvDummy = Volume("Dummy",Box(0.0001,0.0001, 0.0001),description.vacuum());
+            context->lvDummy.setVisAttributes(description.invisible());
           }
           if ( !world.isValid() )  {
             string top = "/dd/Geometry/LHCb/lvLHCb";
-            const LogVol* lv = Context::find(obj->volumePaths,top);
+            const DDDBLogVol* lv = Context::find(obj->volumePaths,top);
             if ( !lv )   {
-              except("DDDB2DD4hep","++ No World volume defined.");
+              except("DDDB2dd4hep","++ No World volume defined.");
             }
-            const Shape* s = Context::find(obj->shapes,lv->id);
+            const DDDBShape* s = Context::find(obj->shapes,lv->id);
             if ( !s )  {
-              except("DDDB2DD4hep","++ No Shape for the world volume defined.");
+              except("DDDB2dd4hep","++ No Shape for the world volume defined.");
             }
             obj->world = s->s.box;
           }
           /// Main detector conversion invokation
-          cnv<Catalog>().convert(obj->top);
-          if ( !world.isValid() && lcdd.worldVolume().isValid() )  {
-            lcdd.endDocument();
+          cnv<DDDBCatalog>().convert(obj->top);
+          if ( !world.isValid() && description.worldVolume().isValid() )  {
+            description.endDocument();
           }
           /// Now configure the conditions manager
           if ( !context->manager.isValid() )  {
-            Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
+            ConditionsManager manager = ConditionsManager::from(description);
             manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
             manager["LoaderType"]     = "dddb";
             manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
@@ -1036,7 +1031,7 @@ namespace DD4hep {
         }
       }
       if ( !context->manager.isValid() )  {
-        Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
+        ConditionsManager manager = ConditionsManager::from(description);
         pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
         context->manager = manager;
         context->epoch   = e.second;
@@ -1047,12 +1042,12 @@ namespace DD4hep {
     }
   }
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
+  /// Namespace for implementation details of the AIDA detector description toolkit
   namespace DDDB  {
-    long dddb_2_dd4hep(LCDD& lcdd, int , char** ) {
-      DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
+    long dddb_2_dd4hep(Detector& description, int , char** ) {
+      DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
-        Context context(lcdd, helper->detectorDescription());
+        Context context(description, helper->detectorDescription());
         context.helper              = helper;
         context.print_materials     = false;
         context.print_logvol        = false;
@@ -1065,7 +1060,7 @@ namespace DD4hep {
         context.print_vis           = false;
         context.max_volume_depth    = 11;
 
-        CNV<dddb> cnv(lcdd,&context);
+        CNV<dddb> cnv(description,&context);
         cnv(make_pair(string("World"),context.geo));
         printout(INFO,"DDDB","+========================= Conversion summary =========================+");
         printout(INFO,"DDDB","++ Converted %8d isotopes.",         int(context.isotopes.size()));
@@ -1091,14 +1086,14 @@ namespace DD4hep {
       except("DDDB","++ No DDDBHelper instance installed. Geometry conversion failed!");
       return 1;
     }
-    long dddb_conditions_2_dd4hep(LCDD& lcdd, int , char** ) {
-      DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
+    long dddb_conditions_2_dd4hep(Detector& description, int , char** ) {
+      DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
-        Context context(lcdd, helper->detectorDescription());
+        Context context(description, helper->detectorDescription());
         context.helper              = helper;
         context.print_conditions    = false;
         context.conditions_only     = true;
-        CNV<dddb> cnv(lcdd,&context);
+        CNV<dddb> cnv(description,&context);
         cnv(make_pair(string(),context.geo));
         helper->setDetectorDescription(0);
         return 1;
@@ -1108,6 +1103,6 @@ namespace DD4hep {
     }
 
   } /* End namespace DDDB      */
-} /* End namespace DD4hep    */
-DECLARE_APPLY(DDDB_2DD4hep,dddb_2_dd4hep)
-DECLARE_APPLY(DDDB_Conditions2DD4hep,dddb_conditions_2_dd4hep)
+} /* End namespace dd4hep    */
+DECLARE_APPLY(DDDB_2dd4hep,dddb_2_dd4hep)
+DECLARE_APPLY(DDDB_Conditions2dd4hep,dddb_conditions_2_dd4hep)

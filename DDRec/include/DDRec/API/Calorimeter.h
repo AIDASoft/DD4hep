@@ -7,25 +7,25 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDRec_CALORIMETER_H_
-#define DDRec_CALORIMETER_H_
+#ifndef rec_CALORIMETER_H_
+#define rec_CALORIMETER_H_
 
 #include "DDRec/API/LayeredSubdetector.h"
 #include "DDRec/API/Subdetector.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] Calorimeter: public LayeredSubdetector, public Subdetector {
+class Calorimeter: public LayeredSubdetector, public Subdetector {
 public:
-	Calorimeter(const Geometry::DetElement& det) :
-		Geometry::DetElement(det), LayeredSubdetector(det), Subdetector(det) {
+	Calorimeter(const DetElement& det) :
+		DetElement(det), LayeredSubdetector(det), Subdetector(det) {
 
 	}
 
 	virtual ~Calorimeter() {}
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
-#endif /* DDRec_CALORIMETER_H_ */
+} /* namespace rec */
+} /* namespace dd4hep */
+#endif /* rec_CALORIMETER_H_ */

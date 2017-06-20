@@ -6,7 +6,7 @@
 #   DDSegmentation_FOUND      : set to TRUE if DDSegmentation found
 #   DDSegmentation_VERSION    : package version
 #   DDSegmentation_ROOT       : path to this DDSegmentation installation
-#   DDSegmentation_LIBRARIES  : list of DD4hep libraries
+#   DDSegmentation_LIBRARIES  : list of dd4hep libraries
 #   DDSegmentation_INCLUDE_DIRS  : list of paths to be used with INCLUDE_DIRECTORIES
 #   DDSegmentation_LIBRARY_DIR  : list of paths to be used with LINK_DIRECTORIES
 #

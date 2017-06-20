@@ -5,7 +5,7 @@
   </plugin>
 
   <plugin name="DD4hepVolumeManager"/>
-  <plugin name="DD4hepConditionsManagerInstaller"/>
+  <plugin name="DD4hep_ConditionsManagerInstaller"/>
 
   <plugin name="DD4hepXMLLoader">
     <arg value="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC_alignment.xml"/>
@@ -20,6 +20,6 @@
   <plugin name="DD4hep_Test_ConditionsAccess"/>
   <plugin name="DD4hep_Test_ConditionsTreeDump"/>
 -->
-  <plugin name="DD4hepExample3"/>
+  <plugin name="DD4hepConditionExample3"/>
 
 </plugins>

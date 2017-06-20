@@ -1,5 +1,5 @@
 //====================================================================
-//  DDSim - LC simulation based on DD4hep
+//  DDSim - LC simulation based on dd4hep
 //--------------------------------------------------------------------
 //  F.Gaede, DESY
 //====================================================================
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace DD4hep::Simulation::Setup;
+using namespace dd4hep::sim::Setup;
 
 /** Simple main program to run a simulation with DDG4
  *  Loops over all xml files given on command line:
@@ -25,8 +25,8 @@ int main_wrapper(int argc, char** argv)  {
     exit( 0 ) ;
   }
 
-  DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
-  Kernel& kernel = Kernel::instance(lcdd);
+  dd4hep::Detector& description = dd4hep::Detector::getInstance();
+  Kernel& kernel = Kernel::instance(description);
 
   // first argument: geometry file
 

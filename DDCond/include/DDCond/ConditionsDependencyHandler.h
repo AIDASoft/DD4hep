@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,16 +14,16 @@
 #define DDCOND_CONDITIONSDEPENDENCYHANDLER_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/ConditionDerived.h"
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsManager.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     // Forward declarations
     class UserPool;
@@ -69,7 +69,7 @@ namespace DD4hep {
       /// Default destructor
       ~ConditionsDependencyHandler();
       /// ConditionResolver implementation: Access to the detector description instance
-      LCDD& lcdd() const;
+      Detector& detectorDescription() const;
       /// ConditionResolver implementation: Access to the conditions manager
       virtual Ref_t manager() const                     { return m_manager;         }
       /// Access to pool IOV
@@ -82,7 +82,7 @@ namespace DD4hep {
       Condition::Object* operator()(const ConditionDependency* dep)  const;
     };
 
-  }        /* End namespace Conditions                */
-}          /* End namespace DD4hep                    */
+  }        /* End namespace cond                */
+}          /* End namespace dd4hep                    */
 
 #endif     /* DDCOND_CONDITIONSDEPENDENCYHANDLER_H    */

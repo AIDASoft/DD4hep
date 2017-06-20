@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/detail/Handle.inl"
-#include "XML/Evaluator.h"
+#include "DDParsers/Evaluator.h"
 #include <iostream>
 #include <iomanip>
 #include <climits>
@@ -25,19 +25,19 @@
 #include "cxxabi.h"
 #endif
 
-namespace DD4hep {
+namespace dd4hep {
   XmlTools::Evaluator& evaluator();
 }
 
 namespace {
-  XmlTools::Evaluator& eval(DD4hep::evaluator());
+  XmlTools::Evaluator& eval(dd4hep::evaluator());
 }
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-short DD4hep::_toShort(const string& value) {
+short dd4hep::_toShort(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
   if (idx != string::npos)
@@ -48,12 +48,12 @@ short DD4hep::_toShort(const string& value) {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
+    throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
   }
   return (short) result;
 }
 
-int DD4hep::_toInt(const string& value) {
+int dd4hep::_toInt(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
   if (idx != string::npos)
@@ -64,12 +64,12 @@ int DD4hep::_toInt(const string& value) {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
+    throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
   }
   return (int) result;
 }
 
-long DD4hep::_toLong(const string& value) {
+long dd4hep::_toLong(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
   if (idx != string::npos)
@@ -80,36 +80,36 @@ long DD4hep::_toLong(const string& value) {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
+    throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
   }
   return (long) result;
 }
 
-bool DD4hep::_toBool(const string& value) {
+bool dd4hep::_toBool(const string& value) {
   return value == "true" || value == "yes";
 }
 
-float DD4hep::_toFloat(const string& value) {
+float dd4hep::_toFloat(const string& value) {
   double result = eval.evaluate(value.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
+    throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
   }
   return (float) result;
 }
 
-double DD4hep::_toDouble(const string& value) {
+double dd4hep::_toDouble(const string& value) {
   double result = eval.evaluate(value.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
+    throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
   }
   return result;
 }
 
-template <> char DD4hep::_multiply<char>(const string& left, const string& right) {
+template <> char dd4hep::_multiply<char>(const string& left, const string& right) {
   double val = _toDouble(left + "*" + right);
   if ( val >= double(SCHAR_MIN) && val <= double(SCHAR_MAX) )
     return (char) (int)val;
@@ -119,7 +119,7 @@ template <> char DD4hep::_multiply<char>(const string& left, const string& right
   return 0;
 }
 
-template <> unsigned char DD4hep::_multiply<unsigned char>(const string& left, const string& right) {
+template <> unsigned char dd4hep::_multiply<unsigned char>(const string& left, const string& right) {
   double val = _toDouble(left + "*" + right);
   if ( val >= 0 && val <= double(UCHAR_MAX) )
     return (unsigned char) (int)val;
@@ -129,7 +129,7 @@ template <> unsigned char DD4hep::_multiply<unsigned char>(const string& left, c
   return 0;
 }
 
-template <> short DD4hep::_multiply<short>(const string& left, const string& right) {
+template <> short dd4hep::_multiply<short>(const string& left, const string& right) {
   double val = _toDouble(left + "*" + right);
   if ( val >= double(SHRT_MIN) && val <= double(SHRT_MAX) )
     return (short) val;
@@ -139,7 +139,7 @@ template <> short DD4hep::_multiply<short>(const string& left, const string& rig
   return 0;
 }
 
-template <> unsigned short DD4hep::_multiply<unsigned short>(const string& left, const string& right) {
+template <> unsigned short dd4hep::_multiply<unsigned short>(const string& left, const string& right) {
   double val = _toDouble(left + "*" + right);
   if ( val >= 0 && val <= double(USHRT_MAX) )
     return (unsigned short)val;
@@ -149,36 +149,36 @@ template <> unsigned short DD4hep::_multiply<unsigned short>(const string& left,
   return 0;
 }
 
-template <> int DD4hep::_multiply<int>(const string& left, const string& right) {
+template <> int dd4hep::_multiply<int>(const string& left, const string& right) {
   return (int) _toDouble(left + "*" + right);
 }
 
-template <> unsigned int DD4hep::_multiply<unsigned int>(const string& left, const string& right) {
+template <> unsigned int dd4hep::_multiply<unsigned int>(const string& left, const string& right) {
   return (unsigned int) _toDouble(left + "*" + right);
 }
 
-template <> long DD4hep::_multiply<long>(const string& left, const string& right) {
+template <> long dd4hep::_multiply<long>(const string& left, const string& right) {
   return (long) _toDouble(left + "*" + right);
 }
 
-template <> unsigned long DD4hep::_multiply<unsigned long>(const string& left, const string& right) {
+template <> unsigned long dd4hep::_multiply<unsigned long>(const string& left, const string& right) {
   return (unsigned long) _toDouble(left + "*" + right);
 }
 
-template <> float DD4hep::_multiply<float>(const string& left, const string& right) {
+template <> float dd4hep::_multiply<float>(const string& left, const string& right) {
   return _toFloat(left + "*" + right);
 }
 
-template <> double DD4hep::_multiply<double>(const string& left, const string& right) {
+template <> double dd4hep::_multiply<double>(const string& left, const string& right) {
   return _toDouble(left + "*" + right);
 }
 
-void DD4hep::_toDictionary(const string& name, const string& value) {
+void dd4hep::_toDictionary(const string& name, const string& value) {
   _toDictionary(name, value, "number");
 }
 
 /// Enter name value pair to the dictionary.  \ingroup DD4HEP_GEOMETRY
-void DD4hep::_toDictionary(const std::string& name, const std::string& value, const std::string& typ)   {
+void dd4hep::_toDictionary(const std::string& name, const std::string& value, const std::string& typ)   {
   if ( typ == "string" )  {
     eval.setEnviron(name.c_str(),value.c_str());
     return;
@@ -197,7 +197,7 @@ void DD4hep::_toDictionary(const std::string& name, const std::string& value, co
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << value << ": ";
       eval.print_error();
-      throw runtime_error("DD4hep: Severe error during expression evaluation " + name + "=" + value);
+      throw runtime_error("dd4hep: Severe error during expression evaluation " + name + "=" + value);
     }
     eval.setVariable(n.c_str(), result);
   }
@@ -209,31 +209,31 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
   return text;
 }
 
-string DD4hep::_toString(bool value) {
+string dd4hep::_toString(bool value) {
   return value ? "true" : "false";
 }
 
-string DD4hep::_toString(short value, const char* fmt) {
+string dd4hep::_toString(short value, const char* fmt) {
   return __to_string((int)value, fmt);
 }
 
-string DD4hep::_toString(int value, const char* fmt) {
+string dd4hep::_toString(int value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-string DD4hep::_toString(float value, const char* fmt) {
+string dd4hep::_toString(float value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-string DD4hep::_toString(double value, const char* fmt) {
+string dd4hep::_toString(double value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-string DD4hep::_ptrToString(const void* value, const char* fmt) {
+string dd4hep::_ptrToString(const void* value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-namespace DD4hep {
+namespace dd4hep {
   static long s_numVerifies = 0;
 
   long num_object_validations() {
@@ -256,7 +256,7 @@ namespace DD4hep {
 #include "DDSegmentation/Segmentation.h"
 typedef DDSegmentation::Segmentation _Segmentation;
 //INSTANTIATE_UNNAMED(_Segmentation);
-namespace DD4hep {
+namespace dd4hep {
   template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string&) {
     this->m_element = s;
     s->setName(n);
@@ -264,14 +264,14 @@ namespace DD4hep {
   template <> const char* Handle<_Segmentation>::name() const {
     return this->m_element ? this->m_element->name().c_str() : "";
   }
-  template class DD4hep::Handle<_Segmentation>;
+  template class dd4hep::Handle<_Segmentation>;
 }
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "TMap.h"
 #include "TColor.h"
 
-DD4HEP_INSTANTIATE_HANDLE_UNNAMED(LCDD);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(Detector);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TObject);
 DD4HEP_INSTANTIATE_HANDLE(TNamed);
 

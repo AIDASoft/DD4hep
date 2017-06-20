@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -73,8 +73,8 @@ namespace ODH {//OtherDetectorHelpers
 
   static bool checkForSensibleGeometry(double crossingAngle, ECrossType crossType) {
     if (crossingAngle == 0 && crossType != kCenter) {
-      printout(DD4hep::ERROR, "Mask/Beampip", "You are trying to build a crossing geometry without a crossing angle.\n" );
-      printout(DD4hep::ERROR, "Mask/Beampip", "This is probably not what you want - better check your geometry data!");
+      printout(dd4hep::ERROR, "Mask/Beampip", "You are trying to build a crossing geometry without a crossing angle.\n" );
+      printout(dd4hep::ERROR, "Mask/Beampip", "This is probably not what you want - better check your geometry data!");
       return false; // premature exit, dd4hep will abort now
     }
     return true;

@@ -12,7 +12,7 @@
 
 #include <map>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 class CylindricalSegmentation: public Segmentation {
@@ -29,5 +29,5 @@ protected:
 
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_CYLINDRICALSEGMENTATION_H_ */

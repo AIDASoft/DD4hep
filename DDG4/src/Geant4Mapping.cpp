@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,13 +19,13 @@
 #include "G4PVPlacement.hh"
 #include <stdexcept>
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep::Geometry;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 using namespace std;
 
 /// Initializing Constructor
-Geant4Mapping::Geant4Mapping(LCDD& lcdd_ref)
-  : m_lcdd(lcdd_ref), m_dataPtr(0) {
+Geant4Mapping::Geant4Mapping(Detector& description_ref)
+  : m_detDesc(description_ref), m_dataPtr(0) {
 }
 
 /// Standard destructor
@@ -37,7 +37,7 @@ Geant4Mapping::~Geant4Mapping() {
 
 /// Possibility to define a singleton instance
 Geant4Mapping& Geant4Mapping::instance() {
-  static Geant4Mapping inst(LCDD::getInstance());
+  static Geant4Mapping inst(Detector::getInstance());
   return inst;
 }
 
@@ -73,10 +73,10 @@ void Geant4Mapping::attach(Geant4GeometryInfo* data_ptr) {
 Geant4VolumeManager Geant4Mapping::volumeManager() const {
   if ( m_dataPtr ) {
     if ( m_dataPtr->g4Paths.empty() ) {
-      VolumeManager::getVolumeManager(m_lcdd);
-      return Geant4VolumeManager(m_lcdd, m_dataPtr);
+      VolumeManager::getVolumeManager(m_detDesc);
+      return Geant4VolumeManager(m_detDesc, m_dataPtr);
     }
-    return Geant4VolumeManager(Geometry::Handle < Geant4GeometryInfo > (m_dataPtr));
+    return Geant4VolumeManager(Handle < Geant4GeometryInfo > (m_dataPtr));
   }
   throw runtime_error(format("Geant4Mapping", "Cannot create volume manager without Geant4 geometry info [Invalid-Info]"));
 }

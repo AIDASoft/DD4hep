@@ -1,6 +1,5 @@
-# $Id: $
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -28,7 +27,7 @@ dd4hep_configure_scripts(SimpleDetector DEFAULT_SETUP WITH_TESTS)
 
 #***  Testing  *********************************************************************
 foreach (test Simple_ILD)
-  foreach( type lcdd gdml vis )
+  foreach( type description gdml vis )
     dd4hep_add_test_reg( SimpleDetector_converter_${type}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
       EXEC_ARGS  geoConverter -compact2${type} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml -output file:${test}.${type}

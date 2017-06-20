@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DDAlign/GlobalAlignmentOperators.h"
@@ -22,8 +22,8 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
+using namespace dd4hep::align;
 
 void GlobalAlignmentOperator::insert(GlobalAlignment alignment)  const   {
   if ( !cache.insert(alignment) )     {

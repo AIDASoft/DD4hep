@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_DDALIGN_ALIGNMENTCALIB_H
 
 // Framework includes
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/ConditionsMap.h"
@@ -25,10 +25,10 @@
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Alignments {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace align {
   
     /// Calib alignment dependencies from conditions
     /**
@@ -42,39 +42,33 @@ namespace DD4hep {
     public:
       class Entry;
       /// Shortcut definitions
-      typedef Conditions::Condition            Condition;
-      typedef Conditions::ConditionKey         ConditionKey;
-      typedef Conditions::ConditionsMap        ConditionsMap;
-      typedef Condition::key_type              key_type;
-      typedef std::map<key_type,Entry*>        UsedConditions;
+      typedef std::map<Condition::key_type,Entry*>  UsedConditions;
 
     public:
       /// Reference to the detector description object
-      LCDD&                  lcdd;
+      Detector&                      description;
       /// Reference to the alignment manager object
-      ConditionsMap&         slice;
+      ConditionsMap& slice;
       /// Internal work stack of cached deltas
-      UsedConditions         used;
+      UsedConditions             used;
 
     protected:      
       /// Implementation: Add a new entry to the transaction stack.
-      std::pair<key_type,Entry*> _set(DetElement det, const Delta& delta);
+      std::pair<Condition::key_type,Entry*> _set(DetElement det, const Delta& delta);
 
     public:
       /// No default constructor
       AlignmentsCalib() = delete;
-
       /// No copy constructor
       AlignmentsCalib(const AlignmentsCalib& copy) = delete;
-
       /// Initializing constructor
-      AlignmentsCalib(LCDD& lcdd, ConditionsMap& mapping);
-
+      AlignmentsCalib(Detector& description, ConditionsMap& mapping);
       /// Default destructor
       virtual ~AlignmentsCalib();
-
       /// No assignment operator
       AlignmentsCalib& operator=(const AlignmentsCalib& copy) = delete;
+      /// No move assignment operator
+      AlignmentsCalib& operator=(AlignmentsCalib&& copy) = delete;
 
       /// (1) Add a new entry to an existing DetElement structure.
       /**
@@ -97,7 +91,7 @@ namespace DD4hep {
        *
        *  The resulting alignment key is returned to the client. If NULL: Failure
        */
-      key_type set(DetElement det, const Delta& delta);
+      Condition::key_type set(DetElement det, const Delta& delta);
 
       /// (2) Add a new entry to an existing DetElement structure.
       /**
@@ -108,7 +102,7 @@ namespace DD4hep {
        *
        *  The alignment key is returned to the client. If NULL: Failure
        */
-      key_type set(const std::string& path, const Delta& delta);
+      Condition::key_type set(const std::string& path, const Delta& delta);
 
       /// Clear all delta data in the caches transaction stack.
       void clearDeltas();
@@ -122,6 +116,6 @@ namespace DD4hep {
       /// Commit all pending transactions. Returns number of altered entries
       AlignmentsCalculator::Result commit();
     };    
-  }       /* End namespace Alignments              */
-}         /* End namespace DD4hep                  */
+  }       /* End namespace align              */
+}         /* End namespace dd4hep                  */
 #endif    /* DD4HEP_DDALIGN_ALIGNMENTCALIB_H       */

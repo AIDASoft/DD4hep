@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,18 +22,18 @@
 #include "DDG4/Geant4Data.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation   {
+  namespace sim   {
 
     /// Standard , initializing constructor
     template <typename T>
     Geant4SensitiveAction<T>::Geant4SensitiveAction(Geant4Context* ctxt,
 						    const std::string& nam,
-						    Geometry::DetElement det,
-						    Geometry::LCDD& lcdd_ref)
-      : Geant4Sensitive(ctxt,nam,det,lcdd_ref), m_collectionName(), m_collectionID(0)
+						    DetElement det,
+						    Detector& description_ref)
+      : Geant4Sensitive(ctxt,nam,det,description_ref), m_collectionName(), m_collectionID(0)
     {
       declareProperty("CollectionName", m_collectionName);
       initialize();
@@ -81,14 +81,11 @@ namespace DD4hep {
     /// Define readout specific hit collection. matching name must be present in readout structure
     template <typename T> template <typename HIT> 
     size_t Geant4SensitiveAction<T>::defineReadoutCollection(const std::string match_name)  {
-      typedef Geometry::ReadoutObject _RO;
       Readout ro = m_sensitive.readout();
-      for(_RO::Collections::const_iterator i=ro->hits.begin(); i!=ro->hits.end(); ++i)  {
-        const _RO::Collection& c = *i;
+      for(const auto& c : ro->hits )  {
         if ( c.name == match_name )   {
           size_t coll_id = defineCollection<HIT>(match_name);
-          Geant4Filter* filter = 
-            new Geant4ReadoutVolumeFilter(context(),name()+"_"+c.name,ro,c.name);
+          Geant4Filter* filter = new Geant4ReadoutVolumeFilter(context(),name()+"_"+c.name,ro,c.name);
           adopt_front(filter);
           return coll_id;
         }
@@ -113,8 +110,8 @@ namespace DD4hep {
     typedef Geant4HitData::Contribution HitContribution;
 
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 
 #include "DD4hep/Printout.h"

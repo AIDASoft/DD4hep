@@ -73,6 +73,7 @@ include(DD4hep_XML_setup)
 
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDSegmentation)
+add_subdirectory(DDParsers)
 add_subdirectory(DDCore)
 add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)

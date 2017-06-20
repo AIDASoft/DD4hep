@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,9 +17,9 @@
 #include "DDG4/Factories.h"
 
 /*
- *   DD4hep::Simulation namespace declaration
+ *   dd4hep::sim namespace declaration
  */
-namespace DD4hep {  namespace Simulation {
+namespace dd4hep {  namespace sim {
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<TrackerCombine>
@@ -116,6 +116,6 @@ namespace DD4hep {  namespace Simulation {
       return return_code;
     }
     typedef Geant4GenericSD<TrackerCombine>  Geant4TrackerCombine;
-  }}    // End namespace DD4hep::Simulation
+  }}    // End namespace dd4hep::sim
 
-DECLARE_GEANT4SENSITIVEDETECTOR_NS(DD4hep::Simulation,Geant4TrackerCombine)
+DECLARE_GEANT4SENSITIVEDETECTOR_NS(dd4hep::sim,Geant4TrackerCombine)

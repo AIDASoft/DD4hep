@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,13 +17,13 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t  x_det     = e;
   string     det_name  = x_det.nameStr();
-  Material   air       = lcdd.air();
+  Material   air       = description.air();
   DetElement sdet        (det_name,x_det.id());
   Assembly   assembly    (det_name+"_assembly");
   PlacedVolume pv;
@@ -42,7 +42,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++m)  {
       xml_comp_t x_slice = j;
-      Material mat = lcdd.material(x_slice.materialStr());
+      Material mat = description.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
       double thickness = x_slice.thickness();
       Tube   s_tub(r,r+thickness,z,2*M_PI);
@@ -54,14 +54,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         s_vol.setSensitiveDetector(sens);
       }
       // Set Attributes
-      s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+      s_vol.setAttributes(description,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
       pv = l_vol.placeVolume(s_vol);
       // Slices have no extra id. Take the ID of the layer!
       pv.addPhysVolID("slice",m);
     }
     l_tub.setDimensions(rmin,r,z);
     //cout << l_name << " " << rmin << " " << r << " " << z << endl;
-    l_vol.setVisAttributes(lcdd,x_layer.visStr());
+    l_vol.setVisAttributes(description,x_layer.visStr());
       
     pv = assembly.placeVolume(l_vol);
     pv.addPhysVolID("layer",n);
@@ -71,7 +71,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     sdet.setCombineHits(x_det.combineHits(),sens);
   }
 
-  pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  pv = description.pickMotherVolume(sdet).placeVolume(assembly);
   pv.addPhysVolID("system",sdet.id()).addPhysVolID("barrel",0);
   sdet.setPlacement(pv);
   return sdet;

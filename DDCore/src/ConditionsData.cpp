@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,7 +17,7 @@
 #include "DD4hep/ConditionsData.h"
 #include <sstream>
 
-using namespace DD4hep::Conditions;
+using namespace dd4hep::cond;
 
 /// print Conditions object
 std::ostream& operator << (std::ostream& s, const AbstractMap& data)   {
@@ -25,13 +25,13 @@ std::ostream& operator << (std::ostream& s, const AbstractMap& data)   {
     void operator()(const AbstractMap::Params::value_type& obj)  const {
       if ( obj.second.typeInfo() == typeid(AbstractMap) )  {
         const AbstractMap& d= obj.second.get<AbstractMap>();
-        DD4hep::printout(DD4hep::INFO,"Condition","++ %-16s [%d] %-8s -> %s",
+        dd4hep::printout(dd4hep::INFO,"Condition","++ %-16s [%d] %-8s -> %s",
                          obj.first.c_str(), d.classID,
                          obj.second.dataType().c_str(), 
                          obj.second.str().c_str());
       }
       else   {
-        DD4hep::printout(DD4hep::INFO,"Condition","++ %-16s %-8s -> %s",
+        dd4hep::printout(dd4hep::INFO,"Condition","++ %-16s %-8s -> %s",
                          obj.first.c_str(),
                          obj.second.dataType().c_str(), 
                          obj.second.str().c_str());
@@ -77,8 +77,8 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
   return *this;
 }
 
-#include "DD4hep/Parsers.h"
-#include "DD4hep/ToStream.h"
+#include "DDParsers/Parsers.h"
+#include "DDParsers/ToStream.h"
 DD4HEP_DEFINE_PARSER_DUMMY(AbstractMap)
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ConditionsInterna.h"

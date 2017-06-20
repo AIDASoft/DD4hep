@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -40,7 +40,7 @@
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
   class NamedObject;
@@ -59,7 +59,7 @@ namespace DD4hep {
 
   /// Handle: a templated class like a shared pointer, which allows specialized access to tgeometry objects.
   /**
-   * The Handle is the base class to access all objects in DD4hep.
+   * The Handle is the base class to access all objects in dd4hep.
    * Objects, which consist ONLY of data  are NEVER passed directly.
    * They are ALWAYS passed using handles. Such handles are 'handy' ;-).
    * Assignment is to and from different handles is possible using concrete
@@ -89,36 +89,34 @@ namespace DD4hep {
     /** Type definitions and class specific abbreviations and forward declarations */
     /// Extern accessible definition of the contained element type
     typedef T Object;
-    /// Declaration of 'self'
-    typedef Handle<Object> handle_t;
 
     /// Single and only data member: Reference to the actual element.
     T* m_element = 0;
     /// Defaulot constructor
     Handle() = default;
     /// Copy constructor
-    Handle(const Handle<T>& e) = default;
+    Handle(const Handle<T>& element) = default;
     /// Initializing constructor from pointer
-    Handle(T* e) : m_element(e)   {            }
+    Handle(T* element) : m_element(element)   {            }
     /// Initializing constructor from unrelated pointer with type checking
-    template <typename Q> Handle(Q* e) : m_element((T*)e)
+    template <typename Q> Handle(Q* element) : m_element((T*)element)
     {    verifyObject();                       }
     /// Initializing constructor from unrelated handle with type checking
-    template <typename Q> Handle(const Handle<Q>& e) : m_element((T*)e.m_element)
+    template <typename Q> Handle(const Handle<Q>& element) : m_element((T*)element.m_element)
     {    verifyObject();                       }
     /// Assignment operator
-    Handle<T>& operator=(const Handle<T>& e) = default;
+    Handle<T>& operator=(const Handle<T>& element) = default;
     /// Boolean operator == used for RB tree insertions
-    bool operator==(const Handle<T>& e)  const {
-      return m_element == e.m_element;
+    bool operator==(const Handle<T>& element)  const {
+      return m_element == element.m_element;
     }
     /// Boolean operator < used for RB tree insertions
-    bool operator<(const Handle<T>& e)  const  {
-      return m_element < e.m_element;
+    bool operator<(const Handle<T>& element)  const  {
+      return m_element < element.m_element;
     }
     /// Boolean operator > used for RB tree insertions
-    bool operator>(const Handle<T>& e)  const  {
-      return m_element > e.m_element;
+    bool operator>(const Handle<T>& element)  const  {
+      return m_element > element.m_element;
     }
     /// Check the validity of the object held by the handle
     bool isValid() const   {
@@ -176,59 +174,60 @@ namespace DD4hep {
   };
   /// Default Ref_t definition describing named objects  \ingroup DD4HEP_GEOMETRY
   typedef Handle<NamedObject> Ref_t;
+  namespace detail  {
+    /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
+    template <typename T> inline void destroyHandle(T& handle) {
+      deletePtr(handle.m_element);
+    }
+    /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
+    template <typename T> class DestroyHandle {
+    public:
+      void operator()(T ptr) const {  destroyHandle(ptr);    }
+    };
+    /// map Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
+    template <typename M> class DestroyHandles {
+    public:
+      /// Container reference
+      M& object;
+      /// Initializing constructor
+      DestroyHandles(M& obj) : object(obj) {                 }
+      /// Action operator
+      void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& arg) const
+      {   DestroyHandle<typename M::mapped_type>()(arg.second);    }
+    };
+    /// Functional created of map destruction functors
+    template <typename M> void destroyHandles(M& arg)  {
+      for_each(arg.begin(), arg.end(), DestroyHandles<M>(arg));
+      arg.clear();
+    }
 
-  /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
-  template <typename T> inline void destroyHandle(T& h) {
-    deletePtr(h.m_element);
+    /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
+    template <typename T> inline void releaseHandle(T& handle) {
+      releasePtr(handle.m_element);
+    }
+    /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
+    template <typename T> class ReleaseHandle {
+    public:
+      void operator()(T handle) const {  releaseHandle(handle);    }
+    };
+    /// map Functor to release handles  \ingroup DD4HEP_GEOMETRY
+    template <typename M> class ReleaseHandles {
+    public:
+      /// Container reference
+      M& object;
+      /// Initializing constructor
+      ReleaseHandles(M& obj) : object(obj) {                 }
+      /// Action operator
+      void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& arg) const
+      {   ReleaseHandle<typename M::mapped_type>()(arg.second);    }
+    };
+    /// Functional created of map destruction functors
+    template <typename M> void releaseHandles(M& arg)  {
+      for_each(arg.begin(), arg.end(), ReleaseHandles<M>(arg));
+      arg.clear();
+    }
   }
-  /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
-  template <typename T> class DestroyHandle {
-  public:
-    void operator()(T p) const {  destroyHandle(p);    }
-  };
-  /// map Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
-  template <typename M> class DestroyHandles {
-  public:
-    /// Container reference
-    M& object;
-    /// Initializing constructor
-    DestroyHandles(M& m) : object(m) {                 }
-    /// Action operator
-    void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& p) const
-    {   DestroyHandle<typename M::mapped_type>()(p.second);    }
-  };
-  /// Functional created of map destruction functors
-  template <typename M> void destroyHandles(M& m)  {
-    for_each(m.begin(), m.end(), DestroyHandles<M>(m));
-    m.clear();
-  }
-
-  /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
-  template <typename T> inline void releaseHandle(T& h) {
-    releasePtr(h.m_element);
-  }
-  /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
-  template <typename T> class ReleaseHandle {
-  public:
-    void operator()(T p) const {  releaseHandle(p);    }
-  };
-  /// map Functor to release handles  \ingroup DD4HEP_GEOMETRY
-  template <typename M> class ReleaseHandles {
-  public:
-    /// Container reference
-    M& object;
-    /// Initializing constructor
-    ReleaseHandles(M& m) : object(m) {                 }
-    /// Action operator
-    void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& p) const
-    {   ReleaseHandle<typename M::mapped_type>()(p.second);    }
-  };
-  /// Functional created of map destruction functors
-  template <typename M> void releaseHandles(M& m)  {
-    for_each(m.begin(), m.end(), ReleaseHandles<M>(m));
-    m.clear();
-  }
-
+  
   /// String conversions: boolean value to string  \ingroup DD4HEP_GEOMETRY
   std::string _toString(bool value);
   /// String conversions: integer value to string  \ingroup DD4HEP_GEOMETRY
@@ -426,14 +425,14 @@ namespace DD4hep {
   /// Enter name value pair to the dictionary.  \ingroup DD4HEP_GEOMETRY
   void _toDictionary(const std::string& name, const std::string& value, const std::string& typ);
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-    using DD4hep::Handle;
-    using DD4hep::Ref_t;
-
-    // Forward declarations
-    class LCDD;
-  } /* End namespace Geometry  */
-}   /* End namespace DD4hep    */
-#endif    /* DD4HEP_HANDLE_H       */
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail {
+    using dd4hep::Handle;
+    using dd4hep::Ref_t;
+  } /* End namespace detail  */
+  
+  // Forward declarations
+  class Detector;
+}         /* End namespace dd4hep    */
+#endif    /* DD4HEP_HANDLE_H         */
 

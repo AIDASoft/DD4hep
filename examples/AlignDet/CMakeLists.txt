@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -124,7 +124,7 @@ dd4hep_add_test_reg( AlignDet_CLICSiD_stress_LONGTEST
   )
 #
 #---Testing: Load Telescope geometry and read and print alignments --------
-dd4hep_add_test_reg( AlignDet_CLICSiD_align_nominal
+dd4hep_add_test_reg( AlignDet_CLICSiD_align_nominal_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
      -input  file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/CLICSiD/compact/compact.xml
@@ -138,12 +138,12 @@ dd4hep_add_test_reg( AlignDet_AlephTPC_load
   EXEC_ARGS  geoPluginRun
              -input file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/AlignDet/compact/AlephTPC.xml
              -destroy -no-interpreter -plugin DD4hep_GlobalAlignmentInstall
-  REGEX_PASS "189 nodes/ 23 volume UID's in LCDD Geometry"
+  REGEX_PASS "189 nodes/ 23 volume UID's in Detector Geometry"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
-dd4hep_add_test_reg( AlignDet_Global_AlephTPC_align
+dd4hep_add_test_reg( AlignDet_AlephTPC_global_align
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
              -input file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/AlignDet/compact/AlephTPC.xml
@@ -155,7 +155,7 @@ dd4hep_add_test_reg( AlignDet_Global_AlephTPC_align
   )
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
-dd4hep_add_test_reg( AlignDet_Global_AlephTPC_reset
+dd4hep_add_test_reg( AlignDet_AlephTPC_global_reset
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun
              -input file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/AlignDet/compact/AlephTPC.xml

@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -17,10 +17,10 @@
 #include "DDG4/Geant4DataDump.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
-typedef ReferenceBitMask<const int> PropertyMask;
+typedef detail::ReferenceBitMask<const int> PropertyMask;
 
 /// Default constructor
 Geant4DataDump::Geant4DataDump(const std::string& tag) : m_tag(tag) {

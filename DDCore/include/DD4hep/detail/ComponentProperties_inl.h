@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,23 +25,23 @@
 #include <set>
 #include <stdexcept>
 
-/// DD4hep namespace declaration
-namespace DD4hep {
+/// dd4hep namespace declaration
+namespace dd4hep {
 
   /// Setup property
   template <typename TYPE> void Property::make(TYPE& val) {
-    static PropertyGrammar g(BasicGrammar::instance<TYPE>());
-    m_hdl = &g;
+    static PropertyGrammar grammar(BasicGrammar::instance<TYPE>());
+    m_hdl = &grammar;
     m_par = &val;
   }
 
   /// Set value of this property
   template <typename TYPE> void Property::set(const TYPE& val) {
-    const PropertyGrammar& g = grammar();
-    if (g.type() == typeid(TYPE))
+    const PropertyGrammar& grm = grammar();
+    if (grm.type() == typeid(TYPE))
       *(TYPE*) m_par = val;
-    else if (!g.fromString(m_par, BasicGrammar::instance< TYPE >().str(&val)))
-      PropertyGrammar::invalidConversion(typeid(TYPE), g.type());
+    else if (!grm.fromString(m_par, BasicGrammar::instance< TYPE >().str(&val)))
+      PropertyGrammar::invalidConversion(typeid(TYPE), grm.type());
   }
 
   /// Assignment operator / set new balue
@@ -52,11 +52,11 @@ namespace DD4hep {
 
   /// Retrieve value from stack (large values e.g. vectors etc.)
   template <typename TYPE> void Property::value(TYPE& val) const {
-    const PropertyGrammar& g = grammar();
-    if (g.type() == typeid(TYPE))
+    const PropertyGrammar& grm = grammar();
+    if (grm.type() == typeid(TYPE))
       val = *(TYPE*) m_par;
     else if (!BasicGrammar::instance< TYPE >().fromString(&val, this->str()))
-      PropertyGrammar::invalidConversion(g.type(), typeid(TYPE));
+      PropertyGrammar::invalidConversion(grm.type(), typeid(TYPE));
   }
 
   /// Retrieve value
@@ -66,10 +66,10 @@ namespace DD4hep {
     return temp;
   }
 
-}      // End namespace DD4hep
+}      // End namespace dd4hep
 
 // Instantiate single property
-#define DD4HEP_DEFINE_PROPERTY_TYPE(x) namespace DD4hep { \
+#define DD4HEP_DEFINE_PROPERTY_TYPE(x) namespace dd4hep { \
   template x Property::value() const;                     \
   template void Property::value(x& value) const;          \
   template void Property::set(const x& value);            \

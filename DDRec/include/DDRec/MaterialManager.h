@@ -1,12 +1,11 @@
-#ifndef DDRec_MaterialManager_H_
-#define DDRec_MaterialManager_H_
+#ifndef rec_MaterialManager_H_
+#define rec_MaterialManager_H_
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Objects.h"
 #include "DDRec/Vector3D.h"
 #include "DDRec/Material.h"
 #include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Volumes.h"
 
 #include <vector>
 
@@ -93,4 +92,4 @@ namespace dd4hep {
 
 namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
-#endif // DDRec_MaterialManager_H_
+#endif // rec_MaterialManager_H_

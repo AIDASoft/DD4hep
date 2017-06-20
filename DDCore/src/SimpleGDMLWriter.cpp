@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "SimpleGDMLWriter.h"
 
 // ROOT includes
@@ -38,8 +38,8 @@
 // C/C++ include files
 #include <iostream>
 
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep;
 using namespace std;
 
 namespace {
@@ -190,10 +190,10 @@ void* SimpleGDMLWriter::handleSolid(const string& name, const TGeoShape* shape) 
 }
 
 /// Dump structure information in GDML format to output stream
-void SimpleGDMLWriter::handleStructure(const VolumeVector& volset) const {
+void SimpleGDMLWriter::handleStructure(const vector<Volume>& volset) const {
   m_output << "\t<structure>" << endl;
-  for (VolumeVector::const_iterator i = volset.begin(); i != volset.end(); ++i)
-    handleVolume((*i)->GetName(), (*i));
+  for ( const auto v : volset )
+    handleVolume(v->GetName(), v);
   m_output << "\t</structure>" << endl;
 }
 
@@ -221,35 +221,34 @@ void* SimpleGDMLWriter::handleTransformation(const string& name, const TGeoMatri
 }
 
 /// Dump Transformations in GDML format to output stream
-void SimpleGDMLWriter::handleTransformations(const TransformSet& trafos) const {
+void SimpleGDMLWriter::handleTransformations(const vector<pair<string, TGeoMatrix*> >& trafos) const {
   m_output << "\t<define>" << endl;
-  for (TransformSet::const_iterator i = trafos.begin(); i != trafos.end(); ++i)
-    handleTransformation((*i).first, (*i).second);
+  for (const auto& t : trafos )
+    handleTransformation(t.first, t.second);
   m_output << "\t</define>" << endl;
 }
 
 /// Dump all solids in GDML format to output stream
-void SimpleGDMLWriter::handleSolids(const SolidSet& solids) const {
+void SimpleGDMLWriter::handleSolids(const set<TGeoShape*>& solids) const {
   m_output << "\t<solids>" << endl;
-  for (SolidSet::const_iterator i = solids.begin(); i != solids.end(); ++i)
-    handleSolid((*i)->GetName(), (*i));
+  for (const auto s : solids )
+    handleSolid(s->GetName(), s);
   m_output << "\t</solids>" << endl;
 }
 
 /// Dump all constants in GDML format to output stream
-void SimpleGDMLWriter::handleDefines(const LCDD::HandleMap& defs) const {
+void SimpleGDMLWriter::handleDefines(const Detector::HandleMap& defs) const {
   m_output << "\t<define>" << endl;
-  for (LCDD::HandleMap::const_iterator i = defs.begin(); i != defs.end(); ++i)
-    m_output << "\t\t<constant name=\"" << (*i).second->GetName() << "\" value=\"" << (*i).second->GetTitle() << "\" />"
+  for (const auto i : defs )
+    m_output << "\t\t<constant name=\"" << i.second->GetName() << "\" value=\"" << i.second->GetTitle() << "\" />"
              << endl;
   m_output << "\t</define>" << endl;
 }
 
-/// Dump all visualisation specs in LCDD format to output stream
-void SimpleGDMLWriter::handleVisualisation(const VisRefs& vis) const {
+/// Dump all visualisation specs in Detector format to output stream
+void SimpleGDMLWriter::handleVisualisation(const set<VisAttr>& vis) const {
   m_output << "\t<display>" << endl;
-  for (VisRefs::const_iterator i = vis.begin(); i != vis.end(); ++i) {
-    VisAttr v = Ref_t(*i);
+  for (const auto v : vis )  {
     if (v.isValid()) {
       float r = 1., g = 1., b = 1., alpha = 1.;
       TColor *color = gROOT->GetColor(v.color());
@@ -291,8 +290,8 @@ void SimpleGDMLWriter::handleVisualisation(const VisRefs& vis) const {
 void SimpleGDMLWriter::create(DetElement top) {
   GeometryInfo geo;
   collect(top, geo);
-  //handleSetup(LCDD::getInstance().header());
-  handleDefines(LCDD::getInstance().constants());
+  //handleSetup(Detector::getInstance().header());
+  handleDefines(Detector::getInstance().constants());
   handleVisualisation(geo.vis);
   handleTransformations(geo.trafos);
   handleSolids(geo.solids);

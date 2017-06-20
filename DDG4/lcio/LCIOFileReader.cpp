@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -36,10 +35,10 @@ using namespace lcio ;
 namespace IO { class LCReader; }
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep  {
+namespace dd4hep  {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation  {
+  namespace sim  {
 
     /// Base class to read lcio event files
     /**
@@ -71,13 +70,13 @@ namespace DD4hep  {
 #include "DDG4/Factories.h"
 #include "UTIL/ILDConf.h"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 // Factory entry
-DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOFileReader)
+DECLARE_GEANT4_EVENT_READER_NS(dd4hep::sim,LCIOFileReader)
 
 /// Initializing constructor
-DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam)
+dd4hep::sim::LCIOFileReader::LCIOFileReader(const std::string& nam)
 : LCIOEventReader(nam)
 {
   m_reader = ::lcio::LCFactory::getInstance()->createLCReader(LCReader::directAccess);
@@ -87,14 +86,14 @@ DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam)
 }
 
 /// Default destructor
-DD4hep::Simulation::LCIOFileReader::~LCIOFileReader()    {
-  DD4hep::deletePtr(m_reader);
+dd4hep::sim::LCIOFileReader::~LCIOFileReader()    {
+  dd4hep::detail::deletePtr(m_reader);
 }
 
 
 /// moveToSpecifiedEvent, a.k.a. skipNEvents
 Geant4EventReader::EventReaderStatus
-DD4hep::Simulation::LCIOFileReader::moveToEvent(int event_number) {
+dd4hep::sim::LCIOFileReader::moveToEvent(int event_number) {
   // ::lcio::LCEvent* evt = m_reader->readEvent(/*runNumber*/ 0, event_number);
   // fg: direct access does not work if run number is different from 0 and/or event numbers are not stored consecutively
   if( m_currEvent == 0 && event_number != 0 ) {
@@ -109,7 +108,7 @@ DD4hep::Simulation::LCIOFileReader::moveToEvent(int event_number) {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-DD4hep::Simulation::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT::LCCollection** particles)  {
+dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT::LCCollection** particles)  {
 
   ::lcio::LCEvent* evt = m_reader->readNextEvent(); // simply read the events sequentially 
   ++m_currEvent ;

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 #ifndef DD4HEP_DDCORE_JSON_PRINTOUT_H
 #define DD4HEP_DDCORE_JSON_PRINTOUT_H
 
-// Forwarding printout functionality to DD4hep
+// Forwarding printout functionality to dd4hep
 /** Note: This is necessary to use the JSON functionality as a standalone 
  *        utility without the need to externalize the world.
  *

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,10 +28,10 @@
 // FRamework include files
 #include "DDG4/Geant4Data.h"
 #include "DDG4/Geant4Particle.h"
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation { }
-  namespace Simulation { }
-  namespace Geometry   { }
+  namespace sim { }
+  namespace detail   { }
 }
 
 // CINT configuration
@@ -43,69 +43,69 @@ namespace DD4hep {
 using namespace std;
 
 /// Define namespaces
-#pragma link C++ namespace DD4hep;
-#pragma link C++ namespace DD4hep::Geometry;
-#pragma link C++ namespace DD4hep::Simulation;
+#pragma link C++ namespace dd4hep;
+#pragma link C++ namespace dd4hep::detail;
+#pragma link C++ namespace dd4hep::sim;
 
 /// Simple stuff
-#pragma link C++ class DD4hep::Simulation::SimpleRun+;
-#pragma link C++ class DD4hep::Simulation::SimpleEvent+;
-#pragma link C++ class DD4hep::Simulation::DataExtension+;
+#pragma link C++ class dd4hep::sim::SimpleRun+;
+#pragma link C++ class dd4hep::sim::SimpleEvent+;
+#pragma link C++ class dd4hep::sim::DataExtension+;
 
 /// Dictionaires for Geant4 particles
-#pragma link C++ class DD4hep::Simulation::ParticleExtension+;
+#pragma link C++ class dd4hep::sim::ParticleExtension+;
 
 /// Auto-pointers related. ROOT cannot handle I/O!
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>;
+#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::DataExtension>;
+#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::ParticleExtension>;
 
 #ifdef DD4HEP_DD4HEP_PTR_AUTO
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>::base_t;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>::base_t;
+#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::DataExtension>::base_t;
+#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::ParticleExtension>::base_t;
 #endif
 
-#pragma link C++ class DD4hep::Simulation::Geant4Particle+;
-#pragma link C++ class vector<DD4hep::Simulation::Geant4Particle*>+;
-#pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>+;
-#pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::iterator;
-#pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::const_iterator;
+#pragma link C++ class dd4hep::sim::Geant4Particle+;
+#pragma link C++ class vector<dd4hep::sim::Geant4Particle*>+;
+#pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>+;
+#pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>::iterator;
+#pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
-#pragma link C++ function operator!=( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
+#pragma link C++ function operator==( const map<int,dd4hep::sim::Geant4Particle*>::iterator&, const map<int,dd4hep::sim::Geant4Particle*>::iterator& );
+#pragma link C++ function operator!=( const map<int,dd4hep::sim::Geant4Particle*>::iterator&, const map<int,dd4hep::sim::Geant4Particle*>::iterator& );
 #endif
 
 //#pragma link C++ class type_info;
 
 /// Dictionaires for basic Hit data structures
-#pragma link C++ class DD4hep::Simulation::Geant4HitData+;
-#pragma link C++ class vector<DD4hep::Simulation::Geant4HitData*>+;
-#pragma link C++ class DD4hep::Simulation::Geant4HitData::Contribution+;
-#pragma link C++ class DD4hep::Simulation::Geant4HitData::Contributions+;
+#pragma link C++ class dd4hep::sim::Geant4HitData+;
+#pragma link C++ class vector<dd4hep::sim::Geant4HitData*>+;
+#pragma link C++ class dd4hep::sim::Geant4HitData::Contribution+;
+#pragma link C++ class dd4hep::sim::Geant4HitData::Contributions+;
 
 /// Dictionaires for Tracker Hit data structures
-#pragma link C++ class DD4hep::Simulation::Geant4Tracker+;
-#pragma link C++ class DD4hep::Simulation::Geant4Tracker::Hit+;
-#pragma link C++ class vector<DD4hep::Simulation::Geant4Tracker::Hit*>+;
+#pragma link C++ class dd4hep::sim::Geant4Tracker+;
+#pragma link C++ class dd4hep::sim::Geant4Tracker::Hit+;
+#pragma link C++ class vector<dd4hep::sim::Geant4Tracker::Hit*>+;
 
 /// Dictionaires for Calorimeter Hit data structures
-#pragma link C++ class DD4hep::Simulation::Geant4Calorimeter+;
-#pragma link C++ class DD4hep::Simulation::Geant4Calorimeter::Hit+;
-#pragma link C++ class vector<DD4hep::Simulation::Geant4Calorimeter::Hit*>+;
+#pragma link C++ class dd4hep::sim::Geant4Calorimeter+;
+#pragma link C++ class dd4hep::sim::Geant4Calorimeter::Hit+;
+#pragma link C++ class vector<dd4hep::sim::Geant4Calorimeter::Hit*>+;
 
 #endif
 
 #ifdef __DDG4_STANDALONE_DICTIONARIES__
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep {
+namespace dd4hep {
 
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation {
+  namespace sim {
 #define NO_CALL {      throw "This function shoule never ever be called!";    }
     /// Default constructor
     inline SimpleRun::SimpleRun() : runID(0), numEvents(0)  {    }

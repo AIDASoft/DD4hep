@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -25,19 +25,19 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace of the DDDB conversion stuff
   namespace DDDB  {
 
-    /// Class supporting the interface of the LHCb conditions database to DD4hep
+    /// Class supporting the interface of the LHCb conditions database to dd4hep
     /**
      *
      *  \author   M.Frank
      *  \version  1.0
      *  \ingroup DD4HEP_XML
      */
-    class DDDBReader : public DD4hep::XML::UriReader   {
+    class DDDBReader : public dd4hep::xml::UriReader   {
     public:
       /// Standard constructor
       DDDBReader(const std::string& dir="");
@@ -70,5 +70,5 @@ namespace DD4hep {
       DDDBReaderContext m_context;
     };
   }    /* End namespace DDDB            */
-}      /* End namespace DD4hep          */
+}      /* End namespace dd4hep          */
 #endif /* DD4HEP_DDDB_DDDBFILEREADER_H  */

@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -28,7 +28,7 @@
 #include <TGLViewer.h>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 template <typename T>
 static inline typename T::const_iterator find(const T& c,const string& s)  {
@@ -122,7 +122,7 @@ TEveElement* View::ImportEventElement(TEveElement* el, TEveElementList* list)  {
 /// Access the global instance of the subdetector geometry
 pair<bool,TEveElement*> 
 View::GetGlobalGeometry(DetElement de, const DisplayConfiguration::Config& /* cfg */)   {
-  SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(de.name());
+  SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(de.name());
   TEveElementList& global = m_eve->GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
   TEveElement* elt = global.FindChild(de.name());
   return pair<bool,TEveElement*>(true,elt);
@@ -131,7 +131,7 @@ View::GetGlobalGeometry(DetElement de, const DisplayConfiguration::Config& /* cf
 /// Create a new instance of the geometry of a sub-detector
 pair<bool,TEveElement*> 
 View::CreateGeometry(DetElement de, const DisplayConfiguration::Config& cfg)   {
-  SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(de.name());
+  SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(de.name());
   TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
   return Utilities::LoadDetElement(de,cfg.data.defaults.load_geo,&topic);
 }
@@ -161,7 +161,7 @@ void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    
   string dets;
   DisplayConfiguration::Configurations::const_iterator ic;
   float legend_y = Annotation::DefaultTextSize()+Annotation::DefaultMargin();
-  const DetElement::Children& c = m_eve->lcdd().world().children();
+  const DetElement::Children& c = m_eve->detectorDescription().world().children();
   for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)   {
     const DisplayConfiguration::Config& cfg = *ic;
     string nam = cfg.name;
@@ -184,7 +184,7 @@ void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    
       DetElement::Children::const_iterator i = c.find(nam);
       if ( i != c.end() )   {
         DetElement de = (*i).second;
-        SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
+        SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(nam);
         TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
         pair<bool,TEveElement*> e(false,0);
         if ( cfg.data.defaults.load_geo > 0 )       // Create a new instance
@@ -243,7 +243,7 @@ void View::ConfigureEventFromGlobal()    {
 
 /// Configure a single view
 void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
-  DetElement world = m_eve->lcdd().world();
+  DetElement world = m_eve->detectorDescription().world();
   const DetElement::Children& c = world.children();
   DisplayConfiguration::Configurations::const_iterator ic;
   for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)  {
@@ -267,7 +267,7 @@ void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
       // Not using the global scene!
       DetElement::Children::const_iterator i = c.find(nam);
       if ( i != c.end() && cfg.data.defaults.show_evt>0 )  {
-        SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
+        SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(nam);
         if ( sd.isValid() )  {
           // This should be configurable!
           const char* coll = sd.readout().name();

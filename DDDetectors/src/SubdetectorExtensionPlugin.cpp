@@ -1,6 +1,5 @@
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,8 +20,8 @@
 #include "DD4hep/SurfaceInstaller.h"
 
 /// Install volume information. Default implementation only prints!
-template <typename T> void Installer<T>::install(DetElement /* layer */, PlacedVolume /* pv */)   {
-  using namespace DD4hep::DDRec;
+template <typename T> void Installer<T>::install(dd4hep::DetElement /* layer */, dd4hep::PlacedVolume /* pv */)   {
+  using namespace dd4hep::rec;
   SubdetectorExtensionImpl* e = new SubdetectorExtensionImpl(m_det);
   m_det.addExtension<SubdetectorExtension>(e);
   stopScanning();

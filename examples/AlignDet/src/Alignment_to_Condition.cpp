@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
  This plugin behaves like a main program.
  Invoke the plugin with something like this:
 
- geoPluginRun -volmgr -destroy -plugin DD4hep_Alignment2Condition
+ geoPluginRun -volmgr -destroy -plugin dd4hep_Alignment2Condition
 
 */
 // Framework include files
@@ -32,22 +32,17 @@
 #include <cerrno>
 
 using namespace std;
-using namespace DD4hep;
-using Alignments::Alignment;
-using Alignments::AlignmentData;
-using Alignments::AlignmentCondition;
-using Conditions::Condition;
-using Conditions::ConditionKey;
+using namespace dd4hep;
 
 /// Plugin function: Alignment program example
 /**
- *  Factory: DD4hep_Alignment2Condition
+ *  Factory: dd4hep_Alignment2Condition
  *
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/12/2016
  */
-static int Alignment_to_Condition (Geometry::LCDD& , int argc, char** argv)  {
+static int Alignment_to_Condition (Detector& , int argc, char** argv)  {
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-help",argv[i],2) || 0 == ::strncmp("-?",argv[i],2) )  {
       /// Help printout describing the basic command line interface

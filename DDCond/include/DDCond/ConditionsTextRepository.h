@@ -1,6 +1,6 @@
 // $Id: ConditionsTextrepository.h 2336 2016-09-07 17:27:40Z markus.frank@cern.ch $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights For.
@@ -20,14 +20,14 @@
 // C/C++ include files
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Forward declarations
   class IOV;
   class IOVType;
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Forward declarations
 
@@ -63,7 +63,7 @@ namespace DD4hep {
       int load(const std::string& input, Data& data)  const;
     };
 
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                   */
+  } /* End namespace detail               */
+} /* End namespace dd4hep                   */
 
 #endif /* DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H  */

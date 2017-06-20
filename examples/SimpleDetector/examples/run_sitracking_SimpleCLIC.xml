@@ -9,7 +9,7 @@
 <marlin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ilcsoft.desy.de/marlin/marlin.xsd">
  <execute>
    <processor name="MyAIDAProcessor"/>
-   <processor name="InitDD4hep"/>
+   <processor name="Initdd4hep"/>
 
    
    <processor name="MySplitCollectionByLayer" />
@@ -44,9 +44,9 @@
  </global>
 
 
- <processor name="InitDD4hep" type="InitializeDD4hep">
- <!--InitializeDD4hep reads a compact xml file and initializes the DD4hep::LCDD object-->
-  <!--Name of the DD4hep compact xml file to load-->
+ <processor name="Initdd4hep" type="Initializedd4hep">
+ <!--Initializedd4hep reads a compact xml file and initializes the dd4hep::Detector object-->
+  <!--Name of the dd4hep compact xml file to load-->
   <parameter name="DD4hepXMLFile" type="string">Simple_ClIC.xml </parameter>
 </processor>
 

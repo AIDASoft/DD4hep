@@ -17,7 +17,7 @@ namespace {
   struct Loader {  Loader() { gSystem->Load("libDDCore"); }  } _load;
 }
 
-using namespace DD4hep::Geometry;
+using namespace dd4hep::detail;
 
 void printPos(const char* com, const Position& p)  {
   printf("%-24s:  %7.3f %7.3f %7.3f\n",com,p.x(),p.y(),p.z());
@@ -53,12 +53,12 @@ int BoxTrafos()  {
   const char* argv[] = {xml.c_str(), "BUILD_DEFAULT", 0};
 
   gSystem->Load("libDDCore");
-  LCDD& lcdd = LCDD::getInstance();
-  lcdd.apply("DD4hepCompactLoader",2,(char**)argv);
-  lcdd.apply("DD4hepGeometryDisplay",0,0);
+  Detector& description = Detector::getInstance();
+  description.apply("DD4hepCompactLoader",2,(char**)argv);
+  description.apply("DD4hepGeometryDisplay",0,0);
 
 
-  DetElement de = lcdd.detector("B3");
+  DetElement de = description.detector("B3");
   PlacedVolume pv = de.placement();
   Volume vol = pv.volume();
   Solid solid = vol.solid();

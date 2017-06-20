@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,28 +16,28 @@
 #include "DD4hep/Printout.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 /// Default constructor
-DD4hepUI::DD4hepUI(LCDD& instance) : m_lcdd(instance)  {
+DD4hepUI::DD4hepUI(Detector& instance) : m_detDesc(instance)  {
 }
 
 /// Default destructor
 DD4hepUI::~DD4hepUI()   {
 }
 
-/// Access to the LCDD instance
-LCDD* DD4hepUI::instance()  const   {
-  return &m_lcdd;
+/// Access to the Detector instance
+Detector* DD4hepUI::instance()  const   {
+  return &m_detDesc;
 }
 
-/// Access to the LCDD instance
-LCDD* DD4hepUI::lcdd()  const   {
-  return &m_lcdd;
+/// Access to the Detector instance
+Detector* DD4hepUI::detectorDescription()  const   {
+  return &m_detDesc;
 }
 
-/// Install the DD4hep conditions manager object
+/// Install the dd4hep conditions manager object
 Handle<NamedObject> DD4hepUI::conditionsMgr()  const  {
   if ( !m_condMgr.isValid() )  {
     const void* argv[] = {"-handle",&m_condMgr,0};
@@ -55,13 +55,13 @@ Handle<NamedObject> DD4hepUI::conditionsMgr()  const  {
 long DD4hepUI::loadConditions(const std::string& fname)  const  {
   Handle<NamedObject> h = conditionsMgr();
   if ( h.isValid() )  {
-    m_lcdd.fromXML(fname, BUILD_DEFAULT);
+    m_detDesc.fromXML(fname, BUILD_DEFAULT);
     return 1;
   }
   return 0;
 }
 
-/// Install the DD4hep alignment manager object
+/// Install the dd4hep alignment manager object
 Handle<NamedObject> DD4hepUI::alignmentMgr()  const  {
   if ( !m_alignMgr.isValid() )  {
     const void* argv[] = {"-handle",&m_alignMgr,0};
@@ -75,31 +75,31 @@ Handle<NamedObject> DD4hepUI::alignmentMgr()  const  {
   return m_alignMgr;
 }
 
-/// LCDD interface: Manipulate geometry using facroy converter
+/// Detector interface: Manipulate geometry using facroy converter
 long DD4hepUI::apply(const char* factory, int argc, char** argv) const   {
-  return m_lcdd.apply(factory,argc,argv);
+  return m_detDesc.apply(factory,argc,argv);
 }
 
-/// LCDD interface: Read any geometry description or alignment file
-void DD4hepUI::fromXML(const std::string& fname, LCDDBuildType type) const  {
-  return m_lcdd.fromXML(fname, type);
+/// Detector interface: Read any geometry description or alignment file
+void DD4hepUI::fromXML(const std::string& fname, DetectorBuildType type) const  {
+  return m_detDesc.fromXML(fname, type);
 }
 
-/// LCDD interface: Re-draw the entire scene
+/// Detector interface: Re-draw the entire scene
 void DD4hepUI::redraw() const   {
-  m_lcdd.worldVolume()->Draw("oglsame");
+  m_detDesc.worldVolume()->Draw("oglsame");
 }
 
 /// Dump the volume tree
 long DD4hepUI::dumpVols(int argc, char** argv)  const   {
   if ( argc==0 )  {
     const void* av[] = {"-positions","-pointers",0};
-    return m_lcdd.apply("DD4hepVolumeDump",2,(char**)av);
+    return m_detDesc.apply("DD4hepVolumeDump",2,(char**)av);
   }
-  return m_lcdd.apply("DD4hepVolumeDump",argc,argv);
+  return m_detDesc.apply("DD4hepVolumeDump",argc,argv);
 }
 
 /// Dump the DetElement tree
 long DD4hepUI::dumpDet()  const   {
-  return m_lcdd.apply("DD4hepDetectorVolumeDump",0,0);
+  return m_detDesc.apply("DD4hepDetectorVolumeDump",0,0);
 }

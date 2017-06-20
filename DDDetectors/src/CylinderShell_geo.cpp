@@ -1,6 +1,6 @@
 // $Id$
 //====================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------
 //
 //  Generic cylindric shell detector to be used to measure 
@@ -43,15 +43,15 @@ to be joined by a sensitive detector:
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sensitive)  {
   xml_det_t  x_det   = e;
   string     name    = x_det.nameStr();
   DetElement sdet   (name,x_det.id());
   Assembly   assembly(name+"_assembly");
-  Material   mat    (lcdd.material(x_det.materialStr()));
+  Material   mat    (description.material(x_det.materialStr()));
   PlacedVolume pv;
 
   sensitive.setType("escape_counter");
@@ -71,13 +71,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
     }
     Polycone   cone  (0.,2*M_PI,rmin,rmax,z);
     Volume     volume(name, cone, mat);
-    volume.setVisAttributes(lcdd, vis);
+    volume.setVisAttributes(description, vis);
     volume.setSensitiveDetector(sensitive);
     pv = assembly.placeVolume(volume);
     pv.addPhysVolID("barrel",mod.id());
   }
 
-  pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  pv = description.pickMotherVolume(sdet).placeVolume(assembly);
   pv.addPhysVolID("system",x_det.id());
   sdet.setPlacement(pv);
   return sdet;

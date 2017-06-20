@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,10 +16,10 @@
 #include "JSON/Dimension.inl"
 #include "JSON/ChildValue.inl"
 
-using namespace DD4hep::JSON;
-
 // Instantiate here the concrete implementations
-#define DD4HEP_DIMENSION_NS JSON
+#define DD4HEP_DIMENSION_NS json
+using namespace dd4hep::DD4HEP_DIMENSION_NS;
+
 #include "XML/detail/Detector.imp"
 #include "XML/detail/Dimension.imp"
 #include "XML/detail/ChildValue.imp"

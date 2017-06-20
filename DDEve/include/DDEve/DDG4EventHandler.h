@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,9 +26,9 @@ class TFile;
 class TBranch;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /** Event I/O handler class for the DD4hep event display
+  /** Event I/O handler class for the dd4hep event display
    *
    * \author  M.Frank
    * \version 1.0
@@ -84,6 +84,6 @@ namespace DD4hep {
     ClassDefOverride(DDG4EventHandler,0);
   };
 
-}      /* End namespace DD4hep            */
+}      /* End namespace dd4hep            */
 #endif /* DD4HEP_DDEVE_DDG4EVENTHANDLER_H */
 

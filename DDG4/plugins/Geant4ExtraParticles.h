@@ -19,10 +19,10 @@
 #include "G4ParticleTable.hh"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     class Geant4ExtraParticles : public Geant4PhysicsConstructor    {
     public:

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -30,10 +30,10 @@
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting JSON utilities
-  namespace JSON {
+  namespace json {
 
     typedef const JsonAttr* Attribute;
 
@@ -346,7 +346,7 @@ namespace DD4hep {
     /// User abstraction class to manipulate JSON elements within a document
     /**
      *  User class encapsulating a DOM element
-     *  using the Handle helper.
+     *  using the Handle_t helper.
      *  This is the main class we interact with when
      *  analysing the json documents for constructing
      *  sub-detectors etc.
@@ -429,6 +429,6 @@ namespace DD4hep {
     void dumpTree(Element elt);
     void dumpTree(const JsonElement* elt);
 
-  }       /* End namespace JSON              */
-}         /* End namespace DD4hep            */
+  }       /* End namespace json              */
+}         /* End namespace dd4hep            */
 #endif    /* DDCORE_DD4HEP_JSON_ELEMENTS_H   */

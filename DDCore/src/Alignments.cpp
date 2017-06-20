@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,15 +21,15 @@
 
 
 using namespace std;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
 
-const std::string DD4hep::Alignments::Keys::deltaName("alignment_delta");
-const DD4hep::Conditions::Condition::itemkey_type  DD4hep::Alignments::Keys::deltaKey =
-  DD4hep::Conditions::ConditionKey::itemCode("alignment_delta");
+const std::string dd4hep::align::Keys::deltaName("alignment_delta");
+const dd4hep::Condition::itemkey_type  dd4hep::align::Keys::deltaKey =
+  dd4hep::ConditionKey::itemCode("alignment_delta");
 
-const std::string DD4hep::Alignments::Keys::alignmentName("alignment");
-const DD4hep::Conditions::Condition::itemkey_type DD4hep::Alignments::Keys::alignmentKey =
-  DD4hep::Conditions::ConditionKey::itemCode("alignment");
+const std::string dd4hep::align::Keys::alignmentName("alignment");
+const dd4hep::Condition::itemkey_type dd4hep::align::Keys::alignmentKey =
+  dd4hep::ConditionKey::itemCode("alignment");
 
 /// Default constructor
 Alignment::Processor::Processor() {
@@ -77,7 +77,7 @@ const TGeoHMatrix& Alignment::detectorTransformation() const   {
 }
 
 /// Access to the node list
-const Alignment::NodeList& Alignment::nodes() const   {
+const std::vector<PlacedVolume>& Alignment::nodes() const   {
   return access()->values().nodes;
 }
 
@@ -141,12 +141,12 @@ Position Alignment::detectorToLocal(const Position& detector) const  {
 }
 
 /// Access the IOV type
-const DD4hep::IOVType& AlignmentCondition::iovType() const   {
+const dd4hep::IOVType& AlignmentCondition::iovType() const   {
   return *(access()->iovType());
 }
 
 /// Access the IOV block
-const DD4hep::IOV& AlignmentCondition::iov() const   {
+const dd4hep::IOV& AlignmentCondition::iov() const   {
   return *(access()->iovData());
 }
 

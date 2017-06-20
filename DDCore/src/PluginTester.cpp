@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,7 +19,7 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace DD4hep;
+using namespace dd4hep;
 
 namespace {
   static int s_extensionID = 0;
@@ -71,7 +71,7 @@ void* PluginTester::addExtension(void* ptr, const std::string& name, const std::
     }
     return extensions[key] = ptr;
   }
-  throw std::runtime_error("DD4hep: addExtension: Object already has an extension "+name+
+  throw std::runtime_error("dd4hep: addExtension: Object already has an extension "+name+
                            " of type:" + typeName(info) + ".");
 }
 
@@ -92,7 +92,7 @@ void* PluginTester::removeExtension(const std::string& name, const std::type_inf
     extensions.erase(j);
     return ptr;
   }
-  throw std::runtime_error("DD4hep: removeExtension: The object "+name+
+  throw std::runtime_error("dd4hep: removeExtension: The object "+name+
                            " of type " + typeName(info) + " is not present.");
 }
 
@@ -105,7 +105,7 @@ void* PluginTester::extension(const std::string& name, const std::type_info& inf
   }
   else if ( !alert )
     return 0;
-  throw std::runtime_error("DD4hep: extension: Object has no extension "+name+
+  throw std::runtime_error("dd4hep: extension: Object has no extension "+name+
                            " of type:" + typeName(info) + ".");
 }
 

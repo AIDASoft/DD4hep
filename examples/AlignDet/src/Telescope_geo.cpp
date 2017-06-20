@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,17 +16,17 @@
 #include "DD4hep/DD4hepUnits.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sd)  {
+static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sd)  {
   Box         box;
   Volume      vol;
   PlacedVolume phv;
   xml_det_t   x_det  = e;
   double      small  = 1e-3*dd4hep::mm;
   string      name   = x_det.nameStr();
-  Material    air    = lcdd.material("Air");
+  Material    air    = description.material("Air");
   DetElement  det    (name,x_det.id());
   Assembly    envVol (name+"_envelope");
 
@@ -44,26 +44,26 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sd)  {
     // Make envelope box for each module a bit bigger to ensure all children are within bounds...
     box = Box(pitch*noPixX/2e0+small, pitch*noPixY/2e0+small, mod_thick/2e0+small);
     Volume modvol(_toString(mod.id(),"module_%d"), box, air);
-    modvol.setVisAttributes(lcdd.visAttributes(mod.visStr()));
+    modvol.setVisAttributes(description.visAttributes(mod.visStr()));
 
     DetElement sens_det(mod_det,"sensor",x_det.id());
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, sens.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"sensor_%d"), box, air);
     vol.setSensitiveDetector(sd);
-    vol.setVisAttributes(lcdd.visAttributes(sens.visStr()));
+    vol.setVisAttributes(description.visAttributes(sens.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()/2e0));
     phv.addPhysVolID("sensor",1);
     sens_det.setPlacement(phv);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, chip.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"chip_%d"), box, air);
-    vol.setVisAttributes(lcdd.visAttributes(chip.visStr()));
+    vol.setVisAttributes(description.visAttributes(chip.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()/2e0));
     phv.addPhysVolID("sensor",2);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, pcb.thickness()/2e0);
     vol = Volume(_toString(mod.id(),"PCB_%d"), box, air);
-    vol.setVisAttributes(lcdd.visAttributes(pcb.visStr()));
+    vol.setVisAttributes(description.visAttributes(pcb.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()+pcb.thickness()/2e0));
     phv.addPhysVolID("sensor",3);
 
@@ -71,8 +71,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sd)  {
     phv.addPhysVolID("module",mod.id());
     mod_det.setPlacement(phv);
   }
-  envVol.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
-  phv = lcdd.pickMotherVolume(det).placeVolume(envVol,Position(0,0,0));
+  envVol.setVisAttributes(description.visAttributes(x_det.visStr()));
+  phv = description.pickMotherVolume(det).placeVolume(envVol,Position(0,0,0));
   phv.addPhysVolID("system",x_det.id());
   det.setPlacement(phv);
   return det;

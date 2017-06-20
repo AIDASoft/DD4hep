@@ -1,17 +1,18 @@
 #include "DDRec/SurfaceHelper.h"
 
 #include "DDRec/DetectorSurfaces.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Detector.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/VolumeManager.h"
 
 namespace dd4hep {
   
-  using namespace Geometry ;
+  using namespace detail ;
 
   namespace rec {
     
 
-    SurfaceHelper::SurfaceHelper(DD4hep::Geometry::DetElement const& e) : _det(e) {
+    SurfaceHelper::SurfaceHelper(dd4hep::DetElement const& e) : _det(e) {
 
       initialize() ;
     }
@@ -19,9 +20,14 @@ namespace dd4hep {
     SurfaceHelper::~SurfaceHelper(){
       // nothing to do
     }
-
-
+    
+    
     void SurfaceHelper::initialize() {
+      
+      // have to populate the volume manager once in order to have 
+      // the volumeIDs attached to the DetElements
+      Detector& description = Detector::getInstance();
+      /* VolumeManager volMgr = */ VolumeManager::getVolumeManager(description);
 
       //------------------ breadth first tree traversal ---------
       std::list< DetElement > dets ;

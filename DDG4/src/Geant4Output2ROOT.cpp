@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,8 +27,8 @@
 #include "TTree.h"
 #include "TBranch.h"
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 using namespace std;
 
 /// Standard constructor
@@ -47,7 +47,7 @@ Geant4Output2ROOT::~Geant4Output2ROOT() {
     m_tree->Write();
     m_file->Close();
     m_tree = 0;
-    deletePtr (m_file);
+    detail::deletePtr (m_file);
   }
 }
 
@@ -67,9 +67,9 @@ TTree* Geant4Output2ROOT::section(const string& nam) {
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
   if (!m_file && !m_output.empty()) {
     TDirectory::TContext ctxt(TDirectory::CurrentDirectory());
-    m_file = TFile::Open(m_output.c_str(), "RECREATE", "DD4hep Simulation data");
+    m_file = TFile::Open(m_output.c_str(), "RECREATE", "dd4hep Simulation data");
     if (m_file->IsZombie()) {
-      deletePtr (m_file);
+      detail::deletePtr (m_file);
       throw runtime_error("Failed to open ROOT output file:'" + m_output + "'");
     }
     m_tree = section("EVENT");

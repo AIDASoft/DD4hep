@@ -1,16 +1,16 @@
-# DD4hep (Detector Description for High Energy Physics)
+# dd4hep (Detector Description for High Energy Physics)
 [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
-[![Coverity Status](https://scan.coverity.com/projects/10713/badge.svg)](https://scan.coverity.com/projects/dd4hep)
+[![Coverity Status](https://scan.coverity.com/projects/10713/badge.svg)](https://scan.coverity.com/projects/DD4hep)
 [![DOI](https://zenodo.org/badge/60682190.svg)](https://zenodo.org/badge/latestdoi/60682190)
 
-DD4hep is a software framework for providing a complete solution for full detector description
+dd4hep is a software framework for providing a complete solution for full detector description
 (geometry, materials, visualization, readout, alignment, calibration, etc.) for the full experiment life cycle (detector concept development, detector optimization, construction, operation). It offers a consistent description through a single source of detector information for simulation, reconstruction, analysis, etc. It distributed under the [GPLv3 License](http://www.gnu.org/licenses/gpl-3.0.en.html)
 
 [![License](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 ## Package Contents
 -------------------
-The DD4hep project consists of several packages. The idea has been to separate the common parts of the detector description toolkit from concrete detector examples.
+The dd4hep project consists of several packages. The idea has been to separate the common parts of the detector description toolkit from concrete detector examples.
 
 - **DDCore**
 
@@ -22,7 +22,7 @@ The DD4hep project consists of several packages. The idea has been to separate t
 
 - **DDG4**
 
- Is the package that contains the conversion of DD4hep geometry into Geant4 geometry to be used for simulation. The conversion is currently based on the Virtual Geometry Modeler (VGM) package that is build internally when required. The option DD4HEP_USE_GEANT4:BOOL controls the building or not of this package that has the dependency to Geant4. The Geant4 installation needs to be located using the variable `-DGeant4_DIR=<path to Geant4Config.cmake>`
+ Is the package that contains the conversion of dd4hep geometry into Geant4 geometry to be used for simulation. The conversion is currently based on the Virtual Geometry Modeler (VGM) package that is build internally when required. The option DD4HEP_USE_GEANT4:BOOL controls the building or not of this package that has the dependency to Geant4. The Geant4 installation needs to be located using the variable `-DGeant4_DIR=<path to Geant4Config.cmake>`
 
 - **examples**
 
@@ -34,7 +34,7 @@ and ‘src’ contain the equivalent drivers for the XercesC parser.
 
 ## Pre-requisites
 
-  DD4hep depends on a number of ‘external’ packages. The user will need to install these in his/her 
+  dd4hep depends on a number of ‘external’ packages. The user will need to install these in his/her 
 system before building and running the examples
 
 - **Mandatory**
@@ -45,7 +45,7 @@ system before building and running the examples
 
   If the XercesC is used to parse compact descriptions and installation of XercesC will be required. To build and run the simulation examples Geant4 will be required. There is also an available interface to LCIO
 
-## How to build DD4hep 
+## How to build dd4hep 
 ### Checkout code
 `git clone git@github.com:AIDASoft/DD4hep.git`
 
@@ -57,7 +57,7 @@ and
 
 ### Configure and build 
 
-  `cd DD4hep`
+  `cd dd4hep`
 
   `mkdir build; cd build`
 
@@ -99,7 +99,7 @@ or
 ## Testing
 
 
- DD4hep has a testing mechanism built on CMake/CTest. If configured with `-DBUILD_TESTING=ON`, some make targets are
+ dd4hep has a testing mechanism built on CMake/CTest. If configured with `-DBUILD_TESTING=ON`, some make targets are
  created automatically. 
 
  - running the tests:
@@ -112,7 +112,7 @@ or
 
  - running the build 
 
-   For each pull request all tests are run through **Travis CI** on SLC6 with GCC 6.2. DD4hep also tested against GCC 6.2 and LLVM 3.9 on SLC6 and CC7 as well as clang 8.0 on macOS Sierra. Build results can be observed [here](https://travis-ci.org/AIDASoft/DD4hep) and the status is indicated by the badge [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
+   For each pull request all tests are run through **Travis CI** on SLC6 with GCC 6.2. dd4hep also tested against GCC 6.2 and LLVM 3.9 on SLC6 and CC7 as well as clang 8.0 on macOS Sierra. Build results can be observed [here](https://travis-ci.org/AIDASoft/DD4hep) and the status is indicated by the badge [![Build Status](https://travis-ci.org/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.org/AIDASoft/DD4hep)
 
 
  - running individual tests with output (e.g. in case of failed tests):

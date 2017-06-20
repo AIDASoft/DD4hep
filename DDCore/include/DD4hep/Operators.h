@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,7 +18,7 @@
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Helper functor to select elements by name (using name() member method)
   template <typename T> class ByName {
@@ -63,5 +63,5 @@ namespace DD4hep {
   template <typename T> ByNameAttr<T> byNameAttr(const T* o) { return ByNameAttr<T>(o->name); }
   template <typename T> ByNameAttr<T> byNameAttr(const T& o) { return ByNameAttr<T>(o.name);  }
 
-}      // End namespace DD4hep
+}      // End namespace dd4hep
 #endif // DD4HEP_DD4HEP_OPERATORS_H

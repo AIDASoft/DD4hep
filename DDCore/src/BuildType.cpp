@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,7 +20,7 @@
 #include <string>
 
 /// Translate string representation of the geometry build type to value
-DD4hep::LCDDBuildType DD4hep::buildType(const char* value)   {
+dd4hep::DetectorBuildType dd4hep::buildType(const char* value)   {
   if ( !value )
     return BUILD_DEFAULT;
   else if ( strncmp(value,"BUILD_DEFAULT",9)==0 )
@@ -45,6 +45,6 @@ DD4hep::LCDDBuildType DD4hep::buildType(const char* value)   {
 }
 
 /// Translate string representation of the geometry build type to value
-DD4hep::LCDDBuildType DD4hep::buildType(const std::string& value)   {
+dd4hep::DetectorBuildType dd4hep::buildType(const std::string& value)   {
   return buildType(value.c_str());
 }

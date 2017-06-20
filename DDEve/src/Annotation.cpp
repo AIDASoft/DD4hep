@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,7 +22,7 @@
 
 // Forward declarations
 
-using namespace DD4hep;
+using namespace dd4hep;
 
 ClassImp(Annotation)
 

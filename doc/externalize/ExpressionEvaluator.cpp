@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,7 +27,7 @@ namespace {
   }
 }
 
-namespace DD4hep {
+namespace dd4hep {
   XmlTools::Evaluator& evaluator() {
     static XmlTools::Evaluator* e = 0;
     if ( !e )   {

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,14 +15,14 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Conditions.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace Conditions {
+  namespace cond {
 
     /// Generic Conditions data dumper.
     /**
@@ -83,6 +83,6 @@ namespace DD4hep {
       /// Callback to output conditions information
       virtual int operator()(Condition condition)  const;
     };
-  }    /* End namespace Conditions           */
-}      /* End namespace DD4hep               */
+  }    /* End namespace cond           */
+}      /* End namespace dd4hep               */
 #endif /* DD4HEP_DDCORE_CONDITIONSPRINTER_H  */

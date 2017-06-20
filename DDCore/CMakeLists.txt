@@ -1,6 +1,6 @@
 #=================================================================================
 #
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #---------------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -11,13 +11,13 @@
 #=================================================================================
 dd4hep_package(    DDCore
   USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
-                   DDSegmentation
+                   DDSegmentation DDParsers
   OPTIONAL         XERCESC
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DD4hep include/XML  include/JSON)
 
 #---Generate ROOT dictionary------------------------------------------------------
-dd4hep_add_dictionary( G__DD4hep
+dd4hep_add_dictionary( G__dd4hep
   SOURCES include/DD4hep/*.h 
   include/DD4hep/detail/*.h 
   include/XML/*.h 
@@ -33,21 +33,15 @@ dd4hep_add_dictionary( G__DD4hep
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h )
 
-dd4hep_add_package_library ( DDParsers
-  INCLUDE_DIRS  
-  LINK_LIBRARIES
-  SOURCES        src/Evaluator/*.cpp 
-  OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
-  )
 
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/XML/*.cpp
   OPTIONAL       [BOOST SOURCES src/JSON/*.cpp]
-  GENERATED      G__DD4hep.cxx 
+  GENERATED      G__dd4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
   LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}
   )
 
 # Generate DDCore plugins---------------------------------------------------------
-dd4hep_add_plugin ( DDCorePlugins  SOURCES src/plugins/*.cpp )
+dd4hep_add_plugin ( DDCorePlugins SOURCES src/plugins/*.cpp )

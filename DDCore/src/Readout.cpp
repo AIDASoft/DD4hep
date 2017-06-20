@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -18,11 +18,11 @@
 #include "DD4hep/detail/Handle.inl"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 /// Copy constructor
 HitCollection::HitCollection(const HitCollection& c)
@@ -58,7 +58,7 @@ size_t Readout::numCollections() const   {
     Object& ro = object<Object>();
     return ro.hits.size();
   }
-  throw runtime_error("DD4hep: Readout::numCollections: Cannot access object data [Invalid Handle]");
+  throw runtime_error("dd4hep: Readout::numCollections: Cannot access object data [Invalid Handle]");
 }
 
 /// Access names of hit collections
@@ -72,7 +72,7 @@ vector<string> Readout::collectionNames()  const   {
     }
     return colls;
   }
-  throw runtime_error("DD4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
+  throw runtime_error("dd4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
 }
 
 /// Access hit collections
@@ -86,7 +86,7 @@ vector<const HitCollection*> Readout::collections()  const   {
     }
     return colls;
   }
-  throw runtime_error("DD4hep: Readout::collections: Cannot access object data [Invalid Handle]");
+  throw runtime_error("dd4hep: Readout::collections: Cannot access object data [Invalid Handle]");
 }
 
 /// Assign IDDescription to readout structure
@@ -102,7 +102,7 @@ void Readout::setIDDescriptor(const Ref_t& new_descriptor) const {
       return;
     }
   }
-  throw runtime_error("DD4hep: Readout::setIDDescriptor: Cannot assign ID descriptor [Invalid Handle]");
+  throw runtime_error("dd4hep: Readout::setIDDescriptor: Cannot assign ID descriptor [Invalid Handle]");
 }
 
 /// Access IDDescription structure
@@ -123,7 +123,7 @@ void Readout::setSegmentation(const Segmentation& seg) const {
       return;
     }
   }
-  throw runtime_error("DD4hep: Readout::setSegmentation: Cannot assign segmentation [Invalid Handle]");
+  throw runtime_error("dd4hep: Readout::setSegmentation: Cannot assign segmentation [Invalid Handle]");
 }
 
 /// Access segmentation structure

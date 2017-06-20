@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,10 +21,10 @@
 
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Alignments {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace align {
 
     /// Alignment Stack object definition
     /**
@@ -146,6 +146,6 @@ namespace DD4hep {
       std::vector<const StackEntry*> entries() const;
     };
 
-  }       /* End namespace Geometry                        */
-}         /* End namespace DD4hep                          */
+  }       /* End namespace detail                        */
+}         /* End namespace dd4hep                          */
 #endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H       */

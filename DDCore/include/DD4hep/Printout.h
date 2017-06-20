@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,22 +27,12 @@
 class TNamed;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   // Forward declarations
+  class Detector;
   class NamedObject;
   template <typename T> class Handle;
-  typedef Handle<NamedObject> Ref_t;
-
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-
-    // Forward declarations
-    class LCDD;
-    class VisAttr;
-    class DetElement;
-    class PlacedVolume;
-  }
 
   enum PrintLevel {
     NOLOG    = 0,
@@ -238,7 +228,7 @@ namespace DD4hep {
   bool isActivePrintLevel(int severity);
 
   /// Helper class template to implement ASCII object dumps
-  /** @class Printer Conversions.h  DD4hep/compact/Conversions.h
+  /** @class Printer Conversions.h  dd4hep/compact/Conversions.h
    *
    *  Small helper class to print objects
    *
@@ -247,14 +237,14 @@ namespace DD4hep {
    */
   template <typename T> struct Printer {
     /// Reference to the detector description object
-    const Geometry::LCDD* lcdd;
+    const Detector* description;
     /// Reference to the output stream object, the Printer object should write
     std::ostream& os;
     /// Optional text prefix when formatting the output
     std::string prefix;
     /// Initializing constructor of the functor
-    Printer(const Geometry::LCDD* l, std::ostream& stream, const std::string& p = "")
-      : lcdd(l), os(stream), prefix(p) {
+    Printer(const Detector* l, std::ostream& stream, const std::string& p = "")
+      : description(l), os(stream), prefix(p) {
     }
     /// Callback operator to be specialized depending on the element type
     void operator()(const T& value) const;
@@ -267,7 +257,7 @@ namespace DD4hep {
   }
 
   /// Helper class template to implement ASCII dumps of named objects maps
-  /** @class PrintMap Conversions.h  DD4hep/compact/Conversions.h
+  /** @class PrintMap Conversions.h  dd4hep/compact/Conversions.h
    *
    *  Small helper class to print maps of objects
    *
@@ -276,10 +266,10 @@ namespace DD4hep {
    */
   template <typename T> struct PrintMap {
     typedef T item_type;
-    typedef const std::map<std::string, Ref_t> cont_type;
+    typedef const std::map<std::string, Handle<NamedObject> > cont_type;
 
     /// Reference to the detector description object
-    const Geometry::LCDD* lcdd;
+    const Detector* description;
     /// Reference to the output stream object, the Printer object should write
     std::ostream& os;
     /// Optional text prefix when formatting the output
@@ -287,8 +277,8 @@ namespace DD4hep {
     /// Reference to the container data of the map.
     cont_type& cont;
     /// Initializing constructor of the functor
-    PrintMap(const Geometry::LCDD* l, std::ostream& stream, cont_type& c, const std::string& t = "")
-      : lcdd(l), os(stream), text(t), cont(c) {
+    PrintMap(const Detector* l, std::ostream& stream, cont_type& c, const std::string& t = "")
+      : description(l), os(stream), text(t), cont(c) {
     }
     /// Callback operator to be specialized depending on the element type
     void operator()() const;
@@ -303,5 +293,5 @@ namespace DD4hep {
     return value ? "true " : "false";
   }
 
-} /* End namespace DD4hep      */
+} /* End namespace dd4hep      */
 #endif    /* DD4HEP_PRINTOUT_H         */

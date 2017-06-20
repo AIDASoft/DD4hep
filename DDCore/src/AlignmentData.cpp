@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -23,8 +23,7 @@
 #include <sstream>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
 
 /// Copy constructor
 Delta::Delta(const Delta& c)
@@ -202,8 +201,8 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
-#include "DD4hep/Parsers.h"
-#include "DD4hep/ToStream.h"
+#include "DDParsers/Parsers.h"
+#include "DDParsers/ToStream.h"
 DD4HEP_DEFINE_PARSER_DUMMY(Delta)
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
 

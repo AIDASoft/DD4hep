@@ -6,17 +6,17 @@ namespace DoxygenFigures {
 /**
 \image html CERN-logo.png
 
-\image html DD4hep_big_picture.png
+\image html dd4hep_big_picture.png
 
-\image html DD4hep_compact_xml.png
+\image html dd4hep_compact_xml.png
 
-\image html DD4hep_classes.png
+\image html dd4hep_classes.png
 
-\image html DD4hep_compact_xml.png
+\image html dd4hep_compact_xml.png
 
 
 */
-class DD4hepFigures  {
+class dd4hepFigures  {
 };
 
 }

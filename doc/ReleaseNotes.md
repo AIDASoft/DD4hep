@@ -107,24 +107,24 @@
 
 # v00-23
 
-* 2017-05-12 Marko Petric ([PR#152](https://github.com/aidasoft/dd4hep/pull/152))
+* 2017-05-12 Marko Petric ([PR#152](https://github.com/aidasoft/DD4hep/pull/152))
   - Update CI to GCC 7.1 and LLVM 4.0 and include Geant4 10.3
 
-* 2017-05-22 Frank Gaede ([PR#154](https://github.com/aidasoft/dd4hep/pull/154))
+* 2017-05-22 Frank Gaede ([PR#154](https://github.com/aidasoft/DD4hep/pull/154))
   - protect against NANs in Guineapig pairs files in Geant4EventReaderGuineaPig
-  - make INFO printout more consistent  with DD4hep style
+  - make INFO printout more consistent  with dd4hep style
 
-* 2017-06-07 Frank Gaede ([PR#157](https://github.com/aidasoft/dd4hep/pull/157))
+* 2017-06-07 Frank Gaede ([PR#157](https://github.com/aidasoft/DD4hep/pull/157))
   -  bug fix in test_cellid_position_converter
        - with this no tests for position from cellID lookup should fail
   - re-implement ```CellIDPositionConverter::cellID(pos)```
 
-* 2017-06-08 Marko Petric ([PR#156](https://github.com/aidasoft/dd4hep/pull/156))
+* 2017-06-08 Marko Petric ([PR#156](https://github.com/aidasoft/DD4hep/pull/156))
   - Mark all fallthroughs in case statements with attributes to suppress warning
 
-* 2017-06-01 Frank Gaede ([PR#155](https://github.com/aidasoft/dd4hep/pull/155))
-  - add new class DDRec::CellIDPositionConverter
-        - replaces DDRec::IDDecoder
+* 2017-06-01 Frank Gaede ([PR#155](https://github.com/aidasoft/DD4hep/pull/155))
+  - add new class rec::CellIDPositionConverter
+        - replaces rec::IDDecoder
         - implement positionNominal(CellID id) and cellID(position)
        - prepare for using alignment map by separating transforms to DetElement and daughter volume
        - do not use deprecated methods/members in VolumeManager
@@ -134,7 +134,7 @@
 
 # v00-22
 
-* 2017-04-28 Markus Frank ([PR#148](https://github.com/aidasoft/dd4hep/pull/148))
+* 2017-04-28 Markus Frank ([PR#148](https://github.com/aidasoft/DD4hep/pull/148))
   Improvements to the compact xml processing
   ===========================================
   
@@ -195,20 +195,20 @@
     PrintPlacements
     PrintSensitives
 
-* 2017-04-28 Ben Couturier ([PR#146](https://github.com/aidasoft/dd4hep/pull/146))
+* 2017-04-28 Ben Couturier ([PR#146](https://github.com/aidasoft/DD4hep/pull/146))
   * Trivial fix for the DDDB converter to create paramphysvol3D volumes, which are otherwise ignored.
 
-* 2017-04-20 Andre Sailer ([PR#145](https://github.com/aidasoft/dd4hep/pull/145))
+* 2017-04-20 Andre Sailer ([PR#145](https://github.com/aidasoft/DD4hep/pull/145))
   - LCIOOutput: Add setting of ProducedBySecondary bit for SimTrackerHits if the hit is produced by a particle that is not stored in the MCParticle collection, needs lcio 2.8
 
-* 2017-05-05 Andre Sailer ([PR#150](https://github.com/aidasoft/dd4hep/pull/150))
-  - Always create DD4hepConfigVersion.cmake in CMAKE_INSTALL_PREFIX and cmake folder
+* 2017-05-05 Andre Sailer ([PR#150](https://github.com/aidasoft/DD4hep/pull/150))
+  - Always create dd4hepConfigVersion.cmake in CMAKE_INSTALL_PREFIX and cmake folder
   - Create DD4hepConfig.cmake also in cmake folder
   - renamed Cmake Macro GENERATE_PACKAGE_CONFIGURATION_FILES to DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES so it does not clash with the macro of the same name in ilcutil/cmakemodules
 
-* 2017-05-07 Andre Sailer ([PR#151](https://github.com/aidasoft/dd4hep/pull/151))
-  - Use cmake to create Version.h file to contain DD4hep version information and macros
-  - Change the way DD4hep package version is defined and set standard cmake variables for this purpose
+* 2017-05-07 Andre Sailer ([PR#151](https://github.com/aidasoft/DD4hep/pull/151))
+  - Use cmake to create Version.h file to contain dd4hep version information and macros
+  - Change the way dd4hep package version is defined and set standard cmake variables for this purpose
 
 # v00-21
 
@@ -320,10 +320,10 @@ Markus Frank 2016-12-19
 - Add Multi-threading conditions example
  
 Andre Sailer 2016-12-16 
-- Add drivers for Beampipe, Mask and Solenoid from lcgeo, changed name to DD4hep_*
+- Add drivers for Beampipe, Mask and Solenoid from lcgeo, changed name to dd4hep_*
  
 Rosa Simonielo, Frank Gaede 2016-12-15 
-- add new struct DDRec::NeighbourSurfacesStruct defined for neighbouring surfaces
+- add new struct rec::NeighbourSurfacesStruct defined for neighbouring surfaces
  
 Frank Gaede 2016-12-14 
 - fix library pathes in env scripts for macos
@@ -350,7 +350,7 @@ Markus Frank 2016-12-05
  
 Andre Sailer 2016-12-06 
 - DDTest: fix location to install DDtest header files
-- Remove minimum required cmake version from DD4hepBuild, this interferes with other packages depending on DD4hep
+- Remove minimum required cmake version from DD4hepBuild, this interferes with other packages depending on dd4hep
  
 Marko Petric 2016-12-02 
 - Fix missing CLHEP in thisdd4hep.sh
@@ -404,10 +404,10 @@ M.Petric:
 # v00-18
 
 2016-11-09 F.Gaede
-- updated DDRec::LayeredCalorimeterData::Layer:
+- updated rec::LayeredCalorimeterData::Layer:
   - remove deprecated thickness 
   - add phi0  
-- add copy assignement to DDRec::MaterialData
+- add copy assignement to rec::MaterialData
 
 2016-11-08 M.Frank
 - Improve conditions handling. Started to implement using simple telescope
@@ -423,12 +423,12 @@ M.Petric:
     system:16,barrel:16:-5
     
 2016-10-18 M.Frank
--  Due to pressure of the FCC folks, I tried to implement a more DD4hep like implementation of the
+-  Due to pressure of the FCC folks, I tried to implement a more dd4hep like implementation of the
   the segmentation objects. For testing only CartesianGridXY. If this mechanism works,
   it could be a starting recipe for the rest of the segmentations. The draw-back of this approach is,
   that assignments are not reversible:
-  DD4hep::CartesianGridXY xy = readout.segmentation();  // Works
-  DD4hep::Segmentation seg = xy;                    // Should not work
+  dd4hep::CartesianGridXY xy = readout.segmentation();  // Works
+  dd4hep::Segmentation seg = xy;                    // Should not work
 
 -  Reason: the managed objects are different....at some point in time I will have to find a
   clean solution for this, but the required changes for such a solution shall be manageable.
@@ -444,10 +444,10 @@ M.Petric:
 
 2016-08-24 M.Frank
 - Adding first somehow useful implementation to use conditions and the consequent loading thereof.
-	Used by the DDDB implementation/example. DDDB is an alternative way to populate the DD4hep
+	Used by the DDDB implementation/example. DDDB is an alternative way to populate the dd4hep
 	detector description using LHCb's detector description database.
 	The reason is, that only a running experiment has a reasonable base to conditions data
-	to excercise the DD4hep conditions.
+	to excercise the dd4hep conditions.
 	If interested, please have a look in the DDDB examples.
 
 - Still TODO:
@@ -513,10 +513,10 @@ M.Petric:
    - fixed memory leak, compiled and valgrinded
 
 2016-02-10 F.Gaede
-- added utility  DD4hep::XML::setDetectorTypeFlag()
+- added utility  dd4hep::xml::setDetectorTypeFlag()
   to set the TypeFlag from xml element <type_flag type="0x42"/>
 - select detectors with 
-  DD4hep::Geometry::DetectorSelector(lcdd).detectors(  ( DD4hep::DetType::TRACKER | DD4hep::DetType::ENDCAP )) ;
+  dd4hep::DetectorSelector(description).detectors(  ( dd4hep::DetType::TRACKER | dd4hep::DetType::ENDCAP )) ;
 - used in UtilityApps/dumpdetector.cc
 - added detector_types.xml with int constants defined in DetType.h, include with :
   `<include ref="${DD4hepINSTALL}/DDDetectors/compact/detector_types.xml"/>`
@@ -535,7 +535,7 @@ M.Petric:
 
 2016-02-03 N.Nikiforou
 - DDDetectors
-  - Added plugin DD4hep_GenericSurfaceInstallerPlugin, copied from lcgeo
+  - Added plugin dd4hep_GenericSurfaceInstallerPlugin, copied from lcgeo
     to allow installation of surfaces to any sliced detector
   cmake/Doxyfile.in
   - Added DDDetectors to the sources directory so Doxygen picks up the
@@ -585,7 +585,7 @@ M.Petric:
   (affected ILD VXD)
 
 2016-01-05 F.Gaede
-- added print functions for DDRec::DetectorData objects
+- added print functions for rec::DetectorData objects
 - used in dumpdetector:
   dumpdetector compact.xml -d 
 
@@ -628,7 +628,7 @@ M.Petric:
   - Removal of compiler warnings
 
 2015-11-23 F.Gaede
-- added glbal method DD4hep::versionString() 
+- added glbal method dd4hep::versionString() 
 
 2015-11-13 S.Lu
 -  Added a new AHcal Barrel segementation: TiledLayerGridXY, to be used e.g.  
@@ -689,7 +689,7 @@ M.Petric:
 
 2015-08-27 F.Gaede
 - added macros DD4HEP_VERSION_GE(MAJV,MINV) and DD4HEP_VERSION_GT(MAJV,MINV)
-  to LCDD.h
+  to Detector.h
 
 - increased version number to v00-15
 
@@ -702,9 +702,9 @@ M.Petric:
 
 2015-08-12 N.Nikiforou
 - DDCore/XML: Added new helper functions to Layering engine:
-   - double absorberThicknessInLayer(XML::Element e) : 
+   - double absorberThicknessInLayer(xml::Element e) : 
      returns total absorber thickness in given layer
-   - void sensitivePositionsInLayer(XML::Element e, std::vector<double>& sens_pos) :
+   - void sensitivePositionsInLayer(xml::Element e, std::vector<double>& sens_pos) :
      provides positions of sensitive slices within a layer with respect to the 
      center of the layer
 
@@ -712,7 +712,7 @@ M.Petric:
 2015-07-25 M.Frank
 - DDSegmentation: Remove several 'shadow' warnings.
 
-- New build system for the DD4hep core, which greatly simplyfies the cmake files
+- New build system for the dd4hep core, which greatly simplyfies the cmake files
   for the various sub-packages. 
   Tested with Andre's build script doc/CompileAllOptionPermutations.sh.
   (GEAR usage not tested though)
@@ -731,7 +731,7 @@ F.Gaede: 2015-07-15
 - moved setting of CMAKE_CXX_FLAGS (if DD4HEP_USE_CXX11) from DD4hep.cmake to CMakeLists.txt
 
 2015-07-11 M.Frank
--  added starter docs DD4hepStartersGuide.pdf
+-  added starter docs dd4hepStartersGuide.pdf
 
 *** **Important** ***
   **Before updating, backup your existing and working checkout. Though I was running 
@@ -740,7 +740,7 @@ F.Gaede: 2015-07-15
 Notes:
 - Backwards compatibility mode for the usage of ROOT 5 and ROOT 6 alternatively.
 - For ROOT 6 the Gaudi PluginService is used and added to the distribution.
-- DD4hep is distributed with a licence. See $DD4hepINSTALL/LICENSE for details.
+- dd4hep is distributed with a licence. See $DD4hepINSTALL/LICENSE for details.
 - In the doc area the $DD4hepINSTALL/doc/CREDITS file everybode should add her/his 
   name, if contributed significantly.
 - Unfortunately this meant to add/change the headers of all files and give a 
@@ -749,12 +749,12 @@ Notes:
 - The plugin factory declaration statements were changed to accomodate both
   ROOT 5 and ROOT 6 and to keep the number of 'ifdef' statements at a minimum.
 - TODO: Properly change the cmake scripts to accomodate for ROOT 6 and the 
-  automatic switch when building DD4hep. 
+  automatic switch when building dd4hep. 
 - For reference reasons: this commits is revision 1812 + 1813 (DDDetectors)
 
 # v00-13  
 2015-07-03 F.Gaede
-- updated doxygen for detector DDRec::DetectorData structs and usage in convertToGear
+- updated doxygen for detector rec::DetectorData structs and usage in convertToGear
 
 2015/07/02 Nikiforos Nikiforou
 - Added isRadiator() helper function in DDCore/XML/XMLDetector.h/cpp 
@@ -775,22 +775,22 @@ Notes:
 
 
 2015-06-29 F.Gaede
-- changed env scripts to prepend to library pathes (DD4hep and dependant packages)
+- changed env scripts to prepend to library pathes (dd4hep and dependant packages)
    - using a newer lcgeo version than the one provided in ilcsoft can simply
         be done w/ source ./bin/thislcgeo.sh 
 	      
 # v00-12  
 2015/06/17 Markus Frank
-- Add possibility to block access to constants by name from LCDD.
-  Functionality enabled by a constant named "LCDD_InhibitConstants" with value "1", "True", "Yes".
+- Add possibility to block access to constants by name from Detector.
+  Functionality enabled by a constant named "Detector_InhibitConstants" with value "1", "True", "Yes".
   Test: geoDisplay -compact file:../DD4hep.trunk/examples/ClientTests/compact/InhibitConstants.xml 
 
-- Add LCDDHelper handle object to easily access the sensitive detector object of a detector
+- Add DetectorHelper handle object to easily access the sensitive detector object of a detector
   using either the subdetector name or the detector element (or one of its children).
-  See: DD4hep/LCDDHelper.h
+  See: dd4hep/DetectorHelper.h
   Test: ``` 
   geoPluginRun -input file:../DD4hep.trunk/examples/CLICSiD/compact/compact.xml \
-                     -plugin CLICSiD_LCDDHelperTest  \
+                     -plugin CLICSiD_DetectorHelperTest  \
          optional:  -<detector-name (default:SiVertexEndcap)>  [Note the '-'!!!] 
          ```
 
@@ -816,11 +816,11 @@ F.Gaede
       to corresponding surface is needed
     - needs plugin "InstallSurfaceManager" to be in the compact file
     - access via:  
-      SurfaceManager surfMan = *lcdd.extension< SurfaceManager >() ;
+      SurfaceManager surfMan = *description.extension< SurfaceManager >() ;
       const SurfaceMap& surfMap = *surfMan.map( "world" ) ;
 - renamed old SurfaceManager to SurfaceHelper
 
-- added method: Geometry::Volume createPlacedEnvelope()
+- added method: Volume createPlacedEnvelope()
   - to be used in all LC detector drivers to create a placed envelope volume
     rest of the detector is then instantiate in this volume
 
@@ -843,14 +843,14 @@ F.Gaede
 
 2015/05/11 Andre Sailer
 - CMake updates:
-  - Split libraries into components: use find_package(DD4hep COMPONENTS <component> [...] )
+  - Split libraries into components: use find_package(dd4hep COMPONENTS <component> [...] )
     to find the components you need.
   - At the moment there are these components are sensible to link against: DDRec, DDG4, DDEve, DDSegmentation
-  - To link against the librarie use either DD4hep_COMPONENT_LIBRARIES or DD4hep_<COMPONENT>_LIBRARY,
+  - To link against the librarie use either dd4hep_COMPONENT_LIBRARIES or dd4hep_<COMPONENT>_LIBRARY,
     where <COMPONENT> needs to be replaced by the UPPER case name of the component
 
 2015/05/09 Markus Frank
-- Allow to access detectors by type from lcdd.
+- Allow to access detectors by type from description.
   - The sensitive type of a detector is set in the 'detector constructor'.
   - Not sensitive detector structures have the name 'passive'
   - Compounds (ie. nested detectors) are of type 'compound'
@@ -859,7 +859,7 @@ F.Gaede
          geoPluginRun -plugin DD4hepDetectorTypes -input <compact-file>
 
 2015/03/12 Markus Frank
-- Add support for ellipsoids in gdml/lcdd and geant4 conversion.
+- Add support for ellipsoids in gdml/description and geant4 conversion.
 - Allow to include files with environment variables from compact notation.
 
 2015/03/09 Markus Frank
@@ -869,8 +869,8 @@ F.Gaede
 
 # v00-11     
 - DDDetectors
-  - new Package containing generic DD4hep detector palette (MF)
-  - added 'dimension' argument to DD4hep_SiTrackerBarrelSurfacePlugin (FG)
+  - new Package containing generic dd4hep detector palette (MF)
+  - added 'dimension' argument to dd4hep_SiTrackerBarrelSurfacePlugin (FG)
     to handle pixel and strip detectors 
 
 - DDRec (Frank Gaede)
@@ -912,9 +912,9 @@ F.Gaede
   - added component to allow the setup of the magnetic field tracking in Geant4 from python
 
 - DDCore (Markus Frank)
-  - fixed LCDD el-mag. field converter 
+  - fixed Detector el-mag. field converter 
   - add generic surface installers 
-  - allow for string constants in lcdd define section
+  - allow for string constants in description define section
   - added arguments for surface plugins
 
 - DDSegmentation (FG) :
@@ -932,7 +932,7 @@ F.Gaede
     
 - CMake:
   - made DD4HEP_USE_BOOST an option flag (FG)
-  - added DD4hepG4 library dependence to DDEve (MF)
+  - added dd4hepG4 library dependence to DDEve (MF)
   - disable dot -> have simpler (and faster) inheritance graphs w/ Doxygen
   - fixed missing search field in Doxygen doc (FG)
   - include boost automatically if build with Geant4
@@ -941,7 +941,7 @@ F.Gaede
 - Documentation
   - improved Doxygen documentation (MF)
   - added manual for DDRec (FG)
-  - new version of the DD4hep manual (MF)
+  - new version of the dd4hep manual (MF)
   - fixed code formating with emacs style:
     ./doc/format_code.sh
 
@@ -1020,7 +1020,7 @@ F.Gaede
   particle filtering to optimize the size of the MC record.
 - DDG4 fix SimpleCalorimter sensitive action and properly support
   hit aggregations.
-- DDEve smaller modifications to support DDG4IO if DD4hep was 
+- DDEve smaller modifications to support DDG4IO if dd4hep was 
   built with the Geant4 option ON.
 
 # v00-08
@@ -1043,7 +1043,7 @@ Andre Sailer, 2014-07-17
 
 Christian.Grefe, 2014-07-15
 - Made DDSegmentation optionally a stand-alone package
-  create DDSgementationConfig.cmake when build as part of DD4hep
+  create DDSgementationConfig.cmake when build as part of dd4hep
 
 Markus Frank, 2014-07-02
 - add LCIO conversions from DDSim - sensitive detectors 
@@ -1071,7 +1071,7 @@ Markus Frank, 2014-07-02
 - DDCore: adjust a few print statements.
 
 2014/06/27 Markus Frank
-- Separate XML loading from LCDD implementation.
+- Separate XML loading from Detector implementation.
 - New package: DDEve: a bit more sophisticated TEve specialization
 - To start use examples/CLICSiD/compact/DDEve.xml
 - DDEve can interface currently to ROOT files created by DDG4.
@@ -1092,7 +1092,7 @@ Markus Frank, 2014-07-02
 - convert to degrees for angles in TGeoShapes constructors
 - NB: there is one inconsistency left here:  angles returned
   from TGeoShapes are already in degrees, this is the one
-  case where a quantity returned from DD4hep/TGeo does not have the default
+  case where a quantity returned from dd4hep/TGeo does not have the default
   units - thus one should not write
   
  ` double phi = coneSeg.Phi1() / tgeo::rad ;`
@@ -1103,16 +1103,16 @@ Markus Frank, 2014-07-02
 
 
 2014/06/03 Markus Frank
-- Provision for ROOT persistency for DD4hep detector descriptions:
-  Create Cint dictionary for DD4hepCore by default when building the library.
+- Provision for ROOT persistency for dd4hep detector descriptions:
+  Create Cint dictionary for dd4hepCore by default when building the library.
   For the time being the area of DDSegmentation is left out, since these
   objects require changes due to the handling of references and template
-  specializations. Besides these, DD4hep detector descriptions can be
+  specializations. Besides these, dd4hep detector descriptions can be
   saved and read-back directly to/from ROOT files - which may improve
   a lot the startup time of processes.
 
 - The DDG4 dictionary is created by default when building the library.
-  When importing DDG4 from python only the DD4hepCore DD4hepG4 libraries
+  When importing DDG4 from python only the dd4hepCore dd4hepG4 libraries
   must be present. It should no longer be necessary to compile the
   necessary AClick on the fly.
 
@@ -1136,11 +1136,11 @@ Markus Frank, 2014-07-02
 
 2014/05/21 Markus Frank
 - Fix material creation from XML
-    JIRA bug: DD4hep -  DDFORHEP-4
+    JIRA bug: dd4hep -  DDFORHEP-4
     https://sft.its.cern.ch/jira/browse/DDFORHEP-4
     using <composite> in material xml files results in wrong material properties
 
-- Fix JIRA bug: DD4hep -   DDFORHEP-3
+- Fix JIRA bug: dd4hep -   DDFORHEP-3
     https://sft.its.cern.ch/jira/browse/DDFORHEP-3
    Recursive assemblies result in error in TGeo geometry
     Bug results in errors when closing the geometry like:
@@ -1229,7 +1229,7 @@ Markus Frank, 2014-07-02
 
 2014/02/07  Frank Gaede
 - added DDGear, support for interfacing to gear for backward compatibility
-  - lives currently in ILDExDet ( should become (optional) part of core DD4hep)
+  - lives currently in ILDExDet ( should become (optional) part of core dd4hep)
   - users need to GearParameter objects as extensions to the DetElement
        -> see ILDExTPC_geo.cpp, ILDExVXD_geo.cpp, ILDExTPCSIT_geo.cpp as examples
   - program convertToGear creates gear xml file from compact file 
@@ -1308,14 +1308,14 @@ Markus Frank, 2014-07-02
   - libDDG4LCIO.so     LCIO output plugin for new framework
 
 2013/11/03    Markus Frank
-- doc: Add CHEP2013 paper about DD4hep as a start of the documentation 
+- doc: Add CHEP2013 paper about dd4hep as a start of the documentation 
     section. More to come hopefully.
 - DDCore: several small improvements:
   - Segmentations are no longer Ref_t's.
   - Base internal implementing object directly on the segmentations 
       classes from Christian.
   - Rearrangement of some code from Handle.h to Primitives.h
-  - Allow to attach extensions to LCDD
+  - Allow to attach extensions to Detector
 - DDG4: Fix Frank's simulation problem, which he caused himself
     introducing his famous factories....
 - DDG4: First attempt to fix simulation problem with mignetic field.
@@ -1372,7 +1372,7 @@ F. Gaede
          (see ReadMe.txt for details)
 
 - moved examples to ./example directory   
-- they are not built as part of DD4hep anymore
+- they are not built as part of dd4hep anymore
 
 - install thisdd4hep.sh in ./bin
            (modified to have the correct pathes) 
@@ -1380,7 +1380,7 @@ F. Gaede
 - added -DINSTALL_DOC=on/off option
            to build doxygen documentation (in ./doc/html/index.html)
 
-- create DD4hepConfig.cmake for easy building against DD4hep
+- create DD4hepConfig.cmake for easy building against dd4hep
            ( see examples CMakeLists.txt)
 
 - fixed doxygen API documentation (C.Rosemann)
@@ -1399,7 +1399,7 @@ F. Gaede
   - creates SimTrackerHits for VXD, SIT and TPC
     - creates SimCalorimeterHits for AHcal barrele and endcap
     - works now wigth ILDExSimu _and_ SLIC if no assemblies are used
-    - assemblies work with the DD4hep Geant4Converter and VolumeManager
+    - assemblies work with the dd4hep Geant4Converter and VolumeManager
   - added a prototype example for a ROOT independent 
               plugin mechanism for SensitiveDetectors
   - added example implemetation for Calice test beam
@@ -1422,7 +1422,7 @@ F. Gaede
       not compliant to 1).
 - The G4 package allows now to translate TGeo geometries to Geant4.
       Visual inspection has shown an agreement between the two geometries.
-- The TGeo to LCDD/GDML conversion is still buggy. Hence, simulations
+- The TGeo to Detector/GDML conversion is still buggy. Hence, simulations
       using slic as an engine do not yet work. This is being looked at.
 
    IMPORTANT NOTICE:
@@ -1464,11 +1464,11 @@ F. Gaede
      +----------+---------+-------------------------------------------+
      |   Total  | Leaking |      Type identifier                      |
      +----------+---------+-------------------------------------------+
-     |        13|        0|DD4hep::Geometry::DetElement::Object
-     |         3|        0|DD4hep::Geometry::SensitiveDetector::Object
-     |         3|        0|DD4hep::Geometry::Readout::Object
-     |         1|        0|DD4hep::Geometry::OverlayedField::Object
-     |         1|        0|DD4hep::Geometry::CartesianField::Object
+     |        13|        0|dd4hep::DetElement::Object
+     |         3|        0|dd4hep::SensitiveDetector::Object
+     |         3|        0|dd4hep::Readout::Object
+     |         1|        0|dd4hep::OverlayedField::Object
+     |         1|        0|dd4hep::CartesianField::Object
      ....
      Ideally the second column only has "0"s. Instances of 1 may be OK (singletons).
 ```
@@ -1480,11 +1480,11 @@ F. Gaede
 
 # v00-01
 2013/20/03    Markus Frank
-- Finished the compact->lcdd converter
-     Extract lcdd information
+- Finished the compact->description converter
+     Extract description information
 ```
-      $ > geoConverter -compact2lcdd -input file:<compact-input-xml-file> -output <detector>.lcdd
-      $ > <SimDist>/scripts/slic.sh -o output.slcio -g SiD.lcdd -m <geant4-macro>.mac -r 100 
+      $ > geoConverter -compact2description -input file:<compact-input-xml-file> -output <detector>.description
+      $ > <SimDist>/scripts/slic.sh -o output.slcio -g SiD.description -m <geant4-macro>.mac -r 100 
 ```
 
 - Finished the compact->gdml converter
@@ -1538,6 +1538,6 @@ F. Gaede
   'thisdd4hep.(c)sh' do include these directories
 
 2013/20/02    Markus Frank
-- DD4hep release notes. Better start them late than never.
-  If you perform significant changes to the DD4hep core,
+- dd4hep release notes. Better start them late than never.
+  If you perform significant changes to the dd4hep core,
   plase leave a small notice here.

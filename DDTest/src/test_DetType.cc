@@ -8,7 +8,7 @@
 
 
 using namespace std ;
-using namespace DD4hep ;
+using namespace dd4hep ;
 
 // this should be the first line in your test
 static DDTest test( "bitfield64" ) ; 

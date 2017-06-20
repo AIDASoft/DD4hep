@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -29,12 +29,12 @@
 #include <map>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Conditions;
-typedef XML::Handle_t xml_h;
-typedef XML::Element xml_elt_t;
-typedef XML::Document xml_doc_t;
-typedef XML::Collection_t xml_coll_t;
+using namespace dd4hep;
+using namespace dd4hep::cond;
+typedef xml::Handle_t xml_h;
+typedef xml::Element xml_elt_t;
+typedef xml::Document xml_doc_t;
+typedef xml::Collection_t xml_coll_t;
 
 typedef map<Condition::key_type,Condition> AllConditions;
 
@@ -51,18 +51,18 @@ namespace {
   int createXML(const string& output, const AllConditions& all) {
     const char comment[] = "\n"
       "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-      "      ++++   Linear collider detector description LCDD in C++  ++++\n"
-      "      ++++   DD4hep Detector description generator.            ++++\n"
+      "      ++++   Linear collider detector description Detector in C++  ++++\n"
+      "      ++++   dd4hep Detector description generator.            ++++\n"
       "      ++++                                                     ++++\n"
       "      ++++                                                     ++++\n"
       "      ++++                              M.Frank CERN/LHCb      ++++\n"
       "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
-    DD4hep::XML::DocumentHandler docH;
+    dd4hep::xml::DocumentHandler docH;
     xml_doc_t doc = docH.create("collection", comment);
     xml_elt_t root = doc.root(), cond(0);
-    for(AllConditions::const_iterator i=all.begin(); i!=all.end(); ++i)  {
+    for( const auto& i : all )  {
       char text[32];
-      Condition c = (*i).second;
+      Condition c = i.second;
       ::snprintf(text,sizeof(text),"0x%16llX",c.key());
       root.append(cond = xml_elt_t(doc, _U(ref)));
       cond.setAttr(_U(key), text);
@@ -95,7 +95,7 @@ namespace {
         data.push_back(e);
       }
     };
-    XML::DocumentHolder doc(XML::DocumentHandler().load(input));
+    xml::DocumentHolder doc(xml::DocumentHandler().load(input));
     xml_h root = doc.root();
     xml_coll_t(root, _U(ref)).for_each(Conv(data));
     return 1;
@@ -114,8 +114,8 @@ namespace {
       ::snprintf(fmt,sizeof(fmt),"%%16llX%c%%s%c%%s%c",sep,sep,sep);
     }
     else   {
-      for(AllConditions::const_iterator i=all.begin(); i!=all.end(); ++i)  {
-        Condition::Object* c = (*i).second.ptr();
+      for( const auto& i : all )  {
+        Condition::Object* c = i.second.ptr();
         size_t siz_n = c->name.length();
         size_t siz_a = c->address.length();
         if ( siz_nam < siz_n ) siz_nam = siz_n;
@@ -129,8 +129,8 @@ namespace {
         << "." << long(siz_nam)
         << "." << long(siz_add)
         << "." << long(siz_tot) << endl;
-    for(AllConditions::const_iterator i=all.begin(); i!=all.end(); ++i)  {
-      Condition c = (*i).second;
+    for( const auto& i : all )  {
+      Condition c = i.second;
       ::snprintf(text, sizeof(text), fmt, c.key(), c.name(), c.address().c_str());
       out << text << endl;
     }
@@ -188,23 +188,17 @@ namespace {
 
 /// Save the repository to file
 int ConditionsRepository::save(ConditionsManager manager, const string& output)  const  {
-  typedef vector<const IOVType*> _T;
-  typedef ConditionsIOVPool::Elements _E;
-  typedef RangeConditions _R;
   AllConditions all;
-  const _T types = manager.iovTypesUsed();
-  for( _T::const_iterator i = types.begin(); i != types.end(); ++i )    {
-    const IOVType* type = *i;
+  const auto types = manager.iovTypesUsed();
+  for( const IOVType* type : types )  {
     if ( type )   {
       ConditionsIOVPool* pool = manager.iovPool(*type);
       if ( pool )  {
-        const _E& e = pool->elements;
-        for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
-          ConditionsPool* cp = (*j).second;
-          _R rc;
-          cp->select_all(rc);
-          for(_R::const_iterator ic=rc.begin(); ic!=rc.end(); ++ic)
-            all[(*ic).key()] = *ic;
+        for( const auto& cp : pool->elements )   {
+          RangeConditions rc;
+          cp.second->select_all(rc);
+          for( const auto cond : rc )
+            all[cond.key()] = cond;
         }
       }
     }

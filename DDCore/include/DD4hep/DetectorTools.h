@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,25 +10,23 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_GEOMETRY_DETECTORTOOLS_H
 #define DD4HEP_GEOMETRY_DETECTORTOOLS_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 
 // Forward declarations
 class TGeoHMatrix;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  // Forward declarations
+  class Detector;
 
-    // Forward declarations
-    class LCDD;
-
+  namespace detail   {
+    
     /// Helper namespace used to answer detector element specific questons
     /**
      *
@@ -36,7 +34,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
      */
-    namespace DetectorTools {
+    namespace tools {
       typedef std::vector<DetElement>   ElementPath;
       typedef std::vector<PlacedVolume> PlacementPath;
 
@@ -51,7 +49,7 @@ namespace DD4hep {
       /// Collect detector elements to the top detector element (world)
       void elementPath(DetElement elt, ElementPath& detectors);
       /// Find DetElement as child of the top level volume by it's absolute path
-      DetElement findElement(LCDD& lcdd, const std::string& path);
+      DetElement findElement(Detector& description, const std::string& path);
       /// Find DetElement as child of a parent by it's relative or absolute path
       DetElement findDaughterElement(DetElement parent, const std::string& subpath);
       /// Find path between the child element and the parent element
@@ -81,9 +79,7 @@ namespace DD4hep {
       std::string toString(const PlacedVolume::VolIDs& ids);
       /// Convert VolumeID to string
       std::string toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code);
-
     }
-
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                   */
+  }
+}         /* End namespace dd4hep                   */
 #endif    /* DD4HEP_GEOMETRY_DETECTORTOOLS_H    */

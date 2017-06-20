@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DD4hep/Factories.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDRec/SurfaceHelper.h"
 
 #include "EvNavHandler.h"
@@ -59,7 +59,9 @@
 
 
 using namespace dd4hep ;
-using namespace dd4hep::rec ;
+using namespace rec ;
+using namespace detail ;
+
 
 //=====================================================================================
 // function declarations: 
@@ -71,9 +73,9 @@ TEveStraightLineSet* getSurfaceVectors(bool addO=true, bool addU= true, bool add
 
 //=====================================================================================
 
-static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
+static long teve_display(Detector& description, int /* argc */, char** /* argv */) {
 
-  TGeoManager* mgr = &lcdd.manager();
+  TGeoManager* mgr = &description.manager();
   mgr->SetNsegments(100); // Increase the visualization resolution.
   TEveManager::Create();
 
@@ -163,9 +165,9 @@ TEveStraightLineSet* getSurfaceVectors(bool addO, bool addU, bool addV, bool add
 
   TEveStraightLineSet* ls = new TEveStraightLineSet(name);
 
-  LCDD& lcdd = LCDD::getInstance();
+  Detector& description = Detector::getInstance();
 
-  DetElement world = lcdd.world() ;
+  DetElement world = description.world() ;
 
   // create a list of all surfaces in the detector:
   SurfaceHelper surfMan(  world ) ;
@@ -206,9 +208,9 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type, TString name)
 
   TEveStraightLineSet* ls = new TEveStraightLineSet(name);
 
-  LCDD& lcdd = LCDD::getInstance();
+  Detector& description = Detector::getInstance();
 
-  DetElement world = lcdd.world() ;
+  DetElement world = description.world() ;
 
   // create a list of all surfaces in the detector:
   SurfaceHelper surfMan(  world ) ;
@@ -264,7 +266,7 @@ void make_gui() {
   browser->StartEmbedding(TRootBrowser::kLeft);
 
   TGMainFrame* frmMain = new TGMainFrame(gClient->GetRoot(), 1000, 600);
-  frmMain->SetWindowName("DD4hep GUI");
+  frmMain->SetWindowName("dd4hep GUI");
   frmMain->SetCleanup(kDeepCleanup);
 
   TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);

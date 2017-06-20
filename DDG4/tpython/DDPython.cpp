@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -39,7 +39,7 @@
 #endif
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 namespace {
   string loadScript(const string& fname) {
@@ -153,14 +153,14 @@ DDPython::DDPython() : context(0)  {
     if ( !module || ::PyErr_Occurred() )   {
       ::PyErr_Print();
       ::PyErr_Clear();
-      DD4hep::printout(WARNING,"DDPython","Main dictionary pointer is NULL. Try to continue like this!");
+      dd4hep::printout(WARNING,"DDPython","Main dictionary pointer is NULL. Try to continue like this!");
     }
     else  {
       _main_dict = ::PyModule_GetDict(module);
       if ( _main_dict )  {
         Py_INCREF( _main_dict );
       }
-      DD4hep::printout(DEBUG,"DDPython","Pointer to main dict:%p",(void*)_main_dict);
+      dd4hep::printout(DEBUG,"DDPython","Pointer to main dict:%p",(void*)_main_dict);
     }
     setMainThread();
   }
@@ -174,7 +174,7 @@ DDPython::DDPython() : context(0)  {
 DDPython::~DDPython()   {
   --_refCount;
   if ( 0 == _refCount && ::Py_IsInitialized() ) {
-    DD4hep::printout(ALWAYS,"DDPython","+++ Shutdown python interpreter......");
+    dd4hep::printout(ALWAYS,"DDPython","+++ Shutdown python interpreter......");
     if ( _main_dict )  {
       Py_DECREF(_main_dict);
       _main_dict = 0;

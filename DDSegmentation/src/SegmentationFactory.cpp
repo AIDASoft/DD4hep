@@ -7,7 +7,7 @@
 
 #include "DDSegmentation/SegmentationFactory.h"
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 using std::map;
@@ -55,4 +55,4 @@ void SegmentationFactory::registerSegmentation(const std::string& name, Segmenta
 }
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */

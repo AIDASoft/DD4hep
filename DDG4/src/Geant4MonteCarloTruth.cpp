@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4MonteCarloTruth.h"
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 /// Standard action constructor
 Geant4MonteCarloTruth::Geant4MonteCarloTruth()   {

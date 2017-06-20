@@ -1,6 +1,6 @@
 #!/bin/python
 #==========================================================================
-#  AIDA Detector description implementation for LCD
+#  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -65,13 +65,13 @@ except ImportError,X:
 try:
   import DD4hep
 except ImportError,X:
-  print 'DD4hep python interface not accessible:',X
+  print 'dd4hep python interface not accessible:',X
   sys.exit(errno.ENOENT)
 
 DD4hep.setPrintLevel(DD4hep.OutputLevel.ERROR)
 print '+++%s\n+++ Loading compact geometry:%s\n+++%s'%(120*'=',opts.compact,120*'=')
-lcdd = DD4hep.Geo.LCDD.getInstance()
-lcdd.fromXML(opts.compact)
+description = DD4hep.Detector.getInstance()
+description.fromXML(opts.compact)
 opts.num_tracks = int(opts.num_tracks)
 opts.vx = float(opts.vx)
 opts.vy = float(opts.vy)
@@ -79,9 +79,9 @@ opts.vz = float(opts.vz)
 print '+++%s\n+++ Checking geometry:%s full-check:%s\n+++%s'%(120*'=',opts.compact,opts.full,120*'=')
 if opts.full:
   print '+++ # tracks:%d vertex:(%7.3f, %7.3f, %7.3f) [cm]'%(opts.num_tracks,opts.vx,opts.vy,opts.vz,)
-  lcdd.manager().CheckGeometryFull(opts.num_tracks,opts.vx,opts.vy,opts.vz,opts.option)
+  description.manager().CheckGeometryFull(opts.num_tracks,opts.vx,opts.vy,opts.vz,opts.option)
 else:
-  lcdd.manager().CheckGeometry()
+  description.manager().CheckGeometry()
 #
 #
 print '+++ Execution finished...'

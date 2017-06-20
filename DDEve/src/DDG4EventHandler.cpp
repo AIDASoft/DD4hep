@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,7 +26,7 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
+using namespace dd4hep;
 
 ClassImp(DDG4EventHandler)
 namespace {
@@ -42,7 +42,7 @@ namespace {
     return h;
   }
 }
-using namespace DD4hep::Geometry;
+using namespace dd4hep::detail;
 DECLARE_CONSTRUCTOR(DDEve_DDG4EventHandler,_create)
 
 /// Standard constructor
@@ -105,13 +105,13 @@ EventHandler::CollectionType DDG4EventHandler::collectionType(const std::string&
   Branches::const_iterator i = m_branches.find(collection);
   if ( i != m_branches.end() )   {
     const char* cl = (*i).second.first->GetClassName();
-    if ( ::strstr(cl,"Simulation::Geant4Calorimeter::Hit") )  return CALO_HIT_COLLECTION;
-    else if ( ::strstr(cl,"Simulation::Geant4Tracker::Hit") ) return TRACKER_HIT_COLLECTION;
-    else if ( ::strstr(cl,"Simulation::Geant4Particle") )     return PARTICLE_COLLECTION;
+    if ( ::strstr(cl,"sim::Geant4Calorimeter::Hit") )  return CALO_HIT_COLLECTION;
+    else if ( ::strstr(cl,"sim::Geant4Tracker::Hit") ) return TRACKER_HIT_COLLECTION;
+    else if ( ::strstr(cl,"sim::Geant4Particle") )     return PARTICLE_COLLECTION;
     // These are OLD types. Eventually remove these lines.....
-    else if ( ::strstr(cl,"Simulation::SimpleCalorimeter::Hit") ) return CALO_HIT_COLLECTION;
-    else if ( ::strstr(cl,"Simulation::SimpleTracker::Hit") )     return TRACKER_HIT_COLLECTION;
-    else if ( ::strstr(cl,"Simulation::Particle") )               return PARTICLE_COLLECTION;
+    else if ( ::strstr(cl,"sim::SimpleCalorimeter::Hit") ) return CALO_HIT_COLLECTION;
+    else if ( ::strstr(cl,"sim::SimpleTracker::Hit") )     return TRACKER_HIT_COLLECTION;
+    else if ( ::strstr(cl,"sim::Particle") )               return PARTICLE_COLLECTION;
   }
   return NO_COLLECTION;
 }

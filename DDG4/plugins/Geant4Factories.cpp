@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DDG4/Factories.h"
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 #include "DDG4/Geant4Random.h"
 DECLARE_GEANT4ACTION(Geant4Random)
@@ -127,10 +127,10 @@ DECLARE_GEANT4ACTION(Geant4GeneratorWrapper)
 
 //=============================
 #include "DDG4/Geant4TestActions.h"
-namespace DD4hep {  namespace Simulation   {
+namespace dd4hep {  namespace sim   {
     namespace Test {}
     //using namespace Test;
-    using namespace DD4hep::Simulation::Test;
+    using namespace dd4hep::sim::Test;
     typedef Geant4TestSensitive Geant4TestSensitiveTracker;
     typedef Geant4TestSensitive Geant4TestSensitiveCalorimeter;
   }}

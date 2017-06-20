@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -26,14 +26,11 @@
 #include <set>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::DDDB;
-using DD4hep::Geometry::LCDD;
-using DD4hep::Geometry::VisAttr;
-
+using namespace dd4hep;
+using namespace dd4hep::DDDB;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Keep all in here anonymous. Does not have to be visible outside.
   namespace {
@@ -49,7 +46,7 @@ namespace DD4hep {
   template <> void Converter<volume>::operator()(xml_h element) const;
   template <> void Converter<include>::operator()(xml_h element) const;
 
-  /** Convert compact visualization attribute to LCDD visualization attribute
+  /** Convert compact visualization attribute to Detector visualization attribute
    *
    *  <vis name="SiVertexBarrelModuleVis"
    *       alpha="1.0" r="1.0" g="0.75" b="0.76"
@@ -59,12 +56,12 @@ namespace DD4hep {
    */
   template <> void Converter<vis>::operator()(xml_h e) const {
     VisAttr attr(e.attr<string>(_U(name)));
-    float r = e.hasAttr(_U(r)) ? e.attr<float>(_U(r)) : 1.0f;
-    float g = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
-    float b = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
+    float red   = e.hasAttr(_U(r)) ? e.attr<float>(_U(r)) : 1.0f;
+    float green = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
+    float blue  = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
 
     printout(DEBUG, "Compact", "++ Converting VisAttr  structure: %s.",attr.name());
-    attr.setColor(r, g, b);
+    attr.setColor(red, green, blue);
     if (e.hasAttr(_U(alpha)))
       attr.setAlpha(e.attr<float>(_U(alpha)));
     if (e.hasAttr(_U(visible)))
@@ -93,22 +90,22 @@ namespace DD4hep {
       attr.setShowDaughters(e.attr<bool>(_U(showDaughters)));
     else
       attr.setShowDaughters(true);
-    lcdd.addVisAttribute(attr);
+    description.addVisAttribute(attr);
   }
 
   template <> void Converter<include>::operator()(xml_h e) const {
-    XML::DocumentHolder doc(XML::DocumentHandler().load(e, e.attr_value(_U(ref))));
+    xml::DocumentHolder doc(xml::DocumentHandler().load(e, e.attr_value(_U(ref))));
     xml_h node = doc.root();
     string tag = node.tag();
 
     if ( tag == "display" )
-      xml_coll_t(node,_U(vis)).for_each(Converter<vis>(this->lcdd,param));
+      xml_coll_t(node,_U(vis)).for_each(Converter<vis>(this->description,param));
     else if ( tag == "vismapping" )
-      xml_coll_t(node,_U(volume)).for_each(Converter<volume>(this->lcdd,param));
+      xml_coll_t(node,_U(volume)).for_each(Converter<volume>(this->description,param));
     else if ( tag == "DDDB_VIS" )
-      Converter<dddb_vis>(lcdd,param)(node);
+      Converter<dddb_vis>(description,param)(node);
     else if ( tag == "dddb_vis" )
-      Converter<dddb_vis>(lcdd,param)(node);
+      Converter<dddb_vis>(description,param)(node);
   }
 
   template <> void Converter<volume>::operator()(xml_h e) const {
@@ -120,19 +117,19 @@ namespace DD4hep {
   }
 
   template <> void Converter<dddb_vis>::operator()(xml_h e) const {
-    xml_coll_t(e, _U(include)).for_each(                  Converter<include>(lcdd,param));
-    xml_coll_t(e, _U(display)).for_each(_U(include),      Converter<include>(lcdd,param));
-    xml_coll_t(e, _LBU(vismapping)).for_each(_U(include), Converter<include>(lcdd,param));
-    xml_coll_t(e, _U(display)).for_each(_U(vis),          Converter<vis>    (lcdd,param));
-    xml_coll_t(e, _LBU(vismapping)).for_each(_U(volume),  Converter<volume> (lcdd,param));
+    xml_coll_t(e, _U(include)).for_each(                  Converter<include>(description,param));
+    xml_coll_t(e, _U(display)).for_each(_U(include),      Converter<include>(description,param));
+    xml_coll_t(e, _LBU(vismapping)).for_each(_U(include), Converter<include>(description,param));
+    xml_coll_t(e, _U(display)).for_each(_U(vis),          Converter<vis>    (description,param));
+    xml_coll_t(e, _LBU(vismapping)).for_each(_U(volume),  Converter<volume> (description,param));
   }
 }
 
 /// Plugin entry point.
-static long load_dddb_vis(lcdd_t& lcdd, xml_h element) {
-  DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
+static long load_dddb_vis(Detector& description, xml_h element) {
+  DDDBHelper* helper = description.extension<DDDBHelper>(false);
   if ( helper )   {
-    DD4hep::Converter<dddb_vis> cnv(lcdd,helper);
+    dd4hep::Converter<dddb_vis> cnv(description,helper);
     cnv(element);
     return 1;
   }

@@ -7,14 +7,12 @@
 
 #include "DDRec/Extensions/LayeringExtensionImpl.h"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 
 #include "TGeoManager.h"
 
-namespace DD4hep {
-namespace DDRec {
-
-using Geometry::DetElement;
+namespace dd4hep {
+namespace rec {
 
 using std::vector;
 using std::map;
@@ -159,7 +157,7 @@ double LayeringExtensionImpl::sensorInteractionLength(int layerIndex) const {
 }
 
 /// Stores the layer information for the given layer index
-void LayeringExtensionImpl::setLayer(int layerIndex, Geometry::DetElement layer_elt, const Position& normal) {
+void LayeringExtensionImpl::setLayer(int layerIndex, DetElement layer_elt, const Position& normal) {
 	LayerAttributes& layerAttributes = _layerMap[layerIndex];
 	layerAttributes.layer = layer_elt;
 	layerAttributes.normal = normal.Unit();
@@ -183,7 +181,7 @@ void LayeringExtensionImpl::checkMap(int layerIndex) const {
 LayeringExtensionImpl::LayerAttributes::LayerAttributes() :
 		thickness(0.), radiationLength(0.), interactionLength(0.), absorberThickness(0.), absorberRadiationLength(0.), absorberInteractionLength(
 				0.), sensorThickness(0.), sensorRadiationLength(0.), sensorInteractionLength(0.), isCalculated(false) {
-	_tgeoManager = Geometry::LCDD::getInstance().world().volume()->GetGeoManager();
+	_tgeoManager = Detector::getInstance().world().volume()->GetGeoManager();
 }
 
 void LayeringExtensionImpl::LayerAttributes::calculate() {
@@ -215,10 +213,10 @@ double LayeringExtensionImpl::LayerAttributes::addElement(const DetElement& det)
 		++it;
 	}
 
-	Geometry::Volume volume = det.volume();
+	Volume volume = det.volume();
 	if (volume.isValid() and volume.solid().isValid()) {
-		Geometry::Solid solid = volume.solid();
-		Geometry::Material material = volume.material();
+		Solid solid = volume.solid();
+		Material material = volume.material();
 		double origin[3] = { 0., 0., 0. };
 		double direction[3] = { normal.x(), normal.y(), normal.z() };
 		double reverse_direction[3] = { -normal.x(), -normal.y(), -normal.z() };
@@ -245,5 +243,5 @@ double LayeringExtensionImpl::LayerAttributes::addElement(const DetElement& det)
 	return thisThickness;
 }
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
+} /* namespace rec */
+} /* namespace dd4hep */

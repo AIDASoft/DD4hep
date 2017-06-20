@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,6 +16,6 @@
 
 // Define unicode tags
 #ifndef UNICODE
-#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x ( #x )
+#define UNICODE(x)  extern const ::dd4hep::xml::Tag_t Unicode_##x ( #x )
 #endif
 #include "DDAlign/AlignmentTags.h"

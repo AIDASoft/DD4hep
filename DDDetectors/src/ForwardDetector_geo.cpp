@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,21 +19,21 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det      = e;
   xml_dim_t   dim        = x_det.dimensions();
   bool        reflect    = x_det.reflect();
   xml_comp_t  beam       = x_det.beampipe();
   string      det_name   = x_det.nameStr();
   int         id         = x_det.id();
-  Material    air        = lcdd.air();
+  Material    air        = description.air();
   DetElement  sdet       (det_name,id);
   Layering    layering   (x_det);
 
-  Volume      motherVol  = lcdd.pickMotherVolume(sdet);
+  Volume      motherVol  = description.pickMotherVolume(sdet);
 
   double      rmax       = dim.outer_r();
   double      rmin       = dim.inner_r();
@@ -116,7 +116,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         string slice_nam = _toString(sliceCount,"slice%d");
         /** Get slice parameters. */
         double sliceThickness = x_slice.thickness();
-        Material slice_mat = lcdd.material(x_slice.materialStr());
+        Material slice_mat = description.material(x_slice.materialStr());
 
         // Go to mid of this slice.
         sliceDisplZ += sliceThickness / 2;
@@ -140,7 +140,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
           sliceVol.setSensitiveDetector(sens);
         }
         // Set attributes of slice
-        slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
+        slice.setAttributes(description, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 
         // Place volume in layer
         PlacedVolume pv = layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ));
@@ -153,7 +153,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         ++sliceCount;
       }
       // Set attributes of slice
-      layer.setAttributes(lcdd, layerVol, x_layer.regionStr(), x_layer.limitsStr(), x_layer.visStr());
+      layer.setAttributes(description, layerVol, x_layer.regionStr(), x_layer.limitsStr(), x_layer.visStr());
 
       // Layer PV.
       PlacedVolume layerPV = envelopeVol.placeVolume(layerVol,Position(0,0,layerPosZ));
@@ -166,7 +166,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       ++layerCount;
     }
   }
-  sdet.setVisAttributes(lcdd, x_det.visStr(), envelopeVol);
+  sdet.setVisAttributes(description, x_det.visStr(), envelopeVol);
   
   // Reflect it.
   if ( reflect )  {

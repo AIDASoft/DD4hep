@@ -1229,7 +1229,7 @@ public:
       GetText() will return "This is ".
 
       WARNING: GetText() accesses a child node - don't become confused with the
-      similarly named TiXmlHandle::Text() and TiXmlNode::ToText() which are
+      similarly named TiXmlHandle_t::Text() and TiXmlNode::ToText() which are
       safe type casts on the referenced node.
   */
   const char* GetText() const;
@@ -1733,8 +1733,8 @@ private:
 };
 
 /**
-   A TiXmlHandle is a class that wraps a node pointer with null checks; this is
-   an incredibly useful thing. Note that TiXmlHandle is not part of the TinyXml
+   A TiXmlHandle_t is a class that wraps a node pointer with null checks; this is
+   an incredibly useful thing. Note that TiXmlHandle_t is not part of the TinyXml
    DOM structure. It is a separate utility class.
 
    Take an example:
@@ -1766,13 +1766,13 @@ private:
    // Finally do something useful.
    @endverbatim
 
-   And that doesn't even cover "else" cases. TiXmlHandle addresses the verbosity
-   of such code. A TiXmlHandle checks for null  pointers so it is perfectly safe
+   And that doesn't even cover "else" cases. TiXmlHandle_t addresses the verbosity
+   of such code. A TiXmlHandle_t checks for null  pointers so it is perfectly safe
    and correct to use:
 
    @verbatim
-   TiXmlHandle docHandle( &document );
-   TiXmlElement* child2 = docHandle.FirstChild( "Document" ).FirstChild( "Element" ).Child( "Child", 1 ).ToElement();
+   TiXmlHandle_t docHandle_t( &document );
+   TiXmlElement* child2 = docHandle_t.FirstChild( "Document" ).FirstChild( "Element" ).Child( "Child", 1 ).ToElement();
    if ( child2 )
    {
    // do something useful
@@ -1782,7 +1782,7 @@ private:
 
    It is also safe to copy handles - internally they are nothing more than node pointers.
    @verbatim
-   TiXmlHandle handleCopy = handle;
+   TiXmlHandle_t handleCopy = handle;
    @endverbatim
 
    What they should not be used for is iteration:
@@ -1791,7 +1791,7 @@ private:
    int i=0;
    while ( true )
    {
-   TiXmlElement* child = docHandle.FirstChild( "Document" ).FirstChild( "Element" ).Child( "Child", i ).ToElement();
+   TiXmlElement* child = docHandle_t.FirstChild( "Document" ).FirstChild( "Element" ).Child( "Child", i ).ToElement();
    if ( !child )
    break;
    // do something
@@ -1804,7 +1804,7 @@ private:
    to. Instead, prefer:
 
    @verbatim
-   TiXmlElement* child = docHandle.FirstChild( "Document" ).FirstChild( "Element" ).FirstChild( "Child" ).ToElement();
+   TiXmlElement* child = docHandle_t.FirstChild( "Document" ).FirstChild( "Element" ).FirstChild( "Child" ).ToElement();
 
    for( child; child; child=child->NextSiblingElement() )
    {
@@ -1812,61 +1812,61 @@ private:
    }
    @endverbatim
 */
-class TiXmlHandle {
+class TiXmlHandle_t {
 public:
   /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
-  TiXmlHandle(TiXmlNode* _node) {
+  TiXmlHandle_t(TiXmlNode* _node) {
     this->node = _node;
   }
   /// Copy constructor
-  TiXmlHandle(const TiXmlHandle& ref) {
+  TiXmlHandle_t(const TiXmlHandle_t& ref) {
     this->node = ref.node;
   }
-  TiXmlHandle operator=(const TiXmlHandle& ref) {
+  TiXmlHandle_t operator=(const TiXmlHandle_t& ref) {
     this->node = ref.node;
     return *this;
   }
 
   /// Return a handle to the first child node.
-  TiXmlHandle FirstChild() const;
+  TiXmlHandle_t FirstChild() const;
   /// Return a handle to the first child node with the given name.
-  TiXmlHandle FirstChild(const char * value) const;
+  TiXmlHandle_t FirstChild(const char * value) const;
   /// Return a handle to the first child element.
-  TiXmlHandle FirstChildElement() const;
+  TiXmlHandle_t FirstChildElement() const;
   /// Return a handle to the first child element with the given name.
-  TiXmlHandle FirstChildElement(const char * value) const;
+  TiXmlHandle_t FirstChildElement(const char * value) const;
 
   /** Return a handle to the "index" child with the given name.
       The first child is 0, the second 1, etc.
   */
-  TiXmlHandle Child(const char* value, int index) const;
+  TiXmlHandle_t Child(const char* value, int index) const;
   /** Return a handle to the "index" child.
       The first child is 0, the second 1, etc.
   */
-  TiXmlHandle Child(int index) const;
+  TiXmlHandle_t Child(int index) const;
   /** Return a handle to the "index" child element with the given name.
       The first child element is 0, the second 1, etc. Note that only TiXmlElements
       are indexed: other types are not counted.
   */
-  TiXmlHandle ChildElement(const char* value, int index) const;
+  TiXmlHandle_t ChildElement(const char* value, int index) const;
   /** Return a handle to the "index" child element.
       The first child element is 0, the second 1, etc. Note that only TiXmlElements
       are indexed: other types are not counted.
   */
-  TiXmlHandle ChildElement(int index) const;
+  TiXmlHandle_t ChildElement(int index) const;
 
 #ifdef TIXML_USE_STL
-  TiXmlHandle FirstChild(const std::string& _value) const {
+  TiXmlHandle_t FirstChild(const std::string& _value) const {
     return FirstChild(_value.c_str());
   }
-  TiXmlHandle FirstChildElement(const std::string& _value) const {
+  TiXmlHandle_t FirstChildElement(const std::string& _value) const {
     return FirstChildElement(_value.c_str());
   }
 
-  TiXmlHandle Child(const std::string& _value, int index) const {
+  TiXmlHandle_t Child(const std::string& _value, int index) const {
     return Child(_value.c_str(), index);
   }
-  TiXmlHandle ChildElement(const std::string& _value, int index) const {
+  TiXmlHandle_t ChildElement(const std::string& _value, int index) const {
     return ChildElement(_value.c_str(), index);
   }
 #endif

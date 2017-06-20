@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,7 +14,7 @@
 #define DD4HEP_GEOMETRY_CONDITIONSPROCESSOR_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionsMap.h"
 
@@ -22,10 +22,10 @@
 #include <memory>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the conditions part of the AIDA detector description toolkit
-  namespace Conditions   {
+  namespace cond   {
 
 
     /// Generic condition processor facade for the Conditons::Processor object
@@ -150,6 +150,6 @@ namespace DD4hep {
     ConditionsCollector<typename std::remove_reference<T>::type> conditionsCollector(ConditionsMap& m, T&& conditions)
     {  return ConditionsCollector<typename std::remove_reference<T>::type>(m, conditions); }
 
-  }       /* End namespace Conditions               */
-}         /* End namespace DD4hep                   */
+  }       /* End namespace cond               */
+}         /* End namespace dd4hep                   */
 #endif    /* DD4HEP_GEOMETRY_CONDITIONSPROCESSOR_H  */

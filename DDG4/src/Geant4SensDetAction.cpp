@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -31,8 +31,8 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 #if 0
 namespace {
@@ -85,9 +85,9 @@ bool Geant4Filter::operator()(const G4Step*) const {
 }
 
 /// Constructor. The detector element is identified by the name
-Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, LCDD& lcdd_ref)
+Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, Detector& description_ref)
   : Geant4Action(ctxt, nam), m_sensitiveDetector(0), m_sequence(0),
-    m_lcdd(lcdd_ref), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
+    m_detDesc(description_ref), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
@@ -95,7 +95,7 @@ Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElem
   }
   declareProperty("HitCreationMode", m_hitCreationMode = SIMPLE_MODE);
   m_sequence  = context()->kernel().sensitiveAction(m_detector.name());
-  m_sensitive = lcdd_ref.sensitiveDetector(det.name());
+  m_sensitive = description_ref.sensitiveDetector(det.name());
   m_readout   = m_sensitive.readout();
   m_segmentation = m_readout.segmentation();
 }
@@ -223,7 +223,7 @@ long long int Geant4Sensitive::volumeID(const G4Step* s) {
 
 /// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the step
 long long int Geant4Sensitive::cellID(const G4Step* s) {
-  StepHandler h(s);
+  Geant4StepHandler h(s);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID volID = volMgr.volumeID(h.preTouchable());
   if ( m_segmentation.isValid() )  {
@@ -244,7 +244,7 @@ Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, co
   m_needsControl = true;
   context()->sensitiveActions().insert(name(), this);
   /// Update the sensitive detector type, so that the proper instance is created
-  m_sensitive = context()->lcdd().sensitiveDetector(nam);
+  m_sensitive = context()->detectorDescription().sensitiveDetector(nam);
   m_sensitiveType = m_sensitive.type();
   m_sensitive.setType("Geant4SensDet");
   InstanceCount::increment(this);
@@ -397,7 +397,7 @@ void Geant4SensDetActionSequence::clear() {
 
 /// Default destructor
 Geant4SensDetSequences::~Geant4SensDetSequences() {
-  releaseObjects(m_sequences);
+  detail::releaseObjects(m_sequences);
   m_sequences.clear();
 }
 

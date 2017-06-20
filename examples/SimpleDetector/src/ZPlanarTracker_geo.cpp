@@ -14,12 +14,12 @@
 #include "DDRec/DetectorData.h"
 #include <exception>
 
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::DDRec ;
+using namespace dd4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep::rec ;
 using namespace DDSurfaces ;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sens)  {
   
   xml_det_t    x_det = e;
   std::string  name  = x_det.nameStr();
@@ -33,7 +33,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   PlacedVolume pv;
   
-  DDRec::ZPlanarData*  zPlanarData = new DDRec::ZPlanarData ;
+  rec::ZPlanarData*  zPlanarData = new rec::ZPlanarData ;
 
 
   double minRadius = 1e99 ;
@@ -106,7 +106,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     //-----------------------------------
     //  store the data in an extension to be used for reconstruction 
-    DDRec::ZPlanarData::LayerLayout thisLayer ;
+    rec::ZPlanarData::LayerLayout thisLayer ;
 
     thisLayer.sensorsPerLadder =  1 ; // for now only one planar sensor
     thisLayer.lengthSensor     =  2. * sens_zhalf ;
@@ -130,8 +130,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     //-----------------------------------
 
 
-    Material supp_mat     = lcdd.material( supp_matS ) ;
-    Material sens_mat     = lcdd.material( sens_matS ) ;
+    Material supp_mat     = description.material( supp_matS ) ;
+    Material sens_mat     = description.material( sens_matS ) ;
 
 
     //-------
@@ -165,8 +165,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     sens.setType("tracker");
     sens_vol.setSensitiveDetector(sens);
     
-    sens_vol.setAttributes( lcdd, x_det.regionStr(), x_det.limitsStr(), sens_vis );
-    supp_vol.setAttributes( lcdd, x_det.regionStr(), x_det.limitsStr(), supp_vis );
+    sens_vol.setAttributes( description, x_det.regionStr(), x_det.limitsStr(), sens_vis );
+    supp_vol.setAttributes( description, x_det.regionStr(), x_det.limitsStr(), supp_vis );
 
 
     //--------- loop over ladders ---------------------------
@@ -210,7 +210,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     
 
-    //    tracker.setVisAttributes(lcdd, x_det.visStr(),laddervol);
+    //    tracker.setVisAttributes(description, x_det.visStr(),laddervol);
     
 
     // is this needed ??
@@ -227,7 +227,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double z_half     =  minZhalf ; 
   
   Tube   tubeSolid (inner_r, outer_r, z_half ) ;
-  Volume tube_vol( name+"_inner_cylinder_air", tubeSolid ,  lcdd.material("Air") ) ;
+  Volume tube_vol( name+"_inner_cylinder_air", tubeSolid ,  description.material("Air") ) ;
   
   assembly.placeVolume( tube_vol , Transform3D() ) ;
   
@@ -241,9 +241,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 
 
-  tracker.addExtension< DDRec::ZPlanarData >( zPlanarData ) ;
+  tracker.addExtension< rec::ZPlanarData >( zPlanarData ) ;
   
-  Volume mother =  lcdd.pickMotherVolume( tracker ) ;
+  Volume mother =  description.pickMotherVolume( tracker ) ;
 
   pv = mother.placeVolume(assembly);
   

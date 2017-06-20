@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -33,10 +33,10 @@
 #include "DDG4/Geant4GeneratorWrapper.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     using std::string;
 
@@ -47,7 +47,7 @@ namespace DD4hep {
       x##Handle(const x##Handle& h) : action(h.action) { if ( action ) action->addRef();} \
       ~x##Handle()                  { if ( action) action->release();                   } \
       Geant4##x* release()          { Geant4##x* tmp = action; action=0; return tmp;    } \
-      operator DD4hep::Simulation::Geant4##x* () const  { return action;     }            \
+      operator dd4hep::sim::Geant4##x* () const  { return action;     }            \
       Geant4##x* operator->() const                     { return action;     }            \
       Geant4##x* get() const                            { return action;     }            \
     }
@@ -212,13 +212,13 @@ namespace DD4hep {
   }
 }
 
-typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
+typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 
 #include "DD4hep/detail/DetectorInterna.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
+using namespace dd4hep;
+using namespace dd4hep::sim;
 
 // CINT configuration
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
@@ -355,8 +355,8 @@ namespace {
 
 
 // somehow the symbol Geometry moved into global namespace. Redeclare it here
-//namespace Geometry {}
-//#pragma link C++ namespace Geometry;
+//namespace detail {}
+//#pragma link C++ namespace detail;
 
 #endif
 

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,10 +19,10 @@
 #include "DD4hep/ConditionsMap.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the alignment part of the AIDA detector description toolkit
-  namespace Alignments {
+  namespace align {
 
     /// Alignment calculator instance to handle alignment dependencies
     /**
@@ -32,8 +32,6 @@ namespace DD4hep {
      */
     class AlignmentsCalculator  {
     public:
-      typedef std::map<DetElement, Delta> Deltas;
-      typedef Conditions::ConditionsMap   Alignments;
       
       /// Object encapsulating the result of a computation call to the alignments calculator
       /**
@@ -67,7 +65,7 @@ namespace DD4hep {
       /// Assignment operator
       AlignmentsCalculator& operator=(const AlignmentsCalculator& mgr) = delete;
       /// Compute all alignment conditions of the internal dependency list
-      Result compute(const Deltas& deltas, Alignments& alignments)  const;
+      Result compute(const std::map<DetElement, Delta>& deltas, ConditionsMap& alignments)  const;
     };
 
     /// Add results
@@ -85,6 +83,6 @@ namespace DD4hep {
       return *this;
     }
 
-  }       /* End namespace Alignments                  */
-}         /* End namespace DD4hep                      */
+  }       /* End namespace align                  */
+}         /* End namespace dd4hep                      */
 #endif    /* DD4HEP_DDALIGN_ALIGNMENTCALCULATOR_H      */

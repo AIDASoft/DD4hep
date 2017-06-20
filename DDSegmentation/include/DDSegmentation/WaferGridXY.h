@@ -13,7 +13,7 @@
 #define MAX_GROUPS 100
 #define MAX_WAFERS 100
 
-namespace DD4hep {
+namespace dd4hep {
   namespace DDSegmentation {
 
     class WaferGridXY: public CartesianGrid {
@@ -130,5 +130,5 @@ namespace DD4hep {
     };
 
   } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 #endif /* DDSegmentation_WAFERGRIDXY_H_ */

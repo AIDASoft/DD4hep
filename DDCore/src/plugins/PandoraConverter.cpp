@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -14,23 +14,23 @@
 #define DD4HEP_GEOMETRY_PANDORACONVERTER_H
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/DetFactoryHelper.h"
 
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep {
+namespace dd4hep {
 
   /*
    *   XML namespace declaration
    */
-  namespace Geometry {
+  namespace detail {
 
     /** @class PandoraConverter PandoraConverter.h XML/PandoraConverter.h
      *
-     * Geometry converter from DD4hep to Geant 4.
+     * Geometry converter from dd4hep to Geant 4.
      *
      * @author  M.Frank
      * @version 1.0
@@ -45,14 +45,14 @@ namespace DD4hep {
       };
 
       /// Reference to detector description
-      LCDD& m_lcdd;
+      Detector& m_detDesc;
       /// Data pointer
       GeometryInfo* m_dataPtr;
 
     public:
 
       /// Initializing Constructor
-      PandoraConverter(LCDD& lcdd);
+      PandoraConverter(Detector& description);
 
       /// Standard destructor
       virtual ~PandoraConverter();
@@ -61,12 +61,12 @@ namespace DD4hep {
       xml_doc_t create(DetElement top);
 
     };
-  }    // End namespace XML
-}      // End namespace DD4hep
+  }    // End namespace xml
+}      // End namespace dd4hep
 
 #endif // DD4HEP_GEOMETRY_PANDORACONVERTER_H
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -79,7 +79,7 @@ namespace DD4hep {
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/DocumentHandler.h"
@@ -87,8 +87,8 @@ namespace DD4hep {
 // C/C++ include files
 #include <stdexcept>
 
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep;
 using namespace std;
 
 /// Helper constructor
@@ -97,8 +97,8 @@ PandoraConverter::GeometryInfo::GeometryInfo()
 }
 
 /// Initializing Constructor
-PandoraConverter::PandoraConverter(LCDD& lcdd)
-  : m_lcdd(lcdd), m_dataPtr(0) {
+PandoraConverter::PandoraConverter(Detector& description)
+  : m_detDesc(description), m_dataPtr(0) {
 }
 
 /// Standard destructor
@@ -114,17 +114,17 @@ xml_doc_t PandoraConverter::create(DetElement /* top */) {
     "<!--                                                               \n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description in C++       ++++\n"
-    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++   dd4hep Detector description generator.            ++++\n"
     "      ++++                                                     ++++\n"
     "      ++++                              M.Frank CERN/LHCb      ++++\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "-->\n"
     "<pandoraSetup>\n\0\0";
-  XML::DocumentHandler docH;
+  xml::DocumentHandler docH;
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
 
   xml_elt_t elt(0);
-  Header hdr = m_lcdd.header();
+  Header hdr = m_detDesc.header();
   geo.doc = docH.parse(empty_xml, sizeof(empty_xml));
   geo.doc_root = geo.doc.root();
   geo.doc_root.append(geo.doc_calorimeters = xml_elt_t(geo.doc, _Unicode(calorimeters)));
@@ -139,7 +139,7 @@ xml_doc_t PandoraConverter::create(DetElement /* top */) {
   return geo.doc;
 }
 
-static long create_lcdd(LCDD& /* lcdd */, int /* argc */, char** /* argv */) {
+static long create_description(Detector& /* description */, int /* argc */, char** /* argv */) {
   throw runtime_error("The pandora xml conversion plugin is not yet implemented");
   return 0;
 #if 0
@@ -897,4 +897,4 @@ static long create_lcdd(LCDD& /* lcdd */, int /* argc */, char** /* argv */) {
                                                         }
 #endif
 }
-DECLARE_APPLY(DD4hepGeometry2PANDORA,create_lcdd)
+DECLARE_APPLY(DD4hepGeometry2PANDORA,create_description)

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -13,17 +13,14 @@
 
 // Framework includes
 #include "DD4hep/IOV.h"
-#include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/ConditionsListener.h"
 #include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 
 using namespace std;
-using namespace DD4hep::Conditions;
+using namespace dd4hep;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(detail::ConditionObject);
 
 namespace {
   /// Simple cast union to perform pointer arithmetic on raw byte based memory
@@ -31,56 +28,56 @@ namespace {
     const char* character;
     const void* p_void;
     void**      pp_void;
-    const Interna::ConditionObject* o;
+    const detail::ConditionObject* o;
     _P(const void* val) { p_void = val; }
   };
 }
 
 /// Default constructor
-Interna::ConditionObject::ConditionObject()
+detail::ConditionObject::ConditionObject()
   : NamedObject(), value(), validity(), address(), comment(), data()
 {
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
-Interna::ConditionObject::ConditionObject(const string& nam,const string& tit)
+detail::ConditionObject::ConditionObject(const string& nam,const string& tit)
   : NamedObject(nam, tit), value(), validity(), address(), comment(), data()
 {
   InstanceCount::increment(this);
 }
 
 /// Standard Destructor
-Interna::ConditionObject::~ConditionObject()  {
+detail::ConditionObject::~ConditionObject()  {
   InstanceCount::decrement(this);
 }
 
 /// Data offset from the opaque data block pointer to the condition
-size_t Interna::ConditionObject::offset()   {
+size_t detail::ConditionObject::offset()   {
   static _P p((void*)0x1000);
-  static size_t off = _P(&p.o->data.grammar).character - p.character + sizeof(p.o->data.grammar);
+  static size_t off = _P(&p.o->data.grammar).character - p.character + sizeof(OpaqueData::grammar);
   return off;
 }
 
 /// Access the bound data payload. Exception id object is unbound
-void* Interna::ConditionObject::payload() const   {
+void* detail::ConditionObject::payload() const   {
   return *(_P(_P(this).character+offset()).pp_void);
 }
 
 /// Move data content: 'from' will be reset to NULL
-Interna::ConditionObject& Interna::ConditionObject::move(ConditionObject& /* from */)   {
+detail::ConditionObject& detail::ConditionObject::move(ConditionObject& /* from */)   {
   return *this;
 }
 
 /// Access safely the IOV
-const Condition::iov_type* Interna::ConditionObject::iovData() const    {
+const dd4hep::IOV* detail::ConditionObject::iovData() const    {
   if ( iov ) return iov;
   invalidHandleError<IOV>();
   return 0;
 }
 
 /// Access safely the IOV-type
-const DD4hep::IOVType* Interna::ConditionObject::iovType() const    {
+const dd4hep::IOVType* detail::ConditionObject::iovType() const    {
   if ( iov && iov->iovType ) return iov->iovType;
   invalidHandleError<IOVType>();
   return 0;

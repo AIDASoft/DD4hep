@@ -1,4 +1,4 @@
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Fields.h"
 
@@ -19,6 +19,7 @@
 
 using namespace std ;
 using namespace dd4hep ;
+using namespace dd4hep::detail;
 using namespace dd4hep::rec ;
 
 //=============================================================================
@@ -27,7 +28,7 @@ int main(int argc, char** argv ){
     
   if( argc < 3 ) {
     std::cout << " usage: convertToGear plugin compact.xml [gear_file.xml]" << std::endl 
-	      << "  plugin: name of a plugin with a signature \"long int (LCDD*, int, char**)\" \n " 
+	      << "  plugin: name of a plugin with a signature \"long int (Detector*, int, char**)\" \n " 
 	      << "  e.g. GearForILD (same as 'default'), GearForCLIC, ..." << std::endl ; 
     
     exit(1) ;
@@ -39,11 +40,11 @@ int main(int argc, char** argv ){
 
   std::string outFile = ( argc>3  ?  argv[3]  : ""  ) ;
 
-  LCDD& lcdd = LCDD::getInstance();
+  Detector& description = Detector::getInstance();
 
-  lcdd.fromCompact( inFile );
+  description.fromCompact( inFile );
 
-  gear::GearMgr* gearMgr = ( pluginName == "default" ) ?  createGearMgr( lcdd )  :   createGearMgr( lcdd , pluginName )  ;
+  gear::GearMgr* gearMgr = ( pluginName == "default" ) ?  createGearMgr( description )  :   createGearMgr( description , pluginName )  ;
  
   //----------------------------------------------------------------------------------
 

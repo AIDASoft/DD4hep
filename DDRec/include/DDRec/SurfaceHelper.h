@@ -1,5 +1,5 @@
-#ifndef DDRec_SurfaceHelper_H_
-#define DDRec_SurfaceHelper_H_
+#ifndef rec_SurfaceHelper_H_
+#define rec_SurfaceHelper_H_
 
 #include "DDRec/Surface.h"
 
@@ -23,7 +23,7 @@ namespace dd4hep {
       ~SurfaceHelper();
       
       /** Get the list of all surfaces added to this DetElement and all its daughters -
-       *  instantiate SurfaceHelper with lcdd.world() to get all surfaces.
+       *  instantiate SurfaceHelper with description.world() to get all surfaces.
        */
       const SurfaceList& surfaceList() { return _sL ; }
 
@@ -41,4 +41,4 @@ namespace dd4hep {
 
 namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
 
-#endif // DDRec_SurfaceHelper_H_
+#endif // rec_SurfaceHelper_H_

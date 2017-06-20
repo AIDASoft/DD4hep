@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +21,7 @@
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
 
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include <G4Version.hh>
 
 // lcio include files
@@ -34,12 +34,12 @@
 using namespace lcio ;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   class ComponentCast;
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     class Geant4ParticleMap;
 
@@ -80,13 +80,12 @@ namespace DD4hep {
       virtual void begin(const G4Event* event);
     };
 
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4OUTPUT2LCIO_H
 
-// $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -100,7 +99,7 @@ namespace DD4hep {
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4DataConversion.h"
 #include "DDG4/Geant4Context.h"
@@ -124,8 +123,8 @@ namespace DD4hep {
 #include "IMPL/MCParticleImpl.h"
 #include "UTIL/ILDConf.h"
 
-using namespace DD4hep::Simulation;
-using namespace DD4hep;
+using namespace dd4hep::sim;
+using namespace dd4hep;
 using namespace std;
 namespace {
   G4Mutex action_mutex=G4MUTEX_INITIALIZER;
@@ -147,7 +146,7 @@ Geant4Output2LCIO::~Geant4Output2LCIO()  {
   G4AutoLock protection_lock(&action_mutex);
   if ( m_file )  {
     m_file->close();
-    deletePtr(m_file);
+    detail::deletePtr(m_file);
   }
   InstanceCount::decrement(this);
 }
@@ -188,7 +187,7 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   rh->parameters().setValue("GEANT4Version", G4Version);
   rh->parameters().setValue("DD4HEPVersion", versionString());
   rh->setRunNumber(m_runNo=run->GetRunID());
-  rh->setDetectorName(context()->lcdd().header().name());
+  rh->setDetectorName(context()->detectorDescription().header().name());
   m_file->writeRunHeader(rh);
 }
 
@@ -201,7 +200,7 @@ void Geant4Output2LCIO::begin(const G4Event* /* event */)  {
 
 /// Data conversion interface for MC particles to LCIO format
 lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* particles)    {
-  typedef ReferenceBitMask<const int> PropertyMask;
+  typedef detail::ReferenceBitMask<const int> PropertyMask;
   typedef Geant4ParticleMap::ParticleMap ParticleMap;
   const ParticleMap& pm = particles->particleMap;
   size_t nparts = pm.size();
@@ -306,7 +305,7 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
   e->setRunNumber(m_runNo);
   e->setEventNumber(ctxt.context->GetEventID());
-  e->setDetectorName(context()->lcdd().header().name());
+  e->setDetectorName(context()->detectorDescription().header().name());
   e->setRunNumber(m_runNo);
   lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
   Geant4ParticleMap* part_map = context()->event().extension<Geant4ParticleMap>(false);

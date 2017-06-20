@@ -1,15 +1,27 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank/M.Clemencic
+//
+//==========================================================================
+
 // Include files
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/LCDD.h"
-//#include "DetDesc/MyDetExtension.h"
+#include "DD4hep/Detector.h"
 
 #include <iostream>
 #include <map>
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 namespace  {
   struct MyDetExtension  {
@@ -35,7 +47,7 @@ namespace  {
 }
 typedef MyDetExtension DetectorExtension;
 
-static Ref_t create_detector(LCDD &lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector sens)  {
   xml_det_t x_det = e;	//xml-detelemnt of the detector taken as an argument
   string det_name = x_det.nameStr();	//det_name is the name of the xml-detelement
   Assembly assembly (det_name);
@@ -63,9 +75,9 @@ static Ref_t create_detector(LCDD &lcdd, xml_h e, SensitiveDetector sens)  {
   double dim_y = det_dim.y();    // det_y is the y dimension of the xml-detelement
   double dim_z = det_dim.z();    // det_z is the z dimension of the xml-detelement
 
-  Material mat = lcdd.material("Silicon");
+  Material mat = description.material("Silicon");
 
-  Volume motherVol = lcdd.pickMotherVolume(sdet); //the mothers volume of our detector
+  Volume motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
 
   PlacedVolume pv;	//struct of Handle giving the volume id(ayto pou 8a kanw volume kai 8a to steilw me setplacement),dld o detector mou
 
@@ -96,7 +108,7 @@ static Ref_t create_detector(LCDD &lcdd, xml_h e, SensitiveDetector sens)  {
     }
   }
   Volume m_volume(det_name, Box(dim_x, dim_y, dim_z), mat);	//as parameters it needs name,solid,material
-  m_volume.setVisAttributes(lcdd.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
+  m_volume.setVisAttributes(description.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
   pv = motherVol.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
 
   xml_comp_t dtctr = x_det;
@@ -106,8 +118,8 @@ static Ref_t create_detector(LCDD &lcdd, xml_h e, SensitiveDetector sens)  {
     m_volume.setSensitiveDetector(sens);
   }
   sdet.setPlacement(pv);
-  // Support additional test if LCDD_InhibitConstants is set to TRUE
-  lcdd.constant<double>("world_side");
+  // Support additional test if Detector_InhibitConstants is set to TRUE
+  description.constant<double>("world_side");
   return sdet;
 }
 DECLARE_DETELEMENT(MiniTelPixel,create_detector)

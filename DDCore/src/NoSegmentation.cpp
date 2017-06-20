@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -19,14 +19,14 @@
 // C/C++ include files
 
 using namespace std;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
 
 Position NoSegmentation::position(const CellID& id) const   {
   return Position(access()->implementation->position(id));
 }
 
 /// determine the cell ID based on the position
-DD4hep::CellID NoSegmentation::cellID(const Position& local,
+dd4hep::CellID NoSegmentation::cellID(const Position& local,
                                        const Position& global,
                                        const VolumeID& volID) const
 {

@@ -7,7 +7,7 @@ from SystemOfUnits import *
 #
 """
 
-   DD4hep simulation example setup using the python configuration
+   dd4hep simulation example setup using the python configuration
 
    @author  M.Frank
    @version 1.0

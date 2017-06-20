@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,11 +20,11 @@
 // C/C++ include files
 #include <sstream>
 #include "TClass.h"
-#include "DD4hep/ToStream.h"
+#include "DDParsers/ToStream.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
+using namespace dd4hep;
+using namespace dd4hep::align;
 
 /// Initializing constructor
 AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* m, const string& pref, int flg)
@@ -68,7 +68,7 @@ int AlignedVolumePrinter::operator()(Alignment a)  const  {
 }
 
 /// Default printout of an alignment entry
-void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix, Alignment a)   {
+void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix, Alignment a)   {
   if ( a.isValid() )   {
     Alignment::Object* ptr = a.ptr();
     const AlignmentData& data = a.data();
@@ -113,13 +113,12 @@ static string _transformPoint2Detector(const AlignmentData& data, const Position
   return text;
 }
 
-void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix,
+void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix,
                                         const string& opt, DetElement de, Alignment alignment)
 {
-  using Geometry::Box;
   const string& tag = prefix;
   const AlignmentData& align_data = alignment.data();
-  Conditions::Condition  align_cond;// = align_data.condition;
+  Condition  align_cond;// = align_data.condition;
   const Delta& align_delta = align_data.delta;
   string par = de.parent().isValid() ? de.parent().path() : string();
   Box bbox = de.placement().volume().solid();
@@ -192,7 +191,7 @@ void DD4hep::Alignments::printAlignment(PrintLevel lvl, const string& prefix,
 }
 
 /// Default printout of a detector element entry
-void DD4hep::Alignments::printElement(PrintLevel prt_level, const string& prefix, DetElement de, ConditionsMap& pool)   {
+void dd4hep::align::printElement(PrintLevel prt_level, const string& prefix, DetElement de, ConditionsMap& pool)   {
   string tag = prefix+"Element";
   if ( de.isValid() )  {
     vector<Alignment> alignments;
@@ -207,12 +206,7 @@ void DD4hep::Alignments::printElement(PrintLevel prt_level, const string& prefix
 }
 
 /// PrintElement placement with/without alignment applied
-void DD4hep::Alignments::printElementPlacement(PrintLevel lvl, const string& prefix, DetElement de, ConditionsMap& pool)
-{
-  using Geometry::Box;
-  using Geometry::Solid;
-  using Geometry::Volume;
-  using Geometry::PlacedVolume;
+void dd4hep::align::printElementPlacement(PrintLevel lvl, const string& prefix, DetElement de, ConditionsMap& pool)   {
   string tag = prefix+"Element";
   if ( de.isValid() )  {
     char text[132];

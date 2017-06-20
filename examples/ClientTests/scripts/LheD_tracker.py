@@ -7,7 +7,7 @@ from SystemOfUnits import *
 #
 """
 
-   DD4hep simulation example setup using the python configuration
+   dd4hep simulation example setup using the python configuration
 
    @author  M.Frank
    @version 1.0
@@ -15,12 +15,12 @@ from SystemOfUnits import *
 """
 def run():
   kernel = DDG4.Kernel()
-  lcdd = kernel.lcdd()
+  description = kernel.detectorDescription()
   
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/LheD_tracker.xml")
 
-  DDG4.importConstants(lcdd,debug=False)
+  DDG4.importConstants(description,debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
 

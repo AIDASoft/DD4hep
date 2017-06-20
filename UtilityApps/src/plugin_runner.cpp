@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -45,23 +45,23 @@ namespace {
     if ( arguments.plugins.empty() )
       usage();
 
-    LCDD& lcdd = dd4hep_instance();
+    Detector& description = dd4hep_instance();
     // Load compact files if required by plugin
     if ( !arguments.geo_files.empty() )   {
-      load_compact(lcdd, arguments);
+      load_compact(description, arguments);
     }
     else  {
       cout << "geoPluginRun: No geometry input supplied. No geometry will be loaded." << endl;
     }
     // Create volume manager and populate it required
-    if ( arguments.volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+    if ( arguments.volmgr  ) run_plugin(description,"DD4hepVolumeManager",0,0);
     // Execute plugin
     for(size_t i=0; i<arguments.plugins.size(); ++i)   {
       std::vector<const char*>& plug = arguments.plugins[i];
       int num_arg = int(plug.size())-2;
-      run_plugin(lcdd,plug[0], num_arg,(char**)&plug[1]);
+      run_plugin(description,plug[0], num_arg,(char**)&plug[1]);
     }
-    if ( arguments.destroy ) delete &lcdd;
+    if ( arguments.destroy ) delete &description;
     return 0;
   }
 }

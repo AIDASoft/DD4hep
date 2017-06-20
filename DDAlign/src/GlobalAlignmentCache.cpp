@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DDAlign/GlobalAlignmentCache.h"
 #include "DDAlign/GlobalAlignmentOperators.h"
@@ -22,9 +22,9 @@
 #include "TGeoManager.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Alignments;
-using namespace DD4hep::Alignments::DDAlign_standard_operations;
+using namespace dd4hep;
+using namespace dd4hep::align;
+using namespace dd4hep::align::DDAlign_standard_operations;
 typedef GlobalAlignmentStack::StackEntry Entry;
 
 DetElement _detector(DetElement child)   {
@@ -36,12 +36,12 @@ DetElement _detector(DetElement child)   {
       return child;
     return _detector(p);
   }
-  throw runtime_error("DD4hep: DetElement cannot determine detector parent [Invalid handle]");
+  throw runtime_error("dd4hep: DetElement cannot determine detector parent [Invalid handle]");
 }
 
 /// Default constructor
-GlobalAlignmentCache::GlobalAlignmentCache(LCDD& lcdd, const string& sdPath, bool top)
-  : m_lcdd(lcdd), m_sdPath(sdPath), m_sdPathLen(sdPath.length()), m_refCount(1), m_top(top)
+GlobalAlignmentCache::GlobalAlignmentCache(Detector& description, const string& sdPath, bool top)
+  : m_detDesc(description), m_sdPath(sdPath), m_sdPathLen(sdPath.length()), m_refCount(1), m_top(top)
 {
 }
 
@@ -49,7 +49,7 @@ GlobalAlignmentCache::GlobalAlignmentCache(LCDD& lcdd, const string& sdPath, boo
 GlobalAlignmentCache::~GlobalAlignmentCache()   {
   int nentries = (int)m_cache.size();
   int nsect = (int)m_detectors.size();
-  releaseObjects(m_detectors);
+  detail::releaseObjects(m_detectors);
   m_cache.clear();
   printout(INFO,"GlobalAlignmentCache",
            "Destroy cache for subdetector %s [%d section(s), %d entrie(s)]",
@@ -71,26 +71,26 @@ int GlobalAlignmentCache::release()   {
 }
 
 /// Create and install a new instance tree
-GlobalAlignmentCache* GlobalAlignmentCache::install(LCDD& lcdd)   {
-  GlobalAlignmentCache* cache = lcdd.extension<GlobalAlignmentCache>(false);
+GlobalAlignmentCache* GlobalAlignmentCache::install(Detector& description)   {
+  GlobalAlignmentCache* cache = description.extension<GlobalAlignmentCache>(false);
   if ( !cache )  {
-    cache = new GlobalAlignmentCache(lcdd,"world",true);
-    lcdd.addExtension<GlobalAlignmentCache>(cache);
+    cache = new GlobalAlignmentCache(description,"world",true);
+    description.addExtension<GlobalAlignmentCache>(cache);
   }
   return cache;
 }
 
 /// Unregister and delete a tree instance
-void GlobalAlignmentCache::uninstall(LCDD& lcdd)   {
-  if ( lcdd.extension<GlobalAlignmentCache>(false) )  {
-    lcdd.removeExtension<GlobalAlignmentCache>(true);
+void GlobalAlignmentCache::uninstall(Detector& description)   {
+  if ( description.extension<GlobalAlignmentCache>(false) )  {
+    description.removeExtension<GlobalAlignmentCache>(true);
   }
 }
 
 /// Add a new entry to the cache. The key is the placement path
 bool GlobalAlignmentCache::insert(GlobalAlignment alignment)  {
   TGeoPhysicalNode* pn = alignment.ptr();
-  unsigned int index = hash32(pn->GetName()+m_sdPathLen);
+  unsigned int index = detail::hash32(pn->GetName()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
   printout(ALWAYS,"GlobalAlignmentCache","Section: %s adding entry: %s",
            name().c_str(),alignment->GetName());
@@ -105,7 +105,7 @@ bool GlobalAlignmentCache::insert(GlobalAlignment alignment)  {
 GlobalAlignmentCache* GlobalAlignmentCache::section(const string& path_name) const   {
   size_t idx, idq;
   if ( path_name[0] != '/' )   {
-    return section(m_lcdd.world().placementPath()+'/'+path_name);
+    return section(m_detDesc.world().placementPath()+'/'+path_name);
   }
   else if ( (idx=path_name.find('/',1)) == string::npos )  {
     return (m_sdPath == path_name.c_str()+1) ? (GlobalAlignmentCache*)this : 0;
@@ -122,7 +122,7 @@ GlobalAlignmentCache* GlobalAlignmentCache::section(const string& path_name) con
 /// Retrieve an alignment entry by its placement path
 GlobalAlignment GlobalAlignmentCache::get(const string& path_name) const   {
   size_t idx, idq;
-  unsigned int index = hash32(path_name.c_str()+m_sdPathLen);
+  unsigned int index = detail::hash32(path_name.c_str()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
   if ( i != m_cache.end() )  {
     return GlobalAlignment((*i).second);
@@ -131,7 +131,7 @@ GlobalAlignment GlobalAlignmentCache::get(const string& path_name) const   {
     return GlobalAlignment(0);
   }
   else if ( path_name[0] != '/' )   {
-    return get(m_lcdd.world().placementPath()+'/'+path_name);
+    return get(m_detDesc.world().placementPath()+'/'+path_name);
   }
   else if ( (idx=path_name.find('/',1)) == string::npos )  {
     // Escape: World volume and not found in cache --> not present
@@ -165,7 +165,7 @@ vector<GlobalAlignment> GlobalAlignmentCache::matches(const string& match, bool 
 
 /// Close existing transaction stack and apply all alignments
 void GlobalAlignmentCache::commit(GlobalAlignmentStack& stack)   {
-  TGeoManager& mgr = m_lcdd.manager();
+  TGeoManager& mgr = m_detDesc.manager();
   mgr.UnlockGeometry();
   apply(stack);
   mgr.LockGeometry();
@@ -175,7 +175,7 @@ void GlobalAlignmentCache::commit(GlobalAlignmentStack& stack)   {
 GlobalAlignmentCache* GlobalAlignmentCache::subdetectorAlignments(const string& nam)    {
   SubdetectorAlignments::const_iterator i = m_detectors.find(nam);
   if ( i == m_detectors.end() )   {
-    GlobalAlignmentCache* ptr = new GlobalAlignmentCache(m_lcdd,nam,false);
+    GlobalAlignmentCache* ptr = new GlobalAlignmentCache(m_detDesc,nam,false);
     m_detectors.insert(make_pair(nam,ptr));
     return ptr;
   }
@@ -186,7 +186,7 @@ GlobalAlignmentCache* GlobalAlignmentCache::subdetectorAlignments(const string& 
 void GlobalAlignmentCache::apply(GlobalAlignmentStack& stack)    {
   typedef map<string,DetElement> DetElementUpdates;
   typedef map<DetElement,vector<Entry*> > sd_entries_t;
-  TGeoManager& mgr = m_lcdd.manager();
+  TGeoManager& mgr = m_detDesc.manager();
   DetElementUpdates detelt_updates;
   sd_entries_t all;
 

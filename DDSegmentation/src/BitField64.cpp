@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-namespace DD4hep{
+namespace dd4hep{
 
 namespace DDSegmentation {
   

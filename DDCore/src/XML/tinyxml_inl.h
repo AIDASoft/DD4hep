@@ -1095,7 +1095,7 @@ bool TiXmlDocument::LoadFile( FILE* file, TiXmlEncoding encoding )
       ++p;
     }
   }
-  // Handle any left over characters.
+  // Handle_t any left over characters.
   if ( p-lastPos ) {
     data.append( lastPos, p-lastPos );
   }
@@ -1653,55 +1653,55 @@ std::string& operator<< (std::string& out, const TiXmlNode& base )
 #endif
 
 
-TiXmlHandle TiXmlHandle::FirstChild() const
+TiXmlHandle_t TiXmlHandle_t::FirstChild() const
 {
   if ( node )
   {
     TiXmlNode* child = node->FirstChild();
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::FirstChild( const char * value ) const
+TiXmlHandle_t TiXmlHandle_t::FirstChild( const char * value ) const
 {
   if ( node )
   {
     TiXmlNode* child = node->FirstChild( value );
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::FirstChildElement() const
+TiXmlHandle_t TiXmlHandle_t::FirstChildElement() const
 {
   if ( node )
   {
     TiXmlElement* child = node->FirstChildElement();
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::FirstChildElement( const char * value ) const
+TiXmlHandle_t TiXmlHandle_t::FirstChildElement( const char * value ) const
 {
   if ( node )
   {
     TiXmlElement* child = node->FirstChildElement( value );
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::Child( int count ) const
+TiXmlHandle_t TiXmlHandle_t::Child( int count ) const
 {
   if ( node )
   {
@@ -1714,13 +1714,13 @@ TiXmlHandle TiXmlHandle::Child( int count ) const
       // nothing
     }
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::Child( const char* value, int count ) const
+TiXmlHandle_t TiXmlHandle_t::Child( const char* value, int count ) const
 {
   if ( node )
   {
@@ -1733,13 +1733,13 @@ TiXmlHandle TiXmlHandle::Child( const char* value, int count ) const
       // nothing
     }
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::ChildElement( int count ) const
+TiXmlHandle_t TiXmlHandle_t::ChildElement( int count ) const
 {
   if ( node )
   {
@@ -1752,13 +1752,13 @@ TiXmlHandle TiXmlHandle::ChildElement( int count ) const
       // nothing
     }
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 
-TiXmlHandle TiXmlHandle::ChildElement( const char* value, int count ) const
+TiXmlHandle_t TiXmlHandle_t::ChildElement( const char* value, int count ) const
 {
   if ( node )
   {
@@ -1771,9 +1771,9 @@ TiXmlHandle TiXmlHandle::ChildElement( const char* value, int count ) const
       // nothing
     }
     if ( child )
-      return TiXmlHandle( child );
+      return TiXmlHandle_t( child );
   }
-  return TiXmlHandle( 0 );
+  return TiXmlHandle_t( 0 );
 }
 
 

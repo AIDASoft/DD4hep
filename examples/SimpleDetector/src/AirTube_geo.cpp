@@ -14,12 +14,12 @@
 #include "DDRec/DetectorData.h"
 
 
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::DDRec ;
+using namespace dd4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep::rec ;
 using namespace DDSurfaces ;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector /* sens */)  {
+static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector /* sens */)  {
   
   xml_det_t    x_det = e;
   std::string  name  = x_det.nameStr();
@@ -41,7 +41,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector /* sens */)  
 
   Tube   tubeSolid (inner_r, outer_r, z_half ) ;
 
-  Volume tube_vol( name+"_inner_cylinder_air", tubeSolid ,  lcdd.material("Air") ) ;
+  Volume tube_vol( name+"_inner_cylinder_air", tubeSolid ,  description.material("Air") ) ;
   
   Vector3D ocyl(  inner_r + 0.5*tube_thick , 0. , 0. ) ;
   
@@ -52,7 +52,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector /* sens */)  
 
   //--------------------------------------
 
-  Volume mother =  lcdd.pickMotherVolume( airTube ) ;
+  Volume mother =  description.pickMotherVolume( airTube ) ;
 
   pv = mother.placeVolume( tube_vol ) ;
   

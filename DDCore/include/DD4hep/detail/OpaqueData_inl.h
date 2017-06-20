@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,7 +27,7 @@
 #include "DD4hep/BasicGrammar.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   namespace   {
     template <typename T> static void opaqueCopyObject(void* t, const void* s)  {
@@ -83,10 +83,10 @@ namespace DD4hep {
     return ret;
   }
 
-} /* End namespace DD4hep               */
+} /* End namespace dd4hep               */
 
 #define DD4HEP_DEFINE_OPAQUEDATA_TYPE(x)                               \
-  namespace DD4hep {                                                   \
+  namespace dd4hep {                                                   \
     template x& OpaqueDataBlock::bind<x>();                            \
     template x& OpaqueDataBlock::bind<x>(const std::string& val);      \
   }

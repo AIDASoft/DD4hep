@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "XML/Conversions.h"
 #include "XML/XMLElements.h"
@@ -23,9 +23,9 @@
 #include <stdexcept>
 
 /*
- *   DD4hep namespace declaration
+ *   dd4hep namespace declaration
  */
-namespace DD4hep  {
+namespace dd4hep  {
 
   namespace   {
     /// Some utility class to specialize the converters:
@@ -41,8 +41,8 @@ namespace DD4hep  {
   template <> void Converter<arg>::operator()(xml_h e)  const;
 }
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace dd4hep;
+using namespace dd4hep::detail;
 
 /** Convert arg objects
  *
@@ -70,11 +70,11 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
   vector<const char*> cargs;
   //args.push_back("plugin:"+nam);
 
-  xml_coll_t(e,"arg").for_each(Converter<arg>(lcdd,&args));
+  xml_coll_t(e,"arg").for_each(Converter<arg>(description,&args));
   for(vector<string>::const_iterator i=args.begin(); i!=args.end();++i)
     cargs.push_back((*i).c_str());
   printout(INFO,"ConverterPlugin","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
-  lcdd.apply(nam.c_str(),int(cargs.size()),(char**)&cargs[0]);
+  description.apply(nam.c_str(),int(cargs.size()),(char**)&cargs[0]);
 }
 
 /** Convert include_file objects
@@ -84,13 +84,13 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
  *  @date    01/04/2014
  */
 template <> void Converter<include_file>::operator()(xml_h element) const   {
-  XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+  xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
   string tag = node.tag();
   if ( tag == "plugin" )
-    Converter<plugin>(lcdd,param)(node);
+    Converter<plugin>(description,param)(node);
   else if ( tag == "plugins" )
-    Converter<plugins>(lcdd,param)(node);
+    Converter<plugins>(description,param)(node);
   else
     throw runtime_error("Undefined tag name in XML structure:"+tag+" XML parsing abandoned.");
 }
@@ -102,12 +102,12 @@ template <> void Converter<include_file>::operator()(xml_h element) const   {
  *  @date    01/04/2014
  */
 template <> void Converter<plugins>::operator()(xml_h e)  const  {
-  xml_coll_t(e,"include").for_each(Converter<include_file>(lcdd,param));
-  xml_coll_t(e,"plugin").for_each(Converter<plugin>(lcdd,param));
+  xml_coll_t(e,"include").for_each(Converter<include_file>(description,param));
+  xml_coll_t(e,"plugin").for_each(Converter<plugin>(description,param));
 }
 
-static long handle_plugins(lcdd_t& lcdd, const xml_h& element) {
-  (DD4hep::Converter < plugins > (lcdd))(element);
+static long handle_plugins(Detector& description, const xml_h& element) {
+  (dd4hep::Converter < plugins > (description))(element);
   return 1;
 }
 DECLARE_XML_DOC_READER(plugins,handle_plugins)

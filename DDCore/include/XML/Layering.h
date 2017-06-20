@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +21,7 @@
 #include <vector>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Class to describe the slice of one layer in a layering stack
   /**
@@ -35,20 +35,16 @@ namespace DD4hep {
     double _thickness;
     std::string _material;
     /// Initializing constructor
-    LayerSlice(bool s, double t, const std::string& m);
+    LayerSlice(bool sens, double thick, const std::string& mat);
     /// Copy constructor
-    LayerSlice(const LayerSlice& c);
+    LayerSlice(const LayerSlice& copy) = default;
     /// Assignment operator
-    LayerSlice& operator=(const LayerSlice& c);
+    LayerSlice& operator=(const LayerSlice& copy) = default;
   };
 
   /// Initializing constructor
-  inline LayerSlice::LayerSlice(bool s, double t, const std::string& m)
-    : _sensitive(s), _thickness(t), _material(m) {
-  }
-  /// Copy constructor
-  inline LayerSlice::LayerSlice(const LayerSlice& c)
-    : _sensitive(c._sensitive), _thickness(c._thickness), _material(c._material) {
+  inline LayerSlice::LayerSlice(bool sens, double thick, const std::string& mat)
+    : _sensitive(sens), _thickness(thick), _material(mat) {
   }
 
   /// Class to describe one layer in a layering stack
@@ -59,16 +55,16 @@ namespace DD4hep {
    */
   class Layer {
   public:
-    double _thickness;
-    double _preOffset;
+    double _thickness = 0.0;
+    double _preOffset = 0.0;
     std::vector<LayerSlice> _slices;
 
     /// Default constructor
-    Layer();
+    Layer() = default;
     /// Copy constructor
-    Layer(const Layer& c);
+    Layer(const Layer& copy) = default;
     /// Assignment operator
-    Layer& operator=(const Layer& c);
+    Layer& operator=(const Layer& copy) = default;
 
     void compute();
     double thickness() const {
@@ -77,15 +73,10 @@ namespace DD4hep {
     double thicknessWithPreOffset() const {
       return _thickness + _preOffset;
     }
-    void add(const LayerSlice& s) {
-      _slices.push_back(s);
+    void add(const LayerSlice& slice) {
+      _slices.push_back(slice);
     }
   };
-
-  /// Default constructor
-  inline Layer::Layer() : _thickness(0.), _preOffset(0.) {
-  }
-
 
   /// Class to describe a layering stack
   /**
@@ -97,17 +88,13 @@ namespace DD4hep {
   public:
     std::vector<Layer*> _layers;
     /// Default constructor
-    LayerStack();
+    LayerStack() = default;
     /// Copy constructor
-    LayerStack(const LayerStack& c);
+    LayerStack(const LayerStack& copy) = default;
     /// Default destructor
-    ~LayerStack() {
-    }
+    ~LayerStack()  = default;
     /// Assignment operator
-    LayerStack& operator=(const LayerStack& c) {
-      if ( &c != this ) _layers = c._layers;
-      return *this;
-    }
+    LayerStack& operator=(const LayerStack& copy)  = default;
     std::vector<Layer*>& layers() {
       return _layers;
     }
@@ -120,14 +107,6 @@ namespace DD4hep {
     }
   };
 
-  /// Default constructor
-  inline LayerStack::LayerStack() {
-  }
-  /// Copy constructor
-  inline LayerStack::LayerStack(const LayerStack& c)
-    : _layers(c._layers) {
-  }
-
   /// Class to convert a layering object from the compact notation
   /**
    *  \author  M.Frank
@@ -138,11 +117,11 @@ namespace DD4hep {
   public:
     LayerStack _stack;
     /// Default constructor
-    Layering();
+    Layering() = default;
     /// Initializing constructor
-    Layering(XML::Element e);
+    Layering(xml::Element element);
     /// Default destructor
-    virtual ~Layering();
+    ~Layering() = default;
 
     std::vector<Layer*>& layers() {
       return _stack.layers();
@@ -152,14 +131,14 @@ namespace DD4hep {
     double totalThickness() const {
       return _stack.totalThickness();
     }
-    double singleLayerThickness(XML::Element e) const;
-    double absorberThicknessInLayer(XML::Element e) const;
-    void sensitivePositionsInLayer(XML::Element e,std::vector<double>& sens_pos) const;
+    double singleLayerThickness(xml::Element e) const;
+    double absorberThicknessInLayer(xml::Element e) const;
+    void sensitivePositionsInLayer(xml::Element e,std::vector<double>& sens_pos) const;
 
   };
 
   /// Namespace containing utilities to parse XML files using XercesC or TinyXML
-  namespace XML {
+  namespace xml {
 
     /// XML converter for layering objects
     /**
@@ -180,5 +159,5 @@ namespace DD4hep {
       : Element(e) {
     }
   }
-}         /* End namespace DD4hep          */
+}         /* End namespace dd4hep          */
 #endif    /* DD4HEP_DDCORE_LAYERING_H      */

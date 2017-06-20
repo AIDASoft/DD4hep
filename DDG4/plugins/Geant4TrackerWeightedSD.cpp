@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,12 +27,12 @@
 using namespace std;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation   {
+  namespace sim   {
 
-    using namespace Geometry;
+    using namespace detail;
 
     /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
     /**
@@ -408,7 +408,7 @@ namespace DD4hep {
   }
 }
 
-using namespace DD4hep::Simulation;
+using namespace dd4hep::sim;
 
 #include "DDG4/Factories.h"
 DECLARE_GEANT4SENSITIVE(Geant4TrackerWeightedAction)

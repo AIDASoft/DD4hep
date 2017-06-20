@@ -13,7 +13,7 @@
  *  @author    Anna Zaborowska
  */
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 class GridPhiEta : public Segmentation {
 public:

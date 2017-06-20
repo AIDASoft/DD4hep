@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,14 +15,14 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/Alignments.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace Alignments {
+  namespace align {
 
     /// Generic Alignments data dumper.
     /**
@@ -105,6 +105,6 @@ namespace DD4hep {
     /// PrintElement placement with/without alignment applied
     void printElementPlacement(PrintLevel prt_level, const std::string& prefix, DetElement detector, ConditionsMap& pool);
 
-  }    /* End namespace Alignments           */
-}      /* End namespace DD4hep               */
+  }    /* End namespace align           */
+}      /* End namespace dd4hep               */
 #endif /* DD4HEP_DDCORE_ALIGNMENTSPRINTER_H  */

@@ -10,17 +10,17 @@
 #ifndef SUBDETECTOR_H_
 #define SUBDETECTOR_H_
 
-#include "DD4hep/Detector.h"
+#include "DD4hep/DetElement.h"
 #include "DDRec/Extensions/SubdetectorExtension.h"
 
-namespace DD4hep {
-namespace DDRec {
+namespace dd4hep {
+namespace rec {
 
-class  [[gnu::deprecated(" unmaintained code ")]] Subdetector: public virtual Geometry::DetElement {
+class Subdetector: public virtual DetElement {
 public:
 	/// Default constructor
-	Subdetector(const Geometry::DetElement& det) :
-		Geometry::DetElement(det) {
+	Subdetector(const DetElement& det) :
+		DetElement(det) {
 		getSubdetectorExtension();
 	}
 
@@ -75,12 +75,12 @@ private:
 	void getSubdetectorExtension() {
 		_subdetector = this->isValid() ? this->extension<SubdetectorExtension>() : 0;
 		if (not _subdetector) {
-			throw invalid_detector_element("Found no extension of type \"SubdetectorExtension\"", Geometry::DetElement(*this));
+			throw invalid_detector_element("Found no extension of type \"SubdetectorExtension\"", DetElement(*this));
 		}
 	}
 };
 
-} /* namespace DDRec */
-} /* namespace DD4hep */
+} /* namespace rec */
+} /* namespace dd4hep */
 
 #endif /* SUBDETECTOR_H_ */

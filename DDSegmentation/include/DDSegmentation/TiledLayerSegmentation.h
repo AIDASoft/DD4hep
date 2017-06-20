@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace DD4hep {
+namespace dd4hep {
 namespace DDSegmentation {
 
 class TiledLayerSegmentation: public Segmentation {
@@ -113,6 +113,6 @@ protected:
 };
 
 } /* namespace DDSegmentation */
-} /* namespace DD4hep */
+} /* namespace dd4hep */
 
 #endif /* TILEDLAYERSEGMENTATION_H_ */

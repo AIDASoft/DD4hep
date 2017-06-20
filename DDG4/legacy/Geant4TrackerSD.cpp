@@ -1,6 +1,6 @@
 // $Id: $
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -22,9 +22,9 @@
 #include <stdexcept>
 
 /*
- *   DD4hep::Simulation namespace declaration
+ *   dd4hep::sim namespace declaration
  */
-namespace DD4hep {  namespace Simulation {
+namespace dd4hep {  namespace sim {
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<Tracker>
@@ -65,6 +65,6 @@ namespace DD4hep {  namespace Simulation {
       throw std::runtime_error("new() failed: Cannot allocate hit object");
     }
     typedef Geant4GenericSD<Tracker> Geant4Tracker;
-  }}    // End namespace DD4hep::Simulation
+  }}    // End namespace dd4hep::sim
 
-DECLARE_GEANT4SENSITIVEDETECTOR_NS(DD4hep::Simulation,Geant4Tracker)
+DECLARE_GEANT4SENSITIVEDETECTOR_NS(dd4hep::sim,Geant4Tracker)

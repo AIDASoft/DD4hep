@@ -8,7 +8,7 @@ global geant4
 #
 """
 
-   DD4hep simulation example setup using the python configuration
+   dd4hep simulation example setup using the python configuration
 
    @author  M.Frank
    @version 1.0
@@ -147,10 +147,11 @@ def dummy_geom():
 def run():
   global geant4
   kernel = DDG4.Kernel()
-  lcdd = kernel.lcdd()
+  description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/share/DD4hep/DDDetectors/compact/SiD_Markus.xml")
-  DDG4.importConstants(lcdd)
+  DDG4.importConstants(description)
+
   DDG4.Core.setPrintLevel(Output.DEBUG)
   DDG4.Core.setPrintFormat("%-32s %6s %s")
 

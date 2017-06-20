@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_IMP_MATRIXHELPERS_H
 #define DD4HEP_IMP_MATRIXHELPERS_H
 
@@ -24,58 +23,57 @@ class TGeoHMatrix;
 class TGeoMatrix;
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+namespace dd4hep {
 
-    typedef Position XYZAngles;
-  
+  /// Namespace for the AIDA detector description matrix helpers
+  namespace Matrices {
+
     /// Access the TGeo identity transformation                                               \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoIdentity*    identityTransform();
+    TGeoIdentity*    _identity();
     /// Convert a Position object to a TGeoTranslation                                        \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoTranslation* _translation(const Geometry::Position& pos);
+    TGeoTranslation* _translation(const Position& pos);
     /// Convert a RotationZYX object to a TGeoRotation                                        \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoRotation*    _rotationZYX(const Geometry::RotationZYX& rot);
+    TGeoRotation*    _rotationZYX(const RotationZYX& rot);
     /// Convert a Rotation3D object to a TGeoRotation                                         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoRotation*    _rotation3D(const Geometry::Rotation3D& rot);
+    TGeoRotation*    _rotation3D(const Rotation3D& rot);
     /// Convert a Transform3D object to a TGeoHMatrix                                         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix*     _transform(const Geometry::Transform3D& trans);
+    TGeoHMatrix*     _transform(const Transform3D& trans);
     /// Convert a Position object to a TGeoHMatrix                                            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix*     _transform(const Geometry::Position& pos);
+    TGeoHMatrix*     _transform(const Position& pos);
     /// Convert a RotationZYX object to a TGeoHMatrix                                         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix*     _transform(const Geometry::RotationZYX& rot);
+    TGeoHMatrix*     _transform(const RotationZYX& rot);
     /// Convert a Rotation3D object to a TGeoHMatrix                                          \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix*     _transform(const Geometry::Rotation3D& rot3D);
+    TGeoHMatrix*     _transform(const Rotation3D& rot3D);
     /// Convert a Position followed by a RotationZYX to a TGeoHMatrix                         \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix*     _transform(const Geometry::Position& pos, const Geometry::RotationZYX& rot);
+    TGeoHMatrix*     _transform(const Position& pos, const RotationZYX& rot);
 
     /// Set a Transform3D object to a TGeoHMatrix                                             \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Transform3D& trans);
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Transform3D& trans);
     /// Set a Position object (translation) to a TGeoHMatrix                                  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Position& pos);
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Position& pos);
     /// Set a RotationZYX object to a TGeoHMatrix                                             \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::RotationZYX& rot);
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const RotationZYX& rot);
     /// Set a Rotation3D object to a TGeoHMatrix                                              \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Rotation3D& rot3D);
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Rotation3D& rot3D);
     /// Set a Position followed by a RotationZYX to a TGeoHMatrix                             \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Geometry::Position& pos, const Geometry::RotationZYX& rot);
+    TGeoHMatrix&     _transform(TGeoHMatrix& mat, const Position& pos, const RotationZYX& rot);
 
     /// Convert a TGeoMatrix object to a generic Transform3D                                  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    Geometry::Transform3D      _transform(const TGeoMatrix* matrix);
+    Transform3D      _transform(const TGeoMatrix* matrix);
 
     /// Decompose a generic Transform3D into a translation (Position) and a RotationZYX       \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    void _decompose(const Geometry::Transform3D& trafo, Geometry::Position& pos, Geometry::RotationZYX& rot);
-    /// Decompose a generic Transform3D into a translation (Geometry::Position) and XYZAngles \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    void _decompose(const Geometry::Transform3D& trafo, Geometry::Position& pos, XYZAngles& rot);
+    void _decompose(const Transform3D& trafo, Position& pos, RotationZYX& rot);
+    /// Decompose a generic Transform3D into a translation (Position) and XYZAngles \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
+    void _decompose(const Transform3D& trafo, Position& pos, XYZAngles& rot);
     /// Decompose a generic Transform3D into a translation (Translation3D) and a RotationZYX  \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    void _decompose(const Geometry::Transform3D& trafo, Geometry::Translation3D& pos, Geometry::RotationZYX& rot);
+    void _decompose(const Transform3D& trafo, Translation3D& pos, RotationZYX& rot);
     /// Decompose a generic Transform3D into a translation (Translation3D) and XYZAngles      \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    void _decompose(const Geometry::Transform3D& trafo, Geometry::Translation3D& pos, XYZAngles& rot);
+    void _decompose(const Transform3D& trafo, Translation3D& pos, XYZAngles& rot);
 
     /// Convert a 3x3 rotation matrix to XYZAngles                                            \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    XYZAngles _XYZangles(const double* matrix);
+    XYZAngles _xyzAngles(const double* matrix);
     /// Convert a the rotation part of a TGeoMatrix to XYZAngles                              \ingroup DD4HEP \ingroup DD4HEP_GEOMETRY
-    XYZAngles _XYZangles(const TGeoMatrix* matrix);
+    XYZAngles _xyzAngles(const TGeoMatrix* matrix);
 
     enum MatrixEqualityCode  {
       MATRICES_EQUAL = 1,
@@ -90,8 +88,7 @@ namespace DD4hep {
      *  or combination: MATRICES_DIFFER_TRANSLATION|MATRICES_DIFFER_ROTATION
      */
     int _matrixEqual(const TGeoMatrix& left, const TGeoMatrix& right);
-    
-  } /* End namespace Geometry        */
-} /* End namespace DD4hep            */
+  }
+} /* End namespace dd4hep            */
 
 #endif // DD4HEP_IMP_MATRIXHELPERS_H

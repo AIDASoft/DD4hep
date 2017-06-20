@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -24,10 +24,10 @@
 #include <list>
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
     /// Class implementing the conditions collection for a given IOV type
     /**
@@ -44,10 +44,7 @@ namespace DD4hep {
     template<typename MAPPING, typename BASE> 
     class ConditionsLinearPool : public BASE   {
     protected:
-      typedef BASE      Base;
-      typedef MAPPING   Mapping;
-      typedef typename  BASE::key_type key_type;
-      Mapping           m_entries;
+      MAPPING           m_entries;
 
       /// Helper function to loop over the conditions container and apply a functor
       template <typename R,typename T> size_t loop(R& result, T functor) {
@@ -114,7 +111,6 @@ namespace DD4hep {
     template<typename MAPPING, typename BASE> class ConditionsLinearUpdatePool 
       : public ConditionsLinearPool<MAPPING,BASE>
     {
-      typedef typename ConditionsLinearPool<MAPPING,BASE>::key_type key_type;
     public:
       /// Default constructor
       ConditionsLinearUpdatePool(ConditionsManager mgr)
@@ -141,7 +137,7 @@ namespace DD4hep {
 
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select_range(Condition::key_type key,
-                                const Condition::iov_type& req, 
+                                const IOV& req, 
                                 RangeConditions& result)  final 
       {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
@@ -171,13 +167,13 @@ namespace DD4hep {
     };
 
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
+  } /* End namespace cond             */
+} /* End namespace dd4hep                   */
 #endif // DDCOND_CONDITIONSLINEARPOOL_H
 
 // $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -193,8 +189,8 @@ namespace DD4hep {
 //#include "DDCond/ConditionsLinearPool.h"
 #include "DD4hep/InstanceCount.h"
 
-using DD4hep::Handle;
-using namespace DD4hep::Conditions;
+using dd4hep::Handle;
+using namespace dd4hep::cond;
 
 /// Default constructor
 template<typename MAPPING, typename BASE>
@@ -210,26 +206,28 @@ ConditionsLinearPool<MAPPING,BASE>::~ConditionsLinearPool()  {
 }
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Conditions {
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace cond {
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
+  } /* End namespace cond             */
+} /* End namespace dd4hep                   */
 
 #include "DD4hep/Factories.h"
 namespace {
+  using namespace dd4hep;
+  
   ConditionsManager _mgr(int argc, char** argv)  {
     if ( argc > 0 )  {
       ConditionsManager::Object* m = (ConditionsManager::Object*)argv[0];
       return m;
     }
-    DD4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[0] = ConditionManager!");
+    dd4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[0] = ConditionManager!");
     return ConditionsManager(0);
   }
 
-#define _CR(fun,x,b,y) void* fun(DD4hep::Geometry::LCDD&, int argc, char** argv) \
+#define _CR(fun,x,b,y) void* fun(dd4hep::Detector&, int argc, char** argv) \
   {  return new b<x<Condition::Object*>,y>(_mgr(argc,argv));  }
   /// Create a conditions pool based on STL vectors
   _CR(create_vector_pool,std::vector,ConditionsLinearPool,ConditionsPool)
@@ -241,10 +239,10 @@ namespace {
   _CR(create_list_update_pool,std::list,ConditionsLinearUpdatePool,UpdatePool)
 }
 
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearPool,            create_vector_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearVectorPool,      create_vector_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearUpdatePool,      create_vector_update_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearVectorUpdatePool,create_vector_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearPool,            create_vector_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearVectorPool,      create_vector_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearUpdatePool,      create_vector_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearVectorUpdatePool,create_vector_update_pool)
 
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearListPool,        create_list_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearListUpdatePool,  create_list_update_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearListPool,        create_list_pool)
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsLinearListUpdatePool,  create_list_update_pool)

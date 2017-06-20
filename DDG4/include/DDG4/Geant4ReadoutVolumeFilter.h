@@ -1,6 +1,5 @@
-// $Id$
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,10 +19,10 @@
 #include "DDG4/Geant4SensDetAction.h"
 
 /// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
+namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
-  namespace Simulation {
+  namespace sim {
 
     /// Default base class for all geant 4 tracking actions.
     /**
@@ -32,30 +31,26 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ReadoutVolumeFilter: public Geant4Filter {
-      typedef Geometry::IDDescriptor::Field Field;
-      typedef Geometry::Readout             Readout;
-      typedef Readout::Collection           Collection;
-
     protected:
       /// Reference to readout descriptor
-      Readout             m_readout;
+      Readout              m_readout;
       /// Collection index
-      const Collection*   m_collection;
+      const HitCollection* m_collection;
       /// Bit field value from ID descriptor
-      Field               m_key;
+      const BitFieldValue* m_key;
 
     public:
       /// Standard constructor
-      Geant4ReadoutVolumeFilter(Geant4Context* context, 
+      Geant4ReadoutVolumeFilter(Geant4Context*     context, 
                                 const std::string& name, 
-                                Readout ro, 
+                                Readout            ro, 
                                 const std::string& coll);
       /// Default destructor
       virtual ~Geant4ReadoutVolumeFilter();
       /// Filter action. Return true if hits should be processed
       virtual bool operator()(const G4Step* step) const;
     };
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #endif // DD4HEP_DDG4_GEANT4READOUTVOLUMEFILTER_H

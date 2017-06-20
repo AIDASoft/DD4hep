@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -20,7 +20,7 @@
 #include "TError.h"
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DDRec/MaterialManager.h"
 #include "main.h"
@@ -53,11 +53,11 @@ int main_wrapper(int argc, char** argv)   {
   if ( !sstr.good() ) Handler::usage();
 
   setPrintLevel(WARNING);
-  Geometry::LCDD& lcdd = Geometry::LCDD::getInstance();
-  lcdd.fromCompact(inFile);
+  Detector& description = Detector::getInstance();
+  description.fromCompact(inFile);
   direction = (p1-p0).unit();
 
-  MaterialManager matMgr( lcdd.world().volume() ) ;
+  MaterialManager matMgr;
   const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
   double sum_x0 = 0;
   double sum_lambda = 0;

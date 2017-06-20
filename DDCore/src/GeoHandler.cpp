@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation for LCD
+//  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 
@@ -25,8 +25,8 @@
 // C/C++ include files
 #include <iostream>
 
-using namespace DD4hep::Geometry;
-using namespace DD4hep;
+using namespace dd4hep::detail;
+using namespace dd4hep;
 using namespace std;
 
 namespace {
@@ -48,11 +48,11 @@ namespace {
 
 /// Default constructor
 GeoHandler::GeoHandler() : m_propagateRegions(false)  {
-  m_data = new Data();
+  m_data = new map<int,set<const TGeoNode*> >();
 }
 
 /// Initializing constructor
-GeoHandler::GeoHandler(Data* ptr)
+GeoHandler::GeoHandler(map<int,set<const TGeoNode*> >* ptr)
   : m_propagateRegions(false), m_data(ptr) {
 }
 
@@ -63,8 +63,8 @@ GeoHandler::~GeoHandler() {
   m_data = 0;
 }
 
-GeoHandler::Data* GeoHandler::release() {
-  Data* d = m_data;
+map<int,set<const TGeoNode*> >* GeoHandler::release() {
+  map<int,set<const TGeoNode*> >* d = m_data;
   m_data = 0;
   return d;
 }
@@ -84,14 +84,13 @@ GeoHandler& GeoHandler::collect(DetElement element) {
 GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   m_data->clear();
   i_collect(element.placement().ptr(), 0, Region(), LimitSet());
-  for (Data::const_reverse_iterator i = m_data->rbegin(); i != m_data->rend(); ++i) {
-    const Data::mapped_type& mapped = (*i).second;
-    for (Data::mapped_type::const_iterator j = mapped.begin(); j != mapped.end(); ++j) {
-      const TGeoNode* n = *j;
+  for (auto i = m_data->rbegin(); i != m_data->rend(); ++i) {
+    const auto& mapped = (*i).second;
+    for (const TGeoNode* n : mapped )  {
       TGeoVolume* v = n->GetVolume();
       if (v) {
         Material m(v->GetMedium());
-        Volume vol = Ref_t(v);
+        Volume   vol(v);
         // Note : assemblies and the world do not have a real volume nor a material
         if (info.volumeSet.find(vol) == info.volumeSet.end()) {
           info.volumeSet.insert(vol);
