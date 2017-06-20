@@ -5,7 +5,7 @@
 
 namespace DDSurfaces {
 
-  using DD4hep::DDRec::Vector2D ;
+  using dd4hep::rec::Vector2D ;
 
 } 
 

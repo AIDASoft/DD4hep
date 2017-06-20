@@ -166,6 +166,6 @@ namespace dd4hep {
   } /* namespace */
 } /* namespace */
 
-namespace DD4hep { namespace DDRec { using namespace dd4hep::rec  ; } }  // bwd compatibility for old namsepaces
+
 
 #endif /* rec_Material_H */

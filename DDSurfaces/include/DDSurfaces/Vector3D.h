@@ -5,7 +5,7 @@
 
 namespace DDSurfaces {
 
-  using DD4hep::DDRec::Vector3D ;
+  using dd4hep::rec::Vector3D ;
 
 }
 
