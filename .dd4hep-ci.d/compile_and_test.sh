@@ -17,6 +17,6 @@ cd ../examples/ && \
 mkdir build && \
 cd build && \
 cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON .. && \
-ninja
-#ninja install && \
-#ctest --output-on-failure -j2 -E LONGTEST
+ninja && \
+ninja install && \
+ctest --output-on-failure -j2
