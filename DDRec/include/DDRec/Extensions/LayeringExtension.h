@@ -11,7 +11,6 @@
 #define rec_LAYERINGEXTENSION_H_
 
 #include "DD4hep/DetElement.h"
-#include "DDRec/tempdefs.h"
 
 namespace dd4hep {
 namespace rec {
