@@ -14,6 +14,20 @@
 //==========================================================================
 #define __DDG4_STANDALONE_DICTIONARIES__
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated"
+#pragma GCC diagnostic ignored "-Wunused"
+#pragma GCC diagnostic ignored "-Woverlength-strings"
+
+#elif defined(__llvm__) || defined(__APPLE__)
+
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wunused"
+#pragma clang diagnostic ignored "-Woverlength-strings"
+#endif
+
 // C/C++ include files
 #include "DDG4/DDG4Dict.h"
 #include "DDEve/DDEveEventData.h"

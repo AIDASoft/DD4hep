@@ -13,17 +13,8 @@
 //  Created by Pere Mato on 22/1/12.
 //
 //==========================================================================
-//
-
 #ifndef DD4HEP_GEOMETRY_DICTIONARY_H
 #define DD4HEP_GEOMETRY_DICTIONARY_H
-
-// Disable some diagnostics for ROOT dictionaries
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wdeprecated"
-#pragma GCC diagnostic ignored "-Wunused"
-#endif
 
 // Framework include files
 #include "DDParsers/Evaluator.h"
