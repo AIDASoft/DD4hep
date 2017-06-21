@@ -123,3 +123,9 @@ void Layering::sensitivePositionsInLayer(xml::Element e, std::vector<double>& se
 }
 
 
+Layering::~Layering(){
+  vector<Layer*>& layers = this->layers();
+  for_each(layers.begin(), layers.end(), detail::deletePtr<Layer>);
+  layers.clear();
+}
+
