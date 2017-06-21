@@ -512,7 +512,7 @@ namespace dd4hep {
       
       DetElement _det ;
       mutable VolSurface _volSurf ;
-      TGeoMatrix* _wtM ; // matrix for world transformation of surface
+      std::unique_ptr<TGeoMatrix> _wtM ; // matrix for world transformation of surface
       
       long64 _id ;
       
@@ -522,8 +522,10 @@ namespace dd4hep {
       Vector3D _n ;
       Vector3D _o ;
 
-      /// default c'tor
-      Surface() :_det( DetElement() ), _volSurf( VolSurface() ), _wtM( 0 ) , _id( 0)  { }
+      /// default c'tor etc. removed
+      Surface() = delete;
+      Surface( Surface const& ) = delete;
+      Surface& operator=( Surface const& ) = delete;
 
     public:
     

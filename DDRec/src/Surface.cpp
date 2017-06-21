@@ -595,7 +595,7 @@ namespace dd4hep {
     //======================================================================================================================
 
     Surface::Surface( DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), 
-                                                                       _wtM(0) , _id( 0) , _type( _volSurf.type() )  {
+                                                                       _wtM() , _id( 0) , _type( _volSurf.type() )  {
 
       initialize() ;
     }      
@@ -738,7 +738,7 @@ namespace dd4hep {
       // need to get the inverse transformation ( see Detector.cpp )
       // std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm.Inverse() ) ) ;
       // has been fixed now, no need to get the inverse anymore:
-      dd4hep_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm ) ) ;
+      std::unique_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm ) ) ;
 
       //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
       // DetElements world transform
@@ -759,11 +759,11 @@ namespace dd4hep {
       dd4hep_ptr<TGeoHMatrix> wt( new TGeoHMatrix( wtI->Inverse() ) ) ;
       wt->Print() ;
       // cache the world transform for the surface
-      _wtM = wt.release()  ;
+      _wtM = std::move(wtI);
 #else
       //      wtI->Print() ;
       // cache the world transform for the surface
-      _wtM = wtI.release()  ;
+      _wtM = std::move(wtI);
 #endif
 
 
