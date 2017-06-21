@@ -58,6 +58,8 @@ int main_wrapper(int argc, char** argv)   {
   direction = (p1-p0).unit();
 
   MaterialManager matMgr( description.world().volume()  ) ;
+  //MaterialManager matMgr( description.world() ) ;
+
   const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
   double sum_x0 = 0;
   double sum_lambda = 0;

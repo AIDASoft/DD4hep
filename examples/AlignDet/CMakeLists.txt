@@ -21,7 +21,7 @@ dd4hep_package ( AlignDet MAJOR 0 MINOR 0 PATCH 1
   )
 
 dd4hep_add_plugin( AlignDetExample SOURCES src/*.cpp  )
-dd4hep_install_dir( compact DESTINATION examples/AlignDet )
+dd4hep_install_dir( compact DESTINATION ${DD4hep_DIR}/examples/AlignDet )
 dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
 
 #

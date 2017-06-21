@@ -76,7 +76,7 @@ namespace {
 
     /// Scan a single physical volume and look for sensitive elements below
     void scanPhysicalVolume(const TGeoNode* node, PlacedVolume::VolIDs ids, SensitiveDetector& sd, Chain& chain) {
-      PlacedVolume pv = Ref_t(node);
+      PlacedVolume pv = node;
       Volume vol = pv.volume();
       PlacedVolume::VolIDs pv_ids = pv.volIDs();
 

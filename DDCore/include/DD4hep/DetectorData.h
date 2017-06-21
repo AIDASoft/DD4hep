@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_DetectorDATA_H
-#define DD4HEP_DDCORE_DetectorDATA_H
+#ifndef DD4HEP_DDCORE_DETECTORDATA_H
+#define DD4HEP_DDCORE_DETECTORDATA_H
 
 // Framework includes
 #include "DD4hep/Detector.h"
@@ -60,7 +60,7 @@ namespace dd4hep {
       /// Default constructor
       ObjectHandleMap() {
       }
-      void append(const Ref_t& e, bool throw_on_doubles = true) {
+      void append(const Handle<NamedObject>& e, bool throw_on_doubles = true) {
         if (e.isValid()) {
           std::string n = e.name();
           std::pair<iterator, bool> r = this->insert(std::make_pair(n, e.ptr()));
@@ -71,7 +71,7 @@ namespace dd4hep {
         throw InvalidObjectError("Attempt to add an invalid object.");
       }
 
-      template <typename T> void append(const Ref_t& e, bool throw_on_doubles = true) {
+      template <typename T> void append(const Handle<NamedObject>& e, bool throw_on_doubles = true) {
         T* obj = dynamic_cast<T*>(e.ptr());
         if (obj) {
           this->append(e, throw_on_doubles);
@@ -82,42 +82,50 @@ namespace dd4hep {
     };
 
   protected:
-    TGeoManager*     m_manager;
-    ObjectHandleMap  m_readouts;
-    ObjectHandleMap  m_idDict;
-    ObjectHandleMap  m_limits;
-    ObjectHandleMap  m_regions;
-    ObjectHandleMap  m_detectors;
-
-    ObjectHandleMap  m_sensitive;
-    ObjectHandleMap  m_display;
-    ObjectHandleMap  m_fields;
-
-    ObjectHandleMap  m_motherVolumes;
-
+    /** All elments of the big detector description common block ;-0  */
+    /// Reference to the geometry manager object from ROOT
+    TGeoManager*             m_manager;
+    /// Map of readout descriptors indexed by subdetector name
+    ObjectHandleMap          m_readouts;
+    /// Map of readout IDDescriptors indexed by hit collection name
+    ObjectHandleMap          m_idDict;
+    /// Map of limit sets
+    ObjectHandleMap          m_limits;
+    /// Map of regions settings for the simulation
+    ObjectHandleMap          m_regions;
+    /// The map of top level sub-detector objects indexed by name
+    ObjectHandleMap          m_detectors;
+    /// The map of top level sub-detector sensitive detector objects indexed by the detector name
+    ObjectHandleMap          m_sensitive;
+    /// The map of display attributes in use
+    ObjectHandleMap          m_display;
+    /// The map of electro magnet field components for the global overlay field
+    ObjectHandleMap          m_fields;
     // GDML fields
-    ObjectHandleMap  m_define;
+    ObjectHandleMap          m_define;
 
-    DetElement       m_world;
-    DetElement       m_trackers;
-    Volume           m_worldVol;
-    Volume           m_trackingVol;
+    std::map<std::string,Volume> m_motherVolumes;
 
-    Material         m_materialAir;
-    Material         m_materialVacuum;
-    VisAttr          m_invisibleVis;
-    OverlayedField   m_field;
-    Header           m_header;
-    Detector::Properties m_properties;
-    DetectorBuildType    m_buildType;
+    DetElement               m_world;
+    DetElement               m_trackers;
+    Volume                   m_worldVol;
+    Volume                   m_trackingVol;
+
+    Material                 m_materialAir;
+    Material                 m_materialVacuum;
+    VisAttr                  m_invisibleVis;
+    OverlayedField           m_field;
+    Header                   m_header;
+    Detector::Properties     m_properties;
+    DetectorBuildType        m_buildType;
 
     /// Definition of the extension type
-    ObjectExtensions m_extensions;
+    ObjectExtensions         m_extensions;
     /// Volume manager reference
-    VolumeManager    m_volManager;
+    VolumeManager            m_volManager;
 
     /// Flag to inhibit the access to global constants. Value set by constants section 'Detector_InhibitConstants'
-    bool             m_inhibitConstants;
+    bool                     m_inhibitConstants;
 
   protected:
     /// Default constructor
@@ -137,5 +145,5 @@ namespace dd4hep {
     void adoptData(DetectorData& source);
   };
 
-} /* End namespace dd4hep   */
-#endif    /* DD4HEP_DDCORE_DetectorDATA_H */
+}         /* End namespace dd4hep         */
+#endif    /* DD4HEP_DDCORE_DETECTORDATA_H */

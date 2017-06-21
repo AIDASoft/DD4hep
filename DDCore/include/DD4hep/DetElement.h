@@ -227,13 +227,16 @@ namespace dd4hep {
     DetElement(const DetElement& e) = default;
 
     /// Constructor to hold handled object
-    DetElement(Object* object_ptr) : Handle<DetElementObject>(object_ptr) { }
+    DetElement(Object* obj) : Handle<DetElementObject>(obj) { }
 
     /// Clone constructor
-    DetElement(Object* data, const std::string& name, const std::string& type);
+    DetElement(Object* obj, const std::string& name, const std::string& type);
 
     /// Templated constructor for handle conversions
     template <typename Q> DetElement(const Handle<Q>& e) : Handle<DetElementObject>(e) {}
+
+    /// Constructor to hold handled object
+    DetElement(NamedObject* obj) : Handle<DetElementObject>(obj) { }
 
 #ifdef __MAKECINT__
     /// Constructor to copy handle

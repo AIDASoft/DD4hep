@@ -50,7 +50,7 @@ namespace dd4hep {
   class VolumeManagerContext {
   public:
     /// Handle to the closest Detector element
-    DetElement   element{0};
+    DetElement   element;
     /// Placement identifier
     VolumeID     identifier = 0;
     /// Ignore mask of the placement identifier
