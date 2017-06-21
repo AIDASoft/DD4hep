@@ -40,7 +40,7 @@ dd4hep_add_executable(test_surfaces
   OPTIONAL [LCIO REQUIRED SOURCES src/test_surfaces.cpp])
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(test_cellid_position_converter
-  USES     DDRec DDTest
+  USES     DDCore DDRec DDTest [ROOT REQUIRED COMPONENTS Eve Gui Graf3d RGL]
   OPTIONAL [LCIO REQUIRED SOURCES src/test_cellid_position_converter.cpp])
 #-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__eve

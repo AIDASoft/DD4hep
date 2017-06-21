@@ -17,8 +17,8 @@
  Invoke the plugin with something like this:
 
  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml \
-              -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml \
-              -delta file:${DD4hep_DIR}/examples/Conditions/data/repository.xml 
+              -input file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/AlignDet/compact/Telescope.xml \
+              -delta file:${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/Conditions/data/repository.xml 
 
 */
 // Framework include files

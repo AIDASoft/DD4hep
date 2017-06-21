@@ -19,15 +19,15 @@
 #include <string>
 
 // Run a ROOT macro
-void run(const char* macro)  {
+void run(const char* macro = "")  {
   int status;
   char cmd[1024];
   const char* dd4hep_install = getenv("DD4hepINSTALL");
   if ( dd4hep_install )  {
-    ::sprintf(cmd,".L %s/examples/DDG4/examples/initAClick.C+",dd4hep_install);
+    ::sprintf(cmd,".L %s/share/DD4hep/examples/DDG4/examples/initAClick.C+",dd4hep_install);
   }
   else  {
-    ::sprintf(cmd,".L examples/DDG4/examples/initAClick.C+");
+    ::sprintf(cmd,".L share/DD4hep/examples/DDG4/examples/initAClick.C+");
   }
   status = gInterpreter->ProcessLine(cmd); 
   ::printf("Status(%s) = %d\n",cmd,status);

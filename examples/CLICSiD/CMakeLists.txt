@@ -18,7 +18,7 @@ dd4hep_package ( CLICSiD MAJOR 0 MINOR 0 PATCH 1
   USES  [ROOT   REQUIRED COMPONENTS Geom] 
         [dd4hep REQUIRED COMPONENTS DDCore]
 )
-dd4hep_install_dir( compact scripts sim DESTINATION ${DD4hep_DIR}/examples/CLICSiD )
+dd4hep_install_dir( compact scripts sim eve DESTINATION ${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/CLICSiD )
 #--------------------------------------------------------------------------
 if (DD4HEP_USE_GEANT4)
   dd4hep_add_executable(CLICSiDXML SOURCES scripts/CLICSiDXML.C
@@ -45,7 +45,7 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
+  EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/checkGeometry.py
                     --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
@@ -53,7 +53,7 @@ dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
+  EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/checkOverlaps.py 
                     --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
@@ -87,7 +87,7 @@ if (DD4HEP_USE_GEANT4)
     # Build AClick from the source file
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_AClick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-      EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${DD4hep_DIR}/examples/CLICSiD/scripts/${script}\")"
+      EXEC_ARGS  root.exe -b -x -n -q -l "${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/DDG4/examples/run.C(\"${CMAKE_INSTALL_PREFIX}/share/DD4hep/examples/CLICSiD/scripts/${script}\")"
       REQUIRES   DDG4 Geant4
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
