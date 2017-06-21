@@ -121,7 +121,7 @@ namespace dd4hep {
     /// Initializing constructor
     Layering(xml::Element element);
     /// Default destructor
-    ~Layering() = default;
+    ~Layering();
 
     std::vector<Layer*>& layers() {
       return _stack.layers();
