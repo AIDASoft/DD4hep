@@ -42,17 +42,17 @@ bool Component::isRadiator() const {
   return val == 'T' || val == 'Y';
 }
 
-dd4hep::NamedObject* Component::createShape() const {
+TObject* Component::createShape() const {
   using namespace dd4hep::detail;
   Dimension child_dim(m_element);
   std::string typ = child_dim.typeStr();
   std::string fac = typ + "__shape_constructor";
   Handle_t solid_elt = m_element;
   Detector* description = 0;
-  NamedObject* solid = PluginService::Create<NamedObject*>(fac, description, &solid_elt);
+  TObject* solid = PluginService::Create<TObject*>(fac, description, &solid_elt);
   if ( !solid )  {
     PluginDebug dbg;
-    PluginService::Create<NamedObject*>(typ, description, &solid_elt);
+    PluginService::Create<TObject*>(typ, description, &solid_elt);
     throw std::runtime_error("Failed to create solid of type " + typ + ". " + dbg.missingFactory(typ));
   }
   return solid;

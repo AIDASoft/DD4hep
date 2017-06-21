@@ -13,6 +13,9 @@
 #ifndef DD4HEP_DD4HEP_PRIMITIVES_H
 #define DD4HEP_DD4HEP_PRIMITIVES_H
 
+// Framework include files
+#include "DD4hep/config.h"
+
 // C/C++ include files
 #include <map>
 #include <list>
@@ -242,6 +245,33 @@ namespace dd4hep {
       static const value_t* null_pointer() { return (value_t*)0;          }
     };
 
+    /// Safe cast mechanism using pre-linked conversions.
+    /**
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP
+     */
+#ifdef DD4HEP_USE_SAFE_CAST
+    template <typename TO> class safe_cast {
+    public:
+      template <typename FROM> static TO* cast(FROM* from);
+      template <typename FROM> static TO* cast(const FROM* from);
+      template <typename FROM> static TO* cast_non_null(FROM* from);
+      template <typename FROM> static TO* cast_non_null(const FROM* from);
+    };
+#else
+    template <typename TO> class safe_cast {
+    public:
+      static TO* cast(TO* from);
+      static TO* cast_non_null(TO* from);
+      template <typename FROM> static TO* cast(FROM* from)                 { return cast((TO*)from; }
+      template <typename FROM> static TO* cast(const FROM* from)           { return cast((TO*)from; }
+      template <typename FROM> static TO* cast_non_null(FROM* from)        { return cast_non_null((TO*)from; }
+      template <typename FROM> static TO* cast_non_null(const FROM* from)  { return cast_non_null((TO*)from; }
+    };
+#endif
+    
     template<typename C> struct ClearOnReturn {
       C& container;
       ClearOnReturn(C& c) : container(c) {  }

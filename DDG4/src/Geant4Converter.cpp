@@ -597,7 +597,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
   if (volIt == info.g4Volumes.end() ) {
     PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
     const TGeoVolume* v = volume;
-    Volume _v = Ref_t(v);
+    Volume _v(v);
     string  n = v->GetName();
     TGeoMedium* med = v->GetMedium();
     TGeoShape* sh = v->GetShape();
@@ -666,7 +666,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
 void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume* volume) const {
   Geant4GeometryInfo& info = data();
   const TGeoVolume* v = volume;
-  Volume _v = Ref_t(v);
+  Volume _v(v);
   Region reg = _v.region();
   LimitSet lim = _v.limitSet();
   SensitiveDetector det = _v.sensitiveDetector();
@@ -809,7 +809,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
   G4Region* g4 = data().g4Regions[region];
   if (!g4) {
     PrintLevel lvl = debugRegions ? ALWAYS : outputLevel;
-    Region r = Ref_t(region);
+    Region r = region;
     g4 = new G4Region(r.name());
     // set production cut
     if( not r.useDefaultCut() ) {
@@ -856,7 +856,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVolume*>& /* volumes */) const {
   G4UserLimits* g4 = data().g4Limits[limitset];
   if (!g4) {
-    LimitSet ls = Ref_t(limitset);
+    LimitSet ls = limitset;
     g4 = new G4UserLimits(limitset->GetName());
     const set<Limit>& limits = ls.limits();
     for (LimitSet::Object::const_iterator i = limits.begin(); i != limits.end(); ++i) {
@@ -949,7 +949,7 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
 void Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
   Geant4GeometryInfo&     info = data();
   set<const TGeoVolume*>& volset = info.sensitives[sens_det];
-  SensitiveDetector       sd = Ref_t(sens_det);
+  SensitiveDetector       sd = sens_det;
   stringstream str;
 
   printout(INFO, "Geant4Converter", "++ SensitiveDetector: %-18s %-20s Hits:%-16s", sd.name(), ("[" + sd.type() + "]").c_str(),

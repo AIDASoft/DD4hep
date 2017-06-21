@@ -96,5 +96,5 @@ std::pair<DetElement,std::string> DDDBHelper::getConditionEntry(const std::strin
   auto i = m_detCond.find(key);
   if ( i != m_detCond.end() )
     return (*i).second;
-  return make_pair(DetElement(0),"");
+  return make_pair(DetElement(),"");
 }

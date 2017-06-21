@@ -52,19 +52,19 @@ namespace dd4hep {
       /// The container of placements managed by this instance
       std::map<VolumeID, VolumeManagerContext*> volumes;
       /// The Detector element handle managed by this instance
-      DetElement detector{0};
+      DetElement detector;
       /// The ID descriptor object
       IDDescriptor id;
       /// The reference to the TOP level VolumeManager
-      VolumeManagerObject* top = 0;
+      VolumeManagerObject* top    = 0;
       /// The system field descriptor
-      const BitFieldValue* system;
+      const BitFieldValue* system = 0;
       /// System identifier
-      VolumeID sysID   = 0;
+      VolumeID sysID              = 0;
       /// Sub-detector mask
-      VolumeID detMask = ~0x0ULL;
+      VolumeID detMask            = ~0x0ULL;
       /// Population flags
-      int flags        = VolumeManager::NONE;
+      int flags                   = VolumeManager::NONE;
     public:
       /// Default constructor
       VolumeManagerObject() = default;

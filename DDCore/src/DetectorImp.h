@@ -99,7 +99,7 @@ namespace dd4hep {
     /// Access an existing extension object from the Detector instance
     virtual void* userExtension(const std::type_info& info, bool alert=true) const;
 
-    virtual Handle<TObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not = true) const;
+    virtual Handle<NamedObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not = true) const;
 
     /// Register new mother volume using the detector name.
     virtual void   declareMotherVolume(const std::string& detector_name, const Volume& vol);
@@ -312,42 +312,42 @@ namespace dd4hep {
     }
 
     /// Add a new constant by named reference to the detector description
-    virtual Detector& addConstant(const Ref_t& x);
+    virtual Detector& addConstant(const Handle<NamedObject>& x);
 
     /// Add a new limit set by named reference to the detector description
-    virtual Detector& addLimitSet(const Ref_t& x) {
+    virtual Detector& addLimitSet(const Handle<NamedObject>& x) {
       m_limits.append(x);
       __R;
     }
     /// Add a new detector region by named reference to the detector description
-    virtual Detector& addRegion(const Ref_t& x) {
+    virtual Detector& addRegion(const Handle<NamedObject>& x) {
       m_regions.append(x);
       __R;
     }
     /// Add a new id descriptor by named reference to the detector description
-    virtual Detector& addIDSpecification(const Ref_t& x) {
+    virtual Detector& addIDSpecification(const Handle<NamedObject>& x) {
       m_idDict.append(x);
       __R;
     }
     /// Add a new detector readout by named reference to the detector description
-    virtual Detector& addReadout(const Ref_t& x) {
+    virtual Detector& addReadout(const Handle<NamedObject>& x) {
       m_readouts.append(x);
       __R;
     }
     /// Add a new visualisation attribute by named reference to the detector description
-    virtual Detector& addVisAttribute(const Ref_t& x) {
+    virtual Detector& addVisAttribute(const Handle<NamedObject>& x) {
       m_display.append(x);
       __R;
     }
     /// Add a new sensitive detector by named reference to the detector description
-    virtual Detector& addSensitiveDetector(const Ref_t& x) {
+    virtual Detector& addSensitiveDetector(const Handle<NamedObject>& x) {
       m_sensitive.append(x);
       __R;
     }
     /// Add a new subdetector by named reference to the detector description
-    virtual Detector& addDetector(const Ref_t& x);
+    virtual Detector& addDetector(const Handle<NamedObject>& x);
     /// Add a field component by named reference to the detector description
-    virtual Detector& addField(const Ref_t& x);
+    virtual Detector& addField(const Handle<NamedObject>& x);
 #undef __R
 
   };

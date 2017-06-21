@@ -93,12 +93,11 @@ namespace {
 #endif
 
   bool is_volume(const TGeoVolume* volume)  {
-    Volume v = Ref_t(volume);
+    Volume v(volume);
     return v.data() != 0;
   }
   bool is_placement(PlacedVolume node)  {
-    PlacedVolume v = Ref_t(node);
-    return v.data() != 0;
+    return node.data() != 0;
   }
 
   string genName(const string& n)  {  return n; }
@@ -659,8 +658,8 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
   xml_h vol = geo.xmlVolumes[volume];
   if (!vol) {
     const TGeoVolume* v = volume;
-    Volume _v = Ref_t(v);
-    string  n = genName(v->GetName(),v);
+    Volume      _v(v);
+    string      n      = genName(v->GetName(),v);
     TGeoMedium* medium = v->GetMedium();
     TGeoShape*  sh     = v->GetShape();
     xml_ref_t   sol    = handleSolid(sh->GetName(), sh);
@@ -723,10 +722,10 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
 /// Dump logical volume in GDML format to output stream
 xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume* volume) const {
   GeometryInfo& geo = data();
-  xml_h vol = geo.xmlVolumes[volume];
+  xml_h         vol = geo.xmlVolumes[volume];
   if (!vol) {
     const TGeoVolume* v = volume;
-    Volume _v = Ref_t(v);
+    Volume _v(volume);
     if (is_volume(volume)) {
       VisAttr vis = _v.visAttributes();
       if (vis.isValid()) {
@@ -743,11 +742,11 @@ xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume*
 
 /// Dump logical volume in GDML format to output stream
 void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* volume) const {
-  Volume v = Ref_t(volume);
+  Volume v(volume);
   if ( is_volume(volume) )     {
-    GeometryInfo& geo = data();
-    Region reg = v.region();
-    LimitSet lim = v.limitSet();
+    GeometryInfo&     geo = data();
+    Region            reg = v.region();
+    LimitSet          lim = v.limitSet();
     SensitiveDetector det = v.sensitiveDetector();
     if (lim.isValid())
       geo.limits.insert(lim);
@@ -928,7 +927,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, IDDescriptor id_spec)
   xml_h id = geo.xmlIdSpecs[id_spec];
   if (!id) {
     int length = 0, start = 0;
-    IDDescriptor desc = Ref_t(id_spec);
+    IDDescriptor desc = id_spec;
     geo.doc_idDict.append(id = xml_elt_t(geo.doc, _U(idspec)));
     id.setAttr(_U(name), name);
     const IDDescriptor::FieldMap& fm = desc.fields();
@@ -996,7 +995,7 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
   GeometryInfo& geo = data();
   xml_h field = geo.xmlFields[f];
   if (!field) {
-    Ref_t fld(f);
+    Handle<NamedObject> fld(f);
     string type = f->GetTitle();
     field = xml_elt_t(geo.doc, Unicode(type));
     field.setAttr(_U(name), f->GetName());
