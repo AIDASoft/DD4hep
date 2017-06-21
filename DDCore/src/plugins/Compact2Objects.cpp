@@ -54,6 +54,7 @@ namespace dd4hep {
   template <> void Converter<Plugin>::operator()(xml_h element) const;
   template <> void Converter<Constant>::operator()(xml_h element) const;
   template <> void Converter<Material>::operator()(xml_h element) const;
+  template <> void Converter<MaterialPropertiesTable>::operator()(xml_h element) const;
   template <> void Converter<Atom>::operator()(xml_h element) const;
   template <> void Converter<Isotope>::operator()(xml_h element) const;
   template <> void Converter<VisAttr>::operator()(xml_h element) const;
@@ -86,6 +87,7 @@ namespace {
   bool s_debug_isotopes     = false;
   bool s_debug_elements     = false;
   bool s_debug_materials    = false;
+  bool s_debug_mpts         = false;
   bool s_debug_segmentation = false;
 }
 
@@ -235,6 +237,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     if      ( nam.substr(0,6) == "isotop" ) s_debug_isotopes     = (0 != val);
     else if ( nam.substr(0,6) == "elemen" ) s_debug_elements     = (0 != val);
     else if ( nam.substr(0,6) == "materi" ) s_debug_materials    = (0 != val);
+    else if ( nam.substr(6,12)== "al_pro" ) s_debug_mpts         = (0 != val);
     else if ( nam.substr(0,6) == "visatt" ) s_debug_visattr      = (0 != val);
     else if ( nam.substr(0,6) == "region" ) s_debug_regions      = (0 != val);
     else if ( nam.substr(0,6) == "readou" ) s_debug_readout      = (0 != val);
@@ -433,6 +436,23 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       }
     }
   }
+}
+
+/** Convert compact material properties table description objects
+ *
+ *  MaterialPropertiesTable (MPT):
+ *
+ *  <material_properties_table name="N2">
+ *    <file="N2_index_of_refraction.json" />
+ *  </material_properties_table>
+ *
+ */
+template <> void Converter<MaterialPropertiesTable>::operator()(xml_h e) const {
+  xml_ref_t         x_mat(e);
+  TGeoManager&      mgr = description.manager();
+  xml_tag_t         mname = x_mat.name();
+  const char*       matname = mname.c_str();
+  std::cout << " CONVERTER FOR MPT !!!!!!!!!!!!!!!!!!!!!!!\n";
 }
 
 /** Convert compact isotope objects
@@ -1032,6 +1052,7 @@ template <> void Converter<GdmlFile>::operator()(xml_h element) const   {
   xml_coll_t(materials, _U(isotope)).for_each(Converter<Isotope>(this->description,0,0));
   xml_coll_t(materials, _U(element)).for_each(Converter<Atom>(this->description));
   xml_coll_t(materials, _U(material)).for_each(Converter<Material>(this->description));
+  xml_coll_t(materials, _U(material_properties_table)).for_each(Converter<MaterialPropertiesTable>(this->description));
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1126,6 +1147,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 
   xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
+  xml_coll_t(compact, _U(material_properties)).for_each(_U(material_properties_table), Converter<MaterialPropertiesTable>(this->description));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
   if ( open_geometry ) description.init();
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(description));

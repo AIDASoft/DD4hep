@@ -428,7 +428,7 @@ ClassImp(VolumeExtension)
 
 /// Default constructor
 VolumeExtension::VolumeExtension()
-: TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0) {
+: TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0), log_surface() {
   INCREMENT_COUNTER;
 }
 
@@ -438,6 +438,7 @@ VolumeExtension::~VolumeExtension() {
   limits.clear();
   vis.clear();
   sens_det.clear();
+  log_surface.clear();
   DECREMENT_COUNTER;
 }
 

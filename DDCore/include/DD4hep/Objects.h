@@ -441,9 +441,9 @@ namespace dd4hep {
    *
    * This class is meant to provide the means to construct a G4MaterialPropertiesTable.
    *
-   *  \author  W.Armstrong
+   *  \author  W.R.Armstrong (warmstrong@anl.gov)
    *  \date    2017/06/17
-   *  \ingroup DD4HEP_GEOMETRY
+   *  \ingroup DD4HEP_CORE
    */
   class MaterialPropertiesTable : public Handle<MaterialPropertiesTableObject> {
     public:
@@ -465,6 +465,58 @@ namespace dd4hep {
       std::string         GetStringData(const std::string& ) const;
 
     };
+
+  /** @brief The "LogicalSurfaceObject".
+   *
+   *  \author  W.R.Armstrong (warmstrong@anl.gov)
+   *  \date    2017/06/17
+   *  \ingroup DD4HEP_CORE
+   */
+  class LogicalSurfaceObject : public NamedObject {
+  public:
+    std::string type;
+    std::string model;
+    std::string finish;
+    std::string content;
+    MaterialPropertiesTable mpt;
+
+    LogicalSurfaceObject(){ }
+    LogicalSurfaceObject(const MaterialPropertiesTable& t) : mpt(t) { }
+    LogicalSurfaceObject(const LogicalSurfaceObject&) = default;
+    LogicalSurfaceObject(LogicalSurfaceObject&&) = default;
+    LogicalSurfaceObject& operator=(const LogicalSurfaceObject&) = default;
+    LogicalSurfaceObject& operator=(LogicalSurfaceObject&&) = default;
+    virtual ~LogicalSurfaceObject() = default;
+
+    //bool operator==(const LogicalSurfaceObject& c) const;
+    //bool operator<(const LogicalSurfaceObject& c) const;
+    //std::string toString() const;
+  };
+
+
+  /** @brief The implementation of a "LogicalSurface".
+   *
+   * This class is meant to provide the means to construct a LogicalSurface 
+   * which is mostly used for optical surfaces. This is being called a "logical"
+   * surface because it can be a surface for transition radiation (and because that
+   * is what is called in Geant4).  It is not called a "surface" in order to avoid
+   * confusion with the dd4hep "surfaces" concept.
+   *
+   *  \author  W.R.Armstrong (warmstrong@anl.gov)
+   *  \date    2017/06/17
+   *  \ingroup DD4HEP_CORE
+   */
+  class LogicalSurface : public Handle<LogicalSurfaceObject> {
+    public:
+      LogicalSurface(){ }
+      LogicalSurface(const LogicalSurface&) = default;
+      LogicalSurface(LogicalSurface&&) = default;
+      LogicalSurface& operator=(const LogicalSurface&) = default;
+      LogicalSurface& operator=(LogicalSurface&&) = default;
+      virtual ~LogicalSurface() = default;
+    };
+
+
 
 }   /* End namespace dd4hep             */
 

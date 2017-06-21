@@ -455,6 +455,7 @@ bool Region::wasThresholdSet() const {
 MaterialPropertiesTable::MaterialPropertiesTable() 
 {
   m_element = new MaterialPropertiesTableObject();
+  std::cout << " HUZZZZA \n";
 }
 
 MaterialPropertiesTable::~MaterialPropertiesTable()
