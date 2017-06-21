@@ -188,13 +188,15 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class std::map<std::string,std::vector<double>>+;
 #pragma link C++ class std::vector<std::pair<std::string,std::vector<double>>>+;
 
-#pragma link C++ class DD4hep::Geometry::MaterialPropertiesTable+;
-#pragma link C++ class DD4hep::Geometry::MaterialPropertiesTableObject+;
-#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::MaterialPropertiesTableObject>+;
+#pragma link C++ class dd4hep::MaterialPropertiesTable+;
+#pragma link C++ class dd4hep::MaterialPropertiesTableObject+;
+#pragma link C++ class dd4hep::Handle<dd4hep::MaterialPropertiesTableObject>+;
+#pragma link C++ class std::map<std::string,dd4hep::MaterialPropertiesTable>+;
 
-#pragma link C++ class DD4hep::Geometry::LogicalSurfaceObject+;
-#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::LogicalSurfaceObject>+;
-#pragma link C++ class DD4hep::Geometry::LogicalSurface+;
+
+#pragma link C++ class dd4hep::LogicalSurfaceObject+;
+#pragma link C++ class dd4hep::Handle<dd4hep::LogicalSurfaceObject>+;
+#pragma link C++ class dd4hep::LogicalSurface+;
 
 // Readout.h
 #pragma link C++ class vector<pair<size_t,string> >+;

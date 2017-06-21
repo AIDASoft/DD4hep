@@ -194,6 +194,8 @@ namespace dd4hep {
 
     /// Retrieve a matrial by it's name from the detector description
     virtual Material material(const std::string& name) const = 0;
+    /// Retrieve a MPT by it's name from the detector description
+    virtual MaterialPropertiesTable materialPropertiesTable(const std::string& name) const = 0;
     /// Retrieve a id descriptor by it's name from the detector description
     virtual IDDescriptor idSpecification(const std::string& name) const = 0;
     /// Retrieve a region object by it's name from the detector description
