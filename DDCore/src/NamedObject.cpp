@@ -50,3 +50,4 @@ NamedObject::NamedObject(const std::string& nam, const std::string& typ)
   : name(nam), type(typ)
 {
 }
+

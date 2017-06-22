@@ -29,11 +29,9 @@ using namespace dd4hep::detail;
 typedef detail::tools::PlacementPath PlacementPath;
 typedef detail::tools::ElementPath   ElementPath;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(WorldObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(DetElementObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(SensitiveDetectorObject);
-DD4HEP_IMPLEMENT_SAFE_CAST(WorldObject,DetElementObject)
-
+DD4HEP_INSTANTIATE_HANDLE_NAMED(WorldObject,DetElementObject);
 
 /// Default constructor
 SensitiveDetectorObject::SensitiveDetectorObject()
