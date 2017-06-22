@@ -294,15 +294,7 @@ Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, d
 
 /// Constructor to be used when creating a new object with attribute initialization
 void EllipticalTube::make(double a, double b, double dz) {
-  _assign(new TGeoEltu(), "", "elliptic_tube", true);
-  setDimensions(a, b, dz);
-}
-
-/// Set the tube dimensions
-EllipticalTube& EllipticalTube::setDimensions(double a, double b, double dz) {
-  double params[] = { a, b, dz };
-  _setDimensions(params);
-  return *this;
+  _assign(new TGeoEltu("", a, b, dz), "", "elliptic_tube", true);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
