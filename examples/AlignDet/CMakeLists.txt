@@ -76,16 +76,6 @@ dd4hep_add_test_reg( AlignDet_Telescope_write_xml
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
-#---Testing: Load Telescope geometry and read and print alignments --------
-dd4hep_add_test_reg( AlignDet_Telescope_readback_xml
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml 
-     -input  file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
-     -deltas file:./new_cond.xml
-  REGEX_PASS "33 conditions in slice. \\(T:33,S:33,L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
-  )
-#
 #---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
 dd4hep_add_test_reg( AlignDet_Telescope_stress
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
@@ -111,6 +101,16 @@ dd4hep_add_test_reg( AlignDet_Telescope_align_nominal
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
      -input  file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml 
   REGEX_PASS "Printed 20, scanned 20 and computed a total of 20 alignments \\(C:20,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Load Telescope geometry and read and print alignments --------
+dd4hep_add_test_reg( AlignDet_Telescope_readback_xml
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml
+  -input  file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+  -deltas file:./new_cond.xml
+  REGEX_PASS "33 conditions in slice. \\(T:33,S:33,L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
