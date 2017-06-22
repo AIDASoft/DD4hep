@@ -399,15 +399,15 @@ Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double 
   return *this;
 }
 
-/// Helper function to create holy hedron
+/// Helper function to create poly hedron
 void PolyhedraRegular::_create(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta) {
   if (rmin < 0e0 || rmin > rmax)
     throw runtime_error("dd4hep: PolyhedraRegular: Illegal argument rmin:<" + _toString(rmin) + "> is invalid!");
   else if (rmax < 0e0)
     throw runtime_error("dd4hep: PolyhedraRegular: Illegal argument rmax:<" + _toString(rmax) + "> is invalid!");
-  _assign(new TGeoPgon(), "", "polyhedra", false);
   double params[] = { start, delta, double(nsides), 2e0, zpos, rmin, rmax, zneg, rmin, rmax };
-  _setDimensions(&params[0]);
+  _assign(new TGeoPgon(params), "", "polyhedra", false);
+  //_setDimensions(&params[0]);
 }
 
 /// Constructor to be used when creating a new object
