@@ -572,8 +572,8 @@ namespace dd4hep {
                                      +" [Internal error -- bad detector constructor]");
           }
 	  
-          PlacedVolume pv_dau = Ref_t(daughter); // why use a Ref_t here  ???
-	  
+	  PlacedVolume pv_dau( daughter );
+
           if( findVolume(  pv_dau , theVol , volList ) ) {
 	    
             //	    std::cout << "  ----- found in daughter volume !!!  " << std::hex << pv_dau.volume().ptr() << std::endl ;
