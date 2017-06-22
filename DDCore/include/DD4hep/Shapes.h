@@ -250,7 +250,7 @@ namespace dd4hep {
   /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
   class MyConeSeg: public TGeoConeSeg {
   public:
-    MyConeSeg() : TGeoConeSeg() { }
+    MyConeSeg() : TGeoConeSeg(0.0,0.0,0.0,0.0,0.0,0.0,0.0) { }
     virtual ~MyConeSeg() { }
     double GetRmin() const {        return GetRmin1();      }
     double GetRmax() const {        return GetRmax1();      }
