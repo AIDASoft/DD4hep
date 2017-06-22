@@ -99,21 +99,32 @@ namespace dd4hep {
 
 #endif
 
-// Predefined cast map for shapes
-#define DD4HEP_IMPLEMENT_SAFE_SHAPE_CAST(FROM)                          \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TGeoShape)                            \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TGeoBBox)
+// Utility for counting the number of args in the __VA_ARGS__ pack:
+#define DD4HEP_HANDLE_PP_NARGS(...)  DD4HEP_HANDLE_PP_NARGS2(__VA_ARGS__, DD4HEP_HANDLE_PP_NARGS_COUNT())
+#define DD4HEP_HANDLE_PP_NARGS2(...) DD4HEP_HANDLE_PP_NARGS_IMPL(__VA_ARGS__)
+#define DD4HEP_HANDLE_PP_NARGS_IMPL(x1, x2, x3, x4, x5, x6, x7, x8, x9, N, ...) N
+#define DD4HEP_HANDLE_PP_NARGS_COUNT() 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, ERROR
 
-#define DD4HEP_INSTANTIATE_HANDLE(X)					\
-  DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)                                   \
-  template class dd4hep::Handle<X>
+// Macros to delegate to concrete, defined-arity implementations:
+#define DD4HEP_HANDLE_XF(count, ...)      DD4HEP_HANDLE_XF_IMPL (count, __VA_ARGS__)
+#define DD4HEP_HANDLE_XF_IMPL(count, ...) DD4HEP_HANDLE_XF_ ## count (__VA_ARGS__)
 
-#define DD4HEP_INSTANTIATE_SHAPE_HANDLE(X)			        \
-  DD4HEP_IMPLEMENT_SAFE_SHAPE_CAST(X)                                   \
-  DD4HEP_INSTANTIATE_HANDLE(X)
+#define DD4HEP_HANDLE_XF_1(CODE,x1)                              DD4HEP_TEMPLATE_HANDLE(CODE,x1)
+#define DD4HEP_HANDLE_XF_2(CODE,x1,x2)                           DD4HEP_IMPLEMENT_SAFE_CAST(x1,x2)  DD4HEP_HANDLE_XF_1(CODE,x1)
+#define DD4HEP_HANDLE_XF_3(CODE,x1,x2,x3)                        DD4HEP_IMPLEMENT_SAFE_CAST(x1,x3)  DD4HEP_HANDLE_XF_2(CODE,x1,x2)
+#define DD4HEP_HANDLE_XF_4(CODE,x1,x2,x3,x4)                     DD4HEP_IMPLEMENT_SAFE_CAST(x1,x4)  DD4HEP_HANDLE_XF_3(CODE,x1,x2,x3)
+#define DD4HEP_HANDLE_XF_5(CODE,x1,x2,x3,x4,x5)                  DD4HEP_IMPLEMENT_SAFE_CAST(x1,x5)  DD4HEP_HANDLE_XF_4(CODE,x1,x2,x3,x4)
+#define DD4HEP_HANDLE_XF_6(CODE,x1,x2,x3,x4,x5,x6)               DD4HEP_IMPLEMENT_SAFE_CAST(x1,x6)  DD4HEP_HANDLE_XF_5(CODE,x1,x2,x3,x4,x5)
+#define DD4HEP_HANDLE_XF_7(CODE,x1,x2,x3,x4,x5,x6,x7)            DD4HEP_IMPLEMENT_SAFE_CAST(x1,x7)  DD4HEP_HANDLE_XF_6(CODE,x1,x2,x3,x4,x5,x6)
+#define DD4HEP_HANDLE_XF_8(CODE,x1,x2,x3,x4,x5,x6,x7,x8)         DD4HEP_IMPLEMENT_SAFE_CAST(x1,x8)  DD4HEP_HANDLE_XF_7(CODE,x1,x2,x3,x4,x5,x6,x7)
+#define DD4HEP_HANDLE_XF_9(CODE,x1,x2,x3,x4,x5,x6,x7,x8,x9)      DD4HEP_IMPLEMENT_SAFE_CAST(x1,x9)  DD4HEP_HANDLE_XF_8(CODE,x1,x2,x3,x4,x5,x6,x7,x8)
+#define DD4HEP_HANDLE_XF_10(CODE,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10) DD4HEP_IMPLEMENT_SAFE_CAST(x1,x10) DD4HEP_HANDLE_XF_9(CODE,x1,x2,x3,x4,x5,x6,x7,x8,x9)
 
-#define DD4HEP_INSTANTIATE_HANDLE_NAMED(X)                              \
-  DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)                                   \
+
+#define DD4HEP_TEMPLATE_HANDLE(CODE,X) DD4HEP_TEMPLATE_HANDLE_CODE_##CODE(X) template class dd4hep::Handle<X>
+#define DD4HEP_TEMPLATE_HANDLE_CODE_NONE(X)
+#define DD4HEP_TEMPLATE_HANDLE_CODE_CAST_ONLY(X)       DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)
+#define DD4HEP_TEMPLATE_HANDLE_CODE_NAMED(X)                            \
   namespace dd4hep {                                                    \
     template <> const char* Handle<X>::name() const			\
     { return this->m_element ? this->m_element->name.c_str() : ""; }	\
@@ -122,32 +133,40 @@ namespace dd4hep {
       this->m_element = p;						\
       p->name = n;							\
       p->type = t;							\
-    }}  								\
-  template class dd4hep::Handle<X>
+    }}                                                                  \
+    DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)
 
-#define DD4HEP_INSTANTIATE_HANDLE_RAW(X)                                \
+#define DD4HEP_TEMPLATE_HANDLE_CODE_UNNAMED(X)                          \
   namespace dd4hep {                                                    \
     template <> void		                                        \
     Handle<X>::assign(X* n, const std::string&, const std::string&)     \
     { this->m_element = n;}	                                        \
     template <> const char* Handle<X>::name() const { return ""; }	\
   }                                                                     \
-  template class dd4hep::Handle<X>
-  
-#define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(X)                            \
+  DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)
+
+#define DD4HEP_TEMPLATE_HANDLE_CODE_RAW(X)                              \
   namespace dd4hep {                                                    \
     template <> void		                                        \
     Handle<X>::assign(X* n, const std::string&, const std::string&)     \
     { this->m_element = n;}	                                        \
     template <> const char* Handle<X>::name() const { return ""; }	\
   }                                                                     \
-  DD4HEP_INSTANTIATE_HANDLE(X)
+  DD4HEP_SAFE_CAST_IMPLEMENTATION(X,X)
+
+// Delegation macro; this is the only macro you need to call from elsewhere:
+#define DD4HEP_INSTANTIATE_HANDLE_CODE(CODE,...)  DD4HEP_HANDLE_XF(DD4HEP_HANDLE_PP_NARGS(__VA_ARGS__),CODE,__VA_ARGS__)
+#define DD4HEP_INSTANTIATE_HANDLE(...)            DD4HEP_INSTANTIATE_HANDLE_CODE(CAST_ONLY,__VA_ARGS__)
+#define DD4HEP_INSTANTIATE_SHAPE_HANDLE(...)      DD4HEP_INSTANTIATE_HANDLE_CODE(CAST_ONLY,__VA_ARGS__,TGeoShape,TGeoBBox)
+#define DD4HEP_INSTANTIATE_HANDLE_RAW(...)        DD4HEP_INSTANTIATE_HANDLE_CODE(RAW,__VA_ARGS__)
+#define DD4HEP_INSTANTIATE_HANDLE_NAMED(...)      DD4HEP_INSTANTIATE_HANDLE_CODE(NAMED,__VA_ARGS__)
+#define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(...)    DD4HEP_INSTANTIATE_HANDLE_CODE(UNNAMED,__VA_ARGS__)
 
 #define DD4HEP_CONCAT_MACROS(name, serial)  name##_##serial
-#define DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(X,serial)             \
-  namespace {                                                           \
-  typedef dd4hep::SegmentationWrapper<X> DD4HEP_CONCAT_MACROS(Wrapper,serial); }      \
-  DD4HEP_IMPLEMENT_SAFE_CAST(DD4HEP_CONCAT_MACROS(Wrapper,serial),dd4hep::SegmentationObject) \
-  DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DD4HEP_CONCAT_MACROS(Wrapper,serial))
+#define DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(serial,name,...)                    \
+  namespace {                                                                         \
+  typedef dd4hep::SegmentationWrapper<name> DD4HEP_CONCAT_MACROS(Wrapper,serial); }   \
+  DD4HEP_INSTANTIATE_HANDLE_CODE(UNNAMED,DD4HEP_CONCAT_MACROS(Wrapper,serial),__VA_ARGS__)
 
-#define DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(X) DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(X,__LINE__)
+#define DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(...)                                   \
+  DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(__LINE__,__VA_ARGS__,dd4hep::SegmentationObject)
