@@ -26,11 +26,10 @@ using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
-DD4HEP_IMPLEMENT_SAFE_CAST(AlignmentObject,ConditionObject)
 
 /// Default constructor
 AlignmentObject::AlignmentObject()
-  : ConditionObject(), alignment_data(0)
+  : ConditionObject(), alignment_data(0)//, source_key(0)
 {
   InstanceCount::increment(this);
   flags  = Condition::ALIGNMENT_DERIVED;

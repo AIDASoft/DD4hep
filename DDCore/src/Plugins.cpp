@@ -176,7 +176,6 @@ void PluginService::addFactory(const std::string& id, stub_t stub,
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*,xml::Handle_t*,Ref_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*,xml::Handle_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(TObject*,     (Detector*,xml::Handle_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*,xml::Handle_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*,xml::Handle_t const*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*, int, char**))

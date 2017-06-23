@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DETECTOR_DETECTOR_H
-#define DD4HEP_DETECTOR_DETECTOR_H
+#ifndef DD4HEP_Detector_Detector_H
+#define DD4HEP_Detector_Detector_H
 
 #include "DD4hep/Version.h"
 
@@ -231,23 +231,23 @@ namespace dd4hep {
     virtual Detector& add(CartesianField entry) = 0;
 
     /// Add a new constant by named reference to the detector description
-    virtual Detector& addConstant(const Handle<NamedObject>& element) = 0;
+    virtual Detector& addConstant(const Ref_t& element) = 0;
     /// Add a new visualisation attribute by named reference to the detector description
-    virtual Detector& addVisAttribute(const Handle<NamedObject>& element) = 0;
+    virtual Detector& addVisAttribute(const Ref_t& element) = 0;
     /// Add a new limit set by named reference to the detector description
-    virtual Detector& addLimitSet(const Handle<NamedObject>& limset) = 0;
+    virtual Detector& addLimitSet(const Ref_t& limset) = 0;
     /// Add a new id descriptor by named reference to the detector description
-    virtual Detector& addIDSpecification(const Handle<NamedObject>& element) = 0;
+    virtual Detector& addIDSpecification(const Ref_t& element) = 0;
     /// Add a new detector region by named reference to the detector description
-    virtual Detector& addRegion(const Handle<NamedObject>& region) = 0;
+    virtual Detector& addRegion(const Ref_t& region) = 0;
     /// Add a new detector readout by named reference to the detector description
-    virtual Detector& addReadout(const Handle<NamedObject>& readout) = 0;
+    virtual Detector& addReadout(const Ref_t& readout) = 0;
     /// Add a new sensitive detector by named reference to the detector description
-    virtual Detector& addSensitiveDetector(const Handle<NamedObject>& element) = 0;
+    virtual Detector& addSensitiveDetector(const Ref_t& element) = 0;
     /// Add a new subdetector by named reference to the detector description
-    virtual Detector& addDetector(const Handle<NamedObject>& detector) = 0;
+    virtual Detector& addDetector(const Ref_t& detector) = 0;
     /// Add a field component by named reference to the detector description
-    virtual Detector& addField(const Handle<NamedObject>& field) = 0;
+    virtual Detector& addField(const Ref_t& field) = 0;
 
     /// Deprecated call (use fromXML): Read compact geometry description or alignment file
     virtual void fromCompact(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) = 0;
@@ -348,5 +348,5 @@ namespace dd4hep {
     return constantAsString(name);
   }
 #endif
-}         /* End namespace dd4hep           */
-#endif    /* DD4HEP_DETECTOR_DETECTOR_H     */
+} /* End namespace dd4hep   */
+#endif    /* DD4HEP_Detector_Detector_H     */

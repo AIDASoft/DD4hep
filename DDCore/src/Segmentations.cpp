@@ -117,47 +117,50 @@ Handle<SensitiveDetectorObject> Segmentation::sensitive() const  {
   return data<Object>()->sensitive;
 }
 
+#define IMPLEMENT_SEGMENTATION_HANDLE(X)                                \
+  DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationWrapper<DDSegmentation::X>);
+
 #include "DDSegmentation/NoSegmentation.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::NoSegmentation);
+IMPLEMENT_SEGMENTATION_HANDLE(NoSegmentation)
 
 #include "DDSegmentation/CartesianGrid.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::CartesianGrid);
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGrid)
 
 #include "DDSegmentation/CartesianGridXY.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXY);
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridXY)
 
 #include "DDSegmentation/CartesianGridXZ.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXZ);
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridXZ)
 
 #include "DDSegmentation/CartesianGridYZ.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridYZ);
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridYZ)
 
 #include "DDSegmentation/CartesianGridXYZ.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXYZ);
+IMPLEMENT_SEGMENTATION_HANDLE(CartesianGridXYZ)
 
 #include "DDSegmentation/TiledLayerGridXY.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::TiledLayerGridXY);
+IMPLEMENT_SEGMENTATION_HANDLE(TiledLayerGridXY)
 
 #include "DDSegmentation/MegatileLayerGridXY.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::MegatileLayerGridXY);
+IMPLEMENT_SEGMENTATION_HANDLE(MegatileLayerGridXY)
 
 #include "DDSegmentation/WaferGridXY.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::WaferGridXY);
+IMPLEMENT_SEGMENTATION_HANDLE(WaferGridXY)
 
 #include "DDSegmentation/PolarGridRPhi.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::PolarGridRPhi);
+IMPLEMENT_SEGMENTATION_HANDLE(PolarGridRPhi)
 
 #include "DDSegmentation/PolarGridRPhi2.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::PolarGridRPhi2);
+IMPLEMENT_SEGMENTATION_HANDLE(PolarGridRPhi2)
 
 #include "DDSegmentation/GridPhiEta.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::GridPhiEta);
+IMPLEMENT_SEGMENTATION_HANDLE(GridPhiEta)
 
 #include "DDSegmentation/GridRPhiEta.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::GridRPhiEta);
+IMPLEMENT_SEGMENTATION_HANDLE(GridRPhiEta)
 
 #include "DDSegmentation/ProjectiveCylinder.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::ProjectiveCylinder);
+IMPLEMENT_SEGMENTATION_HANDLE(ProjectiveCylinder)
 
 #include "DDSegmentation/MultiSegmentation.h"
-DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(DDSegmentation::MultiSegmentation);
+IMPLEMENT_SEGMENTATION_HANDLE(MultiSegmentation)

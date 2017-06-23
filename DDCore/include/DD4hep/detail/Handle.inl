@@ -45,75 +45,33 @@ namespace dd4hep {
       invalidHandleError(typeid(T));
       return 0; // We have thrown an exception before - does not harm!
     }
+
 }   /* End namespace dd4hep      */
 
+#if 0
+#include <iostream>
 
-#ifdef DD4HEP_USE_SAFE_CAST
-
-#define DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM, TO)                                                  \
-  namespace dd4hep {  namespace detail  {                                                          \
-    template <> template <> TO* safe_cast<TO>::cast<FROM>(FROM* p)                                 \
-    {  return dynamic_cast<TO*>(p);  }                                                             \
-    template <> template <> TO* safe_cast<TO>::cast<FROM>(const FROM* p)                           \
-    {  return const_cast<TO*>(dynamic_cast<const TO*>(p));  }                                      \
-    template <> template <> TO* safe_cast<TO>::cast_non_null<FROM>(FROM* p)  {                     \
-      TO* ptr = dynamic_cast<TO*>(p);                                                              \
-      if ( ptr ) return ptr;                                                                       \
-      invalidHandleAssignmentError(typeid(FROM),typeid(TO));                                       \
-      return ptr;                                                                                  \
-    }                                                                                              \
-    template <> template <> TO* safe_cast<TO>::cast_non_null<FROM>(const FROM* p) {                \
-      return safe_cast<TO>::cast_non_null<FROM>(const_cast<FROM*>(p));                             \
-    }                                                                                              \
-  }}
-
-// Predefined simple cast map
-#define DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TO)                                                        \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,TO)                                                         \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(TO,FROM)
-
-// Predefined cast map including standard object types
-#define DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(FROM)                                                     \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TObject)                                                         \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,NamedObject)                                                     \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TNamed)                                                          \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,FROM)
-
-#else
-
-#define DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM, TO)                                                  \
-  namespace dd4hep {  namespace detail  {                                                          \
-    template <> FROM* safe_cast<FROM>::cast(FROM* p)                                               \
-    {  return dynamic_cast<FROM*>(p);  }                                                           \
-    template <> template <> FROM* safe_cast<FROM>::cast_non_null(FROM* p)  {                       \
-       FROM* ptr = const_cast<FROM*>(dynamic_cast<const FROM*>(p));                                \
-       if ( !ptr )  invalidHandleError(typeid(FROM));                                              \
-       return ptr;                                                                                 \
-    }                                                                                              \
-  }}
-// Predefined simple cast map
-#define DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TO)      DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,FROM)
-
-// Predefined cast map including standard object types
-#define DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(FROM)   DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,FROM)
+      std::cout << "element:" << (void*)m_element << std::endl;\
+      std::cout << "type:   "  << (char*)(m_element ? typeName(typeid(*m_element)).c_str() : "---") << std::endl;\
+      std::cout << "type:   "  << (void*)(m_element ? &typeid(*m_element) : 0) << std::endl;\
+      std::cout << "target: "  << typeName(typeid(X)) << std::endl;\
+      std::cout << "target: "  << (void*)&typeid(X) << std::endl;\
+      std::cout << "cast:   "  << dynamic_cast<X*>((TObject*)m_element) << std::endl;\
+      std::cout << "cast:   "  << dynamic_cast<X*>(m_element) << std::endl;\
 
 #endif
 
-// Predefined cast map for shapes
-#define DD4HEP_IMPLEMENT_SAFE_SHAPE_CAST(FROM)                          \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TGeoShape)                            \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TGeoBBox)
-
-#define DD4HEP_INSTANTIATE_HANDLE(X)					\
-  DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)                                   \
+#define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
+  namespace dd4hep {                                                    \
+    template <> void Handle<X>::verifyObject() const  {                 \
+      increment_object_validations();					\
+      if (m_element && dynamic_cast<X*>(m_element) == 0) {	        \
+        bad_assignment(typeid(*m_element), typeid(X));		        \
+      }                                                                 \
+  }}                                                                    \
   template class dd4hep::Handle<X>
 
-#define DD4HEP_INSTANTIATE_SHAPE_HANDLE(X)			        \
-  DD4HEP_IMPLEMENT_SAFE_SHAPE_CAST(X)                                   \
-  DD4HEP_INSTANTIATE_HANDLE(X)
-
 #define DD4HEP_INSTANTIATE_HANDLE_NAMED(X)                              \
-  DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)                                   \
   namespace dd4hep {                                                    \
     template <> const char* Handle<X>::name() const			\
     { return this->m_element ? this->m_element->name.c_str() : ""; }	\
@@ -122,18 +80,15 @@ namespace dd4hep {
       this->m_element = p;						\
       p->name = n;							\
       p->type = t;							\
-    }}  								\
+    }									\
+    template <> void Handle<X>::verifyObject() const  	{               \
+      increment_object_validations();                                   \
+      if (m_element && dynamic_cast<X*>((NamedObject*)m_element) == 0) {\
+        bad_assignment(typeid(*m_element), typeid(X));		        \
+      }                                                                 \
+    }}                                                                  \
   template class dd4hep::Handle<X>
 
-#define DD4HEP_INSTANTIATE_HANDLE_RAW(X)                                \
-  namespace dd4hep {                                                    \
-    template <> void		                                        \
-    Handle<X>::assign(X* n, const std::string&, const std::string&)     \
-    { this->m_element = n;}	                                        \
-    template <> const char* Handle<X>::name() const { return ""; }	\
-  }                                                                     \
-  template class dd4hep::Handle<X>
-  
 #define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(X)                            \
   namespace dd4hep {                                                    \
     template <> void		                                        \
@@ -142,12 +97,3 @@ namespace dd4hep {
     template <> const char* Handle<X>::name() const { return ""; }	\
   }                                                                     \
   DD4HEP_INSTANTIATE_HANDLE(X)
-
-#define DD4HEP_CONCAT_MACROS(name, serial)  name##_##serial
-#define DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(X,serial)             \
-  namespace {                                                           \
-  typedef dd4hep::SegmentationWrapper<X> DD4HEP_CONCAT_MACROS(Wrapper,serial); }      \
-  DD4HEP_IMPLEMENT_SAFE_CAST(DD4HEP_CONCAT_MACROS(Wrapper,serial),dd4hep::SegmentationObject) \
-  DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DD4HEP_CONCAT_MACROS(Wrapper,serial))
-
-#define DD4HEP_IMPLEMENT_SEGMENTATION_HANDLE(X) DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(X,__LINE__)

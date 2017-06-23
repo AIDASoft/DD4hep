@@ -587,7 +587,7 @@ DetElement VolumeManager::lookupDetector(VolumeID volume_id) const {
     return c->element;
   }
   except("VolumeManager","lookupContext: Failed to search Volume context [Invalid Manager Handle]");
-  return DetElement();
+  return 0;
 }
 
 /// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID

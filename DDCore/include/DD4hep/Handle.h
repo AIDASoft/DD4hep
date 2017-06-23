@@ -14,12 +14,12 @@
 #define DD4HEP_HANDLE_H
 
 // Framework include files
+#include "DD4hep/config.h"
 #include "DD4hep/Primitives.h"
 
 #include <string>
 #include <typeinfo>
 #include <stdexcept>
-#include <type_traits>
 
 // Conversion factor from radians to degree: 360/(2*PI)
 #ifndef RAD_2_DEGREE
@@ -56,10 +56,11 @@ namespace dd4hep {
     return 0xFEEDAFFEDEADFACEULL;
   }
 
+
   /// Handle: a templated class like a shared pointer, which allows specialized access to tgeometry objects.
   /**
    * The Handle is the base class to access all objects in dd4hep.
-   * Objects, which consist ONLY of data, which are NEVER passed directly.
+   * Objects, which consist ONLY of data  are NEVER passed directly.
    * They are ALWAYS passed using handles. Such handles are 'handy' ;-).
    * Assignment is to and from different handles is possible using concrete
    * type checking.
@@ -91,26 +92,20 @@ namespace dd4hep {
 
     /// Single and only data member: Reference to the actual element.
     T* m_element = 0;
-    /// Default constructor
+    /// Defaulot constructor
     Handle() = default;
     /// Copy constructor
     Handle(const Handle<T>& element) = default;
     /// Initializing constructor from pointer
     Handle(T* element) : m_element(element)   {            }
-
     /// Initializing constructor from unrelated pointer with type checking
-    template <typename Q> Handle(Q* element)
-      : m_element(element ? detail::safe_cast<T>::template cast(element) : 0)
-    {             }
-
+    template <typename Q> Handle(Q* element) : m_element((T*)element)
+    {    verifyObject();                       }
     /// Initializing constructor from unrelated handle with type checking
-    template <typename Q> Handle(const Handle<Q>& element)
-      : m_element(element.m_element ? detail::safe_cast<T>::template cast(element.m_element) : 0)
-    {             }
-
+    template <typename Q> Handle(const Handle<Q>& element) : m_element((T*)element.m_element)
+    {    verifyObject();                       }
     /// Assignment operator
     Handle<T>& operator=(const Handle<T>& element) = default;
-
     /// Boolean operator == used for RB tree insertions
     bool operator==(const Handle<T>& element)  const {
       return m_element == element.m_element;
@@ -168,6 +163,8 @@ namespace dd4hep {
     /** Very compact way to check the validity of a handle with exception thrown.  
      */
     T* access() const;
+    /// Verify the object type after a (re-)assignment
+    void verifyObject() const;
     /// Access the object name (or "" if not supported by the object)
     const char* name() const;
     /// Assign a new named object. Note: object references must be managed by the user

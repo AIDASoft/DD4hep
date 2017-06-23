@@ -769,7 +769,7 @@ namespace dd4hep {
       }
       Volume  vol;
       DDDBCatalog*   support = 0;
-      DetElement det, parent_element;
+      DetElement det(0), parent_element(0);
       if ( context->print_detelem )  {
         printout(INFO,"CNV<Catalog>","++ Starting catalog %p %s [cref:%d/%d lref:%d/%d lv:%s sup:%s np:%s] Cond:%s ",
                  (void*)object,
