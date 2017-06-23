@@ -225,23 +225,21 @@ DetElement DetElement::child(const string& child_name) const {
 /// Access to the detector elements's parent
 DetElement DetElement::parent() const {
   Object* o = ptr();
-  return (o) ? o->parent : DetElement();
+  return (o) ? o->parent : 0;
 }
 
 /// Access to the world object. Only possible once the geometry is closed.
 DetElement DetElement::world()  const   {
   Object* o = ptr();
-  return (o) ? o->world() : World();
+  return (o) ? o->world() : 0;
 }
 
-/// Simple checking routine
 void DetElement::check(bool cond, const string& msg) const {
   if (cond) {
     throw runtime_error("dd4hep: " + msg);
   }
 }
 
-/// Add a new child subdetector element
 DetElement& DetElement::add(DetElement sdet) {
   if (isValid()) {
     pair<Children::iterator, bool> r = object<Object>().children.insert(make_pair(sdet.name(), sdet));

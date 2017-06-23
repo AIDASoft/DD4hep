@@ -18,7 +18,6 @@
  *  Include XML/XMLDetector.h or JSON/Detector.h !
  */
 
-class TObject;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -56,7 +55,7 @@ namespace dd4hep {
       bool isRadiator() const;
       
       /// Create a shape using the plugin mechanism from an XML element
-      TObject* createShape() const;
+      NamedObject* createShape() const;
     };
 
     /// XML Handle_t class extending the XML handle Dimension

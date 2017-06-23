@@ -101,8 +101,8 @@ template <> void Converter<detector>::operator()(json_h element) const {
       sd.setReadout(ro);
       description.addSensitiveDetector(sd);
     }
-    Handle<NamedObject> sens = sd;
-    DetElement det(PluginService::Create<NamedObject*>(type, &description, &element, &sens));
+    Ref_t sens = sd;
+    DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &description, &element, &sens)));
     if (det.isValid()) {
       setChildTitles(make_pair(name, det));
       if ( sd.isValid() )  {

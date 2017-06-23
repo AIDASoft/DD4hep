@@ -38,7 +38,7 @@ SensitiveDetector DetectorHelper::sensitiveDetector(DetElement detector) const  
       }
     }
   }
-  return SensitiveDetector();
+  return SensitiveDetector(0);
 }
 
 /// Find a detector element by it's system ID
@@ -48,6 +48,6 @@ DetElement DetectorHelper::detectorByID(int id)  const    {
     DetElement de(i.second);
     if ( de.id() == id ) return de;
   }
-  return DetElement();
+  return DetElement(0);
 }
 

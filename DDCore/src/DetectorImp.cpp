@@ -172,7 +172,7 @@ void* DetectorImp::userExtension(const type_info& info, bool alert) const {
 void DetectorImp::declareMotherVolume(const string& detector_name, const Volume& vol)  {
   if ( !detector_name.empty() )  {
     if ( vol.isValid() )  {
-      auto i = m_motherVolumes.find(detector_name);
+      HandleMap::const_iterator i = m_motherVolumes.find(detector_name);
       if (i == m_motherVolumes.end())   {
         m_motherVolumes.insert(make_pair(detector_name,vol));
         return;
@@ -188,7 +188,7 @@ void DetectorImp::declareMotherVolume(const string& detector_name, const Volume&
 Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
   if ( de.isValid() )   {
     string de_name = de.name();
-    auto i = m_motherVolumes.find(de_name);
+    HandleMap::const_iterator i = m_motherVolumes.find(de_name);
     if (i == m_motherVolumes.end())   {
       return m_worldVol;
     }
@@ -197,7 +197,7 @@ Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
   throw runtime_error("Detector: Attempt access mother volume of invalid detector [Invalid-handle]");
 }
 
-Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
+Detector& DetectorImp::addDetector(const Ref_t& ref_det) {
   DetElement det_element(ref_det);
   DetectorHelper helper(this);
   DetElement existing_det = helper.detectorByID(det_element.id());
@@ -234,7 +234,7 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
 }
 
 /// Add a new constant by named reference to the detector description
-Detector& DetectorImp::addConstant(const Handle<NamedObject>& x) {
+Detector& DetectorImp::addConstant(const Ref_t& x) {
   if ( strcmp(x.name(),"Detector_InhibitConstants") == 0 )   {
     const char* title = x->GetTitle();
     char c = ::toupper(title[0]);
@@ -255,7 +255,7 @@ Constant DetectorImp::constant(const string& name) const {
 /// Typed access to constants: access string values
 string DetectorImp::constantAsString(const string& name) const {
   if ( !m_inhibitConstants )   {
-    Handle<NamedObject> c = constant(name);
+    Ref_t c = constant(name);
     if (c.isValid())
       return c->GetTitle();
     throw runtime_error("Detector:constantAsString: The constant " + name + " is not known to the system.");
@@ -280,7 +280,7 @@ double DetectorImp::constantAsDouble(const string& name) const {
 }
 
 /// Add a field component by named reference to the detector description
-Detector& DetectorImp::addField(const Handle<NamedObject>& x) {
+Detector& DetectorImp::addField(const Ref_t& x) {
   m_field.add(x);
   m_fields.append(x);
   return *this;
@@ -290,7 +290,7 @@ Detector& DetectorImp::addField(const Handle<NamedObject>& x) {
 Material DetectorImp::material(const string& name) const {
   TGeoMedium* mat = m_manager->GetMedium(name.c_str());
   if (mat) {
-    return Material(mat);
+    return Material(Ref_t(mat));
   }
   throw runtime_error("Cannot find a material referenced by name:" + name);
 }
@@ -364,10 +364,10 @@ vector<DetElement> DetectorImp::detectors(unsigned int includeFlag, unsigned int
 
 /// Access a set of subdetectors according to several sensitive types.
 vector<DetElement> DetectorImp::detectors(const string& type1,
-                                          const string& type2,
-                                          const string& type3,
-                                          const string& type4,
-                                          const string& type5 )  {
+                                      const string& type2,
+                                      const string& type3,
+                                      const string& type4,
+                                      const string& type5 )  {
   if ( m_manager->IsClosed() ) {
     vector<DetElement> v;
     DetectorTypeMap::const_iterator i, end=m_detectorTypes.end();
@@ -386,7 +386,7 @@ vector<DetElement> DetectorImp::detectors(const string& type1,
   throw runtime_error("detectors("+type1+","+type2+",...): Detectors can only selected by type once the geometry is closed!");
 }
 
-Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
+Handle<TObject> DetectorImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
   HandleMap::const_iterator i = e.find(name);
   if (i != e.end()) {
     return (*i).second;

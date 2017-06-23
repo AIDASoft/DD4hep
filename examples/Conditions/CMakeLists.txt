@@ -20,8 +20,8 @@ dd4hep_package ( Conditions MAJOR 0 MINOR 0 PATCH 1
 )
 #-----------------------------------------------------------------------------------
 dd4hep_add_plugin(ConditionsExample SOURCES src/*.cpp)
-dd4hep_install_dir( xml  DESTINATION examples/Conditions )
-dd4hep_install_dir( data DESTINATION examples/Conditions )
+dd4hep_install_dir( xml  DESTINATION ${DD4hep_DIR}/examples/Conditions )
+dd4hep_install_dir( data DESTINATION ${DD4hep_DIR}/examples/Conditions )
 dd4hep_configure_scripts ( Conditions DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------
 #

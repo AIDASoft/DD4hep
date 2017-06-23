@@ -45,86 +45,33 @@ namespace dd4hep {
       invalidHandleError(typeid(T));
       return 0; // We have thrown an exception before - does not harm!
     }
+
 }   /* End namespace dd4hep      */
 
+#if 0
+#include <iostream>
 
-#ifdef DD4HEP_USE_SAFE_CAST
-
-#define DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM, TO)                                                  \
-  namespace dd4hep {  namespace detail  {                                                          \
-    template <> template <> TO* safe_cast<TO>::cast<FROM>(FROM* p)                                 \
-    {  return dynamic_cast<TO*>(p);  }                                                             \
-    template <> template <> TO* safe_cast<TO>::cast<FROM>(const FROM* p)                           \
-    {  return const_cast<TO*>(dynamic_cast<const TO*>(p));  }                                      \
-    template <> template <> TO* safe_cast<TO>::cast_non_null<FROM>(FROM* p)  {                     \
-      TO* ptr = dynamic_cast<TO*>(p);                                                              \
-      if ( ptr ) return ptr;                                                                       \
-      invalidHandleAssignmentError(typeid(FROM),typeid(TO));                                       \
-      return ptr;                                                                                  \
-    }                                                                                              \
-    template <> template <> TO* safe_cast<TO>::cast_non_null<FROM>(const FROM* p) {                \
-      return safe_cast<TO>::cast_non_null<FROM>(const_cast<FROM*>(p));                             \
-    }                                                                                              \
-  }}
-
-// Predefined simple cast map
-#define DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TO)                                                        \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,TO)                                                         \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(TO,FROM)
-
-// Predefined cast map including standard object types
-#define DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(FROM)                                                     \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TObject)                                                         \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,NamedObject)                                                     \
-  DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TNamed)                                                          \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,FROM)
-
-#else
-
-#define DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM, TO)                                                  \
-  namespace dd4hep {  namespace detail  {                                                          \
-    template <> FROM* safe_cast<FROM>::cast(FROM* p)                                               \
-    {  return dynamic_cast<FROM*>(p);  }                                                           \
-    template <> template <> FROM* safe_cast<FROM>::cast_non_null(FROM* p)  {                       \
-       FROM* ptr = const_cast<FROM*>(dynamic_cast<const FROM*>(p));                                \
-       if ( !ptr )  invalidHandleError(typeid(FROM));                                              \
-       return ptr;                                                                                 \
-    }                                                                                              \
-  }}
-// Predefined simple cast map
-#define DD4HEP_IMPLEMENT_SAFE_CAST(FROM,TO)      DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,FROM)
-
-// Predefined cast map including standard object types
-#define DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(FROM)   DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM,FROM)
+      std::cout << "element:" << (void*)m_element << std::endl;\
+      std::cout << "type:   "  << (char*)(m_element ? typeName(typeid(*m_element)).c_str() : "---") << std::endl;\
+      std::cout << "type:   "  << (void*)(m_element ? &typeid(*m_element) : 0) << std::endl;\
+      std::cout << "target: "  << typeName(typeid(X)) << std::endl;\
+      std::cout << "target: "  << (void*)&typeid(X) << std::endl;\
+      std::cout << "cast:   "  << dynamic_cast<X*>((TObject*)m_element) << std::endl;\
+      std::cout << "cast:   "  << dynamic_cast<X*>(m_element) << std::endl;\
 
 #endif
 
-// Utility for counting the number of args in the __VA_ARGS__ pack:
-#define DD4HEP_HANDLE_PP_NARGS(...)  DD4HEP_HANDLE_PP_NARGS2(__VA_ARGS__, DD4HEP_HANDLE_PP_NARGS_COUNT())
-#define DD4HEP_HANDLE_PP_NARGS2(...) DD4HEP_HANDLE_PP_NARGS_IMPL(__VA_ARGS__)
-#define DD4HEP_HANDLE_PP_NARGS_IMPL(x1, x2, x3, x4, x5, x6, x7, x8, x9, N, ...) N
-#define DD4HEP_HANDLE_PP_NARGS_COUNT() 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, ERROR
+#define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
+  namespace dd4hep {                                                    \
+    template <> void Handle<X>::verifyObject() const  {                 \
+      increment_object_validations();					\
+      if (m_element && dynamic_cast<X*>(m_element) == 0) {	        \
+        bad_assignment(typeid(*m_element), typeid(X));		        \
+      }                                                                 \
+  }}                                                                    \
+  template class dd4hep::Handle<X>
 
-// Macros to delegate to concrete, defined-arity implementations:
-#define DD4HEP_HANDLE_VAR_ARG(count, ...)      DD4HEP_HANDLE_VAR_ARG_IMPL (count, __VA_ARGS__)
-#define DD4HEP_HANDLE_VAR_ARG_IMPL(count, ...) DD4HEP_HANDLE_VAR_ARG_ ## count (__VA_ARGS__)
-
-#define DD4HEP_HANDLE_VAR_ARG_1(CODE,x1)                              DD4HEP_TEMPLATE_HANDLE(CODE,x1)
-#define DD4HEP_HANDLE_VAR_ARG_2(CODE,x1,x2)                           DD4HEP_IMPLEMENT_SAFE_CAST(x1,x2)  DD4HEP_HANDLE_VAR_ARG_1(CODE,x1)
-#define DD4HEP_HANDLE_VAR_ARG_3(CODE,x1,x2,x3)                        DD4HEP_IMPLEMENT_SAFE_CAST(x1,x3)  DD4HEP_HANDLE_VAR_ARG_2(CODE,x1,x2)
-#define DD4HEP_HANDLE_VAR_ARG_4(CODE,x1,x2,x3,x4)                     DD4HEP_IMPLEMENT_SAFE_CAST(x1,x4)  DD4HEP_HANDLE_VAR_ARG_3(CODE,x1,x2,x3)
-#define DD4HEP_HANDLE_VAR_ARG_5(CODE,x1,x2,x3,x4,x5)                  DD4HEP_IMPLEMENT_SAFE_CAST(x1,x5)  DD4HEP_HANDLE_VAR_ARG_4(CODE,x1,x2,x3,x4)
-#define DD4HEP_HANDLE_VAR_ARG_6(CODE,x1,x2,x3,x4,x5,x6)               DD4HEP_IMPLEMENT_SAFE_CAST(x1,x6)  DD4HEP_HANDLE_VAR_ARG_5(CODE,x1,x2,x3,x4,x5)
-#define DD4HEP_HANDLE_VAR_ARG_7(CODE,x1,x2,x3,x4,x5,x6,x7)            DD4HEP_IMPLEMENT_SAFE_CAST(x1,x7)  DD4HEP_HANDLE_VAR_ARG_6(CODE,x1,x2,x3,x4,x5,x6)
-#define DD4HEP_HANDLE_VAR_ARG_8(CODE,x1,x2,x3,x4,x5,x6,x7,x8)         DD4HEP_IMPLEMENT_SAFE_CAST(x1,x8)  DD4HEP_HANDLE_VAR_ARG_7(CODE,x1,x2,x3,x4,x5,x6,x7)
-#define DD4HEP_HANDLE_VAR_ARG_9(CODE,x1,x2,x3,x4,x5,x6,x7,x8,x9)      DD4HEP_IMPLEMENT_SAFE_CAST(x1,x9)  DD4HEP_HANDLE_VAR_ARG_8(CODE,x1,x2,x3,x4,x5,x6,x7,x8)
-#define DD4HEP_HANDLE_VAR_ARG_10(CODE,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10) DD4HEP_IMPLEMENT_SAFE_CAST(x1,x10) DD4HEP_HANDLE_VAR_ARG_9(CODE,x1,x2,x3,x4,x5,x6,x7,x8,x9)
-
-
-#define DD4HEP_TEMPLATE_HANDLE(CODE,X) DD4HEP_TEMPLATE_HANDLE_CODE_##CODE(X) template class dd4hep::Handle<X>
-#define DD4HEP_TEMPLATE_HANDLE_CODE_NONE(X)
-#define DD4HEP_TEMPLATE_HANDLE_CODE_CAST_ONLY(X)       DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)
-#define DD4HEP_TEMPLATE_HANDLE_CODE_NAMED(X)                            \
+#define DD4HEP_INSTANTIATE_HANDLE_NAMED(X)                              \
   namespace dd4hep {                                                    \
     template <> const char* Handle<X>::name() const			\
     { return this->m_element ? this->m_element->name.c_str() : ""; }	\
@@ -133,40 +80,20 @@ namespace dd4hep {
       this->m_element = p;						\
       p->name = n;							\
       p->type = t;							\
+    }									\
+    template <> void Handle<X>::verifyObject() const  	{               \
+      increment_object_validations();                                   \
+      if (m_element && dynamic_cast<X*>((NamedObject*)m_element) == 0) {\
+        bad_assignment(typeid(*m_element), typeid(X));		        \
+      }                                                                 \
     }}                                                                  \
-    DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)
+  template class dd4hep::Handle<X>
 
-#define DD4HEP_TEMPLATE_HANDLE_CODE_UNNAMED(X)                          \
+#define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(X)                            \
   namespace dd4hep {                                                    \
     template <> void		                                        \
     Handle<X>::assign(X* n, const std::string&, const std::string&)     \
     { this->m_element = n;}	                                        \
     template <> const char* Handle<X>::name() const { return ""; }	\
   }                                                                     \
-  DD4HEP_IMPLEMENT_SAFE_NAMED_CAST(X)
-
-#define DD4HEP_TEMPLATE_HANDLE_CODE_RAW(X)                              \
-  namespace dd4hep {                                                    \
-    template <> void		                                        \
-    Handle<X>::assign(X* n, const std::string&, const std::string&)     \
-    { this->m_element = n;}	                                        \
-    template <> const char* Handle<X>::name() const { return ""; }	\
-  }                                                                     \
-  DD4HEP_SAFE_CAST_IMPLEMENTATION(X,X)
-
-// Delegation macro; this is the only macro you need to call from elsewhere:
-#define DD4HEP_INSTANTIATE_HANDLE_CODE(CODE,...)  DD4HEP_HANDLE_VAR_ARG(DD4HEP_HANDLE_PP_NARGS(__VA_ARGS__),CODE,__VA_ARGS__)
-#define DD4HEP_INSTANTIATE_HANDLE(...)            DD4HEP_INSTANTIATE_HANDLE_CODE(CAST_ONLY,__VA_ARGS__)
-#define DD4HEP_INSTANTIATE_SHAPE_HANDLE(...)      DD4HEP_INSTANTIATE_HANDLE_CODE(CAST_ONLY,__VA_ARGS__,TGeoShape,TGeoBBox)
-#define DD4HEP_INSTANTIATE_HANDLE_RAW(...)        DD4HEP_INSTANTIATE_HANDLE_CODE(RAW,__VA_ARGS__)
-#define DD4HEP_INSTANTIATE_HANDLE_NAMED(...)      DD4HEP_INSTANTIATE_HANDLE_CODE(NAMED,__VA_ARGS__)
-#define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(...)    DD4HEP_INSTANTIATE_HANDLE_CODE(UNNAMED,__VA_ARGS__)
-
-#define DD4HEP_CONCAT_MACROS(name, serial)  name##_##serial
-#define DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(serial,name,...)                    \
-  namespace {                                                                         \
-  typedef dd4hep::SegmentationWrapper<name> DD4HEP_CONCAT_MACROS(Wrapper,serial); }   \
-  DD4HEP_INSTANTIATE_HANDLE_CODE(UNNAMED,DD4HEP_CONCAT_MACROS(Wrapper,serial),__VA_ARGS__)
-
-#define DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(...)                                   \
-  DD4HEP_SEGMENTATION_HANDLE_IMPLEMENTATION(__LINE__,__VA_ARGS__,dd4hep::SegmentationObject)
+  DD4HEP_INSTANTIATE_HANDLE(X)
