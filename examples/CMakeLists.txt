@@ -22,6 +22,9 @@
 # M.Frank, CERN, 2015:  Adapt to new cmake scripts
 #==========================================================================
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+
+project( DD4hep_Examples )
+
 option(BUILD_TESTING "Enable and build tests" ON)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
