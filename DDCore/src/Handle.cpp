@@ -255,6 +255,7 @@ namespace dd4hep {
 
 #include "DDSegmentation/Segmentation.h"
 typedef DDSegmentation::Segmentation _Segmentation;
+//INSTANTIATE_UNNAMED(_Segmentation);
 namespace dd4hep {
   template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string&) {
     this->m_element = s;
@@ -270,12 +271,15 @@ namespace dd4hep {
 #include "TMap.h"
 #include "TColor.h"
 
-template class dd4hep::Handle<NamedObject>;
-DD4HEP_SAFE_CAST_IMPLEMENTATION(NamedObject,NamedObject)
-
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(Detector);
-DD4HEP_INSTANTIATE_HANDLE_CODE(RAW,TObject,NamedObject);
-DD4HEP_INSTANTIATE_HANDLE_CODE(NONE,TNamed,TObject,NamedObject);
+DD4HEP_INSTANTIATE_HANDLE_RAW(TObject);
+DD4HEP_INSTANTIATE_HANDLE_RAW(TNamed);
+DD4HEP_SAFE_CAST_IMPLEMENTATION(TObject,TObject)
+DD4HEP_SAFE_CAST_IMPLEMENTATION(TNamed,TNamed)
+DD4HEP_SAFE_CAST_IMPLEMENTATION(NamedObject,NamedObject)
+DD4HEP_IMPLEMENT_SAFE_CAST(TObject,TNamed)
+DD4HEP_IMPLEMENT_SAFE_CAST(TObject,NamedObject)
+DD4HEP_IMPLEMENT_SAFE_CAST(TNamed,NamedObject)
 
 #include "TGeoMedium.h"
 #include "TGeoMaterial.h"
@@ -313,9 +317,10 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 #include "TGeoVolume.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
-DD4HEP_INSTANTIATE_HANDLE(TGeoVolume,TGeoAtt);
+DD4HEP_INSTANTIATE_HANDLE(TGeoVolume);
 DD4HEP_INSTANTIATE_HANDLE(TGeoShape);
-DD4HEP_INSTANTIATE_HANDLE(TGeoBBox,TGeoShape);
+DD4HEP_INSTANTIATE_HANDLE(TGeoBBox);
+DD4HEP_IMPLEMENT_SAFE_CAST(TGeoShape,TGeoBBox)
 
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoCone);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoArb8);

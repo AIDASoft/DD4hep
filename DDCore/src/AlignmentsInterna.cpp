@@ -24,8 +24,9 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject,ConditionObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
+DD4HEP_IMPLEMENT_SAFE_CAST(AlignmentObject,ConditionObject)
 
 /// Default constructor
 AlignmentObject::AlignmentObject()
