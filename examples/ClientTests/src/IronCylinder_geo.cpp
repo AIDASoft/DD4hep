@@ -25,10 +25,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   // XML dimension object: DDCore/XML/XMLDimension.h
   xml_dim_t x_det_dim(x_det.dimensions());
-  double inner_r = x_det_dim.rmin();
-  double outer_r = x_det_dim.rmax();
-  Assembly calo_vol(x_det.nameStr()+"_envelope");
-  PlacedVolume pv;
+  double    inner_r = x_det_dim.rmin();
+  double    outer_r = x_det_dim.rmax();
+  Assembly  calo_vol(x_det.nameStr()+"_envelope");
 
   // Set envelope volume attributes
   calo_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());

@@ -99,6 +99,14 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
   -plugin DD4hepVolumeMgrTest all
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000010002 system:0002 barrel:0001")
 #
+#  Test handle casting procedures.
+dd4hep_add_test_reg( ClientTests_Check_Handle_Casts
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Check_Handles.xml
+  -plugin DD4hepDetectorVolumeDump
+  REGEX_PASS "|   PASSED casts: 86      FAILED casts: 86                        |")
+#
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 
               MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
