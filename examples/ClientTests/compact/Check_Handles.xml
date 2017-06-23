@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <limits>
+    <limitset name="cal_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <detectors>
+    <detector id="1" name="Shell" type="DD4hep_Check_Handles" readout="ContainmentHits" vis="VisibleGreen" limits="cal_limits" region="Bla">
+      <dimensions rmin="10*cm" rmax="500*cm" z="600*cm" phiBins="64" />
+    </detector>
+  </detectors>
+  
+  <readouts>
+    <readout name="ContainmentHits">
+      <id>system:8,barrel:16,module:16</id>
+    </readout>
+  </readouts>
+  <regions>
+    <region name="Bla" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="SiRegionLimitSet"/>
+    </region>
+  </regions>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+</lccdd>

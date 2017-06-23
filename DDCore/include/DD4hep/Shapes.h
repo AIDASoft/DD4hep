@@ -33,6 +33,7 @@
 #include "TGeoPcon.h"
 #include "TGeoSphere.h"
 #include "TGeoArb8.h"
+#include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
 #include "TGeoTube.h"
 #include "TGeoEltu.h"
@@ -40,6 +41,7 @@
 #include "TGeoTorus.h"
 #include "TGeoHalfSpace.h"
 #include "TGeoCompositeShape.h"
+#include "TGeoShapeAssembly.h"
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif

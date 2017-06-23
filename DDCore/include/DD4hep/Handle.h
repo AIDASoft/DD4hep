@@ -91,26 +91,23 @@ namespace dd4hep {
 
     /// Single and only data member: Reference to the actual element.
     T* m_element = 0;
+
     /// Default constructor
     Handle() = default;
     /// Copy constructor
     Handle(const Handle<T>& element) = default;
     /// Initializing constructor from pointer
     Handle(T* element) : m_element(element)   {            }
-
     /// Initializing constructor from unrelated pointer with type checking
     template <typename Q> Handle(Q* element)
-      : m_element(element ? detail::safe_cast<T>::template cast(element) : 0)
+      : m_element(element ? detail::safe_cast<T>::cast(element) : 0)
     {             }
-
     /// Initializing constructor from unrelated handle with type checking
     template <typename Q> Handle(const Handle<Q>& element)
-      : m_element(element.m_element ? detail::safe_cast<T>::template cast(element.m_element) : 0)
+      : m_element(element.m_element ? detail::safe_cast<T>::cast(element.m_element) : 0)
     {             }
-
     /// Assignment operator
     Handle<T>& operator=(const Handle<T>& element) = default;
-
     /// Boolean operator == used for RB tree insertions
     bool operator==(const Handle<T>& element)  const {
       return m_element == element.m_element;
