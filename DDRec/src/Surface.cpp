@@ -621,7 +621,7 @@ namespace dd4hep {
       
       if( ! ( mat.Z() > 0 ) ) {
 	
-        MaterialManager matMgr ;
+        MaterialManager matMgr( _det.placement().volume() )  ;
         
 	Vector3D p = _o - innerThickness() * _n  ;
 
@@ -640,7 +640,7 @@ namespace dd4hep {
       
       if( ! ( mat.Z() > 0 ) ) {
 	
-        MaterialManager matMgr ;
+        MaterialManager matMgr( _det.placement().volume() ) ;
         
 	Vector3D p = _o + outerThickness() * _n  ;
 
