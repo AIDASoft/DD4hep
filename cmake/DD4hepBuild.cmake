@@ -91,12 +91,12 @@ macro(dd4hep_set_compiler_flags)
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
   endif()
 
-  if( ("${CMAKE_CXX_COMPILER_ID}" EQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" EQUAL "GNU") )
-    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
-  endif()
-
-  if("${CMAKE_CXX_COMPILER_ID}" EQUAL "AppleClang")
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error")
+  elseif ( ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" ))
+    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+  else()
+    MESSAGE( WARNING "We do not test with the ${CMAKE_CXX_COMPILER_ID} compiler, use at your own discretion" )
   endif()
 
  #rpath treatment
