@@ -87,7 +87,7 @@ macro(dd4hep_set_compiler_flags)
   if ( THREADS_HAVE_PTHREAD_ARG )
     set ( CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS} -pthread")
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pthread")
-  elif ( CMAKE_THREAD_LIBS_INIT )
+  elseif ( CMAKE_THREAD_LIBS_INIT )
     SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
   endif()
 
