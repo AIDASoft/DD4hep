@@ -9,6 +9,7 @@
 #include "DDRec/Material.h"
 
 #include <list>
+#include <memory>
 
 class TGeoMatrix ;
 
