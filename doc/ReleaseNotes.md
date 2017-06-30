@@ -1,3 +1,82 @@
+# v01-00
+
+* 2017-06-22 Marko Petric ([PR#192](https://github.com/AIDASoft/DD4hep/pull/192))
+  - Move `AlignDet_Telescope_readback_xml` to later in the pipeline since it depends on the output of `AlignDet_Telescope_write_xml`
+
+* 2017-06-22 Andre Sailer ([PR#191](https://github.com/AIDASoft/DD4hep/pull/191))
+  - Surface: fix memory leak of transformation matrix
+  - XML::Layering: fix memory leak of contained layers in the object
+
+* 2017-06-23 Andre Sailer ([PR#197](https://github.com/AIDASoft/DD4hep/pull/197))
+  - Fix memory leaks for Tube, EllipticalTube and Polyhedron
+
+* 2017-06-23 Andre Sailer ([PR#196](https://github.com/AIDASoft/DD4hep/pull/196))
+  - CMake: add `Project( DD4hep )`, needed to get the correct CMAKE_CXX_COMPILER_ID on macs due to CMP0025 (cmake policy)
+  - CMake: fix treatment of linker flags, they are now properly set for Linux and Macs to error when undefined functions are encountered at link time
+  - CMake: fix elif --> elseif when checking threading libraries
+
+* 2017-06-23 Frank Gaede ([PR#195](https://github.com/AIDASoft/DD4hep/pull/195))
+  - fix crash in `dd4hep::rec::Surface` after changes in Handle assignment (PR #193)
+  - fix use of deprecated `dd4hep::rec::MaterialManager` c'tor in Surface
+
+* 2017-06-20 Frank Gaede ([PR#185](https://github.com/AIDASoft/DD4hep/pull/185))
+  - bug fix in material utilities
+       - call `MaterialManager( Volume v)` with `Detector.world().volume()`
+
+* 2017-06-20 Marko Petric ([PR#184](https://github.com/AIDASoft/DD4hep/pull/184))
+  - Reinstate the full test-suite on Travis
+
+* 2017-06-20 Markus Frank ([PR#183](https://github.com/AIDASoft/DD4hep/pull/183))
+  - Unify header guards in DDCore
+  - Add header to steer ignoring warnings of rootcling generated dictionaries.
+
+* 2017-06-20 Frank Gaede ([PR#182](https://github.com/AIDASoft/DD4hep/pull/182))
+  - cleanup of namespace `dd4hep::rec`
+    - remove obsolete bwd compatibility for `DD4hep::DDRec`
+    - re-introduce `[deprecated]` warnings for unmaintained classes in DDRec/API 
+    - re-fix deprecated c'tor for `MaterialManager` in material utilities
+
+* 2017-06-20 Markus Frank ([PR#181](https://github.com/AIDASoft/DD4hep/pull/181))
+  - Attack many warnings from:
+    - `-Wshadow`
+    - `-Winclude-hygiene`
+    - `-Woverlength-strings` (int cling dictionaries)
+
+* 2017-06-20 Markus Frank ([PR#179](https://github.com/AIDASoft/DD4hep/pull/179))
+  - Remove a bunch of shadow warnings and include-hygiene warnings.
+
+* 2017-06-21 Marko Petric ([PR#169](https://github.com/AIDASoft/DD4hep/pull/169))
+  - Make boost explicit requirement for DD4hep and drop DD4HEP_USE_BOOST
+
+* 2017-06-21 David Blyth ([PR#168](https://github.com/AIDASoft/DD4hep/pull/168))
+  - Added environment helper scripts `thisdd4hep_only.(c)sh` that only set up variables for DD4hep and not for dependencies.
+
+* 2017-06-19 Markus Frank ([PR#178](https://github.com/AIDASoft/DD4hep/pull/178))
+  - Update documentation after reorganization of namespaces (put back previous docs).
+
+* 2017-06-19 Markus Frank ([PR#175](https://github.com/AIDASoft/DD4hep/pull/175))
+  ## DD4hep namespace reorganization
+  
+  Re-organize namespaces according to the decisions of the DD4hep developers meeting from 16th June we have decided:
+  
+  1. all namespaces will be lower case and shorter
+      * rename namespace `DD4hep` -> `dd4hep`
+      * rename namespace `DD4hep::DDRec` -> `dd4hep::rec`
+      * rename namespace `DD4hep::Simulation` -> `dd4hep::sim`
+      * rename namespace `XML` -> `xml` and `JSON` -> `json`
+      * rename all other namespaces according to this pattern
+  2. The namespace `DD4hep::Geometry::` will be incorporated into `dd4hep::`
+  3. All utilities will be moved `dd4hep::detail`
+  4. `LCDD` will be renamed to `Detector` and current `Detector.h` will be renamed to `DetElement.h`
+  8. Examine if `DDSegmentation` can be incorporated into `DDCore` and make it volume aware
+      * If this this cannot be achieved in whole place `DDSegmentation` into the right namespace
+  
+    ## DDParsers
+  
+    DDParsers are now a separate package. This does not make it yet standalone,
+    but it is at the same level as e.g. DDSeqmentation. Any librarian is
+    encouraged to externialize it fully.
+
 # v00-24
 
 * 2017-06-08 Markus Frank ([PR#160](https://github.com/AIDASoft/DD4hep/pull/160))
