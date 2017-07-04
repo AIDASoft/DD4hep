@@ -15,6 +15,7 @@
 #define DD4HEP_DDCORE_DETECTORDATA_H
 
 // Framework includes
+#include "DD4hep/Printout.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/ObjectExtensions.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
@@ -64,8 +65,12 @@ namespace dd4hep {
         if (e.isValid()) {
           std::string n = e.name();
           std::pair<iterator, bool> r = this->insert(std::make_pair(n, e.ptr()));
-          if (!throw_on_doubles || r.second)
+          if (!throw_on_doubles || r.second) {
+            if (not r.second) {
+              printout(WARNING,"Detector","+++ Object '%s' is already defined and new one will be ignored", n.c_str());
+            }
             return;
+          }
           throw InvalidObjectError("Attempt to add an already existing object:" + std::string(e.name()) + ".");
         }
         throw InvalidObjectError("Attempt to add an invalid object.");
