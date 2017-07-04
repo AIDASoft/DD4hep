@@ -1,3 +1,11 @@
+# v01-00-01
+
+* 2017-07-04 Frank Gaede ([PR#199](https://github.com/AIDASoft/DD4hep/pull/199))
+  - bug fix for VolumeManagerContext::toElement() and VolumeManagerContext::placement() 
+        - set flag=true in VolumeManager_Populator::add_entry when 
+           a ContextExtension is needed, i.e. sensitive volume is not DetElement's volume
+  - fixes problems in CellIDPositionConverter
+
 # v01-00
 
 * 2017-06-22 Marko Petric ([PR#192](https://github.com/AIDASoft/DD4hep/pull/192))
