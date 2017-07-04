@@ -268,7 +268,7 @@ namespace dd4hep {
             context->element    = e;
             if ( nodes.size() > 0 )  {
               ContextExtension* ext = new(_getExtension(context)) ContextExtension();
-	      context->flag=true ;
+              context->flag=1;
               ext->placement  = PlacedVolume(n);
               for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
                 TGeoMatrix* m = nodes[i-1]->GetMatrix();
