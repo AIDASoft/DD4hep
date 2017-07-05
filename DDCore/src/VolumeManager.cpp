@@ -45,6 +45,84 @@ namespace {
     char* p = (char*)ctxt;
     return (ContextExtension*)(p + sizeof(VolumeManagerContext));
   }
+
+#if 0
+  static size_t ALLOCATE_SIZE = 1000;
+  class ContextAllocator  {
+
+  public:
+    struct Small  {
+      unsigned int   chunk = 0;
+      unsigned short  slot = 0;
+      unsigned char   type = 0;
+      unsigned char   used = 0;
+      unsigned char   ctxt[sizeof(VolumeManagerContext)];
+      /// Default constructor
+      Small() : type(1) {}
+      /// Default destructor
+      virtual ~Small() = default;
+      /// Inhibit copy constructor
+      Small(const Small& copy) = delete;
+      /// Inhibit assignment operator
+      Small& operator=(const Small& copy) = delete;
+    };
+    struct Large : public Small  {
+      unsigned char extension[sizeof(ContextExtension)];
+      /// Default constructor
+      Large() : Small()  { type = 2; }
+      /// Default destructor
+      virtual ~Large() = default;
+      /// Inhibit copy constructor
+      Large(const Large& copy) = delete;
+      /// Inhibit assignment operator
+      Large& operator=(const Large& copy) = delete;
+    };
+
+    std::vector<std::pair<size_t,Small*> > small;
+    std::vector<std::pair<size_t,Large*> > large;
+    std::pair<size_t, Small*> curr_small{0,0};
+    std::pair<size_t, Large*> curr_large{0,0};
+    size_t num_total = 0;
+    size_t num_free = 0;
+    ContextAllocator()  {}
+    void freeBlock(void* ctxt)    {
+      unsigned char* p = (unsigned char*)ctxt;
+      p -= (sizeof(Small) - sizeof(VolumeManagerContext));
+      Small* s = (Small*)p;
+      switch(s->type)   {
+      case 1:
+        freeSlot(small,s);
+        return;
+      case 2:
+        freeSlot(large,s);
+        return;
+      default:
+        printout(ERROR,"VolumeManager",
+                 "++ Hit invalid context slot:%p type:%4X",
+                 (void*)s, s->type);
+        return;
+      }
+    }
+    void freeSlot(std::vector<std::pair<size_t,Large*> >& cont, Small* s)    {      
+    }
+    void freeSlot(std::vector<std::pair<size_t,Small*> >& cont, Small* s)    {      
+    }
+    void* alloc_large()  {
+      if ( curr_large.first > 0 )  {
+        Large* cont = (Large*)curr_large.second;
+        --curr_large.first;
+        --num_free;
+        cont[curr_large.first].used = 1;
+        return &cont[curr_large.first].ctxt;
+      }
+      curr_large = make_pair(ALLOCATE_SIZE,new Large[ALLOCATE_SIZE]);
+      large.push_back(curr_large);
+      num_total += ALLOCATE_SIZE;
+      num_free += ALLOCATE_SIZE;
+      return alloc_large();
+    }
+  };
+#endif
 }
 
 /// Namespace for the AIDA detector description toolkit

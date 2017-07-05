@@ -134,8 +134,6 @@ namespace dd4hep {
     /** Data block (bound type)         */
     /// Access the data type
     int dataType()  const;
-    /// Access the IOV block
-    OpaqueData& data()  const;
 
     /** Interval of validity            */
     /// Access the IOV type
@@ -143,6 +141,15 @@ namespace dd4hep {
     /// Access the IOV block
     const IOV& iov()  const;
 
+    /** Conditions identification using integer keys.   */
+    /// Hash identifier
+    key_type key()  const;
+    /// DetElement part of the identifier
+    detkey_type  detector_key()  const;
+    /// Item part of the identifier
+    itemkey_type item_key()  const;
+      
+    
     /** Direct data items in string form */
     /// Access the type field of the condition
     const std::string& type()  const;
@@ -160,22 +167,15 @@ namespace dd4hep {
     /// Flag operations: Test for a given a conditons flag
     bool testFlag(mask_type option) const;
 
-    /** Conditions meta-data   */
+    /** Conditions meta-data and handling of the data binding  */
+    /// Access the opaque data block
+    OpaqueData& data()  const;
     /// Access to the type information
     const std::type_info& typeInfo() const;
     /// Access to the grammar type
     const BasicGrammar& descriptor() const;
-    /// Hash identifier
-    key_type key()  const;
-    /// DetElement part of the identifier
-    detkey_type  detector_key()  const;
-    /// Item part of the identifier
-    itemkey_type item_key()  const;
-      
-    /** Conditions handling */
-    /// Re-evaluate the conditions data according to the previous bound type definition
-    Condition& rebind();
-
+    /// Check if object is already bound....
+    bool is_bound()  const  {  return isValid() ? data().is_bound() : false;  }
     /** Bind the data of the conditions object to a given format.
      *
      *  Note: The type definition is possible exactly once.
@@ -192,8 +192,8 @@ namespace dd4hep {
     template <typename T> T& get();
     /// Generic getter (const version). Specify the exact type, not a polymorph type
     template <typename T> const T& get() const;
-    /// Check if object is already bound....
-    bool is_bound()  const  {  return isValid() ? data().is_bound() : false;  }
+    /// Re-evaluate the conditions data according to the previous bound type definition
+    Condition& rebind();
   };
 
   /// Initializing constructor

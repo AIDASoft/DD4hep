@@ -3,7 +3,7 @@
 %
 \input{DD4hep-setup.tex}
 %
-\pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{DDAlign User Manual}}}
+\pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{DDCond User Manual}}}
 %
 \begin{document}   
 %
@@ -33,20 +33,16 @@ M. Frank \\
 \normalsize
 Experimental setups in High Energy Physics are highly complex assemblies 
 consisting of various detector devices typically called {\it{subdetectors}}.
-Contrary to the ideal world, where all these components are of perfect shape 
-and at exact positions, existing devices have imperfections both in their 
-shape and their relative and absolute positions.\\
-To still measure the detector response from particle collisions with the highest
-possible precision, these imperfections are taken into account when converting
-measured signals to space-points in the measurement devices. This procedure
-is called {\it{detector alignment}}. \DDhep does not want to solve the exact 
-problem of the detector alignment itself, but rather support firstly algorithms 
-determining the imperfections and secondly support the application of the 
-measured imperfection to the ideal geometry for further event data processing.\\
-We will present the tools to support the detector alignment procedures using 
-the \DDhep detector description toolkit. 
-The \DDA toolkit implements a modular and flexible approach to introduce and
-access the imperfections.\\
+To properly interprete the electronic signals which form the response of 
+particle collisions inside these subdetectors other auxiliary data are 
+necessary. These auxiliary data typically are time dependent - though normally
+at a much longer scale than the event data itself. The conditions part of the 
+\DDhep toolkit, called \DDC, addresses the management and the access of such
+conditions data. The Manual describes a solution, which pools groups of these
+time dependent data according to its validity. This approach firstly
+allows to quickly access all relevant data for a given particle collision.
+efficient caching mechansims and allows to quickly determine which data items
+need to be accessed from a persistent medium.
 The design is strongly driven by easy of use;
 developers of detector descriptions and applications using
 them should provide minimal information and minimal specific
@@ -90,50 +86,381 @@ version          & Date & Author \\[0.2cm] \hline
 
 %=============================================================================
 \section{Introduction}
-\label{sec:ddalign-user-manual-introduction}
+\label{sec:ddcond-user-manual-introduction}
 %=============================================================================
 \noindent
-In a high energy physics experiment the data originating from particle collisions
-(so called $Event$-$data$) in most cases require supplementary, mostly 
-environmental, calibration- or alignment data to extract the physics content
-from the recorded event data. These supplementary data are time-dependent and 
-typically called $conditons$. The ability of an experiment to produce correct 
-and timely results depends on the complete and efficient availability of 
-needed conditions for each stage of data handling.
-This manual should introduce to the \DDC toolkit, which provides access
-to conditions data within the \DDH data structures.
-
-
-
-
-One goal of \DDA is to easily model geometrical imperfections applied to
-the ideal geometry of detection devices as they are typically used in 
-high energy physics experiments.
+In a high energy physics experiment the data originating from particle 
+collisions (so called $Event$-$data$) in most cases require supplementary, 
+mostly  environmental, calibration- or alignment data to extract the physics
+content from the recorded event data. These supplementary data are 
+time-dependent and  typically called $conditons$. The ability of an 
+experiment to produce correct and timely results depends on the complete 
+and efficient availability of  needed conditions for each stage of data 
+handling. This manual should introduce to the \DDC toolkit, which provides 
+access to conditions data within the \DDH data structures.
 
 \noindent
-\DDA formalizes both the access and the application of geometrical imperfection 
-to the ideal geometry. In this manual we will shortly describe the model used
-to describe an experiments detector description and then in more detail 
-document the support for alignment with its programming interfaces.
+The \DDC extensions to the \DDH toolkit formalize both the access and 
+the management to time-dependent data necessary to process the event data.
+In this manual we will shortly describe the model used to organize and manage 
+the conditions data internally and then describe the user interface to
+actually perform the required actions.
+These conditions data typically are stored in a database. Nearly every
+high energy physics experiment has strong feelings how to efficiently
+read and store the conditions data in terms of tablespace organization 
+and data format.
+For this reason \DDC does not attempt to solve the persistency problem,
+but rather defines an interface used to load missing data items from the 
+persistent medium. Any persistent data representation, which can fulfill
+the requirements of this interface may be adopted by the \DDC 
+conditions caching and access mechanism. For details please see 
+section~\ref{sec:ddcond-user-interface}.
+
+%=============================================================================
+\subsection{Definition of Conditions Data}
+\label{subsec:ddcond-conditions-data}
+%=============================================================================
+\noindent
+Conditions data are firstly
+\begin{itemize}
+\item raw data values. Raw data values are recorded from measurement 
+      devices such as 
+      thermometers, pressure devices or 
+      geometrical parameters resulting
+      from survey parameters and others.
+      These data may change with time, but have one and only one version.
+\item Secondly there is the large group of data derived from the raw values.
+      These derived values are transformed from one or several raw values
+      into new data items with an interval of validity being the
+      intersection of the intervals of validity of its ingredients.
+      Effectively every raw measurement requires calibration to represent
+      a useful value. Hence, nearly all raw values require such a 
+      transformation. Since these data are re-calibrated, not only one version
+      exists, but many e.g. as a result of different calibration algorithms. 
+\end{itemize}
+Typically one data processing application predefines for all events 
+to be processed the corresponding versions of the conditions data to be used.
+This time span typically is much larger than the intervals of validity 
+of single data value.
+The collection of all individual data item version for such a large time interval
+is called a "global tag".
+Within such a global tag, several conditions values of the same data item, but 
+with a different interval of validity may be accessed.
+
+\noindent
+Given this definition it is evident that the division between raw values 
+and derived conditions is rather fluent. Derived data as a result of
+a calibration process are technically identical to raw values in an
+analysis application using these re-calibrated constants.
+Hence, as soon as derived data enter the conditions database they are 
+technically identical to raw values.
+\DDC provides a mechanism that according to a recipe given upfront
+for a given event time a coherent set of conditions can be projected
+which includes
+\begin{itemize}
+\item all requested raw data values and
+\item all requested derived data are computed.
+\end{itemize}
+
+
+%=============================================================================
+\subsection{Conditions Slices}
+\label{subsec:ddcond-conditions-slices}
+%=============================================================================
+
+\noindent
+Conditions slices define a coherent set of conditions data valid for an event 
+recorded at a specific time. Each of the individual conditions of the slice
+has a certain interval of validity, hence the validity of the entire slice
+is defined as the intersection of these validities.
+As a corollary, the slice may be valid for more than one event as long as the
+event's time stamp is within this intersection.
+
+\newpage
+%=============================================================================
+\section{Generic Concepts and Design}
+\label{sec:ddcond-design-concepts}
+%=============================================================================
+
+\noindent 
+The \DDH conditions mechanism was designed to be very flexible concerning 
+back-end implementations. Most of the conditions and alignment utilities offered 
+by \DDH are available if a minimal interface is respected. This minimal interface
+includes a container called $ConditionsMap$ (See section~\ref{subsec:ddcond-conditionsmap})
+and the layout of the conditions objects (See section~\ref{subsec:ddcond-conditions-data}).
+The conditions objects contain a flexible user defined payload and a generic, 
+interface used to interact with tools and the generic container object or
+conditions slices as described in section~\ref{subsec:ddcond-conditions-slices}.
+
+%=============================================================================
+\subsection{The ConditionsMap Interface}
+\label{subsec:ddcond-conditionsmap}
+%=============================================================================
+
+\noindent
+The $ConditionsMap$ interface defines the lowest common denominator to
+allow tools or clients to interact with conditions of a given slice.
+This interface defines the interaction of clients with a conditions slice.
+These interactions cover both the data access and the data management 
+within a slice. The interface allows to
+\begin{itemize}
+\item access individual conditions by the detector element
+and a given item key. The interface allows
+\item to scan conditions according to the detector element or 
+\item to scan all conditions contained. Further it allows 
+\item insert conditions to the mapping and
+\item to clear the content.
+\end{itemize}
+The provision of these basic interaction mechanisms allows us to build
+very generic tools firstly for conditions, but also later for the
+management and th computation of alignment data as described in
+the \DDA manual~\cite{bib:ddalign-manual}.
+
+\noindent
+The $ConditionsMap$ interface class, which supports this basic functionality
+has the following entry points:
+\begin{unnumberedcode}
+  class ConditionsMap   {
+  public:
+    /// Insert a new entry to the map. The detector element key and 
+    /// the item key make a unique global conditions key
+    virtual bool insert(DetElement         detector,
+                        Condition::itemkey_type key,
+                        Condition          condition) = 0;
+    /// Interface to access conditions by hash value. The detector element key 
+    /// and the item key make a unique global conditions key
+    virtual Condition get(DetElement              detector,
+                          Condition::itemkey_type key) const = 0;
+    /// Interface to scan data content of the conditions mapping
+    virtual void scan(const Condition::Processor& processor) const = 0;
+
+    /// No ConditionsMap overload: Access all conditions within 
+    /// a key range in the interval [lower,upper]
+    virtual std::vector<Condition> get(DetElement              detector,
+                                       Condition::itemkey_type lower,
+                                       Condition::itemkey_type upper)  const;
+      
+    /// Interface to partially scan data content of the conditions mapping
+    virtual void scan(DetElement                  detector,
+                      Condition::itemkey_type     lower,
+                      Condition::itemkey_type     upper,
+                      const Condition::Processor& processor) const;
+  };
+\end{unnumberedcode}
+Such $ConditionsMap$ implementations can easily be constructed using standard
+STL maps. The lookup key is constructed out of two elements:
+\begin{itemize}
+\item The detector element this condition belongs to and 
+\item an identifier of condition within this detector element.
+\end{itemize}
+An efficient implementation of a longword key would consist of the tuple:
+$$
+[ hash32(conditions-name) , hash32(det-element->path()) ],
+$$
+which resembles to an ordered sequence of conditions according to 
+their detector element. A special implementation, which implements 
+this user interface is the $ConditionsSlice$ implemented in the 
+\DDC package (See section [] for details).
+
+%=============================================================================
+\subsection{Conditions Data}
+\label{subsec:ddcond-conditions-data}
+%=============================================================================
+
+\noindent
+A conditions objects serves two purposes:
+\begin{itemize}
+\item Firstly, it supports the basic functionality required by a 
+      conditions management framework, which implements the $ConditionsMap$ 
+      interface.
+\item Secondly, the objects hosts and manages a user payload, the actual
+      conditions data. These data are freely user defined. An automatic 
+      parsing mechanism from a string representation is supported if the 
+      payload-class can properly described using a boost::spirit
+      parsing structure. Default types are defined for 
+    \begin{itemize}
+        \item all primitive data types, 
+        \item ROOT::Math::XYZVector, ROOT::Math::XYZPoint, ROOT::Math::PxPyPzEVector.
+        \item a number of STL containers thereof:\\
+                std::vector\textless TYPE\textgreater, 
+                std::list\textless TYPE\textgreater,
+                std::set\textless TYPE\textgreater,\\
+                std::map\textless int,TYPE\textgreater,
+                std::map\textless string,TYPE\textgreater,\\
+                std::pair\textless int,TYPE\textgreater,
+                std::pair\textless string,TYPE\textgreater.
+    \end{itemize}
+\end{itemize}
+For completeness we include here the basic data access methods of the conditions
+class:
+\vspace{-0.2cm}
+\begin{unnumberedcode}
+  class Condition: public Handle<detail::ConditionObject> {
+    /** Interval of validity                                   */
+    /// Access the IOV type
+    const IOVType& iovType()  const;
+    /// Access the IOV block
+    const IOV& iov()  const;
+ 
+    /** Conditions identification using integer keys.          */
+    /// Hash identifier
+    key_type key()  const;
+    /// DetElement part of the identifier
+    detkey_type  detector_key()  const;
+    /// Item part of the identifier
+    itemkey_type item_key()  const;
+
+    /** Conditions meta-data and handling of the data binding  */
+    /// Access the opaque data block
+    OpaqueData& data()  const;
+    /// Access to the type information
+    const std::type_info& typeInfo() const;
+    /// Access to the grammar type
+    const BasicGrammar& descriptor() const;
+    /// Check if object is already bound....
+    bool is_bound()  const  {  return isValid() ? data().is_bound() : false;  }
+    /// Bind the data of the conditions object to a given format.
+    template <typename T> T& bind();
+    /// Set and bind the data of the conditions object to a given format.
+    template <typename T> T& bind(const std::string& val);
+    /// Generic getter. Specify the exact type, not a polymorph type
+    template <typename T> T& get();
+    /// Generic getter (const version). Specify the exact type, not a polymorph type
+    template <typename T> const T& get() const;
+    ...
+  };
+\end{unnumberedcode}
+Please be aware that the access to the IOV and the IOVType is only 
+possible if supported by the caching mechanism.
+
+\noindent
+Using the $OpaqueData$ data structure and its concrete implementation,
+the user can map any data item to the conditions object using the 
+$bind()$ method and retrieve the data back using $get()$.
+Clearly, the left should know what the right does and the types to be
+retrieved back must match be bound data types.
+
+\noindent
+The following code-snippet shows how to bind conditions data:
+\vspace{-0.2cm}
+\begin{unnumberedcode}
+  Condition cond = ...;
+  // Fill conditions data by hand:
+  std::vector<int>& data = cond.bind<std::vector<int> >();
+  data.push_back(0);
+  data.push_back(1);    .....
+
+  // Fill conditions data from the string representation using boost::spirit:
+  std::string str = "[0,1,2]";
+  std::vector<int>& data = cond.bind<std::vector<int> >(str);
+  int i = data[0]; ....  
+\end{unnumberedcode}
+This is an example how to access already bound data:
+\vspace{-0.2cm}
+\begin{unnumberedcode}
+  Condition cond = ...;
+
+  // Fill conditions data by hand:
+  std::vector<int>& data = cond.get<std::vector<int> >();
+\end{unnumberedcode}
+
+\newpage
+%=============================================================================
+\section{DDCond Conditions Store and Slices}
+\label{subsec:ddcond-conditions-store}
+%=============================================================================
+
+%=============================================================================
+\subsection{Data Organization}
+\label{subsec:ddcond-internal-data-organization}
+%=============================================================================
+
+\noindent
+The basic assumption to optimize the access and the management of conditions
+data can be very simply summarized: it is assumed, that groups of data items
+exist, which have a common interval of validity. In other words: given a 
+certain event, valid or invalid conditions can quickly be identified by 
+checking the so called "interval of validity" of the entire group with the
+time stamp of the event. This intervall of validity defines the time span
+for which a given group of processing parameters is valid. It starts and 
+ends with a time stamp. The definition of a time stamp may be user defined 
+and not necessarily resemble to values in seconds or fractions thereof. 
+Time stamps could as well be formulated as an interval of luminosity sections,
+run numbers, fill numbers or entire years. 
+
+\noindent
+Groups of parameters associated to certain intervals of validity can
+be very effectively managed if pooled together according to the 
+interval of validity. This of course assumes that each group contains
+a significant number of parameters. If each of these pools only contains
+one single value this would not be an efficient.
+
+\noindent
+This assumption is fundamental for this approach to be efficient. 
+If the data are not
+organized accordingly, the caching mechanism implemented in \DDC will 
+still work formally. However, by construction it cannot not work efficiently. 
+Resources both in CPU and memory would be wasted at run-time.
+The necessity to properly organize the conditions data becomes
+immediately evident in Figure~\ref{fig:ddcond-data-organization}:
+Users can orginize data according to certain types, These types are
+independently managed and subdivided into pools. Each of these pools
+manages a set of conditions items sharing the same interval ov validity.
+
 
 %=============================================================================
 \begin{figure}[h]
-  \begin{center}
-    \includegraphics[height=90mm] {DD4hep_classes.png}
-    \caption{Class diagram with the main classes and their relations 
-             for the Generic Detector Description Model. The implementing
-             ROOT classes are shown in brackets.}
-    \label{fig:dd4hep-detector-model}
+  \begin{center}\includegraphics[height=10cm] {DDCond-ConditionsStore.png}
+    \caption{The graphical representation of the organisation of the
+             conditions data in \DDH. }
+    \label{fig:ddcond-data-organization}
   \end{center}
 \end{figure}
 \vspace{-0.5cm}
+
 %=============================================================================
-\subsection{Generic Detector Description Model}
-\label{subsec:generic-model}
+\subsection{Data Access}
+\label{subsec:ddcond-data-access}
+%=============================================================================
+
+%=============================================================================
+\begin{figure}[h]
+  \begin{center}\includegraphics[width=15cm] {DDCond-ConditionsAccess.png}
+    \caption{The interaction of a particular user with the conditions
+             data store using the $ConditionsManager$ interface.}
+    \label{fig:ddcond-data-organization}
+  \end{center}
+\end{figure}
+\vspace{-0.5cm}
+
+%=============================================================================
+\begin{figure}[h]
+  \begin{center}\includegraphics[width=15cm] {DDCond-ConditionsMT.png}
+    \caption{MT.}
+    \label{fig:ddcond-multi-threaded-processing}
+  \end{center}
+\end{figure}
+\vspace{-0.5cm}
+
+\newpage
+%=============================================================================
+\section{The User Interface}
+\label{sec:ddcond-user-interface}
+%=============================================================================
+
+%=============================================================================
+\subsection{Conditions Data Classes}
+\label{subsec:ddcond-data-classes}
+%=============================================================================
+
+%=============================================================================
+\subsection{ConditionsSlice}
+\label{subsec:ddcond-data-classes}
 %=============================================================================
 
 \noindent
-This is the heart of the DD4hep detector description toolkit. Its purpose is 
+The ConditionsSlice a Concrete inmplementation of the ConditonsMap Interface.
+bla bla
 
 \newpage
 %=============================================================================
@@ -142,6 +469,7 @@ This is the heart of the DD4hep detector description toolkit. Its purpose is
                 "Detector Description Framework in LHCb", 
                 International Conference on Computing in High Energy and Nuclear Physics  (CHEP 2003), 
                 La Jolla, CA, 2003, proceedings. 
+\bibitem{bib:ddalign-manual}  M.Frank, \DDA manual.
 \end{thebibliography}
 %=============================================================================
 \end{document}
