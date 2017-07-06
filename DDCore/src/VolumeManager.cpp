@@ -346,7 +346,7 @@ namespace dd4hep {
             context->element    = e;
             if ( nodes.size() > 0 )  {
               ContextExtension* ext = new(_getExtension(context)) ContextExtension();
-              context->flag=1;
+              context->flag   = 1;
               ext->placement  = PlacedVolume(n);
               for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
                 TGeoMatrix* m = nodes[i-1]->GetMatrix();
@@ -384,7 +384,7 @@ namespace dd4hep {
         printout(m_debug ? INFO : DEBUG, "VolumeManager", log.str().c_str());
       }
     };
-  }       /* End namespace detail              */
+  }       /* End namespace detail                */
 }         /* End namespace dd4hep                */
 
 /// Default destructor
@@ -394,14 +394,21 @@ VolumeManagerContext::~VolumeManagerContext() {
 }
 
 /// Acces the sensitive volume placement
-PlacedVolume VolumeManagerContext::placement()  const   {
-  return (0 == flag ) ? element.placement() : _getExtension(this)->placement;
+PlacedVolume VolumeManagerContext::elementPlacement()  const   {
+  return element.placement();
+}
+
+/// Acces the sensitive volume placement
+PlacedVolume VolumeManagerContext::volumePlacement()  const   {
+  if ( 0 == flag )
+    return element.placement();
+  return _getExtension(this)->placement;
 }
 
 /// Access the transformation to the closest detector element
 const TGeoHMatrix& VolumeManagerContext::toElement()  const   {
   static TGeoHMatrix identity;
-  return (0 == flag ) ? identity : _getExtension(this)->toElement;
+  return ( 0 == flag ) ? identity : _getExtension(this)->toElement;
 }
 
 /// Initializing constructor to create a new object
@@ -412,8 +419,8 @@ VolumeManager::VolumeManager(Detector& description, const string& nam, DetElemen
   if (elt.isValid()) {
     detail::VolumeManager_Populator p(description, *this);
     obj_ptr->detector = elt;
-    obj_ptr->id = ro.isValid() ? ro.idSpec() : IDDescriptor();
-    obj_ptr->top = obj_ptr;
+    obj_ptr->id    = ro.isValid() ? ro.idSpec() : IDDescriptor();
+    obj_ptr->top   = obj_ptr;
     obj_ptr->flags = flags;
     p.populate(elt);
   }
@@ -523,7 +530,7 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, VolumeManagerContext* 
   Object&  o      = _data();
   VolumeID vid    = context->identifier;
   VolumeID mask   = context->mask;
-  PlacedVolume pv = context->placement();
+  PlacedVolume pv = context->elementPlacement();
   auto i = o.volumes.find(vid);
 
   if ( (vid&mask) != vid ) {
@@ -640,9 +647,15 @@ VolumeManagerContext* VolumeManager::lookupContext(VolumeID volume_id) const {
 }
 
 /// Lookup a physical (placed) volume identified by its 64 bit hit ID
-PlacedVolume VolumeManager::lookupPlacement(VolumeID volume_id) const {
+PlacedVolume VolumeManager::lookupDetElementPlacement(VolumeID volume_id) const {
   VolumeManagerContext* c = lookupContext(volume_id); // Throws exception if not found!
-  return c->placement();
+  return c->elementPlacement();
+}
+
+/// Lookup a physical (placed) volume identified by its 64 bit hit ID
+PlacedVolume VolumeManager::lookupVolumePlacement(VolumeID volume_id) const {
+  VolumeManagerContext* c = lookupContext(volume_id); // Throws exception if not found!
+  return c->volumePlacement();
 }
 
 /// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
@@ -704,7 +717,7 @@ std::ostream& dd4hep::operator<<(std::ostream& os, const VolumeManager& m) {
     const VolumeManagerContext* c = i.second;
     os << prefix
        << "Element:" << setw(32) << left << c->element.path()
-       << " pv:"     << setw(32) << left << c->placement().name()
+      //<< " pv:"     << setw(32) << left << c->placement().name()
        << " id:"     << setw(18) << left << (void*) c->identifier
        << " mask:"   << setw(18) << left << (void*) c->mask
        << endl;

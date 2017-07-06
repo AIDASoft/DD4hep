@@ -26,7 +26,7 @@ Geant4ConversionHelper::~Geant4ConversionHelper() {
 
 /// Access to the data encoding using the volume manager and a specified volume id
 std::string Geant4ConversionHelper::encoding(VolumeManager vm, VolumeID vid) {
-  PlacedVolume      pv = vm.lookupPlacement(vid);
+  PlacedVolume      pv = vm.lookupVolumePlacement(vid);
   SensitiveDetector sd = pv.volume().sensitiveDetector();
   return encoding(sd);
 }

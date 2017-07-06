@@ -112,7 +112,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
     mgr_ctxt  = m_mgr.lookupContext(vid);
 
     if ( pv.volume().isSensitive() )  {
-      PlacedVolume det_place = m_mgr.lookupPlacement(vid);
+      PlacedVolume det_place = m_mgr.lookupDetElementPlacement(vid);
       if ( pv.ptr() != det_place.ptr() )   {
         err << "VolumeMgrTest: Wrong placement "
             << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"

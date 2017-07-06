@@ -39,7 +39,7 @@ void VolumeManagerObject::update(unsigned long tags, DetElement& det, void* para
     printout(DEBUG,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
   
   for(const auto& i : volumes )
-    printout(DEBUG,"VolumeManager","+++ Alignment update %s",i.second->placement().name());
+    printout(DEBUG,"VolumeManager","+++ Alignment update %s",i.second->elementPlacement().name());
 }
 
 /// Search the locally cached volumes for a matching ID

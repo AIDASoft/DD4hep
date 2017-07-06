@@ -104,7 +104,7 @@ VolumeID IDDecoder::volumeID(const Position& pos) const {
  * Returns the placement for a given cell ID
  */
 PlacedVolume IDDecoder::placement(const CellID& cell) const {
-	return _volumeManager.lookupPlacement(cell);
+	return _volumeManager.lookupVolumePlacement(cell);
 }
 
 /*
