@@ -71,7 +71,9 @@ namespace dd4hep {
     /// Default destructor
     virtual ~VolumeManagerContext();
     /// Acces the sensitive volume placement
-    PlacedVolume placement()  const;
+    PlacedVolume volumePlacement()  const;
+    /// Acces the detector element volume placement
+    PlacedVolume elementPlacement()  const;
     /// Access the transformation to the closest detector element
     const TGeoHMatrix& toElement()  const;
   };
@@ -180,7 +182,9 @@ namespace dd4hep {
     /// Lookup the context, which belongs to a registered physical volume.
     VolumeManagerContext* lookupContext(VolumeID volume_id) const;
     /// Lookup a physical (placed) volume identified by its 64 bit hit ID
-    PlacedVolume lookupPlacement(VolumeID volume_id) const;
+    PlacedVolume lookupVolumePlacement(VolumeID volume_id) const;
+    /// Lookup a physical (placed) volume of the detector element containing a volume identified by its 64 bit hit ID
+    PlacedVolume lookupDetElementPlacement(VolumeID volume_id) const;
     /// Convenience routine: Lookup a top level subdetector detector element according to a contained 64 bit hit ID
     DetElement lookupDetector(VolumeID volume_id) const;
     /// Convenience routine: Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
