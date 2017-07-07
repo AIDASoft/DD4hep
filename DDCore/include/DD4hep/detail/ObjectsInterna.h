@@ -65,6 +65,8 @@ namespace dd4hep {
   public:
     /// Constant type
     std::string dataType;
+    /// Default constructor for ROOT persistency
+    ConstantObject();
     /// Standard constructor
     ConstantObject(const std::string& nam, const std::string& val, const std::string& typ);
     /// Default destructor
@@ -167,7 +169,7 @@ namespace dd4hep {
   class ReadoutObject: public NamedObject {
   public:
     /// Handle to the readout segmentation
-    Segmentation segmentation;
+    Segmentation segmentation;  //! No ROOT persistency
     /// Handle to the volume
     Volume readoutWorld;
     /// Handle to the field descriptor
@@ -194,6 +196,7 @@ namespace dd4hep {
     typedef std::vector<std::pair<size_t, std::string> >         FieldIDs;
     FieldMap fieldMap; //! not ROOT-persistent
     FieldIDs fieldIDs; //! not ROOT-persistent
+    /// The description string to build the bit-field descriptors.
     std::string description;
     /// Default constructor
     IDDescriptorObject();

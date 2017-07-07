@@ -158,9 +158,9 @@ protected:
 	/// The indices used for the encoding
 	std::map<std::string, StringParameter> _indexIdentifiers;
 	/// The cell ID encoder and decoder
-	mutable BitField64* _decoder;
+	mutable BitField64* _decoder = 0;    //! Not ROOT persistent
 	/// Keeps track of the decoder ownership
-	bool _ownsDecoder;
+	bool _ownsDecoder = false;
 private:
 	/// No copy constructor allowed
 	Segmentation(const Segmentation&);

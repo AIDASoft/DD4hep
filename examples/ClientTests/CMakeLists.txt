@@ -107,6 +107,14 @@ dd4hep_add_test_reg( ClientTests_Check_Handle_Casts
   -plugin DD4hepDetectorVolumeDump
   REGEX_PASS "|   PASSED casts: 86      FAILED casts: 86                        |")
 #
+#  Test saving geometry to file
+dd4hep_add_test_reg( ClientTests_MiniTel_Save_ROOT_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.xml
+  -plugin DD4hepGeometry2ROOT -output MiniTel_geometry.root
+  REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file.")
+#
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 
               MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 

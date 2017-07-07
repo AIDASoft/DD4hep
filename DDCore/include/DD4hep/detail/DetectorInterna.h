@@ -130,7 +130,7 @@ namespace dd4hep {
     /// The array of children
     DetElement::Children children;
     /// Placeholder for structure with update callbacks
-    UpdateCallbacks      updateCalls;
+    UpdateCallbacks      updateCalls;  //! Not ROOT persistent
 
     //@{ Additional information set externally to facilitate the processing of event data */
     /// Basic ideal/nominal detector element alignment entry
@@ -191,7 +191,7 @@ namespace dd4hep {
   class WorldObject: public DetElementObject {
   public:
     /// Reference to the Detector instance object
-    Detector* description;
+    Detector* description; //! Not persistent in ROOT
 
   public:
     //@{ Public methods to ease the usage of the data. */

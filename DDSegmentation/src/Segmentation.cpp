@@ -40,14 +40,10 @@ namespace dd4hep {
       if (_ownsDecoder and _decoder != 0) {
         delete _decoder;
       }
-      map<std::string, SegmentationParameter*>::iterator it;
-      for (it = _parameters.begin(); it != _parameters.end(); ++it) {
-        SegmentationParameter* p = it->second;
-        if (p) {
-          delete p;
-          p = 0;
-        }
+      for (auto& p : _parameters)  {
+        if ( p.second ) delete p.second;
       }
+      _parameters.clear();
     }
   
     /// Add subsegmentation. Call only valid for Multi-segmentations. Default implementation throws an exception

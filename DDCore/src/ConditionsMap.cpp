@@ -24,7 +24,12 @@ void ConditionsMap::scan(DetElement   detector,
                          Condition::itemkey_type upper,
                          const Condition::Processor&   processor) const
 {
-  /// Heklper to implement partial scans.
+  /// Helper to implement partial scans.
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_CONDITIONS
+   */
   struct Scanner : public Condition::Processor   {
     Condition::key_type lower, upper;
     const Condition::Processor& processor;
@@ -54,7 +59,12 @@ void ConditionsMap::scan(DetElement   detector,
 std::vector<Condition> ConditionsMap::get(DetElement detector,
                                           Condition::itemkey_type lower,
                                           Condition::itemkey_type upper)  const   {
-  /// Heklper to implement partial scans.
+  /// Helper to implement partial scans.
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_CONDITIONS
+   */
   struct Scanner : public Condition::Processor   {
     Condition::key_type lower, upper;
     std::vector<Condition>& result;
