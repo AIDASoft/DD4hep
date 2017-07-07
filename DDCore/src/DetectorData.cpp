@@ -107,26 +107,29 @@ void DetectorData::clearData()   {
 void DetectorData::adoptData(DetectorData& source)   {
   m_inhibitConstants = source.m_inhibitConstants;
   m_extensions.move(source.m_extensions);
-  m_motherVolumes  = source.m_motherVolumes;
-  m_world          = source.m_world;
-  m_field          = source.m_field;
-  m_header         = source.m_header;
-  m_properties     = source.m_properties;
+  m_manager        = source.m_manager;
   m_readouts       = source.m_readouts;
   m_idDict         = source.m_idDict;
   m_limits         = source.m_limits;
   m_regions        = source.m_regions;
+  m_detectors      = source.m_detectors;
   m_sensitive      = source.m_sensitive;
   m_display        = source.m_display;
   m_fields         = source.m_fields;
   m_define         = source.m_define;
+
+  m_motherVolumes  = source.m_motherVolumes;
+  m_world          = source.m_world;
   m_trackers       = source.m_trackers;
   m_worldVol       = source.m_worldVol;
   m_trackingVol    = source.m_trackingVol;
-  m_invisibleVis   = source.m_invisibleVis;
-  m_materialVacuum = source.m_materialVacuum;
   m_materialAir    = source.m_materialAir;
-  m_manager        = source.m_manager;
+  m_materialVacuum = source.m_materialVacuum;
+  m_invisibleVis   = source.m_invisibleVis;
+  m_field          = source.m_field;
+  m_header         = source.m_header;
+  m_properties     = source.m_properties;
+  //m_extensions     = source.m_extensions;
   m_volManager     = source.m_volManager;
   source.clearData();
 }

@@ -487,7 +487,19 @@ DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
  */
 static long dump_geometry2root(Detector& description, int argc, char** argv) {
   if ( argc > 0 )   {
-    string output = argv[0];
+    string output;
+    for(int i = 0; i < argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-output",argv[i],4) )
+        output = argv[++i];
+    }
+    if ( output.empty() )   {
+      cout <<
+        "Usage: -plugin <name> -arg [-arg]                                             \n"
+        "     name:   factory name     DD4hepGeometry2ROOT                             \n"
+        "     -output <string>         Output file name.                               \n"
+        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      ::exit(EINVAL);
+    }
     printout(INFO,"Geometry2ROOT","+++ Dump geometry to root file:%s",output.c_str());
     //description.manager().Export(output.c_str()+1);
     if ( DD4hepRootPersistency::save(description,output.c_str(),"Geometry") > 1 )  {

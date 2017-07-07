@@ -162,7 +162,7 @@ namespace DDSegmentation {
 
     // -------------- data members:--------------
 
-    std::vector<BitFieldValue*>  _fields ;
+    std::vector<BitFieldValue*> _fields;   //! Not ROOT persistent
     long64    _value ;
     IndexMap  _map ;
     long64    _joined ;

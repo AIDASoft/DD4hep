@@ -96,9 +96,6 @@ namespace dd4hep {
       virtual std::vector<double> cellDimensions(const CellID& cellID) const;
       virtual std::vector<double> cellDimensions(const unsigned int ilayer, const unsigned int iwafer) const;
 
-      
-    protected:
-
       struct segInfo {
         double megaTileSizeX = 0;
         double megaTileSizeY = 0;
@@ -108,6 +105,9 @@ namespace dd4hep {
         unsigned int nCellsY = 0;
         segInfo() = default;
       };
+
+      
+    protected:
 
       mutable segInfo _currentSegInfo;
 

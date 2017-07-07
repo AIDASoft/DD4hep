@@ -30,6 +30,7 @@
 #include "DD4hep/Callback.h"
 #include "DD4hep/DetectorData.h"
 #include "DD4hep/Conditions.h"
+#include "DD4hep/Alignments.h"
 #include "DD4hep/FieldTypes.h"
 
 // C/C++ include files
@@ -98,6 +99,7 @@ template class pair<dd4hep::Callback,unsigned long>;
 #pragma link C++ function operator!=( const map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator&,const map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator& );
 #endif
 
+#pragma link C++ class dd4hep::BasicGrammar+;
 #pragma link C++ class dd4hep::ObjectExtensions+;
 template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Handle<TNamed>+;
@@ -113,6 +115,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Detector::PropertyValues+;
 #pragma link C++ class dd4hep::Detector::Properties+;
 #pragma link C++ class DD4hepRootPersistency+;
+#pragma link C++ class DD4hepRootCheck+;
 
 // These below are the Namedobject instances to be generated ....
 //#pragma link C++ class dd4hep::Detector::HandleMap+;
@@ -122,9 +125,12 @@ template class dd4hep::Handle<TNamed>;
 //#pragma link C++ class dd4hep::Detector::HandleMap::value_type+;
 
 #pragma link C++ class dd4hep::VolumeManager+;
-#pragma link C++ class dd4hep::VolumeManagerObject+;
+#pragma link C++ class dd4hep::detail::VolumeManagerObject+;
 #pragma link C++ class dd4hep::VolumeManagerContext+;
-#pragma link C++ class dd4hep::Handle<dd4hep::VolumeManagerObject>+;
+#pragma link C++ class dd4hep::Handle<dd4hep::detail::VolumeManagerObject>+;
+#pragma link C++ class map<dd4hep::DetElement,dd4hep::VolumeManager>+;
+#pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManager>+;
+#pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManagerContext*>+;
 
 #pragma link C++ class dd4hep::CartesianField+;
 #pragma link C++ class dd4hep::CartesianField::Object+;
@@ -210,6 +216,10 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Handle<dd4hep::AlignmentData>+;
 #pragma link C++ class dd4hep::Handle<TGeoPhysicalNode>+;
 
+#pragma link C++ class dd4hep::AlignmentCondition+;
+#pragma link C++ class dd4hep::detail::AlignmentObject+;
+#pragma link C++ class dd4hep::Handle<dd4hep::detail::AlignmentObject>+;
+
 
 
 #pragma link C++ class dd4hep::Condition+;
@@ -218,10 +228,13 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class vector<dd4hep::ConditionKey>+;
 #pragma link C++ class dd4hep::detail::ConditionObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::ConditionObject>+;
+#pragma link C++ class dd4hep::OpaqueData+;
+#pragma link C++ class dd4hep::OpaqueDataBlock+;
 
 // DetElement.h
 #pragma link C++ class dd4hep::World+;
 #pragma link C++ class dd4hep::WorldObject+;
+#pragma link C++ class dd4hep::Handle<dd4hep::WorldObject>+;
 #pragma link C++ class dd4hep::DetElement+;
 #pragma link C++ class dd4hep::DetElementObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::DetElementObject>+;
@@ -327,6 +340,8 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class dd4hep::UnionSolid+;
 #pragma link C++ class dd4hep::IntersectionSolid+;
 
+
+
 #pragma link C++ class pair<string, string>+;
 #pragma link C++ class map<string, string>+;
 #pragma link C++ class map<string, string>::iterator;
@@ -359,27 +374,36 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class dd4hep::cond::AbstractMap+;
 #pragma link C++ class dd4hep::cond::AbstractMap::Params+;
 
-
 #endif  // __CINT__
 
 
 // -------------------------------------------------------------------------
 // DDSegmentation dictionaries
+#define __HAVE_DDSEGMENTATION__
 // -------------------------------------------------------------------------
 #ifdef __HAVE_DDSEGMENTATION__
 #include "DDSegmentation/Segmentation.h"
 #include "DDSegmentation/NoSegmentation.h"
-#include "DDSegmentation/GridPhiEta.h"
-#include "DDSegmentation/GridRPhiEta.h"
 #include "DDSegmentation/CartesianGrid.h"
 #include "DDSegmentation/CartesianGridXY.h"
 #include "DDSegmentation/CartesianGridXYZ.h"
 #include "DDSegmentation/CartesianGridXZ.h"
 #include "DDSegmentation/CartesianGridYZ.h"
 #include "DDSegmentation/CylindricalSegmentation.h"
+#include "DDSegmentation/GridPhiEta.h"
+#include "DDSegmentation/GridRPhiEta.h"
+#include "DDSegmentation/MegatileLayerGridXY.h"
+#include "DDSegmentation/MultiSegmentation.h"
+#include "DDSegmentation/NoSegmentation.h"
+#include "DDSegmentation/PolarGrid.h"
+#include "DDSegmentation/PolarGridRPhi2.h"
+#include "DDSegmentation/PolarGridRPhi.h"
 #include "DDSegmentation/ProjectiveCylinder.h"
+
 #include "DDSegmentation/SegmentationParameter.h"
+#include "DDSegmentation/TiledLayerGridXY.h"
 #include "DDSegmentation/TiledLayerSegmentation.h"
+#include "DDSegmentation/WaferGridXY.h"
 typedef dd4hep::DDSegmentation::VolumeID VolumeID;
 typedef dd4hep::DDSegmentation::CellID CellID;
 
@@ -390,26 +414,35 @@ typedef dd4hep::DDSegmentation::CellID CellID;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<float>+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<double>+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<string>+;
-#if 0
+#pragma link C++ class map<string,dd4hep::DDSegmentation::TypedSegmentationParameter<string>* >+;
+#pragma link C++ class map<string,dd4hep::DDSegmentation::TypedSegmentationParameter<double>* >+;
+#pragma link C++ class map<string,dd4hep::DDSegmentation::TypedSegmentationParameter<float>* >+;
+
 /// Severe problem due to template specialization!
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<int> >+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<float> >+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<double> >+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<string> >+;
-#endif
 
 #pragma link C++ class dd4hep::DDSegmentation::Segmentation+;
-#pragma link C++ class dd4hep::DDSegmentation::NoSegmentation+;
-#pragma link C++ class dd4hep::DDSegmentation::GridPhiEta+;
-#pragma link C++ class dd4hep::DDSegmentation::GridRPhiEta+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianGrid+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianGridXY+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianGridXYZ+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianGridXZ+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianGridYZ+;
 #pragma link C++ class dd4hep::DDSegmentation::CylindricalSegmentation+;
+#pragma link C++ class dd4hep::DDSegmentation::GridPhiEta+;
+#pragma link C++ class dd4hep::DDSegmentation::GridRPhiEta+;
+#pragma link C++ class dd4hep::DDSegmentation::MegatileLayerGridXY+;
+#pragma link C++ class dd4hep::DDSegmentation::MultiSegmentation+;
+#pragma link C++ class dd4hep::DDSegmentation::NoSegmentation+;
+#pragma link C++ class dd4hep::DDSegmentation::PolarGrid+;
+#pragma link C++ class dd4hep::DDSegmentation::PolarGridRPhi2+;
+#pragma link C++ class dd4hep::DDSegmentation::PolarGridRPhi+;
 #pragma link C++ class dd4hep::DDSegmentation::ProjectiveCylinder+;
+#pragma link C++ class dd4hep::DDSegmentation::TiledLayerGridXY+;
 #pragma link C++ class dd4hep::DDSegmentation::TiledLayerSegmentation+;
+#pragma link C++ class dd4hep::DDSegmentation::WaferGridXY+;
 
 #pragma link C++ class dd4hep::DDSegmentation::BitFieldValue+;
 #pragma link C++ class dd4hep::DDSegmentation::BitField64+;

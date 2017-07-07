@@ -45,6 +45,13 @@ IDDescriptor::IDDescriptor(const string& description) {
   _construct(obj, description);
 }
 
+/// Re-build object in place
+void IDDescriptor::rebuild(const string& description)   {
+  Object* p = ptr();
+  p->~Object();
+  new(p) Object(description);
+}
+
 /// Acces string representation
 string IDDescriptor::toString() const {
   if ( isValid() ) {

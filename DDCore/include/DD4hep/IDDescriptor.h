@@ -74,6 +74,8 @@ namespace dd4hep {
     std::string toString() const;
     /// Access the BitField64 object
     BitField64* decoder();
+    /// Re-build object in place
+    void rebuild(const std::string& description);
   };
 }         /* End namespace dd4hep          */
 #endif    /* DD4HEP_DDCORE_IDDESCRIPTOR_H  */

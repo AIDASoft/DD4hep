@@ -101,12 +101,16 @@ namespace dd4hep {
     /// DDSegmentation aggregate
     IMP* implementation;
   public:
+#if defined(G__ROOT) || defined(__CLANG__) || defined(__ROOTCLING__)
+    /// Empty constructor for ROOT persistency
+    SegmentationWrapper() : SegmentationObject(implementation=new IMP(0)) { }
+#endif
     /// Standard constructor
     SegmentationWrapper(BitField64* decoder);
     /// Default destructor
     virtual ~SegmentationWrapper();
   };
-
+  
   /// Standard constructor
   template <typename IMP> inline
   SegmentationWrapper<IMP>::SegmentationWrapper(BitField64* decode)

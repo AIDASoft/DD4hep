@@ -100,7 +100,7 @@ public:
 	enum UnitType {
 		NoUnit, LengthUnit, AngleUnit
 	};
-	/// Destructor
+	/// Default destructor
 	virtual ~SegmentationParameter() {
 	}
 	/// Access to the parameter name
@@ -154,22 +154,29 @@ protected:
 
 template<typename TYPE> class TypedSegmentationParameter: public SegmentationParameter {
 public:
+#if defined(G__ROOT) || defined(__CLANG__) || defined(__ROOTCLING__)
+  /// Empty constructor for ROOT persistency
+  TypedSegmentationParameter()
+    : SegmentationParameter("","",SegmentationParameter::NoUnit,false), _value(0), _defaultValue()  {}
+#endif
 	/// Default constructor
 	TypedSegmentationParameter(const std::string& nam, const std::string& desc, TYPE& val,
 			const TYPE& default_Value, SegmentationParameter::UnitType unitTyp = SegmentationParameter::NoUnit,
 			bool isOpt = false) :
-			SegmentationParameter(nam, desc, unitTyp, isOpt), _value(val), _defaultValue(default_Value) {
-		_value = default_Value;
+			SegmentationParameter(nam, desc, unitTyp, isOpt), _value(&val), _defaultValue(default_Value) {
+		*_value = default_Value;
 	}
+	/// Default destructor
+	virtual ~TypedSegmentationParameter() {	}
 
 	/// Access to the parameter value
 	const TYPE& typedValue() const {
-		return _value;
+		return *_value;
 	}
 
 	/// Set the parameter value
 	void setTypedValue(const TYPE& val) {
-		_value = val;
+		*_value = val;
 	}
 
 	/// Access to the parameter default value
@@ -185,7 +192,7 @@ public:
 	/// Access to the parameter value in string representation
 	std::string value() const {
 		std::stringstream s;
-		s << _value;
+		s << *_value;
 		return s.str();
 	}
 
@@ -193,7 +200,7 @@ public:
 	void setValue(const std::string& val) {
 		std::stringstream s;
 		s << val;
-		s >> _value;
+		s >> *_value;
 	}
 
 	/// Access to the parameter default value in string representation
@@ -204,28 +211,35 @@ public:
 	}
 
 protected:
-	TYPE& _value;
-	TYPE _defaultValue;
+	TYPE* _value = 0;   //!
+	TYPE  _defaultValue;
 };
 
 template<typename TYPE> class TypedSegmentationParameter<std::vector<TYPE> > : public SegmentationParameter {
 public:
+#if defined(G__ROOT) || defined(__CLANG__) || defined(__ROOTCLING__)
+  /// Empty constructor for ROOT persistency
+  TypedSegmentationParameter()
+    : SegmentationParameter("","",SegmentationParameter::NoUnit,false), _value(0), _defaultValue()  {}
+#endif
 	/// Default constructor
 	TypedSegmentationParameter(const std::string& nam, const std::string& desc, std::vector<TYPE>& val,
 			const std::vector<TYPE>& defaultVal, SegmentationParameter::UnitType unitTyp =
 					SegmentationParameter::NoUnit, bool isOpt = false) :
-			SegmentationParameter(nam, desc, unitTyp, isOpt), _value(val), _defaultValue(defaultVal) {
-		_value = defaultVal;
+			SegmentationParameter(nam, desc, unitTyp, isOpt), _value(&val), _defaultValue(defaultVal) {
+		*_value = defaultVal;
 	}
+	/// Default destructor
+	virtual ~TypedSegmentationParameter() {	}
 
 	/// Access to the parameter value
 	const std::vector<TYPE>& typedValue() const {
-		return _value;
+		return *_value;
 	}
 
 	/// Set the parameter value
 	void setTypedValue(const std::vector<TYPE>& val) {
-		_value = val;
+		*_value = val;
 	}
 
 	/// Access to the parameter default value
@@ -243,9 +257,8 @@ public:
 	/// Access to the parameter value in string representation
 	std::string value() const {
 		std::stringstream s;
-		typename std::vector<TYPE>::const_iterator it = _value.begin();
-		for (; it != _value.end(); ++it) {
-			s << *it;
+		for (const auto& it : *_value )  {
+			s << it;
 			s << " ";
 		}
 		return s.str();
@@ -254,14 +267,14 @@ public:
 	/// Set the parameter value in string representation
 	void setValue(const std::string& val) {
 		std::vector<std::string> elements = splitString(val);
-		_value.clear();
+		_value->clear();
 		for (std::vector<std::string>::const_iterator it = elements.begin(); it != elements.end(); ++it) {
 			if (not it->empty()) {
 				TYPE entry;
 				std::stringstream s;
 				s << *it;
 				s >> entry;
-				_value.push_back(entry);
+				_value->push_back(entry);
 			}
 		}
 	}
@@ -278,8 +291,8 @@ public:
 	}
 
 protected:
-	std::vector<TYPE>& _value;
-	std::vector<TYPE> _defaultValue;
+	std::vector<TYPE>* _value = 0;   //!
+	std::vector<TYPE>  _defaultValue;
 
 };
 

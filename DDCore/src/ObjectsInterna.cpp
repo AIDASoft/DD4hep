@@ -25,7 +25,8 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(VisAttrObject);
 
 /// Standard constructor
 VisAttrObject::VisAttrObject()
-  : magic(magic_word()), col(0), color(0), alpha(0), drawingStyle(VisAttr::SOLID), lineStyle(VisAttr::SOLID), showDaughters(true), visible(true) {
+  : magic(magic_word()), col(0), color(0), alpha(0),
+    drawingStyle(VisAttr::SOLID), lineStyle(VisAttr::SOLID), showDaughters(true), visible(true) {
   InstanceCount::increment(this);
 }
 
@@ -48,6 +49,11 @@ HeaderObject::~HeaderObject() {
 }
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConstantObject);
+
+/// Default constructor
+ConstantObject::ConstantObject()  {
+  InstanceCount::increment(this);
+}
 
 /// Standard constructor
 ConstantObject::ConstantObject(const string& nam, const string& val, const string& typ)
@@ -109,13 +115,13 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(IDDescriptorObject);
 
 /// Standard constructor
 IDDescriptorObject::IDDescriptorObject()
-  : NamedObject(), BitField64() /*, maxBit(0) */{
+  : NamedObject(), BitField64()   {
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
 IDDescriptorObject::IDDescriptorObject(const std::string& desc)
-  : NamedObject(), BitField64(desc) /*, maxBit(0) */{
+  : NamedObject(), BitField64(desc)   {
   InstanceCount::increment(this);
 }
 
@@ -123,3 +129,4 @@ IDDescriptorObject::IDDescriptorObject(const std::string& desc)
 IDDescriptorObject::~IDDescriptorObject() {
   InstanceCount::decrement(this);
 }
+

@@ -15,6 +15,8 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/detail/Handle.inl"
+#include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
 
@@ -28,7 +30,13 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
+DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
+
+
 namespace {
+
+  static bool s_useAllocator = false;
+
   class ContextExtension  {
   public:
     /// The placement of the (sensitive) volume
@@ -41,24 +49,18 @@ namespace {
     ~ContextExtension() = default;
   };
     
-  inline ContextExtension* _getExtension(const VolumeManagerContext* ctxt)  {
-    char* p = (char*)ctxt;
-    return (ContextExtension*)(p + sizeof(VolumeManagerContext));
-  }
-
-#if 0
   static size_t ALLOCATE_SIZE = 1000;
-  class ContextAllocator  {
+  class VolumeContextAllocator  {
 
   public:
-    struct Small  {
+    struct Small   {
+      unsigned char  context[sizeof(VolumeManagerContext)];
       unsigned int   chunk = 0;
       unsigned short  slot = 0;
       unsigned char   type = 0;
       unsigned char   used = 0;
-      unsigned char   ctxt[sizeof(VolumeManagerContext)];
       /// Default constructor
-      Small() : type(1) {}
+      Small() : type(1)   {}
       /// Default destructor
       virtual ~Small() = default;
       /// Inhibit copy constructor
@@ -80,21 +82,33 @@ namespace {
 
     std::vector<std::pair<size_t,Small*> > small;
     std::vector<std::pair<size_t,Large*> > large;
-    std::pair<size_t, Small*> curr_small{0,0};
-    std::pair<size_t, Large*> curr_large{0,0};
-    size_t num_total = 0;
-    size_t num_free = 0;
-    ContextAllocator()  {}
+    std::list<Small*> free_small;
+    std::list<Large*> free_large;
+
+    VolumeContextAllocator()  {}
+    static VolumeContextAllocator* instance()  {
+      static VolumeContextAllocator _s;
+      return &_s;
+    }
+    void clear()  {
+      free_small.clear();
+      for( auto& i : small ) delete i.second;
+      small.clear();
+
+      free_large.clear();
+      for( auto& i : large ) delete i.second;
+      large.clear();
+    }
     void freeBlock(void* ctxt)    {
-      unsigned char* p = (unsigned char*)ctxt;
-      p -= (sizeof(Small) - sizeof(VolumeManagerContext));
-      Small* s = (Small*)p;
+      Small* s = (Small*)ctxt;
       switch(s->type)   {
       case 1:
-        freeSlot(small,s);
+        s->used = 0;
+        free_small.push_back(s);
         return;
       case 2:
-        freeSlot(large,s);
+        s->used = 0;
+        free_large.push_back((Large*)s);
         return;
       default:
         printout(ERROR,"VolumeManager",
@@ -103,26 +117,41 @@ namespace {
         return;
       }
     }
-    void freeSlot(std::vector<std::pair<size_t,Large*> >& cont, Small* s)    {      
-    }
-    void freeSlot(std::vector<std::pair<size_t,Small*> >& cont, Small* s)    {      
-    }
     void* alloc_large()  {
-      if ( curr_large.first > 0 )  {
-        Large* cont = (Large*)curr_large.second;
-        --curr_large.first;
-        --num_free;
-        cont[curr_large.first].used = 1;
-        return &cont[curr_large.first].ctxt;
+      if ( s_useAllocator )  {
+        if ( !free_large.empty() )  {
+          Large* entry = free_large.back();
+          free_large.pop_back();
+          entry->used = 1;
+          return entry->context;
+        }
+        Large* blk = new Large[ALLOCATE_SIZE];
+        for(size_t i=0; i<ALLOCATE_SIZE;++i) free_large.push_back(&blk[i]);
+        large.push_back(make_pair(ALLOCATE_SIZE,blk));
+        return alloc_large();
       }
-      curr_large = make_pair(ALLOCATE_SIZE,new Large[ALLOCATE_SIZE]);
-      large.push_back(curr_large);
-      num_total += ALLOCATE_SIZE;
-      num_free += ALLOCATE_SIZE;
-      return alloc_large();
+      return new VolumeContextAllocator::Large();
+    }
+    void* alloc_small()  {
+      if ( s_useAllocator )  {
+        if ( !free_small.empty() )  {
+          Small* entry = free_small.back();
+          free_small.pop_back();
+          entry->used = 1;
+          return entry->context;
+        }
+        Small* blk = new Small[ALLOCATE_SIZE];
+        for(size_t i=0; i<ALLOCATE_SIZE;++i) free_small.push_back(&blk[i]);
+        small.push_back(make_pair(ALLOCATE_SIZE,blk));
+        return alloc_small();
+      }
+      return new VolumeContextAllocator::Small();
     }
   };
-#endif
+  inline ContextExtension* _getExtension(const VolumeManagerContext* ctxt)  {
+    VolumeContextAllocator::Large* p = (VolumeContextAllocator::Large*)ctxt;
+    return (ContextExtension*)p->extension;
+  }
 }
 
 /// Namespace for the AIDA detector description toolkit
@@ -336,17 +365,16 @@ namespace dd4hep {
             VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
 
             // This is the block, we effectively have to save for each physical volume with a VolID
-            size_t len = nodes.empty()
-              ? sizeof(VolumeManagerContext)
-              : sizeof(VolumeManagerContext) + sizeof(ContextExtension);
-            void* ptr = ::operator new(len);
-            VolumeManagerContext* context = new(ptr) VolumeManagerContext;
+            void* mem = nodes.empty()
+              ? VolumeContextAllocator::instance()->alloc_small()
+              : VolumeContextAllocator::instance()->alloc_large();
+            VolumeManagerContext* context = new(mem) VolumeManagerContext;
             context->identifier = code.first;
             context->mask       = code.second;
             context->element    = e;
-            if ( nodes.size() > 0 )  {
+            context->flag       = nodes.empty() ? 0 : 1;
+            if ( context->flag )  {
               ContextExtension* ext = new(_getExtension(context)) ContextExtension();
-              context->flag   = 1;
               ext->placement  = PlacedVolume(n);
               for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
                 TGeoMatrix* m = nodes[i-1]->GetMatrix();
@@ -726,3 +754,36 @@ std::ostream& dd4hep::operator<<(std::ostream& os, const VolumeManager& m) {
     os << prefix << i.second << endl;
   return os;
 }
+
+/// Default destructor
+VolumeManagerObject::~VolumeManagerObject() {
+  /// Cleanup volume tree
+  if ( s_useAllocator )  {
+    VolumeContextAllocator::instance()->clear();
+  }
+  else   {
+    destroyObjects(volumes);
+  }
+  /// Cleanup dependent managers
+  destroyHandles(managers);
+  managers.clear();
+  subdetectors.clear();
+}
+
+/// Update callback when alignment has changed (called only for subdetectors....)
+void VolumeManagerObject::update(unsigned long tags, DetElement& det, void* param)   {
+  if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
+    printout(DEBUG,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
+  if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )
+    printout(DEBUG,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
+  
+  for(const auto& i : volumes )
+    printout(DEBUG,"VolumeManager","+++ Alignment update %s",i.second->elementPlacement().name());
+}
+
+/// Search the locally cached volumes for a matching ID
+VolumeManagerContext* VolumeManagerObject::search(const VolumeID& vol_id) const {
+  auto i = volumes.find(vol_id&detMask);
+  return (i == volumes.end()) ? 0 : (*i).second;
+}
+

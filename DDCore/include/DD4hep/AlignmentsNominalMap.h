@@ -45,6 +45,9 @@ namespace dd4hep {
   public:
     /// Reference to the top detector element
     DetElement  world;
+    /// Potential cache of real conditions
+    std::map<Condition::key_type,Condition> data;
+
   public:
     /// Standard constructor
     AlignmentsNominalMap(DetElement wrld);
@@ -85,5 +88,5 @@ namespace dd4hep {
                       Condition::itemkey_type     upper,
                       const Condition::Processor& processor) const  override;
   };
-}         /* End namespace dd4hep                   */
+}         /* End namespace dd4hep                        */
 #endif    /* DD4HEP_DDCORE_ALIGNMENTSNOMINALMAP_H        */
