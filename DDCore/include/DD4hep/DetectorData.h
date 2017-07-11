@@ -87,21 +87,22 @@ namespace dd4hep {
     };
 
   protected:
+  public:
     /** All elments of the big detector description common block ;-0  */
     /// Reference to the geometry manager object from ROOT
     TGeoManager*             m_manager;
-    /// Map of readout descriptors indexed by subdetector name
-    ObjectHandleMap          m_readouts;
     /// Map of readout IDDescriptors indexed by hit collection name
     ObjectHandleMap          m_idDict;
     /// Map of limit sets
     ObjectHandleMap          m_limits;
     /// Map of regions settings for the simulation
     ObjectHandleMap          m_regions;
-    /// The map of top level sub-detector objects indexed by name
-    ObjectHandleMap          m_detectors;
+    /// Map of readout descriptors indexed by subdetector name
+    ObjectHandleMap          m_readouts;
     /// The map of top level sub-detector sensitive detector objects indexed by the detector name
     ObjectHandleMap          m_sensitive;
+    /// The map of top level sub-detector objects indexed by name
+    ObjectHandleMap          m_detectors;
     /// The map of display attributes in use
     ObjectHandleMap          m_display;
     /// The map of electro magnet field components for the global overlay field
@@ -133,6 +134,7 @@ namespace dd4hep {
     bool                     m_inhibitConstants;
 
   protected:
+  public:
     /// Default constructor
     DetectorData();
     /// Default destructor
@@ -147,7 +149,7 @@ namespace dd4hep {
     /// Clear data content: DOES NOT RELEASEW ALLOCATED RESOURCES!
     void clearData();
     /// Adopt all data from source structure.
-    void adoptData(DetectorData& source);
+    void adoptData(DetectorData& source, bool CLR=true);
   };
 
 }         /* End namespace dd4hep         */

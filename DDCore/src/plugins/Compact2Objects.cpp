@@ -627,7 +627,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
   string name = seg.hasAttr(_U(name)) ? seg.attr<string>(_U(name)) : string();
   std::pair<Segmentation,IDDescriptor>* opt = _option<pair<Segmentation,IDDescriptor> >();
 
-  BitField64* bitfield = opt->second.ptr();
+  BitField64* bitfield = &opt->second->decoder;
   Segmentation segment(type, name, bitfield);
   if ( segment.isValid() ) {
     const DDSegmentation::Parameters& pars = segment.parameters();
@@ -717,8 +717,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   
   if (id) {
     //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-    opt.second = IDDescriptor(id.text());
-    opt.second->SetName(ro.name());
+    opt.second = IDDescriptor(name,id.text());
     description.addIDSpecification(opt.second);
   }
   if (seg) {   // Segmentation is not mandatory!

@@ -57,6 +57,8 @@ namespace dd4hep {
     /// Access flag for hit positioning
     bool useForHitPosition() const;
     /// Accessor: Segmentation type
+    const char* name() const;
+    /// Accessor: Segmentation type
     std::string type() const;
     /// Access to the parameters
     DDSegmentation::Parameters parameters() const;

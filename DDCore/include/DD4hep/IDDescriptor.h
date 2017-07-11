@@ -45,8 +45,8 @@ namespace dd4hep {
     /// Constructor to be used when reading the already parsed object
     template <typename Q> IDDescriptor(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Initializing constructor
-    IDDescriptor(const std::string& description);
-    // the string description of all fields
+    IDDescriptor(const std::string& name, const std::string& description);
+    /// The string description of all fields from the BitField
     std::string fieldDescription() const;
     /// The total number of encoding bits for this descriptor
     unsigned maxBit() const;

@@ -154,9 +154,9 @@ protected:
 	/// The description of the segmentation
 	std::string _description;
 	/// The parameters for this segmentation
-	std::map<std::string, Parameter> _parameters;
+	std::map<std::string, Parameter> _parameters;   //! No ROOT persistency
 	/// The indices used for the encoding
-	std::map<std::string, StringParameter> _indexIdentifiers;
+	std::map<std::string, StringParameter> _indexIdentifiers;   //! No ROOT persistency
 	/// The cell ID encoder and decoder
 	mutable BitField64* _decoder = 0;    //! Not ROOT persistent
 	/// Keeps track of the decoder ownership

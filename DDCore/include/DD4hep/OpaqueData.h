@@ -51,7 +51,7 @@ namespace dd4hep {
 
   protected:
     /// Pointer to object data
-    void* pointer = 0;
+    void* pointer = 0;   //! No ROOT persistency
 
   public:
     /// Create data block from string representation
@@ -89,13 +89,16 @@ namespace dd4hep {
       STACK_DATA = 1<<2,
       BOUND_DATA = 1<<3
     };
+
+
+    
     /// Data buffer: plain data are allocated directly on this buffer
     /** Internal data buffer is sufficient to store any vector  */
     unsigned char data[sizeof(std::vector<void*>)];
-    /// Destructor function -- only set if the object is valid
-    void (*destruct)(void*);
+    /// Destructor function  -- only set if the object is valid
+    //void (*destruct)(void*);
     /// Constructor function -- only set if the object is valid
-    void (*copy)(void*,const void*);
+    //void (*copy)(void*,const void*);
 
   public:
     /// Data buffer type: Must be a bitmap!

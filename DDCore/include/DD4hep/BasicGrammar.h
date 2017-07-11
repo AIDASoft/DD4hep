@@ -57,6 +57,10 @@ namespace dd4hep {
     virtual std::string str(const void* ptr) const = 0;
     /// Set value from serialized string. On successful data conversion TRUE is returned.
     virtual bool fromString(void* ptr, const std::string& value) const = 0;
+    /// Opaque object destructor
+    virtual void destruct(void* pointer) const = 0;
+    /// Opaque object copy construction. Memory must be allocated externally
+    virtual void copy(void* to, const void* from)  const = 0;
   };
 }      // End namespace dd4hep
 

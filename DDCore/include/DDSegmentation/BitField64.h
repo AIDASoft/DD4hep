@@ -145,6 +145,10 @@ namespace DDSegmentation {
      */
     std::string valueString() const ;
 
+    const std::vector<BitFieldValue*>& fields()  const  {
+      return _fields;
+    }
+    
   protected:
 
     /** Add an additional field to the list 
@@ -156,9 +160,11 @@ namespace DDSegmentation {
      */
     void init( const std::string& initString) ;
 
+  public:
     /** No default c'tor */
     BitField64() : _value(0) , _joined(0) { }
 
+  protected:
 
     // -------------- data members:--------------
 
@@ -274,6 +280,11 @@ namespace DDSegmentation {
     /** The field's mask */
     ulong64 mask() const { return _mask ; }
 
+    /** Minimal value  */
+    int  minValue()  const  { return _minVal;  }
+
+    /** Maximal value  */
+    int  maxValue()  const  { return _maxVal;  }
 
   protected:
   

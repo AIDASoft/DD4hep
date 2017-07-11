@@ -78,6 +78,10 @@ namespace dd4hep {
     virtual bool fromString(void* ptr, const std::string& value) const  override;
     /// Evaluate string value if possible before calling boost::spirit
     virtual int evaluate(void* ptr, const std::string& value) const;
+    /// Opaque object destructor
+    virtual void destruct(void* pointer) const;
+    /// Opaque object copy construction. Memory must be allocated externally
+    virtual void copy(void* to, const void* from)  const;
   };
 
   /// Standarsd constructor
@@ -133,6 +137,18 @@ namespace dd4hep {
     std::stringstream string_rep;
     Utils::toStream(*(TYPE*)ptr,string_rep);
     return string_rep.str();
+  }
+
+  /// Opaque object destructor
+  template <typename TYPE> void Grammar<TYPE>::destruct(void* pointer) const   {
+    TYPE* obj = (TYPE*)pointer;
+    obj->~TYPE();
+  }
+
+  /// Opaque object destructor
+  template <typename TYPE> void Grammar<TYPE>::copy(void* to, const void* from) const   {
+    const TYPE* from_obj = (const TYPE*)from;
+    new (to) TYPE(*from_obj);
   }
 
   /// Helper function to parse data type

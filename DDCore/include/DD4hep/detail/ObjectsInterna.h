@@ -169,7 +169,7 @@ namespace dd4hep {
   class ReadoutObject: public NamedObject {
   public:
     /// Handle to the readout segmentation
-    Segmentation segmentation;  //! No ROOT persistency
+    Segmentation segmentation;  //! not ROOT-persistent
     /// Handle to the volume
     Volume readoutWorld;
     /// Handle to the field descriptor
@@ -190,12 +190,17 @@ namespace dd4hep {
    *  \date    2012/07/31
    *  \ingroup DD4HEP_CORE
    */
-  class IDDescriptorObject: public NamedObject, public BitField64 {
+  class IDDescriptorObject: public NamedObject {
   public:
     typedef std::vector<std::pair<std::string, BitFieldValue*> > FieldMap;
     typedef std::vector<std::pair<size_t, std::string> >         FieldIDs;
-    FieldMap fieldMap; //! not ROOT-persistent
-    FieldIDs fieldIDs; //! not ROOT-persistent
+    /// Map of id-fields in the descriptor
+    FieldMap fieldMap;  //! not ROOT-persistent
+    /// String map of id descriptors
+    FieldIDs fieldIDs;  //! not ROOT-persistent
+    /// Decoder object
+    BitField64 decoder; //! not ROOT-persistent
+    
     /// The description string to build the bit-field descriptors.
     std::string description;
     /// Default constructor
@@ -204,11 +209,13 @@ namespace dd4hep {
     IDDescriptorObject(const std::string& initString);
     /// Default destructor
     virtual ~IDDescriptorObject();
+#if 0
 #ifndef __CINT__
     /// Access to the field container of the BitField64
-    const std::vector<BitFieldValue*> fields() const {
-      return _fields;
+    const std::vector<BitFieldValue*>& fields() const {
+      return decoder.fields();
     }
+#endif
 #endif
   };
 }      /* End namespace dd4hep              */

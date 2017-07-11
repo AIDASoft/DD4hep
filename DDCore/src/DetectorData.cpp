@@ -104,7 +104,7 @@ void DetectorData::clearData()   {
 }
 
 /// Adopt all data from source structure
-void DetectorData::adoptData(DetectorData& source)   {
+void DetectorData::adoptData(DetectorData& source, bool clr)   {
   m_inhibitConstants = source.m_inhibitConstants;
   m_extensions.move(source.m_extensions);
   m_manager        = source.m_manager;
@@ -131,5 +131,5 @@ void DetectorData::adoptData(DetectorData& source)   {
   m_properties     = source.m_properties;
   //m_extensions     = source.m_extensions;
   m_volManager     = source.m_volManager;
-  source.clearData();
+  if ( clr ) source.clearData();
 }
