@@ -116,6 +116,8 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Detector::Properties+;
 #pragma link C++ class DD4hepRootPersistency+;
 #pragma link C++ class DD4hepRootCheck+;
+#pragma link C++ class pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*>+;
+#pragma link C++ class map<dd4hep::Readout,pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*> >+;
 
 // These below are the Namedobject instances to be generated ....
 //#pragma link C++ class dd4hep::Detector::HandleMap+;

@@ -115,13 +115,13 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(IDDescriptorObject);
 
 /// Standard constructor
 IDDescriptorObject::IDDescriptorObject()
-  : NamedObject(), BitField64()   {
+  : NamedObject(), decoder()   {
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
 IDDescriptorObject::IDDescriptorObject(const std::string& desc)
-  : NamedObject(), BitField64(desc)   {
+  : NamedObject(), decoder(desc)   {
   InstanceCount::increment(this);
 }
 

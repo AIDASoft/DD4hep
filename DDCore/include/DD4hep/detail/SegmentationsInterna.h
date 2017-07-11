@@ -87,7 +87,7 @@ namespace dd4hep {
     /// Reference to hosting top level sensitve detector structure
     Handle<SensitiveDetectorObject> sensitive;
     /// Reference to base segmentation
-    DDSegmentation::Segmentation* segmentation;      
+    DDSegmentation::Segmentation* segmentation = 0;
   };
 
   /// Concrete wrapper class for segmentation implementation based on DDSegmentation objects

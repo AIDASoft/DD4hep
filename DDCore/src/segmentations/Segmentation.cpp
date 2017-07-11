@@ -15,6 +15,7 @@
 #include <iomanip>
 
 namespace dd4hep {
+
   namespace DDSegmentation {
 
     using std::cerr;
@@ -37,12 +38,14 @@ namespace dd4hep {
 
     /// Destructor
     Segmentation::~Segmentation() {
+#if 0
       if (_ownsDecoder and _decoder != 0) {
         delete _decoder;
       }
       for (auto& p : _parameters)  {
         if ( p.second ) delete p.second;
       }
+#endif
       _parameters.clear();
     }
   
@@ -97,8 +100,7 @@ namespace dd4hep {
 
     /// Access to parameter by name
     Parameter Segmentation::parameter(const std::string& parameterName) const {
-      map<std::string, Parameter>::const_iterator it;
-      it = _parameters.find(parameterName);
+      map<std::string, Parameter>::const_iterator it = _parameters.find(parameterName);
       if (it != _parameters.end()) {
         return it->second;
       }
@@ -110,20 +112,15 @@ namespace dd4hep {
     /// Access to all parameters
     Parameters Segmentation::parameters() const {
       Parameters pars;
-      map<std::string, Parameter>::const_iterator it;
-      for (it = _parameters.begin(); it != _parameters.end(); ++it) {
-        pars.push_back(it->second);
-      }
+      for ( const auto& it : _parameters )
+        pars.push_back(it.second);
       return pars;
     }
 
     /// Set all parameters from an existing set of parameters
     void Segmentation::setParameters(const Parameters& pars) {
-      Parameters::const_iterator it;
-      for (it = pars.begin(); it != pars.end(); ++it) {
-        Parameter p = *it;
+      for ( const auto* p : pars )
         parameter(p->name())->value() = p->value();
-      }
     }
 
     /// Add a cell identifier to this segmentation. Used by derived classes to define their required identifiers
@@ -179,12 +176,9 @@ namespace dd4hep {
             << "of the segmentation";
         throw std::runtime_error(err.str());
       }
-
-
       std::vector<double>::const_iterator bin = std::upper_bound(cellBoundaries.begin(),
                                                                  cellBoundaries.end(),
                                                                  position-offset);
-
       // need to reduce found bin by one, because upper_bound works that way, lower_bound would not help
       return bin - cellBoundaries.begin() - 1 ;
 

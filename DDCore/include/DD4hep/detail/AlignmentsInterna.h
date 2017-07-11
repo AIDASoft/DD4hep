@@ -64,7 +64,7 @@ namespace dd4hep {
       /// Copy constructor
       AlignmentObject(const AlignmentObject& copy) = delete;
       /// Standard constructor with user provided payload pointer to bind alignment data
-      AlignmentObject(const std::string& nam,const std::string& tit,void* payload,size_t len);
+      AlignmentObject(const std::string& nam, const std::string& tit, void* payload, size_t len);
       /// Standard Destructor
       virtual ~AlignmentObject();
       /// Assignment operator

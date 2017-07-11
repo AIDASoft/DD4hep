@@ -94,6 +94,10 @@ DECLARE_APPLY(DD4hepGeometryDisplay,display)
 static long run_interpreter(Detector& /* description */, int argc, char** argv) {
   pair<int, char**> a(argc,argv);
   TRint app("dd4hep", &a.first, a.second);
+  for(int i=0; i<argc; ++i)   {
+    printout(INFO,"DD4hepRint","Excecute[%d]: %s",i,argv[i]);
+    gInterpreter->ProcessLine(argv[i]);
+  }
   app.Run();
   return 1;
 }
@@ -531,6 +535,62 @@ static long load_geometryFromroot(Detector& description, int argc, char** argv) 
   return 0;
 }
 DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
+
+/// Basic entry point to check sensitive detector strictures
+/**
+ *  Factory: DD4hepCheckSensitives
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_sensitives(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkSensitives();
+}
+DECLARE_APPLY(DD4hepCheckSensitives,check_sensitives)
+
+/// Basic entry point to check sensitive detector strictures
+/**
+ *  Factory: DD4hepCheckDetectors
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_detectors(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkDetectors();
+}
+DECLARE_APPLY(DD4hepCheckDetectors,check_detectors)
+
+/// Basic entry point to check sensitive detector strictures
+/**
+ *  Factory: DD4hepCheckReadouts
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_readouts(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkReadouts();
+}
+DECLARE_APPLY(DD4hepCheckReadouts,check_readouts)
+
+/// Basic entry point to check IDDescriptors of the detector object
+/**
+ *  Factory: DD4hepCheckIdspecs
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_idspecs(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkIdSpecs();
+}
+DECLARE_APPLY(DD4hepCheckIdspecs,check_idspecs)
 
 /// Basic entry point to print out the volume hierarchy
 /**

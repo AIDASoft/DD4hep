@@ -58,7 +58,7 @@ namespace dd4hep {
       /// The reference to the TOP level VolumeManager
       VolumeManagerObject* top    = 0;
       /// The system field descriptor
-      const BitFieldValue* system = 0;
+      const BitFieldValue* system = 0;   //! Not ROOT persistent
       /// System identifier
       VolumeID sysID              = 0;
       /// Sub-detector mask

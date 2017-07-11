@@ -11,10 +11,10 @@
 #=================================================================================
 dd4hep_package(    DDCore
   USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
-                   DDSegmentation DDParsers
+                   DDParsers
   OPTIONAL         XERCESC
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DD4hep include/XML include/JSON)
+  INSTALL_INCLUDES include/DDSegmentation include/DD4hep include/XML include/JSON)
 
 #---Generate ROOT dictionary------------------------------------------------------
 dd4hep_add_dictionary( G__DD4hep
@@ -22,8 +22,6 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/*.h
   include/DD4hep/detail/*.h
   include/XML/*.h 
-  ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/BitField64.h
-  ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/Segmentation.h
   EXCLUDE include/DD4hep/DetFactoryHelper.h
   include/DD4hep/Factories.h
   include/DD4hep/Plugins.h
@@ -36,7 +34,7 @@ dd4hep_add_dictionary( G__DD4hep
 
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
-  SOURCES        src/*.cpp src/XML/*.cpp
+  SOURCES        src/*.cpp src/segmentations/*.cpp src/XML/*.cpp
   OPTIONAL       [BOOST SOURCES src/JSON/*.cpp]
   GENERATED      G__DD4hep.cxx 
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}

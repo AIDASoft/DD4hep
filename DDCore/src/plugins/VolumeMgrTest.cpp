@@ -53,17 +53,18 @@ namespace  {
     IDDescriptor  m_iddesc;
     VolumeManager m_mgr;
     DetElement    m_det;
-
+    size_t        m_errors = 0;
+    size_t        m_elements = 0;
     /// Initializing constructor
     VolIDTest(Detector& description, DetElement sdet, size_t depth);
     /// Default destructor
-    virtual ~VolIDTest() {}
+    virtual ~VolIDTest();
     /// Check volume integrity
-    void checkVolume(DetElement e, PlacedVolume pv, const VolIDs& child_ids, const Chain& chain)  const;
+    void checkVolume(DetElement e, PlacedVolume pv, const VolIDs& child_ids, const Chain& chain);
     /// Walk through tree of detector elements
     //void walk(DetElement de, VolIDs ids, const Chain& chain, size_t depth, size_t mx_depth)  const;
     /// Walk through tree of volume placements
-    void walkVolume(DetElement e, PlacedVolume pv, VolIDs ids, const Chain& chain, size_t depth, size_t mx_depth)  const;
+    void walkVolume(DetElement e, PlacedVolume pv, VolIDs ids, const Chain& chain, size_t depth, size_t mx_depth);
 
     /// Action routine to execute the test
     static long run(Detector& description,int argc,char** argv);
@@ -97,14 +98,26 @@ VolIDTest::VolIDTest(Detector& description, DetElement sdet, size_t depth) : m_m
   walkVolume(sdet, pv, ids, chain, 1, depth);
 }
 
+/// Default destructor
+VolIDTest::~VolIDTest()   {
+  if ( m_errors == 0 )
+    printout(ALWAYS,"VolIDTest","+++ PASSED: Checked %ld objects. Num.Errors:%ld",
+             m_elements, m_errors);
+  else
+    printout(ALWAYS,"VolIDTest","+++ FAILED: Checked %ld objects. Num.Errors:%ld",
+             m_elements, m_errors);
+}
+
 /// Check volume integrity
-void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& child_ids, const Chain& chain)  const {
+void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& child_ids, const Chain& chain)   {
   stringstream err, log;
   VolumeID     det_vol_id = detector.volumeID();
   VolumeID     vid = det_vol_id;
   DetElement   top_sdet, det_elem;
   VolumeManagerContext* mgr_ctxt = 0;
   
+  ++m_elements;
+
   try {
     vid       = m_iddesc.encode(child_ids);
     top_sdet  = m_mgr.lookupDetector(vid);
@@ -118,12 +131,14 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
             << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
             << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
             << " vid:" << volumeID(vid);
+        ++m_errors;
       }
       else if ( top_sdet.ptr() != detector.ptr() )   {
         err << "VolumeMgrTest: Wrong associated sub-detector element vid="  << volumeID(vid)
             << " got "        << top_sdet.path() << " (" << (void*)top_sdet.ptr() << ") "
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
             << " vid:" << volumeID(vid);
+        ++m_errors;
       }
       else if ( !detail::tools::isParentElement(detector,det_elem) )   {
       // This is sort of a bit wischi-waschi.... 
@@ -131,23 +146,28 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
             << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
             << " vid:" << volumeID(vid);
+        ++m_errors;
       }
       else if ( top_sdet.ptr() != m_det.ptr() )   {
         err << "VolumeMgrTest: Wrong associated detector "
             << " vid:" << volumeID(vid);
+        ++m_errors;
       }
     }
   }
   catch(const exception& ex) {
     err << "Lookup " << pv.name() << " id:" << volumeID(vid)
         << " path:" << detector.path() << " error:" << ex.what();
+    ++m_errors;
   }
+
   if ( pv.volume().isSensitive() || (0 != det_vol_id) )  {
     string id_desc;
     log << "Volume:"  << setw(50) << left << pv.name();
     if ( pv.volume().isSensitive() )  {
       IDDescriptor dsc = SensitiveDetector(pv.volume().sensitiveDetector()).readout().idSpec();
       log << " IDDesc:" << (char*)(dsc.ptr() == m_iddesc.ptr() ? "OK " : "BAD");
+      if ( dsc.ptr() != m_iddesc.ptr() ) ++m_errors;
     }
     else  {
       log << setw(11) << " ";
@@ -178,17 +198,21 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
         }
         for (size_t i = chain.size(); i > 0; --i)  {
           const TGeoMatrix* mat = chain[i-1]->GetMatrix();
-          ::printf("Placement [%d]  VolID:%s\t\t",int(i),chain[i-1].volIDs().str().c_str());
-          mat->Print();
+          if ( printLevel() <= INFO )  {
+            ::printf("Placement [%d]  VolID:%s\t\t",int(i),chain[i-1].volIDs().str().c_str());
+            mat->Print();
+          }
         }
-        ::printf("Computed Trafo (from placements):\t\t");
-        trafo.Print();
         det_elem  = m_mgr.lookupDetElement(vid);
-        ::printf("DetElement Trafo: %s [%s]\t\t",
-                 det_elem.path().c_str(),volumeID(det_elem.volumeID()).c_str());
-        det_elem.nominal().worldTransformation().Print();
-        ::printf("VolumeMgr  Trafo: %s [%s]\t\t",det_elem.path().c_str(),volumeID(vid).c_str());
-        m_mgr.worldTransformation(m_mapping,vid).Print();
+        if ( printLevel() <= INFO )  {
+          ::printf("Computed Trafo (from placements):\t\t");
+          trafo.Print();
+          ::printf("DetElement Trafo: %s [%s]\t\t",
+                   det_elem.path().c_str(),volumeID(det_elem.volumeID()).c_str());
+          det_elem.nominal().worldTransformation().Print();
+          ::printf("VolumeMgr  Trafo: %s [%s]\t\t",det_elem.path().c_str(),volumeID(vid).c_str());
+          m_mgr.worldTransformation(m_mapping,vid).Print();
+        }
         if ( 0 == mgr_ctxt )  {
           printout(ERROR,m_det.name(),"VOLUME_MANAGER FAILED: Could not find entry for vid:%s.",
                    volumeID(vid).c_str());
@@ -200,9 +224,10 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
           int res2 = detail::matrix::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
           if ( res1 != detail::matrix::MATRICES_EQUAL || res2 != detail::matrix::MATRICES_EQUAL )  {
             printout(ERROR,m_det.name(),"DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
+            ++m_errors;
           }
           else  {
-            printout(ERROR,m_det.name(),"DETELEMENT_PLACEMENT: PASSED. All matrices equal: %s",
+            printout(INFO,m_det.name(),"DETELEMENT_PLACEMENT: PASSED. All matrices equal: %s",
                      volumeID(vid).c_str());
           }
         }
@@ -213,9 +238,10 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
           int res2 = detail::matrix::_matrixEqual(trafo, m_mgr.worldTransformation(m_mapping,vid));
           if ( res2 != detail::matrix::MATRICES_EQUAL )  {
             printout(ERROR,m_det.name(),"VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
+            ++m_errors;
           }
           else  {
-            printout(ERROR,m_det.name(),"VOLUME_PLACEMENT: PASSED. All matrices equal: %s",
+            printout(INFO,m_det.name(),"VOLUME_PLACEMENT: PASSED. All matrices equal: %s",
                      volumeID(vid).c_str());
           }
         }
@@ -224,6 +250,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
     catch(const exception& ex) {
       err << "Matrix " << pv.name() << " id:" << volumeID(vid)
           << " path:" << detector.path() << " error:" << ex.what();
+      ++m_errors;
     }
     
   }
@@ -231,7 +258,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
 
 /// Walk through tree of detector elements
 void VolIDTest::walkVolume(DetElement detector, PlacedVolume pv, VolIDs ids, const Chain& chain,
-                           size_t depth, size_t mx_depth)  const
+                           size_t depth, size_t mx_depth)  
 {
   if ( depth <= mx_depth )  {
     const TGeoNode* current  = pv.ptr();
@@ -255,26 +282,7 @@ void VolIDTest::walkVolume(DetElement detector, PlacedVolume pv, VolIDs ids, con
     }
   }
 }
-#if 0
-/// Walk through tree of volume placements
-void VolIDTest::walk(DetElement detector, VolIDs ids, const Chain& chain, size_t depth, size_t mx_depth)  const   {
-  if ( depth <= mx_depth )  {
-    DetElement::Children::const_iterator i;
-    PlacedVolume pv = detector.placement();
-    VolIDs       child_ids(ids);
-    Chain        child_chain(chain);
-    VolumeID     det_vol_id   = detector.volumeID();
-    //bool         is_sensitive = pv.volume().isSensitive() || (0 != det_vol_id);
 
-    child_chain.push_back(pv);
-    child_ids.insert(child_ids.end(), pv.volIDs().begin(), pv.volIDs().end());
-    //if ( is_sensitive )  {
-    checkVolume(detector, pv, child_ids, child_chain);
-    //}
-    walkVolume(detector, pv, child_ids, child_chain, depth+1, mx_depth);
-  }
-}
-#endif
 /// Action routine to execute the test
 long VolIDTest::run(Detector& description,int argc,char** argv)    {
   printout(ALWAYS,"DD4hepVolumeMgrTest","++ Processing plugin...");

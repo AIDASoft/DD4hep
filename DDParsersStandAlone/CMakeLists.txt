@@ -20,9 +20,9 @@ option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #-----------------------------------------------------------------------------------------------------
 #
 #  project version (Major,minor,patch)
-#  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#  !! Use the same version numbers in DDSegmentation/CMakeLists.txt    !!
-#  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#  !! Use the same version numbers as in DDSegmentation/CMakeLists.txt    !!
+#  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
 # project version
 SET( DD4hep_VERSION_MAJOR 0  )

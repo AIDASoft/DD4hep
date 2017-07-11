@@ -44,6 +44,11 @@ Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec
 }
 
 /// Accessor: Segmentation type
+const char* Segmentation::name() const {
+  return data<Object>()->name().c_str();
+}
+
+/// Accessor: Segmentation type
 std::string Segmentation::type() const {
   return data<Object>()->type();
 }

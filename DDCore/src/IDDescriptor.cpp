@@ -26,7 +26,7 @@ using namespace dd4hep::detail;
 
 namespace {
   void _construct(IDDescriptor::Object* o, const string& dsc) {
-    BitField64& bf = *o;
+    BitField64& bf = o->decoder;
     o->fieldIDs.clear();
     o->fieldMap.clear();
     o->description = dsc;
@@ -39,17 +39,19 @@ namespace {
 }
 
 /// Initializing constructor
-IDDescriptor::IDDescriptor(const string& description) {
+IDDescriptor::IDDescriptor(const string& nam, const string& description) {
   Object* obj = new Object(description);
-  assign(obj, description, "iddescriptor");
+  assign(obj, nam, "iddescriptor");
   _construct(obj, description);
 }
 
 /// Re-build object in place
 void IDDescriptor::rebuild(const string& description)   {
   Object* p = ptr();
-  p->~Object();
-  new(p) Object(description);
+  string  dsc = description;
+  p->decoder.~BitField64();
+  new(&p->decoder) BitField64(dsc);
+  _construct(p, dsc);
 }
 
 /// Acces string representation
@@ -61,13 +63,13 @@ string IDDescriptor::toString() const {
 }
 
 std::string IDDescriptor::fieldDescription() const {
-  BitField64* bf = data<Object>();
-  return bf->fieldDescription();
+  BitField64& bf = data<Object>()->decoder;
+  return bf.fieldDescription();
 }
 
 /// The total number of encoding bits for this descriptor
 unsigned IDDescriptor::maxBit() const {
-  return data<Object>()->highestBit();
+  return data<Object>()->decoder.highestBit();
 }
 
 /// Access the field-id container
@@ -133,7 +135,7 @@ VolumeID IDDescriptor::encode(const std::vector<std::pair<std::string, int> >& i
 void IDDescriptor::decodeFields(VolumeID vid,
                                 vector<pair<const BitFieldValue*, VolumeID> >& flds)  const
 {
-  const vector<BitFieldValue*>& v = access()->fields();
+  const vector<BitFieldValue*>& v = access()->decoder.fields();
   flds.clear();
   for (auto f : v )
     flds.push_back(make_pair(f, f->value(vid)));
@@ -141,7 +143,7 @@ void IDDescriptor::decodeFields(VolumeID vid,
 
 /// Decode volume IDs and return string reprensentation for debugging purposes
 string IDDescriptor::str(VolumeID vid)   const {
-  const vector<BitFieldValue*>& v = access()->fields();
+  const vector<BitFieldValue*>& v = access()->decoder.fields();
   stringstream str;
   for (auto f : v )
     str << f->name() << ":" << setw(4) << setfill('0') << hex << right << f->value(vid)
@@ -151,7 +153,7 @@ string IDDescriptor::str(VolumeID vid)   const {
 
 /// Decode volume IDs and return string reprensentation for debugging purposes
 string IDDescriptor::str(VolumeID vid, VolumeID mask)   const {
-  const vector<BitFieldValue*>& v = access()->fields();
+  const vector<BitFieldValue*>& v = access()->decoder.fields();
   stringstream str;
   for (auto f : v )  {
     if ( 0 == (mask&f->mask()) ) continue;
@@ -163,5 +165,5 @@ string IDDescriptor::str(VolumeID vid, VolumeID mask)   const {
 
 /// Access the BitField64 object
 BitField64* IDDescriptor::decoder() {
-  return data<Object>();
+  return &(data<Object>()->decoder);
 }
