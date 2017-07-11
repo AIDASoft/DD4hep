@@ -90,15 +90,9 @@ namespace dd4hep {
       BOUND_DATA = 1<<3
     };
 
-
-    
     /// Data buffer: plain data are allocated directly on this buffer
     /** Internal data buffer is sufficient to store any vector  */
     unsigned char data[sizeof(std::vector<void*>)];
-    /// Destructor function  -- only set if the object is valid
-    //void (*destruct)(void*);
-    /// Constructor function -- only set if the object is valid
-    //void (*copy)(void*,const void*);
 
   public:
     /// Data buffer type: Must be a bitmap!
@@ -114,14 +108,9 @@ namespace dd4hep {
     /// Move the data content: 'from' will be reset to NULL
     bool move(OpaqueDataBlock& from);
     /// Bind data value
-    bool bind(const BasicGrammar* grammar,
-              void (*ctor)(void*,const void*),
-              void (*dtor)(void*));
+    bool bind(const BasicGrammar* grammar);
     /// Bind data value in place
-    bool bind(void* ptr, size_t len,
-              const BasicGrammar* grammar,
-              void (*ctor)(void*,const void*),
-              void (*dtor)(void*));
+    bool bind(void* ptr, size_t len, const BasicGrammar* grammar);
     /// Bind data value
     template <typename T> T& bind();
     /// Bind data value
