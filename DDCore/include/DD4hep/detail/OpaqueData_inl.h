@@ -29,16 +29,6 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  namespace   {
-    template <typename T> static void opaqueCopyObject(void* t, const void* s)  {
-      new(t) T(*(const T*)s);
-    }
-    template <typename T> static void opaqueDestructObject(void* p)  {
-      T* t = (T*)p;
-      t->~T();
-    }
-  }
-
   /// Generic getter. Specify the exact type, not a polymorph type
   template <typename T> T& OpaqueData::get() {
     if (!grammar || (grammar->type() != typeid(T))) { throw std::bad_cast(); }
@@ -53,13 +43,13 @@ namespace dd4hep {
 
   /// Bind data value
   template <typename T> T& OpaqueDataBlock::bind()  {
-    this->bind(&BasicGrammar::instance<T>(),opaqueCopyObject<T>,opaqueDestructObject<T>);
+    this->bind(&BasicGrammar::instance<T>());
     return *(new(this->pointer) T());
   }
 
   /// Bind data value
   template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len)  {
-    this->bind(ptr,len,&BasicGrammar::instance<T>(),opaqueCopyObject<T>,opaqueDestructObject<T>);
+    this->bind(ptr,len,&BasicGrammar::instance<T>());
     return *(new(this->pointer) T());
   }
 

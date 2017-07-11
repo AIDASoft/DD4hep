@@ -213,10 +213,21 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
           ::printf("VolumeMgr  Trafo: %s [%s]\t\t",det_elem.path().c_str(),volumeID(vid).c_str());
           m_mgr.worldTransformation(m_mapping,vid).Print();
         }
+        
+        /// Check volume manager context
         if ( 0 == mgr_ctxt )  {
           printout(ERROR,m_det.name(),"VOLUME_MANAGER FAILED: Could not find entry for vid:%s.",
                    volumeID(vid).c_str());
+          ++m_errors;
         }
+
+        /// Check nominal and DetElement trafos for pointer equality:
+        if ( &det_elem.nominal().worldTransformation() != &m_mgr.worldTransformation(m_mapping,det_elem.volumeID()) )
+        {
+            printout(ERROR,m_det.name(),"DETELEMENT_PERSISTENCY FAILED: World transformation have DIFFERET pointer!");
+          ++m_errors;
+        }
+        
         if ( pv.ptr() == det_elem.placement().ptr() )   {
           // The computed transformation 'trafo' MUST be equal to:
           // m_mgr.worldTransformation(vid) AND det_elem.nominal().worldTransformation()

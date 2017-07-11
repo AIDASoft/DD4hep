@@ -63,21 +63,20 @@ OpaqueDataBlock::OpaqueDataBlock() : OpaqueData(), /*destruct(0), copy(0),*/ typ
 
 /// Copy constructor
 OpaqueDataBlock::OpaqueDataBlock(const OpaqueDataBlock& c) 
-  : OpaqueData(c), /*destruct(c.destruct), copy(c.copy), */type(c.type)   {
+  : OpaqueData(c), type(c.type)   {
   grammar = 0;
   pointer = 0;
-  this->bind(c.grammar,0,0/*c.copy,c.destruct*/);
+  this->bind(c.grammar);
   this->grammar->copy(pointer,c.pointer);
   InstanceCount::increment(this);
 }
 
 /// Standard Destructor
 OpaqueDataBlock::~OpaqueDataBlock()   {
-  //if ( destruct )  {
-  //(*destruct)(pointer);
-  grammar->destruct(pointer);
+  if ( pointer )  {
+    grammar->destruct(pointer);
     if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
-    //}
+  }
   pointer = 0;
   grammar = 0;
   InstanceCount::decrement(this);
@@ -88,13 +87,9 @@ bool OpaqueDataBlock::move(OpaqueDataBlock& from)   {
   pointer = from.pointer;
   grammar = from.grammar;
   ::memcpy(data,from.data,sizeof(data));
-  //destruct = from.destruct;
-  //copy = from.copy;
   type = from.type;
   ::memset(from.data,0,sizeof(data));
   from.type = PLAIN_DATA;
-  //from.destruct = 0;
-  //from.copy = 0;
   from.pointer = 0;
   from.grammar = 0;
   return true;
@@ -104,21 +99,18 @@ bool OpaqueDataBlock::move(OpaqueDataBlock& from)   {
 OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
   if ( this != &c )  {
     if ( this->grammar == c.grammar )   {
-      //if ( destruct )  {
-      //(*destruct)(pointer);
-  grammar->destruct(pointer);
+      if ( pointer )  {
+        grammar->destruct(pointer);
         if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
       }
       pointer = 0;
       grammar = 0;
-      //}
+    }
     if ( this->grammar == 0 )  {
       this->OpaqueData::operator=(c);
-      //this->destruct = c.destruct;
-      //this->copy = c.copy;
       this->type = c.type;
       this->grammar = 0;
-      this->bind(c.grammar,0,0/*c.copy,c.destruct*/);
+      this->bind(c.grammar);
       this->grammar->copy(pointer,c.pointer);
       return *this;
     }
@@ -128,12 +120,10 @@ OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
 }
 
 /// Set data value
-bool OpaqueDataBlock::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), void (*dtor)(void*))   {
+bool OpaqueDataBlock::bind(const BasicGrammar* g)   {
   if ( !grammar )  {
     size_t len = g->sizeOf();
     grammar  = g;
-    //destruct = dtor;
-    //copy     = ctor;
     (len > sizeof(data))
       ? (pointer=::operator new(len),type=ALLOC_DATA)
       : (pointer=data,type=PLAIN_DATA);
@@ -149,12 +139,10 @@ bool OpaqueDataBlock::bind(const BasicGrammar* g, void (*ctor)(void*,const void*
 }
 
 /// Set data value
-bool OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g, void (*ctor)(void*,const void*), void (*dtor)(void*))   {
+bool OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
   if ( !grammar )  {
     size_t len = g->sizeOf();
-    grammar  = g;
-    //destruct = dtor;
-    //copy     = ctor;
+    grammar = g;
     if ( len <= size )
       pointer=ptr, type=STACK_DATA;
     else if ( len <= sizeof(data) )

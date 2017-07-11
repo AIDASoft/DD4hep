@@ -66,6 +66,8 @@ namespace dd4hep {
     Grammar();
     /// Default destructor
     virtual ~Grammar();
+
+    /** Base class overrides   */
     /// PropertyGrammar overload: Access to the type information
     virtual const std::type_info& type() const  override;
     /// Access to the type information name
@@ -76,12 +78,14 @@ namespace dd4hep {
     virtual std::string str(const void* ptr) const  override;
     /// PropertyGrammar overload: Retrieve value from string
     virtual bool fromString(void* ptr, const std::string& value) const  override;
+    /// Opaque object destructor
+    virtual void destruct(void* pointer) const  override;
+    /// Opaque object copy construction. Memory must be allocated externally
+    virtual void copy(void* to, const void* from)  const  override;
+
+    /** Class member function   */
     /// Evaluate string value if possible before calling boost::spirit
     virtual int evaluate(void* ptr, const std::string& value) const;
-    /// Opaque object destructor
-    virtual void destruct(void* pointer) const;
-    /// Opaque object copy construction. Memory must be allocated externally
-    virtual void copy(void* to, const void* from)  const;
   };
 
   /// Standarsd constructor
