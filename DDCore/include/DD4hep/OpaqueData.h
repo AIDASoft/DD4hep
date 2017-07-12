@@ -47,7 +47,7 @@ namespace dd4hep {
 
   public:
     /// Data type
-    const BasicGrammar* grammar = 0;
+    const BasicGrammar* grammar = 0;  //!
 
   protected:
     /// Pointer to object data

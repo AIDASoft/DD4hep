@@ -19,6 +19,7 @@
 // Framework include files
 #include "DDParsers/Evaluator.h"
 #include "DD4hep/DD4hepRootPersistency.h"
+#include "DD4hep/detail/Grammar.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"
@@ -51,6 +52,11 @@ namespace dd4hep {
   XmlTools::Evaluator& evaluator();
   XmlTools::Evaluator& g4Evaluator();
 }
+
+namespace dd4hep   {   namespace Parsers   {
+    int parse(dd4hep::AlignmentData&, const std::string&);
+    int parse(dd4hep::detail::AlignmentObject&, const std::string&);
+  }}
 
 // -------------------------------------------------------------------------
 // Regular dd4hep dictionaries
@@ -211,19 +217,18 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Delta+;
 #pragma link C++ class dd4hep::Alignment+;
 #pragma link C++ class dd4hep::AlignmentData+;
-
-#pragma link C++ class dd4hep::detail::AlignmentConditionObject+;
-#pragma link C++ class dd4hep::align::GlobalAlignment+;
-#pragma link C++ class dd4hep::AlignmentDecorator<AlignmentData>+;
 #pragma link C++ class dd4hep::Handle<dd4hep::AlignmentData>+;
-#pragma link C++ class dd4hep::Handle<TGeoPhysicalNode>+;
+//#pragma link C++ class dd4hep::Grammar<dd4hep::AlignmentData>+;
 
 #pragma link C++ class dd4hep::AlignmentCondition+;
 #pragma link C++ class dd4hep::detail::AlignmentObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::AlignmentObject>+;
+//#pragma link C++ class dd4hep::Grammar<dd4hep::detail::AlignmentObject>+;
 
+#pragma link C++ class dd4hep::align::GlobalAlignment+;
+#pragma link C++ class dd4hep::Handle<TGeoPhysicalNode>+;
 
-
+// Conditions stuff
 #pragma link C++ class dd4hep::Condition+;
 #pragma link C++ class vector<dd4hep::Condition>+;
 #pragma link C++ class dd4hep::ConditionKey+;

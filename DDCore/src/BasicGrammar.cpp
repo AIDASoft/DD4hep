@@ -21,10 +21,12 @@
 
 /// Default constructor
 dd4hep::BasicGrammar::BasicGrammar()  {
+  self = this;
 }
 
 /// Default destructor
 dd4hep::BasicGrammar::~BasicGrammar()   {
+  self = 0;
 }
 
 /// Error callback on invalid conversion

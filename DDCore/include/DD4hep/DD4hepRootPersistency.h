@@ -25,6 +25,9 @@ public:
 
   /// Helper since plain segmentations cannot be saved
   std::map<dd4hep::Readout,std::pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*> > m_segments;
+
+  std::map<dd4hep::DetElement,dd4hep::AlignmentCondition> nominals;  //!
+  
   /// The main data block
   dd4hep::DetectorData*     m_data = 0;
   
@@ -126,11 +129,17 @@ public:
 
 class DD4hepRootCheck  {
 public:
+  /// Reference to the detector model object
   dd4hep::Detector* object=0;
+  /// Default constructor
   DD4hepRootCheck() = default;
+  /// Copy constructor
   DD4hepRootCheck(const DD4hepRootCheck& copy) = default;
+  /// Initializing constructor
   DD4hepRootCheck(dd4hep::Detector* o) : object(o) {}
-  ~DD4hepRootCheck() = default;
+  /// Default destructor
+  virtual ~DD4hepRootCheck() = default;
+  /// Assignment operator
   DD4hepRootCheck& operator=(const DD4hepRootCheck& copy) = default;
   /// Call to check a Material object
   size_t checkMaterials()  const;
@@ -154,6 +163,7 @@ public:
   size_t checkVolManager()   const;
   /// Call to check a top level Detector element (subdetector)
   size_t checkDetectors()  const;
+  /// Check all of the above
   size_t checkAll()   const;
 };
 

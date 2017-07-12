@@ -35,9 +35,14 @@ namespace dd4hep {
    *   \ingroup DD4HEP
    */
   class BasicGrammar {
+  protected:
+    /// Instance pointer
+    BasicGrammar* self = 0;
+
   public:
     /// Default constructor
     BasicGrammar();
+
     /// Default destructor
     virtual ~BasicGrammar();
 
