@@ -23,7 +23,7 @@
 
 // Framework include files
 #include "DD4hep/Primitives.h"
-#include "DD4hep/BasicGrammar.h"
+#include "DD4hep/detail/Grammar.h"
 
 #if defined(DD4HEP_PARSER_HEADER)
 
@@ -51,42 +51,6 @@ namespace {  static XmlTools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
-
-  /// Concrete type dependent grammar definition
-  /**
-   *   \author  M.Frank
-   *   \date    13.08.2013
-   *   \ingroup DD4HEP
-   */
-  template <typename TYPE> class Grammar : public BasicGrammar {
-    /// Cached type information name
-    std::string m_typeName;
-  public:
-    /// Standarsd constructor
-    Grammar();
-    /// Default destructor
-    virtual ~Grammar();
-
-    /** Base class overrides   */
-    /// PropertyGrammar overload: Access to the type information
-    virtual const std::type_info& type() const  override;
-    /// Access to the type information name
-    virtual const std::string& type_name() const  override;    
-    /// Access the object size (sizeof operator)
-    virtual size_t sizeOf() const  override;
-    /// PropertyGrammar overload: Serialize a property to a string
-    virtual std::string str(const void* ptr) const  override;
-    /// PropertyGrammar overload: Retrieve value from string
-    virtual bool fromString(void* ptr, const std::string& value) const  override;
-    /// Opaque object destructor
-    virtual void destruct(void* pointer) const  override;
-    /// Opaque object copy construction. Memory must be allocated externally
-    virtual void copy(void* to, const void* from)  const  override;
-
-    /** Class member function   */
-    /// Evaluate string value if possible before calling boost::spirit
-    virtual int evaluate(void* ptr, const std::string& value) const;
-  };
 
   /// Standarsd constructor
   template <typename TYPE> Grammar<TYPE>::Grammar() {

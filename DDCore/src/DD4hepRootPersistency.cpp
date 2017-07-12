@@ -54,7 +54,13 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
         persist->m_segments[ro].second = ro.segmentation().segmentation();
       }
     }
-
+    for( const auto& mgr : persist->m_data->m_volManager->managers )  {
+      for( const auto& v : mgr.second->volumes )  {
+        persist->nominals[v.second->element] = v.second->element.nominal();
+      }
+    }
+    printout(ALWAYS,"DD4hepRootPersistency","+++ Saving %ld nominals....",persist->nominals.size());
+#if 0
     TClass* opaqueCl = gROOT->GetClass("dd4hep::OpaqueDataBlock");
     if ( 0 == opaqueCl )  {
       printout(ERROR,"DD4hepRootPersistency","+++ Missing TClass for 'dd4hep::OpaqueDataBlock'.");
@@ -64,6 +70,7 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
       opaqueCl->AdoptStreamer(new TClassStreamer(stream_opaque_datablock));
       printout(ALWAYS,"DD4hepRootPersistency","+++ Set Streamer to %s",opaqueCl->GetName());
     }
+#endif
     TDataMember* m = 0;
     TClass* volCl = TGeoVolume::Class();
     printout(ALWAYS,"DD4hepRootPersistency","+++ Patching %s.fUserExtension to persistent",volCl->GetName());    
@@ -95,7 +102,7 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
 }
 
 int DD4hepRootPersistency::load(Detector& description, const char* fname, const char* instance)  {
-
+#if 0
   TClass* opaqueCl = gROOT->GetClass("dd4hep::OpaqueDataBlock");
   if ( 0 == opaqueCl )  {
     printout(ERROR,"DD4hepRootPersistency","+++ Missing TClass for 'dd4hep::OpaqueDataBlock'.");
@@ -105,6 +112,7 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
     opaqueCl->AdoptStreamer(new TClassStreamer(stream_opaque_datablock));
     printout(ALWAYS,"DD4hepRootPersistency","+++ Set Streamer to %s",opaqueCl->GetName());
   }
+#endif
   TDataMember* m = 0;
   TClass* volCl = TGeoVolume::Class();
   printout(ALWAYS,"DD4hepRootPersistency","+++ Patching %s.fUserExtension to persistent",volCl->GetName());    
@@ -142,23 +150,32 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       persist->m_segments.clear();
 
       const auto& sdets = persist->volumeManager()->subdetectors;
+      size_t num[3] = {0,0,0};
       for( const auto& vm : sdets )  {
-        DetElement det = vm.first;
         VolumeManager::Object* obj = vm.second.ptr();
         obj->system = obj->id.field("system");
         if ( 0 != obj->system )   {
           printout(ALWAYS,"DD4hepRootPersistency",
-                   "+++ Fixed VolumeManager.system for '%s'.",
-                   det.path().c_str());
+                   "+++ Fixed VolumeManager.system for %-24s  %6ld volumes %4ld sdets %4ld mgrs.",
+                   obj->detector.path().c_str(), obj->volumes.size(),
+                   obj->subdetectors.size(), obj->managers.size());
+          num[0] += obj->volumes.size();
+          num[1] += obj->subdetectors.size();
+          num[2] += obj->managers.size();
           continue;
         }
         printout(ALWAYS,"DD4hepRootPersistency",
                  "+++ FAILED to fix VolumeManager.system for '%s: %s'.",
-                 det.path().c_str(), "[No IDDescriptor field 'system']");
+                 obj->detector.path().c_str(), "[No IDDescriptor field 'system']");
       }
-      
+      printout(ALWAYS,"DD4hepRootPersistency",
+               "+++ Fixed VolumeManager TOTALS     %-24s  %6ld volumes %4ld sdets %4ld mgrs.","",num[0],num[1],num[2]);
+
+
+      printout(ALWAYS,"DD4hepRootPersistency","+++ loaded %ld nominals....",persist->nominals.size());
+
       data.adoptData(*target);
-      target->clearData();
+      //target->clearData();
       delete persist;
       printout(ALWAYS,"DD4hepRootPersistency",
                "+++ Successfully loaded detector description from file:%s",fname);

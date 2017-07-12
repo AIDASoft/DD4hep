@@ -176,7 +176,9 @@ namespace dd4hep {
       /// Set of already added entries
       set<VolumeID> m_entries;
       /// Debug flag
-      bool          m_debug;
+      bool          m_debug    = false;
+      /// Node counter
+      size_t        m_numNodes = 0;
 
     public:
       /// Default constructor
@@ -185,6 +187,9 @@ namespace dd4hep {
       {
         m_debug = (0 != ::getenv("DD4HEP_VOLMGR_DEBUG"));
       }
+
+      /// Access node count
+      size_t numNodes()  const  {   return m_numNodes;  }
 
       /// Populate the Volume manager
       void populate(DetElement e) {
@@ -385,6 +390,7 @@ namespace dd4hep {
               print_node(sd, parent, e, n, code, nodes);
             }
             m_entries.insert(code.first);
+            ++m_numNodes;
           }
         }
       }
@@ -442,6 +448,7 @@ const TGeoHMatrix& VolumeManagerContext::toElement()  const   {
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(Detector& description, const string& nam, DetElement elt, Readout ro, int flags) {
   printout(INFO, "VolumeManager", " - populating volume ids - be patient ..."  );
+  size_t node_count = 0;
   Object* obj_ptr = new Object();
   assign(obj_ptr, nam, "VolumeManager");
   if (elt.isValid()) {
@@ -451,8 +458,9 @@ VolumeManager::VolumeManager(Detector& description, const string& nam, DetElemen
     obj_ptr->top   = obj_ptr;
     obj_ptr->flags = flags;
     p.populate(elt);
+    node_count = p.numNodes();
   }
-  printout(INFO, "VolumeManager", " - populating volume ids - done"  );
+  printout(INFO, "VolumeManager", " - populating volume ids - done. %ld nodes.",node_count);
 }
 
 /// Initializing constructor to create a new object
