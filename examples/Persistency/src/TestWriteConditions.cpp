@@ -108,7 +108,8 @@ static int persistency_example (Detector& /* description */, int argc, char** ar
   printout(INFO,"Example","+++ Writing generic conditions vector to %s",output.c_str());
   int nbytes = io.write(output,"Conditions",conditions);
   printout(INFO,"Example","+++ Wrote %d bytes to file %s",nbytes,output.c_str());
-  
+  printout(INFO,"Example","+++ %s %ld conditions to file.",
+           nbytes > 0 ? "PASSED Wrote" : "FAILED +++ Could not write",conditions.size());
   // All done.
   return 1;
 }
