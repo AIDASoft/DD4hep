@@ -49,4 +49,5 @@ dd4hep_enable_tests (AlignDet
   Conditions
   DDDB
   DDG4
+  Persistency
   SimpleDetector)
