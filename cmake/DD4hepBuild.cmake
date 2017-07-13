@@ -1392,7 +1392,7 @@ endmacro( dd4hep_configure_scripts )
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_add_test_reg test_name )
-  cmake_parse_arguments(ARG "BUILD_EXEC" "OUTPUT" "COMMAND;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED;REQUIRES" ${ARGN} )
+  cmake_parse_arguments(ARG "BUILD_EXEC" "OUTPUT" "COMMAND;DEPENDS;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED;REQUIRES" ${ARGN} )
   set ( missing )
   set ( use_test 1 )
 
@@ -1444,6 +1444,10 @@ function ( dd4hep_add_test_reg test_name )
     if ( NOT "${failed}" STREQUAL "" )
       set_tests_properties( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "${failed}" )
     endif()
+    # Set test dependencies if present
+    foreach ( _dep ${ARG_DEPENDS} )
+      set_tests_properties( t_${test_name} PROPERTIES DEPENDS t_${_dep} )
+    endforeach()
   endif()
 endfunction()
 
