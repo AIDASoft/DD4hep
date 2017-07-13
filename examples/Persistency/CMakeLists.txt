@@ -37,6 +37,7 @@ dd4hep_add_test_reg( Persist_Conditions_Restore
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -plugin DD4hep_PersistencyExample_read_cond -input Conditions.root
+  DEPENDS    Persist_Conditions_Save
   REGEX_PASS "\\+\\+\\+ Read successfully 14 conditions. Result=172"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -56,6 +57,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader MiniTel_geometry.root
+  DEPENDS    Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -66,6 +68,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_VolMgr1_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader MiniTel_geometry.root
   -plugin DD4hepCheckVolumeManager
+  DEPENDS    Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -77,6 +80,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Nominal_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader MiniTel_geometry.root
   -plugin DD4hepCheckNominals
+  DEPENDS    Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 DetElements. Num.Errors: 0"
   )
 #
@@ -86,6 +90,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Sensitives_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader MiniTel_geometry.root
   -plugin DD4hepCheckSensitives
+  DEPENDS    Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 SensitiveDetector objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -96,6 +101,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Segmentations_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader MiniTel_geometry.root
   -plugin DD4hepCheckSegmentations
+  DEPENDS    Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 readout segmentations. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -106,6 +112,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Readouts_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader MiniTel_geometry.root
   -plugin DD4hepCheckReadouts
+  DEPENDS    Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 readout objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -125,6 +132,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -135,6 +143,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr1_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
   -plugin DD4hepCheckVolumeManager
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 29270 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -145,6 +154,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr2_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
   -plugin DD4hepVolumeMgrTest SiTrackerBarrel
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED: Checked 81306 objects. Num.Errors:0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -156,6 +166,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Nominal_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
   -plugin DD4hepCheckNominals
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ FAILED Checked 15946 DetElements. Num.Errors: 50"
   )
 #
@@ -165,6 +176,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Sensitives_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
   -plugin DD4hepCheckSensitives
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 14 SensitiveDetector objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -175,6 +187,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Segmentations_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
   -plugin DD4hepCheckSegmentations
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 9 readout segmentations. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
@@ -185,6 +198,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Readouts_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin DD4hepRootLoader CLICSiD_geometry.root
   -plugin DD4hepCheckReadouts
+  DEPENDS    Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 14 readout objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
