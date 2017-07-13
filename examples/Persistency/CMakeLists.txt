@@ -42,6 +42,75 @@ dd4hep_add_test_reg( Persist_Conditions_Restore
   )
 #
 #  Test saving geometry to ROOT file
+dd4hep_add_test_reg( Persist_MiniTel_Save_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/../ClientTests/compact/MiniTel.xml
+  -plugin DD4hepGeometry2ROOT -output MiniTel_geometry.root
+  REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file."
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  )
+#
+#  Test restoring geometry from ROOT file: Volume Manager
+dd4hep_add_test_reg( Persist_MiniTel_Restore_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING
+  -plugin DD4hepRootLoader MiniTel_geometry.root
+  REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  )
+#
+#  Test restoring geometry from ROOT file: Volume Manager loading+nominals
+dd4hep_add_test_reg( Persist_MiniTel_Restore_VolMgr1_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING
+  -plugin DD4hepRootLoader MiniTel_geometry.root
+  -plugin DD4hepCheckVolumeManager
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 VolumeManager contexts. Num.Errors: 0"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  )
+#
+#  Test restoring geometry from ROOT file: DetElement nominal alignments
+#  Note: BeamCal has a problem. Need to be taken into account
+dd4hep_add_test_reg( Persist_MiniTel_Restore_Nominal_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING
+  -plugin DD4hepRootLoader MiniTel_geometry.root
+  -plugin DD4hepCheckNominals
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 DetElements. Num.Errors: 0"
+  )
+#
+#  Test restoring geometry from ROOT file: Sensitive detectors
+dd4hep_add_test_reg( Persist_MiniTel_Restore_Sensitives_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING
+  -plugin DD4hepRootLoader MiniTel_geometry.root
+  -plugin DD4hepCheckSensitives
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 SensitiveDetector objects. Num.Errors: 0"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  )
+#
+#  Test restoring geometry from ROOT file: Readout segmentations
+dd4hep_add_test_reg( Persist_MiniTel_Restore_Segmentations_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING
+  -plugin DD4hepRootLoader MiniTel_geometry.root
+  -plugin DD4hepCheckSegmentations
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 readout segmentations. Num.Errors: 0"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  )
+#
+#  Test restoring geometry from ROOT file: Readout structures
+dd4hep_add_test_reg( Persist_MiniTel_Restore_Readouts_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING
+  -plugin DD4hepRootLoader MiniTel_geometry.root
+  -plugin DD4hepCheckReadouts
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 readout objects. Num.Errors: 0"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  )
+#
+#  Test saving geometry to ROOT file
 dd4hep_add_test_reg( Persist_CLICSiD_Save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
