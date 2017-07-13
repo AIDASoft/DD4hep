@@ -116,6 +116,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::OpaqueDataBlock+;
 
 #pragma link C++ class dd4hep::Detector+;
+#pragma link C++ class dd4hep::DetectorLoad+;
 #pragma link C++ class dd4hep::DetectorData+;
 #pragma link C++ class dd4hep::DetectorData::ObjectHandleMap+;
 #pragma link C++ class dd4hep::Detector::PropertyValues+;

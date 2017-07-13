@@ -58,37 +58,6 @@ dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
-#  Test saving geometry to ROOT file
-dd4hep_add_test_reg( CLICSiD_ROOT_Save_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun
-  -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
-  -plugin DD4hepGeometry2ROOT -output CLICSiD_geometry.root
-  REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file.")
-#
-#  Test restoring geometry from ROOT file: Volume Manager
-dd4hep_add_test_reg( CLICSiD_ROOT_Restore_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -print WARNING
-  -plugin DD4hepRootLoader CLICSiD_geometry.root
-  REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file")
-#
-#  Test restoring geometry from ROOT file: Volume Manager
-dd4hep_add_test_reg( CLICSiD_ROOT_Restore_VolMgr_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -print WARNING
-  -plugin DD4hepRootLoader CLICSiD_geometry.root
-  -plugin DD4hepVolumeMgrTest SiTrackerBarrel
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked 81306 objects. Num.Errors:0")
-#
-#  Test restoring geometry from ROOT file: Volume Manager
-dd4hep_add_test_reg( CLICSiD_ROOT_Restore_Sensitives_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-  EXEC_ARGS  geoPluginRun -print WARNING
-  -plugin DD4hepRootLoader CLICSiD_geometry.root
-  -plugin DD4hepCheckSensitives
-  REGEX_PASS "\\+\\+\\+ Checked 14 SensitiveDetector objects. Num.Errors: 0")
-#
 #---Geant4 Testsing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)

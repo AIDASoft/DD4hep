@@ -34,6 +34,7 @@
 #include "TGeoVolume.h"
 #include "TGeoShape.h"
 #include "TClass.h"
+
 #include "XML/DocumentHandler.h"
 
 #if DD4HEP_USE_PYROOT
@@ -102,12 +103,12 @@ void Detector::destroyInstance() {
 }
 
 /// Default constructor
-DetectorImp::DetectorImp() : DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
+DetectorImp::DetectorImp()
+  : DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
-
   set_unexpected( description_unexpected ) ;
   set_terminate( description_unexpected ) ;
-
+  
   InstanceCount::increment(this);
   if (0 == gGeoManager) {
     gGeoManager = new TGeoManager("world", "Detector Geometry");

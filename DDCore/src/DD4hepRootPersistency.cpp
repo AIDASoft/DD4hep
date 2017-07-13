@@ -18,31 +18,19 @@
 #include "DD4hep/detail/SegmentationsInterna.h"
 
 // ROOT include files
-#include "TClassStreamer.h"
-#include "TDataMember.h"
-#include "TClass.h"
 #include "TFile.h"
-#include "TROOT.h"
+#include "TTimeStamp.h"
 
 ClassImp(DD4hepRootPersistency)
 
 using namespace dd4hep;
 using namespace std;
 
-namespace  {
-  void stream_opaque_datablock(TBuffer& b, void* obj)    {
-    if ( b.IsReading() )  {
-      printout(INFO,"OpaqueData","Streaming IN  opaque data object...");
-    }
-    else  {
-      printout(INFO,"OpaqueData","Streaming OUT opaque data object...");
-    }
-  }
-}
 
 int DD4hepRootPersistency::save(Detector& description, const char* fname, const char* instance)   {
   TFile* f = TFile::Open(fname,"RECREATE");
   if ( f && !f->IsZombie()) {
+    TTimeStamp start;
     DD4hepRootPersistency* persist = new DD4hepRootPersistency();
     persist->m_data = new dd4hep::DetectorData();
     persist->m_data->adoptData(dynamic_cast<DetectorData&>(description),false);
@@ -60,35 +48,14 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
       }
     }
     printout(ALWAYS,"DD4hepRootPersistency","+++ Saving %ld nominals....",persist->nominals.size());
-#if 0
-    TClass* opaqueCl = gROOT->GetClass("dd4hep::OpaqueDataBlock");
-    if ( 0 == opaqueCl )  {
-      printout(ERROR,"DD4hepRootPersistency","+++ Missing TClass for 'dd4hep::OpaqueDataBlock'.");
-      return 0;
-    }
-    if ( 0 == opaqueCl->GetStreamer() )  {
-      opaqueCl->AdoptStreamer(new TClassStreamer(stream_opaque_datablock));
-      printout(ALWAYS,"DD4hepRootPersistency","+++ Set Streamer to %s",opaqueCl->GetName());
-    }
-#endif
-    TDataMember* m = 0;
-    TClass* volCl = TGeoVolume::Class();
-    printout(ALWAYS,"DD4hepRootPersistency","+++ Patching %s.fUserExtension to persistent",volCl->GetName());    
-    m = volCl->GetDataMember("fUserExtension");
-    m->SetTitle(m->GetTitle()+2);
-    m->SetBit(BIT(2));
-    TClass* nodCl = TGeoNode::Class();
-    printout(ALWAYS,"DD4hepRootPersistency","+++ Patching %s.fUserExtension to persistent",nodCl->GetName());    
-    m = nodCl->GetDataMember("fUserExtension");
-    m->SetTitle(m->GetTitle()+2);
-    m->SetBit(BIT(2));
-    
+
     /// Now we write the object
     int nBytes = persist->Write(instance);
     f->Close();
+    TTimeStamp stop;
     printout(ALWAYS,"DD4hepRootPersistency",
-             "+++ Wrote %d Bytes of geometry data '%s' to '%s'.",
-             nBytes, instance, fname);
+             "+++ Wrote %d Bytes of geometry data '%s' to '%s'  [%8.3f seconds].",
+             nBytes, instance, fname, stop.AsDouble()-start.AsDouble());
     if ( nBytes > 0 )  {
       printout(ALWAYS,"DD4hepRootPersistency",
                "+++ Successfully saved geometry data to file.");
@@ -102,42 +69,19 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
 }
 
 int DD4hepRootPersistency::load(Detector& description, const char* fname, const char* instance)  {
-#if 0
-  TClass* opaqueCl = gROOT->GetClass("dd4hep::OpaqueDataBlock");
-  if ( 0 == opaqueCl )  {
-    printout(ERROR,"DD4hepRootPersistency","+++ Missing TClass for 'dd4hep::OpaqueDataBlock'.");
-    return 0;
-  }
-  if ( 0 == opaqueCl->GetStreamer() )  {
-    opaqueCl->AdoptStreamer(new TClassStreamer(stream_opaque_datablock));
-    printout(ALWAYS,"DD4hepRootPersistency","+++ Set Streamer to %s",opaqueCl->GetName());
-  }
-#endif
-  TDataMember* m = 0;
-  TClass* volCl = TGeoVolume::Class();
-  printout(ALWAYS,"DD4hepRootPersistency","+++ Patching %s.fUserExtension to persistent",volCl->GetName());    
-  m = volCl->GetDataMember("fUserExtension");
-  m->SetTitle(m->GetTitle()+2);
-  m->SetBit(BIT(2));
-  TClass* nodCl = TGeoNode::Class();
-  printout(ALWAYS,"DD4hepRootPersistency","+++ Patching %s.fUserExtension to persistent",nodCl->GetName());    
-  m = nodCl->GetDataMember("fUserExtension");
-  m->SetTitle(m->GetTitle()+2);
-  m->SetBit(BIT(2));
-
-
   TFile* f = TFile::Open(fname);
   if ( f && !f->IsZombie()) {
-    DD4hepRootPersistency* persist = (DD4hepRootPersistency*)f->Get(instance);
-    if ( persist )   {
-      DetectorData& data = dynamic_cast<DetectorData&>(description);
-      DetectorData* target = persist->m_data;
-      for( const auto& s : target->m_idDict )  {
+    TTimeStamp start;
+    unique_ptr<DD4hepRootPersistency> persist((DD4hepRootPersistency*)f->Get(instance));
+    if ( persist.get() )   {
+      DetectorData* source = persist->m_data;
+      const auto& iddesc = persist->idSpecifications();
+      for( const auto& s : iddesc )  {
         IDDescriptor id = s.second;
         id.rebuild(id->description);
       }
       printout(ALWAYS,"DD4hepRootPersistency",
-               "+++ Fixed %ld IDDescriptor objects.",target->m_idDict.size());
+               "+++ Fixed %ld IDDescriptor objects.",iddesc.size());
       for( const auto& s : persist->m_segments )  {
         Readout ro = s.first;
         IDDescriptor id = s.second.first;
@@ -148,7 +92,6 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       printout(ALWAYS,"DD4hepRootPersistency",
                "+++ Fixed %ld segmentation objects.",persist->m_segments.size());
       persist->m_segments.clear();
-
       const auto& sdets = persist->volumeManager()->subdetectors;
       size_t num[3] = {0,0,0};
       for( const auto& vm : sdets )  {
@@ -170,15 +113,14 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       }
       printout(ALWAYS,"DD4hepRootPersistency",
                "+++ Fixed VolumeManager TOTALS     %-24s  %6ld volumes %4ld sdets %4ld mgrs.","",num[0],num[1],num[2]);
-
-
       printout(ALWAYS,"DD4hepRootPersistency","+++ loaded %ld nominals....",persist->nominals.size());
-
-      data.adoptData(*target);
-      //target->clearData();
-      delete persist;
+      DetectorData* tar_data = dynamic_cast<DetectorData*>(&description);
+      DetectorData* src_data = dynamic_cast<DetectorData*>(source);
+      tar_data->adoptData(*src_data,false);
+      TTimeStamp stop;
       printout(ALWAYS,"DD4hepRootPersistency",
-               "+++ Successfully loaded detector description from file:%s",fname);
+               "+++ Successfully loaded detector description from file:%s  [%8.3f seconds]",
+               fname, stop.AsDouble()-start.AsDouble());
       return 1;
     }
     printout(ERROR,"DD4hepRootPersistency",
@@ -192,6 +134,10 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
   return 0;
 }
 
+
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/AlignmentsInterna.h"
 namespace {
 
   class PersistencyChecks  {
@@ -380,6 +326,55 @@ namespace {
                fld.name());
       return 1;
     }
+    size_t checkAlignment(DetElement det)   {
+      AlignmentCondition::Object* align = det->nominal.ptr();
+      if ( 0 == align )  {
+        printout(ERROR,"chkNominals",
+                 "+++ ERROR +++ Detector element with invalid nominal:%s",
+                 det.path().c_str());
+        ++errors;
+      }
+      else if ( 0 == align->alignment_data )  {
+        printout(ERROR,"chkNominals",
+                 "+++ ERROR +++ Detector element with invalid nominal data:%s",
+                 det.path().c_str());
+        ++errors;
+      }
+      else if ( Condition(align).data().ptr() != align->alignment_data )  {
+        printout(ERROR,"chkNominals",
+                 "+++ ERROR +++ Detector element with inconsisten nominal data:%s [%p != %p]",
+                 det.path().c_str(),Condition(align).data().ptr(),align->alignment_data);
+        ++errors;
+      }
+      else  {
+        return 1;
+      }
+      return 0;
+    }
+    
+    /// Check nominal alignments of the volume manager
+    size_t checkNominals(VolumeManager mgr)   {
+      int count = 0;
+      const auto& sdets = mgr->subdetectors;
+      for( const auto& vm : sdets )  {
+        VolumeManager::Object* obj   = vm.second.ptr();
+        for( const auto& iv : obj->volumes )  {
+          VolumeManagerContext* ctx   = iv.second;
+          count += checkAlignment(ctx->element);
+        }
+      }
+      return count;
+    }
+    size_t checkDetectorNominals(DetElement d)   {
+      int count = 0;
+      Volume v = d.placement().volume();
+      if ( v.isSensitive() )   {
+        count += checkAlignment(d);
+      }
+      for( const auto& c : d.children() )
+        count += checkDetectorNominals(c.second);
+      return count;
+    }
   };
 }
 
@@ -389,8 +384,8 @@ size_t DD4hepRootCheck::checkConstants()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->constants() )
     count += checks.checkConstant(obj);
-  printout(ALWAYS,"chkProperty","+++ Checked %ld Constant objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkProperty","+++ %s Checked %ld Constant objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -400,8 +395,8 @@ size_t DD4hepRootCheck::checkProperties()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->properties() )
     count += checks.checkProperty(obj);
-  printout(ALWAYS,"chkProperty","+++ Checked %ld Property objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkProperty","+++ %s Checked %ld Property objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -418,9 +413,16 @@ size_t DD4hepRootCheck::checkReadouts()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->readouts() )
     count += checks.checkReadout(obj.second);
-  printout(ALWAYS,"chkReadouts","+++ Checked %ld Readout objects. Num.Errors: %ld",
-           count, checks.errors); 
-  return checks.errors;
+
+  if ( object->sensitiveDetectors().size() != object->readouts().size() )   {
+    printout(ERROR,"chkNominals",
+             "+++ Number of sensitive detectors does NOT match number of readouts: %ld != %ld",
+             object->sensitiveDetectors().size(),object->readouts().size());
+    ++checks.errors;
+  }
+  printout(ALWAYS,"chkNominals","+++ %s Checked %ld readout objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors);
+  return count;
 }
 
 /// Call to theck the DD4hep fields
@@ -429,8 +431,8 @@ size_t DD4hepRootCheck::checkFields()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->fields() )
     count += checks.checkField(obj.second);
-  printout(ALWAYS,"chkFields","+++ Checked %ld Field objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkFields","+++ %s Checked %ld Field objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -440,8 +442,8 @@ size_t DD4hepRootCheck::checkRegions()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->regions() )
     count += checks.checkRegion(obj.second);
-  printout(ALWAYS,"chkRegions","+++ Checked %ld Region objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkRegions","+++ %s Checked %ld Region objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -451,8 +453,8 @@ size_t DD4hepRootCheck::checkIdSpecs()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->idSpecifications() )
     count += checks.checkIDDescriptor(obj.second);
-  printout(ALWAYS,"chkReadouts","+++ Checked %ld Readout objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkReadouts","+++ %s Checked %ld Readout objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -462,8 +464,8 @@ size_t DD4hepRootCheck::checkDetectors()  const   {
   PersistencyChecks checks;
   for( const auto& obj : object->detectors() )
     count += checks.checkDetector(obj.second);
-  printout(ALWAYS,"chkDetectors","+++ Checked %ld DetElement objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkDetectors","+++ %s Checked %ld DetElement objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -473,8 +475,8 @@ size_t DD4hepRootCheck::checkSensitives()   const   {
   PersistencyChecks checks;
   for( const auto& obj : object->sensitiveDetectors() )
     count += checks.checkSensitive(obj.second);
-  printout(ALWAYS,"chkSensitives","+++ Checked %ld SensitiveDetector objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkSensitives","+++ %s Checked %ld SensitiveDetector objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
@@ -484,16 +486,43 @@ size_t DD4hepRootCheck::checkLimitSets()   const   {
   size_t count = 0;
   for( const auto& obj : object->limitsets() )
     count += checks.checkLimitset(obj.second);
-  printout(ALWAYS,"chkSensitives","+++ Checked %ld SensitiveDetector objects. Num.Errors: %ld",
-           count, checks.errors); 
+  printout(ALWAYS,"chkSensitives","+++ %s Checked %ld SensitiveDetector objects. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors); 
   return checks.errors;
 }
 
 /// Call to check the volume manager hierarchy
 size_t DD4hepRootCheck::checkVolManager()   const   {
-  const void* args[] = {"SiTrackerBarrel",0};
-  size_t count = object->apply("DD4hepVolumeMgrTest",1,(char**)args);
-  printout(ALWAYS,"chkVolumeMgr","+++ Checked %ld Volume objects.",count); 
+  PersistencyChecks checks;
+  size_t count = checks.checkNominals(object->volumeManager());
+  printout(ALWAYS,"chkNominals","+++ %s Checked %ld VolumeManager contexts. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors);
+  return count;
+}
+
+/// Call to check the nominal alignments in the detector hierarchy (for sensitive detectors)
+size_t DD4hepRootCheck::checkNominals()   const   {
+  size_t count = 0;
+  PersistencyChecks checks;
+  const auto& dets = object->sensitiveDetectors();
+  for( const auto& d : dets )
+    count += checks.checkDetectorNominals(object->detector(d.first));
+  printout(ALWAYS,"chkNominals","+++ %s Checked %ld DetElements. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors);
+  return count;
+}
+
+/// Call to check the segmentations starting from the top level detector
+size_t DD4hepRootCheck::checkSegmentations()   const   {
+  size_t count = 0;
+  PersistencyChecks checks;
+  const auto& dets = object->sensitiveDetectors();
+  for( const auto& d : dets )   {
+    Segmentation seg = SensitiveDetector(d.second).readout().segmentation();
+    if ( seg.isValid() )  count += checks.checkSegmentation(seg);
+  }
+  printout(ALWAYS,"chkNominals","+++ %s Checked %ld readout segmentations. Num.Errors: %ld",
+           checks.errors==0 ? "PASSED" : "FAILED", count, checks.errors);
   return count;
 }
 

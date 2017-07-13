@@ -75,6 +75,8 @@ namespace dd4hep {
 
   /// Class describing an opaque conditions data block
   /**
+   *  This class is used to handle the actual data IO.
+   *  Hence, we have write access to the data in abstract form.
    *
    *  \author  M.Frank
    *  \version 1.0
@@ -107,10 +109,12 @@ namespace dd4hep {
     OpaqueDataBlock& operator=(const OpaqueDataBlock& clone);
     /// Move the data content: 'from' will be reset to NULL
     bool move(OpaqueDataBlock& from);
+    /// Write access to the data buffer. Is only valid after call to bind<T>()
+    void* ptr()  const {  return pointer;      }
     /// Bind data value
-    bool bind(const BasicGrammar* grammar);
+    void* bind(const BasicGrammar* grammar);
     /// Bind data value in place
-    bool bind(void* ptr, size_t len, const BasicGrammar* grammar);
+    void* bind(void* ptr, size_t len, const BasicGrammar* grammar);
     /// Bind data value
     template <typename T> T& bind();
     /// Bind data value

@@ -68,7 +68,7 @@ namespace dd4hep {
       /// Data block
       OpaqueDataBlock data;
       /// Interval of validity
-      const IOV* iov   = 0;
+      const IOV* iov   = 0;     //! No ROOT persistency
       /// Hash value of the name
       Condition::key_type  hash  = 0;
       /// Flags

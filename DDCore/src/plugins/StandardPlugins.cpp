@@ -538,6 +538,20 @@ DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
 
 /// Basic entry point to check sensitive detector strictures
 /**
+ *  Factory: DD4hepCheckDetectors
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_detectors(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkDetectors();
+}
+DECLARE_APPLY(DD4hepCheckDetectors,check_detectors)
+
+/// Basic entry point to check sensitive detector strictures
+/**
  *  Factory: DD4hepCheckSensitives
  *
  *  \author  M.Frank
@@ -552,17 +566,17 @@ DECLARE_APPLY(DD4hepCheckSensitives,check_sensitives)
 
 /// Basic entry point to check sensitive detector strictures
 /**
- *  Factory: DD4hepCheckDetectors
+ *  Factory: DD4hepCheckSegmentations
  *
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/04/2014
  */
-static long check_detectors(Detector& description, int /* argc */, char** /* argv */) {
+static long check_segmentations(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkDetectors();
+  return check.checkSegmentations();
 }
-DECLARE_APPLY(DD4hepCheckDetectors,check_detectors)
+DECLARE_APPLY(DD4hepCheckSegmentations,check_segmentations)
 
 /// Basic entry point to check sensitive detector strictures
 /**
@@ -591,6 +605,34 @@ static long check_idspecs(Detector& description, int /* argc */, char** /* argv 
   return check.checkIdSpecs();
 }
 DECLARE_APPLY(DD4hepCheckIdspecs,check_idspecs)
+
+/// Basic entry point to check IDDescriptors of the detector object
+/**
+ *  Factory: DD4hepCheckVolumeManager
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_volumemanager(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkVolManager();
+}
+DECLARE_APPLY(DD4hepCheckVolumeManager,check_volumemanager)
+
+/// Basic entry point to check IDDescriptors of the detector object
+/**
+ *  Factory: DD4hepCheckNominals
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long check_nominals(Detector& description, int /* argc */, char** /* argv */) {
+  DD4hepRootCheck check(&description);
+  return check.checkNominals();
+}
+DECLARE_APPLY(DD4hepCheckNominals,check_nominals)
 
 /// Basic entry point to print out the volume hierarchy
 /**
