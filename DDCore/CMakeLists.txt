@@ -21,7 +21,8 @@ dd4hep_add_dictionary( G__DD4hep
   SOURCES include/ROOT/Warnings.h
   include/DD4hep/*.h
   include/DD4hep/detail/*.h
-  include/XML/*.h 
+  include/XML/*.h
+  src/DetectorImp.h
   EXCLUDE include/DD4hep/DetFactoryHelper.h
   include/DD4hep/Factories.h
   include/DD4hep/Plugins.h

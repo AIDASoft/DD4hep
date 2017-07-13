@@ -119,15 +119,15 @@ OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
   return *this;
 }
 
-/// Set data value
-bool OpaqueDataBlock::bind(const BasicGrammar* g)   {
+/// Bind data value
+void* OpaqueDataBlock::bind(const BasicGrammar* g)   {
   if ( !grammar )  {
     size_t len = g->sizeOf();
     grammar  = g;
     (len > sizeof(data))
       ? (pointer=::operator new(len),type=ALLOC_DATA)
       : (pointer=data,type=PLAIN_DATA);
-    return true;
+    return pointer;
   }
   else if ( grammar == g )  {
     // We cannot ingore secondary requests for data bindings.
@@ -135,11 +135,11 @@ bool OpaqueDataBlock::bind(const BasicGrammar* g)   {
     except("OpaqueData","You may not bind opaque multiple times!");
   }
   typeinfoCheck(grammar->type(),g->type(),"Opaque data blocks may not be assigned.");
-  return false;
+  return 0;
 }
 
 /// Set data value
-bool OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
+void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
   if ( !grammar )  {
     size_t len = g->sizeOf();
     grammar = g;
@@ -149,7 +149,7 @@ bool OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
       pointer=data, type=PLAIN_DATA;
     else 
       pointer=::operator new(len),type=ALLOC_DATA;
-    return true;
+    return pointer;
   }
   else if ( grammar == g )  {
     // We cannot ingore secondary requests for data bindings.
@@ -157,7 +157,7 @@ bool OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
     except("OpaqueData","You may not bind opaque multiple times!");
   }
   typeinfoCheck(grammar->type(),g->type(),"Opaque data blocks may not be assigned.");
-  return false;
+  return 0;
 }
 
 /// Set data value
@@ -170,3 +170,18 @@ void OpaqueDataBlock::assign(const void* ptr, const type_info& typ)  {
   }
   grammar->copy(pointer,ptr);
 }
+
+/// print Conditions object
+std::ostream& operator << (std::ostream& s, const OpaqueDataBlock& data)   {
+  s << data.str();
+  return s;
+}
+#include "DDParsers/Parsers.h"
+#include "DDParsers/ToStream.h"
+DD4HEP_DEFINE_PARSER_DUMMY(OpaqueDataBlock)
+
+#include "DD4hep/detail/BasicGrammar_inl.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+DD4HEP_DEFINE_PARSER_GRAMMAR(OpaqueDataBlock,eval_none<OpaqueDataBlock>)
+DD4HEP_DEFINE_CONDITIONS_TYPE(OpaqueDataBlock)
+

@@ -150,6 +150,47 @@ namespace dd4hep {
     void clearData();
     /// Adopt all data from source structure.
     void adoptData(DetectorData& source, bool CLR=true);
+
+    /// Access the geometry manager of this instance
+    TGeoManager& manager() const                          {    return *m_manager;         }
+    /// Return handle to material describing air
+    dd4hep::Material air() const                          {    return m_materialAir;      }
+    /// Return handle to material describing vacuum
+    dd4hep::Material vacuum() const                       {    return m_materialVacuum;   }
+    /// Return handle to "invisible" visualization attributes
+    dd4hep::VisAttr invisible() const                     {    return m_invisibleVis;     }
+    /// Return reference to the top-most (world) detector element
+    dd4hep::DetElement world() const                      {    return m_world;            }
+    /// Return reference to detector element with all tracker devices.
+    dd4hep::DetElement trackers() const                   {    return m_trackers;         }
+    /// Return handle to the world volume containing everything
+    dd4hep::Volume worldVolume() const                    {    return m_worldVol;         }
+    /// Return handle to the world volume containing the volume with the tracking devices
+    dd4hep::Volume trackingVolume() const                 {    return m_trackingVol;      }
+    /// Return handle to the VolumeManager
+    dd4hep::VolumeManager volumeManager() const           {    return m_volManager;       }
+    /// Return handle to the combined electromagentic field description.
+    dd4hep::OverlayedField field() const                  {    return m_field;            }
+    /// Accessor to the header entry
+    dd4hep::Header header() const                         {    return m_header;           }
+    /// Accessor to the map of constants
+    const Detector::HandleMap& constants() const          {    return m_define;           }
+    /// Accessor to the map of visualisation attributes
+    const Detector::HandleMap& visAttributes() const      {    return m_display;          }
+    /// Accessor to the map of limit settings
+    const Detector::HandleMap& limitsets() const          {    return m_limits;           }
+    /// Accessor to the map of region settings
+    const Detector::HandleMap& regions() const            {    return m_regions;          }
+    /// Accessor to the map of readout structures
+    const Detector::HandleMap& readouts() const           {    return m_readouts;         }
+    /// Accessor to the map of sub-detectors
+    const Detector::HandleMap& detectors() const          {    return m_detectors;        }
+    /// Retrieve a sensitive detector by it's name from the detector description
+    const Detector::HandleMap& sensitiveDetectors() const {    return m_sensitive;        }
+    /// Accessor to the map of field entries, which together form the global field
+    const Detector::HandleMap& fields() const             {    return m_fields;           }
+    /// Accessor to the map of ID specifications
+    const Detector::HandleMap& idSpecifications() const   {    return m_idDict;           }
   };
 
 }         /* End namespace dd4hep         */

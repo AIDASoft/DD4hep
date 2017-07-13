@@ -35,19 +35,16 @@ namespace dd4hep {
    */
   template <typename TYPE> class Grammar : public BasicGrammar {
     friend class BasicGrammar;
-    /// Cached type information name
-    std::string m_typeName;
-  public:
     /// Default destructor
     virtual ~Grammar();
     /// Standarsd constructor
     Grammar();
 
+  public:
+
     /** Base class overrides   */
     /// PropertyGrammar overload: Access to the type information
     virtual const std::type_info& type() const  override;
-    /// Access to the type information name
-    virtual const std::string& type_name() const  override;    
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const  override;
     /// PropertyGrammar overload: Serialize a property to a string
@@ -58,6 +55,8 @@ namespace dd4hep {
     virtual void destruct(void* pointer) const  override;
     /// Opaque object copy construction. Memory must be allocated externally
     virtual void copy(void* to, const void* from)  const  override;
+    /// Bind opaque address to object
+    virtual void bind(void* pointer)  const override;
 
     /** Class member function   */
     /// Evaluate string value if possible before calling boost::spirit

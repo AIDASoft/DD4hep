@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DetectorLOAD_H
-#define DD4HEP_DDCORE_DetectorLOAD_H
+#ifndef DD4HEP_DDCORE_DETECTORLOAD_H
+#define DD4HEP_DDCORE_DETECTORLOAD_H
 
 // Framework includes
 #include "DD4hep/Detector.h"
@@ -59,5 +59,5 @@ namespace dd4hep {
     virtual void processXMLElement(const xml::Handle_t& root, DetectorBuildType type);
   };
 
-}         /* End namespace dd4hep     */
-#endif    /* DD4HEP_DDCORE_DetectorLOAD_H */
+}         /* End namespace dd4hep         */
+#endif    /* DD4HEP_DDCORE_DETECTORLOAD_H */
