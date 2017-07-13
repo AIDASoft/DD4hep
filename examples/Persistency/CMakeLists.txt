@@ -28,7 +28,7 @@ dd4hep_add_test_reg( Persist_Conditions_Save
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -plugin DD4hep_PersistencyExample_write_cond -output Conditions.root
-  REGEX_PASS "\\+\\+\\+ Wrote 1360 bytes to file Conditions.root"
+  REGEX_PASS "\\+\\+\\+ PASSED Wrote 14 conditions to file."
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
 #
@@ -37,7 +37,7 @@ dd4hep_add_test_reg( Persist_Conditions_Restore
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -plugin DD4hep_PersistencyExample_read_cond -input Conditions.root
-  REGEX_PASS "\\+\\+\\+ Read successfully 14 conditions. Result=1637"
+  REGEX_PASS "\\+\\+\\+ Read successfully 14 conditions. Result=172"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
 #

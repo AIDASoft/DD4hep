@@ -37,7 +37,7 @@ int dd4hep::PersistencyExamples::printCondition(Condition cond)   {
   else if ( gr->type() == typeid(string) )
     result += cond.get<string>().length();
   else if ( gr->type() == typeid(Delta) )
-    result += sizeof(cond.get<Delta>());
+  { ++result; cond.get<Delta>(); }
   else if ( gr->type() == typeid(AlignmentData) )   {
     if ( dynamic_cast<detail::AlignmentObject*>(cond.ptr()) )  {
       AlignmentCondition ac = cond;
@@ -47,7 +47,8 @@ int dd4hep::PersistencyExamples::printCondition(Condition cond)   {
                ok ? "SUCCESS" : "ERROR", cond.name(),cond.data().ptr(),&ac->values(),
                ok ? "[Good-payload-mapping]" : "[Bad-payload-mapping]");
     }
-    result += sizeof(cond.get<AlignmentData>());    
+    ++result;
+    cond.get<AlignmentData>();
   }
   else if ( gr->type() == typeid(vector<int>) )
     result += int(cond.get<vector<int> >().size());
