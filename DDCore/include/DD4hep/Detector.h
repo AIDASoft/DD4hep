@@ -23,9 +23,10 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Readout.h"
 #include "DD4hep/DetElement.h"
+#include "DD4hep/NamedObject.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/VolumeManager.h"
-#include "DD4hep/NamedObject.h"
+#include "DD4hep/ExtensionEntry.h"
 #include "DD4hep/BuildType.h"
 
 // C/C++ include files
@@ -263,37 +264,33 @@ namespace dd4hep {
     /// Manipulate geometry using factory converter
     virtual long apply(const char* factory, int argc, char** argv) = 0;
 
+    /// Add an extension object to the detector element (low level member function)
+    virtual void* addUserExtension(unsigned long long int key, ExtensionEntry* entry) = 0;
+    /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned  (low level member function)
+    virtual void* removeUserExtension(unsigned long long int key, bool destroy) = 0;
+    /// Access an existing extension object from the detector element (low level member function)
+    virtual void* userExtension(unsigned long long int key, bool alert=true) const = 0;
+
     /// Extend the sensitive detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
-      return (IFACE*) addUserExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _delete<IFACE>);
+      return (IFACE*) addUserExtension(detail::typeHash64<IFACE>(),
+                                       new detail::DeleteExtension<IFACE>(dynamic_cast<IFACE*>(c)));
     }
 
     /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned
-    template <class T> T* removeExtension(bool destroy=true)  {
-      return (T*) removeUserExtension(typeid(T),destroy);
+    template <class IFACE> IFACE* removeExtension(bool destroy=true)  {
+      return (IFACE*) removeUserExtension(detail::typeHash64<IFACE>(),destroy);
     }
 
     /// Access extension element by the type
-    template <class T> T* extension(bool alert=true) const {
-      return (T*) userExtension(typeid(T),alert);
+    template <class IFACE> IFACE* extension(bool alert=true) const {
+      return (IFACE*) userExtension(detail::typeHash64<IFACE>(),alert);
     }
 
     ///---Factory method-------
     static Detector& getInstance(void);
     /// Destroy the instance
     static void destroyInstance();
-
-  protected:
-    /// Templated destructor function
-    template <typename T> static void _delete(void* ptr) {
-      delete (T*) (ptr);
-    }
-    /// Add an extension object to the detector element
-    virtual void* addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) = 0;
-    /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned
-    virtual void* removeUserExtension(const std::type_info& info, bool destroy) = 0;
-    /// Access an existing extension object from the detector element
-    virtual void* userExtension(const std::type_info& info, bool alert=true) const = 0;
 
   };
 

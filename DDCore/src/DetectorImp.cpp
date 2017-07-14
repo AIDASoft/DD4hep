@@ -155,18 +155,18 @@ void DetectorImp::imp_loadVolumeManager()   {
 }
 
 /// Add an extension object to the Detector instance
-void* DetectorImp::addUserExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
-  return m_extensions.addExtension(ptr,info,destruct);
+void* DetectorImp::addUserExtension(unsigned long long int key, ExtensionEntry* entry) {
+  return m_extensions.addExtension(key,entry);
 }
 
 /// Remove an existing extension object from the Detector instance
-void* DetectorImp::removeUserExtension(const type_info& info, bool destroy)  {
-  return m_extensions.removeExtension(info,destroy);
+void* DetectorImp::removeUserExtension(unsigned long long int key, bool destroy)  {
+  return m_extensions.removeExtension(key,destroy);
 }
 
 /// Access an existing extension object from the Detector instance
-void* DetectorImp::userExtension(const type_info& info, bool alert) const {
-  return m_extensions.extension(info,alert);
+void* DetectorImp::userExtension(unsigned long long int key, bool alert) const {
+  return m_extensions.extension(key,alert);
 }
 
 /// Register new mother volume using the detector name.

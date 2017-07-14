@@ -56,7 +56,7 @@ namespace dd4hep {
     class AlignmentObject : public detail::ConditionObject    {
     public:
       /// Cached pointer to the bound conditions data, since these may be accessed very frequently
-      AlignmentData* alignment_data = 0;  //! This valiable is internally bound and not ROOT persistent!
+      AlignmentData* alignment_data = 0;  //! This variable is internally bound and not ROOT persistent!
 
     public:
       /// Default constructor. Alignment data wuill be bound to the heap.

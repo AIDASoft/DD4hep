@@ -21,6 +21,7 @@
 #include "DD4hep/Readout.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/Segmentations.h"
+#include "DD4hep/ObjectExtensions.h"
 
 // C/C++ include files
 #include <map>
@@ -41,19 +42,6 @@ namespace dd4hep {
    *  \ingroup DD4HEP_CORE
    */
   class SensitiveDetector: public Handle<SensitiveDetectorObject> {
-  protected:
-
-    /// Templated destructor function
-    template <typename T> static void _delete(void* ptr) {
-      delete (T*) (ptr);
-    }
-
-    /// Add an extension object to the detector element
-    void* i_addExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
-
-    /// Access an existing extension object from the detector element
-    void* i_extension(const std::type_info& info) const;
-
   public:
 
     /// Default constructor
@@ -128,14 +116,20 @@ namespace dd4hep {
     /// Access to the limit set of the sensitive detector (not mandatory).
     LimitSet limits() const;
 
+    /// Add an extension object to the detector element
+    void* addExtension(unsigned long long int key, ExtensionEntry* entry)  const;
+
+    /// Access an existing extension object from the detector element
+    void* extension(unsigned long long int key) const;
+
     /// Extend the sensitive detector element with an arbitrary structure accessible by the type
-    template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
-      return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _delete<IFACE>);
+    template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)  const {
+      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),new detail::DeleteExtension<CONCRETE>(c));
     }
 
     /// Access extension element by the type
     template <typename IFACE> IFACE* extension() const {
-      return (IFACE*) i_extension(typeid(IFACE));
+      return (IFACE*) this->extension(detail::typeHash64<IFACE>());
     }
   };
 
@@ -179,10 +173,14 @@ namespace dd4hep {
       virtual int processElement(DetElement detector) = 0;
     };
 
-    typedef std::map<std::string, DetElement>      Children;
+    typedef std::map<std::string, DetElement> Children;
 
     enum CopyParameters {
-      COPY_NONE = 0, COPY_PLACEMENT = 1 << 0, COPY_PARENT = 1 << 1, COPY_ALIGNMENT = 1 << 2, LAST
+      COPY_NONE      = 0,
+      COPY_PLACEMENT = 1 << 0,
+      COPY_PARENT    = 1 << 1,
+      COPY_ALIGNMENT = 1 << 2,
+      LAST
     };
 
     enum UpdateParam {
@@ -200,21 +198,24 @@ namespace dd4hep {
 
   protected:
 
-    /// Templated destructor function
-    template <typename T> static void _delete(void* ptr) {
-      delete (T*) (ptr);
-    }
-    /// Templated copy constructor
-    template <typename T> static void* _copy(const void* ptr, DetElement elt) {
-      return new T(*(dynamic_cast<const T*>((T*) ptr)), elt);
-    }
+    template <typename T> struct DetElementExtension : public ExtensionEntry  {
+    protected:
+      T* ptr;
+    public:
+      DetElementExtension() = delete;
+      DetElementExtension(T* p) : ptr(p) {}
+      DetElementExtension(const DetElementExtension& copy) = default;
+      DetElementExtension& operator=(const DetElementExtension& copy) = default;
+      virtual ~DetElementExtension() = default;
+      // This one ensures we have the correct signatures
+      T* copy(DetElement de)  const            { return new T(*ptr,de);   }
+      virtual void* object()  const override        { return ptr;              }
+      virtual void* copy(void* det)  const override { return copy(DetElement((Object*)det));  }
+      virtual void  destruct()  const override      { delete ptr;              }
+      virtual ExtensionEntry* clone(void* det)  const  override
+      {  return new DetElementExtension<T>((T*)this->copy(det));           }
+    };
 
-    /// Add an extension object to the detector element
-    void* i_addExtension(void* ptr, const std::type_info& info,
-                         void* (*copy)(const void*, DetElement),
-                         void (*destruct)(void*)) const;
-    /// Access an existing extension object from the detector element
-    void* i_extension(const std::type_info& info) const;
     /// Internal call to extend the detector element with an arbitrary structure accessible by the type
     void i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const;
 
@@ -275,14 +276,20 @@ namespace dd4hep {
     /// Clone (Deep copy) the DetElement structure with a new name and new identifier
     DetElement clone(const std::string& new_name, int new_id) const;
 
+    /// Add an extension object to the detector element
+    void* addExtension(unsigned long long int key,ExtensionEntry* entry) const;
+
+    /// Access an existing extension object from the detector element
+    void* extension(unsigned long long int key) const;
+
     /// Extend the detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
       CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
-      return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _copy<CONCRETE>, _delete<IFACE>);
+      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),new DetElementExtension<CONCRETE>(c));
     }
     /// Access extension element by the type
     template <typename IFACE> IFACE* extension() const {
-      return (IFACE*) i_extension(typeid(IFACE));
+      return (IFACE*) this->extension(detail::typeHash64<IFACE>());
     }
     /// Extend the detector element with an arbitrary callback
     template <typename Q, typename T>

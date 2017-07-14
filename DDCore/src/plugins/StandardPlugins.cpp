@@ -931,10 +931,26 @@ static long detectortype_cache(Detector& description, int , char** ) {
 }
 DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
 
+/// Basic entry point to print out detector type map
+/**
+ *  Factory: TestSurfaces
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 #include "DD4hep/SurfaceInstaller.h"
 typedef SurfaceInstaller TestSurfacesPlugin;
 DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
 
+/// Basic entry point to print out detector type map
+/**
+ *  Factory: DD4hepPluginTester
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
 #include "DD4hep/PluginTester.h"
 static long install_plugin_tester(Detector& description, int , char** ) {
   PluginTester* test = description.extension<PluginTester>(false);

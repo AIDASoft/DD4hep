@@ -80,21 +80,19 @@ namespace dd4hep {
       /// Access the G4Event directly: Explicit G4Run accessor
       const G4Run& run() const       { return *m_run;   }
       /// Add an extension object to the detector element
-      /** Note:
-       *  To add an extension, which should NOT be deleted,
-       *  set 'dtor' to ObjectExtensions::_noDelete or 0.
-       */
-      void* addExtension(void* ptr, const std::type_info& info, void (*dtor)(void*))    {
-        return ObjectExtensions::addExtension(ptr,info,dtor);
+      void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
+        return ObjectExtensions::addExtension(k, e);
       }
       /// Add user extension object. Ownership is transferred!
       template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
-        void  (*dt)(void*) = ObjectExtensions::_delete<T>;
-        return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
+        ExtensionEntry* e = take_ownership
+          ? (ExtensionEntry*)new detail::DeleteExtension<T>(ptr)
+          : (ExtensionEntry*)new detail::SimpleExtension<T>(ptr);
+        return (T*)ObjectExtensions::addExtension(detail::typeHash64<T>(),e);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
       template <typename T> T* extension(bool alert=true) {
-        return (T*)ObjectExtensions::extension(typeid(T),alert);
+        return (T*)ObjectExtensions::extension(detail::typeHash64<T>(),alert);
       }
     };
 
@@ -138,21 +136,19 @@ namespace dd4hep {
       Geant4Random& random() const     {  return *m_random;  }
 
       /// Add an extension object to the detector element
-      /** Note:
-       *  To add an extension, which should NOT be deleted,
-       *  set 'dtor' to ObjectExtensions::_noDelete or 0.
-       */
-      void* addExtension(void* ptr, const std::type_info& info, void (*dtor)(void*))    {
-        return ObjectExtensions::addExtension(ptr,info,dtor);
+      void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
+        return ObjectExtensions::addExtension(k, e);
       }
       /// Add user extension object. Ownership is transferred and object deleted at the end of the event.
       template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
-        void  (*dt)(void*) = ObjectExtensions::_delete<T>;
-        return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
+        ExtensionEntry* e = take_ownership
+          ? (ExtensionEntry*)new detail::DeleteExtension<T>(ptr)
+          : (ExtensionEntry*)new detail::SimpleExtension<T>(ptr);
+        return (T*)ObjectExtensions::addExtension(detail::typeHash64<T>(),e);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
       template <typename T> T* extension(bool alert=true) {
-        return (T*)ObjectExtensions::extension(typeid(T),alert);
+        return (T*)ObjectExtensions::extension(detail::typeHash64<T>(),alert);
       }
     };
 
