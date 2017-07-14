@@ -12,8 +12,6 @@
 
 #include <cassert>
 
-#define MAX_LAYERS 100
-
 /*
 
   a megatile is a rectangule in x-y, split into a grid along x and y, with an exactly integer number of cells in x and y.
@@ -27,6 +25,11 @@
   - complications due to end-of-slab moved to higher level detector drivers.
 
   D. Jeans - Nov 2016
+
+  July 2017 - DJeans
+  some changes for easier use of multi-layer segmentations
+  - for uniform segmentation, allow setting of ncellsx/y via parameter
+  - use std::vector, rather than fixed array to store ncells values
 
 */
 
@@ -65,9 +68,13 @@ namespace dd4hep {
       }
 
       void setMegaTileCellsXY( unsigned int layer, int ix, int iy ) {
-        assert ( layer < MAX_LAYERS );
-        _nCellsX[layer] = ix;
-        _nCellsY[layer] = iy;
+	while ( _nCellsX.size()<=layer ) {
+	  _nCellsX.push_back(0);
+	  _nCellsY.push_back(0);
+	}
+	_nCellsX[layer] = ix;
+	_nCellsY[layer] = iy;
+
       }
 
       void setSpecialMegaTile( unsigned int layer, unsigned int tile, 
@@ -96,6 +103,12 @@ namespace dd4hep {
       virtual std::vector<double> cellDimensions(const CellID& cellID) const;
       virtual std::vector<double> cellDimensions(const unsigned int ilayer, const unsigned int iwafer) const;
 
+      int getUnifNCellsX() {return _unif_nCellsX;}
+      int getUnifNCellsY() {return _unif_nCellsY;}
+
+      
+    protected:
+
       struct segInfo {
         double megaTileSizeX = 0;
         double megaTileSizeY = 0;
@@ -105,9 +118,6 @@ namespace dd4hep {
         unsigned int nCellsY = 0;
         segInfo() = default;
       };
-
-      
-    protected:
 
       mutable segInfo _currentSegInfo;
 
@@ -125,8 +135,11 @@ namespace dd4hep {
       double  _megaTileOffsetY = 0;
 
       // number of cells per megatile in X, Y
-      unsigned int _nCellsX[MAX_LAYERS];
-      unsigned int _nCellsY[MAX_LAYERS];
+      std::vector < int > _nCellsX;
+      std::vector < int > _nCellsY;
+
+      int _unif_nCellsX;
+      int _unif_nCellsY;
 
       std::map < std::pair < unsigned int, unsigned int > , segInfo > specialMegaTiles_layerWafer;
 

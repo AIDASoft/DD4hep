@@ -50,10 +50,11 @@ namespace dd4hep {
       registerParameter("identifier_module", "Cell encoding identifier for module", _identifierModule, std::string("module"),
                         SegmentationParameter::NoUnit, true);
 
-      for (int i=0; i<MAX_LAYERS; i++) {
-        _nCellsX[i]=0;
-        _nCellsY[i]=0;
-      }
+      registerParameter("common_nCellsX", "ncells in x (uniform)",  _unif_nCellsX, int(0), SegmentationParameter::NoUnit, true);
+      registerParameter("common_nCellsY", "ncells in y (uniform)",  _unif_nCellsY, int(0), SegmentationParameter::NoUnit, true);
+
+      _nCellsX.clear();
+      _nCellsY.clear();
     }
 
 
@@ -144,16 +145,22 @@ namespace dd4hep {
 
     void MegatileLayerGridXY::getSegInfo( unsigned int layerIndex, unsigned int waferIndex) const {
 
-      assert ( layerIndex < MAX_LAYERS && "layer index too high" );
-
       std::pair < unsigned int, unsigned int > tileid(layerIndex, waferIndex);
       if ( specialMegaTiles_layerWafer.find( tileid ) == specialMegaTiles_layerWafer.end() ) { // standard megatile
         _currentSegInfo.megaTileSizeX   = _megaTileSizeX;
         _currentSegInfo.megaTileSizeY   = _megaTileSizeY;
         _currentSegInfo.megaTileOffsetX = _megaTileOffsetX;
         _currentSegInfo.megaTileOffsetY = _megaTileOffsetY;
-        _currentSegInfo.nCellsX         = _nCellsX[layerIndex];
-        _currentSegInfo.nCellsY         = _nCellsY[layerIndex];
+
+	if ( _unif_nCellsX>0 && _unif_nCellsY>0 ) {
+	  _currentSegInfo.nCellsX         = _unif_nCellsX;
+	  _currentSegInfo.nCellsY         = _unif_nCellsY;
+	} else {
+	  assert ( layerIndex<_nCellsX.size() && "MegatileLayerGridXY ERROR: too high layer index?" );
+	  _currentSegInfo.nCellsX         = _nCellsX[layerIndex];
+	  _currentSegInfo.nCellsY         = _nCellsY[layerIndex];
+	}
+
       } else { // special megatile
         _currentSegInfo = specialMegaTiles_layerWafer.find( tileid )->second;
       }
