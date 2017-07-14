@@ -86,8 +86,8 @@ namespace dd4hep {
       /// Add user extension object. Ownership is transferred!
       template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
         ExtensionEntry* e = take_ownership
-          ? (ExtensionEntry*)new detail::DeleteExtension<T>(ptr)
-          : (ExtensionEntry*)new detail::SimpleExtension<T>(ptr);
+          ? (ExtensionEntry*)new detail::DeleteExtension<T,T>(ptr)
+          : (ExtensionEntry*)new detail::SimpleExtension<T,T>(ptr);
         return (T*)ObjectExtensions::addExtension(detail::typeHash64<T>(),e);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
@@ -142,8 +142,8 @@ namespace dd4hep {
       /// Add user extension object. Ownership is transferred and object deleted at the end of the event.
       template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
         ExtensionEntry* e = take_ownership
-          ? (ExtensionEntry*)new detail::DeleteExtension<T>(ptr)
-          : (ExtensionEntry*)new detail::SimpleExtension<T>(ptr);
+          ? (ExtensionEntry*)new detail::DeleteExtension<T,T>(ptr)
+          : (ExtensionEntry*)new detail::SimpleExtension<T,T>(ptr);
         return (T*)ObjectExtensions::addExtension(detail::typeHash64<T>(),e);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid

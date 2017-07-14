@@ -17,6 +17,6 @@
 
 /// Callback on invalid call invokation
 void dd4hep::ExtensionEntry::invalidCall(const char* tag)  const {
-  except("ExtensionEntry","Invalid call invokation from %s to method %s(...).",
+  except("ExtensionEntry","Invalid call invocation from %s to method %s(...).",
          typeName(typeid(*this)).c_str(), tag);    
 }

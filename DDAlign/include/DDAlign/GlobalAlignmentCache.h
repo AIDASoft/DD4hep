@@ -14,6 +14,7 @@
 #define DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H
 
 // Framework include files
+#include "DD4hep/ExtensionEntry.h"
 #include "DD4hep/GlobalAlignment.h"
 #include "DDAlign/GlobalAlignmentStack.h"
 
@@ -40,6 +41,7 @@ namespace dd4hep {
     class GlobalAlignmentCache  {
       friend class dd4hep::Detector;
       friend class GlobalAlignmentOperator;
+      friend class dd4hep::detail::DeleteExtension<GlobalAlignmentCache,GlobalAlignmentCache>;
 
     public:
       typedef GlobalAlignmentStack                        Stack;

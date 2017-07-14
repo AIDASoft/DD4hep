@@ -124,7 +124,8 @@ namespace dd4hep {
 
     /// Extend the sensitive detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)  const {
-      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),new detail::DeleteExtension<CONCRETE>(c));
+      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),
+                                         new detail::DeleteExtension<IFACE,CONCRETE>(c));
     }
 
     /// Access extension element by the type
@@ -198,22 +199,25 @@ namespace dd4hep {
 
   protected:
 
-    template <typename T> struct DetElementExtension : public ExtensionEntry  {
+    template <typename Q, typename T> struct DetElementExtension : public ExtensionEntry  {
     protected:
-      T* ptr;
+      T* ptr = 0;
+      mutable Q* iface = 0;  //!
     public:
       DetElementExtension() = delete;
-      DetElementExtension(T* p) : ptr(p) {}
+      DetElementExtension(T* p) : ptr(p) {  iface = dynamic_cast<Q*>(p); }
       DetElementExtension(const DetElementExtension& copy) = default;
       DetElementExtension& operator=(const DetElementExtension& copy) = default;
       virtual ~DetElementExtension() = default;
       // This one ensures we have the correct signatures
-      T* copy(DetElement de)  const            { return new T(*ptr,de);   }
-      virtual void* object()  const override        { return ptr;              }
-      virtual void* copy(void* det)  const override { return copy(DetElement((Object*)det));  }
+      T* copy(DetElement de)  const                 { return new T(*ptr,de);   }
       virtual void  destruct()  const override      { delete ptr;              }
+      virtual void* object()  const override
+      { return iface ? iface : (iface=dynamic_cast<Q*>(ptr));                  }
+      virtual void* copy(void* det)  const override
+      { return copy(DetElement((Object*)det));                                 }
       virtual ExtensionEntry* clone(void* det)  const  override
-      {  return new DetElementExtension<T>((T*)this->copy(det));           }
+      {  return new DetElementExtension<Q,T>((T*)this->copy(det));             }
     };
 
     /// Internal call to extend the detector element with an arbitrary structure accessible by the type
@@ -285,7 +289,8 @@ namespace dd4hep {
     /// Extend the detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
       CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
-      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),new DetElementExtension<CONCRETE>(c));
+      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),
+                                         new DetElementExtension<IFACE,CONCRETE>(c));
     }
     /// Access extension element by the type
     template <typename IFACE> IFACE* extension() const {
