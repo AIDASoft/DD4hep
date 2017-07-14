@@ -38,14 +38,12 @@ namespace dd4hep {
 
     /// Destructor
     Segmentation::~Segmentation() {
-#if 0
       if (_ownsDecoder and _decoder != 0) {
         delete _decoder;
       }
       for (auto& p : _parameters)  {
         if ( p.second ) delete p.second;
       }
-#endif
       _parameters.clear();
     }
   
