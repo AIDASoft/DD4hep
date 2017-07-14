@@ -173,7 +173,7 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
 void Geant4ParticleHandler::operator()(G4Event* event)  {
   typedef Geant4MonteCarloTruth _MC;
   debug("+++ Event:%d Add EVENT extension of type Geant4ParticleHandler.....",event->GetEventID());
-  context()->event().addExtension((_MC*)this, typeid(_MC), 0);
+  context()->event().addExtension((_MC*)this, false);
   clear();
   /// Call the user particle handler
   if ( m_userHandler )  {

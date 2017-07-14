@@ -91,13 +91,13 @@ namespace dd4hep {
     virtual void endDocument();
 
     /// Add an extension object to the Detector instance
-    virtual void* addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
+    virtual void* addUserExtension(unsigned long long int key, ExtensionEntry* entry);
 
     /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned
-    virtual void* removeUserExtension(const std::type_info& info, bool destroy=true);
+    virtual void* removeUserExtension(unsigned long long int key, bool destroy=true);
 
     /// Access an existing extension object from the Detector instance
-    virtual void* userExtension(const std::type_info& info, bool alert=true) const;
+    virtual void* userExtension(unsigned long long int key, bool alert=true) const;
 
     virtual Handle<NamedObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not = true) const;
 

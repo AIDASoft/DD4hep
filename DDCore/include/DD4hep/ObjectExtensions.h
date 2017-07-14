@@ -13,8 +13,10 @@
 #ifndef DD4HEP_DDCORE_OBJECTEXTENSIONS_H
 #define DD4HEP_DDCORE_OBJECTEXTENSIONS_H
 
+// Framework include files
+#include "DD4hep/ExtensionEntry.h"
+
 // C/C++ include files
-#include <typeinfo>
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
@@ -30,21 +32,8 @@ namespace dd4hep {
    */
   class ObjectExtensions   {
   public:
-    /// Defintiion of the extension entry
-    struct Entry {
-      void* (*copy)(const void*, void*);
-      void  (*destruct)(void*);
-      int id;
-    };
     /// The extensions object
-    std::map<const std::type_info*, void*>    extensions; //!
-    /// Pointer to the extension map
-    std::map<const std::type_info*, Entry>*   extensionMap; //!
-
-    /// Function to be passed as dtor if object should NOT be deleted!
-    static void _noDelete(void*) {}
-    /// Templated destructor function
-    template <typename T> static void _delete(void* ptr) { delete (T*) (ptr); }
+    std::map<unsigned long long int, ExtensionEntry*>    extensions;   //!
 
   public:
     /// Default constructor
@@ -55,24 +44,22 @@ namespace dd4hep {
     virtual ~ObjectExtensions();
     /// Assignment operator
     ObjectExtensions& operator=(const ObjectExtensions& copy) = delete;
+    /// Initialize non-persistent object containers (e.g. after loading from ROOT file)
+    void initialize();
     /// Move extensions to target object
     void move(ObjectExtensions& copy);
     /// Clear all extensions
     void clear(bool destroy=true);
     /// Copy object extensions from another object. Hosting type must be identical!
-    void copyFrom(const std::map<const std::type_info*, void*>& ext, void* arg);
+    void copyFrom(const std::map<unsigned long long int,ExtensionEntry*>& ext, void* arg);
     /// Add an extension object to the detector element
-    void* addExtension(void* ptr, const std::type_info& info,
-                       void* (*ctor)(const void*, void* arg),
-                       void  (*dtor)(void*));
-    /// Add an extension object to the detector element
-    void* addExtension(void* ptr, const std::type_info& info, void  (*dtor)(void*));
+    void* addExtension(unsigned long long int key, ExtensionEntry* entry);
     /// Remove an existing extension object from the instance
-    void* removeExtension(const std::type_info& info, bool destroy);
+    void* removeExtension(unsigned long long int key, bool destroy);
     /// Access an existing extension object from the detector element
-    void* extension(const std::type_info& info, bool alert) const;
+    void* extension(unsigned long long int key, bool alert) const;
     /// Access an existing extension object from the detector element
-    void* extension(const std::type_info& info) const;
+    void* extension(unsigned long long int key) const;
   };
 
 } /* End namespace dd4hep        */

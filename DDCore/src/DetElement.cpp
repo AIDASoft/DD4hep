@@ -64,16 +64,13 @@ DetElement::DetElement(DetElement det_parent, const string& det_name, int det_id
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(void* ext_ptr, const type_info& info,
-                                 void* (*ctor)(const void*, DetElement),
-                                 void  (*dtor)(void*) ) const
-{
-  return access()->addExtension(ext_ptr, info, (void* (*)(const void*, void*))(ctor), dtor);
+void* DetElement::addExtension(unsigned long long int k,ExtensionEntry* e) const  {
+  return access()->addExtension(k,e);
 }
 
 /// Access an existing extension object from the detector element
-void* DetElement::i_extension(const type_info& info) const {
-  return access()->extension(info);
+void* DetElement::extension(unsigned long long int k) const {
+  return access()->extension(k);
 }
 
 /// Internal call to extend the detector element with an arbitrary structure accessible by the type
@@ -441,14 +438,12 @@ LimitSet SensitiveDetector::limits() const {
 }
 
 /// Add an extension object to the detector element
-void* SensitiveDetector::i_addExtension(void* ext_ptr,
-                                        const type_info& info,
-                                        void (*dtor)(void*))
+void* SensitiveDetector::addExtension(unsigned long long int k,ExtensionEntry* e)  const
 {
-  return access()->addExtension(ext_ptr, info, dtor);
+  return access()->addExtension(k,e);
 }
 
 /// Access an existing extension object from the detector element
-void* SensitiveDetector::i_extension(const type_info& info) const {
-  return access()->extension(info);
+void* SensitiveDetector::extension(unsigned long long int k) const {
+  return access()->extension(k);
 }

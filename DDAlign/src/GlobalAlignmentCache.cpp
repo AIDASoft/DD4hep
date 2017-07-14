@@ -75,7 +75,8 @@ GlobalAlignmentCache* GlobalAlignmentCache::install(Detector& description)   {
   GlobalAlignmentCache* cache = description.extension<GlobalAlignmentCache>(false);
   if ( !cache )  {
     cache = new GlobalAlignmentCache(description,"world",true);
-    description.addExtension<GlobalAlignmentCache>(cache);
+    description.addUserExtension(detail::typeHash64<GlobalAlignmentCache>(),
+                                 new detail::SimpleExtension<GlobalAlignmentCache>(cache));
   }
   return cache;
 }
