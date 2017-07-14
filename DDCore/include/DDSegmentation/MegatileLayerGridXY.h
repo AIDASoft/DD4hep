@@ -107,8 +107,6 @@ namespace dd4hep {
       int getUnifNCellsY() {return _unif_nCellsY;}
 
       
-    protected:
-
       struct segInfo {
         double megaTileSizeX = 0;
         double megaTileSizeY = 0;
@@ -118,6 +116,9 @@ namespace dd4hep {
         unsigned int nCellsY = 0;
         segInfo() = default;
       };
+
+    protected:
+
 
       mutable segInfo _currentSegInfo;
 
