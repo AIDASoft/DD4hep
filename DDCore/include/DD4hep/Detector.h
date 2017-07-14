@@ -266,15 +266,18 @@ namespace dd4hep {
 
     /// Add an extension object to the detector element (low level member function)
     virtual void* addUserExtension(unsigned long long int key, ExtensionEntry* entry) = 0;
-    /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned  (low level member function)
+
+    /// Remove an existing extension object from the Detector instance.
+    /** If not destroyed, the instance is returned  (low level member function) */
     virtual void* removeUserExtension(unsigned long long int key, bool destroy) = 0;
+
     /// Access an existing extension object from the detector element (low level member function)
     virtual void* userExtension(unsigned long long int key, bool alert=true) const = 0;
 
     /// Extend the sensitive detector element with an arbitrary structure accessible by the type
-    template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
+    template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)  {
       return (IFACE*) addUserExtension(detail::typeHash64<IFACE>(),
-                                       new detail::DeleteExtension<IFACE>(dynamic_cast<IFACE*>(c)));
+                                       new detail::DeleteExtension<IFACE,CONCRETE>(c));
     }
 
     /// Remove an existing extension object from the Detector instance. If not destroyed, the instance is returned

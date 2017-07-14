@@ -95,7 +95,7 @@ void* ObjectExtensions::removeExtension(unsigned long long int key, bool destroy
 void* ObjectExtensions::extension(unsigned long long int key) const {
   const auto j = extensions.find(key);
   if (j != extensions.end()) {
-    return (*j).second;
+    return (*j).second->object();
   }
   except("removeExtension","The object has no extension of type %016llX.",key);
   return 0;
@@ -105,7 +105,7 @@ void* ObjectExtensions::extension(unsigned long long int key) const {
 void* ObjectExtensions::extension(unsigned long long int key, bool alert) const {
   const auto j = extensions.find(key);
   if (j != extensions.end()) {
-    return (*j).second;
+    return (*j).second->object();
   }
   else if ( !alert )
     return 0;
