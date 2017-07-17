@@ -167,9 +167,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     HalfSpace(const HalfSpace& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> HalfSpace(const Q* p) : Solid_type<TGeoHalfSpace>(p) { }
+    template <typename Q> HalfSpace(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used with an existing object
-    template <typename Q> HalfSpace(const Handle<Q>& e) : Solid_type<TGeoHalfSpace>(e) { }
+    template <typename Q> HalfSpace(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create an new halfspace object from a point on a plane and the plane normal
     HalfSpace(const double* const point, const double* const normal) { make(point,normal);  }
     /// Assignment operator
@@ -201,9 +201,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Polycone(const Polycone& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Polycone(const Q* p) : Solid_type<TGeoPcon>(p) {  }
+    template <typename Q> Polycone(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when reading the already parsed polycone object
-    template <typename Q> Polycone(const Handle<Q>& e) : Solid_type<TGeoPcon>(e) { }
+    template <typename Q> Polycone(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new polycone object
     Polycone(double start, double delta);
 
@@ -236,9 +236,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     ConeSegment(const ConeSegment& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> ConeSegment(const Q* p) : Solid_type<TGeoConeSeg>(p) {  }
+    template <typename Q> ConeSegment(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when reading the already parsed ConeSegment object
-    template <typename Q> ConeSegment(const Handle<Q>& e) : Solid_type<TGeoConeSeg>(e) {  }
+    template <typename Q> ConeSegment(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new ConeSegment object
     ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1 = 0.0, double phi2 = 2.0 * M_PI);
     /// Assignment operator
@@ -248,7 +248,7 @@ namespace dd4hep {
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
                                double rmin2, double rmax2, double phi1 = 0.0, double phi2 = 2.0 * M_PI);
   };
-
+#if 0
   /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
   class MyConeSeg: public TGeoConeSeg {
   public:
@@ -257,7 +257,7 @@ namespace dd4hep {
     double GetRmin() const {        return GetRmin1();      }
     double GetRmax() const {        return GetRmax1();      }
   };
-
+#endif
   /// Class describing a tube shape of a section of a tube
   /**
    *   TGeoTube - cylindrical tube class. It takes 3 parameters :
@@ -270,7 +270,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Tube: public Solid_type< /*TGeoTubeSeg */MyConeSeg> {
+  class Tube: public Solid_type<TGeoTubeSeg> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi);
@@ -281,9 +281,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Tube(const Tube& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Tube(const Q* p) : Solid_type<MyConeSeg>(p) {  }
+    template <typename Q> Tube(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to assign an object
-    template <typename Q> Tube(const Handle<Q>& e) : Solid_type<MyConeSeg>(e) {  }
+    template <typename Q> Tube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double z)
     {   make("", rmin, rmax, z, 0, 2*M_PI);               }
@@ -332,9 +332,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     EllipticalTube(const EllipticalTube& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> EllipticalTube(const Q* p) : Solid_type<TGeoEltu>(p) {   }
+    template <typename Q> EllipticalTube(const Q* p) : Solid_type<Object>(p) {   }
     /// Constructor to assign an object
-    template <typename Q> EllipticalTube(const Handle<Q>& e) : Solid_type<TGeoEltu>(e) {   }
+    template <typename Q> EllipticalTube(const Handle<Q>& e) : Solid_type<Object>(e) {   }
     /// Constructor to create a new anonymous tube object with attribute initialization
     EllipticalTube(double a, double b, double dz) {  make(a, b, dz);  }
     /// Constructor to create a new anonymous tube object with attribute initialization
@@ -366,9 +366,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Cone(const Cone& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Cone(const Q* p) : Solid_type<TGeoCone>(p) { }
+    template <typename Q> Cone(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Cone(const Handle<Q>& e) : Solid_type<TGeoCone>(e) { }
+    template <typename Q> Cone(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
     Cone(double z, double rmin1, double rmax1, double rmin2, double rmax2)
     {     make(z, rmin1, rmax1, rmin2, rmax2);                                 }
@@ -400,9 +400,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Trap(const Trap& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Trap(const Q* p) : Solid_type<TGeoTrap>(p) { }
+    template <typename Q> Trap(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Trap(const Handle<Q>& e) : Solid_type<TGeoTrap>(e) { }
+    template <typename Q> Trap(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
     Trap(double z, double theta, double phi,
          double y1, double x1, double x2, double alpha1,
@@ -441,9 +441,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Trapezoid(const Trapezoid& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Trapezoid(const Q* p) : Solid_type<TGeoTrd2>(p) { }
+    template <typename Q> Trapezoid(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Trapezoid(const Handle<Q>& e) : Solid_type<TGeoTrd2>(e) { }
+    template <typename Q> Trapezoid(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
     Trapezoid(double x1, double x2, double y1, double y2, double z);
     /// Constructor to create a new anonymous object with attribute initialization
@@ -475,9 +475,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Torus(const Torus& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Torus(const Q* p) : Solid_type<TGeoTorus>(p) { }
+    template <typename Q> Torus(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Torus(const Handle<Q>& e) : Solid_type<TGeoTorus>(e) {  }
+    template <typename Q> Torus(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous object with attribute initialization
     template<typename R, typename RMIN, typename RMAX, typename PHI, typename DELTA_PHI>
     Torus(R r, RMIN rmin, RMAX rmax, PHI phi=M_PI, DELTA_PHI delta_phi = 2.*M_PI)
@@ -508,9 +508,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Sphere(const Sphere& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Sphere(const Q* p) : Solid_type<TGeoSphere>(p) { }
+    template <typename Q> Sphere(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Sphere(const Handle<Q>& e) : Solid_type<TGeoSphere>(e) {  }
+    template <typename Q> Sphere(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous object with attribute initialization
     Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0, double delta_phi = 2. * M_PI);
     /// Assignment operator
@@ -536,9 +536,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Paraboloid(const Paraboloid& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Paraboloid(const Q* p) : Solid_type<TGeoParaboloid>(p) { }
+    template <typename Q> Paraboloid(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Paraboloid(const Handle<Q>& e) : Solid_type<TGeoParaboloid>(e) { }
+    template <typename Q> Paraboloid(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
     Paraboloid(double r_low, double r_high, double delta_z);
     /// Assignment operator
@@ -564,9 +564,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     Hyperboloid(const Hyperboloid& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Hyperboloid(const Q* p) : Solid_type<TGeoHype>(p) {  }
+    template <typename Q> Hyperboloid(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Hyperboloid(const Handle<Q>& e) : Solid_type<TGeoHype>(e) {   }
+    template <typename Q> Hyperboloid(const Handle<Q>& e) : Solid_type<Object>(e) {   }
     /// Constructor to create a new anonymous object with attribute initialization
     Hyperboloid(double rin, double stin, double rout, double stout, double dz);
     /// Assignment operator
@@ -594,9 +594,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     PolyhedraRegular(const PolyhedraRegular& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> PolyhedraRegular(const Q* p) : Solid_type<TGeoPgon>(p) {  }
+    template <typename Q> PolyhedraRegular(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when passing an already created object
-    template <typename Q> PolyhedraRegular(const Handle<Q>& e) : Solid_type<TGeoPgon>(e) {  }
+    template <typename Q> PolyhedraRegular(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(int nsides, double rmin, double rmax, double zlen);
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
@@ -626,9 +626,9 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     EightPointSolid(const EightPointSolid& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> EightPointSolid(const Q* p) : Solid_type<TGeoArb8>(p) { }
+    template <typename Q> EightPointSolid(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> EightPointSolid(const Handle<Q>& e) : Solid_type<TGeoArb8>(e) {}
+    template <typename Q> EightPointSolid(const Handle<Q>& e) : Solid_type<Object>(e) {}
     /// Constructor to create a new anonymous object with attribute initialization
     EightPointSolid(double dz, const double* vertices) { make(dz,vertices);  }
     /// Assignment operator
@@ -654,7 +654,7 @@ namespace dd4hep {
   public:
     /// Constructor to be used when passing an already created object
     template <typename Q>
-    BooleanSolid(const Handle<Q>& e) : Solid_type<TGeoCompositeShape>(e) { }
+    BooleanSolid(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Assignment operator
     BooleanSolid& operator=(const BooleanSolid& copy) = default;
   };
