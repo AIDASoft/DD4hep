@@ -122,6 +122,9 @@ namespace dd4hep {
     /// Access an existing extension object from the detector element
     void* extension(unsigned long long int key) const;
 
+    /// Access an existing extension object from the detector element
+    void* extension(unsigned long long int key, bool alert) const;
+
     /// Extend the sensitive detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)  const {
       return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),
@@ -284,7 +287,7 @@ namespace dd4hep {
     void* addExtension(unsigned long long int key,ExtensionEntry* entry) const;
 
     /// Access an existing extension object from the detector element
-    void* extension(unsigned long long int key) const;
+    void* extension(unsigned long long int key, bool alert) const;
 
     /// Extend the detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
@@ -294,7 +297,11 @@ namespace dd4hep {
     }
     /// Access extension element by the type
     template <typename IFACE> IFACE* extension() const {
-      return (IFACE*) this->extension(detail::typeHash64<IFACE>());
+      return (IFACE*) this->extension(detail::typeHash64<IFACE>(),true);
+    }
+    /// Access extension element by the type
+    template <typename IFACE> IFACE* extension(bool alert) const {
+      return (IFACE*) this->extension(detail::typeHash64<IFACE>(),alert);
     }
     /// Extend the detector element with an arbitrary callback
     template <typename Q, typename T>

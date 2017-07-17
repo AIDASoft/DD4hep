@@ -1,4 +1,3 @@
-// $Id: $
 //====================================================================
 //  Simple tracking detector made from planar sensors that are parallel
 //  to the z-axis. There are two materials per ladder: one sensitive
@@ -204,7 +203,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
       DetElement   ladderDE( layerDE ,  laddername , x_det.id() );
       ladderDE.setPlacement( pv ) ;
 
-      volSurfaceList( ladderDE )->push_back( surf ) ;
+      //volSurfaceList( ladderDE )->push_back( surf ) ;
 
     }
     

@@ -1,4 +1,3 @@
-// $Id: $
 //====================================================================
 //  // Simple tube filled with air 
 //  // used for tracking purposes ...
