@@ -69,8 +69,8 @@ void* DetElement::addExtension(unsigned long long int k,ExtensionEntry* e) const
 }
 
 /// Access an existing extension object from the detector element
-void* DetElement::extension(unsigned long long int k) const {
-  return access()->extension(k);
+void* DetElement::extension(unsigned long long int k, bool alert) const {
+  return access()->extension(k, alert);
 }
 
 /// Internal call to extend the detector element with an arbitrary structure accessible by the type
@@ -446,4 +446,9 @@ void* SensitiveDetector::addExtension(unsigned long long int k,ExtensionEntry* e
 /// Access an existing extension object from the detector element
 void* SensitiveDetector::extension(unsigned long long int k) const {
   return access()->extension(k);
+}
+
+/// Access an existing extension object from the detector element
+void* SensitiveDetector::extension(unsigned long long int k, bool alert) const {
+  return access()->extension(k, alert);
 }

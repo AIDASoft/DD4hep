@@ -67,11 +67,18 @@ void ObjectExtensions::copyFrom(const map<unsigned long long int,ExtensionEntry*
 
 /// Add an extension object to the detector element
 void* ObjectExtensions::addExtension(unsigned long long int key, ExtensionEntry* e)  {
-  auto j = extensions.find(key);
-  if (j == extensions.end()) {
-    return extensions[key] = e;
+  if ( e )   {
+    if ( e->object() )  {
+      auto j = extensions.find(key);
+      if (j == extensions.end()) {
+        extensions[key] = e;
+        return e->object();
+      }
+      except("ObjectExtensions::addExtension","Object already has an extension of type: %s.",obj_type(e->object()).c_str());
+    }
+    except("ObjectExtensions::addExtension","Invalid extension object for key %016llX!",key);
   }
-  except("addExtension","Object already has an extension of type: %s.",obj_type(e->object()).c_str());
+  except("ObjectExtensions::addExtension","Invalid extension entry for key %016llX!",key);
   return 0;
 }
 
@@ -87,7 +94,7 @@ void* ObjectExtensions::removeExtension(unsigned long long int key, bool destroy
     extensions.erase(j);
     return ptr;
   }
-  except("removeExtension","The object of type %016llX is not present.",key);
+  except("ObjectExtensions::removeExtension","The object of type %016llX is not present.",key);
   return 0;
 }
 
@@ -97,8 +104,8 @@ void* ObjectExtensions::extension(unsigned long long int key) const {
   if (j != extensions.end()) {
     return (*j).second->object();
   }
-  except("removeExtension","The object has no extension of type %016llX.",key);
-  return 0;
+  string msg = format("ObjectExtensions::extension","The object has no extension of type %016llX.",key);
+  throw runtime_error(msg);
 }
 
 /// Access an existing extension object from the detector element
@@ -109,6 +116,6 @@ void* ObjectExtensions::extension(unsigned long long int key, bool alert) const 
   }
   else if ( !alert )
     return 0;
-  except("removeExtension","The object has no extension of type %016llX.",key);
-  return 0;
+  string msg = format("ObjectExtensions::extension","The object has no extension of type %016llX.",key);
+  throw runtime_error(msg);
 }

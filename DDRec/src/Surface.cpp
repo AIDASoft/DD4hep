@@ -509,19 +509,10 @@ namespace dd4hep {
     //================================================================================================================
 
     VolSurfaceList* volSurfaceList( DetElement& det ) {
-
-      
-      VolSurfaceList* list = 0 ;
-
-      try {
-
-        list = det.extension< VolSurfaceList >() ;
-
-      } catch(const std::runtime_error& e){ 
-	
-        list = det.addExtension<VolSurfaceList >(  new VolSurfaceList ) ; 
+      VolSurfaceList* list = det.extension< VolSurfaceList >(false);
+      if ( !list )  {
+        list = det.addExtension<VolSurfaceList >(new VolSurfaceList);
       }
-
       return list ;
     }
 
