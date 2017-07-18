@@ -3,7 +3,7 @@ project(DDSegmentation)
  #fg: version number must be the same as dd4hep !!
 set(DDSegmentation_VERSION_MAJOR 1)
 set(DDSegmentation_VERSION_MINOR 1)
-set(DDSegmentation_VERSION_PATCH 0)
+set(DDSegmentation_VERSION_PATCH 1)
 set(DDSegmentation_VERSION "${DDSegmentation_VERSION_MAJOR}.${DDSegmentation_VERSION_MINOR}" )
 set(DDSegmentation_SOVERSION "${DDSegmentation_VERSION_MAJOR}.${DDSegmentation_VERSION_MINOR}")
 
