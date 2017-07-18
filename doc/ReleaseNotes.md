@@ -1,3 +1,14 @@
+# v01-01-01
+
+* 2017-07-18 Frank Gaede
+	- apply changes from D.Jeans to MegatileLayerGridXY:
+		- add ncellsX/Y as a "parameter", allowing it to be set in compact description.
+		  This change is for easier use in the case of a MultiSegmentation.
+		  (Only a uniform segmentation can be defined in this way: for more complex cases, must set by driver.)
+		- change from array to std::vector to store ncells information
+
+
+
 # v01-01
 
 * 2017-07-06 Markus Frank ([PR#201](https://github.com/AIDASoft/DD4hep/pull/201))
