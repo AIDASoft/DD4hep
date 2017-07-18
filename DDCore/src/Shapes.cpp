@@ -281,13 +281,13 @@ ConeSegment& ConeSegment::setDimensions(double dz,
 void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi) {
   _assign(new TGeoTubeSeg(rmin,rmax,z,startPhi/units::deg,deltaPhi/units::deg),nam,"tube",true);
   //_assign(new MyConeSeg(), nam, "tube", true);
-  setDimensions(rmin, rmax, z, startPhi, deltaPhi);
+  //setDimensions(rmin, rmax, z, startPhi, deltaPhi);
 }
 
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  //double params[] = {rmin,rmax,z,startPhi,deltaPhi};
-  double params[] = { z, rmin, rmax, rmin, rmax, startPhi/units::deg,deltaPhi/units::deg };
+  double params[] = {rmin,rmax,z,startPhi/units::deg,deltaPhi/units::deg};
+  //double params[] = { z, rmin, rmax, rmin, rmax, startPhi/units::deg,deltaPhi/units::deg };
   _setDimensions(params);
   return *this;
 }
