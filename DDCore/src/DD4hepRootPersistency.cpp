@@ -20,6 +20,7 @@
 // ROOT include files
 #include "TFile.h"
 #include "TTimeStamp.h"
+#include <memory>
 
 ClassImp(DD4hepRootPersistency)
 
