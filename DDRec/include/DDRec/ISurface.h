@@ -9,7 +9,8 @@
 #include <bitset>
 #include <cmath>
 
-namespace dd4hep { namespace rec {
+namespace dd4hep {
+  namespace rec {
   
   class SurfaceType ;
 

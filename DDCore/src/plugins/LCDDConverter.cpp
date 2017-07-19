@@ -215,6 +215,13 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
   return mat;
 }
 
+/// Dump material properties table in GDML format to output stream
+xml_h LCDDConverter::handleMaterialPropertiesTable(const string& name, MaterialPropertiesTable mpt) const {
+  GeometryInfo& geo = data();
+  xml_h xml_mpt;// = geo.xmlMaterialPropertiesTable[mpt];
+  return xml_mpt;
+}
+
 /// Dump solid in GDML format to output stream
 xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) const {
   GeometryInfo& geo = data();
@@ -1264,7 +1271,7 @@ xml_doc_t LCDDConverter::createDetector(DetElement top) {
 LCDDConverter::GeometryInfo::GeometryInfo()
   : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), doc_limits(0), 
     doc_regions(0), doc_display(0), doc_gdml(0), doc_fields(0), doc_define(0),
-    doc_materials(0), doc_solids(0), doc_structure(0), doc_setup(0)
+    doc_materials(0), doc_mpts(0), doc_solids(0), doc_structure(0), doc_setup(0)
 {
 }
 

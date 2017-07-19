@@ -172,6 +172,11 @@ install(DIRECTORY cmake
   PATTERN ".svn" EXCLUDE
   )
 
+install(DIRECTORY share/data
+  DESTINATION share/DD4hep
+  )
+
+
 #-----------------------------------------------------------------------------------
 display_std_variables()
 

@@ -50,18 +50,19 @@ namespace dd4hep {
     class LCDDConverter: public GeoHandler {
     public:
       typedef xml::XmlElement XmlElement;
-      typedef std::map<Atom,              XmlElement*> ElementMap;
-      typedef std::map<Material,          XmlElement*> MaterialMap;
-      typedef std::map<LimitSet,          XmlElement*> LimitMap;
-      typedef std::map<PlacedVolume,      XmlElement*> PlacementMap;
-      typedef std::map<Region,            XmlElement*> RegionMap;
-      typedef std::map<SensitiveDetector, XmlElement*> SensDetMap;
-      typedef std::map<Volume,            XmlElement*> VolumeMap;
-      typedef std::map<IDDescriptor,      XmlElement*> IdSpecMap;
-      typedef std::map<VisAttr,           XmlElement*> VisMap;
-      typedef std::map<const TGeoShape*,  XmlElement*> SolidMap;
-      typedef std::map<OverlayedField,    XmlElement*> FieldMap;
-      typedef std::map<const TGeoMatrix*, XmlElement*> TrafoMap;
+      typedef std::map<Atom,                    XmlElement*> ElementMap;
+      typedef std::map<Material,                XmlElement*> MaterialMap;
+      typedef std::map<MaterialPropertiesTable, XmlElement*> MaterialPropertiesTableMap;
+      typedef std::map<LimitSet,                XmlElement*> LimitMap;
+      typedef std::map<PlacedVolume,            XmlElement*> PlacementMap;
+      typedef std::map<Region,                  XmlElement*> RegionMap;
+      typedef std::map<SensitiveDetector,       XmlElement*> SensDetMap;
+      typedef std::map<Volume,                  XmlElement*> VolumeMap;
+      typedef std::map<IDDescriptor,            XmlElement*> IdSpecMap;
+      typedef std::map<VisAttr,                 XmlElement*> VisMap;
+      typedef std::map<const TGeoShape*,        XmlElement*> SolidMap;
+      typedef std::map<OverlayedField,          XmlElement*> FieldMap;
+      typedef std::map<const TGeoMatrix*,       XmlElement*> TrafoMap;
       /// Data structure of the geometry converter from dd4hep to Geant 4 in Detector format.
       /**
        *  \author  M.Frank
@@ -70,26 +71,27 @@ namespace dd4hep {
        */
       class GeometryInfo: public GeoHandler::GeometryInfo {
       public:
-        ElementMap   xmlElements;
-        MaterialMap  xmlMaterials;
-        SolidMap     xmlSolids;
-        VolumeMap    xmlVolumes;
-        PlacementMap xmlPlacements;
-        RegionMap    xmlRegions;
-        VisMap       xmlVis;
-        LimitMap     xmlLimits;
-        IdSpecMap    xmlIdSpecs;
-        SensDetMap   xmlSensDets;
-        TrafoMap     xmlPositions;
-        TrafoMap     xmlRotations;
-        FieldMap     xmlFields;
+        ElementMap                 xmlElements;
+        MaterialMap                xmlMaterials;
+        MaterialPropertiesTableMap xmlMPTs;
+        SolidMap                   xmlSolids;
+        VolumeMap                  xmlVolumes;
+        PlacementMap               xmlPlacements;
+        RegionMap                  xmlRegions;
+        VisMap                     xmlVis;
+        LimitMap                   xmlLimits;
+        IdSpecMap                  xmlIdSpecs;
+        SensDetMap                 xmlSensDets;
+        TrafoMap                   xmlPositions;
+        TrafoMap                   xmlRotations;
+        FieldMap                   xmlFields;
         std::set<SensitiveDetector> sensitives;
         std::set<Region> regions;
         std::set<LimitSet> limits;
         // These we need for redundancy and checking the data integrity
         typedef std::map<std::string, const TNamed*> CheckIter;
         struct _checks {
-          std::map<std::string, const TNamed*> positions, rotations, volumes, solids, materials;
+          std::map<std::string, const TNamed*> positions, rotations, volumes, solids, materials, mpts;
         };
         mutable _checks checks;
         void check(const std::string& name, const TNamed* n, std::map<std::string, const TNamed*>& array) const;
@@ -108,11 +110,15 @@ namespace dd4hep {
         void checkMaterial(const std::string& name, Material n) const {
           check(name, n.ptr(), checks.materials);
         }
+        void checkMaterialPropertiesTable(const std::string& name, MaterialPropertiesTable n) const {
+          /// \todo
+          //check(name, n.ptr(), checks.mpts);
+        }
 
         xml_doc_t doc;
         xml_h identity_rot, identity_pos;
         xml_elt_t doc_root, doc_header, doc_idDict, doc_detectors, doc_limits, doc_regions, doc_display, doc_gdml, doc_fields,
-          doc_define, doc_materials, doc_solids, doc_structure, doc_setup;
+          doc_define, doc_materials, doc_mpts, doc_solids, doc_structure, doc_setup;
         GeometryInfo();
       };
       typedef std::set<std::string> NameSet;
@@ -149,6 +155,9 @@ namespace dd4hep {
 
       /// Convert the geometry type material into the corresponding Xml object(s).
       virtual xml_h handleMaterial(const std::string& name, Material medium) const;
+
+      /// Convert the geometry type material into the corresponding Xml object(s).
+      virtual xml_h handleMaterialPropertiesTable(const std::string& name, MaterialPropertiesTable mpt) const;
 
       /// Convert the geometry type element into the corresponding Xml object(s).
       virtual xml_h handleElement(const std::string& name, Atom element) const;

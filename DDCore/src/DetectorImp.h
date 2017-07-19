@@ -183,6 +183,8 @@ namespace dd4hep {
     /// Retrieve a matrial by it's name from the detector description
     virtual Material material(const std::string& name) const;
 
+    virtual MaterialPropertiesTable materialPropertiesTable(const std::string& name) const;
+
     /// Retrieve a region object by it's name from the detector description
     virtual Region region(const std::string& name) const {
       return getRefChild(m_regions, name);

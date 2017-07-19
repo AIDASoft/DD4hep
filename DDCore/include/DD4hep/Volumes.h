@@ -52,6 +52,7 @@ namespace dd4hep {
   class  VisAttr;
   class  DetElement;
   class  SensitiveDetector;
+  class  LogicalSurface;
 
   // Forward declarations
   class  Volume;
@@ -193,6 +194,8 @@ namespace dd4hep {
     /// Reference to the sensitive detector
     Handle<NamedObject> sens_det;
 
+    LogicalSurface      log_surface;
+
     int                 referenced;
     /// Default constructor
     VolumeExtension();
@@ -206,6 +209,7 @@ namespace dd4hep {
       vis        = c.vis;
       sens_det   = c.sens_det;
       referenced = c.referenced;
+      log_surface = c.log_surface;
     }
     /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
     virtual TGeoExtension *Grab()  override;

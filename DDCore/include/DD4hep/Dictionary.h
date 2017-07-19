@@ -198,6 +198,21 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Handle<dd4hep::RegionObject>+;
 #pragma link C++ class vector<dd4hep::Region>+;
 
+#pragma link C++ class std::vector<std::string>+;
+#pragma link C++ class std::pair<std::string,std::vector<double>>+;
+#pragma link C++ class std::map<std::string,std::vector<double>>+;
+#pragma link C++ class std::vector<std::pair<std::string,std::vector<double>>>+;
+
+#pragma link C++ class dd4hep::MaterialPropertiesTable+;
+#pragma link C++ class dd4hep::MaterialPropertiesTableObject+;
+#pragma link C++ class dd4hep::Handle<dd4hep::MaterialPropertiesTableObject>+;
+#pragma link C++ class std::map<std::string,dd4hep::MaterialPropertiesTable>+;
+
+
+#pragma link C++ class dd4hep::LogicalSurfaceObject+;
+#pragma link C++ class dd4hep::Handle<dd4hep::LogicalSurfaceObject>+;
+#pragma link C++ class dd4hep::LogicalSurface+;
+
 // Readout.h
 #pragma link C++ class vector<pair<size_t,string> >+;
 #pragma link C++ class dd4hep::Segmentation+;

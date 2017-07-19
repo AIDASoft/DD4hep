@@ -30,6 +30,9 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <fstream>
+
+#include "JSON/json.hpp"
 
 using namespace std;
 using namespace dd4hep;
@@ -447,6 +450,87 @@ bool Region::useDefaultCut() const {
 
 bool Region::wasThresholdSet() const {
   return object<Object>().was_threshold_set;
+}
+
+MaterialPropertiesTable::MaterialPropertiesTable() 
+{
+  m_element = new MaterialPropertiesTableObject();
+  std::cout << " HUZZZZA \n";
+}
+
+MaterialPropertiesTable::~MaterialPropertiesTable()
+{
+  delete m_element;
+}
+
+int MaterialPropertiesTable::nArrayData() const {
+  return m_element->nArrayData();
+}
+int MaterialPropertiesTable::nConstData() const {
+  return m_element->nConstData();
+}
+int MaterialPropertiesTable::nStringData() const {
+  return m_element->nStringData();
+}
+
+std::vector<double> MaterialPropertiesTable::GetArrayData( const std::string& key) const
+{
+  std::vector<double> res;
+  if(m_element->raw_array_data.count(key)) {
+    res = m_element->raw_array_data.at(key);
+  }
+  return res;
+}
+
+double              MaterialPropertiesTable::GetConstData( const std::string& key) const
+{
+  double res;
+  if(m_element->raw_const_data.count(key)) {
+    res = m_element->raw_const_data.at(key);
+  }
+  return res;
+}
+
+std::string         MaterialPropertiesTable::GetStringData(const std::string& key) const
+{
+  std::string res;
+  if(m_element->raw_string_data.count(key)) {
+    res = m_element->raw_string_data.at(key);
+  }
+  return res;
+}
+
+void MaterialPropertiesTable::loadFile(const char* fname)
+{
+  using json = nlohmann::json;
+  std::ifstream i(fname);
+  //std::cout << fname  << std::endl;
+  json j;
+  i >> j;
+  int data_present = j.count("data"); 
+  //std::cout << "data_present " << data_present << std::endl;
+  // iterate the array
+  for (json::iterator it = j["data"].begin(); it != j["data"].end(); ++it) {
+    //std::cout << it.key() << '\n';
+    //std::cout << boolalpha; 
+    //std::cout << it.value().is_array() << '\n';
+    if( it.value().is_array() ) {
+      //std::cout << it.key() << std::endl;
+      //auto vec = it.value().get<std::vector<double>>();
+      m_element->raw_array_data[std::string(it.key())] = it.value().get<std::vector<double>>();
+    }
+  }
+  for (json::iterator it = j["const_data"].begin(); it != j["const_data"].end(); ++it) {
+    if( it.value().is_array() ) {
+      m_element->raw_const_data[std::string(it.key())] = it.value().get<double>();
+    }
+  }
+  for (json::iterator it = j.begin(); it != j.end(); ++it) {
+    if( it.value().is_string() ) {
+      //std::cout << it.value().get<std::string>() <<std::endl;
+      m_element->raw_string_data[it.key()] = it.value().get<std::string>();
+    }
+  }
 }
 
 #undef setAttr

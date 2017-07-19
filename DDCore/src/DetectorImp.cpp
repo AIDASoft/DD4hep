@@ -137,6 +137,10 @@ DetectorImp::DetectorImp()
   attr.setShowDaughters(true);
   addVisAttribute(attr);
   m_invisibleVis = attr;
+
+  std::map<std::string, MaterialPropertiesTable>* table_map = nullptr;
+  addExtension<std::map<std::string, MaterialPropertiesTable>>( new std::map<std::string, MaterialPropertiesTable>() );
+
 }
 
 /// Standard destructor
@@ -294,6 +298,16 @@ Material DetectorImp::material(const string& name) const {
     return Material(mat);
   }
   throw runtime_error("Cannot find a material referenced by name:" + name);
+}
+
+/// Retrieve a MPT by it's name from the detector description
+MaterialPropertiesTable DetectorImp::materialPropertiesTable(const string& name) const {
+  std::map<std::string, MaterialPropertiesTable>* table_map = nullptr;
+  table_map = extension<std::map<std::string, MaterialPropertiesTable>>();
+  if(table_map) {
+    return (*table_map)[name];
+  }
+  throw runtime_error("Cannot find a material properties table referenced by name:" + name);
 }
 
 /// Internal helper to map detector types once the geometry is closed

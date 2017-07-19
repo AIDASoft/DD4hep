@@ -98,6 +98,9 @@ namespace dd4hep {
       /// Handle the geant 4 specific properties
       void handleProperties(Detector::Properties& prp) const;
 
+      /// Convert the geometry type material into the corresponding Geant4 object(s).
+      virtual void* handleMaterialPropertiesTable(const std::string& name, const MaterialPropertiesTable& mpt) const;
+
       /// Print the geometry type SensitiveDetector
       virtual void printSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
 
