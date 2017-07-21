@@ -51,12 +51,23 @@ namespace dd4hep {
       persistent_type userPools;
       persistent_type iovPools;
       float           duration;
-      
+      enum ImportStrategy  {
+        IMPORT_ALL             = 1<<0,
+        IMPORT_EXACT           = 1<<1,
+        IMPORT_CONTAINED       = 1<<2,
+        IMPORT_CONTAINED_LOWER = 1<<3,
+        IMPORT_CONTAINED_UPPER = 1<<4,
+        IMPORT_EDGE_LOWER      = 1<<5,
+        IMPORT_EDGE_UPPER      = 1<<6,
+        LAST
+      };
       /// Load ConditionsIOVPool and populate conditions manager
-      size_t _import(persistent_type& pers,
+      size_t _import(ImportStrategy     strategy,
+                     persistent_type&   pers,
                      const std::string& id,
                      const std::string& iov_type,
-                     ConditionsManager mgr);
+                     const IOV::Key&    iov_key,
+                     ConditionsManager  mgr);
 
       /// Clear object content and release allocated memory
       void _clear(persistent_type& pool);
@@ -78,11 +89,13 @@ namespace dd4hep {
       /// Open ROOT file in read mode
       static TFile* openFile(const std::string& fname);      
       
-      /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
+      /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
+      size_t add(const std::string& identifier, const IOV& iov, std::vector<Condition>& conditions);
+      /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
       size_t add(const std::string& identifier, ConditionsPool& pool);
-      /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
+      /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
       size_t add(const std::string& identifier, const UserPool& pool);
-      /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
+      /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
       size_t add(const std::string& identifier, const ConditionsIOVPool& pool);
 
       /// Load conditions content from file.
@@ -94,11 +107,18 @@ namespace dd4hep {
       }
       
       /// Load conditions IOV pool and populate conditions manager
-      size_t importIOVPool(const std::string& id,const std::string& iov_type,ConditionsManager mgr);
+      size_t importIOVPool(const std::string& id, const std::string& iov_type, ConditionsManager mgr);
       /// Load conditions user pool and populate conditions manager
-      size_t importUserPool(const std::string& id,const std::string& iov_type,ConditionsManager mgr);
+      size_t importUserPool(const std::string& id, const std::string& iov_type, ConditionsManager mgr);
       /// Load conditions pool and populate conditions manager
-      size_t importConditionsPool(const std::string& id,const std::string& iov_type,ConditionsManager mgr);
+      size_t importConditionsPool(const std::string& id, const std::string& iov_type, ConditionsManager mgr);
+
+      /// Load conditions pool and populate conditions manager. Allow tro be selective also for the key
+      size_t importConditionsPool(ImportStrategy     strategy,
+                                  const std::string& id,
+                                  const std::string& iov_type,
+                                  const IOV::Key&    key,
+                                  ConditionsManager  mgr);
 
       /// Save the data content to a root file
       int save(TFile* file);

@@ -44,10 +44,13 @@ using namespace dd4hep::ConditionExamples;
  *  \date    01/12/2016
  */
 static int condition_example (Detector& description, int argc, char** argv)  {
-
   string input, conditions;
   int    num_iov = 10;
   bool   arg_error = false;
+  bool   output_iovpool  = true;
+  bool   output_userpool = true;
+  bool   output_condpool = true;
+
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-input",argv[i],4) )
       input = argv[++i];
@@ -95,9 +98,6 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   }
 
   char text[132];
-  bool output_iovpool  = true;
-  bool output_userpool = true;
-  bool output_condpool = true;
   size_t count = 0, total_count = 0;
   auto* persist = new cond::ConditionsRootPersistency("DD4hep Conditions");
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
@@ -122,13 +122,27 @@ static int condition_example (Detector& description, int argc, char** argv)  {
     }
   }
   if ( output_condpool )  {
+    int npool = 0;
     cond::ConditionsIOVPool* iov_pool = manager.iovPool(*iov_typ);
     for( const auto& p : iov_pool->elements )  {
       ::snprintf(text,sizeof(text),"Conditions pool %s:[%ld,%ld]",
                  iov_typ->name.c_str(),p.second->iov->key().first,p.second->iov->key().second);
-      count = persist->add(text,*p.second);
+      if ( (npool%2) == 0 )  { /// Check here saving ConditionsPool objects
+        count = persist->add(text,*p.second);
+        printout(ALWAYS,"Example",
+                 "+++ ConditionsPool:         Added %ld conditions "
+                 "to persistent conditions pool.",count);
+      }
+      else   {                 /// Check here saving std::vector<Condition>
+        vector<Condition> entries;
+        p.second->select_all(entries);
+        count = persist->add(text,*p.second->iov,entries);
+        printout(ALWAYS,"Example",
+                 "+++ std::vector<Condition>: Added %ld conditions "
+                 "to persistent conditions pool.",count);
+      }
       total_count += count;
-      printout(ALWAYS,"Example","+++ Added %ld conditions to persistent conditions pool.",count);
+      ++npool;
     }
   }
   if ( output_iovpool )  {
