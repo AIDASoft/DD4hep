@@ -35,6 +35,19 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::ConditionExamples;
 
+static void help(int argc, char** argv)  {
+  /// Help printout describing the basic command line interface
+  cout <<
+    "Usage: -plugin <name> -arg [-arg]                                             \n"
+    "     name:   factory name     DD4hep_ConditionExample_load                    \n"
+    "     -input       <string>    Geometry file                                   \n"
+    "     -conditions  <string>    Conditions input file                           \n"
+    "     -iovs        <number>    Number of parallel IOV slots for processing.    \n"
+    "     -restore     <string>    Restore strategy: iovpool, userpool or condpool.\n"
+    "\tArguments given: " << arguments(argc,argv) << endl << flush;
+  ::exit(EINVAL);
+}
+
 /// Plugin function: Condition program example
 /**
  *  Factory: DD4hep_ConditionExample_load
@@ -44,7 +57,7 @@ using namespace dd4hep::ConditionExamples;
  *  \date    01/12/2016
  */
 static int condition_example (Detector& description, int argc, char** argv)  {
-  string input, conditions;
+  string input, conditions, restore="iovpool";
   int    num_iov = 10;
   bool   arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
@@ -52,22 +65,14 @@ static int condition_example (Detector& description, int argc, char** argv)  {
       input = argv[++i];
     else if ( 0 == ::strncmp("-conditions",argv[i],4) )
       conditions = argv[++i];
+    else if ( 0 == ::strncmp("-restore",argv[i],4) )
+      restore = argv[++i];
     else if ( 0 == ::strncmp("-iovs",argv[i],4) )
       num_iov = ::atol(argv[++i]);
     else
       arg_error = true;
   }
-  if ( arg_error || input.empty() || conditions.empty() )   {
-    /// Help printout describing the basic command line interface
-    cout <<
-      "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_ConditionExample_load                    \n"
-      "     -input       <string>    Geometry file                                   \n"
-      "     -conditions  <string>    Conditions input file                           \n"
-      "     -iovs        <number>    Number of parallel IOV slots for processing.    \n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
-    ::exit(EINVAL);
-  }
+  if ( arg_error || input.empty() || conditions.empty() ) help(argc,argv);
 
   // First we load the geometry
   description.fromXML(input);
@@ -85,9 +90,18 @@ static int condition_example (Detector& description, int argc, char** argv)  {
     printout(ALWAYS,"Statistics","+=========================================================================");
     printout(ALWAYS,"Statistics","+  Loaded conditions object from file %s. Took %8.3f seconds.",
              conditions.c_str(),pers->duration);
-    size_t num_cond = pers->importIOVPool("ConditionsIOVPool No 1","run",manager);
-    printout(ALWAYS,"Statistics","+  Imported %ld conditions to IOV pool. Took %8.3f seconds.",
-             num_cond, pers->duration);
+    size_t num_cond = 0;
+    if      ( restore == "iovpool" )
+      num_cond = pers->importIOVPool("ConditionsIOVPool No 1","run",manager);
+    else if ( restore == "userpool" )
+      num_cond = pers->importUserPool("*","run",manager);
+    else if ( restore == "condpool" )
+      num_cond = pers->importConditionsPool("*","run",manager);
+    else
+      help(argc,argv);
+
+    printout(ALWAYS,"Statistics","+  Imported %ld conditions from %s to IOV pool. Took %8.3f seconds.",
+             num_cond, restore.c_str(), pers->duration);
     printout(ALWAYS,"Statistics","+=========================================================================");
   }
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs

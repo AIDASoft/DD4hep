@@ -72,6 +72,22 @@ ConditionsRootPersistency::~ConditionsRootPersistency()    {
   clear();
 }
 
+/// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
+size_t ConditionsRootPersistency::add(const std::string& identifier,
+                                      const IOV& iov,
+                                      std::vector<Condition>& conditions)   {
+  DurationStamp stamp(this);
+  conditionPools.push_back(pair<iov_key_type, pool_type>());
+  pool_type&    ent = conditionPools.back().second;
+  iov_key_type& key = conditionPools.back().first;
+  key.first         = identifier;
+  key.second.first  = make_pair(iov.iovType->name,iov.type);
+  key.second.second = iov.key();
+  ent               = conditions;
+  for(auto c : ent) c.ptr()->addRef();
+  return ent.size();
+}
+
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
 size_t ConditionsRootPersistency::add(const string& identifier, ConditionsPool& pool)    {
   DurationStamp stamp(this);
@@ -171,18 +187,52 @@ ConditionsRootPersistency::load(TFile* file,const string& obj)   {
 }
 
 /// Load ConditionsPool(s) and populate conditions manager
-size_t ConditionsRootPersistency::_import(persistent_type&   persistent_pools,
+size_t ConditionsRootPersistency::_import(ImportStrategy     strategy,
+                                          persistent_type&   persistent_pools,
                                           const std::string& id,
                                           const std::string& iov_type,
-                                          ConditionsManager mgr)   {
+                                          const IOV::Key&    iov_key,
+                                          ConditionsManager  mgr)   {
   size_t count = 0;
   std::pair<bool,const IOVType*> iovTyp(false,0);
   for (auto& iovp : persistent_pools )   {
+    bool use = false;
     const iov_key_type& key = iovp.first;
     if ( !(id.empty() || id=="*" || key.first == id) )
       continue;
     if ( !(iov_type.empty() || iov_type == "*" || key.second.first.first == iov_type) )
       continue;
+    switch(strategy)   {
+    case IMPORT_ALL:
+      use = true;
+      break;
+    case IMPORT_EXACT:
+      use = key.second.second == iov_key;
+      break;
+    case IMPORT_CONTAINED:
+      use = IOV::key_is_contained(key.second.second,iov_key);
+      break;
+    case IMPORT_EDGE_LOWER:
+      use = IOV::key_overlaps_lower_end(key.second.second,iov_key);
+      break;
+    case IMPORT_EDGE_UPPER:
+      use = IOV::key_overlaps_higher_end(key.second.second,iov_key);
+      break;
+    case IMPORT_CONTAINED_LOWER:
+      use = IOV::key_is_contained(key.second.second,iov_key) ||
+        IOV::key_overlaps_lower_end(key.second.second,iov_key);
+      break;
+    case IMPORT_CONTAINED_UPPER:
+      use = IOV::key_is_contained(key.second.second,iov_key) ||
+        IOV::key_overlaps_higher_end(key.second.second,iov_key);
+      break;
+    default:
+      use = false;
+      break;
+    }
+    if ( !use )
+      continue;
+
     iovTyp = mgr.registerIOVType(key.second.first.second,key.second.first.first);
     if ( iovTyp.second )   {
       ConditionsPool* pool = mgr.registerIOV(*iovTyp.second, key.second.second);
@@ -211,7 +261,7 @@ size_t ConditionsRootPersistency::importIOVPool(const std::string& identifier,
                                                 ConditionsManager  mgr)
 {
   DurationStamp stamp(this);
-  return _import(iovPools,identifier,iov_type,mgr);
+  return _import(IMPORT_ALL,iovPools,identifier,iov_type,IOV::Key(),mgr);
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
@@ -220,7 +270,7 @@ size_t ConditionsRootPersistency::importUserPool(const std::string& identifier,
                                                  ConditionsManager  mgr)
 {
   DurationStamp stamp(this);
-  return _import(userPools,identifier,iov_type,mgr);
+  return _import(IMPORT_ALL,userPools,identifier,iov_type,IOV::Key(),mgr);
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
@@ -229,7 +279,16 @@ size_t ConditionsRootPersistency::importConditionsPool(const std::string& identi
                                                        ConditionsManager  mgr)
 {
   DurationStamp stamp(this);
-  return _import(conditionPools,identifier,iov_type,mgr);
+  return _import(IMPORT_ALL,conditionPools,identifier,iov_type,IOV::Key(),mgr);
+}
+
+/// Load conditions pool and populate conditions manager. Allow tro be selective also for the key
+size_t ConditionsRootPersistency::importConditionsPool(ImportStrategy     strategy,
+                                                       const std::string& identifier,
+                                                       const std::string& iov_type,
+                                                       const IOV::Key&    iov_key,
+                                                       ConditionsManager  mgr)   {
+  return _import(strategy,conditionPools,identifier,iov_type,iov_key,mgr);
 }
 
 /// Save the data content to a root file

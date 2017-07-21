@@ -94,12 +94,32 @@ dd4hep_add_test_reg( Conditions_Telescope_root_save
   )
 #
 #---Testing: Save conditions to ROOT file
-dd4hep_add_test_reg( Conditions_Telescope_root_load
+dd4hep_add_test_reg( Conditions_Telescope_root_load_iov
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
-    -conditions TelescopeConditions.root
-  REGEX_PASS "\\+  Accessed a total of 1600 conditions \\(S:  1600,L:     0,C:     0,M:0\\)"
+    -conditions TelescopeConditions.root -iovs 30 -restore iovpool
+  REGEX_PASS "\\+  Accessed a total of 4800 conditions \\(S:  4800,L:     0,C:     0,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Save conditions to ROOT file
+dd4hep_add_test_reg( Conditions_Telescope_root_load_usr
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
+    -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+    -conditions TelescopeConditions.root -iovs 30 -restore userpool
+  REGEX_PASS "\\+  Accessed a total of 4800 conditions \\(S:  4800,L:     0,C:     0,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Save conditions to ROOT file
+dd4hep_add_test_reg( Conditions_Telescope_root_load_pool
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
+    -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+    -conditions TelescopeConditions.root -iovs 30 -restore condpool
+  REGEX_PASS "\\+  Accessed a total of 4800 conditions \\(S:  4800,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -141,10 +161,30 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_save_LONGTEST
   )
 #
 #---Testing: Save conditions to ROOT file
-dd4hep_add_test_reg( Conditions_CLICSiD_root_load_LONGTEST
+dd4hep_add_test_reg( Conditions_CLICSiD_root_load_iov_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
-    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -restore iovpool
+    -conditions CLICSiDConditions.root
+  REGEX_PASS "\\+  Accessed a total of 840264 conditions \\(S:840264,L:     0,C:     0,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Save conditions to ROOT file
+dd4hep_add_test_reg( Conditions_CLICSiD_root_load_usr_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -restore userpool
+    -conditions CLICSiDConditions.root
+  REGEX_PASS "\\+  Accessed a total of 840264 conditions \\(S:840264,L:     0,C:     0,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Save conditions to ROOT file
+dd4hep_add_test_reg( Conditions_CLICSiD_root_load_cond_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
+    -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -restore condpool
     -conditions CLICSiDConditions.root
   REGEX_PASS "\\+  Accessed a total of 840264 conditions \\(S:840264,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
