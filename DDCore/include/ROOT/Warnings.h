@@ -28,3 +28,12 @@
 #pragma clang diagnostic ignored "-Wunused"
 #pragma clang diagnostic ignored "-Woverlength-strings"
 #endif
+
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLANG__) || defined(__ROOTCLING__)
+#define  DD4HEP_DICTIONARY_MODE 1
+#endif
+
+#if defined(G__DICTIONARY) && defined(G__ROOT)
+#define  DD4HEP_DICTIONARY_CODE 1
+#endif
+

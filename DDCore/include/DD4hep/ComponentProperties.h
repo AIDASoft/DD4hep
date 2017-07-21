@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DDG4_COMPONENTPROPERTIES_H
 #define DD4HEP_DDG4_COMPONENTPROPERTIES_H
 
@@ -36,7 +35,7 @@ namespace dd4hep {
    *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_SIMULATION
+   *  \ingroup DD4HEP_CORE
    */
   class PropertyConfigurator {
   protected:
@@ -49,14 +48,16 @@ namespace dd4hep {
 
   /// Class describing the grammar representation of a given data type
   /**
+   *  Note: This class cannot be saved to a ROOT file!
+   *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_SIMULATION
+   *  \ingroup DD4HEP_CORE
    */
   class PropertyGrammar {
   protected:
     friend class Property;
-    const BasicGrammar& m_grammar;
+    const BasicGrammar& m_grammar;  //! This member is not ROOT persistent as the entire class is not.
   public:
     /// Default constructor
     PropertyGrammar(const BasicGrammar& g);
@@ -82,9 +83,11 @@ namespace dd4hep {
    *   between types, which are initially unrelated such as
    *   e.g. vector<int> and list<short>.
    *
+   *  Note: This class cannot be saved to a ROOT file!
+   *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_SIMULATION
+   *  \ingroup DD4HEP_CORE
    */
   class Property {
   protected:
@@ -138,9 +141,11 @@ namespace dd4hep {
 
   /// Concrete template instantiation of a combined property value pair.
   /**
+   *  Note: This class cannot be saved to a ROOT file!
+   *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_SIMULATION
+   *  \ingroup DD4HEP_CORE
    */
   template <class TYPE> class PropertyValue : private Property {
   public:
@@ -170,9 +175,11 @@ namespace dd4hep {
 
   /// Manager to ease the handling of groups of properties.
   /**
+   *  Note: This class cannot be saved to a ROOT file!
+   *
    *  \author  M.Frank
    *  \version 1.0
-   *  \ingroup DD4HEP_SIMULATION
+   *  \ingroup DD4HEP_CORE
    */
   class PropertyManager {
   public:
@@ -230,6 +237,8 @@ namespace dd4hep {
 
   /// Property object as base class for all objects supporting properties
   /** 
+   *  Note: This class cannot be saved to a ROOT file!
+   *
    *  \author  M.Frank
    *  \version 1.0
    */

@@ -408,7 +408,6 @@ namespace dd4hep {
 
   // Utility type definitions
   typedef std::vector<Condition>          RangeConditions;
-  typedef std::pair<RangeConditions,bool> RangeStatus;
-
+  
 }          /* End namespace dd4hep                   */
-#endif     /* DD4HEP_DDCORE_CONDITIONS_H         */
+#endif     /* DD4HEP_DDCORE_CONDITIONS_H             */

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCOND_CONDITIONSPOOL_H
-#define DDCOND_CONDITIONSPOOL_H
+#ifndef DDCOND_CONDITIONS_CONDITIONSPOOL_H
+#define DDCOND_CONDITIONS_CONDITIONSPOOL_H
 
 // Framework include files
 #include "DD4hep/NamedObject.h"
@@ -217,6 +217,6 @@ namespace dd4hep {
                              void* user_param,
                              bool force) = 0;
     };
-  }        /* End namespace cond               */
+  }        /* End namespace cond                     */
 }          /* End namespace dd4hep                   */
-#endif     /* DDCOND_CONDITIONSPOOL_H                */
+#endif     /* DDCOND_CONDITIONS_CONDITIONSPOOL_H     */

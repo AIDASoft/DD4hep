@@ -123,7 +123,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
            cr_stat.GetName(), cr_stat.GetMean(), cr_stat.GetMeanErr(), cr_stat.GetRMS(), cr_stat.GetN());
   printout(INFO,"Statistics","+  %-12s:  %11.5g +- %11.4g  RMS = %11.5g  N = %lld",
            acc_stat.GetName(), acc_stat.GetMean(), acc_stat.GetMeanErr(), acc_stat.GetRMS(), acc_stat.GetN());
-  printout(INFO,"Statistics","+  Accessed Total %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld). Created:%ld",
+  printout(INFO,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld). Created:%ld",
            total.total(), total.selected, total.loaded, total.computed, total.missing, total_created);
   printout(INFO,"Statistics","+=========================================================================");
   // All done.
