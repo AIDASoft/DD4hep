@@ -99,6 +99,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_iov
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore iovpool
+  DEPENDS Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 4800 conditions \\(S:  4800,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -109,6 +110,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_usr
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore userpool
+  DEPENDS Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 4800 conditions \\(S:  4800,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -119,6 +121,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_pool
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore condpool
+  DEPENDS Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 4800 conditions \\(S:  4800,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -166,6 +169,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_iov_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -restore iovpool
     -conditions CLICSiDConditions.root
+  DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 840264 conditions \\(S:840264,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -176,6 +180,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_usr_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -restore userpool
     -conditions CLICSiDConditions.root
+  DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 840264 conditions \\(S:840264,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -186,6 +191,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_cond_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/CLICSiD/compact/compact.xml -iovs 3 -restore condpool
     -conditions CLICSiDConditions.root
+  DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 840264 conditions \\(S:840264,L:     0,C:     0,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
