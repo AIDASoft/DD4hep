@@ -39,7 +39,8 @@ ConditionResolver::~ConditionResolver()  {
 void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const   {
   except("ConditionUpdateCall",
          "%s [%016llX]: FAILED to access non-existing item:%s [%016llX]",
-         dependency.target.name, dependency.target.hash, key_value.name, key_value.hash);
+         dependency.target.name.c_str(), dependency.target.hash,
+         key_value.name.c_str(), key_value.hash);
 }
 
 /// Initializing constructor
