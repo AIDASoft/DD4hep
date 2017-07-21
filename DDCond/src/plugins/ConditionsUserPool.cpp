@@ -437,10 +437,10 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
 
 namespace {
   struct COMP {
-    typedef pair<Condition::key_type,const ConditionDependency*> Dep;
-    typedef pair<const Condition::key_type,detail::ConditionObject*>   Cond;
-    typedef pair<const Condition::key_type,ConditionsLoadInfo* >   Info;
-    typedef pair<const Condition::key_type,Condition>   Cond2;
+    typedef pair<Condition::key_type,const ConditionDependency*>     Dep;
+    typedef pair<const Condition::key_type,detail::ConditionObject*> Cond;
+    typedef pair<const Condition::key_type,ConditionsLoadInfo* >     Info;
+    typedef pair<const Condition::key_type,Condition>                Cond2;
     
     bool operator()(const Dep& a,const Cond& b) const { return a.first < b.first; }
     bool operator()(const Cond& a,const Dep& b) const { return a.first < b.first; }
@@ -498,7 +498,12 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
   printout(num_calc_miss==0 ? DEBUG : INFO,"UserPool",
            "Found %ld missing derived conditions out of %ld conditions.",
            num_calc_miss, slice_calc.size());
-
+#if 0
+  auto iter = begin(calc_missing);
+  for(auto i=0; i<num_calc_miss; ++i, ++iter)   {
+    printout(INFO,""," Missing derived: %016llX -> %s",(*iter).first,(*iter).second->target.name.c_str());
+  }
+#endif
   result.loaded   = 0;
   result.computed = 0;
   result.selected = m_conditions.size();

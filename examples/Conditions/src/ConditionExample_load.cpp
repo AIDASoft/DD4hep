@@ -16,15 +16,19 @@
    This plugin behaves like a main program.
    Invoke the plugin with something like this:
 
-   geoPluginRun -volmgr -destroy -plugin DD4hep_ConditionExample_populate \
-   -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
+   geoPluginRun -volmgr -destroy -plugin DD4hep_ConditionExample_load \
+   -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml \
+   -conditions Conditions.root
 
-   Populate the conditions store by hand for a set of IOVs.
+   Save the conditions store by hand for a set of IOVs.
    Then compute the corresponding alignment entries....
 
 */
 // Framework include files
 #include "ConditionExampleObjects.h"
+#include "DDCond/ConditionsIOVPool.h"
+#include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsRootPersistency.h"
 #include "DD4hep/Factories.h"
 
 using namespace std;
@@ -33,32 +37,34 @@ using namespace dd4hep::ConditionExamples;
 
 /// Plugin function: Condition program example
 /**
- *  Factory: DD4hep_ConditionExample_populate
+ *  Factory: DD4hep_ConditionExample_load
  *
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/12/2016
  */
 static int condition_example (Detector& description, int argc, char** argv)  {
-
-  string input;
+  string input, conditions;
   int    num_iov = 10;
   bool   arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-input",argv[i],4) )
       input = argv[++i];
+    else if ( 0 == ::strncmp("-conditions",argv[i],4) )
+      conditions = argv[++i];
     else if ( 0 == ::strncmp("-iovs",argv[i],4) )
       num_iov = ::atol(argv[++i]);
     else
       arg_error = true;
   }
-  if ( arg_error || input.empty() )   {
+  if ( arg_error || input.empty() || conditions.empty() )   {
     /// Help printout describing the basic command line interface
     cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
-      "     name:   factory name     DD4hep_ConditionExample_populate                \n"
-      "     -input   <string>        Geometry file                                   \n"
-      "     -iovs    <number>        Number of parallel IOV slots for processing.    \n"
+      "     name:   factory name     DD4hep_ConditionExample_load                    \n"
+      "     -input       <string>    Geometry file                                   \n"
+      "     -conditions  <string>    Conditions input file                           \n"
+      "     -iovs        <number>    Number of parallel IOV slots for processing.    \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
@@ -68,26 +74,28 @@ static int condition_example (Detector& description, int argc, char** argv)  {
 
   /******************** Initialize the conditions manager *****************/
   ConditionsManager manager = installManager(description);
-  const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
-  if ( 0 == iov_typ )
-    except("ConditionsPrepare","++ Unknown IOV type supplied.");
-
-  /******************** Now as usual: create the slice ********************/
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
   Scanner(ConditionsKeys(*content,INFO),description.world());
   Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
 
-  /******************** Populate the conditions store *********************/
-  // Have 10 run-slices [11,20] .... [91,100]
-  for(int i=0; i<num_iov; ++i)  {
-    IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
-    ConditionsPool*   iov_pool = manager.registerIOV(*iov.iovType, iov.key());
-    // Create conditions with all deltas. Use a generic creator
-    Scanner(ConditionsCreator(*slice, *iov_pool, INFO),description.world(),0,true);
+  /******************** Load the conditions from file *********************/
+  {
+    auto pers = cond::ConditionsRootPersistency::load(conditions.c_str(),"DD4hep Conditions");
+    printout(ALWAYS,"Statistics","+=========================================================================");
+    printout(ALWAYS,"Statistics","+  Loaded conditions object from file %s. Took %8.3f seconds.",
+             conditions.c_str(),pers->duration);
+    size_t num_cond = pers->importIOVPool("ConditionsIOVPool No 1","run",manager);
+    printout(ALWAYS,"Statistics","+  Imported %ld conditions to IOV pool. Took %8.3f seconds.",
+             num_cond, pers->duration);
+    printout(ALWAYS,"Statistics","+=========================================================================");
   }
-  
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
+  const IOVType* iov_typ = manager.iovType("run");
+  cond::ConditionsIOVPool* pool = manager.iovPool(*iov_typ);
+  for( const auto& p : pool->elements )
+    p.second->print("*");
+
   ConditionsManager::Result total;
   for(int i=0; i<num_iov; ++i)  {
     IOV req_iov(iov_typ,i*10+5);
@@ -98,16 +106,16 @@ static int condition_example (Detector& description, int argc, char** argv)  {
       Scanner(ConditionsPrinter(slice.get(),"Example"),description.world());
     }
     // Now compute the tranformation matrices
-    printout(INFO,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
+    printout(ALWAYS,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
              r.total(), r.selected, r.loaded, r.computed, r.missing, req_iov.str().c_str());
   }  
-  printout(INFO,"Statistics","+=========================================================================");
-  printout(INFO,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld)",
+  printout(ALWAYS,"Statistics","+=========================================================================");
+  printout(ALWAYS,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld)",
            total.total(), total.selected, total.loaded, total.computed, total.missing);
-  printout(INFO,"Statistics","+=========================================================================");
+  printout(ALWAYS,"Statistics","+=========================================================================");
   // All done.
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_APPLY(DD4hep_ConditionExample_populate,condition_example)
+DECLARE_APPLY(DD4hep_ConditionExample_load,condition_example)

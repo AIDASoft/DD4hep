@@ -23,6 +23,7 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/detail/*.h
   include/XML/*.h
   src/DetectorImp.h
+  src/RootDictionary.h
   EXCLUDE include/DD4hep/DetFactoryHelper.h
   include/DD4hep/Factories.h
   include/DD4hep/Plugins.h
@@ -34,11 +35,32 @@ dd4hep_add_dictionary( G__DD4hep
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h )
 
+#---Generate ROOT dictionary------------------------------------------------------
+dd4hep_add_dictionary( G__DD4hepGeo
+  SOURCES include/ROOT/Warnings.h
+  src/GeoDictionary.h
+  LINKDEF include/ROOT/LinkDef.h )
+
+#---Generate ROOT dictionary------------------------------------------------------
+dd4hep_add_dictionary( G__DD4hepProperties
+  SOURCES include/ROOT/Warnings.h
+  src/PropertyDictionary.h
+  LINKDEF include/ROOT/LinkDef.h )
+
+#---Generate ROOT dictionary------------------------------------------------------
+dd4hep_add_dictionary( G__DD4hepSegmentations
+  SOURCES include/ROOT/Warnings.h
+  src/SegmentationDictionary.h
+  LINKDEF include/ROOT/LinkDef.h )
+
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/segmentations/*.cpp src/XML/*.cpp
   OPTIONAL       [BOOST SOURCES src/JSON/*.cpp]
-  GENERATED      G__DD4hep.cxx 
+  GENERATED      G__DD4hep.cxx
+  G__DD4hepProperties.cxx
+  G__DD4hepSegmentations.cxx
+  G__DD4hepGeo.cxx
   INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
   LINK_LIBRARIES DDParsers ${GaudiPluginService_LIBRARIES}
   )

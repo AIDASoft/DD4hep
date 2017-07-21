@@ -71,6 +71,8 @@ namespace dd4hep {
                              const ConditionDependency& d,
                              void* parameter,
                              IOV& iov);
+      /// Throw exception on conditions access failure
+      void accessFailure(const ConditionKey& key_value)  const;
       /// Access to dependency keys
       const ConditionKey& key(size_t which)  const;
       /// Access to condition object by dependency index
@@ -90,7 +92,8 @@ namespace dd4hep {
           iov->iov_intersection(cond.iov());
           return data;
         }
-        throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing item:"+key_value.name);
+        accessFailure(key_value);
+        throw std::runtime_error("ConditionUpdateCall");
       }
       /// Access of other conditions data from the resolver
       template<typename T> const T& get(const ConditionKey& key_value)  const {
@@ -101,7 +104,8 @@ namespace dd4hep {
           iov->iov_intersection(cond.iov());
           return data;
         }
-        throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing item:"+key_value.name);
+        accessFailure(key_value);
+        throw std::runtime_error("ConditionUpdateCall");
       }
       /// Access of other conditions data from the resolver
       template<typename T> T& get(size_t key_id)  {

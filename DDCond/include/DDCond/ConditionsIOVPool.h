@@ -37,12 +37,15 @@ namespace dd4hep {
      */
     class ConditionsIOVPool  {
     public:
+      /// Shortcut name for the actual container elements
       typedef std::shared_ptr<ConditionsPool> Element;
+      /// Shortcut name for the actual conditions container
       typedef std::map<IOV::Key, Element >    Elements;      
 
       /// Container of IOV dependent conditions pools
-      Elements elements;
-      const IOVType* type;
+      Elements elements;     //! Not ROOT persistent
+      /// Reference to the IOV container
+      const IOVType* type;   //! Not ROOT persistent
       
     public:
       /// Default constructor

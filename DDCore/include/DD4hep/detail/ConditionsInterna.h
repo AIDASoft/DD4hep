@@ -58,29 +58,33 @@ namespace dd4hep {
     class ConditionObject : public NamedObject {
     public:
       /// Condition value (in string form)
-      std::string     value;
+      std::string          value;
       /// Condition validity (in string form)
-      std::string     validity;
+      std::string          validity;
       /// Condition address
-      std::string     address;
+      std::string          address;
       /// Comment string
-      std::string     comment;
+      std::string          comment;
       /// Data block
-      OpaqueDataBlock data;
+      OpaqueDataBlock      data;
       /// Interval of validity
-      const IOV* iov   = 0;     //! No ROOT persistency
+      const IOV*           iov   = 0;     //! No ROOT persistency
       /// Hash value of the name
       Condition::key_type  hash  = 0;
       /// Flags
       Condition::mask_type flags = 0;
       /// Reference count
-      int             refCount = 0;
+      int                  refCount = 1;
       /// Default constructor
       ConditionObject();
       /// Standard constructor
       ConditionObject(const std::string& nam,const std::string& tit="");
       /// Standard Destructor
       virtual ~ConditionObject();
+      /// Increase reference counter (Used by persistency mechanism)
+      ConditionObject* addRef()  {  ++refCount; return this;         }
+      /// Release object (Used by persistency mechanism)
+      void release();
       /// Data offset from the opaque data block pointer to the condition
       static size_t offset();
       /// Move data content: 'from' will be reset to NULL

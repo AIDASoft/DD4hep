@@ -52,6 +52,11 @@ detail::ConditionObject::~ConditionObject()  {
   InstanceCount::decrement(this);
 }
 
+/// Release object (Used by persistency mechanism)
+void detail::ConditionObject::release()  {
+  if ( --refCount <= 0 ) delete this;
+}
+
 /// Data offset from the opaque data block pointer to the condition
 size_t detail::ConditionObject::offset()   {
   static _P p((void*)0x1000);
