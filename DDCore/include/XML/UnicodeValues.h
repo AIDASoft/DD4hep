@@ -254,6 +254,7 @@ UNICODE (n);
 UNICODE (N);
 UNICODE (NIL);
 UNICODE (name);
+UNICODE (nocore);
 UNICODE (nmodules);
 UNICODE (nModules);
 UNICODE (normal);

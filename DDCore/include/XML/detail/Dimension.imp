@@ -147,6 +147,8 @@ XML_ATTR_ACCESSOR(int, number)
 XML_ATTR_ACCESSOR(int, repeat)
 XML_ATTR_ACCESSOR(bool, reflect)
 XML_ATTR_ACCESSOR_BOOL(reflect)
+XML_ATTR_ACCESSOR(bool, nocore)
+XML_ATTR_ACCESSOR_BOOL(nocore)
 
 XML_ATTR_ACCESSOR(int, nmodules)
 XML_ATTR_ACCESSOR(int, nModules)
