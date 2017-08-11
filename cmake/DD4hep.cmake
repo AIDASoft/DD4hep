@@ -109,8 +109,13 @@ function(dd4hep_generate_rootmap_notapple library)
   #                   DEPENDS ${library})
   ##add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
 
+  SET( install_destination "lib" )
+  if( CMAKE_INSTALL_LIBDIR )
+    SET( install_destination ${CMAKE_INSTALL_LIBDIR} )
+  endif()
+
   install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
-    DESTINATION lib
+    DESTINATION ${install_destination}
   )
 endfunction()
 #
