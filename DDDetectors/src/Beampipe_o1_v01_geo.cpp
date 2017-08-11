@@ -263,24 +263,22 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	tubeLog2.setVisAttributes(description, "VacVis");
 
 	if (nocore){
-
+	  
 	  //placement of the wall only
 	  envelope.placeVolume( wallLog,  transformer );
 	  envelope.placeVolume( wallLog2,  transmirror );
-
-	}
-
-	else{
-
+	  
+	}else{
+	  
 	  // placement of the tube in the world, both at +z and -z
 	  envelope.placeVolume( tubeLog,  transformer );
 	  envelope.placeVolume( tubeLog2,  transmirror );
-
+	  
 	  // placement as a daughter volume of the tube, will appear in both placements of the tube
 	  tubeLog.placeVolume( wallLog,  Transform3D() );
 	  tubeLog2.placeVolume( wallLog2,  Transform3D() );
 	}
-
+	
       }
     }
       break;
@@ -344,19 +342,17 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       tubeLog1.setVisAttributes(description, "VacVis");
 
       if (nocore){
-
+	
 	// placement of the wall only
 	envelope.placeVolume( wallLog0, placementTransformer );
 	envelope.placeVolume( wallLog1, placementTransmirror );
-
-      }
-
-      else{
-
+	
+      }else{
+	
 	// placement of the tube in the world, both at +z and -z
 	envelope.placeVolume( tubeLog0, placementTransformer );
 	envelope.placeVolume( tubeLog1, placementTransmirror );
-
+	
 	// placement as a daughter volumes of the tube
 	tubeLog0.placeVolume( wallLog0, Position() );
 	tubeLog1.placeVolume( wallLog1, Position() );
@@ -409,9 +405,6 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       tubeLog0.setVisAttributes(description, "VacVis");
       tubeLog1.setVisAttributes(description, "VacVis");
 
-      // placement as a daughter volumes of the tube
-      tubeLog0.placeVolume( wallLog0 , Position() );
-      tubeLog1.placeVolume( wallLog1 , Position() );
 
       if (nocore){
 
@@ -419,9 +412,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	envelope.placeVolume( wallLog0, placementTransformer );
 	envelope.placeVolume( wallLog1, placementTransmirror );
 
-      }
-
-      else{
+      }else{
 
 	// placement of the tube in the world, both at +z and -z
 	envelope.placeVolume( tubeLog0, placementTransformer );
@@ -496,8 +487,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	  // placement as a daughter volumes of the tube
 	  tubeLog0.placeVolume( wallLog0, Position() );
 	  tubeLog1.placeVolume( wallLog1, Position() );
-	}
-	else{    // placement of the wall only
+	}else{    // placement of the wall only
 	  envelope.placeVolume( wallLog0, placementTransformer );
 	  envelope.placeVolume( wallLog1, placementTransmirror );
 	}
@@ -566,8 +556,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	// placement as a daughter volumes of the tube
 	  tubeLog0.placeVolume( wallLog0, Transform3D() );
 	  tubeLog1.placeVolume( wallLog1, Transform3D() );
-	}
-	else{   // placement of the wall only
+	}else{   // placement of the wall only
 	  envelope.placeVolume( wallLog0, placementTransformer );
 	  envelope.placeVolume( wallLog1, placementTransmirror );
 	}
@@ -643,8 +632,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	  // placement as a daughter volumes of the tube
 	  tubeLog0.placeVolume( wallLog0, Transform3D() );
 	  tubeLog1.placeVolume( wallLog1, Transform3D() );
-	}
-	else{  // placement of the wall only
+	}else{  // placement of the wall only
 	  envelope.placeVolume( wallLog0, placementTransformer );
 	  envelope.placeVolume( wallLog1, placementTransmirror );
 	}
@@ -664,11 +652,13 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 
 
   // add a surface just inside the beampipe for tracking:
-  Vector3D oIPCyl( (min_radius-1.e-3)  , 0. , 0.  ) ;
-  SimpleCylinder ipCylSurf( envelope , SurfaceType( SurfaceType::Helper ) , 1.e-5  , 1e-5 , oIPCyl ) ;
-  // the length does not really matter here as long as it is long enough for all tracks ...
-  ipCylSurf->setHalfLength(  100*units::cm ) ;
-  dd4hep::rec::volSurfaceList( tube )->push_back( ipCylSurf ) ;
+  if (nocore==false){
+    Vector3D oIPCyl( (min_radius-1.e-3)  , 0. , 0.  ) ;
+    SimpleCylinder ipCylSurf( envelope , SurfaceType( SurfaceType::Helper ) , 1.e-5  , 1e-5 , oIPCyl ) ;
+    // the length does not really matter here as long as it is long enough for all tracks ...
+    ipCylSurf->setHalfLength(  100*units::cm ) ;
+    dd4hep::rec::volSurfaceList( tube )->push_back( ipCylSurf ) ;
+  }
 
   tube.addExtension< dd4hep::rec::ConicalSupportData >( beampipeData ) ;
 
