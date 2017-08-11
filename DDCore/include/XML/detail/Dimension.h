@@ -401,6 +401,10 @@ namespace dd4hep {
       bool reflect() const;
       /// Access attribute values: reflect
       bool reflect(bool default_value) const;
+      /// Access attribute values: nocore
+      bool nocore() const;
+      /// Access attribute values: nocore
+      bool nocore(bool default_value) const;
       /// Access attribute values: crossing_angle
       double crossing_angle() const;
       /// Access attribute values: repeat

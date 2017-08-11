@@ -111,7 +111,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
   //Access to the XML File
   xml_det_t xmlBeampipe = element;
   const std::string name = xmlBeampipe.nameStr();
-
+  bool nocore  = xmlBeampipe.nocore(false);
 
   dd4hep::DetElement tube(  name, xmlBeampipe.id()  ) ;
 
@@ -210,10 +210,6 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       Volume tubeLog( volName, tubeSolid, coreMaterial ) ;
       Volume tubeLog2( volName, tubeSolid, coreMaterial ) ;
 
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog,  transformer );
-      envelope.placeVolume( tubeLog2,  transmirror );
-
       // if inner and outer radii are equal, then omit the tube wall
       if (rInnerStart != rOuterStart || rInnerEnd != rOuterEnd) {
 
@@ -266,9 +262,25 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	tubeLog.setVisAttributes(description, "VacVis");
 	tubeLog2.setVisAttributes(description, "VacVis");
 
-	// placement as a daughter volume of the tube, will appear in both placements of the tube
-	tubeLog.placeVolume( wallLog,  Transform3D() );
-	tubeLog2.placeVolume( wallLog2,  Transform3D() );
+	if (nocore){
+
+	  //placement of the wall only
+	  envelope.placeVolume( wallLog,  transformer );
+	  envelope.placeVolume( wallLog2,  transmirror );
+
+	}
+
+	else{
+
+	  // placement of the tube in the world, both at +z and -z
+	  envelope.placeVolume( tubeLog,  transformer );
+	  envelope.placeVolume( tubeLog2,  transmirror );
+
+	  // placement as a daughter volume of the tube, will appear in both placements of the tube
+	  tubeLog.placeVolume( wallLog,  Transform3D() );
+	  tubeLog2.placeVolume( wallLog2,  Transform3D() );
+	}
+
       }
     }
       break;
@@ -294,10 +306,6 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       // tube consists of vacuum (will later have two different daughters)
       Volume tubeLog0( volName + "_0", tubeSolid, coreMaterial );
       Volume tubeLog1( volName + "_1", tubeSolid, coreMaterial );
-
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
 
       // the wall solid and placeholders for possible SubtractionSolids
       ConeSegment wholeSolid(  zHalf, 0, rOuterStart, 0, rOuterEnd, phi1, phi2);
@@ -335,9 +343,24 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       tubeLog0.setVisAttributes(description, "VacVis");
       tubeLog1.setVisAttributes(description, "VacVis");
 
-      // placement as a daughter volumes of the tube
-      tubeLog0.placeVolume( wallLog0, Position() );
-      tubeLog1.placeVolume( wallLog1, Position() );
+      if (nocore){
+
+	// placement of the wall only
+	envelope.placeVolume( wallLog0, placementTransformer );
+	envelope.placeVolume( wallLog1, placementTransmirror );
+
+      }
+
+      else{
+
+	// placement of the tube in the world, both at +z and -z
+	envelope.placeVolume( tubeLog0, placementTransformer );
+	envelope.placeVolume( tubeLog1, placementTransmirror );
+
+	// placement as a daughter volumes of the tube
+	tubeLog0.placeVolume( wallLog0, Position() );
+	tubeLog1.placeVolume( wallLog1, Position() );
+      }
 
       break;
     }
@@ -365,10 +388,6 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       Volume tubeLog0( volName + "_0", tubeSolid, coreMaterial );
       Volume tubeLog1( volName + "_1", tubeSolid, coreMaterial );
 
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
-
       // the wall solid and the piece (only a tube, for the moment) which will be punched out
       ConeSegment wholeSolid( zHalf, rCenterPunch , rOuterStart, rCenterPunch, rOuterEnd, phi1, phi2);
 
@@ -393,6 +412,25 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       // placement as a daughter volumes of the tube
       tubeLog0.placeVolume( wallLog0 , Position() );
       tubeLog1.placeVolume( wallLog1 , Position() );
+
+      if (nocore){
+
+	// placement of the wall only
+	envelope.placeVolume( wallLog0, placementTransformer );
+	envelope.placeVolume( wallLog1, placementTransmirror );
+
+      }
+
+      else{
+
+	// placement of the tube in the world, both at +z and -z
+	envelope.placeVolume( tubeLog0, placementTransformer );
+	envelope.placeVolume( tubeLog1, placementTransmirror );
+
+	// placement as a daughter volumes of the tube
+	tubeLog0.placeVolume( wallLog0 , Position() );
+	tubeLog1.placeVolume( wallLog1 , Position() );
+      }
 
       break;
     }
@@ -431,9 +469,11 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       Volume tubeLog0( volName + "_0", tubeSolid0, coreMaterial );
       Volume tubeLog1( volName + "_1", tubeSolid1, coreMaterial );
 
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
+      if (nocore==false){
+	// placement of the tube in the world, both at +z and -z
+	envelope.placeVolume( tubeLog0, placementTransformer );
+	envelope.placeVolume( tubeLog1, placementTransmirror );
+      }
 
       if (rInnerStart != rOuterStart || rInnerEnd != rOuterEnd) {
 	// the wall solid: a tubular cone
@@ -452,10 +492,15 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 
 	tubeLog0.setVisAttributes(description, "VacVis");
 	tubeLog1.setVisAttributes(description, "VacVis");
-
-	// placement as a daughter volumes of the tube
-	tubeLog0.placeVolume( wallLog0, Position() );
-	tubeLog1.placeVolume( wallLog1, Position() );
+	if (nocore==false){
+	  // placement as a daughter volumes of the tube
+	  tubeLog0.placeVolume( wallLog0, Position() );
+	  tubeLog1.placeVolume( wallLog1, Position() );
+	}
+	else{    // placement of the wall only
+	  envelope.placeVolume( wallLog0, placementTransformer );
+	  envelope.placeVolume( wallLog1, placementTransmirror );
+	}
       }
     }
       break;
@@ -493,9 +538,11 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       Volume tubeLog0( volName + "_0", tubeSolid0, coreMaterial );
       Volume tubeLog1( volName + "_1", tubeSolid1, coreMaterial );
 
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
+      if (nocore==false){
+	// placement of the tube in the world, both at +z and -z
+	envelope.placeVolume( tubeLog0, placementTransformer );
+	envelope.placeVolume( tubeLog1, placementTransmirror );
+      }
 
       if (rInnerStart != rOuterStart || rInnerEnd != rOuterEnd) {
 	// the wall solid: a tubular cone
@@ -515,9 +562,15 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	tubeLog0.setVisAttributes(description, "VacVis");
 	tubeLog1.setVisAttributes(description, "VacVis");
 
+	if (nocore==false){
 	// placement as a daughter volumes of the tube
-	tubeLog0.placeVolume( wallLog0, Transform3D() );
-	tubeLog1.placeVolume( wallLog1, Transform3D() );
+	  tubeLog0.placeVolume( wallLog0, Transform3D() );
+	  tubeLog1.placeVolume( wallLog1, Transform3D() );
+	}
+	else{   // placement of the wall only
+	  envelope.placeVolume( wallLog0, placementTransformer );
+	  envelope.placeVolume( wallLog1, placementTransmirror );
+	}
       }
       break;
     }
@@ -560,9 +613,11 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       Volume tubeLog0( volName + "_0", tubeSolid0, coreMaterial );
       Volume tubeLog1( volName + "_1", tubeSolid1, coreMaterial );
 
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
+      if (nocore==false){
+	// placement of the tube in the world, both at +z and -z
+	envelope.placeVolume( tubeLog0, placementTransformer );
+	envelope.placeVolume( tubeLog1, placementTransmirror );
+      }
 
       if (rInnerStart != rOuterStart || rInnerEnd != rOuterEnd) {
 	// the wall solid: a tubular cone
@@ -584,9 +639,15 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	tubeLog0.setVisAttributes(description, "VacVis");
 	tubeLog1.setVisAttributes(description, "VacVis");
 
-	// placement as a daughter volumes of the tube
-	tubeLog0.placeVolume( wallLog0, Transform3D() );
-	tubeLog1.placeVolume( wallLog1, Transform3D() );
+	if (nocore==false){
+	  // placement as a daughter volumes of the tube
+	  tubeLog0.placeVolume( wallLog0, Transform3D() );
+	  tubeLog1.placeVolume( wallLog1, Transform3D() );
+	}
+	else{  // placement of the wall only
+	  envelope.placeVolume( wallLog0, placementTransformer );
+	  envelope.placeVolume( wallLog1, placementTransmirror );
+	}
       }
       break;
     }
