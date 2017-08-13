@@ -131,6 +131,6 @@ dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT:
 /// list
 Geant4EventReader::EventReaderStatus
 dd4hep::sim::LCIOFileReader::setParameters( std::map< std::string, std::string > & parameters ) {
-  _getParameterValue( parameters, "MCParticleCollectionName", m_collectionName, LCIO::MCPARTICLES);
+  _getParameterValue( parameters, "MCParticleCollectionName", m_collectionName, LCIO::MCPARTICLE);
   return EVENT_READER_OK;
 }
