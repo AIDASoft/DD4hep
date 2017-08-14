@@ -43,6 +43,7 @@ from DDSim.Helper.Random import Random
 from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Physics import Physics
 from DDSim.Helper.GuineaPig import GuineaPig
+from DDSim.Helper.LCIO import MCParticles
 
 import os
 import sys
@@ -85,6 +86,7 @@ class DD4hepSimulation(object):
     self.field = MagneticField()
     self.action = Action()
     self.guineapig = GuineaPig()
+    self.mcparticles = MCParticles()
 
     self.filter = Filter()
     self.physics = Physics()
@@ -362,6 +364,7 @@ class DD4hepSimulation(object):
     for index,inputFile in enumerate(self.inputFiles, start=4):
       if inputFile.endswith(".slcio"):
         gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO%d" % index)
+        gen.Parameters = self.mcParticles.getParameters()
         gen.Input="LCIOFileReader|"+inputFile
       elif inputFile.endswith(".stdhep"):
         gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/STDHEP%d" % index)
