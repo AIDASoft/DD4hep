@@ -2,10 +2,10 @@
 
 from DDSim.Helper.Input import Input
 
-class MCParticles( Input ):
+class LCIO( Input ):
   """Configuration for the generator-level InputFiles"""
   def __init__( self ):
-    super(MCParticles, self).__init__()
+    super(LCIO, self).__init__()
     self._parameters["MCParticleCollectionName"] = "MCParticle"
 
   @property
