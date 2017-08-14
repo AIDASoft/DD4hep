@@ -128,6 +128,11 @@ class DD4hepSimulation(object):
       self.steeringFile = parsed.steeringFile
       self.readSteeringFile()
 
+    ## readSteeringFile will set self._argv to None if there is a steering file
+    if self._argv is None:
+      self._argv = list(argv) if argv else list(sys.argv)
+
+
     parser.add_argument("--compactFile", action="store", default=self.compactFile,
                         help="The compact XML file")
 
