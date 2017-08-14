@@ -105,10 +105,10 @@ dd4hep_add_test_reg( ClientTests_Check_Handle_Casts
   EXEC_ARGS  geoPluginRun
   -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Check_Handles.xml
   -plugin DD4hepDetectorVolumeDump
-  REGEX_PASS "|   PASSED casts: 86      FAILED casts: 86                        |")
+  REGEX_PASS "|   164  casts PASSED     90 casts FAILED                         |")
 #
 #  Test saving geometry to file
-dd4hep_add_test_reg( ClientTests_MiniTel_Save_ROOT_LONGTEST
+dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.xml
@@ -117,11 +117,21 @@ dd4hep_add_test_reg( ClientTests_MiniTel_Save_ROOT_LONGTEST
 #
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 
-              MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
-              MultiCollections MultiSegmentations )
+    MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
+    MultiCollections MultiSegmentations )
+
+  # Test materials in volumes. Test here the proper access to the materials from the volumes,
+  # which was broken at some point.
+  dd4hep_add_test_reg( ClientTests_volume_materials_${test}
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy
+      -input  file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+      -plugin DD4hepVolumeDump -materials
+      REGEX_PASS "\\+\\+\\+ Checked [1-9][0-9]* materials in volume placements.   0 are BAD." )
+            
   # Test format conversions
   foreach( type description gdml vis )
-    dd4hep_add_test_reg( ClientTests_${test}_converter_${type}
+    dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}
                               -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
@@ -139,14 +149,14 @@ foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBloc
          NestedSimple NestedDetectors MultiCollections )
   #
   # Test material scans in [origine to 10 meters in y]
-  dd4hep_add_test_reg( ClientTests_${test}_material_scan
+  dd4hep_add_test_reg( ClientTests_material_scan_${test}
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  materialScan file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml 0 0 0 0 10000 0
     REGEX_PASS " Average Material " )
   #
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   if (DD4HEP_USE_GEANT4)
-    dd4hep_add_test_reg( ClientTests_${test}_g4material_scan_LONGTEST
+    dd4hep_add_test_reg( ClientTests_g4material_scan_${test}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
                         --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
@@ -160,7 +170,7 @@ endforeach()
 foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiCollections )
   #
   # ROOT Geometry checks
-  dd4hep_add_test_reg( ClientTests_${test}_check_geometry_LONGTEST
+  dd4hep_add_test_reg( ClientTests_check_geometry_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
                       --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
@@ -168,7 +178,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiColl
     REGEX_PASS " Execution finished..." )
   #
   # ROOT Geometry overlap checks
-  dd4hep_add_test_reg( ClientTests_${test}_check_overlaps_LONGTEST
+  dd4hep_add_test_reg( ClientTests_check_overlaps_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
                       --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml

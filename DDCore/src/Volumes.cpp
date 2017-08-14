@@ -566,7 +566,7 @@ const Volume& Volume::setMaterial(const Material& m) const {
 
 /// Access to the Volume material
 Material Volume::material() const {
-  return Ref_t(m_element->GetMedium());
+  return Material(m_element->GetMedium());
 }
 
 #include "TROOT.h"

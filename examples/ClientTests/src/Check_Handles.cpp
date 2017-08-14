@@ -30,12 +30,19 @@ namespace {
   }
   template <typename T, typename Q> Result test_handle(T& from)  {
     Result r(0,0);
+    /// Test handle copy constructors
     try  {
       Q to(from);
       if ( to.ptr() && from.ptr() )  {
         printout(INFO,"Check_Handles","PASSED: Handle Construction from %s to %s.",
                  typeName(typeid(T)).c_str(),typeName(typeid(Q)).c_str());
         ++r.first;
+        T ffrom(to);
+        if ( to.ptr() && ffrom.ptr() )  {
+          printout(INFO,"Check_Handles","PASSED: Handle Construction from %s to %s.",
+                   typeName(typeid(Q)).c_str(),typeName(typeid(T)).c_str());
+          ++r.first;
+        }
       }
       else if ( !to.ptr() && from.ptr() )   {
         printout(INFO,"Check_Handles","FAILED: Handle Construction from %s to %s.",
@@ -48,21 +55,28 @@ namespace {
                typeName(typeid(T)).c_str(),typeName(typeid(Q)).c_str());
       ++r.second;
     }
+    /// Test handle assignments
     try  {
       Q to = from;
       if ( to.ptr() && from.ptr() )  {
-        printout(INFO,"Check_Handles","PASSED: Assignment          from %s to %s.",
+        printout(INFO,"Check_Handles","PASSED: Handle Assignment   from %s to %s.",
                  typeName(typeid(T)).c_str(),typeName(typeid(Q)).c_str());
         ++r.first;
+        T ffrom = to;
+        if ( to.ptr() && ffrom.ptr() )  {
+          printout(INFO,"Check_Handles","PASSED: Handle Construction from %s to %s.",
+                   typeName(typeid(Q)).c_str(),typeName(typeid(T)).c_str());
+          ++r.first;
+        }
       }
       else if ( !to.ptr() && from.ptr() )   {
-        printout(INFO,"Check_Handles","FAILED: Assignment          from %s to %s.",
+        printout(INFO,"Check_Handles","FAILED: Handle Assignment   from %s to %s.",
                  typeName(typeid(T)).c_str(),typeName(typeid(Q)).c_str());
         ++r.second;
       }
     }
     catch(const std::exception& e)   {
-      printout(INFO,"Check_Handles","FAILED: Assignment            from %s to %s. [Exception]",
+      printout(INFO,"Check_Handles","FAILED: Handle Assignment     from %s to %s. [Exception]",
                typeName(typeid(T)).c_str(),typeName(typeid(Q)).c_str());
       ++r.second;
     }
@@ -192,7 +206,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   //result += test_handle<Assembly,Region>(calo_vol);
   printout(INFO,"Check_Handles","+-----------------------------------------------------------------+");
-  printout(INFO,"Check_Handles","|   PASSED casts: %-4d    FAILED casts: %-4d                      |",
+  printout(INFO,"Check_Handles","|   %-4d casts PASSED   %4d casts FAILED                         |",
            result.first, result.second);
   printout(INFO,"Check_Handles","+-----------------------------------------------------------------+");
   return d_det;

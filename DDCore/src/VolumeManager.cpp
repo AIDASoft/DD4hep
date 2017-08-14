@@ -624,7 +624,7 @@ bool VolumeManager::adoptPlacement(VolumeManagerContext* context) {
     Object& o = _data();
     if ( context )   {
       if ( (o.flags & ONE) == ONE ) {
-        VolumeManager top(Ref_t(o.top));
+        VolumeManager top(o.top);
         return top.adoptPlacement(context);
       }
       if ( (o.flags & TREE) == TREE ) {
@@ -634,7 +634,7 @@ bool VolumeManager::adoptPlacement(VolumeManagerContext* context) {
           if ( sys_id == o.sysID ) {
             return adoptPlacement(sys_id, context);
           }
-          VolumeManager top(Ref_t(o.top));
+          VolumeManager top(o.top);
           return top.adoptPlacement(context);
         }
         for( auto& j : o.managers )  {
@@ -662,7 +662,7 @@ VolumeManagerContext* VolumeManager::lookupContext(VolumeID volume_id) const {
     bool is_top = o.top == ptr();
     bool one_tree = (o.flags & ONE) == ONE;
     if ( !is_top && one_tree ) {
-      return VolumeManager(Ref_t(o.top)).lookupContext(volume_id);
+      return VolumeManager(o.top).lookupContext(volume_id);
     }
     VolumeID id = volume_id;
     /// First look in our own volume cache if the entry is found.

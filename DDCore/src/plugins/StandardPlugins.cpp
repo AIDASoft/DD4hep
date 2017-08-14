@@ -647,24 +647,41 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
     bool m_printVolIDs = false;
     bool m_printPointers = false;
     bool m_printPositions = false;
+    bool m_printMaterials = false;
     bool m_printSensitivesOnly = false;
+    long m_numNodes       = 0;
+    long m_numSensitive   = 0;
+    long m_numMaterial    = 0;
+    long m_numMaterialERR = 0;
+
     Actor(int ac, char** av)  {
       for(int i=0; i<ac; ++i)  {
         char c = ::tolower(av[i][0]);
         char* p = av[i];
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
-        if ( ::strncmp(p,"volume_ids",3)==0 ) m_printVolIDs = true;
-        else if ( ::strncmp(p,"positions",3)==0 ) m_printPositions = true;
-        else if ( ::strncmp(p,"pointers",3)==0  ) m_printPointers  = true;
-        else if ( ::strncmp(p,"sensitive",3)==0 ) m_printSensitivesOnly = true;
+        if      ( ::strncmp(p,"volume_ids",3) == 0 ) m_printVolIDs = true;
+        else if ( ::strncmp(p,"positions",3) == 0  ) m_printPositions      = true;
+        else if ( ::strncmp(p,"materials",3) == 0  ) m_printMaterials      = true;
+        else if ( ::strncmp(p,"pointers",3) == 0   ) m_printPointers       = true;
+        else if ( ::strncmp(p,"sensitive",3) == 0  ) m_printSensitivesOnly = true;
+      }
+    }
+    ~Actor()  {
+      printout(ALWAYS,"VolumeDump","+++ Checked %ld physical volume placements.     %3ld are sensitive.",
+               m_numNodes, m_numSensitive);
+      if ( m_printMaterials )  {
+        printout(ALWAYS,"VolumeDump","+++ Checked %ld materials in volume placements. %3ld are BAD.",
+                 m_numMaterial, m_numMaterialERR);
       }
     }
 
-    long dump(TGeoNode* ideal, TGeoNode* aligned,int level, PlacedVolume::VolIDs volids) const {
+    long dump(TGeoNode* ideal, TGeoNode* aligned,int level, PlacedVolume::VolIDs volids)  {
       char fmt[128];
       string opt_info;
       PlacedVolume pv(ideal);
       bool sensitive = false;
+
+      ++m_numNodes;
       if ( m_printPositions || m_printVolIDs )  {
         stringstream log;
         if ( m_printPointers )    {
@@ -737,6 +754,19 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
                  aligned->GetName(),
                  volume ? volume->GetShape()->IsA()->GetName() : "[Invalid Volume]",
                  opt_info.c_str());
+        if ( sens == 'S' ) ++m_numSensitive;
+      }
+      if ( m_printMaterials )   {
+        Volume   vol = pv.volume();
+        Material mat = vol.material();
+        TGeoMaterial* m = mat->GetMaterial();
+        bool ok = mat.A() == m->GetA() && mat.Z() == m->GetZ();
+        ::snprintf(fmt,sizeof(fmt),"%03d  %%-%ds Material: %%-16s A:%%f %%f   Z:%%f %%f",
+                   level+1,2*level+1);
+        ++m_numMaterial;
+        if ( !ok ) ++m_numMaterialERR;
+        printout(ok ? INFO : ERROR,
+                 "VolumeDump", fmt, "", mat.name(), mat.A(), m->GetA(), mat.Z(), m->GetZ());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         if ( ideal )   {
