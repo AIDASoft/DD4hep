@@ -40,22 +40,22 @@ Author::Author(Detector& /* description */) {
 }
 
 /// Access the auhor's name
-std::string Author::authorName() const {
+string Author::authorName() const {
   return m_element->GetName();
 }
 
 /// Set the author's name
-void Author::setAuthorName(const std::string& nam) {
+void Author::setAuthorName(const string& nam) {
   m_element->SetName(nam.c_str());
 }
 
 /// Access the auhor's email address
-std::string Author::authorEmail() const {
+string Author::authorEmail() const {
   return m_element->GetTitle();
 }
 
 /// Set the author's email address
-void Author::setAuthorEmail(const std::string& addr) {
+void Author::setAuthorEmail(const string& addr) {
   m_element->SetTitle(addr.c_str());
 }
 
@@ -66,72 +66,72 @@ Header::Header(const string& author_name, const string& descr_url) {
 }
 
 /// Accessor to object name
-const std::string Header::name() const {
+const string Header::name() const {
   return m_element->GetName();
 }
 
 /// Accessor: set object name
-void Header::setName(const std::string& new_name) {
+void Header::setName(const string& new_name) {
   m_element->SetName(new_name.c_str());
 }
 
 /// Accessor to object title
-const std::string Header::title() const {
+const string Header::title() const {
   return m_element->GetTitle();
 }
 
 /// Accessor: set object title
-void Header::setTitle(const std::string& new_title) {
+void Header::setTitle(const string& new_title) {
   m_element->SetTitle(new_title.c_str());
 }
 
 /// Accessor to object url
-const std::string& Header::url() const {
+const string& Header::url() const {
   return data<Object>()->url;
 }
 
 /// Accessor: set object url
-void Header::setUrl(const std::string& new_url) {
+void Header::setUrl(const string& new_url) {
   data<Object>()->url = new_url;
 }
 
 /// Accessor to object author
-const std::string& Header::author() const {
+const string& Header::author() const {
   return data<Object>()->author;
 }
 
 /// Accessor: set object author
-void Header::setAuthor(const std::string& new_author) {
+void Header::setAuthor(const string& new_author) {
   data<Object>()->author = new_author;
 }
 
 /// Accessor to object status
-const std::string& Header::status() const {
+const string& Header::status() const {
   return data<Object>()->status;
 }
 
 /// Accessor: set object status
-void Header::setStatus(const std::string& new_status) {
+void Header::setStatus(const string& new_status) {
   data<Object>()->status = new_status;
 }
 
 /// Accessor to object version
-const std::string& Header::version() const {
+const string& Header::version() const {
   return data<Object>()->version;
 }
 
 /// Accessor: set object version
-void Header::setVersion(const std::string& new_version) {
+void Header::setVersion(const string& new_version) {
   data<Object>()->version = new_version;
 }
 
 /// Accessor to object comment
-const std::string& Header::comment() const {
+const string& Header::comment() const {
   return data<Object>()->comment;
 }
 
 /// Accessor: set object comment
-void Header::setComment(const std::string& new_comment) {
+void Header::setComment(const string& new_comment) {
   data<Object>()->comment = new_comment;
 }
 
@@ -184,60 +184,60 @@ double  Material::Z() const {
   }
   throw runtime_error("dd4hep: Attempt to access proton number from invalid material handle!");
 }
+
 /// atomic number of the underlying material
 double  Material::A() const {
-  Handle < TGeoMedium > val(*this);
-  if (val.isValid()) {
-    TGeoMaterial* m = val->GetMaterial();
+  if ( isValid() ) {
+    TGeoMaterial* m = ptr()->GetMaterial();
     if (m)
       return m->GetA();
-    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access atomic number from invalid material handle!");
 }
 
 /// density of the underlying material
 double  Material::density() const {
-  Handle < TGeoMedium > val(*this);
-  if (val.isValid()) {
-    TGeoMaterial* m = val->GetMaterial();
+  if ( isValid() )  {
+    TGeoMaterial* m = ptr()->GetMaterial();
     if (m)
       return m->GetDensity();
-    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access density from invalid material handle!");
 }
 
 /// Access the radiation length of the underlying material
 double Material::radLength() const {
-  Handle < TGeoMedium > val(*this);
-  if (val.isValid()) {
-    TGeoMaterial* m = val->GetMaterial();
+  if ( isValid() ) {
+    TGeoMaterial* m = ptr()->GetMaterial();
     if (m)
       return m->GetRadLen();
-    throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("dd4hep: The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access radiation length from invalid material handle!");
 }
 
 /// Access the radiation length of the underlying material
 double Material::intLength() const {
-  Handle < TGeoMedium > val(*this);
-  if (val.isValid()) {
-    TGeoMaterial* m = val->GetMaterial();
+  if ( isValid() ) {
+    TGeoMaterial* m = ptr()->GetMaterial();
     if (m)
       return m->GetIntLen();
-    throw runtime_error("The medium " + string(val->GetName()) + " has an invalid material reference!");
+    throw runtime_error("The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("Attempt to access interaction length from invalid material handle!");
 }
 
 /// String representation of this object
 string Material::toString() const {
-  Handle < TGeoMedium > val(*this);
-  stringstream os;
-  os << val->GetName() << " " << val->GetTitle() << " id:" << hex << val->GetId() << " Pointer:" << val->GetPointerName();
-  return os.str();
+  if ( isValid() ) {
+    TGeoMedium* val = ptr();
+    stringstream os;
+    os << val->GetName() << " " << val->GetTitle() << " id:" << hex << val->GetId() << " Pointer:" << val->GetPointerName();
+    return os.str();
+  }
+  throw runtime_error("Attempt to convert invalid material handle to string!");
 }
 
 /// Constructor to be used when creating a new entity
@@ -463,8 +463,8 @@ struct IDSpec : public Ref_t {
   template <typename Q>
   IDSpec(const Handle<Q>& e) : Ref_t(e) {}
   /// Constructor to be used when creating a new DOM tree
-  IDSpec(Detector& doc, const std::string& name, const IDDescriptor& dsc);
-  void addField(const std::string& name, const std::pair<int,int>& field);
+  IDSpec(Detector& doc, const string& name, const IDDescriptor& dsc);
+  void addField(const string& name, const pair<int,int>& field);
 };
 
 IDSpec::IDSpec(Detector& description, const string& name, const IDDescriptor& dsc)

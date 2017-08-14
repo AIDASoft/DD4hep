@@ -368,12 +368,12 @@
   - make clear that  void fieldComponents() has to add
      the new field to the given field vector
 
-Marko Petric 2017-03-23 
+* Marko Petric 2017-03-23 
   - Convert Release notes to markdown
   - Add some text about WIP and issue tracking
   - Add CONTRIBUTING.md and PULL_REQUEST_TEMPLATE
 
-Markus Frank 2017-03-17
+* Markus Frank 2017-03-17
  
  - Add a new input type by parsing JSON files. The basic json interpreter
     is present and offers essentially the same interface as the XML persers.
@@ -383,13 +383,13 @@ Markus Frank 2017-03-17
     present in XMLDimesion.h, XMLDetector.h and XMLChildValue.h is shared
     and instantiated for both.
 
-Markus Frank 2017-03-10
+* Markus Frank 2017-03-10
  
  - New round to kill coverity deficiencies.
  - Add exception try-catch clauses around various main programs in UtilityApps
     See UtilityApps/src/main.h for details.
 
-Markus Frank 2017-03-09
+* Markus Frank 2017-03-09
  
  - Fix issue with long volume ids exceeding 32 bits.
     Test added in examples/ClientTests
@@ -398,9 +398,9 @@ Markus Frank 2017-03-09
  - Remove various svn left-overs (ID$ strings etc.)
 
 
-Frank Gaede 2017-02-10
+* Frank Gaede 2017-02-10
  
-- allow event readers to create more than one vertex per event
+  - allow event readers to create more than one vertex per event
      this should be possible as most generator formats allow to specify
      more than one event vertex 
   - changed signature of Geant4EventReader::readParticles(int,Vertex*, Particles&)
@@ -411,73 +411,73 @@ Frank Gaede 2017-02-10
 
 # v00-20
 
-Frank Gaede 2017-01-13 
+* Frank Gaede 2017-01-13 
 - fix computation of radiation and interaction lengths
 - require the density to be specified in the materials xml file
  
-Frank Gaede 2017-01-04 
+* Frank Gaede 2017-01-04 
 - adopt numbers in test_surface.cc to elements.xml
 - use elements.xml generated with plugin in DDTest
 -  add ROOT version to dumped element table
 
-Frank Gaede 2016-12-22 
+* Frank Gaede 2016-12-22 
 - fix test_surfaces by adapting to elements.xml
 - fix test_units by including elements.xml
  
-Markus Frank 2016-12-21 
+* Markus Frank 2016-12-21 
 - Add plugin to dump the default ROOT element table
  
-Markus Frank 2016-12-20 
+* Markus Frank 2016-12-20 
 - Remove obsolete build flags
  
-Markus Frank 2016-12-19 
+* Markus Frank 2016-12-19 
 - Add Multi-threading conditions example
  
-Andre Sailer 2016-12-16 
+* Andre Sailer 2016-12-16 
 - Add drivers for Beampipe, Mask and Solenoid from lcgeo, changed name to dd4hep_*
  
-Rosa Simonielo, Frank Gaede 2016-12-15 
+* Rosa Simonielo, Frank Gaede 2016-12-15 
 - add new struct rec::NeighbourSurfacesStruct defined for neighbouring surfaces
  
-Frank Gaede 2016-12-14 
+* Frank Gaede 2016-12-14 
 - fix library pathes in env scripts for macos
 - use DD4HEP_LIBRARY_PATH and full lib path on mac
 - apply rpath compiler settings to GaudiPluginService
 - make compatible w/ Geant4 10.3
  
-Marko Petric 2016-12-13 
+* Marko Petric 2016-12-13 
 - Fix compiler flag handling
  
-Daniel Jeans 2016-12-08 
+* Daniel Jeans 2016-12-08 
 - add utility graphicalMaterialScan
  
-Markus Frank 2016-12-07 
+* Markus Frank 2016-12-07 
 - Fix compiler error on MacOSX gcc 4.9
  
-Marko Petric 2016-12-07 
+* Marko Petric 2016-12-07 
 - Remove few tests from Travis
 - move flag to CMAKE_SHARED_LINKER_FLAGS
 - Remove the dynamic lookup on runtime for libs on mac
  
-Markus Frank 2016-12-05 
+* Markus Frank 2016-12-05 
 - First version of conditions and alignments
  
-Andre Sailer 2016-12-06 
+* Andre Sailer 2016-12-06 
 - DDTest: fix location to install DDtest header files
 - Remove minimum required cmake version from DD4hepBuild, this interferes with other packages depending on dd4hep
  
-Marko Petric 2016-12-02 
+* Marko Petric 2016-12-02 
 - Fix missing CLHEP in thisdd4hep.sh
 - Clean up FindPYTHON.cmake file
 - Change gaudi auto_ptr to unique_ptr since the auto is deprecated
 - Fix initAClick
  
-Marko Petric 2016-11-29 
+* Marko Petric 2016-11-29 
 - Fix rpath issues on mac with python
 - Add custom DynamicPath on mac when loading python libs
 - Add function to set the DD4HEP_LIBRARY_PATH
  
-Marko Petric 2016-11-28 
+* Marko Petric 2016-11-28 
 - Update all minimum CMake versions
 - Fix gitlab builds
 - Rename MakeRootMap to MakeGaudiMap for consistency
@@ -485,13 +485,13 @@ Marko Petric 2016-11-28
  Remove FindROOT.cmake and use from now on ROOTConfig.cmake
  
  
-Markus Frank 2016-11-30 
+* Markus Frank 2016-11-30 
 - New version of conditions handling
  
-Andre Sailer 2016-11-25 
+* Andre Sailer 2016-11-25 
 - Fix ProductionCut conversion in Geant4Converter.cpp: cut is a range
  
-Markus Frank 2016-11-24 
+* Markus Frank 2016-11-24 
 - Fix linker errors on MAC
 - Remove compiler warnings on MACOSX
 - First fixes to version of alignment constant processing also remove where visited the $ statements in the files.
@@ -500,30 +500,30 @@ the conditions area.
 - First usable version of alignment constant processing
  
  
-Markus Frank 2016-11-16 
+* Markus Frank 2016-11-16 
 - Try to improve efficiency using C++11 default operations
  
-Markus Frank 2016-11-10 
+* Markus Frank 2016-11-10 
 - Simplify opaque data mappings for conditions
  
 # v00-19
-2016-11-17 D.Jeans
+* 2016-11-17 D.Jeans
 - rewritten MegatileLayerGrid class 
   - not backward compatible 
 
-M.Petric:
+* M.Petric:
 - improved Travis CI configuration 
 - remove some tests from CI
 
 # v00-18
 
-2016-11-09 F.Gaede
+* 2016-11-09 F.Gaede
 - updated rec::LayeredCalorimeterData::Layer:
   - remove deprecated thickness 
   - add phi0  
 - add copy assignement to rec::MaterialData
 
-2016-11-08 M.Frank
+* 2016-11-08 M.Frank
 - Improve conditions handling. Started to implement using simple telescope
   detector from C.Burr.
 - Add variable DD4HEP_LIBRARY_PATH to be used on MacOSX El Capitane
@@ -536,7 +536,7 @@ M.Petric:
   - ClientTests/Bitfield_SidesTest2.xml to test readout string:
     system:16,barrel:16:-5
     
-2016-10-18 M.Frank
+* 2016-10-18 M.Frank
 -  Due to pressure of the FCC folks, I tried to implement a more dd4hep like implementation of the
   the segmentation objects. For testing only CartesianGridXY. If this mechanism works,
   it could be a starting recipe for the rest of the segmentations. The draw-back of this approach is,
@@ -549,33 +549,33 @@ M.Petric:
 
 # v00-17
 
-2016-09-29 V.Volkl
-- Small fixes and extensions of DDEve. Show "Views" menu even if specifying xml on the command line.
-  Add possibility to specify event data in EveDisplay method, rather than having to select it in the gui dialogue.
-  Selects FCC EventHandler if specified in the config xml (as an "eventHandler"-attribute to the "display" node),
-  but keeps default behavior if not.
+* 2016-09-29 V.Volkl
+  - Small fixes and extensions of DDEve. Show "Views" menu even if specifying xml on the command line.
+    Add possibility to specify event data in EveDisplay method, rather than having to select it in the gui dialogue.
+    Selects FCC EventHandler if specified in the config xml (as an "eventHandler"-attribute to the "display" node),
+    but keeps default behavior if not.
 
 
-2016-08-24 M.Frank
-- Adding first somehow useful implementation to use conditions and the consequent loading thereof.
+* 2016-08-24 M.Frank
+      - Adding first somehow useful implementation to use conditions and the consequent loading thereof.
 	Used by the DDDB implementation/example. DDDB is an alternative way to populate the dd4hep
 	detector description using LHCb's detector description database.
 	The reason is, that only a running experiment has a reasonable base to conditions data
 	to excercise the dd4hep conditions.
 	If interested, please have a look in the DDDB examples.
 
-- Still TODO:
-  - A formal way to bootstrap the conditions loading still has to be found.
-  - Conditions loading from XML files and a small comprehensive example.
+  - Still TODO:
+    - A formal way to bootstrap the conditions loading still has to be found.
+    - Conditions loading from XML files and a small comprehensive example.
 
 # v00-16
-2016-07-26 Shaojun Lu  
+* 2016-07-26 Shaojun Lu  
 - Added new MegatileLayerGridXY segmentation for Scintillator strip Ecal, which is implemented by K.Kotera, 
  and used by SEcal04Hybrid geometry driver.
 
  - many ( minor fixes ) by F. Gaede, M. Petric, A Sailer, ...
 
-2016-06-24 M.Frank
+* 2016-06-24 M.Frank
 - Implement multiple segmentations.
   Though one readout objects (associated to one DetElement) may only have on segmentation,
   The MultiSegmentation type allows to have several sub-segmentations, which can be chosen
@@ -591,10 +591,10 @@ M.Petric:
 
 
 
-2016-05-03 M.Frank
+* 2016-05-03 M.Frank
 - Green light is ON. You may use revision 2237 and above.
 
-2016-05-03 M.Frank
+* 2016-05-03 M.Frank
 - **Mega commit. Do not use until green signal arrives with seperate release notice.**
 - Package DDDB: Prove of concept, that we can populate the geometry also from other
   sources than xml files obeying the lccdd notation.
@@ -610,10 +610,10 @@ M.Petric:
   "-inlineInputHeader" which physically includes the header files used to generate the 
   dictionaries --> relocatability.
 
-2016-03-21 M.Frank
+* 2016-03-21 M.Frank
 - Add additional vertex argument to EventReader::readParticles, which supposedly should
 
-2016-03-03 M.Frank
+* 2016-03-03 M.Frank
 - Improve/complete job options type palette. 
 - Allow modify the Geant4IsotropGenerator to shoot particle distributions according
   to several distributions:
@@ -622,11 +622,11 @@ M.Petric:
   Default is uniform.
 
 # v00-15     
-2016-02-15 A.Sailer
+* 2016-02-15 A.Sailer
 -  LCIOStdHepReader.cpp
    - fixed memory leak, compiled and valgrinded
 
-2016-02-10 F.Gaede
+* 2016-02-10 F.Gaede
 - added utility  dd4hep::xml::setDetectorTypeFlag()
   to set the TypeFlag from xml element <type_flag type="0x42"/>
 - select detectors with 
@@ -637,17 +637,17 @@ M.Petric:
   - add elements to xml, e.g.
     <type_flags type="DetType_TRACKER +  DetType_ENDCAP  + DetType_PIXEL + DetType_STRIP "/>
 
-2016-02-10 M.Frank
+* 2016-02-10 M.Frank
 - DDCond:
     First implementation of conditions access. Required some movements of files
     from DDG4 (Properties) and some changes in the core conditions implementation.
     The basic infrastructure is now present. Don't know yet however how buggy it is...
 
-2016-02-05 F.Gaede
+* 2016-02-05 F.Gaede
 -  added DetElement::typeFlag() and DetElement::setTypeFlag(unsigned int types)
 - added utility class DetType for setting detector type properties in type flag
 
-2016-02-03 N.Nikiforou
+* 2016-02-03 N.Nikiforou
 - DDDetectors
   - Added plugin dd4hep_GenericSurfaceInstallerPlugin, copied from lcgeo
     to allow installation of surfaces to any sliced detector
@@ -655,56 +655,56 @@ M.Petric:
   - Added DDDetectors to the sources directory so Doxygen picks up the
     plugin documentation
 
-2016-02-02 F.Gaede
+* 2016-02-02 F.Gaede
 - set momentum at endpoint (if lcio version > 2.6 ) for MCParticles in Geant4Output2LCIO.cpp 
 - fixed printlevel in Geant4Action::print()
 - removed random lines drawn in teveDisplay
 - dont't print DetectorData by default in dumpdetector
 
-2016-02-02 A.Sailer
+* 2016-02-02 A.Sailer
 - DDG4
   - Implemented SimulatorFlags (DDFORHEP-17)
     * In ParticleHandler: vertexIsNotEndpointOfParent, Stopped, leftDetector
     * Steerable distance for vertexIsNotEndpointOfParent
     * TCUserParticleHanlder Simulator flags: DecayedInTracker, DecayedInCalorimeter
 
-2016-01-21 A.Sailer/M.Frank
+* 2016-01-21 A.Sailer/M.Frank
 - DDG4
   - Improved user defined physics constructors
     * Allows user defined global rangecut
     * Allows extending particle table (e.g. B-Hadrons unknown to geant4)
 
-2016-01-18 F.Gaede
+* 2016-01-18 F.Gaede
 - fixed default c'tors in DDRec/DetectorData.h  to zero initialize sub-structures (LayerLayout etc)
 
-2016-01-13 F.Gaede
+* 2016-01-13 F.Gaede
 - allow the default sensitive action to be a tuple with parameter dictionary in DDG4.py/ddsim.steer e.g.:
   SIM.action.tracker = ("Geant4TrackerWeightedAction", {"HitPositionCombination" : 1 , "CollectSingleDeposits" :  False } )
 - fixed endpoint in MC-truth particles
  
-2016-01-11 F.Gaede
+* 2016-01-11 F.Gaede
 - fix hit momentum in Geant4TrackerAction (Geant4SDActions.cpp)
 
-2016-01-11 A.Sailer
+* 2016-01-11 A.Sailer
 - DDG4
   - Add LargestAcceptableStep to field setup
 
-2016-01-07 A.Sailer
+* 2016-01-07 A.Sailer
 - DDG4
   - Fix the logic for skipping of events at the start of input files: LCIO, HepMC, stdhep and HepEvt
   - Event number in lcio outputfile takes skipped events into account now
 
-2016-01-06 F.Gaede
+* 2016-01-06 F.Gaede
 - bug fix in DDSurfaces::ISurface for surface properties (orthogonal/parallel to z)
   (affected ILD VXD)
 
-2016-01-05 F.Gaede
+* 2016-01-05 F.Gaede
 - added print functions for rec::DetectorData objects
 - used in dumpdetector:
   dumpdetector compact.xml -d 
 
 
-2015-12-09 N.Nikiforou
+* 2015-12-09 N.Nikiforou
 - UtilityApps/teveDisplay
   - Modified teveDisplay to have three separate collections of surface vectors (u,v,n) 
     instead of one collection. Now the vectors are colored differently.
@@ -714,7 +714,7 @@ M.Petric:
   - Changed signature of getSurfaces() to allow setting of name and color of collection.
   
 
-2015-12-01 M.Frank
+* 2015-12-01 M.Frank
 - DDG4
   - Remove some of the compilation warnings
   - Remove energy cut in sensitive detectors
@@ -724,7 +724,7 @@ M.Petric:
   examples/ClientTests
   - Add a few tests for materialscan and simulation
 
-2015-11-24 M.Frank
+* 2015-11-24 M.Frank
 - DDG4
   - Implementation of multi-threading mode.
     To use and understand, please consult the DDG4 manual from the doc area.
@@ -737,28 +737,29 @@ M.Petric:
   - DDG4 examples: DDG4/examples/CLICSidSimu.py deleted and replaced with:
     1) DDG4/examples/SiDSim.py  (single threaded, old example)
     2) DDG4/examples/SiDSim_MT.py (multi threaded version of SiDSim.py)
-  DDCore:
+
+ -DDCore:
   - Support user formats for the default printout statements for nicer printouts.
   - Removal of compiler warnings
 
-2015-11-23 F.Gaede
+* 2015-11-23 F.Gaede
 - added glbal method dd4hep::versionString() 
 
-2015-11-13 S.Lu
+* 2015-11-13 S.Lu
 -  Added a new AHcal Barrel segementation: TiledLayerGridXY, to be used e.g.  
    for the ILD AHcal Barrel Sensitive layer segmentation design.
 
-2015-10-30 F.Gaede
+* 2015-10-30 F.Gaede
 - fixed LCIOFileReader to use sequential reading mode
   as using direct access always required runNum==0 and sequential evt nums ...
    
 
-2015-10-15 F.Gaede
+* 2015-10-15 F.Gaede
 - DDSurfaces::ISurface/Surface
   - added implemation of conical surfaces 
     - ICone, VolConeImpl, VolCone, ConeSurface
 
-2015-10-13 M.Frank
+* 2015-10-13 M.Frank
 - DDG4
   - Remove explicit constructors for modular physics lists.
     Use the native Geant4 provided G4PhysListFactory instead.
@@ -770,7 +771,7 @@ M.Petric:
     test_surfaces, but to be appended as a DDG4 event action for event by event
     tests of hits.
 
-2015-10-09 M.Frank
+* 2015-10-09 M.Frank
 - DDG4
   - Extend the functionality of the DDG4 plugins
     Geant4InteractionVertexBoost and Geant4InteractionVertexSmear.
@@ -788,12 +789,12 @@ M.Petric:
     this instance. See DDG4/examples/CLICRandom.py for illustration.
   - Updated DDG4 manual.
 
-2015-09-30 F.Gaede
+* 2015-09-30 F.Gaede
 - updated createGearForILD.cpp to use new parameters in LayeredCalorimeterData
   ( innerThickness, innerRadLength, etc)
 
 
-2015-09-15 F.Gaede
+* 2015-09-15 F.Gaede
 - refactoring of Surface classes:
     - made VolSurface a reference counting handle to 
       a polymorphic pointer of type VolSurfaceBase
@@ -801,20 +802,20 @@ M.Petric:
         of dedicated surface classes for special cases
         such as inside the beampipe or the face of the calorimeter
 
-2015-08-27 F.Gaede
+* 2015-08-27 F.Gaede
 - added macros DD4HEP_VERSION_GE(MAJV,MINV) and DD4HEP_VERSION_GT(MAJV,MINV)
   to Detector.h
 
 - increased version number to v00-15
 
 
-2015-08-20 M.Frank
+* 2015-08-20 M.Frank
 - DDCore: Modularize/abstract plugin manager 
 - VolumeManager: Fix bug propagating sensitive detectors
   Showed up in the examples of nested detectors
 
 
-2015-08-12 N.Nikiforou
+* 2015-08-12 N.Nikiforou
 - DDCore/XML: Added new helper functions to Layering engine:
    - double absorberThicknessInLayer(xml::Element e) : 
      returns total absorber thickness in given layer
@@ -823,7 +824,7 @@ M.Petric:
      center of the layer
 
 
-2015-07-25 M.Frank
+* 2015-07-25 M.Frank
 - DDSegmentation: Remove several 'shadow' warnings.
 
 - New build system for the dd4hep core, which greatly simplyfies the cmake files
@@ -832,19 +833,19 @@ M.Petric:
   (GEAR usage not tested though)
 
 # v00-14     
-F.Gaede
+* F.Gaede
 - fixed writing of generator status for lcio::MCParticle
   in Geant4Output2LCIO.cpp
 
-A.Sailer 
+* A.Sailer 
 - Add missing scope to /DD4hep/Factories.h, to not force everyone to use using namespace
 
-F.Gaede: 2015-07-15
+* F.Gaede: 2015-07-15
 - changed type in SurfaceList and SurfaceMap from Surface to ISurface
 - added methods length_along_u/v() to ISurface
 - moved setting of CMAKE_CXX_FLAGS (if DD4HEP_USE_CXX11) from DD4hep.cmake to CMakeLists.txt
 
-2015-07-11 M.Frank
+* 2015-07-11 M.Frank
 -  added starter docs dd4hepStartersGuide.pdf
 
 *** **Important** ***
@@ -867,10 +868,10 @@ Notes:
 - For reference reasons: this commits is revision 1812 + 1813 (DDDetectors)
 
 # v00-13  
-2015-07-03 F.Gaede
+* 2015-07-03 F.Gaede
 - updated doxygen for detector rec::DetectorData structs and usage in convertToGear
 
-2015/07/02 Nikiforos Nikiforou
+* 2015/07/02 Nikiforos Nikiforou
 - Added isRadiator() helper function in DDCore/XML/XMLDetector.h/cpp 
   Mirroring functionality of isSensitive() and used in geometry drivers
   e.g. to calculate total absorber thickness
@@ -884,17 +885,17 @@ Notes:
   - gap1 (e.g middle stave gap along z)
   - gap2 (reserved for future use)
 
- 2015-06-29 A.Sailer
+*  2015-06-29 A.Sailer
  - always store lcio collections, even if they are empty in Geant4Output2LCIO (DDG4/ddsim)
 
 
-2015-06-29 F.Gaede
+* 2015-06-29 F.Gaede
 - changed env scripts to prepend to library pathes (dd4hep and dependant packages)
    - using a newer lcgeo version than the one provided in ilcsoft can simply
         be done w/ source ./bin/thislcgeo.sh 
 	      
 # v00-12  
-2015/06/17 Markus Frank
+* 2015/06/17 Markus Frank
 - Add possibility to block access to constants by name from Detector.
   Functionality enabled by a constant named "Detector_InhibitConstants" with value "1", "True", "Yes".
   Test: geoDisplay -compact file:../DD4hep.trunk/examples/ClientTests/compact/InhibitConstants.xml 
@@ -913,17 +914,17 @@ Notes:
   Test: `geoDisplay -compact file:../DD4hep.trunk/examples/ClientTests/compact/DuplicateSysID.xml`
 
 
-A. Sailer
+* A. Sailer
 - DDSegmentation: Added function cellDimension which returns the dimension of any given cell
 
-S.Lu:
+* S.Lu:
 - Added a switch for BirksLaw to Geant4StepHandler. 
   For backward compatable, by default, do not apply BirksLaw, and apply BirksLaw with call 'doApplyBirksLaw()'.
   added optional Geant4ScintillatorCalorimeterAction
 - Added one 'Geant4ScintillatorCalorimeterAction' into DDG4 plugins Geant4SDActions for  scintillator to take 
   Geant4 BirksLaw effect as sensitive detector active layer.
 
-F.Gaede
+* F.Gaede
 - added SurfaceManager class that holds maps of surfaces for 
   "world","tracker","calorimeter","passive" and all individual subdetectors
     - to be used in reconstruction code where a lookup from cellID
@@ -945,17 +946,17 @@ F.Gaede
    - added new build_type: BUILD_ENVELOPE 
       - can be used to visulize envelopes only (geoDisplay, teveDisplay,...)
 
-2015/05/22 Nikiforos Nikiforou
+* 2015/05/22 Nikiforos Nikiforou
 - Fixed bug in DDG4/lcio/LCIOConversions.cpp, which stored only the PDG of the primary particle 
   in multiple particle contributions in SimCalorimeterHits instead of both the primary and secondary PDGs.
 
 
-2015/05/13 Markus Frank
+* 2015/05/13 Markus Frank
 - Fix bug in DDG4, which forced DDG4 to exit if a property from the Geant4 prompt could
   not be set. No an error message is printed and the prompt is returned to the user.
   (Bug submitted by A. Sailer)
 
-2015/05/11 Andre Sailer
+* 2015/05/11 Andre Sailer
 - CMake updates:
   - Split libraries into components: use find_package(dd4hep COMPONENTS <component> [...] )
     to find the components you need.
@@ -963,7 +964,7 @@ F.Gaede
   - To link against the librarie use either dd4hep_COMPONENT_LIBRARIES or dd4hep_<COMPONENT>_LIBRARY,
     where <COMPONENT> needs to be replaced by the UPPER case name of the component
 
-2015/05/09 Markus Frank
+* 2015/05/09 Markus Frank
 - Allow to access detectors by type from description.
   - The sensitive type of a detector is set in the 'detector constructor'.
   - Not sensitive detector structures have the name 'passive'
@@ -972,16 +973,17 @@ F.Gaede
 
          geoPluginRun -plugin DD4hepDetectorTypes -input <compact-file>
 
-2015/03/12 Markus Frank
+* 2015/03/12 Markus Frank
 - Add support for ellipsoids in gdml/description and geant4 conversion.
 - Allow to include files with environment variables from compact notation.
 
-2015/03/09 Markus Frank
+* 2015/03/09 Markus Frank
 - Finalize move to geant4 version 10, started by A.Sailer
 - Add non-isotrop particle generator in DDG4 (request P.Kostka)
 - Isolate ROOT plugin manager as start to move to ROOT 6
 
-# v00-11     
+# v00-11
+* F.Gaede
 - DDDetectors
   - new Package containing generic dd4hep detector palette (MF)
   - added 'dimension' argument to dd4hep_SiTrackerBarrelSurfacePlugin (FG)
@@ -1071,12 +1073,12 @@ F.Gaede
 
 - plus many small bug fixes  (use svn log for details )
 
-2014/09/26 Markus Frank
+* 2014/09/26 Markus Frank
 - Quite some effort to improve the doxygen documentation.
   The current revision is can be found at:
   https://cern.ch/frankm/DD4hep/html/index.html
 
-2014/02/06 Markus Frank
+* 2014/02/06 Markus Frank
 - DDDetectors: Add example surface plugin with arguments.
     - example code: DDDetectors/src/SurfaceExamplePlugin.cpp
     - compact:
@@ -1098,7 +1100,7 @@ F.Gaede
     SurfaceExamplePlugin: argument[3] = cc=3*m value = 300
 ```
 
-2014/08/15 Markus Frank
+* 2014/08/15 Markus Frank
 - DDG4: Impreoved LCIO handling for DDG4
 - DDG4: Input handling:
   - LCIO input file reading with multiple *independent* inputs
@@ -1111,7 +1113,7 @@ F.Gaede
     Still needs revisiting.
 
 # v00-10      
- Frank Gaede
+*  Frank Gaede
 - fixed version numbers and release notes for release v00-08 and v00-09
   ( both have the wrong version number for the libraries 0.7 !)
 - added ./doc/prepare_a_release.howto
@@ -1119,7 +1121,7 @@ F.Gaede
  - added some simple unit tests for BitField64
 
 
-2014/08/15 Markus Frank
+* 2014/08/15 Markus Frank
 - DDG4 Add possibility for user hook to the particle handler +
   Data member to store additionbal particle data for the
   output stage.
@@ -1129,7 +1131,7 @@ F.Gaede
 - Update CLICSiD Example.
 
 # v00-09      
-2014/08/07 Markus Frank
+* 2014/08/07 Markus Frank
 - DDG4: First version to support MC truth in DDG4 including 
   particle filtering to optimize the size of the MC record.
 - DDG4 fix SimpleCalorimter sensitive action and properly support
@@ -1146,7 +1148,7 @@ F.Gaede
   - ...
 
 
-Andre Sailer, 2014-07-17
+* Andre Sailer, 2014-07-17
 - Unify cmake option variables, small cmake corrections
 - Change options `_WITH_` to `_USE_`
 - Print Warning that variables with `_WITH_` are deprecated
@@ -1155,15 +1157,15 @@ Andre Sailer, 2014-07-17
 - Updated documentation
 - Updated ILDExDet example
 
-Christian.Grefe, 2014-07-15
+* Christian.Grefe, 2014-07-15
 - Made DDSegmentation optionally a stand-alone package
   create DDSgementationConfig.cmake when build as part of dd4hep
 
-Markus Frank, 2014-07-02
+* Markus Frank, 2014-07-02
 - add LCIO conversions from DDSim - sensitive detectors 
   can now simply instantiate LCIO Sim hits
   
-2014/06/30 Markus Frank
+* 2014/06/30 Markus Frank
 - DDG4: Support user (context-) extensions for Geant4.
   User contexts are availible for events and runs. The contexts
   are accessible from the Geant4Context meber of each Geant4Action,
@@ -1184,7 +1186,7 @@ Markus Frank, 2014-07-02
 ```      
 - DDCore: adjust a few print statements.
 
-2014/06/27 Markus Frank
+* 2014/06/27 Markus Frank
 - Separate XML loading from Detector implementation.
 - New package: DDEve: a bit more sophisticated TEve specialization
 - To start use examples/CLICSiD/compact/DDEve.xml
@@ -1195,12 +1197,12 @@ Markus Frank, 2014-07-02
 - start the display with: `$> root.exe ${DD4hepINSTALL}/examples/DDEve/DDEve.C`
 
 
-2014/06/19 Frank Gaede
+* 2014/06/19 Frank Gaede
 - replaced TGeoUnits.h by  DD4hepUnits.h
 - renamed namespace tgeo to dd4hep -> users need to replace tgeo::mm by dd4hep::mm
 
 
-2014/06/12 Frank Gaede
+* 2014/06/12 Frank Gaede
 - changed default unit for angles to be radians   (tgeo::rad = 1.)
 - enforce usage of units from TGeoUnits.h in xml expression evaluators
 - convert to degrees for angles in TGeoShapes constructors
@@ -1216,7 +1218,7 @@ Markus Frank, 2014-07-02
   `double phi = coneSeg.Phi1() * tgeo::deg ;`
 
 
-2014/06/03 Markus Frank
+* 2014/06/03 Markus Frank
 - Provision for ROOT persistency for dd4hep detector descriptions:
   Create Cint dictionary for dd4hepCore by default when building the library.
   For the time being the area of DDSegmentation is left out, since these
@@ -1238,7 +1240,7 @@ Markus Frank, 2014-07-02
   This information is accessible from the help menu of the ROOT OGL widget.
 
 # v00-07
-2014/05/28 Markus Frank
+* 2014/05/28 Markus Frank
 
 - Several fixes and improvements in DDG4
   - Cache output levels in Geant4Kernel object
@@ -1248,7 +1250,7 @@ Markus Frank, 2014-07-02
       your PolyconeSupport does not work anymore, because the angles
       were given in degrees. They should be given in radians!**
 
-2014/05/21 Markus Frank
+* 2014/05/21 Markus Frank
 - Fix material creation from XML
     JIRA bug: dd4hep -  DDFORHEP-4
     https://sft.its.cern.ch/jira/browse/DDFORHEP-4
@@ -1267,7 +1269,7 @@ Markus Frank, 2014-07-02
     All detector constructors receive angles in "rad". No correction 
     from degree to rad should be necessary.
 
-2014/05/21 Frank Gaede
+* 2014/05/21 Frank Gaede
 - add MaterialManager class providing
   - access to materials at any point or on straight
     line between two points
@@ -1292,7 +1294,7 @@ Markus Frank, 2014-07-02
        see ILDExDet/compact/materials Polysterene as example
 
 
-2014/05/06 Frank Gaede
+* 2014/05/06 Frank Gaede
 - DDSurfaces/DDRec:
   - added ICylinder and CylinderSurface to provide
     access to cylinder radius for the tracking
@@ -1301,7 +1303,7 @@ Markus Frank, 2014-07-02
   - protect against missing lcio input file
   - reduced printout from VolumeManager  (changed INFO to DEBUG)
 
-2014/04/05-2014/04/29 Frank Gaede
+* 2014/04/05-2014/04/29 Frank Gaede
 - Implementation of Surface classes for track reconstruction
   - abstract interfaces in DDSurface:  ISurface and IMaterial  
   - implementation in DDRec:  Surface, SurfaceManager, DetectorSurfaces
@@ -1318,12 +1320,12 @@ Markus Frank, 2014-07-02
      (fails currently for some hits that are not created on the surface ...)
   - added some assemblies to ILDExDet to better structure the geometry hierarchy   
 
-2014/04/28  Markus Frank
+* 2014/04/28  Markus Frank
 - First attempt to understand fully the handling of recursive assemblies
      from the 2014/04/25 was apparently with limited success. Now they should
      work!
 
-2014/04/25  Markus Frank
+* 2014/04/25  Markus Frank
 - Moved boost::spirit parsers to DDCore, since these parsers are also used
      in other packages such as DDCond and DDAlign - whenever strings have to be
      converted to objects.
@@ -1341,7 +1343,7 @@ Markus Frank, 2014-07-02
 - Geant4Converter: I convinced myself, that the bug in handling assemblies
      of assemblies is resolved. To be tested though.
 
-2014/02/07  Frank Gaede
+* 2014/02/07  Frank Gaede
 - added DDGear, support for interfacing to gear for backward compatibility
   - lives currently in ILDExDet ( should become (optional) part of core dd4hep)
   - users need to GearParameter objects as extensions to the DetElement
@@ -1353,7 +1355,7 @@ Markus Frank, 2014-07-02
      wrt. to position of support ans sensitive ladders
 
 # v00-06   
-2014/02/04  Frank Gaede
+* 2014/02/04  Frank Gaede
 - fixed environment scripts thisdd4hep.sh and this${PackageName}.sh
     to also export library pathes for external libraries (CLHEP, LCIO, gear)
 
@@ -1365,7 +1367,7 @@ Markus Frank, 2014-07-02
 - updated Readme.txt wrt build procedure and running the tests
 
 
-2014/01/17    Markus Frank
+* 2014/01/17    Markus Frank
 - Prepare implementation of Alignment using Release and Grap features of TGeoVolume
     and TGeoNode. In principle this was done in a backwards compatible way, but 
     I cannot really check 100% the #ifdef's.
@@ -1373,7 +1375,7 @@ Markus Frank, 2014-07-02
     (Bug reported by P.Kostka).
 - Fix several compiler warnings issued by Coverity.
 
-2013/12/17    Markus Frank
+* 2013/12/17    Markus Frank
 - Whole load of fixes to keep coverity quiet....
 - Fix bug in DDG4 field interface component
 - Allow the usage of units, positions and lorentzvectors and in DDG4 properties.
@@ -1405,7 +1407,7 @@ Markus Frank, 2014-07-02
     `<lccdd>` include directives are executed BEFORE any other directive!
     Other include directives are executed BEFORE the corresponding named directive!
 
-2013/11/14    Markus Frank
+* 2013/11/14    Markus Frank
 - Reformat files in DDCode and DDG4 to remove the <TAB>s from the source files.
     Hopefully the content is now more readable.
 - DDCore: Remove empty and named constructors for shapes. Empty constructors
@@ -1421,7 +1423,7 @@ Markus Frank, 2014-07-02
   - libDDG4Plugins.so  New framework plugins
   - libDDG4LCIO.so     LCIO output plugin for new framework
 
-2013/11/03    Markus Frank
+* 2013/11/03    Markus Frank
 - doc: Add CHEP2013 paper about dd4hep as a start of the documentation 
     section. More to come hopefully.
 - DDCore: several small improvements:
@@ -1456,7 +1458,7 @@ Markus Frank, 2014-07-02
       Where BOOST_INCLUDE_DIR should point to the boost header directory.
       BOOST libraries are not used.
 
-2013/10/18    Markus Frank
+* 2013/10/18    Markus Frank
 - Throw exception if the expression evaluator sees a problem.
     The message printed before was often not seen.
 - Improve printout on exceptions and plugin abortion
@@ -1481,7 +1483,7 @@ Markus Frank, 2014-07-02
 ```
 
 
-F. Gaede
+* F. Gaede
 - changes to build system:
          (see ReadMe.txt for details)
 
@@ -1501,6 +1503,7 @@ F. Gaede
           (greatly improved with many graphs)
 
 # v00-04
+* F. Gaede
 - placement options are now compatible with geant4 
 - fixed Geant4SensitiveDetector::getVolumeID()
 - modified ILDEx model to not use assemblies (for now !?)
@@ -1520,7 +1523,7 @@ F. Gaede
           calorimeters: CaliceTbeam  (Shaojun Lu, DESY)
 
 
-2013/21/06    Markus Frank
+* 2013/21/06    Markus Frank
 - Since the placement model for combined translations and rotations
       caused more confusion than good, it was agreed to move to a more
       Geant4 like placement model using Vectors, Rotations and Transformations
@@ -1552,7 +1555,7 @@ F. Gaede
    will be reduced
 
 # v00-02
-2013/02/06    Markus Frank
+* 2013/02/06    Markus Frank
 - Simplyfy inheritance for common objects from TNamed.
      Use direct inheritance of Object from TNamed rather than hidden 
      using the Value<a,b> construct.
@@ -1593,7 +1596,7 @@ F. Gaede
 
 
 # v00-01
-2013/20/03    Markus Frank
+* 2013/20/03    Markus Frank
 - Finished the compact->description converter
      Extract description information
 ```
@@ -1613,7 +1616,7 @@ F. Gaede
       information is found, the resulting graphics however is not very nice!
  
 
-2013/22/02    Markus Frank
+* 2013/22/02    Markus Frank
 - Today a decision was taken to remove all _X() and _A() macros 
   accessing static unicode strings. A common macro will be used to
   address both XML elements and XML attributes using the macro _U(...).
@@ -1624,7 +1627,7 @@ F. Gaede
   They now complain if the plugin was not found.
 
 
-2013/21/02    Markus Frank
+* 2013/21/02    Markus Frank
 - Require strict checks for the existence of xml attributes.
   e.g. default=false for Element::attr<bool>() is no longer an option.
   if the attribute is not present in the element, an exception
@@ -1634,7 +1637,7 @@ F. Gaede
   Use a more generic pattern do support also more generic XML 
   processing.
 
-2013/20/02    Markus Frank
+* 2013/20/02    Markus Frank
 - Install rootmap mechanism for the usage of plugins.
   It is no longer necessary to have separate programs
   for the various detector models (ILD/SiD).
@@ -1651,7 +1654,7 @@ F. Gaede
 - The LD_LIBRARY_PATH and PATH variables as defined in 
   'thisdd4hep.(c)sh' do include these directories
 
-2013/20/02    Markus Frank
+* 2013/20/02    Markus Frank
 - dd4hep release notes. Better start them late than never.
   If you perform significant changes to the dd4hep core,
   plase leave a small notice here.
