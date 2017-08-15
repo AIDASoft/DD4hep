@@ -120,7 +120,7 @@ dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT:
     *particles = evt->getCollection(m_collectionName);
     if ( *particles ) {
       printout(INFO,"LCIOFileReader","read collection %s from event %d in run %d ", 
-               m_collectionName, evt->getEventNumber(), evt->getRunNumber());
+               m_collectionName.c_str(), evt->getEventNumber(), evt->getRunNumber());
       return EVENT_READER_OK;
     }
   }
