@@ -1,56 +1,97 @@
-# v01-02
+# v01-02                                                                                                                                                                        
+
+* 2017-07-14 Daniel Jeans ([PR#204](https://github.com/AIDAsoft/DD4hep/pull/204))
+  - add ncellsX/Y as a "parameter", allowing it to be set in compact description. This change is for easier use in the case of a MultiSegmentation. (Only a uniform segmentation can be defined in this way: for more complex cases, must set by driver.)                                                                                                                                                                                                                                 
+  - change from array to std::vector to store ncells information                                                                                                                                                                             
+
+* 2017-07-17 Markus Frank ([PR#206](https://github.com/AIDAsoft/DD4hep/pull/206))
+  ## Implement ROOT persistency mechanism for detector descriptions (continuation of AIDASoft/DD4hep#202).
+  Object extensions are now persistent.                                                                   
+                                                                                                          
+  This is however not for free: **it requires a dictionary for the extension itself and it requires a dictionary for the class holding the extension**. These are:
+   - `dd4hep::DetElement::DetElementExtension<IFACE,CONCRETE>` for `DetElement` extensions.                                                                       
+   - `dd4hep::SimpleExtension<IFACE,CONCRETE>` for simple extension managed by the user framework (user calls explicitly destructor).                             
+   - `dd4hep::DeleteExtension<IFACE,CONCRETE>` for simple extension managed by dd4hep (dd4hep calls automatically destructor on hosting object destruction).      
+   - `dd4hep::CopyDeleteExtension<IFACE,CONCRETE>`. As above, but these extensions support calling the copy constructor of the embedded object and hence allow to copy also the hosting objects.
+                                                                                                                                                                                                
+  Please note: to persistify these objects it was necessary to no longer use the type-info of the objects as an identifier, but rather a 64-bit-hash of the raw type-info-name. This relies that this name is identical across platforms. This typically is true for linux, but not enforced by any standard.                                                                                                                                                                             
 
 * 2017-08-11 Andre Sailer ([PR#213](https://github.com/AIDAsoft/DD4hep/pull/213))
   - CMake:: dd4hep_generate_rootmap: use CMAKE_INSTALL_LIBDIR if it is set. If the macro is called from other libraries this variable might be set and should be used for consistency. Fixes #212
 
+* 2017-07-13 Markus Frank ([PR#202](https://github.com/AIDAsoft/DD4hep/pull/202))
+  ## Implement ROOT persistency mechanism for detector descriptions              
+                                                                                 
+  The following commits allow to save and restore Detector objects (ie. the full detector description) to/from ROOT. Most changes affected the usage of void pointers. 
+                                                                                                                                                                       
+  It is **NOT** possible to:                                                                                                                                           
+   * save object extensions. Another usage of void pointers and type-info objects, which both cannot be saved.                                                         
+   * save callback objects. Callbacks store in memory pointers to member functions. These depend on the loading of libraries at run-time and hence may differ from application to application.
+   * save conditions slices. This shall be a futute extension. There should be no fundamental problem doing so - it was simply not yet done.                                                  
+                                                                                                                                                                                              
+  In the example area a new slot call "Persistency" was created with various tests:                                                                                                           
+   * Save and restore simple conditions                                                                                                                                                       
+   * Save and restore the MiniTel detector (`examples/ClientTests/compact/MiniTel.xml`)                                                                                                       
+   * Save and restore the CLICSiD detector (`examples/CLICSiD/compact/compact.xml`)                                                                                                           
+                                                                                                                                                                                              
+  The detector examples also have a set of tests associated to check the validity of the restored information.                                                                                
+                                                                                                                                                                                              
+  ## Integrate `DDSegmentatation` into `DDCore`                                                                                                                                               
+                                                                                                                                                                                              
+  As a first step to start the cleanup of `DDSegmentation` the code was integrated into `DDCore`. For backwards compatibility a dummy library `libDDSegmentation.so` is kept, so that client cmake files directly referring `DDSegmentation` still work. **This tough is only a temporary measure and users should remove references to the DDSegmentation library.** Include files can be accessed as before. These are part of the `DDCore` include directory.                          
+
 * 2017-08-15 Yorgos Voutsinas ([PR#216](https://github.com/AIDAsoft/DD4hep/pull/216))
-  * Adding variable "nocore" for beam pipe (with default value = false) In case the variable appears in the BP xml file as "true", the BP sections will have no core of beam material, in order that someone might add various BP walls made of different materials while avoiding G4 overlaps. Example of use:
-  ```xml
-  <detector name="BeBeampipe" type="DD4hep_Beampipe_o1_v01" insideTrackingVolume="true" nocore="true" vis="BeamPipeVis">
-  ```
+  * Adding variable "nocore" for beam pipe (with default value = false) In case the variable appears in the BP xml file as "true", the BP sections will have no core of beam material, in order that someone might add various BP walls made of different materials while avoiding G4 overlaps. Example of use:                                                                                                                                                                           
+  ```xml                                                                                                                                                                                                                                     
+  <detector name="BeBeampipe" type="DD4hep_Beampipe_o1_v01" insideTrackingVolume="true" nocore="true" vis="BeamPipeVis">                                                                                                                     
+  ```                                                                                                                                                                                                                                        
 
 * 2017-08-15 Jan Strube ([PR#215](https://github.com/AIDAsoft/DD4hep/pull/215))
   - LCIOEventReader: adding parameter for the name of the MCParticle collection: `MCParticleCollectionName`
 
 * 2017-08-14 Markus Frank ([PR#217](https://github.com/AIDAsoft/DD4hep/pull/217))
-  ## Enhance ROOT Detector Description Persistency
+  ## Enhance ROOT Detector Description Persistency                               
   Conditions slices from the DD4hep conditions store can now be saved to ROOT files ans named objects. Conditions persistency examples are added to the `examples/Conditions` section.
-  The examples are derived from the Telescope and CLICSiD example:
-   - `Conditions_Telescope_root_save`
-   - `Conditions_Telescope_root_load_iov`
-   - `Conditions_Telescope_root_load_pool`
-   - `Conditions_CLICSiD_root_save_LONGTEST`
-   - `Conditions_CLICSiD_root_load_iov_LONGTEST`
-   - `Conditions_CLICSiD_root_load_usr_LONGTEST`
-   - `Conditions_CLICSiD_root_load_cond_LONGTEST`
-  
-  ## Fix Handle Problem when Accessing Materials from Volumes  
-  A cast problem was not spotted in the last commit, which manifested itself in accessing invalid materials from volumes. This commit resolves #211 , reported by @jhrdinka.
-  
-  A set of tests checks this behaviour in the ClientTests: `ClientTests_volume_materials_<text>`, where the volume tree is scanned and for all sensitive volumes and access the corresponding `materials/TGeoMedium` entities from the volume object.
+  The examples are derived from the Telescope and CLICSiD example:                                                                                                                    
+   - `Conditions_Telescope_root_save`                                                                                                                                                 
+   - `Conditions_Telescope_root_load_iov`                                                                                                                                             
+   - `Conditions_Telescope_root_load_pool`                                                                                                                                            
+   - `Conditions_CLICSiD_root_save_LONGTEST`                                                                                                                                          
+   - `Conditions_CLICSiD_root_load_iov_LONGTEST`                                                                                                                                      
+   - `Conditions_CLICSiD_root_load_usr_LONGTEST`                                                                                                                                      
+   - `Conditions_CLICSiD_root_load_cond_LONGTEST`                                                                                                                                     
+                                                                                                                                                                                      
+  ## Fix Handle Problem when Accessing Materials from Volumes                                                                                                                         
+  A cast problem was not spotted in the last commit, which manifested itself in accessing invalid materials from volumes. This commit resolves #211 , reported by @jhrdinka.          
+                                                                                                                                                                                      
+  A set of tests checks this behaviour in the ClientTests: `ClientTests_volume_materials_<text>`, where the volume tree is scanned and for all sensitive volumes and access the corresponding `materials/TGeoMedium` entities from the volume object.                                                                                                                                                                                                                                     
+
+* 2017-07-18 Shaojun Lu ([PR#208](https://github.com/AIDAsoft/DD4hep/pull/208))
+  - added "#include <memory>" for the smart pointers to DD4hepRootPersistency.cpp
 
 * 2017-07-19 Markus Frank ([PR#209](https://github.com/AIDAsoft/DD4hep/pull/209))
   - Implement `dd4hep::Tube` using `TGeoTubeSeg` (See also Issue AIDASoft/DD4hep#203 for details)
 
 * 2017-07-21 Markus Frank ([PR#210](https://github.com/AIDAsoft/DD4hep/pull/210))
-  ## Implement ROOT persistency mechanism for the conditions
-  
-  Conditions pools can now be made persistent provided all the dictionaries for the payload objects are provided. A new class `ConditionsRootPersistency` allows to save and re-load conditions pools to/from a ROOT file. Such pools can either be:
-   - Simple `ConditionsPool` objects
-   - The entire `IOV` indexed pool set (class `ConditionsIOVPool`) or
+  ## Implement ROOT persistency mechanism for the conditions                     
+                                                                                 
+  Conditions pools can now be made persistent provided all the dictionaries for the payload objects are provided. A new class `ConditionsRootPersistency` allows to save and re-load conditions pools to/from a ROOT file. Such pools can either be:                                                                                                                                                                                                                                      
+   - Simple `ConditionsPool` objects                                                                                                                                                                                                         
+   - The entire `IOV` indexed pool set (class `ConditionsIOVPool`) or                                                                                                                                                                        
    - A the pool used by a `ConditionsSlice` (class `UserPool`).
    - A std::vector<Condition> which belong all to the same IOV
-  
+
   In any case the restoration of the saved conditions is performed through the `ConditionsManager` interface in order to ensure proper management of the added condition objects.
-  
+
   Some example plugin tasks were added in examples/Conditions:
    - `DD4hep_ConditionExample_save` to save conditions to a ROOT file.
    - `DD4hep_ConditionExample_load` to restore conditions from file.
-  
+
   Others to come.
-  
+
   ## Split of dictionary files
   The ROOT dictionary creation in `DDCore` was getting increasingly large. Now the ROOT dictionaries are created in several files, what firstly allows them to be produced in parallel and secondly eases the compilation due to smaller generated file sizes.
+
 
 # v01-01
 
