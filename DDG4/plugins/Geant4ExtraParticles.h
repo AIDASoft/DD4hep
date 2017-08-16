@@ -3,9 +3,6 @@
 //          Taikan Suehara <suehara@icepp.s.u-tokyo.ac.jp>
 // Proted from Mokka by A.Sailer (CERN )
 //
-// $Id$
-// $Name: $
-
 #ifndef ExtraParticles_hh
 #define ExtraParticles_hh 1
 

@@ -72,7 +72,7 @@ namespace dd4hep {
      *   \date    13.08.2013
      *   \ingroup DD4HEP
      */
-    template <typename Q,typename T> struct SimpleExtension : public ExtensionEntry  {
+    template <typename Q,typename T> class SimpleExtension : public ExtensionEntry  {
     protected:
       T* ptr = 0;
       mutable Q* iface = 0;  //!
@@ -114,7 +114,7 @@ namespace dd4hep {
      *   \date    13.08.2013
      *   \ingroup DD4HEP
      */
-    template <typename Q,typename T> struct DeleteExtension : public ExtensionEntry  {
+    template <typename Q,typename T> class DeleteExtension : public ExtensionEntry  {
     protected:
       T* ptr = 0;
       mutable Q* iface = 0;  //!
@@ -156,7 +156,7 @@ namespace dd4hep {
      *   \date    13.08.2013
      *   \ingroup DD4HEP
      */
-    template <typename Q,typename T> struct CopyDeleteExtension : public ExtensionEntry  {
+    template <typename Q,typename T> class CopyDeleteExtension : public ExtensionEntry  {
     protected:
       T* ptr = 0;
       mutable Q* iface = 0;  //!

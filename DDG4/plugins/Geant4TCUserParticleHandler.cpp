@@ -60,7 +60,6 @@ namespace dd4hep {
 
 #endif // DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 
-// $Id: Geant4Field.cpp 888 2013-11-14 15:54:56Z markus.frank@cern.ch $
 //====================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------

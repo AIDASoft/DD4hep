@@ -154,13 +154,12 @@ a calibration process are technically identical to raw values in an
 analysis application using these re-calibrated constants.
 Hence, as soon as derived data enter the conditions database they are 
 technically identical to raw values.
-\DDC provides a mechanism that according to a recipe given upfront
-for a given event time a coherent set of conditions can be projected
-which includes
-\begin{itemize}
-\item all requested raw data values and
-\item all requested derived data are computed.
-\end{itemize}
+
+\noindent
+To support such calibration processes producing derived conditions 
+data, \DDC provides a mechanism to project new values given 
+a set of recipes provided by the user. This recipes can project a 
+set of coherent new conditions for a given event time accordingly.
 
 
 %=============================================================================
@@ -193,86 +192,18 @@ interface used to interact with tools and the generic container object or
 conditions slices as described in section~\ref{subsec:ddcond-conditions-slices}.
 
 %=============================================================================
-\subsection{The ConditionsMap Interface}
-\label{subsec:ddcond-conditionsmap}
-%=============================================================================
-
-\noindent
-The $ConditionsMap$ interface defines the lowest common denominator to
-allow tools or clients to interact with conditions of a given slice.
-This interface defines the interaction of clients with a conditions slice.
-These interactions cover both the data access and the data management 
-within a slice. The interface allows to
-\begin{itemize}
-\item access individual conditions by the detector element
-and a given item key. The interface allows
-\item to scan conditions according to the detector element or 
-\item to scan all conditions contained. Further it allows 
-\item insert conditions to the mapping and
-\item to clear the content.
-\end{itemize}
-The provision of these basic interaction mechanisms allows us to build
-very generic tools firstly for conditions, but also later for the
-management and th computation of alignment data as described in
-the \DDA manual~\cite{bib:ddalign-manual}.
-
-\noindent
-The $ConditionsMap$ interface class, which supports this basic functionality
-has the following entry points:
-\begin{unnumberedcode}
-  class ConditionsMap   {
-  public:
-    /// Insert a new entry to the map. The detector element key and 
-    /// the item key make a unique global conditions key
-    virtual bool insert(DetElement         detector,
-                        Condition::itemkey_type key,
-                        Condition          condition) = 0;
-    /// Interface to access conditions by hash value. The detector element key 
-    /// and the item key make a unique global conditions key
-    virtual Condition get(DetElement              detector,
-                          Condition::itemkey_type key) const = 0;
-    /// Interface to scan data content of the conditions mapping
-    virtual void scan(const Condition::Processor& processor) const = 0;
-
-    /// No ConditionsMap overload: Access all conditions within 
-    /// a key range in the interval [lower,upper]
-    virtual std::vector<Condition> get(DetElement              detector,
-                                       Condition::itemkey_type lower,
-                                       Condition::itemkey_type upper)  const;
-      
-    /// Interface to partially scan data content of the conditions mapping
-    virtual void scan(DetElement                  detector,
-                      Condition::itemkey_type     lower,
-                      Condition::itemkey_type     upper,
-                      const Condition::Processor& processor) const;
-  };
-\end{unnumberedcode}
-Such $ConditionsMap$ implementations can easily be constructed using standard
-STL maps. The lookup key is constructed out of two elements:
-\begin{itemize}
-\item The detector element this condition belongs to and 
-\item an identifier of condition within this detector element.
-\end{itemize}
-An efficient implementation of a longword key would consist of the tuple:
-$$
-[ hash32(conditions-name) , hash32(det-element->path()) ],
-$$
-which resembles to an ordered sequence of conditions according to 
-their detector element. A special implementation, which implements 
-this user interface is the $ConditionsSlice$ implemented in the 
-\DDC package (See section [] for details).
-
-%=============================================================================
-\subsection{Conditions Data}
+\subsection{Condition Objects and Conditions Data}
 \label{subsec:ddcond-conditions-data}
 %=============================================================================
 
 \noindent
 A conditions objects serves two purposes:
 \begin{itemize}
-\item Firstly, it supports the basic functionality required by a 
-      conditions management framework, which implements the $ConditionsMap$ 
-      interface.
+\item Firstly, it supports the basic functionality which is generic to any 
+      condition -- independent of the actual user payload. This information 
+      includes access to the interval of validity and the key to uniquely identify
+      the condition. 
+
 \item Secondly, the objects hosts and manages a user payload, the actual
       conditions data. These data are freely user defined. An automatic 
       parsing mechanism from a string representation is supported if the 
@@ -290,6 +221,10 @@ A conditions objects serves two purposes:
                 std::pair\textless int,TYPE\textgreater,
                 std::pair\textless string,TYPE\textgreater.
     \end{itemize}
+
+\item Thirdly, it supports the basic functionality required by a 
+      conditions management framework, which implements the $ConditionsMap$ 
+      interface.
 \end{itemize}
 For completeness we include here the basic data access methods of the conditions
 class:
@@ -364,6 +299,78 @@ This is an example how to access already bound data:
   std::vector<int>& data = cond.get<std::vector<int> >();
 \end{unnumberedcode}
 
+
+%=============================================================================
+\subsection{The ConditionsMap Interface}
+\label{subsec:ddcond-conditionsmap}
+%=============================================================================
+
+\noindent
+The $ConditionsMap$ interface defines the lowest common denominator to
+allow tools or clients to interact with conditions of a given slice.
+This interface defines the interaction of clients with a conditions slice.
+These interactions cover both the data access and the data management 
+within a slice. The interface allows to
+\begin{itemize}
+\item access individual conditions by the detector element
+and a given item key. The interface allows
+\item to scan conditions according to the detector element or 
+\item to scan all conditions contained. Further it allows 
+\item insert conditions to the mapping and
+\item to clear the content.
+\end{itemize}
+The provision of these basic interaction mechanisms allows us to build
+very generic tools firstly for conditions, but also later for the
+management and th computation of alignment data as described in
+the \DDA manual~\cite{bib:ddalign-manual}.
+
+\noindent
+The $ConditionsMap$ interface class, which supports this basic functionality
+has the following entry points:
+\begin{unnumberedcode}
+  class ConditionsMap   {
+  public:
+    /// Insert a new entry to the map. The detector element key and 
+    /// the item key make a unique global conditions key
+    virtual bool insert(DetElement         detector,
+                        Condition::itemkey_type key,
+                        Condition          condition) = 0;
+    /// Interface to access conditions by hash value. The detector element key 
+    /// and the item key make a unique global conditions key
+    virtual Condition get(DetElement              detector,
+                          Condition::itemkey_type key) const = 0;
+    /// Interface to scan data content of the conditions mapping
+    virtual void scan(const Condition::Processor& processor) const = 0;
+
+    /// No ConditionsMap overload: Access all conditions within 
+    /// a key range in the interval [lower,upper]
+    virtual std::vector<Condition> get(DetElement              detector,
+                                       Condition::itemkey_type lower,
+                                       Condition::itemkey_type upper)  const;
+      
+    /// Interface to partially scan data content of the conditions mapping
+    virtual void scan(DetElement                  detector,
+                      Condition::itemkey_type     lower,
+                      Condition::itemkey_type     upper,
+                      const Condition::Processor& processor) const;
+  };
+\end{unnumberedcode}
+Such $ConditionsMap$ implementations can easily be constructed using standard
+STL maps. The lookup key is constructed out of two elements:
+\begin{itemize}
+\item The detector element this condition belongs to and 
+\item an identifier of condition within this detector element.
+\end{itemize}
+An efficient implementation of a longword key would consist of the tuple:
+$$
+[ hash32(conditions-name) , hash32(det-element->path()) ],
+$$
+which resembles to an ordered sequence of conditions according to 
+their detector element. A special implementation, which implements 
+this user interface is the $ConditionsSlice$ implemented in the 
+\DDC package (See section \ref{subsec:ddcond-conditions-store} for details).
+
+
 \newpage
 %=============================================================================
 \section{DDCond Conditions Store and Slices}
@@ -376,12 +383,13 @@ This is an example how to access already bound data:
 %=============================================================================
 
 \noindent
-The basic assumption to optimize the access and the management of conditions
+The basic assumption of the \DDC conditions store to optimize the access 
+and the management of conditions
 data can be very simply summarized: it is assumed, that groups of data items
 exist, which have a common interval of validity. In other words: given a 
 certain event, valid or invalid conditions can quickly be identified by 
 checking the so called "interval of validity" of the entire group with the
-time stamp of the event. This intervall of validity defines the time span
+time stamp of the event. This interval of validity defines the time span
 for which a given group of processing parameters is valid. It starts and 
 ends with a time stamp. The definition of a time stamp may be user defined 
 and not necessarily resemble to values in seconds or fractions thereof. 
@@ -403,10 +411,9 @@ still work formally. However, by construction it cannot not work efficiently.
 Resources both in CPU and memory would be wasted at run-time.
 The necessity to properly organize the conditions data becomes
 immediately evident in Figure~\ref{fig:ddcond-data-organization}:
-Users can orginize data according to certain types, These types are
+Users can organize data according to certain types, These types are
 independently managed and subdivided into pools. Each of these pools
 manages a set of conditions items sharing the same interval ov validity.
-
 
 %=============================================================================
 \begin{figure}[h]
@@ -418,17 +425,41 @@ manages a set of conditions items sharing the same interval ov validity.
 \end{figure}
 \vspace{-0.5cm}
 
+
+\noindent
+The internal organization of the conditions data in \DDC is entirely 
+transparent to the user. The description here is contained for
+completeness and for the understanding of the limitations of the implemented
+approach. If different requirements or access patterns concerning the 
+access to conditions data arise, it should though be feasible to implement
+these fairly straight forward using a suited approach.
+
 %=============================================================================
-\subsection{Data Access}
+\subsection{Slice Configuration and Data Access}
 \label{subsec:ddcond-data-access}
 %=============================================================================
+
+\noindent
+As defined in section~\ref{subsec:ddcond-conditions-slices}, the conditions slice
+id the main entity to project conditions suitable to process a given particle
+collision. As shown also in Figure~\ref{fig:ddcond-slice-usage}, there are 
+several steps to be performed before a conditions slice is ready to be used:
+\begin{enumerate}
+\item Create the conditions data slice.
+\item Setting up the data content of the slice.
+\item Preparing the conditions data slice.
+\item Using the conditions data slice.
+\end{enumerate}
+
+NEED TO MENTION ConditionsContent
+
 
 %=============================================================================
 \begin{figure}[h]
   \begin{center}\includegraphics[width=15cm] {DDCond-ConditionsAccess.png}
     \caption{The interaction of a particular user with the conditions
              data store using the $ConditionsManager$ interface.}
-    \label{fig:ddcond-data-organization}
+    \label{fig:ddcond-slice-usage}
   \end{center}
 \end{figure}
 \vspace{-0.5cm}

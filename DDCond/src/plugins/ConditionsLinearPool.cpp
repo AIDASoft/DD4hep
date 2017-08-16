@@ -171,7 +171,6 @@ namespace dd4hep {
 } /* End namespace dd4hep                   */
 #endif // DDCOND_CONDITIONSLINEARPOOL_H
 
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------

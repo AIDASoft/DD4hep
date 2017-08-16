@@ -67,7 +67,8 @@ namespace dd4hep {
        *   \version 1.0
        *   \date    31/03/2016
        */
-      template <typename T> struct LoadInfo : public ConditionsLoadInfo {
+      template <typename T> class LoadInfo : public ConditionsLoadInfo {
+      public:
         T info;
         LoadInfo(const T& i) : info(i) {}
         LoadInfo()                  = default;

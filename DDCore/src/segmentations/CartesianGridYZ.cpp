@@ -1,8 +1,8 @@
 /* CartesianGridYZ.cpp
  *
- *  @date: Sep 03, 2014
- *  @author: F.Gaede CERN/Desy
- *  @version: $Id: $
+ *  @date:     Sep 03, 2014
+ *  @author:   F.Gaede CERN/Desy
+ *  @version:  1.0
  *     direkt copy of CartesianGridXY
  *     by Christian Grefe, CERN
  */

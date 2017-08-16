@@ -759,14 +759,14 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       if ( m_printMaterials )   {
         Volume   vol = pv.volume();
         Material mat = vol.material();
-        TGeoMaterial* m = mat->GetMaterial();
-        bool ok = mat.A() == m->GetA() && mat.Z() == m->GetZ();
+        TGeoMaterial* mptr = mat->GetMaterial();
+        bool ok = mat.A() == mptr->GetA() && mat.Z() == mptr->GetZ();
         ::snprintf(fmt,sizeof(fmt),"%03d  %%-%ds Material: %%-16s A:%%f %%f   Z:%%f %%f",
                    level+1,2*level+1);
         ++m_numMaterial;
         if ( !ok ) ++m_numMaterialERR;
         printout(ok ? INFO : ERROR,
-                 "VolumeDump", fmt, "", mat.name(), mat.A(), m->GetA(), mat.Z(), m->GetZ());
+                 "VolumeDump", fmt, "", mat.name(), mat.A(), mptr->GetA(), mat.Z(), mptr->GetZ());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         if ( ideal )   {
