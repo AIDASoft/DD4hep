@@ -6,15 +6,15 @@ class LCIO( Input ):
   """Configuration for the generator-level InputFiles"""
   def __init__( self ):
     super(LCIO, self).__init__()
-    self._parameters["MCParticleCollectionName"] = "MCParticle"
+    self._parameters["mcParticleCollectionName"] = "MCParticle"
 
   @property
   def mcParticleCollectionName( self ):
     """Set the name of the collection containing the MCParticle input.
     Default is "MCParticle".
     """
-    return self._parameters["MCParticleCollectionName"]
+    return self._parameters["mcParticleCollectionName"]
   @particlesPerEvent.setter
   def particlesPerEvent( self, val ):
-    self._parameters["MCParticleCollectionName"] = val
+    self._parameters["mcParticleCollectionName"] = val
 
