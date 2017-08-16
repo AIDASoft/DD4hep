@@ -199,8 +199,8 @@ static long create_description(Detector& /* description */, int /* argc */, char
    * This class converts from a compact detector description into slicPandora's
    * geometry input format.
    *
-   * @author Jeremy McCormick <jeremym@slac.stanford.edu>
-   * @version $Id$
+   * @author  Jeremy McCormick <jeremym@slac.stanford.edu>
+   * @version 1.0
    */
                                                         public class Main implements Converter
                                                         {

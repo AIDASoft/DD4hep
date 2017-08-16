@@ -120,8 +120,6 @@ namespace dd4hep {
 }      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H
 
-
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------

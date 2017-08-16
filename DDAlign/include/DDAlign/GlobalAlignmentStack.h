@@ -50,7 +50,8 @@ namespace dd4hep {
        *  \version  1.0
        *  \ingroup  DD4HEP_ALIGN
        */
-      struct StackEntry {
+      class StackEntry {
+      public:
         /// Reference to the detector element
         DetElement        detector;
         /// Delta transformation to be applied

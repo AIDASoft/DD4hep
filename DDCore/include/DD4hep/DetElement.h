@@ -202,7 +202,7 @@ namespace dd4hep {
 
   protected:
 
-    template <typename Q, typename T> struct DetElementExtension : public ExtensionEntry  {
+    template <typename Q, typename T> class DetElementExtension : public ExtensionEntry  {
     protected:
       T* ptr = 0;
       mutable Q* iface = 0;  //!

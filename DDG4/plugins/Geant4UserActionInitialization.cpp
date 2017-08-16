@@ -58,7 +58,6 @@ namespace dd4hep {
 //  \date   2015-11-03
 //
 //==========================================================================
-// $Id$
 
 // Framework include files
 #include "DDG4/Factories.h"

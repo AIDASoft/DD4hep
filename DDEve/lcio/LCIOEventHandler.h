@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -16,7 +15,6 @@
 
 // Framework include files
 #include "DDEve/EventHandler.h"
-
 #include "lcio.h"
 
 // C/C++ include files
