@@ -1,4 +1,3 @@
-#if 0
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -141,4 +140,4 @@ namespace dd4hep {
   }        /* End namespace cond                            */
 }          /* End namespace dd4hep                          */
 #endif     /* DD4HEP_CONDITIONS_CONDITIONSTREEPERSISTENCY_H */
-#endif
+

@@ -17,7 +17,7 @@
    This plugin behaves like a main program.
    Invoke the plugin with something like this:
 
-   geoPluginRun -volmgr -destroy -plugin DD4hep_ConditionExample_load \
+   geoPluginRun -volmgr -destroy -plugin DD4hep_ConditionExample_manual \
    -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml \
    -conditions Conditions.root
 
@@ -40,7 +40,7 @@ static void help(int argc, char** argv)  {
   /// Help printout describing the basic command line interface
   cout <<
     "Usage: -plugin <name> -arg [-arg]                                             \n"
-    "     name:   factory name     DD4hep_ConditionExample_load                    \n"
+    "     name:   factory name     DD4hep_ConditionExample_manual                  \n"
     "     -input       <string>    Geometry file                                   \n"
     "     -conditions  <string>    Conditions input file                           \n"
     "     -iovs        <number>    Number of parallel IOV slots for processing.    \n"
@@ -51,7 +51,7 @@ static void help(int argc, char** argv)  {
 
 /// Plugin function: Condition program example
 /**
- *  Factory: DD4hep_ConditionExample_load
+ *  Factory: DD4hep_ConditionExample_manual
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -143,4 +143,4 @@ static int condition_example (Detector& description, int argc, char** argv)  {
 }
 
 // first argument is the type from the xml file
-DECLARE_APPLY(DD4hep_ConditionExample_load,condition_example)
+DECLARE_APPLY(DD4hep_ConditionExample_manual,condition_example)
