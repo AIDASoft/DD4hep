@@ -25,6 +25,13 @@ namespace dd4hep {
 
     /// Namespace for condition operators to avoid clashes
     namespace Operators {
+
+      /// Definition of the selector object base class to cover type definitions
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       class Cond__Oper {
       public:
         typedef Condition cond_t;
@@ -33,6 +40,12 @@ namespace dd4hep {
         typedef std::pair<const Condition::key_type,object_t*> ptr_mapentry_t;
       };
 
+      /// Sequential container select operator for conditions mappings
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       template <typename T> struct SequenceSelect : public Cond__Oper  {
         T& mapping;
         SequenceSelect(T& o) : mapping(o) {                                            }
@@ -40,7 +53,13 @@ namespace dd4hep {
         { mapping.insert(mapping.end(), o); return true;                               }
       };
 
-      template <typename T> struct MapSelect : public Cond__Oper  {
+      /// Mapped container selection operator for conditions mappings
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+     template <typename T> struct MapSelect : public Cond__Oper  {
         T& mapping;
         MapSelect(T& o) : mapping(o) {                                                 }
         bool operator()(Condition::Object* o)  const
@@ -51,6 +70,7 @@ namespace dd4hep {
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename T> struct MapConditionsSelect : public ConditionsSelect  {
         T& mapping;
@@ -64,6 +84,7 @@ namespace dd4hep {
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename T> struct PoolSelect : public Cond__Oper  {
         T& pool;
@@ -71,10 +92,11 @@ namespace dd4hep {
         bool operator()(Condition::Object* o)  const         { return pool.insert(o);  }
       };
 
-      /// Helper to remove objects from a conditions pool
+      /// Helper to remove objects from a conditions pool. The removed condition is deleted.
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename T> struct PoolRemove : public Cond__Oper  {
         T& pool;
@@ -82,6 +104,12 @@ namespace dd4hep {
         bool operator()(object_t* o) const { pool.onRemove(o); delete(o); return true; }
       };
     
+      /// Container select operator for conditions mappings with conditions flagged active
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       template <typename T> struct ActiveSelect : public Cond__Oper {
       public:
         T& collection;
@@ -99,6 +127,7 @@ namespace dd4hep {
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template<typename collection_type> class KeyedSelect : public Cond__Oper  {
         cond_t::key_type key;
@@ -118,6 +147,7 @@ namespace dd4hep {
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       class KeyFind : public Cond__Oper  {
         cond_t::key_type hash;
@@ -130,6 +160,7 @@ namespace dd4hep {
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename OPER> class OperatorWrapper : public Cond__Oper  {
       public:
@@ -143,9 +174,13 @@ namespace dd4hep {
         bool operator()(const mapentry_t& o) const     { return oper(o.second.ptr());  }
         bool operator()(const ptr_mapentry_t& o) const { return oper(o.second);        }
       };
-      template <typename oper_type> OperatorWrapper<oper_type> operatorWrapper(oper_type& oper) {
-        return OperatorWrapper<oper_type>(oper);
-      }
+
+      /// Arbitrary wrapper for user defined conditions operators
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       template <typename OPER> class ConditionsOperation : public Cond__Oper  {
       public:
         typedef OPER operator_t;
@@ -159,43 +194,48 @@ namespace dd4hep {
         bool operator()(const ptr_mapentry_t& o) const { return oper(o.second);        }
       };
     
-      /// Helper to insert objects into a conditions pool
+      /// Helper function to create a OperatorWrapper<T> object from the argument type
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
-      //class ConditionsPoolSelect : public ConditionsOperation<ConditionsPoolSelect>  {
-      //public: ConditionsPoolSelect(ConditionsPool& p) : wrapper_t(operator_t(p)) {}
-      //};
+      template <typename oper_type> OperatorWrapper<oper_type> operatorWrapper(oper_type& oper) {
+        return OperatorWrapper<oper_type>(oper);
+      }
 
-      /// Helper to remove objects from a conditions pool
+      /// Helper to create functor to remove objects from a conditions pool
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename P> inline ConditionsOperation<PoolRemove<P> > poolRemove(P& pool)
       { return ConditionsOperation<PoolRemove<P> >(PoolRemove<P>(pool));  }
 
-      /// Helper to insert objects into a conditions pool
+      /// Helper to create functor to insert objects into a conditions pool
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename P> inline ConditionsOperation<PoolSelect<P> > poolSelect(P& pool)
       { return ConditionsOperation<PoolSelect<P> >(PoolSelect<P>(pool));  }
 
-      /// Helper to collect conditions using a ConditionsSelect base class
+      /// Helper to create functor to collect conditions using a ConditionsSelect base class
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename T> inline MapConditionsSelect<T> mapConditionsSelect(T& collection)
       {  return MapConditionsSelect<T>(collection);      }
 
-      /// Helper to select objects from a conditions pool into a sequential container
+      /// Helper to create functor to select objects from a conditions pool into a sequential container
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename C> inline 
       ConditionsOperation<SequenceSelect<C> > sequenceSelect(C& coll) {
@@ -203,10 +243,11 @@ namespace dd4hep {
         return ConditionsOperation<operator_t>(operator_t(coll));
       }
 
-      /// Helper to select objects from a conditions pool into a mapped container
+      /// Helper to create functor to select objects from a conditions pool into a mapped container
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename C> inline 
       ConditionsOperation<SequenceSelect<C> > mapSelect(C& coll) {
@@ -218,23 +259,26 @@ namespace dd4hep {
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename C> inline ConditionsOperation<ActiveSelect<C> > activeSelect(C& coll)
       { return ConditionsOperation<ActiveSelect<C> >(ActiveSelect<C>(coll)); }
 
-      /// Helper to select keyed objects from a conditions pool
+      /// Helper to create functor to select keyed objects from a conditions pool
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       template <typename C> inline 
       ConditionsOperation<KeyedSelect<C> > keyedSelect(Condition::key_type key, C& coll)
       { return ConditionsOperation<KeyedSelect<C> >(KeyedSelect<C>(key, coll)); }
 
-      /// Helper to find conditions objects by hash key
+      /// Helper to create functor to find conditions objects by hash key
       /** 
        *  \author  M.Frank
        *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
        */
       ConditionsOperation<KeyFind> inline  keyFind(Condition::key_type key)
       { return ConditionsOperation<KeyFind>(KeyFind(key)); }

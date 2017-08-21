@@ -97,7 +97,7 @@ time-dependent and  typically called $conditons$. The ability of an
 experiment to produce correct and timely results depends on the complete 
 and efficient availability of  needed conditions for each stage of data 
 handling. This manual should introduce to the \DDC toolkit, which provides 
-access to conditions data within the \DDH data structures.
+access to conditions data within the \DDH data structures~\cite{bib:dd4hep-manual}.
 
 \noindent
 The \DDC extensions to the \DDH toolkit formalize both the access and 
@@ -113,8 +113,12 @@ For this reason \DDC does not attempt to solve the persistency problem,
 but rather defines an interface used to load missing data items from the 
 persistent medium. Any persistent data representation, which can fulfill
 the requirements of this interface may be adopted by the \DDC 
-conditions caching and access mechanism. For details please see 
-section~\ref{sec:ddcond-user-interface}.
+conditions caching and access mechanism.
+
+\noindent
+At the end of this manual a walk-through of an example is discussed to 
+illustrate, which steps have to be performed to use the \DDH conditions
+store within a client application.
 
 %=============================================================================
 \subsection{Definition of Conditions Data}
@@ -122,7 +126,7 @@ section~\ref{sec:ddcond-user-interface}.
 %=============================================================================
 \noindent
 Conditions data are firstly
-\begin{itemize}
+\begin{itemize}\itemcompact
 \item raw data values. Raw data values are recorded from measurement 
       devices such as 
       thermometers, pressure devices or 
@@ -198,7 +202,7 @@ conditions slices as described in section~\ref{subsec:ddcond-conditions-slices}.
 
 \noindent
 A conditions objects serves two purposes:
-\begin{itemize}
+\begin{itemize}\itemcompact
 \item Firstly, it supports the basic functionality which is generic to any 
       condition -- independent of the actual user payload. This information 
       includes access to the interval of validity and the key to uniquely identify
@@ -208,11 +212,11 @@ A conditions objects serves two purposes:
       conditions data. These data are freely user defined. An automatic 
       parsing mechanism from a string representation is supported if the 
       payload-class can properly described using a boost::spirit
-      parsing structure. Default types are defined for 
-    \begin{itemize}
+      parsing structure. Default type implementations are defined for 
+      \begin{itemize}\itemcompact
         \item all primitive data types, 
         \item ROOT::Math::XYZVector, ROOT::Math::XYZPoint, ROOT::Math::PxPyPzEVector.
-        \item a number of STL containers thereof:\\
+        \item a number of STL containers of the above basic data types:\\
                 std::vector\textless TYPE\textgreater, 
                 std::list\textless TYPE\textgreater,
                 std::set\textless TYPE\textgreater,\\
@@ -220,15 +224,18 @@ A conditions objects serves two purposes:
                 std::map\textless string,TYPE\textgreater,\\
                 std::pair\textless int,TYPE\textgreater,
                 std::pair\textless string,TYPE\textgreater.
-    \end{itemize}
-
+      \end{itemize}
+      Additional types can easily be implemented using boost::spirit if the basic
+      representation is in the form of a string. Dummy boost::spirit parsers 
+      may be implemented if the conversion to and from strings is not required.
 \item Thirdly, it supports the basic functionality required by a 
       conditions management framework, which implements the $ConditionsMap$ 
       interface.
 \end{itemize}
 For completeness we include here the basic data access methods of the conditions
-class:
-\vspace{-0.2cm}
+class\\
+(see \detdesc{classdd4hep_1_1_condition.html}{DD4hep/Conditions.h}):
+\vspace{-0.4cm}
 \begin{unnumberedcode}
   class Condition: public Handle<detail::ConditionObject> {
     /** Interval of validity                                   */
@@ -311,7 +318,7 @@ allow tools or clients to interact with conditions of a given slice.
 This interface defines the interaction of clients with a conditions slice.
 These interactions cover both the data access and the data management 
 within a slice. The interface allows to
-\begin{itemize}
+\begin{itemize}\itemcompact
 \item access individual conditions by the detector element
 and a given item key. The interface allows
 \item to scan conditions according to the detector element or 
@@ -357,7 +364,7 @@ has the following entry points:
 \end{unnumberedcode}
 Such $ConditionsMap$ implementations can easily be constructed using standard
 STL maps. The lookup key is constructed out of two elements:
-\begin{itemize}
+\begin{itemize}\itemcompact
 \item The detector element this condition belongs to and 
 \item an identifier of condition within this detector element.
 \end{itemize}
@@ -376,6 +383,11 @@ this user interface is the $ConditionsSlice$ implemented in the
 \section{DDCond Conditions Store and Slices}
 \label{subsec:ddcond-conditions-store}
 %=============================================================================
+
+\noindent
+The $ConditionsMap$ interface allows tools to work with various conditions 
+data stores. \DDC provides an efficient implementation of such a store,
+which is described in the following chapters.
 
 %=============================================================================
 \subsection{Data Organization}
@@ -396,6 +408,15 @@ and not necessarily resemble to values in seconds or fractions thereof.
 Time stamps could as well be formulated as an interval of luminosity sections,
 run numbers, fill numbers or entire years. 
 
+%=============================================================================
+\begin{figure}[t]
+  \begin{center}\includegraphics[height=11cm] {DDCond-ConditionsStore.png}
+    \caption{The graphical representation of the organisation of the
+             conditions data in \DDH. }
+    \label{fig:ddcond-data-organization}
+  \end{center}
+\end{figure}
+
 \noindent
 Groups of parameters associated to certain intervals of validity can
 be very effectively managed if pooled together according to the 
@@ -415,17 +436,6 @@ Users can organize data according to certain types, These types are
 independently managed and subdivided into pools. Each of these pools
 manages a set of conditions items sharing the same interval ov validity.
 
-%=============================================================================
-\begin{figure}[h]
-  \begin{center}\includegraphics[height=10cm] {DDCond-ConditionsStore.png}
-    \caption{The graphical representation of the organisation of the
-             conditions data in \DDH. }
-    \label{fig:ddcond-data-organization}
-  \end{center}
-\end{figure}
-\vspace{-0.5cm}
-
-
 \noindent
 The internal organization of the conditions data in \DDC is entirely 
 transparent to the user. The description here is contained for
@@ -441,31 +451,79 @@ these fairly straight forward using a suited approach.
 
 \noindent
 As defined in section~\ref{subsec:ddcond-conditions-slices}, the conditions slice
-id the main entity to project conditions suitable to process a given particle
-collision. As shown also in Figure~\ref{fig:ddcond-slice-usage}, there are 
+is the main entity to project conditions suitable to process a given particle
+collision (see \detdesc{classdd4hep_1_1cond_1_1_conditions_content.html}{DDCond/ConditionsContent.h} for details). 
+As shown also in Figure~\ref{fig:ddcond-slice-usage}, there are 
 several steps to be performed before a conditions slice is ready to be used:
-\begin{enumerate}
+\begin{enumerate}\itemcompact
 \item Create the conditions data slice.
-\item Setting up the data content of the slice.
+\item Setting up the data content of the slice by attaching an object of type
+      $ConditionsContent$.
 \item Preparing the conditions data slice.
 \item Using the conditions data slice.
 \end{enumerate}
 
-NEED TO MENTION ConditionsContent
+\noindent
+The $ConditionsContent$ (see \detdesc{classdd4hep_1_1cond_1_1_conditions_slice.html}{DDCond/ConditionsSlice.h} for details) 
+is a simple object, which contains load addresses
+to identify persistent conditions within the database/persistent schema 
+used and a set of dependency rules to compute the corresponding derived conditions.
 
 
 %=============================================================================
 \begin{figure}[h]
   \begin{center}\includegraphics[width=15cm] {DDCond-ConditionsAccess.png}
-    \caption{The interaction of a particular user with the conditions
-             data store using the $ConditionsManager$ interface.}
+    \caption{The interaction of a user with the conditions
+             data store using the $ConditionsSlice$ and the 
+             $ConditionsManager$ interface to define the conditions content, 
+             prepare the data and then access the loaded data from the slice
+             projected according to the required interval of validity.}
     \label{fig:ddcond-slice-usage}
   \end{center}
 \end{figure}
 \vspace{-0.5cm}
 
+\noindent
+The $ConditionsSlice$ holds a consistent set of conditions valid for a given 
+interval of validity, which is the intersection of the intervals of 
+validity of all contained conditions. The has the following consequences 
+for the client when using a prepared $ConditionsSlice$:
+\begin{itemize}
+\item $ConditionsSlice$ objects are prepared by the client framework.
+      Specific algorithms and other code fragments developed by physicist users
+      should not deal with such activities. In multi-threaded applications
+      the preparation of a $ConditionsSlice$ may be done in a separate thread.
+\item Once prepared, the slice nor the contained conditions may be altered.
+      All contained conditions must be considered read-only.
+\item Since the slice is considered read-only, it can be used by multiple 
+      clients simultaneously. In particular, multiple threads may share 
+      the same slice.
+\item A $ConditionsSlice$ may only be re-used and prepared according to
+      a different interval of validity once no other clients use it.
+\item At any point of time any number of $ConditionsSlice$ objects
+      may be present in the client framework. There is no interference
+      as long as the above mentioned requirements are fulfilled.
+\end{itemize}
+
+\noindent
+The fact that multiple instances of the conditions slices may be present 
+as well as the fact that the preparation of slices and their use is strictly
+separated makes then ideal for the usage within multi-threaded event 
+processing frameworks. As shown in 
+figure~\ref{fig:ddcond-multi-threaded-processing}, 
+the following use cases can easily be met:
+\begin{itemize}
+\item Mulitple threads may share the same slice while processing event data
+      (thread 1-3) as long as the time stamp of the event data processed 
+      by each thread is contained in the interval of validity of the
+      slice.
+\item At the same time another thread may process event data with a different
+      time stamp. The conditions for this event were prepared using another slice
+      (thread 4-N).
+\end{itemize}
+
 %=============================================================================
-\begin{figure}[h]
+\begin{figure}[t]
   \begin{center}\includegraphics[width=15cm] {DDCond-ConditionsMT.png}
     \caption{MT.}
     \label{fig:ddcond-multi-threaded-processing}
@@ -473,33 +531,104 @@ NEED TO MENTION ConditionsContent
 \end{figure}
 \vspace{-0.5cm}
 
-\newpage
-%=============================================================================
-\section{The User Interface}
-\label{sec:ddcond-user-interface}
-%=============================================================================
 
 %=============================================================================
-\subsection{Conditions Data Classes}
-\label{subsec:ddcond-data-classes}
-%=============================================================================
-
-%=============================================================================
-\subsection{ConditionsSlice}
-\label{subsec:ddcond-data-classes}
+\subsection{Loading Conditions Data}
+\label{subsec:ddcond-data-loading}
 %=============================================================================
 
 \noindent
-The ConditionsSlice a Concrete inmplementation of the ConditonsMap Interface.
-bla bla
+The loading of conditions data is highly experiment specific. Different 
+access patterns and load implementations (single threaded, multi-threaded, locking etc.)
+make it close to impossible to implement any solution fitting all needs.
+For this reason the loading of conditions is deferred to an abstract implementation,
+which is invoked during the preparation phase of a conditions slice if the required
+data are not found in the conditions cache. This data loader interface
+(see \detdesc{classdd4hep_1_1cond_1_1_conditions_data_loader.html}{ConditionsDataLoader.h}
+for details), receives all relevant callbacks from the framework to resolve 
+missing conditions and pass the loaded objects to the framework for the management.
+The callback to be implemented by the framework developers are:
+\begin{unnumberedcode}
+/// Interface for a generic conditions loader
+/** 
+ *  Common function for all loader.
+ */
+class ConditionsDataLoader : public NamedObject, public PropertyConfigurable   {
+  typedef Condition::key_type                                   key_type;
+  typedef std::map<key_type,Condition>                          LoadedItems;
+  typedef std::vector<std::pair<key_type,ConditionsLoadInfo*> > RequiredItems;
+public:
+  ....
+  /// Load a number of conditions items from the persistent medium according to the required IOV
+  virtual size_t load_many(  const IOV&       req_validity,
+                             RequiredItems&   work,
+                             LoadedItems&     loaded,
+                             IOV&             combined_validity) = 0;
+};
+\end{unnumberedcode}
+The arguments to the callback contain the necessary information to retrieve
+the requested items.
+
+\newpage
+%=============================================================================
+\section{Example Walkthrough}
+\label{sec:ddcond-example}
+%=============================================================================
+
+%=============================================================================
+\subsection{Example to Load and Prepare Conditions(Slices)}
+\label{subsec:ddcond-example-loading}
+%=============================================================================
+
+\noindent
+To illustrate the usage of the \DDC package an example is discussed here in detail.
+The full example is part of the conditions unit tests and can be found in the 
+\DDH examples.\\
+(See examples/Conditions/src/ConditionExample\_manual.cpp).
+
+\noindent
+The examples uses conditions names and detector element names explicitly and
+hence requires a fixed detector description being loaded in memory.
+For simplicity we use here the Minitel example from the example/ClientTests.
+
+\begin{code}
+  description.fromXML("examples/ClientTests/compact/MiniTel.xml");
+  description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
+
+  ConditionsManager manager = ConditionsManager::from(description);
+  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
+  manager["LoaderType"]     = "root";
+  manager.initialize();
+
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+
+ \end{code}
+
+\noindent
+{\bf{Explanation:}} \\
+\begin{tabular} {l||p{0cm}}
+\docline{Line}{}
+\docline{1}{Load the MiniTel detector description using the compact notation.}
+\docline{2}{Install the conditions manager implementation using the plugin mechanism.}
+\docline{4}{Access conditions manager instance from the Detector interface.}
+\docline{5-8}{Configure the properties of the conditions manager.}
+\docline{9}{Initialize the conditions manager instance.}
+\docline{11-12}{Create empty $ConditionsSlice$ and $ConditionsContent$ instances.}
+\docline{14}{}
+
+\end{tabular}
+
+
+TO BE COMPLETED!
+
 
 \newpage
 %=============================================================================
 \begin{thebibliography}{9}
-\bibitem{bib:LHCb-geometry} S. Ponce et al., 
-                "Detector Description Framework in LHCb", 
-                International Conference on Computing in High Energy and Nuclear Physics  (CHEP 2003), 
-                La Jolla, CA, 2003, proceedings. 
+\bibitem{bib:dd4hep-manual}  M.Frank, \DDH manual.
 \bibitem{bib:ddalign-manual}  M.Frank, \DDA manual.
 \end{thebibliography}
 %=============================================================================

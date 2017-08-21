@@ -105,6 +105,7 @@ namespace dd4hep {
 
       typedef HitManipulator::Wrapper Wrapper;
     protected:
+      /// Wrapper data
       mutable Wrapper m_data;
 
     public:
@@ -224,8 +225,11 @@ namespace dd4hep {
         virtual void* operator()(const Geant4HitWrapper& w) const = 0;
       };
 
+      /// Union defining the hit collection flags for processing
       union CollectionFlags  {
+        /// Full value
         unsigned long        value;
+        /// Individual hit collection bits
         struct BitItems  {
           unsigned           repeatedLookup:1;
           unsigned           mappedLookup:1;
@@ -259,6 +263,7 @@ namespace dd4hep {
       void getData(const ComponentCast& cast, std::vector<void*>* result);
 
     public:
+      /// Enumeration for collection optimization types
       enum OptimizationFlags  {
         OPTIMIZE_NONE = 0,
         OPTIMIZE_REPEATEDLOOKUP = 1<<0,

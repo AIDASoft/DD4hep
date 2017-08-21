@@ -24,6 +24,7 @@ using namespace dd4hep;
 using namespace dd4hep::align;
 typedef Condition::key_type key_type;
 
+/// Helper class to store information about alignment calibration items
 /**  Implementation details: Alignment context entry
  *
  *   \author  M.Frank

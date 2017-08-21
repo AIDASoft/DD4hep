@@ -21,6 +21,7 @@
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsManagerObject.h"
 #include "DDCond/ConditionsRootPersistency.h"
+#include "DDCond/ConditionsTreePersistency.h"
 
 // -------------------------------------------------------------------------
 // Regular dd4hep dictionaries
@@ -63,6 +64,7 @@ using namespace dd4hep;
 //#pragma link C++ class std::list<cond::ConditionsRootPersistency::IOVPool>+;
 
 #pragma link C++ class cond::ConditionsRootPersistency+;
+#pragma link C++ class cond::ConditionsTreePersistency+;
 
 #endif
 

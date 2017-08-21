@@ -11,8 +11,8 @@
 //
 //=========================================================================
 
-//Class include file
-#include "DDG4/Geant4EventSeed.h"
+// Class include file
+#include "Geant4EventSeed.h"
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"

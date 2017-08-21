@@ -15,14 +15,14 @@
 #include "DD4hep/Printout.h"
 #include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsRootPersistency.h"
+#include "DDCond/ConditionsTreePersistency.h"
 
 #include "TFile.h"
 #include "TTimeStamp.h"
 
-typedef dd4hep::cond::ConditionsRootPersistency __ConditionsRootPersistency;
+typedef dd4hep::cond::ConditionsTreePersistency __ConditionsTreePersistency;
 /// ROOT Class implementation directive
-ClassImp(__ConditionsRootPersistency)
+ClassImp(__ConditionsTreePersistency)
 
 
 using namespace std;
@@ -39,9 +39,9 @@ namespace  {
    *  \ingroup DD4HEP_CONDITIONS
    */
   struct Scanner : public Condition::Processor   {
-    ConditionsRootPersistency::pool_type& pool;
+    ConditionsTreePersistency::pool_type& pool;
     /// Constructor
-    Scanner(ConditionsRootPersistency::pool_type& p) : pool(p) {}
+    Scanner(ConditionsTreePersistency::pool_type& p) : pool(p) {}
     /// Conditions callback for object processing
     virtual int process(Condition c)  const override  {
       pool.push_back(c.ptr());
@@ -50,8 +50,8 @@ namespace  {
   };
   struct DurationStamp  {
     TTimeStamp start;
-    ConditionsRootPersistency* object = 0;
-    DurationStamp(ConditionsRootPersistency* obj) : object(obj)  {
+    ConditionsTreePersistency* object = 0;
+    DurationStamp(ConditionsTreePersistency* obj) : object(obj)  {
     }
     ~DurationStamp()  {
       TTimeStamp stop;
@@ -61,22 +61,22 @@ namespace  {
 }
 
 /// Default constructor
-ConditionsRootPersistency::ConditionsRootPersistency() : TNamed()   {
+ConditionsTreePersistency::ConditionsTreePersistency() : TNamed()   {
 }
 
 /// Initializing constructor
-ConditionsRootPersistency::ConditionsRootPersistency(const string& name, const string& title)
+ConditionsTreePersistency::ConditionsTreePersistency(const string& name, const string& title)
   : TNamed(name.c_str(), title.c_str())
 {
 }
 
 /// Default destructor
-ConditionsRootPersistency::~ConditionsRootPersistency()    {
+ConditionsTreePersistency::~ConditionsTreePersistency()    {
   clear();
 }
 
 /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const std::string& identifier,
+size_t ConditionsTreePersistency::add(const std::string& identifier,
                                       const IOV& iov,
                                       std::vector<Condition>& conditions)   {
   DurationStamp stamp(this);
@@ -92,7 +92,7 @@ size_t ConditionsRootPersistency::add(const std::string& identifier,
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const string& identifier, ConditionsPool& pool)    {
+size_t ConditionsTreePersistency::add(const string& identifier, ConditionsPool& pool)    {
   DurationStamp stamp(this);
   conditionPools.push_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
@@ -107,7 +107,7 @@ size_t ConditionsRootPersistency::add(const string& identifier, ConditionsPool& 
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const string& identifier, const ConditionsIOVPool& pool)    {
+size_t ConditionsTreePersistency::add(const string& identifier, const ConditionsIOVPool& pool)    {
   size_t count = 0;
   DurationStamp stamp(this);
   for( const auto& p : pool.elements )  {
@@ -126,7 +126,7 @@ size_t ConditionsRootPersistency::add(const string& identifier, const Conditions
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const string& identifier, const UserPool& pool)    {
+size_t ConditionsTreePersistency::add(const string& identifier, const UserPool& pool)    {
   DurationStamp stamp(this);
   userPools.push_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = userPools.back().second;
@@ -141,16 +141,16 @@ size_t ConditionsRootPersistency::add(const string& identifier, const UserPool& 
 }
 
 /// Open ROOT file in read mode
-TFile* ConditionsRootPersistency::openFile(const string& fname)     {
+TFile* ConditionsTreePersistency::openFile(const string& fname)     {
   TDirectory::TContext context;
   TFile* file = TFile::Open(fname.c_str());
   if ( file && !file->IsZombie()) return file;
-  except("ConditionsRootPersistency","+++ FAILED to open ROOT file %s in read-mode.",fname.c_str());
+  except("ConditionsTreePersistency","+++ FAILED to open ROOT file %s in read-mode.",fname.c_str());
   return 0;
 }
 
 /// Clear object content and release allocated memory
-void ConditionsRootPersistency::_clear(persistent_type& pool)  {
+void ConditionsTreePersistency::_clear(persistent_type& pool)  {
   /// Cleanup all the stuff not useful....
   for (auto& p : pool )  {
     for(Condition c : p.second )
@@ -161,7 +161,7 @@ void ConditionsRootPersistency::_clear(persistent_type& pool)  {
 }
 
 /// Clear object content and release allocated memory
-void ConditionsRootPersistency::clear()  {
+void ConditionsTreePersistency::clear()  {
   /// Cleanup all the stuff not useful....
   _clear(conditionPools);
   _clear(userPools);
@@ -169,28 +169,28 @@ void ConditionsRootPersistency::clear()  {
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-std::unique_ptr<ConditionsRootPersistency>
-ConditionsRootPersistency::load(TFile* file,const string& obj)   {
-  std::unique_ptr<ConditionsRootPersistency> p;
+std::unique_ptr<ConditionsTreePersistency>
+ConditionsTreePersistency::load(TFile* file,const string& obj)   {
+  std::unique_ptr<ConditionsTreePersistency> p;
   if ( file && !file->IsZombie())    {
     TTimeStamp start;
-    p.reset((ConditionsRootPersistency*)file->Get(obj.c_str()));
+    p.reset((ConditionsTreePersistency*)file->Get(obj.c_str()));
     TTimeStamp stop;
     if ( p.get() )    {
       p->duration = stop.AsDouble()-start.AsDouble();
       return p;
     }
-    except("ConditionsRootPersistency",
+    except("ConditionsTreePersistency",
            "+++ FAILED to load object %s from file %s",
            obj.c_str(), file->GetName());
   }
-  except("ConditionsRootPersistency",
+  except("ConditionsTreePersistency",
          "+++ FAILED to load object %s from file [Invalid file]",obj.c_str());
   return p;
 }
 
 /// Load ConditionsPool(s) and populate conditions manager
-size_t ConditionsRootPersistency::_import(ImportStrategy     strategy,
+size_t ConditionsTreePersistency::_import(ImportStrategy     strategy,
                                           persistent_type&   persistent_pools,
                                           const std::string& id,
                                           const std::string& iov_type,
@@ -243,12 +243,12 @@ size_t ConditionsRootPersistency::_import(ImportStrategy     strategy,
         Condition::Object* o = c.ptr();
         o->iov = pool->iov;
         if ( pool->insert(o->addRef()) )    {
-          //printout(WARNING,"ConditionsRootPersistency","%p: [%016llX] %s -> %s",
+          //printout(WARNING,"ConditionsTreePersistency","%p: [%016llX] %s -> %s",
           //         o, o->hash,o->GetName(),o->data.str().c_str());
           ++count;
         }
         else   {
-          printout(WARNING,"ConditionsRootPersistency",
+          printout(WARNING,"ConditionsTreePersistency",
                    "+++ Ignore condition %s from %s iov:%s [Already present]",
                    c.name(),id.c_str(), iov_type.c_str());
         }
@@ -259,7 +259,7 @@ size_t ConditionsRootPersistency::_import(ImportStrategy     strategy,
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
-size_t ConditionsRootPersistency::importIOVPool(const std::string& identifier,
+size_t ConditionsTreePersistency::importIOVPool(const std::string& identifier,
                                                 const std::string& iov_type,
                                                 ConditionsManager  mgr)
 {
@@ -268,7 +268,7 @@ size_t ConditionsRootPersistency::importIOVPool(const std::string& identifier,
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
-size_t ConditionsRootPersistency::importUserPool(const std::string& identifier,
+size_t ConditionsTreePersistency::importUserPool(const std::string& identifier,
                                                  const std::string& iov_type,
                                                  ConditionsManager  mgr)
 {
@@ -277,7 +277,7 @@ size_t ConditionsRootPersistency::importUserPool(const std::string& identifier,
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
-size_t ConditionsRootPersistency::importConditionsPool(const std::string& identifier,
+size_t ConditionsTreePersistency::importConditionsPool(const std::string& identifier,
                                                        const std::string& iov_type,
                                                        ConditionsManager  mgr)
 {
@@ -286,7 +286,7 @@ size_t ConditionsRootPersistency::importConditionsPool(const std::string& identi
 }
 
 /// Load conditions pool and populate conditions manager. Allow tro be selective also for the key
-size_t ConditionsRootPersistency::importConditionsPool(ImportStrategy     strategy,
+size_t ConditionsTreePersistency::importConditionsPool(ImportStrategy     strategy,
                                                        const std::string& identifier,
                                                        const std::string& iov_type,
                                                        const IOV::Key&    iov_key,
@@ -295,7 +295,7 @@ size_t ConditionsRootPersistency::importConditionsPool(ImportStrategy     strate
 }
 
 /// Save the data content to a root file
-int ConditionsRootPersistency::save(TFile* file)    {
+int ConditionsTreePersistency::save(TFile* file)    {
   DurationStamp stamp(this);
   //TDirectory::TContext context;
   int nBytes = file->WriteTObject(this,GetName());
@@ -303,7 +303,7 @@ int ConditionsRootPersistency::save(TFile* file)    {
 }
 
 /// Save the data content to a root file
-int ConditionsRootPersistency::save(const string& fname)    {
+int ConditionsTreePersistency::save(const string& fname)    {
   DurationStamp stamp(this);
   //TDirectory::TContext context;
   TFile* file = TFile::Open(fname.c_str(),"RECREATE");

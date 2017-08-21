@@ -33,13 +33,18 @@ namespace dd4hep {
 
     /// Base class to be implemented by objects to listen on condition callbacks
     /**
-     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionsTextRepository  {
     public:
+      /// Definition of a single Entry in the conditions repository
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       class Entry  {
       public:
         std::string name, address;
@@ -49,6 +54,8 @@ namespace dd4hep {
         ~Entry() = default;
         Entry& operator=(const Entry& copy) = default;
       };
+
+      /// Definition of the entry collection
       typedef std::vector<Entry> Data;
 
     public:

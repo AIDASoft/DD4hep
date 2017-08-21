@@ -40,6 +40,14 @@ namespace dd4hep {
      */
     class AlignmentsCalib {
     public:
+      /// Helper class to store information about alignment calibration items
+      /**  Implementation details: Alignment context entry
+       *
+       *   \author  M.Frank
+       *   \version 1.0
+       *   \date    31/01/2017
+       *   \ingroup DD4HEP_DDALIGN
+       */
       class Entry;
       /// Shortcut definitions
       typedef std::map<Condition::key_type,Entry*>  UsedConditions;

@@ -74,6 +74,7 @@ namespace dd4hep {
       virtual ~ConditionsDataLoader();
       /// Add data source definition to loader
       void addSource(const std::string& source, const IOV& iov);
+#if 0
       /// Load  a condition set given the conditions key according to their validity
       virtual size_t load_single(key_type         key,
                                  const IOV&       req_validity,
@@ -82,6 +83,8 @@ namespace dd4hep {
       virtual size_t load_range( key_type         key,
                                  const IOV&       req_validity,
                                  RangeConditions& conditions) = 0;
+#endif
+      /// Load a number of conditions items from the persistent medium according to the required IOV
       virtual size_t load_many(  const IOV&       req_validity,
                                  RequiredItems&   work,
                                  LoadedItems&     loaded,

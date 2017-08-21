@@ -57,6 +57,11 @@ namespace dd4hep {
   namespace sim {
 
     /// Sequence handler implementing common actions to all sequences.
+    /** @class SequenceHdl
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
     template <typename T> class SequenceHdl {
     public:
       typedef SequenceHdl<T> Base;
@@ -66,42 +71,52 @@ namespace dd4hep {
       SequenceHdl()
         : m_sequence(0), m_activeContext(0) {
       }
+      /// Initializing constructor
       SequenceHdl(Geant4Context* ctxt, T* seq) : m_sequence(0), m_activeContext(ctxt)  {
         _aquire(seq);
       }
+      /// Default destructor
       virtual ~SequenceHdl() {
         _release();
       }
+      /// Aquire object reference
       void _aquire(T* s) {
         InstanceCount::increment(this);
         m_sequence = s;
         if ( m_sequence ) m_sequence->addRef();
       }
+      /// Release object
+      void _release() {
+        detail::releasePtr(m_sequence);
+        InstanceCount::decrement(this);
+      }
+      /// Update Geant4Context for current call
       void updateContext(Geant4Context* ctxt)   {
         m_activeContext = ctxt;
         if ( m_sequence )  {
           m_sequence->updateContext(ctxt);
         }
       }
-      void _release() {
-        detail::releasePtr(m_sequence);
-        InstanceCount::decrement(this);
-      }
+      /// Access reference to the current active Geant4Context structure
       Geant4Context* context() const  {  
         return m_activeContext;
       }
+      /// Access reference to the current active Geant4Kernel structure
       Geant4Kernel& kernel()  const  {
         return context()->kernel();
       }
+      /// G4 callback in multi threaded mode to configure thread fiber
       void configureFiber(Geant4Context* ctxt)   {
         if ( m_sequence )  {
           m_sequence->configureFiber(ctxt);
         }
       }
+      /// Create Geant4 run context
       void createClientContext(const G4Run* run)   {
         Geant4Run* r = new Geant4Run(run);
         m_activeContext->setRun(r);
       }
+      /// Destroy Geant4 run context
       void destroyClientContext(const G4Run*)   {
         Geant4Run* r = m_activeContext->runPtr();
         if ( r )  {
@@ -109,10 +124,12 @@ namespace dd4hep {
           detail::deletePtr(r);
         }
       }
+      /// Create Geant4 event context
       void createClientContext(const G4Event* evt)   {
         Geant4Event* e = new Geant4Event(evt,Geant4Random::instance());
         m_activeContext->setEvent(e);
       }
+      /// Destroy Geant4 event context
       void destroyClientContext(const G4Event*)   {
         Geant4Event* e = m_activeContext->eventPtr();
         if ( e )  {
@@ -122,6 +139,7 @@ namespace dd4hep {
       }
     };
 
+    /// Forward declarations
     class Geant4UserRunAction;
     class Geant4UserEventAction;
 
@@ -480,11 +498,24 @@ using namespace dd4hep::sim;
 #include "G4RunManager.hh"
 #include "G4PhysListFactory.hh"
 
+
+/// Compatibility actions for running Geant4 in single threaded mode
+/** @class Geant4Compatibility
+ *
+ * @author  M.Frank
+ * @version 1.0
+ */
 class Geant4Compatibility {
 public:
-  Geant4Compatibility() {}
+  /// Default constructor
+  Geant4Compatibility() = default;
+  /// Default destructor
+  virtual ~Geant4Compatibility() = default;
+  /// Detector construction invocation in compatibility mode
   Geant4DetectorConstructionSequence* buildDefaultDetectorConstruction(Geant4Kernel& kernel);
 };
+
+/// Detector construction invocation in compatibility mode
 Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorConstruction(Geant4Kernel& kernel)  {
   Geant4Action* cr;
   Geant4DetectorConstruction* det_cr;

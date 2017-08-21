@@ -17,6 +17,11 @@
 #include "DD4hep/DetectorData.h"
 
 /// Helper class to support ROOT persistency of Detector objects
+/**
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \ingroup DD4HEP_CORE
+ */
 class DD4hepRootPersistency : public TNamed  {
 public:
   typedef std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >  HandleMap;
@@ -81,6 +86,12 @@ public:
   ClassDef(DD4hepRootPersistency,1);
 };
 
+/// Helper class to check various ingredients of the Detector object after loaded from ROOT
+/**
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \ingroup DD4HEP_CORE
+ */
 class DD4hepRootCheck  {
 public:
   /// Reference to the detector model object
@@ -124,6 +135,5 @@ public:
   /// Check all of the above
   size_t checkAll()   const;
 };
-
 
 #endif    /* DD4HEP_DD4HEPROOTPERSISTENCY_H         */

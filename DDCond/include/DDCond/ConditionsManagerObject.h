@@ -142,13 +142,13 @@ namespace dd4hep {
       
       /// Access conditions multi IOV pool by iov type
       virtual ConditionsIOVPool* iovPool(const IOVType& type)  const = 0;
-
+#if 0
       /// Retrieve a condition set given a Detector Element and the conditions name according to their validity
       virtual Condition get(key_type key, const IOV& req_validity) = 0;
 
       /// Retrieve a condition given a Detector Element and the conditions name
       virtual RangeConditions getRange(key_type key, const IOV& req_validity) = 0;
-
+#endif
       /// Push all pending updates to the conditions store. 
       /** Note:
        *  This does not yet make the new conditions availible to the clients
