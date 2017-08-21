@@ -47,6 +47,7 @@ namespace dd4hep {
       ConditionsMultiLoader(Detector& description, ConditionsManager mgr, const std::string& nam);
       /// Default destructor
       virtual ~ConditionsMultiLoader();
+#if 0
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load_single(key_type key,
                                  const IOV& req_validity,
@@ -55,6 +56,7 @@ namespace dd4hep {
       virtual size_t load_range( key_type key,
                                  const IOV& req_validity,
                                  RangeConditions& conditions);
+#endif
       /// Optimized update using conditions slice data
       virtual size_t load_many(  const IOV& /* req_validity */,
                                  RequiredItems&  /* work         */,
@@ -146,7 +148,7 @@ ConditionsMultiLoader::load_source(const std::string& nam,
   }
   return (*iop).second;
 }
-
+#if 0
 /// Load  a condition set given a Detector Element and the conditions name according to their validity
 size_t ConditionsMultiLoader::load_range(key_type key,
                                          const IOV& req_validity,
@@ -186,3 +188,4 @@ size_t ConditionsMultiLoader::load_single(key_type key,
   }
   return conditions.size() - len;
 }
+#endif

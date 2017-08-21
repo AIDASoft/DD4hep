@@ -23,7 +23,12 @@ namespace dd4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
 
-    namespace HepMC {  class EventStream;  }
+    /// HepMC namespace declaration
+    namespace HepMC {
+      /// HepMC EventStream class used internally by the Geant4EventReaderHepMC plugin
+      class EventStream;
+    }
+
     /// Class to populate Geant4 primaries from StdHep files.
     /**
      * Class to populate Geant4 primary particles and vertices from a
@@ -89,8 +94,16 @@ namespace dd4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
 
+    /// HepMC namespace declaration
     namespace HepMC {
 
+      /// HepMC EventHeader class used internally by the Geant4EventReaderHepMC plugin
+      /*
+       *  \author  P.Kostka (main author)
+       *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
       class EventHeader  {
       public:
         int   id;
@@ -103,6 +116,7 @@ namespace dd4hep {
         float alpha_qed;
         vector<float>      weights;
         vector<long>       random;
+        /// Default constructor
         EventHeader() : id(0), num_vertices(0), bp1(0), bp2(0), 
                         signal_process_id(0), signal_process_vertex(0),
                         scale(0.0), alpha_qcd(0.0), alpha_qed(0.0), weights(), random() {}
@@ -111,6 +125,13 @@ namespace dd4hep {
       /// The known_io enum is used to track which type of input is being read
       enum known_io { gen=1, ascii, extascii, ascii_pdt, extascii_pdt };
 
+      /// HepMC EventStream class used internally by the Geant4EventReaderHepMC plugin
+      /*
+       *  \author  P.Kostka (main author)
+       *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
       class EventStream {
       public:
         typedef std::map<int,Geant4Vertex*> Vertices;
@@ -128,7 +149,7 @@ namespace dd4hep {
         Vertices m_vertices;
         Particles m_particles;
 
-
+        /// Default constructor
         EventStream(istream& in) : instream(in), mom_unit(0.0), pos_unit(0.0),
                                    io_type(0), xsection(0.0), xsection_err(0.0)
         { use_default_units();                       }

@@ -276,6 +276,12 @@ namespace dd4hep {
     };
 #endif
     
+    /// Operator to clear containers when out of scope
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CORE
+     */
     template<typename C> struct ClearOnReturn {
       C& container;
       ClearOnReturn(C& c) : container(c) {  }

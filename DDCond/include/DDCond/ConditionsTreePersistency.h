@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSROOTPERSISTENCY_H
-#define DD4HEP_CONDITIONS_CONDITIONSROOTPERSISTENCY_H
+#ifndef DD4HEP_CONDITIONS_CONDITIONSTREEPERSISTENCY_H
+#define DD4HEP_CONDITIONS_CONDITIONSTREEPERSISTENCY_H
 
 // Framework/ROOT include files
 #include "DDCond/ConditionsPool.h"
@@ -48,7 +48,7 @@ namespace dd4hep {
      *  \author  M.Frank
      *  \version 1.0
      */
-    class ConditionsRootPersistency : public TNamed  {
+    class ConditionsTreePersistency : public TNamed  {
     public:
       typedef std::vector<Condition>                                  pool_type;
       typedef std::pair<std::string, pool_type>                       named_pool_type;
@@ -82,15 +82,15 @@ namespace dd4hep {
       
     public:
       /// No copy constructor
-      ConditionsRootPersistency(const ConditionsRootPersistency& copy) = delete;
+      ConditionsTreePersistency(const ConditionsTreePersistency& copy) = delete;
       /// Initializing constructor
-      ConditionsRootPersistency(const std::string& name, const std::string& title="DD4hep conditions container");
+      ConditionsTreePersistency(const std::string& name, const std::string& title="DD4hep conditions container");
       /// Default constructor
-      ConditionsRootPersistency();
+      ConditionsTreePersistency();
       /// Default destructor
-      virtual ~ConditionsRootPersistency();
+      virtual ~ConditionsTreePersistency();
       /// No assignment
-      ConditionsRootPersistency& operator=(const ConditionsRootPersistency& copy) = delete;
+      ConditionsTreePersistency& operator=(const ConditionsTreePersistency& copy) = delete;
 
       /// Clear object content and release allocated memory
       void clear();
@@ -107,10 +107,10 @@ namespace dd4hep {
       size_t add(const std::string& identifier, const ConditionsIOVPool& pool);
 
       /// Load conditions content from file.
-      static std::unique_ptr<ConditionsRootPersistency> load(TFile* file,const std::string& object);
+      static std::unique_ptr<ConditionsTreePersistency> load(TFile* file,const std::string& object);
       
       /// Load conditions content from file.
-      static std::unique_ptr<ConditionsRootPersistency> load(const std::string& file,const std::string& object)  {
+      static std::unique_ptr<ConditionsTreePersistency> load(const std::string& file,const std::string& object)  {
         return load(openFile(file), object);
       }
       
@@ -134,9 +134,9 @@ namespace dd4hep {
       int save(const std::string& file_name);
 
       /// ROOT object ClassDef
-      ClassDef(ConditionsRootPersistency,1);
+      ClassDef(ConditionsTreePersistency,1);
     };
     
   }        /* End namespace cond                            */
 }          /* End namespace dd4hep                          */
-#endif     /* DD4HEP_CONDITIONS_CONDITIONSROOTPERSISTENCY_H */
+#endif     /* DD4HEP_CONDITIONS_CONDITIONSTREEPERSISTENCY_H */

@@ -37,6 +37,7 @@ namespace dd4hep {
      */
     class ConditionsRepository  {
     public:
+      /// Definition of a single Entry in the conditions repository
       /**
        *  \author  M.Frank
        *  \version 1.0
@@ -50,6 +51,8 @@ namespace dd4hep {
         Entry(const Entry& e) = default;
         Entry& operator=(const Entry& e) = default;
       };
+
+      /// Definition of the entry collection
       typedef std::vector<Entry> Data;
 
     public:

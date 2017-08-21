@@ -375,7 +375,7 @@ bool Manager_Type1::select_range(Condition::key_type key,
   }
   return is_range_complete(req_validity,conditions);
 }
-
+#if 0
 /// Retrieve a condition given a Detector Element and the conditions name
 Condition
 Manager_Type1::get(Condition::key_type key, const IOV& iov)
@@ -437,6 +437,7 @@ Manager_Type1::getRange(Condition::key_type key, const IOV& iov)
   }
   return conditions;
 }
+#endif
 
 /// Prepare all updates for the given keys to the clients with the defined IOV
 ConditionsManager::Result

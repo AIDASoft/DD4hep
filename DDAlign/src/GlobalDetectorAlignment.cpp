@@ -35,6 +35,12 @@ namespace dd4hep {
   /// Namespace for the alignment part of the AIDA detector description toolkit
   namespace align {
 
+    /// Global alignment data container
+    /**
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_DDALIGN
+     */
     class GlobalAlignmentData : public NamedObject  {
     public:
       GlobalAlignment global;

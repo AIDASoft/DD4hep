@@ -55,6 +55,7 @@ namespace dd4hep {
      * @version 1.0
      */
     template <class HIT> struct HitPositionCompare: public HitCompare<HIT> {
+      /// Reference to the hit position
       const Position& pos;
       /// Constructor
       HitPositionCompare(const Position& p) : pos(p) {}
@@ -143,7 +144,7 @@ namespace dd4hep {
       double length;
       /// Monte Carlo / Geant4 information
       Contribution truth;
-
+      /// Energy deposit of the hit
       double energyDeposit;
 
     public:

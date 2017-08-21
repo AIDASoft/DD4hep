@@ -22,6 +22,7 @@ namespace dd4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
 
+    /// Plugin class to set the event seed for each event
     /**
      * \addtogroup Geant4RunActions
      * @{
@@ -34,6 +35,7 @@ namespace dd4hep {
      *
      *  \author  A.Sailer
      *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      * @}
      */
     class Geant4EventSeed: public Geant4RunAction {

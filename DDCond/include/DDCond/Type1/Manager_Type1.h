@@ -150,13 +150,13 @@ namespace dd4hep {
        *  This does not yet make the new conditions availible to the clients
        */
       virtual void pushUpdates()  final;
- 
+#if 0 
       /// Retrieve a condition set given a Detector Element and the conditions name according to their validity  (deprecated)
       virtual Condition get(key_type key, const IOV& req_validity)  final;
 
       /// Retrieve a condition given a Detector Element and the conditions name (deprecated)
       virtual RangeConditions getRange(key_type key, const IOV& req_validity)  final;
-
+#endif
       /// Create empty user pool object
       virtual std::unique_ptr<UserPool> createUserPool(const IOVType* iovT)  const;
 
