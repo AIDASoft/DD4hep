@@ -21,6 +21,7 @@
 #include "TTimeStamp.h"
 
 typedef dd4hep::cond::ConditionsRootPersistency __ConditionsRootPersistency;
+
 /// ROOT Class implementation directive
 ClassImp(__ConditionsRootPersistency)
 
