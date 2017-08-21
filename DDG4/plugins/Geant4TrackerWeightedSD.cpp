@@ -42,32 +42,27 @@ namespace dd4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
-     */
-
-    /** \addtogroup Geant4SDActionPlugin
      *
-     * @{
-     * \package Geant4TrackerWeightedAction
+     *  \addtogroup Geant4SDActionPlugin
      *
-     * \brief Sensitive detector meant for tracking detectors with multiple ways to combine steps
-
-     
-      \param integer HitPositionCombination
-        -# Use energy weights to define the position of the energy deposit
-        -# Set the hit position between the step pre and post point
-        -# Set the hit position to the position of the step pre point
-        -# Set the hit position to the position of the step post point
-
-      \param bool CollectSingleDeposits
-        - If true each step is written out
-
-
+     *  @{
+     *  \package Geant4TrackerWeightedAction
+     *
+     *  \brief Sensitive detector meant for tracking detectors with multiple ways to combine steps
+     *
+     *
+     *  \param integer HitPositionCombination
+     *   -# Use energy weights to define the position of the energy deposit
+     *   -# Set the hit position between the step pre and post point
+     *   -# Set the hit position to the position of the step pre point
+     *   -# Set the hit position to the position of the step post point
+     *
+     *  \param bool CollectSingleDeposits
+     *   - If true each step is written out
      *
      * @}
      */
-
     struct TrackerWeighted {
-      typedef Geant4HitCollection HitCollection;
 
       /// Enumeration to define the calculation of the position of the energy deposit
       enum  {
@@ -95,6 +90,8 @@ namespace dd4hep {
       EInside               last_inside          = kOutside;
       long long int         cell                 = 0;
       bool                  single_deposit_mode  = false;
+
+      /// Default constructor
       TrackerWeighted() = default;
 
       /// Clear collected information and restart for new hit

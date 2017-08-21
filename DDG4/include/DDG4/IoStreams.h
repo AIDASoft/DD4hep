@@ -78,6 +78,7 @@ namespace dd4hep {
     typedef char  char_type;
     typedef boost::iostreams::stream_offset stream_offset;
     typedef boost::iostreams::detail::path detail_path;
+    /// Helper structure to define boost::iostreams
     struct  category : boost::iostreams::seekable_device_tag, boost::iostreams::closable_tag { };
 
     /// Default constructor
@@ -134,6 +135,7 @@ namespace dd4hep {
   template <typename T=int> class dd4hep_file_source : private dd4hep_file<T> {
   public:
     typedef dd4hep_file<T> descriptor;
+    /// Helper structure to define boost::iostreams
     struct category : boost::iostreams::input_seekable,
                       boost::iostreams::device_tag,
                       boost::iostreams::closable_tag      { };
@@ -199,6 +201,7 @@ namespace dd4hep {
   class  dd4hep_file_sink : private dd4hep_file<T> {
   public:
     typedef dd4hep_file<T> descriptor;
+    /// Helper structure to define boost::iostreams
     struct category : boost::iostreams::output_seekable,
                       boost::iostreams::device_tag,
                       boost::iostreams::closable_tag  { };

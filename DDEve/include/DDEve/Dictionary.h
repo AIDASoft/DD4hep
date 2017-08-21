@@ -38,9 +38,19 @@
 #include "DDEve/GenericEventHandler.h"
 #include "DDEve/DDG4EventHandler.h"
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   void EveDisplay(const char* xmlFile, const char* eventFileName);
+
+  /// ROOT interactive interface class for running DDEve
+  /* 
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
+   */
   struct DDEve {
+    /// ROOT interactive entry point for running DDEve
     static void run(const char* xmlFile)  {
       EveDisplay(xmlFile, nullptr);
     }

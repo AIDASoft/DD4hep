@@ -48,8 +48,9 @@ namespace dd4hep {
 
   /// Event data actor base class for particles. Used to extract data from concrete classes.
   /** 
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   struct DDEveParticleActor  {
     virtual ~DDEveParticleActor() {}
@@ -57,10 +58,11 @@ namespace dd4hep {
     virtual void setSize(size_t /* num_elements */) {}
   };
 
-  /// Event handler base class. Interface to all DDEve I/O actions
+  /// Event handler base class: Interface to all DDEve I/O actions
   /** 
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class EventHandler   {
   public:
@@ -115,10 +117,12 @@ namespace dd4hep {
     ClassDef(EventHandler,0);
   };
 
-  /** @class EventConsumer  EventHandler.h DDEve/EventHandler.h
+  /// Event event consumer base class for DDEve: Interface class for event I/O
+  /**
    *
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class EventConsumer   {
   public:

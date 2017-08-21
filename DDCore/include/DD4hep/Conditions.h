@@ -220,6 +220,12 @@ namespace dd4hep {
     /// Hashed key representation
     Condition::key_type     hash = 0;
 
+    /// Helper union to interprete conditions keys
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
     union KeyMaker  {
       Condition::key_type  hash;
       /** Note: The memory layout is important here to have properly

@@ -28,8 +28,11 @@ namespace dd4hep {
   // Forward declarations
   class Display;
 
-  /// DisplayConfiguration  DisplayConfiguration.h DDEve/DisplayConfiguration.h
+  /// Generic display configuration structure for DDEve
   /*
+   * The data content is filled from the XML configuration file
+   * and then used when building the application interface
+   *
    * \author  M.Frank
    * \version 1.0
    * \ingroup DD4HEP_EVE
@@ -45,6 +48,8 @@ namespace dd4hep {
            PANEL      = 1<<4,
            COLLECTION = 1<<5
     };
+
+    /// Default base class for all configurations
     struct Defaults {
       char  load_geo;
       char  show_evt;
@@ -52,9 +57,13 @@ namespace dd4hep {
       int   color;
       float alpha;
     };
+
+    /// Configuration class for 3D calorimeter display
     struct Calo3D : public Defaults  {
       float rmin, dz, threshold, towerH, emax;
     };
+
+    /// Configuration class for 3D calorimeter data display
     struct Calodata : public Defaults {
       float rmin, dz, threshold, towerH, emax;
       float eta_min, eta_max;
@@ -63,8 +72,12 @@ namespace dd4hep {
       short n_phi;
       int spare;
     };
+
+    /// Generic panel configuration 
     struct Panel : public Defaults {
     };
+
+    /// Configuration class for hit data display
     struct Hits : public Defaults {
       float size;   // Marker size
       float width;
@@ -73,6 +86,8 @@ namespace dd4hep {
       float emax;   // Max energy deposit displayed
       int   type;   // Marker type
     };
+
+    /// Container with full display configuration
     class Config  {
     public:
       union Values  {
@@ -97,6 +112,8 @@ namespace dd4hep {
       Config& operator=(const Config& c);
     };
     typedef std::vector<Config> Configurations;
+
+    /// View configuration
     class ViewConfig : public Config {
     public:
       std::string type;
@@ -113,8 +130,12 @@ namespace dd4hep {
       ViewConfig& operator=(const ViewConfig& c);
     };
     typedef std::list<ViewConfig> ViewConfigurations;
+
+    /// Container with view configurations
     ViewConfigurations views;
+    /// Container with calorimeter data configurations
     Configurations     calodata;
+    /// Container for data collection configurations
     Configurations     collections;
   public:
     /// Initializing constructor

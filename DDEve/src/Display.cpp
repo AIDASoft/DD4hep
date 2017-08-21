@@ -57,7 +57,6 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
-
 ClassImp(Display)
 
 namespace dd4hep {
@@ -82,28 +81,6 @@ namespace dd4hep {
       display->eventHandler().Open(display->getEventHandlerName(),eventFileName);
     }
   }
-}
-
-
-Display::CalodataContext::CalodataContext() 
-  : slice(0), calo3D(0), caloViz(0), eveHist(0), config()
-{
-}
-
-Display::CalodataContext::CalodataContext(const CalodataContext& c) 
-  : slice(c.slice), calo3D(c.calo3D), caloViz(c.caloViz), eveHist(c.eveHist), config(c.config)
-{
-}
-
-Display::CalodataContext& Display::CalodataContext::operator=(const CalodataContext& c)  
-{
-  if ( &c == this ) return *this;
-  config = c.config;
-  slice = c.slice;
-  calo3D = c.calo3D;
-  caloViz = c.caloViz;
-  eveHist = c.eveHist;
-  return *this;
 }
 
 /// Standard constructor

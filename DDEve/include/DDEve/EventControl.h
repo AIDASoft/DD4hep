@@ -27,7 +27,8 @@ namespace dd4hep {
   // Forward declarations
   class Display;
 
-  /** EventControl  EventControl.h DDEve/EventControl.h
+  /// Event input control for DDEve: Interface class for event I/O
+  /**
    *
    * \author  M.Frank
    * \version 1.0
@@ -50,6 +51,7 @@ namespace dd4hep {
     typedef std::pair<TGCompositeFrame*,Labels> Line;
     typedef std::vector<Line > Lines;
     Lines   m_lines;
+
   public:
     /// Standard constructor
     EventControl(Display* disp, unsigned int width, unsigned int height);
