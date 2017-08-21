@@ -96,7 +96,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_save
 #---Testing: Save conditions to ROOT file
 dd4hep_add_test_reg( Conditions_Telescope_root_load_iov
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun -print DEBUG -destroy -plugin DD4hep_ConditionExample_load
+  EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore iovpool
   DEPENDS Conditions_Telescope_root_save
@@ -107,7 +107,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_iov
 #---Testing: Save conditions to ROOT file
 dd4hep_add_test_reg( Conditions_Telescope_root_load_usr
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun -print DEBUG -destroy -plugin DD4hep_ConditionExample_load
+  EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_DIR}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore userpool
   DEPENDS Conditions_Telescope_root_save
