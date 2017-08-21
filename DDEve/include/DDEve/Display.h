@@ -88,11 +88,17 @@ namespace dd4hep {
     Detector*            m_detDesc = 0;
     /// Reference to the event reader object
     GenericEventHandler* m_evtHandler = 0;
+    /// Geometry item element list
     TEveElementList*     m_geoGlobal = 0;
+    /// Event item element list
     TEveElementList*     m_eveGlobal = 0;
+    /// Reference to the view menu
     ViewMenu*            m_viewMenu;
+    /// Reference to the specialized ddeve menu
     dd4hepMenu*          m_dd4Menu;
+    /// Geometry data topics
     Topics               m_geoTopics;
+    /// Event data topics
     Topics               m_eveTopics;
     Views                m_eveViews;
     Menus                m_menus;
