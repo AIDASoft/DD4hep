@@ -85,7 +85,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
 
   /******************** Load the conditions from file *********************/
-  {
+  try  {
     auto pers = cond::ConditionsRootPersistency::load(conditions.c_str(),"DD4hep Conditions");
     printout(ALWAYS,"Statistics","+=========================================================================");
     printout(ALWAYS,"Statistics","+  Loaded conditions object from file %s. Took %8.3f seconds.",
@@ -104,6 +104,11 @@ static int condition_example (Detector& description, int argc, char** argv)  {
              num_cond, restore.c_str(), pers->duration);
     printout(ALWAYS,"Statistics","+=========================================================================");
   }
+  catch(const exception& e)    {
+    printout(ERROR,"ConditionsExample","Failed to import ROOT object(s): %s",e.what());    
+    throw;
+  }
+  
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
   const IOVType* iov_typ = manager.iovType("run");
   cond::ConditionsIOVPool* pool = manager.iovPool(*iov_typ);
