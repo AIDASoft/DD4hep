@@ -10,7 +10,7 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
+#if 0
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DDCond/ConditionsSlice.h"
@@ -315,3 +315,4 @@ int ConditionsTreePersistency::save(const string& fname)    {
   }
   return -1;
 }
+#endif
