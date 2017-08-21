@@ -85,6 +85,8 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
 
   /******************** Load the conditions from file *********************/
+  printout(INFO,"ConditionsExample","+  Start conditions import from ROOT object(s): %s",
+           conditions.c_str());
   try  {
     auto pers = cond::ConditionsRootPersistency::load(conditions.c_str(),"DD4hep Conditions");
     printout(ALWAYS,"Statistics","+=========================================================================");
