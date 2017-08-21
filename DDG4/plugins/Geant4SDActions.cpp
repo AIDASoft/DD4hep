@@ -34,7 +34,6 @@ namespace dd4hep {
      * \package Geant4TrackerAction
      *
      * \brief Sensitive detector meant for tracking detectors, will produce one hit per step
-
      *
      * @}
      */
@@ -94,7 +93,6 @@ namespace dd4hep {
      *
      * @}
      */
-
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4Calorimeter>::defineCollections() {
       m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
@@ -161,14 +159,12 @@ namespace dd4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
-     
-     * \addtogroup Geant4SDActionPlugin
+     *  \addtogroup Geant4SDActionPlugin
      *
      * @{
      * \package Geant4OpticalCalorimeterAction
      *
      * \brief Sensitive detector meant for optical calorimeters
-
      *
      * @}
      */
@@ -221,19 +217,17 @@ namespace dd4hep {
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-    /** \addtogroup Geant4SDActionPlugin
+    /// Class to implement the standard sensitive detector for scintillator calorimeters
+    /* \addtogroup Geant4SDActionPlugin
      *
      * @{
      * \package Geant4ScintillatorCalorimeterAction
-     *
      * \brief Sensitive detector meant for scintillator calorimeters
-
-     This sensitive action will apply Birks' law to the energy deposits
-
+     *
+     * This sensitive action will apply Birks' law to the energy deposits
      *
      * @}
      */
-
     struct Geant4ScintillatorCalorimeter {};
 
     /// Define collections created by this sensitivie action object
@@ -298,10 +292,9 @@ namespace dd4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
-     */
-
-    /** \addtogroup Geant4SDActionPlugin
      *
+     *
+     * \addtogroup Geant4SDActionPlugin
      * @{
      * \package Geant4TrackerCombineAction
      *
@@ -312,8 +305,6 @@ namespace dd4hep {
      *
      * @}
      */
-
-
     struct TrackerCombine {
       Geant4Tracker::Hit  pre, post;
       Position          mean_pos;
@@ -479,9 +470,9 @@ namespace dd4hep {
 
     typedef Geant4SensitiveAction<TrackerCombine>  Geant4TrackerCombineAction;
 
-    typedef Geant4TrackerAction Geant4SimpleTrackerAction;
-    typedef Geant4CalorimeterAction Geant4SimpleCalorimeterAction;
-    typedef Geant4OpticalCalorimeterAction Geant4SimpleOpticalCalorimeterAction;
+    typedef Geant4TrackerAction                    Geant4SimpleTrackerAction;
+    typedef Geant4CalorimeterAction                Geant4SimpleCalorimeterAction;
+    typedef Geant4OpticalCalorimeterAction         Geant4SimpleOpticalCalorimeterAction;
   }
 }
 

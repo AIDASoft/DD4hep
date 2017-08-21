@@ -34,6 +34,14 @@ namespace dd4hep {
      */
     class UriReader {
     public:
+      /// Base class of the user context type chained to the entity resolver
+      /*  User overloaded extensions hole the information necessary 
+       *  to perform the entity resolution
+       *  
+       *  \author   M.Frank
+       *  \version  1.0
+       *  \ingroup DD4HEP_XML
+       */
       struct UserContext {
         UserContext() {}
         UserContext(const UserContext&) {}

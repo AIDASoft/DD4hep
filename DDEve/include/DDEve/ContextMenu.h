@@ -27,10 +27,12 @@
  */
 namespace dd4hep {
 
+  /// DD4hep specific handler for TEve context menus
   /** @class ContextMenuHandler  ContextMenu.h DDEve/ContextMenu.h
    *
-   * @author  M.Frank
-   * @version 1.0
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class ContextMenuHandler : public TObject {
   protected:
@@ -52,10 +54,12 @@ namespace dd4hep {
   };
 
 
+  /// DD4hep specific TEve context menu
   /** @class ContextMenu  ContextMenu.h DDEve/ContextMenu.h
    *
-   * @author  M.Frank
-   * @version 1.0
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class ContextMenu  {
     typedef std::vector<ContextMenuHandler*> Handlers;

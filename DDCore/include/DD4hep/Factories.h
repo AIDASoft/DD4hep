@@ -58,10 +58,26 @@ namespace dd4hep {
   public:
     static void* create(const char* arg);
   };
+
+  /// Template class for a generic dd4hep object constructor
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    2012/07/31
+   *  \ingroup DD4HEP_CORE
+   */
   template <typename T> class DetectorConstructionFactory : public PluginFactoryBase {
   public:
     static void* create(Detector& description, int argc, char** argv);
   };
+
+  /// Template class for a generic segmentation object constructor
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    2012/07/31
+   *  \ingroup DD4HEP_CORE
+   */
   template <typename T> class SegmentationFactory : public PluginFactoryBase {
   public:
     static SegmentationObject* create(DDSegmentation::BitField64* decoder);
@@ -180,6 +196,7 @@ namespace {
   /// Forward declartion of the base factory template
   template <typename P, typename S> class Factory;
 
+  /// Helper structure to shortcut type definitions for the factories
   struct ns  {
     typedef dd4hep::NamedObject         Named;
     typedef dd4hep::xml::Handle_t       xml_h;

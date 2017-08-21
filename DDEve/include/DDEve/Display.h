@@ -64,44 +64,50 @@ namespace dd4hep {
     typedef std::map<std::string, ViewConfig>        ViewConfigurations;
     typedef std::map<std::string, DataConfig>        DataConfigurations;
 
+    /// Calorimeter data context for the DDEve event display
     struct CalodataContext {
-      int slice;
-      TEveCalo3D* calo3D;
-      TEveCaloViz* caloViz;
-      TEveCaloDataHist* eveHist;
+      int slice = 0;
+      TEveCalo3D* calo3D = 0;
+      TEveCaloViz* caloViz = 0;
+      TEveCaloDataHist* eveHist = 0;
       DisplayConfiguration::Config config;
-      CalodataContext();
-      CalodataContext(const CalodataContext& c);
-      CalodataContext& operator=(const CalodataContext& c);
+      /// Default constructor
+      CalodataContext() = default;
+      /// Copy constructor
+      CalodataContext(const CalodataContext& c) = default;
+      /// Assignment operator
+      CalodataContext& operator=(const CalodataContext& c) = default;
     };
+
     typedef std::map<std::string, CalodataContext> Calodata;
    
   protected:
     /// Reference to TEve manager
-    TEveManager* m_eve;
+    TEveManager*         m_eve = 0;
     /// Reference to geometry hub
-    Detector* m_detDesc;
+    Detector*            m_detDesc = 0;
     /// Reference to the event reader object
-    GenericEventHandler* m_evtHandler;
-    TEveElementList* m_geoGlobal;
-    TEveElementList* m_eveGlobal;
-    ViewMenu* m_viewMenu;
-    dd4hepMenu* m_dd4Menu;
-    Topics m_geoTopics;
-    Topics m_eveTopics;
-    Views  m_eveViews;
-    Menus  m_menus;
-    ViewConfigurations m_viewConfigs;
-    DataConfigurations m_calodataConfigs;
-    DataConfigurations m_collectionsConfigs;
+    GenericEventHandler* m_evtHandler = 0;
+    TEveElementList*     m_geoGlobal = 0;
+    TEveElementList*     m_eveGlobal = 0;
+    ViewMenu*            m_viewMenu;
+    dd4hepMenu*          m_dd4Menu;
+    Topics               m_geoTopics;
+    Topics               m_eveTopics;
+    Views                m_eveViews;
+    Menus                m_menus;
+    ViewConfigurations   m_viewConfigs;
+    DataConfigurations   m_calodataConfigs;
+    DataConfigurations   m_collectionsConfigs;
     /// Container with calorimeter data (projections)
-    Calodata m_calodata;
+    Calodata             m_calodata;
     /// TGeoManager visualisation level
-    int m_visLevel;
+    int                  m_visLevel;
     /// Load level for the eve geometry
-    int m_loadLevel;
+    int                  m_loadLevel;
     /// Name of the event handler plugin
-    std::string m_eventHandlerName;
+    std::string          m_eventHandlerName;
+
   public:
     /// Standard constructor
     Display(TEveManager* eve);

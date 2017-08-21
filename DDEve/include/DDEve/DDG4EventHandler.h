@@ -28,8 +28,9 @@ class TBranch;
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  /** Event I/O handler class for the dd4hep event display
-   *
+  /// Event I/O handler class for the dd4hep event display
+  /* I/O handler for generic ROOT files produced by the DDG4 ROOT output stream
+   * 
    * \author  M.Frank
    * \version 1.0
    * \ingroup DD4HEP_EVE

@@ -202,23 +202,39 @@ namespace dd4hep {
 
   protected:
 
+    /// Wrapper class for detector element extension objects
+    /** A wrapper class is necessary for the ROOT persistency of extension objects
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CORE
+     */
     template <typename Q, typename T> class DetElementExtension : public ExtensionEntry  {
     protected:
       T* ptr = 0;
       mutable Q* iface = 0;  //!
     public:
+      /// Inhibit default constructor
       DetElementExtension() = delete;
+      /// Typed objects constructor
       DetElementExtension(T* p) : ptr(p) {  iface = dynamic_cast<Q*>(p); }
+      /// Copy constructor
       DetElementExtension(const DetElementExtension& copy) = default;
+      /// Assignment operator
       DetElementExtension& operator=(const DetElementExtension& copy) = default;
+      /// Default destructor
       virtual ~DetElementExtension() = default;
-      // This one ensures we have the correct signatures
+      /// This one ensures we have the correct signatures
       T* copy(DetElement de)  const                 { return new T(*ptr,de);   }
+      /// Wrapper for the object destruction
       virtual void  destruct()  const override      { delete ptr;              }
+      /// Wrapper to access the desired interface
       virtual void* object()  const override
       { return iface ? iface : (iface=dynamic_cast<Q*>(ptr));                  }
+      /// Copy/clone the object
       virtual void* copy(void* det)  const override
       { return copy(DetElement((Object*)det));                                 }
+      /// Copy/clone the object
       virtual ExtensionEntry* clone(void* det)  const  override
       {  return new DetElementExtension<Q,T>((T*)this->copy(det));             }
     };

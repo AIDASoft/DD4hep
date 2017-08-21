@@ -28,6 +28,7 @@
  */
 namespace dd4hep {
 
+  /// LCIO input event handler for DDEve: Interface class for event I/O
   /** @class LCIOEventHandler  LCIOEventHandler.h DDEve/LCIOEventHandler.h
    *
    * @author  M.Frank
@@ -40,12 +41,15 @@ namespace dd4hep {
   protected:
     /// Reference to data file reader
     lcio::LCReader* m_lcReader;
+    /// Reference to the current LCIO event
     lcio::LCEvent*  m_event;
+    /// Input file name
     std::string     m_fileName;
     /// Branch map
     Branches        m_branches;
     /// Data collection map
     TypedEventCollections m_data;
+
   public:
     /// Standard constructor
     LCIOEventHandler();

@@ -42,8 +42,8 @@ namespace dd4hep  {
     class VolSurfaceBase;
   }
   
-  /** Base class to implement surface installers for known detector patterns
-   *
+  /// Base class to implement surface installers for known detector patterns
+  /*
    *  The class scans the geometry of a subdetector and gives callbacks
    *  to user classes, which then should install in the proper callback
    *  routines the surface instances to the detector elements.
@@ -135,8 +135,8 @@ typedef void* SURFACEINSTALLER_DATA;
  */
 namespace {
 
-  /** Install class template to create surface installer plugins
-   *
+  /// Installer class template to create surface installer plugins
+  /*
    *  See the base class SurfaceInstaller for further details.
    *
    *  \author  M.Frank
