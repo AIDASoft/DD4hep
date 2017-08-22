@@ -59,7 +59,7 @@ namespace dd4hep {
       typedef std::set<LimitSet>                          LimitSetSet;
       typedef std::set<TNamed*>                           ObjectSet;
 #endif
-      /// Data container
+      /// Data container to store information obtained during the geometry scan
       /**
        *  \author  M.Frank
        *  \version 1.0

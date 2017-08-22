@@ -100,10 +100,15 @@ namespace dd4hep {
     Topics               m_geoTopics;
     /// Event data topics
     Topics               m_eveTopics;
+    /// Container with configured event views
     Views                m_eveViews;
+    /// Container with top level menues
     Menus                m_menus;
+    /// Container with view configurations
     ViewConfigurations   m_viewConfigs;
+    /// Container with calorimeter data display configurations
     DataConfigurations   m_calodataConfigs;
+    /// Container with non-calorimeter data display configurations
     DataConfigurations   m_collectionsConfigs;
     /// Container with calorimeter data (projections)
     Calodata             m_calodata;

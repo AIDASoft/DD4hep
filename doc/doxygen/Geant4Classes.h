@@ -53,6 +53,10 @@ class G4VSensitiveDetector	{};
 
 /// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
 /** Class of the Geant4 toolkit. \see http://www-geant4.kek.jp/Reference  */
+class G4VUserActionInitialization {};
+
+/// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
+/** Class of the Geant4 toolkit. \see http://www-geant4.kek.jp/Reference  */
 class G4VUserDetectorConstruction	{};	
 
 /// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference

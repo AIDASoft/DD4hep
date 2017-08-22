@@ -177,9 +177,12 @@ recorded at a specific time. Each of the individual conditions of the slice
 has a certain interval of validity, hence the validity of the entire slice
 is defined as the intersection of these validities.
 As a corollary, the slice may be valid for more than one event as long as the
-event's time stamp is within this intersection.
+event's time stamp is within this intersection. To maximize the flexibility,
+and to allow users to implement private slice implementations, slices have 
+a common interface, the $ConditionsMap$ (See section~\ref{subsec:ddcond-conditionsmap}). 
+For most practical purposes and to share tools between slice implementations, 
+this interface is sufficient.
 
-\newpage
 %=============================================================================
 \section{Generic Concepts and Design}
 \label{sec:ddcond-design-concepts}
@@ -235,7 +238,7 @@ A conditions objects serves two purposes:
 For completeness we include here the basic data access methods of the conditions
 class\\
 (see \detdesc{classdd4hep_1_1_condition.html}{DD4hep/Conditions.h}):
-\vspace{-0.4cm}
+
 \begin{unnumberedcode}
   class Condition: public Handle<detail::ConditionObject> {
     /** Interval of validity                                   */
@@ -313,7 +316,8 @@ This is an example how to access already bound data:
 %=============================================================================
 
 \noindent
-The $ConditionsMap$ interface defines the lowest common denominator to
+The $ConditionsMap$ interface (see 
+defines the lowest common denominator to
 allow tools or clients to interact with conditions of a given slice.
 This interface defines the interaction of clients with a conditions slice.
 These interactions cover both the data access and the data management 
@@ -370,13 +374,31 @@ STL maps. The lookup key is constructed out of two elements:
 \end{itemize}
 An efficient implementation of a longword key would consist of the tuple:
 $$
-[ hash32(conditions-name) , hash32(det-element->path()) ],
+[ hash32(conditions\ name) , hash32(det-element\ path) ],
 $$
 which resembles to an ordered sequence of conditions according to 
 their detector element. A special implementation, which implements 
 this user interface is the $ConditionsSlice$ implemented in the 
 \DDC package (See section \ref{subsec:ddcond-conditions-store} for details).
 
+%=============================================================================
+\subsection{Common Conditions Tools}
+\label{subsec:ddcond-conditions-tools}
+%=============================================================================
+
+\noindent
+\begin{itemize}
+\item \bold{ConditionsPrinter} A tool to print conditions by scanning conditions for a 
+        single $DetElement$ or the entire sub-tree. See 
+        \detdesc{classdd4hep_1_1cond_1_1_conditions_printer.html}{DDCore/ConditionsPrinter.h} 
+        for details).
+\item \bold{ConditionsProcessor} A wrapper to support condition functors implementing 
+        the default callback:
+        $$
+        int\ operator()\ (Condition\ consition);
+        $$
+        The return value may be used to e.g. collect counters.
+\end{itemize}
 
 \newpage
 %=============================================================================
@@ -452,7 +474,9 @@ these fairly straight forward using a suited approach.
 \noindent
 As defined in section~\ref{subsec:ddcond-conditions-slices}, the conditions slice
 is the main entity to project conditions suitable to process a given particle
-collision (see \detdesc{classdd4hep_1_1cond_1_1_conditions_content.html}{DDCond/ConditionsContent.h} for details). 
+collision (see \detdesc{classdd4hep_1_1cond_1_1_conditions_content.html}{DDCond/ConditionsContent.h}
+for details). Figure~\ref{fig:ddcond-slice-definition} shows the data content of a 
+conditions slice.
 As shown also in Figure~\ref{fig:ddcond-slice-usage}, there are 
 several steps to be performed before a conditions slice is ready to be used:
 \begin{enumerate}\itemcompact
@@ -463,15 +487,26 @@ several steps to be performed before a conditions slice is ready to be used:
 \item Using the conditions data slice.
 \end{enumerate}
 
+%=============================================================================
+\begin{figure}[h]
+  \begin{center}\includegraphics[width=12cm] {DDCond-ConditionsSlice.png}
+    \caption{The data content of a $ConditionsSlice$ containing the 
+             desired content ($ConditionsContent$), the pool to access the
+             conditions data by key ($UserPool$) and optional containers
+             showing the status of partial or unsuccessful load and prepare operations.}
+    \label{fig:ddcond-slice-usage}
+  \end{center}
+\end{figure}
+
 \noindent
-The $ConditionsContent$ (see \detdesc{classdd4hep_1_1cond_1_1_conditions_slice.html}{DDCond/ConditionsSlice.h} for details) 
-is a simple object, which contains load addresses
+The $ConditionsContent$ 
+(see \detdesc{classdd4hep_1_1cond_1_1_conditions_slice.html}{DDCond/ConditionsSlice.h} 
+for details)  is a simple object, which contains load addresses
 to identify persistent conditions within the database/persistent schema 
 used and a set of dependency rules to compute the corresponding derived conditions.
 
-
 %=============================================================================
-\begin{figure}[h]
+\begin{figure}[t]
   \begin{center}\includegraphics[width=15cm] {DDCond-ConditionsAccess.png}
     \caption{The interaction of a user with the conditions
              data store using the $ConditionsSlice$ and the 
@@ -481,7 +516,6 @@ used and a set of dependency rules to compute the corresponding derived conditio
     \label{fig:ddcond-slice-usage}
   \end{center}
 \end{figure}
-\vspace{-0.5cm}
 
 \noindent
 The $ConditionsSlice$ holds a consistent set of conditions valid for a given 
