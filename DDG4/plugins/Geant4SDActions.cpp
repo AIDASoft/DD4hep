@@ -154,7 +154,6 @@ namespace dd4hep {
     //               Geant4SensitiveAction<OpticalCalorimeter>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    /// Helper class to define properties of optical calorimeters. UNTESTED
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -168,6 +167,7 @@ namespace dd4hep {
      *
      * @}
      */
+    /// Helper class to define properties of optical calorimeters. UNTESTED
     struct Geant4OpticalCalorimeter {};
 
     /// Define collections created by this sensitivie action object
@@ -217,7 +217,6 @@ namespace dd4hep {
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-    /// Class to implement the standard sensitive detector for scintillator calorimeters
     /* \addtogroup Geant4SDActionPlugin
      *
      * @{
@@ -228,6 +227,7 @@ namespace dd4hep {
      *
      * @}
      */
+    /// Class to implement the standard sensitive detector for scintillator calorimeters
     struct Geant4ScintillatorCalorimeter {};
 
     /// Define collections created by this sensitivie action object
@@ -284,15 +284,7 @@ namespace dd4hep {
     }
     typedef Geant4SensitiveAction<Geant4ScintillatorCalorimeter> Geant4ScintillatorCalorimeterAction;
 
-    /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
     /**
-     *  Geant4SensitiveAction<TrackerCombine>
-     *
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
-     *
      *
      * \addtogroup Geant4SDActionPlugin
      * @{
@@ -304,6 +296,15 @@ namespace dd4hep {
 
      *
      * @}
+     */
+    /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
+    /**
+     *  Geant4SensitiveAction<TrackerCombine>
+     *
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     struct TrackerCombine {
       Geant4Tracker::Hit  pre, post;

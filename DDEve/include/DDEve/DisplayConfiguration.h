@@ -41,6 +41,7 @@ namespace dd4hep {
   protected:
     Display* m_display;
   public:
+
     enum { NO_DATA    = 0,
            CALODATA   = 1<<1, 
            DETELEMENT = 1<<2, 
@@ -90,6 +91,7 @@ namespace dd4hep {
     /// Container with full display configuration
     class Config  {
     public:
+      /// Union to store specific data. Discriminator is Config::type
       union Values  {
         double vals[20];
         Defaults defaults;

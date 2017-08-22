@@ -34,15 +34,7 @@ namespace dd4hep {
 
     using namespace detail;
 
-    /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
     /**
-     *  Geant4SensitiveAction<TrackerWeighted>
-     *
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
-     *
      *  \addtogroup Geant4SDActionPlugin
      *
      *  @{
@@ -61,6 +53,15 @@ namespace dd4hep {
      *   - If true each step is written out
      *
      * @}
+     */
+    /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
+    /**
+     *  Geant4SensitiveAction<TrackerWeighted>
+     *
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     struct TrackerWeighted {
 

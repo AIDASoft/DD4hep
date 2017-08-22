@@ -37,10 +37,12 @@ public:
   DD4hepRootPersistency() : TNamed() {}
   /// Default destructor
   virtual ~DD4hepRootPersistency() {}
+
   /// Save an existing detector description in memory to a ROOT file
   static int save(dd4hep::Detector& description, const char* fname, const char* instance = "Geometry");
   /// Load an detector description from a ROOT file to memory
   static int load(dd4hep::Detector& description, const char* fname, const char* instance = "Geometry");
+  
   /// Access the geometry manager of this instance
   TGeoManager& manager() const                {    return *m_data->m_manager;         }
   /// Return handle to material describing air

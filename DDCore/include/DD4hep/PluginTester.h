@@ -25,13 +25,17 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
+  /// Helper class to ease testing of plugins: Effectively a container of object extensions.
   class PluginTester  {
   public:
     /// Definition of the extension type
     typedef std::pair<const std::type_info*,std::string> key_type;
+    /// Mapped extension type
     typedef std::map<key_type, void*> Extensions;
     /// Extensions destructor type
     typedef void (*destruct_t)(void*);
+
     /// Defintiion of the extension entry
     struct Entry {
       destruct_t destruct;

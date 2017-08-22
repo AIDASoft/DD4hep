@@ -23,6 +23,7 @@ namespace dd4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
 
+    /// Reader for ascii files with e+e- pairs created from GuineaPig.
     /**
      *  Reader for ascii files with e+e- pairs created from GuineaPig.
      *  Will read complete the file into one event - unless skip N events is
