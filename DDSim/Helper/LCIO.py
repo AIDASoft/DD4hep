@@ -14,7 +14,8 @@ class LCIO( Input ):
     Default is "MCParticle".
     """
     return self._parameters["mcParticleCollectionName"]
-  @particlesPerEvent.setter
-  def particlesPerEvent( self, val ):
+  
+  @mcParticleCollectionName.setter
+  def mcParticleCollectionName( self, val ):
     self._parameters["mcParticleCollectionName"] = val
 
