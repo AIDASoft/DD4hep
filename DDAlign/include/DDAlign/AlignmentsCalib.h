@@ -72,7 +72,7 @@ namespace dd4hep {
       /// Initializing constructor
       AlignmentsCalib(Detector& description, ConditionsMap& mapping);
       /// Default destructor
-      virtual ~AlignmentsCalib();
+      virtual ~AlignmentsCalib() noexcept(false);
       /// No assignment operator
       AlignmentsCalib& operator=(const AlignmentsCalib& copy) = delete;
       /// No move assignment operator
@@ -116,7 +116,7 @@ namespace dd4hep {
       void clearDeltas();
 
       /// We clear the entire cached stack of used entries.
-      void clear();
+      void clear() noexcept(false);
 
       /// Convenience only: Access detector element by path
       DetElement detector(const std::string& path)  const;

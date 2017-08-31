@@ -49,7 +49,7 @@ PluginDebug::PluginDebug(int dbg)
 }
 
 /// Default destructor
-PluginDebug::~PluginDebug() {
+PluginDebug::~PluginDebug() noexcept(false) {
   ROOT::Reflex::PluginService::SetDebug (m_debug);
 }
 
@@ -140,7 +140,7 @@ PluginDebug::PluginDebug(int dbg)  noexcept(false) : m_debug(0) {
 }
 
 /// Default destructor
-PluginDebug::~PluginDebug()  {
+PluginDebug::~PluginDebug()   noexcept(false)   {
   PluginInterface::instance().setDebug(m_debug);
 }
 

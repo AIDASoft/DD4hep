@@ -73,6 +73,8 @@ namespace dd4hep {
       /// Default destructor
       virtual ~ConditionsDataLoader();
       /// Add data source definition to loader
+      void addSource(const std::string& source);
+      /// Add data source definition to loader for data corresponding to a given IOV
       void addSource(const std::string& source, const IOV& iov);
 #if 0
       /// Load  a condition set given the conditions key according to their validity
