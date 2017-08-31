@@ -51,7 +51,7 @@ AlignmentsCalib::AlignmentsCalib(Detector& l, ConditionsMap& m) : description(l)
 }
 
 /// Default destructor
-AlignmentsCalib::~AlignmentsCalib()   {
+AlignmentsCalib::~AlignmentsCalib()   noexcept(false)  {
   clear();
 }
 
@@ -124,7 +124,7 @@ void AlignmentsCalib::clearDeltas()   {
 }
 
 /// Clear all pending entries in the working cache
-void AlignmentsCalib::clear()   {
+void AlignmentsCalib::clear()   noexcept(false)  {
   for(auto& e : used)   {
     e.second->source.get<Delta>() = e.second->delta;
     detail::deletePtr(e.second);

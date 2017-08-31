@@ -39,6 +39,11 @@ void ConditionsDataLoader::addSource(const string& source, const IOV& iov)   {
   m_sources.push_back(make_pair(source,iov));
 }
 
+/// Add data source definition to loader
+void ConditionsDataLoader::addSource(const string& source)   {
+  m_sources.push_back(make_pair(source,IOV(0,0)));
+}
+
 /// Queue update to manager.
 //Condition ConditionsDataLoader::queueUpdate(Entry* data)   {
 //  return m_mgr->__queue_update(data);

@@ -157,22 +157,27 @@ namespace {
       if ( in.good() )  {
         if ( siz_tot )  {
           // Direct access mode with fixed record size
-          text[8] = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
-          e.name = text+9;
-          e.address = text+10+siz_nam;  
-          if ( (idx=e.name.find(' ')) != string::npos )
-            e.name[idx] = 0;
-          if ( (idx=e.address.find(' ')) != string::npos )
-            e.address[idx] = 0;
+          if ( siz_nam+9 < (long)sizeof(text) )  {
+            text[8] = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
+            e.name = text+9;
+            e.address = text+10+siz_nam;  
+            if ( (idx=e.name.find(' ')) != string::npos && idx < e.name.length() )
+              e.name[idx] = 0;
+            if ( (idx=e.address.find(' ')) != string::npos && idx < e.address.length() )
+              e.address[idx] = 0;
+          }
+          else  {
+            except("ConditionsRepository","+++ Invalid record encountered. [Sever error]");
+          }
         }
         else  {
           // Variable record size
           e.name=text+9;
-          if ( (idx=e.name.find(sep)) != string::npos )
+          if ( (idx=e.name.find(sep)) != string::npos && idx < sizeof(text)-9 )
             text[9+idx] = 0, e.address=text+idx+10, e.name=text+9;
-          if ( (idx=e.address.find(sep)) != string::npos )
+          if ( (idx=e.address.find(sep)) != string::npos && idx < e.address.length() )
             e.address[idx] = 0;
-          else if ( (idx=e.address.find('\n')) != string::npos )
+          else if ( (idx=e.address.find('\n')) != string::npos && idx < e.address.length() )
             e.address[idx] = 0;
         }
         size_t cap = data.capacity();

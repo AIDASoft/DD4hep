@@ -201,9 +201,11 @@ void Geant4ParticlePrint::printParticleTree(const G4Event* e,
   ::memset(txt+6,' ',len-6);
   txt[len-1] = 0;
   txt[len-2] = '>';
-  txt[level+6]='+';
-  ::memset(txt+level+6+1,'-',len-level-3-6);
-
+  if ( size_t(level + 6) < len )    {
+    txt[level+6]='+';
+    ::memset(txt+level+6+1,'-',len-level-3-6);
+  }
+  
   printParticle(txt, e, p);
   const set<int>& daughters = p->daughters;
   // For all particles, the set of daughters must be contained in the record.

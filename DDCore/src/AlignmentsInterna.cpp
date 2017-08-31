@@ -24,8 +24,8 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject,ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject,ConditionObject);
 
 /// Default constructor
 AlignmentObject::AlignmentObject()
@@ -39,7 +39,7 @@ AlignmentObject::AlignmentObject()
 
 /// Standard constructor
 AlignmentObject::AlignmentObject(const string& nam, const string& tit, void* p, size_t len)
-  : ConditionObject(nam, tit), alignment_data(0)//, source_key(0)
+  : ConditionObject(nam, tit), alignment_data(0)
 {
   InstanceCount::increment(this);
   flags  = Condition::ALIGNMENT_DERIVED|Condition::ONSTACK;

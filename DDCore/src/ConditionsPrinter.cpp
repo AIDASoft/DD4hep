@@ -49,12 +49,12 @@ protected:
   ConditionsPrinter* m_parent = 0;
 public:
   std::string        prefix;
-  PrintLevel         printLevel;
+  PrintLevel         printLevel = INFO;
 public:
   /// Copy constructor
   ParamPrinter(const ParamPrinter& copy) = default;
   /// Initializing constructor
-  ParamPrinter(ConditionsPrinter* p);
+  ParamPrinter(ConditionsPrinter* p, PrintLevel lvl);
   /// Default destructor
   virtual ~ParamPrinter() = default;
   /// Assignment operator
@@ -65,7 +65,9 @@ public:
 
 
 /// Initializing constructor
-ConditionsPrinter::ParamPrinter::ParamPrinter(ConditionsPrinter* p)  : m_parent(p)  {
+ConditionsPrinter::ParamPrinter::ParamPrinter(ConditionsPrinter* p, PrintLevel lvl)
+  : m_parent(p), printLevel(lvl)
+{
 }
 
 /// Callback to output conditions information
@@ -112,8 +114,7 @@ void ConditionsPrinter::ParamPrinter::operator()(const AbstractMap::Params::valu
 ConditionsPrinter::ConditionsPrinter(ConditionsMap* m, const string& pref, int flg)
   : mapping(m), m_flag(flg), name("Condition"), prefix(pref)
 {
-  m_print = new ParamPrinter(this);
-  m_print->printLevel = printLevel;
+  m_print = new ParamPrinter(this, printLevel);
 }
 
 /// Default destructor

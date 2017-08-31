@@ -33,18 +33,8 @@ namespace dd4hep {
   class NamedObject;
   template <typename T> class Handle;
 
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities
-  namespace xml  {
-    //class Handle;
-    //class Collection_t;
-    //class Document;
-    //class Element;
-  }
-
   /// Factory base class implementing some utilities
   struct PluginFactoryBase  {
-    //typedef xml::Handle_t xml_h;
-    //typedef xml::Element  xml_e;
     typedef std::string   str_t;
 
     template <typename T> static T* ptr(const T* _p)     { return (T*)_p;  }
@@ -74,7 +64,7 @@ namespace dd4hep {
     /// Default constructor
     PluginDebug(int dbg = 2)  noexcept(false);
     /// Default destructor
-    ~PluginDebug();
+    ~PluginDebug()  noexcept(false);
     /// Helper to check factory existence
     std::string missingFactory(const std::string& name) const;
   };
@@ -245,8 +235,5 @@ namespace dd4hep {
     };                                                                  \
     template <typename P> inline R Factory<P,R(A0,A1,A2,A3,A4)>::call(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4)
   
-
-
-
 #endif    /* __CINT__          */
 #endif    /* DD4HEP_PLUGINS_H  */

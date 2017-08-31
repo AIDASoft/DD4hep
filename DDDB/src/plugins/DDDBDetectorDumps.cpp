@@ -63,7 +63,7 @@ DECLARE_APPLY(DDDB_PluginLevel,dddb_plugin_print_level)
 namespace {
 
   using namespace dd4hep::cond;
-  
+
   /// Basic entry point to print out the detector element hierarchy
   /**
    *  \author  M.Frank
@@ -75,7 +75,31 @@ namespace {
     using align::deltaCollector;    
     using DDDB::DDDBCatalog;
 
-
+    /// Access the test's name
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    01/04/2014
+     */
+    struct naming  {
+      /// Access the name of the test
+      static const char* get(int flag)   {
+        const char* n = "DDDBDetectorDump";
+        if ( flag == 1 )
+          n = "DDDBDetVolumeDump";
+        else if ( flag == 2 )
+          n = "DDDBDetConditionKeyDump";
+        else if ( flag == 3 )
+          n = "DDDBDetConditionDump";
+        else if ( flag == 4 )
+          n = "DDDBDetectorDump";
+        else if ( flag == 5 )
+          n = "DetElementConditionDump";
+        else if ( flag == 5 )
+          n = "DDDBDetectorDumpAll";
+        return n;
+      }
+    };
     /// Callback object to print selective information
     /**
      *  \author  M.Frank
@@ -121,6 +145,7 @@ namespace {
           m_alignPrinter(0,"DDDBAlignments"),
           m_flag(flg), m_sensitivesOnly(sens), m_dumpConditions(dmp), m_detDesc(l)
       {
+        m_name = naming::get(flg);
         m_manager = ConditionsManager::from(m_detDesc);
         m_slice.reset(new ConditionsSlice(m_manager,shared_ptr<ConditionsContent>(new ConditionsContent())));
         m_detElementPrinter.printLevel   = s_PrintLevel;
@@ -371,19 +396,6 @@ namespace {
       }
     }
     DumpActor actor(description, flag, dump_sensitive_only, dump_all_cond);
-    actor.m_name = "DDDBDetectorDump";
-    if ( flag == 1 )
-      actor.m_name = "DDDBDetVolumeDump";
-    else if ( flag == 2 )
-      actor.m_name = "DDDBDetConditionKeyDump";
-    else if ( flag == 3 )
-      actor.m_name = "DDDBDetConditionDump";
-    else if ( flag == 4 )
-      actor.m_name = "DDDBDetectorDump";
-    else if ( flag == 5 )
-      actor.m_name = "DetElementConditionDump";
-    else if ( flag == 5 )
-      actor.m_name = "DDDBDetectorDumpAll";
     printout(INFO,actor.m_name,"**************** DDDB Detector dump *****************************");
     return actor.init().dump(description.world(), 0);
   }

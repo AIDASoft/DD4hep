@@ -609,24 +609,177 @@ the requested items.
 \label{sec:ddcond-example}
 %=============================================================================
 
+
+%=============================================================================
+\subsection{Example to Save Conditions to a ROOT File}
+\label{subsec:ddcond-example-saving}
+%=============================================================================
+
+\noindent
+To illustrate the usage of the \DDC package when saving conditions,
+an example is discussed here in detail.
+The full example is part of the conditions unit tests and can be found in the 
+\DDH examples.\\
+(See examples/Conditions/src/ConditionExample\_manual\_save.cpp).
+
+\noindent
+The examples uses conditions names and detector element names explicitly and
+hence requires a fixed detector description being loaded in memory.
+For simplicity we use here the Minitel example from the examples/ClientTests.
+However, the example is very generic and also the conditions are "generic",
+hence any geometry would work.
+
+
+\vspace{0.6cm}
+
+\noindent
+{\bf{Prerequisites:}} \\
+\\
+A valid compact geometry description to be loaded during the program startup.
+
+\vspace{0.6cm}
+
+\noindent
+{\bf{Plugin Invocation:}} \\
+\\
+A valid example conditions data file is required. Then use the default way
+to invoke plugins:\\
+\tw{\$ > geoPluginRun\ \textrm{-}destroy  \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}plugin\ DD4hep\_ConditionExample\_manual\_save \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}input\ file:\$\{DD4hep\_DIR\}/examples/AlignDet/compact/Telescope.xml
+    \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}conditions\ Conditions.root\ \textrm{-}runs\ 10}
+
+
+\vspace{0.6cm}
+
+\noindent
+{\bf{Example Code:}} \\
+
+\begin{code}
+  int          num_run    = <number of condition loads>;
+  const string conditions = <conditions file name>;
+  const string geometry   = <geometry compact xml description";
+
+  description.fromXML(geometry);
+  description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
+
+  ConditionsManager manager = ConditionsManager::from(description);
+  manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+  manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
+  manager.initialize();
+
+  shared_ptr<ConditionsContent> content(new ConditionsContent());
+  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+
+  const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
+  if ( 0 == iov_typ )
+    except("ConditionsPrepare","++ Conditions IOV type registration failed!");
+
+  Scanner(ConditionsKeys(*content,INFO),description.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
+
+  // Have 10 run-slices [11,20] .... [91,100]
+  for(int i=0; i<num_run; ++i)  {
+    IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
+    ConditionsPool*   iov_pool = manager.registerIOV(*iov.iovType, iov.key());
+    // Create conditions with all deltas. Use a generic creator
+    Scanner(ConditionsCreator(*slice, *iov_pool, INFO),description.world(),0,true);
+  }
+
+\end{code}
+
+\noindent
+{\bf{Explanation:}} \\
+\begin{tabular} {l||p{0cm}}
+\docline{Line}{}
+\docline{1-3}{Definition of processing parameters.}
+\docline{5}{Load the detector description using the compact notation.}
+\docline{6}{Install the conditions manager implementation using the plugin mechanism.}
+\docline{8}{Access conditions manager instance from the Detector interface.}
+\docline{9-11}{Configure the properties of the conditions manager.}
+\docline{12}{Initialize the conditions manager instance.}
+\docline{14-15}{Create an empty $ConditionsSlice$ instance the container with 
+                the desired conditions content.}
+\docline{17}{Register IOV type the Conditions Manager. The IOV types are part of the conditions
+            persistency mechanism. They may not change with time and have to be defined 
+            by the experiment once and for all!}
+\docline{18-19}{This is example specific and only a shortcut to fill the 
+             required conditions content and the derivation rules.\\
+             In real life this would be intrinsic to the experiment's 
+             data processing framework.}
+\docline{18}{Populate the $ConditionsContent$ instance with the addresses (keys) 
+             of the conditions required:
+             We scan the $DetElement$ hierarchy and add a couple of conditions
+             for each $DetElement$}
+\docline{19}{Add for each $DetElement$ 3 derived conditions,
+             which all depend on the persistent condition derived\_data.\\
+             In the real world this would be very specific derived actions.}
+
+\end{tabular}
+
+\newpage
+
+
 %=============================================================================
 \subsection{Example to Load and Prepare Conditions(Slices)}
 \label{subsec:ddcond-example-loading}
 %=============================================================================
 
 \noindent
-To illustrate the usage of the \DDC package an example is discussed here in detail.
+To illustrate the usage of the \DDC package when loading conditions,
+an example is discussed here in detail.
 The full example is part of the conditions unit tests and can be found in the 
 \DDH examples.\\
-(See examples/Conditions/src/ConditionExample\_manual.cpp).
+(See examples/Conditions/src/ConditionExample\_manual\_load.cpp).
 
 \noindent
 The examples uses conditions names and detector element names explicitly and
 hence requires a fixed detector description being loaded in memory.
-For simplicity we use here the Minitel example from the example/ClientTests.
+For simplicity we use here the Minitel example from the examples/ClientTests.
+However, the example is very generic and also the conditions are "generic",
+hence any geometry would work.
+
+\vspace{0.6cm}
+
+\noindent
+{\bf{Prerequisites:}} \\
+\\
+A valid example conditions data file is required, since in this example we 
+load the conditions and inject them to the store from an already existing root file.
+To obtain such a file for a given geometry, execute the example plugin:\\
+\tw{\$ > geoPluginRun\ \textrm{-}destroy  \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}plugin\ DD4hep\_ConditionExample\_manual\_save \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}input\ file:\$\{DD4hep\_DIR\}/examples/AlignDet/compact/Telescope.xml
+    \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}conditions Conditions.root\ \textrm{-}runs\ 10}
+
+\vspace{0.6cm}
+
+\noindent
+{\bf{Plugin Invocation:}} \\
+\\
+A valid example conditions data file is required. Then use the default way
+to invoke plugins:\\
+\tw{\$ > geoPluginRun\ \textrm{-}destroy  \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}plugin\ DD4hep\_ConditionExample\_manual\_load \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}input\ file:\$\{DD4hep\_DIR\}/examples/AlignDet/compact/Telescope.xml
+    \ \ \ \char`\\} \\
+\tw{\hspace{3cm} \textrm{-}conditions\ Conditions.root\ \textrm{-}runs\ 10}
+
+
+\vspace{0.6cm}
+
+\noindent
+{\bf{Example Code:}} \\
 
 \begin{code}
-  description.fromXML("examples/ClientTests/compact/MiniTel.xml");
+  int          num_run    = <number of condition loads>;
+  const string conditions = <conditions file name>;
+  const string geometry   = <geometry compact xml description";
+
+  description.fromXML(geometry);
   description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);
 
   ConditionsManager manager = ConditionsManager::from(description);
@@ -639,25 +792,61 @@ For simplicity we use here the Minitel example from the example/ClientTests.
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
 
- \end{code}
+  Scanner(ConditionsKeys(*content,INFO),description.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
+
+  const IOVType* iov_typ = manager.iovType("run");
+  for ( int irun=0; irun < num_runs; ++irun )  {
+    IOV iov(iov_typ,irun*10+5);
+    ConditionsManager::Result r = manager.prepare(iov,*slice);
+    if ( r.missing != 0 )  {
+       except("Example", 
+              "Conditions prepare step for IOV %s FAILED. There are %ld missing conditions.",
+              r.missing, iov.str().c_str());
+    }
+    Scanner(ConditionsPrinter(slice.get(),"Example"),description.world());
+  }
+\end{code}
 
 \noindent
 {\bf{Explanation:}} \\
 \begin{tabular} {l||p{0cm}}
 \docline{Line}{}
-\docline{1}{Load the MiniTel detector description using the compact notation.}
-\docline{2}{Install the conditions manager implementation using the plugin mechanism.}
-\docline{4}{Access conditions manager instance from the Detector interface.}
-\docline{5-8}{Configure the properties of the conditions manager.}
-\docline{9}{Initialize the conditions manager instance.}
-\docline{11-12}{Create empty $ConditionsSlice$ and $ConditionsContent$ instances.}
-\docline{14}{}
+\docline{1-3}{Definition of processing parameters.}
+\docline{5}{Load the detector description using the compact notation.}
+\docline{6}{Install the conditions manager implementation using the plugin mechanism.}
+\docline{8}{Access conditions manager instance from the Detector interface.}
+\docline{9-12}{Configure the properties of the conditions manager.}
+\docline{13}{Initialize the conditions manager instance.}
+\docline{15-16}{Create an empty $ConditionsSlice$ instance the container with 
+                the desired conditions content.}
+\docline{18-19}{This is example specific and only a shortcut to fill the 
+             required conditions content and the derivation rules.\\
+             In real life this would be intrinsic to the experiment's 
+             data processing framework.}
+\docline{18}{Populate the $ConditionsContent$ instance with the addresses (keys) 
+             of the conditions required:
+             We scan the $DetElement$ hierarchy and add a couple of conditions
+             for each $DetElement$}
+\docline{19}{Add for each $DetElement$ 3 derived conditions,
+             which all depend on the persistent condition derived\_data.\\
+             In the real world this would be very specific derived actions.}
 
+\docline{22-31}{Emulate a pseudo event loop: Our conditions are of type "run".}
+\docline{23}{This is the IOV we want to use for this "processing step". 
+            The conditions filled into the slice during the prepare step will 
+            satisfy this IOV requirement.}
+\docline{24}{Conditions prepare step. Select the proper set of conditions 
+            from the store (or load them if needed). Attach the selected 
+            conditions to the user pool.}
+\docline{25-29}{Check the result of the prepare step. If anything would be missing,
+            the parameter r.missing of the return code would be non-zero.}
+\docline{30}{Emulate data processing algorithms: Here we only scan the 
+            $DetElement$ tree and print all conditions.\\
+            We know what we expect since we defined the content the same way!
+            In the printer we can access the conditions directly from the slice,
+            since the slice implements the $ConditionsMap$ interface.}
 \end{tabular}
-
-
-TO BE COMPLETED!
-
 
 \newpage
 %=============================================================================

@@ -23,11 +23,11 @@
 using namespace std;
 using namespace dd4hep;
 
-const std::string dd4hep::align::Keys::deltaName("alignment_delta");
+const string dd4hep::align::Keys::deltaName("alignment_delta");
 const dd4hep::Condition::itemkey_type  dd4hep::align::Keys::deltaKey =
   dd4hep::ConditionKey::itemCode("alignment_delta");
 
-const std::string dd4hep::align::Keys::alignmentName("alignment");
+const string dd4hep::align::Keys::alignmentName("alignment");
 const dd4hep::Condition::itemkey_type dd4hep::align::Keys::alignmentKey =
   dd4hep::ConditionKey::itemCode("alignment");
 
@@ -77,7 +77,7 @@ const TGeoHMatrix& Alignment::detectorTransformation() const   {
 }
 
 /// Access to the node list
-const std::vector<PlacedVolume>& Alignment::nodes() const   {
+const vector<PlacedVolume>& Alignment::nodes() const   {
   return access()->values().nodes;
 }
 
@@ -157,20 +157,17 @@ AlignmentCondition::key_type AlignmentCondition::key() const   {
 
 /// Data accessor for the use of decorators
 AlignmentData& AlignmentCondition::data()              {
-  Object* o = access();
-  return o->alignment_data ? *o->alignment_data : o->values();
+  return *(access()->alignment_data);
 }
 
 /// Data accessor for the use of decorators
 const AlignmentData& AlignmentCondition::data() const  {
-  Object* o = access();
-  return o->alignment_data ? *o->alignment_data : o->values();
+  return *(access()->alignment_data);
 }
 
 /// Access the delta value of the object
 const Delta& AlignmentCondition::delta() const   {
-  Object* o = access();
-  return (o->alignment_data ? *o->alignment_data : o->values()).delta;
+  return access()->alignment_data->delta;
 }
 
 /// Check if object is already bound....
