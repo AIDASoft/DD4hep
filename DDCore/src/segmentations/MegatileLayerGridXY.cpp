@@ -72,8 +72,8 @@ namespace dd4hep {
       getSegInfo(layerIndex, waferIndex);
 
       Vector3D cellPosition(0,0,0);
-      cellPosition.X = cellIndexX * (_currentSegInfo.megaTileSizeX / _currentSegInfo.nCellsX ) + _currentSegInfo.megaTileOffsetX;
-      cellPosition.Y = cellIndexY * (_currentSegInfo.megaTileSizeY / _currentSegInfo.nCellsY ) + _currentSegInfo.megaTileOffsetY;
+      cellPosition.X = ( cellIndexX + 0.5 ) * (_currentSegInfo.megaTileSizeX / _currentSegInfo.nCellsX ) + _currentSegInfo.megaTileOffsetX;
+      cellPosition.Y = ( cellIndexY + 0.5 ) * (_currentSegInfo.megaTileSizeY / _currentSegInfo.nCellsY ) + _currentSegInfo.megaTileOffsetY;
 
       if ( fabs( cellPosition.X )>10000e0 || fabs( cellPosition.Y )>10000e0 ) {
         std::cout << "crazy cell position: " << cellPosition.X << " " << cellPosition.Y << std::endl;
