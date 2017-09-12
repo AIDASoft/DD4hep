@@ -1,0 +1,9 @@
+!!!IMPORTANT!!!: To facilitate faster and easier response to your issue please provide in addition to the description of the issue also the following information
+
+ - OS version: e.g. SLC6
+ - Compiler version: e.g GCC 6.2
+ - DD4hep version: tag or commit ID, or GitHub branch
+ - Reproduced by: exact steps to reproduce the problem: checkout, setup environment (Geant, ROOT versions, iLCSoft release), cmake, build, run...
+ - Input: link to input files if applicable
+ - Output: full build and run log output
+ - Goal: A short description of what you are trying to achieve
