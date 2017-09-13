@@ -204,6 +204,8 @@ std::string Geant4ParticleHandle::processName() const   {
   else if ( particle->status&G4PARTICLE_GEN_STABLE ) return "Gen.Stable";
   else if ( particle->status&G4PARTICLE_GEN_DECAYED ) return "Gen.Decay";
   else if ( particle->status&G4PARTICLE_GEN_DOCUMENTATION ) return "Gen.DOC";
+  else if ( particle->status&G4PARTICLE_GEN_BEAM ) return "Gen.Beam";
+  else if ( particle->status&G4PARTICLE_GEN_HARDPROCESS ) return "Gen.HardProcess";
   return "???";
 }
 
@@ -380,6 +382,8 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
            status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
            status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
            status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.',
+           status.isSet(G4PARTICLE_GEN_BEAM) ? 'b' : '.',
+           status.isSet(G4PARTICLE_GEN_HARDPROCESS) ? 'H' : '.',
 
            status.isSet(G4PARTICLE_SIM_CREATED) ? 's' : '.',
            status.isSet(G4PARTICLE_SIM_BACKSCATTER) ? 'b' : '.',

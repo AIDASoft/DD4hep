@@ -109,7 +109,9 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, const G4Event
         status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',
         status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
         status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
-        status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
+        status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.',
+        status.isSet(G4PARTICLE_GEN_BEAM) ? 'b' : '.',
+        status.isSet(G4PARTICLE_GEN_HARDPROCESS) ? 'H' : '.'
         );
   if ( e && m_printHits )  {
     Geant4ParticleMap* truth = context()->event().extension<Geant4ParticleMap>();

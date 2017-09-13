@@ -70,10 +70,13 @@ namespace dd4hep {
       G4PARTICLE_GEN_STABLE          = 1<<1,  // undecayed particle, stable in the generator
       G4PARTICLE_GEN_DECAYED         = 1<<2,  // particle decayed in the generator
       G4PARTICLE_GEN_DOCUMENTATION   = 1<<3,  // documentation line
+      G4PARTICLE_GEN_BEAM            = 1<<4,  // beam particles
+      G4PARTICLE_GEN_HARDPROCESS     = 1<<5,  // hard process
 
       G4PARTICLE_GEN_GENERATOR       =        // Particle comes from generator
       (  G4PARTICLE_GEN_EMPTY+G4PARTICLE_GEN_STABLE+
-         G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION  ),
+         G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION+
+         G4PARTICLE_GEN_BEAM + G4PARTICLE_GEN_HARDPROCESS  ),
       G4PARTICLE_GEN_STATUS          = 0x3FF, // Mask for generator status (bit 0...9)
 
       // Simulation status of a given particle

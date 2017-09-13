@@ -133,6 +133,8 @@ LCIOEventReader::readParticles(int event_number,
     else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE);
     else if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
     else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+    else if ( genStatus == 4 ) status.set(G4PARTICLE_GEN_BEAM);
+    else if ( genStatus == 5 ) status.set(G4PARTICLE_GEN_HARDPROCESS);
     else {
       cout << " #### WARNING - LCIOInputAction : unknown generator status : "
            << genStatus << " -> ignored ! " << endl;
@@ -155,7 +157,10 @@ LCIOEventReader::readParticles(int event_number,
       else
         vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     }
-
+    else if ( status.isSet(G4PARTICLE_GEN_BEAM) || status.isSet(G4PARTICLE_GEN_HARDPROCESS) ) { // primary quarks etc of Whizard2
+      vtx->in.insert(p->id);
+    }
+    
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
     if ( mcp->isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);
     if ( mcp->vertexIsNotEndpointOfParent() ) status.set(G4PARTICLE_SIM_PARENT_RADIATED);
