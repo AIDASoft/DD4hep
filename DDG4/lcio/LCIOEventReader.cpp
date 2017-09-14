@@ -149,11 +149,17 @@ LCIOEventReader::readParticles(int event_number,
     //   haveVertex = true ;
     // }
 
+    //fg: we simply add all particles without parents as outgoing to the main
+    //    event vertex. This might include the incoming beam particles, e.g. in
+    //    the case of lcio files written with Whizard2, which is slightly odd,
+    //    however should be treated correctly in Geant4InputHandling.cpp.
+    //    We no longer make an attempt to identify the incoming particles
+    //    based on the generator status, as this varies widely with different
+    //    generators.
+
     if ( p->parents.size() == 0 )  {
-      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
-	      vtx->in.insert(p->id);  // Beam particles and primary quarks etc
-      else
-        vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+
+      vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     }
 
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
