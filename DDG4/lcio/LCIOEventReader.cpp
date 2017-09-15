@@ -133,10 +133,10 @@ LCIOEventReader::readParticles(int event_number,
     else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE);
     else if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
     else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
-    else {
-      cout << " #### WARNING - LCIOInputAction : unknown generator status : "
-           << genStatus << " -> ignored ! " << endl;
-    }
+    else if ( genStatus == 4 ) status.set(G4PARTICLE_GEN_BEAM);
+    else
+      status.set(G4PARTICLE_GEN_OTHER);
+
 
     //fixme: need to define the correct logic for selecting the particle to use
     //       for the _one_ event vertex 

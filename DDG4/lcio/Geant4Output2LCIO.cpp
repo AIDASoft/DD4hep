@@ -240,9 +240,11 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 
       // Set generator status
       q->setGeneratorStatus(0);
-      if ( mask.isSet(G4PARTICLE_GEN_STABLE) ) q->setGeneratorStatus(1);
-      else if ( mask.isSet(G4PARTICLE_GEN_DECAYED) ) q->setGeneratorStatus(2);
+      if ( mask.isSet(G4PARTICLE_GEN_STABLE) )             q->setGeneratorStatus(1);
+      else if ( mask.isSet(G4PARTICLE_GEN_DECAYED) )       q->setGeneratorStatus(2);
       else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) q->setGeneratorStatus(3);
+      else if ( mask.isSet(G4PARTICLE_GEN_BEAM) )          q->setGeneratorStatus(4);
+      else if ( mask.isSet(G4PARTICLE_GEN_OTHER) )         q->setGeneratorStatus(9);
       //      std::cout << " ********** mcp genstatus : " << q->getGeneratorStatus() << std::endl ;
 
       // Set simulation status
