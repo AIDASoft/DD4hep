@@ -631,7 +631,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     }
     // We assume that particles from the generator have consistent parents
     // For all other particles except the primaries, the parent must be contained in the record.
-    if ( !mask.isSet(G4PARTICLE_PRIMARY) && !status.anySet(G4PARTICLE_GEN_GENERATOR) )  {
+    if ( !mask.isSet(G4PARTICLE_PRIMARY) && !status.anySet(G4PARTICLE_GEN_STATUS) )  {
       TrackEquivalents::const_iterator eq_it = m_equivalentTracks.find(p->g4Parent);
       bool in_map = false, in_parent_list = false;
       int parent_id = -1;

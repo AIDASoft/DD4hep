@@ -65,15 +65,19 @@ namespace dd4hep {
       G4PARTICLE_KEEP_ALWAYS = 1<<10,
       G4PARTICLE_FORCE_KILL = 1<<11,
 
-      // Generator status for a given particles: bit 0...3 come from LCIO, rest is internal
+      // Generator status for a given particles: bit 0...4, agreed by many formats (HepMC, LCIO, ....):
       G4PARTICLE_GEN_EMPTY           = 1<<0,  // Empty line
       G4PARTICLE_GEN_STABLE          = 1<<1,  // undecayed particle, stable in the generator
       G4PARTICLE_GEN_DECAYED         = 1<<2,  // particle decayed in the generator
       G4PARTICLE_GEN_DOCUMENTATION   = 1<<3,  // documentation line
+      G4PARTICLE_GEN_BEAM            = 1<<4,  // beam particle
+
+      G4PARTICLE_GEN_OTHER           = 1<<9,  // any other generator status
 
       G4PARTICLE_GEN_GENERATOR       =        // Particle comes from generator
       (  G4PARTICLE_GEN_EMPTY+G4PARTICLE_GEN_STABLE+
-         G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION  ),
+         G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION+
+	 G4PARTICLE_GEN_BEAM+G4PARTICLE_GEN_OTHER),
       G4PARTICLE_GEN_STATUS          = 0x3FF, // Mask for generator status (bit 0...9)
 
       // Simulation status of a given particle
