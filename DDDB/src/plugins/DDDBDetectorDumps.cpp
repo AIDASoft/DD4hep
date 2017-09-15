@@ -83,19 +83,19 @@ namespace {
      */
     struct naming  {
       /// Access the name of the test
-      static const char* get(int flag)   {
+      static const char* get(int flg)   {
         const char* n = "DDDBDetectorDump";
-        if ( flag == 1 )
+        if ( flg == 1 )
           n = "DDDBDetVolumeDump";
-        else if ( flag == 2 )
+        else if ( flg == 2 )
           n = "DDDBDetConditionKeyDump";
-        else if ( flag == 3 )
+        else if ( flg == 3 )
           n = "DDDBDetConditionDump";
-        else if ( flag == 4 )
+        else if ( flg == 4 )
           n = "DDDBDetectorDump";
-        else if ( flag == 5 )
+        else if ( flg == 5 )
           n = "DetElementConditionDump";
-        else if ( flag == 5 )
+        else if ( flg == 5 )
           n = "DDDBDetectorDumpAll";
         return n;
       }

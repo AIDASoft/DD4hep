@@ -197,14 +197,14 @@ namespace {
   template <typename P, typename S> class Factory;
 
   /// Helper structure to shortcut type definitions for the factories
-  struct ns  {
+  namespace ns {
     typedef dd4hep::NamedObject         Named;
     typedef dd4hep::xml::Handle_t       xml_h;
     typedef dd4hep::json::Handle_t      json_h;
     typedef dd4hep::Handle<Named>       ref_t;
     typedef dd4hep::SegmentationObject  SegmentationObject;
     typedef dd4hep::DDSegmentation::BitField64   BitField64;
-  };
+  }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_1(void*,const char*)  
   {    return dd4hep::ConstructionFactory<P>::create(a0);                               }
@@ -216,7 +216,7 @@ namespace {
   {    return dd4hep::SegmentationFactory<P>::create(a0);                               }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(void*,dd4hep::Detector*,int,char**)
-  {    return dd4hep::DetectorConstructionFactory<P>::create(*a0,a1,a2);                    }
+  {    return dd4hep::DetectorConstructionFactory<P>::create(*a0,a1,a2);                }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(long,dd4hep::Detector*,int,char**)
   {    return make_return<long>(dd4hep::ApplyFactory<P>::create(*a0,a1,a2));            }
@@ -225,7 +225,7 @@ namespace {
   {    return dd4hep::XMLElementFactory<P>::create(*a0,*a1).ptr();                      }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_2(TObject*,dd4hep::Detector*,ns::xml_h*)
-  {    return dd4hep::XMLObjectFactory<P>::create(*a0,*a1).ptr();                      }
+  {    return dd4hep::XMLObjectFactory<P>::create(*a0,*a1).ptr();                       }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_2(long,dd4hep::Detector*,ns::xml_h*)
   {    return make_return<long>(dd4hep::XMLDocumentReaderFactory<P>::create(*a0,*a1));  }
@@ -251,7 +251,7 @@ namespace {
   { DD4HEP_PLUGINSVC_FACTORY(n::x,x,dd4hep::*(),__LINE__) }
 
 // Call function of the type [SegmentationObject (*func)(dd4hep::Detector*,DDSegmentation::BitField64*)]
-#define DECLARE_SEGMENTATION(name,func)        DD4HEP_OPEN_PLUGIN(dd4hep,name)   { \
+#define DECLARE_SEGMENTATION(name,func) DD4HEP_OPEN_PLUGIN(dd4hep,name)   { \
     template <> SegmentationObject*                           \
       SegmentationFactory<name>::create(DDSegmentation::BitField64* d) { return func(d); } \
     DD4HEP_PLUGINSVC_FACTORY(name,segmentation_constructor__##name,     \
