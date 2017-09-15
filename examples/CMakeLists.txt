@@ -47,6 +47,7 @@ dd4hep_enable_tests (AlignDet
   CLICSiD
   ClientTests
   Conditions
+  DDCMS
   DDDB
   DDG4
   Persistency
