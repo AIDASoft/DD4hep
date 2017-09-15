@@ -228,6 +228,9 @@ namespace dd4hep {
     }
   }
   
+  /// String manipulations: Remove unconditionally all white spaces
+  std::string remove_whitespace(const std::string& v);
+
   /// String conversions: boolean value to string  \ingroup DD4HEP_CORE
   std::string _toString(bool value);
   /// String conversions: integer value to string  \ingroup DD4HEP_CORE

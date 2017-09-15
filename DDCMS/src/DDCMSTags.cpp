@@ -11,9 +11,7 @@
 //
 //==========================================================================
 //
-// DDDB is a detector description convention developed by the LHCb experiment.
-// For further information concerning the DTD, please see:
-// http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
+// DDCMS is a detector description convention developed by the CMS experiment.
 //
 //==========================================================================
 
@@ -22,4 +20,4 @@
 
 // Define unicode tags
 #define UNICODE(x)  extern const ::dd4hep::xml::Tag_t Unicode_##x ( #x )
-#include "DDDB/DDDBTags.h"
+#include "DDCMS/DDCMSTags.h"

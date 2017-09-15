@@ -86,6 +86,11 @@ namespace dd4hep {
 
     /// Access to shape name
     const char* name() const;
+    /// Set new shape name
+    Solid_type<T>& setName(const char* value);
+    /// Set new shape name
+    Solid_type<T>& setName(const std::string& value);
+
     /// Access to shape type (The TClass name of the ROOT implementation)
     const char* type() const;
     /// Auto conversion to underlying ROOT object

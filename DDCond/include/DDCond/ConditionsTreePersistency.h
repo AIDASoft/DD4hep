@@ -32,6 +32,82 @@ namespace dd4hep {
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace cond {
 
+    /*
+     *   event (iov)
+     *       |
+     *       |
+     *       |           Link attribute:
+     *       |           (priority,tag-id)
+     *       V            0..*                       valid for mutiple conditions
+     *   global tag ---------------->  condition tag (iov,version,pool-id)
+     *   (named,iov)                       | 1       [cached, # of consecutive iov]
+     *   [in memory]                       |
+     *                                     |
+     *                                     |
+     *                                     V 0..1
+     *                               conditions pool (pool-id)
+     *                                     |         [DDCond cache/management]
+     *                                     |
+     *                                     |
+     *                                     |
+     *                                     V 0..*
+     *                                 condition
+     *                                                              
+     *
+     */
+    
+    /** Class representing a conditions tag
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     */
+    class ConditionsTag  {
+    public:
+      /// Tag name
+      std::string name;
+      /// Interval of validity
+      IOV         iov{0};
+      /// Version number of the condition
+      int         version = -1;
+      /// The collections contributing to this tag
+      int         collectionID = -1;
+      /// Default destructor
+      ~ConditionsTag() = default;
+      /// Default constructor
+      ConditionsTag() = default;
+      /// Copy contructor
+      ConditionsTag(const ConditionsTag& copy) =  default;
+      /// Assignment operator
+      ConditionsTag& operator=(const ConditionsTag& copy) =  default;
+    };
+
+    /** Class representing a global tag
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     */
+    class GlobalTag  {
+    public:
+      /// Name of the global tag
+      std::string       name;
+      /// The interval of validity for this global tag
+      IOV               iov{0};
+
+      /// This vector contains all the individual tags contributing to this global tag
+      /** Tuple: (priority,tag-id)   ->   tree collection identifier          */
+      std::map<std::pair<int,int>, int>  tags;
+
+
+      /// Default detructor
+      ~GlobalTag()   = default;
+      /// Default constructor
+      GlobalTag()    = default;
+      /// Copy contructor
+      GlobalTag(const GlobalTag& copy) =  default;
+      /// Assignment operator
+      GlobalTag& operator=(const GlobalTag& copy) =  default;
+    };
+
     /// Forward declarations
     class ConditionsSlice;
     class ConditionsIOVPool;
@@ -56,7 +132,6 @@ namespace dd4hep {
       typedef std::list<std::pair<iov_key_type, pool_type> >          persistent_type;
 
       persistent_type conditionPools;
-      persistent_type userPools;
       persistent_type iovPools;
       float           duration;
       enum ImportStrategy  {
@@ -98,14 +173,13 @@ namespace dd4hep {
       static TFile* openFile(const std::string& fname);      
       
       /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-      size_t add(const std::string& identifier, const IOV& iov, std::vector<Condition>& conditions);
+      size_t add(const std::string& tag, const IOV& iov, std::vector<Condition>& conditions);
       /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-      size_t add(const std::string& identifier, ConditionsPool& pool);
+      size_t add(const std::string& tag, ConditionsPool& pool);
       /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-      size_t add(const std::string& identifier, const UserPool& pool);
-      /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-      size_t add(const std::string& identifier, const ConditionsIOVPool& pool);
+      size_t add(const std::string& tag, const ConditionsIOVPool& pool);
 
+      
       /// Load conditions content from file.
       static std::unique_ptr<ConditionsTreePersistency> load(TFile* file,const std::string& object);
       
@@ -116,11 +190,8 @@ namespace dd4hep {
       
       /// Load conditions IOV pool and populate conditions manager
       size_t importIOVPool(const std::string& id, const std::string& iov_type, ConditionsManager mgr);
-      /// Load conditions user pool and populate conditions manager
-      size_t importUserPool(const std::string& id, const std::string& iov_type, ConditionsManager mgr);
       /// Load conditions pool and populate conditions manager
       size_t importConditionsPool(const std::string& id, const std::string& iov_type, ConditionsManager mgr);
-
       /// Load conditions pool and populate conditions manager. Allow tro be selective also for the key
       size_t importConditionsPool(ImportStrategy     strategy,
                                   const std::string& id,

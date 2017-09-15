@@ -173,6 +173,18 @@ template <typename T> const char* Solid_type<T>::name() const {
   return this->ptr()->GetName();
 }
 
+/// Set new shape name
+template <typename T> Solid_type<T>& Solid_type<T>::setName(const char* value)    {
+  this->access()->SetName(value);
+  return *this;
+}
+
+/// Set new shape name
+template <typename T> Solid_type<T>& Solid_type<T>::setName(const std::string& value)    {
+  this->access()->SetName(value.c_str());
+  return *this;
+}
+
 /// Access to shape type (The TClass name of the ROOT implementation)
 template <typename T> const char* Solid_type<T>::type() const  {
   if ( this->ptr() )  {

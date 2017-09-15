@@ -38,7 +38,9 @@
 using namespace std;
 using namespace dd4hep;
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   class Debug;
   class Isotope;
   class Plugin;
@@ -50,6 +52,7 @@ namespace dd4hep {
   class JsonFile;
   class DetElementInclude;
 
+  /// Converter instances implemented in this compilation unit
   template <> void Converter<Debug>::operator()(xml_h element) const;
   template <> void Converter<Plugin>::operator()(xml_h element) const;
   template <> void Converter<Constant>::operator()(xml_h element) const;
@@ -219,12 +222,12 @@ static Ref_t create_MultipoleField(Detector& description, xml_h e) {
 }
 DECLARE_XMLELEMENT(MultipoleMagnet,create_MultipoleField)
 
-static long create_Compact(Detector& description, xml_h element) {
+static long load_Compact(Detector& description, xml_h element) {
   Converter<Compact>converter(description);
   converter(element);
   return 1;
 }
-DECLARE_XML_DOC_READER(lccdd,create_Compact)
+DECLARE_XML_DOC_READER(lccdd,load_Compact)
 
 /** Convert parser debug flags.
  */

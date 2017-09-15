@@ -127,6 +127,7 @@ UNICODE (eunit);
 UNICODE (end_x);
 UNICODE (end_y);
 UNICODE (end_z);
+UNICODE (eval);
 
 UNICODE (f);
 UNICODE (F);
