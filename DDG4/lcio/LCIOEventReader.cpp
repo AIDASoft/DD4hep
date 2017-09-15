@@ -75,16 +75,6 @@ LCIOEventReader::readParticles(int event_number,
   // check if there is at least one particle
   if ( NHEP == 0 ) return EVENT_READER_NO_PRIMARIES;
 
-  //fg: for now we create exactly one event vertex here ( as before )
-  Geant4Vertex* vtx = new Geant4Vertex ;
-  vertices.push_back( vtx );
-  vtx->x = 0;
-  vtx->y = 0;
-  vtx->z = 0;
-  vtx->time = 0;
-  //  bool haveVertex = false ;
-
-
   mcpcoll.resize(NHEP,0);
   for(int i=0; i<NHEP; ++i ) {
     EVENT::MCParticle* p = dynamic_cast<EVENT::MCParticle*>(primaries->getElementAt(i));
@@ -143,19 +133,9 @@ LCIOEventReader::readParticles(int event_number,
     p_ext->generatorStatus =  mcp->getGeneratorStatus();
     p->extension.adopt( p_ext ) ;
 
-    //fixme: need to define the correct logic for selecting the particle to use
-    //       for the _one_ event vertex 
-    // fill vertex information from first stable particle
-    // if( !haveVertex &&  genStatus == 1 ){
-    //   vtx->x = p->vsx ;
-    //   vtx->y = p->vsy ;
-    //   vtx->z = p->vsz ;
-    //   vtx->time = p->time ;
-    //   haveVertex = true ;
-    // }
 
-    //fg: we simply add all particles without parents as outgoing to the main
-    //    event vertex. This might include the incoming beam particles, e.g. in
+    //fg: we simply add all particles without parents as with their own vertex.
+    //    This might include the incoming beam particles, e.g. in
     //    the case of lcio files written with Whizard2, which is slightly odd,
     //    however should be treated correctly in Geant4InputHandling.cpp.
     //    We no longer make an attempt to identify the incoming particles
@@ -164,7 +144,14 @@ LCIOEventReader::readParticles(int event_number,
 
     if ( p->parents.size() == 0 )  {
 
-      vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+      Geant4Vertex* vtx = new Geant4Vertex ;
+      vertices.push_back( vtx );
+      vtx->x = p->vsx;
+      vtx->y = p->vsy;
+      vtx->z = p->vsz;
+      vtx->time = p->time;
+
+      vtx->out.insert(p->id) ;
     }
 
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
