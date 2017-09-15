@@ -67,7 +67,7 @@ void Geant4EventReader::checkParameters(std::map< std::string, std::string > &pa
 
 }
 
-/// Move to the indicated event number.
+#if 0
 Geant4EventReader::EventReaderStatus
 Geant4EventReader::moveToEvent(int event_number)   {
   if ( event_number >= INT_MIN )   {
@@ -92,6 +92,13 @@ Geant4EventReader::moveToEvent(int event_number)   {
   }
   return EVENT_READER_ERROR;
 }
+#else
+/// Move to the indicated event number.
+Geant4EventReader::EventReaderStatus
+Geant4EventReader::moveToEvent(int event_number)   {
+  return EVENT_READER_OK;
+}
+#endif
 
 /// Standard constructor
 Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)

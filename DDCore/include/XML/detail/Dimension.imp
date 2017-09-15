@@ -95,6 +95,7 @@ XML_ATTR_ACCESSOR_DOUBLE(beta)
 XML_ATTR_ACCESSOR_DOUBLE(gamma)
 XML_ATTR_ACCESSOR_DOUBLE(delta)
 XML_ATTR_ACCESSOR_DOUBLE(epsilon)
+XML_ATTR_ACCESSOR_DOUBLE(fraction)
 XML_ATTR_ACCESSOR_DOUBLE(theta)
 XML_ATTR_ACCESSOR_DOUBLE(deltatheta)
 XML_ATTR_ACCESSOR(int, thetaBins)
@@ -208,22 +209,37 @@ std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::valueStr() const   {
   return m_element.attr < std::string > (_U(value));
 }
 
+/// Access "label" attribute as STL std::string
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::labelStr() const   {
+  return m_element.attr < std::string > (_U(label));
+}
+
+/// Access "symbol" attribute as STL std::string
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::symbolStr() const   {
+  return m_element.attr < std::string > (_U(symbol));
+}
+
+/// Access "region" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::regionStr() const {
   return m_element.hasAttr(_U(region)) ? m_element.attr < std::string > (_U(region)) : std::string();
 }
 
+/// Access "limits" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::limitsStr() const {
   return m_element.hasAttr(_U(limits)) ? m_element.attr < std::string > (_U(limits)) : std::string();
 }
 
+/// Access "vis" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::visStr() const {
   return m_element.hasAttr(_U(vis)) ? m_element.attr < std::string > (_U(vis)) : std::string();
 }
 
+/// Access "readout" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::readoutStr() const {
   return m_element.hasAttr(_U(readout)) ? m_element.attr < std::string > (_U(readout)) : std::string();
 }
 
+/// Access "module" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::moduleStr() const {
   return m_element.hasAttr(_U(module)) ? m_element.attr < std::string > (_U(module)) : std::string();
 }

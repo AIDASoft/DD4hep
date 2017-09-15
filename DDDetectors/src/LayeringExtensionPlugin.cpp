@@ -25,8 +25,8 @@ namespace  {
   public:
     DetElement det, parent;
     std::map<int,DetElement> layers;
-    LayeringContext() {}
-    ~LayeringContext()  {
+    LayeringContext()   noexcept(true)     {}
+    ~LayeringContext()   {
       LayeringExtensionImpl* e = new LayeringExtensionImpl();
       det.addExtension<LayeringExtension>(e);
       for(std::map<int,DetElement>::const_iterator i=layers.begin(); i!=layers.end();++i)   {

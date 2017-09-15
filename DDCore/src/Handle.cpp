@@ -203,6 +203,16 @@ void dd4hep::_toDictionary(const std::string& name, const std::string& value, co
   }
 }
 
+/// String manipulations: Remove unconditionally all white spaces
+string dd4hep::remove_whitespace(const string& v)    {
+  string value;
+  value.reserve(v.length()+1);
+  for(const char* p = v.c_str(); *p; ++p)   {
+    if ( !::isspace(*p) ) value += *p;
+  }
+  return value;
+}
+
 template <typename T> static inline string __to_string(T value, const char* fmt) {
   char text[128];
   ::snprintf(text, sizeof(text), fmt, value);

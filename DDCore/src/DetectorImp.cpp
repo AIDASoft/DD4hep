@@ -17,8 +17,9 @@
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/DetectorHelper.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/VolumeManagerInterna.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/detail/VolumeManagerInterna.h"
 #include "DetectorImp.h"
 
 // C/C++ include files
@@ -178,11 +179,16 @@ void DetectorImp::declareMotherVolume(const string& detector_name, const Volume&
         m_motherVolumes.insert(make_pair(detector_name,vol));
         return;
       }
-      throw runtime_error("Detector: A mother volume to the detector "+detector_name+" was already registered.");
+      except("DD4hep",
+             "+++ A mother volume to the detector %s was already registered.",
+             detector_name.c_str());
     }
-    throw runtime_error("Detector: Attempt to register invalid mother volume for detector:"+detector_name+" [Invalid-Handle].");
+    except("DD4hep",
+           "+++ Attempt to register invalid mother volume for detector: %s [Invalid-Handle].",
+           detector_name.c_str());
   }
-  throw runtime_error("Detector: Attempt to register mother volume to invalid detector [Invalid-detector-name].");
+  except("DD4hep",
+         "+++ Attempt to register mother volume to invalid detector [Invalid-detector-name].");
 }
 
 /// Access mother volume by detector element
@@ -191,11 +197,22 @@ Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
     string de_name = de.name();
     auto i = m_motherVolumes.find(de_name);
     if (i == m_motherVolumes.end())   {
-      return m_worldVol;
+      if ( m_worldVol.isValid() )  {
+        return m_worldVol;
+      }
+      except("DD4hep",
+             "+++ The world volume is not (yet) valid. Are you correctly building detector %s?",
+             de.name());
     }
-    return (*i).second;
+    if ( (*i).second.isValid() )  {
+      return (*i).second;
+    }
+    except("DD4hep",
+           "+++ The mother volume of %s is not valid. Are you correctly building detectors?",
+           de.name());
   }
-  throw runtime_error("Detector: Attempt access mother volume of invalid detector [Invalid-handle]");
+  except("DD4hep","Detector: Attempt access mother volume of invalid detector [Invalid-handle]");
+  return 0;
 }
 
 Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
@@ -209,8 +226,7 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
       stringstream str;
       str << "Detector: The sensitive sub-detectors " << det_element.name() << " and "
           << existing_det.name() << " have the identical ID:" << det_element.id() << ".";
-      printout(ERROR,"Detector",str.str());
-      throw runtime_error(str.str());
+      except("DD4hep",str.str());
     }
   }
   m_detectors.append(ref_det);
@@ -231,7 +247,8 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
       return *this;
     }
   }
-  throw runtime_error("Detector: The detector " + string(det_element.name()) + " has no known parent.");
+  except("DD4hep","Detector: The detector %s has no known parent.", det_element.name());
+  throw runtime_error("Detector-Error"); // Never called....
 }
 
 /// Add a new constant by named reference to the detector description
@@ -464,6 +481,7 @@ namespace {
 
 }
 
+/// Finalize/close the geometry
 void DetectorImp::endDocument() {
   TGeoManager* mgr = m_manager;
   if (!mgr->IsClosed()) {
@@ -488,15 +506,17 @@ void DetectorImp::endDocument() {
   }
 }
 
+/// Initialize the geometry and set the bounding box of the world volume
 void DetectorImp::init() {
   if (!m_world.isValid()) {
     TGeoManager* mgr = m_manager;
+    Constant     air_const = getRefChild(m_define, "Air", false);
+    Constant     vac_const = getRefChild(m_define, "Vacuum", false);
     Box worldSolid("world_x", "world_y", "world_z");
     printout(INFO,"Detector"," *********** created World volume with size : %7.0f %7.0f %7.0f",
              worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
-
-    m_materialAir = material("Air");
-    m_materialVacuum = material("Vacuum");
+    m_materialAir    = material(air_const.isValid() ? air_const->GetTitle() : "Air");
+    m_materialVacuum = material(vac_const.isValid() ? vac_const->GetTitle() : "Vacuum");
 
     Volume world_vol("world_volume", worldSolid, m_materialAir);
     m_world = DetElement(new WorldObject(*this,"world"));

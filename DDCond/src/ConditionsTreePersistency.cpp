@@ -125,21 +125,6 @@ size_t ConditionsTreePersistency::add(const string& identifier, const Conditions
   return count;
 }
 
-/// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsTreePersistency::add(const string& identifier, const UserPool& pool)    {
-  DurationStamp stamp(this);
-  userPools.push_back(pair<iov_key_type, pool_type>());
-  pool_type&    ent = userPools.back().second;
-  iov_key_type& key = userPools.back().first;
-  const IOV&    iov = pool.validity();
-  key.first         = identifier;
-  key.second.first  = make_pair(iov.iovType->name,iov.type);
-  key.second.second = iov.key();
-  pool.scan(Scanner(ent));
-  for(auto c : ent) c.ptr()->addRef();
-  return ent.size();
-}
-
 /// Open ROOT file in read mode
 TFile* ConditionsTreePersistency::openFile(const string& fname)     {
   TDirectory::TContext context;
@@ -164,7 +149,6 @@ void ConditionsTreePersistency::_clear(persistent_type& pool)  {
 void ConditionsTreePersistency::clear()  {
   /// Cleanup all the stuff not useful....
   _clear(conditionPools);
-  _clear(userPools);
   _clear(iovPools);
 }
 
@@ -265,15 +249,6 @@ size_t ConditionsTreePersistency::importIOVPool(const std::string& identifier,
 {
   DurationStamp stamp(this);
   return _import(IMPORT_ALL,iovPools,identifier,iov_type,IOV::Key(),mgr);
-}
-
-/// Load ConditionsIOVPool and populate conditions manager
-size_t ConditionsTreePersistency::importUserPool(const std::string& identifier,
-                                                 const std::string& iov_type,
-                                                 ConditionsManager  mgr)
-{
-  DurationStamp stamp(this);
-  return _import(IMPORT_ALL,userPools,identifier,iov_type,IOV::Key(),mgr);
 }
 
 /// Load ConditionsIOVPool and populate conditions manager

@@ -169,6 +169,10 @@ namespace dd4hep {
       double distance() const;
       ///Access parameters: distance
       double distance(double default_value) const;
+      /// Access parameters: fraction
+      double fraction()  const;
+      /// Access parameters: fraction
+      double fraction(double default_value)  const;
       /// Access parameters: B
       double B() const;
       /// Access parameters: B
@@ -562,6 +566,10 @@ namespace dd4hep {
       std::string typeStr() const;
       /// Access "value" attribute as STL string
       std::string valueStr() const;
+      /// Access "label" attribute as STL string
+      std::string labelStr() const;
+      /// Access "symbol" attribute as STL string
+      std::string symbolStr() const;
       /// Access "module" attribute as STL string
       std::string moduleStr() const;
       /// Access "readout" attribute as STL string

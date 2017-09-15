@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<DDDefinition>
+  <debug>
+    <debug_shapes/>
+    <debug_volumes/>
+    <debug_placements/>
+  </debug>
+  <ConstantsSection label="" eval="true">
+    <Constant name="world_x" value="5*m"/>
+    <Constant name="world_y" value="5*m"/>
+    <Constant name="world_z" value="5*m"/>
+    <Constant name="fm"      value="1e-12*m"/>
+    <Constant name="Air"     value="materials_Air"     type="string"/>
+    <Constant name="Vacuum"  value="materials_Vacuum"  type="string"/>
+  </ConstantsSection>
+
+  <VisSection>
+<!--   Unused stuff:
+    <vis name="Layer_pixbarlayer0_PixelBarrelLayer0"         alpha="1.0" r="1"    g="0"  b="1" showDaughters="true" visible="true"/>
+
+    <vis name="pixbarladderhalf_PixelBarrelModuleHalfMinus"         alpha="0.3" r="0.3"    g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderhalf_PixelBarrelModuleHalfPlus"         alpha="0.3" r="0.3"    g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+
+    <vis name="pixbarladderhalf_PixelBarrelROChipHalf"         alpha="0.5" r="0.3"    g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderhalf_PixelBarrelSensorHalf"         alpha="1.0" r="0.9"    g="0.9"  b="0" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderhalf_PixelBarrelActiveHalf"         alpha="1.0" r="0.9"    g="0.9"  b="0" showDaughters="true" visible="true"/>
+
+    <vis name="pixbarladderfull_PixelBarrelCFStripHoleFull"    alpha="0.3" r="0.3"  g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderfull_PixelBarrelModuleFullMinus"         alpha="0.3" r="0.3"    g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderfull_PixelBarrelModuleFullPlus"         alpha="0.3" r="0.3"    g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+
+    <vis name="pixbarladderfull_PixelBarrelROChipFull"         alpha="1" r="0.1"    g="0.1"  b="0.1" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderfull_PixelBarrelSensorFull"         alpha="1" r="0.9"    g="0.9"  b="0" showDaughters="true" visible="true"/>
+    <vis name="pixbarladderfull_PixelBarrelActiveFull"         alpha="1" r="0.9"    g="0.9"  b="0" showDaughters="true" visible="true"/>
+-->      
+
+ <!--  DO NOT REFORMAT PLEASE!!!!  Vis attributes represent volume hierarchy!  -->
+
+          <vis name="pixbarladderhalf_PixelBarrelCable1Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+          <vis name="pixbarladderhalf_PixelBarrelCable2Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+          <vis name="pixbarladderhalf_PixelBarrelCable3Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+          <vis name="pixbarladderhalf_PixelBarrelCable4Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+        <vis name="pixbarladderhalf_PixelBarrelCableBoxHalf"     alpha="0.4"   r="0.4"  g="0.2"  b="0.2" showDaughters="true" visible="true"/>
+        <vis name="pixbarladderhalf_PixelBarrelModuleBoxHalf"    alpha="0.6"   r="0.2"  g="0.2"  b="0.2" showDaughters="true" visible="true"/>
+        <vis name="pixbarladderhalf_PixelBarrelCFStripHalf"      alpha="1"     r="1"    g="0.1"  b="0.1" showDaughters="true" visible="true"/>
+      <vis name="pixbarladderhalf_PixelBarrelLadderHalf"         alpha="0.8"   r="0.6"  g="0.6"  b="0.0" showDaughters="true" visible="true"/>
+
+          <vis name="pixbarladderfull_PixelBarrelCable1Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable2Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable3Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable4Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+        <vis name="pixbarladderfull_PixelBarrelCableBoxFull"     alpha="0.4"   r="0.4"  g="0.2"  b="0.2" showDaughters="true" visible="true"/>
+        <vis name="pixbarladderfull_PixelBarrelModuleBoxFull"    alpha="0.6"   r="0.2"  g="0.2"  b="0.2" showDaughters="true" visible="true"/>
+        <vis name="pixbarladderfull_PixelBarrelCFStripFull"      alpha="1"     r="1"    g="0.1"  b="0.1" showDaughters="true" visible="true"/>
+      <vis name="pixbarladderfull_PixelBarrelLadderFull"         alpha="0.8"   r="0.6"  g="0.6"  b="0.0" showDaughters="true" visible="true"/>
+
+        <vis name="pixbarlayer0_PixelBarrelLayer0Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true" visible="false"/>
+      <vis name="pixbarlayer0_PixelBarrelLayer0CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true" visible="true"/>
+    <vis name="pixbarlayer0_PixelBarrelLayer0"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true" visible="true"/>
+
+        <vis name="pixbarlayer1_PixelBarrelLayer1Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true" visible="false"/>
+      <vis name="pixbarlayer1_PixelBarrelLayer1CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true" visible="true"/>
+    <vis name="pixbarlayer1_PixelBarrelLayer1"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true" visible="true"/>
+
+        <vis name="pixbarlayer2_PixelBarrelLayer2Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true" visible="false"/>
+      <vis name="pixbarlayer2_PixelBarrelLayer2CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true" visible="true"/>
+    <vis name="pixbarlayer2_PixelBarrelLayer2"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true" visible="true"/>
+
+  </VisSection>
+
+  <IncludeSection>
+    <Include ref="materials.xml"/>
+    <Include ref="trackermaterial.xml"/>
+    <Include ref="pixfwdMaterials.xml"/>
+    <Include ref="pixbarmaterial.xml"/>
+    <Include ref="vacuum.xml"/>
+    <Include ref="cmsextent.xml"/>
+    <Include ref="cms.xml"/>
+    <Include ref="pixbar.xml"/>
+    <Include ref="pixbarladder.xml"/>
+    <Include ref="pixbarladderfull.xml"/>
+    <Include ref="pixbarladderhalf.xml"/>
+    <Include ref="pixbarlayer.xml"/>
+    <Include ref="pixbarlayer0.xml"/>
+    <Include ref="pixbarlayer1.xml"/>
+    <Include ref="pixbarlayer2.xml"/>
+
+  </IncludeSection>
+</DDDefinition>
