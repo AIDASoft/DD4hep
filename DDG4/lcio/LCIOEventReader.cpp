@@ -14,6 +14,7 @@
 
 // Framework include files
 #include "LCIOEventReader.h"
+#include "LCIOParticleExtension.h"
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Context.h"
@@ -137,6 +138,10 @@ LCIOEventReader::readParticles(int event_number,
     else
       status.set(G4PARTICLE_GEN_OTHER);
 
+    // store the original generator status in case it is not in [0,4]
+    LCIOParticleExtension* p_ext = new LCIOParticleExtension ;
+    p_ext->generatorStatus =  mcp->getGeneratorStatus();
+    p->extension.adopt( p_ext ) ;
 
     //fixme: need to define the correct logic for selecting the particle to use
     //       for the _one_ event vertex 
