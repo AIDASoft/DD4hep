@@ -327,6 +327,14 @@ namespace dd4hep {
       return Readout() ;
     }
 
+    std::vector<double> CellIDPositionConverter::cellDimensions(const CellID& cell) const {
+      auto context = findContext( cell ) ;
+      if( context == nullptr ) return { };
+      dd4hep::Readout r  = findReadout( context->element ) ;
+      dd4hep::Segmentation seg = r.segmentation() ;
+      return seg.cellDimensions( cell );
+    }
+
 
 
 
