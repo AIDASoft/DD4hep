@@ -96,6 +96,10 @@ namespace dd4hep {
        */
       Readout findReadout(const PlacedVolume& pv) const ;
 
+      /** Returns the segmentation.cellDimensions. 
+       *
+       */
+    std::vector<double> cellDimensions(const CellID& cell) const ;
 
     protected:
       VolumeManager _volumeManager{} ;
