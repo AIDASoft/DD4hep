@@ -19,7 +19,6 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-#include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
 #include <sstream>
@@ -29,10 +28,10 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 using namespace dd4hep::cms;
 
-static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e, SensitiveDetector& /* sens */)  {
+static long create_element(Detector& description, ParsingContext& ctxt, xml_h e, SensitiveDetector& /* sens */)  {
   stringstream  str;
   PlacedVolume  pv;
-  Namespace     ns(ctxt);
+  Namespace     ns(ctxt, e, true);
   AlgoArguments args(ctxt, e);
   string        parentName = args.parentName();
 
@@ -51,9 +50,7 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
   string coolMat   = args.value<string>("CoolMaterial");
   string tubeMat   = args.value<string>("CoolTubeMaterial");
 
-  str.str("");
-  str << "DDPixBarLayerAlgo debug: Parent " << parentName 
-      << " NameSpace " << ns.name << "\n"
+  str << "Parent " << parentName << " NameSpace " << ns.name << "\n"
       << "\tLadders " << number << "\tGeneral Material " 
       << genMat << "\tLength " << layerDz << "\tSensorEdge "
       << sensorEdge << "\tSpecification of Cooling Pieces:\n"
@@ -61,19 +58,17 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
       << " Side " << coolSide << " Thickness of Shell " 
       << coolThick << " Radial distance " << coolDist 
       << " Materials " << coolMat << ", " << tubeMat;
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(INFO,"DDPixBarLayerAlgo",str);
 
   vector<string> ladder      = args.value<vector<string> >("LadderName");
   vector<double> ladderWidth = args.value<vector<double> >("LadderWidth");
   vector<double> ladderThick = args.value<vector<double> >("LadderThick");
   
-  str.str("");
-  str << "DDPixBarLayerAlgo debug: Full Ladder " 
-      << ladder[0] << " width/thickness " << ladderWidth[0]
+  str << "Full Ladder " << ladder[0] << " width/thickness " << ladderWidth[0]
       << ", " << ladderThick[0] << "\tHalf Ladder " 
       << ladder[1] << " width/thickness " << ladderWidth[1]
       << ", " << ladderThick[1];
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
   string mother = parentName;
   const std::string &idName = mother;
@@ -86,26 +81,23 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
   double rmin = (coolDist-0.5*(d1+d2))*cos(0.5*dphi)-0.5*ladderThick[0];
   double rmax = (coolDist+0.5*(d1+d2))*cos(0.5*dphi)+0.5*ladderThick[0];
   double rmxh = rmax - 0.5*ladderThick[0] + ladderThick[1];
-  str.str("");
-  str << "DDPixBarLayerAlgo test: Rmin/Rmax " << rmin 
+  str << "Rmin/Rmax " << rmin 
       << ", " << rmax << " d1/d2 " << d1 << ", " << d2 
       << " x1/x2 " << x1 << ", " << x2;
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
   double rtmi = rmin + 0.5*ladderThick[0] - ladderThick[1];
   double rtmx = sqrt(rmxh*rmxh+ladderWidth[1]*ladderWidth[1]);
   Solid solid = Tube(rtmi, rtmx, 0.5*layerDz, 0, CLHEP::twopi);
   solid.setName(idName);
   str.str("");
-  str << "DDPixBarLayerAlgo test: " 
-      << idName << " Tubs made of " 
+  str << "IDname "<< idName << " Tubs made of " 
       << genMat << " from 0 to " << CLHEP::twopi/CLHEP::deg 
       << " with Rin " << rtmi << " Rout " << rtmx 
       << " ZHalf " << 0.5*layerDz;
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
-  Material matter;
-  Volume   layer(solid.name(), solid, description.material(genMat));
+  Volume layer(solid.name(), solid, ns.material(genMat));
 
   double rr = 0.5*(rmax+rmin);
   double dr = 0.5*(rmax-rmin);
@@ -113,13 +105,12 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
   std::string name = idName + "CoolTube";
   solid = Trap(0.5*coolDz, 0, 0, h1, d2, d1, 0, h1, d2, d1, 0);
   solid.setName(idName+"CoolTube");
-  str.str("");
-  str << "DDPixBarLayerAlgo test: " <<solid.name() 
+  str << "Solid " << solid.name() 
       << " Trap made of " << tubeMat << " of dimensions " 
       << 0.5*coolDz << ", 0, 0, " << h1 << ", " << d2 
       << ", " << d1 << ", 0, " << h1 << ", " << d2 << ", " 
       << d1 << ", 0";
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
   Volume coolTube(solid.name(), solid, description.material(tubeMat));
   
   h1  -= coolThick;
@@ -128,30 +119,27 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
   solid = Trap(0.5*coolDz, 0, 0, h1, d2, d1, 0, h1, d2, d1, 0);
   solid.setName(idName + "Coolant");
   
-  str.str("");
-  str << "DDPixBarLayerAlgo test: " <<solid.name() 
+  str << "Solid " << solid.name() 
       << " Trap made of " << coolMat << " of dimensions " 
       << 0.5*coolDz << ", 0, 0, " << h1 << ", " << d2
       << ", " << d1 << ", 0, " << h1 << ", " << d2 << ", " 
       << d1 << ", 0";
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
   Volume cool(solid.name(), solid, description.material(coolMat));
-
   //cpv.position(cool, coolTube, 1, DDTranslation(0.0, 0.0, 0.0), DDRotation());
   pv = coolTube.placeVolume(cool);
-  str.str("");
-  str << "DDPixBarLayerAlgo test: " << cool.name() 
+  str << "Cool " << cool.name() 
       << " number 1 positioned in " << coolTube.name() 
       << " at (0,0,0) with no rotation";
-  printout(DEBUG,"PixelGeom",str.str().c_str());
+  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
   string ladderFull = ladder[0];
   string ladderHalf = ladder[1];
   int nphi=number/2, copy=1, iup=-1;
   double phi0 = 90*CLHEP::deg;
-  Volume ladderHalfVol = ctxt.volume(ladderHalf);
-  Volume ladderFullVol = ctxt.volume(ladderFull);
+  Volume ladderHalfVol = ns.volume(ladderHalf);
+  Volume ladderFullVol = ns.volume(ladderFull);
 
   for (int i=0; i<number; i++) {
     double phi = phi0 + i*dphi;
@@ -166,23 +154,21 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
       rots = idName + std::to_string(copy);
       phix = phi-90*CLHEP::deg;
       phiy = 90*CLHEP::deg+phix;
-      str.str("");
-      str << "DDPixBarLayerAlgo test: Creating a new "
-                            << "rotation: " << rots << "\t90., " 
-                            << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg 
-                            << ", 0, 0";
-      printout(DEBUG,"PixelGeom",str.str().c_str());
+      str << "Creating a new "
+          << "rotation: " << rots << "\t90., " 
+          << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg 
+          << ", 0, 0";
+      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
       rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
 
       //cpv.position(ladderHalf, layer, copy, tran, rot);
       pv = layer.placeVolume(ladderHalfVol, Transform3D(rot,tran));
       if ( !pv.isValid() )  {  }
-      str.str("");
-      str << "DDPixBarLayerAlgo test: " << ladderHalfVol.name()
+      str << "ladderHalfVol: " << ladderHalfVol.name()
           << " number " << copy << " positioned in " 
           << layer.name() << " at " << tran << " with " 
           << rot;
-      printout(DEBUG,"PixelGeom",str.str().c_str());
+      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
       copy++;
       iup  = -1;
@@ -191,23 +177,20 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
       rots = idName + std::to_string(copy);
       phix = phi+90*CLHEP::deg;
       phiy = 90*CLHEP::deg+phix;
-      str.str("");
-      str << "DDPixBarLayerAlgo test: Creating a new "
-          << "rotation: " << rots << "\t90., " 
+      str << "Creating a new rotation: " << rots << "\t90., " 
           << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg 
           << ", 0, 0";
-      printout(DEBUG,"PixelGeom",str.str().c_str());
+      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
       rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
       //cpv.position(ladderHalf, layer, copy, tran, rot);
       pv = layer.placeVolume(ladderHalfVol, Transform3D(rot,tran));
       if ( !pv.isValid() )  {  }
-      str.str("");
-      str << "DDPixBarLayerAlgo test: " << ladderHalfVol.name()
+      str << "ladderHalfVol: " << ladderHalfVol.name()
           << " number " << copy << " positioned in " 
           << layer.name() << " at " << tran << " with " 
           << rot;
-      printout(DEBUG,"PixelGeom",str.str().c_str());
+      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
       copy++;
     } else {
       iup  =-iup;
@@ -217,24 +200,22 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
       if (iup > 0) phix = phi-90*CLHEP::deg;
       else         phix = phi+90*CLHEP::deg;
       phiy = phix+90.*CLHEP::deg;
-      str.str("");
       str << "DDPixBarLayerAlgo test: Creating a new "
           << "rotation: " << rots << "\t90., " 
           << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg 
           << ", 0, 0";
-      printout(DEBUG,"PixelGeom",str.str().c_str());
+      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
 
       rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
 
       //cpv.position(ladderFull, layer, copy, tran, rot);
       pv = layer.placeVolume(ladderFullVol, Transform3D(rot,tran));
       if ( !pv.isValid() )  {  }
-      str.str("");
-      str << "DDPixBarLayerAlgo test: " << ladderFullVol.name()
+      str << "test: " << ladderFullVol.name()
           << " number " << copy << " positioned in " 
           << layer.name() << " at " << tran << " with " 
           << rot;
-      printout(DEBUG,"PixelGeom",str.str().c_str());
+      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
       copy++;
     }
     rrr  = coolDist*cos(0.5*dphi);
@@ -243,32 +224,36 @@ static Ref_t create_element(Detector& description, ParsingContext& ctxt, xml_h e
     phix = phi+0.5*dphi;
     if (iup > 0) phix += 180*CLHEP::deg;
     phiy = phix+90.*CLHEP::deg;
-    str.str("");
-    str << "DDPixBarLayerAlgo test: Creating a new "
-        << "rotation: " << rots << "\t90., " 
+    str << "Creating a new rotation: " << rots << "\t90., " 
         << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg 
         << ", 0, 0";
-    printout(DEBUG,"PixelGeom",str.str().c_str());
+    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
     rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
     //cpv.position(coolTube, layer, i+1, tran, rot);
     pv = layer.placeVolume(coolTube,Transform3D(rot,tran));
     if ( !pv.isValid() )  {  }
-    str.str("");
-    str << "DDPixBarLayerAlgo test: " << coolTube.name() 
+    str << "coolTube: " << coolTube.name() 
         << " number " << i+1 << " positioned in " 
         << layer.name() << " at " << tran << " with "<< rot;
-    printout(DEBUG,"PixelGeom",str.str().c_str());
+    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDPixBarLayerAlgo",str);
   }
 
-  // Now we have built the layer.....create the DetElement object
-  string     det_name = "Layer_"+idName;
-  DetElement det_elt(det_name,0);
+  ns.addVolumeNS(layer);
+  //nn.addVolume(assembly);
+  printout(INFO,"DDPixBarLayerAlgo","Layer: %s assembly:%s",layer.name(),"---");
+#if 0
+  string     det_name = idName;
   Assembly   assembly(det_name);
-  Volume     motherVol = description.pickMotherVolume(det_elt);
+  // Now we have built the layer.....create the DetElement object
+  DetElement det_elt(det_name,0);
   pv = assembly.placeVolume(layer);
-  pv = motherVol.placeVolume(assembly);
+
   det_elt.setPlacement(pv);
-  return det_elt;
+  description.addDetector(det_elt);
+  Volume     motherVol = description.pickMotherVolume(det_elt);
+  pv = motherVol.placeVolume(assembly);
+#endif  
+  return 1;
 }
 
 // first argument is the type from the xml file

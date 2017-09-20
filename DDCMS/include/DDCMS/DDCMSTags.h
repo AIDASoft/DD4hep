@@ -76,7 +76,24 @@ namespace dd4hep {
     UNICODE(Polycone);
     UNICODE(ZSection);
     UNICODE(z);
+
+    UNICODE(Trapezoid);
+    UNICODE(alp1);
+    UNICODE(h1);
+    UNICODE(bl1);
+    UNICODE(tl1);
+    UNICODE(alp2);
+    UNICODE(h2);
+    UNICODE(bl2);
+    UNICODE(tl2);
+
+    UNICODE(Torus);
+    UNICODE(torusRadius);
+    UNICODE(innerRadius);
+    UNICODE(outerRadius);
     
+    UNICODE(SubtractionSolid);
+
     UNICODE(LogicalPartSection);
     UNICODE(LogicalPart);
     UNICODE(rSolid);
@@ -86,6 +103,7 @@ namespace dd4hep {
     UNICODE(PosPart);
     UNICODE(copyNumber);
     UNICODE(rParent);
+    UNICODE(ChildName);
     UNICODE(rChild);
     UNICODE(Translation);
 
@@ -105,7 +123,10 @@ namespace dd4hep {
     UNICODE(debug_volumes);
     UNICODE(debug_placements);
     UNICODE(debug_namespaces);
+    UNICODE(debug_rotations);
     UNICODE(debug_visattr);
+    UNICODE(debug_includes);
+    UNICODE(debug_algorithms);
 
     /// DD4hep specific
     UNICODE(IncludeSection);

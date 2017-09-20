@@ -21,6 +21,7 @@
 #include <cstdarg>
 #include <map>
 #include <string>
+#include <sstream>
 #include <iostream>
 
 /// Forward declarations
@@ -57,6 +58,26 @@ namespace dd4hep {
    */
   std::string arguments(int argc, char** argv);
   
+  /// Calls the display action with a given severity level
+  /**
+   *  @arg severity   [int,read-only]      Display severity flag (see enum)
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg str        [stringstream, RW]   string stream containing data to be printed.
+   *                                       Object is reset after use.
+   *  @return Status code indicating success or failure
+   */
+  int printout(PrintLevel severity, const char* src, std::stringstream& str);
+
+  /// Calls the display action with a given severity level
+  /**
+   *  @arg severity   [int,read-only]      Display severity flag (see enum)
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg str        [stringstream, RW]   string stream containing data to be printed.
+   *                                       Object is reset after use.
+   *  @return Status code indicating success or failure
+   */
+  int printout(PrintLevel severity, const std::string& src, std::stringstream& str);
+
   /// Calls the display action with a given severity level
   /**
    *  @arg severity   [int,read-only]      Display severity flag (see enum)

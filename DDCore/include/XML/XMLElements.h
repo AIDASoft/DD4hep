@@ -627,24 +627,25 @@ namespace dd4hep {
       typedef XmlDocument* DOC;
       DOC m_doc;
 
-      /// Constructor
-      Document(DOC d) : m_doc(d) {
-      }
+      /// Default Constructor
+      Document() : m_doc(0) {}
+      /// Initializing Constructor
+      Document(DOC d) : m_doc(d) {}
+      /// Copy constructor
+      Document(const Document& d) = default;
+      /// Assignment
+      Document& operator=(const Document& d) = default;
+      /// Destructor
+      ~Document() = default;
       /// Auto-conversion to DOM document
-      operator DOC() const {
-        return m_doc;
-      }
+      operator DOC() const       {        return m_doc;      }
       /// Accessot to DOM document behaviour using arrow operator
-      DOC operator->() const {
-        return m_doc;
-      }
+      DOC operator->() const     {        return m_doc;      }
       /// Accessot to DOM document behaviour
-      DOC ptr() const {
-        return m_doc;
-      }
+      DOC ptr() const            {        return m_doc;      }
+
       /// Access the ROOT eleemnt of the DOM document
       Handle_t root() const;
-
       /// Create DOM element
       Handle_t createElt(const XmlChar* tag) const;
       /// Clone a DOM element / sub-tree
@@ -668,11 +669,13 @@ namespace dd4hep {
     class DocumentHolder : public Document {
     public:
       /// Default Constructor
-      DocumentHolder() : Document(0) {
-      }
+      DocumentHolder() = default;
+      /// Default Constructor
+      DocumentHolder(const DocumentHolder& copy) = delete;
       /// Constructor
-      DocumentHolder(DOC d) : Document(d) {
-      }
+      DocumentHolder(DOC d) : Document(d) { }
+      /// Assignment operator
+      DocumentHolder& operator=(const DocumentHolder& copy) = delete;
       /// Assign new document. Old document is dropped.
       DocumentHolder& assign(DOC d);
       /// Standard destructor - releases the document

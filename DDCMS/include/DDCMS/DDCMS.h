@@ -52,6 +52,7 @@ namespace dd4hep {
       Namespace() = delete;
       /// Initializing constructor
       Namespace(ParsingContext* ctx, xml_h element);
+      Namespace(ParsingContext& ctx, xml_h element, bool);
       /// Initializing constructor
       Namespace(ParsingContext* ctx);
       /// Initializing constructor
@@ -66,11 +67,37 @@ namespace dd4hep {
       std::string prepend(const std::string& n)  const;
       /// Resolve namespace during XML parsing
       std::string real_name(const std::string& v)  const;
+      /// Strip off the namespace part of a given name
+      static std::string obj_name(const std::string& name);
+      /// Return the namespace name of a component
+      static std::string ns_name(const std::string& n);
       template <typename T> T attr(xml_elt_t elt,const xml_tag_t& n) const   {
         std::string val = real_name(elt.attr<std::string>(n));
         elt.setAttr(n,val);
         return elt.attr<T>(n);
       }
+      /// Add a new constant to the namespace
+      void addConstant(const std::string& name, const std::string& value, const std::string& type)  const;
+      /// Add a new constant to the namespace as fully indicated by the name
+      void addConstantNS(const std::string& name, const std::string& value, const std::string& type)  const;
+
+      /// Access material by its namespace dressed name
+      Material material(const std::string& name)  const;
+      Solid  solid(const std::string& name)  const;
+      /// Add solid to current namespace
+      void addSolid(const std::string& name,Solid solid)  const;
+      /// Add solid to current namespace as fully indicated by the name
+      void addSolidNS(const std::string& name,Solid solid)  const;
+
+      Volume volume(const std::string& name, bool exc=true)  const;
+      /// Add volume to current namespace
+      void addVolume(Volume vol)  const;
+      /// Add volume to current namespace as fully indicated by the name
+      void addVolumeNS(Volume vol)  const;
+
+      const Rotation3D& rotation(const std::string& name)  const;
+      /// Add rotation matrix to current namespace
+      void addRotation(const std::string& name,const Rotation3D& rot)  const;
     };
 
     /// XML parser context to store intermediate stuff
@@ -82,6 +109,7 @@ namespace dd4hep {
      */
     class ParsingContext  {
     public:
+      Detector*                          description;
       std::map<std::string, Rotation3D>  rotations;
       std::map<std::string, Solid>       shapes;
       std::map<std::string, Volume>      volumes;
@@ -89,20 +117,21 @@ namespace dd4hep {
       bool geo_inited = false;
 
       // Debug flags
+      bool debug_includes     = false;
       bool debug_constants    = false;
       bool debug_materials    = false;
+      bool debug_rotations    = false;
       bool debug_shapes       = false;
       bool debug_volumes      = false;
       bool debug_placements   = false;
       bool debug_namespaces   = false;
       bool debug_visattr      = false;
+      bool debug_algorithms   = false;
 
     public:
-      ParsingContext() { namespaces.push_back(""); }
+      ParsingContext(Detector* det) : description(det) { namespaces.push_back(""); }
       ~ParsingContext() = default;
       const std::string& ns() const  {  return namespaces.back(); }
-      Volume volume(const std::string& name)  const;
-      const Rotation3D& rotation(const std::string& name)  const;
     };
 
     /// Encapsulation of the CMS detector description algorithm arguments
@@ -137,6 +166,8 @@ namespace dd4hep {
 
       /// Access value of rParent child node
       std::string parentName()  const;
+      /// Access value of child'name from the xml element
+      std::string childName()  const;
       /// Check the existence of an argument by name
       bool find(const std::string& name)  const;
       /// Access typed argument by name

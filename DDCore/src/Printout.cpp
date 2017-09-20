@@ -102,6 +102,40 @@ string dd4hep::arguments(int argc, char** argv)   {
   return str.str();
 }  
 
+/// Calls the display action with a given severity level
+/**
+ *  @arg severity   [int,read-only]      Display severity flag (see enum)
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg str        [stringstream, RW]   string stream containing data to be printed.
+ *                                       Object is reset after use.
+ *  @return Status code indicating success or failure
+ */
+int dd4hep::printout(PrintLevel severity, const char* src, std::stringstream& str)   {
+  int ret = 1;
+  if (severity >= print_lvl) {
+    ret = printout(severity, src, str.str().c_str());
+  }
+  str.str("");
+  return ret;
+}
+
+/// Calls the display action with a given severity level
+/**
+ *  @arg severity   [int,read-only]      Display severity flag (see enum)
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg str        [stringstream, RW]   string stream containing data to be printed.
+ *                                       Object is reset after use.
+ *  @return Status code indicating success or failure
+ */
+int dd4hep::printout(PrintLevel severity, const std::string& src, std::stringstream& str)   {
+  int ret = 1;
+  if (severity >= print_lvl) {
+    ret = printout(severity, src, str.str().c_str());
+  }
+  str.str("");
+  return ret;
+}
+
 /** Calls the display action
  *  \arg severity   [int,read-only]      Display severity flag
  *  \arg src        [string,read-only]   Information source (component, etc.)
