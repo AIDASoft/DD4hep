@@ -73,7 +73,6 @@ static long algorithm(Detector& /* description */,
   for (int i  = 0; i < numcopies; ++i) {
     double phix   = phi[i] + tilt;
     double phiy   = phix + 90.*CLHEP::deg;
-    double phideg = phi[i]/CLHEP::deg;
     double xpos   = radius*cos(phi[i]);
     double ypos   = radius*sin(phi[i]);
     Rotation3D rot = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
