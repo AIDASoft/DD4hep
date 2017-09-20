@@ -129,6 +129,8 @@ namespace dd4hep {
     UNICODE(debug_algorithms);
 
     /// DD4hep specific
+    UNICODE(open_geometry);
+    UNICODE(close_geometry);
     UNICODE(IncludeSection);
     UNICODE(Include);
     

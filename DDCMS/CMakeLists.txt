@@ -15,6 +15,7 @@
 
 dd4hep_package(    DDCMS
   USES             DDCore
+                   [CLHEP REQUIRED]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDCMS)
 
