@@ -159,60 +159,60 @@ namespace dd4hep {
 
 /// Converter for <ConstantsSection/> tags
 template <> void Converter<constantssection>::operator()(xml_h element) const  {
-  Namespace ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(Constant)).for_each(Converter<constant>(description,ns.context,optional));
+  Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(Constant)).for_each(Converter<constant>(description,_ns.context,optional));
 }
 
 /// Converter for <VisSection/> tags
 template <> void Converter<vissection>::operator()(xml_h element) const  {
-  Namespace ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(vis)).for_each(Converter<vis>(description,ns.context,optional));
+  Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(vis)).for_each(Converter<vis>(description,_ns.context,optional));
 }
 
 /// Converter for <MaterialSection/> tags
 template <> void Converter<materialsection>::operator()(xml_h element) const   {
-  Namespace ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(ElementaryMaterial)).for_each(Converter<elementarymaterial>(description,ns.context,optional));
-  xml_coll_t(element, _CMU(CompositeMaterial)).for_each(Converter<compositematerial>(description,ns.context,optional));
+  Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(ElementaryMaterial)).for_each(Converter<elementarymaterial>(description,_ns.context,optional));
+  xml_coll_t(element, _CMU(CompositeMaterial)).for_each(Converter<compositematerial>(description,_ns.context,optional));
 }
 
 template <> void Converter<rotationsection>::operator()(xml_h element) const   {
-  Namespace ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(Rotation)).for_each(Converter<rotation>(description,ns.context,optional));
+  Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(Rotation)).for_each(Converter<rotation>(description,_ns.context,optional));
 }
 
 template <> void Converter<pospartsection>::operator()(xml_h element) const   {
-  Namespace ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(PosPart)).for_each(Converter<pospart>(description,ns.context,optional));
+  Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(PosPart)).for_each(Converter<pospart>(description,_ns.context,optional));
 }
 
 /// Generic converter for  <LogicalPartSection/> tags
 template <> void Converter<logicalpartsection>::operator()(xml_h element) const   {
-  Namespace ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(LogicalPart)).for_each(Converter<logicalpart>(description,ns.context,optional));
+  Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(LogicalPart)).for_each(Converter<logicalpart>(description,_ns.context,optional));
 }
 
 /// Generic converter for  <SolidSection/> tags
 template <> void Converter<solidsection>::operator()(xml_h element) const   {
-  Namespace ns(_param<ParsingContext>(), element);
+  Namespace _ns(_param<ParsingContext>(), element);
   for(xml_coll_t solid(element, _U(star)); solid; ++solid)   {
     string tag = solid.tag();
     if ( tag == "Box" )
-      Converter<box>(description,ns.context,optional)(solid);
+      Converter<box>(description,_ns.context,optional)(solid);
     else if ( tag == "Polycone" )
-      Converter<polycone>(description,ns.context,optional)(solid);
+      Converter<polycone>(description,_ns.context,optional)(solid);
     else if ( tag == "Tubs" )
-      Converter<tubs>(description,ns.context,optional)(solid);
+      Converter<tubs>(description,_ns.context,optional)(solid);
     else if ( tag == "Torus" )
-      Converter<torus>(description,ns.context,optional)(solid);
+      Converter<torus>(description,_ns.context,optional)(solid);
     else if ( tag == "Trapezoid" )
-      Converter<trapezoid>(description,ns.context,optional)(solid);
+      Converter<trapezoid>(description,_ns.context,optional)(solid);
     else if ( tag == "UnionSolid" )
-      Converter<unionsolid>(description,ns.context,optional)(solid);
+      Converter<unionsolid>(description,_ns.context,optional)(solid);
     else if ( tag == "SubtractionSolid" )
-      Converter<subtractionsolid>(description,ns.context,optional)(solid);
+      Converter<subtractionsolid>(description,_ns.context,optional)(solid);
     else if ( tag == "IntersectionSolid" )
-      Converter<intersectionsolid>(description,ns.context,optional)(solid);
+      Converter<intersectionsolid>(description,_ns.context,optional)(solid);
     else  {
       string nam = xml_dim_t(solid).nameStr();
       printout(ERROR,"DDCMS","+++ Request to process unknown shape %s [%s]",
@@ -223,14 +223,14 @@ template <> void Converter<solidsection>::operator()(xml_h element) const   {
 
 /// Converter for <Constant/> tags
 template <> void Converter<constant>::operator()(xml_h element) const  {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   resolve*  res  = _option<resolve>();
   xml_dim_t constant = element;
   xml_dim_t par  = constant.parent();
   bool      eval = par.hasAttr(_U(eval)) ? par.attr<bool>(_U(eval)) : false;
   string    val  = constant.valueStr();
   string    nam  = constant.nameStr();
-  string    real = ns.prepend(nam);
+  string    real = _ns.prepend(nam);
   string    typ  = eval ? "number" : "string";
   size_t    idx  = val.find('[');
   
@@ -239,7 +239,7 @@ template <> void Converter<constant>::operator()(xml_h element) const  {
 
   if ( idx == string::npos || typ == "string" )  {
     try  {
-      ns.addConstant(nam, val, typ);
+      _ns.addConstant(nam, val, typ);
       res->allConst[real] = val;
       res->originalConst[real] = val;
     }
@@ -255,13 +255,13 @@ template <> void Converter<constant>::operator()(xml_h element) const  {
     size_t idp = val.find(':',idx);
     size_t idq = val.find(']',idx);
     if ( idp == string::npos || idp > idq )
-      val.insert(idx,ns.name);
+      val.insert(idx,_ns.name);
     else if ( idp != string::npos && idp < idq )
       val[idp] = '_';
     idx = val.find('[',idx);
   }
   while ( (idx=val.find(':')) != string::npos ) val[idx]='_';
-  printout(ns.context->debug_constants ? ALWAYS : DEBUG,
+  printout(_ns.context->debug_constants ? ALWAYS : DEBUG,
            "Constant","Unresolved: %s -> %s",real.c_str(),val.c_str());
   res->allConst[real] = val;
   res->originalConst[real] = val;
@@ -277,13 +277,13 @@ template <> void Converter<constant>::operator()(xml_h element) const  {
  *       visible="true"/>
  */
 template <> void Converter<vis>::operator()(xml_h e) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   VisAttr attr(e.attr<string>(_U(name)));
   float red   = e.hasAttr(_U(r)) ? e.attr<float>(_U(r)) : 1.0f;
   float green = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
   float blue  = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
 
-  printout(ns.context->debug_visattr ? ALWAYS : DEBUG, "Compact",
+  printout(_ns.context->debug_visattr ? ALWAYS : DEBUG, "Compact",
            "++ Converting VisAttr  structure: %-16s. R=%.3f G=%.3f B=%.3f",
            attr.name(), red, green, blue);
   attr.setColor(red, green, blue);
@@ -320,9 +320,9 @@ template <> void Converter<vis>::operator()(xml_h e) const {
 
 /// Converter for <ElementaryMaterial/> tags
 template <> void Converter<elementarymaterial>::operator()(xml_h element) const   {
-  Namespace     ns(_param<ParsingContext>());
+  Namespace     _ns(_param<ParsingContext>());
   xml_dim_t     xmat(element);
-  string        nam = ns.prepend(xmat.nameStr());
+  string        nam = _ns.prepend(xmat.nameStr());
   TGeoManager&  mgr = description.manager();
   TGeoMaterial* mat = mgr.GetMaterial(nam.c_str());
   if ( 0 == mat )   {
@@ -334,7 +334,7 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
     TGeoMixture*      mix = new TGeoMixture(nam.c_str(), 1, density);
     TGeoElement*      elt = tab->FindElement(xmat.nameStr().c_str());
 
-    printout(ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
+    printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
              "+++ Converting material %-48s  Density: %.3f.",
              ('"'+nam+'"').c_str(), density);
 
@@ -367,9 +367,9 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
 
 /// Converter for <CompositeMaterial/> tags
 template <> void Converter<compositematerial>::operator()(xml_h element) const   {
-  Namespace     ns(_param<ParsingContext>());
+  Namespace     _ns(_param<ParsingContext>());
   xml_dim_t     xmat(element);
-  string        nam = ns.prepend(xmat.nameStr());
+  string        nam = _ns.prepend(xmat.nameStr());
   TGeoManager&  mgr = description.manager();
   TGeoMaterial* mat = mgr.GetMaterial(nam.c_str());
   if ( 0 == mat )   {
@@ -378,7 +378,7 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
     xml_coll_t   composites(xmat,_CMU(MaterialFraction));
     TGeoMixture* mix = new TGeoMixture(nam.c_str(), composites.size(), density);
 
-    printout(ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
+    printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
              "++ Converting material %-48s  Density: %.3f.",
              ('"'+nam+'"').c_str(), density);
     
@@ -386,7 +386,7 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
       xml_dim_t xfrac(composites);
       xml_dim_t xfrac_mat(xfrac.child(_CMU(rMaterial)));
       double    fraction = xfrac.fraction();
-      string    fracname = ns.real_name(xfrac_mat.nameStr());
+      string    fracname = _ns.real_name(xfrac_mat.nameStr());
 
       TGeoMaterial* frac_mat = mgr.GetMaterial(fracname.c_str());
       if ( frac_mat )  {
@@ -411,34 +411,34 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
 /// Converter for <Rotation/> tags
 template <> void Converter<rotation>::operator()(xml_h element) const  {
   ParsingContext* ctx = _param<ParsingContext>();
-  Namespace ns(ctx);
+  Namespace _ns(ctx);
   xml_dim_t xrot(element);
   string    nam    = xrot.nameStr();
-  double    thetaX = xrot.hasAttr(_CMU(thetaX)) ? ns.attr<double>(xrot,_CMU(thetaX)) : 0e0;
-  double    phiX   = xrot.hasAttr(_CMU(phiX))   ? ns.attr<double>(xrot,_CMU(phiX))   : 0e0;
-  double    thetaY = xrot.hasAttr(_CMU(thetaY)) ? ns.attr<double>(xrot,_CMU(thetaY)) : 0e0;
-  double    phiY   = xrot.hasAttr(_CMU(phiY))   ? ns.attr<double>(xrot,_CMU(phiY))   : 0e0;
-  double    thetaZ = xrot.hasAttr(_CMU(thetaZ)) ? ns.attr<double>(xrot,_CMU(thetaZ)) : 0e0;
-  double    phiZ   = xrot.hasAttr(_CMU(phiZ))   ? ns.attr<double>(xrot,_CMU(phiZ))   : 0e0;
+  double    thetaX = xrot.hasAttr(_CMU(thetaX)) ? _ns.attr<double>(xrot,_CMU(thetaX)) : 0e0;
+  double    phiX   = xrot.hasAttr(_CMU(phiX))   ? _ns.attr<double>(xrot,_CMU(phiX))   : 0e0;
+  double    thetaY = xrot.hasAttr(_CMU(thetaY)) ? _ns.attr<double>(xrot,_CMU(thetaY)) : 0e0;
+  double    phiY   = xrot.hasAttr(_CMU(phiY))   ? _ns.attr<double>(xrot,_CMU(phiY))   : 0e0;
+  double    thetaZ = xrot.hasAttr(_CMU(thetaZ)) ? _ns.attr<double>(xrot,_CMU(thetaZ)) : 0e0;
+  double    phiZ   = xrot.hasAttr(_CMU(phiZ))   ? _ns.attr<double>(xrot,_CMU(phiZ))   : 0e0;
   Rotation3D rot = make_rotation3D(thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
   printout(ctx->debug_rotations ? ALWAYS : DEBUG,
            "DDCMS","+++ Adding rotation: %-32s: (theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
-           ns.prepend(nam).c_str(),thetaX,phiX,thetaY,phiY,thetaZ,phiZ);
-  ns.addRotation(nam, rot);
+           _ns.prepend(nam).c_str(),thetaX,phiX,thetaY,phiY,thetaZ,phiZ);
+  _ns.addRotation(nam, rot);
 }
 
 /// Converter for <Logicalpart/> tags
 template <> void Converter<logicalpart>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string    sol = e.child(_CMU(rSolid)).attr<string>(_U(name));
   string    mat = e.child(_CMU(rMaterial)).attr<string>(_U(name));
-  ns.addVolume(Volume(e.nameStr(), ns.solid(sol), ns.material(mat)));
+  _ns.addVolume(Volume(e.nameStr(), _ns.solid(sol), _ns.material(mat)));
 }
 
 /// Helper converter
 template <> void Converter<transform3d>::operator()(xml_h element) const {
-  Namespace    ns(_param<ParsingContext>());
+  Namespace    _ns(_param<ParsingContext>());
   Transform3D* tr = _option<Transform3D>();
   xml_dim_t   e(element);
   xml_dim_t   translation = e.child(_CMU(Translation),false);
@@ -448,34 +448,34 @@ template <> void Converter<transform3d>::operator()(xml_h element) const {
   Rotation3D  rot;
 
   if ( translation.ptr() )   {
-    double x = ns.attr<double>(translation,_U(x));
-    double y = ns.attr<double>(translation,_U(y));
-    double z = ns.attr<double>(translation,_U(z));
+    double x = _ns.attr<double>(translation,_U(x));
+    double y = _ns.attr<double>(translation,_U(y));
+    double z = _ns.attr<double>(translation,_U(z));
     pos = Position(x,y,z);
   }
   if ( rotation.ptr() )   {
-    double x = ns.attr<double>(rotation,_U(x));
-    double y = ns.attr<double>(rotation,_U(y));
-    double z = ns.attr<double>(rotation,_U(z));
+    double x = _ns.attr<double>(rotation,_U(x));
+    double y = _ns.attr<double>(rotation,_U(y));
+    double z = _ns.attr<double>(rotation,_U(z));
     rot = RotationZYX(z,y,x);
   }
   else if ( refRotation.ptr() )   {
-    rot = ns.rotation(refRotation.nameStr());
+    rot = _ns.rotation(refRotation.nameStr());
   }
   *tr = Transform3D(rot,pos);
 }
 
 /// Converter for <PosPart/> tags
 template <> void Converter<pospart>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t   e(element);
   int         copy        = e.attr<int>(_CMU(copyNumber));
-  string      parent_nam  = ns.attr<string>(e.child(_CMU(rParent)),_U(name));
-  string      child_nam   = ns.attr<string>(e.child(_CMU(rChild)),_U(name));
-  Volume      parent      = ns.volume(parent_nam);
-  Volume      child       = ns.volume(child_nam, false);
+  string      parent_nam  = _ns.attr<string>(e.child(_CMU(rParent)),_U(name));
+  string      child_nam   = _ns.attr<string>(e.child(_CMU(rChild)),_U(name));
+  Volume      parent      = _ns.volume(parent_nam);
+  Volume      child       = _ns.volume(child_nam, false);
   
-  printout(ns.context->debug_placements ? ALWAYS : DEBUG, "DDCMS",
+  printout(_ns.context->debug_placements ? ALWAYS : DEBUG, "DDCMS",
            "+++ %s Parent: %-24s [%s] Child: %-32s [%s] copy:%d",
            e.tag().c_str(),
            parent_nam.c_str(), parent.isValid() ? "VALID" : "INVALID",
@@ -495,7 +495,7 @@ template <> void Converter<pospart>::operator()(xml_h element) const {
 
 template <typename TYPE>
 static void convert_boolean(ParsingContext* ctx, xml_h element)   {
-  Namespace   ns(ctx);
+  Namespace   _ns(ctx);
   xml_dim_t   e(element);
   string      nam = e.nameStr();
   Solid       solids[2];
@@ -503,12 +503,12 @@ static void convert_boolean(ParsingContext* ctx, xml_h element)   {
   int cnt=0;
 
   for(xml_coll_t c(element, _CMU(rSolid)); cnt<2 && c; ++c, ++cnt)
-    solids[cnt] = ns.solid(c.attr<string>(_U(name)));
+    solids[cnt] = _ns.solid(c.attr<string>(_U(name)));
 
   if ( cnt != 2 )   {
     except("DDCMS","+++ Failed to create blooean solid %s. Found only %d parts.",nam.c_str(), cnt);
   }
-  printout(ns.context->debug_placements ? ALWAYS : DEBUG, "DDCMS",
+  printout(_ns.context->debug_placements ? ALWAYS : DEBUG, "DDCMS",
            "+++ SubtractionSolid: %s Left: %-32s Right: %-32s",
            nam.c_str(), solids[0]->GetName(), solids[1]->GetName());
 
@@ -519,7 +519,7 @@ static void convert_boolean(ParsingContext* ctx, xml_h element)   {
   }
   if ( !boolean.isValid() )
     except("DDCMS","+++ FAILED to construct subtraction solid: %s",nam.c_str());
-  ns.addSolid(nam,boolean);
+  _ns.addSolid(nam,boolean);
 }
 
 /// Converter for <SubtractionSolid/> tags
@@ -539,90 +539,90 @@ template <> void Converter<intersectionsolid>::operator()(xml_h element) const  
 
 /// Converter for <Polycone/> tags
 template <> void Converter<polycone>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string nam      = e.nameStr();
-  double startPhi = ns.attr<double>(e,_CMU(startPhi));
-  double deltaPhi = ns.attr<double>(e,_CMU(deltaPhi));
+  double startPhi = _ns.attr<double>(e,_CMU(startPhi));
+  double deltaPhi = _ns.attr<double>(e,_CMU(deltaPhi));
   vector<double> z, rmin, rmax;
   
   for(xml_coll_t zplane(element, _CMU(ZSection)); zplane; ++zplane)   {
-    rmin.push_back(ns.attr<double>(zplane,_CMU(rMin)));
-    rmax.push_back(ns.attr<double>(zplane,_CMU(rMax)));
-    z.push_back(ns.attr<double>(zplane,_CMU(z)));
+    rmin.push_back(_ns.attr<double>(zplane,_CMU(rMin)));
+    rmax.push_back(_ns.attr<double>(zplane,_CMU(rMax)));
+    z.push_back(_ns.attr<double>(zplane,_CMU(z)));
   }
-  printout(ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+  printout(_ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
            "+   Polycone: startPhi=%10.3f [rad] deltaPhi=%10.3f [rad]  %4ld z-planes",
            startPhi, deltaPhi, z.size());
-  ns.addSolid(nam, Polycone(startPhi,deltaPhi,rmin,rmax,z));
+  _ns.addSolid(nam, Polycone(startPhi,deltaPhi,rmin,rmax,z));
 }
 
 /// Converter for <Torus/> tags
 template <> void Converter<torus>::operator()(xml_h element) const   {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string nam      = e.nameStr();
-  double r        = ns.attr<double>(e,_CMU(torusRadius));
-  double rinner   = ns.attr<double>(e,_CMU(innerRadius));
-  double router   = ns.attr<double>(e,_CMU(outerRadius));
-  double startPhi = ns.attr<double>(e,_CMU(startPhi));
-  double deltaPhi = ns.attr<double>(e,_CMU(deltaPhi));
-  printout(ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+  double r        = _ns.attr<double>(e,_CMU(torusRadius));
+  double rinner   = _ns.attr<double>(e,_CMU(innerRadius));
+  double router   = _ns.attr<double>(e,_CMU(outerRadius));
+  double startPhi = _ns.attr<double>(e,_CMU(startPhi));
+  double deltaPhi = _ns.attr<double>(e,_CMU(deltaPhi));
+  printout(_ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
            "+   Torus:    r=%10.3f [cm] r_inner=%10.3f [cm] r_outer=%10.3f [cm]"
            " startPhi=%10.3f [rad] deltaPhi=%10.3f [rad]",
            r, rinner, router, startPhi, deltaPhi);
-  ns.addSolid(nam, Torus(r, rinner, router, startPhi, deltaPhi));
+  _ns.addSolid(nam, Torus(r, rinner, router, startPhi, deltaPhi));
 }
 
 /// Converter for <Trapezoid/> tags
 template <> void Converter<trapezoid>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string nam      = e.nameStr();
-  double dz       = ns.attr<double>(e,_U(dz));
-  double alp1     = ns.attr<double>(e,_CMU(alp1));
-  double bl1      = ns.attr<double>(e,_CMU(bl1));
-  double tl1      = ns.attr<double>(e,_CMU(tl1));
-  double h1       = ns.attr<double>(e,_CMU(h1));
-  double alp2     = ns.attr<double>(e,_CMU(alp2));
-  double bl2      = ns.attr<double>(e,_CMU(bl2));
-  double tl2      = ns.attr<double>(e,_CMU(tl2));
-  double h2       = ns.attr<double>(e,_CMU(h2));
-  double phi      = ns.attr<double>(e,_U(phi));
-  double theta    = ns.attr<double>(e,_U(theta));
-  printout(ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+  double dz       = _ns.attr<double>(e,_U(dz));
+  double alp1     = _ns.attr<double>(e,_CMU(alp1));
+  double bl1      = _ns.attr<double>(e,_CMU(bl1));
+  double tl1      = _ns.attr<double>(e,_CMU(tl1));
+  double h1       = _ns.attr<double>(e,_CMU(h1));
+  double alp2     = _ns.attr<double>(e,_CMU(alp2));
+  double bl2      = _ns.attr<double>(e,_CMU(bl2));
+  double tl2      = _ns.attr<double>(e,_CMU(tl2));
+  double h2       = _ns.attr<double>(e,_CMU(h2));
+  double phi      = _ns.attr<double>(e,_U(phi));
+  double theta    = _ns.attr<double>(e,_U(theta));
+  printout(_ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
            "+   Trapezoid:  dz=%10.3f [cm] alp1:%.3f bl1=%.3f tl1=%.3f alp2=%.3f bl2=%.3f tl2=%.3f h2=%.3f phi=%.3f theta=%.3f",
            dz, alp1, bl1, tl1, h1, alp2, bl2, tl2, h2, phi, theta);
-  ns.addSolid(nam, Trap(dz, theta, phi, h1, bl1, tl1, alp1, h2, bl2, tl2, alp2));
+  _ns.addSolid(nam, Trap(dz, theta, phi, h1, bl1, tl1, alp1, h2, bl2, tl2, alp2));
 }
 
 /// Converter for <Tubs/> tags
 template <> void Converter<tubs>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string nam      = e.nameStr();
-  double dz       = ns.attr<double>(e,_CMU(dz));
-  double rmin     = ns.attr<double>(e,_CMU(rMin));
-  double rmax     = ns.attr<double>(e,_CMU(rMax));
-  double startPhi = ns.attr<double>(e,_CMU(startPhi));
-  double deltaPhi = ns.attr<double>(e,_CMU(deltaPhi));
-  printout(ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+  double dz       = _ns.attr<double>(e,_CMU(dz));
+  double rmin     = _ns.attr<double>(e,_CMU(rMin));
+  double rmax     = _ns.attr<double>(e,_CMU(rMax));
+  double startPhi = _ns.attr<double>(e,_CMU(startPhi));
+  double deltaPhi = _ns.attr<double>(e,_CMU(deltaPhi));
+  printout(_ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
            "+   Tubs:     dz=%10.3f [cm] rmin=%10.3f [cm] rmax=%10.3f [cm]"
            " startPhi=%10.3f [rad] deltaPhi=%10.3f [rad]", dz, rmin, rmax, startPhi, deltaPhi);
-  ns.addSolid(nam, Tube(rmin,rmax,dz,startPhi,deltaPhi));
+  _ns.addSolid(nam, Tube(rmin,rmax,dz,startPhi,deltaPhi));
 }
 
 /// Converter for <Box/> tags
 template <> void Converter<box>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string nam = e.nameStr();
-  double dx  = ns.attr<double>(e,_CMU(dx));
-  double dy  = ns.attr<double>(e,_CMU(dy));
-  double dz  = ns.attr<double>(e,_CMU(dz));
-  printout(ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+  double dx  = _ns.attr<double>(e,_CMU(dx));
+  double dy  = _ns.attr<double>(e,_CMU(dy));
+  double dz  = _ns.attr<double>(e,_CMU(dz));
+  printout(_ns.context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
            "+   Box:      dx=%10.3f [cm] dy=%10.3f [cm] dz=%10.3f [cm]", dx, dy, dz);
-  ns.addSolid(nam, Box(dx,dy,dz));
+  _ns.addSolid(nam, Box(dx,dy,dz));
 }
 
 /// DD4hep specific Converter for <Include/> tags: process only the constants
@@ -649,26 +649,26 @@ template <> void Converter<include_constants>::operator()(xml_h element) const  
 
 /// Converter for <Algorithm/> tags
 template <> void Converter<algorithm>::operator()(xml_h element) const  {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string name = e.nameStr();
   try {
     SensitiveDetector sd;
     Segmentation      seg;
-    string type = ns.real_name(e.nameStr());
+    string type = _ns.real_name(e.nameStr());
 
     // SensitiveDetector and Segmentation currently are undefined. Let's keep it like this
     // until we found something better.....
-    printout(ns.context->debug_algorithms ? ALWAYS : DEBUG,
+    printout(_ns.context->debug_algorithms ? ALWAYS : DEBUG,
              "DDCMS","+++ Start executing algorithm %s....",type.c_str());
-    long ret = PluginService::Create<long>(type, &description, ns.context, &element, &sd);
+    long ret = PluginService::Create<long>(type, &description, _ns.context, &element, &sd);
     if ( ret == 1 )    {
-      printout(ns.context->debug_algorithms ? ALWAYS : DEBUG,
+      printout(_ns.context->debug_algorithms ? ALWAYS : DEBUG,
                "DDCMS", "+++ Executed algorithm: %08lX = %s", ret, name.c_str());
       return;      
     }
 #if 0
-    DetElement det(PluginService::Create<NamedObject*>(type, &description, ns.context, &element, &sd));
+    DetElement det(PluginService::Create<NamedObject*>(type, &description, _ns.context, &element, &sd));
     if (det.isValid())    {
       // setChildTitles(make_pair(name, det));
       if ( sd.isValid() )  {
@@ -681,7 +681,7 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
     }
     if (!det.isValid()) {
       PluginDebug dbg;
-      PluginService::Create<NamedObject*>(type, &description, ns.context, &element, &sd);
+      PluginService::Create<NamedObject*>(type, &description, _ns.context, &element, &sd);
       except("DDCMS","Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     description.addDetector(det);
@@ -701,16 +701,16 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
 }
 
 template <> void Converter<debug>::operator()(xml_h dbg) const {
-  Namespace ns(_param<ParsingContext>());
-  if ( dbg.hasChild(_CMU(debug_constants)) )  ns.context->debug_constants  = true;
-  if ( dbg.hasChild(_CMU(debug_materials)) )  ns.context->debug_materials  = true;
-  if ( dbg.hasChild(_CMU(debug_rotations)) )  ns.context->debug_rotations  = true;
-  if ( dbg.hasChild(_CMU(debug_shapes)) )     ns.context->debug_shapes     = true;
-  if ( dbg.hasChild(_CMU(debug_volumes)) )    ns.context->debug_volumes    = true;
-  if ( dbg.hasChild(_CMU(debug_placements)) ) ns.context->debug_placements = true;
-  if ( dbg.hasChild(_CMU(debug_namespaces)) ) ns.context->debug_namespaces = true;
-  if ( dbg.hasChild(_CMU(debug_includes))   ) ns.context->debug_includes   = true;
-  if ( dbg.hasChild(_CMU(debug_algorithms)) ) ns.context->debug_algorithms = true;
+  Namespace _ns(_param<ParsingContext>());
+  if ( dbg.hasChild(_CMU(debug_constants)) )  _ns.context->debug_constants  = true;
+  if ( dbg.hasChild(_CMU(debug_materials)) )  _ns.context->debug_materials  = true;
+  if ( dbg.hasChild(_CMU(debug_rotations)) )  _ns.context->debug_rotations  = true;
+  if ( dbg.hasChild(_CMU(debug_shapes)) )     _ns.context->debug_shapes     = true;
+  if ( dbg.hasChild(_CMU(debug_volumes)) )    _ns.context->debug_volumes    = true;
+  if ( dbg.hasChild(_CMU(debug_placements)) ) _ns.context->debug_placements = true;
+  if ( dbg.hasChild(_CMU(debug_namespaces)) ) _ns.context->debug_namespaces = true;
+  if ( dbg.hasChild(_CMU(debug_includes))   ) _ns.context->debug_includes   = true;
+  if ( dbg.hasChild(_CMU(debug_algorithms)) ) _ns.context->debug_algorithms = true;
 }
 
 template <> void Converter<vis_apply>::operator()(xml_h /* dddefinition */) const {
@@ -735,7 +735,7 @@ template <> void Converter<vis_apply>::operator()(xml_h /* dddefinition */) cons
 template <> void Converter<resolve>::operator()(xml_h /* element */) const {
   ParsingContext* ctx = _param<ParsingContext>();
   resolve*        res = _option<resolve>();
-  Namespace       ns(ctx);
+  Namespace       _ns(ctx);
   int count = 0;
 
   printout(ctx->debug_constants ? ALWAYS : DEBUG,
@@ -765,7 +765,7 @@ template <> void Converter<resolve>::operator()(xml_h /* element */) const {
         printout(ctx->debug_constants ? ALWAYS : DEBUG,
                  "DDCMS","+++ [%06ld] ----------  %-40s = %s",
                  res->unresolvedConst.size()-1,n.c_str(),res->originalConst[n].c_str());
-        ns.addConstantNS(n, v, "number");
+        _ns.addConstantNS(n, v, "number");
         res->unresolvedConst.erase(i);
         break;
       }
@@ -791,7 +791,7 @@ template <> void Converter<print_xml_doc>::operator()(xml_h element) const {
 /// Converter for <DDDefinition/> tags
 static long load_dddefinition(Detector& det, xml_h element) {
   static ParsingContext ctxt(&det);
-  Namespace ns(ctxt);
+  Namespace _ns(ctxt);
   xml_elt_t dddef(element);
   string fname = xml::DocumentHandler::system_path(element);
   bool open_geometry  = dddef.hasChild(_CMU(open_geometry));
@@ -827,7 +827,7 @@ static long load_dddefinition(Detector& det, xml_h element) {
     if ( open_geometry )  {
       ctxt.geo_inited = true;
       det.init();
-      ns.addVolume(det.worldVolume());
+      _ns.addVolume(det.worldVolume());
     }
     for(xml::Document d : res.includes )  {
       print_doc((doc=d).root());
