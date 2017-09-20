@@ -16,9 +16,13 @@
 //==========================================================================
 
 // Framework includes
+#include "DD4hep/Path.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/BasicGrammar.h"
 #include "DDCMS/DDCMS.h"
+
+#include <TClass.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -27,28 +31,16 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cms;
 
+#define NAMESPACE_SEP '_'
+
 Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
-                                          double thetaY, double phiY,
-                                          double thetaZ, double phiZ)   {
+                                        double thetaY, double phiY,
+                                        double thetaZ, double phiZ)   {
   Position  posX(sin(thetaX) * cos(phiX), sin(thetaX) * sin(phiX), cos(thetaX));
   Position  posY(sin(thetaY) * cos(phiY), sin(thetaY) * sin(phiY), cos(thetaY));
   Position  posZ(sin(thetaZ) * cos(phiZ), sin(thetaZ) * sin(phiZ), cos(thetaZ));
   Rotation3D rot(posX,posY,posZ);
   return rot;
-}
-
-Volume ParsingContext::volume(const std::string& name)  const   {
-  auto i = volumes.find(name);
-  if ( i != volumes.end() ) return (*i).second;
-  throw runtime_error("Unknown volume identifier:"+name);
-}
-
-const Rotation3D& ParsingContext::rotation(const std::string& name)  const   {
-  static Rotation3D s_null;
-  auto i = rotations.find(name);
-  if ( i != rotations.end() ) return (*i).second;
-  if ( name.find("_NULL") == name.length()-5 ) return s_null;
-  throw runtime_error("Unknown rotation identifier:"+name);
 }
 
 /// Initializing constructor
@@ -64,11 +56,41 @@ Namespace::Namespace(ParsingContext* ctx, xml_h element) : context(ctx)  {
              "DDCMS","+++ Current namespace is now: %s",name.c_str());
     return;
   }
-  name = name.substr(0,name.find('.'));
-  context->namespaces.push_back(name.empty() ? name : name+'_');
+  if ( has_label )   {
+    size_t idx = name.find('.');
+    name = name.substr(0,idx);
+  }
+  else  {
+    Path   path(xml::DocumentHandler::system_path(element));
+    name = path.filename().substr(0,path.filename().rfind('.'));
+  }
+  if ( !name.empty() ) name += NAMESPACE_SEP;
+  context->namespaces.push_back(name);
   pop = true;
   printout(context->debug_namespaces ? ALWAYS : DEBUG,
            "DDCMS","+++ Current namespace is now: %s",name.c_str());
+  return;
+}
+
+/// Initializing constructor
+Namespace::Namespace(ParsingContext& ctx, xml_h element, bool ) : context(&ctx)  {
+  xml_dim_t elt(element);
+  bool has_label = elt.hasAttr(_U(label));
+  name = has_label ? elt.labelStr() : "";
+  if ( has_label )   {
+    size_t idx = name.find('.');
+    name = name.substr(0,idx);
+  }
+  else  {
+    Path   path(xml::DocumentHandler::system_path(element));
+    name = path.filename().substr(0,path.filename().rfind('.'));
+  }
+  if ( !name.empty() ) name += NAMESPACE_SEP;
+  context->namespaces.push_back(name);
+  pop = true;
+  printout(context->debug_namespaces ? ALWAYS : DEBUG,
+           "DDCMS","+++ Current namespace is now: %s",name.c_str());
+  return;
 }
 
 /// Initializing constructor
@@ -91,12 +113,12 @@ Namespace::~Namespace()   {
 }
 
 /// Prepend name with namespace
-std::string Namespace::prepend(const std::string& n)  const   {
+string Namespace::prepend(const string& n)  const   {
   return name + n;
 }
 
 /// Resolve namespace during XML parsing
-std::string Namespace::real_name(const std::string& v)  const  {
+string Namespace::real_name(const string& v)  const  {
   size_t idx, idq, idp;
   string val = v;
   while ( (idx=val.find('[')) != string::npos )  {
@@ -107,12 +129,155 @@ std::string Namespace::real_name(const std::string& v)  const  {
     if ( idp == string::npos || idp > idq )
       val.insert(idx,name);
     else if ( idp != string::npos && idp < idq )
-      val[idp] = '_';
+      val[idp] = NAMESPACE_SEP;
   }
-  while ( (idx=val.find(':')) != string::npos ) val[idx]='_';
+  while ( (idx=val.find(':')) != string::npos ) val[idx]=NAMESPACE_SEP;
   return val;
 }
 
+/// Return the namespace name of a component
+string Namespace::ns_name(const string& nam)    {
+  size_t idx;
+  if ( (idx=nam.find(':')) != string::npos )
+    return nam.substr(0,idx);
+  else if ( (idx=nam.find('_')) != string::npos )
+    return nam.substr(0,idx);
+  return "";
+}
+
+/// Strip off the namespace part of a given name
+string Namespace::obj_name(const string& nam)   {
+  size_t idx;
+  if ( (idx=nam.find(':')) != string::npos )
+    return nam.substr(idx+1);
+  else if ( (idx=nam.find('_')) != string::npos )
+    return nam.substr(idx+1);
+  return "";
+}
+
+/// Add a new constant to the namespace
+void Namespace::addConstant(const string& nam, const string& val, const string& typ)  const  {
+  addConstantNS(prepend(nam), val, typ);
+}
+
+/// Add a new constant to the namespace indicated by the name
+void Namespace::addConstantNS(const string& nam, const string& val, const string& typ)  const {
+  const string& v = val;
+  const string& n = nam;
+  printout(context->debug_constants ? ALWAYS : DEBUG,
+           "DDCMS","+++ Add constant object: %-40s = %s [type:%s]",
+           n.c_str(), v.c_str(), typ.c_str());
+  _toDictionary(n, v, typ);
+  Constant c(n, v, typ);
+  context->description->addConstant(c);
+}
+
+/// Access material by its namespace dressed name
+Material Namespace::material(const string& nam)  const   {
+  return context->description->material(real_name(nam));
+}
+
+/// Add rotation matrix to current namespace
+void Namespace::addRotation(const string& nam,const Rotation3D& rot)  const  {
+  string n = prepend(nam);
+  context->rotations[n] = rot;
+}
+
+const Rotation3D& Namespace::rotation(const string& nam)  const   {
+  static Rotation3D s_null;
+  size_t idx;
+  auto i = context->rotations.find(nam);
+  if ( i != context->rotations.end() )
+    return (*i).second;
+  else if ( nam == "NULL" )
+    return s_null;
+  else if ( nam.find("_NULL") == nam.length()-5 )
+    return s_null;
+  string n = nam;
+  if ( (idx=nam.find(':')) != string::npos )  {
+    n[idx] = NAMESPACE_SEP;
+    i = context->rotations.find(n);
+    if ( i != context->rotations.end() )
+      return (*i).second;
+  }
+  for (const auto& r : context->rotations )  {
+    cout << r.first << endl;
+  }
+  throw runtime_error("Unknown rotation identifier:"+nam);
+}
+
+/// Add rotation matrix to current namespace
+void Namespace::addVolumeNS(Volume vol)  const  {
+  string   n = vol.name();
+  Solid    s = vol.solid();
+  Material m = vol.material();
+  vol->SetName(n.c_str());
+  context->volumes[n] = vol;
+  printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
+           "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
+           vol.name(), s.name(), s.type(), m.name());
+}
+
+/// Add rotation matrix to current namespace
+void Namespace::addVolume(Volume vol)  const  {
+  string   n = prepend(vol.name());
+  Solid    s = vol.solid();
+  Material m = vol.material();
+  vol->SetName(n.c_str());
+  context->volumes[n] = vol;
+  printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
+           "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
+           vol.name(), s.name(), s.type(), m.name());
+}
+
+Volume Namespace::volume(const string& nam, bool exc)  const   {
+  size_t idx;
+  auto i = context->volumes.find(nam);
+  if ( i != context->volumes.end() )  {
+    return (*i).second;
+  }
+  if ( (idx=nam.find(':')) != string::npos )  {
+    string n = nam;
+    n[idx] = NAMESPACE_SEP;
+    i = context->volumes.find(n);
+    if ( i != context->volumes.end() )
+      return (*i).second;
+  }
+  if ( exc )  {
+    throw runtime_error("Unknown volume identifier:"+nam);
+  }
+  return 0;
+}
+
+/// Add solid to current namespace as fully indicated by the name
+void Namespace::addSolidNS(const std::string& nam,Solid sol)  const   {
+  printout(context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+           "+++ Add shape of type %s : %s",sol->IsA()->GetName(), nam.c_str());
+  context->shapes[nam] = sol.setName(nam);
+}
+
+/// Add solid to current namespace
+void Namespace::addSolid(const string& nam, Solid sol)  const  {
+  addSolidNS(prepend(nam), sol);
+}
+
+Solid Namespace::solid(const string& nam)  const   {
+  size_t idx;
+  string n = context->namespaces.back() + nam;
+  auto i = context->shapes.find(n);
+  if ( i != context->shapes.end() )
+    return (*i).second;
+  if ( (idx=nam.find(':')) != string::npos )  {
+    n = real_name(nam);
+    n[idx] = NAMESPACE_SEP;
+    i = context->shapes.find(n);
+    if ( i != context->shapes.end() )
+      return (*i).second;
+  }  
+  i = context->shapes.find(nam);
+  if ( i != context->shapes.end() ) return (*i).second;
+  throw runtime_error("Unknown shape identifier:"+nam);
+}
 
 AlgoArguments::AlgoArguments(ParsingContext& ctxt, xml_h elt)
   : context(ctxt), element(elt)
@@ -121,15 +286,21 @@ AlgoArguments::AlgoArguments(ParsingContext& ctxt, xml_h elt)
 }
 
 /// Access value of rParent child node
-std::string AlgoArguments::parentName()  const    {
-  Namespace     ns(context);
+string AlgoArguments::parentName()  const    {
+  Namespace n(context);
   xml_dim_t e(element);
-  string val = ns.real_name(xml_dim_t(e.child(_CMU(rParent))).nameStr());
+  string val = n.real_name(xml_dim_t(e.child(_CMU(rParent))).nameStr());
   return val;
 }
 
+/// Access value of child'name from the xml element
+string AlgoArguments::childName()  const   {
+  Namespace n(context);
+  return n.real_name(value<string>("ChildName"));
+}
+
 /// Check the existence of an argument by name
-bool AlgoArguments::find(const std::string& nam)  const   {
+bool AlgoArguments::find(const string& nam)  const   {
   for(xml_coll_t p(element,_U(star)); p; ++p)  {
     string n = p.attr<string>(_U(name));
     if ( n == nam )  {
@@ -147,7 +318,8 @@ xml_h AlgoArguments::raw_arg(const string& nam)  const   {
       return p;
     }
   }
-  throw runtime_error("DDCMS: Attempt to access non-existing algorithm option: " + name);
+  except("DDCMS","+++ Attempt to access non-existing algorithm option %s[%s]",name.c_str(),nam.c_str());
+  throw runtime_error("DDCMS: Attempt to access non-existing algorithm option.");
 }
 
 /// Access namespace resolved argument as a string by name
@@ -182,7 +354,7 @@ namespace {
       except("DDCMS","+++ VectorParam<%s>: %s -> %s [Invalid entry count: %d <> %ld]",
              typ.c_str(), nam.c_str(), val.c_str(), num, data.size());
     }
-    printout(INFO,"DDCMS","+++ VectorParam<%s>: ret=%d %s -> %s",
+    printout(DEBUG,"DDCMS","+++ VectorParam<%s>: ret=%d %s -> %s",
              typ.c_str(), res, nam.c_str(), gr.str(&data).c_str());
     return data;
   }
@@ -196,22 +368,32 @@ namespace {
   template <> string __cnv<string>(const string& arg)   { return arg;  }
 
   template <typename T> vector<T> __cnvVect(const AlgoArguments* a, const char* req_typ, xml_h xp)   {
-    vector<string> str_data = raw_vector(a, xp);
+    Namespace ns(a->context);
+    string piece;
+    string nam = xp.attr<string>(_U(name));
     string typ = xp.attr<string>(_U(type));
+    string val = xp.text();
+    int    num = xp.attr<int>(_CMU(nEntries));
     if ( typ != req_typ )   {
-      string nam = xp.attr<string>(_U(name));
-      const BasicGrammar& gr = BasicGrammar::instance<vector<string> >();
       except("DDCMS",
              "+++ VectorParam<%s | %s>: %s -> <%s> %s [Incompatible vector-type]",
              req_typ, typ.c_str(), nam.c_str(), typeName(typeid(T)).c_str(),
-             gr.str(&str_data).c_str());
+             val.c_str());
     }
-    vector<T> res_data;
-    for(const auto& v : str_data)  {
-      T d = __cnv<T>(v);
-      res_data.push_back(d);
+    vector<T> data;
+    val = remove_whitespace(val);
+    if ( !val.empty() ) val += ',';
+    for(size_t idx=0, idq=val.find(',',idx);
+        idx != string::npos && idq != string::npos;
+        idx=++idq, idq=val.find(',',idx))
+    {
+      piece = ns.real_name(val.substr(idx,idq-idx));
+      T d = __cnv<T>(piece);
+      data.push_back(d);
     }
-    return res_data;
+    printout(DEBUG,"DDCMS","+++ VectorParam<%s>: %s[%d] -> %s",
+             typ.c_str(), nam.c_str(), num, val.c_str());
+    return data;
   }
 }
 
