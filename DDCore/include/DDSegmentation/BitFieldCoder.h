@@ -41,6 +41,7 @@ namespace DDSegmentation {
    */  
   class BitFieldCoder{
     
+  public:
 
     /** Helper class for BitFieldCoder that corresponds to one field value. 
      */
@@ -63,7 +64,7 @@ namespace DDSegmentation {
 
 
       // assign the given value to the bit field
-      void set(long64& bitfield, long64 value) ;
+      void set(long64& bitfield, long64 value) const ;
 
 
       /** The field's name */
@@ -195,6 +196,13 @@ namespace DDSegmentation {
       return *_fields[ index( name ) ] ;
     }
 
+    /** Const Access to field through index .
+     */
+    const BitFieldValue& operator[](unsigned index) const { 
+
+      return *_fields[ index ] ;
+    }
+
     /** Return a valid description string of all fields
      */
     std::string fieldDescription() const ;
@@ -207,6 +215,10 @@ namespace DDSegmentation {
       return _fields;
     }
     
+
+    /** the mask of all the bits used in the description */
+    ulong64 mask() const { return _joined ; }
+
   protected:
 
     /** Add an additional field to the list 
