@@ -59,12 +59,12 @@ const string& SegmentationObject::description() const {
 }
 
 /// Access the underlying decoder
-const BitField64* SegmentationObject::decoder() const {
+const BitFieldCoder* SegmentationObject::decoder() const {
   return segmentation->decoder();
 }
 
 /// Set the underlying decoder
-void SegmentationObject::setDecoder(BitField64* ptr_decoder) const {
+void SegmentationObject::setDecoder(const BitFieldCoder* ptr_decoder) const {
   segmentation->setDecoder(ptr_decoder);
 }
 

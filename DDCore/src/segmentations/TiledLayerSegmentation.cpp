@@ -42,7 +42,7 @@ TiledLayerSegmentation::TiledLayerSegmentation(const std::string& cellEncoding) 
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-TiledLayerSegmentation::TiledLayerSegmentation(BitField64* decode) :	Segmentation(decode) {
+TiledLayerSegmentation::TiledLayerSegmentation(const BitFieldCoder* decode) :	Segmentation(decode) {
 	_type = "TiledLayerSegmentation";
 	_description = "Cartesian segmentation using optimal tiling depending on the layer dimensions";
 
@@ -116,30 +116,29 @@ TiledLayerSegmentation::LayerDimensions TiledLayerSegmentation::layerDimensions(
 
 /// determine the position based on the cell ID
 Vector3D TiledLayerSegmentation::position(const CellID& cID) const {
-	_decoder->setValue(cID);
-	int layerIndex = (*_decoder)[_identifierLayer];
+	int layerIndex = _decoder->get(cID,_identifierLayer);
 	double cellSizeX = layerGridSizeX(layerIndex);
 	double cellSizeY = layerGridSizeY(layerIndex);
 	LayerDimensions dimensions = layerDimensions(layerIndex);
 	double offsetX = calculateOffset(cellSizeX, dimensions.x);
 	double offsetY = calculateOffset(cellSizeY, dimensions.y);
-	double localX = binToPosition((*_decoder)[_identifierX], cellSizeX, offsetX);
-	double localY = binToPosition((*_decoder)[_identifierY], cellSizeY, offsetY);
+	double localX = binToPosition(_decoder->get(cID,_identifierX), cellSizeX, offsetX);
+	double localY = binToPosition(_decoder->get(cID,_identifierY), cellSizeY, offsetY);
 	return Vector3D(localX, localY, 0.);
 }
 /// determine the cell ID based on the position
   CellID TiledLayerSegmentation::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */,
 		const VolumeID& vID) const {
-	_decoder->setValue(vID);
-	int layerIndex = (*_decoder)[_identifierLayer];
+	CellID cID = vID ;
+	int layerIndex = _decoder->get(cID,_identifierLayer);
 	double cellSizeX = layerGridSizeX(layerIndex);
 	double cellSizeY = layerGridSizeY(layerIndex);
 	LayerDimensions dimensions = layerDimensions(layerIndex);
 	double offsetX = calculateOffset(cellSizeX, dimensions.x);
 	double offsetY = calculateOffset(cellSizeY, dimensions.y);
-	(*_decoder)[_identifierX] = positionToBin(localPosition.x(), cellSizeX, offsetX);
-	(*_decoder)[_identifierY] = positionToBin(localPosition.y(), cellSizeY, offsetY);
-	return _decoder->getValue();
+	_decoder->set(cID,_identifierX, positionToBin(localPosition.x(), cellSizeX, offsetX));
+	_decoder->set(cID,_identifierY, positionToBin(localPosition.y(), cellSizeY, offsetY));
+	return cID;
 }
 
 /// helper method to calculate optimal cell size based on total size

@@ -20,7 +20,7 @@ namespace dd4hep {
         virtual ~NoSegmentation();
 
         NoSegmentation(const std::string& cellEncoding = "");
-        NoSegmentation(BitField64* decoder);
+        NoSegmentation(const BitFieldCoder* decoder);
 	
         virtual Vector3D position(const CellID& cellID) const;
         virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;

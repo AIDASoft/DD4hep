@@ -114,7 +114,7 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      dd4hep::BitField64 idDecoder( cellIDEcoding ) ;
+      BitField64 idDecoder( cellIDEcoding ) ;
 
       int nHit = col->getNumberOfElements() ;
       

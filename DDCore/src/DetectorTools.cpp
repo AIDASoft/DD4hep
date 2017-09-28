@@ -388,7 +388,7 @@ std::string detail::tools::toString(const PlacedVolume::VolIDs& ids)   {
 std::string detail::tools::toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code)   {
   stringstream log;
   for( const auto& id : ids )  {
-    const BitFieldValue* f = dsc.field(id.first);
+    const BitFieldElement* f = dsc.field(id.first);
     VolumeID value = f->value(code);
     log << id.first << "=" << id.second << "," << value << " [" << f->offset() << "," << f->width() << "] ";
   }

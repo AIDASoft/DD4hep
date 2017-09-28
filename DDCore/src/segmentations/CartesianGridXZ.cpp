@@ -30,7 +30,7 @@ CartesianGridXZ::CartesianGridXZ(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-CartesianGridXZ::CartesianGridXZ(BitField64* decode) :
+CartesianGridXZ::CartesianGridXZ(const BitFieldCoder* decode) :
 	CartesianGrid(decode) {
 	// define type and description
 	_type = "CartesianGridXZ";
@@ -52,20 +52,19 @@ CartesianGridXZ::~CartesianGridXZ() {
 
 /// determine the position based on the cell ID
 Vector3D CartesianGridXZ::position(const CellID& cID) const {
-	_decoder->setValue(cID);
 	vector<double> localPosition(3);
 	Vector3D cellPosition;
-	cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
-	cellPosition.Z = binToPosition((*_decoder)[_zId].value(), _gridSizeZ, _offsetZ);
+	cellPosition.X = binToPosition( _decoder->get(cID,_xId ), _gridSizeX, _offsetX);
+	cellPosition.Z = binToPosition( _decoder->get(cID,_zId ), _gridSizeZ, _offsetZ);
 	return cellPosition;
 }
 
 /// determine the cell ID based on the position
   CellID CartesianGridXZ::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
-	_decoder->setValue(vID);
-	(*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
-	(*_decoder)[_zId] = positionToBin(localPosition.Z, _gridSizeZ, _offsetZ);
-	return _decoder->getValue();
+        CellID cID = vID ;
+        _decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX) );
+	_decoder->set( cID,_zId, positionToBin(localPosition.Z, _gridSizeZ, _offsetZ) );
+	return cID ;
 }
 
 std::vector<double> CartesianGridXZ::cellDimensions(const CellID&) const {

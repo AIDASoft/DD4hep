@@ -43,7 +43,7 @@ namespace dd4hep {
       MegatileLayerGridXY(const std::string& cellEncoding = "");
 
       /// Default constructor used by derived classes passing an existing decoder
-      MegatileLayerGridXY(BitField64* decoder);
+      MegatileLayerGridXY(const BitFieldCoder* decoder);
 
       /// destructor
       virtual ~MegatileLayerGridXY();

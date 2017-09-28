@@ -23,7 +23,7 @@ namespace dd4hep {
   namespace detail {
 
     using DDSegmentation::BitField64;
-    using DDSegmentation::BitFieldValue;
+    using DDSegmentation::BitFieldElement;
 
   }       /* End namespace detail           */
 }         /* End namespace dd4hep             */

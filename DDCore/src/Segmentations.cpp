@@ -30,7 +30,7 @@ using namespace dd4hep::detail;
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationObject);
 
 /// Constructor to used when creating a new object
-Segmentation::Segmentation(const string& typ, const string& nam, BitField64* dec) : Handle<Object>()
+Segmentation::Segmentation(const string& typ, const string& nam, const BitFieldCoder* dec) : Handle<Object>()
 {
   string seg_type = "segmentation_constructor__"+typ;
   SegmentationObject* obj = PluginService::Create<SegmentationObject*>(seg_type, dec);
@@ -103,12 +103,12 @@ DDSegmentation::Segmentation* Segmentation::segmentation() const  {
 }
 
 /// Access the underlying decoder
-const BitField64* Segmentation::decoder()  const {
+const BitFieldCoder* Segmentation::decoder()  const {
   return data<Object>()->segmentation->decoder();
 }
 
 /// Set the underlying decoder
-void Segmentation::setDecoder(BitField64* decode) const  {
+void Segmentation::setDecoder(const BitFieldCoder* decode) const  {
   data<Object>()->segmentation->setDecoder(decode);
 }
 

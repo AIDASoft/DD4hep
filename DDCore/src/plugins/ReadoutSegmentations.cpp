@@ -20,7 +20,7 @@ using namespace dd4hep::DDSegmentation;
 
 namespace {
   template<typename T> dd4hep::SegmentationObject*
-  create_segmentation(dd4hep::BitField64* decoder)  {
+  create_segmentation(const dd4hep::BitFieldCoder* decoder)  {
     return new dd4hep::SegmentationWrapper<T>(decoder);
   }
 }

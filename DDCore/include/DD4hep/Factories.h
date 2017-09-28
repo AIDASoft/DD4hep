@@ -43,7 +43,7 @@ namespace dd4hep {
 
   /// Namespace describing generic detector segmentations
   namespace DDSegmentation  {
-    class BitField64;
+    class BitFieldCoder;
   }
   
   
@@ -80,7 +80,7 @@ namespace dd4hep {
    */
   template <typename T> class SegmentationFactory : public PluginFactoryBase {
   public:
-    static SegmentationObject* create(DDSegmentation::BitField64* decoder);
+    static SegmentationObject* create(const DDSegmentation::BitFieldCoder* decoder);
   };
 
   /// Template class with a generic signature to apply Detector plugins
@@ -203,7 +203,7 @@ namespace {
     typedef dd4hep::json::Handle_t      json_h;
     typedef dd4hep::Handle<Named>       ref_t;
     typedef dd4hep::SegmentationObject  SegmentationObject;
-    typedef dd4hep::DDSegmentation::BitField64   BitField64;
+    typedef dd4hep::DDSegmentation::BitFieldCoder   BitFieldCoder;
   }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_1(void*,const char*)  
@@ -212,7 +212,7 @@ namespace {
   DD4HEP_PLUGIN_FACTORY_ARGS_1(ns::Named*,dd4hep::Detector*)
   {    return dd4hep::TranslationFactory<P>::create(*a0).ptr();                         }
 
-  DD4HEP_PLUGIN_FACTORY_ARGS_1(ns::SegmentationObject*,ns::BitField64*)
+  DD4HEP_PLUGIN_FACTORY_ARGS_1(ns::SegmentationObject*,const ns::BitFieldCoder*)
   {    return dd4hep::SegmentationFactory<P>::create(a0);                               }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(void*,dd4hep::Detector*,int,char**)
@@ -250,12 +250,12 @@ namespace {
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)       namespace dd4hep    \
   { DD4HEP_PLUGINSVC_FACTORY(n::x,x,dd4hep::*(),__LINE__) }
 
-// Call function of the type [SegmentationObject (*func)(dd4hep::Detector*,DDSegmentation::BitField64*)]
+// Call function of the type [SegmentationObject (*func)(dd4hep::Detector*,DDSegmentation::BitFieldCoder*)]
 #define DECLARE_SEGMENTATION(name,func) DD4HEP_OPEN_PLUGIN(dd4hep,name)   { \
     template <> SegmentationObject*                           \
-      SegmentationFactory<name>::create(DDSegmentation::BitField64* d) { return func(d); } \
+      SegmentationFactory<name>::create(const DDSegmentation::BitFieldCoder* d) { return func(d); } \
     DD4HEP_PLUGINSVC_FACTORY(name,segmentation_constructor__##name,     \
-                             SegmentationObject*(DDSegmentation::BitField64*),__LINE__)}
+                             SegmentationObject*(const DDSegmentation::BitFieldCoder*),__LINE__)}
 
 // Call function of the type [long (*func)(const char* arg)]
 #define DECLARE_APPLY(name,func)        DD4HEP_OPEN_PLUGIN(dd4hep,name)   { \

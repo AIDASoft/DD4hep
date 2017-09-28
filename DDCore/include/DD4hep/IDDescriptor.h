@@ -15,7 +15,7 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
-#include "DD4hep/BitField64.h"
+#include "DD4hep/BitFieldCoder.h"
 
 // C++ include files
 #include <string>
@@ -36,7 +36,7 @@ namespace dd4hep {
    */
   class IDDescriptor: public Handle<IDDescriptorObject> {
   public:
-    typedef std::vector<std::pair<std::string, BitFieldValue*> >  FieldMap;
+    typedef std::vector<std::pair<std::string, const BitFieldElement*> >  FieldMap;
     typedef std::vector<std::pair<size_t, std::string> >          FieldIDs;
 
   public:
@@ -55,25 +55,25 @@ namespace dd4hep {
     /// Access the fieldmap container
     const FieldMap& fields() const;
     /// Get the field descriptor of one field by name
-    const BitFieldValue* field(const std::string& field_name) const;
+    const BitFieldElement* field(const std::string& field_name) const;
     /// Get the field identifier of one field by name
     size_t fieldID(const std::string& field_name) const;
     /// Get the field descriptor of one field by its identifier
-    const BitFieldValue* field(size_t identifier) const;
+    const BitFieldElement* field(size_t identifier) const;
 #ifndef __MAKECINT__
     /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
     VolumeID encode(const std::vector<std::pair<std::string, int> >& ids) const;
 #endif
     /// Decode volume IDs and return filled descriptor with all fields
-    void decodeFields(VolumeID vid, std::vector<std::pair<const BitFieldValue*, VolumeID> >& fields)  const;
+    void decodeFields(VolumeID vid, std::vector<std::pair<const BitFieldElement*, VolumeID> >& fields)  const;
     /// Decode volume IDs and return string reprensentation for debugging purposes
     std::string str(VolumeID vid)  const;
     /// Decode volume IDs and return string reprensentation for debugging purposes
     std::string str(VolumeID vid, VolumeID mask)  const;
     /// Access string representation
     std::string toString() const;
-    /// Access the BitField64 object
-    BitField64* decoder();
+    /// Access the BitFieldCoder object
+    BitFieldCoder* decoder();
     /// Re-build object in place
     void rebuild(const std::string& description);
   };

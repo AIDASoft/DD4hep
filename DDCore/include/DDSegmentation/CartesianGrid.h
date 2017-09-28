@@ -21,7 +21,7 @@ protected:
 	/// Default constructor used by derived classes passing the encoding string
 	CartesianGrid(const std::string& cellEncoding = "");
 	/// Default constructor used by derived classes passing an existing decoder
-	CartesianGrid(BitField64* decoder);
+	CartesianGrid(const BitFieldCoder* decoder);
 };
 
 } /* namespace DDSegmentation */

@@ -28,7 +28,7 @@ PolarGridRPhi::PolarGridRPhi(const std::string& cellEncoding) :
 
 
 /// Default constructor used by derived classes passing an existing decoder
-PolarGridRPhi::PolarGridRPhi(BitField64* decode) : PolarGrid(decode) {
+PolarGridRPhi::PolarGridRPhi(const BitFieldCoder* decode) : PolarGrid(decode) {
 	// define type and description
 	_type = "PolarGridRPhi";
 	_description = "Polar RPhi segmentation in the local XY-plane";
@@ -49,10 +49,9 @@ PolarGridRPhi::~PolarGridRPhi() {
 
 /// determine the position based on the cell ID
 Vector3D PolarGridRPhi::position(const CellID& cID) const {
-	_decoder->setValue(cID);
 	Vector3D cellPosition;
-	double R = binToPosition((*_decoder)[_rId].value(), _gridSizeR, _offsetR);
-	double phi = binToPosition((*_decoder)[_phiId].value(), _gridSizePhi, _offsetPhi);
+	double R =   binToPosition(_decoder->get(cID,_rId),   _gridSizeR,   _offsetR);
+	double phi = binToPosition(_decoder->get(cID,_phiId), _gridSizePhi, _offsetPhi);
 	
 	cellPosition.X = R * cos(phi);
 	cellPosition.Y = R * sin(phi);
@@ -62,18 +61,16 @@ Vector3D PolarGridRPhi::position(const CellID& cID) const {
 
 /// determine the cell ID based on the position
   CellID PolarGridRPhi::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
-	_decoder->setValue(vID);
 	double phi = atan2(localPosition.Y,localPosition.X);
 	double R = sqrt( localPosition.X * localPosition.X + localPosition.Y * localPosition.Y );
-
-	(*_decoder)[_rId] = positionToBin(R, _gridSizeR, _offsetR);
-	(*_decoder)[_phiId] = positionToBin(phi, _gridSizePhi, _offsetPhi);
-	return _decoder->getValue();
+	CellID cID = vID ;
+	_decoder->set(cID,_rId  , positionToBin(R, _gridSizeR, _offsetR));
+	_decoder->set(cID,_phiId, positionToBin(phi, _gridSizePhi, _offsetPhi));
+	return cID;
 }
 
 std::vector<double> PolarGridRPhi::cellDimensions(const CellID& cID) const {
-  _decoder->setValue(cID);
-  const double rPhiSize = binToPosition((*_decoder)[_rId].value(), _gridSizeR, _offsetR)*_gridSizePhi;
+  const double rPhiSize = binToPosition(_decoder->get(cID,_rId), _gridSizeR, _offsetR)*_gridSizePhi;
 #if __cplusplus >= 201103L
   return {_gridSizeR, rPhiSize};
 #else

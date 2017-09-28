@@ -15,48 +15,22 @@ typedef unsigned long long ulong64 ;
 
 namespace DDSegmentation {
 
-  class BitFieldValue ;
   class StringTokenizer ; 
 
-
-  /** Helper class for decoding and encoding a bit field of 64bits for convenient declaration and 
-   *  manipulation of sub fields of various widths.<br>
-   *  This is a thread safe re-implementation of the functionality in the deprected BitField64.
-   *  
-   *  Example:<br>
-   *    BitFieldCoder bc("layer:7,system:-3,barrel:3,theta:32:11,phi:11" ) ; <br> 
-   *    bc.set( field,  "layer"  , 123 );         <br> 
-   *    bc.set( field,  "system" , -4  );         <br> 
-   *    bc.set( field,  "barrel" , 7   );         <br> 
-   *    bc.set( field,  "theta"  , 180 );         <br> 
-   *    bc.set( field,  "phi"    , 270 );         <br> 
-   *    ...                                       <br>
-   *    int theta = bc.get( field, "theta" ) ;                    <br>
-   *    ...                                       <br>
-   *    unsigned phiIndex = bc.index("phi") ;     <br>
-   *    int phi = bc.get( field, phiIndex ) ;                <br>
-   *
-   *    @author F.Gaede, DESY
-   *    @date  2017-09
-   */  
-  class BitFieldCoder{
-    
-  public:
-
-    /** Helper class for BitFieldCoder that corresponds to one field value. 
+      /** Helper class for BitFieldCoder that corresponds to one field value. 
      */
 
-    class BitFieldValue{
+    class BitFieldElement{
   
     public :
-      virtual ~BitFieldValue() {}
+      virtual ~BitFieldElement() {}
   
       /** The default c'tor.
        * @param  name          name of the field
        * @param  offset        offset of field
        * @param  signedWidth   width of field, negative if field is signed
        */
-      BitFieldValue( const std::string& name, 
+      BitFieldElement( const std::string& name, 
 		     unsigned offset, int signedWidth ) ; 
 
       /// calculate this field's value given an external 64 bit bitmap 
@@ -101,12 +75,35 @@ namespace DDSegmentation {
     };
 
 
+  
+  /** Helper class for decoding and encoding a bit field of 64bits for convenient declaration and 
+   *  manipulation of sub fields of various widths.<br>
+   *  This is a thread safe re-implementation of the functionality in the deprected BitField64.
+   *  
+   *  Example:<br>
+   *    BitFieldCoder bc("layer:7,system:-3,barrel:3,theta:32:11,phi:11" ) ; <br> 
+   *    bc.set( field,  "layer"  , 123 );         <br> 
+   *    bc.set( field,  "system" , -4  );         <br> 
+   *    bc.set( field,  "barrel" , 7   );         <br> 
+   *    bc.set( field,  "theta"  , 180 );         <br> 
+   *    bc.set( field,  "phi"    , 270 );         <br> 
+   *    ...                                       <br>
+   *    int theta = bc.get( field, "theta" ) ;                    <br>
+   *    ...                                       <br>
+   *    unsigned phiIndex = bc.index("phi") ;     <br>
+   *    int phi = bc.get( field, phiIndex ) ;                <br>
+   *
+   *    @author F.Gaede, DESY
+   *    @date  2017-09
+   */  
+  class BitFieldCoder{
+    
   public :
     
     typedef std::map<std::string, unsigned int> IndexMap ;
 
     /** No default c'tor */
-    BitFieldCoder() = delete ;
+    BitFieldCoder() {} ;
 
     ~BitFieldCoder() {  // clean up
       for(unsigned i=0;i<_fields.size();i++){
@@ -191,14 +188,14 @@ namespace DDSegmentation {
 
     /** Const Access to field through name .
      */
-    const BitFieldValue& operator[](const std::string& name) const { 
+    const BitFieldElement& operator[](const std::string& name) const { 
 
       return *_fields[ index( name ) ] ;
     }
 
     /** Const Access to field through index .
      */
-    const BitFieldValue& operator[](unsigned index) const { 
+    const BitFieldElement& operator[](unsigned index) const { 
 
       return *_fields[ index ] ;
     }
@@ -211,7 +208,7 @@ namespace DDSegmentation {
      */
     std::string valueString(ulong64 bitfield) const ;
 
-    const std::vector<BitFieldValue*>& fields()  const  {
+    const std::vector<BitFieldElement*>& fields()  const  {
       return _fields;
     }
     
@@ -236,7 +233,7 @@ namespace DDSegmentation {
 
     // -------------- data members:--------------
 
-    std::vector<BitFieldValue*> _fields{} ;
+    std::vector<BitFieldElement*> _fields{} ;
     IndexMap  _map{} ;
     long64    _joined{} ;
 

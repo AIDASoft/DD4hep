@@ -16,7 +16,7 @@ namespace dd4hep {
     }
 
     /// Default constructor used by derived classes passing an existing decoder
-    CylindricalSegmentation::CylindricalSegmentation(BitField64* decode) :
+    CylindricalSegmentation::CylindricalSegmentation(const BitFieldCoder* decode) :
       Segmentation(decode) {
     }
 

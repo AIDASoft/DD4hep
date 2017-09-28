@@ -934,7 +934,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, IDDescriptor id_spec)
     for (const auto& i : fm )  {
       xml_h idfield = xml_elt_t(geo.doc, _U(idfield));
 #if 0
-      const BitFieldValue* f = i.second;
+      const BitFieldElement* f = i.second;
       start = f.first;
       length = f.second<0 ? -f.second : f.second;
       idfield.setAttr(_U(signed),f.second<0 ? true : false);
@@ -942,7 +942,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, IDDescriptor id_spec)
       idfield.setAttr(_U(length),length);
       idfield.setAttr(_U(start),start);
 #else
-      const BitFieldValue* f = i.second;
+      const BitFieldElement* f = i.second;
       idfield.setAttr(_U(signed),f->isSigned() ? true : false);
       idfield.setAttr(_U(label), f->name());
       idfield.setAttr(_U(length), (int) f->width());

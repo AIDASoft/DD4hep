@@ -129,8 +129,8 @@ int main() {
 		<< std::endl;
 
       std::cout << std::setw(20) <<  "Calculated"
-		<< std::setw(20) <<  (*seg.decoder())["r"]
-		<< std::setw(20) <<  (*seg.decoder())["phi"]
+		<< std::setw(20) <<  seg.decoder()->get(cid,"r")
+		<< std::setw(20) <<  seg.decoder()->get(cid,"phi")
 		<< std::endl;
 
     }
@@ -164,10 +164,11 @@ int main() {
       const long long rB = (*it)._rB;
       const long long pB = (*it)._pB;
 
-      (*seg.decoder())["r"] = rB;
-      (*seg.decoder())["phi"] = pB;
+      dd4hep::DDSegmentation::CellID cellID  ;
 
-      dd4hep::DDSegmentation::CellID cellID = (*seg.decoder()).getValue();
+      seg.decoder()->set(cellID,"r"  , rB);
+      seg.decoder()->set(cellID,"phi", pB);
+
       std::cout << "CellID: " << cellID  << std::endl;
 
       dd4hep::DDSegmentation::Vector3D expectedPosition( r*cos(phi), r*sin(phi), 0.0);

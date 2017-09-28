@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 namespace dd4hep {
   namespace DDSegmentation {
@@ -23,7 +24,7 @@ namespace dd4hep {
       setup();
     }
 
-    MegatileLayerGridXY::MegatileLayerGridXY(BitField64* decode) :
+    MegatileLayerGridXY::MegatileLayerGridXY(const BitFieldCoder* decode) :
       CartesianGrid(decode) {
       setup();
     }
@@ -62,11 +63,10 @@ namespace dd4hep {
     Vector3D MegatileLayerGridXY::position(const CellID& cID) const {
       // this is local position within the megatile
 
-      _decoder->setValue(cID);
-      unsigned int layerIndex = (*_decoder)[_identifierLayer];
-      unsigned int waferIndex = (*_decoder)[_identifierWafer];
-      int cellIndexX = (*_decoder)[_xId];
-      int cellIndexY = (*_decoder)[_yId];
+      unsigned int layerIndex = _decoder->get(cID,_identifierLayer);
+      unsigned int waferIndex = _decoder->get(cID,_identifierWafer);
+      int cellIndexX = _decoder->get(cID,_xId);
+      int cellIndexY = _decoder->get(cID,_yId);
 
       // segmentation info for this megatile ("wafer")
       getSegInfo(layerIndex, waferIndex);
@@ -94,9 +94,8 @@ namespace dd4hep {
       // this is the local position within a megatile, local coordinates
 
       // get the layer, wafer, module indices from the volumeID
-      _decoder->setValue(vID);
-      unsigned int layerIndex = (*_decoder)[_identifierLayer];
-      unsigned int waferIndex = (*_decoder)[_identifierWafer];
+      unsigned int layerIndex = _decoder->get(vID,_identifierLayer);
+      unsigned int waferIndex = _decoder->get(vID,_identifierWafer);
 
       // segmentation info for this megatile ("wafer")
       getSegInfo(layerIndex, waferIndex);
@@ -112,17 +111,17 @@ namespace dd4hep {
       int _cellIndexX = int ( localX / ( _currentSegInfo.megaTileSizeX / _currentSegInfo.nCellsX ) );
       int _cellIndexY = int ( localY / ( _currentSegInfo.megaTileSizeY / _currentSegInfo.nCellsY ) );
 
-      (*_decoder)[_xId] = _cellIndexX;
-      (*_decoder)[_yId] = _cellIndexY;
+      CellID cID = vID ;
+      _decoder->set(cID,_xId,_cellIndexX);
+      _decoder->set(cID,_yId,_cellIndexY);
 
-      return _decoder->getValue();
+      return cID;
     }
 
 
     std::vector<double> MegatileLayerGridXY::cellDimensions(const CellID& cID) const {
-      _decoder->setValue( cID );
-      unsigned int layerIndex = (*_decoder)[_identifierLayer];
-      unsigned int waferIndex = (*_decoder)[_identifierWafer];
+      unsigned int layerIndex = _decoder->get(cID,_identifierLayer);
+      unsigned int waferIndex = _decoder->get(cID,_identifierWafer);
       return cellDimensions(layerIndex, waferIndex);
     }
 

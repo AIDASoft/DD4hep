@@ -27,12 +27,12 @@ namespace dd4hep {
 
     /// Default constructor used by derived classes passing the encoding string
     Segmentation::Segmentation(const std::string& cellEncoding) :
-      _name("Segmentation"), _type("Segmentation"), _decoder(new BitField64(cellEncoding)), _ownsDecoder(true) {
+      _name("Segmentation"), _type("Segmentation"), _decoder(new BitFieldCoder(cellEncoding)), _ownsDecoder(true) {
 
     }
 
     /// Default constructor used by derived classes passing an existing decoder
-    Segmentation::Segmentation(BitField64* newDecoder) :
+    Segmentation::Segmentation(const BitFieldCoder* newDecoder) :
       _name("Segmentation"), _type("Segmentation"), _decoder(newDecoder), _ownsDecoder(false) {
     }
 
@@ -55,12 +55,12 @@ namespace dd4hep {
     /// Determine the volume ID from the full cell ID by removing all local fields
     VolumeID Segmentation::volumeID(const CellID& cID) const {
       map<std::string, StringParameter>::const_iterator it;
-      _decoder->setValue(cID);
+      VolumeID vID = cID ;
       for (it = _indexIdentifiers.begin(); it != _indexIdentifiers.end(); ++it) {
         std::string identifier = it->second->typedValue();
-        (*_decoder)[identifier] = 0;
+        _decoder->set(vID,identifier,0);
       }
-      return _decoder->getValue();
+      return vID;
     }
 
     /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
@@ -68,18 +68,18 @@ namespace dd4hep {
       map<std::string, StringParameter>::const_iterator it;
       for (it = _indexIdentifiers.begin(); it != _indexIdentifiers.end(); ++it) {
         const std::string& identifier = it->second->typedValue();
-        _decoder->setValue(cID);
-        int currentValue = (*_decoder)[identifier];
+        CellID nID = cID ;
+        int currentValue = _decoder->get(cID,identifier);
         // add both neighbouring cell IDs, don't add out of bound indices
         try {
-          (*_decoder)[identifier] = currentValue - 1;
-          cellNeighbours.insert(_decoder->getValue());
+          _decoder->set(nID,identifier,currentValue - 1);
+          cellNeighbours.insert(nID);
         } catch (runtime_error& e) {
           // nothing to do
         }
         try {
-          (*_decoder)[identifier] = currentValue + 1;
-          cellNeighbours.insert(_decoder->getValue());
+          _decoder->set(nID,identifier,currentValue + 1);
+          cellNeighbours.insert(nID);
         } catch (runtime_error& e) {
           // nothing to do
         }
@@ -87,7 +87,7 @@ namespace dd4hep {
     }
 
     /// Set the underlying decoder
-    void Segmentation::setDecoder(BitField64* newDecoder) {
+    void Segmentation::setDecoder(const BitFieldCoder* newDecoder) {
       if ( _decoder == newDecoder )
         return; //self assignment
       else if (_ownsDecoder)

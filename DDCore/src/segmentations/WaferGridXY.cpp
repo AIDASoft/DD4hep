@@ -31,7 +31,7 @@ WaferGridXY::WaferGridXY(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-WaferGridXY::WaferGridXY(BitField64* decode) :	CartesianGrid(decode) {
+WaferGridXY::WaferGridXY(const BitFieldCoder* decode) :	CartesianGrid(decode) {
 	// define type and description
 	_type = "WaferGridXY";
 	_description = "Cartesian segmentation in the local XY-plane for both Normal wafer and Magic wafer(depending on the layer dimensions)";
@@ -56,30 +56,29 @@ WaferGridXY::~WaferGridXY() {
 
 /// determine the position based on the cell ID
 Vector3D WaferGridXY::position(const CellID& cID) const {
-	_decoder->setValue(cID);
         unsigned int _groupMGWaferIndex;
         unsigned int _waferIndex;
 	Vector3D cellPosition;
 
-        _groupMGWaferIndex = (*_decoder)[_identifierMGWaferGroup];
-        _waferIndex = (*_decoder)[_identifierWafer];
+        _groupMGWaferIndex = _decoder->get(cID,_identifierMGWaferGroup);
+        _waferIndex = _decoder->get(cID,_identifierWafer);
 
 	if ( _waferOffsetX[_groupMGWaferIndex][_waferIndex] > 0 || _waferOffsetX[_groupMGWaferIndex][_waferIndex] < 0 )
 	  {
-	    cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX+_waferOffsetX[_groupMGWaferIndex][_waferIndex]);
+	    cellPosition.X = binToPosition(_decoder->get(cID,_xId), _gridSizeX, _offsetX+_waferOffsetX[_groupMGWaferIndex][_waferIndex]);
 	  }
 	else
 	  {
-	    cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
+	    cellPosition.X = binToPosition(_decoder->get(cID,_xId), _gridSizeX, _offsetX);
 	  }
 
 	if ( _waferOffsetY[_groupMGWaferIndex][_waferIndex] > 0 || _waferOffsetY[_groupMGWaferIndex][_waferIndex] < 0 )
 	  {
-	    cellPosition.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY+_waferOffsetY[_groupMGWaferIndex][_waferIndex]);
+	    cellPosition.Y = binToPosition(_decoder->get(cID,_yId), _gridSizeY, _offsetY+_waferOffsetY[_groupMGWaferIndex][_waferIndex]);
 	  }
 	else
 	  {
-	    cellPosition.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY);
+	    cellPosition.Y = binToPosition(_decoder->get(cID,_yId), _gridSizeY, _offsetY);
 	  }
 
 	return cellPosition;
@@ -87,32 +86,33 @@ Vector3D WaferGridXY::position(const CellID& cID) const {
 
 /// determine the cell ID based on the position
   CellID WaferGridXY::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
-	_decoder->setValue(vID);
         unsigned int _groupMGWaferIndex;
         unsigned int _waferIndex;
 
-        _groupMGWaferIndex = (*_decoder)[_identifierMGWaferGroup];
-        _waferIndex = (*_decoder)[_identifierWafer];
+	CellID cID = vID ;
+
+        _groupMGWaferIndex = _decoder->get(cID,_identifierMGWaferGroup);
+        _waferIndex = _decoder->get(cID,_identifierWafer);
 
 	if ( _waferOffsetX[_groupMGWaferIndex][_waferIndex] > 0 || _waferOffsetX[_groupMGWaferIndex][_waferIndex] < 0 )
 	  {
-	    (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX+_waferOffsetX[_groupMGWaferIndex][_waferIndex]);
+	    _decoder->set(cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX+_waferOffsetX[_groupMGWaferIndex][_waferIndex]));
 	  }
 	else
 	  {
-	    (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
+	    _decoder->set(cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX));
 	  }
 
 	if ( _waferOffsetY[_groupMGWaferIndex][_waferIndex] > 0 ||  _waferOffsetY[_groupMGWaferIndex][_waferIndex] < 0)
 	  {
-	    (*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY+_waferOffsetY[_groupMGWaferIndex][_waferIndex]);
+	    _decoder->set(cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY+_waferOffsetY[_groupMGWaferIndex][_waferIndex]));
 	  }
 	else
 	  {
-	    (*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY);
+	    _decoder->set(cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY));
 	  }
 
-	return _decoder->getValue();
+	return cID;
 }
 
 std::vector<double> WaferGridXY::cellDimensions(const CellID&) const {

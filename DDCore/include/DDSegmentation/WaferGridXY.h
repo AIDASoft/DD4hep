@@ -21,7 +21,7 @@ namespace dd4hep {
       /// Default constructor passing the encoding string
       WaferGridXY(const std::string& cellEncoding = "");
       /// Default constructor used by derived classes passing an existing decoder
-      WaferGridXY(BitField64* decoder);
+      WaferGridXY(const BitFieldCoder* decoder);
       /// destructor
       virtual ~WaferGridXY();
 

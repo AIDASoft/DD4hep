@@ -21,7 +21,7 @@ protected:
 	/// Default constructor used by derived classes passing the encoding string
 	PolarGrid(const std::string& cellEncoding = "");
 	/// Default constructor used by derived classes passing an existing decoder
-	PolarGrid(BitField64* decoder);
+	PolarGrid(const BitFieldCoder* decoder);
 };
 
 } /* namespace DDSegmentation */

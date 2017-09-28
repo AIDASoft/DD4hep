@@ -20,7 +20,7 @@ public:
 	/// Default constructor passing the encoding string
 	CartesianGridYZ(const std::string& cellEncoding = "");
 	/// Default constructor used by derived classes passing an existing decoder
-	CartesianGridYZ(BitField64* decoder);
+	CartesianGridYZ(const BitFieldCoder* decoder);
 	/// destructor
 	virtual ~CartesianGridYZ();
 

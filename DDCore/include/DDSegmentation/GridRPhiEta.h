@@ -21,7 +21,7 @@ public:
   GridRPhiEta(const std::string& aCellEncoding);
 
   /// Default constructor used by derived classes passing an existing decoder
-  GridRPhiEta(BitField64* aDecoder);
+  GridRPhiEta(const BitFieldCoder* decoder);
 
   /// destructor
   virtual ~GridRPhiEta() = default;
@@ -81,8 +81,6 @@ public:
   }
 
 private:
-  /// determine the radial distance R based on the current cell ID
-  double r() const;
 
   /// the grid size in r
   double m_gridSizeR;

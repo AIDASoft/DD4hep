@@ -16,7 +16,7 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/Objects.h"
-#include "DD4hep/BitField64.h"
+#include "DD4hep/BitFieldCoder.h"
 #include "DDSegmentation/Segmentation.h"
 
 // C/C++ include files
@@ -55,9 +55,9 @@ namespace dd4hep {
     /// Access the description of the segmentation
     const std::string& description() const;
     /// Access the underlying decoder
-    const BitField64* decoder() const;
+    const BitFieldCoder* decoder() const;
     /// Set the underlying decoder
-    void setDecoder(BitField64* decoder) const;
+    void setDecoder(const BitFieldCoder* decoder) const;
     /// Access to parameter by name
     DDSegmentation::Parameter  parameter(const std::string& parameterName) const;
     /// Access to all parameters
@@ -106,14 +106,14 @@ namespace dd4hep {
     SegmentationWrapper() : SegmentationObject(implementation=new IMP(0)) { }
 #endif
     /// Standard constructor
-    SegmentationWrapper(BitField64* decoder);
+    SegmentationWrapper(const BitFieldCoder* decoder);
     /// Default destructor
     virtual ~SegmentationWrapper();
   };
   
   /// Standard constructor
   template <typename IMP> inline
-  SegmentationWrapper<IMP>::SegmentationWrapper(BitField64* decode)
+  SegmentationWrapper<IMP>::SegmentationWrapper(const BitFieldCoder* decode)
     :  SegmentationObject(implementation=new IMP(decode))
   {
   }

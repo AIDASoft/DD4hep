@@ -335,7 +335,7 @@ namespace dd4hep {
         VolumeID volume_id = initial.first, mask = initial.second;
         for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
           const auto& id = (*i);
-          const BitFieldValue* f = iddesc.field(id.first);
+          const BitFieldElement* f = iddesc.field(id.first);
           VolumeID msk = f->mask();
           int      off = f->offset();
           VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
@@ -349,7 +349,7 @@ namespace dd4hep {
         VolumeID volume_id = 0, mask = 0;
         for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
           const auto& id = (*i);
-          const BitFieldValue* f = iddesc.field(id.first);
+          const BitFieldElement* f = iddesc.field(id.first);
           VolumeID msk = f->mask();
           int      off = f->offset();
           VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
@@ -508,7 +508,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
       i = o.subdetectors.insert(make_pair(det, VolumeManager(det,ro))).first;
       const auto& id = (*vit);
       VolumeManager m = (*i).second;
-      const BitFieldValue* field = ro.idSpec().field(id.first);
+      const BitFieldElement* field = ro.idSpec().field(id.first);
       if (!field) {
         throw runtime_error("dd4hep: VolumeManager::addSubdetector: IdDescriptor of " + 
                             string(det.name()) + " has no field " + id.first);

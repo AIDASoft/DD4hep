@@ -18,7 +18,7 @@ public:
 	/// default constructor using an arbitrary type
 	CartesianGridXYZ(const std::string& cellEncoding);
 	/// Default constructor used by derived classes passing an existing decoder
-	CartesianGridXYZ(BitField64* decoder);
+	CartesianGridXYZ(const BitFieldCoder* decoder);
 	/// destructor
 	virtual ~CartesianGridXYZ();
 

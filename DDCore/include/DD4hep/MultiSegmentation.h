@@ -72,7 +72,7 @@ namespace dd4hep {
     /// access the field name used to discriminate sub-segmentations
     const std::string& discriminatorName() const;
     /// Discriminating bitfield entry
-    BitFieldValue* discriminator() const;
+    const BitFieldElement* discriminator() const;
     /// The underlying sub-segementations
     const Segmentations& subSegmentations()  const;
     /// determine the position based on the cell ID

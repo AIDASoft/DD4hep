@@ -75,10 +75,10 @@ namespace dd4hep {
       VolumeID volumeID(const G4VTouchable* touchable) const;
       /// Accessfully decoded volume fields  by placement path
       void volumeDescriptor(const std::vector<const G4VPhysicalVolume*>&   path,
-                            std::pair<VolumeID,std::vector<std::pair<const BitFieldValue*, VolumeID> > >& volume_desc) const;
+                            std::pair<VolumeID,std::vector<std::pair<const BitFieldElement*, VolumeID> > >& volume_desc) const;
       /// Access fully decoded volume fields by Geant4 touchable object
       void volumeDescriptor(const G4VTouchable* touchable,
-                            std::pair<VolumeID,std::vector<std::pair<const BitFieldValue*, VolumeID> > >& volume_desc) const;
+                            std::pair<VolumeID,std::vector<std::pair<const BitFieldElement*, VolumeID> > >& volume_desc) const;
     };
 
   }    // End namespace sim

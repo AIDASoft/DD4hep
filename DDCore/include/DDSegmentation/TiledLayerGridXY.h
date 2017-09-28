@@ -22,7 +22,7 @@ public:
 	/// Default constructor passing the encoding string
 	TiledLayerGridXY(const std::string& cellEncoding = "");
 	/// Default constructor used by derived classes passing an existing decoder
-	TiledLayerGridXY(BitField64* decoder);
+	TiledLayerGridXY(const BitFieldCoder* decoder);
 	/// destructor
 	virtual ~TiledLayerGridXY();
 

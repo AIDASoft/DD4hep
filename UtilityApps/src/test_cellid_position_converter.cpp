@@ -16,7 +16,7 @@
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/BitField64.h"
+#include "DD4hep/BitFieldCoder.h"
 #include "DDRec/CellIDPositionConverter.h"
 
 #include "lcio.h"
@@ -124,8 +124,8 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      dd4hep::BitField64 idDecoder0( cellIDEcoding ) ;
-      dd4hep::BitField64 idDecoder1( cellIDEcoding ) ;
+      dd4hep::BitFieldCoder idDecoder0( cellIDEcoding ) ;
+      dd4hep::BitFieldCoder idDecoder1( cellIDEcoding ) ;
 
       int nHit = std::min( col->getNumberOfElements(), maxHit )  ;
      
@@ -137,10 +137,7 @@ int main_wrapper(int argc, char** argv ){
         dd4hep::long64 id0 = sHit->getCellID0() ;
         dd4hep::long64 id1 = sHit->getCellID1() ;
 
-	idDecoder0.setValue( id0 , id1 ) ;
-
-	dd4hep::long64 id = idDecoder0.getValue() ;
-	
+	dd4hep::long64 id =  idDecoder0.toLong( id0 , id1 ) ;                                                                                                                  
 
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
 	
@@ -150,11 +147,8 @@ int main_wrapper(int argc, char** argv ){
 	
 	CellID idFromDecoder = idposConv.cellID( point ) ;
 
-        idDecoder1.setValue( idFromDecoder ) ;
-
-	
 	std::stringstream sst ;
-	sst << " compare ids: " << det.name() << " " <<  idDecoder0.valueString() << "  -  " << idDecoder1.valueString() ;
+	sst << " compare ids: " << det.name() << " " <<  idDecoder0.valueString(id) << "  -  " << idDecoder1.valueString(idFromDecoder) ;
 
 	test( id, idFromDecoder,  sst.str() ) ;
 	

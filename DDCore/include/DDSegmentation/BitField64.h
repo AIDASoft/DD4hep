@@ -25,14 +25,14 @@ namespace dd4hep {
     class BitFieldValue{
 
       long64& _value ;
-      const BitFieldCoder::BitFieldValue& _bv ;
+      const BitFieldElement& _bv ;
     
     public :
     
       BitFieldValue() = delete ;
     
-      /// only c'tor with reference to bitfield and BitFieldCoder::BitFieldValue
-      BitFieldValue( long64& bitfield, const BitFieldCoder::BitFieldValue& bv ) :
+      /// only c'tor with reference to bitfield and BitFieldElement
+      BitFieldValue( long64& bitfield, const BitFieldElement& bv ) :
 	_value( bitfield ), _bv( bv) {}
     
       /** Returns the current field value 

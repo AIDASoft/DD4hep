@@ -27,7 +27,7 @@ PolarGridRPhi2::PolarGridRPhi2(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-PolarGridRPhi2::PolarGridRPhi2(BitField64* decode) :
+PolarGridRPhi2::PolarGridRPhi2(const BitFieldCoder* decode) :
 		PolarGrid(decode) {
 	// define type and description
 	_type = "PolarGridRPhi2";
@@ -49,11 +49,10 @@ PolarGridRPhi2::~PolarGridRPhi2() {
 
 /// determine the position based on the cell ID
 Vector3D PolarGridRPhi2::position(const CellID& cID) const {
-	_decoder->setValue(cID);
 	Vector3D cellPosition;
-	const int rBin = (*_decoder)[_rId].value();
+	const int rBin = _decoder->get(cID,_rId);
 	double R = binToPosition(rBin, _gridRValues, _offsetR);
-	double phi = binToPosition((*_decoder)[_phiId].value(), _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
+	double phi = binToPosition(_decoder->get(cID,_phiId), _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
 
 	if ( phi < _offsetPhi) {
 	  phi += 2*M_PI;
@@ -67,28 +66,28 @@ Vector3D PolarGridRPhi2::position(const CellID& cID) const {
 
 /// determine the cell ID based on the position
   CellID PolarGridRPhi2::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
-	_decoder->setValue(vID);
+
 	double phi = atan2(localPosition.Y,localPosition.X);
 	double R = sqrt( localPosition.X * localPosition.X + localPosition.Y * localPosition.Y );
 
 	const int rBin = positionToBin(R, _gridRValues, _offsetR);
-	(*_decoder)[_rId] = rBin;
+
+	CellID cID = vID ;
+	_decoder->set(cID,_rId, rBin);
 
 	if ( phi < _offsetPhi) {
 	  phi += 2*M_PI;
 	}
 	const int pBin = positionToBin(phi, _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
-	(*_decoder)[_phiId] = pBin;
+	_decoder->set(cID,_phiId,pBin);
 
-	return _decoder->getValue();
+	return cID;
 }
 
 
 std::vector<double> PolarGridRPhi2::cellDimensions(const CellID& cID) const {
 
-  _decoder->setValue(cID);
-
-  const int rBin = (*_decoder)[_rId].value();
+  const int rBin = _decoder->get(cID,_rId);
   const double rCenter = binToPosition(rBin, _gridRValues, _offsetR);
 
   const double rPhiSize = _gridPhiValues[rBin]*rCenter;
