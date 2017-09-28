@@ -17,7 +17,9 @@ namespace dd4hep {
   
   namespace DDSegmentation {
     
-    /** Helper class for BitField64 that corresponds to one field value. 
+    /** Lightweight helper class for BitField64 that corresponds to one field value.
+     *  (Not thread safe - only use directly through BitField64).
+     *
      *    @author F.Gaede, DESY
      *    @date  2017-09
      */
@@ -92,8 +94,8 @@ namespace dd4hep {
      *    unsigned phiIndex = b.index("phi") ;        <br>
      *    int phi = b[  phiIndex ] ;                  <br>
      *
+     *    Sep-2017: FG: re-implemented as lightweight wrapper around BitFieldCoder
      *    @author F.Gaede, DESY
-     *    @version $Id:$
      *    @date  2013-06
      */  
     class BitField64{
@@ -103,8 +105,8 @@ namespace dd4hep {
     public :
 
       virtual ~BitField64() {
-
-	delete _coder ;
+	if( _owner)
+	  delete _coder ;
       } ; 
   
       /** No default c'tor */
@@ -128,6 +130,11 @@ namespace dd4hep {
       
 	_coder = new BitFieldCoder( initString ) ;
       }
+
+      /// Initialize from existing BitFieldCoder
+      BitField64( const BitFieldCoder* coder ) : _owner(false), _coder( coder ) {
+      }
+
 
       /** Returns the current 64bit value 
        */
@@ -212,7 +219,7 @@ namespace dd4hep {
     protected:
 
       // -------------- data members:--------------
-
+      bool  _owner{true} ;
       long64    _value{} ;
       const BitFieldCoder* _coder{} ;
     
@@ -227,6 +234,7 @@ namespace dd4hep {
   
   } // end namespace
 
+  using DDSegmentation::BitField64 ;
 } // end namespace
 
 #endif
