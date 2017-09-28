@@ -8,7 +8,7 @@
 #ifndef DDSegmentation_SEGMENTATION_H_
 #define DDSegmentation_SEGMENTATION_H_
 
-#include "DDSegmentation/BitField64.h"
+#include "DDSegmentation/BitFieldCoder.h"
 #include "DDSegmentation/SegmentationFactory.h"
 #include "DDSegmentation/SegmentationParameter.h"
 
@@ -102,11 +102,11 @@ public:
 		return _description;
 	}
 	/// Access the underlying decoder
-	virtual BitField64* decoder()  const {
+	virtual const BitFieldCoder* decoder()  const {
 		return _decoder;
 	}
 	/// Set the underlying decoder
-	virtual void setDecoder(BitField64* decoder);
+	virtual void setDecoder(const BitFieldCoder* decoder);
 	/// Access to parameter by name
 	virtual Parameter parameter(const std::string& parameterName) const;
 	/// Access to all parameters
@@ -125,7 +125,7 @@ protected:
 	/// Default constructor used by derived classes passing the encoding string
 	Segmentation(const std::string& cellEncoding = "");
 	/// Default constructor used by derived classes passing an existing decoder
-	Segmentation(BitField64* decoder);
+	Segmentation(const BitFieldCoder* decoder);
 
 	/// Add a parameter to this segmentation. Used by derived classes to define their parameters
 	template<typename TYPE> void registerParameter(const std::string& nam, const std::string& desc,
@@ -158,8 +158,8 @@ protected:
 	/// The indices used for the encoding
 	std::map<std::string, StringParameter> _indexIdentifiers;   //! No ROOT persistency
 	/// The cell ID encoder and decoder
-	mutable BitField64* _decoder = 0;    //! Not ROOT persistent
-	/// Keeps track of the decoder ownership
+	const BitFieldCoder* _decoder = 0;
+        /// Keeps track of the decoder ownership
 	bool _ownsDecoder = false;
 private:
 	/// No copy constructor allowed

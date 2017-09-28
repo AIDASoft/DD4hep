@@ -36,7 +36,7 @@ using namespace dd4hep;
 using namespace std;
 
 #include "DDG4/Geant4AssemblyVolume.h"
-typedef pair<VolumeID,vector<pair<const BitFieldValue*, VolumeID> > > VolIDDescriptor;
+typedef pair<VolumeID,vector<pair<const BitFieldElement*, VolumeID> > > VolIDDescriptor;
 namespace {
 
   /// Helper class to populate the Geant4 volume manager

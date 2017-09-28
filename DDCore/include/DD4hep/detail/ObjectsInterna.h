@@ -18,7 +18,7 @@
 #include "DD4hep/NamedObject.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/Segmentations.h"
-#include "DD4hep/BitField64.h"
+#include "DD4hep/BitFieldCoder.h"
 
 // C/C++ include files
 #include <set>
@@ -192,14 +192,14 @@ namespace dd4hep {
    */
   class IDDescriptorObject: public NamedObject {
   public:
-    typedef std::vector<std::pair<std::string, BitFieldValue*> > FieldMap;
+    typedef std::vector<std::pair<std::string, const BitFieldElement*> > FieldMap;
     typedef std::vector<std::pair<size_t, std::string> >         FieldIDs;
     /// Map of id-fields in the descriptor
     FieldMap fieldMap;  //! not ROOT-persistent
     /// String map of id descriptors
     FieldIDs fieldIDs;  //! not ROOT-persistent
     /// Decoder object
-    BitField64 decoder; //! not ROOT-persistent
+    BitFieldCoder decoder; //! not ROOT-persistent
     
     /// The description string to build the bit-field descriptors.
     std::string description;
@@ -211,8 +211,8 @@ namespace dd4hep {
     virtual ~IDDescriptorObject();
 #if 0
 #ifndef __CINT__
-    /// Access to the field container of the BitField64
-    const std::vector<BitFieldValue*>& fields() const {
+    /// Access to the field container of the BitFieldCoder
+    const std::vector<BitFieldElement*>& fields() const {
       return decoder.fields();
     }
 #endif

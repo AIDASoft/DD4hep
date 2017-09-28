@@ -29,7 +29,7 @@ public:
 	/// Default constructor passing the encoding string
 	TiledLayerSegmentation(const std::string& cellEncoding = "");
 	/// Default constructor used by derived classes passing an existing decoder
-	TiledLayerSegmentation(BitField64* decoder);
+	TiledLayerSegmentation(const BitFieldCoder* decoder);
 	/// destructor
 	virtual ~TiledLayerSegmentation();
 

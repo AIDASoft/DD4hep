@@ -18,7 +18,7 @@ public:
 	/// default constructor using an arbitrary type
 	ProjectiveCylinder(const std::string& cellEncoding);
 	/// Default constructor used by derived classes passing an existing decoder
-	ProjectiveCylinder(BitField64* decoder);
+	ProjectiveCylinder(const BitFieldCoder* decoder);
 	/// destructor
 	virtual ~ProjectiveCylinder();
 
@@ -92,11 +92,6 @@ protected:
 	std::string _thetaID;
 	/// the field name used for phi
 	std::string _phiID;
-
-	/// determine the polar angle theta based on the current cell ID
-	double theta() const;
-	/// determine the azimuthal angle phi based on the current cell ID
-	double phi() const;
 
 };
 

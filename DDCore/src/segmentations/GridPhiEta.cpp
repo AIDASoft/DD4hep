@@ -19,7 +19,7 @@ GridPhiEta::GridPhiEta(const std::string& cellEncoding) :
   registerIdentifier("identifier_phi", "Cell ID identifier for phi", m_phiID, "phi");
 }
 
-GridPhiEta::GridPhiEta(BitField64* aDecoder) :
+GridPhiEta::GridPhiEta(const BitFieldCoder* aDecoder) :
   Segmentation(aDecoder) {
   // define type and description
   _type = "GridPhiEta";
@@ -35,36 +35,24 @@ GridPhiEta::GridPhiEta(BitField64* aDecoder) :
 }
 
 Vector3D GridPhiEta::position(const CellID& cID) const {
-  _decoder->setValue(cID);
-  return Util::positionFromREtaPhi(1.0, eta(), phi());
+  return Util::positionFromREtaPhi(1.0, eta(cID), phi(cID));
 }
 
 CellID GridPhiEta::cellID(const Vector3D& /* localPosition */, const Vector3D& globalPosition, const VolumeID& vID) const {
-  _decoder->setValue(vID);
   double lEta = Util::etaFromXYZ(globalPosition);
   double lPhi = Util::phiFromXYZ(globalPosition);
-  (*_decoder)[m_etaID] = positionToBin(lEta, m_gridSizeEta, m_offsetEta);
-  (*_decoder)[m_phiID] = positionToBin(lPhi, 2 * M_PI / (double) m_phiBins, m_offsetPhi);
-  return _decoder->getValue();
-}
-
-double GridPhiEta::eta() const {
-  CellID etaValue = (*_decoder)[m_etaID].value();
-  return binToPosition(etaValue, m_gridSizeEta, m_offsetEta);
-}
-double GridPhiEta::phi() const {
-  CellID phiValue = (*_decoder)[m_phiID].value();
-  return binToPosition(phiValue, 2.*M_PI/(double)m_phiBins, m_offsetPhi);
+  CellID cID = vID ;
+  _decoder->set( cID, m_etaID, positionToBin(lEta, m_gridSizeEta, m_offsetEta) );
+  _decoder->set( cID, m_phiID, positionToBin(lPhi, 2 * M_PI / (double) m_phiBins, m_offsetPhi) );
+  return cID;
 }
 
 double GridPhiEta::eta(const CellID& cID) const {
-  _decoder->setValue(cID);
-  CellID etaValue = (*_decoder)[m_etaID].value();
+  CellID etaValue = _decoder->get(cID, m_etaID);
   return binToPosition(etaValue, m_gridSizeEta, m_offsetEta);
 }
 double GridPhiEta::phi(const CellID& cID) const {
-  _decoder->setValue(cID);
-  CellID phiValue = (*_decoder)[m_phiID].value();
+  CellID phiValue = _decoder->get(cID, m_phiID);
   return binToPosition(phiValue, 2.*M_PI/(double)m_phiBins, m_offsetPhi);
 }
 REGISTER_SEGMENTATION(GridPhiEta)

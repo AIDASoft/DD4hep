@@ -8,8 +8,8 @@ namespace dd4hep{
 
 namespace DDSegmentation {
   
-  BitFieldCoder::BitFieldValue::BitFieldValue( const std::string& fieldName,
-				unsigned fieldOffset, int signedWidth ) :
+  BitFieldElement::BitFieldElement( const std::string& fieldName,
+				    unsigned fieldOffset, int signedWidth ) :
     _mask(0), 
     _offset( fieldOffset ),
     _width( abs( signedWidth ) ),
@@ -22,7 +22,7 @@ namespace DDSegmentation {
     if( _offset > 63 || _offset+_width > 64 ) {
       
       std::stringstream s ;
-      s << " BitFieldValue '" << _name << "': out of range -  offset : " 
+      s << " BitFieldElement '" << _name << "': out of range -  offset : " 
 	<< _offset  << " width " << _width  ;
       
       throw( std::runtime_error( s.str() ) ) ;
@@ -45,7 +45,7 @@ namespace DDSegmentation {
   }
   
 
-  long64 BitFieldCoder::BitFieldValue::value(long64 id) const { 
+  long64 BitFieldElement::value(long64 id) const { 
       
     if(  _isSigned   ) {
 
@@ -64,13 +64,13 @@ namespace DDSegmentation {
     }
   }
 
-  void BitFieldCoder::BitFieldValue::set(long64& field, long64 in) {
+  void BitFieldElement::set(long64& field, long64 in) const {
     
     // check range 
     if( in < _minVal || in > _maxVal  ) {
       
       std::stringstream s ;
-      s << " BitFieldValue '" << _name << "': out of range : " << in 
+      s << " BitFieldElement '" << _name << "': out of range : " << in 
 	<< " for width " << _width  ; 
       
       throw( std::runtime_error( s.str() ) );
@@ -94,7 +94,7 @@ namespace DDSegmentation {
       return it->second  ;
     
     else
-      throw std::runtime_error(" BitFieldValue: unknown name: " + name ) ;
+      throw std::runtime_error(" BitFieldElement: unknown name: " + name ) ;
   }
   
   unsigned BitFieldCoder::highestBit() const {
@@ -163,7 +163,7 @@ namespace DDSegmentation {
   void BitFieldCoder::addField( const std::string& name,  unsigned offset, int width ){
 
       
-    BitFieldValue* bfv =  new  BitFieldValue( name, offset, width ) ;
+    BitFieldElement* bfv =  new  BitFieldElement( name, offset, width ) ;
 
     _fields.push_back(  bfv ) ;
     
@@ -172,7 +172,7 @@ namespace DDSegmentation {
     if( _joined & bfv->mask()  ) {
       
       std::stringstream s ;
-      s << " BitFieldValue::addField(" << name << "): bits already used " << std::hex << _joined
+      s << " BitFieldElement::addField(" << name << "): bits already used " << std::hex << _joined
 	<< " for mask " <<  bfv->mask()   ; 
 
       throw( std::runtime_error( s.str() ) ) ;

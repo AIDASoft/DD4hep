@@ -10,6 +10,7 @@
 // C/C++ includes
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 #include <stdexcept>
 #include <cmath>
 
@@ -40,7 +41,7 @@ TiledLayerGridXY::TiledLayerGridXY(const std::string& cellEncoding) :
 }
 
 /// Default constructor used by derived classes passing an existing decoder
-TiledLayerGridXY::TiledLayerGridXY(BitField64* decode) : CartesianGrid(decode) {
+TiledLayerGridXY::TiledLayerGridXY(const BitFieldCoder* decode) : CartesianGrid(decode) {
 	// define type and description
 	_type = "TiledLayerGridXY";
 	_description = "Cartesian segmentation in the local XY-plane using optimal tiling depending on the layer dimensions";
@@ -68,15 +69,14 @@ TiledLayerGridXY::~TiledLayerGridXY() {
 
 /// determine the position based on the cell ID
 Vector3D TiledLayerGridXY::position(const CellID& cID) const {
-	_decoder->setValue(cID);
 	unsigned int _layerIndex;
 	Vector3D cellPosition;
 
 	// AHcal: _layerIndex is [1,48], _layerOffsetX is [0,47]
-	_layerIndex = (*_decoder)[_identifierLayer];
+	_layerIndex = _decoder->get(cID,_identifierLayer);
 
 	if ( _layerOffsetX.size() != 0 && _layerIndex <=_layerOffsetX.size() ) {
-	  cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _layerOffsetX[_layerIndex - 1]*_gridSizeX/2.);
+	  cellPosition.X = binToPosition(_decoder->get(cID,_xId), _gridSizeX, _layerOffsetX[_layerIndex - 1]*_gridSizeX/2.);
 	  // check the integer cell boundary in x,
 	  if ( ( _layerDimX.size() != 0 && _layerIndex <= _layerDimX.size() )
 	       &&( _fractCellSizeXPerLayer.size() != 0 && _layerIndex <=  _fractCellSizeXPerLayer.size() )
@@ -88,27 +88,27 @@ Vector3D TiledLayerGridXY::position(const CellID& cID) const {
 		*(_layerDimX.at(_layerIndex - 1) - _fractCellSizeXPerLayer.at(_layerIndex - 1)/2.0) ;
 	    }
 	} else {
-	  cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
+	  cellPosition.X = binToPosition(_decoder->get(cID,_xId), _gridSizeX, _offsetX);
 	}
-	cellPosition.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY);
+	cellPosition.Y = binToPosition(_decoder->get(cID,_yId), _gridSizeY, _offsetY);
 	return cellPosition;
 }
 
 /// determine the cell ID based on the position
   CellID TiledLayerGridXY::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
-	_decoder->setValue(vID);
+	CellID cID = vID ;
 	unsigned int _layerIndex;
 
 	// AHcal: _layerIndex is [1,48], _layerOffsetX is [0,47]
-	_layerIndex = (*_decoder)[_identifierLayer];
+	_layerIndex = _decoder->get(cID,_identifierLayer);
 
 	if ( _layerOffsetX.size() != 0 && _layerIndex <=_layerOffsetX.size() ) {
-	  (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _layerOffsetX[_layerIndex - 1]*_gridSizeX/2.);
+	  _decoder->set(cID,_xId,positionToBin(localPosition.X, _gridSizeX, _layerOffsetX[_layerIndex - 1]*_gridSizeX/2.));
 	} else {
-	  (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
+	  _decoder->set(cID,_xId,positionToBin(localPosition.X, _gridSizeX, _offsetX));
 	}
-	(*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY);
-	return _decoder->getValue();
+	_decoder->set(cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY));
+	return cID;
 }
 
 std::vector<double> TiledLayerGridXY::cellDimensions(const CellID&) const {

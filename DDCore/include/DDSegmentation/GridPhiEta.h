@@ -20,7 +20,7 @@ public:
   /// default constructor using an arbitrary type
   GridPhiEta(const std::string& aCellEncoding);
   /// Default constructor used by derived classes passing an existing decoder
-  GridPhiEta(BitField64* aDecoder);
+  GridPhiEta(const BitFieldCoder* decoder);
 
   /// destructor
   virtual ~GridPhiEta() = default;
@@ -128,10 +128,6 @@ public:
   }
 
 protected:
-  /// determine the pseudorapidity based on the current cell ID
-  double eta() const;
-  /// determine the azimuthal angle phi based on the current cell ID
-  double phi() const;
 
   /// the grid size in eta
   double m_gridSizeEta;

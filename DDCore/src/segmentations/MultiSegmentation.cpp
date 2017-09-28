@@ -8,6 +8,7 @@
 #include "DDSegmentation/MultiSegmentation.h"
 #include <iomanip>
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ namespace dd4hep {
     }
 
     /// Default constructor used by derived classes passing an existing decoder
-    MultiSegmentation::MultiSegmentation(BitField64* decode)
+    MultiSegmentation::MultiSegmentation(const BitFieldCoder* decode)
       :	Segmentation(decode), m_discriminator(0), m_debug(0)
     {
       // define type and description
@@ -53,7 +54,7 @@ namespace dd4hep {
     }
 
     /// Set the underlying decoder
-    void MultiSegmentation::setDecoder(BitField64* newDecoder) {
+    void MultiSegmentation::setDecoder(const BitFieldCoder* newDecoder) {
       this->Segmentation::setDecoder(newDecoder);
       for(Segmentations::iterator i=m_segmentations.begin(); i != m_segmentations.end(); ++i)
         (*i).segmentation->setDecoder(newDecoder);

@@ -32,8 +32,8 @@ namespace dd4hep {
 
   /// Namespace describing generic detector segmentations
   namespace DDSegmentation  {
-    class BitField64;
-    class BitFieldValue;
+    class BitFieldCoder;
+    class BitFieldElement;
     /// Useful typedefs to differentiate cell IDs and volume IDs
     typedef long long int CellID;
     typedef long long int VolumeID;
@@ -44,13 +44,13 @@ namespace dd4hep {
 #ifdef __CINT__
   typedef DDSegmentation::CellID CellID;
   typedef DDSegmentation::VolumeID VolumeID;
-  typedef DDSegmentation::BitField64 BitField64;
-  typedef DDSegmentation::BitFieldValue BitFieldValue;
+  typedef DDSegmentation::BitFieldCoder BitFieldCoder;
+  typedef DDSegmentation::BitFieldElement BitFieldElement;
 #else
   using DDSegmentation::CellID;
   using DDSegmentation::VolumeID;
-  using DDSegmentation::BitField64;
-  using DDSegmentation::BitFieldValue;
+  using DDSegmentation::BitFieldCoder;
+  using DDSegmentation::BitFieldElement;
 #endif
 
   /// Specialized exception to be thrown if invalid handles are accessed

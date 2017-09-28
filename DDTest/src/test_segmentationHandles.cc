@@ -16,10 +16,11 @@
 static dd4hep::DDTest test( "CellDimensions" ) ;
 using namespace dd4hep;
 using namespace dd4hep::detail;
+//using dd4hep::DDSegmentation::BitFieldCoder;
 
 int main() {
   try{
-    BitField64 bf("system:8,barrel:3,layer:8,slice:5,x:16,y:16");
+    BitFieldCoder bf("system:8,barrel:3,layer:8,slice:5,x:16,y:16");
     Segmentation base("CartesianGridXY","Test",&bf);
     CartesianGridXY seg(base);
     const double xSize=12343.43243;
@@ -41,7 +42,7 @@ int main() {
   }
 
   try{
-    BitField64 bf("system:8,barrel:3,layer:8,slice:5,x:16,z:16");
+    BitFieldCoder bf("system:8,barrel:3,layer:8,slice:5,x:16,z:16");
     Segmentation base("CartesianGridXZ","Test",&bf);
     CartesianGridXZ seg(base);
 
@@ -64,7 +65,7 @@ int main() {
   }
 
   try{
-    BitField64 bf("system:8,barrel:3,layer:8,slice:5,y:16,z:16");
+    BitFieldCoder bf("system:8,barrel:3,layer:8,slice:5,y:16,z:16");
     Segmentation base("CartesianGridYZ","Test",&bf);
     CartesianGridYZ seg = base;
 
@@ -87,7 +88,7 @@ int main() {
   }
 
   try{
-    BitField64 bf("system:8,barrel:3,layer:8,slice:7,x:10,y:10,z:10");
+    BitFieldCoder bf("system:8,barrel:3,layer:8,slice:7,x:10,y:10,z:10");
     Segmentation base("CartesianGridXYZ","Test",&bf);
     CartesianGridXYZ seg = base;
 

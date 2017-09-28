@@ -44,7 +44,7 @@ namespace dd4hep {
       std::string    m_discriminatorId;
 
       /// Bitfield corresponding to dicriminator identifier
-      BitFieldValue* m_discriminator;
+      const BitFieldElement* m_discriminator;
 
       /// Debug flags
       int m_debug;
@@ -54,7 +54,7 @@ namespace dd4hep {
       MultiSegmentation(const std::string& cellEncoding = "");
 
       /// Default constructor used by derived classes passing an existing decoder
-      MultiSegmentation(BitField64* decoder);
+      MultiSegmentation(const BitFieldCoder* decoder);
 
       /// Default destructor
       virtual ~MultiSegmentation();
@@ -83,10 +83,10 @@ namespace dd4hep {
       const std::string& discriminatorName() const {  return m_discriminatorId;  }
 
       /// Discriminating bitfield entry
-      BitFieldValue* discriminator() const         {  return m_discriminator;    }
+      const BitFieldElement* discriminator() const         {  return m_discriminator;    }
 
       /// Set the underlying decoder
-      virtual void setDecoder(BitField64* decoder);
+      virtual void setDecoder(const BitFieldCoder* decoder);
 
       /// The underlying sub-segementations
       const Segmentations& subSegmentations()  const { return m_segmentations;   }

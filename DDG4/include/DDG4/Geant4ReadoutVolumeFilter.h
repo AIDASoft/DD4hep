@@ -37,7 +37,7 @@ namespace dd4hep {
       /// Collection index
       const HitCollection* m_collection;
       /// Bit field value from ID descriptor
-      const BitFieldValue* m_key;
+      const BitFieldElement* m_key;
 
     public:
       /// Standard constructor

@@ -17,7 +17,7 @@ namespace DDSegmentation {
       
       if( i != 0 )   os << "," ;
 
-      os << fields()[i]->name() <<  ":" << _coder->get( _value , i ) ;
+      os << _coder->fields()[i]->name() <<  ":" << _coder->get( _value , i ) ;
 
     }
     return os.str() ;
@@ -29,9 +29,10 @@ namespace DDSegmentation {
     os << " bitfield:  0x" << std::hex // << std::ios::width(16) << std::ios::fill('0') <<
        << b._value << std::dec << std::endl ;
 
-    for(unsigned i=0;i<_coder->size();i++){
+
+    for(unsigned i=0;i<b._coder->size();i++){
       
-      const BitFieldCoder::BitFieldValue* bv = b.fields()[i] ;
+      const BitFieldElement* bv = b._coder->fields()[i] ;
       
       os << "  " <<  bv->name()
 	 << " [" <<  bv->offset()  << ":"  ;
@@ -40,7 +41,7 @@ namespace DDSegmentation {
 
       os <<  bv->width() << "]  : "  ;
       
-      os <<   _coder->get( _value , i) 
+      os <<   b._coder->get( b._value , i) 
 	 << std::endl ;
       
     }

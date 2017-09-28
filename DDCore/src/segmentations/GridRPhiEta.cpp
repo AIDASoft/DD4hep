@@ -16,7 +16,7 @@ GridRPhiEta::GridRPhiEta(const std::string& cellEncoding) :
   registerIdentifier("identifier_r", "Cell ID identifier for R", m_rID, "r");
 }
 
-GridRPhiEta::GridRPhiEta(BitField64* aDecoder) :
+GridRPhiEta::GridRPhiEta(const BitFieldCoder* aDecoder) :
   GridPhiEta(aDecoder) {
   // define type and description
   _type = "GridRPhiEta";
@@ -29,29 +29,22 @@ GridRPhiEta::GridRPhiEta(BitField64* aDecoder) :
 }
 
 Vector3D GridRPhiEta::position(const CellID& cID) const {
-  _decoder->setValue(cID);
-  return Util::positionFromREtaPhi(r(), eta(), phi());
+  return Util::positionFromREtaPhi(r(cID), eta(cID), phi(cID));
 }
 
 CellID GridRPhiEta::cellID(const Vector3D& /* localPosition */, const Vector3D& globalPosition, const VolumeID& vID) const {
-  _decoder->setValue(vID);
   double lRadius = Util::radiusFromXYZ(globalPosition);
   double lEta = Util::etaFromXYZ(globalPosition);
   double lPhi = Util::phiFromXYZ(globalPosition);
-  (*_decoder)[m_etaID] = positionToBin(lEta, m_gridSizeEta, m_offsetEta);
-  (*_decoder)[m_phiID] = positionToBin(lPhi, 2 * M_PI / (double) m_phiBins, m_offsetPhi);
-  (*_decoder)[m_rID] = positionToBin(lRadius, m_gridSizeR, m_offsetR);
-  return _decoder->getValue();
-}
-
-double GridRPhiEta::r() const {
-  CellID rValue = (*_decoder)[m_rID].value();
-  return binToPosition(rValue, m_gridSizeR, m_offsetR);
+  CellID cID = vID ;
+  _decoder->set( cID, m_etaID, positionToBin(lEta, m_gridSizeEta, m_offsetEta) );
+  _decoder->set( cID, m_phiID, positionToBin(lPhi, 2 * M_PI / (double) m_phiBins, m_offsetPhi) );
+  _decoder->set( cID, m_rID  , positionToBin(lRadius, m_gridSizeR, m_offsetR) );
+  return cID;
 }
 
 double GridRPhiEta::r(const CellID& cID) const {
-  _decoder->setValue(cID);
-  CellID rValue = (*_decoder)[m_rID].value();
+  CellID rValue = _decoder->get(cID, m_rID);
   return binToPosition(rValue, m_gridSizeR, m_offsetR);
 }
 REGISTER_SEGMENTATION(GridRPhiEta)

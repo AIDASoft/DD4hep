@@ -17,7 +17,7 @@ namespace dd4hep {
       _description = "None Segmentation";
     }
 
-    NoSegmentation::NoSegmentation(BitField64* decode) : Segmentation(decode)
+    NoSegmentation::NoSegmentation(const BitFieldCoder* decode) : Segmentation(decode)
     { 
       _type = "NoSegmentation";
       _description = "None Segmentation";

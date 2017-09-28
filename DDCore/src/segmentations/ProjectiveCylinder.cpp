@@ -35,7 +35,7 @@ ProjectiveCylinder::ProjectiveCylinder(const std::string& cellEncoding) :
 
 
 /// Default constructor used by derived classes passing an existing decoder
-ProjectiveCylinder::ProjectiveCylinder(BitField64* decode) :	CylindricalSegmentation(decode) {
+ProjectiveCylinder::ProjectiveCylinder(const BitFieldCoder* decode) :	CylindricalSegmentation(decode) {
 	// define type and description
 	_type = "ProjectiveCylinder";
 	_description = "Projective segmentation in the global coordinates";
@@ -56,41 +56,27 @@ ProjectiveCylinder::~ProjectiveCylinder() {
 
 /// determine the local based on the cell ID
 Vector3D ProjectiveCylinder::position(const CellID& cID) const {
-	_decoder->setValue(cID);
-	return Util::positionFromRThetaPhi(1.0, theta(), phi());
+	return Util::positionFromRThetaPhi(1.0, theta(cID), phi(cID));
 }
 
 /// determine the cell ID based on the position
 CellID ProjectiveCylinder::cellID(const Vector3D& /* localPosition */, const Vector3D& globalPosition, const VolumeID& vID) const {
-	_decoder->setValue(vID);
+        CellID cID = vID ;
 	double lTheta = thetaFromXYZ(globalPosition);
 	double lPhi = phiFromXYZ(globalPosition);
-	(*_decoder)[_thetaID] = positionToBin(lTheta, M_PI / (double) _thetaBins, _offsetTheta);
-	(*_decoder)[_phiID] = positionToBin(lPhi, 2 * M_PI / (double) _phiBins, _offsetPhi);
-	return _decoder->getValue();
-}
-
-/// determine the polar angle theta based on the current cell ID
-double ProjectiveCylinder::theta() const {
-	CellID thetaIndex = (*_decoder)[_thetaID].value();
-	return M_PI * ((double) thetaIndex + 0.5) / (double) _thetaBins;
-}
-/// determine the azimuthal angle phi based on the current cell ID
-double ProjectiveCylinder::phi() const {
-	CellID phiIndex = (*_decoder)[_phiID].value();
-	return 2. * M_PI * ((double) phiIndex + 0.5) / (double) _phiBins;
+	_decoder->set(cID,_thetaID, positionToBin(lTheta, M_PI / (double) _thetaBins, _offsetTheta));
+	_decoder->set(cID,_phiID  , positionToBin(lPhi, 2 * M_PI / (double) _phiBins, _offsetPhi));
+	return cID;
 }
 
 /// determine the polar angle theta based on the cell ID
 double ProjectiveCylinder::theta(const CellID& cID) const {
-	_decoder->setValue(cID);
-	CellID thetaIndex = (*_decoder)[_thetaID].value();
+        CellID thetaIndex = _decoder->get(cID,_thetaID);
 	return M_PI * ((double) thetaIndex + 0.5) / (double) _thetaBins;
 }
 /// determine the azimuthal angle phi based on the cell ID
 double ProjectiveCylinder::phi(const CellID& cID) const {
-	_decoder->setValue(cID);
-	CellID phiIndex = (*_decoder)[_phiID].value();
+        CellID phiIndex = _decoder->get(cID,_phiID);
 	return 2. * M_PI * ((double) phiIndex + 0.5) / (double) _phiBins;
 }
 

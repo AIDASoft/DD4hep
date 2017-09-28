@@ -27,7 +27,7 @@ const std::string& MultiSegmentation::discriminatorName() const   {
 }
 
 /// Discriminating bitfield entry
-BitFieldValue* MultiSegmentation::discriminator() const  {
+const BitFieldElement* MultiSegmentation::discriminator() const  {
   return access()->implementation->discriminator();
 }
 

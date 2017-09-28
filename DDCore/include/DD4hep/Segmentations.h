@@ -16,7 +16,7 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/Objects.h"
-#include "DD4hep/BitField64.h"
+#include "DD4hep/BitFieldCoder.h"
 #include "DDSegmentation/Segmentation.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -41,7 +41,7 @@ namespace dd4hep {
   class Segmentation : public Handle<SegmentationObject> {
   public:
     /// Initializing constructor creating a new object of the given DDSegmentation type
-    Segmentation(const std::string& type, const std::string& name, BitField64* decoder);
+    Segmentation(const std::string& type, const std::string& name, const BitFieldCoder* decoder);
     /// Default constructor
     Segmentation() = default;
     /// Copy Constructor from object
@@ -69,9 +69,9 @@ namespace dd4hep {
     /// Access the sensitive detector using this segmetnation object
     Handle<SensitiveDetectorObject> sensitive() const;
     /// Access the underlying decoder
-    const BitField64* decoder() const;
+    const BitFieldCoder* decoder() const;
     /// Set the underlying decoder
-    void setDecoder(BitField64* decoder) const;
+    void setDecoder(const BitFieldCoder* decoder) const;
     /// determine the local position based on the cell ID
     Position position(const long64& cellID) const;
     /// determine the cell ID based on the local position
