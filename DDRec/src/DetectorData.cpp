@@ -166,7 +166,7 @@ namespace dd4hep {
       std::vector<LayeredCalorimeterData::Layer> layers = d.layers ;
 
       io <<  " Layers : " << std::endl 
-	 <<  "  distance      inner_nX0   outer_nX0    inner_nInt    outer_nInt  inner_thick outer_thick   sense_thick" 
+	 <<  "  distance      inner_nX0   outer_nX0    inner_nInt    outer_nInt  inner_thick outer_thick   sense_thick  cellSize0  cellSize1" 
 	 << std::endl ;
 
       for(unsigned i=0,N=layers.size() ; i<N ; ++i){
@@ -181,6 +181,8 @@ namespace dd4hep {
 	   << " " << l.inner_thickness
 	   << " " << l.outer_thickness
 	   << " " << l.sensitive_thickness
+	   << " " << l.cellSize0
+	   << " " << l.cellSize1
 	   << std::endl ;
       }
 
