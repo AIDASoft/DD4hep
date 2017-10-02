@@ -13,7 +13,8 @@ namespace dd4hep {
       io <<  "   zHalf : "              <<  d.zHalf  << std::endl ; 
       io <<  "   rMin : "               <<  d.rMin << std::endl ; 
       io <<  "   rMax : "               <<  d.rMax << std::endl ; 
-      io <<  "   driftLength : "        <<  d.driftLength << std::endl ; 
+      io <<  "   driftLength : "        <<  d.driftLength << std::endl ;
+      io <<  "   zMinReadout : "        <<  d.zMinReadout << std::endl ;
       io <<  "   rMinReadout : "        <<  d.rMinReadout << std::endl ; 
       io <<  "   rMaxReadout : "        <<  d.rMaxReadout << std::endl ; 
       io <<  "   innerWallThickness : " <<  d.innerWallThickness << std::endl ; 

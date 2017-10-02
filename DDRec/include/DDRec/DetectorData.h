@@ -47,6 +47,8 @@ namespace dd4hep {
       double rMax ;
       /// driftLength in z (half length of active volume)
       double driftLength ;
+      /// start z of active Volume (typically cathode half thickness)
+      double zMinReadout ;
       /// inner r of active volume
       double rMinReadout ;
       /// outer r of active volume
