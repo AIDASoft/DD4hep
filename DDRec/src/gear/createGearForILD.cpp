@@ -5,7 +5,6 @@
 #include "DDRec/DetectorData.h"
 #include "DDRec/DDGear.h"
 #include "DDRec/MaterialManager.h"
-#include "DDRec/API/Calorimeter.h"
 
 #include "DDSurfaces/Vector3D.h"
 
