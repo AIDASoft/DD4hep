@@ -512,7 +512,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   }
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
-  Int_t id = 5*(a ? a->GetEntries() : 0);
+  Int_t id = (a ? a->GetEntries() : 0);
   if (transform && transform != detail::matrix::_identity()) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
