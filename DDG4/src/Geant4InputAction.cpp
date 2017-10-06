@@ -95,7 +95,7 @@ Geant4EventReader::moveToEvent(int event_number)   {
 #else
 /// Move to the indicated event number.
 Geant4EventReader::EventReaderStatus
-Geant4EventReader::moveToEvent(int event_number)   {
+Geant4EventReader::moveToEvent(int /* event_number */)   {
   return EVENT_READER_OK;
 }
 #endif
@@ -159,7 +159,9 @@ int Geant4InputAction::readParticles(int evt_number,
   }
   int status = m_reader->moveToEvent(evid);
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
-    string msg = issue(evid)+"Error when moving to event - may be end of file.";
+    string msg = issue(evid)+"Error when moving to event - ";
+    if ( status == Geant4EventReader::EVENT_READER_EOF ) msg += " EOF: [end of file].";
+    else msg += " Unknown error condition";
     if ( m_abort )  {
       abortRun(msg,"Error when reading file %s",m_input.c_str());
       return status;
@@ -172,7 +174,9 @@ int Geant4InputAction::readParticles(int evt_number,
 
 
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
-    string msg = issue(evid)+"Error when moving to event - may be end of file.";
+    string msg = issue(evid)+"Error when moving to event - ";
+    if ( status == Geant4EventReader::EVENT_READER_EOF ) msg += " EOF: [end of file].";
+    else msg += " Unknown error condition";
     if ( m_abort )  {
       abortRun(msg,"Error when reading file %s",m_input.c_str());
       return status;

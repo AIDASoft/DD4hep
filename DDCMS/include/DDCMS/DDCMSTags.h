@@ -114,7 +114,9 @@ namespace dd4hep {
     UNICODE(nEntries);
 
     UNICODE(VisSection);
+    UNICODE(vismaterial);
     UNICODE(vis);
+
     
     /// Debug flags
     UNICODE(debug_constants);
@@ -133,6 +135,7 @@ namespace dd4hep {
     UNICODE(close_geometry);
     UNICODE(IncludeSection);
     UNICODE(Include);
+    UNICODE(DisabledAlgo);
     
   }   /* End namespace DDCMS       */
 }     /* End namespace dd4hep     */

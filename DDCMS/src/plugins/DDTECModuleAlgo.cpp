@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -31,11 +27,9 @@ static void doPos(ParsingContext& ctxt, Volume toPos, Volume mother,
                   int /* copyNr */, double x, double y, double z, 
                   const string& rotName)
 {
-  stringstream  str;
   Namespace ns(ctxt);
   mother.placeVolume(toPos,Transform3D(ns.rotation(rotName),Position(x,y,z)));
-  str << "Volume: " << mother.name() << " positioned daughter "<< mother.name();
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
+  LogDebug("TECGeom") << "Volume: " << mother.name() << " positioned daughter "<< mother.name();
 }
 
 static void doPos(ParsingContext& ctxt, Volume toPos, Volume mother,
@@ -63,7 +57,6 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream  str;
   Namespace     ns(ctxt, e, true);
   AlgoArguments args(ctxt, e);
   Volume        mother      = ns.volume(args.parentName());
@@ -147,25 +140,22 @@ static long algorithm(Detector& /* description */,
   double         siReenforceThick = args.value<double>("SiReenforcementThick");//             Thick
   string         siReenforceMat = args.value<string>("SiReenforcementMaterial");  //             Materieal
 
-  str << "debug: ModuleThick " << moduleThick
+  LogDebug("TECGeom") << "debug: ModuleThick " << moduleThick
       << " Detector Tilt " << detTilt/CLHEP::deg << " Height "
       << fullHeight << " dl(Top) " << dlTop << " dl(Bottom) "
       << dlBottom << " dl(Hybrid) " << dlHybrid
       << " rPos " << rPos << " standrad rotation " 
       << standardRot;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug: Frame Width " << frameWidth 
+  LogDebug("TECGeom") << "debug: Frame Width " << frameWidth 
       << " Thickness " << frameThick << " Overlap " 
       << frameOver;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug: Top Frame Material " 
+  LogDebug("TECGeom") << "debug: Top Frame Material " 
       << topFrameMat << " Height " << topFrameHeight 
       << " Top Width " << topFrameTopWidth << " Bottom Width "
       << topFrameTopWidth
       << " Thickness " << topFrameThick <<" positioned at"
       << topFrameZ;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug : Side Frame Material " 
+  LogDebug("TECGeom") << "debug : Side Frame Material " 
       << sideFrameMat << " Thickness " << sideFrameThick
       << " left Leg's Width: " << sideFrameLWidth
       << " left Leg's Height: " << sideFrameLHeight
@@ -175,74 +165,61 @@ static long algorithm(Detector& /* description */,
       << " right Leg's tilt(theta): " << sideFrameRtheta
       << "Supplies Box's Material: " << siFrSuppBoxMat
       << " positioned at" << sideFrameZ;
-  for (int i= 0; i < (int)(siFrSuppBoxWidth.size());i++){
-    str << " Supplies Box" << i << "'s Width: " 
+  for (int i= 0; i < (int)(siFrSuppBoxWidth.size());i++)
+    LogDebug("TECGeom") << " Supplies Box" << i << "'s Width: " 
         << siFrSuppBoxWidth[i] << " Supplies Box" << i
         <<"'s Height: " << siFrSuppBoxHeight[i]
         << " Supplies Box" << i << "'s y Position: " 
         << siFrSuppBoxYPos[i];
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  }
-  str << "debug: Wafer Material " 
+  LogDebug("TECGeom") << "debug: Wafer Material " 
       << waferMat << " Side Width Top" << sideWidthTop
       << " Side Width Bottom" << sideWidthBottom
       << " and positioned at "<<waferPosition
       << " positioned with rotation"	<< " matrix:"
       << waferRot;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug: Active Material " 
+  LogDebug("TECGeom") << "debug: Active Material " 
       << activeMat << " Height " << activeHeight 
       << " rotated by " << activeRot
       << " translated by (0,0," << -0.5 * backplaneThick << ")"
       << " Thickness/Z"
       << waferThick-backplaneThick << "/" << activeZ;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug: Hybrid Material " 
+  LogDebug("TECGeom") << "debug: Hybrid Material " 
       << hybridMat << " Height " << hybridHeight 
       << " Width " << hybridWidth << " Thickness " 
       << hybridThick << " Z"  << hybridZ;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug: Pitch Adapter Material " 
+  LogDebug("TECGeom") << "debug: Pitch Adapter Material " 
       << pitchMat << " Height " << pitchHeight 
       << " Thickness " << pitchThick << " position with "
       << " rotation " << pitchRot << " at Z" << pitchZ;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "debug: Bridge Material " 
+  LogDebug("TECGeom") << "debug: Bridge Material " 
       << bridgeMat << " Width " << bridgeWidth 
       << " Thickness " << bridgeThick << " Height " 
       << bridgeHeight << " Separation "<< bridgeSep;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  str << "FALTBOOT DDTECModuleAlgo debug : Si-Reenforcement Material " 
+  LogDebug("TECGeom") << "FALTBOOT DDTECModuleAlgo debug : Si-Reenforcement Material " 
       << sideFrameMat << " Thickness " << siReenforceThick;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  for (int i= 0; i < (int)(siReenforceWidth.size());i++){
-    str << " SiReenforcement" << i << "'s Width: " 
+  for (int i= 0; i < (int)(siReenforceWidth.size());i++)
+    LogDebug("TECGeom") << " SiReenforcement" << i << "'s Width: " 
         << siReenforceWidth[i] << " SiReenforcement" << i 
         << "'s Height: " << siReenforceHeight[i]
         << " SiReenforcement" << i << "'s y Position: "
         <<siReenforceYPos[i];
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  }
+
   if(!isStereo){
-    str << "This is a normal module, in ring "<<ringNo<<"!"; 
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-  } else {
-    str << "This is a stereo module, in ring "<<ringNo<<"!"; 
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-    str << "Phi Position corrected by " << posCorrectionPhi << "*rad";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-    str << "debug: stereo Top Frame 2nd Part left Heigt " 
+    LogDebug("TECGeom") << "This is a normal module, in ring "<<ringNo<<"!"; 
+  }
+  else {
+    LogDebug("TECGeom") << "This is a stereo module, in ring "<<ringNo<<"!"; 
+    LogDebug("TECGeom") << "Phi Position corrected by " << posCorrectionPhi << "*rad";
+    LogDebug("TECGeom") << "debug: stereo Top Frame 2nd Part left Heigt " 
         << topFrame2LHeight << " right Height " << topFrame2RHeight 
         << " Width " << topFrame2Width ;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
-    str << " left Leg's lower Width: " << sideFrameLWidthLow
+    LogDebug("TECGeom") << " left Leg's lower Width: " << sideFrameLWidthLow
         << " right Leg's lower Width: " << sideFrameRWidthLow;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   }
 
   // Execution part:
 
-  str << "==>> Constructing DDTECModuleAlgo: ";
+  LogDebug("TECGeom") << "==>> Constructing DDTECModuleAlgo: ";
   //declarations
   double tmp;
   //names
@@ -252,8 +229,7 @@ static long algorithm(Detector& /* description */,
   //usefull constants
   const double topFrameEndZ = 0.5 * (-waferPosition + fullHeight) + pitchHeight + hybridHeight - topFrameHeight;
   string idName     = ns.prepend(ns.obj_name(mother.name()));
-  str << "idName: " << idName << " parent " << mother.name() << " namespace " << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
+  LogDebug("TECGeom") << "idName: " << idName << " parent " << mother.name() << " namespace " << ns.name;
   Solid solid;
 
    //set global parameters
@@ -283,12 +259,11 @@ static long algorithm(Detector& /* description */,
   if(isStereo)  bl1 = 0.5 * sideFrameLWidthLow;
   solid = Trap(dz, thet, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
   ns.addSolidNS(name,solid);
-  str << "Solid: " << solid.name() 
+  LogDebug("TECGeom") << "Solid: " << solid.name() 
       << " Trap made of " << sideFrameMat << " of dimensions "
       << dz << ",  "<<thet<<", 0, " << h1 << ", " << bl1 << ", "
       << bl1 << ", 0, " << h1 << ", " << bl2 << ", " << bl2
       << ", 0";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   Volume sideFrameLeft(name, solid, ns.material(sideFrameMat));
   ns.addVolumeNS(sideFrameLeft);
   //translate
@@ -320,12 +295,11 @@ static long algorithm(Detector& /* description */,
   if(isStereo) bl1 = 0.5 * sideFrameRWidthLow;
   solid = Trap(dz, thet, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
   ns.addSolidNS(name,solid);
-  str << "Solid:\t" << solid.name() 
+  LogDebug("TECGeom") << "Solid:\t" << solid.name() 
       << " Trap made of " << sideFrameMat << " of dimensions "
       << dz << ", "<<thet<<", 0, " << h1 << ", " << bl1 << ", "
       << bl1 << ", 0, " << h1 << ", " << bl2 << ", " << bl2
       << ", 0";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   Volume sideFrameRight(name, solid, ns.material(sideFrameMat));
   ns.addVolumeNS(sideFrameRight);
   //translate
@@ -360,12 +334,11 @@ static long algorithm(Detector& /* description */,
     // ^-- this calculates the lower left angel of the tipped trapezoid, which is the SideFframe...
     
     solid = Trap(dz, thet,0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
-    str << "Solid:\t" << solid.name() 
+    LogDebug("TECGeom") << "Solid:\t" << solid.name() 
         << " Trap made of " << siFrSuppBoxMat << " of dimensions "
         << dz << ", 0, 0, " << h1 << ", " << bl1 << ", "
         << bl1 << ", 0, " << h1 << ", " << bl2 << ", " << bl2
         << ", 0";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
     Volume siFrSuppBox(name, solid, matter);
     ns.addVolumeNS(siFrSuppBox);
     //translate
@@ -394,10 +367,9 @@ static long algorithm(Detector& /* description */,
   dz        = 0.5 * hybridHeight;
   solid = Box(dx, dy, dz);
   ns.addSolidNS(name, solid);
-  str << "Solid:\t" << solid.name() 
+  LogDebug("TECGeom") << "Solid:\t" << solid.name() 
       << " Box made of " << hybridMat << " of dimensions "
       << dx << ", " << dy << ", " << dz;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   Volume hybrid(name, solid, ns.material(hybridMat));
   ns.addVolumeNS(hybrid);
 
@@ -415,12 +387,11 @@ static long algorithm(Detector& /* description */,
   dz      = 0.5 * fullHeight;
   solid = Trap(dz, 0, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
   ns.addSolidNS(name,solid);
-  str << "Solid:\t" << solid.name()
+  LogDebug("TECGeom") << "Solid:\t" << solid.name()
 			<< " Trap made of " << waferMat << " of dimensions "
 			<< dz << ", 0, 0, " << h1 << ", " << bl1 << ", "
 			<< bl1 << ", 0, " << h1 << ", " << bl2 << ", "
 			<< bl2 << ", 0";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   Volume wafer(name, solid, ns.material(waferMat));
   
   ypos = activeZ;
@@ -440,12 +411,11 @@ static long algorithm(Detector& /* description */,
   }
   solid = Trap(dz, 0, 0, h1, bl2, bl1, 0, h1, bl2, bl1, 0);
   ns.addSolidNS(name,solid);
-  str << "Solid:\t" << solid.name() 
+  LogDebug("TECGeom") << "Solid:\t" << solid.name() 
       << " Trap made of " << activeMat << " of dimensions "
       << dz << ", 0, 0, " << h1 << ", " << bl2 << ", "
       << bl1 << ", 0, " << h1 << ", " << bl2 << ", "
       << bl1 << ", 0";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   Volume active(name, solid, ns.material(activeMat));
   ns.addVolumeNS(active);
   doPos(ctxt, active, wafer, 1, -0.5 * backplaneThick,0,0, activeRot); // from the definition of the wafer local axes and doPos() routine
@@ -467,12 +437,11 @@ static long algorithm(Detector& /* description */,
     }
     solid = Trap(dz, 0, 0, h1, bl2, bl1, 0, h1, bl2, bl1, 0);
     ns.addSolidNS(name,solid);
-    str << "Solid:\t" << solid.name() 
+    LogDebug("TECGeom") << "Solid:\t" << solid.name() 
         << " Trap made of " << inactiveMat << " of dimensions "
         << dz << ", 0, 0, " << h1 << ", " << bl2 << ", "
         << bl1 << ", 0, " << h1 << ", " << bl2 << ", "
         << bl1 << ", 0";  
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
     Volume inactive(name, solid, ns.material(inactiveMat));
     ns.addVolumeNS(inactive);
     ypos = inactivePos - 0.5*activeHeight;
@@ -486,10 +455,9 @@ static long algorithm(Detector& /* description */,
     dz      = 0.5 * pitchHeight;
     solid   = Box(dx, dy, dz);
     ns.addSolidNS(name,solid);
-    str << "Solid:\t" << solid.name() 
+    LogDebug("TECGeom") << "Solid:\t" << solid.name() 
         << " Box made of " << pitchMat <<" of dimensions "
         << dx << ", " << dy << ", " << dz;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   } else {
     dz      = 0.5 * pitchWidth;    
     h1      = 0.5 * pitchThick;
@@ -498,13 +466,12 @@ static long algorithm(Detector& /* description */,
     thet = atan((bl1-bl2)/(2.*dz));
     solid   = Trap(dz, thet, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
     ns.addSolidNS(name,solid);
-    str << "Solid:\t" << solid.name()
+    LogDebug("TECGeom") << "Solid:\t" << solid.name()
         << " Trap made of " <<  pitchMat
         << " of dimensions " << dz << ", " << thet/CLHEP::deg
         << ", 0, " << h1 << ", " << bl1 << ", " << bl1
         << ", 0, " << h1 << ", " << bl2 << ", " << bl2
         << ", 0";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   }
   xpos = 0;
   ypos = pitchZ;
@@ -529,12 +496,11 @@ static long algorithm(Detector& /* description */,
   
   solid = Trap(dz, 0, 0, h1, bl1, bl1,0, h1, bl2, bl2, 0);
   ns.addSolid(name,solid);
-  str << "Solid:\t" << solid.name() 
+  LogDebug("TECGeom") << "Solid:\t" << solid.name() 
       << " Trap made of " << topFrameMat << " of dimensions " 
       << dz << ", 0, 0, " << h1 << ", " << bl1 << ", "  
       << bl1 << ", 0, " << h1 << ", " << bl2 << ", " << bl2
       << ", 0";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   Volume topFrame(name, solid, ns.material(topFrameMat));
   ns.addVolumeNS(topFrame);
   
@@ -549,12 +515,11 @@ static long algorithm(Detector& /* description */,
 	
     solid   = Trap(dz, thet, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
     ns.addSolid(name,solid);
-    str << "Solid:\t" << solid.name()
+    LogDebug("TECGeom") << "Solid:\t" << solid.name()
         << " Trap made of " << topFrameMat << " of dimensions "
         << dz << ", " << thet/CLHEP::deg << ", 0, " << h1 
         << ", " << bl1 << ", " << bl1 << ", 0, " << h1 
         << ", " << bl2 << ", " << bl2 << ", 0";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   }
   
   // Position the topframe
@@ -580,12 +545,11 @@ static long algorithm(Detector& /* description */,
     dz = 0.5 * siReenforceHeight[i];
     bl1 = bl2 = 0.5 * siReenforceWidth[i];    
     solid = Trap(dz, 0, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
-    str << "Solid:\t" << solid.name() 
+    LogDebug("TECGeom") << "Solid:\t" << solid.name() 
         << " Trap made of " << matter.name() << " of dimensions "
         << dz << ", 0, 0, " << h1 << ", " << bl1 << ", "
         << bl1 << ", 0, " << h1 << ", " << bl2 << ", " << bl2
         << ", 0";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
     Volume siReenforce(name, solid, matter);
     ns.addVolumeNS(siReenforce);
     //translate
@@ -612,34 +576,30 @@ static long algorithm(Detector& /* description */,
     h1      = 0.5 * bridgeThick;
     dz      = 0.5 * bridgeHeight;
     solid = Trap(dz, 0, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
-    str << "Solid:\t" << solid.name()
+    LogDebug("TECGeom") << "Solid:\t" << solid.name()
         << " Trap made of " << bridgeMat << " of dimensions "
         << dz << ", 0, 0, " << h1 << ", " << bl1 << ", "
         << bl1 << ", 0, " << h1 << ", " << bl2 << ", " << bl2
         << ", 0";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
     Volume bridge(name, solid, ns.material(bridgeMat));
     ns.addVolumeNS(bridge);
 
     name    = idName + "BridgeGap";
     bl1     = 0.5*bridgeSep;
     solid = Box(bl1, h1, dz);
-    str << "Solid:\t" << solid.name() 
+    LogDebug("TECGeom") << "Solid:\t" << solid.name() 
         << " Box made of " << genMat << " of dimensions "
         << bl1 << ", " << h1 << ", " << dz;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
     Volume bridgeGap(name, solid, ns.material(genMat));
     ns.addVolumeNS(bridgeGap);
     /* PlacedVolume pv = */ bridge.placeVolume(bridgeGap);
-    str << "Solid: " << bridgeGap.name() 
+    LogDebug("TECGeom") << "Solid: " << bridgeGap.name() 
         << " number 1 positioned in " << bridge.name()
         << " at (0,0,0) with no rotation";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
   }
-  str << "<<== End of DDTECModuleAlgo construction ...";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECModuleAlgo",str);
+  LogDebug("TECGeom") << "<<== End of DDTECModuleAlgo construction ...";
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTECModuleAlgo,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTECModuleAlgo,algorithm)

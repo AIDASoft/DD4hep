@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -32,7 +28,6 @@ static long  algorithm(Detector& /* description */,
                        xml_h e,
                        SensitiveDetector& /* sens */)
 {
-  stringstream   str;
   Namespace      ns(ctxt,e,true);
   AlgoArguments  args(ctxt, e);
   // Header section of original DDTrackerAngular.h
@@ -43,33 +38,26 @@ static long  algorithm(Detector& /* description */,
   double         startAngle  = args.value<double>("StartAngle");      //Start anle
   double         radius      = args.value<double>("Radius");          //Radius
   vector<double> center      = args.value<vector<double> >("Center"); //Phi values
-  double         delta;          //Increment in phi
   Volume         mother      = ns.volume(args.parentName());
   Volume         child       = ns.volume(args.value<string>("ChildName"));
 
+  double         delta = 0e0;                                         //Increment in phi
   // Code section of original DDTrackerAngular.cc
   if (fabs(rangeAngle-360.0*CLHEP::deg)<0.001*CLHEP::deg) { 
     delta    =   rangeAngle/double(n);
-  } else {
-    if (n > 1) {
-      delta    =   rangeAngle/double(n-1);
-    } else {
-      delta = 0.;
-    }
+  } else if (n > 1) {
+    delta    =   rangeAngle/double(n-1);
   }  
 
-  str << "debug: Parameters for positioning:: n "
+  LogDebug("TrackerGeom") << "debug: Parameters for positioning:: n "
       << n << " Start, Range, Delta " 
       << startAngle/CLHEP::deg << " " 
       << rangeAngle/CLHEP::deg << " " << delta/CLHEP::deg
       << " Radius " << radius << " Centre " << center[0] 
       << ", " << center[1] << ", "<<center[2];
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerAngular",str);
-
-  str << "debug: Parent " << mother.name() 
+  LogDebug("TrackerGeom") << "debug: Parent " << mother.name() 
       << "\tChild " << child.name() << " NameSpace "
       << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerAngular",str);
 
   double theta  = 90.*CLHEP::deg;
   int    copy   = startCopyNo;
@@ -87,11 +75,10 @@ static long  algorithm(Detector& /* description */,
         rotation = ns.rotation(ns.prepend(rotstr));
       }
       else  {
-        str << "Creating a new "
+        LogDebug("TrackerGeom") << "Creating a new "
             << "rotation: " << rotstr << "\t90., " 
             << phix/CLHEP::deg << ", 90.," 
             << phiy/CLHEP::deg <<", 0, 0";
-        printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerAngular",str);
         RotationZYX   rot;
         rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
       }
@@ -102,10 +89,9 @@ static long  algorithm(Detector& /* description */,
     double zpos = center[2];
     Position tran(xpos, ypos, zpos);
     mother.placeVolume(child, Transform3D(rotation,tran));
-    str << "test " << child.name() << " number " 
-        << copy << " positioned in " << mother.name() << " at "
-        << tran  << " with " << rotation;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerAngular",str);
+    LogDebug("TrackerGeom") << "test " << child.name() << " number " 
+                            << copy << " positioned in " << mother.name() << " at "
+                            << tran  << " with " << rotation;
     copy += incrCopyNo;
     phi  += delta;
   }
@@ -113,4 +99,4 @@ static long  algorithm(Detector& /* description */,
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTrackerAngular,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTrackerAngular,algorithm)

@@ -21,7 +21,6 @@
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
 
-#include "LCIOParticleExtension.h"
 #include "DD4hep/Detector.h"
 #include <G4Version.hh>
 
@@ -241,14 +240,8 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 
       // Set generator status
       q->setGeneratorStatus(0);
-
-      // see if we have preserved the original generator code in the stdhep or LCIO reader
-      const LCIOParticleExtension* p_ext = dynamic_cast< LCIOParticleExtension*>( p->extension.get() ) ;
-
-      if( p_ext ) {
-
-	q->setGeneratorStatus(  p_ext->generatorStatus ) ;
-
+      if( p->genStatus ) {
+        q->setGeneratorStatus( p->genStatus ) ;
       } else {
 
 	if ( mask.isSet(G4PARTICLE_GEN_STABLE) )             q->setGeneratorStatus(1);

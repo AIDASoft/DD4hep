@@ -56,7 +56,8 @@ namespace dd4hep  {
         EVENT_READER_NO_DIRECT=2,
         EVENT_READER_NO_PRIMARIES=4,
         EVENT_READER_NO_FACTORY=6,
-        EVENT_READER_IO_ERROR=8
+        EVENT_READER_IO_ERROR=8,
+        EVENT_READER_EOF=10
       };
     protected:
       /// File name to be opened and read

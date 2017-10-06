@@ -79,7 +79,7 @@ namespace dd4hep {
          G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION+
 	 G4PARTICLE_GEN_BEAM+G4PARTICLE_GEN_OTHER),
       G4PARTICLE_GEN_STATUS          = 0x3FF, // Mask for generator status (bit 0...9)
-
+      G4PARTICLE_GEN_STATUS_MASK     = 0xFFFF,// Mask for the raw generator status (max 65k values)
       // Simulation status of a given particle
       G4PARTICLE_SIM_CREATED         = 1<<10, // True if the particle has been created by the simulation program (rather than the generator)
       G4PARTICLE_SIM_BACKSCATTER     = 1<<11, // True if the particle is the result of a backscatter from a calorimeter shower.
@@ -102,9 +102,6 @@ namespace dd4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Particle {
-    private:
-      /// Copy constructor
-      Geant4Particle(const Geant4Particle& c);
     public:
       typedef std::set<int> Particles;
       /// Reference counter
@@ -114,13 +111,15 @@ namespace dd4hep {
       int g4Parent = 0, reason = 0, mask = 0;
       int steps  = 0, secondaries = 0, pdgID = 0;
       int status = 0, colorFlow[2] {0,0};
-      char charge = 0, _spare[3] {0,0,0};
+      unsigned short genStatus= 0;
+      char  charge = 0;
+      char  _spare[1] {0};
       float spin[3] {0E0,0E0,0E0};
-      // 12 ints + 4 floats should be aligned to 8 bytes....
-      double vsx = 0E0, vsy = 0E0, vsz = 0E0;
-      double vex = 0E0, vey = 0E0, vez = 0E0;
-      double psx = 0E0, psy = 0E0, psz = 0E0;
-      double pex = 0E0, pey = 0E0, pez = 0E0;
+      // 12 ints + 4 bytes + 3 floats should be aligned to 8 bytes....
+      double vsx  = 0E0, vsy  = 0E0, vsz = 0E0;
+      double vex  = 0E0, vey  = 0E0, vez = 0E0;
+      double psx  = 0E0, psy  = 0E0, psz = 0E0;
+      double pex  = 0E0, pey  = 0E0, pez = 0E0;
       double mass = 0E0, time = 0E0, properTime = 0E0;
       /// The list of daughters of this MC particle
       Particles parents;
@@ -137,8 +136,12 @@ namespace dd4hep {
       Geant4Particle();
       /// Constructor with ID initialization
       Geant4Particle(int part_id);
+      /// NO copy constructor
+      Geant4Particle(const Geant4Particle& copy) = delete;
       /// Default destructor
       virtual ~Geant4Particle();
+      /// NO assignment operation
+      Geant4Particle& operator=(const Geant4Particle& copy) = delete;
       /// Increase reference count
       Geant4Particle* addRef()  {
         ++ref;

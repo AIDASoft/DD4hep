@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -32,7 +28,6 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream   str;
   Namespace      ns(ctxt,e,true);
   AlgoArguments  args(ctxt, e);
   int            startCopyNo = args.value<int>("StartCopyNo");
@@ -44,15 +39,13 @@ static long algorithm(Detector& /* description */,
   Volume         child       = ns.volume(args.value<string>("ChildName"));
   Volume         mother      = ns.volume(args.parentName());
 
-  str << "Parent " << mother.name() << " Child " << child.name() << " NameSpace " << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECOptoHybAlgo",str);
-
-  str << "Height of the Hybrid "
-      << optoHeight << " and Width " << optoWidth
-      <<"Rpos " << rpos << " Zpos " << zpos 
-      << " StartCopyNo " << startCopyNo << " Number " 
-      << angles.size();
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECOptoHybAlgo",str);
+  LogDebug("TECGeom") << "Parent " << mother.name()
+                      << " Child " << child.name() << " NameSpace " << ns.name;
+  LogDebug("TECGeom") << "Height of the Hybrid "
+                      << optoHeight << " and Width " << optoWidth
+                      <<"Rpos " << rpos << " Zpos " << zpos 
+                      << " StartCopyNo " << startCopyNo << " Number " 
+                      << angles.size();
 
   // given r positions are for the lower left corner
   rpos += optoHeight/2;
@@ -76,25 +69,22 @@ static long algorithm(Detector& /* description */,
       }
       else  {
         double theta = 90.*CLHEP::deg;
-        str << "test: Creating a new "
-            << "rotation: " << rotstr << "\t90., " 
-            << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg
-            << ", 0, 0";
-        printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECOptoHybAlgo",str);
+        LogDebug("TECGeom") << "test: Creating a new "
+                            << "rotation: " << rotstr << "\t90., " 
+                            << phix/CLHEP::deg << ", 90.," << phiy/CLHEP::deg
+                            << ", 0, 0";
         rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
       }
     }
     mother.placeVolume(child, Transform3D(rotation,tran));
-    str << "test " << child.name() << " number " 
-        << copyNo << " positioned in " << mother.name() << " at "
-        << tran  << " with " << rotation;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECOptoHybAlgo",str);
+    LogDebug("TECGeom") << "test " << child.name() << " number " 
+                        << copyNo << " positioned in " << mother.name() << " at "
+                        << tran  << " with " << rotation;
     copyNo++;
   }
-  str << "<<== End of DDTECOptoHybAlgo construction ...";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECOptoHybAlgo",str);
+  LogDebug("TECGeom") << "<<== End of DDTECOptoHybAlgo construction ...";
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTECOptoHybAlgo,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTECOptoHybAlgo,algorithm)

@@ -32,7 +32,6 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream   str;
   Namespace      ns(ctxt,e,true);
   AlgoArguments  args(ctxt, e);
   int            startCopyNo = args.find("StartCopyNo") ? args.value<int>("StartCopyNo") : 1;
@@ -41,19 +40,17 @@ static long algorithm(Detector& /* description */,
   vector<string> coolInsert  = args.value<vector<string> >("CoolInsert");
   Volume         mother      = ns.volume(args.parentName());
 
-  str << "debug: Parent " << mother.name() 
-      <<" NameSpace " << ns.name << " at radial Position " << rPosition;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECCoolAlgo",str);
+  LogDebug("TECGeom") << "debug: Parent " << mother.name() 
+                      <<" NameSpace " << ns.name << " at radial Position " << rPosition;
   if (phiPosition.size() == coolInsert.size()) {
     for (int i=0; i<(int)(phiPosition.size()); i++)   {
-      str << "debug: Insert[" << i << "]: "
+      LogDebug("TECGeom") << "debug: Insert[" << i << "]: "
           << coolInsert.at(i) << " at Phi " 
           << phiPosition.at(i)/CLHEP::deg;
-      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECCoolAlgo",str);
     }
-  } else {
-    str << "ERROR: Number of inserts does not match the numer of PhiPositions!";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECCoolAlgo",str);
+  }
+  else {
+    LogDebug("TECGeom") << "ERROR: Number of inserts does not match the numer of PhiPositions!";
   }
 
   int copyNo  = startCopyNo;
@@ -66,18 +63,17 @@ static long algorithm(Detector& /* description */,
     // place inserts
     Position tran(xpos, ypos, 0.0);
     mother.placeVolume(child,tran);
-    str << "test " << child.name() << "["  
-        << copyNo << "] positioned in " << mother.name()
-        << " at " << tran
-        << " phi " << phiPosition.at(i)/CLHEP::deg << " r " 
-        << rPosition;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECCoolAlgo",str);
+    LogDebug("TECGeom") << "test " << child.name() << "["  
+                        << copyNo << "] positioned in " << mother.name()
+                        << " at " << tran
+                        << " phi " << phiPosition.at(i)/CLHEP::deg << " r " 
+                        << rPosition;
     copyNo++;
   }
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECCoolAlgo","Finished....");
+  LogDebug("TECGeom") << "Finished....";
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTECCoolAlgo,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTECCoolAlgo,algorithm)
 

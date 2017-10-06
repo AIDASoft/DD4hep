@@ -34,59 +34,16 @@ typedef detail::ReferenceBitMask<int> PropertyMask;
 ParticleExtension::~ParticleExtension() {
 }
 
-/// Copy constructor
-Geant4Particle::Geant4Particle(const Geant4Particle& c)
-: ref(1), id(c.id), originalG4ID(c.originalG4ID), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
-  steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
-  status(c.status), charge(0),
-  vsx(c.vsx), vsy(c.vsy), vsz(c.vsz),
-  vex(c.vex), vey(c.vey), vez(c.vez),
-  psx(c.psx), psy(c.psy), psz(c.psz),
-  pex(c.pex), pey(c.pey), pez(c.pez),
-  mass(c.mass), time(c.time), properTime(c.properTime),
-  parents(c.parents), daughters(c.daughters), extension(),
-  process(c.process)//, definition(c.definition)
-{
-  InstanceCount::increment(this);
-  spin[0] = c.spin[0];
-  spin[1] = c.spin[1];
-  spin[2] = c.spin[2];
-  colorFlow[0] = c.colorFlow[0];
-  colorFlow[1] = c.colorFlow[1];
-}
-
 /// Default constructor
-Geant4Particle::Geant4Particle()
-: ref(1), id(0), originalG4ID(0), g4Parent(0), reason(0), mask(0),
-  steps(0), secondaries(0), pdgID(0),
-  status(0), charge(0),
-  vsx(0.0), vsy(0.0), vsz(0.0),
-  vex(0.0), vey(0.0), vez(0.0),
-  psx(0.0), psy(0.0), psz(0.0),
-  pex(0.0), pey(0.0), pez(0.0),
-  mass(0.0), time(0.0), properTime(0.0),
-  daughters(), extension(), process(0)//, definition(0)
+Geant4Particle::Geant4Particle() : ref(1)
 {
   InstanceCount::increment(this);
-  spin[0] = spin[1] = spin[2] = 0;
-  colorFlow[0] = colorFlow[1] = 0;
 }
 
 /// Constructor with ID initialization
-Geant4Particle::Geant4Particle(int part_id)
-: ref(1), id(part_id), originalG4ID(part_id), g4Parent(0), reason(0), mask(0),
-  steps(0), secondaries(0), pdgID(0),
-  status(0), charge(0),
-  vsx(0.0), vsy(0.0), vsz(0.0),
-  vex(0.0), vey(0.0), vez(0.0),
-  psx(0.0), psy(0.0), psz(0.0),
-  pex(0.0), pey(0.0), pez(0.0),
-  mass(0.0), time(0.0), properTime(0.0),
-  daughters(), extension(), process(0)//, definition(0)
+Geant4Particle::Geant4Particle(int part_id) : ref(1), id(part_id), originalG4ID(part_id)
 {
   InstanceCount::increment(this);
-  spin[0] = spin[1] = spin[2] = 0;
-  colorFlow[0] = colorFlow[1] = 0;
 }
 
 /// Default destructor
@@ -111,6 +68,7 @@ Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
     reason      = c.reason;
     mask        = c.mask;
     status      = c.status;
+    genStatus   = c.genStatus;
     charge      = c.charge;
     steps       = c.steps;
     secondaries = c.secondaries;
