@@ -29,10 +29,11 @@
 #include "DD4hep/World.h"
 #include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Callback.h"
-#include "DD4hep/DetectorData.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/FieldTypes.h"
+#include "DD4hep/DetectorData.h"
+#include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/ComponentProperties.h"
 
 // C/C++ include files
@@ -98,7 +99,7 @@ template class pair<dd4hep::Callback,unsigned long>;
 #pragma link C++ class map<string, dd4hep::Handle<dd4hep::NamedObject> >+;
 #pragma link C++ class map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator;
 #pragma link C++ class map<string, dd4hep::Handle<dd4hep::NamedObject> >::const_iterator;
-#pragma link C++ class dd4hep::dd4hepUI;
+#pragma link C++ class dd4hep::detail::DD4hepUI;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
@@ -245,6 +246,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::WorldObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::WorldObject>+;
 #pragma link C++ class dd4hep::DetElement+;
+#pragma link C++ class dd4hep::DetElement::Processor+;
 #pragma link C++ class dd4hep::DetElementObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::DetElementObject>+;
 #pragma link C++ class vector<dd4hep::DetElement>+;
@@ -252,6 +254,9 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class map<string,dd4hep::DetElement>+;
 #pragma link C++ class map<string,dd4hep::DetElement>::iterator;
 #pragma link C++ class map<string,dd4hep::DetElement>::const_iterator;
+
+#pragma link C++ class dd4hep::DetectorProcessor+;
+#pragma link C++ class dd4hep::DetectorScanner+;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler

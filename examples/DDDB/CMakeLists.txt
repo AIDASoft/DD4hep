@@ -31,6 +31,7 @@ if (DD4HEP_USE_XERCESC)
     )
   #---Package installation procedure(s) -----------------------------------------
   install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)
+  install ( PROGRAMS scripts/display_dddb.sh DESTINATION bin)
   install ( PROGRAMS scripts/extract_dddb.sh DESTINATION bin)
   install ( FILES    data/DDDB.tar.gz DESTINATION examples/DDDB)
   #---Testing--------------------------------------------------------------------

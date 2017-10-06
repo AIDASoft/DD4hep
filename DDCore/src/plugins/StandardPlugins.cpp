@@ -20,6 +20,7 @@
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/PluginCreators.h"
+#include "DD4hep/VolumeProcessor.h"
 #include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "XML/DocumentHandler.h"
@@ -68,12 +69,27 @@ DECLARE_CONSTRUCTOR(Detector_constructor,create_description_instance)
  */
 static long display(Detector& description, int argc, char** argv) {
   TGeoManager& mgr = description.manager();
+  int vislevel = 4, visopt = 1;
   const char* opt = "ogl";
-  if (argc > 0) {
-    opt = argv[0];
+  for(int i = 0; i < argc && argv[i]; ++i)  {
+    if ( 0 == ::strncmp("-option",argv[i],4) )
+      opt = argv[++i];
+    else if ( 0 == ::strncmp("-level",argv[i],4) )
+      vislevel = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("-visopt",argv[i],4) )
+      visopt = ::atol(argv[++i]);
+    else  {
+      cout <<
+        "Usage: -plugin <name> -arg [-arg]                                                 \n"
+        "     -option <string> ROOT Draw option.    Default: 'ogl'                         \n"
+        "     -level  <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
+        "     -visopt <number> Visualization option [TGeoManager::SetVisOption] Default: 1 \n"       
+        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      ::exit(EINVAL);
+    }
   }
-  mgr.SetVisLevel(4);
-  mgr.SetVisOption(1);
+  mgr.SetVisLevel(vislevel);
+  mgr.SetVisOption(visopt);
   TGeoVolume* vol = mgr.GetTopVolume();
   if (vol) {
     vol->Draw(opt);
@@ -644,6 +660,7 @@ DECLARE_APPLY(DD4hepCheckNominals,check_nominals)
  */
 static long dump_volume_tree(Detector& description, int argc, char** argv) {
   struct Actor {
+    bool m_printPathes = false;
     bool m_printVolIDs = false;
     bool m_printPointers = false;
     bool m_printPositions = false;
@@ -659,11 +676,12 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         char c = ::tolower(av[i][0]);
         char* p = av[i];
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
-        if      ( ::strncmp(p,"volume_ids",3) == 0 ) m_printVolIDs = true;
-        else if ( ::strncmp(p,"positions",3) == 0  ) m_printPositions      = true;
-        else if ( ::strncmp(p,"materials",3) == 0  ) m_printMaterials      = true;
-        else if ( ::strncmp(p,"pointers",3) == 0   ) m_printPointers       = true;
-        else if ( ::strncmp(p,"sensitive",3) == 0  ) m_printSensitivesOnly = true;
+        if      ( ::strncmp(p,"volume_ids",3) == 0  ) m_printVolIDs         = true;
+        else if ( ::strncmp(p,"pathes",3)     == 0  ) m_printPathes         = true;
+        else if ( ::strncmp(p,"positions",3)  == 0  ) m_printPositions      = true;
+        else if ( ::strncmp(p,"materials",3)  == 0  ) m_printMaterials      = true;
+        else if ( ::strncmp(p,"pointers",3)   == 0  ) m_printPointers       = true;
+        else if ( ::strncmp(p,"sensitive",3)  == 0  ) m_printSensitivesOnly = true;
       }
     }
     ~Actor()  {
@@ -675,13 +693,17 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       }
     }
 
-    long dump(TGeoNode* ideal, TGeoNode* aligned,int level, PlacedVolume::VolIDs volids)  {
+    long dump(string prefix, TGeoNode* ideal, TGeoNode* aligned, int level, PlacedVolume::VolIDs volids)  {
       char fmt[128];
-      string opt_info;
       PlacedVolume pv(ideal);
       bool sensitive = false;
+      string opt_info, pref = prefix;
 
       ++m_numNodes;
+      if ( m_printPathes )   {
+        pref += "/";
+        pref += aligned->GetName();
+      }
       if ( m_printPositions || m_printVolIDs )  {
         stringstream log;
         if ( m_printPointers )    {
@@ -732,25 +754,25 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         char sens = pv.volume().isSensitive() ? 'S' : ' ';
         if ( m_printPointers )    {
           if ( ideal == aligned )  {
-            ::snprintf(fmt,sizeof(fmt),"%03d [Ideal:%p] %%-%ds %%-16s (%%s) \t %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p] %%-%ds %%-16s (%%s) \t %c %%s",
                        level+1,(void*)ideal,2*level+1,sens);
           }
           else  {
-            ::snprintf(fmt,sizeof(fmt),"%03d Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
                        level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
         else  {
           if ( ideal == aligned )  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%-16s (%%s) \t %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%-16s (%%s) \t %c %%s",
                        level+1,2*level+1,sens);
           }
           else  {
-            ::snprintf(fmt,sizeof(fmt),"%03d Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
                        level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
-        printout(INFO,"VolumeDump",fmt,"",
+        printout(INFO,"VolumeDump",fmt,pref.c_str(),"",
                  aligned->GetName(),
                  volume ? volume->GetShape()->IsA()->GetName() : "[Invalid Volume]",
                  opt_info.c_str());
@@ -761,19 +783,19 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         Material mat = vol.material();
         TGeoMaterial* mptr = mat->GetMaterial();
         bool ok = mat.A() == mptr->GetA() && mat.Z() == mptr->GetZ();
-        ::snprintf(fmt,sizeof(fmt),"%03d  %%-%ds Material: %%-16s A:%%f %%f   Z:%%f %%f",
+        ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds Material: %%-16s A:%%f %%f   Z:%%f %%f",
                    level+1,2*level+1);
         ++m_numMaterial;
         if ( !ok ) ++m_numMaterialERR;
         printout(ok ? INFO : ERROR,
-                 "VolumeDump", fmt, "", mat.name(), mat.A(), mptr->GetA(), mat.Z(), mptr->GetZ());
+                 "VolumeDump", fmt, pref.c_str(), "", mat.name(), mat.A(), mptr->GetA(), mat.Z(), mptr->GetZ());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         if ( ideal )   {
           TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
           const char* daughter_name    = ideal_daughter->GetName();
           TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
-          dump(ideal_daughter, aligned_daughter, level+1, volids);
+          dump(pref, ideal_daughter, aligned_daughter, level+1, volids);
         }
         else  {
           printout(ERROR,"VolumeDump"," <ERROR: INVALID IDEAL Translation matrix>: %s",aligned->GetName());
@@ -787,7 +809,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
   detail::tools::placementPath(description.world(), path);
   PlacedVolume  pv = detail::tools::findNode(description.world().placement(),place);
   Actor actor(argc,argv);
-  return actor.dump(description.world().placement().ptr(),pv.ptr(),0,PlacedVolume::VolIDs());
+  return actor.dump("",description.world().placement().ptr(),pv.ptr(),0,PlacedVolume::VolIDs());
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
@@ -805,17 +827,78 @@ DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
  *  \date    18/11/2016
  */
 static int detelement_processor(Detector& description, int argc, char** argv)   {
+  bool       recursive = true;
   DetElement det = description.world();
   unique_ptr<DetectorProcessor> proc(dd4hep::createProcessor<DetectorProcessor>(description, argc, argv));
   for(int i=0, num=std::min(argc,3); i<num; ++i)  {
-    if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
-      det = detail::tools::findElement(description, argv[++i]);
-      break;
+    if ( 0 == ::strncmp(argv[i],"-recursive",4) )
+      recursive = true;
+    else if ( 0 == ::strncmp(argv[i],"-no-recursive",7) )
+      recursive = false;
+    else if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
+      string path = argv[++i];
+      det = detail::tools::findElement(description, path);
+      if ( det.isValid() )   {
+        continue;
+      }
+      except("DetElementProcessor",
+             "++ The detector element path:%s is not part of this description!",
+             path.c_str());
+    }
+    else  {
+      except("DetElementProcessor","++ Unknown plugin argument: %s",argv[i]);
     }
   }
-  return DetectorScanner().scan(*proc,det);
+  return DetectorScanner().scan(*proc, det, 0, recursive);
 }
 DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
+
+// ======================================================================================
+/// Plugin function: Apply arbitrary functor callback on the tree of detector elements
+/**
+ *  Factory: dd4hep_DetElementProcessor
+ *
+ *  Invokation: -plugin dd4hep_DetElementProcessor 
+ *                      -detector /path/to/detElement (default: /world)
+ *                      -processor <factory-name> <processor-args>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    18/11/2016
+ */
+static int placed_volume_processor(Detector& description, int argc, char** argv)   {
+  bool         recursive = true;
+  PlacedVolume pv = description.world().placement();
+  unique_ptr<PlacedVolumeProcessor> proc(dd4hep::createProcessor<PlacedVolumeProcessor>(description, argc, argv));
+  
+  for(int i=0, num=std::min(argc,3); i<num; ++i)  {
+    if ( 0 == ::strncmp(argv[i],"-recursive",4) )
+      recursive = true;
+    else if ( 0 == ::strncmp(argv[i],"-no-recursive",7) )
+      recursive = false;
+    else if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
+      string path = argv[++i];
+      DetElement det = detail::tools::findElement(description, path);
+      if ( det.isValid() )  {
+        pv = det.placement();
+        if ( pv.isValid() )  {
+          continue;
+        }
+        except("PlacedVolumeProcessor",
+               "++ The detector element with path:%s has no valid placement!",
+               path.c_str());
+      }
+      except("PlacedVolumeProcessor",
+             "++ The detector element path:%s is not part of this description!",
+             path.c_str());
+    }
+    else  {
+      except("PlacedVolumeProcessor","++ Unknown plugin argument: %s",argv[i]);
+    }
+  }
+  return PlacedVolumeScanner().scan(*proc, pv, 0, recursive);
+}
+DECLARE_APPLY(DD4hep_PlacedVolumeProcessor,placed_volume_processor)
 
 /// Basic entry point to print out the detector element hierarchy
 /**

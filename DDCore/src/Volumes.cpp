@@ -304,6 +304,14 @@ static TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
 }
 
 /// Default constructor
+PlacedVolume::Processor::Processor()   {
+}
+
+/// Default destructor
+PlacedVolume::Processor::~Processor()   {
+}
+
+/// Default constructor
 PlacedVolumeExtension::PlacedVolumeExtension()
   : TGeoExtension(), magic(0), refCount(0), volIDs() {
   magic = magic_word();
@@ -504,7 +512,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   }
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
-  Int_t id = a ? a->GetEntries() : 0;
+  Int_t id = 5*(a ? a->GetEntries() : 0);
   if (transform && transform != detail::matrix::_identity()) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
@@ -521,7 +529,9 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
     }
   }
   parent->AddNode(daughter, id, transform);
-  geo_node_t* n = static_cast<geo_node_t*>(parent->GetNode(id));
+  //geo_node_t* n = static_cast<geo_node_t*>(parent->GetNode(id));
+  TString nam_id = TString::Format("%s_%d", daughter->GetName(), id);
+  geo_node_t* n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
   n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
 }

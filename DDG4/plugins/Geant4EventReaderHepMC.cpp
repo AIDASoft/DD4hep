@@ -232,7 +232,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
   primary_vertex->z = 0;
 
   if ( !m_events->ok() )  {
-    return EVENT_READER_IO_ERROR;
+    return EVENT_READER_EOF;
   }
   else if ( m_events->read() )  {
     EventStream::Particles& parts = m_events->particles();
@@ -266,18 +266,18 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
 
       //ad particles to the 'primary vertex'
       if ( p->parents.size() == 0 )  {
-	PropertyMask status(p->status);
-	if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
-	  primary_vertex->in.insert(p->id);  // Beam particles and primary quarks etc.
-	else
-	  primary_vertex->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+        PropertyMask status(p->status);
+        if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+          primary_vertex->in.insert(p->id);  // Beam particles and primary quarks etc.
+        else
+          primary_vertex->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
       }
       
     }
     ++m_currEvent;
     return EVENT_READER_OK;
   }
-  return EVENT_READER_IO_ERROR;
+  return EVENT_READER_EOF;
 }
 
 void HepMC::fix_particles(EventStream& info)  {
@@ -436,7 +436,8 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
   else if ( stat == 0x3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
   else if ( stat == 0x4 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
   else if ( stat == 0xB ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
-
+  p->genStatus = stat&G4PARTICLE_GEN_STATUS_MASK;
+  
   // read flow patterns if any exist
   for (int i = 0; i < size; ++i ) {
     input >> p->colorFlow[0] >> p->colorFlow[1];
@@ -629,8 +630,8 @@ int HepMC::read_pdf(EventStream &, istringstream & input)  {
     int pdf_id1=0, pdf_id2=0;
     input >> pdf_id1 >> pdf_id2;
     /*
-    pdf->set_pdf_id1( pdf_id1 );
-    pdf->set_pdf_id2( pdf_id2 );
+      pdf->set_pdf_id1( pdf_id1 );
+      pdf->set_pdf_id2( pdf_id2 );
     */
   }
   return input.fail() ? 0 : 1;
