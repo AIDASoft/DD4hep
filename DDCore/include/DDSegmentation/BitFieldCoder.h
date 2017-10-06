@@ -24,7 +24,13 @@ namespace DDSegmentation {
   
     public :
   
-      /** The default c'tor.
+      BitFieldElement() = default ;
+      ~BitFieldElement() = default ;
+      BitFieldElement(const BitFieldElement&) = default ;
+      BitFieldElement(BitFieldElement&&) = default ;
+
+
+      /** The standard c'tor.
        * @param  name          name of the field
        * @param  offset        offset of field
        * @param  signedWidth   width of field, negative if field is signed
