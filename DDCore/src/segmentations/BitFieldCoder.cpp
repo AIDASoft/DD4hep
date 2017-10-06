@@ -103,8 +103,8 @@ namespace DDSegmentation {
     
     for(unsigned i=0;i<_fields.size();i++){
       
-      if( hb < ( _fields[i]->offset() + _fields[i]->width() ) )
-	hb = _fields[i]->offset() + _fields[i]->width()  ;
+      if( hb < ( _fields[i].offset() + _fields[i].width() ) )
+	hb = _fields[i].offset() + _fields[i].width()  ;
     }    
     return hb ;
   }
@@ -118,7 +118,7 @@ namespace DDSegmentation {
       
       if( i != 0 )   os << "," ;
 
-      os << _fields[i]->name() <<  ":" << _fields[i]->value(bitfield) ;
+      os << _fields[i].name() <<  ":" << _fields[i].value(bitfield) ;
 
     }
     return os.str() ;
@@ -132,54 +132,39 @@ namespace DDSegmentation {
       
       if( i != 0 )   os << "," ;
       
-      os << _fields[i]->name() <<  ":"
-	 << _fields[i]->offset() << ":" ;
+      os << _fields[i].name() <<  ":"
+	 << _fields[i].offset() << ":" ;
       
-      if(  _fields[i]->isSigned()  )  
+      if(  _fields[i].isSigned()  )
 	os << "-" ;
       
-      os  << _fields[i]->width() ;
+      os  << _fields[i].width() ;
       
     }
-//     for( IndexMap::const_iterator it = _map.begin()  ;
-// 	 it !=  _map.end() ; ++it ){
 
-//       if( it !=  _map.begin() )
-// 	os << "," ;
-      
-//       os << it->first <<  ":"
-// 	 << _fields[ it->second ]->offset() << ":" ;
-      
-//       if(  _fields[ it->second ]->isSigned()  )  
-// 	os << "-" ;
-
-//       os  << _fields[ it->second ]->width() ;
-
-//     }
-    
     return os.str() ;
   }
 
   void BitFieldCoder::addField( const std::string& name,  unsigned offset, int width ){
 
       
-    BitFieldElement* bfv =  new  BitFieldElement( name, offset, width ) ;
-
-    _fields.push_back(  bfv ) ;
+    _fields.push_back( BitFieldElement( name, offset, width ) ) ;
     
+    BitFieldElement& bfv = _fields.back() ;
+
     _map[ name ] = _fields.size()-1 ;
 
-    if( _joined & bfv->mask()  ) {
+    if( _joined & bfv.mask()  ) {
       
       std::stringstream s ;
       s << " BitFieldElement::addField(" << name << "): bits already used " << std::hex << _joined
-	<< " for mask " <<  bfv->mask()   ; 
+	<< " for mask " <<  bfv.mask() ;
 
       throw( std::runtime_error( s.str() ) ) ;
       
     }
 
-    _joined |= _fields.back()->mask() ;
+    _joined |= bfv.mask() ;
 
   }
 

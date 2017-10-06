@@ -42,6 +42,30 @@ int main(int /* argc */, char** /* argv */ ){
 
     test(  field , long64(0xbebafecacafebabeUL)  , " same value 0xbebafecacafebabeUL from individual initialization " ); 
 
+
+    // make a copy for testing the access
+    const BitFieldCoder bf2 = bf ;
+
+    test( bf2.get( field, "layer") ,  373 , " acces field value: layer" );
+    test( bf2.get( field, "module"),  254 , " acces field value: module" );
+    test( bf2.get( field, "sensor"),  202 , " acces field value: sensor" );
+    test( bf2.get( field, "side"),    1   , " acces field value: side" );
+    test( bf2.get( field, "system"),  30  , " acces field value: system" );
+    test( bf2.get( field, "x"),      -310 , " acces field value: x" );
+    test( bf2.get( field, "y"),    -16710 , " acces field value: y" );
+
+
+
+
+    test( bf2.get( field, bf2.index( "layer")) ,  373 , " acces field value: layer" );
+    test( bf2.get( field, bf2.index( "module")),  254 , " acces field value: module" );
+    test( bf2.get( field, bf2.index( "sensor")),  202 , " acces field value: sensor" );
+    test( bf2.get( field, bf2.index( "side")),    1   , " acces field value: side" );
+    test( bf2.get( field, bf2.index( "system")),  30  , " acces field value: system" );
+    test( bf2.get( field, bf2.index( "x")),      -310 , " acces field value: x" );
+    test( bf2.get( field, bf2.index( "y")),    -16710 , " acces field value: y" );
+
+
     // --------------------------------------------------------------------
 
 
