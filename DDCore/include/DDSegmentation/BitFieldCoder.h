@@ -23,7 +23,6 @@ namespace DDSegmentation {
     class BitFieldElement{
   
     public :
-      virtual ~BitFieldElement() {}
   
       /** The default c'tor.
        * @param  name          name of the field
@@ -102,14 +101,11 @@ namespace DDSegmentation {
     
     typedef std::map<std::string, unsigned int> IndexMap ;
 
-    /** No default c'tor */
-    BitFieldCoder() {} ;
+    BitFieldCoder() = default ;
+    ~BitFieldCoder() = default ;
+    BitFieldCoder(const BitFieldCoder&) = default ;
+    BitFieldCoder(BitFieldCoder&&) = default ;
 
-    ~BitFieldCoder() {  // clean up
-      for(unsigned i=0;i<_fields.size();i++){
-	delete _fields[i] ;
-      }
-  }
     
     /** The c'tor takes an initialization string of the form:<br>
      *  \<fieldDesc\>[,\<fieldDesc\>...]<br>
@@ -148,27 +144,27 @@ namespace DDSegmentation {
     /** get value of sub-field specified by index 
      */
     long64 get(long64 bitfield, size_t index) const { 
-      return _fields.at(index)->value( bitfield )  ; 
+      return _fields.at(index).value( bitfield )  ;
     }
     
     /** Access to field through name .
      */
     long64 get(long64 bitfield, const std::string& name) const {
 
-      return _fields.at( index( name ) )->value( bitfield ) ;
+      return _fields.at( index( name ) ).value( bitfield ) ;
     }
 
     /** set value of sub-field specified by index 
      */
     void set(long64& bitfield, size_t index, ulong64 value) const { 
-      _fields.at(index)->set( bitfield , value )  ; 
+      _fields.at(index).set( bitfield , value )  ;
     }
     
     /** Access to field through name .
      */
     void set(long64& bitfield, const std::string& name, ulong64 value) const {
 
-      _fields.at( index( name ) )->set( bitfield, value ) ;
+      _fields.at( index( name ) ).set( bitfield, value ) ;
     }
 
 
@@ -190,14 +186,14 @@ namespace DDSegmentation {
      */
     const BitFieldElement& operator[](const std::string& name) const { 
 
-      return *_fields[ index( name ) ] ;
+      return _fields[ index( name ) ] ;
     }
 
     /** Const Access to field through index .
      */
     const BitFieldElement& operator[](unsigned index) const { 
 
-      return *_fields[ index ] ;
+      return _fields[ index ] ;
     }
 
     /** Return a valid description string of all fields
@@ -208,7 +204,7 @@ namespace DDSegmentation {
      */
     std::string valueString(ulong64 bitfield) const ;
 
-    const std::vector<BitFieldElement*>& fields()  const  {
+    const std::vector<BitFieldElement>& fields()  const  {
       return _fields;
     }
     
@@ -233,7 +229,7 @@ namespace DDSegmentation {
 
     // -------------- data members:--------------
 
-    std::vector<BitFieldElement*> _fields{} ;
+    std::vector<BitFieldElement> _fields{} ;
     IndexMap  _map{} ;
     long64    _joined{} ;
 
