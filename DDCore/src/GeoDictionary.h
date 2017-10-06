@@ -19,6 +19,7 @@
 // Framework include files
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Shapes.h"
+#include "DD4hep/VolumeProcessor.h"
 
 // C/C++ include files
 #include <vector>
@@ -44,6 +45,8 @@ using namespace std;
 #pragma link C++ class dd4hep::Handle<TGeoVolume>+;
 
 #pragma link C++ class dd4hep::PlacedVolume+;
+#pragma link C++ class dd4hep::PlacedVolume::Processor+;
+
 #ifndef __ROOTCLING__
 template vector<pair<string, int> >;
 template vector<pair<string, int> >::iterator;
@@ -121,6 +124,9 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class dd4hep::SubtractionSolid+;
 #pragma link C++ class dd4hep::UnionSolid+;
 #pragma link C++ class dd4hep::IntersectionSolid+;
+
+#pragma link C++ class dd4hep::PlacedVolumeProcessor+;
+#pragma link C++ class dd4hep::PlacedVolumeScanner+;
 
 #endif  // __CINT__
 #endif  /* DD4HEP_DDCORE_ROOTDICTIONARY_H  */

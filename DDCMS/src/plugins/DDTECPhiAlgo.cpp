@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -32,7 +28,6 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream  str;
   Namespace     ns(ctxt, e, true);
   AlgoArguments args(ctxt, e);
   Volume        mother      = ns.volume(args.parentName());
@@ -45,18 +40,16 @@ static long algorithm(Detector& /* description */,
   int           startCopyNo = args.find("StartCopyNo") ? args.value<int>("StartCopyNo") : 1; //Start copy number
   int           incrCopyNo  = args.find("IncrCopyNo") ? args.value<int>("IncrCopyNo") : 1;  //Increment in copy number
 
-  str << "debug: Parameters for "
+  LogDebug("TECGeom") << "debug: Parameters for "
       << "positioning--" << "\tStartAngle " 
       << startAngle/CLHEP::deg << "\tIncrAngle " 
       << incrAngle/CLHEP::deg << "\tZ in/out " << zIn << ", " 
       << zOut 	      << "\tCopy Numbers " << number 
       << " Start/Increment " << startCopyNo << ", " 
       << incrCopyNo;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECPhiAlgo",str);
-  str << "debug: Parent " << mother.name() 
+  LogDebug("TECGeom") << "debug: Parent " << mother.name() 
       << "\tChild " << child.name() << " NameSpace " 
       << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECPhiAlgo",str);
 
   if (number > 0) {
     double theta  = 90.*CLHEP::deg;
@@ -67,10 +60,9 @@ static long algorithm(Detector& /* description */,
       Rotation3D rotation = make_rotation3D(theta, phix, theta, phiy, 0, 0);
       Position   tran(0., 0., (i%2 == 0) ? zIn : zOut);
       /* PlacedVolume pv = */ mother.placeVolume(child,Transform3D(rotation,tran));
-      str << "test: " << child.name() <<" number "
+      LogDebug("TECGeom") << "test: " << child.name() <<" number "
           << copyNo << " positioned in " << mother.name() <<" at "
           << tran << " with " << rotation;
-      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTECPhiAlgo",str);
       copyNo += incrCopyNo;
     }
   }
@@ -78,4 +70,4 @@ static long algorithm(Detector& /* description */,
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTECPhiAlgo,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTECPhiAlgo,algorithm)

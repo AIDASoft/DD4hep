@@ -131,8 +131,6 @@ namespace dd4hep {
     inline ParticleExtension::~ParticleExtension()  {    }
     /// Default constructor
     inline Geant4Particle::Geant4Particle()   {     }
-    /// Copy constructor
-    inline Geant4Particle::Geant4Particle(const Geant4Particle&)   {  NO_CALL   }
     /// Default destructor
     inline Geant4Particle::~Geant4Particle()   {     }
     /// Remove daughter from set

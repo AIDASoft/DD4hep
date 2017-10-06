@@ -124,7 +124,7 @@ dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT:
       return EVENT_READER_OK;
     }
   }
-  return EVENT_READER_ERROR;
+  return EVENT_READER_EOF;
 }
 
 /// Set the parameters for the class, in particular the name of the MCParticle

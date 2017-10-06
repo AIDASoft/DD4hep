@@ -141,6 +141,24 @@ namespace dd4hep {
     typedef PlacedVolumeExtension         Object;
     typedef PlacedVolumeExtension::VolIDs VolIDs;
 
+    /// Abstract base for processing callbacks to PlacedVolume objects
+    /** Helper to facilitate building plugins, which instrument
+     *  placements and volumes e.g. during geometry scans.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CORE
+     */
+    class Processor {
+    public:
+      /// Default constructor
+      Processor();
+      /// Default destructor
+      virtual ~Processor();
+      /// Container callback for object processing
+      virtual int processPlacement(PlacedVolume pv) = 0;
+    };
+
     /// Default constructor
     PlacedVolume() = default;
     /// Copy assignment

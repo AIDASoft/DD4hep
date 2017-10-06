@@ -226,6 +226,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.reason       = prim_part->reason|reason;
     m_currTrack.mask         = prim_part->mask;
     m_currTrack.status       = prim_part->status;
+    m_currTrack.genStatus    = prim_part->genStatus;
     m_currTrack.spin[0]      = prim_part->spin[0];
     m_currTrack.spin[1]      = prim_part->spin[1];
     m_currTrack.spin[2]      = prim_part->spin[2];
@@ -241,6 +242,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.reason       = reason;
     m_currTrack.mask         = 0;
     m_currTrack.status       = G4PARTICLE_SIM_CREATED;
+    m_currTrack.genStatus    = 0;
     m_currTrack.spin[0]      = 0;
     m_currTrack.spin[1]      = 0;
     m_currTrack.spin[2]      = 0;
