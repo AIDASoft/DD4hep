@@ -199,8 +199,8 @@ namespace dd4hep {
           parent_sd = m_detDesc.sensitiveDetector(e.name());
         }
         //printout(INFO, "VolumeManager", "++ Executing %s plugin manager version",typ ? "***NEW***" : "***OLD***");
-        //for (const auto& i : c )  {
-          DetElement de = e;//i.second;
+        for (const auto& i : e.children() )  {
+          DetElement de = i.second;
           PlacedVolume pv = de.placement();
           if (pv.isValid()) {
             Chain chain;
@@ -208,12 +208,11 @@ namespace dd4hep {
             SensitiveDetector sd = parent_sd;
             m_entries.clear();
             scanPhysicalVolume(de, de, pv, coding, sd, chain);
-            //continue;
-            return;
+            continue;
           }
           printout(WARNING, "VolumeManager", "++ Detector element %s of type %s has no placement.", 
                    de.name(), de.type().c_str());
-          //}
+        }
       }
       /// Scan a single physical volume and look for sensitive elements below
       size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
