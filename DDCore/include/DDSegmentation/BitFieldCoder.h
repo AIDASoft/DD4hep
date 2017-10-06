@@ -24,7 +24,8 @@ namespace DDSegmentation {
   
     public :
   
-      BitFieldElement() = default ;
+      /// The empty I/O c'tor.
+      BitFieldElement() = default;
       ~BitFieldElement() = default ;
       BitFieldElement(const BitFieldElement&) = default ;
       BitFieldElement(BitFieldElement&&) = default ;
