@@ -22,6 +22,16 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /** Helper function to get attribute or return the default.
+   *  If the hasAttr does not return true then the supplied default value is returned.
+   *  This is useful when building a detector and you want to supply a default value.
+   */
+  template <typename T>
+    T getAttrOrDefault(const dd4hep::xml::Element& e, const dd4hep::xml::XmlChar* attr_name, T default_value)
+    {
+      return (e.hasAttr(attr_name)) ? e.attr<T>(attr_name) : default_value;
+    }
+
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace detail {
 
