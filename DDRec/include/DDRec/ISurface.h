@@ -138,7 +138,8 @@ namespace dd4hep { namespace rec {
       OrthogonalToZ,
       Invisible,
       Measurement1D,
-      Cone
+      Cone,
+      Unbounded
     } ;
     
     ///default c'tor
@@ -222,6 +223,9 @@ namespace dd4hep { namespace rec {
     /// true if the measurement is only 1D, i.e. the second direction v is not used
     bool isMeasurement1D() const { return _bits[ SurfaceType::Measurement1D ] ; } 
 
+    /// true if the surface is unbounded ( ISurface::insideBounds() does not check volume boundaries)
+
+    bool isUnbounded() const { return  _bits[ SurfaceType::Unbounded ] ; } 
 
     /// true if all properties of otherType are also true for this type.
     bool isSimilar( const SurfaceType& otherType) const {
@@ -286,7 +290,9 @@ namespace dd4hep { namespace rec {
        << "] zCylinder["     << t.isZCylinder() 
        << "] zCone["         << t.isZCone() 
        << "] zPlane["        << t.isZPlane()  
-       << "] zDisk["         << t.isZDisk() << "]"  ; 
+       << "] zDisk["         << t.isZDisk()
+       << "] unbounded["     << t.isUnbounded()
+       << "]"  ; 
 
     return os ;
   }
