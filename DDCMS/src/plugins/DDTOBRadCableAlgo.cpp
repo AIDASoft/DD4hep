@@ -104,7 +104,7 @@ static long algorithm(Detector& /* description */,
                         << " R torus " << coolR1[i];
     Volume coolManifoldLogic_a = ns.addVolume(Volume(name,solid,ns.material(coolM1)));
     Position r1(0, 0, (dz-diskDz));
-    disk.placeVolume(coolManifoldLogic_a,r1);  // i+1
+    disk.placeVolume(coolManifoldLogic_a,i+1,r1);  // i+1
     LogDebug("TOBGeom") << name << " number " << i+1 
                         << " positioned in " << disk.name() << " at " << r1
                         << " with no rotation";
@@ -118,7 +118,7 @@ static long algorithm(Detector& /* description */,
                         << " with Rin " << coolRin << " Rout " << coolRout2
                         << " R torus " << coolR1[i];
     Volume coolManifoldFluidLogic_a = ns.addVolume(Volume(name,solid,ns.material(coolM2)));
-    disk.placeVolume(coolManifoldFluidLogic_a); // i+1
+    disk.placeVolume(coolManifoldFluidLogic_a,i+1); // i+1
     LogDebug("TOBGeom") << name << " number " << i+1 
                         << " positioned in " << coolM2
                         << " with no translation and no rotation";
@@ -133,7 +133,7 @@ static long algorithm(Detector& /* description */,
                         << " R torus " << coolR2[i];
     Volume coolManifoldLogic_r = ns.addVolume(Volume(name,solid,ns.material(coolM1)));
     r1 = Position(0, 0, (dz-diskDz));
-    disk.placeVolume(coolManifoldLogic_r, r1); // i+1
+    disk.placeVolume(coolManifoldLogic_r, i+1, r1); // i+1
     LogDebug("TOBGeom") << name << " number " << i+1 
                         << " positioned in " << disk.name() << " at " << r1
                         << " with no rotation";
@@ -147,7 +147,7 @@ static long algorithm(Detector& /* description */,
                         << " with Rin " << coolRin << " Rout " << coolRout2
                         << " R torus " << coolR2[i];
     Volume coolManifoldFluidLogic_r = ns.addVolume(Volume(name, solid, ns.material(coolM2)));
-    disk.placeVolume(coolManifoldFluidLogic_r); // i+1
+    disk.placeVolume(coolManifoldFluidLogic_r,i+1); // i+1
     LogDebug("TOBGeom") << name << " number " << i+1 
                         << " positioned in " << coolM2
                         << " with no translation and no rotation";
@@ -164,7 +164,7 @@ static long algorithm(Detector& /* description */,
                         << " ZHalf " << dz;
     Volume connLogic = ns.addVolume(Volume(name, solid, ns.material(connM[i])));
     Position r2(0, 0, (dz-diskDz));
-    disk.placeVolume(connLogic,r2); // i+1
+    disk.placeVolume(connLogic,i+1,r2); // i+1
     LogDebug("TOBGeom") << name << " number " << i+1 
                         << " positioned in " << disk.name() << " at " << r2 
                         << " with no rotation";
@@ -195,7 +195,7 @@ static long algorithm(Detector& /* description */,
                           << "\tRmin = " << pgonRmin[ii] << "\tRmax = " << pgonRmax[ii];
     Volume cableLogic = ns.addVolume(Volume(name, solid, ns.material(cableM[i])));
     Position r3(0, 0, (diskDz-(i+0.5)*cableT));
-    disk.placeVolume(cableLogic, r3); // i+1
+    disk.placeVolume(cableLogic, i+1, r3); // i+1
     LogDebug("TOBGeom") << name << " number " <<i+1
                         << " positioned in " << disk.name() << " at " << r3
                         << " with no rotation";

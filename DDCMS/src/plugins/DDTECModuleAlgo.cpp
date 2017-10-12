@@ -24,11 +24,11 @@ using namespace dd4hep;
 using namespace dd4hep::cms;
 
 static void doPos(ParsingContext& ctxt, Volume toPos, Volume mother, 
-                  int /* copyNr */, double x, double y, double z, 
+                  int copyNr, double x, double y, double z, 
                   const string& rotName)
 {
   Namespace ns(ctxt);
-  mother.placeVolume(toPos,Transform3D(ns.rotation(rotName),Position(x,y,z)));
+  mother.placeVolume(toPos,copyNr,Transform3D(ns.rotation(rotName),Position(x,y,z)));
   LogDebug("TECGeom") << "Volume: " << mother.name() << " positioned daughter "<< mother.name();
 }
 
@@ -592,7 +592,7 @@ static long algorithm(Detector& /* description */,
         << bl1 << ", " << h1 << ", " << dz;
     Volume bridgeGap(name, solid, ns.material(genMat));
     ns.addVolumeNS(bridgeGap);
-    /* PlacedVolume pv = */ bridge.placeVolume(bridgeGap);
+    /* PlacedVolume pv = */ bridge.placeVolume(bridgeGap, 1);
     LogDebug("TECGeom") << "Solid: " << bridgeGap.name() 
         << " number 1 positioned in " << bridge.name()
         << " at (0,0,0) with no rotation";

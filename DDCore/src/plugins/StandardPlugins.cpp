@@ -46,6 +46,52 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
+
+namespace  {
+  struct ProcessorArgs   {
+    bool use = false;
+    int  start = 0, end = 0, argc = 0, count=0;
+    std::vector<char*> argv;
+    ProcessorArgs(int ac, char** av)    {
+      for(int i=0; i<ac; ++i)  {
+        if ( 0 == ::strncmp(av[i],"-processor",6) )   {
+          use = true;
+          start = i;
+        }
+        if ( use )   {
+          ++argc; ++count; end = i;
+          if ( 0 == ::strncmp(av[i],"-end-processor",6) )  {
+            argv.push_back(av[i]);
+            return;
+          }
+          else if ( 0 == ::strncmp(av[i],"-end-plugin",4) )  { // End of current plugin
+            argv.push_back((char*)"-end-processor");
+            return;
+          }
+          else if ( 0 == ::strncmp(av[i],"-plugin",4) )  {     // Start of next plugin
+            argv.push_back((char*)"-end-processor");
+            return;
+          }
+          argv.push_back(av[i]);
+        }
+      }
+    }
+  };
+}
+
+/// Dummy plugin to be able to invoke the plugin runner and e.g. only test the geometry
+/**
+ *  Factory: DD4hep_DummyPlugin
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long dummy_plugin(Detector& , int, char**) {
+  return 1;
+}
+DECLARE_APPLY(DD4hep_DummyPlugin,dummy_plugin)
+
 /// Basic entry point to create a Detector instance
 /**
  *  Factory: Detector_constructor
@@ -61,7 +107,7 @@ DECLARE_CONSTRUCTOR(Detector_constructor,create_description_instance)
 
 /// Basic entry point to display the currently loaded geometry using the ROOT OpenGL viewer
 /**
- *  Factory: DD4hepGeometryDisplay
+ *  Factory: DD4hep_GeometryDisplay
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -97,27 +143,32 @@ static long display(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(DD4hepGeometryDisplay,display)
+DECLARE_APPLY(DD4hep_GeometryDisplay,display)
 
 /// Basic entry point to start the ROOT interpreter.
 /**
- *  Factory: dd4hepRint
+ *  Factory: DD4hep_Rint
  *
  *  \author  M.Frank
  *  \version 1.0
  *  \date    01/04/2014
  */
 static long run_interpreter(Detector& /* description */, int argc, char** argv) {
-  pair<int, char**> a(argc,argv);
-  TRint app("dd4hep", &a.first, a.second);
+  if ( 0 == gApplication )  {
+    pair<int, char**> a(argc,argv);
+    gApplication = new TRint("DD4hepRint", &a.first, a.second);
+    printout(INFO,"DD4hepRint","++ Created ROOT interpreter instance for DD4hepUI.");
+  }
   for(int i=0; i<argc; ++i)   {
     printout(INFO,"DD4hepRint","Excecute[%d]: %s",i,argv[i]);
     gInterpreter->ProcessLine(argv[i]);
   }
-  app.Run();
+  if ( !gApplication->IsRunning() )  {
+    gApplication->Run();
+  }
   return 1;
 }
-DECLARE_APPLY(DD4hepRint,run_interpreter)
+DECLARE_APPLY(DD4hep_Rint,run_interpreter)
 
 /// Basic entry point to start the ROOT interpreter.
 /**
@@ -125,7 +176,7 @@ DECLARE_APPLY(DD4hepRint,run_interpreter)
  *  in the interpreter with the global variable 
  *  dd4hep::DD4hepUI* gdd4hepUI;
  *
- *  Factory: DD4hepInteractiveUI
+ *  Factory: DD4hep_InteractiveUI
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -141,13 +192,13 @@ static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
            "to interact with the detector description.");
   return 1;
 }
-DECLARE_APPLY(DD4hepInteractiveUI,root_ui)
+DECLARE_APPLY(DD4hep_InteractiveUI,root_ui)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**
  *  Dump the elment table to stdout or file.
  *
- *  Factory: DD4hepElementTable -format xml/text(default) -output <file-name>
+ *  Factory: DD4hep_ElementTable -format xml/text(default) -output <file-name>
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -196,7 +247,7 @@ static long root_elements(Detector& description, int argc, char** argv) {
       if ( c == 't' && i+1<argc ) type = argv[++i];
       else if ( c == 'o' && i+1<argc ) output = argv[++i];
       else  {
-        ::printf("DD4hepElementTable -opt [-opt]                         \n"
+        ::printf("DD4hep_ElementTable -opt [-opt]                        \n"
                  "  -type   <string>    Output format: text or xml       \n"
                  "  -output <file-name> Output file specifier (xml only) \n"
                  "\n");
@@ -211,7 +262,7 @@ static long root_elements(Detector& description, int argc, char** argv) {
   if ( type == "xml" )  {
      const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   Linear collider detector description in C++       ++++\n"
+    "      ++++   Generic detector description in C++               ++++\n"
     "      ++++   dd4hep Detector description generator.            ++++\n"
     "      ++++                                                     ++++\n"
     "      ++++   Parser:"
@@ -246,7 +297,7 @@ static long root_elements(Detector& description, int argc, char** argv) {
   }
   return 1;
 }
-DECLARE_APPLY(DD4hepElementTable,root_elements)
+DECLARE_APPLY(DD4hep_ElementTable,root_elements)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**
@@ -316,7 +367,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
       if ( c == 't' && i+1<argc ) type = argv[++i];
       else if ( c == 'o' && i+1<argc ) output = argv[++i];
       else  {
-        ::printf("DD4hepElementTable -opt [-opt]                         \n"
+        ::printf("DD4hep_MaterialTable -opt [-opt]                       \n"
                  "  -type   <string>    Output format: text or xml       \n"
                  "  -output <file-name> Output file specifier (xml only) \n"
                  "\n");
@@ -331,14 +382,14 @@ static long root_materials(Detector& description, int argc, char** argv) {
   if ( type == "xml" )  {
      const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   Linear collider detector description in C++       ++++\n"
+    "      ++++   Generic detector description in C++               ++++\n"
     "      ++++   dd4hep Detector description generator.            ++++\n"
     "      ++++                                                     ++++\n"
     "      ++++   Parser:"
     XML_IMPLEMENTATION_TYPE
     "                ++++\n"
     "      ++++                                                     ++++\n"
-    "      ++++   Table of elements as defined in ROOT: " ROOT_RELEASE  "     ++++\n"
+    "      ++++   Table of elements as defined in ROOT: " ROOT_RELEASE "     ++++\n"
     "      ++++                                                     ++++\n"
     "      ++++                              M.Frank CERN/LHCb      ++++\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
@@ -361,7 +412,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
   }
   return 1;
 }
-DECLARE_APPLY(DD4hepMaterialTable,root_materials)
+DECLARE_APPLY(DD4hep_MaterialTable,root_materials)
 
 /// Basic entry point to interprete an XML document
 /**
@@ -370,7 +421,7 @@ DECLARE_APPLY(DD4hepMaterialTable,root_materials)
  *  - The processing hint (build type) is passed as optional 
  *    second argument.
  *
- *  Factory: DD4hepCompactLoader
+ *  Factory: DD4hep_CompactLoader
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -393,7 +444,7 @@ static long load_compact(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(DD4hepCompactLoader,load_compact)
+DECLARE_APPLY(DD4hep_CompactLoader,load_compact)
 
 /// Basic entry point to process any XML document.
 /**
@@ -404,7 +455,7 @@ DECLARE_APPLY(DD4hepCompactLoader,load_compact)
  *
  *  The root tag defines the plugin to interprete it.
  *
- *  Factory: DD4hepXMLLoader
+ *  Factory: DD4hep_XMLLoader
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -427,7 +478,7 @@ static long load_xml(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(DD4hepXMLLoader,load_xml)
+DECLARE_APPLY(DD4hep_XMLLoader,load_xml)
 
 /// Basic entry point to process any pre-parsed XML document.
 /**
@@ -438,7 +489,7 @@ DECLARE_APPLY(DD4hepXMLLoader,load_xml)
  *
  *  The root tag defines the plugin to interprete it.
  *
- *  Factory: DD4hepXMLProcessor
+ *  Factory: DD4hep_XMLProcessor
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -466,11 +517,11 @@ static long process_xml_doc(Detector& description, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(DD4hepXMLProcessor,process_xml_doc)
+DECLARE_APPLY(DD4hep_XMLProcessor,process_xml_doc)
 
 /// Basic entry point to load the volume manager object
 /**
- *  Factory: DD4hepVolumeManager
+ *  Factory: DD4hep_VolumeManager
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -495,11 +546,12 @@ static long load_volmgr(Detector& description, int, char**) {
   }
   return 0;
 }
+DECLARE_APPLY(DD4hep_VolumeManager,load_volmgr)
 DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
 /// Basic entry point to dump a dd4hep geometry to a ROOT file
 /**
- *  Factory: DD4hepGeometry2ROOT
+ *  Factory: DD4hep_Geometry2ROOT
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -529,11 +581,11 @@ static long dump_geometry2root(Detector& description, int argc, char** argv) {
   printout(ERROR,"Geometry2ROOT","+++ No output file name given.");
   return 0;
 }
-DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
+DECLARE_APPLY(DD4hep_Geometry2ROOT,dump_geometry2root)
 
 /// Basic entry point to load a dd4hep geometry directly from the ROOT file
 /**
- *  Factory: DD4hepRootLoader
+ *  Factory: DD4hep_RootLoader
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -547,14 +599,14 @@ static long load_geometryFromroot(Detector& description, int argc, char** argv) 
       return 1;
     }
   }
-  printout(ERROR,"DD4hepRootLoader","+++ No input file name given.");
+  printout(ERROR,"DD4hep_RootLoader","+++ No input file name given.");
   return 0;
 }
-DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
+DECLARE_APPLY(DD4hep_RootLoader,load_geometryFromroot)
 
 /// Basic entry point to check sensitive detector strictures
 /**
- *  Factory: DD4hepCheckDetectors
+ *  Factory: DD4hep_CheckDetectors
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -564,7 +616,7 @@ static long check_detectors(Detector& description, int /* argc */, char** /* arg
   DD4hepRootCheck check(&description);
   return check.checkDetectors();
 }
-DECLARE_APPLY(DD4hepCheckDetectors,check_detectors)
+DECLARE_APPLY(DD4hep_CheckDetectors,check_detectors)
 
 /// Basic entry point to check sensitive detector strictures
 /**
@@ -578,11 +630,11 @@ static long check_sensitives(Detector& description, int /* argc */, char** /* ar
   DD4hepRootCheck check(&description);
   return check.checkSensitives();
 }
-DECLARE_APPLY(DD4hepCheckSensitives,check_sensitives)
+DECLARE_APPLY(DD4hep_CheckSensitives,check_sensitives)
 
 /// Basic entry point to check sensitive detector strictures
 /**
- *  Factory: DD4hepCheckSegmentations
+ *  Factory: DD4hep_CheckSegmentations
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -592,11 +644,11 @@ static long check_segmentations(Detector& description, int /* argc */, char** /*
   DD4hepRootCheck check(&description);
   return check.checkSegmentations();
 }
-DECLARE_APPLY(DD4hepCheckSegmentations,check_segmentations)
+DECLARE_APPLY(DD4hep_CheckSegmentations,check_segmentations)
 
 /// Basic entry point to check sensitive detector strictures
 /**
- *  Factory: DD4hepCheckReadouts
+ *  Factory: DD4hep_CheckReadouts
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -606,11 +658,11 @@ static long check_readouts(Detector& description, int /* argc */, char** /* argv
   DD4hepRootCheck check(&description);
   return check.checkReadouts();
 }
-DECLARE_APPLY(DD4hepCheckReadouts,check_readouts)
+DECLARE_APPLY(DD4hep_CheckReadouts,check_readouts)
 
 /// Basic entry point to check IDDescriptors of the detector object
 /**
- *  Factory: DD4hepCheckIdspecs
+ *  Factory: DD4hep_CheckIdspecs
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -620,11 +672,11 @@ static long check_idspecs(Detector& description, int /* argc */, char** /* argv 
   DD4hepRootCheck check(&description);
   return check.checkIdSpecs();
 }
-DECLARE_APPLY(DD4hepCheckIdspecs,check_idspecs)
+DECLARE_APPLY(DD4hep_CheckIdspecs,check_idspecs)
 
 /// Basic entry point to check IDDescriptors of the detector object
 /**
- *  Factory: DD4hepCheckVolumeManager
+ *  Factory: DD4hep_CheckVolumeManager
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -634,11 +686,11 @@ static long check_volumemanager(Detector& description, int /* argc */, char** /*
   DD4hepRootCheck check(&description);
   return check.checkVolManager();
 }
-DECLARE_APPLY(DD4hepCheckVolumeManager,check_volumemanager)
+DECLARE_APPLY(DD4hep_CheckVolumeManager,check_volumemanager)
 
 /// Basic entry point to check IDDescriptors of the detector object
 /**
- *  Factory: DD4hepCheckNominals
+ *  Factory: DD4hep_CheckNominals
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -648,11 +700,11 @@ static long check_nominals(Detector& description, int /* argc */, char** /* argv
   DD4hepRootCheck check(&description);
   return check.checkNominals();
 }
-DECLARE_APPLY(DD4hepCheckNominals,check_nominals)
+DECLARE_APPLY(DD4hep_CheckNominals,check_nominals)
 
 /// Basic entry point to print out the volume hierarchy
 /**
- *  Factory: DD4hepVolumeDump
+ *  Factory: DD4hep_VolumeDump
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -811,7 +863,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
   Actor actor(argc,argv);
   return actor.dump("",description.world().placement().ptr(),pv.ptr(),0,PlacedVolume::VolIDs());
 }
-DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
+DECLARE_APPLY(DD4hep_VolumeDump,dump_volume_tree)
 
 // ======================================================================================
 /// Plugin function: Apply arbitrary functor callback on the tree of detector elements
@@ -828,10 +880,14 @@ DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
  */
 static int detelement_processor(Detector& description, int argc, char** argv)   {
   bool       recursive = true;
+  ProcessorArgs args(argc, argv);
   DetElement det = description.world();
-  unique_ptr<DetectorProcessor> proc(dd4hep::createProcessor<DetectorProcessor>(description, argc, argv));
-  for(int i=0, num=std::min(argc,3); i<num; ++i)  {
-    if ( 0 == ::strncmp(argv[i],"-recursive",4) )
+  unique_ptr<DetectorProcessor> proc(dd4hep::createProcessor<DetectorProcessor>(description, args.argc, &args.argv[0]));
+
+  for(int i=0; i<argc; ++i)  {
+    if ( i >= args.start && i <= args.end )
+      continue;
+    else if ( 0 == ::strncmp(argv[i],"-recursive",4) )
       recursive = true;
     else if ( 0 == ::strncmp(argv[i],"-no-recursive",7) )
       recursive = false;
@@ -869,10 +925,13 @@ DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
 static int placed_volume_processor(Detector& description, int argc, char** argv)   {
   bool         recursive = true;
   PlacedVolume pv = description.world().placement();
-  unique_ptr<PlacedVolumeProcessor> proc(dd4hep::createProcessor<PlacedVolumeProcessor>(description, argc, argv));
+  ProcessorArgs args(argc, argv);
+  unique_ptr<PlacedVolumeProcessor> proc(dd4hep::createProcessor<PlacedVolumeProcessor>(description, args.argc, &args.argv[0]));
   
-  for(int i=0, num=std::min(argc,3); i<num; ++i)  {
-    if ( 0 == ::strncmp(argv[i],"-recursive",4) )
+  for(int i=0; i<argc; ++i)  {
+    if ( i >= args.start && i <= args.end )
+      continue;
+    else if ( 0 == ::strncmp(argv[i],"-recursive",4) )
       recursive = true;
     else if ( 0 == ::strncmp(argv[i],"-no-recursive",7) )
       recursive = false;
@@ -896,13 +955,13 @@ static int placed_volume_processor(Detector& description, int argc, char** argv)
       except("PlacedVolumeProcessor","++ Unknown plugin argument: %s",argv[i]);
     }
   }
-  return PlacedVolumeScanner().scan(*proc, pv, 0, recursive);
+  return PlacedVolumeScanner().scanPlacements(*proc, pv, 0, recursive);
 }
 DECLARE_APPLY(DD4hep_PlacedVolumeProcessor,placed_volume_processor)
 
 /// Basic entry point to print out the detector element hierarchy
 /**
- *  Factory: DD4hepDetectorDump, DD4hepDetectorVolumeDump
+ *  Factory: DD4hep_DetectorDump, DD4hep_DetectorVolumeDump
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -910,7 +969,12 @@ DECLARE_APPLY(DD4hep_PlacedVolumeProcessor,placed_volume_processor)
  */
 template <int flag> long dump_detelement_tree(Detector& description, int argc, char** argv) {
   struct Actor {
-    static long dump(DetElement de,int level, bool sensitive_only) {
+    long count = 0;
+    Actor() = default;
+    ~Actor() {
+      printout(ALWAYS,"DetectorDump", "+++ Scanned a total of %ld elements.",count);
+    }
+    long dump(DetElement de,int level, bool sensitive_only) {
       const DetElement::Children& c = de.children();
       if ( !sensitive_only || 0 != de.volumeID() )  {
         PlacedVolume place = de.placement();
@@ -918,6 +982,7 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
         char fmt[128];
         switch(flag)  {
         case 0:
+          ++count;
           if ( de.placement() == de.idealPlacement() )  {
             ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
             printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
@@ -927,17 +992,25 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
           ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
                      level+1,2*level+1);
           printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
-                   (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(), (void*)place.ptr(), sens);
+                   (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(),
+                   (void*)place.ptr(), sens);
           break;
         case 1:
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",level+1,2*level+1);
+          ++count;
+          ::snprintf(fmt,sizeof(fmt),
+                     "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",
+                     level+1,2*level+1);
           printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(c.size()), (void*)de.volumeID());
           if ( de.placement() == de.idealPlacement() )  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s  %%c",level+1,2*level+3);
+            ::snprintf(fmt,sizeof(fmt),
+                       "%03d %%-%ds Placement: %%s  %%c",
+                       level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
             break;
           }
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",level+1,2*level+3);
+          ::snprintf(fmt,sizeof(fmt),
+                     "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
+                     level+1,2*level+3);
           printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(),
                    (void*)de.idealPlacement().ptr(), (void*)place.ptr(), sens);          
           break;
@@ -954,10 +1027,11 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
   for(int i=0; i<argc; ++i)  {
     if ( ::strcmp(argv[i],"--sensitive")==0 ) { sensitive_only = true; }
   }
-  return Actor::dump(description.world(),0,sensitive_only);
+  Actor a;
+  return a.dump(description.world(),0,sensitive_only);
 }
-DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree<0>)
-DECLARE_APPLY(DD4hepDetectorVolumeDump,dump_detelement_tree<1>)
+DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)
+DECLARE_APPLY(DD4hep_DetectorVolumeDump,dump_detelement_tree<1>)
 
 /// Basic entry point to print out the volume hierarchy
 /**
@@ -981,11 +1055,11 @@ static long detelement_cache(Detector& description, int , char** ) {
   };
   return Actor::cache(description.world());
 }
-DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)
+DECLARE_APPLY(DD4hep_DetElementCache,detelement_cache)
 
 /// Basic entry point to dump the geometry tree of the description instance
 /**
- *  Factory: DD4hepGeometryTreeDump
+ *  Factory: DD4hep_GeometryTreeDump
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -997,7 +1071,7 @@ static long exec_GeometryTreeDump(Detector& description, int, char** ) {
   dmp.create(description.world());
   return 1;
 }
-DECLARE_APPLY(DD4hepGeometryTreeDump,exec_GeometryTreeDump)
+DECLARE_APPLY(DD4hep_GeometryTreeDump,exec_GeometryTreeDump)
 
 /// Basic entry point to dump the geometry in GDML format
 /**
@@ -1021,11 +1095,11 @@ static long exec_SimpleGDMLWriter(Detector& description, int argc, char** argv) 
   }
   return 1;
 }
-DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
+DECLARE_APPLY(DD4hep_SimpleGDMLWriter,exec_SimpleGDMLWriter)
 
 /// Basic entry point to print out detector type map
 /**
- *  Factory: DD4hepDetectorTypes
+ *  Factory: DD4hep_DetectorTypes
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -1042,7 +1116,7 @@ static long detectortype_cache(Detector& description, int , char** ) {
   }
   return 1;
 }
-DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
+DECLARE_APPLY(DD4hep_DetectorTypes,detectortype_cache)
 
 /// Basic entry point to print out detector type map
 /**
@@ -1058,7 +1132,7 @@ DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
 
 /// Basic entry point to print out detector type map
 /**
- *  Factory: DD4hepPluginTester
+ *  Factory: DD4hep_PluginTester
  *
  *  \author  M.Frank
  *  \version 1.0
@@ -1074,5 +1148,5 @@ static long install_plugin_tester(Detector& description, int , char** ) {
   }
   return 1;
 }
-DECLARE_APPLY(DD4hepPluginTester,install_plugin_tester)
+DECLARE_APPLY(DD4hep_PluginTester,install_plugin_tester)
 

@@ -62,8 +62,8 @@ static long algorithm(Detector& /* description */,
     Position tran = base + (offset + double(i)*delta)*direction;
     // Copy number ???
     /* PlacedVolume pv = */ rotMat.empty()
-      ? mother.placeVolume(child,Transform3D(rot,tran))
-      : mother.placeVolume(child,tran);
+      ? mother.placeVolume(child,ci,Transform3D(rot,tran))
+      : mother.placeVolume(child,ci,tran);
     LogDebug("TrackerGeom") << child.name() << " number "
                             << ci << " positioned in " << mother.name() << " at "
                             << tran << " with " << rot;

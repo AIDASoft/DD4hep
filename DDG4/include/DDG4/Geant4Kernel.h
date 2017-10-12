@@ -54,7 +54,7 @@ namespace dd4hep {
       /// Reference to Geant4 track manager
       G4TrackingManager* m_trackMgr;
       /// Detector description object
-      Detector*              m_detDesc;
+      Detector*          m_detDesc;
       /// Property pool
       PropertyManager    m_properties;
 
@@ -148,7 +148,7 @@ namespace dd4hep {
       /// Access phase phases
       const Phases& phases() const              {        return m_phases;          }
       /// Access to detector description
-      Detector& detectorDescription() const                        {        return *m_detDesc;           }
+      Detector& detectorDescription() const     {        return *m_detDesc;        }
       /// Access the tracking manager
       G4TrackingManager* trackMgr() const       {        return m_trackMgr;        }
       /// Access the tracking manager

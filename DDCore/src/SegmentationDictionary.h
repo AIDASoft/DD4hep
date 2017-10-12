@@ -84,7 +84,7 @@ typedef dd4hep::DDSegmentation::CellID CellID;
 #pragma link C++ class dd4hep::DDSegmentation::TiledLayerSegmentation+;
 #pragma link C++ class dd4hep::DDSegmentation::WaferGridXY+;
 
-#pragma link C++ class dd4hep::DDSegmentation::BitFieldValue+;
+#pragma link C++ class dd4hep::DDSegmentation::BitFieldElement+;
 #pragma link C++ class dd4hep::DDSegmentation::BitFieldCoder+;
 
 #endif  // __CINT__

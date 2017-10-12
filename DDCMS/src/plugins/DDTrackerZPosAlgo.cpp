@@ -31,7 +31,7 @@ static long algorithm(Detector& /* description */,
   Namespace      ns(ctxt, e, true);
   AlgoArguments  args(ctxt, e);
   int            startCopyNo = args.find("StartCopyNo") ? args.value<int>("StartCopyNo") : 1;
-  int            incrCopyNo  = args.find("IncrCopyNo") ? args.value<int>("IncrCopyNo") : 1;
+  int            incrCopyNo  = args.find("IncrCopyNo")  ? args.value<int>("IncrCopyNo")  : 1;
   Volume         mother      = ns.volume(args.parentName());
   Volume         child       = ns.volume(args.value<string>("ChildName"));
   vector<double> zvec        = args.value<vector<double> >("ZPositions");    // Z positions
@@ -45,16 +45,15 @@ static long algorithm(Detector& /* description */,
     LogDebug("TrackerGeom") << "\t[" << i << "]\tZ = " << zvec[i]
                             << ", Rot.Matrix = " << rotMat[i];
 
-  for (int i=0, copy = startCopyNo; i<(int)(zvec.size()); i++) {
+  for (int i=0, copy = startCopyNo; i<(int)(zvec.size()); i++, copy += incrCopyNo) {
     Position tran(0, 0, zvec[i]);
     Rotation3D rot;
     /* PlacedVolume pv = */ rotMat[i] != "NULL"
-      ? mother.placeVolume(child,Transform3D(ns.rotation(rotMat[i]),tran))
-      : mother.placeVolume(child,tran);
+      ? mother.placeVolume(child,copy,Transform3D(ns.rotation(rotMat[i]),tran))
+      : mother.placeVolume(child,copy,tran);
     LogDebug("TrackerGeom") << "test: " << child.name() 
                             <<" number " << copy << " positioned in " 
                             << mother.name() << " at " << tran << " with " << rot;
-    copy += incrCopyNo;
   }
   return 1;
 }

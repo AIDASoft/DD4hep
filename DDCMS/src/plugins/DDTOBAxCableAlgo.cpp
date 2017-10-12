@@ -92,7 +92,7 @@ static long algorithm(Detector& /* description */,
                         << (startphi+deltaphi)/CLHEP::deg << " with Rin " 
                         << rin << " Rout " << rout << " ZHalf " << dz;
     Volume sectorLogic = ns.addVolume(Volume(name,solid, ns.material(sectorMaterial_A[i])));
-    tubsVol.placeVolume(sectorLogic); // copyNr: i+1
+    tubsVol.placeVolume(sectorLogic,i+1); // copyNr: i+1
     LogDebug("TOBGeom") << sectorLogic.name() << " number " << i+1 
                         << " positioned in " << tubsName 
                         << " with no translation and no rotation";
@@ -109,7 +109,7 @@ static long algorithm(Detector& /* description */,
                         << " ZHalf " << dz;
     
     sectorLogic = ns.addVolume(Volume(name, solid, ns.material(sectorMaterial_B[i])));
-    tubsVol.placeVolume(sectorLogic); // copyNr: i+1
+    tubsVol.placeVolume(sectorLogic,i+1); // copyNr: i+1
     LogDebug("TOBGeom") << sectorLogic.name() << " number " << i+1 
                         << " positioned in " << tubsName 
                         << " with no translation and no rotation";
@@ -125,7 +125,7 @@ static long algorithm(Detector& /* description */,
                         << (startphi+deltaphi)/CLHEP::deg << " with Rin " 
                         << rin << " Rout " << rout << " ZHalf " << dz;
     sectorLogic = ns.addVolume(Volume(name, solid, ns.material(sectorMaterial_C[i])));
-    tubsVol.placeVolume(sectorLogic); // copyNr: i+1
+    tubsVol.placeVolume(sectorLogic,i+1); // copyNr: i+1
     LogDebug("TOBGeom") << sectorLogic.name() << " number " << i+1 
                         << " positioned in " << tubsName 
                         << " with no translation and no rotation";

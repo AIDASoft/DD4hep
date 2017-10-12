@@ -59,7 +59,7 @@ static long algorithm(Detector& /* description */,
       double phix = phiz + 90.*CLHEP::deg;  
       Rotation3D rotation = make_rotation3D(theta, phix, 0e0, 0e0, theta, phiz);
       Position   tran(0., 0., (i%2 == 0) ? zIn : zOut);
-      /* PlacedVolume pv = */ mother.placeVolume(child,Transform3D(rotation,tran));
+      /* PlacedVolume pv = */ mother.placeVolume(child,copyNo,Transform3D(rotation,tran));
       LogDebug("TECGeom") << "test: " << child.name() <<" number "
           << copyNo << " positioned in " << mother.name() <<" at "
           << tran << " with " << rotation;
