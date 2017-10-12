@@ -410,7 +410,7 @@ string dd4hep::xml::getEnviron(const string& env)   {
     return "";
   }
   else  {
-    string v = env.substr(0,id2+1);
+    string v = env.substr(id1,id2-id1+1);
     const char* ret = eval.getEnviron(v.c_str());
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << env << ": ";
