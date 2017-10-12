@@ -148,10 +148,9 @@ namespace dd4hep {
      */
     VolumeManager(Detector& description,
                   const std::string& name,
-                  DetElement world = DetElement(),
-                  Readout ro = Readout(),
-                  int flags =
-                  NONE);
+                  DetElement         world = DetElement(),
+                  Readout            ro    = Readout(),
+                  int                flags = NONE);
     /// Initializing constructor for subdetector volume managers.
     VolumeManager(DetElement subdetector, Readout ro);
 

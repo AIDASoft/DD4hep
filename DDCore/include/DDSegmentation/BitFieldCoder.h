@@ -33,8 +33,7 @@ namespace DDSegmentation {
        * @param  offset        offset of field
        * @param  signedWidth   width of field, negative if field is signed
        */
-      BitFieldElement( const std::string& name, 
-		     unsigned offset, int signedWidth ) ; 
+      BitFieldElement( const std::string& name, unsigned offset, int signedWidth ) ; 
 
       /// calculate this field's value given an external 64 bit bitmap 
       long64 value(long64 bitfield) const;
@@ -67,13 +66,13 @@ namespace DDSegmentation {
 
     protected:
   
-      ulong64 _mask{} ;
-      unsigned _offset{} ;
-      unsigned _width{} ;
-      int _minVal{} ;
-      int _maxVal{} ;
-      bool _isSigned{} ;
-      std::string _name{} ;
+      ulong64 _mask    = 0;
+      unsigned _offset = 0;
+      unsigned _width  = 0;
+      int _minVal      = 0;
+      int _maxVal      = 0;
+      bool _isSigned   = 0;
+      std::string _name;
 
     };
 
@@ -236,9 +235,9 @@ namespace DDSegmentation {
 
     // -------------- data members:--------------
 
-    std::vector<BitFieldElement*> _fields{} ;
-    IndexMap  _map{} ;
-    long64    _joined{} ;
+    std::vector<BitFieldElement*> _fields;
+    IndexMap  _map;
+    long64    _joined = 0;
 
 
   };
