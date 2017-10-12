@@ -1,25 +1,25 @@
 <plugins>
 
-  <plugin name="DD4hepXMLLoader">
+  <plugin name="DD4hep_XMLLoader">
     <arg value="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC.xml"/>
   </plugin>
 
-  <plugin name="DD4hepVolumeManager"/>
+  <plugin name="DD4hep_VolumeManager"/>
   <plugin name="DD4hep_ConditionsManagerInstaller"/>
 
-  <plugin name="DD4hepXMLLoader">
+  <plugin name="DD4hep_XMLLoader">
     <arg value="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC_alignment.xml"/>
   </plugin>
-  <plugin name="DD4hepXMLLoader">
+  <plugin name="DD4hep_XMLLoader">
     <arg value="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC_reset.xml"/>
   </plugin>
 
-  <plugin name="DD4hep_Test_CallbackInstallTest"/>
+  <plugin name="DD4hep_Test_CallbackInstall"/>
 
 <!--
   <plugin name="DD4hep_Test_ConditionsAccess"/>
   <plugin name="DD4hep_Test_ConditionsTreeDump"/>
 -->
-  <plugin name="DD4hepConditionExample3"/>
+  <plugin name="DD4hep_ConditionExample3"/>
 
 </plugins>

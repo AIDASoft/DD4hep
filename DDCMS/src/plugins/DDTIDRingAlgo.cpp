@@ -85,7 +85,7 @@ static long algorithm(Detector& /* description */,
     Position    trmod(xpos, ypos, zpos);
     Rotation3D  rotation = make_rotation3D(theta, phix, thetay, phiy, theta, phiz);
     // int copyNr = i+1;
-    /* PlacedVolume pv = */ mother.placeVolume(module, Transform3D(rotation,trmod));
+    /* PlacedVolume pv = */ mother.placeVolume(module, i+1, Transform3D(rotation,trmod));
     LogDebug("TIDGeom") << module.name() << " number "
                         << i+1 << " positioned in " << mother.name() << " at "
                         << trmod << " with " << rotation;
@@ -101,7 +101,7 @@ static long algorithm(Detector& /* description */,
     }
     // int copyNr = i+1;
     Position tricc(xpos, ypos, zpos);
-    /* PlacedVolume pv = */ mother.placeVolume(icc, Transform3D(rotation,tricc));
+    /* PlacedVolume pv = */ mother.placeVolume(icc, i+1, Transform3D(rotation,tricc));
     LogDebug("TIDGeom") << iccName << " number " 
                         << i+1 << " positioned in " << mother.name() << " at "
                         << tricc << " with " << rotation;

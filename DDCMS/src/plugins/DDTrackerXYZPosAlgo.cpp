@@ -51,16 +51,15 @@ static long algorithm(Detector& /* description */,
                             << ", Rot.Matrix = " << rotMat[i];
   }
 
-  for (int i=0, copy = startCopyNo; i<(int)(zvec.size()); i++) {
+  for (int i=0, copy = startCopyNo; i<(int)(zvec.size()); i++, copy += incrCopyNo) {
     Position tran(xvec[i], yvec[i], zvec[i]);
     Rotation3D rot;
     /* PlacedVolume pv = */ rotMat[i] != "NULL"
-      ? mother.placeVolume(child,Transform3D(ns.rotation(rotMat[i]),tran))
+      ? mother.placeVolume(child,copy,Transform3D(ns.rotation(rotMat[i]),tran))
       : mother.placeVolume(child,tran);
     LogDebug("TrackerGeom") << "test: " << child.name() 
                             <<" number " << copy << " positioned in " 
                             << mother.name() << " at " << tran << " with " << rot;
-    copy += incrCopyNo;
   }
   return 1;
 }

@@ -25,6 +25,9 @@ namespace DDSegmentation {
     public :
       virtual ~BitFieldElement() {}
   
+      /// The empty I/O c'tor.
+      BitFieldElement() = default;
+
       /** The default c'tor.
        * @param  name          name of the field
        * @param  offset        offset of field

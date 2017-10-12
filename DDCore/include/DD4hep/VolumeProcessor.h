@@ -47,9 +47,9 @@ namespace dd4hep {
     /// Default assignment
     PlacedVolumeProcessor& operator=(const PlacedVolumeProcessor& copy) = default;
     /// Callback to output PlacedVolume information of an single Placement
-    virtual int operator()(PlacedVolume pv, int level)  const = 0;
+    virtual int operator()(PlacedVolume pv, int level) = 0;
     /// Callback to output PlacedVolume information of an entire Placement
-    virtual int process(PlacedVolume pv, int level, bool recursive)  const;
+    virtual int process(PlacedVolume pv, int level, bool recursive);
   };
 
   /// PlacedVolume scanner using a Processor object
@@ -83,7 +83,7 @@ namespace dd4hep {
     /// Default assignment
     PlacementProcessor& operator=(const PlacementProcessor& copy) = default;
     /// Callback to output detector information of an single placement
-    virtual int operator()(PlacedVolume pv, int level)  const final
+    virtual int operator()(PlacedVolume pv, int level)  final
     {   return (processor)(pv, level);         }
   };
 
@@ -115,7 +115,7 @@ namespace dd4hep {
     /// Default assignment
     PlacementProcessorShared& operator=(const PlacementProcessorShared& copy) = default;
     /// Callback to output detector information of an single DetElement
-    virtual int operator()(PlacedVolume pv, int level)  const final
+    virtual int operator()(PlacedVolume pv, int level)  final
     {  return (*processor)(pv, level);                 }
   };
 
@@ -162,12 +162,15 @@ namespace dd4hep {
     {  scan(proc, start, level, recursive);     }
 
     /// PlacedVolume element tree scanner using wrapped PlacedVolumeProcessor objects
+    int scanPlacements(PlacedVolumeProcessor& proc, PlacedVolume start, int level=0, bool recursive=true)  const {
+      return proc.process(start, level, recursive);
+    }
+    /// PlacedVolume element tree scanner using wrapped PlacedVolumeProcessor objects
     template <typename Q>
     int scan(Q& p, PlacedVolume start, int level=0, bool recursive=true)  const {
       auto proc = placementProcessor(p);
       return proc.process(start, level, recursive);
     }
-
     /// PlacedVolume element tree scanner using wrapped PlacedVolumeProcessor objects
     template <typename Q>
     int scan(const Q& p, PlacedVolume start, int level=0, bool recursive=true) const {

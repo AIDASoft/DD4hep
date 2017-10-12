@@ -1,0 +1,48 @@
+<ddeve>
+  <display visLevel="7" loadLevel="4"/>
+
+  <collection name="TIDB_2Hits"        hits="PointSet" color="kGreen+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="TIDF_1Hits"        hits="PointSet" color="kGreen+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="TIB_1Hits"         hits="PointSet" color="kBlue" size="0.3" type="21" towerH="3*MeV" emax="2*GeV"/>
+  <collection name="PixelBarrel_1Hits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
+  <collection name="TOB_1Hits"         hits="PointSet" color="kRed+3" size="0.3" type="20"/>
+  <collection name="MC_Particles"      hits="Particles" size="0.6" width="2" type="kCircle"/>
+
+  <calodata name="PixelBarrel" hits="PixelBarrel_1Hits" towerH="20" emax="200"
+	    n_eta="200" eta_min="-5"  eta_max="5" 
+	    n_phi="200" phi_min="-pi" phi_max="pi" 
+	    alpha="0.5" rmin="0.5" dz="50.0" color="kMagenta"/>
+
+
+  <view name="3D Trackers R-Phi (Local)" type="RhoPhiProjection">
+    <detelement name="Tracker_2/PixelBarrel_1" load_geo="5" alpha="0.55"/>
+    <detelement name="Tracker_2/TIB_1"         load_geo="5" alpha="0.55"/>
+    <detelement name="Tracker_2/TIDB_2"        load_geo="5" alpha="0.55"/>
+    <detelement name="Tracker_2/TIDF_1"        load_geo="5" alpha="0.55"/>
+    <detelement name="Tracker_2/TOB_1"         load_geo="5" alpha="0.55"/>
+  </view>
+  <view name="3D Trackers" type="View3D">
+    <detelement name="Tracker_2/PixelBarrel_1" load_geo="-1" alpha="0.55"/>
+    <detelement name="Tracker_2/TIB_1"         load_geo="-1" alpha="0.55"/>
+    <detelement name="Tracker_2/TIDB_2"        load_geo="-1" alpha="0.55"/>
+    <detelement name="Tracker_2/TIDF_1"        load_geo="-1" alpha="0.55"/>
+    <detelement name="Tracker_2/TOB_1"         load_geo="-1" alpha="0.55"/>
+  </view>
+
+  <view name="PixelBarrel Deposits" type="Calo3DProjection">
+    <detelement name="Tracker_2/PixelBarrel_1" load_geo="-1" show_evt="1" alpha="0.55"/>
+    <calodata name="PixelBarrel"/>
+  </view>
+
+  <view name="PixelBarrel 2D" type="Calo2DProjection">
+    <calodata name="PixelBarrel"/>
+    <detelement name="Tracker_2/PixelBarrel_1" load_geo="-1" alpha="0.55"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
+  </view>
+
+  <view name="Multi (Global)" type="MultiView">
+    <detelement name="global"/>
+  </view>
+
+  <include ref="../data/dd4hep-config.xml"/>
+</ddeve>

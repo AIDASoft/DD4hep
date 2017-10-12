@@ -54,6 +54,11 @@ namespace dd4hep {
       /// Install the dd4hep alignment manager object
       Handle<NamedObject> alignmentMgr()  const;
 
+      /// Create ROOT interpreter instance
+      long createInterpreter(int argc, char** argv);
+      /// Execute ROOT interpreter instance
+      long runInterpreter()  const;
+      
       /// Detector interface: Manipulate geometry using factory converter
       virtual long apply(const char* factory, int argc, char** argv) const;
       /// Detector interface: Read any geometry description or alignment file

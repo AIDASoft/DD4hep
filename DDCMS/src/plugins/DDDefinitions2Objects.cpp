@@ -507,7 +507,7 @@ template <> void Converter<pospart>::operator()(xml_h element) const {
   if ( child.isValid() )   {
     Transform3D trafo;
     Converter<transform3d>(description,param,&trafo)(element);
-    pv = parent.placeVolume(child,trafo);
+    pv = parent.placeVolume(child,copy,trafo);
   }
   if ( !pv.isValid() )   {
     printout(ERROR,"DDCMS","+++ Placement FAILED! Parent:%s Child:%s Valid:%s",
@@ -729,11 +729,12 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
 
 template <> void Converter<debug>::operator()(xml_h dbg) const {
   Namespace _ns(_param<ParsingContext>());
-  if ( dbg.hasChild(_CMU(debug_constants)) )  _ns.context->debug_constants  = true;
-  if ( dbg.hasChild(_CMU(debug_materials)) )  _ns.context->debug_materials  = true;
-  if ( dbg.hasChild(_CMU(debug_rotations)) )  _ns.context->debug_rotations  = true;
-  if ( dbg.hasChild(_CMU(debug_shapes)) )     _ns.context->debug_shapes     = true;
-  if ( dbg.hasChild(_CMU(debug_volumes)) )    _ns.context->debug_volumes    = true;
+  if ( dbg.hasChild(_CMU(debug_visattr))    ) _ns.context->debug_visattr    = true;
+  if ( dbg.hasChild(_CMU(debug_constants))  ) _ns.context->debug_constants  = true;
+  if ( dbg.hasChild(_CMU(debug_materials))  ) _ns.context->debug_materials  = true;
+  if ( dbg.hasChild(_CMU(debug_rotations))  ) _ns.context->debug_rotations  = true;
+  if ( dbg.hasChild(_CMU(debug_shapes))     ) _ns.context->debug_shapes     = true;
+  if ( dbg.hasChild(_CMU(debug_volumes))    ) _ns.context->debug_volumes    = true;
   if ( dbg.hasChild(_CMU(debug_placements)) ) _ns.context->debug_placements = true;
   if ( dbg.hasChild(_CMU(debug_namespaces)) ) _ns.context->debug_namespaces = true;
   if ( dbg.hasChild(_CMU(debug_includes))   ) _ns.context->debug_includes   = true;
@@ -781,7 +782,8 @@ template <> void Converter<vis_apply>::operator()(xml_h /* dddefinition */) cons
             }
           }
           */
-          printout(INFO,"Vis","+++ %-40s Material:%s Dens:%6.1f vis-attrs:%s [%s]",
+          printout(n_s.context->debug_visattr ? ALWAYS : DEBUG,
+                   "Vis","+++ %-40s Material:%s Dens:%6.1f vis-attrs:%s [%s]",
                    vol.name(), mat.name(), mat.density(), yes_no(vis.isValid()),
                    vis.name());
           vol.setVisAttributes(vis);

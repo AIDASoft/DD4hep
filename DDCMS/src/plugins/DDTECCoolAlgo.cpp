@@ -62,7 +62,7 @@ static long algorithm(Detector& /* description */,
     double ypos = -rPosition*sin(phiPosition.at(i));
     // place inserts
     Position tran(xpos, ypos, 0.0);
-    mother.placeVolume(child,tran);
+    mother.placeVolume(child, copyNo, tran);
     LogDebug("TECGeom") << "test " << child.name() << "["  
                         << copyNo << "] positioned in " << mother.name()
                         << " at " << tran

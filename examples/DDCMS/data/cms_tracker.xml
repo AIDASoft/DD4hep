@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <DDDefinition>
   <debug>
+<!-- 
     <debug_rotations/>
     <debug_materials/>
-<!-- 
+
     <debug_shapes/>
     <debug_volumes/>
     <debug_constants/>
@@ -296,6 +297,8 @@
     <Include ref="pixfwdCommon.xml"/>
 
 <!--
+
+THIS IS THE HORROR. CANNOT GET IT GOING:
     <Include ref="pixfwdBlade.xml"/>
     <Include ref="pixfwdPanel.xml"/>
     <Include ref="pixfwdPanelBase.xml"/>
@@ -311,13 +314,14 @@
     <Include ref="pixfwdPlaq2x5.xml"/>
 
     <Include ref="pixfwd.xml"/>
--->
 
+    TEC sucks in Geant4. Ignored.
+    <Include ref="trackertec.xml"/>
+-->
     <Include ref="trackerbulkhead.xml"/>
 
     <Include ref="trackertib.xml"/>
     <Include ref="trackertid.xml"/>
-    <Include ref="trackertec.xml"/>
 
     <Include ref="trackerother.xml"/>
     <Include ref="trackerpixbar.xml"/>

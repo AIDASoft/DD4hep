@@ -269,6 +269,8 @@ namespace dd4hep {
 
     /// Check if placement is properly instrumented
     Object* data() const;
+
+    /** Daughter placements with auto-generated copy number for the daughter volume  */
     /// Place daughter volume. The position and rotation are the identity
     PlacedVolume placeVolume(const Volume& vol) const;
     /// Place daughter volume according to a generic Transform3D
@@ -279,6 +281,18 @@ namespace dd4hep {
     PlacedVolume placeVolume(const Volume& vol, const RotationZYX& rot) const;
     /// Place rotated daughter volume. The position is automatically the identity position
     PlacedVolume placeVolume(const Volume& vol, const Rotation3D& rot) const;
+
+    /** Daughter placements with user supplied copy number for the daughter volume  */
+    /// Place daughter volume. The position and rotation are the identity
+    PlacedVolume placeVolume(const Volume& vol, int copy_no) const;
+    /// Place daughter volume according to a generic Transform3D
+    PlacedVolume placeVolume(const Volume& volume, int copy_no, const Transform3D& tr) const;
+    /// Place un-rotated daughter volume at the given position.
+    PlacedVolume placeVolume(const Volume& vol, int copy_no, const Position& pos) const;
+    /// Place rotated daughter volume. The position is automatically the identity position
+    PlacedVolume placeVolume(const Volume& vol, int copy_no, const RotationZYX& rot) const;
+    /// Place rotated daughter volume. The position is automatically the identity position
+    PlacedVolume placeVolume(const Volume& vol, int copy_no, const Rotation3D& rot) const;
 
     /// Attach attributes to the volume
     const Volume& setAttributes(const Detector& description, const std::string& region, const std::string& limits,
