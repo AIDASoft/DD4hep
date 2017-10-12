@@ -304,6 +304,14 @@ static TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
 }
 
 /// Default constructor
+PlacedVolume::Processor::Processor()   {
+}
+
+/// Default destructor
+PlacedVolume::Processor::~Processor()   {
+}
+
+/// Default constructor
 PlacedVolumeExtension::PlacedVolumeExtension()
   : TGeoExtension(), magic(0), refCount(0), volIDs() {
   magic = magic_word();
@@ -498,13 +506,14 @@ Volume::Object* Volume::data() const   {
   return o;
 }
 
-static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
+static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
+  TGeoVolume* parent = par;
+  if ( !parent )   {
+    throw runtime_error("dd4hep: Volume: Attempt to assign daughters to an invalid physical parent volume.");
+  }
   if ( !daughter )   {
     throw runtime_error("dd4hep: Volume: Attempt to assign an invalid physical daughter volume.");
   }
-  TGeoVolume* parent = par;
-  TObjArray* a = parent->GetNodes();
-  Int_t id = a ? a->GetEntries() : 0;
   if (transform && transform != detail::matrix::_identity()) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
@@ -520,10 +529,23 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
       as->ComputeBBox();
     }
   }
+  geo_node_t* n;
+  TString nam_id = TString::Format("%s_%d", daughter->GetName(), id);
+  n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+  if ( n != 0 )  {
+    printout(ERROR,"PlacedVolume","++ Attempt to add already exiting node %s",(const char*)nam_id);
+  }
   parent->AddNode(daughter, id, transform);
-  geo_node_t* n = static_cast<geo_node_t*>(parent->GetNode(id));
+  //n = static_cast<geo_node_t*>(parent->GetNode(id));
+  n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
   n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
+}
+
+static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
+  TObjArray* a = par ? par->GetNodes() : 0;
+  Int_t id = (a ? a->GetEntries() : 0);
+  return _addNode(par, daughter, id, transform);
 }
 
 /// Place daughter volume according to generic Transform3D
@@ -549,6 +571,31 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const RotationZYX& rot) c
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation3D& rot) const {
   return _addNode(m_element, volume, detail::matrix::_rotation3D(rot));
+}
+
+/// Place daughter volume according to generic Transform3D
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Transform3D& trans) const {
+  return _addNode(m_element, volume, copy_no, detail::matrix::_transform(trans));
+}
+
+/// Place daughter volume. The position and rotation are the identity
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no) const {
+  return _addNode(m_element, volume, copy_no, detail::matrix::_identity());
+}
+
+/// Place un-rotated daughter volume at the given position.
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Position& pos) const {
+  return _addNode(m_element, volume, copy_no, detail::matrix::_translation(pos));
+}
+
+/// Place rotated daughter volume. The position is automatically the identity position
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const RotationZYX& rot) const {
+  return _addNode(m_element, volume, copy_no, detail::matrix::_rotationZYX(rot));
+}
+
+/// Place rotated daughter volume. The position is automatically the identity position
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Rotation3D& rot) const {
+  return _addNode(m_element, volume, copy_no, detail::matrix::_rotation3D(rot));
 }
 
 /// Set the volume's material

@@ -194,13 +194,12 @@ namespace dd4hep {
       /// Populate the Volume manager
       void populate(DetElement e) {
         //const char* typ = 0;//::getenv("VOLMGR_NEW");
-        const DetElement::Children& c = e.children();
         SensitiveDetector parent_sd;
         if ( e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR )  {
           parent_sd = m_detDesc.sensitiveDetector(e.name());
         }
         //printout(INFO, "VolumeManager", "++ Executing %s plugin manager version",typ ? "***NEW***" : "***OLD***");
-        for (const auto& i : c )  {
+        for (const auto& i : e.children() )  {
           DetElement de = i.second;
           PlacedVolume pv = de.placement();
           if (pv.isValid()) {
@@ -288,7 +287,7 @@ namespace dd4hep {
             }
           }
           if ( sd.isValid() )   {
-            if ( !have_encoding )   {
+            if ( !have_encoding && !compound )   {
               printout(ERROR, "VolumeManager","Element %s: Missing SD encoding. Volume manager won't work!",
                        e.path().c_str());
             }
@@ -369,6 +368,7 @@ namespace dd4hep {
             DetElement    sub_detector = m_detDesc.detector(sd_name);
             VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
 
+            //m_debug = true;
             // This is the block, we effectively have to save for each physical volume with a VolID
             void* mem = nodes.empty()
               ? VolumeContextAllocator::instance()->alloc_small()

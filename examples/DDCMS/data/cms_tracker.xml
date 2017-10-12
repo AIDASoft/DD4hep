@@ -2,15 +2,16 @@
 <DDDefinition>
   <debug>
 <!-- 
+    <debug_rotations/>
+    <debug_materials/>
+
     <debug_shapes/>
     <debug_volumes/>
     <debug_constants/>
-    <debug_rotations/>
-    <debug_materials/>
     <debug_includes/>
     <debug_namespaces/>
-    <debug_algorithms/>
     <debug_placements/>
+    <debug_algorithms/>
 -->
   </debug>
   <open_geometry/>
@@ -62,29 +63,46 @@
         <vis name="pixbarladderhalf_PixelBarrelCFStripHalf"      alpha="1"     r="1"    g="0.1"  b="0.1" showDaughters="true" visible="true"/>
       <vis name="pixbarladderhalf_PixelBarrelLadderHalf"         alpha="0.8"   r="0.6"  g="0.6"  b="0.0" showDaughters="true" visible="true"/>
 
-          <vis name="pixbarladderfull_PixelBarrelCable1Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
-          <vis name="pixbarladderfull_PixelBarrelCable2Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
-          <vis name="pixbarladderfull_PixelBarrelCable3Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
-          <vis name="pixbarladderfull_PixelBarrelCable4Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
-        <vis name="pixbarladderfull_PixelBarrelCableBoxFull"     alpha="0.4"   r="0.4"  g="0.2"  b="0.2" showDaughters="true" visible="true"/>
-        <vis name="pixbarladderfull_PixelBarrelModuleBoxFull"    alpha="0.6"   r="0.2"  g="0.2"  b="0.2" showDaughters="true" visible="true"/>
-        <vis name="pixbarladderfull_PixelBarrelCFStripFull"      alpha="1"     r="1"    g="0.1"  b="0.1" showDaughters="true" visible="true"/>
-      <vis name="pixbarladderfull_PixelBarrelLadderFull"         alpha="0.8"   r="0.6"  g="0.6"  b="0.0" showDaughters="true" visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable1Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true"  visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable2Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true"  visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable3Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true"  visible="true"/>
+          <vis name="pixbarladderfull_PixelBarrelCable4Full"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true"  visible="true"/>
+        <vis name="pixbarladderfull_PixelBarrelCableBoxFull"     alpha="0.4"   r="0.4"  g="0.2"  b="0.2" showDaughters="true"  visible="true"/>
+        <vis name="pixbarladderfull_PixelBarrelModuleBoxFull"    alpha="0.6"   r="0.2"  g="0.2"  b="0.2" showDaughters="true"  visible="true"/>
+        <vis name="pixbarladderfull_PixelBarrelCFStripFull"      alpha="1"     r="1"    g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
+      <vis name="pixbarladderfull_PixelBarrelLadderFull"         alpha="0.8"   r="0.6"  g="0.6"  b="0.0" showDaughters="true"  visible="true"/>
 
-        <vis name="pixbarlayer0_PixelBarrelLayer0Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true" visible="false"/>
-      <vis name="pixbarlayer0_PixelBarrelLayer0CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true" visible="true"/>
-    <vis name="pixbarlayer0_PixelBarrelLayer0"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true" visible="true"/>
+        <vis name="pixbarlayer0_PixelBarrelLayer0Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true"  visible="false"/>
+      <vis name="pixbarlayer0_PixelBarrelLayer0CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="pixbarlayer0_PixelBarrelLayer0"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true"  visible="true"/>
 
-        <vis name="pixbarlayer1_PixelBarrelLayer1Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true" visible="false"/>
-      <vis name="pixbarlayer1_PixelBarrelLayer1CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true" visible="true"/>
-    <vis name="pixbarlayer1_PixelBarrelLayer1"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true" visible="true"/>
+        <vis name="pixbarlayer1_PixelBarrelLayer1Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true"  visible="false"/>
+      <vis name="pixbarlayer1_PixelBarrelLayer1CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="pixbarlayer1_PixelBarrelLayer1"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true"  visible="true"/>
 
-        <vis name="pixbarlayer2_PixelBarrelLayer2Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true" visible="false"/>
-      <vis name="pixbarlayer2_PixelBarrelLayer2CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true" visible="true"/>
-    <vis name="pixbarlayer2_PixelBarrelLayer2"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true" visible="true"/>
+        <vis name="pixbarlayer2_PixelBarrelLayer2Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true"  visible="false"/>
+      <vis name="pixbarlayer2_PixelBarrelLayer2CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="pixbarlayer2_PixelBarrelLayer2"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true"  visible="true"/>f 
+    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
+    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="1.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="CMS_Invisible"                                    alpha="1"     r="0.0"  g="0.0"  b="1"   showDaughters="true"  visible="false"/>
 
+    <vismaterial name="AL"                type="solid-light-grey"/>
+    <vismaterial name="SI"                type="solid-red"/>
+    <vismaterial name="materials_Air"     type="CMS_Invisible"/>
+    <vismaterial name="materials_E_Air"   type="CMS_Invisible"/>
+    <vismaterial name="materials_H_Air"   type="CMS_Invisible"/>
+    <vismaterial name="materials_M_B_Air" type="CMS_Invisible"/>
+    <vismaterial name="materials_M_F_Air" type="CMS_Invisible"/>
+    <vismaterial name="materials_T_Air"   type="CMS_Invisible"/>
+    <vismaterial name="materials_V_Air"   type="CMS_Invisible"/>
+    <vismaterial name="trackermaterial_T_Aluminium" type="solid-light-grey"/>
+    <vismaterial name="tecmaterial_TEC_petalinsert" type="solid-blue"/>
   </VisSection>
 
+  <DisabledAlgo  name="track:DDTOBRadCableAlgo"/>
   <ConstantsSection label="pixfwd" eval="true">
         <Constant name="AnchorZ" value="0.*mm"/>
         <Constant name="ZPixelForward" value="325.*mm"/>
@@ -97,15 +115,12 @@
     <Include ref="materials.xml"/>
     <Include ref="trackermaterial.xml"/>
     <Include ref="tibtidcommonmaterial.xml"/>
-    <Include ref="pixfwdMaterials.xml"/>
 
     <Include ref="vacuum.xml"/>
     <Include ref="cmsextent.xml"/>
     <Include ref="cms.xml"/>
 
-<!--
--->
-
+    <Include ref="pixfwdMaterials.xml"/>
     <Include ref="pixbarmaterial.xml"/>
     <Include ref="pixbarladder.xml"/>
     <Include ref="pixbarladderfull.xml"/>
@@ -115,9 +130,6 @@
     <Include ref="pixbarlayer1.xml"/>
     <Include ref="pixbarlayer2.xml"/>
     <Include ref="pixbar.xml"/>
-
-<!--
--->
 
     <Include ref="tecmaterial.xml"/>
 
@@ -183,8 +195,6 @@
     <Include ref="tec.xml"/>
     <Include ref="tecservices.xml"/>
 
-<!--
--->
     <Include ref="tibmaterial.xml"/>
 
     <Include ref="tibmodpar.xml"/>
@@ -223,8 +233,6 @@
 
     <Include ref="tib.xml"/>
 
-<!--
--->
     <Include ref="tidmaterial.xml"/>
     <Include ref="tidmodpar.xml"/>
     <Include ref="tidringpar.xml"/>
@@ -250,17 +258,13 @@
     <Include ref="tibtidservices.xml"/>
     <Include ref="tibtidservicesb.xml"/>
     <Include ref="tibtidservicesf.xml"/>
-<!--
--->
 
     <Include ref="tobmaterial.xml"/>
     <Include ref="tobmodpar.xml"/>
-
+    <Include ref="tobrodpar.xml"/>
     <Include ref="tobmodule0.xml"/>
     <Include ref="tobmodule2.xml"/>
     <Include ref="tobmodule4.xml"/>
-
-    <Include ref="tobrodpar.xml"/>
 
     <Include ref="tobrod0.xml"/>
     <Include ref="tobrod0c.xml"/>
@@ -288,14 +292,16 @@
     <Include ref="tobrod5.xml"/>
     <Include ref="tobrod5h.xml"/>
     <Include ref="tobrod5l.xml"/>
-
     <Include ref="tob.xml"/>
 
+    <Include ref="pixfwdCommon.xml"/>
 
 <!--
-    <Include ref="pixfwdCommon.xml"/>
-    <Include ref="pixfwdPanelBase.xml"/>
+
+THIS IS THE HORROR. CANNOT GET IT GOING:
+    <Include ref="pixfwdBlade.xml"/>
     <Include ref="pixfwdPanel.xml"/>
+    <Include ref="pixfwdPanelBase.xml"/>
     <Include ref="pixfwdDisk.xml"/>
     <Include ref="pixfwdCylinder.xml"/>
     <Include ref="pixfwdNipple.xml"/>
@@ -309,26 +315,23 @@
 
     <Include ref="pixfwd.xml"/>
 
+    TEC sucks in Geant4. Ignored.
+    <Include ref="trackertec.xml"/>
 -->
+    <Include ref="trackerbulkhead.xml"/>
 
     <Include ref="trackertib.xml"/>
     <Include ref="trackertid.xml"/>
-    <Include ref="trackertec.xml"/>
-    <Include ref="trackertob.xml"/>
-    <Include ref="trackerbulkhead.xml"/>
+
     <Include ref="trackerother.xml"/>
     <Include ref="trackerpixbar.xml"/>
+
     <Include ref="tracker.xml"/>
+    <Include ref="trackertob.xml"/>
 
   </IncludeSection>
 
   <PosPartSection label="">
-<!--
-    <PosPart copyNumber="1">
-	<rParent name="world_volume"/>
-	<rChild name="tec:TEC"/>
-    </PosPart>
--->
     <PosPart copyNumber="2">
 	<rParent name="world_volume"/>
 	<rChild name="tracker:Tracker"/>

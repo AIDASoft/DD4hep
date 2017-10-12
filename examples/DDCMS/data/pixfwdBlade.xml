@@ -45,7 +45,7 @@
          
          -->
     <!-- Blade geometry parameters: Input from drawings -->
-    <ConstantsSection label="Input" eval="true">
+    <ConstantsSection label="Common" eval="true">
         <Constant name="T01" value="0.5*mm"/>
         <!-- Blade01.gif -->
         <Constant name="T02" value="3.0*mm"/>

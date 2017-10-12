@@ -27,6 +27,7 @@ if test -z "${DDDB_DIR}"; then
     fi;
     DDDB_DIR=${target}/DDDB;
 fi;
+export DDDB_DIR;
 loader="-loader DDDB_FileReader";
 params="-params file:${DDDB_DIR}/Parameters.xml";
 input="-input file:${DDDB_DIR}/DDDB/lhcb.xml";

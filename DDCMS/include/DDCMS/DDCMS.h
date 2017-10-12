@@ -24,6 +24,7 @@
 
 // C/C++ include files
 #include <map>
+#include <sstream>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -77,27 +78,27 @@ namespace dd4hep {
         return elt.attr<T>(n);
       }
       /// Add a new constant to the namespace
-      void addConstant(const std::string& name, const std::string& value, const std::string& type)  const;
+      void     addConstant(const std::string& name, const std::string& value, const std::string& type)  const;
       /// Add a new constant to the namespace as fully indicated by the name
-      void addConstantNS(const std::string& name, const std::string& value, const std::string& type)  const;
+      void     addConstantNS(const std::string& name, const std::string& value, const std::string& type)  const;
 
       /// Access material by its namespace dressed name
       Material material(const std::string& name)  const;
-      Solid  solid(const std::string& name)  const;
+      Solid    solid(const std::string& name)  const;
       /// Add solid to current namespace
-      void addSolid(const std::string& name,Solid solid)  const;
+      Solid    addSolid(const std::string& name,Solid solid)  const;
       /// Add solid to current namespace as fully indicated by the name
-      void addSolidNS(const std::string& name,Solid solid)  const;
+      Solid    addSolidNS(const std::string& name,Solid solid)  const;
 
-      Volume volume(const std::string& name, bool exc=true)  const;
+      Volume   volume(const std::string& name, bool exc=true)  const;
       /// Add volume to current namespace
-      void addVolume(Volume vol)  const;
+      Volume   addVolume(Volume vol)  const;
       /// Add volume to current namespace as fully indicated by the name
-      void addVolumeNS(Volume vol)  const;
+      Volume   addVolumeNS(Volume vol)  const;
 
       const Rotation3D& rotation(const std::string& name)  const;
       /// Add rotation matrix to current namespace
-      void addRotation(const std::string& name,const Rotation3D& rot)  const;
+      void    addRotation(const std::string& name,const Rotation3D& rot)  const;
     };
 
     /// XML parser context to store intermediate stuff
@@ -113,6 +114,8 @@ namespace dd4hep {
       std::map<std::string, Rotation3D>  rotations;
       std::map<std::string, Solid>       shapes;
       std::map<std::string, Volume>      volumes;
+      std::map<std::string, std::string> vismaterial;
+      std::set<std::string>              disabledAlgs;
       std::vector<std::string>           namespaces;
       bool geo_inited = false;
 
@@ -172,7 +175,62 @@ namespace dd4hep {
       bool find(const std::string& name)  const;
       /// Access typed argument by name
       template<typename T> T value(const std::string& name)  const;
+      /// Shortcut to access string arguments
+      std::string str(const std::string& nam)  const;
+      /// Shortcut to access double arguments
+      double dble(const std::string& nam)  const;
+      /// Shortcut to access integer arguments
+      int integer(const std::string& nam)  const;
+      /// Shortcut to access vector<double> arguments
+      std::vector<double> vecDble(const std::string& nam)  const;
+      /// Shortcut to access vector<int> arguments
+      std::vector<int> vecInt(const std::string& nam)  const;
+      /// Shortcut to access vector<int> arguments
+      std::vector<std::string> vecStr(const std::string& nam)  const;
     };
+
+    /// Re-direct debug messages to the DD4hep printer
+    /*
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_CORE
+     */
+    class LogDebug : public std::stringstream  {
+    protected:
+      std::string tag;
+      int  level;
+      bool pop = false;
+    public:
+      LogDebug() = delete;
+      LogDebug(const LogDebug& copy) = delete;
+      LogDebug& operator=(const LogDebug& copy) = delete;
+      LogDebug(const std::string& tag_value, bool /* set_context */);
+      LogDebug(const std::string& tag_value);
+      ~LogDebug();
+      static void setDebugAlgorithms(bool value);
+    };
+
+    /// Re-direct warning messages to the DD4hep printer
+    /*
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_CORE
+     */
+    class LogWarn : public LogDebug  {
+    public:
+      LogWarn() = delete;
+      LogWarn(const LogWarn& copy) = delete;
+      LogWarn& operator=(const LogWarn& copy) = delete;
+      LogWarn(const std::string& tag_value);
+    };
+
+
+    /// Helper: Convert the name of a placed volume into a subdetector name
+    std::string detElementName(PlacedVolume pv);
+    /// Compute the material fraction of a given element in a volume 
+    double material_fraction(Volume vol, const TGeoElement* e);
 
     /// Create 3D rotation matrix from angles.
     Rotation3D make_rotation3D(double thetaX, double phiX,

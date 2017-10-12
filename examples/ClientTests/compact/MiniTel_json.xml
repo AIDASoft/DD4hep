@@ -7,7 +7,7 @@
 	title="Sensor for New experiment"
         author="Anastasia Karachaliou"
         status="development"
-        url="/afs/cern.ch/user/a/akaracha/workspace/MyExperiment/DetDesc/xmlDDescr/geometry_myexper.xml"
+        url="/geometry_myexper.xml"
         version= "v0r1">
     <comment>simple Detector as a small box</comment>
   </info>

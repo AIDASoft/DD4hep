@@ -76,6 +76,7 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
     unique_ptr<DD4hepRootPersistency> persist((DD4hepRootPersistency*)f->Get(instance));
     if ( persist.get() )   {
       DetectorData* source = persist->m_data;
+#if 0
       const auto& iddesc = persist->idSpecifications();
       for( const auto& s : iddesc )  {
         IDDescriptor id = s.second;
@@ -83,6 +84,7 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       }
       printout(ALWAYS,"DD4hepRootPersistency",
                "+++ Fixed %ld IDDescriptor objects.",iddesc.size());
+#endif
       for( const auto& s : persist->m_segments )  {
         Readout ro = s.first;
         IDDescriptor id = s.second.first;

@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -32,7 +28,6 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream  str;
   Namespace     ns(ctxt, e, true);
   AlgoArguments args(ctxt, e);
   Volume        mother      = ns.volume(args.parentName());
@@ -47,16 +42,14 @@ static long algorithm(Detector& /* description */,
   int           startCopyNo = args.find("StartCopyNo") ? args.value<int>("StartCopyNo") : 1; //Start copy number
   int           incrCopyNo  = args.find("IncrCopyNo")  ? args.value<int>("IncrCopyNo")  : 1; //Increment in copy number
 
-  str << "Parameters for positioning-- Tilt " << tilt 
-      << "\tStartAngle " << startAngle/CLHEP::deg 
-      << "\tRangeAngle " << rangeAngle/CLHEP::deg 
-      << "\tRin " << radiusIn << "\tRout " << radiusOut 
-      << "\t ZPos " << zpos << "\tCopy Numbers " << number 
-      << " Start/Increment " << startCopyNo << ", " 
-      << incrCopyNo;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAltAlgo",str);
-  str << "Parent " << mother.name() << "\tChild " << child.name() << " NameSpace " << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAltAlgo",str);
+  LogDebug("TrackerGeom") << "Parent " << mother.name() << "\tChild " << child.name() << " NameSpace " << ns.name;
+  LogDebug("TrackerGeom") << "Parameters for positioning-- Tilt " << tilt 
+                          << "\tStartAngle " << startAngle/CLHEP::deg 
+                          << "\tRangeAngle " << rangeAngle/CLHEP::deg 
+                          << "\tRin " << radiusIn << "\tRout " << radiusOut 
+                          << "\t ZPos " << zpos << "\tCopy Numbers " << number 
+                          << " Start/Increment " << startCopyNo << ", " 
+                          << incrCopyNo;
 
   if (number > 0) {
     double theta  = 90.*CLHEP::deg;
@@ -87,12 +80,11 @@ static long algorithm(Detector& /* description */,
         ypos = radiusOut*sin(phi);
       }
       Position tran(xpos, ypos, zpos);  
-      /* PlacedVolume pv = */ mother.placeVolume(child,Transform3D(rotation,tran));
-      str << "" << child.name() 
-          << " number " << copyNo << " positioned in " 
-          << mother.name() << " at " << tran << " with " 
-          << rotation;
-      printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAltAlgo",str);
+      /* PlacedVolume pv = */ mother.placeVolume(child,copyNo,Transform3D(rotation,tran));
+      LogDebug("TrackerGeom") << "" << child.name() 
+                              << " number " << copyNo << " positioned in " 
+                              << mother.name() << " at " << tran << " with " 
+                              << rotation;
       copyNo += incrCopyNo;
     }
   }
@@ -100,5 +92,5 @@ static long algorithm(Detector& /* description */,
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTrackerPhiAltAlgo,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTrackerPhiAltAlgo,algorithm)
 

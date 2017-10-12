@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -32,7 +28,6 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream  str;
   Namespace      ns(ctxt, e, true);
   AlgoArguments  args(ctxt, e);
   Volume         mother     = ns.volume(args.parentName());
@@ -46,20 +41,16 @@ static long algorithm(Detector& /* description */,
   double         sICC       = args.value<double>("ICCShift");            //Shift of ICC       per to R
   vector<double> zICC       = args.value<vector<double> >("ICCZ");        //                   in Z
 
-  str << "Parent " << mother.name() 
-      << "\tModule " << moduleName[0] << ", "
-      << moduleName[1] << "\tICC " << iccName 
-      << "\tNameSpace " << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTIDRingAlgo",str);
-
-  str << "Parameters for positioning--"
-      << " StartAngle " << startAngle/CLHEP::deg
-      << " Copy Numbers " << number << " Modules at R " 
-      << rModule << " Z " << zModule[0] << ", " << zModule[1] 
-      << " ICCs at R " << rICC << " Z " << zICC[0] << ", " 
-      << zICC[1]; 
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTIDRingAlgo",str);
-
+  LogDebug("TIDGeom") << "Parent " << mother.name() 
+                      << "\tModule " << moduleName[0] << ", "
+                      << moduleName[1] << "\tICC " << iccName 
+                      << "\tNameSpace " << ns.name;
+  LogDebug("TIDGeom") << "Parameters for positioning--"
+                      << " StartAngle " << startAngle/CLHEP::deg
+                      << " Copy Numbers " << number << " Modules at R " 
+                      << rModule << " Z " << zModule[0] << ", " << zModule[1] 
+                      << " ICCs at R " << rICC << " Z " << zICC[0] << ", " 
+                      << zICC[1]; 
   double theta = 90.*CLHEP::deg;
   double phiy  = 0.*CLHEP::deg;
   double dphi  = CLHEP::twopi/number;
@@ -94,12 +85,10 @@ static long algorithm(Detector& /* description */,
     Position    trmod(xpos, ypos, zpos);
     Rotation3D  rotation = make_rotation3D(theta, phix, thetay, phiy, theta, phiz);
     // int copyNr = i+1;
-    /* PlacedVolume pv = */ mother.placeVolume(module, Transform3D(rotation,trmod));
-    str << module.name() << " number "
-        << i+1 << " positioned in " << mother.name() << " at "
-        << trmod << " with " << rotation;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTIDRingAlgo",str);
-
+    /* PlacedVolume pv = */ mother.placeVolume(module, i+1, Transform3D(rotation,trmod));
+    LogDebug("TIDGeom") << module.name() << " number "
+                        << i+1 << " positioned in " << mother.name() << " at "
+                        << trmod << " with " << rotation;
     //Now the ICC
     if (i%2 == 0 ) {
       zpos = zICC[0];
@@ -112,14 +101,13 @@ static long algorithm(Detector& /* description */,
     }
     // int copyNr = i+1;
     Position tricc(xpos, ypos, zpos);
-    /* PlacedVolume pv = */ mother.placeVolume(icc, Transform3D(rotation,tricc));
-    str << iccName << " number " 
-        << i+1 << " positioned in " << mother.name() << " at "
-        << tricc << " with " << rotation;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTIDRingAlgo",str);
+    /* PlacedVolume pv = */ mother.placeVolume(icc, i+1, Transform3D(rotation,tricc));
+    LogDebug("TIDGeom") << iccName << " number " 
+                        << i+1 << " positioned in " << mother.name() << " at "
+                        << tricc << " with " << rotation;
   }
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTIDRingAlgo___DISABLED,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTIDRingAlgo,algorithm)

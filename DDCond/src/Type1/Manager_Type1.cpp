@@ -81,13 +81,14 @@ namespace {
     if ( typ && !iov->has_range() ) return typ;
     return 0;
   }
+#if 0
   /// Helper: Specialized IOV check for range IOV values
   template <> const IOVType* check_iov_type<Range>(const Manager_Type1* o, const IOV* iov)   {
     const IOVType* typ = check_iov_type<void>(o,iov);
     if ( typ && iov->has_range() ) return typ;
     return 0;
   }
-
+#endif
   /// Helper: Check conditions result for consistency
   template <typename T> void __check_values__(const Manager_Type1* o, Condition::key_type key, const IOV* iov)  
   {

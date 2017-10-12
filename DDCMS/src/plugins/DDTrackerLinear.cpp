@@ -17,23 +17,17 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 using namespace dd4hep::cms;
 
-static long create_element(Detector& /* description */,
-                           ParsingContext& ctxt,
-                           xml_h e,
-                           SensitiveDetector& /* sens */)
+static long algorithm(Detector& /* description */,
+                      ParsingContext& ctxt,
+                      xml_h e,
+                      SensitiveDetector& /* sens */)
 {
-  stringstream   str;
   Namespace      ns(ctxt, e, true);
   AlgoArguments  args(ctxt, e);
   int            startcn = args.find("StartCopyNo") ? args.value<int>("StartCopyNo") : 1;
@@ -48,8 +42,8 @@ static long create_element(Detector& /* description */,
   Volume         mother  = ns.volume(args.parentName());
   Volume         child   = ns.volume(args.value<string>("ChildName"));
 
-  printout(INFO,"DDTrackerLinear","+++ Executing Algorithm. rParent:%s",mother.name());
-  str << "debug: Parent " << mother.name() 
+  LogDebug("TrackerGeom") << "+++ Executing Algorithm. rParent:" << mother.name();
+  LogDebug("TrackerGeom") << "debug: Parent " << mother.name() 
       << "\tChild " << child.name() << " NameSpace " 
       << ns.name << "\tNumber " << number 
       << "\tAxis (theta/phi) " << theta/dd4hep::deg << ", "
@@ -57,7 +51,6 @@ static long create_element(Detector& /* description */,
       << ", "  << delta << "\tCentre " << centre[0] << ", "
       << centre[1] << ", " << centre[2] << "\tRotation "
       << rotMat;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerLinear",str);
 
   Position direction(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
   Position base(centre[0],centre[1],centre[2]);
@@ -69,16 +62,15 @@ static long create_element(Detector& /* description */,
     Position tran = base + (offset + double(i)*delta)*direction;
     // Copy number ???
     /* PlacedVolume pv = */ rotMat.empty()
-      ? mother.placeVolume(child,Transform3D(rot,tran))
-      : mother.placeVolume(child,tran);
-    str << child.name() << " number "
-        << ci << " positioned in " << mother.name() << " at "
-        << tran << " with " << rot;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerLinear",str);
+      ? mother.placeVolume(child,ci,Transform3D(rot,tran))
+      : mother.placeVolume(child,ci,tran);
+    LogDebug("TrackerGeom") << child.name() << " number "
+                            << ci << " positioned in " << mother.name() << " at "
+                            << tran << " with " << rot;
   }
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTrackerLinear,create_element)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTrackerLinear,algorithm)
 

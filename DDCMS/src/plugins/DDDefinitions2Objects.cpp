@@ -50,6 +50,8 @@ namespace dd4hep {
 
     static UInt_t unique_mat_id = 0xAFFEFEED;
 
+
+    class disabled_algo;
     class include_constants;
     class include_load;
     class include_unload;
@@ -90,6 +92,7 @@ namespace dd4hep {
 
     class vissection;
     class vis_apply;
+    class vismaterial;
     class vis;
     class debug;
   }
@@ -97,7 +100,8 @@ namespace dd4hep {
   /// Converter instances implemented in this compilation unit
   template <> void Converter<debug>::operator()(xml_h element) const;
   template <> void Converter<print_xml_doc>::operator()(xml_h element) const;
-
+  template <> void Converter<disabled_algo>::operator()(xml_h element) const;
+  
   /// Converter for <ConstantsSection/> tags
   template <> void Converter<constantssection>::operator()(xml_h element) const;
   template <> void Converter<constant>::operator()(xml_h element) const;
@@ -105,7 +109,11 @@ namespace dd4hep {
 
   /// Converter for <VisSection/> tags
   template <> void Converter<vissection>::operator()(xml_h element) const;
+  /// Convert to apply visualization attributes
   template <> void Converter<vis_apply>::operator()(xml_h element) const;
+  /// Convert material visualization attributes
+  template <> void Converter<vismaterial>::operator()(xml_h element) const;
+  /// Convert compact visualization attributes
   template <> void Converter<vis>::operator()(xml_h element) const;
 
   /// Converter for <MaterialSection/> tags
@@ -166,6 +174,7 @@ template <> void Converter<constantssection>::operator()(xml_h element) const  {
 /// Converter for <VisSection/> tags
 template <> void Converter<vissection>::operator()(xml_h element) const  {
   Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(vismaterial)).for_each(Converter<vismaterial>(description,_ns.context,optional));
   xml_coll_t(element, _CMU(vis)).for_each(Converter<vis>(description,_ns.context,optional));
 }
 
@@ -190,6 +199,11 @@ template <> void Converter<pospartsection>::operator()(xml_h element) const   {
 template <> void Converter<logicalpartsection>::operator()(xml_h element) const   {
   Namespace _ns(_param<ParsingContext>(), element);
   xml_coll_t(element, _CMU(LogicalPart)).for_each(Converter<logicalpart>(description,_ns.context,optional));
+}
+
+template <> void Converter<disabled_algo>::operator()(xml_h element) const   {
+  ParsingContext* c = _param<ParsingContext>();
+  c->disabledAlgs.insert(element.attr<string>(_U(name)));
 }
 
 /// Generic converter for  <SolidSection/> tags
@@ -266,6 +280,13 @@ template <> void Converter<constant>::operator()(xml_h element) const  {
   res->allConst[real] = val;
   res->originalConst[real] = val;
   res->unresolvedConst[real] = val;
+}
+
+/// Convert material visualization attributes
+template <> void Converter<vismaterial>::operator()(xml_h e) const {
+  ParsingContext* c = _param<ParsingContext>();
+  xml_dim_t xvis(e);
+  c->vismaterial[xvis.nameStr()] = xvis.typeStr();
 }
 
 /** Convert compact visualization attribute to Detector visualization attribute
@@ -405,6 +426,7 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
       medium->SetTitle("material");
       medium->SetUniqueID(unique_mat_id);
     }
+    
   }
 }
 
@@ -485,7 +507,7 @@ template <> void Converter<pospart>::operator()(xml_h element) const {
   if ( child.isValid() )   {
     Transform3D trafo;
     Converter<transform3d>(description,param,&trafo)(element);
-    pv = parent.placeVolume(child,trafo);
+    pv = parent.placeVolume(child,copy,trafo);
   }
   if ( !pv.isValid() )   {
     printout(ERROR,"DDCMS","+++ Placement FAILED! Parent:%s Child:%s Valid:%s",
@@ -652,15 +674,20 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
   Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string name = e.nameStr();
+  if ( _ns.context->disabledAlgs.find(name) != _ns.context->disabledAlgs.end() )   {
+    printout(INFO,"DDCMS","+++ Skip disabled algorithms: %s",name.c_str());
+    return;
+  }
   try {
     SensitiveDetector sd;
     Segmentation      seg;
-    string type = _ns.real_name(e.nameStr());
+    string            type = "DDCMS_"+_ns.real_name(name);
 
     // SensitiveDetector and Segmentation currently are undefined. Let's keep it like this
     // until we found something better.....
     printout(_ns.context->debug_algorithms ? ALWAYS : DEBUG,
              "DDCMS","+++ Start executing algorithm %s....",type.c_str());
+    LogDebug context(e.nameStr(),true);
     long ret = PluginService::Create<long>(type, &description, _ns.context, &element, &sd);
     if ( ret == 1 )    {
       printout(_ns.context->debug_algorithms ? ALWAYS : DEBUG,
@@ -702,34 +729,69 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
 
 template <> void Converter<debug>::operator()(xml_h dbg) const {
   Namespace _ns(_param<ParsingContext>());
-  if ( dbg.hasChild(_CMU(debug_constants)) )  _ns.context->debug_constants  = true;
-  if ( dbg.hasChild(_CMU(debug_materials)) )  _ns.context->debug_materials  = true;
-  if ( dbg.hasChild(_CMU(debug_rotations)) )  _ns.context->debug_rotations  = true;
-  if ( dbg.hasChild(_CMU(debug_shapes)) )     _ns.context->debug_shapes     = true;
-  if ( dbg.hasChild(_CMU(debug_volumes)) )    _ns.context->debug_volumes    = true;
+  if ( dbg.hasChild(_CMU(debug_visattr))    ) _ns.context->debug_visattr    = true;
+  if ( dbg.hasChild(_CMU(debug_constants))  ) _ns.context->debug_constants  = true;
+  if ( dbg.hasChild(_CMU(debug_materials))  ) _ns.context->debug_materials  = true;
+  if ( dbg.hasChild(_CMU(debug_rotations))  ) _ns.context->debug_rotations  = true;
+  if ( dbg.hasChild(_CMU(debug_shapes))     ) _ns.context->debug_shapes     = true;
+  if ( dbg.hasChild(_CMU(debug_volumes))    ) _ns.context->debug_volumes    = true;
   if ( dbg.hasChild(_CMU(debug_placements)) ) _ns.context->debug_placements = true;
   if ( dbg.hasChild(_CMU(debug_namespaces)) ) _ns.context->debug_namespaces = true;
   if ( dbg.hasChild(_CMU(debug_includes))   ) _ns.context->debug_includes   = true;
   if ( dbg.hasChild(_CMU(debug_algorithms)) ) _ns.context->debug_algorithms = true;
+  LogDebug::setDebugAlgorithms(_ns.context->debug_algorithms);
 }
 
 template <> void Converter<vis_apply>::operator()(xml_h /* dddefinition */) const {
   struct VisPatcher: public detail::GeoScan {
-    Detector& detector;
-    VisPatcher(Detector& d) : detail::GeoScan(d.world()), detector(d)  {    }
+    const Namespace& n_s;
+    VisPatcher(const Namespace&  n)
+      : detail::GeoScan(n.context->description->world()), n_s(n)
+    {    }
     void patch()   const  {
+      Detector* detector = n_s.context->description;
       printout(INFO,"Detector","+++ Applying DD4hep visualization attributes....");
+      VisAttr invisible = detector->visAttributes("invisible");
       for (auto i = m_data->rbegin(); i != m_data->rend(); ++i) {
         for( const TGeoNode* n : (*i).second )  {
-          Volume  vol(n->GetVolume());
-          VisAttr vis = detector.visAttributes(vol.name());
-          printout(DEBUG,"Vis","+++ %s  vis-attrs:%s",vol.name(), yes_no(vis.isValid()));
+          Volume   vol = n->GetVolume();
+          Material mat = vol.material();
+          VisAttr  vis = detector->visAttributes(vol.name());
+          if ( !vis.isValid() )  {
+            auto iv = n_s.context->vismaterial.find(mat.name());
+            if ( iv != n_s.context->vismaterial.end() )  {
+              vis = detector->visAttributes((*iv).second);
+            }
+          }
+          if ( !vis.isValid() && mat.density() < 5e0 )  {
+            vis = invisible;
+          }
+          /*
+          if ( !vis )   {
+            TGeoMaterial* m = mat->GetMaterial();
+            int ne = m->GetNelements();
+            for(int k=0; ne==1 && k<ne; ++k)   {
+              TGeoElement* e = m->GetElement(k);
+              auto iv = n_s.context->vismaterial.find(e->GetName());
+              if ( iv != n_s.context->vismaterial.end() )  {
+                vis = detector->visAttributes((*iv).second);
+                printout(INFO,"Vis","Set visattr according to element: %s -> %s",
+                         mat.name(), e->GetName());
+                break;
+              }
+            }
+          }
+          */
+          printout(n_s.context->debug_visattr ? ALWAYS : DEBUG,
+                   "Vis","+++ %-40s Material:%s Dens:%6.1f vis-attrs:%s [%s]",
+                   vol.name(), mat.name(), mat.density(), yes_no(vis.isValid()),
+                   vis.name());
           vol.setVisAttributes(vis);
         }
       }
     }
   };
-  VisPatcher(description).patch();
+  VisPatcher(Namespace(_param<ParsingContext>())).patch();
 }
 
 template <> void Converter<resolve>::operator()(xml_h /* element */) const {
@@ -785,7 +847,7 @@ template <> void Converter<resolve>::operator()(xml_h /* element */) const {
 template <> void Converter<print_xml_doc>::operator()(xml_h element) const {
   string fname = xml::DocumentHandler::system_path(element);
   printout(_param<ParsingContext>()->debug_includes ? ALWAYS : DEBUG,
-           "DDCMS","+++ Processing data from file:%s",fname.c_str());
+           "DDCMS","+++ Processing data from: %s",fname.c_str());
 }
 
 /// Converter for <DDDefinition/> tags
@@ -809,6 +871,7 @@ static long load_dddefinition(Detector& det, xml_h element) {
   try  {
     resolve res;
     print_doc((doc=dddef.document()).root());
+    xml_coll_t(dddef, _CMU(DisabledAlgo)).for_each(Converter<disabled_algo>(det,&ctxt,&res));
     xml_coll_t(dddef, _CMU(ConstantsSection)).for_each(Converter<constantssection>(det,&ctxt,&res));
     xml_coll_t(dddef, _CMU(VisSection)).for_each(Converter<vissection>(det,&ctxt));
     xml_coll_t(dddef, _CMU(RotationSection)).for_each(Converter<rotationsection>(det,&ctxt));
@@ -816,7 +879,10 @@ static long load_dddefinition(Detector& det, xml_h element) {
 
     xml_coll_t(dddef, _CMU(IncludeSection)).for_each(_CMU(Include), Converter<include_load>(det,&ctxt,&res));
 
-    for(xml::Document d : res.includes ) Converter<include_constants>(det,&ctxt,&res)((doc=d).root());
+    for(xml::Document d : res.includes )   {
+      print_doc((doc=d).root());
+      Converter<include_constants>(det,&ctxt,&res)((doc=d).root());
+    }
     // Before we continue, we have to resolve all constants NOW!
     Converter<resolve>(det,&ctxt,&res)(dddef);
     // Now we can process the include files one by one.....

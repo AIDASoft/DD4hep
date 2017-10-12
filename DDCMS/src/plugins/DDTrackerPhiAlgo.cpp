@@ -17,11 +17,7 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
 #include "DDCMS/DDCMSPlugins.h"
-
-// C/C++ include files
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -32,13 +28,12 @@ static long algorithm(Detector& /* description */,
                       xml_h e,
                       SensitiveDetector& /* sens */)
 {
-  stringstream   str;
   Namespace      ns(ctxt, e, true);
   AlgoArguments  args(ctxt, e);
   Volume         mother      = ns.volume(args.parentName());
   Volume         child       = ns.volume(args.childName());
   int            startcn     = args.find("StartCopyNo") ? args.value<int>("StartCopyNo") : 1;
-  int            incrcn      = args.find("IncrCopyNo") ? args.value<int>("IncrCopyNo") : 1;
+  int            incrcn      = args.find("IncrCopyNo")  ? args.value<int>("IncrCopyNo")  : 1;
   vector<double> phi         = args.value<vector<double> >("Phi");         // Phi values
   vector<double> zpos        = args.value<vector<double> >("ZPos");        // Z positions
   int            numcopies   = args.find("NumCopies") ? args.value<int>("NumCopies") : int(phi.size());
@@ -46,27 +41,21 @@ static long algorithm(Detector& /* description */,
   double         tilt        = args.value<double>("Tilt");
 
   if ( numcopies != int(phi.size()) )  {
-    str << "error: Parameter "
+    LogDebug("TrackerGeom") << "error: Parameter "
         << "NumCopies does not agree with the size "
         << "of the Phi vector. It was adjusted to "
         << "be the size of the Phi vector and may "
         << "lead to crashes or errors.";
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAlgo",str);
   }
-
-  str << "debug: Parameters for position"
+  LogDebug("TrackerGeom") << "debug: Parameters for position"
                           << "ing:: " << " Radius " << radius << " Tilt " 
                           << tilt/CLHEP::deg << " Copies " << phi.size() 
                           << " at";
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAlgo",str);
-  for (int i=0; i<(int)(phi.size()); i++)  {
-    str << "\t[" << i << "] phi = " << phi[i]/CLHEP::deg 
+  for (int i=0; i<(int)(phi.size()); i++)
+    LogDebug("TrackerGeom") << "\t[" << i << "] phi = " << phi[i]/CLHEP::deg 
         << " z = " << zpos[i];
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAlgo",str);
-  }
-  str <<  "debug: Parent " << mother.name()
+  LogDebug("TrackerGeom") <<  "debug: Parent " << mother.name()
       <<"\tChild " << child.name() << " NameSpace " << ns.name;
-  printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAlgo",str);
 
   double theta  = 90.*CLHEP::deg;
   int ci = startcn;
@@ -77,16 +66,15 @@ static long algorithm(Detector& /* description */,
     double ypos   = radius*sin(phi[i]);
     Rotation3D rot = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
     Position   tran(xpos, ypos, zpos[i]);
-    /* PlacedVolume pv = */ mother.placeVolume(child,Transform3D(rot,tran));
-    str << "test: " << child.name() << " number "
+    /* PlacedVolume pv = */ mother.placeVolume(child,ci,Transform3D(rot,tran));
+    LogDebug("TrackerGeom") << "test: " << child.name() << " number "
         << ci << " positioned in " << mother.name() << " at "
         << tran  << " with " << rot;
-    printout(ctxt.debug_algorithms ? ALWAYS : DEBUG,"DDTrackerPhiAlgo",str);
     ci = ci+incrcn;
   }
   return 1;
 }
 
 // first argument is the type from the xml file
-DECLARE_DDCMS_DETELEMENT(track_DDTrackerPhiAlgo,algorithm)
+DECLARE_DDCMS_DETELEMENT(DDCMS_track_DDTrackerPhiAlgo,algorithm)
 

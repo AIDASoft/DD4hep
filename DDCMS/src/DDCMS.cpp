@@ -33,6 +33,7 @@ using namespace dd4hep::cms;
 
 #define NAMESPACE_SEP '_'
 
+/// Create 3D rotation matrix from angles.
 Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
                                         double thetaY, double phiY,
                                         double thetaZ, double phiZ)   {
@@ -41,6 +42,45 @@ Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
   Position  posZ(sin(thetaZ) * cos(phiZ), sin(thetaZ) * sin(phiZ), cos(thetaZ));
   Rotation3D rot(posX,posY,posZ);
   return rot;
+}
+
+/// Helper: Convert the name of a placed volume into a subdetector name
+string dd4hep::cms::detElementName(PlacedVolume pv)   {
+  if ( pv.isValid() )  {
+    string nam = pv.name();
+    string nnam = nam.substr(nam.find('_')+1);
+    return nnam;
+    //size_t idx = nnam.rfind('_');
+    //return idx == string::npos ? nnam : nnam.substr(0,idx);
+  }
+  except("DDCMS","++ Cannot deduce name from invalid PlacedVolume handle!");
+  return string();
+}
+
+/// Compute the material fraction of a given element in a volume 
+double dd4hep::cms::material_fraction(Volume vol, const TGeoElement* element)    {
+  double frac = 0e0, tot = 0e0;
+  TGeoMaterial* m = vol.material()->GetMaterial();
+  for ( int i=0, n=m->GetNelements(); i<n; ++i )  {
+    TGeoElement* e = m->GetElement(i);
+    if ( m->IsMixture() )  {
+      TGeoMixture* mix = (TGeoMixture*)m;
+      tot  += mix->GetWmixt()[i];
+    }
+    else {
+      tot = 1e0;
+    }
+    if ( e == element )   {
+      if ( m->IsMixture() )  {
+        TGeoMixture* mix = (TGeoMixture*)m;
+        frac += mix->GetWmixt()[i];
+      }
+      else  {
+        frac = 1e0;
+      }
+    }
+  }
+  return tot>1e-20 ? frac/tot : 0.0;
 }
 
 /// Initializing constructor
@@ -207,7 +247,7 @@ const Rotation3D& Namespace::rotation(const string& nam)  const   {
 }
 
 /// Add rotation matrix to current namespace
-void Namespace::addVolumeNS(Volume vol)  const  {
+Volume Namespace::addVolumeNS(Volume vol)  const  {
   string   n = vol.name();
   Solid    s = vol.solid();
   Material m = vol.material();
@@ -216,10 +256,11 @@ void Namespace::addVolumeNS(Volume vol)  const  {
   printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
            vol.name(), s.name(), s.type(), m.name());
+  return vol;
 }
 
 /// Add rotation matrix to current namespace
-void Namespace::addVolume(Volume vol)  const  {
+Volume Namespace::addVolume(Volume vol)  const  {
   string   n = prepend(vol.name());
   Solid    s = vol.solid();
   Material m = vol.material();
@@ -228,6 +269,7 @@ void Namespace::addVolume(Volume vol)  const  {
   printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
            vol.name(), s.name(), s.type(), m.name());
+  return vol;
 }
 
 Volume Namespace::volume(const string& nam, bool exc)  const   {
@@ -250,15 +292,16 @@ Volume Namespace::volume(const string& nam, bool exc)  const   {
 }
 
 /// Add solid to current namespace as fully indicated by the name
-void Namespace::addSolidNS(const std::string& nam,Solid sol)  const   {
+Solid Namespace::addSolidNS(const string& nam,Solid sol)  const   {
   printout(context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add shape of type %s : %s",sol->IsA()->GetName(), nam.c_str());
   context->shapes[nam] = sol.setName(nam);
+  return sol;
 }
 
 /// Add solid to current namespace
-void Namespace::addSolid(const string& nam, Solid sol)  const  {
-  addSolidNS(prepend(nam), sol);
+Solid Namespace::addSolid(const string& nam, Solid sol)  const  {
+  return addSolidNS(prepend(nam), sol);
 }
 
 Solid Namespace::solid(const string& nam)  const   {
@@ -415,29 +458,86 @@ namespace dd4hep {
     template string AlgoArguments::value<string>(const string& nam)  const;
 
     /// Access typed vector<string> argument by name
-    template<> vector<string> AlgoArguments::value<vector<string> >(const string& nam)  const   {
-      xml_h xp = raw_arg(nam);
-      return raw_vector(this,xp);    
-    }
+    template<> vector<string> AlgoArguments::value<vector<string> >(const string& nam)  const
+    {      return raw_vector(this,raw_arg(nam));                     }
 
     /// Access typed vector<double> argument by name
-    template<> vector<double> AlgoArguments::value<vector<double> >(const string& nam)  const   {
-      return __cnvVect<double>(this,"numeric",raw_arg(nam));
-    }
+    template<> vector<double> AlgoArguments::value<vector<double> >(const string& nam)  const
+    {      return __cnvVect<double>(this,"numeric",raw_arg(nam));    }
 
     /// Access typed vector<float> argument by name
-    template<> vector<float> AlgoArguments::value<vector<float> >(const string& nam)  const   {
-      return __cnvVect<float>(this,"numeric",raw_arg(nam));
-    }
+    template<> vector<float> AlgoArguments::value<vector<float> >(const string& nam)  const
+    {      return __cnvVect<float>(this,"numeric",raw_arg(nam));     }
 
     /// Access typed vector<long> argument by name
-    template<> vector<long> AlgoArguments::value<vector<long> >(const string& nam)  const   {
-      return __cnvVect<long>(this,"numeric",raw_arg(nam));
-    }
+    template<> vector<long> AlgoArguments::value<vector<long> >(const string& nam)  const
+    {      return __cnvVect<long>(this,"numeric",raw_arg(nam));      }
 
     /// Access typed vector<int> argument by name
-    template<> vector<int> AlgoArguments::value<vector<int> >(const string& nam)  const   {
-      return __cnvVect<int>(this,"numeric",raw_arg(nam));
-    }
+    template<> vector<int> AlgoArguments::value<vector<int> >(const string& nam)  const
+    {      return __cnvVect<int>(this,"numeric",raw_arg(nam));       }
   }
+}
+
+/// Shortcut to access string arguments
+string AlgoArguments::str(const string& nam)  const
+{  return this->value<string>(nam);                }
+
+/// Shortcut to access double arguments
+double AlgoArguments::dble(const string& nam)  const
+{  return this->value<double>(nam);                }
+
+/// Shortcut to access integer arguments
+int AlgoArguments::integer(const string& nam)  const
+{  return this->value<int>(nam);                   }
+
+/// Shortcut to access vector<double> arguments
+vector<double> AlgoArguments::vecDble(const string& nam)  const
+{  return this->value<vector<double> >(nam);       }
+
+/// Shortcut to access vector<int> arguments
+vector<int> AlgoArguments::vecInt(const string& nam)  const
+{  return this->value<vector<int> >(nam);          }
+
+/// Shortcut to access vector<string> arguments
+vector<string> AlgoArguments::vecStr(const string& nam)  const
+{  return this->value<vector<string> >(nam);       }
+
+namespace {
+  bool s_debug_algorithms = false;
+  vector<string> s_algorithms;
+  const std::string currentAlg()  {
+    static std::string s_none = "??????";
+    if ( !s_algorithms.empty() ) return s_algorithms.back();
+    return s_none;
+  }
+}
+
+LogDebug::LogDebug(const std::string& tag_value, bool /* set_context */)  {
+  level = s_debug_algorithms ? ALWAYS : DEBUG;
+  s_algorithms.push_back(tag_value);
+  pop = true;
+}
+
+LogDebug::LogDebug(const std::string& t) : stringstream(), tag(t)  {
+  level = s_debug_algorithms ? ALWAYS : DEBUG;
+}
+
+LogDebug::~LogDebug()   {
+  if ( pop )   {
+    s_algorithms.pop_back();
+    return;
+  }
+  if ( this->str().empty() ) return;
+  printout(PrintLevel(level),
+           currentAlg(),"%s: %s",
+           tag.c_str(),this->str().c_str());
+}
+
+void LogDebug::setDebugAlgorithms(bool value)   {
+  s_debug_algorithms = value;
+}
+
+LogWarn::LogWarn(const std::string& t) : LogDebug(t)  {
+  level = WARNING;
 }

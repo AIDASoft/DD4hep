@@ -195,11 +195,11 @@ namespace dd4hep {
     typedef std::vector<std::pair<std::string, const BitFieldElement*> > FieldMap;
     typedef std::vector<std::pair<size_t, std::string> >         FieldIDs;
     /// Map of id-fields in the descriptor
-    FieldMap fieldMap;  //! not ROOT-persistent
+    FieldMap fieldMap;
     /// String map of id descriptors
-    FieldIDs fieldIDs;  //! not ROOT-persistent
+    FieldIDs fieldIDs;
     /// Decoder object
-    BitFieldCoder decoder; //! not ROOT-persistent
+    BitFieldCoder decoder;
     
     /// The description string to build the bit-field descriptors.
     std::string description;
@@ -218,5 +218,5 @@ namespace dd4hep {
 #endif
 #endif
   };
-}      /* End namespace dd4hep              */
+}      /* End namespace dd4hep            */
 #endif /* DD4HEP_DDCORE_OBJECTSINTERNA_H  */

@@ -25,6 +25,7 @@
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBConversion.h"
+#include "Math/Polar2D.h"
 
 // C/C++ include files
 
@@ -45,7 +46,7 @@ namespace dd4hep {
     using cond::AbstractMap;
 
     typedef AbstractMap::Params ConditionParams;
-
+    struct PositionRPhiZ {};
     struct DDDBLogVolRef {};
     struct DDDBElementRef  {};
     struct DDDBMaterialRef  {};
@@ -309,6 +310,11 @@ namespace dd4hep {
     template <> void Conv<DDDBParamPhysVol3D>::convert(xml_h element) const;
     template <> void Conv<DDDBConditionParam>::convert(xml_h element) const;
     template <> void Conv<Delta>::convert(xml_h element) const;
+
+    template <> void Conv<Position>::convert(xml_h element) const;
+    template <> void Conv<PositionRPhiZ>::convert(xml_h element) const;
+    template <> void Conv<RotationZYX>::convert(xml_h element) const;
+    template <> void Conv<Transform3D>::convert(xml_h element) const;
 
     void extract_transformation(Detector& description, void* context, xml_coll_t& collection, Transform3D& tr, int which=-1);
     void build_transformation(Detector& description, void* context, xml_h element, Transform3D& tr, int which=-1)   {
@@ -880,6 +886,15 @@ namespace dd4hep {
       dddb_dim_t dim = element;
       Position*  pos = _option<Position>();
       pos->SetXYZ(dim.x(0.0), dim.y(0.0), dim.z(0.0));
+      //dddb_print(p);
+    }
+
+    /// Specialized conversion of <posRPhiZ/> entities
+    template <> void Conv<PositionRPhiZ>::convert(xml_h element) const {
+      dddb_dim_t dim = element;
+      ROOT::Math::Polar2D<double> dim2(dim.r(0.0), dim.phi(0.0));
+      Position*  pos = _option<Position>();
+      pos->SetXYZ(dim2.X(), dim2.Y(), dim.z(0.0));
       //dddb_print(p);
     }
 
@@ -1617,6 +1632,13 @@ namespace dd4hep {
           else if ( tag == "posXYZ" && (which<0 || count == which) )   {
             apply_trafo(apply, pos, rot, trafo, tr);
             pos.SetXYZ(dim.x(0.0), dim.y(0.0), dim.z(0.0));
+            apply = 1;
+            ++count;
+          }
+          else if ( tag == "posRPhiZ" && (which<0 || count == which) )   {
+            ROOT::Math::Polar2D<double> dim2(dim.r(0.0), dim.phi(0.0));
+            apply_trafo(apply, pos, rot, trafo, tr);
+            pos.SetXYZ(dim2.X(), dim2.Y(), dim.z(0.0));
             apply = 1;
             ++count;
           }

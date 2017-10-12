@@ -156,10 +156,12 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
 
 
   // First check the input file status
-  if ( !m_input.good() || m_input.eof() )   {
+  if ( m_input.eof() )   {
+    return EVENT_READER_EOF;
+  }
+  else if ( !m_input.good() )   {
     return EVENT_READER_IO_ERROR;
   }
-
   //static const double c_light = 299.792;// mm/ns
   //
   //  Read the event, check for errors
@@ -167,7 +169,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   unsigned NHEP(0);  // number of entries
   m_input >> NHEP;
 
-  if( m_input.eof() ){ return EVENT_READER_IO_ERROR; }
+  if( m_input.eof() )  { return EVENT_READER_EOF; }
 
 
   //check loop variable read from input file and chack that is reasonable
@@ -175,7 +177,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
 
   if( NHEP > 1e6 ){ 
     printout(ERROR,"EventReaderHepEvt::readParticles","Cannot read in more than million particles, but  %d requested", NHEP );
-    return EVENT_READER_IO_ERROR; 
+    return EVENT_READER_EOF; 
   }
 
   
@@ -223,7 +225,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
               >> VHEP4;
 
     if(m_input.eof())
-      return EVENT_READER_IO_ERROR;
+      return EVENT_READER_EOF;
 
     //
     //  create a MCParticle and fill it from stdhep info
@@ -262,6 +264,8 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     else if ( ISTHEP == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
     else if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
     else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
+    //  RAW Generator status
+    p->genStatus = ISTHEP&G4PARTICLE_GEN_STATUS_MASK;
 
     //fixme: need to define the correct logic for selecting the particle to use
     //       for the _one_ event vertex 

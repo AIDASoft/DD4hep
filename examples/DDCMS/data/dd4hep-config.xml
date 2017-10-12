@@ -1,0 +1,25 @@
+<plugins>
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepINSTALL}/examples/DDCMS/data/cms_tracker.xml"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>
+    <arg value="DDCMS_DetElementCreator"/>
+  </plugin>
+  <plugin name="DD4hep_VolumeManager"/>
+  <plugin name="DD4hep_InteractiveUI"/>
+
+<!--
+  <plugin name="DD4hep_DetectorDump">
+    <arg value="-sensitive"/>
+  </plugin>
+  <plugin name="DD4hep_GeometryDisplay"/>
+
+  <plugin name="DD4hep_VolumeDump">
+    <arg value="-sensitive"/>
+    <arg value="-volids"/>
+  </plugin>
+-->
+</plugins>
