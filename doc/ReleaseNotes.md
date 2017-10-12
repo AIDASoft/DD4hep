@@ -1,3 +1,71 @@
+# v01-03
+
+* 2017-10-12 Frank Gaede ([PR#244](https://github.com/AIDASoft/DD4hep/pull/244))
+  - allow for unbounded surfaces in DDRec
+       - add new property `SurfaceType::Unbounded`
+       - if a surface is marked unbounded `Surface::insideBounds()` ignores the volume boundaries (and only checks the distance to the surface)
+
+* 2017-09-19 Whitney Armstrong ([PR#233](https://github.com/AIDASoft/DD4hep/pull/233))
+  - Added helper  `CellIDPositionConverter::cellDimensions(const CellID& cell)`
+
+* 2017-10-09 Frank Gaede ([PR#242](https://github.com/AIDASoft/DD4hep/pull/242))
+  - improve `BitFieldCoder` class
+      - remove heap allocation of BitFieldElements
+      - add move constructors for efficient filling of vector
+
+* 2017-09-29 Frank Gaede ([PR#238](https://github.com/AIDASoft/DD4hep/pull/238))
+  - add new threadsafe class `BitFieldCoder` as replacement for `BitField64`
+  - use as `const` everywhere
+  - re-implement `BitField64` using `BitFieldCoder`
+    - is thread safe if used locally 
+    - can be instantiated from `const BitFieldCoder*`
+
+* 2017-09-18 Markus Frank ([PR#234](https://github.com/AIDASoft/DD4hep/pull/234))
+  - Created a new example showing the CMS tracking detector
+    - Get CMS going with their evaluation. Added a package DDCMS with the conversion plugins for the silicon trackers and the corresponding conversion mechanism for their `xml` structure.
+
+* 2017-09-18 Frank Gaede ([PR#232](https://github.com/AIDASoft/DD4hep/pull/232))
+  - fix reading of stdhep/lcio generator files with generator statuses not in [0,3]
+  - add `G4PARTICLE_GEN_BEAM` and `G4PARTICLE_GEN_OTHER` to DDG4
+    -  `G4PARTICLE_GEN_BEAM`  is generally agreed to be used for beam particles (HepMC, LCIO)
+    -  all other status codes vary from generator to generator and we use OTHER
+  - for stdhep or lcio input the true generator status is preserved in the lcio output, regardless of its value
+  - create a vertex for every parent-less particle in LCIOEventReader
+    - this allows for example to read GuineaPig files ( non-prompt pair particles) or special user created files with non-prompt particles
+   - Resolves #101
+
+* 2017-09-20 Markus Frank ([PR#235](https://github.com/AIDASoft/DD4hep/pull/235))
+  - A more complete version of the CMS tracker
+     - Enhanced the CMS tracker example to be more complete.
+     - Stopped at some point to convert all CMS algorithms. Hence, the tracker is not complete, but the remaining work looks to be purely mechanical.
+
+* 2017-10-02 Frank Gaede ([PR#239](https://github.com/AIDASoft/DD4hep/pull/239))
+  - add cell sizes to printout of `LayeredCalorimeterData::layer`
+      - used in `dumpdetector -d`
+
+* 2017-09-14 Frank Gaede ([PR#231](https://github.com/AIDASoft/DD4hep/pull/231))
+  - adapt LCIOEventReader for Pythia8 and Whizard2
+    - add all parent-less particles to outgoing vertex
+    - fixes #226 and closes #229 
+    - also used for stdhep files
+
+* 2017-09-07 Daniel Jeans ([PR#227](https://github.com/AIDASoft/DD4hep/pull/227))
+  - Fix calculation of cell position in `MegatileLayerGridXY`
+  - previously, returned position was the lower corner of the cell
+  - after this bug fix, it's the cell centre
+
+* 2017-10-05 Frank Gaede ([PR#241](https://github.com/AIDASoft/DD4hep/pull/241))
+  - remove deprecated and unused classes from DDRec
+
+* 2017-10-05 Frank Gaede ([PR#240](https://github.com/AIDASoft/DD4hep/pull/240))
+  - add `dd4hep::rec::FixedPadSizeTPCData.zMinReadout`
+       - needed to describe the cathode thickness
+
+* 2017-08-21 Markus Frank ([PR#221](https://github.com/AIDASoft/DD4hep/pull/221))
+  - Document several classes in doxygen notation.
+     - Aim is that there are (at least) no class headers without docs.
+     - See [documentation](http://test-dd4hep.web.cern.ch/test-dd4hep/doxygen/html/annotated.html)
+
 # v01-02                                                                                                                                                                        
 
 * 2017-07-14 Daniel Jeans ([PR#204](https://github.com/AIDAsoft/DD4hep/pull/204))

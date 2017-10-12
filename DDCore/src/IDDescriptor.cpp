@@ -135,29 +135,29 @@ VolumeID IDDescriptor::encode(const std::vector<std::pair<std::string, int> >& i
 void IDDescriptor::decodeFields(VolumeID vid,
                                 vector<pair<const BitFieldElement*, VolumeID> >& flds)  const
 {
-  const vector<BitFieldElement*>& v = access()->decoder.fields();
+  const vector<BitFieldElement>& v = access()->decoder.fields();
   flds.clear();
-  for (auto f : v )
-    flds.push_back(make_pair(f, f->value(vid)));
+  for (auto& f : v )
+    flds.push_back(make_pair(&f, f.value(vid)));
 }
 
 /// Decode volume IDs and return string reprensentation for debugging purposes
 string IDDescriptor::str(VolumeID vid)   const {
-  const vector<BitFieldElement*>& v = access()->decoder.fields();
+  const vector<BitFieldElement>& v = access()->decoder.fields();
   stringstream str;
-  for (auto f : v )
-    str << f->name() << ":" << setw(4) << setfill('0') << hex << right << f->value(vid)
+  for (auto& f : v )
+    str << f.name() << ":" << setw(4) << setfill('0') << hex << right << f.value(vid)
         << left << dec << " ";
   return str.str().substr(0,str.str().length()-1);
 }
 
 /// Decode volume IDs and return string reprensentation for debugging purposes
 string IDDescriptor::str(VolumeID vid, VolumeID mask)   const {
-  const vector<BitFieldElement*>& v = access()->decoder.fields();
+  const vector<BitFieldElement>& v = access()->decoder.fields();
   stringstream str;
-  for (auto f : v )  {
-    if ( 0 == (mask&f->mask()) ) continue;
-    str << f->name() << ":" << setw(4) << setfill('0') << hex << right << f->value(vid)
+  for (auto& f : v )  {
+    if ( 0 == (mask&f.mask()) ) continue;
+    str << f.name() << ":" << setw(4) << setfill('0') << hex << right << f.value(vid)
         << left << dec << " ";
   }
   return str.str().substr(0,str.str().length()-1);

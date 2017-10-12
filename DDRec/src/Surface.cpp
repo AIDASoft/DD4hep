@@ -194,22 +194,30 @@ namespace dd4hep {
 
     /// Checks if the given point lies within the surface
     bool VolSurfaceBase::insideBounds(const Vector3D& point, double epsilon) const {
-      
+
 #if 0
+
+      bool inShape = ( type().isUnbounded() ? true : volume()->GetShape()->Contains( point.const_array() ) ) ;
+
       double dist = std::abs ( distance( point ) ) ;
-      
-      bool inShape = volume()->GetShape()->Contains( point.const_array() ) ;
-      
+
       std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << dist 
                 << " origin = " << origin() << " normal = " << normal() 
                 << " p * n = " << point * normal() 
                 << " isInShape : " << inShape << std::endl ;
-	
+
       return dist < epsilon && inShape ;
 #else
-	
-      //fixme: older versions of ROOT (~<5.34.10 ) take a non const pointer as argument - therefore use a const cast here for the time being ...
-      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( const_cast<double*> (point.const_array() )  ) ; 
+
+      if(  type().isUnbounded() ){
+
+	return std::abs ( distance( point ) ) < epsilon ;
+
+      } else {
+
+	return (  std::abs ( distance( point ) ) < epsilon &&  volume()->GetShape()->Contains( point.const_array() ) ) ;
+      }
+
 #endif
  
     }
