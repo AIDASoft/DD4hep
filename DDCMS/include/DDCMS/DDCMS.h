@@ -189,8 +189,17 @@ namespace dd4hep {
       std::vector<std::string> vecStr(const std::string& nam)  const;
     };
 
+    /// Re-direct debug messages to the DD4hep printer
+    /*
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_CORE
+     */
     class LogDebug : public std::stringstream  {
+    protected:
       std::string tag;
+      int  level;
       bool pop = false;
     public:
       LogDebug() = delete;
@@ -201,7 +210,28 @@ namespace dd4hep {
       ~LogDebug();
       static void setDebugAlgorithms(bool value);
     };
-    
+
+    /// Re-direct warning messages to the DD4hep printer
+    /*
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_CORE
+     */
+    class LogWarn : public LogDebug  {
+    public:
+      LogWarn() = delete;
+      LogWarn(const LogWarn& copy) = delete;
+      LogWarn& operator=(const LogWarn& copy) = delete;
+      LogWarn(const std::string& tag_value);
+    };
+
+
+    /// Helper: Convert the name of a placed volume into a subdetector name
+    std::string detElementName(PlacedVolume pv);
+    /// Compute the material fraction of a given element in a volume 
+    double material_fraction(Volume vol, const TGeoElement* e);
+
     /// Create 3D rotation matrix from angles.
     Rotation3D make_rotation3D(double thetaX, double phiX,
                                double thetaY, double phiY,

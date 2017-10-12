@@ -170,7 +170,7 @@ static long algorithm(Detector& /* description */,
       << " with Rin " << rin << " Rout " << rout 
       << " ZHalf " << 0.5*layerL;
   Volume layerIn = ns.addVolumeNS(Volume(name, solid, ns.material(genMat)));
-  layer.placeVolume(layerIn); // copyNr=1 !
+  layer.placeVolume(layerIn, 1); // copyNr=1 !
   LogDebug("TIBGeom") << layerIn.name()
       << " number 1 positioned in " << layer.name()
       << " at (0,0,0) with no rotation";
@@ -185,12 +185,11 @@ static long algorithm(Detector& /* description */,
     double phiy   = phix + 90.*CLHEP::deg;
     Rotation3D rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
     Position   trdet(rposdet*cos(phi), rposdet*sin(phi), 0);
-    layerIn.placeVolume(detIn, Transform3D(rotation,trdet)); // copyNr=n+1
+    layerIn.placeVolume(detIn, n+1, Transform3D(rotation,trdet)); // copyNr=n+1
     LogDebug("TIBGeom") << detIn.name() << " number " << n+1 << " positioned in " 
         << layerIn.name() << " at " << trdet << " with "
         << rotation;
   }
-
   //Now the external layer
   rin  = cylinderInR + cylinderT;
   rout = rmax-MFRingT;
@@ -201,7 +200,7 @@ static long algorithm(Detector& /* description */,
       << " with Rin " << rin << " Rout " << rout
       << " ZHalf " << 0.5*layerL;
   Volume layerOut = ns.addVolumeNS(Volume(name, solid, ns.material(genMat)));
-  layer.placeVolume(layerOut); // CopyNr again 1 ??
+  layer.placeVolume(layerOut, 1); // CopyNr 1 
   LogDebug("TIBGeom") << layerOut.name() 
       << " number 1 positioned in " << layer.name() 
       << " at (0,0,0) with no rotation";
@@ -216,7 +215,7 @@ static long algorithm(Detector& /* description */,
     double phiy   = phix + 90.*CLHEP::deg;
     Rotation3D rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
     Position   trdet(rposdet*cos(phi), rposdet*sin(phi), 0);
-    layerOut.placeVolume(detOut,Transform3D(rotation,trdet));
+    layerOut.placeVolume(detOut, n+1, Transform3D(rotation,trdet));
     LogDebug("TIBGeom") << "DDTIBLayerAlgo test " << detectorUp
         << " number " << n+1 << " positioned in " 
         << layerOut.name() << " at " << trdet << " with "
@@ -236,7 +235,7 @@ static long algorithm(Detector& /* description */,
       << CLHEP::twopi/CLHEP::deg << " with Rin " << rin 
       << " Rout " << rout << " ZHalf " << 0.5*layerL;
   Volume cylinder = ns.addVolumeNS(Volume(name, solid, ns.material(cylinderMat)));
-  layer.placeVolume(cylinder); // CopyNr = 1
+  layer.placeVolume(cylinder, 1); // CopyNr = 1
   LogDebug("TIBGeom") << cylinder.name() 
       << " number 1 positioned in " << layer.name()
       << " at (0,0,0) with no rotation";
@@ -252,7 +251,7 @@ static long algorithm(Detector& /* description */,
       << " with Rin " << rin << " Rout " << rout 
       << " ZHalf " << 0.5*layerL;
   Volume cylinderIn = ns.addVolumeNS(Volume(name, solid, ns.material(genMat)));
-  cylinder.placeVolume(cylinderIn);
+  cylinder.placeVolume(cylinderIn, 1);
   LogDebug("TIBGeom") << cylinderIn.name() 
       << " number 1 positioned in " << cylinder.name() 
       << " at (0,0,0) with no rotation";
@@ -266,8 +265,8 @@ static long algorithm(Detector& /* description */,
       << CLHEP::twopi/CLHEP::deg << " with Rin " << rin 
       << " Rout " << rout << " ZHalf "  << fillerDz;
   Volume cylinderFiller = ns.addVolumeNS(Volume(name,solid,ns.material(fillerMat)));
-  cylinderIn.placeVolume(cylinderFiller,Position(0.0, 0.0, 0.5*layerL-fillerDz)); // copyNr 1
-  cylinderIn.placeVolume(cylinderFiller,Position(0.0, 0.0,-0.5*layerL+fillerDz)); // copyNr 2
+  cylinderIn.placeVolume(cylinderFiller, 1, Position(0.0, 0.0, 0.5*layerL-fillerDz)); // copyNr 1
+  cylinderIn.placeVolume(cylinderFiller, 2, Position(0.0, 0.0,-0.5*layerL+fillerDz)); // copyNr 2
   LogDebug("TIBGeom") << "DDTIBLayerAlgo test " << cylinderFiller.name()
       << " number 1" << " positioned in " 
       << cylinderIn.name() << " at " << Position(0.0, 0.0, 0.5*layerL-fillerDz)
@@ -277,7 +276,7 @@ static long algorithm(Detector& /* description */,
   // Ribs
   //
   Material matrib = ns.material(ribMat);
-  for (int i = 0; i < (int)(ribW.size()); i++) {
+  for (size_t i = 0; i < ribW.size(); i++) {
     name = idName + "Rib" + std::to_string(i);
     double width = 2.*ribW[i]/(rin+rout);
     double dz    = 0.5*layerL-2.*fillerDz;
@@ -295,13 +294,13 @@ static long algorithm(Detector& /* description */,
     double phiy   = phix + 90.*CLHEP::deg;
     Rotation3D rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
     Position tran(0, 0, 0);
-    cylinderIn.placeVolume(cylinderRib,Transform3D(rotation,tran));// copyNr=1
+    cylinderIn.placeVolume(cylinderRib, 1, Transform3D(rotation,tran));// copyNr=1
     LogDebug("TIBGeom") << cylinderRib.name()
         << " number 1" << " positioned in " 
         << cylinderIn.name() << " at " << tran << " with " 
         << rotation;
   }
-
+  //
   //Manifold rings
   //
   // Inner ones first
@@ -314,8 +313,8 @@ static long algorithm(Detector& /* description */,
       << CLHEP::twopi/CLHEP::deg << " with Rin " << rin 
       << " Rout " << rout << " ZHalf " << MFRingDz;
   Volume inmfr = ns.addVolumeNS(Volume(name, solid, ns.material(MFIntRingMat)));
-  layer.placeVolume(inmfr, Position(0.0, 0.0, -0.5*layerL+MFRingDz)); // Copy Nr=1
-  layer.placeVolume(inmfr, Position(0.0, 0.0, +0.5*layerL+MFRingDz)); // Copy Nr=2
+  layer.placeVolume(inmfr, 1, Position(0.0, 0.0, -0.5*layerL+MFRingDz)); // Copy Nr=1
+  layer.placeVolume(inmfr, 2, Position(0.0, 0.0, +0.5*layerL+MFRingDz)); // Copy Nr=2
   LogDebug("TIBGeom") << inmfr.name() 
       << " number 1 and 2 positioned in " << layer.name()
       << " at (0,0,+-" << 0.5*layerL-MFRingDz << ") with no rotation";
@@ -331,13 +330,13 @@ static long algorithm(Detector& /* description */,
       << " Rout " << rout << " ZHalf " << MFRingDz;
 
   Volume outmfr = ns.addVolumeNS(Volume(name, solid, ns.material(MFExtRingMat)));
-  layer.placeVolume(outmfr,Position(0.0, 0.0, -0.5*layerL+MFRingDz)); // CopyNr=1
-  layer.placeVolume(outmfr,Position(0.0, 0.0, +0.5*layerL+MFRingDz)); // CopyNr=2
+  layer.placeVolume(outmfr, 1, Position(0.0, 0.0, -0.5*layerL+MFRingDz)); // CopyNr=1
+  layer.placeVolume(outmfr, 2, Position(0.0, 0.0, +0.5*layerL+MFRingDz)); // CopyNr=2
   LogDebug("TIBGeom") << outmfr.name() 
       << " number 1 and 2 positioned in " << layer.name()
       << " at (0,0,+-" << 0.5*layerL-MFRingDz 
       << ") with no rotation";
-
+  //
   //Central Support rings
   //
   // Ring 1
@@ -354,7 +353,7 @@ static long algorithm(Detector& /* description */,
       << " ZHalf " << centDz;
 
   Volume cent1 = ns.addVolumeNS(Volume(name, solid, ns.material(centMat)));
-  layer.placeVolume(cent1,Position(0.0, 0.0, centZ)); // Copy Nr = 1
+  layer.placeVolume(cent1,1, Position(0.0, 0.0, centZ)); // Copy Nr = 1
   LogDebug("TIBGeom") << cent1.name() << " positioned in " << layer.name()
       << " at (0,0," << centZ << ") with no rotation";
   // Ring 2
@@ -370,15 +369,15 @@ static long algorithm(Detector& /* description */,
       << " ZHalf " << centDz;
 
   Volume cent2 = ns.addVolumeNS(Volume(name, solid, ns.material(centMat)));
-  layer.placeVolume(cent2, Position(0e0,0e0,centZ)); // copyNr=1
+  layer.placeVolume(cent2, 1, Position(0e0,0e0,centZ)); // copyNr=1
   LogDebug("TIBGeom") << cent2.name() 
       << " positioned in " << layer.name()
       << " at (0,0," << centZ << ") with no rotation";
-  
+  //
   ////// DOHM
   //
   // Preparing DOHM Carrier solid
-
+  //
   name = idName + "DOHMCarrier";
   double dohmCarrierRin   = MFRingOutR - MFRingT;
   double dohmCarrierRout  = MFRingOutR;
@@ -452,26 +451,24 @@ static long algorithm(Detector& /* description */,
     Volume dohmCarrier = ns.addVolumeNS(Volume(name,solid,ns.material(dohmCarrierMaterial)));
     int primReplica = 0;
     int auxReplica = 0;
-
-    for (int i = 0; i < placeDohm*((int)(dohmList.size())); i++) {
-      double phi    = (std::abs(dohmList[i])+0.5-1.)*dphi;
-      double phix   = phi + 90*CLHEP::deg;
-      double theta  = 90*CLHEP::deg;
-      double phiy   = phix + 90.*CLHEP::deg;
+#if 0
+    for ( size_t i = 0; i < placeDohm*dohmList.size(); i++ )   {
+      double phi   = (std::abs(dohmList[i])+0.5-1.)*dphi;
+      double phix  = phi + 90*CLHEP::deg;
+      double theta = 90*CLHEP::deg;
+      double phiy  = phix + 90.*CLHEP::deg;
       dohmRotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
 
-      string dohmName;
-      int dohmReplica = 0;
+      int    dohmReplica = 0;
       double dohmZ = 0.;
       Volume dohm;
-      
+
       if(dohmList[i]<0.) {
         // Place a Auxiliary DOHM
-        dohm = ns.volume(dohmAuxName);
+        dohm  = ns.volume(dohmAuxName);
         dohmZ = dohmCarrierDz - 0.5*dohmAuxL - dohmtoMF;
         primReplica++;
         dohmReplica = primReplica;
-	
       } else {
         // Place a Primary DOHM
         dohm = ns.volume(dohmPrimName);
@@ -479,22 +476,23 @@ static long algorithm(Detector& /* description */,
         auxReplica++;
         dohmReplica = auxReplica;
       }
-      
       Position dohmTrasl(dohmR*cos(phi), dohmR*sin(phi), dohmZ);
-      dohmCarrier.placeVolume(dohm,Transform3D(dohmRotation,dohmTrasl));
+      dohmCarrier.placeVolume(dohm,dohmReplica,Transform3D(dohmRotation,dohmTrasl));
       LogDebug("TIBGeom") << dohm.name() 
           << " replica " << dohmReplica << " positioned in " 
           << dohmCarrier.name() << " at " << dohmTrasl << " with "
           << dohmRotation;
     }
-    
-    layer.placeVolume(dohmCarrier, Transform3D(rotation,tran));// copyNr = dohmCarrierReplica
+#else
+    LogWarn("TIBGeom") << "DOOHM placement sucks for Geant4. ERASED!";
+#endif
+    layer.placeVolume(dohmCarrier, dohmCarrierReplica, Transform3D(rotation,tran));// copyNr = dohmCarrierReplica
     LogDebug("TIBGeom") << "DDTIBLayerAlgo test "
         << dohmCarrier.name() << " positioned in " << mother
         << " replica " << dohmCarrierReplica << " at "
         << tran << " with " << rotation;
   }
-
+  //
   ////// PILLARS
   for (int j = 0; j<4; j++) {    
     vector<double> pillarZ;
@@ -553,7 +551,7 @@ static long algorithm(Detector& /* description */,
       if( pillarPhi[i]>0. ) {
         pillarTran = Position(0., 0., pillarZ[i]);
         pillarRota = make_rotation3D(90.*CLHEP::deg, pillarPhi[i], 90.*CLHEP::deg, 90.*CLHEP::deg+pillarPhi[i], 0., 0.);
-        layer.placeVolume(Pillar,Transform3D(pillarRota,pillarTran)); // copyNr i
+        layer.placeVolume(Pillar,i,Transform3D(pillarRota,pillarTran)); // copyNr i
         LogDebug("TIBGeom") << Pillar.name() << " positioned in " 
             << mother << " at "
             << pillarTran << " with " << pillarRota 

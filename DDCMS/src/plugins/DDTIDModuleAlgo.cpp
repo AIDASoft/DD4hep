@@ -282,7 +282,7 @@ static long algorithm(Detector& /* description */,
       Volume holeFrame = ns.addVolumeNS(Volume(name, solid, ns.material(genMat)));
 
       rot   = ns.rotation(holeFrameRot[k]);
-      sideFrame.placeVolume(holeFrame,Transform3D(rot,Position(0e0,0e0,zpos)));// copyNr=1
+      sideFrame.placeVolume(holeFrame,1,Transform3D(rot,Position(0e0,0e0,zpos)));// copyNr=1
       LogDebug("TIDGeom") << holeFrame.name() 
           << " number 1 positioned in " << sideFrame.name()
           << " at (0,0," << zpos << ") with no rotation";
@@ -374,7 +374,7 @@ static long algorithm(Detector& /* description */,
       Volume holeKapton = ns.addVolumeNS(Volume(name, solid, ns.material(genMat)));
 
       rot = ns.rotation(holeKaptonRot[k]);
-      kapton.placeVolume(holeKapton, Transform3D(rot,Position(xpos, 0.0, zpos)));
+      kapton.placeVolume(holeKapton, 1, Transform3D(rot,Position(xpos, 0.0, zpos)));
       LogDebug("TIDGeom") << holeKapton.name() 
           << " number 1 positioned in " << kapton.name()
           << " at (0,0," << zpos << ") with no rotation";
@@ -419,7 +419,7 @@ static long algorithm(Detector& /* description */,
       Volume active  = ns.addVolumeNS(Volume(name, solid, ns.material(activeMat)));
       rot = ns.rotation(activeRot);
       Position tran(0.0,-0.5 * backplaneThick[k],0.0); // from the definition of the wafer local axes
-      wafer.placeVolume(active, Transform3D(rot,tran));  // inactive backplane copyNr=1
+      wafer.placeVolume(active, 1, Transform3D(rot,tran));  // inactive backplane copyNr=1
       LogDebug("TIDGeom") << "DDTIDModuleAlgo test: " << active.name() 
           << " number 1 positioned in " << wafer.name() 
           << " at " << tran << " with " << rot;

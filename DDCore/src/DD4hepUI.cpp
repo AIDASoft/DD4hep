@@ -14,6 +14,7 @@
 // Framework includes
 #include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Printout.h"
+#include "TRint.h"
 
 using namespace std;
 using namespace dd4hep;
@@ -94,12 +95,38 @@ void DD4hepUI::redraw() const   {
 long DD4hepUI::dumpVols(int argc, char** argv)  const   {
   if ( argc==0 )  {
     const void* av[] = {"-positions","-pointers",0};
-    return m_detDesc.apply("DD4hepVolumeDump",2,(char**)av);
+    return m_detDesc.apply("DD4hep_VolumeDump",2,(char**)av);
   }
-  return m_detDesc.apply("DD4hepVolumeDump",argc,argv);
+  return m_detDesc.apply("DD4hep_VolumeDump",argc,argv);
 }
 
 /// Dump the DetElement tree
 long DD4hepUI::dumpDet()  const   {
-  return m_detDesc.apply("DD4hepDetectorVolumeDump",0,0);
+  return m_detDesc.apply("DD4hep_DetectorVolumeDump",0,0);
+}
+
+/// Create ROOT interpreter instance
+long DD4hepUI::createInterpreter(int argc, char** argv)  {
+  if ( 0 == gApplication )  {
+    pair<int, char**> a(argc,argv);
+    gApplication = new TRint("DD4hepUI", &a.first, a.second);
+    printout(INFO,"DD4hepUI","++ Created ROOT interpreter instance for DD4hepUI.");
+    return 1;
+  }
+  printout(WARNING,"DD4hepUI",
+           "++ Another ROOT application instance already exists. Keep existing instance.");
+  return 1;
+}
+
+/// Execute ROOT interpreter instance
+long DD4hepUI::runInterpreter()  const   {
+  if ( 0 != gApplication )  {
+    if ( !gApplication->IsRunning() )  {
+      gApplication->Run();
+      return 1;
+    }
+    except("DD4hepUI","++ The ROOT application is already running.");
+  }
+  except("DD4hepUI","++ No ROOT interpreter instance present!");
+  return 0;
 }

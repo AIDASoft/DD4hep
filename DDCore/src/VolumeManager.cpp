@@ -287,7 +287,7 @@ namespace dd4hep {
             }
           }
           if ( sd.isValid() )   {
-            if ( !have_encoding )   {
+            if ( !have_encoding && !compound )   {
               printout(ERROR, "VolumeManager","Element %s: Missing SD encoding. Volume manager won't work!",
                        e.path().c_str());
             }
@@ -368,6 +368,7 @@ namespace dd4hep {
             DetElement    sub_detector = m_detDesc.detector(sd_name);
             VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
 
+            //m_debug = true;
             // This is the block, we effectively have to save for each physical volume with a VolID
             void* mem = nodes.empty()
               ? VolumeContextAllocator::instance()->alloc_small()

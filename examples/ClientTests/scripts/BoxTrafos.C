@@ -54,8 +54,8 @@ int BoxTrafos()  {
 
   gSystem->Load("libDDCore");
   Detector& description = Detector::getInstance();
-  description.apply("DD4hepCompactLoader",2,(char**)argv);
-  description.apply("DD4hepGeometryDisplay",0,0);
+  description.apply("DD4hep_CompactLoader",2,(char**)argv);
+  description.apply("DD4hep_GeometryDisplay",0,0);
 
 
   DetElement de = description.detector("B3");

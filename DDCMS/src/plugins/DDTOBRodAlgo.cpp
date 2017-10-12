@@ -157,7 +157,7 @@ static long algorithm(Detector& /* description */,
     for (int j=0; j<(int)(sideRodX.size()); j++) {
       Position r(sideRodX[j], sideRodY[i], sideRodZ[i]);
       child = sideRod[i];
-      rod.placeVolume(ns.volume(child), /* j+1, */ r);
+      rod.placeVolume(ns.volume(child), j+1, r);
       LogDebug("TOBGeom") << child << " number " << j+1 << " positioned in "
                           << rodName << " at " << r << " with no rotation";
     }
@@ -166,7 +166,7 @@ static long algorithm(Detector& /* description */,
   for (int i=0; i<(int)(clampX.size()); i++) {
     Position r(clampX[i], 0, shift+clampZ[i]);
     child = clamp;
-    rod.placeVolume(ns.volume(child), /* i+1, */ r);
+    rod.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in "
                         << rodName << " at " << r << " with no rotation";
   }
@@ -174,7 +174,7 @@ static long algorithm(Detector& /* description */,
   for (int i=0; i<(int)(sideCoolX.size()); i++) {
     Position r(sideCoolX[i], sideCoolY[i], shift+sideCoolZ[i]);
     child = sideCool;
-    rod.placeVolume(ns.volume(child), /* i+1, */ r);
+    rod.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in "
                         << rodName << " at " << r << " with no rotation";
   }
@@ -182,7 +182,7 @@ static long algorithm(Detector& /* description */,
   for (int i=0; i<(int)(optFibreX.size()); i++) {
     Position r(optFibreX[i], 0, shift+optFibreZ[i]);
     child = optFibre;
-    rod.placeVolume(ns.volume(child), /* i+1, */ r);
+    rod.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in "
                         << rodName << " at " << r << " with no rotation";
   }
@@ -192,7 +192,7 @@ static long algorithm(Detector& /* description */,
     int j = i/2;
     Position r(sideClampX[i],moduleY[j],shift+moduleZ[j]+sideClamp1DZ[i]);
     child = sideClamp1;
-    rod.placeVolume(ns.volume(child), /* i+1, */ r);
+    rod.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in " << rodName << " at "
                         << r << " with no rotation";
   }
@@ -200,7 +200,7 @@ static long algorithm(Detector& /* description */,
     int j = i/2;
     Position r(sideClampX[i],moduleY[j],shift+moduleZ[j]+sideClamp2DZ[i]);
     child = sideClamp2;
-    rod.placeVolume(ns.volume(child), /* i+1, */ r);
+    rod.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in " << rodName << " at "
                         << r << " with no rotation";
   }
@@ -210,13 +210,13 @@ static long algorithm(Detector& /* description */,
   for (int i=0; i<(int)(endRod1Y.size()); i++) {
     Position r(0, endRod1Y[i], shift+endRod1Z[i]);
     child = endRod1;
-    cent.placeVolume(ns.volume(child), /* i+1, */ r);
+    cent.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in " << centName << " at "
                         << r << " with no rotation";
   }
   Position r1(0, endRod2Y, shift+endRod2Z);
   child = endRod2;
-  cent.placeVolume(ns.volume(child), /* 1, */ r1);
+  cent.placeVolume(ns.volume(child), 1, r1);
   LogDebug("TOBGeom") << child << " number 1 " << "positioned in " << centName << " at " << r1 
                       << " with no rotation";
 
@@ -224,14 +224,14 @@ static long algorithm(Detector& /* description */,
   Position r2(0, endCoolY, shift+endCoolZ);
   Rotation3D rot2 = ns.rotation(endCoolRot);
   child = endCool;
-  cent.placeVolume(ns.volume(child), /* 1, */ Transform3D(rot2,r2));
+  cent.placeVolume(ns.volume(child), 1, Transform3D(rot2,r2));
   LogDebug("TOBGeom") << child << " number 1 " << "positioned in " << centName << " at " << r2 
                       << " with " << rot2;
 
   //Mother cable
   Position r3(0, 0, shift+cableZ);
   child = cable;
-  cent.placeVolume(ns.volume(child), /* 1, */ r3);
+  cent.placeVolume(ns.volume(child), 1, r3);
   LogDebug("TOBGeom") << child << " number 1 " << "positioned in " << centName << " at " << r3
                       << " with no rotation";
 
@@ -240,7 +240,7 @@ static long algorithm(Detector& /* description */,
     Position r(0, moduleY[i], shift+moduleZ[i]);
     Rotation3D rot = ns.rotation(moduleRot[i]);
     child = module;
-    cent.placeVolume(ns.volume(child), /* i+1, */ Transform3D(rot,r));
+    cent.placeVolume(ns.volume(child), i+1, Transform3D(rot,r));
     LogDebug("TOBGeom") << child << " number " 
                         << i+1 << " positioned in " << centName << " at "
                         << r << " with " << rot;
@@ -250,7 +250,7 @@ static long algorithm(Detector& /* description */,
   for (int i=0; i<(int)(connect.size()); i++) {
     Position r(0, connectY[i], shift+connectZ[i]);
     child = connect[i];
-    cent.placeVolume(ns.volume(child), /* i+1, */ r);
+    cent.placeVolume(ns.volume(child), i+1, r);
     LogDebug("TOBGeom") << child << " number " << i+1 << " positioned in " << centName << " at "
                         << r << " with no rotation";
   }
@@ -263,7 +263,7 @@ static long algorithm(Detector& /* description */,
       copyNumber++;
       Position r(aohX[i] + 0, aohY[i] + connectY[i], aohZ[i] + shift+connectZ[i]);
       child = aohName;
-      cent.placeVolume(ns.volume(child), r); // copyNumber
+      cent.placeVolume(ns.volume(child), copyNumber, r);
       LogDebug("TOBGeom") << child << " number " << copyNumber << " positioned in " << centName << " at "
                           << r << " with no rotation";
       // if two copies add a copy with (-aohX,-aohZ) translation
@@ -271,7 +271,7 @@ static long algorithm(Detector& /* description */,
         copyNumber++;
         r = Position(-aohX[i] + 0, aohY[i] + connectY[i], -aohZ[i] + shift+connectZ[i]);
         child = aohName;
-        cent.placeVolume(ns.volume(child), r); // copyNumber
+        cent.placeVolume(ns.volume(child), copyNumber, r);
         LogDebug("TOBGeom") << child << " number " << copyNumber << " positioned in " << centName << " at "
                             << r << " with no rotation";
       }
@@ -284,18 +284,19 @@ static long algorithm(Detector& /* description */,
           switch(j) {
           case 1:
             rr = Position(-aohX[i] + 0, aohY[i] + connectY[i], +aohZ[i] + shift+connectZ[i]);
-            cent.placeVolume(ns.volume(child), rr); // copyNumber
+            cent.placeVolume(ns.volume(child), copyNumber, rr); // copyNumber
             break;
           case 2:
             rr = Position(-aohX[i] + 0, aohY[i] + connectY[i], -aohZ[i] + shift+connectZ[i]);
-            cent.placeVolume(ns.volume(child), rr); // copyNumber
+            cent.placeVolume(ns.volume(child), copyNumber, rr); // copyNumber
             break;
           case 3:
             rr = Position(+aohX[i] + 0, aohY[i] + connectY[i], -aohZ[i] + shift+connectZ[i]);
-            cent.placeVolume(ns.volume(child), rr); // copyNumber
+            cent.placeVolume(ns.volume(child), copyNumber, rr); // copyNumber
             break;
           }
-          LogDebug("TOBGeom") << child << " number " << copyNumber << " positioned in " << centName << " at "
+          LogDebug("TOBGeom") << child << " number " << copyNumber
+                              << " positioned in " << centName << " at "
                               << rr << " with no rotation";
         }
       }

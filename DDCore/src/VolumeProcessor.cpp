@@ -22,7 +22,7 @@ PlacedVolumeProcessor::~PlacedVolumeProcessor()   {
 }
 
 /// Callback to output PlacedVolume information of an entire DetElement
-int PlacedVolumeProcessor::process(PlacedVolume pv, int level, bool recursive)  const  {
+int PlacedVolumeProcessor::process(PlacedVolume pv, int level, bool recursive)  {
   if ( pv.isValid() )  {
     int ret = (*this)(pv, level);
     TGeoNode* node = pv.ptr();

@@ -184,7 +184,7 @@ static long algorithm(Detector& /* description */,
     zpos = zCool-zCenter;
     for ( int j2=0; j2<2; j2++) {
       copy++;
-      parentVol.placeVolume(ns.volume(name),Position(xpos,ypos,zpos));
+      parentVol.placeVolume(ns.volume(name),copy,Position(xpos,ypos,zpos));
       LogDebug("TIDGeom") << name <<" number "
                           << copy << " positioned in " << parentName << " at "
                           << Position(xpos,ypos,zpos) << " with " << rot;
@@ -203,7 +203,7 @@ static long algorithm(Detector& /* description */,
       zBotSpacers = 0.5*botSpacersHeight;
     }
     zpos = zBotSpacers - zCenter; 
-    parentVol.placeVolume(ns.volume(name),Position(0.0,ypos,zpos));
+    parentVol.placeVolume(ns.volume(name),1,Position(0.0,ypos,zpos));
     LogDebug("TIDGeom") << name <<" number "
                         << 1 << " positioned in " << parentName << " at "
                         << Position(0.0,ypos,zpos) << " with no rotation";       	
@@ -233,7 +233,7 @@ static long algorithm(Detector& /* description */,
       // tilt Side Spacers (parallel to Side Frame)
       thetax = 90.*CLHEP::deg+thetaz;
       rot = make_rotation3D(thetax, phix, thetay, phiy, thetaz, phiz);
-      parentVol.placeVolume(ns.volume(name),Transform3D(rot,Position(xpos,ypos,zpos)));
+      parentVol.placeVolume(ns.volume(name),copy,Transform3D(rot,Position(xpos,ypos,zpos)));
       LogDebug("TIDGeom") << name <<" number " << copy << " positioned in " << parentName << " at "
                           << Position(xpos,ypos,zpos) << " with " << rot;
       xpos   = -xpos;
@@ -257,7 +257,7 @@ static long algorithm(Detector& /* description */,
     Position tran(xpos, ypos, zpos);
     rot = ns.rotation(waferRot[k]);
     
-    parentVol.placeVolume(ns.volume(name),Transform3D(rot,tran)); // copyNr=k+1
+    parentVol.placeVolume(ns.volume(name),k+1,Transform3D(rot,tran)); // copyNr=k+1
     LogDebug("TIDGeom") << name <<" number " << k+1 << " positioned in " << parentName << " at "
                         << tran << " with " << rot;
 
@@ -278,7 +278,7 @@ static long algorithm(Detector& /* description */,
     zpos = zPitch - zCenter;
     rot = ns.rotation(pitchRot[k]);
     tran = Position(xpos,ypos,zpos);
-    parentVol.placeVolume(ns.volume(name),Transform3D(rot,tran)); // copyNr=k+1
+    parentVol.placeVolume(ns.volume(name),k+1,Transform3D(rot,tran)); // copyNr=k+1
     LogDebug("TIDGeom") << name <<" number " << k+1 << " positioned in " << parentName << " at "
                         << tran << " with " << rot;
 
@@ -293,7 +293,7 @@ static long algorithm(Detector& /* description */,
     }
     zpos = zHybrid - zCenter;
     tran = Position(0,ypos,zpos);
-    parentVol.placeVolume(ns.volume(name),tran); // copyNr=k+1
+    parentVol.placeVolume(ns.volume(name),k+1,tran); // copyNr=k+1
     LogDebug("TIDGeom") << name <<" number "  << k+1 << " positioned in " << parentName << " at " << tran;
 
     // Box frame
@@ -307,7 +307,7 @@ static long algorithm(Detector& /* description */,
     }
     zpos = zBoxFrame - zCenter;
     tran = Position(0,ypos,zpos);
-    parentVol.placeVolume(ns.volume(name),tran); // copyNr=k+1
+    parentVol.placeVolume(ns.volume(name),k+1,tran); // copyNr=k+1
     LogDebug("TIDGeom") << name <<" number " << k+1 << " positioned in " << parentName << " at " << tran;
 
     // Side frame
@@ -322,7 +322,7 @@ static long algorithm(Detector& /* description */,
     zpos = zSideFrame-zCenter;
     rot  = ns.rotation(sideFrameRot[k]);
     tran = Position(0,ypos,zpos);
-    parentVol.placeVolume(ns.volume(name),Transform3D(rot,tran));
+    parentVol.placeVolume(ns.volume(name),k+1,Transform3D(rot,tran));
     LogDebug("TIDGeom") << name <<" number "
                         << k+1 << " positioned in " << parentName << " at "
                         << tran << " with " << rot;
@@ -343,7 +343,7 @@ static long algorithm(Detector& /* description */,
     zpos = zKapton-zCenter;
     rot  = ns.rotation(kaptonRot[k]);
     tran = Position(0,ypos,zpos);
-    parentVol.placeVolume(ns.volume(name),Transform3D(rot,tran));
+    parentVol.placeVolume(ns.volume(name),k+1,Transform3D(rot,tran));
     LogDebug("TIDGeom") << name <<" number "
                         << k+1 << " positioned in " << parentName << " at "
                         << tran << " with " << rot;

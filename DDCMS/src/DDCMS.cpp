@@ -33,6 +33,7 @@ using namespace dd4hep::cms;
 
 #define NAMESPACE_SEP '_'
 
+/// Create 3D rotation matrix from angles.
 Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
                                         double thetaY, double phiY,
                                         double thetaZ, double phiZ)   {
@@ -41,6 +42,45 @@ Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
   Position  posZ(sin(thetaZ) * cos(phiZ), sin(thetaZ) * sin(phiZ), cos(thetaZ));
   Rotation3D rot(posX,posY,posZ);
   return rot;
+}
+
+/// Helper: Convert the name of a placed volume into a subdetector name
+string dd4hep::cms::detElementName(PlacedVolume pv)   {
+  if ( pv.isValid() )  {
+    string nam = pv.name();
+    string nnam = nam.substr(nam.find('_')+1);
+    return nnam;
+    //size_t idx = nnam.rfind('_');
+    //return idx == string::npos ? nnam : nnam.substr(0,idx);
+  }
+  except("DDCMS","++ Cannot deduce name from invalid PlacedVolume handle!");
+  return string();
+}
+
+/// Compute the material fraction of a given element in a volume 
+double dd4hep::cms::material_fraction(Volume vol, const TGeoElement* element)    {
+  double frac = 0e0, tot = 0e0;
+  TGeoMaterial* m = vol.material()->GetMaterial();
+  for ( int i=0, n=m->GetNelements(); i<n; ++i )  {
+    TGeoElement* e = m->GetElement(i);
+    if ( m->IsMixture() )  {
+      TGeoMixture* mix = (TGeoMixture*)m;
+      tot  += mix->GetWmixt()[i];
+    }
+    else {
+      tot = 1e0;
+    }
+    if ( e == element )   {
+      if ( m->IsMixture() )  {
+        TGeoMixture* mix = (TGeoMixture*)m;
+        frac += mix->GetWmixt()[i];
+      }
+      else  {
+        frac = 1e0;
+      }
+    }
+  }
+  return tot>1e-20 ? frac/tot : 0.0;
 }
 
 /// Initializing constructor
@@ -474,18 +514,22 @@ namespace {
 }
 
 LogDebug::LogDebug(const std::string& tag_value, bool /* set_context */)  {
+  level = s_debug_algorithms ? ALWAYS : DEBUG;
   s_algorithms.push_back(tag_value);
   pop = true;
 }
 
 LogDebug::LogDebug(const std::string& t) : stringstream(), tag(t)  {
-  if ( pop ) s_algorithms.pop_back();
+  level = s_debug_algorithms ? ALWAYS : DEBUG;
 }
 
 LogDebug::~LogDebug()   {
-  if ( pop ) return;
+  if ( pop )   {
+    s_algorithms.pop_back();
+    return;
+  }
   if ( this->str().empty() ) return;
-  printout(s_debug_algorithms ? ALWAYS : DEBUG,
+  printout(PrintLevel(level),
            currentAlg(),"%s: %s",
            tag.c_str(),this->str().c_str());
 }
@@ -494,3 +538,6 @@ void LogDebug::setDebugAlgorithms(bool value)   {
   s_debug_algorithms = value;
 }
 
+LogWarn::LogWarn(const std::string& t) : LogDebug(t)  {
+  level = WARNING;
+}

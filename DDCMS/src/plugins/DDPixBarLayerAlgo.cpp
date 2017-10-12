@@ -104,7 +104,7 @@ static long algorithm(Detector& description, ParsingContext& ctxt, xml_h e, Sens
       << d1 << ", 0";
 
   Volume cool = ns.addVolume(Volume(name, solid, description.material(coolMat)));
-  pv = coolTube.placeVolume(cool);
+  pv = coolTube.placeVolume(cool,1);
   LogDebug("PixelGeom") << "Cool " << cool.name() 
       << " number 1 positioned in " << coolTube.name() 
       << " at (0,0,0) with no rotation";
@@ -136,7 +136,7 @@ static long algorithm(Detector& description, ParsingContext& ctxt, xml_h e, Sens
       rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
 
       //cpv.position(ladderHalf, layer, copy, tran, rot);
-      pv = layer.placeVolume(ladderHalfVol, Transform3D(rot,tran));
+      pv = layer.placeVolume(ladderHalfVol, copy, Transform3D(rot,tran));
       if ( !pv.isValid() )  {  }
       LogDebug("PixelGeom") << "ladderHalfVol: " << ladderHalfVol.name()
           << " number " << copy << " positioned in " 
@@ -154,7 +154,7 @@ static long algorithm(Detector& description, ParsingContext& ctxt, xml_h e, Sens
           << ", 0, 0";
       rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
       //cpv.position(ladderHalf, layer, copy, tran, rot);
-      pv = layer.placeVolume(ladderHalfVol, Transform3D(rot,tran));
+      pv = layer.placeVolume(ladderHalfVol, copy, Transform3D(rot,tran));
       if ( !pv.isValid() )  {  }
       LogDebug("PixelGeom") << "ladderHalfVol: " << ladderHalfVol.name()
           << " number " << copy << " positioned in " 
@@ -176,7 +176,7 @@ static long algorithm(Detector& description, ParsingContext& ctxt, xml_h e, Sens
       rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
 
       //cpv.position(ladderFull, layer, copy, tran, rot);
-      pv = layer.placeVolume(ladderFullVol, Transform3D(rot,tran));
+      pv = layer.placeVolume(ladderFullVol, copy, Transform3D(rot,tran));
       if ( !pv.isValid() )  {  }
       LogDebug("PixelGeom") << "test: " << ladderFullVol.name()
           << " number " << copy << " positioned in " 
@@ -195,7 +195,7 @@ static long algorithm(Detector& description, ParsingContext& ctxt, xml_h e, Sens
         << ", 0, 0";
     
     rot = make_rotation3D(90*CLHEP::deg, phix, 90*CLHEP::deg, phiy, 0.,0.);
-    pv  = layer.placeVolume(coolTube,Transform3D(rot,tran));
+    pv  = layer.placeVolume(coolTube, i+1, Transform3D(rot,tran));
     if ( !pv.isValid() )  {  }
     LogDebug("PixelGeom") << "coolTube: " << coolTube.name() 
         << " number " << i+1 << " positioned in " 

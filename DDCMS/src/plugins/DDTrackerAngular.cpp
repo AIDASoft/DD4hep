@@ -88,7 +88,7 @@ static long  algorithm(Detector& /* description */,
     double ypos = radius*sin(phi) + center[1];
     double zpos = center[2];
     Position tran(xpos, ypos, zpos);
-    mother.placeVolume(child, Transform3D(rotation,tran));
+    mother.placeVolume(child, copy, Transform3D(rotation,tran));
     LogDebug("TrackerGeom") << "test " << child.name() << " number " 
                             << copy << " positioned in " << mother.name() << " at "
                             << tran  << " with " << rotation;

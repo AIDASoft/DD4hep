@@ -87,7 +87,7 @@ namespace {
     // Load compact files
     for(size_t i=0; i<geo_files.size(); ++i)  {
       const char* plugin_argv[] = {geo_files[i], 0};
-      run_plugin(description,"DD4hepCompactLoader",1,(char**)plugin_argv);
+      run_plugin(description,"DD4hep_CompactLoader",1,(char**)plugin_argv);
     }
     // Create volume manager and populate it required
     if ( volmgr  ) run_plugin(description,"DD4hepVolumeManager",0,0);

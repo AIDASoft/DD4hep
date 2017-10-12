@@ -71,7 +71,7 @@ namespace {
   std::ostream& print_default_args()  {
     std::cout << 
       "        -build_type <number/string> Specify the build type                         \n"
-      "                        [OPTIONAL]     MUST come immediately after the -compact input.\n"
+      "                        [OPTIONAL]  MUST come immediately after the -compact input.\n"
       "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
       "                                    Allowed: BUILD_SIMU [=1], BUILD_RECO [=2],     \n"
       "                                    BUILD_DISPLAY [=3] or BUILD_ENVELOPE [=4]      \n"
@@ -82,21 +82,23 @@ namespace {
       "                                    check the volume ids for duplicates etc.       \n"
       "        -no-volmgr      [OPTIONAL]  Inhibit loading phys.volume manager            \n"
       "        -interpreter    [OPTIONAL]  Start ROOT C++ interpreter after execution.    \n"
+      "        -interactive    [OPTIONAL]  Alias for -interpreter argument.               \n"
       "        -no-interpreter [OPTIONAL]  Inhibit ROOT C++ interpreter.                  \n"
-      "        -print      <number/string> Specify output level. Default: INFO(=3)        \n"
+      "        -print     <number/string>  Specify output level. Default: INFO(=3)        \n"
       "                        [OPTIONAL]  Allowed values: VERBOSE(=1), DEBUG(=2),        \n"
       "                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    \n"
       "                                    The lower the level, the more printout...      \n"
       "        -dry-run        [OPTIONAL]  Only load description. No execution.           \n"
-      "        -plugin <name> <args>       Execute plugin <name> after loading geometry.  \n"
-      "                                    All arguments following until the next         \n"
-      "                                    '-plugin' tag are considered as arguments      \n"
-      "                                    to the current plugin.                         \n"
       "        -ui             [OPTIONAL]  Install ROOT interpreter UI for dd4hep         \n"
       "                                    Will show up in the global interpreter variable\n"
       "                                    'dd4hep::ROOTUI* gdd4hepUI' and allows the user\n"
       "                                    to interact with the the Detector instance from the\n"
-      "                                    ROOT interactive prompt.                       \n";
+      "                                    ROOT interactive prompt.                       \n"
+      "        -plugin <name> <args>       Execute plugin <name> after loading geometry.  \n"
+      "                                    All arguments following until the next         \n"
+      "                                    '-plugin' tag are considered as arguments      \n"
+      "                                    to the current plugin.                         \n"
+      " ";
     return std::cout;
   }
 
@@ -121,12 +123,12 @@ namespace {
 
     //____________________________________________________________________________
     Args() {
-      ui = false;
-      volmgr  = false;
-      dry_run = false;
-      destroy = false;
+      ui          = false;
+      volmgr      = false;
+      dry_run     = false;
+      destroy     = false;
       interpreter = true;
-      print   = dd4hep::INFO;
+      print       = dd4hep::INFO;
     }
 
     //____________________________________________________________________________
@@ -159,8 +161,14 @@ namespace {
         interpreter = true;
       else if ( ::strncmp(argv[i],"-no-interpreter",7)==0 )
         interpreter = false;
+      else if ( ::strncmp(argv[i],"-interactive",6)==0 )
+        interpreter = true;
+      else if ( ::strncmp(argv[i],"-no-interactive",7)==0 )
+        interpreter = false;
       else if ( ::strncmp(argv[i],"-ui",3)==0 )
         ui = true;
+      else if ( ::strncmp(argv[i],"-no-ui",6)==0 )
+        ui = false;
       else if ( ::strncmp(argv[i],"-plugin",5)==0 )   {
         // Need to interprete plugin args here locally.....
         plugins.push_back(std::vector<const char*>());
@@ -197,11 +205,11 @@ namespace {
           usage_default(name);
         }
         std::cout << "Executed dd4hep plugin: '" << plug[0]
-             << "' with args (" << num_args << ") :[ ";
+                  << "' with args (" << num_args << ") :[ ";
         for(size_t j=1; j<plug.size(); ++j)   {
           if ( plug[j] ) std::cout << plug[j] << " ";
         }
-        std::cout << "]" << std::endl;
+        std::cout << "]" << std::endl << std::flush;
       }
       result = run_plugin(description,name,a.first,a.second);
       return result;
@@ -243,7 +251,7 @@ namespace {
     // Load all compact files
     for(size_t i=0; i<args.geo_files.size(); ++i)  {
       const char* argv[] = {args.geo_files[i], args.build_types[i], 0};
-      run_plugin(description,"DD4hepCompactLoader",2,(char**)argv);
+      run_plugin(description,"DD4hep_CompactLoader",2,(char**)argv);
     }
   }
 
@@ -268,9 +276,9 @@ namespace {
     dd4hep::Detector& description = dd4hep_instance();
     // Load all compact files
     load_compact(description, args);
-    if ( args.ui ) run_plugin(description,"DD4hepInteractiveUI",0,0);
+    if ( args.ui ) run_plugin(description,"DD4hep_InteractiveUI",0,0);
     // Create volume manager and populate it required
-    if ( args.volmgr ) run_plugin(description,"DD4hepVolumeManager",0,0);
+    if ( args.volmgr ) run_plugin(description,"DD4hep_VolumeManager",0,0);
 
     // Create an interactive ROOT application
     if ( !args.dry_run ) {
