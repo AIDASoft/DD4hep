@@ -66,12 +66,12 @@ namespace DDSegmentation {
 
     protected:
   
-      ulong64 _mask    = 0;
-      unsigned _offset = 0;
-      unsigned _width  = 0;
-      int _minVal      = 0;
-      int _maxVal      = 0;
-      bool _isSigned   = 0;
+      ulong64 _mask     {};
+      unsigned _offset  {};
+      unsigned _width   {};
+      int _minVal       {};
+      int _maxVal       {};
+      bool _isSigned    {};
       std::string _name;
 
     };
@@ -237,7 +237,7 @@ namespace DDSegmentation {
 
     std::vector<BitFieldElement*> _fields;
     IndexMap  _map;
-    long64    _joined = 0;
+    long64    _joined  {};
 
 
   };
