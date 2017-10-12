@@ -25,7 +25,7 @@ dd4hep_configure_scripts (Persistency DEFAULT_SETUP WITH_TESTS )
 #
 #  Test saving conditions to ROOT file
 dd4hep_add_test_reg( Persist_Conditions_Save
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -plugin    DD4hep_PersistencyExample_write_cond -output Conditions.root
   REGEX_PASS "\\+\\+\\+ PASSED Wrote 14 conditions to file."
@@ -34,7 +34,7 @@ dd4hep_add_test_reg( Persist_Conditions_Save
 #
 #  Test restoring geometry from ROOT file: Volume Manager
 dd4hep_add_test_reg( Persist_Conditions_Restore
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -plugin    DD4hep_PersistencyExample_read_cond -input Conditions.root
   DEPENDS    Persist_Conditions_Save
@@ -44,7 +44,7 @@ dd4hep_add_test_reg( Persist_Conditions_Restore
 #
 #  Test saving geometry to ROOT file
 dd4hep_add_test_reg( Persist_MiniTel_Save_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/../ClientTests/compact/MiniTel.xml
   -plugin    DD4hep_Geometry2ROOT -output MiniTel_geometry.root
@@ -54,7 +54,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Save_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Volume Manager
 dd4hep_add_test_reg( Persist_MiniTel_Restore_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   DEPENDS    Persist_MiniTel_Save_LONGTEST
@@ -64,7 +64,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Volume Manager loading+nominals
 dd4hep_add_test_reg( Persist_MiniTel_Restore_VolMgr1_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckVolumeManager
@@ -76,7 +76,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_VolMgr1_LONGTEST
 #  Test restoring geometry from ROOT file: DetElement nominal alignments
 #  Note: BeamCal has a problem. Need to be taken into account
 dd4hep_add_test_reg( Persist_MiniTel_Restore_Nominal_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckNominals
@@ -86,7 +86,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Nominal_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Sensitive detectors
 dd4hep_add_test_reg( Persist_MiniTel_Restore_Sensitives_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckSensitives
@@ -97,7 +97,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Sensitives_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Readout segmentations
 dd4hep_add_test_reg( Persist_MiniTel_Restore_Segmentations_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckSegmentations
@@ -108,7 +108,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Segmentations_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Readout structures
 dd4hep_add_test_reg( Persist_MiniTel_Restore_Readouts_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckReadouts
@@ -119,7 +119,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Readouts_LONGTEST
 #
 #  Test saving geometry to ROOT file
 dd4hep_add_test_reg( Persist_CLICSiD_Save_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -volmgr    -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/compact/compact.xml
   -plugin    DD4hep_Geometry2ROOT -output CLICSiD_geometry.root
@@ -129,7 +129,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Save_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Volume Manager
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   DEPENDS    Persist_CLICSiD_Save_LONGTEST
@@ -139,7 +139,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Volume Manager loading+nominals
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr1_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckVolumeManager
@@ -150,7 +150,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr1_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Test Volume Manager results
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr2_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_VolumeMgrTest SiTrackerBarrel
@@ -162,7 +162,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr2_LONGTEST
 #  Test restoring geometry from ROOT file: DetElement nominal alignments
 #  Note: BeamCal has a problem. Need to be taken into account
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_Nominal_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckNominals
@@ -172,7 +172,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Nominal_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Sensitive detectors
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_Sensitives_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckSensitives
@@ -183,7 +183,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Sensitives_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Readout segmentations
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_Segmentations_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckSegmentations
@@ -194,7 +194,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Segmentations_LONGTEST
 #
 #  Test restoring geometry from ROOT file: Readout structures
 dd4hep_add_test_reg( Persist_CLICSiD_Restore_Readouts_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckReadouts
