@@ -25,10 +25,22 @@
 #ifndef _WIN32
 #include <libgen.h>
 #endif
+#include "TSystem.h"
 
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::xml;
+
+namespace {
+  string undressed_file_name(const string& fn)   {
+    if ( !fn.empty() )   {
+      TString tfn(fn);
+      gSystem->ExpandPathName(tfn);
+      return string(tfn);
+    }
+    return fn;
+  }
+}
 
 #ifndef __TIXML__
 #include "xercesc/framework/LocalFileFormatTarget.hpp"
@@ -366,9 +378,10 @@ int DocumentHandler::output(Document doc, const string& fname) const {
 
   if (fname.empty())
     tar = new StdOutFormatTarget();
-  else
-    tar = new LocalFileFormatTarget(Strng_t(fname));
-
+  else   {
+    string fn = undressed_file_name(fname);
+    tar = new LocalFileFormatTarget(Strng_t(fn));
+  }
   out->setByteStream(tar);
   wrt->getDomConfig()->setParameter(Strng_t("format-pretty-print"), true);
   wrt->write((xercesc::DOMDocument*) doc.ptr(), out);
@@ -408,7 +421,7 @@ namespace dd4hep {
 namespace {
   static string _clean_fname(const string& s) {
     std::string const& temp = getEnviron(s);
-    std::string temp2 = temp.empty() ? s : temp;
+    std::string temp2 = undressed_file_name(temp.empty() ? s : temp);
     if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
     return temp2;
   }
@@ -451,7 +464,7 @@ string DocumentHandler::system_path(Handle_t base)   {
   if ( elt ) {
     fn = Xml(elt.document()).d->Value();
   }
-  return fn;
+  return undressed_file_name(fn);
 }
 
 /// Load XML file and parse it using URI resolver to read data.
@@ -531,14 +544,15 @@ Document DocumentHandler::parse(const char* bytes, size_t /* length */, const ch
 
 /// Write xml document to output file (stdout if file name empty)
 int DocumentHandler::output(Document doc, const string& fname) const {
-  FILE* file = fname.empty() ? stdout : ::fopen(fname.c_str(),"w");
+  string fn = undressed_file_name(fname);
+  FILE* file = fn.empty() ? stdout : ::fopen(fn.c_str(),"w");
   if ( !file ) {
     printout(ERROR,"DocumentHandler","+++ Failed to open output file: %s",fname.c_str());
     return 0;
   }
   TiXmlDocument* d = (TiXmlDocument*)doc.ptr();
   d->Print(file);
-  if ( !fname.empty() ) ::fclose(file);
+  if ( !fn.empty() ) ::fclose(file);
   return 1;
 }
 
