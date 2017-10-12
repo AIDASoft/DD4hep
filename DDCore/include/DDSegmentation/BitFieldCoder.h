@@ -24,11 +24,12 @@ namespace DDSegmentation {
   
     public :
   
-      /** The default c'tor.
+      /** The default c'tor.  */
       BitFieldElement() = default ;
       ~BitFieldElement() = default ;
       BitFieldElement(const BitFieldElement&) = default ;
       BitFieldElement(BitFieldElement&&) = default ;
+      BitFieldElement& operator=(const BitFieldElement&) = default ;
 
 
       /** The standard c'tor.
