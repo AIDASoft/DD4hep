@@ -229,6 +229,33 @@ double Material::intLength() const {
   throw runtime_error("Attempt to access interaction length from invalid material handle!");
 }
 
+/// Access the fraction of an element within the material
+double Material::fraction(Atom atom) const    {
+  double frac = 0e0, tot = 0e0;
+  TGeoElement* elt = atom.access();
+  TGeoMaterial* m = access()->GetMaterial();
+  for ( int i=0, n=m->GetNelements(); i<n; ++i )  {
+    TGeoElement* e = m->GetElement(i);
+    if ( m->IsMixture() )  {
+      TGeoMixture* mix = (TGeoMixture*)m;
+      tot  += mix->GetWmixt()[i];
+    }
+    else {
+      tot = 1e0;
+    }
+    if ( e == elt )   {
+      if ( m->IsMixture() )  {
+        TGeoMixture* mix = (TGeoMixture*)m;
+        frac += mix->GetWmixt()[i];
+      }
+      else  {
+        frac = 1e0;
+      }
+    }
+  }
+  return tot>1e-20 ? frac/tot : 0.0;
+}
+
 /// String representation of this object
 string Material::toString() const {
   if ( isValid() ) {

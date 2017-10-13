@@ -17,19 +17,8 @@
 
 // Framework include files
 #include "DD4hep/VolumeProcessor.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/DetFactoryHelper.h"
 
-// ROOT include files
-#include "TGeoElement.h"
-#include "TGeoManager.h"
-
-//#include <set>
-
-using namespace std;
-using namespace dd4hep;
-
-namespace {
+namespace dd4hep {
   
   /// DD4hep DetElement creator for the CMS geometry.
   /*  Heuristically assign DetElement structures to the sensitive volume pathes.
@@ -40,7 +29,7 @@ namespace {
    */
   class DDCMSDetElementCreator : public PlacedVolumeProcessor  {
     Detector&    description;
-    TGeoElement* silicon = 0;
+    Atom silicon;
     struct Data {
       PlacedVolume pv {0};
       DetElement   element {};
@@ -96,19 +85,24 @@ namespace {
 }
 
 
+#include "DD4hep/detail/DetectorInterna.h"
+#include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/DetectorHelper.h"
 #include "DD4hep/Printout.h"
 #include "DDCMS/DDCMS.h"
+
 #include <sstream>
+
+using namespace std;
+using namespace dd4hep;
 
 /// Initializing constructor
 DDCMSDetElementCreator::DDCMSDetElementCreator(Detector& desc)
   : description(desc)
 {
-  TGeoElementTable* tab = description.manager().GetElementTable();
-  silicon = tab->FindElement("SI");
-  if ( !silicon ) silicon = tab->FindElement("Si");
-  if ( !silicon ) silicon = tab->FindElement("si");
-  if ( !silicon )   {
+  DetectorHelper helper(description);
+  silicon = helper.element("SI");
+  if ( !silicon.isValid() )   {
     except("DDCMSDetElementCreator",
            "++ Failed to extract SILICON from the element table.");
   }
@@ -250,7 +244,7 @@ DetElement DDCMSDetElementCreator::addSubdetector(const std::string& nam, Placed
 
 /// Callback to output PlacedVolume information of an single Placement
 int DDCMSDetElementCreator::operator()(PlacedVolume pv, int vol_level)   {
-  double frac_si = dd4hep::cms::material_fraction(pv.volume(),silicon);
+  double frac_si = pv.volume().material().fraction(silicon);
   if ( frac_si > 90e-2 )  {
     Data& data = stack.back();
     data.sensitive     = true;

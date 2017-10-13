@@ -11,7 +11,11 @@
 //
 //==========================================================================
 
+// Framework include files
 #include "DD4hep/DetectorHelper.h"
+
+// ROOT include files
+#include "TGeoManager.h"
 
 using namespace std;
 using namespace dd4hep;
@@ -51,3 +55,43 @@ DetElement DetectorHelper::detectorByID(int id)  const    {
   return DetElement();
 }
 
+/// Access an element from the element table by name
+Atom DetectorHelper::element(const std::string& nam)  const   {
+  TGeoManager&      mgr = access()->manager();
+  TGeoElementTable* tab = mgr.GetElementTable();
+  TGeoElement*      elt = tab->FindElement(nam.c_str());
+  if ( !elt )    {
+    string n = nam;
+    transform(n.begin(), n.end(), n.begin(), ::toupper);
+    elt = tab->FindElement(n.c_str());     // Check for IRON
+    if ( !elt )    {
+      transform(n.begin(), n.end(), n.begin(), ::tolower);
+      elt = tab->FindElement(n.c_str());   // Check for iron
+      if ( !elt )    {
+        n[0] = ::toupper(n[0]);
+        elt = tab->FindElement(n.c_str()); // Check for Iron
+      }
+    }
+  }
+  return elt;
+}
+
+/// Access a material from the material table by name
+Material DetectorHelper::material(const std::string& nam)  const   {
+  TGeoManager& mgr = access()->manager();
+  TGeoMedium*  m   = mgr.GetMedium(nam.c_str());
+  if ( !m )    {
+    string n = nam;
+    transform(n.begin(), n.end(), n.begin(), ::toupper);
+    m = mgr.GetMedium(n.c_str());     // Check for IRON
+    if ( !m )    {
+      transform(n.begin(), n.end(), n.begin(), ::tolower);
+      m = mgr.GetMedium(n.c_str());   // Check for iron
+      if ( !m )    {
+        n[0] = ::toupper(n[0]);
+        m = mgr.GetMedium(n.c_str()); // Check for Iron
+      }
+    }
+  }
+  return m;
+}
