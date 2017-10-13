@@ -57,32 +57,6 @@ string dd4hep::cms::detElementName(PlacedVolume pv)   {
   return string();
 }
 
-/// Compute the material fraction of a given element in a volume 
-double dd4hep::cms::material_fraction(Volume vol, const TGeoElement* element)    {
-  double frac = 0e0, tot = 0e0;
-  TGeoMaterial* m = vol.material()->GetMaterial();
-  for ( int i=0, n=m->GetNelements(); i<n; ++i )  {
-    TGeoElement* e = m->GetElement(i);
-    if ( m->IsMixture() )  {
-      TGeoMixture* mix = (TGeoMixture*)m;
-      tot  += mix->GetWmixt()[i];
-    }
-    else {
-      tot = 1e0;
-    }
-    if ( e == element )   {
-      if ( m->IsMixture() )  {
-        TGeoMixture* mix = (TGeoMixture*)m;
-        frac += mix->GetWmixt()[i];
-      }
-      else  {
-        frac = 1e0;
-      }
-    }
-  }
-  return tot>1e-20 ? frac/tot : 0.0;
-}
-
 /// Initializing constructor
 Namespace::Namespace(ParsingContext* ctx, xml_h element) : context(ctx)  {
   xml_dim_t elt(element);

@@ -230,6 +230,10 @@ namespace dd4hep {
   public:
     /// Default constructor
     Atom() = default;
+    /// Copy constructor
+    Atom(const Atom& copy) = default;
+    /// Initialization from pointer
+    Atom(Object* e) : Handle<Object>(e) { }
 #ifndef __CINT__
     /// Constructorto be used for assignment from a handle
     Atom(const Handle<Object>& e) : Handle<Object>(e) {   }
@@ -238,6 +242,8 @@ namespace dd4hep {
     template <typename Q> Atom(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Constructor to be used when reading the already parsed DOM tree
     Atom(const std::string& name, const std::string& formula, int Z, int N, double density);
+    /// Assignment operator
+    Atom& operator=(const Atom& copy) = default;
   };
 
   /// Handle class describing a material
@@ -254,12 +260,18 @@ namespace dd4hep {
   public:
     /// Default constructor
     Material() = default;
+    /// Copy constructor
+    Material(const Material& copy) = default;
+    /// Initialization from pointer
+    Material(Object* e) : Handle<Object>(e) { }
 #ifndef __CINT__
     /// Constructorto be used for assignment from material handle
     Material(const Handle<Object>& e) : Handle<Object>(e) { }
 #endif
     /// Constructorto be used for assignment from object handle
     template <typename Q> Material(const Handle<Q>& e) : Handle<Object>(e) {  }
+    /// Assignment operator
+    Material& operator=(const Material& copy) = default;
     /// proton number of the underlying material
     double Z() const ;
     /// atomic number of the underlying material
@@ -272,6 +284,8 @@ namespace dd4hep {
     double radLength() const;
     /// Access the interaction length of the underlying material
     double intLength() const;
+    /// Access the fraction of an element within the material
+    double fraction(Atom atom) const;
   };
 
   /// Handle class describing visualization attributes

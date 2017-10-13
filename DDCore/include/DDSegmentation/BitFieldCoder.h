@@ -24,12 +24,12 @@ namespace DDSegmentation {
   
     public :
   
-      /// The empty I/O c'tor.
-      BitFieldElement() = default;
-      ~BitFieldElement() = default ;
+      /// Default constructor
+      BitFieldElement() = default ;
+      /// Copy constructor
       BitFieldElement(const BitFieldElement&) = default ;
+      /// Move constructor
       BitFieldElement(BitFieldElement&&) = default ;
-
 
       /** The standard c'tor.
        * @param  name          name of the field
@@ -37,6 +37,11 @@ namespace DDSegmentation {
        * @param  signedWidth   width of field, negative if field is signed
        */
       BitFieldElement( const std::string& name, unsigned offset, int signedWidth ) ; 
+      /// Default destructor
+      ~BitFieldElement() = default ;
+
+      /// Assignment operator
+      BitFieldElement& operator=(const BitFieldElement&) = default ;
 
       /// calculate this field's value given an external 64 bit bitmap 
       long64 value(long64 bitfield) const;
@@ -107,11 +112,17 @@ namespace DDSegmentation {
     
     typedef std::map<std::string, unsigned int> IndexMap ;
 
+    /// Default constructor
     BitFieldCoder() = default ;
-    ~BitFieldCoder() = default ;
+    /// Copy constructor
     BitFieldCoder(const BitFieldCoder&) = default ;
+    /// Move constructor
     BitFieldCoder(BitFieldCoder&&) = default ;
+    /// Default destructor
+    ~BitFieldCoder() = default ;
 
+    /// Assignment operator
+    BitFieldCoder& operator=(const BitFieldCoder&) = default ;
     
     /** The c'tor takes an initialization string of the form:<br>
      *  \<fieldDesc\>[,\<fieldDesc\>...]<br>

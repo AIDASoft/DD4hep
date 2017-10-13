@@ -11,8 +11,9 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DetectorHELPER_H
-#define DD4HEP_DetectorHELPER_H
+#ifndef DD4HEP_DDCORE_DETECTORHELPER_H
+#define DD4HEP_DDCORE_DETECTORHELPER_H
+
 #include "DD4hep/Detector.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -50,7 +51,11 @@ namespace dd4hep {
     SensitiveDetector sensitiveDetector(DetElement detector) const;      
     /// Find a detector element by it's system ID
     DetElement detectorByID(int id)  const;
+    /// Access an element from the element table by name
+    Atom element(const std::string& name)  const;
+    /// Access a material from the material table by name
+    Material material(const std::string& name)  const;
   };
 
-}       /* End namespace dd4hep    */
-#endif  /* DD4HEP_DetectorHELPER_H     */
+}       /* End namespace dd4hep               */
+#endif  /* DD4HEP_DDCORE_DETECTORHELPER_H     */
