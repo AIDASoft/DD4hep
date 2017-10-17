@@ -19,6 +19,7 @@
 // Framework include files
 #include "DDParsers/Evaluator.h"
 #include "DD4hep/DD4hepRootPersistency.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/detail/Grammar.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
@@ -80,6 +81,8 @@ using namespace std;
 #pragma link C++ namespace dd4hep::cond;
 #pragma link C++ namespace dd4hep::align;
 #pragma link C++ namespace dd4hep::DDSegmentation;
+
+#pragma link C++ enum dd4hep::PrintLevel;
 
 #ifndef __ROOTCLING__
 template pair<unsigned int, string>;

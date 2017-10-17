@@ -100,17 +100,16 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TIB
   )
 #
 #  Dump CMS detector element tree of SD TOB
-#  Sucks. To be investigated. VolumeManager does not work!
-#dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TOB
-#  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
-#  EXEC_ARGS  geoPluginRun
-#  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
-#  -destroy -print WARNING
-#  -plugin DD4hep_VolumeMgrTest TOB_1
-#  REGEX_PASS "PASSED: Checked 150699 objects. Num.Errors:0"
-#  REGEX_FAIL "Exception"
-#  REGEX_FAIL "FAILED"
-#  )
+dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TOB
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
+  -destroy -print WARNING
+  -plugin DD4hep_VolumeMgrTest TOB_1
+  REGEX_PASS "PASSED: Checked 150699 objects. Num.Errors:0"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+  )
 
 #
 #  Test saving geometry to ROOT file

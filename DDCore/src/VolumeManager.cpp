@@ -561,7 +561,7 @@ IDDescriptor VolumeManager::idSpec() const {
 }
 
 /// Register physical volume with the manager (normally: section manager)
-bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, VolumeManagerContext* context) {
+bool VolumeManager::adoptPlacement(VolumeID sys_id, VolumeManagerContext* context) {
   stringstream err;
   Object&  o      = _data();
   VolumeID vid    = context->identifier;
@@ -586,9 +586,10 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, VolumeManagerContext* 
         << " ["     << pv.name() << "]"
         << " id:"   << setw(16) << hex << right << setfill('0') << vid  << dec << setfill(' ')
         << " mask:" << setw(16) << hex << right << setfill('0') << mask << dec << setfill(' ')
-        << " Det:"  << context->element.path();
+        << " Det:"  << setw(4)  << hex << right << setfill('0') << context->element.volumeID()
+        << " / "    << setw(4)  << sys_id << dec << setfill(' ') << ": " << context->element.path();
     printout(VERBOSE, "VolumeManager", err.str().c_str());
-    //printout(INFO, "VolumeManager", err.str().c_str());
+    //printout(ALWAYS, "VolumeManager", err.str().c_str());
     return true;
   }
   err << "+++ Attempt to register duplicate"
@@ -704,9 +705,12 @@ DetElement VolumeManager::lookupDetector(VolumeID volume_id) const {
     }
     else  {
       for (const auto& j : o.subdetectors )  {
-        if ( (volume_id&j.second->sysID) == j.second->sysID )  {
-          sys_id = j.second->sysID;
-          break;
+        if ( j.second->system )  {
+          VolumeID vid = volume_id&j.second->system->mask();
+          if ( (volume_id&j.second->sysID) == vid )  {
+            sys_id = j.second->sysID;
+            break;
+          }
         }
       }
     }

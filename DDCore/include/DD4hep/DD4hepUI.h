@@ -15,6 +15,7 @@
 
 // Framework includes
 #include "DD4hep/Detector.h"
+#include "DD4hep/Printout.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -45,6 +46,8 @@ namespace dd4hep {
       Detector* instance()  const;
       /// Access to the Detector instance
       Detector* detectorDescription()  const;
+      /// Set the printout level from the interactive prompt
+      PrintLevel setPrintLevel(PrintLevel level)   const;
 
       /// Install the dd4hep conditions manager object
       Handle<NamedObject> conditionsMgr()  const;

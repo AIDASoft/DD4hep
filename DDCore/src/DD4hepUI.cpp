@@ -38,6 +38,11 @@ Detector* DD4hepUI::detectorDescription()  const   {
   return &m_detDesc;
 }
 
+/// Set the printout level from the interactive prompt
+PrintLevel DD4hepUI::setPrintLevel(PrintLevel level)   const   {
+  return dd4hep::setPrintLevel(level);
+}
+
 /// Install the dd4hep conditions manager object
 Handle<NamedObject> DD4hepUI::conditionsMgr()  const  {
   if ( !m_condMgr.isValid() )  {

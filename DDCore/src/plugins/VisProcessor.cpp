@@ -28,7 +28,7 @@ namespace dd4hep  {
    */
   class VisProcessor : public PlacedVolumeProcessor  {
   public:
-    Detector&    description;
+    Detector&              description;
     std::vector<Atom>      activeElements;
     std::vector<Material>  activeMaterials;
     std::vector<Material>  inactiveMaterials;
@@ -48,7 +48,22 @@ namespace dd4hep  {
 }
 #endif //  DD4HEP_DDCORE_VISPROCESSOR_H
 
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+
+//#include "DD4hep/VisProcessor.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/DetectorTools.h"
 #include "DD4hep/DetectorHelper.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include <sstream>
@@ -79,8 +94,8 @@ int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
   double frac_active = 0.0;
   VisAttr attr;
 
-  for ( Atom a : activeElements )   {
-    frac_active += vol.material().fraction(a);
+  for ( Atom atom : activeElements )   {
+    frac_active += vol.material().fraction(atom);
   }
   //if ( frac_active >= fraction )
     printout(INFO,"VisProcessor",
@@ -91,8 +106,8 @@ int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
   if ( frac_active >= fraction )
     attr = activeVis;
   if ( !attr.isValid() )  {
-    for ( Material m : activeMaterials )  {
-      if ( m.ptr() == vol.material().ptr() )   {
+    for ( Material mat : activeMaterials )  {
+      if ( mat.ptr() == vol.material().ptr() )   {
         attr = activeVis;
         break;
       }
@@ -120,7 +135,7 @@ int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
 
 static void* create_object(Detector& description, int argc, char** argv)   {
   DetectorHelper helper(description);
-  VisProcessor* proc = new VisProcessor(description);
+  VisProcessor*  proc = new VisProcessor(description);
   for ( int i=0; i<argc; ++i )   {
     if ( argv[i] )    {
       if ( ::strncmp(argv[i],"-vis-active",6) == 0 )   {
@@ -134,18 +149,18 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         continue;
       }
       else if ( ::strncmp(argv[i],"-elt-active",6) == 0 )   {
-        Atom a = helper.element(argv[++i]);
-        if ( a.isValid() ) proc->activeElements.push_back(a);
+        Atom atom = helper.element(argv[++i]);
+        if ( atom.isValid() ) proc->activeElements.push_back(atom);
         continue;
       }
       else if ( ::strncmp(argv[i],"-mat-active",6) == 0 )   {
-        Material m = helper.material(argv[++i]);
-        if ( m.isValid() ) proc->activeMaterials.push_back(m);
+        Material mat = helper.material(argv[++i]);
+        if ( mat.isValid() ) proc->activeMaterials.push_back(mat);
         continue;
       }
       else if ( ::strncmp(argv[i],"-mat-inactive",6) == 0 )   {
-        Material m = helper.material(argv[++i]);
-        if ( m.isValid() ) proc->inactiveMaterials.push_back(m);
+        Material mat = helper.material(argv[++i]);
+        if ( mat.isValid() ) proc->inactiveMaterials.push_back(mat);
         continue;
       }
       else if ( ::strncmp(argv[i],"-all-inactive",6) == 0 )   {
@@ -159,11 +174,17 @@ static void* create_object(Detector& description, int argc, char** argv)   {
           if ( !str.fail() ) continue;
         }
       }
+      else if ( ::strncmp(argv[i],"-path",4) == 0 )   {
+        string     path = argv[++i];
+        DetElement de = detail::tools::findElement(description,path);
+        if ( de.isValid() ) continue;
+        printout(ERROR,"VisProcessor","++ Invalid DetElement path: %s",path.c_str());
+      }
       cout <<
         "Usage: DD4hep_VisProcessor -arg [-arg]                                              \n"
         "     -vis-active   <name>     Set the visualization attribute for   active materials\n"
         "     -vis-inactive <name>     Set the visualization attribute for inactive materials\n"
-        "     -element      <name>     Add active element by name. If the fractional sum of  \n"
+        "     -elt-active   <name>     Add active element by name. If the fractional sum of  \n"
         "                              all active elements in a volume exceeds <fraction>    \n"
         "                              the volume is considered active                       \n"
         "     -mat-active   <name>     Add material by name to the list of   active materials\n"
@@ -175,7 +196,8 @@ static void* create_object(Detector& description, int argc, char** argv)   {
       ::exit(EINVAL);
     }
   }
-  return (void*)((PlacedVolumeProcessor*)proc);
+  PlacedVolumeProcessor* placement_proc = proc;
+  return (void*)placement_proc;
 }
 
 // first argument is the type from the xml file
