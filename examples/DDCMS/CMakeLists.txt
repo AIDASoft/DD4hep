@@ -70,7 +70,7 @@ dd4hep_add_test_reg( DDCMS_DumpDetElements
   EXEC_ARGS  geoPluginRun -print WARNING
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -plugin DD4hep_DetectorDump -sensitive
-  REGEX_PASS "Scanned a total of 36101 elements."
+  REGEX_PASS "Scanned a total of 36096 elements."
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
