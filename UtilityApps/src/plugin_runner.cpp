@@ -16,6 +16,7 @@
 
 // Framework include files
 #include "run_plugin.h"
+#include <memory>
 
 using namespace std;
 
