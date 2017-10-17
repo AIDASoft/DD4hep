@@ -29,7 +29,7 @@ namespace dd4hep {
    */
   class DDCMSDetElementCreator : public PlacedVolumeProcessor  {
     Detector&    description;
-    Atom silicon;
+    Atom         silicon;
     struct Data {
       PlacedVolume pv {0};
       DetElement   element {};
@@ -38,7 +38,7 @@ namespace dd4hep {
       int          vol_count = 0;
       int          daughter_count = 0;
       int          sensitive_count = 0;
-      
+
       Data() = default;
       Data(PlacedVolume v) : pv(v) {}
       Data(const Data& d) = default;

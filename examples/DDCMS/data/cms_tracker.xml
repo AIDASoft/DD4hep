@@ -13,6 +13,7 @@
     <debug_placements/>
     <debug_algorithms/>
 -->
+    <debug_visattr/>
   </debug>
   <open_geometry/>
   <close_geometry/>
@@ -82,12 +83,40 @@
 
         <vis name="pixbarlayer2_PixelBarrelLayer2Coolant"        alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true"  visible="false"/>
       <vis name="pixbarlayer2_PixelBarrelLayer2CoolTube"         alpha="1.0"   r="0"    g="0.2"  b="0.8" showDaughters="true"  visible="true"/>
-    <vis name="pixbarlayer2_PixelBarrelLayer2"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true"  visible="true"/>f 
-    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
+    <vis name="pixbarlayer2_PixelBarrelLayer2"                   alpha="0.5"   r="0.6"  g="0.6"  b="0.6" showDaughters="true"  visible="true"/> 
+
+    <vis name="tobmodule0_TOBActiveRphi0"                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tobmodule0_TOBWaferSter0"                         alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tobmodule2_TOBActiveRphi2"                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tobmodule4_TOBActiveRphi4"                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tobmodule4_TOBWaferRphi4"                         alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tobmodpar_TOBInactive"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+
+    <vis name="tibmodule0_TIBActiveRphi0"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tibmodule0_TIBActiveSter0"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tibmodule2_TIBActiveRphi2"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tibmodule0_TIBWaferRphi0"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tibmodule0_TIBWaferSter0"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="tibmodule2_TIBWaferRphi2"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+<!--
+    <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+-->
+    <vis name="vis-tob"                                          alpha="0.4"   r="0.0"  g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
+    <vis name="solid-verylight-grey"                             alpha="0.3"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
     <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="1.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-green"                                alpha="0.4"   r="0.0"  g="0.4"  b="0.0" showDaughters="true"  visible="false"/>
     <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="CMS_Invisible"                                    alpha="1"     r="0.0"  g="0.0"  b="1"   showDaughters="true"  visible="false"/>
+    <vis name="solid-light-blue"                                 alpha="0.4"   r="0.0"  g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
+    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9"   showDaughters="true"  visible="false"/>
+    <vis name="tracker_Tracker"                                  alpha="0.5"   r="0.9"  g="0.9"  b="0.9"   showDaughters="true"  visible="false"/>
+
+    <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="vis-invisible-daughters"                          alpha="0.5"   r="0.7"  g="0.7"  b="0.7"   showDaughters="true"  visible="false"/>
 
     <vismaterial name="AL"                type="solid-light-grey"/>
     <vismaterial name="SI"                type="solid-red"/>
@@ -99,8 +128,27 @@
     <vismaterial name="materials_T_Air"   type="CMS_Invisible"/>
     <vismaterial name="materials_V_Air"   type="CMS_Invisible"/>
     <vismaterial name="trackermaterial_T_Aluminium" type="solid-light-grey"/>
-    <vismaterial name="tecmaterial_TEC_petalinsert" type="solid-blue"/>
+    <vismaterial name="tecmaterial_TEC_petalinsert" type="solid-light-green"/>
+
   </VisSection>
+  <VisSection2>
+    <vis name="tracker_Tracker"                                  alpha="0.3"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
+    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-grey"                             alpha="0.3"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
+    <vis name="solid-red"                                        alpha="0.3"   r="1.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="1.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="CMS_Invisible"                                    alpha="1"     r="0.0"  g="0.0"  b="1"   showDaughters="true"  visible="false"/>
+    <vismaterial name="materials_Air"     type="CMS_Invisible"/>
+    <vismaterial name="materials_E_Air"   type="CMS_Invisible"/>
+    <vismaterial name="materials_H_Air"   type="CMS_Invisible"/>
+    <vismaterial name="materials_M_B_Air" type="CMS_Invisible"/>
+    <vismaterial name="materials_M_F_Air" type="CMS_Invisible"/>
+    <vismaterial name="materials_T_Air"   type="CMS_Invisible"/>
+    <vismaterial name="materials_V_Air"   type="CMS_Invisible"/>
+    <vismaterial name="trackermaterial_T_Aluminium" type="solid-light-grey"/>
+    <vismaterial name="tecmaterial_TEC_petalinsert" type="solid-blue"/>
+  </VisSection2>
 
   <DisabledAlgo  name="track:DDTOBRadCableAlgo"/>
   <ConstantsSection label="pixfwd" eval="true">

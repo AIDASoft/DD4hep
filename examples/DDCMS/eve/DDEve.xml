@@ -1,12 +1,12 @@
 <ddeve>
-  <display visLevel="7" loadLevel="4"/>
+  <display visLevel="7" loadLevel="5"/>
 
-  <collection name="TIDB_2Hits"        hits="PointSet" color="kGreen+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
-  <collection name="TIDF_1Hits"        hits="PointSet" color="kGreen+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
-  <collection name="TIB_1Hits"         hits="PointSet" color="kBlue" size="0.3" type="21" towerH="3*MeV" emax="2*GeV"/>
-  <collection name="PixelBarrel_1Hits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
-  <collection name="TOB_1Hits"         hits="PointSet" color="kRed+3" size="0.3" type="20"/>
-  <collection name="MC_Particles"      hits="Particles" size="0.6" width="2" type="kCircle"/>
+  <collection name="TIDB_2Hits"        hits="PointSet" color="kRed+4" size="0.8" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="TIDF_1Hits"        hits="PointSet" color="kRed+3" size="0.8" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="TIB_1Hits"         hits="PointSet" color="kBlue+3" size="0.8"  type="21" towerH="3*MeV" emax="2*GeV"/>
+  <collection name="PixelBarrel_1Hits" hits="PointSet" color="kBlack" size="0.8" type="20"/>
+  <collection name="TOB_1Hits"         hits="PointSet" color="kRed" size="0.8"   type="20"/>
+  <collection name="MC_Particles"      hits="Particles" size="0.6" width="1" type="kCircle"/>
 
   <calodata name="PixelBarrel" hits="PixelBarrel_1Hits" towerH="20" emax="200"
 	    n_eta="200" eta_min="-5"  eta_max="5" 

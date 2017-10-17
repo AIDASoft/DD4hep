@@ -8,10 +8,34 @@
     <arg value="-processor"/>
     <arg value="DDCMS_DetElementCreator"/>
   </plugin>
+<!--
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-red"/>
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-fraction"/>
+    <arg value="0.33"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-red"/>
+    <arg value="-vis-inactive"/>
+    <arg value="solid-verylight-grey"/>
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-all-inactive"/>
+    <arg value="-fraction"/>
+    <arg value="0.9"/>
+  </plugin>
   <plugin name="DD4hep_VolumeManager"/>
   <plugin name="DD4hep_InteractiveUI"/>
 
-<!--
   <plugin name="DD4hep_DetectorDump">
     <arg value="-sensitive"/>
   </plugin>
