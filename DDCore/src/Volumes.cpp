@@ -620,7 +620,7 @@ Material Volume::material() const {
 
 /// Set Visualization attributes to the volume
 const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
-  if (attr.isValid()) {
+  if ( attr.isValid() ) {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
     Color_t bright = vis->color;//kBlue;//TColor::GetColorBright(vis->color);
     Color_t dark = vis->color;//kRed;//TColor::GetColorDark(vis->color);

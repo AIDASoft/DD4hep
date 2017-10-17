@@ -17,6 +17,7 @@
 
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/DetectorHelper.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/Printout.h"
@@ -696,17 +697,17 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
     }
 #if 0
     DetElement det(PluginService::Create<NamedObject*>(type, &description, _ns.context, &element, &sd));
-    if (det.isValid())    {
+    if (det.isValid())   {
       // setChildTitles(make_pair(name, det));
-      if ( sd.isValid() )  {
+      if ( sd.isValid() )   {
         det->flag |= DetElement::Object::HAVE_SENSITIVE_DETECTOR;
       }
-      if ( seg.isValid() )  {
+      if ( seg.isValid() )   {
         seg->sensitive = sd;
         seg->detector  = det;
       }
     }
-    if (!det.isValid()) {
+    if (!det.isValid())   {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type, &description, _ns.context, &element, &sd);
       except("DDCMS","Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
@@ -717,11 +718,11 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
     printout(ERROR, "DDCMS", "++ FAILED  NOT ADDING SUBDETECTOR %08lX = %s",ret, name.c_str());
     return;
   }
-  catch (const exception& exc) {
+  catch (const exception& exc)   {
     printout(ERROR, "DDCMS", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), exc.what());
     terminate();
   }
-  catch (...) {
+  catch (...)   {
     printout(ERROR, "DDCMS", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), "UNKNONW Exception");
     terminate();
   }
@@ -750,38 +751,38 @@ template <> void Converter<vis_apply>::operator()(xml_h /* dddefinition */) cons
     {    }
     void patch()   const  {
       Detector* detector = n_s.context->description;
+      DetectorHelper helper(detector);
+      Atom SI = helper.element("SI");
       printout(INFO,"Detector","+++ Applying DD4hep visualization attributes....");
-      VisAttr invisible = detector->visAttributes("invisible");
+      VisAttr vis_tob = detector->visAttributes("vis-tob");
+      VisAttr vis_active_material = detector->visAttributes("vis-active-material");
+      VisAttr inv_daughters = detector->visAttributes("vis-invisible-daughters");
       for (auto i = m_data->rbegin(); i != m_data->rend(); ++i) {
         for( const TGeoNode* n : (*i).second )  {
           Volume   vol = n->GetVolume();
           Material mat = vol.material();
           VisAttr  vis = detector->visAttributes(vol.name());
+
           if ( !vis.isValid() )  {
             auto iv = n_s.context->vismaterial.find(mat.name());
             if ( iv != n_s.context->vismaterial.end() )  {
               vis = detector->visAttributes((*iv).second);
             }
           }
-          if ( !vis.isValid() && mat.density() < 5e0 )  {
-            vis = invisible;
+          if ( !vis.isValid() && mat.fraction(SI)>0.3 )  {
+            vis = vis_active_material;
           }
-          /*
-          if ( !vis )   {
-            TGeoMaterial* m = mat->GetMaterial();
-            int ne = m->GetNelements();
-            for(int k=0; ne==1 && k<ne; ++k)   {
-              TGeoElement* e = m->GetElement(k);
-              auto iv = n_s.context->vismaterial.find(e->GetName());
-              if ( iv != n_s.context->vismaterial.end() )  {
-                vis = detector->visAttributes((*iv).second);
-                printout(INFO,"Vis","Set visattr according to element: %s -> %s",
-                         mat.name(), e->GetName());
-                break;
-              }
+          if ( !vis.isValid() && strncmp(vol.name(),"tob",3)==0 )  {
+            vis = vis_tob;
+          }
+          if ( vol->GetNdaughters() > 0 )  {
+            vis = inv_daughters;
+          }
+          else if ( !vis.isValid() )  {
+            if ( mat.density() < 5e0 )  {
+              vis = inv_daughters;
             }
           }
-          */
           printout(n_s.context->debug_visattr ? ALWAYS : DEBUG,
                    "Vis","+++ %-40s Material:%s Dens:%6.1f vis-attrs:%s [%s]",
                    vol.name(), mat.name(), mat.density(), yes_no(vis.isValid()),

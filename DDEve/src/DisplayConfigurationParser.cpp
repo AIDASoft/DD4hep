@@ -310,6 +310,8 @@ static long setup_DDEve(Detector& description, const xml_h& e) {
   if ( first )   {
     first = false;
 #define add_root_enum(x) xml::_toDictionary(xml::Strng_t(#x),int(x))
+    add_root_enum(kBlack);
+    add_root_enum(kWhite);
     add_root_enum(kOrange);
     add_root_enum(kBlue);
     add_root_enum(kAzure);
