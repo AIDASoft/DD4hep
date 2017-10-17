@@ -73,18 +73,20 @@ namespace  {
 
 /// Initializing constructor
 VolIDTest::VolIDTest(Detector& description, DetElement sdet, size_t depth) : m_mapping(description.world()), m_det(sdet) {
-  m_mgr    = description.volumeManager();
+  m_mgr = description.volumeManager();
   if ( !m_det.isValid() )   {
     stringstream err;
+    ++m_errors;
     err << "The subdetector " << m_det.name() << " is not known to the geometry.";
-    printout(INFO,"VolIDTest",err.str().c_str());
+    except("VolumeMgrTest",err.str().c_str());
     throw runtime_error(err.str());
   }
   if ( !description.sensitiveDetector(m_det.name()).isValid() )   {
     stringstream err;
+    ++m_errors;
     err << "The sensitive detector of subdetector " << m_det.name()
         << " is not known to the geometry.";
-    printout(INFO,"VolIDTest",err.str().c_str());
+    printout(ERROR,"VolumeMgrTest",err.str().c_str());
     //throw runtime_error(err.str());
     return;
   }
@@ -310,8 +312,12 @@ long VolIDTest::run(Detector& description,int argc,char** argv)    {
       }
       return 1;
     }
+    DetElement sdet = description.detector(name);
+    if ( !sdet.isValid() )   {
+      except("VolumeMgrTest","++ Unknwon top level subdetector: %s",name.c_str());
+    }
     printout(INFO,"DD4hepVolumeMgrTest","++ Processing subdetector: %s",name.c_str());
-    VolIDTest test(description,description.detector(name),99);
+    VolIDTest test(description,sdet,99);
   }
   return 1;
 }
