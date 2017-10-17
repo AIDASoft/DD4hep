@@ -12,8 +12,8 @@
     <debug_namespaces/>
     <debug_placements/>
     <debug_algorithms/>
--->
     <debug_visattr/>
+-->
   </debug>
   <open_geometry/>
   <close_geometry/>

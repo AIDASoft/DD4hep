@@ -184,8 +184,12 @@ DECLARE_APPLY(DD4hep_Rint,run_interpreter)
  */
 static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
   char cmd[256];
-  DD4hepUI* ui = new DD4hepUI(description);
-  ::snprintf(cmd,sizeof(cmd),"dd4hep::detail::DD4hepUI* gDD4hepUI = (dd4hep::detail::DD4hepUI*)%p;",(void*)ui);
+  //DD4hepUI* ui = new DD4hepUI(description);
+  //::snprintf(cmd,sizeof(cmd),"dd4hep::detail::DD4hepUI* gDD4hepUI = (dd4hep::detail::DD4hepUI*)%p;",(void*)ui);
+  ::snprintf(cmd,sizeof(cmd),
+             "dd4hep::detail::DD4hepUI* gDD4hepUI = new "
+             "dd4hep::detail::DD4hepUI(*(dd4hep::Detector*)%p);",
+             (void*)&description);
   gInterpreter->ProcessLine(cmd);
   printout(ALWAYS,"DD4hepUI",
            "Use the ROOT interpreter variable gDD4hepUI "
@@ -936,8 +940,8 @@ static int placed_volume_processor(Detector& description, int argc, char** argv)
     else if ( 0 == ::strncmp(argv[i],"-no-recursive",7) )
       recursive = false;
     else if ( 0 == ::strncmp(argv[i],"-detector",4) )  {
-      string path = argv[++i];
-      DetElement det = detail::tools::findElement(description, path);
+      string     path = argv[++i];
+      DetElement det  = detail::tools::findElement(description, path);
       if ( det.isValid() )  {
         pv = det.placement();
         if ( pv.isValid() )  {
@@ -969,53 +973,60 @@ DECLARE_APPLY(DD4hep_PlacedVolumeProcessor,placed_volume_processor)
  */
 template <int flag> long dump_detelement_tree(Detector& description, int argc, char** argv) {
   struct Actor {
+    string path;
     long count = 0;
-    Actor() = default;
+    int have_match = -1, analysis_level = 999999;
+    Actor(const string& p, int level) : path(p), analysis_level(level) {}
     ~Actor() {
       printout(ALWAYS,"DetectorDump", "+++ Scanned a total of %ld elements.",count);
     }
-    long dump(DetElement de,int level, bool sensitive_only) {
+    long dump(DetElement de,int level, bool sensitive_only)   {
       const DetElement::Children& c = de.children();
-      if ( !sensitive_only || 0 != de.volumeID() )  {
-        PlacedVolume place = de.placement();
-        char sens = place.isValid() ? place.volume().isSensitive() ? 'S' : ' ' : ' ';
-        char fmt[128];
-        switch(flag)  {
-        case 0:
-          ++count;
-          if ( de.placement() == de.idealPlacement() )  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
+      bool  use_elt = path.empty() || de.path().find(path) != string::npos;
+      if ( have_match<0 && use_elt ) have_match = level;
+      use_elt = use_elt && (level-have_match)<=analysis_level;
+      if ( use_elt )   {
+        if ( !sensitive_only || 0 != de.volumeID() )  {
+          PlacedVolume place = de.placement();
+          char sens = place.isValid() ? place.volume().isSensitive() ? 'S' : ' ' : ' ';
+          char fmt[128];
+          switch(flag)  {
+          case 0:
+            ++count;
+            if ( de.placement() == de.idealPlacement() )  {
+              ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
+              printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
+                       (unsigned long)de.volumeID(), (void*)place.ptr(), sens);
+              break;
+            }
+            ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
+                       level+1,2*level+1);
             printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
-                     (unsigned long)de.volumeID(), (void*)place.ptr(), sens);
+                     (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(),
+                     (void*)place.ptr(), sens);
             break;
-          }
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
-                     level+1,2*level+1);
-          printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
-                   (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(),
-                   (void*)place.ptr(), sens);
-          break;
-        case 1:
-          ++count;
-          ::snprintf(fmt,sizeof(fmt),
-                     "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",
-                     level+1,2*level+1);
-          printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(c.size()), (void*)de.volumeID());
-          if ( de.placement() == de.idealPlacement() )  {
+          case 1:
+            ++count;
             ::snprintf(fmt,sizeof(fmt),
-                       "%03d %%-%ds Placement: %%s  %%c",
+                       "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",
+                       level+1,2*level+1);
+            printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(c.size()), (void*)de.volumeID());
+            if ( de.placement() == de.idealPlacement() )  {
+              ::snprintf(fmt,sizeof(fmt),
+                         "%03d %%-%ds Placement: %%s  %%c",
+                         level+1,2*level+3);
+              printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
+              break;
+            }
+            ::snprintf(fmt,sizeof(fmt),
+                       "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
                        level+1,2*level+3);
-            printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
+            printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(),
+                     (void*)de.idealPlacement().ptr(), (void*)place.ptr(), sens);          
+            break;
+          default:
             break;
           }
-          ::snprintf(fmt,sizeof(fmt),
-                     "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
-                     level+1,2*level+3);
-          printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(),
-                   (void*)de.idealPlacement().ptr(), (void*)place.ptr(), sens);          
-          break;
-        default:
-          break;
         }
       }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
@@ -1023,11 +1034,30 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
       return 1;
     }
   };
+  int  level = 999999;
   bool sensitive_only = false;
+  string path;
   for(int i=0; i<argc; ++i)  {
-    if ( ::strcmp(argv[i],"--sensitive")==0 ) { sensitive_only = true; }
+    if      ( ::strncmp(argv[i],"--sensitive",     5)==0 ) { sensitive_only = true;    }
+    else if ( ::strncmp(argv[i], "-sensitive",     5)==0 ) { sensitive_only = true;    }
+    else if ( ::strncmp(argv[i], "--no-sensitive", 8)==0 ) { sensitive_only = false;   }
+    else if ( ::strncmp(argv[i], "-no-sensitive",  7)==0 ) { sensitive_only = false;   }
+    else if ( ::strncmp(argv[i], "--detector",     5)==0 ) { path = argv[++i];         }
+    else if ( ::strncmp(argv[i], "-detector",      5)==0 ) { path = argv[++i];         }
+    else if ( ::strncmp(argv[i], "--level",        5)==0 ) { level= ::atol(argv[++i]); }
+    else if ( ::strncmp(argv[i], "-level",         5)==0 ) { level= ::atol(argv[++i]); }
+    else   {
+      cout << "  "
+           << (flag==0 ? "DD4hep_DetectorDump" : "DD4hep_DetectorVolumeDump") << " -arg [-arg]     \n"
+        "    --sensitive            Process only sensitive volumes.                                \n"
+        "    -sensitive             dto.                                                           \n"
+        "    --detector   <path>    Process elements only if <path> is part of the DetElement path.\n"
+        "    -detector    <path>    dto.                                                           \n"
+        "\tArguments given: " << arguments(argc,argv) << endl << flush;        
+      ::exit(EINVAL);
+    }
   }
-  Actor a;
+  Actor a(path, level);
   return a.dump(description.world(),0,sensitive_only);
 }
 DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)

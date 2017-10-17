@@ -8,6 +8,10 @@
     <arg value="-processor"/>
     <arg value="DDCMS_DetElementCreator"/>
   </plugin>
+  <plugin name="DD4hep_VolumeManager"/>
+  <plugin name="DD4hep_InteractiveUI"/>
+
+
 <!--
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-processor"/>
@@ -33,9 +37,6 @@
     <arg value="-fraction"/>
     <arg value="0.9"/>
   </plugin>
-  <plugin name="DD4hep_VolumeManager"/>
-  <plugin name="DD4hep_InteractiveUI"/>
-
   <plugin name="DD4hep_DetectorDump">
     <arg value="-sensitive"/>
   </plugin>

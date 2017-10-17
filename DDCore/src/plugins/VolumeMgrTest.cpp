@@ -134,6 +134,7 @@ void VolIDTest::checkVolume(DetElement detector, PlacedVolume pv, const VolIDs& 
         ++m_errors;
       }
       else if ( top_sdet.ptr() != detector.ptr() )   {
+        top_sdet  = m_mgr.lookupDetector(vid);
         err << "VolumeMgrTest: Wrong associated sub-detector element vid="  << volumeID(vid)
             << " got "        << top_sdet.path() << " (" << (void*)top_sdet.ptr() << ") "
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
