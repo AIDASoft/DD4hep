@@ -26,8 +26,10 @@ dd4hep_package (DDCMS MAJOR 0 MINOR 0 PATCH 1
 #------------------------------------------------------------------------------
 dd4hep_add_plugin(DDCMSexample SOURCES src/*.cpp)
 #---Package installation procedure(s) -----------------------------------------
-dd4hep_install_dir( data DESTINATION ${DD4hep_DIR}/examples/DDCMS )
-dd4hep_install_dir( eve  DESTINATION ${DD4hep_DIR}/examples/DDCMS )
+dd4hep_install_dir( data    DESTINATION ${DD4hep_DIR}/examples/DDCMS )
+dd4hep_install_dir( eve     DESTINATION ${DD4hep_DIR}/examples/DDCMS )
+dd4hep_install_dir( scripts DESTINATION ${DD4hep_DIR}/examples/DDCMS )
+#
 #---Testing--------------------------------------------------------------------
 dd4hep_configure_scripts ( DDCMS DEFAULT_SETUP WITH_TESTS )
 #

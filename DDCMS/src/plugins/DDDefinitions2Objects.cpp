@@ -92,8 +92,6 @@ namespace dd4hep {
     class algorithm;    
 
     class vissection;
-    class vis_apply;
-    class vismaterial;
     class vis;
     class debug;
   }
@@ -110,10 +108,6 @@ namespace dd4hep {
 
   /// Converter for <VisSection/> tags
   template <> void Converter<vissection>::operator()(xml_h element) const;
-  /// Convert to apply visualization attributes
-  template <> void Converter<vis_apply>::operator()(xml_h element) const;
-  /// Convert material visualization attributes
-  template <> void Converter<vismaterial>::operator()(xml_h element) const;
   /// Convert compact visualization attributes
   template <> void Converter<vis>::operator()(xml_h element) const;
 
@@ -175,7 +169,6 @@ template <> void Converter<constantssection>::operator()(xml_h element) const  {
 /// Converter for <VisSection/> tags
 template <> void Converter<vissection>::operator()(xml_h element) const  {
   Namespace _ns(_param<ParsingContext>(), element);
-  xml_coll_t(element, _CMU(vismaterial)).for_each(Converter<vismaterial>(description,_ns.context,optional));
   xml_coll_t(element, _CMU(vis)).for_each(Converter<vis>(description,_ns.context,optional));
 }
 
@@ -281,13 +274,6 @@ template <> void Converter<constant>::operator()(xml_h element) const  {
   res->allConst[real] = val;
   res->originalConst[real] = val;
   res->unresolvedConst[real] = val;
-}
-
-/// Convert material visualization attributes
-template <> void Converter<vismaterial>::operator()(xml_h e) const {
-  ParsingContext* c = _param<ParsingContext>();
-  xml_dim_t xvis(e);
-  c->vismaterial[xvis.nameStr()] = xvis.typeStr();
 }
 
 /** Convert compact visualization attribute to Detector visualization attribute
@@ -743,58 +729,6 @@ template <> void Converter<debug>::operator()(xml_h dbg) const {
   LogDebug::setDebugAlgorithms(_ns.context->debug_algorithms);
 }
 
-template <> void Converter<vis_apply>::operator()(xml_h /* dddefinition */) const {
-  struct VisPatcher: public detail::GeoScan {
-    const Namespace& n_s;
-    VisPatcher(const Namespace&  n)
-      : detail::GeoScan(n.context->description->world()), n_s(n)
-    {    }
-    void patch()   const  {
-      Detector* detector = n_s.context->description;
-      DetectorHelper helper(detector);
-      Atom SI = helper.element("SI");
-      printout(INFO,"Detector","+++ Applying DD4hep visualization attributes....");
-      VisAttr vis_tob = detector->visAttributes("vis-tob");
-      VisAttr vis_active_material = detector->visAttributes("vis-active-material");
-      VisAttr inv_daughters = detector->visAttributes("vis-invisible-daughters");
-      for (auto i = m_data->rbegin(); i != m_data->rend(); ++i) {
-        for( const TGeoNode* n : (*i).second )  {
-          Volume   vol = n->GetVolume();
-          Material mat = vol.material();
-          VisAttr  vis = detector->visAttributes(vol.name());
-
-          if ( !vis.isValid() )  {
-            auto iv = n_s.context->vismaterial.find(mat.name());
-            if ( iv != n_s.context->vismaterial.end() )  {
-              vis = detector->visAttributes((*iv).second);
-            }
-          }
-          if ( !vis.isValid() && mat.fraction(SI)>0.3 )  {
-            vis = vis_active_material;
-          }
-          if ( !vis.isValid() && strncmp(vol.name(),"tob",3)==0 )  {
-            vis = vis_tob;
-          }
-          if ( vol->GetNdaughters() > 0 )  {
-            vis = inv_daughters;
-          }
-          else if ( !vis.isValid() )  {
-            if ( mat.density() < 5e0 )  {
-              vis = inv_daughters;
-            }
-          }
-          printout(n_s.context->debug_visattr ? ALWAYS : DEBUG,
-                   "Vis","+++ %-40s Material:%s Dens:%6.1f vis-attrs:%s [%s]",
-                   vol.name(), mat.name(), mat.density(), yes_no(vis.isValid()),
-                   vis.name());
-          vol.setVisAttributes(vis);
-        }
-      }
-    }
-  };
-  VisPatcher(Namespace(_param<ParsingContext>())).patch();
-}
-
 template <> void Converter<resolve>::operator()(xml_h /* element */) const {
   ParsingContext* ctx = _param<ParsingContext>();
   resolve*        res = _option<resolve>();
@@ -936,8 +870,6 @@ static long load_dddefinition(Detector& det, xml_h element) {
 
   /// This should be the end of all processing....close the geometry
   if ( close_geometry )  {
-    Converter<vis_apply> cnv(det,&ctxt);
-    cnv(dddef);
     det.endDocument();
   }
   printout(INFO,"DDDefinition","+++ Finished processing %s",fname.c_str());

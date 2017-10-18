@@ -1,5 +1,5 @@
 <ddeve>
-  <display visLevel="7" loadLevel="5"/>
+  <display visLevel="12" loadLevel="12"/>
 
   <collection name="TIDB_2Hits"        hits="PointSet" color="kRed+4" size="0.8" type="21" towerH="3*MeV" emax="10*GeV"/>
   <collection name="TIDF_1Hits"        hits="PointSet" color="kRed+3" size="0.8" type="21" towerH="3*MeV" emax="10*GeV"/>

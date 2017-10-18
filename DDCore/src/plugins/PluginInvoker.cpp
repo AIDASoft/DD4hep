@@ -35,10 +35,16 @@ namespace dd4hep  {
     class arg;
   }
 
+  // Converters re-used from compact:
+  template <> void Converter<Readout>::operator()(xml_h element) const;
+  template <> void Converter<LimitSet>::operator()(xml_h element) const;
+  template <> void Converter<Constant>::operator()(xml_h element) const;
+  template <> void Converter<VisAttr>::operator()(xml_h element) const;
+  // Converters implemented here:
   template <> void Converter<include_file>::operator()(xml_h element) const;
-  template <> void Converter<plugins>::operator()(xml_h e)  const;
-  template <> void Converter<plugin>::operator()(xml_h e)  const;
-  template <> void Converter<arg>::operator()(xml_h e)  const;
+  template <> void Converter<plugins>::operator()(xml_h element)  const;
+  template <> void Converter<plugin>::operator()(xml_h element)  const;
+  template <> void Converter<arg>::operator()(xml_h element)  const;
 }
 using namespace std;
 using namespace dd4hep;
@@ -102,8 +108,13 @@ template <> void Converter<include_file>::operator()(xml_h element) const   {
  *  @date    01/04/2014
  */
 template <> void Converter<plugins>::operator()(xml_h e)  const  {
-  xml_coll_t(e,"include").for_each(Converter<include_file>(description,param));
-  xml_coll_t(e,"plugin").for_each(Converter<plugin>(description,param));
+  xml_coll_t(e, _U(define)).for_each(_U(constant),  Converter<Constant>(description,param));
+  xml_coll_t(e, _U(display)).for_each(_U(vis),      Converter<VisAttr>(description,param));
+  xml_coll_t(e, _U(include)).for_each(              Converter<include_file>(description,param));
+  xml_coll_t(e, _U(includes)).for_each(_U(include), Converter<include_file>(description,param));
+  xml_coll_t(e, _U(limits)).for_each(_U(limitset),  Converter<LimitSet>(description,param));
+  xml_coll_t(e, _U(readouts)).for_each(_U(readout), Converter<Readout>(description,param));
+  xml_coll_t(e, _U(plugin)).for_each(               Converter<plugin>(description,param));
 }
 
 static long handle_plugins(Detector& description, const xml_h& element) {
