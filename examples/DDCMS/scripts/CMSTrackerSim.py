@@ -16,7 +16,6 @@ def run():
   install_dir = os.environ['DD4hepINSTALL']
   kernel.setOutputLevel('Geant4Converter',Output.DEBUG)
   kernel.setOutputLevel('Gun',Output.INFO)
-  kernel.loadGeometry("file:"+install_dir+"/examples/DDCMS/data/cms_tracker.xml")
   kernel.detectorDescription().fromXML("file:"+install_dir+"/examples/DDCMS/data/dd4hep-config.xml");
   kernel.NumEvents = 5
   geant4 = DDG4.Geant4(kernel)

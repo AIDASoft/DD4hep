@@ -114,7 +114,6 @@ namespace dd4hep {
       std::map<std::string, Rotation3D>  rotations;
       std::map<std::string, Solid>       shapes;
       std::map<std::string, Volume>      volumes;
-      std::map<std::string, std::string> vismaterial;
       std::set<std::string>              disabledAlgs;
       std::vector<std::string>           namespaces;
       bool geo_inited = false;
