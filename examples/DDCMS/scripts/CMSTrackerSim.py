@@ -18,10 +18,20 @@ def run():
   kernel.setOutputLevel('Gun',Output.INFO)
   kernel.detectorDescription().fromXML("file:"+install_dir+"/examples/DDCMS/data/dd4hep-config.xml");
   kernel.NumEvents = 5
-  geant4 = DDG4.Geant4(kernel)
+  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   geant4.setupCshUI()
-  if len(sys.argv) >= 2 and sys.argv[1] =="batch":
+  batch = False
+  test  = False
+  for i in xrange(len(sys.argv)):
+    arg = sys.argv[i].lower()
+    if arg == 'batch':
+      batch = True
+    elif arg == 'test':
+      test  = True
+    elif arg == 'numevents':
+      kernel.NumEvents = int(sys.argv[i+1])
+  if batch or test:
     kernel.UI = ''
 
   # Configure field
@@ -29,7 +39,13 @@ def run():
   # Configure I/O
   evt_root = geant4.setupROOTOutput('RootOutput','CMSTracker_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=True)
   # Setup particle gun
-  geant4.setupGun("Gun",particle='pi-',energy=100*GeV,multiplicity=1)
+  generators = []
+  generators.append(geant4.setupGun("GunPi-",particle='pi-',energy=300*GeV,multiplicity=1,Standalone=False,register=False, Mask=1))
+  if not test:
+    generators.append(geant4.setupGun("GunPi+",particle='pi+',energy=300*GeV,multiplicity=1,Standalone=False,register=False, Mask=2))
+    generators.append(geant4.setupGun("GunE-",particle='e-',energy=100*GeV,multiplicity=1,Standalone=False,register=False, Mask=4))
+    generators.append(geant4.setupGun("GunE+",particle='e+',energy=100*GeV,multiplicity=1,Standalone=False,register=False, Mask=8))
+  geant4.buildInputStage(generators)
   # Now setup all tracking detectors
   for i in geant4.description.detectors():
     o = DDG4.DetElement(i.second.ptr())

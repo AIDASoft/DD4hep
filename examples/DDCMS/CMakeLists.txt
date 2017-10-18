@@ -112,7 +112,14 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TOB
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
-
+#
+#  Dump CMS detector element tree of SD TOB
+dd4hep_add_test_reg( DDCMS_Geant4_LONGTEST
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
+  EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/CMSTrackerSim.py batch test numevents 2
+  REGEX_PASS "\\+\\+\\+ Finished run 0 after 2 events \\(2 events in total\\)"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR;FAILED"
+  )
 #
 #  Test saving geometry to ROOT file
 dd4hep_add_test_reg( DDCMS_Persist_Save_LONGTEST
