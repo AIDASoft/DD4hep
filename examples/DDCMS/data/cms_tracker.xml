@@ -54,7 +54,7 @@
 -->      
 
  <!--  DO NOT REFORMAT PLEASE!!!!  Vis attributes represent volume hierarchy!  -->
-
+<!--
           <vis name="pixbarladderhalf_PixelBarrelCable1Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
           <vis name="pixbarladderhalf_PixelBarrelCable2Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
           <vis name="pixbarladderhalf_PixelBarrelCable3Half"     alpha="1.0"   r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
@@ -98,25 +98,32 @@
     <vis name="tibmodule0_TIBWaferRphi0"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name="tibmodule0_TIBWaferSter0"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name="tibmodule2_TIBWaferRphi2"                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+
+
+    <vis name="vis-tob"                                          alpha="0.4"   r="0.0"  g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
+    <vis name="tracker_Tracker"                                  alpha="0.5"   r="0.9"  g="0.9"  b="0.9"   showDaughters="true"  visible="false"/>
+-->
+
+    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
+    <vis name="solid-verylight-grey"                             alpha="0.6"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
+    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-red"                              alpha="0.6"   r="1.0"  g="0.8"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-green"                                alpha="0.4"   r="0.0"  g="0.4"  b="0.0" showDaughters="true"  visible="false"/>
+    <vis name="solid-verylight-green"                            alpha="0.6"   r="0.8"  g="1.0"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-blue"                                 alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-blue"                             alpha="0.6"   r="0.8"  g="0.8"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9" showDaughters="true"  visible="false"/>
+
+    <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="vis-invisible-daughters"                          alpha="1.0"   r="0.1"  g="0.1"  b="0.8" showDaughters="true"  visible="false"/>
+
 <!--
     <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name=""                            alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
--->
-    <vis name="vis-tob"                                          alpha="0.4"   r="0.0"  g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
-    <vis name="solid-verylight-grey"                             alpha="0.3"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
-    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="1.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-green"                                alpha="0.4"   r="0.0"  g="0.4"  b="0.0" showDaughters="true"  visible="false"/>
-    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-blue"                                 alpha="0.4"   r="0.0"  g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
-    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9"   showDaughters="true"  visible="false"/>
-    <vis name="tracker_Tracker"                                  alpha="0.5"   r="0.9"  g="0.9"  b="0.9"   showDaughters="true"  visible="false"/>
-
-    <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="vis-invisible-daughters"                          alpha="0.5"   r="0.7"  g="0.7"  b="0.7"   showDaughters="true"  visible="false"/>
 
     <vismaterial name="AL"                type="solid-light-grey"/>
     <vismaterial name="SI"                type="solid-red"/>
@@ -129,6 +136,7 @@
     <vismaterial name="materials_V_Air"   type="CMS_Invisible"/>
     <vismaterial name="trackermaterial_T_Aluminium" type="solid-light-grey"/>
     <vismaterial name="tecmaterial_TEC_petalinsert" type="solid-light-green"/>
+-->
 
   </VisSection>
   <VisSection2>
@@ -364,8 +372,8 @@ THIS IS THE HORROR. CANNOT GET IT GOING:
     <Include ref="pixfwd.xml"/>
 
     TEC sucks in Geant4. Ignored.
-    <Include ref="trackertec.xml"/>
 -->
+    <Include ref="trackertec.xml"/>
     <Include ref="trackerbulkhead.xml"/>
 
     <Include ref="trackertib.xml"/>
