@@ -11,32 +11,192 @@
   <plugin name="DD4hep_VolumeManager"/>
   <plugin name="DD4hep_InteractiveUI"/>
 
-
-<!--
   <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2"/>
+
     <arg value="-processor"/>
     <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="AL_Vis"/>
+    <arg value="-vis-active"/>
+    <arg value="CMS_Invisible"/>
+    <arg value="-elt-active"/>
+    <arg value="AL"/>
+    <arg value="-fraction"/>
+    <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TrackerOuterCylinder_1"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="OuterCylinder_1_Vis"/>
+    <arg value="-vis-inactive"/>
+    <arg value="CMS_Invisible"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TrackerBulkhead_1"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="TrackerBulkhead_1_Vis"/>
+    <arg value="-vis-inactive"/>
+    <arg value="CMS_Invisible"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TrackerBulkhead_2"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="TrackerBulkhead_2_Vis"/>
+    <arg value="-vis-inactive"/>
+    <arg value="CMS_Invisible"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TEC_1"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="Invisible_Vis"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-green"/>
+
+    <arg value="-vis-inactive"/>
+    <arg value="solid-verylight-green"/>
+
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-fraction"/>
+    <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TEC_2"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="Invisible_Vis"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-green"/>
+
+    <arg value="-vis-inactive"/>
+    <arg value="solid-verylight-green"/>
+
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-fraction"/>
+    <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TIB_1"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="Tracker_2/TIB_1"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-blue"/>
+
+    <arg value="-vis-inactive"/>
+    <arg value="solid-verylight-blue"/>
+
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-fraction"/>
+    <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TIDF_1"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="Tracker_2/TIDF_1"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-light-blue"/>
+
+    <arg value="-vis-inactive"/>
+    <arg value="solid-verylight-blue"/>
+
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-fraction"/>
+    <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TOB_1"/>
+
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisProcessor"/>
+    <arg value="-name"/>
+    <arg value="TOB_1_Vis"/>
     <arg value="-vis-active"/>
     <arg value="solid-red"/>
+
+    <arg value="-vis-inactive"/>
+    <arg value="solid-verylight-red"/>
+
     <arg value="-elt-active"/>
     <arg value="SI"/>
     <arg value="-fraction"/>
     <arg value="0.33"/>
+    <arg value="-show"/>
   </plugin>
 
   <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2"/>
+
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
-    <arg value="-vis-active"/>
-    <arg value="solid-red"/>
-    <arg value="-vis-inactive"/>
-    <arg value="solid-verylight-grey"/>
-    <arg value="-elt-active"/>
-    <arg value="SI"/>
-    <arg value="-all-inactive"/>
-    <arg value="-fraction"/>
-    <arg value="0.9"/>
+    <arg value="DD4hep_VisDensityProcessor"/>
+    <arg value="-name"/>
+    <arg value="Density_Vis"/>
+    <arg value="-min-density"/>
+    <arg value="5.0"/>
+    <arg value="-vis"/>
+    <arg value="vis-invisible-daughters"/>
+    <arg value="-show"/>
   </plugin>
+<!--
   <plugin name="DD4hep_DetectorDump">
     <arg value="-sensitive"/>
   </plugin>

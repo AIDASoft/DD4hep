@@ -29,14 +29,19 @@ namespace dd4hep  {
   class VisProcessor : public PlacedVolumeProcessor  {
   public:
     Detector&              description;
+    std::string            name;
     std::vector<Atom>      activeElements;
     std::vector<Material>  activeMaterials;
     std::vector<Material>  inactiveMaterials;
     VisAttr                activeVis;
     VisAttr                inactiveVis;
-    double                 fraction = 0e0;
+    double                 fraction = 100e-2;
+    size_t                 numActive = 0;
+    size_t                 numInactive = 0;
     bool                   setAllInactive = false;
-
+    bool                   show = false;
+    /// Print properties
+    void _show();
   public:
     /// Initializing constructor
     VisProcessor(Detector& desc);
@@ -71,19 +76,48 @@ namespace dd4hep  {
 using namespace std;
 using namespace dd4hep;
 
+namespace {
+  void set_attr(Volume vol, VisAttr attr)   {
+    if ( vol.visAttributes().ptr() != attr.ptr() )  {
+      vol.setVisAttributes(attr);
+    }
+  }
+}
+
+
 /// Initializing constructor
-VisProcessor::VisProcessor(Detector& desc) : description(desc)
+VisProcessor::VisProcessor(Detector& desc) : description(desc), name("VisProcessor")
 {
 }
 
 /// Default destructor
 VisProcessor::~VisProcessor()   {
+  if ( show )  {
+    if ( activeVis.isValid() )
+      printout(ALWAYS,name,"++       %8ld   active vis-attrs applied: %s", numActive, activeVis.name());
+    if ( inactiveVis.isValid() )
+      printout(ALWAYS,name,"++       %8ld inactive vis-attrs applied: %s", numInactive, inactiveVis.name());
+  }
 }
 
-namespace {
-  void set_attr(Volume vol, VisAttr attr)   {
-    if ( vol.visAttributes().ptr() != attr.ptr() )  {
-      vol.setVisAttributes(attr);
+/// Print properties
+void VisProcessor::_show()   {
+  if ( show )  {
+    if ( activeVis.isValid() )   {
+      for ( Atom atom : activeElements )   {
+        printout(ALWAYS,name,"++ SETUP   Active element:  %-11s  Vis: %s",atom.name(),activeVis.name());
+      }
+      for ( Material mat : activeMaterials )  {
+        printout(ALWAYS,name,"++ SETUP   Active material: %-11s  Vis: %s", mat.name(),activeVis.name());
+      }
+    }
+    if ( inactiveVis.isValid() )   {
+      if ( setAllInactive || !activeElements.empty() )  {
+        printout(ALWAYS,name,"++ SETUP Inactive material: %-11s  Vis: %s", "All-non-active",inactiveVis.name());
+      }
+      for ( Material mat : inactiveMaterials )  {
+        printout(ALWAYS,name,"++ SETUP Inactive material: %-11s  Vis: %s", mat.name(),activeVis.name());
+      }
     }
   }
 }
@@ -98,37 +132,47 @@ int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
     frac_active += vol.material().fraction(atom);
   }
   //if ( frac_active >= fraction )
-    printout(INFO,"VisProcessor",
-             "++ Volume:%s [%s] active:%s fraction:%.3f active-vis:%s inactive-vis:%s",
-             pv.name(), vol.name(), yes_no(frac_active >= fraction), frac_active,
-             yes_no(activeVis.isValid()), yes_no(inactiveVis.isValid()));
-
-  if ( frac_active >= fraction )
-    attr = activeVis;
-  if ( !attr.isValid() )  {
-    for ( Material mat : activeMaterials )  {
-      if ( mat.ptr() == vol.material().ptr() )   {
-        attr = activeVis;
-        break;
+  printout(DEBUG,name,
+           "++ Volume:%s [%s] active:%s fraction:%.3f active-vis:%s inactive-vis:%s",
+           pv.name(), vol.name(), yes_no(frac_active >= fraction), frac_active,
+           yes_no(activeVis.isValid()), yes_no(inactiveVis.isValid()));
+  if ( activeVis.isValid() )   {
+    if ( frac_active >= fraction )  {
+      attr = activeVis;
+      ++numActive;
+    }
+    if ( !attr.isValid() )  {
+      for ( Material mat : activeMaterials )  {
+        if ( mat.ptr() == vol.material().ptr() )   {
+          attr = activeVis;
+          ++numActive;
+          break;
+        }
       }
     }
   }
   // If we get here, the material is definitely inactive
-  if ( !attr.isValid() && setAllInactive )
-    attr = inactiveVis;
-  if ( !attr.isValid() )  {
-    for ( Material m : inactiveMaterials )   {
-      if ( m.ptr() == vol.material().ptr() )   {
-        attr = inactiveVis;
-        break;
-      }
-    }
-    if ( !activeElements.empty() && frac_active<fraction )   {
+  if ( inactiveVis.isValid() )  {
+    if ( !attr.isValid() && setAllInactive )   {
       attr = inactiveVis;
+      ++numInactive;
+    }
+    else if ( frac_active<fraction )   {
+      attr = inactiveVis;
+      ++numInactive;
+    }
+    if ( !attr.isValid() && inactiveVis.isValid() )  {
+      for ( Material m : inactiveMaterials )   {
+        if ( m.ptr() == vol.material().ptr() )   {
+          attr = inactiveVis;
+          ++numInactive;
+          break;
+        }
+      }
     }
   }
   if ( attr.isValid() )  {
-    set_attr(vol,activeVis);
+    set_attr(vol,attr);
   }
   return 1;
 }
@@ -180,6 +224,15 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         if ( de.isValid() ) continue;
         printout(ERROR,"VisProcessor","++ Invalid DetElement path: %s",path.c_str());
       }
+      else if ( ::strncmp(argv[i],"-name",4) == 0 )   {
+        string     name = argv[++i];
+        proc->name = name;
+        continue;
+      }
+      else if ( ::strncmp(argv[i],"-show",4) == 0 )   {
+        proc->show = true;
+        continue;
+      }
       cout <<
         "Usage: DD4hep_VisProcessor -arg [-arg]                                              \n"
         "     -vis-active   <name>     Set the visualization attribute for   active materials\n"
@@ -192,10 +245,12 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         "     -all-inactive            Auto set all volumes inactive, which are NOT active   \n"
         "     -fraction     <double>   Set the fraction above which the active elment content\n"
         "                              defines an active volume.                             \n"
+        "     -show                    Print setup to output device (stdout)                 \n"
         "\tArguments given: " << arguments(argc,argv) << endl << flush;
       ::exit(EINVAL);
     }
   }
+  proc->_show();
   PlacedVolumeProcessor* placement_proc = proc;
   return (void*)placement_proc;
 }
