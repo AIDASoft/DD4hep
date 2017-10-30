@@ -28,7 +28,7 @@ def loadDDG4():
     gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
 
   result = gSystem.Load("libDDG4Plugins")
-  if 0 != result:
+  if result < 0:
     raise Exception('DDG4.py: Failed to load the DDG4 library libDDG4Plugins: '+gSystem.GetErrorStr())
   from ROOT import dd4hep as module
   return module
