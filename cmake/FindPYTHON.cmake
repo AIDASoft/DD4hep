@@ -1,7 +1,7 @@
 include ( FindPackageHandleStandardArgs )
 
-find_package(PythonInterp  REQUIRED)
-find_package(PythonLibs    REQUIRED)
+find_package(PythonInterp 2 REQUIRED)
+find_package(PythonLibs   2 REQUIRED)
 
 if (PYTHONLIBS_FOUND)
   get_filename_component(PYTHON_LIBRARY_DIR  ${PYTHON_LIBRARIES} PATH)
