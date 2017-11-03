@@ -69,12 +69,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   sens.setType("calorimeter");
   { // =====  buildBarrelStave(description, sens, module_volume) =====
     // Parameters for computing the layer X dimension:
-    double stave_z  = trd_y1/2;
-    double l_dim_x  = trd_x1/2;                            // Starting X dimension for the layer.
-    double adj      = (l_dim_x-trd_x2/2)/2;                // Adjacent angle of triangle.
-    double hyp      = std::sqrt(trd_z*trd_z/4 + adj*adj);  // Hypotenuse of triangle.
-    double beta     = std::acos(adj / hyp);                // Lower-right angle of triangle.
-    double tan_beta = std::tan(beta);                      // Primary coefficient for figuring X.
+    double stave_z  = trd_y1;
+    double tan_hphi = std::tan(hphi);
+    double l_dim_x  = trd_x1; // Starting X dimension for the layer.
     double l_pos_z  = -(layering.totalThickness() / 2);
 
     // Loop over the sets of layer elements in the detector.
@@ -86,11 +83,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       for (int j=0; j<repeat; j++)    {
         string l_name = _toString(l_num,"layer%d");
         double l_thickness = layering.layer(l_num-1)->thickness();  // Layer's thickness.
-        double xcut = (l_thickness / tan_beta);                     // X dimension for this layer.
-        l_dim_x -= xcut/2;
 
         Position   l_pos(0,0,l_pos_z+l_thickness/2);      // Position of the layer.
-        Box        l_box(l_dim_x*2-tolerance,stave_z*2-tolerance,l_thickness-tolerance);
+        Box        l_box(l_dim_x-tolerance,stave_z-tolerance,l_thickness / 2-tolerance);
         Volume     l_vol(l_name,l_box,air);
         DetElement layer(stave_det, l_name, det_id);
 
@@ -101,7 +96,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
           xml_comp_t x_slice = si;
           string     s_name  = _toString(s_num,"slice%d");
           double     s_thick = x_slice.thickness();
-          Box        s_box(l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
+          Box        s_box(l_dim_x-tolerance,stave_z-tolerance,s_thick / 2-tolerance);
           Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
           DetElement slice(layer,s_name,det_id);
 
@@ -128,6 +123,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
         layer_phv.addPhysVolID("layer", l_num);
         layer.setPlacement(layer_phv);
         // Increment to next layer Z position.
+        double xcut = l_thickness * tan_hphi;
+        l_dim_x += xcut;
         l_pos_z += l_thickness;          
         ++l_num;
       }
