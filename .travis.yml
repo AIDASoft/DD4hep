@@ -4,9 +4,12 @@ dist: trusty
 services:
   - docker
 
+language: cpp
+
 env:
   matrix:
     - COMPILER=gcc
+    - COMPILER=llvm
 
 before_install:
   - wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
@@ -33,8 +36,11 @@ install:
 
 # command to run tests
 script:
-  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER=$COMPILER -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/slc6-build /bin/bash
+  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER_TYPE=$COMPILER -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/slc6-build /bin/bash
   - docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/compile_and_test.sh"
+  - if [[ "${TRAVIS_EVENT_TYPE}" != "cron" && "${TRAVIS_EVENT_TYPE}" != "pull_request" && "${COMPILER}" == "gcc" && ${repo%/*} == "AIDASoft" ]];
+    then curl -X POST -F token=$GITLAB_TOKEN -F ref=master https://gitlab.cern.ch/api/v4/projects/7828/trigger/pipeline;
+    fi
 
 # Don't send e-mail notifications
 notifications:
