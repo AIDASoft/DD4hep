@@ -39,7 +39,7 @@ namespace dd4hep {
     
       /** Returns the current field value 
        */
-      long64 value() const { return _value ; }
+      long64 value() const { return _bv.value( _value ) ; }
   
       /// Calculate Field value given an external 64 bit bitmap value
       long64 value(long64 id) const { return _bv.value( id ) ; }

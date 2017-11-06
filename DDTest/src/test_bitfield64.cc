@@ -67,6 +67,12 @@ int main(int /* argc */, char** /* argv */ ){
     test(  bf3.getValue() , bf2.getValue()  , " same value 0xbebafecacafebabeUL from setting low and high word " ); 
 
 
+    test(  bf3["layer"] , 373  , " get value for \"layer\": 373  " );
+
+    unsigned xIndex = bf2.index( "x" ) ;
+
+    test(  bf3[xIndex] , -310  , " get value for xIndex : -310  " );
+
     // --------------------------------------------------------------------
 
 
