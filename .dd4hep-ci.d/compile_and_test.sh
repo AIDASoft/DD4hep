@@ -1,9 +1,6 @@
 #!/bin/bash
 
-export COMPILER_TYPE="gcc"
-
 source /DD4hep/.dd4hep-ci.d/init_x86_64.sh
-
 
 cd /DD4hep
 mkdir build
