@@ -85,7 +85,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
     // Create tube envelope for this layer, which can be reused in bool definition
     // in the repeat loop below.
-    Tube layerTube(rmin,rmax,layerThickness);
+    Tube layerTube(rmin,rmax,layerThickness * 0.5);
 
     for(int i=0, repeat=x_layer.repeat(); i<repeat; ++i)  {
       string layer_nam = _toString(layerCount,"layer%d");
@@ -122,7 +122,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
         slicePosZ   += sliceThickness / 2;
 
         // Slice's basic tube.
-        Tube sliceTube(rmin,rmax,sliceThickness);
+        Tube sliceTube(rmin,rmax,sliceThickness * 0.5);
         DetElement slice(layer,slice_nam,sdet.id());
         double sliceGlobalZ = zinner + (layerDisplZ - layerThickness / 2) + sliceDisplZ;
         double slicePosX    = std::tan(xangleHalf) * sliceGlobalZ;
