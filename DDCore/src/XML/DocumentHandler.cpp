@@ -36,7 +36,7 @@ namespace {
     if ( !fn.empty() )   {
       TString tfn(fn);
       gSystem->ExpandPathName(tfn);
-      return string(tfn);
+      return string(tfn.Data());
     }
     return fn;
   }
