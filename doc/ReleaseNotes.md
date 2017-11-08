@@ -1,3 +1,43 @@
+# v01-04
+
+* 2017-10-17 Markus Frank ([PR#248](https://github.com/aidasoft/DD4hep/pull/248))
+  ### VolumeManager Implementation
+  A possibly important bug was fixed for the lookup of top level subdetectors in the `VolumeManager` by volume identifers of (sensitive) volumes. Due to a bug in the de-masking possible wrong top level subdetectors were returned. The default use cases typically do not use this call and hence should not be affected.
+
+* 2017-10-17 Shaojun Lu ([PR#247](https://github.com/aidasoft/DD4hep/pull/247))
+  - Fix C++11 pointer error by adding include <memory> for 'unique_ptr' (GCC 4.9).
+
+* 2017-10-13 Marko Petric ([PR#246](https://github.com/aidasoft/DD4hep/pull/246))
+  ### DDCMS:
+  - Improve the CMS excercise. New examples etc.
+  - Support for simulation using DDG4 (at least partially - since not all subdetector volumes are accepted by Geant4).
+  
+  ### DDG4:
+  - Event reader returns `EVENT_READER_EOF` if `EOF` is detected rather than a generic IO error.
+  - Add generator status word to the `Geant4Particle` object. Remove the extension mechanism, which is very heavy to just add one integer.
+  
+  ### General:
+   - We need to distinguish the plugins using some namespace mechanism. I started to introduce the namespace separator `"_".` Hence all DD4hep plugins start with `DD4hep_<plugin>`. I hope this does not break everything. If it does, please notify me and we can undo.
+
+* 2017-10-13 Whitney Armstrong ([PR#243](https://github.com/aidasoft/DD4hep/pull/243))
+  - Added helper function `getAttrOrDefault` (defined in  `DDCore/include/XML/Helper.h`) 
+   This  function `getAttrOrDefault(xml::Element e, xml::XmlChar attr_name, T default_value)` will return the attribute  name,  converted to to type `T` but if it is not found it will return `default_value`. When building new detectors supplying this is useful for supplying default attribute values.
+
+* 2017-10-19 Markus Frank ([PR#249](https://github.com/aidasoft/DD4hep/pull/249))
+  * Improve the CMS tracker visualisation
+  * Add DDG4 simulation example to DDCMS
+  * Add some plugins to add visualisation attributes if required (not for the compact description)
+
+* 2017-11-01 David Blyth ([PR#254](https://github.com/aidasoft/DD4hep/pull/254))
+  - DDG4/python/DDG4.py: loadDDG4() changed to not raise exception if libraries are already loaded
+
+* 2017-11-01 David Blyth ([PR#252](https://github.com/aidasoft/DD4hep/pull/252))
+  - Added requirement of Python 2 in cmake/FindPYTHON.cmake.  This makes clear the requirement of Python 2, and resolves the issue where CMake tries to build with Python 3 in a system where both exist.
+
+* 2017-11-07 Frank Gaede ([PR#256](https://github.com/aidasoft/DD4hep/pull/256))
+  - bug fix in `BitField64::operator[std::string]() `
+  - make uses of TString in DocumentHandler.cpp compatible with clang9 (on Mac)
+
 # v01-03
 
 * 2017-10-12 Frank Gaede ([PR#244](https://github.com/AIDASoft/DD4hep/pull/244))
