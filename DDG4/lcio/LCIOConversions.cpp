@@ -203,7 +203,7 @@ namespace dd4hep {
           EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
           if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )     {
             float contrib_pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
-            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, c.pdgID, contrib_pos);
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, c.length/mm, c.pdgID, contrib_pos);
           }
           else    {
             lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns);

@@ -70,8 +70,9 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre  = h.prePosG4();
   const G4ThreeVector& post = h.postPosG4();
+  double length = (post-pre).mag() ;
   float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
-  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),pos);
+  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),length,pos);
   return contrib;
 }
 /// Extract the MC contribution for a given hit from the step information with BirksLaw effect option
@@ -82,8 +83,9 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre  = h.prePosG4();
   const G4ThreeVector& post = h.postPosG4();
+  double length = (post-pre).mag() ;
   float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
-  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),pos);
+  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),length,pos);
   return contrib;
 }
 
@@ -95,7 +97,7 @@ Geant4Tracker::Hit::Hit()
 
 /// Standard initializing constructor
 Geant4Tracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp)
-: Geant4HitData(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
+  : Geant4HitData(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp, 0.), energyDeposit(deposit) {
   InstanceCount::increment(this);
 }
 
