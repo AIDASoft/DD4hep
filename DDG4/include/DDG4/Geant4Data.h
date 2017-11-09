@@ -146,6 +146,8 @@ namespace dd4hep {
         double deposit;
         /// Timestamp when this energy was deposited
         double time;
+        /// Length of this step
+        double length = 0.0;
         /// Proper position of the hit contribution
         float  x,y,z;
 
@@ -154,24 +156,24 @@ namespace dd4hep {
           : trackID(-1), pdgID(-1), deposit(0.0), time(0.0), x(0), y(0), z(0) {
         }
         /// Initializing constructor
-        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
-          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), x(0), y(0), z(0) {
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double len)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), length(len), x(0), y(0), z(0) {
         }
         /// Initializing constructor
-        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, float* pos)
-          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double len, float* pos)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), length(len),
             x(pos[0]), y(pos[1]), z(pos[2])
         {
         }
         /// Initializing constructor
-        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double* pos)
-          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double len, double* pos)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), length(len),
             x(pos[0]), y(pos[1]), z(pos[2])
         {
         }
         /// Copy constructor
         MonteCarloContrib(const MonteCarloContrib& c)
-          : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time),
+          : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time), length(c.length),
             x(c.x), y(c.y), z(c.z) {
         }
         /// Assignment operator
@@ -181,6 +183,7 @@ namespace dd4hep {
             pdgID   = c.pdgID;
             deposit = c.deposit;
             time    = c.time;
+            length  = c.length;
             x       = c.x;
             y       = c.y;
             z       = c.z;
@@ -190,7 +193,7 @@ namespace dd4hep {
         /// Clear data content
         void clear() {
           x = y = z = 0.0;
-          time = deposit = 0.0;
+          time = deposit = length = 0.0;
           pdgID = trackID = -1;
         }
       };
