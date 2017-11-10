@@ -1,3 +1,16 @@
+# v01-05
+
+* 2017-11-10 Dan Protopopescu ([PR#262](https://github.com/aidaSoft/DD4hep/pull/262))
+  - Added createGearForSiD minimal plugin solely for use with LCCalibration
+
+* 2017-11-10 Frank Gaede ([PR#261](https://github.com/aidaSoft/DD4hep/pull/261))
+  - add `Geant4::HitData::MonteCarloContrib::length`  (step length) 
+  - set in all CalorimeterSDActions
+  - write out it LCIO if `Geant4Sensitive::DETAILED_MODE` and LCIO_VERS>v02-10
+
+* 2017-11-10 Whitney Armstrong ([PR#260](https://github.com/aidaSoft/DD4hep/pull/260))
+  - added electric and magnetic field functions that return the field value (taking the position as the only argument) directly in `dd4hep::OverlayedField`
+
 # v01-04
 
 * 2017-10-17 Markus Frank ([PR#248](https://github.com/aidasoft/DD4hep/pull/248))
