@@ -34,7 +34,7 @@ dd4hep_add_package_library(DDRec
 )
 dd4hep_add_plugin(DDRecPlugins 
   SOURCES  src/plugins/*.cpp 
-  OPTIONAL [GEAR SOURCES src/gear/createGearForILD.cpp src/gear/createGearForCLIC.cpp DEFINITIONS DD4HEP_USE_GEAR]
+  OPTIONAL [GEAR SOURCES src/gear/createGearForILD.cpp src/gear/createGearForCLIC.cpp src/gear/createGearForSiD.cpp DEFINITIONS DD4HEP_USE_GEAR]
 )
 
 if(DD4HEP_USE_GEAR)
