@@ -44,3 +44,4 @@ Version.h
 # emacs backup files
 *~
 
+*.DS_Store

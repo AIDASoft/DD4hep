@@ -1,0 +1,77 @@
+/* fix anchors */
+h2 a, h3 a, h4 a, h5 a {
+    position: absolute;
+    margin-top: -120px;
+}
+
+/* do not display title page */
+.maketitle {
+    display: none;
+}
+
+/* fix minted sections */
+.ec-lmr-6:before {
+    content: '';
+    clear: right;
+    display: block;
+}
+.ec-lmr-6 {
+    margin-right: 8px;
+}
+.fancyvrb {
+    font-size: 80%;
+}
+.fancyvrb span span {
+    display: inline-block;
+}
+
+/* improve lstlisting */
+div.lstlisting {
+    white-space: normal;
+}
+.lstlisting span {
+    display: inline-block;
+}
+
+/* customize sidebar and toolbar */
+.sidebar {
+    position:fixed;
+    width:18em;
+    top:120px;
+    left:100%;
+    margin-left:-20em;
+}
+.sidebar .sectionToc, .sidebar .subsectionToc {
+    display:block;
+    margin-top:-1em;
+    margin-bottom:0px;
+}
+.sidebar .sectionTOCS br {
+    display:none;
+}
+.sidebar .toolbar {
+    font-size:2em; 
+    padding: 5px; 
+    margin-left: 20px; 
+    background-color:#fed;
+}
+/* hide sidebar for screens to small */
+@media only screen and (max-width: 1480px) {
+    .sidebar {
+        display: none;
+    }
+}
+
+#license-text {
+    display: inline-block; 
+    position: relative; 
+    left: 10px; 
+    top: -5px; 
+    max-width: 350px;
+}
+@media only screen and (max-width: 481px) {
+    #license-text {
+        top: 10px;
+        left: 0;
+    }
+}

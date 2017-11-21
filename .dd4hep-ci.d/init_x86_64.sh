@@ -133,3 +133,10 @@ export LD_LIBRARY_PATH="${BOOST_ROOT}/lib:$LD_LIBRARY_PATH"
 
 export Ninja_HOME=${CLICREPO}/software/Ninja/1.7.2/${BUILD_FLAVOUR}
 export PATH="$Ninja_HOME:$PATH"
+
+#--------------------------------------------------------------------------------
+#     Doxygen
+#--------------------------------------------------------------------------------
+
+export Doxygen_HOME=${CLICREPO}/software/Doxygen/1.8.13/${BUILD_FLAVOUR}
+export PATH="$Doxygen_HOME/bin:$PATH"

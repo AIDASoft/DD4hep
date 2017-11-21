@@ -1,0 +1,11 @@
+\newcommand\AddFile[1]{\special{t4ht+@File: #1}}%
+
+\newcommand\AddCss[1]{%
+  \AddFile{#1}%
+  \Configure{@HEAD}{\HCode{<link rel="stylesheet" type="text/css" href="#1" />}}
+}
+
+\newcommand\AddJs[1]{%
+  \AddFile{#1}%
+  \Configure{@HEAD}{\HCode{\Hnewline<script type="text/javascript" src="#1"></script>}}
+}
