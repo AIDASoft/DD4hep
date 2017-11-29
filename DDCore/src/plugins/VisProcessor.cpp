@@ -162,8 +162,8 @@ int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
       ++numInactive;
     }
     if ( !attr.isValid() && inactiveVis.isValid() )  {
-      for ( Material m : inactiveMaterials )   {
-        if ( m.ptr() == vol.material().ptr() )   {
+      for ( Material imat : inactiveMaterials )   {
+        if ( imat.ptr() == vol.material().ptr() )   {
           attr = inactiveVis;
           ++numInactive;
           break;
