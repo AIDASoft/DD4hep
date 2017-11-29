@@ -1,0 +1,2 @@
+gGeoManager->SetNsegments(200);
+gGeoManager->CheckOverlaps (0.001);

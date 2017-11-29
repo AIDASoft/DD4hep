@@ -1,0 +1,35 @@
+/vis/viewer/set/viewpointVector -1 0 0
+/vis/viewer/set/lightsVector -1 0 0
+/vis/viewer/set/style wireframe
+/vis/viewer/set/auxiliaryEdge true
+/vis/viewer/set/lineSegmentsPerCircle 100
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/tracking/storeTrajectory 1
+/vis/scene/add/hits
+/vis/sceneHandler/attach
+/vis/scene/endOfEventAction accumulate
+/vis/set/textColour green
+/vis/set/textLayout right
+/vis/scene/add/text2D 0.9 -.9 24 ! ! FCC-he
+/vis/set/textLayout
+/vis/set/textColour
+/vis/scene/add/scale
+/vis/scene/add/axes
+/vis/scene/add/eventID
+/vis/scene/add/date
+/vis/set/colour red
+/vis/set/lineWidth 2
+/vis/scene/add/frame
+/vis/set/colour
+/vis/set/lineWidth
+/vis/geometry/set/visibility World 0 false
+/vis/geometry/set/visibility Envelope 0 false
+/vis/viewer/set/style surface
+/vis/viewer/set/hiddenMarker true
+/vis/viewer/set/viewpointThetaPhi 120 150
+/vis/verbose warnings
+/run/initialize
+/run/verbose 2

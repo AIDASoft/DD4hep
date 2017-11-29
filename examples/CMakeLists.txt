@@ -43,8 +43,10 @@ dd4hep_package ( dd4hepExample MAJOR 0 MINOR 15 PATCH 0
                  [dd4hep REQUIRED COMPONENTS DDCore]
 )
 #
-dd4hep_enable_tests (AlignDet
+dd4hep_enable_tests (
   CLICSiD
+  LHeD
+  AlignDet
   ClientTests
   Conditions
   DDCMS

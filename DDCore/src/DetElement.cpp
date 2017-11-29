@@ -369,6 +369,11 @@ Readout SensitiveDetector::readout() const {
   return access()->readout;
 }
 
+/// Assign the IDDescriptor reference
+IDDescriptor SensitiveDetector::idSpec() const {
+  return readout().idSpec();
+}
+
 /// Set energy cut off
 SensitiveDetector& SensitiveDetector::setEnergyCutoff(double value) {
   access()->ecut = value;

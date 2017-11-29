@@ -484,6 +484,7 @@ static long algorithm(Detector& /* description */,
           << dohmRotation;
     }
 #else
+    if ( placeDohm || primReplica || auxReplica || dohmR>0e0 )  {} // Avoid warnings
     LogWarn("TIBGeom") << "DOOHM placement sucks for Geant4. ERASED!";
 #endif
     layer.placeVolume(dohmCarrier, dohmCarrierReplica, Transform3D(rotation,tran));// copyNr = dohmCarrierReplica

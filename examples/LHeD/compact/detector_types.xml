@@ -1,0 +1,74 @@
+<!--
+    define global constants with enums defined in 
+    $DD4hepINSTALL/DDCore/include/DD4hep/DetType.h
+    NB: if that file is changed this file needs to
+        be manually updated correspondingly !!
+
+   author: F.Gaede, DESY 02/2016
+-->
+<define>
+  <constant name="DetType_TRACKER"         value =  " 0x1 "/>
+  <constant name="DetType_CALORIMETER"     value =  " 0x2 "/>
+  <constant name="DetType_CHERENKOV"       value =  " 0x4 "/>
+  <constant name="DetType_ENDCAP"          value =  " 0x8 "/>
+  <constant name="DetType_BARREL"          value =  " 0x10 "/>
+  <constant name="DetType_FORWARD"         value =  " 0x20 "/>
+  <constant name="DetType_VERTEX"          value =  " 0x40 "/>
+  <constant name="DetType_STRIP"           value =  " 0x80 "/>
+  <constant name="DetType_PIXEL"           value =  " 0x100 "/>
+  <constant name="DetType_GASEOUS"         value =  " 0x200 "/>
+  <constant name="DetType_WIRE"            value =  " 0x400 "/>
+  <constant name="DetType_ELECTROMAGNETIC" value =  " 0x800 "/>
+  <constant name="DetType_HADRONIC"        value =  " 0x1000 "/>
+  <constant name="DetType_MUON"            value =  " 0x2000 "/>
+  <constant name="DetType_SUPPORT"         value =  " 0x4000 "/>
+  <constant name="DetType_BEAMPIPE"        value =  " 0x8000 "/>
+  <constant name="DetType_COIL"            value =  " 0x10000 "/>
+  <constant name="DetType_AUXILIARY"       value =  " 0x20000 "/>
+  <!-- <constant name="DetType_bit_ 18 " value =  " 0x40000 "/> -->
+  <!-- <constant name="DetType_bit_ 19 " value =  " 0x80000 "/> -->
+  <!-- <constant name="DetType_bit_ 20 " value =  " 0x100000 "/> -->
+  <!-- <constant name="DetType_bit_ 21 " value =  " 0x200000 "/> -->
+  <!-- <constant name="DetType_bit_ 22 " value =  " 0x400000 "/> -->
+  <!-- <constant name="DetType_bit_ 23 " value =  " 0x800000 "/> -->
+  <!-- <constant name="DetType_bit_ 24 " value =  " 0x1000000 "/> -->
+  <!-- <constant name="DetType_bit_ 25 " value =  " 0x2000000 "/> -->
+  <!-- <constant name="DetType_bit_ 26 " value =  " 0x4000000 "/> -->
+  <!-- <constant name="DetType_bit_ 27 " value =  " 0x8000000 "/> -->
+  <!-- <constant name="DetType_bit_ 28 " value =  " 0x10000000 "/> -->
+  <!-- <constant name="DetType_bit_ 29 " value =  " 0x20000000 "/> -->
+  <!-- <constant name="DetType_bit_ 30 " value =  " 0x40000000 "/> -->
+  <!-- <constant name="DetType_bit_ 31 " value =  " 0x80000000 "/> -->
+  <!-- <constant name="DetType_bit_ 32 " value =  " 0x100000000 "/> -->
+  <!-- <constant name="DetType_bit_ 33 " value =  " 0x200000000 "/> -->
+  <!-- <constant name="DetType_bit_ 34 " value =  " 0x400000000 "/> -->
+  <!-- <constant name="DetType_bit_ 35 " value =  " 0x800000000 "/> -->
+  <!-- <constant name="DetType_bit_ 36 " value =  " 0x1000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 37 " value =  " 0x2000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 38 " value =  " 0x4000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 39 " value =  " 0x8000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 40 " value =  " 0x10000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 41 " value =  " 0x20000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 42 " value =  " 0x40000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 43 " value =  " 0x80000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 44 " value =  " 0x100000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 45 " value =  " 0x200000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 46 " value =  " 0x400000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 47 " value =  " 0x800000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 48 " value =  " 0x1000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 49 " value =  " 0x2000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 50 " value =  " 0x4000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 51 " value =  " 0x8000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 52 " value =  " 0x10000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 53 " value =  " 0x20000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 54 " value =  " 0x40000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 55 " value =  " 0x80000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 56 " value =  " 0x100000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 57 " value =  " 0x200000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 58 " value =  " 0x400000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 59 " value =  " 0x800000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 60 " value =  " 0x1000000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 61 " value =  " 0x2000000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 62 " value =  " 0x4000000000000000 "/> -->
+  <!-- <constant name="DetType_bit_ 63 " value =  " 0x8000000000000000 "/> -->
+</define>

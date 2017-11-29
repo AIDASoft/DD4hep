@@ -39,34 +39,45 @@ namespace dd4hep {
   public:
     /// Default constructor
     Readout() = default;
+
     /// Copy Constructor from object
     Readout(const Readout& e) = default;
+
 #ifndef __CINT__
     /// Copy Constructor from handle
     Readout(const Handle<ReadoutObject>& e) : Handle<Object>(e) { }
 #endif
+
     /// Constructor to be used when reading the already parsed object
     template <typename Q> Readout(const Handle<Q>& e) : Handle<Object>(e) { }
+
     /// Initializing constructor
     Readout(const std::string& name);
+
     /// Assignment operator
     Readout& operator=(const Readout& ro) = default;
+
     /// Access explicit names of hit collections if present
     std::vector<std::string> collectionNames()  const;
+
 #ifndef __CINT__
     /// Access hit collections if present
     std::vector<const HitCollection*> collections()  const;
 #endif
     /// Access number of hit collections
     size_t numCollections() const;
+    
     /// Assign IDDescription to readout structure
     void setIDDescriptor(const Ref_t& spec) const;
+
     /// Access IDDescription structure
     IDDescriptor idSpec() const;
+
     /// Assign segmentation structure to readout
     void setSegmentation(const Segmentation& segment) const;
+
     /// Access segmentation structure
     Segmentation segmentation() const;
   };
-} /* End namespace dd4hep                   */
+}         /* End namespace dd4hep         */
 #endif    /* DD4HEP_DDCORE_READOUT_H      */

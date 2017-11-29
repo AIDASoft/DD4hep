@@ -208,7 +208,27 @@ void DDPython::restoreThread()   {
 }
 
 int DDPython::setArgs(int argc, char** argv)  const   {
+  // Need to protect against API change from Python 2 to Python 3
+#if PY_VERSION_HEX < 0x03000000
   ::PySys_SetArgv(argc,argv);
+#else
+  vector<wstring> wargs;
+  vector<const wchar_t*> wargv;
+  for(int i=0; i<argc;++i)  {
+    std::wstring wstr;
+    if ( argv[i] )  {
+      const size_t size = strlen(argv[i]);
+      if (size > 0) {
+        wstr.resize(size+1);
+        std::mbstowcs(&wstr[0], argv[i], size);
+        wstr[size] = 0;
+      }
+    }
+    wargs.push_back(wstr);
+  }
+  for(auto& s : wargs ) wargv.push_back(s.c_str());
+  ::PySys_SetArgv(argc,(wchar_t**)&wargv[0]);
+#endif
   return 1;
 }
 
@@ -301,5 +321,24 @@ bool DDPython::isMainThread()   {
 
 /// Start the interpreter in normal mode without hacks like 'pythopn.exe' does.
 int DDPython::run_interpreter(int argc, char** argv)   {
+#if PY_VERSION_HEX < 0x03000000
   return ::Py_Main(argc, argv);
+#else
+  vector<wstring> wargs;
+  vector<const wchar_t*> wargv;
+  for(int i=0; i<argc;++i)  {
+    std::wstring wstr;
+    if ( argv[i] )  {
+      const size_t size = strlen(argv[i]);
+      if (size > 0) {
+        wstr.resize(size+1);
+        std::mbstowcs(&wstr[0], argv[i], size);
+        wstr[size] = 0;
+      }
+    }
+    wargs.push_back(wstr);
+  }
+  for( auto& s : wargs ) wargv.push_back(s.c_str());
+  return ::Py_Main(argc, (wchar_t**)&wargv[0]);
+#endif
 }

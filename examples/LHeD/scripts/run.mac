@@ -1,0 +1,33 @@
+# $Id: run1.mac,v 1.2 2000-11-21 10:59:42 maire Exp $
+#
+# Macro file for "exampleN03.cc"
+# 
+# can be run in batch, without graphic
+# or interactively: Idle> /control/execute run1.mac
+#
+/control/verbose 1
+/control/saveHistory
+#
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+#
+# 2 x  3 GeV Muons events
+#
+# uncomment when running slic
+#/generator/select gun
+#/gun/direction 1. 1. .1
+#/gun/particle mu+
+#/gun/energy 100 GeV
+  /vis/open DAWNFILE
+  /vis/viewer/refresh
+  /vis/viewer/zoom 100
+  /vis/viewer/set/viewpointThetaPhi 0 0
+  /vis/viewer/set/style wireframe
+  /vis/scene/create
+  /vis/scene/add/volume
+  /vis/scene/add/trajectories
+  /vis/scene/add/hits
+  /vis/sceneHandler/attach
+  /tracking/storeTrajectory 1
+/run/beamOn 1
