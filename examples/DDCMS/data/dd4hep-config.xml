@@ -123,7 +123,7 @@
     <arg value="Tracker_2"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="AL_Vis"/>
     <arg value="-vis-active"/>
@@ -141,7 +141,7 @@
     <arg value="Tracker_2/TrackerOuterCylinder_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="OuterCylinder_1_Vis"/>
     <arg value="-vis-inactive"/>
@@ -155,7 +155,7 @@
     <arg value="Tracker_2/TrackerBulkhead_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="TrackerBulkhead_1_Vis"/>
     <arg value="-vis-inactive"/>
@@ -169,7 +169,7 @@
     <arg value="Tracker_2/TrackerBulkhead_2"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="TrackerBulkhead_2_Vis"/>
     <arg value="-vis-inactive"/>
@@ -183,7 +183,7 @@
     <arg value="Tracker_2/PixelBarrel_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="PixelBarrel_1_Vis"/>
     <arg value="-vis-inactive"/>
@@ -197,7 +197,7 @@
     <arg value="Tracker_2/TEC_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="Invisible_Vis"/>
     <arg value="-vis-active"/>
@@ -219,7 +219,7 @@
     <arg value="Tracker_2/TEC_2"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="Invisible_Vis"/>
     <arg value="-vis-active"/>
@@ -241,7 +241,7 @@
     <arg value="Tracker_2/TIB_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="Tracker_2/TIB_1"/>
     <arg value="-vis-active"/>
@@ -263,7 +263,7 @@
     <arg value="Tracker_2/TIDF_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="Tracker_2/TIDF_1"/>
     <arg value="-vis-active"/>
@@ -285,7 +285,7 @@
     <arg value="Tracker_2/TOB_1"/>
 
     <arg value="-processor"/>
-    <arg value="DD4hep_VisProcessor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
     <arg value="-name"/>
     <arg value="TOB_1_Vis"/>
     <arg value="-vis-active"/>

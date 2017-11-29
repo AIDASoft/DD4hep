@@ -39,7 +39,6 @@ static double computeDpt( double ra, double rb, double theta ) {
 }
 
 static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
-  typedef vector<PlacedVolume> Placements;
   xml_det_t   x_det     = e;
   Material    air       = description.air();
   int         det_id    = x_det.id();

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_VISPROCESSOR_H
-#define DD4HEP_DDCORE_VISPROCESSOR_H
+#ifndef DD4HEP_DDCORE_VISMATERIALPROCESSOR_H
+#define DD4HEP_DDCORE_VISMATERIALPROCESSOR_H
 
 // Framework include files
 #include "DD4hep/VolumeProcessor.h"
@@ -26,7 +26,7 @@ namespace dd4hep  {
    *  \version 1.0
    *  \ingroup DD4HEP_CORE
    */
-  class VisProcessor : public PlacedVolumeProcessor  {
+  class VisMaterialProcessor : public PlacedVolumeProcessor  {
   public:
     Detector&              description;
     std::string            name;
@@ -44,14 +44,14 @@ namespace dd4hep  {
     void _show();
   public:
     /// Initializing constructor
-    VisProcessor(Detector& desc);
+    VisMaterialProcessor(Detector& desc);
     /// Default destructor
-    virtual ~VisProcessor();
+    virtual ~VisMaterialProcessor();
     /// Callback to output PlacedVolume information of an single Placement
     virtual int operator()(PlacedVolume pv, int level);
   };
 }
-#endif //  DD4HEP_DDCORE_VISPROCESSOR_H
+#endif //  DD4HEP_DDCORE_VISMATERIALPROCESSOR_H
 
 //==========================================================================
 //  AIDA Detector description implementation 
@@ -66,7 +66,7 @@ namespace dd4hep  {
 //
 //==========================================================================
 
-//#include "DD4hep/VisProcessor.h"
+//#include "DD4hep/VisMaterialProcessor.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/DetectorHelper.h"
@@ -86,12 +86,12 @@ namespace {
 
 
 /// Initializing constructor
-VisProcessor::VisProcessor(Detector& desc) : description(desc), name("VisProcessor")
+VisMaterialProcessor::VisMaterialProcessor(Detector& desc) : description(desc), name("VisMaterialProcessor")
 {
 }
 
 /// Default destructor
-VisProcessor::~VisProcessor()   {
+VisMaterialProcessor::~VisMaterialProcessor()   {
   if ( show )  {
     if ( activeVis.isValid() )
       printout(ALWAYS,name,"++       %8ld   active vis-attrs applied: %s", numActive, activeVis.name());
@@ -101,7 +101,7 @@ VisProcessor::~VisProcessor()   {
 }
 
 /// Print properties
-void VisProcessor::_show()   {
+void VisMaterialProcessor::_show()   {
   if ( show )  {
     if ( activeVis.isValid() )   {
       for ( Atom atom : activeElements )   {
@@ -123,7 +123,7 @@ void VisProcessor::_show()   {
 }
 
 /// Callback to output PlacedVolume information of an single Placement
-int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
+int VisMaterialProcessor::operator()(PlacedVolume pv, int /* level */)   {
   Volume vol = pv.volume();
   double frac_active = 0.0;
   VisAttr attr;
@@ -179,7 +179,7 @@ int VisProcessor::operator()(PlacedVolume pv, int /* level */)   {
 
 static void* create_object(Detector& description, int argc, char** argv)   {
   DetectorHelper helper(description);
-  VisProcessor*  proc = new VisProcessor(description);
+  VisMaterialProcessor*  proc = new VisMaterialProcessor(description);
   for ( int i=0; i<argc; ++i )   {
     if ( argv[i] )    {
       if ( ::strncmp(argv[i],"-vis-active",6) == 0 )   {
@@ -222,7 +222,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         string     path = argv[++i];
         DetElement de = detail::tools::findElement(description,path);
         if ( de.isValid() ) continue;
-        printout(ERROR,"VisProcessor","++ Invalid DetElement path: %s",path.c_str());
+        printout(ERROR,"VisMaterialProcessor","++ Invalid DetElement path: %s",path.c_str());
       }
       else if ( ::strncmp(argv[i],"-name",4) == 0 )   {
         string     name = argv[++i];
@@ -234,7 +234,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         continue;
       }
       cout <<
-        "Usage: DD4hep_VisProcessor -arg [-arg]                                              \n"
+        "Usage: DD4hep_VisMaterialProcessor -arg [-arg]                                      \n"
         "     -vis-active   <name>     Set the visualization attribute for   active materials\n"
         "     -vis-inactive <name>     Set the visualization attribute for inactive materials\n"
         "     -elt-active   <name>     Add active element by name. If the fractional sum of  \n"
@@ -256,5 +256,4 @@ static void* create_object(Detector& description, int argc, char** argv)   {
 }
 
 // first argument is the type from the xml file
-DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_VisProcessor,create_object)
-
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_VisMaterialProcessor,create_object)
