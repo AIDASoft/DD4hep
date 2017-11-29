@@ -19,8 +19,6 @@
 /// Geant4 include files
 #include "G4RunManager.hh"
 
-typedef G4RunManager   G4__RunManager;
-
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -68,18 +66,17 @@ namespace dd4hep {
       printout(WARNING,"Geant4Kernel","+++ Falling back to single threaded mode.");
       m_numThreads = 0;
     }
-    typedef Geant4RunManager<G4__RunManager>   G4RunManager;
+    typedef Geant4RunManager<G4RunManager>   Geant4STRunManager;
   }
 }
 #endif   // DDG4_GEANT4RUNMANAGER_H
 
 #include "DDG4/Factories.h"
 using namespace dd4hep::sim;
-DECLARE_GEANT4ACTION(G4RunManager)
+DD4HEP_PLUGINSVC_FACTORY(Geant4STRunManager,G4RunManager,dd4hep::sim::Geant4Action*(_ns::CT*,std::string),__LINE__)
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
-typedef  G4MTRunManager G4__MTRunManager;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -91,10 +88,10 @@ namespace dd4hep {
       printout(WARNING,"Geant4RunManager","+++ Configured run manager of type: %s with %d threads.",
                typeName(typeid(G4MTRunManager)).c_str(), m_numThreads);
     }
-    typedef Geant4RunManager<G4__MTRunManager> G4MTRunManager;
+    typedef Geant4RunManager<G4MTRunManager> Geant4MTRunManager;
   }
 }
-DECLARE_GEANT4ACTION(G4MTRunManager)
+DD4HEP_PLUGINSVC_FACTORY(Geant4MTRunManager,G4MTRunManager,dd4hep::sim::Geant4Action*(_ns::CT*,std::string),__LINE__)
 #endif
 
 
