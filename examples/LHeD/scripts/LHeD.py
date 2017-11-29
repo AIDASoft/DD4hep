@@ -11,7 +11,7 @@ class LHeD:
  
   def loadGeometry(self):
     import os
-    dd4hep_dir = os.environ['DD4hep']
+    dd4hep_dir = os.environ['DD4hepINSTALL']
     self.kernel.loadGeometry("file:"+dd4hep_dir+"/examples/LHeD/compact/compact_Lhe_dip_sol_ell.xml")
     return self
 

@@ -67,7 +67,7 @@ dd4hep_add_test_reg( LHeD_check_overlaps_LONGTEST
 if (DD4HEP_USE_GEANT4)
   #
   # Basic DDG4 component/unit tests
-  foreach(script testDDPython LHeDMagField LHeDPhysics LHeDRandom LHeDScan)
+  foreach(script LHeDMagField LHeDPhysics LHeDRandom LHeDScan)
     dd4hep_add_test_reg( LHeD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py
