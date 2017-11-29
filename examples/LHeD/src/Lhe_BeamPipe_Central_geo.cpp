@@ -26,22 +26,12 @@
 #include <map>
 #include <string>
 
-using dd4hep::Transform3D;
-using dd4hep::Position;
-using dd4hep::RotationY;
-using dd4hep::RotateY;
-using dd4hep::ConeSegment;
-using dd4hep::SubtractionSolid;
-using dd4hep::Material;
-using dd4hep::Volume;
-using dd4hep::Solid;
-using dd4hep::Tube;
-namespace units = dd4hep;
-using dd4hep::rec::Vector3D;
-using dd4hep::rec::VolCylinder;
-using dd4hep::rec::VolCone;
-using dd4hep::rec::SurfaceType;
+//using dd4hep::rec::Vector3D;
+//using dd4hep::rec::VolCylinder;
+//using dd4hep::rec::VolCone;
+//using dd4hep::rec::SurfaceType;
 
+namespace units = dd4hep;
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
@@ -51,9 +41,9 @@ class SimpleCylinderImpl : public  dd4hep::rec::VolCylinderImpl{
   double _half_length ;
 public:
   /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
-  SimpleCylinderImpl( dd4hep::Volume vol, SurfaceType type,
-		      double thickness_inner ,double thickness_outer,  Vector3D origin ) :
-    dd4hep::rec::VolCylinderImpl( vol,  type, thickness_inner, thickness_outer,   origin ),
+  SimpleCylinderImpl( Volume vol, rec::SurfaceType type,
+                      double thickness_inner ,double thickness_outer,  rec::Vector3D origin ) :
+    rec::VolCylinderImpl( vol,  type, thickness_inner, thickness_outer,   origin ),
     _half_length(0){
   }
   void setHalfLength( double half_length){
@@ -62,17 +52,17 @@ public:
   void setID( dd4hep::long64 id ) { _id = id ;
   }
   // overwrite to include points inside the inner radius of the barrel
-  bool insideBounds(const Vector3D& point, double epsilon) const {
+  bool insideBounds(const rec::Vector3D& point, double epsilon) const {
     return ( std::abs( point.rho() - origin().rho() ) < epsilon && std::abs( point.z() ) < _half_length ) ;
   }
 
-  virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100){
+  virtual std::vector< std::pair<rec::Vector3D, rec::Vector3D> > getLines(unsigned nMax=100){
 
-    std::vector< std::pair<Vector3D, Vector3D> >  lines ;
+    std::vector< std::pair<rec::Vector3D, rec::Vector3D> >  lines ;
 
     lines.reserve( nMax ) ;
 
-    Vector3D zv( 0. , 0. , _half_length ) ;
+    rec::Vector3D zv( 0. , 0. , _half_length ) ;
     double r = _o.rho() ;
 
     unsigned n = nMax / 4 ;
@@ -80,13 +70,13 @@ public:
 
     for( unsigned i = 0 ; i < n ; ++i ) {
 
-      Vector3D rv0(  r*sin(  i   *dPhi ) , r*cos(  i   *dPhi )  , 0. ) ;
-      Vector3D rv1(  r*sin( (i+1)*dPhi ) , r*cos( (i+1)*dPhi )  , 0. ) ;
+      rec::Vector3D rv0(  r*sin(  i   *dPhi ) , r*cos(  i   *dPhi )  , 0. ) ;
+      rec::Vector3D rv1(  r*sin( (i+1)*dPhi ) , r*cos( (i+1)*dPhi )  , 0. ) ;
 
-      Vector3D pl0 =  zv + rv0 ;
-      Vector3D pl1 =  zv + rv1 ;
-      Vector3D pl2 = -zv + rv1  ;
-      Vector3D pl3 = -zv + rv0 ;
+      rec::Vector3D pl0 =  zv + rv0 ;
+      rec::Vector3D pl1 =  zv + rv1 ;
+      rec::Vector3D pl2 = -zv + rv1  ;
+      rec::Vector3D pl3 = -zv + rv0 ;
 
       lines.push_back( std::make_pair( pl0, pl1 ) ) ;
       lines.push_back( std::make_pair( pl1, pl2 ) ) ;
@@ -97,11 +87,11 @@ public:
   }
 };
 
-class SimpleCylinder : public dd4hep::rec::VolSurface{
+class SimpleCylinder : public rec::VolSurface{
 public:
-  SimpleCylinder( dd4hep::Volume vol, dd4hep::rec::SurfaceType type, double thickness_inner ,
-		  double thickness_outer,  Vector3D origin ) :
-    dd4hep::rec::VolSurface( new SimpleCylinderImpl( vol,  type,  thickness_inner , thickness_outer, origin ) ) {
+  SimpleCylinder( Volume vol, rec::SurfaceType type, double thickness_inner ,
+                  double thickness_outer,  rec::Vector3D origin ) :
+    rec::VolSurface( new SimpleCylinderImpl(vol,  type,  thickness_inner , thickness_outer, origin ) ) {
   }
   SimpleCylinderImpl* operator->() { return static_cast<SimpleCylinderImpl*>( _surf ) ; }
 } ;
@@ -110,20 +100,20 @@ public:
 static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   printout(dd4hep::DEBUG,"Lhe_Beampipe", "Creating Beampipe" ) ;
   
-//  typedef vector<PlacedVolume> Placements;
+  //  typedef vector<PlacedVolume> Placements;
   xml_det_t  x_det = e;
   string     name  = x_det.nameStr();
   DetElement sdet (name,x_det.id());
   Material   mat  (description.material(x_det.materialStr()));
-//  vector<double> rmin,rmax,z,thickness;
+  //  vector<double> rmin,rmax,z,thickness;
   double rmin, rmax, thickness, z;
-//  PlacedVolume pv;
+  //  PlacedVolume pv;
 
-// multiplication factor for ellipse major radius
-// rmin        ellipse short radius
-// rmax        ellipse long radius
-// thickness   BP thickness
-// z           z-length
+  // multiplication factor for ellipse major radius
+  // rmin        ellipse short radius
+  // rmax        ellipse long radius
+  // thickness   BP thickness
+  // z           z-length
   rmax = 1.;
   thickness = 1.;
   rmin = 1.;
@@ -134,18 +124,15 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     rmax = dim.rmax();
     thickness = dim.thickness();
     z = dim.z();
-//    rmin.push_back(dim.rmin());
-//    rmax.push_back(dim.rmax());
-//    z.push_back(dim.z());
-//    thickness.push_back(dim.thickness());
+    //    rmin.push_back(dim.rmin());
+    //    rmax.push_back(dim.rmax());
+    //    z.push_back(dim.z());
+    //    thickness.push_back(dim.thickness());
   }
 
-  double ra    = 1.;         // ellipse long radius init
-         ra    = rmax;       // ellipse long radius
-  double rb    = 1.;         // ellipse short radius init
-         rb    = rmin;       // ellipse short radius
-  double thick = 1.;  // BP thickness
-         thick = thickness;  // BP thickness
+  double ra    = rmax;         // ellipse long radius init
+  double rb    = rmin;         // ellipse short radius init
+  double thick = thickness;    // BP thickness
  
   EllipticalTube bpElTubeOut(ra+thick, rb+thick, z);
   EllipticalTube bpElTubeInn(ra, rb, z+thick);
@@ -158,54 +145,54 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   SubtractionSolid beamTube(beamTube1,bpTube2);
   
   Volume  det_vol(name, beamTube, mat);
-  PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,0));
+  PlacedVolume pv_det = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,0));
   
   double z_offset = x_det.hasAttr(_U(z_offset)) ? x_det.z_offset() : 0.0;
   bool    reflect = x_det.hasAttr(_U(reflect)) ? x_det.reflect() : false;
 
-if ( z_offset >= 0 ) {
-  if ( reflect) {
-   PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,0));
-   sdet.setPlacement(pv);
-   det_vol.setVisAttributes(description, x_det.visStr());
-   det_vol.setLimitSet(description, x_det.limitsStr());
-   det_vol.setRegion(description, x_det.regionStr());
-     if ( x_det.isSensitive() )   {
-    SensitiveDetector sd = sens;
-    xml_dim_t sd_typ = x_det.child(_U(sensitive));
-    det_vol.setSensitiveDetector(sens);
-    sd.setType(sd_typ.typeStr());
+  if ( z_offset >= 0 ) {
+    if ( reflect) {
+      PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,0));
+      sdet.setPlacement(pv);
+      det_vol.setVisAttributes(description, x_det.visStr());
+      det_vol.setLimitSet(description, x_det.limitsStr());
+      det_vol.setRegion(description, x_det.regionStr());
+      if ( x_det.isSensitive() )   {
+        SensitiveDetector sd = sens;
+        xml_dim_t sd_typ = x_det.child(_U(sensitive));
+        det_vol.setSensitiveDetector(sens);
+        sd.setType(sd_typ.typeStr());
+      }
+    } else {
+      PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,z_offset));
+      sdet.setPlacement(pv);
+      det_vol.setVisAttributes(description, x_det.visStr());
+      det_vol.setLimitSet(description, x_det.limitsStr());
+      det_vol.setRegion(description, x_det.regionStr());
+      if ( x_det.isSensitive() )   {
+        SensitiveDetector sd = sens;
+        xml_dim_t sd_typ = x_det.child(_U(sensitive));
+        det_vol.setSensitiveDetector(sens);
+        sd.setType(sd_typ.typeStr());
+      }
     }
-   } else {
-   PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,z_offset));
-   sdet.setPlacement(pv);
-   det_vol.setVisAttributes(description, x_det.visStr());
-   det_vol.setLimitSet(description, x_det.limitsStr());
-   det_vol.setRegion(description, x_det.regionStr());
-     if ( x_det.isSensitive() )   {
-    SensitiveDetector sd = sens;
-    xml_dim_t sd_typ = x_det.child(_U(sensitive));
-    det_vol.setSensitiveDetector(sens);
-    sd.setType(sd_typ.typeStr());
-    }
-   }
   } else {
-   PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,z_offset-z));
-   sdet.setPlacement(pv);
-   det_vol.setVisAttributes(description, x_det.visStr());
-   det_vol.setLimitSet(description, x_det.limitsStr());
-   det_vol.setRegion(description, x_det.regionStr());
-     if ( x_det.isSensitive() )   {
-    SensitiveDetector sd = sens;
-    xml_dim_t sd_typ = x_det.child(_U(sensitive));
-    det_vol.setSensitiveDetector(sens);
-    sd.setType(sd_typ.typeStr());
+    PlacedVolume pv = description.pickMotherVolume(sdet).placeVolume(det_vol,Position(0,0,z_offset-z));
+    sdet.setPlacement(pv);
+    det_vol.setVisAttributes(description, x_det.visStr());
+    det_vol.setLimitSet(description, x_det.limitsStr());
+    det_vol.setRegion(description, x_det.regionStr());
+    if ( x_det.isSensitive() )   {
+      SensitiveDetector sd = sens;
+      xml_dim_t sd_typ = x_det.child(_U(sensitive));
+      det_vol.setSensitiveDetector(sens);
+      sd.setType(sd_typ.typeStr());
     }
   }
  
   if ( x_det.hasAttr(_U(id)) )  {
     int det_id = x_det.id();
-    pv.addPhysVolID("system",det_id);
+    pv_det.addPhysVolID("system",det_id);
   }
   return sdet;
 }

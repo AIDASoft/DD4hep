@@ -63,7 +63,7 @@ int initAClick(const char* command=0)  {
   std::string defs    = "";
   std::string libs    = " -L"+rootsys+"/lib";
   std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples -I"+dd4hep + " -I"+dd4hep+"/include";
-  libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
+  libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4";
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
 #ifdef __APPLE__

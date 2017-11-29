@@ -25,8 +25,6 @@ using namespace dd4hep::detail;
 
 static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
   typedef vector<PlacedVolume> Placements;
-    double     ra = 0.;
-    double     rb = 0.;
   xml_det_t   x_det     = e;
   Material    vacuum    = description.vacuum();
   int         det_id    = x_det.id();
@@ -34,8 +32,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   bool        reflect   = x_det.reflect(false);
   DetElement  sdet        (det_name,det_id);
   Assembly    assembly    (det_name);
-              ra      = x_det.rmax();  // ellipse long radius - y
-              rb      = x_det.r();     // ellipse short radius - x   
+  // MSF: unused! double      ra        = x_det.rmax();  // ellipse long radius - y
+  // MSF: unused! double      rb        = x_det.r();     // ellipse short radius - x   
   //Volume      assembly    (det_name,Box(10000,10000,10000),vacuum);
   Volume      motherVol = description.pickMotherVolume(sdet);
   int         m_id=0, c_id=0, n_sensor=0;

@@ -36,7 +36,7 @@
     </includes>
 
     <define>
-        <constant name="Lhe_Detector_dir" value="${DD4hep}/examples/LHeD/" type="string"/>;
+        <constant name="Lhe_Detector_dir" value="${DD4hepINSTALL}/examples/LHeD/" type="string"/>;
         <constant name="world_side" value="20.*m"/>
         <constant name="world_x" value="world_side"/>
         <constant name="world_y" value="world_side"/>
