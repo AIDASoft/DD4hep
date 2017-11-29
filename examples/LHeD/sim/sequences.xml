@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geant4_setup>
+
+
+
+  <!-- Kernel parameters  
+       UI="UI" is default, 
+    
+       Note:
+       NumEvents is ignored in interactive sessions, but  used
+       in batch mode without ui nor vis.
+    
+       To run batch: set UI=""
+  -->
+  <kernel UI="" NumEvents="10"/>  
+
+  <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
+       object and may be retrieved by there using the action name.
+    
+       Note: registered actions MUST be unique.
+       However, not all actions need to registered....
+       Only register those, you later need to retrieve by name.
+  -->
+  <actions>
+    <action name="Geant4TestRunAction/RunInit">
+      <properties Control="true"
+		  Property_int="12345"
+		  Property_double="-5e15"
+		  Property_string="Startrun: Hello_2"/>
+     </action>
+    <action name="Geant4TestEventAction/UserEvent_2">
+      <properties Control="true"
+		  Property_int="1234"
+		  Property_double="5e15"
+		  Property_string="Hello_2"/>
+    </action>
+    <action name="Geant4TCUserParticleHandler/UserParticleHandler">
+      <properties Control="true"
+		  TrackingVolume_Zmax="765*cm"
+		  TrackingVolume_Rmax="625*cm"/>
+    </action>
+
+    <!-- UI handler initializing vis and ui. NAME IS FIXED/COMMON KNOWLEDGE -->
+    <action name="Geant4UIManager/UI">
+      <properties HaveVIS="0"
+		  HaveUI="1"
+		  SetupUI=""
+		  SessionType="csh"/>
+     </action>
+  </actions>
+
+  <!-- List of known phases.
+       Note: Phases can only be attached to the program at very well defined moments,
+       which are explained in the documentation.
+       These are typically the "standard" moments: BeginRun, EndRun, BeginEvent, etc.
+       and the calls after processing the hits of each sensitive detector.
+    
+  -->
+  <phases>
+    <phase type="RunAction/begin">
+      <action name="RunInit"/>
+      <action name="Geant4TestRunAction/UserRunInit">
+	<properties Control="true"
+		    Property_int="1234"
+		    Property_double="5e15"
+		    Property_string="'Hello_2'"/>
+      </action>
+    </phase>
+    <phase type="EventAction/end">
+      <action name="UserEvent_2"/>
+    </phase>
+    <phase type="EventAction/begin">
+      <action name="UserEvent_2"/>
+    </phase>
+  </phases>
+
+  <!-- List of globally known filters. Filters are called by Geant4 before the
+       hit processing in the sensitive detectors start. The global filters
+       may be shared between many sensitive detectors. Alternatively filters
+       may be directly attached to the sensitive detector in question.
+       Attributes are directly passed as properties to the filter action.
+    
+       Note: registered global filters MUST be unique.
+       However, not all filters need to registered....
+  -->
+  <filters>
+    <filter name="GeantinoRejectFilter/GeantinoRejector"/>
+    <filter name="ParticleRejectFilter/OpticalPhotonRejector">
+        <properties particle="opticalphoton" Control="true"/>
+    </filter>
+    <filter name="ParticleSelectFilter/OpticalPhotonSelector">
+        <properties particle="opticalphoton" Control="true"/>
+    </filter>
+    <filter name="EnergyDepositMinimumCut">
+      <properties Cut="10*keV" Control="true"/>
+    </filter>
+  </filters>
+
+  <!-- List of known action sequences.
+       Note: Action sequences exist for each of the various geant4 callback,
+       which are explained in the documentation, such as EventAction, RunAction, etc
+       and the calls after processing the hits of each sensitive detector.
+    
+  -->
+  <sequences>
+    <sequence name="Geant4EventActionSequence/EventAction">
+      <properties Control="true"/>
+      <action name="Geant4TestEventAction/UserEvent_1">
+        <properties Control="true"
+		    OutputLevel="3"
+		    Property_int="901234"
+  	  	    Property_double="1e11"
+		    Property_string="'Hello_1'"/>
+      </action>
+      <action name="UserEvent_2"/>
+<!--
+      <action name="Geant4Output2LCIO/LCIOOutput">
+	<properties Control="true" Output="simple_lcio"/>
+      </action>
+-->
+      <action name="Geant4Output2ROOT/RootOutput">
+	<properties Control="true" Output="LHeD_simple.root"/>
+      </action>
+    </sequence>
+    <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
+      <action name="Geant4ParticleGun/Gun">
+        <properties Control="true"
+                    OutputLevel="3"
+		    energy="500*MeV"
+  	  	    particle="'e-'"
+		    multiplicity="1"
+		    direction="(1,1,1)"/>
+      </action>
+      <action name="Geant4ParticleHandler/ParticleHandler">
+        <properties Control="true"
+		    SaveProcesses="['Decay']"
+  	  	    MinimalKineticEnergy="100*MeV"/>
+	<adopt name="UserParticleHandler"/>
+      </action>
+
+<!--
+      <action name="LCIOInputAction/LCIO1">
+       <properties Control="true"
+	   Input="LCIOStdHepReader|/opt/DD4hep/files/NC_bb_tag_2_pythia_events.hep"/>
+      </action>
+-->
+<!--
+		/afs/.cern.ch/project/lhec/users/pythia-files
+		/opt/DD4hep/files/
+		    input="LCIOFileReader|/opt/DD4hep/files/test03092013.slcio"/>
+-->
+    </sequence>
+
+    <sequence sd="SiVertexBarrel" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
+       <filter name="GeantinoRejector"/>
+       <filter name="EnergyDepositMinimumCut"/>
+      <action name="Geant4SimpleTrackerAction/SiVertexBarrelHandler">
+       <properties Control="true"/>
+      </action>
+    </sequence>    
+    <sequence sd="SiTrackerBarrel" type="Geant4SensDetActionSequence">
+       <properties Control="true"/>
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut"/>
+      <action name="Geant4SimpleTrackerAction/SiTrackerBarrelHandler"/>
+    </sequence>
+    <sequence sd="SiTrackerForward" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut"/>
+      <action name="Geant4SimpleTrackerAction/SiTrackerForwardHandler"/>
+    </sequence>
+    <sequence sd="SiTrackerBackward" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut"/>
+      <action name="Geant4SimpleTrackerAction/SiTrackerBackwardHandler"/>
+    </sequence>    
+
+    <sequence sd="EcalBarrel" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
+      <action name="Geant4SimpleCalorimeterAction/EcalBarrelHandler"/>
+    </sequence>
+    <sequence sd="EcalEndcap_fwd" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
+      <action name="Geant4SimpleCalorimeterAction/EcalEndCap_fwdpHandler"/>
+    </sequence>
+    <sequence sd="EcalEndcap_bwd" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
+      <action name="Geant4SimpleCalorimeterAction/EcalEndCap_bwdHandler"/>
+    </sequence>
+
+    <sequence sd="HcalBarrel" type="Geant4SensDetActionSequence">
+	  <filter name="OpticalPhotonSelector"/>
+      <action name="Geant4SimpleOpticalCalorimeterAction/HcalBarrelHandler">
+       <properties Control="true"/>
+      </action>
+    </sequence>
+    <sequence sd="HcalEndcap_fwd" type="Geant4SensDetActionSequence">
+	  <filter name="OpticalPhotonSelector"/>
+      <action name="Geant4SimpleOpticalCalorimeterAction/HcalEndcap_fwdHandler">
+       <properties Control="true"/>
+      </action>
+    </sequence>    
+    <sequence sd="HcalEndcap_bwd" type="Geant4SensDetActionSequence">
+	  <filter name="OpticalPhotonSelector"/>
+      <action name="Geant4SimpleOpticalCalorimeterAction/HcalEndcap_bwdHandler">
+      <properties Control="true"/>
+      </action>
+    </sequence>	    
+    <sequence sd="HcalPlug_fwd" type="Geant4SensDetActionSequence">
+ 	  <filter name="OpticalPhotonSelector"/>
+      <action name="Geant4SimpleCalorimeterAction/HcalPlug_fwdHandler"/>
+      <properties Control="true"/>
+    </sequence>
+    <sequence sd="HcalPlug_bwd" type="Geant4SensDetActionSequence">
+ 	  <filter name="OpticalPhotonSelector"/>
+ 	  <action name="Geant4SimpleCalorimeterAction/HcalPlug_bwdHandler"/>
+      <properties Control="true"/>
+    </sequence>
+ 	
+    <sequence sd="MuonBarrel" type="Geant4SensDetActionSequence">
+      <action name="Geant4SimpleCalorimeterAction/MuonBarrelHandler"/>
+    </sequence>
+    <sequence sd="MuonEndcap_fwd1" type="Geant4SensDetActionSequence">
+      <action name="Geant4SimpleCalorimeterAction/MuonEndcap_fwd1Handler"/>
+    </sequence>
+    <sequence sd="MuonEndcap_fwd2" type="Geant4SensDetActionSequence">
+      <action name="Geant4SimpleCalorimeterAction/MuonEndcap_fwd2Handler"/>
+    </sequence>
+    <sequence sd="MuonEndcap_bwd1" type="Geant4SensDetActionSequence">
+      <action name="Geant4SimpleCalorimeterAction/MuonEndcap_bwd1Handler"/>
+    </sequence>
+    <sequence sd="MuonEndcap_bwd2" type="Geant4SensDetActionSequence">
+      <action name="Geant4SimpleCalorimeterAction/MuonEndcap_bwd2Handler"/>
+    </sequence>
+
+  </sequences>
+
+</geant4_setup>

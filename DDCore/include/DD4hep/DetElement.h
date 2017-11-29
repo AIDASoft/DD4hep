@@ -98,6 +98,9 @@ namespace dd4hep {
     /// Access readout structure of the sensitive detector
     Readout readout() const;
 
+    /// Access IDDescription structure
+    IDDescriptor idSpec() const;
+
     /// Set energy cut off
     SensitiveDetector& setEnergyCutoff(double value);
 

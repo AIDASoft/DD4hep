@@ -1,0 +1,169 @@
+<ddeve>
+  <display visLevel="7" loadLevel="1"/>
+  <calodata name="Ecal" hits="EcalBarrelHits" towerH="80" emax="1000"
+	    n_eta="200" eta_min="-5" eta_max="7" 
+	    n_phi="200" phi_min="-pi" phi_max="pi" 
+	    alpha="0.4" rmin="EcalBarrel_rmin" dz="EcalEndcap_zmin_fwd" color="kBlue"/>
+  <calodata name="EcalEndcap_fwd" use="Ecal" hits="EcalEndcapHits0"/>
+  <calodata name="EcalEndcap_bwd" use="Ecal" hits="EcalEndcapHits1"/>
+
+  <calodata name="Hcal" hits="HcalBarrelHits"  towerH="150" emax="10000"
+	    n_eta="200" eta_min="-5" eta_max="7" 
+	    n_phi="200" phi_min="-pi" phi_max="pi"
+	    alpha="0.4" rmin="HcalBarrel_rmin" dz="HcalEndcap_zmin_bwd" color="kBlue"/>
+  <calodata name="HcalEndcap_fwd" use="Hcal" hits="HcalEndcapHits0"/>
+  <calodata name="HcalEndcap_bwd" use="Hcal" hits="HcalEndcapHits1"/>
+  <calodata name="HcalPlug_fwd" use="Hcal" hits="HcalPlugHits01"/>
+  <calodata name="HcalPlug_bwd" use="Hcal" hits="HcalPlugHits11"/>
+
+  <calodata name="SiVertex" hits="SiVertexBarrelHits" towerH="20" emax="200"
+	    n_eta="200" eta_min="-3" eta_max="3" 
+	    n_phi="200" phi_min="-pi" phi_max="pi" 
+	    alpha="0.4" rmin="VertexBarrel_r0" dz="VertexService_zmax" color="kBlue"/>
+
+  <calodata name="SiTracker" hits="SiTrackerBarrelHits" towerH="50" emax="200"
+	    n_eta="200" eta_min="-5" eta_max="7" 
+	    n_phi="200" phi_min="-pi" phi_max="pi" 
+	    alpha="0.4" rmin="Ftd_sdisk_ri4" dz="Btd_disk_z14" color="kBlue"/>
+  <calodata name="SiTrackerForward" use="SiTracker" hits="SiTrackerForwardHits"/>
+  <calodata name="SiTrackerBackward" use="SiTracker" hits="SiTrackerBackwardHits"/>
+
+
+  <calodata name="Muon" hits="MuonBarrelHits" towerH="300" emax="1000"
+	    n_eta="200" eta_min="-5" eta_max="9"
+	    n_phi="200" phi_min="-pi" phi_max="pi" 
+	    alpha="0.4" rmin="MuonBarrel_rmin" dz="MuonEndcap_zmin_bwd" color="kYellow"/>
+  <calodata name="MuonBarrel" use="Muon" hits="MuonBarrelHits"/>
+  <calodata name="MuonEndcap_fwd1" use="Muon" hits="MuonEndcapHits01"/>
+  <calodata name="MuonEndcap_fwd2" use="Muon" hits="MuonEndcapHits02"/>
+  <calodata name="MuonEndcap_bwd1" use="Muon" hits="MuonEndcapHits11"/>
+  <calodata name="MuonEndcap_bwd2" use="Muon" hits="MuonEndcapHits12"/>
+
+  <collection name="EcalBarrelHits" hits="PointSet" color="1" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="EcalEndcapHits0" hits="PointSet" color="1" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="EcalEndcapHits1" hits="PointSet" color="1" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalBarrelHits" hits="PointSet" color="1" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalEndcapHits0" hits="PointSet" color="kMagenta" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalEndcapHits1" hits="PointSet" color="kMagenta" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalPlugHits01" hits="PointSet" color="kMagenta" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalPlugHits02" hits="PointSet" color="kMagenta" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalPlugHits11" hits="PointSet" color="kMagenta" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalPlugHits12" hits="PointSet" color="kMagenta" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="SiVertexBarrelHits" hits="PointSet" color="1" size="0.3" type="20"/>
+  <collection name="SiTrackerForwardHits" hits="PointSet" color="1" size="0.3" type="20"/>
+  <collection name="SiTrackerBackwardHits" hits="PointSet" color="1" size="0.3" type="20"/>
+  <collection name="MC_Particles" hits="Particles" size="0.6" width="2" type="kCircle"/>
+  
+  <collection name="MuonBarrelHits" hits="PointSet" color="kYellow+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="MuonEndcapHits01" hits="PointSet" color="kYellow+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="MuonEndcapHits02" hits="PointSet" color="kYellow+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="MuonEndcapHits11" hits="PointSet" color="kYellow+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="MuonEndcapHits12" hits="PointSet" color="kYellow+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  
+
+  <view name="3D Trackers R-Phi (Global)" type="RhoPhiProjection">
+    <detelement name="SiVertexBarrel"    load_geo="-1" alpha="0.4"/>
+    <detelement name="SiTrackerBarrel"   load_geo="-1" alpha="0.4"/>
+  </view>
+
+  <view name="3D Trackers R-Phi (Local)" type="RhoPhiProjection">
+    <detelement name="SiVertexBarrel"    load_geo="-1" alpha="0.4"/>
+    <detelement name="SiTrackerBarrel"   load_geo="3" alpha="0.4"/>
+  </view>
+
+  <view name="3D Trackers" type="View3D">
+    <detelement name="SiVertexBarrel"    load_geo="-1" alpha="0.4"/>
+    <detelement name="SiTrackerBarrel"   load_geo="-1" alpha="0.4"/>
+    <detelement name="SiTrackerForward"   load_geo="-1" alpha="0.4"/>
+    <detelement name="SiTrackerBackward"   load_geo="-1" alpha="0.4"/>
+  </view>
+
+  <view name="3D Vertex" type="View3D">
+    <detelement name="SiVertexBarrel" load_geo="1" alpha="0.4"/>
+  </view>
+
+  <view name="3D Ecal+Hcal" type="Calo3DProjection">
+    <detelement name="EcalBarrel" load_geo="-1" show_evt="1" alpha="0.4"/>
+    <detelement name="HcalBarrel" load_geo="-1" show_evt="0" alpha="0.4"/>
+    <calodata name="Ecal"/>
+    <calodata name="Hcal"/>
+  </view>
+
+  <view name="3D Calorimeters" type="View3D">
+    <detelement name="EcalBarrel" load_geo="2" alpha="0.4"/>
+    <detelement name="EcalEndcap_fwd" load_geo="2" alpha="0.4"/>
+    <detelement name="EcalEndcap_bwd" load_geo="2" alpha="0.4"/>
+    <detelement name="HcalBarrel" load_geo="2" alpha="0.4"/>
+    <detelement name="HcalEndcap_fwd" load_geo="2" alpha="0.4"/>
+    <detelement name="HcalEndcap_bwd" load_geo="2" alpha="0.4"/>
+    <detelement name="HcalPlug_fwd"   load_geo="2" alpha="0.4"/>
+    <detelement name="HcalPlug_bwd"   load_geo="2" alpha="0.4"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
+  </view>
+
+  <view name="Calo 3D" type="Calo3DProjection">
+    <calodata name="Ecal"/>
+    <calodata name="Hcal"/>
+    <calodata name="EcalEndcap_fwd"/>
+    <calodata name="EcalEndcap_bwd"/>
+    <calodata name="HcalEndcap_fwd"/>
+    <calodata name="HcalEndcap_bwd"/>
+    <calodata name="HcalPlug_fwd"/>
+    <calodata name="HcalPlug_bwd"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
+  </view>
+
+  <view name="Calo Lego" type="CaloLego">
+    <calodata name="Ecal"/>
+    <calodata name="Hcal"/>
+    <calodata name="EcalEndcap_fwd"/>
+    <calodata name="EcalEndcap_bwd"/>
+    <calodata name="HcalEndcap_fwd"/>
+    <calodata name="HcalEndcap_bwd"/>
+    <calodata name="HcalPlug_fwd"/>
+    <calodata name="HcalPlug_bwd"/>
+  </view>
+
+  <view name="Muon 3D" type="Calo3DProjection">
+    <calodata name="Muon"/>
+    <calodata name="MuonEndcap_fwd1"/>
+    <calodata name="MuonEndcap_fwd2"/>
+    <calodata name="MuonEndcap_bwd1"/>
+    <calodata name="MuonEndcap_bwd2"/>
+  </view>
+
+  <view name="Silicon Deposits" type="Calo3DProjection">
+    <calodata name="SiVertex"/>
+    <calodata name="SiTracker"/>
+    <calodata name="SiTrackerForward"/>
+    <calodata name="SiTrackerBackward"/>
+  </view>
+
+  <view name="Calo 2D" type="Calo2DProjection">
+    <calodata name="Ecal"/>
+    <calodata name="Hcal"/>
+    <calodata name="Muon"/>
+    <detelement name="EcalBarrel" load_geo="2" alpha="0.4"/>
+    <detelement name="HcalBarrel" load_geo="2" alpha="0.4"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
+  </view>
+
+  <view name="Multi (Global)" type="MultiView">
+    <detelement name="global"/>
+  </view>
+
+  <view name="Multi (Calo)" type="MultiView">
+    <detelement name="EcalBarrel" load_geo="-1" alpha="0.4"/>
+    <detelement name="EcalEndcap_fwd" load_geo="-1" alpha="0.4"/>
+    <detelement name="EcalEndcap_bwd" load_geo="-1" alpha="0.4"/>
+    <detelement name="HcalPlug_fwd"   load_geo="-1" alpha="0.4"/>
+    <detelement name="HcalPlug_bwd"   load_geo="-1" alpha="0.4"/>
+    <detelement name="HcalBarrel" load_geo="-1" alpha="0.4"/>
+    <detelement name="HcalEndcap_fwd" load_geo="-1" alpha="0.4"/>
+    <detelement name="HcalEndcap_bwd" load_geo="-1" alpha="0.4"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
+    <panel name="Silicon Deposits" use="Calo3DProjection"/>
+    <panel name="Calo 2D"          use="Calo2DProjection"/>
+  </view>
+  <include ref="../compact/../compact/compact_Fhe_dip_sol_ell.xml"/>
+</ddeve>

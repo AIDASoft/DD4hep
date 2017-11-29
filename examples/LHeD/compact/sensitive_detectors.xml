@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geant4>
+  <sensitive_detectors>
+    <sd name="SiVertexBarrel" 
+        type="Geant4Tracker" 
+        ecut="10.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="SiTrackerBarrel"
+        type="Geant4Tracker" 
+        ecut="10.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="SiTrackerForward"
+        type="Geant4Tracker" 
+        ecut="10.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="SiTrackerBackward"
+        type="Geant4Tracker" 
+        ecut="10.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="EcalBarrel"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="EcalEndcap_fwd"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="EcalEndcap_bwd"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+
+    <sd name="HcalBarrel"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+
+    <sd name="HcalEndcap_fwd"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="HcalEndcap_bwd"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>   
+    <sd name="HcalPlug_fwd"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    <sd name="HcalPlug_bwd"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+     
+    <sd name="MuonBarrel"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        limits="cal_limits"
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    
+    <sd name="MuonEndcap_fwd1"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    
+    <sd name="MuonEndcap_fwd2"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    
+    <sd name="MuonEndcap_bwd1"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+    
+    <sd name="MuonEndcap_bwd2"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+
+<!--    
+    <sd name="LumiCal"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+
+    <sd name="BeamCal"
+        type="Geant4Calorimeter" 
+        ecut="100.0*MeV" 
+        verbose="true" 
+        hit_aggregation="position">
+    </sd>
+-->
+  </sensitive_detectors>
+
+  <properties>
+     <attributes name="geant4_field"
+          id="0"
+          type="Geant4FieldSetup"
+          object="GlobalSolenoid1"
+          global="true"
+          min_chord_step="0.01*mm"
+          delta_chord="0.25*mm"
+          delta_intersection="1e-05*mm"
+          delta_one_step="0.001*mm"
+          eps_min="5e-05*mm"
+          eps_max="0.001*mm"
+          stepper="HelixSimpleRunge"
+          equation="Mag_UsualEqRhs">
+     </attributes>
+<!--
+    <attributes name="geant4_field"
+          id="1"
+          type="Geant4FieldSetup"
+          object="DipoleMagnet"
+          global="true"
+          min_chord_step="0.01*mm"
+          delta_chord="0.25*mm"
+          delta_intersection="1e-05*mm"
+          delta_one_step="0.001*mm"
+          eps_min="5e-05*mm"
+          eps_max="0.001*mm"
+          stepper="HelixSimpleRunge"
+          equation="Mag_UsualEqRhs">
+     </attributes>
+-->
+  </properties>
+
+</geant4>
