@@ -14,6 +14,7 @@
 // Framework include files
 #include "DD4hep/Detector.h"
 #include "DD4hep/Memory.h"
+#include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/InstanceCount.h"
@@ -23,11 +24,7 @@
 #include "DDG4/Geant4ActionPhase.h"
 
 // Geant4 include files
-#ifdef G4MULTITHREADED
-#include "G4MTRunManager.hh"
-#else
 #include "G4RunManager.hh"
-#endif
 #include "G4UIdirectory.hh"
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
@@ -82,10 +79,11 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
   m_detDesc->addExtension < Geant4Kernel > (this);
   m_ident = -1;
   declareProperty("UI",m_uiName);
-  declareProperty("OutputLevel",    m_outputLevel = DEBUG);
-  declareProperty("NumEvents",      m_numEvent = 10);
-  declareProperty("OutputLevels",   m_clientLevels);
-  declareProperty("NumberOfThreads",m_numThreads);
+  declareProperty("OutputLevel",      m_outputLevel = DEBUG);
+  declareProperty("NumEvents",        m_numEvent = 10);
+  declareProperty("OutputLevels",     m_clientLevels);
+  declareProperty("NumberOfThreads",  m_numThreads);
+  declareProperty("RunManagerType",   m_runManagerType = "G4RunManager");
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for named Geant4 actions");
@@ -101,9 +99,10 @@ Geant4Kernel::Geant4Kernel(Geant4Kernel* m, unsigned long ident)
     m_threadContext(0), phase(this)
 {
   char text[64];
-  m_detDesc           = m_master->m_detDesc;
+  m_detDesc        = m_master->m_detDesc;
   m_ident          = m_master->m_workers.size();
   m_numEvent       = m_master->m_numEvent;
+  m_runManagerType = m_master->m_runManagerType;
   declareProperty("UI",m_uiName = m_master->m_uiName);
   declareProperty("OutputLevel", m_outputLevel = m_master->m_outputLevel);
   declareProperty("OutputLevels",m_clientLevels = m_master->m_clientLevels);
@@ -241,26 +240,28 @@ G4RunManager& Geant4Kernel::runManager() {
     return *m_runManager;
   }
   else if ( isMaster() )   {
-#ifdef G4MULTITHREADED
-    if ( m_numThreads > 0 )   {
-      printout(WARNING,"Geant4Kernel","+++ Multi-threaded mode requested with %d worker threads.",m_numThreads);
-      G4MTRunManager* run_mgr = new G4MTRunManager;
-      run_mgr->SetNumberOfThreads(m_numThreads);
-      m_runManager = run_mgr;
+    Geant4Action* mgr =
+      PluginService::Create<Geant4Action*>(m_runManagerType,
+                                           m_context,
+                                           string("Geant4RunManager"));
+    if ( !mgr )   {
+      except("Geant4Kernel",
+             "+++ Invalid Geant4RunManager class: %s. Aborting.",
+             m_runManagerType.c_str());
+    }
+    mgr->property("NumberOfThreads").set(m_numThreads);
+    mgr->enableUI();
+    m_runManager = dynamic_cast<G4RunManager*>(mgr);
+    if ( m_runManager )  {
       return *m_runManager;
     }
-#endif
-    if ( m_numThreads > 0 )   {
-      printout(WARNING,"Geant4Kernel","+++ Multi-threaded mode requested, "
-               "but not supported by this compilation of Geant4.");
-      printout(WARNING,"Geant4Kernel","+++ Falling back to single threaded mode.");
-      m_numThreads = 0;
-    }
-    return *(m_runManager = new G4RunManager);
+    except("Geant4Kernel",
+           "+++ Invalid Geant4RunManager action: %s. Invalid inheritance.",
+           m_runManagerType.c_str());
   }
-  throw runtime_error(format("Geant4Kernel", 
-                             "DDG4: Only the master thread may instantiate "
-                             "a G4RunManager object!"));
+  except("Geant4Kernel", 
+         "+++ Only the master thread may instantiate a G4RunManager object!");
+  throw runtime_error("Is never called -- just to satisfy compiler!");
 }
 
 /// Construct detector geometry using description plugin
@@ -312,7 +313,7 @@ int Geant4Kernel::terminate() {
   detail::releaseObjects(m_globalFilters);
   detail::releaseObjects(m_globalActions);
   if ( ptr == this )  {
-    detail::deletePtr  (m_runManager);
+    detail::deletePtr(m_runManager);
   }
   Geant4ActionContainer::terminate();
   if ( ptr == this && m_detDesc )  {
@@ -339,11 +340,12 @@ Geant4Kernel& Geant4Kernel::registerGlobalAction(Geant4Action* action) {
                nam.c_str(),typeName(typeid(*action)).c_str());
       return *this;
     }
-    throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is already globally "
-                               "registered. [Action-Already-Registered]", nam.c_str()));
+    except("Geant4Kernel", "DDG4: The action '%s' is already globally "
+           "registered. [Action-Already-Registered]", nam.c_str());
   }
-  throw runtime_error(format("Geant4Kernel", "DDG4: Attempt to globally register an invalid "
-                             "action. [Action-Invalid]"));
+  except("Geant4Kernel",
+         "DDG4: Attempt to globally register an invalid action. [Action-Invalid]");
+  return *this;
 }
 
 /// Retrieve action from repository
@@ -351,8 +353,8 @@ Geant4Action* Geant4Kernel::globalAction(const std::string& action_name, bool th
   GlobalActions::iterator i = m_globalActions.find(action_name);
   if (i == m_globalActions.end()) {
     if (throw_if_not_present) {
-      throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is not globally "
-                                 "registered. [Action-Missing]", action_name.c_str()));
+       except("Geant4Kernel", "DDG4: The action '%s' is not globally "
+              "registered. [Action-Missing]", action_name.c_str());
     }
     return 0;
   }
@@ -373,11 +375,12 @@ Geant4Kernel& Geant4Kernel::registerGlobalFilter(Geant4Action* filter) {
       m_globalFilters[nam] = filter;
       return *this;
     }
-    throw runtime_error(format("Geant4Kernel", "DDG4: The filter '%s' is already globally "
-                               "registered. [Filter-Already-Registered]", nam.c_str()));
+    except("Geant4Kernel", "DDG4: The filter '%s' is already globally "
+           "registered. [Filter-Already-Registered]", nam.c_str());
   }
-  throw runtime_error(format("Geant4Kernel", "DDG4: Attempt to globally register an invalid "
-                             "filter. [Filter-Invalid]"));
+  except("Geant4Kernel",
+         "DDG4: Attempt to globally register an invalid filter. [Filter-Invalid]");
+  return *this;
 }
 
 /// Retrieve filter from repository
@@ -385,8 +388,8 @@ Geant4Action* Geant4Kernel::globalFilter(const std::string& filter_name, bool th
   GlobalActions::iterator i = m_globalFilters.find(filter_name);
   if (i == m_globalFilters.end()) {
     if (throw_if_not_present) {
-      throw runtime_error(format("Geant4Kernel", "DDG4: The filter '%s' is not already globally "
-                                 "registered. [Filter-Missing]", filter_name.c_str()));
+      except("Geant4Kernel", "DDG4: The filter '%s' is not already globally "
+             "registered. [Filter-Missing]", filter_name.c_str());
     }
     return 0;
   }
@@ -409,8 +412,8 @@ Geant4ActionPhase* Geant4Kernel::getPhase(const std::string& nam) {
   if (i != m_phases.end()) {
     return (*i).second;
   }
-  throw runtime_error(format("Geant4Kernel", "DDG4: The Geant4 action phase '%s' "
-                             "does not exist. [No-Entry]", nam.c_str()));
+  except("Geant4Kernel", "DDG4: The Geant4 action phase '%s' does not exist. [No-Entry]", nam.c_str());
+  return 0;
 }
 
 /// Add a new phase to the phase
@@ -428,8 +431,7 @@ Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_inf
     return p;
   }
   else if (throw_on_exist) {
-    throw runtime_error(format("Geant4Kernel", "DDG4: The Geant4 action phase %s "
-                               "already exists. [Already-Exists]", nam.c_str()));
+    except("Geant4Kernel", "DDG4: The Geant4 action phase %s already exists. [Already-Exists]", nam.c_str());
   }
   return (*i).second;
 }
