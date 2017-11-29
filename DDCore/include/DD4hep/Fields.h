@@ -177,7 +177,7 @@ namespace dd4hep {
       combinedElectric((const double*) &pos, field);
     }
 
-    /// 
+    /// Returns the 3 electric field components (x, y, z) if many components are present
     Direction combinedElectric(const Position& pos) const {
       Direction field;
       combinedElectric((const double*) &pos, (double*) &field);
@@ -195,7 +195,7 @@ namespace dd4hep {
     /// Returns the 3 magnetic field components (x, y, z) if many components are present
     void combinedMagnetic(const double* pos, double* field) const;
 
-    /// 
+    /// Returns the 3 magnetic field components (x, y, z) at a given position
     Direction combinedMagnetic(const Position& pos) const {
       Direction field;
       combinedMagnetic((const double*) &pos, (double*) &field);
@@ -212,7 +212,7 @@ namespace dd4hep {
       electricField((double*) &pos, field);
     }
 
-    /// 
+    /// Returns the 3 electric field components (x, y, z) at a given position
     Direction electricField(const Position& pos) const {
       Direction field;
       electricField((const double*) &pos, (double*) &field);
@@ -231,7 +231,7 @@ namespace dd4hep {
       magneticField((double*) &pos, (double*) &field);
     }
 
-    /// 
+    /// Returns the 3 electric field components (x, y, z) at a given position
     Direction magneticField(const Position& pos) const {
       Direction field;
       magneticField((double*) &pos, (double*) &field);
