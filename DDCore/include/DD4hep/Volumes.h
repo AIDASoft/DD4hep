@@ -94,7 +94,7 @@ namespace dd4hep {
       template< class InputIt>
       iterator insert(InputIt first, InputIt last)
       {  return this->Base::insert(this->Base::end(), first, last);    }
-#if not defined __GNUCC__ || (defined __GNUCC__ && __GNUC_PREREQ(5,0) )
+#if !defined __GNUCC__ || (defined __GNUCC__ && __GNUC__ > 5)
       /// Insert bunch of entries
       template< class InputIt>
       iterator insert(std::vector<VolID>::const_iterator pos, InputIt first, InputIt last)
