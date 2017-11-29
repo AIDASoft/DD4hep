@@ -84,7 +84,7 @@ namespace dd4hep {
   namespace sim {
     template <> void Geant4RunManager<G4MTRunManager>::enableUI()  {
       Geant4Action::enableUI();
-      this->RUNMANAGER::SetNumberOfThreads(m_numThreads);
+      this->G4MTRunManager::SetNumberOfThreads(m_numThreads);
       printout(WARNING,"Geant4RunManager","+++ Configured run manager of type: %s with %d threads.",
                typeName(typeid(G4MTRunManager)).c_str(), m_numThreads);
     }
