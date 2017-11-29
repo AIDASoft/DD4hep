@@ -181,7 +181,7 @@ namespace dd4hep {
     Direction combinedElectric(const Position& pos) const {
       Direction field;
       combinedElectric((const double*) &pos, (double*) &field);
-      return std::move(field);
+      return field;
     }
 
     /// Returns the 3 electric field components (x, y, z) if many components are present
@@ -199,7 +199,7 @@ namespace dd4hep {
     Direction combinedMagnetic(const Position& pos) const {
       Direction field;
       combinedMagnetic((const double*) &pos, (double*) &field);
-      return std::move(field);
+      return field;
     }
 
     /// Returns the 3 electric field components (x, y, z).
@@ -216,7 +216,7 @@ namespace dd4hep {
     Direction electricField(const Position& pos) const {
       Direction field;
       electricField((const double*) &pos, (double*) &field);
-      return std::move(field);
+      return field;
     }
 
     /// Returns the 3 electric field components (x, y, z).
@@ -235,7 +235,7 @@ namespace dd4hep {
     Direction magneticField(const Position& pos) const {
       Direction field;
       magneticField((double*) &pos, (double*) &field);
-      return std::move(field);
+      return field;
     }
 
     /// Returns the 3  magnetic field components (x, y, z).
