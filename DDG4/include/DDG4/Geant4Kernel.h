@@ -35,6 +35,8 @@ namespace dd4hep {
 
     /// Class, which allows all Geant4Action derivatives to access the DDG4 kernel structures.
     /**
+     *  To implement access to a user specified framework please see class Geant4Context.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -45,6 +47,7 @@ namespace dd4hep {
       typedef std::map<std::string, Geant4ActionPhase*> Phases;
       typedef std::map<std::string, Geant4Action*>      GlobalActions;
       typedef std::map<std::string,int>                 ClientOutputLevels;
+      typedef std::pair<void*, const std::type_info*>   UserFramework;
 
     protected:
       /// Reference to the run manager
@@ -57,7 +60,8 @@ namespace dd4hep {
       Detector*          m_detDesc;
       /// Property pool
       PropertyManager    m_properties;
-
+      /// Reference to the user framework
+      UserFramework      m_userFramework;
 
       /// Action phases
       Phases        m_phases;
@@ -67,16 +71,18 @@ namespace dd4hep {
       GlobalActions m_globalActions;
       /// Globally registered filters of sensitive detectors
       GlobalActions m_globalFilters;
+      /// Property: Client output levels
+      ClientOutputLevels m_clientLevels;
       /// Property: Name of the G4UI command tree
       std::string m_controlName;
       /// Property: Name of the UI action. Must be member of the global actions
       std::string m_uiName;
+      /// Property: Name of the G4 run manager factory to be used. Default: Geant4RunManager
+      std::string m_runManagerType;
       /// Property: Number of events to be executed in batch mode
       long        m_numEvent;
       /// Property: Output level
       int         m_outputLevel;
-      /// Property: Client output levels
-      ClientOutputLevels m_clientLevels;
 
       /// Property: Running in multi threaded context
       //bool        m_multiThreaded;
@@ -159,7 +165,12 @@ namespace dd4hep {
       unsigned long id()  const                 {        return m_ident;           }
       /// Access to the Geant4 run manager
       G4RunManager& runManager();
-
+      /// Generic framework access
+      UserFramework& userFramework()            {        return m_userFramework;   }
+      /// Set the framework context to the kernel object
+      template <typename T> void setUserFramework(T* object)   {
+        m_userFramework = UserFramework(object,&typeid(T));
+      }
       /** Property access                            */
       /// Access to the properties of the object
       PropertyManager& properties()             {        return m_properties;      }

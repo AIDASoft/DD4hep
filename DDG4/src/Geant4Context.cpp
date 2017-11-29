@@ -89,6 +89,11 @@ Detector& Geant4Context::detectorDescription() const {
   return m_kernel->detectorDescription();
 }
 
+/// Generic framework access
+Geant4Context::UserFramework& Geant4Context::userFramework() const  {
+  return m_kernel->userFramework();
+}
+
 /// Create a user trajectory
 G4VTrajectory* Geant4Context::createTrajectory(const G4Track* /* track */) const {
   string err = dd4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");

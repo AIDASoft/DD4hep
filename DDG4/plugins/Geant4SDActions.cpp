@@ -25,6 +25,33 @@ namespace dd4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim   {
 
+    namespace {
+      struct Geant4VoidSensitive {};
+    }
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //               Geant4SensitiveAction<Geant4VoidSensitive>
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4VoidSensitiveAction
+     * \brief Void Sensitive detector action to skip the processing of a detector
+     *        without changing the entire DDG4 setup.
+     *
+     * @}
+     */
+
+    /// Define collections created by this sensitivie action object
+    template <> void Geant4SensitiveAction<Geant4VoidSensitive>::defineCollections()    {
+      m_collectionID = -1;
+    }
+
+    /// Method for generating hit(s) using the information of G4Step object.
+    template <> bool Geant4SensitiveAction<Geant4VoidSensitive>::process(G4Step* /*step*/,G4TouchableHistory* /*hist*/ ) {
+      return true;
+    }
+    typedef Geant4SensitiveAction<Geant4VoidSensitive> Geant4VoidSensitiveAction;
+
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //               Geant4SensitiveAction<Geant4Tracker>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -32,7 +59,6 @@ namespace dd4hep {
      *
      * @{
      * \package Geant4TrackerAction
-     *
      * \brief Sensitive detector meant for tracking detectors, will produce one hit per step
      *
      * @}
@@ -480,6 +506,9 @@ namespace dd4hep {
 using namespace dd4hep::sim;
 
 #include "DDG4/Factories.h"
+// Special void entry point
+DECLARE_GEANT4SENSITIVE(Geant4VoidSensitiveAction)
+// Standard factories used for simulation
 DECLARE_GEANT4SENSITIVE(Geant4TrackerAction)
 DECLARE_GEANT4SENSITIVE(Geant4TrackerCombineAction)
 DECLARE_GEANT4SENSITIVE(Geant4CalorimeterAction)
