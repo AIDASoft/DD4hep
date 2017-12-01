@@ -575,7 +575,7 @@ class Geant4:
     if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type,collections)
 
-  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='HelixSimpleRunge', equation='Mag_UsualEqRhs',prt=False):
+  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='G4ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
     import SystemOfUnits
     field = self.addConfig('Geant4FieldTrackingSetupAction/'+name)
     field.stepper            = stepper
@@ -584,9 +584,9 @@ class Geant4:
     field.eps_max            = 0.001*SystemOfUnits.mm
     field.min_chord_step     = 0.01*SystemOfUnits.mm
     field.delta_chord        = 0.25*SystemOfUnits.mm
-    field.delta_intersection = 1e-05*SystemOfUnits.mm
-    field.delta_one_step     = 0.001*SystemOfUnits.mm
-    field.largest_step       = 10*SystemOfUnits.m
+    field.delta_intersection = 0.001*SystemOfUnits.mm
+    field.delta_one_step     = 0.01*SystemOfUnits.mm
+    field.largest_step       = 1000*SystemOfUnits.m
     if prt:
       print '+++++> ',field.name,'-> stepper  = ',field.stepper
       print '+++++> ',field.name,'-> equation = ',field.equation
