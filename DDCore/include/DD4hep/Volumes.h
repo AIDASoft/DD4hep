@@ -272,6 +272,9 @@ namespace dd4hep {
     /// Check if placement is properly instrumented
     Object* data() const;
 
+    /// If we import volumes from external sources, we have to attach the extensions to the tree
+    Volume& import();
+    
     /** Daughter placements with auto-generated copy number for the daughter volume  */
     /// Place daughter volume. The position and rotation are the identity
     PlacedVolume placeVolume(const Volume& vol) const;

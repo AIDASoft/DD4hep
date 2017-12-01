@@ -8,9 +8,10 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-
+import logging
 from DD4hep import *
 
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 def loadDDG4():
   ## import ROOT ## done in import * above
   from ROOT import gSystem
@@ -44,10 +45,10 @@ def _import_class(ns,nam):
 try:
   dd4hep     = loadDDG4() 
 except Exception as X:
-  print '+--%-100s--+'%(100*'-',)
-  print '|  %-100s  |'%('Failed to load DDG4 library:',)
-  print '|  %-100s  |'%(str(X),)
-  print '+--%-100s--+'%(100*'-',)
+  logging.info('+--%-100s--+',100*'-')
+  logging.info('|  %-100s  |','Failed to load DDG4 library:')
+  logging.info('|  %-100s  |',str(X))
+  logging.info('+--%-100s--+',100*'-')
   exit(1)
 
 from ROOT import CLHEP as CLHEP
@@ -90,15 +91,15 @@ def importConstants(description,namespace=None,debug=False):
   while len(todo) and cnt<100:
     cnt = cnt + 1
     if cnt == 100:
-      print '%s %d out of %d %s "%s": [%s]\n+++ %s'\
-          %('+++ FAILED to import',
+      logging.info('%s %d out of %d %s "%s": [%s]\n+++ %s',\
+            '+++ FAILED to import',
             len(todo),len(todo)+num,
             'global values into namespace',
-            ns.__name__,'Try to continue anyway',100*'=',)
+            ns.__name__,'Try to continue anyway',100*'=')
       for k,v in todo.items():
         if not hasattr(ns,k):
-          print '+++ FAILED to import: "'+k+'" = "'+str(v)+'"'
-      print '+++ %s'%(100*'=',)
+          logging.info('+++ FAILED to import: "'+k+'" = "'+str(v)+'"')
+      logging.info('+++ %s',100*'=')
 
     for k,v in todo.items():
       if not hasattr(ns,k):
@@ -107,11 +108,11 @@ def importConstants(description,namespace=None,debug=False):
         if status == 0:
           evaluator.setVariable(k,val)
           setattr(ns,k,val)
-          if debug: print 'Imported global value: "'+k+'" = "'+str(val)+'" into namespace',ns.__name__
+          if debug: logging.info('Imported global value: "'+k+'" = "'+str(val)+'" into namespace'+ns.__name__)
           del todo[k]
           num = num + 1
   if cnt<100:
-    print '+++ Imported %d global values to namespace:%s'%(num,ns.__name__,)
+    logging.info('+++ Imported %d global values to namespace:%s',num,ns.__name__,)
 
 #---------------------------------------------------------------------------  
 def _registerGlobalAction(self,action):
@@ -121,7 +122,7 @@ def _registerGlobalFilter(self,filter):
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
   import exceptions
-  #print '_getKernelProperty:',str(type(self)),name
+  #logging.info('_getKernelProperty: %s  %s',str(type(self)),name)
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
     return ret.data
@@ -135,7 +136,7 @@ def _getKernelProperty(self, name):
 #---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
   import exceptions
-  #print '_setKernelProperty:',name,value
+  #logging.info('_setKernelProperty: %s %s',name,str(value))
   if Interface.setPropertyKernel(self.get(),name,str(value)):
     return
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
@@ -250,7 +251,7 @@ _import_class('CLHEP','HepRandomEngine')
 #---------------------------------------------------------------------------
 def _get(self, name):
   import exceptions, traceback
-  #print '_get:',str(type(self)),name
+  #logging.info('_get: %s  %s',str(type(self)),name)
   a = Interface.toAction(self)
   ret = Interface.getProperty(a,name)
   if ret.status > 0:
@@ -267,7 +268,7 @@ def _get(self, name):
 
 def _set(self, name, value):
   import exceptions
-  #print '_set:',name,value
+  #logging.info('_set: %s %s',name,str(value))
   a = Interface.toAction(self)
   if Interface.setProperty(a,name,str(value)):
     return
@@ -489,9 +490,9 @@ class Geant4:
     return self
 
   def printDetectors(self):
-    print '+++  List of sensitive detectors:'
+    logging.info('+++  List of sensitive detectors:')
     for i in self.description.detectors():
-      #print i.second.ptr().GetName()
+      #logging.info(i.second.ptr().GetName())
       o = DetElement(i.second.ptr())
       sd = self.description.sensitiveDetector(o.name())
       if sd.isValid():
@@ -499,7 +500,7 @@ class Geant4:
         sdtyp = 'Unknown'
         if self.sensitive_types.has_key(typ):
           sdtyp = self.sensitive_types[typ]
-        print '+++  %-32s type:%-12s  --> Sensitive type: %s'%(o.name(), typ, sdtyp,)
+        logging.info('+++  %-32s type:%-12s  --> Sensitive type: %s',o.name(), typ, sdtyp)
 
   def setupSensitiveSequencer(self, name, action):
     if isinstance( action, tuple ):
@@ -526,7 +527,6 @@ class Geant4:
     if collections is None:
       sd = self.description.sensitiveDetector(name)
       ro = sd.readout()
-      #print dir(ro)
       collections = ro.collectionNames()
       if len(collections)==0:
         act = SensitiveAction(self.kernel(),sensitive_type+'/'+name+'Handler',name)
@@ -575,9 +575,8 @@ class Geant4:
     if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type,collections)
 
-  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='G4ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
+  def _private_setupField(self, field, stepper, equation, prt):
     import SystemOfUnits
-    field = self.addConfig('Geant4FieldTrackingSetupAction/'+name)
     field.stepper            = stepper
     field.equation           = equation
     field.eps_min            = 5e-05*SystemOfUnits.mm
@@ -588,15 +587,25 @@ class Geant4:
     field.delta_one_step     = 0.01*SystemOfUnits.mm
     field.largest_step       = 1000*SystemOfUnits.m
     if prt:
-      print '+++++> ',field.name,'-> stepper  = ',field.stepper
-      print '+++++> ',field.name,'-> equation = ',field.equation
-      print '+++++> ',field.name,'-> eps_min  = ',field.eps_min,'[mm]'
-      print '+++++> ',field.name,'-> eps_max  = ',field.eps_max,'[mm]'
-      print '+++++> ',field.name,'-> delta_chord        = ',field.delta_chord,'[mm]'
-      print '+++++> ',field.name,'-> min_chord_step     = ',field.min_chord_step,'[mm]'
-      print '+++++> ',field.name,'-> delta_one_step     = ',field.delta_one_step,'[mm]'
-      print '+++++> ',field.name,'-> delta_intersection = ',field.delta_intersection,'[mm]'
-      print '+++++> ',field.name,'-> largest_step       = ',field.largest_step,'[mm]'
+      logging.info('+++++> %s %s %s %s ',field.name,'-> stepper  = ',str(field.stepper),'')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> equation = ',str(field.equation),'')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> eps_min  = ',str(field.eps_min),'[mm]')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> eps_max  = ',str(field.eps_max),'[mm]')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> delta_chord        = ',str(field.delta_chord),'[mm]')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> min_chord_step     = ',str(field.min_chord_step),'[mm]')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> delta_one_step     = ',str(field.delta_one_step),'[mm]')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> delta_intersection = ',str(field.delta_intersection),'[mm]')
+      logging.info('+++++> %s %s %s %s ',field.name,'-> largest_step       = ',str(field.largest_step),'[mm]')
+    return field
+    
+  def setupTrackingFieldMT(self, name='MagFieldTrackingSetup', stepper='G4ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
+    seq,fld = self.addDetectorConstruction("Geant4FieldTrackingConstruction/"+name)
+    self._private_setupField(fld, stepper, equation, prt)
+    return (seq,fld)
+
+  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='G4ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
+    field = self.addConfig('Geant4FieldTrackingSetupAction/'+name)
+    self._private_setupField(field, stepper, equation, prt)
     return field
   
   def setupPhysics(self, name):

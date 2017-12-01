@@ -8,6 +8,9 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 #
 # We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
 def compileAClick(dictionary,g4=True):
@@ -24,11 +27,11 @@ def compileAClick(dictionary,g4=True):
 
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
-  #####print "Includes:   ",gSystem.GetIncludePath(),"\n","Linked libs:",gSystem.GetLinkedLibs()
-  print 'Loading AClick ',dictionary
+  #####logging.info("Includes:   %s\n","Linked libs:%s",gSystem.GetIncludePath(),gSystem.GetLinkedLibs())
+  logging.info('Loading AClick %s',dictionary)
   package = imp.find_module('DDG4')
   dic = os.path.dirname(package[1])+os.sep+dictionary
-  ###print dic
+  ###logging.info(str(dic))
   gInterpreter.ProcessLine('.L '+dic+'+')
   #####gInterpreter.Load('DDG4Dict_C.so')
   from ROOT import dd4hep as module
@@ -60,7 +63,7 @@ def import_namespace_item(ns,nam):
   return attr
 
 def import_root(nam):
-  #print 'import ROOT class ',nam,str(name_space)
+  #logging.info('import ROOT class %s in namespace %s',nam,str(name_space))
   setattr(name_space,nam,getattr(ROOT,nam))
 
 #---------------------------------------------------------------------------
@@ -70,10 +73,10 @@ try:
   import ROOT
 except Exception,X:
   import sys
-  print '+--%-100s--+'%(100*'-',)
-  print '|  %-100s  |'%('Failed to load dd4hep base library:',)
-  print '|  %-100s  |'%(str(X),)
-  print '+--%-100s--+'%(100*'-',)
+  logging.info('+--%-100s--+',100*'-')
+  logging.info('|  %-100s  |','Failed to load dd4hep base library:')
+  logging.info('|  %-100s  |',str(X))
+  logging.info('+--%-100s--+',100*'-')
   sys.exit(1)
 
 class _Levels:

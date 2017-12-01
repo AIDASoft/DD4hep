@@ -1,10 +1,11 @@
 #
 #
-import os, time, DDG4
+import os, time, logging, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
 global geant4
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 #
 """
 
@@ -25,7 +26,7 @@ def setupWorker():
   run1.Property_int    = 12345
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
-  print run1.Property_string, run1.Property_double, run1.Property_int
+  logging.info("%s %f %d",run1.Property_string, run1.Property_double, run1.Property_int)
   run1.enableUI()
   kernel.registerGlobalAction(run1)
   kernel.runAction().adopt(run1)
@@ -116,11 +117,11 @@ def setupWorker():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
-  print 'PYTHON: +++ Geant4 worker thread configured successfully....'
+  logging.info('PYTHON: +++ Geant4 worker thread configured successfully....')
   return 1
   
 def setupMaster():
-  print 'PYTHON: +++ Setting up master thread.....'
+  logging.info('PYTHON: +++ Setting up master thread.....')
   return 1
 
 def setupSensitives():
@@ -132,17 +133,16 @@ def setupSensitives():
   seq,act = geant4.setupTracker('SiVertexEndcap')
   act.OutputLevel = Output.ERROR
   act.CollectSingleDeposits = False
-  print 'PYTHON: +++ Setting up Geant4 sensitive detectors for worker thread.....'
+  logging.info('PYTHON: +++ Setting up Geant4 sensitive detectors for worker thread.....')
   return 1
 
 def dummy_sd():
-  print 'PYTHON: +++ Setting up DUMMY Geant4 sensitive detectors for worker thread.....'
+  logging.info('PYTHON: +++ Setting up DUMMY Geant4 sensitive detectors for worker thread.....')
   return 1
   
 def dummy_geom():
-  print 'PYTHON: +++ Setting up DUMMY Geant4 geometry for worker thread.....'
+  logging.info('PYTHON: +++ Setting up DUMMY Geant4 geometry for worker thread.....')
   return 1
-  
 
 def run():
   global geant4
@@ -167,20 +167,7 @@ def run():
   seq,act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
 
   # Configure G4 magnetic field tracking
-  seq,fld = geant4.addDetectorConstruction("Geant4FieldTrackingConstruction/MagFieldTrackingSetup")
-  fld.stepper            = "HelixGeant4Runge"
-  fld.equation           = "Mag_UsualEqRhs"
-  fld.eps_min            = 5e-05 * mm
-  fld.eps_max            = 0.001 * mm
-  fld.min_chord_step     = 0.01 * mm
-  fld.delta_chord        = 0.25 * mm
-  fld.delta_intersection = 1e-05 * mm
-  fld.delta_one_step     = 0.001 * mm
-  print '+++++> ',fld.name,'-> stepper  = ',fld.stepper
-  print '+++++> ',fld.name,'-> equation = ',fld.equation
-  print '+++++> ',fld.name,'-> eps_min  = ',fld.eps_min
-  print '+++++> ',fld.name,'-> eps_max  = ',fld.eps_max
-  print '+++++> ',fld.name,'-> delta_one_step = ',fld.delta_one_step
+  self.setupTrackingFieldMT()
 
   seq,act = geant4.addDetectorConstruction("Geant4PythonDetectorConstruction/DummyDet",
                                            geometry=dummy_geom,
@@ -236,5 +223,5 @@ def run():
 
 if __name__ == "__main__":
   import sys
-  print sys.argv
+  logging.info('Arguments: %s',str(sys.argv))
   run()
