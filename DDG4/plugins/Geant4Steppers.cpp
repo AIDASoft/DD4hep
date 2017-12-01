@@ -21,6 +21,10 @@
 #include "G4SimpleHeum.hh"
 #include "G4ClassicalRK4.hh"
 #include "G4ConstRK4.hh"
+#include "G4CashKarpRKF45.hh"
+#include "G4BogackiShampine45.hh"
+#include "G4DormandPrince745.hh"
+
 
 DECLARE_GEANT4_STEPPER(ImplicitEuler)
 DECLARE_GEANT4_STEPPER(ExplicitEuler)
@@ -28,7 +32,9 @@ DECLARE_GEANT4_STEPPER(SimpleRunge)
 DECLARE_GEANT4_STEPPER(SimpleHeum)
 DECLARE_GEANT4_MAGSTEPPER(ConstRK4)
 DECLARE_GEANT4_STEPPER(ClassicalRK4)
-
+DECLARE_GEANT4_STEPPER(CashKarpRKF45)
+DECLARE_GEANT4_STEPPER(DormandPrince745)
+DECLARE_GEANT4_STEPPER(BogackiShampine45)
 
 // Geant 4 include files
 #include "G4HelixExplicitEuler.hh"

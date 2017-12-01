@@ -345,13 +345,13 @@ namespace dd4hep {
      */
     std::string type() const;
     ///  Set detector type (structure, tracker, calorimeter, etc.).
-    DetElement& setType(const std::string& typ);
+    DetElement&  setType(const std::string& typ);
 
     // Return flag word encoding detector types ( ideally use dd4hep::DetType for decoding )
     unsigned int typeFlag() const;
 
     ///  Set the flag word encoding detector types ( ideally use dd4hep::DetType for encoding )
-    DetElement& setTypeFlag(unsigned int types);
+    DetElement&  setTypeFlag(unsigned int types);
 
     /// Access hash key of this detector element (Only valid once geometry is closed!)
     unsigned int key()  const;

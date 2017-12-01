@@ -10,8 +10,9 @@
 #
 #==========================================================================
 
-import sys, errno, optparse
+import sys, errno, optparse, logging
 
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 parser = optparse.OptionParser()
 parser.description = "TGeo Geometry checking."
 parser.formatter.width = 132
@@ -51,7 +52,7 @@ parser.add_option("-o", "--option", dest="option", default='ob',
 (opts, args) = parser.parse_args()
 
 if opts.compact is None:
-  print "   ",parser.format_help()
+  logging.info("   %s",parser.format_help())
   sys.exit(1)
 
 try:
@@ -59,30 +60,30 @@ try:
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError,X:
-  print 'PyROOT interface not accessible:',X
+  logging.error('PyROOT interface not accessible: %s',str(X))
   sys.exit(errno.ENOENT)
 
 try:
   import DD4hep
 except ImportError,X:
-  print 'dd4hep python interface not accessible:',X
+  logging.error('dd4hep python interface not accessible: %s',str(X))
   sys.exit(errno.ENOENT)
 
 DD4hep.setPrintLevel(DD4hep.OutputLevel.ERROR)
-print '+++%s\n+++ Loading compact geometry:%s\n+++%s'%(120*'=',opts.compact,120*'=')
+logging.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
 description = DD4hep.Detector.getInstance()
 description.fromXML(opts.compact)
 opts.num_tracks = int(opts.num_tracks)
 opts.vx = float(opts.vx)
 opts.vy = float(opts.vy)
 opts.vz = float(opts.vz)
-print '+++%s\n+++ Checking geometry:%s full-check:%s\n+++%s'%(120*'=',opts.compact,opts.full,120*'=')
+logging.info('+++%s\n+++ Checking geometry:%s full-check:%s\n+++%s',120*'=',opts.compact,opts.full,120*'=')
 if opts.full:
-  print '+++ # tracks:%d vertex:(%7.3f, %7.3f, %7.3f) [cm]'%(opts.num_tracks,opts.vx,opts.vy,opts.vz,)
+  logging.info('+++ # tracks:%d vertex:(%7.3f, %7.3f, %7.3f) [cm]',opts.num_tracks,opts.vx,opts.vy,opts.vz)
   description.manager().CheckGeometryFull(opts.num_tracks,opts.vx,opts.vy,opts.vz,opts.option)
 else:
   description.manager().CheckGeometry()
 #
 #
-print '+++ Execution finished...'
+logging.info('+++ Execution finished...')
 sys.exit(0)

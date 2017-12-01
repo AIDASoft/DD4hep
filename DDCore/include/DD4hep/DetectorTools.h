@@ -79,6 +79,8 @@ namespace dd4hep {
       std::string toString(const PlacedVolume::VolIDs& ids);
       /// Convert VolumeID to string
       std::string toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code);
+      /// Extract all the path elements from a path
+      std::vector<std::string> pathElements(const std::string& path);
     }
   }
 }         /* End namespace dd4hep                   */

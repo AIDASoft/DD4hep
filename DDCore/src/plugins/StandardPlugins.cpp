@@ -726,11 +726,15 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
     long m_numSensitive   = 0;
     long m_numMaterial    = 0;
     long m_numMaterialERR = 0;
-
+    bool m_topStat        = false;
+    map<string,long> top_counts;
+    string currTop;
+    
     Actor(int ac, char** av)  {
       for(int i=0; i<ac; ++i)  {
         char c = ::tolower(av[i][0]);
         char* p = av[i];
+        if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
         if      ( ::strncmp(p,"volume_ids",3) == 0  ) m_printVolIDs         = true;
         else if ( ::strncmp(p,"pathes",3)     == 0  ) m_printPathes         = true;
@@ -738,11 +742,18 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         else if ( ::strncmp(p,"materials",3)  == 0  ) m_printMaterials      = true;
         else if ( ::strncmp(p,"pointers",3)   == 0  ) m_printPointers       = true;
         else if ( ::strncmp(p,"sensitive",3)  == 0  ) m_printSensitivesOnly = true;
+        else if ( ::strncmp(p,"topstats",3)   == 0  ) m_topStat             = true;
       }
     }
     ~Actor()  {
       printout(ALWAYS,"VolumeDump","+++ Checked %ld physical volume placements.     %3ld are sensitive.",
                m_numNodes, m_numSensitive);
+      if ( m_topStat )  {
+        for(const auto& t : top_counts)  {
+          if ( t.second > 1 )
+            printout(ALWAYS,"VolumeDump","+++     Top node: %-32s     %8ld placements.",t.first.c_str(),t.second);
+        }
+      }
       if ( m_printMaterials )  {
         printout(ALWAYS,"VolumeDump","+++ Checked %ld materials in volume placements. %3ld are BAD.",
                  m_numMaterial, m_numMaterialERR);
@@ -756,6 +767,15 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       string opt_info, pref = prefix;
 
       ++m_numNodes;
+      if ( level == 0 )
+        currTop = "";
+      else if ( level == 1 )   {
+        currTop = ideal->GetVolume()->GetName();
+        ++top_counts[currTop];
+      }
+      else if ( level > 1 )   {
+        ++top_counts[currTop];
+      }
       if ( m_printPathes )   {
         pref += "/";
         pref += aligned->GetName();

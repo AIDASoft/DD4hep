@@ -1,9 +1,10 @@
 #
 #
-import os, time, DDG4
+import os, time, logging, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 #
 """
 
@@ -48,23 +49,7 @@ def run():
   # Configure UI
   #geant4.setupCshUI(macro='run.mac',ui=None)
   geant4.setupCshUI()
-
-  field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-  field.stepper            = "HelixSimpleRunge"
-  field.equation           = "Mag_UsualEqRhs"
-  field.eps_min            = 5e-05*mm
-  field.eps_max            = 0.001*mm
-  field.min_chord_step     = 0.01*mm
-  field.delta_chord        = 0.25*mm
-  field.delta_intersection = 1e-05*mm
-  field.delta_one_step     = 0.001*mm
-  print '+++++> ',field.name,'-> stepper  = ',field.stepper
-  print '+++++> ',field.name,'-> equation = ',field.equation
-  print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
-  print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
-  print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
-
-
+  geant4.setupTrackingField()
 
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
@@ -185,7 +170,7 @@ def run():
 
   #DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
-  print 'End of run. Terminating .......'
+  logging.info('End of run. Terminating .......')
   kernel.terminate()
 
 if __name__ == "__main__":

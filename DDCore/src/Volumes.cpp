@@ -19,6 +19,7 @@
 #include "DD4hep/detail/ObjectsInterna.h"
 
 // ROOT include files
+#include "TClass.h"
 #include "TColor.h"
 #include "TGeoShape.h"
 #include "TGeoVolume.h"
@@ -291,16 +292,36 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
 }
 #endif
 ClassImp(PlacedVolumeExtension)
-
-static TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
-  geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
-  e->SetUserExtension(new Volume::Object());
-  return e;
-}
-static TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
-  geo_assembly_t* e = new geo_assembly_t(name.c_str()); // It is important to use the correct constructor!!
-  e->SetUserExtension(new Assembly::Object());
-  return e;
+namespace {
+  TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
+    geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
+    e->SetUserExtension(new Volume::Object());
+    return e;
+  }
+  TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
+    geo_assembly_t* e = new geo_assembly_t(name.c_str()); // It is important to use the correct constructor!!
+    e->SetUserExtension(new Assembly::Object());
+    return e;
+  }
+  class VolumeImport   {
+  public:
+    void operator()(TGeoVolume* v)   {
+      if ( !v->GetUserExtension() )   {
+        if ( v->IsA() == geo_volume_t::Class() )
+          v->SetUserExtension(new Volume::Object());
+        else if  ( v->IsA() == geo_assembly_t::Class() )
+          v->SetUserExtension(new Assembly::Object());
+        else
+          except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",v->IsA()->GetName());
+      }
+      for(Int_t i=0; i<v->GetNdaughters(); ++i)  {
+        geo_node_t* pv = v->GetNode(i);
+        if ( !pv->GetUserExtension() )
+          pv->geo_node_t::SetUserExtension(new PlacedVolume::Object());
+        (*this)(pv->GetVolume());
+      }
+    }
+  };
 }
 
 /// Default constructor
@@ -506,13 +527,24 @@ Volume::Object* Volume::data() const   {
   return o;
 }
 
+/// If we import volumes from external sources, we have to attach the extensions to the tree
+Volume& Volume::import()    {
+  if ( m_element )   {
+    VolumeImport import;
+    import(m_element);
+    return *this;
+  }
+  except("dd4hep","Volume: Attempt to import invalid Volume handle.");
+  return *this;
+}
+    
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   if ( !parent )   {
-    throw runtime_error("dd4hep: Volume: Attempt to assign daughters to an invalid physical parent volume.");
+    except("dd4hep","Volume: Attempt to assign daughters to an invalid physical parent volume.");
   }
   if ( !daughter )   {
-    throw runtime_error("dd4hep: Volume: Attempt to assign an invalid physical daughter volume.");
+    except("dd4hep","Volume: Attempt to assign an invalid physical daughter volume.");
   }
   if (transform && transform != detail::matrix::_identity()) {
     string nam = string(daughter->GetName()) + "_placement";

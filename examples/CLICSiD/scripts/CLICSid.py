@@ -1,4 +1,4 @@
-import sys, DDG4
+import sys, logging, DDG4
 from SystemOfUnits import *
 
 class CLICSid:
@@ -52,13 +52,13 @@ class CLICSid:
     return self
 
   def setupDetectors(self):
-    print "#  First the tracking detectors"
+    logging.info("#  First the tracking detectors")
     seq,act = self.geant4.setupTracker('SiVertexBarrel')
     seq,act = self.geant4.setupTracker('SiVertexEndcap')
     seq,act = self.geant4.setupTracker('SiTrackerBarrel')
     seq,act = self.geant4.setupTracker('SiTrackerEndcap')
     seq,act = self.geant4.setupTracker('SiTrackerForward')
-    print "#  Now setup the calorimeters"
+    logging.info("#  Now setup the calorimeters")
     seq,act = self.geant4.setupCalorimeter('EcalBarrel')
     seq,act = self.geant4.setupCalorimeter('EcalEndcap')
     seq,act = self.geant4.setupCalorimeter('HcalBarrel')
@@ -82,5 +82,5 @@ class CLICSid:
       self.kernel.NumEvents = 0
       self.kernel.run()
     self.kernel.terminate()
-    print '+++++ All Done....\n\nTEST_PASSED'
+    logging.info('+++++ All Done....\n\nTEST_PASSED')
     sys.exit(0)

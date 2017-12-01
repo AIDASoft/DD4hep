@@ -6,6 +6,9 @@ dd4hep simulation example setup using the python configuration
 @version 1.0
 
 """
+import logging
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+
 def run(input_file):
   import DDG4
   from DDG4 import OutputLevel as Output
@@ -25,21 +28,21 @@ def run(input_file):
     try:
       ret = gen.readParticles(0,prim_vtx,parts)
     except Exception,X:
-      print '\nException: readParticles:',str(X)
+      logging.info( '\nException: readParticles: %s',str(X))
       ret = None
     if ret:
       for v in prim_vtx:
-        print 'Mask:%04X (X:%8.2g,Y:%8.2g,Z:%8.2g) time:%8.2g Outgoing:%4d particles'%\
-              (v.mask,v.x,v.y,v.z,v.time,len(v.out),)
+        logging.info( 'Mask:%04X (X:%8.2g,Y:%8.2g,Z:%8.2g) time:%8.2g Outgoing:%4d particles',
+                      v.mask,v.x,v.y,v.z,v.time,len(v.out))
       for p in parts:
-        print 'Mask:%04X ID:%5d PDG-id:%8d Charge:%1d Mass:%8.3g Momentum:(%8.2g,%8.2g,%8.2g) '\
-              'Vertex:(%8.2g,%8.2g,%8.2g) NDau:%2d Status:%08X'%\
-              (p.mask,p.id,p.pdgID,int(p.charge3()),p.mass,p.psx,p.psy,p.psz,\
-               p.vsx,p.vsy,p.vsz,len(p.daughters),p.status,)
+        logging.info( 'Mask:%04X ID:%5d PDG-id:%8d Charge:%1d Mass:%8.3g Momentum:(%8.2g,%8.2g,%8.2g) '\
+                      'Vertex:(%8.2g,%8.2g,%8.2g) NDau:%2d Status:%08X',
+                      p.mask,p.id,p.pdgID,int(p.charge3()),p.mass,p.psx,p.psy,p.psz,\
+                      p.vsx,p.vsy,p.vsz,len(p.daughters),p.status)
       parts.clear()
     else:
-      print '*** End of recordset or read failure.....'
-    print 132*'*'
+      logging.info( '*** End of recordset or read failure.....')
+    logging.info( 132*'*')
   return 0
   
 if __name__ == "__main__":
@@ -49,5 +52,5 @@ if __name__ == "__main__":
     input_file = sys.argv[1]
     sys.exit(run(input_file))
   else:
-    print 'No input file given. Try again....'
+    logging.info( 'No input file given. Try again....')
     sys.exit(2)  # ENOENT

@@ -1,11 +1,12 @@
 #
 #
-import os, time, DDG4
+import os, time, logging, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
 #
-print \
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.info(
 """
 
    dd4hep simulation example setup using the python configuration
@@ -13,7 +14,7 @@ print \
    @author  M.Frank
    @version 1.0
 
-"""
+""")
 def run():
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
@@ -23,50 +24,37 @@ def run():
 
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
-  print "#  Configure UI"
+  logging.info("#  Configure UI")
   geant4.setupCshUI()
 
-  print "#  Configure G4 magnetic field tracking"
-  field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-  field.stepper            = "HelixGeant4Runge"
-  field.equation           = "Mag_UsualEqRhs"
-  field.eps_min            = 5e-05 * mm
-  field.eps_max            = 0.001 * mm
-  field.min_chord_step     = 0.01 * mm
-  field.delta_chord        = 0.25 * mm
-  field.delta_intersection = 1e-05 * mm
-  field.delta_one_step     = 0.001 * mm
-  print '+++++> ',field.name,'-> stepper  = ',field.stepper
-  print '+++++> ',field.name,'-> equation = ',field.equation
-  print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
-  print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
-  print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
+  logging.info("#  Configure G4 magnetic field tracking")
+  geant4.setupTrackingField()
 
-  print "#  Setup random generator"
+  logging.info("#  Setup random generator")
   rndm = DDG4.Action(kernel,'Geant4Random/Random')
   rndm.Seed = 987654321
   rndm.initialize()
   ##rndm.showStatus()
 
-  print "#  Configure Run actions"
+  logging.info("#  Configure Run actions")
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
   run1.Property_int    = 12345
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
-  print run1.Property_string, run1.Property_double, run1.Property_int
+  logging.info("%s %s %s",run1.Property_string, str(run1.Property_double), str(run1.Property_int))
   run1.enableUI()
   kernel.registerGlobalAction(run1)
   kernel.runAction().adopt(run1)
 
-  print "#  Configure Event actions"
+  logging.info("#  Configure Event actions")
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.INFO
   prt.OutputType  = 3 # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
-  print """
+  logging.info("""
   Configure I/O
-  """
+  """)
   evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio.OutputLevel = Output.ERROR
 
@@ -78,10 +66,10 @@ def run():
   kernel.generatorAction().adopt(gen)
 
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-  print """
+  logging.info("""
   Generation of isotrope tracks of a given multiplicity with overlay:
-  """
-  print "#  First particle generator: pi+"
+  """)
+  logging.info("#  First particle generator: pi+")
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
   gen.Mask     = 1
   gen.Particle = 'pi+'
@@ -89,14 +77,14 @@ def run():
   gen.Multiplicity = 2
   gen.Distribution = 'cos(theta)'
   kernel.generatorAction().adopt(gen)
-  print "#  Install vertex smearing for this interaction"
+  logging.info("#  Install vertex smearing for this interaction")
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearPi+");
   gen.Mask   = 1
   gen.Offset = (20*mm, 10*mm, 10*mm, 0*ns)
   gen.Sigma  = (4*mm, 1*mm, 1*mm, 0*ns)
   kernel.generatorAction().adopt(gen)
 
-  print "#  Second particle generator: e-"
+  logging.info("#  Second particle generator: e-")
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropE-");
   gen.Mask     = 2
   gen.Particle = 'e-'
@@ -104,7 +92,7 @@ def run():
   gen.Multiplicity = 3
   gen.Distribution = 'uniform'
   kernel.generatorAction().adopt(gen)
-  print "  Install vertex smearing for this interaction"
+  logging.info("  Install vertex smearing for this interaction")
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearE-");
   gen.Mask   = 2
   gen.Offset = (-20*mm, -10*mm, -10*mm, 0*ns)
@@ -112,19 +100,19 @@ def run():
   kernel.generatorAction().adopt(gen)
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  print "#  Merge all existing interaction records"
+  logging.info("#  Merge all existing interaction records")
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
   gen.OutputLevel = 4 #generator_output_level
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
-  print "#  Finally generate Geant4 primaries"
+  logging.info("#  Finally generate Geant4 primaries")
   gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
   gen.OutputLevel = 4 #generator_output_level
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
-  print "#  ....and handle the simulation particles."
+  logging.info("#  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
   #part.SaveProcesses = ['conv','Decay']
@@ -138,7 +126,7 @@ def run():
   user.enableUI()
   part.adopt(user)
 
-  print "#  Setup global filters fur use in sensntive detectors"
+  logging.info("#  Setup global filters fur use in sensntive detectors")
   f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
   f2 = DDG4.Filter(kernel,'ParticleRejectFilter/OpticalPhotonRejector')
   f2.particle = 'opticalphoton'
@@ -152,7 +140,7 @@ def run():
   kernel.registerGlobalFilter(f3)
   kernel.registerGlobalFilter(f4)
 
-  print "#  First the tracking detectors"
+  logging.info("#  First the tracking detectors")
   seq,act = geant4.setupTracker('SiVertexBarrel')
   seq.adopt(f1)
   #seq.adopt(f4)
@@ -165,7 +153,7 @@ def run():
   seq,act = geant4.setupTracker('SiTrackerBarrel')
   seq,act = geant4.setupTracker('SiTrackerEndcap')
   seq,act = geant4.setupTracker('SiTrackerForward')
-  print "#  Now setup the calorimeters"
+  logging.info("#  Now setup the calorimeters")
   seq,act = geant4.setupCalorimeter('EcalBarrel')
   seq,act = geant4.setupCalorimeter('EcalEndcap')
   seq,act = geant4.setupCalorimeter('HcalBarrel')
@@ -176,7 +164,7 @@ def run():
   seq,act = geant4.setupCalorimeter('LumiCal')
   seq,act = geant4.setupCalorimeter('BeamCal')
 
-  print "#  Now build the physics list:"
+  logging.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
   ph = geant4.addPhysics('Geant4PhysicsList/Myphysics')
   #ph.addParticleConstructor('G4BosonConstructor')
