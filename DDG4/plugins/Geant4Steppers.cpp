@@ -22,7 +22,6 @@
 #include "G4ClassicalRK4.hh"
 #include "G4ConstRK4.hh"
 #include "G4CashKarpRKF45.hh"
-#include "G4DoLoMcPriRK34.hh"
 #include "G4DormandPrince745.hh"
 #include "G4DormandPrinceRK56.hh"
 #include "G4DormandPrinceRK78.hh"
@@ -35,15 +34,16 @@ DECLARE_GEANT4_STEPPER(SimpleHeum)
 DECLARE_GEANT4_MAGSTEPPER(ConstRK4)
 DECLARE_GEANT4_STEPPER(ClassicalRK4)
 DECLARE_GEANT4_STEPPER(CashKarpRKF45)
-DECLARE_GEANT4_STEPPER(DoLoMcPriRK34)
 DECLARE_GEANT4_STEPPER(DormandPrince745)
 DECLARE_GEANT4_STEPPER(DormandPrinceRK56)
 DECLARE_GEANT4_STEPPER(DormandPrinceRK78)
 DECLARE_GEANT4_STEPPER(BogackiShampine23)
 
 #if G4VERSION_NUMBER>=1003
+#include "G4DoLoMcPriRK34.hh"
 #include "G4BogackiShampine45.hh"
 DECLARE_GEANT4_STEPPER(BogackiShampine45)
+DECLARE_GEANT4_STEPPER(DoLoMcPriRK34)
 #endif
 
 // Geant 4 include files
