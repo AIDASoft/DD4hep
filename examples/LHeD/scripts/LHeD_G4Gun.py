@@ -8,9 +8,10 @@
 
 """
 def run():
-  import LHeD, DDG4
+  import logging, LHeD, DDG4
   from DDG4 import OutputLevel as Output
   
+  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   lhed = LHeD.LHeD()
   geant4 = lhed.geant4
   kernel = lhed.kernel
@@ -28,7 +29,7 @@ def run():
 
   gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
-  print "#  First particle generator: gun"
+  logging.info("#  First particle generator: gun")
   gun = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/Gun");
   gun.Uses     = 'G4ParticleGun'
   gun.Mask     = 1
