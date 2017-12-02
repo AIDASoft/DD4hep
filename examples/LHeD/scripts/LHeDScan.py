@@ -7,7 +7,9 @@
 
 """
 def run():
-  import os, sys, DDG4, SystemOfUnits
+  import os, sys, logging, DDG4, SystemOfUnits
+
+  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/examples/LHeD/compact/compact.xml")
@@ -40,8 +42,8 @@ def run():
   kernel.run()
 
   kernel.terminate()
-  print 'End of run. Terminating .......'
-  print 'TEST_PASSED'
+  logging.info('End of run. Terminating .......')
+  logging.info('TEST_PASSED')
 
 if __name__ == "__main__":
   run()

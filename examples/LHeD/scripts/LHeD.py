@@ -1,4 +1,4 @@
-import sys, DDG4
+import sys, logging, DDG4
 from SystemOfUnits import *
 
 class LHeD:
@@ -11,8 +11,8 @@ class LHeD:
  
   def loadGeometry(self):
     import os
-    dd4hep_dir = os.environ['DD4hepINSTALL']
-    self.kernel.loadGeometry("file:"+dd4hep_dir+"/examples/LHeD/compact/compact_Lhe_dip_sol_ell.xml")
+    install_dir = os.environ['DD4hepINSTALL']
+    self.kernel.loadGeometry("file:"+install_dir+"/examples/LHeD/compact/compact_Lhe_dip_sol_ell.xml")
     return self
 
   # Example to show how to configure G4 magnetic field tracking
@@ -52,12 +52,12 @@ class LHeD:
     return self
 
   def setupDetectors(self):
-    print "#  First the tracking detectors"
+    logging.info("#  First the tracking detectors")
     seq,act = self.geant4.setupTracker('SiVertexBarrel')
     seq,act = self.geant4.setupTracker('SiTrackerForward')
     seq,act = self.geant4.setupTracker('SiTrackerBarrel')
     seq,act = self.geant4.setupTracker('SiTrackerBackward')
-    print "#  Now setup the calorimeters"
+    logging.info("#  Now setup the calorimeters")
     seq,act = self.geant4.setupCalorimeter('EcalBarrel')
     seq,act = self.geant4.setupCalorimeter('EcalEndcap_fwd')
     seq,act = self.geant4.setupCalorimeter('EcalEndcap_bwd')
@@ -85,5 +85,5 @@ class LHeD:
       self.kernel.NumEvents = 0
       self.kernel.run()
     self.kernel.terminate()
-    print '+++++ All Done....\n\nTEST_PASSED'
+    logging.info('+++++ All Done....\n\nTEST_PASSED')
     sys.exit(0)

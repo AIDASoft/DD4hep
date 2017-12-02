@@ -240,13 +240,28 @@
         <constant name="MuonEndcap_layers" value="12"/>
         <constant name="MuonEndcap_layer_thickness" value="10.0*cm + 4.0*cm"/>
         <constant name="MuonEndcap_thickness" value="MuonEndcap_layers*MuonEndcap_layer_thickness"/>
-
+        <constant name="SolenoidCoilOuterZ2" value="MuonBarrel_length*0.5+MuonEndcap_thickness"/>
         <constant name="MuonBarrel_zmin" value="HcalEndcap_zmin_bwd-HcalEndcap_thickness_bwd"/>
         <constant name="MuonBarrel_layers" value="6"/>
         <constant name="MuonBarrel_layer_thickness" value="10.0*cm + 4.0*cm"/>
         <constant name="MuonBarrel_thickness" value="MuonBarrel_layers*MuonBarrel_layer_thickness"/>
+                
+        <constant name="SolenoidalFieldRadius2"  value="HcalBarrel_rmax + 40.*cm"/>
+        <constant name="SolenoidBarrelInnerRadius2" value="HcalBarrel_rmax + 40*cm"/>
+        <constant name="SolenoidBarrelInnerCryostatThickness2" value="3.0*cm"/>
+        <constant name="SolenoidBarrelInnerAirgapThickness2" value="1.0*cm"/>
+        <constant name="SolenoidBarrelAlConductorThickness2" value="10.0*cm"/>
+        <constant name="SolenoidBarrelQuenchbackThickness2" value="8.0*cm"/>
+        <constant name="SolenoidBarrelOuterAirgapThickness2" value="2.7*cm"/>
+        <constant name="SolenoidBarrelOuterCryostatThickness2" value="3.0*cm"/>
+        <constant name="SolenoidEndcapCryostatThickness2" value="3.0*cm"/>
+        <constant name="SolenoidEndcapAirgapThickness2" value="2.7*cm"/>
+        <constant name="SolenoidBarrelOuterZ2" value="SolenoidCoilOuterZ2+SolenoidEndcapAirgapThickness2"/>        
+        <constant name="SolenoidBarrelConductorInnerRadius2" value="SolenoidBarrelInnerRadius2 + SolenoidBarrelInnerCryostatThickness2 + SolenoidBarrelInnerAirgapThickness2"/>
+        <constant name="SolenoidBarrelOuterCryostatInnerRadius2" value="SolenoidBarrelConductorInnerRadius2 + SolenoidBarrelAlConductorThickness2 + SolenoidBarrelQuenchbackThickness2 + SolenoidBarrelOuterAirgapThickness2"/>
+        <constant name="SolenoidBarrelOuterRadius2" value="SolenoidBarrelOuterCryostatInnerRadius2 + SolenoidBarrelOuterCryostatThickness2"/>
 
-        <constant name="MuonBarrel_rmin" value="HcalEndcap_rmax + 2.0*cm"/>
+        <constant name="MuonBarrel_rmin" value="SolenoidBarrelOuterRadius2 + 20.0*cm"/>
         <constant name="MuonBarrel_rmax" value="MuonBarrel_rmin + MuonBarrel_thickness"/>
 
         <constant name="MuonEndcap_zmin_fwd" value="HcalEndcap_zmax_fwd-MuonEndcap_thickness-EcalEndcap_length_fwd+5.*cm"/> 
@@ -1432,7 +1447,7 @@
                            gap="0.*cm" 
                            material="Steel235">
             <comment>Muon Calorimeter Barrel</comment>
-            <dimensions numsides="(int) MuonSides" rmin="((HcalEndcap_rmax+2.0*cm) / ( cos(pi/CaloSides) ) )" z="MuonBarrel_length" z_offset="OffsetZ*1.2"/>
+            <dimensions numsides="(int) MuonSides" rmin="((SolenoidBarrelOuterRadius2) / ( cos(pi/CaloSides) ) )" z="MuonBarrel_length" z_offset="OffsetZ*1.2"/>
             <staves vis="MuonBarrelStavesVis"/>
             <comment> Start with an active layer, followed by a thin 5.0cm absorber layer. The second active layer is followed by a thick 20.0cm steel layer to take the forces. </comment>
             <layer repeat="1" vis="MuonBarrelLayerVis">
@@ -1716,6 +1731,35 @@
                 <slice material="Vacuum"   thickness="SolenoidBarrelOuterAirgapThickness1" />
                 <slice material="Aluminum" thickness="SolenoidBarrelOuterCryostatThickness1" />
            </layer>
+ 
+        </detector>
+
+       <detector name="SolenoidCoilBarrel2" type="Lhe_MultiLayerTracker" insideTrackingVolume="true">
+           <layer id="1" 
+             inner_r="SolenoidBarrelInnerRadius2" 
+             z_offset="OffsetZ*1.15" 
+             outer_z="MuonBarrel_length*0.5"  
+             vis="SolenoidBarrelLayerVis">
+                <slice material="Steel235" thickness="SolenoidBarrelInnerCryostatThickness2" />
+                <slice material="Vacuum"  thickness="SolenoidBarrelInnerAirgapThickness2" />
+            </layer>
+            <layer id="2" 
+              inner_r="SolenoidBarrelConductorInnerRadius2" 
+              z_offset="OffsetZ*1.15"  
+              outer_z="MuonBarrel_length*0.5" 
+              vis="SolenoidBarrelLayerVis">
+                <slice material="Aluminum" thickness="SolenoidBarrelAlConductorThickness2" />
+                <slice material="Aluminum" thickness="SolenoidBarrelQuenchbackThickness2" />
+            </layer>
+
+            <layer id="3" 
+              inner_r="SolenoidBarrelOuterCryostatInnerRadius2" 
+              z_offset="OffsetZ*1.15" 
+              outer_z="MuonBarrel_length*0.5" 
+              vis="SolenoidBarrelLayerVis">
+                <slice material="Vacuum"   thickness="SolenoidBarrelOuterAirgapThickness2" />
+                <slice material="Steel235" thickness="SolenoidBarrelOuterCryostatThickness2" />
+            </layer>
         </detector>
 
     </detectors>
@@ -1880,6 +1924,12 @@
           inner_field="3.5*tesla"
           outer_field="-1.5*tesla"
           zmax="SolenoidCoilOuterZ1"
+          outer_radius="SolenoidalFieldRadius1">
+        </field>
+        <field name="GlobalSolenoid2" type="solenoid"
+          inner_field="-1.5*tesla"
+          outer_field="0.5*tesla"
+          zmax="SolenoidCoilOuterZ2"
           outer_radius="world_side">
         </field>
        <field name="MachineDipole+" type="DipoleMagnet"

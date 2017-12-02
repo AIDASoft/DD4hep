@@ -135,7 +135,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
     // multiplication factor for ellipse major radius
     double c0;                                      
-    if (x_layer.id() <=1 ) c0 = 2.9;
+    if (x_layer.id() <=1 ) c0 = 2.;
     else if (x_layer.id() == 2 ) c0 = 1.9;
     else if (x_layer.id() == 3 ) c0 = 1.45;
     else c0 = 1.23;
