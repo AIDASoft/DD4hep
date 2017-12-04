@@ -58,7 +58,10 @@ dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
-###if (DD4HEP_HAVE_HIGHER_ROOT_VERSION)
+
+##message (STATUS "ROOT_FIND_VERSION: ${ROOT_FIND_VERSION} ROOT_VERSION: ${ROOT_VERSION}")
+## Always false. Good for now!
+if( "${ROOT_FIND_VERSION}" VERSION_GREATER "6.13.0" )
 # ROOT Geometry export to GDML
 dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
@@ -98,7 +101,7 @@ dd4hep_add_test_reg( CLICSiD_GDML_import_LONGTEST
   REGEX_PASS "Checked 130738 physical volume placements"
   REGEX_FAIL "Exception;EXCEPTION;ERROR" )
 #
-####endif(DD4HEP_HAVE_HIGHER_ROOT_VERSION)
+endif()
 #
 #---Geant4 Testsing-----------------------------------------------------------------
 #
