@@ -15,19 +15,18 @@
 //  M.Frank
 //==========================================================================
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wdeprecated"
-#pragma GCC diagnostic ignored "-Wunused"
-#pragma GCC diagnostic ignored "-Woverlength-strings"
-
-#elif defined(__llvm__) || defined(__clang__) || defined(__APPLE__)
-
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#pragma clang diagnostic ignored "-Wdeprecated"
-#pragma clang diagnostic ignored "-Wunused"
-#pragma clang diagnostic ignored "-Woverlength-strings"
+#if defined(__clang__)
+  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  #pragma clang diagnostic ignored "-Wdeprecated"
+  #pragma clang diagnostic ignored "-Wunused"
+  #pragma clang diagnostic ignored "-Woverlength-strings"
+#elif defined(__GNUC__) || defined(__GNUG__)
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  #pragma GCC diagnostic ignored "-Wdeprecated"
+  #pragma GCC diagnostic ignored "-Wunused"
+  #pragma GCC diagnostic ignored "-Woverlength-strings"
 #endif
+
 
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLANG__) || defined(__ROOTCLING__)
 #define  DD4HEP_DICTIONARY_MODE 1

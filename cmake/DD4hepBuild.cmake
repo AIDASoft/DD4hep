@@ -1025,7 +1025,7 @@ function( dd4hep_add_library binary building )
         #
         # root-cint produces warnings of type 'unused-function' disable them on generated files
         foreach ( f in  ${ARG_GENERATED} )
-          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function GENERATED TRUE )
+          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS "-Wno-unused-function -Wno-overlength-strings" GENERATED TRUE )
         endforeach()
         list ( APPEND sources ${ARG_GENERATED} )
       endif()
@@ -1217,7 +1217,7 @@ function ( dd4hep_add_executable binary )
         endif()
         #  Prepare flags for cint generated sources:
         foreach ( f in  ${ARG_GENERATED} )
-          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function GENERATED TRUE )
+          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS "-Wno-unused-function -Wno-overlength-strings" GENERATED TRUE )
         endforeach()
         #
         set ( sources ${ARG_GENERATED} ${ARG_SOURCES} ${optional_sources} )
