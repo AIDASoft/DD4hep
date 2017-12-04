@@ -25,11 +25,12 @@
 #include "TGeoManager.h"
 #include "TGDMLParse.h"
 #include "TGDMLWrite.h"
+#include "TUri.h"
 
 using namespace std;
 using namespace dd4hep;
 
-#ifdef ROOT_VERSION_CODE >= ROOT_VERSION(6,13,1)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,13,1)
 
 /// ROOT GDML reader plugin
 /**
@@ -77,6 +78,8 @@ static long gdml_parse(Detector& description, int argc, char** argv) {
         Volume mother = (parent==world) ? description.pickMotherVolume(child) : parent.volume();
         if ( i == elements.size()-1 )  {
           TGDMLParse parser;
+          TUri uri(input.c_str());
+          input = uri.GetRelativePart();
           Volume vol = parser.GDMLReadFile(input.c_str());
           if ( vol.isValid() )   {
             vol.import(); // We require the extensions in dd4hep.
@@ -137,8 +140,9 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
     DetElement detector = detail::tools::findElement(description,path);
     if ( detector.isValid() )   {
       TGDMLWrite extract;
+      TUri uri(output.c_str());
       Volume volume = detector.volume();
-      extract.WriteGDMLfile(&description.manager(), volume.ptr(), output.c_str());
+      extract.WriteGDMLfile(&description.manager(), volume.ptr(), uri.GetRelativePart());
       return 1;
     }
     except("ROOTGDMLExtract","+++ Invalid DetElement path given: %s", path.c_str());
