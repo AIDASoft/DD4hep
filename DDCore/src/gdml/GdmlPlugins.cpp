@@ -29,7 +29,7 @@
 using namespace std;
 using namespace dd4hep;
 
-#ifdef DD4HEP_HAVE_HIGHER_ROOT_VERSION
+#ifdef ROOT_VERSION_CODE >= ROOT_VERSION(6,13,1)
 
 /// ROOT GDML reader plugin
 /**
