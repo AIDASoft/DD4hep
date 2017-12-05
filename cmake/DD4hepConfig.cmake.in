@@ -19,8 +19,9 @@ set ( DD4hep_VERSION     "@DD4hep_VERSION@" )
 set ( DD4hep_SOVERSION   "@DD4hep_SOVERSION@" )
 set ( DD4HEP_USE_GEANT4  "@DD4HEP_USE_GEANT4@" )
 set ( DD4HEP_USE_XERCESC "@DD4HEP_USE_XERCESC@" )
-set ( DD4HEP_USE_CXX11   "@DD4HEP_USE_CXX11@" )
-set ( DD4HEP_USE_CXX14   "@DD4HEP_USE_CXX14@" )
+set ( CMAKE_CXX_STANDARD "@CMAKE_CXX_STANDARD@" )
+set ( CMAKE_CXX_STANDARD_REQUIRED ON )
+set ( CMAKE_CXX_EXTENSIONS OFF )
 set ( Geant4_DIR         "@Geant4_DIR@" )
 set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
 
@@ -87,16 +88,6 @@ if( @DD4HEP_USE_XERCESC@ )
   set( DD4HEP_USE_XERCESC True )
 endif()
 INCLUDE( ${DD4hep_DIR}/cmake/DD4hep_XML_setup.cmake )
-
-# -----------------------------------------
-if( @DD4HEP_USE_CXX14@ )
-  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14" )
-  ADD_DEFINITIONs(-DDD4HEP_USE_CXX14)
-elseif( @DD4HEP_USE_CXX11@ )
-  SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
-  ADD_DEFINITIONs(-DDD4HEP_USE_CXX11)
-else()
-endif()
 
 #----- APPLE ? -------
 

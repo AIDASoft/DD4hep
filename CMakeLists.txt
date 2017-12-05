@@ -44,6 +44,11 @@ ENDIF()
 
 ENABLE_LANGUAGE(CXX)
 
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard used for compiling")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 ###############################
 # Define DD4hep build options #
 ###############################
@@ -53,7 +58,6 @@ option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
-option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 
 #####################

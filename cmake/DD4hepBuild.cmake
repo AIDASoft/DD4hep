@@ -11,19 +11,15 @@
 #=================================================================================
 
 ##set(DD4HEP_DEBUG_CMAKE 1)
-message ( STATUS "INCLUDING DD4hepBuild.... c++11:${DD4HEP_USE_CXX11} c++14:${DD4HEP_USE_CXX14}" )
-
+message ( STATUS "INCLUDING DD4hepBuild.cmake" )
 include ( CMakeParseArguments )
 set ( DD4hepBuild_included ON )
-##set ( DD4HEP_DEBUG_CMAKE ON )
-##set ( CMAKE_CTEST_COMMAND ${CMAKE_CTEST_COMMAND} --test-output-size-passed 4096 )
+
 
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_to_parent_scope val)
   set ( ${val} ${${val}} PARENT_SCOPE )
 endmacro(dd4hep_to_parent_scope)
-
-find_package(Threads REQUIRED)
 
 #---------------------------------------------------------------------------------------------------
 #  MACRO: dd4hep_set_compiler_flags
@@ -60,29 +56,15 @@ macro(dd4hep_set_compiler_flags)
     ENDIF()
   ENDFOREACH()
 
-  CHECK_CXX_COMPILER_FLAG("-std=c++14" CXX_FLAG_WORKS_CXX14)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" CXX_FLAG_WORKS_CXX11)
   CHECK_CXX_COMPILER_FLAG("-ftls-model=global-dynamic" CXX_FLAG_WORKS_FTLS_global_dynamic)
 
-  if (NOT CXX_FLAG_WORKS_CXX11)
-    message( FATAL_ERROR "The provided compiler does not support the C++11 standard" )
-  endif()
-
-  if (NOT CXX_FLAG_WORKS_FTLS_global_dynamic)
+  if (CXX_FLAG_WORKS_FTLS_global_dynamic)
+    set ( CMAKE_CXX_FLAGS "-ftls-model=global-dynamic ${CMAKE_CXX_FLAGS} ")
+  else()
     message( FATAL_ERROR "The provided compiler does not support the flag -ftls-model=global-dynamic" )
   endif()
 
-  if ( DD4HEP_USE_CXX14 )
-    set ( CMAKE_CXX_FLAGS "-std=c++14 -ftls-model=global-dynamic ${CMAKE_CXX_FLAGS} ")
-    set ( DD4HEP_USE_CXX11 OFF ) 
-    set ( DD4HEP_USE_STDCXX 14 )
-    add_definitions(-DDD4HEP_USE_STDCXX=14)
-  else()
-    set ( CMAKE_CXX_FLAGS "-std=c++11 -ftls-model=global-dynamic ${CMAKE_CXX_FLAGS} ")
-    set ( DD4HEP_USE_CXX14 OFF )
-    set ( DD4HEP_USE_STDCXX 11 )
-    add_definitions(-DDD4HEP_USE_STDCXX=11)
-  endif()
+  find_package(Threads REQUIRED)
 
   if ( THREADS_HAVE_PTHREAD_ARG OR CMAKE_USE_PTHREADS_INIT )
     set ( CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS} -pthread")
@@ -294,7 +276,6 @@ function( dd4hep_print_cmake_options )
   dd4hep_print ( "|                     Requires LCIO_DIR to be set                           |")
   dd4hep_print ( "|                     or LCIO in CMAKE_MODULE_PATH                          |")
   dd4hep_print ( "|  DD4HEP_USE_GEAR    Build gear wrapper for backward compatibility OFF     |")
-  dd4hep_print ( "|  DD4HEP_USE_CXX14   Build DD4hep using c++14                      OFF     |")
   dd4hep_print ( "|  BUILD_TESTING      Enable and build tests                        ON      |")
   dd4hep_print ( "|  DD4HEP_USE_PYROOT  Enable 'Detector Builders' based on PyROOT    OFF     |")
   dd4hep_print ( "+---------------------------------------------------------------------------+")
@@ -1326,7 +1307,7 @@ function( dd4hep_add_dictionary dictionary )
     #
     add_custom_command(OUTPUT ${dictionary}.cxx
       COMMAND ${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx
-      -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${DD4HEP_USE_STDCXX} ${inc_dirs} ${headers} ${linkdefs}
+      -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${CMAKE_CXX_STANDARD} ${inc_dirs} ${headers} ${linkdefs}
       DEPENDS ${headers} ${linkdefs} )
     #  Install the binary to the destination directory
     #set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )
