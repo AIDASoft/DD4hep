@@ -963,7 +963,7 @@ endfunction()
 #
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_add_library binary building )
-  cmake_parse_arguments ( ARG "NODEFAULTS" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;PRINT" ${ARGN} )
+    cmake_parse_arguments ( ARG "NODEFAULTS;NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;PRINT" ${ARGN} )
   dd4hep_package_properties( pkg PKG_NAME enabled )
   set ( tag "Library[${pkg}] -> ${binary}" )
   if ( NOT "${ARG_PRINT}" STREQUAL "" )
@@ -1027,9 +1027,11 @@ function( dd4hep_add_library binary building )
         ##dd4hep_print ( "set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})")
         set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})
         #
-        install ( TARGETS ${binary}  
-	  LIBRARY DESTINATION lib 
-	  RUNTIME DESTINATION bin)
+        if ( NOT ${ARG_NOINSTALL} )
+          install ( TARGETS ${binary}  
+            LIBRARY DESTINATION lib 
+            RUNTIME DESTINATION bin)
+        endif()
         set ( building_binary "ON" )
       else()
         dd4hep_print ( "|++> ${tag} Skipped. No sources to be compiled [Use constraint]" )
@@ -1125,7 +1127,10 @@ function( dd4hep_add_plugin binary )
   if ( "${enabled}" STREQUAL "OFF" )
     dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
   else()
-    cmake_parse_arguments(ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS" ${ARGN})
+      cmake_parse_arguments(ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;NOINSTALL" ${ARGN})
+      if ( ${ARG_NOINSTALL} )
+          set(NOINSTALL NOINSTALL)
+      endif()
     get_property(pkg_lib  GLOBAL PROPERTY ${PKG}_LIBRARIES )
     dd4hep_add_library( ${binary} building
       PRINT          ${tag}
@@ -1135,7 +1140,9 @@ function( dd4hep_add_plugin binary )
       INCLUDE_DIRS   ${ARG_INCLUDE_DIRS} 
       USES           ${ARG_USES}
       OPTIONAL       "${ARG_OPTIONAL}"
-      DEFINITIONS    ${ARG_DEFINITIONS} )
+      DEFINITIONS    ${ARG_DEFINITIONS}
+      ${NOINSTALL}
+      )
     #
     # Generate ROOTMAP if the plugin will be built:
     if ( "${building}" STREQUAL "ON" )
