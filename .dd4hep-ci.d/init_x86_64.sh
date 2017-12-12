@@ -84,7 +84,7 @@ export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 #     ROOT
 #--------------------------------------------------------------------------------
 
-export ROOTSYS=${CLICREPO}/software/ROOT/6.10.08/${BUILD_FLAVOUR}
+export ROOTSYS=${CLICREPO}/software/ROOT/6.12.02/${BUILD_FLAVOUR}
 export PYTHONPATH="$ROOTSYS/lib:$PYTHONPATH"
 export PATH="$ROOTSYS/bin:$PATH"
 export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
