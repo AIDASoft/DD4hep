@@ -72,13 +72,13 @@ endif()
 CHECK_PACKAGE_LIBS(DD4hep DDCore)
 
 IF(DD4hep_FIND_COMPONENTS)
-  MESSAGE( STATUS "DD4hep: Looking for Components: ${DD4hep_FIND_COMPONENTS}" )
+  dd4hep_print( "|++> DD4hep: Looking for Components: ${DD4hep_FIND_COMPONENTS}" )
 
   FOREACH(comp ${DD4hep_FIND_COMPONENTS})
     #CHECK_PACKAGE_LIBS is looking for components too, just need to check if they were found, if requested
     STRING( TOUPPER ${comp} _ulibname )
     if(NOT DD4hep_${_ulibname}_FOUND)
-      MESSAGE(FATAL_ERROR "Did not find required component: ${comp}")
+      MESSAGE(FATAL_ERROR "|++> Did not find required component: ${comp}")
     ENDIF()
   ENDFOREACH()
 ENDIF()

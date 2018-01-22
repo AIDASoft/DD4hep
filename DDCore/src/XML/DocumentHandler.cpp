@@ -274,9 +274,16 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname, UriReader* rea
   string path;
   DOMElement* elt = (DOMElement*)base.ptr();
   try  {
-    Strng_t p = _toString(fname);
-    XMLURL ref_url(elt->getBaseURI(), p);
-    path = _toString(ref_url.getURLText());
+    Document doc;
+    Strng_t p = _toString(fname);    
+    path      = _toString(fname);
+    /// This is a bit complicated, but if the primary source is in-memory
+    try  {
+      XMLURL  ref_url(elt->getBaseURI(), p);
+      path = _toString(ref_url.getURLText());
+    }
+    catch(...)   {
+    }
     return load(path, reader);
   }
   catch(const exception& exc)   {
