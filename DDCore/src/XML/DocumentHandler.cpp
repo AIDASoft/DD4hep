@@ -527,20 +527,40 @@ Document DocumentHandler::parse(const char* bytes, size_t /* length */, const ch
              "[URI Resolution is not supported by TiXML]");
   }
   TiXmlDocument* doc = new TiXmlDocument();
-  try {
-    if ( 0 == doc->Parse(bytes) ) {
-      return (XmlDocument*)doc;
+  try  {
+    if ( bytes )   {
+      size_t len = ::strlen(bytes);
+      // TiXml does not support white spaces at the end. Check and remove.
+      if ( bytes[len-1] != 0 || ::isspace(bytes[len-2]) )   {
+        char* buff = new char[len+1];
+        try  {
+          ::memcpy(buff, bytes, len+1);
+          buff[len] = 0;
+          for(size_t i=len-1; ::isspace(buff[i]); --i) buff[i] = 0;
+          if ( 0 == doc->Parse(buff) ) {
+            delete [] buff;
+            return (XmlDocument*)doc;
+          }
+        }
+        catch(...)   {
+        }
+        delete [] buff;
+      }
+      if ( 0 == doc->Parse(bytes) ) {
+        return (XmlDocument*)doc;
+      }
+      if ( doc->Error() ) {
+        printout(FATAL,"DocumentHandler",
+                 "+++ Error (TinyXML) while parsing XML string [%s]",
+                 doc->ErrorDesc());
+        printout(FATAL,"DocumentHandler",
+                 "+++ XML Document error: %s Location Line:%d Column:%d",
+                 doc->Value(), doc->ErrorRow(), doc->ErrorCol());
+        throw runtime_error(string("dd4hep: ")+doc->ErrorDesc());
+      }
+      throw runtime_error("dd4hep: Unknown error while parsing XML document string with TiXml.");
     }
-    if ( doc->Error() ) {
-      printout(FATAL,"DocumentHandler",
-               "+++ Error (TinyXML) while parsing XML string [%s]",
-               doc->ErrorDesc());
-      printout(FATAL,"DocumentHandler",
-               "+++ XML Document error: %s Location Line:%d Column:%d",
-               doc->Value(), doc->ErrorRow(), doc->ErrorCol());
-      throw runtime_error(string("dd4hep: ")+doc->ErrorDesc());
-    }
-    throw runtime_error("dd4hep: Unknown error while parsing XML document with TiXml.");
+    throw runtime_error("dd4hep: FAILED to parse invalid document string [NULL] with TiXml.");
   }
   catch(exception& e) {
     printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(string):%s",e.what());
