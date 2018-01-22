@@ -32,14 +32,14 @@
 
   <detectors>
     <comment>Boxes</comment>
-    <detector id="3" name="B3" type="BoxSegment" vis="B2_vis">
+    <detector id="3" name="B3" type="DD4hep_BoxSegment" vis="B2_vis">
       <comment>Vertical box</comment>
       <material name="Steel235"/>
       <box      x="10"  y="20"   z="30"/>
       <position x="-10" y="30"   z="10"/>
       <rotation x="0"   y="0"    z="0"/>
     </detector>
-    <detector id="3" name="B4" type="BoxSegment" vis="B1_vis">
+    <detector id="3" name="B4" type="DD4hep_BoxSegment" vis="B1_vis">
       <comment>Vertical box</comment>
       <material name="Steel235"/>
       <box      x="10"  y="20"   z="30"/>

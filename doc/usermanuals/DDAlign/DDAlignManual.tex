@@ -110,21 +110,48 @@ To avoid confusion within this document, a few terms need to be defined
 with respect to detector alignment:
 \begin{itemize}\itemcompact
 \item The {\it{ideal geometry}} describes the detector as it was designed.
-    Such a detector is an utopic object, which can never be realized in terms
+    Such a detector is an utopia, which can never be realized in terms
     of the placement of the individual components as such.
-\item The {\it{actual geometry}} describes the real detector 
-    in the configuration at
-    a given time. This includes all the changes i.e. {\it{deltas}} to the 
-    {\it{ideal}} geometry. These changes are also called the 
-    {\it{alignment parameters}}. These parameters typically are only valid 
-    for a defined time interval.
-\item {\it{Realignment}} defines the procedure to apply a new set of
-    temporary {\it{misalignment parameters}} to the ideal geometry. 
-    Such a procedure
-    is applied, if a previously applied set of parameters is no longer valid with
-    respect to the event data to be processed. In short {\it{realignment}}
-    is necessary if the {\it{actual geometry}} of the detector is time dependent.
+\item The {\it{actual geometry}} describes - as a first approximation 
+    to the real world - the real detector at a given time valid for a rather
+    significant amount of time  e.g. for a year of data taking.
+    The {\it{actual geometry}} typically includes corrections deduced 
+    e.g. from optical surveys etc. The {\it{actual geometry}} does not 
+    change during the life-time of an analysis or calibration process. 
+    In the following this is called {\it{Global Alignment}}. 
+    The transformation of the ideal geometry to the actual geometry 
+    is steered by alignment parameters aka {\it{Alignment Deltas}}. 
+    Such {\it{deltas}} may be applied at any level of the geometrical 
+    hierarchy. 
+    In short, the {\it{actual geometry}} results from the {\it{ideal geometry}}
+    after applying the global {\it{Alignment Deltas}} and is then 
+    the {\it{geometry in memory}}. The ROOT geometry
+    toolkit is the only one, which allows for global alignment procedures
+    \footnote{A conversion of this geometry e.g. to Geant4 (using the functionality
+    provided by \DDG allow to simulate distorted geometries with the Geant4 toolkit.}.
+\item {\it{Realignment}} then defines the procedures to correct data 
+    collected in particle collisions. These data are taken with the real, 
+    a priori unknown geometry, which on top of the actual geometry suffers 
+    from small shifts e.g. due to temperature or pressure changes. These 
+    shifts normally are frequently computed by specialized applications 
+    with respect to the to the actual geometry and typically are valid 
+    for relatively short time periods \cal{O}(1 hour). These shifts, called 
+    {\it{Alignment Deltas}}, are used to re-align the detector response 
+    for physics analysis. This process in the following is called 
+    {\it{Local Alignment}}.
+    The handling of the {\it{Alignment Deltas}} for local alignments in fact 
+    is very similar to the handling of detector conditions implemented in the
+    package \DDC\cite{bib:DDCond}. 
+    In section~\ref{sect:ddalign-local-aligments} 
+    this issue is further elaborated.
 \end{itemize}
+
+\noindent
+Technically the {\it{Alignment Deltas}} used for the global alignment 
+and the {\it{Alignment Deltas}} used for the local alignment are identical.
+Though it should be stressed that the use is entirely different:
+Whereas the first actually alter the geometry, the latter are only used 
+to properly interpret the data collected.
 
 \noindent
 \DDA formalizes both the access and the application of alignment parameters 
@@ -175,7 +202,7 @@ the all TPC geometrical dimensions, the alignment and calibration constants
 and other slow varying conditions such as the gas pressure, end-plate 
 temperatures etc. The $Detector$ $Element$ acts as a data concentrator. 
 Applications may access the full experiment geometry and all connected data
-through a singleton object called $LCDD$, which provides 
+through a singleton object of type $Detector$, which provides 
 management, bookkeeping and ownership to the model instances.
 
 \noindent
@@ -260,13 +287,15 @@ a volume it is e.g. irrelevant if the volume is sensitive or not.
   \end{center}
 \end{figure}
 
-
-
 %=============================================================================
-\subsection{Alignment Parameters of Detector Components}
+\section{Global Alignment}
+\label{sect:ddalign-global-aligments}
+%=============================================================================
+\subsection{Global Alignment of Detector Components}
 \label{subsect:ddalign-intro-aligments}
 %=============================================================================
 \noindent
+In this section the backgrounds of the {\it{Global Alignment}} is described.
 Alignment parameters never apply in the same way to {\it{all}} placements of the 
 same volume in this hierarchy. Hence, to (re-)align a volume in the hierarchy
 means to logically lift a full branch of placements from the top volume down to
@@ -354,30 +383,6 @@ rotation or both with a pivot point in the origin. These simplifications
 are supported  in the user interface described in 
 Section~\ref{sec:ddalign-user-manual-ddalign-interface}.
 
-\noindent
-Generally such a behavior can be achieved in two ways. The usage strongly depends
-on the use-case required by the client:
-\begin{enumerate}
-\item either the ideal geometry in memory is changed directly to 
-      reflect the  measured geometry. This approach has the 
-      disadvantage, that all measurement points on a daughter 
-      volume can only be transformed to the global coordinate
-      system using one single transformation. Time-dependent changes of 
-      these transformations cannot be modeled. Hence, for multi-threaded
-      systems this approach is of limited use. However, this is the 
-      perfect approach to simulate distorted geometries. This approach 
-      is naturally supported by the ROOT geometry toolkit.
-\item The second possibility is to not modify the ideal geometry in memory,
-      but to provide instead transformations to move measured coordinates 
-      to their correct place in space. This approach allows to keep 
-      several - also time-dependent - transformations in memory. 
-      Ideal to support multi-threaded data processing frameworks, 
-      which become more and more popular.
-\end{enumerate}
-
-\noindent
-\DDA supports both possibilities as will be described in the following sections.
-
 %=============================================================================
 \begin{figure}[t]
   \begin{center}
@@ -396,14 +401,16 @@ on the use-case required by the client:
 \end{figure}
 
 %=============================================================================
-\subsection{Iterative Application of Alignments}
+\subsection{Iterative Application of Global Alignments}
 \label{subsect:ddalign-intro-iterative-alignments}
 %=============================================================================
 \noindent
-In the general case a given set of alignment parameters is not static and 
-may very well change with time. For this reason it is highly important to 
-support not only one single realignment step.
-Hence, the following scenario is an important use case:
+Technically it is possible to apply global alignment procedures iteratively.
+This however id {\bf{deprecated}} and violates thread safety for the simple reason
+that the {\it{geometry in memory}} is altered. If applied, it is duty of the 
+client framework to ensure that during the change of global alignment 
+no processing of event data is ongoing.
+Hence, the procedure is described here only for completeness:
 \begin{enumerate}\itemcompact
 \item Create the ideal detector using an ideal geometry.
 \item Apply a set of alignment parameters for a given time 
@@ -420,7 +427,7 @@ Section~\ref{sec:ddalign-user-manual-ddalign-interface} the implementation
 to realize this use case is described.
 
 %=============================================================================
-\subsection{Procedures to Determine Alignment Parameters}
+\subsection{Procedures to Determine Global Alignment Parameters}
 \label{subsect:ddalign-intro-determine-alignment-params}
 %=============================================================================
 \noindent
@@ -436,12 +443,11 @@ are, like the alignment parameters, provided in terms of {\it{changes}} with
 respect to the ideal position and hence may be treated in a similar way.
 
 \noindent 
-The survey parameters are - like alignment parameters - accessible to users
+The survey parameters are accessible to users
 through the interface offered by the $DetElement$ objects.
 
-
 %=============================================================================
-\subsection{Simulation of Non-Ideal, Real Detector Geometries}
+\subsection{Simulation of Non-Ideal Detector Geometries}
 \label{subsect:ddalign-intro-simulate-misaligned-geometries}
 %=============================================================================
 \noindent
@@ -480,20 +486,21 @@ section~\ref{sec:ddalign-user-manual-ddalign-global-interface}.
 
 \newpage
 %=============================================================================
-\section{The Global Alignment Interface}
+\subsection{The Global Alignment Interface}
 \label{sec:ddalign-user-manual-ddalign-global-interface}
 %=============================================================================
 
 \noindent
 In this chapter will be documented how to use the $Global$ $Alignment$ 
 interface of \DDA. As already mentioned in 
-section~\ref{}, this interface allows to alter the layout of the 
+section~\ref{sec:ddalign-user-manual-introduction}, 
+this interface allows to alter the layout of the 
 geometry in memory. Use cases are e.g. the simulation of 
 non-ideal geometries.
 
 \noindent
 Global alignment can be applied to detector elements using a specialized
-interface $GlobalDetectorAlignment$~\footnote{See the header file
+interface {\it{GlobalDetectorAlignment}}~\footnote{See the header file
 $DDAlign/GlobalDetectorAlignment.h$ for details.}. This interface 
 provides the API to apply global changes to the geometry provided
 the presence of alignment parameters as shown in the following 
@@ -501,7 +508,8 @@ code snippet:
 
 \begin{code}
   /// First install the global alignment cache to build proper transactions
-  GlobalAlignmentCache* cache = GlobalAlignmentCache::install(lcdd);
+  Detector& detector = ...;
+  GlobalAlignmentCache* cache = GlobalAlignmentCache::install(detector);
   
   /// Now create the tranaction context. There may only be one context present
   GlobalAlignmentStack::create();
@@ -526,15 +534,20 @@ code snippet:
 {\bf{Explanation:}} \\
 \begin{tabular} {l||p{0cm}}
 \docline{Line}{}
-\docline{2}{Install the $GlobalAlignmentCache$. Required to be done
-once. The object is registered to the LCDD instance and kept there.}
-\docline{2-7}{The fact that the classes $GlobalAlignmentCache$ and 
+\docline{3}{Install the $GlobalAlignmentCache$. Required to be done
+once. The object is registered to the $Detector$ instance and kept there.}
+\docline{3-8}{The fact that the classes $GlobalAlignmentCache$ and 
 $GlobalAlignmentStack$ are singletons is not a fundamental issue.
 However, we want to call the XML parser (or other database sources)
 iteratively and currently cannot chain a context (stack).}
-\docline{15-19}{The created stacked entries are automatically released 
+\docline{16-21}{The created stacked entries are automatically released 
 once the transaction is committed.}
 \end{tabular}
+
+\noindent
+Please note, that this interface normally is not directly invoked
+by users, but rather called by plugin mechanisms as the one described below
+capable of reading the global misalignments from XML.
 
 \noindent
 %=============================================================================
@@ -542,13 +555,16 @@ once the transaction is committed.}
 \label{sec:ddalign-user-manual-global-misalignment-manip-xml}
 %=============================================================================
 \noindent
-In this section we describe how to load geometry imperfections and to apply them
+In this section we describe how to load global geometry 
+imperfections and to apply them
 to an existing geometry. Loading the XML file is done automatically using the 
-standard XML loader plugin provided by \DDhep. This plugin is interfaced to 
-the {\tt LCDD} instance and invoked from code as follows:
+standard XML loader plugin provided by \DDhep. This mechanism is favoured and 
+much simpler than programming the global misalignment directly.
+This plugin is interfaced to 
+the {\tt Detector} instance and invoked from code as follows:
 \begin{code}
-    LCDD& lcdd = ....;
-    lcdd.fromXML("file:AlepTPC_alignment.xml");
+    Detector& detector = ....;
+    detector.fromXML("file:AlepTPC_alignment.xml");
 \end{code}
 To fully exploit the capabilities it is important to understand the interpreted 
 structure of the XML file being processed. At the top level of the primary 
@@ -649,15 +665,12 @@ coordinate system of the closest mother-volume in the volume hierarchy,
 i.e. translations, rotations and pivot points are local to the 
 mother coordinate system.
 
-\newpage
 \noindent
 Included files may directly start with the {\tt root} tags {\tt subdetectors}, 
 {\tt detelements} or {\tt detelement} and may recursively include other
 files. Except for the top level these files are processed in the calling context.
+The result of this procedure is shown in Figure~\ref{fig:dd4hep-aligned-hierarchies}.
 
-\vspace{1cm}
-\noindent
-And finally, the result:
 %=============================================================================
 \begin{figure}[h]
   \begin{center}
@@ -681,10 +694,10 @@ In this section we describe how to export geometry imperfections to an XML file.
 A small helper class {\tt AlignmentWriter} achieves this task as shown in 
 the snippet:
 \begin{code}
-  LCDD& lcdd = ....;
-  DetElement top = ....;
+  Detector&  detector = ....;
+  DetElement top = detector.world();
   if ( top.isValid() )   {
-    AlignmentWriter wr(lcdd);
+    AlignmentWriter wr(detector);
     return wr.write(top,output,enable\_transactions);
   }
 \end{code}
@@ -696,14 +709,56 @@ file. The output file conforms to the specifications described in
 Section~\ref{sec:ddalign-user-manual-misalignment-manip-xml} and may later
 be imported by another process.
 
-
-
-
-\vspace{3cm}
 \noindent
-FIXME: This chapter sort of still has to be written!!!!
+{\bf{FIXME: This chapter sort of still has to be written/completed!!!!}}
+
+\newpage
+
+\section{Up to here the manual should be pretty much correct.\\
+Everything below is at least questionable.}
+
+%=============================================================================
+\section{Local Alignment}
+\label{sect:ddalign-local-aligments}
+%=============================================================================
+bla bla bla
 
 %%%% Here we are now.
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\noindent
+Generally such a behavior can be achieved in two ways. The usage strongly depends
+on the use-case required by the client:
+\begin{enumerate}
+\item either the ideal geometry in memory is changed directly to 
+      reflect the  measured geometry. This approach has the 
+      disadvantage, that all measurement points on a daughter 
+      volume can only be transformed to the global coordinate
+      system using one single transformation. Time-dependent changes of 
+      these transformations cannot be modeled. Hence, for multi-threaded
+      systems this approach is of limited use. However, this is the 
+      perfect approach to simulate distorted geometries. This approach 
+      is naturally supported by the ROOT geometry toolkit.
+\item The second possibility is to not modify the ideal geometry in memory,
+      but to provide instead transformations to move measured coordinates 
+      to their correct place in space. This approach allows to keep 
+      several - also time-dependent - transformations in memory. 
+      Ideal to support multi-threaded data processing frameworks, 
+      which become more and more popular.
+\end{enumerate}
+
+\noindent
+\DDA supports both possibilities as will be described in the following sections.
+
+
+
 \vspace{3cm}
 
 \newpage
@@ -908,7 +963,7 @@ There are multiple possibilities to apply alignment parameters:
 In this section we describe how to apply geometry imperfections to an existing 
 detector geometry in memory using {\tt C++}. To apply misalignment to an existing
 geometry two classes are collaborating, the {\tt AlignmentCache} attached to
-the geometry container {\tt LCDD} and a temporary structure the {\tt AlignmentStack}.
+the geometry container {\tt Detector} and a temporary structure the {\tt AlignmentStack}.
 The {\tt AlignmentCache} allows to access all existing alignment entries 
 based on their subdetector.
 The {\tt AlignmentStack} may exist in exactly one instance and is used to
@@ -933,8 +988,8 @@ opening and closing a transaction:
 // Required include file(s)
 #include "DDAlign/AlignmentCache.h"
 
-    LCDD& lcdd = ....;
-    AlignmentCache* cache = lcdd.extension<Geometry::AlignmentCache>();
+    Detector& detector = ....;
+    AlignmentCache* cache = detector.extension<Geometry::AlignmentCache>();
 
     // First things first: open the transaction.
     cache->openTransaction();
@@ -1060,6 +1115,7 @@ the geometry. For further shortcuts in the calling sequence please consult the
 \bibitem{bib:geant4}  S. Agostinelli et al., 
                    "Geant4 - A Simulation Toolkit", \\
                     Nuclear Instruments and Methods {\bf{A}} 506 (2003) 250-303.
+\bibitem{bib:DDCond} M.Frank, "DDCond -- Conditions Support for the DD4hep Geometry Description Toolkit".
 
 \end{thebibliography}
 %=============================================================================

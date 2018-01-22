@@ -147,9 +147,9 @@ MACRO( CHECK_PACKAGE_LIBS _pkgname )
     ENDIF()
 
     IF( NOT ${_pkgname}_FIND_QUIETLY )
-        MESSAGE( STATUS "Check for ${_pkgname}_LIBRARIES: ${_std_libnames}" )
+        MESSAGE( STATUS "|++> Check for ${_pkgname}_LIBRARIES: ${_std_libnames}" )
         IF( _ext_libnames )
-            MESSAGE( STATUS "Check for ${_pkgname}_COMPONENT_LIBRARIES: ${_ext_libnames}" )
+            MESSAGE( STATUS "|++> Check for ${_pkgname}_COMPONENT_LIBRARIES: ${_ext_libnames}" )
         ENDIF()
     ENDIF()
 
@@ -220,7 +220,7 @@ MACRO( CHECK_PACKAGE_LIBS _pkgname )
             LIST( APPEND ${_pkgname}_LIBRARY_DIRS ${_aux} )
 
             IF( NOT ${_pkgname}_FIND_QUIETLY )
-                MESSAGE( STATUS "Check for ${_pkgname}_${_ulibname}_LIBRARY: ${${_pkgname}_${_ulibname}_LIBRARY} -- ok" )
+                MESSAGE( STATUS "|++> Check for ${_pkgname}_${_ulibname}_LIBRARY: ${${_pkgname}_${_ulibname}_LIBRARY} -- ok" )
             ENDIF()
 
         ELSE() # library not found
@@ -234,7 +234,7 @@ MACRO( CHECK_PACKAGE_LIBS _pkgname )
             ENDIF()
 
             IF( NOT ${_pkgname}_FIND_QUIETLY )
-                MESSAGE( STATUS "Check for ${_pkgname}_${_ulibname}_LIBRARY: ${_libname} -- failed" )
+                MESSAGE( STATUS "|++> Check for ${_pkgname}_${_ulibname}_LIBRARY: ${_libname} -- failed" )
             ENDIF()
 
         ENDIF()

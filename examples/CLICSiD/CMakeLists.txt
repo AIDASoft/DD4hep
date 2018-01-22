@@ -145,4 +145,11 @@ if (DD4HEP_USE_GEANT4)
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
+  #
+  # Invoke G4 multi-threading tests if enabled
+  if (Geant4_TLS_MODEL)
+    dd4hep_print("|++> Geant4 Multi-threading ENABLED. Configuring multi-threaded DDG4 tests.")
+  else()
+    dd4hep_print("|++> Geant4 Multi-threading NOT ENABLED. Shall not execute multi-threaded DDG4 tests.")
+  endif()
 endif()

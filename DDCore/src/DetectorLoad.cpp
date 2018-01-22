@@ -34,8 +34,12 @@ namespace dd4hep {
 using namespace dd4hep;
 using namespace std;
 
-/// Default constructor
+/// Default constructor (protected, for sub-classes)
 DetectorLoad::DetectorLoad(Detector* description) : m_detDesc(description)  {
+}
+
+/// Default constructor (public, if used as a handle)
+DetectorLoad::DetectorLoad(Detector& description) : m_detDesc(&description)  {
 }
 
 /// Standard destructor
@@ -60,7 +64,6 @@ void DetectorLoad::processXML(const string& xmlfile, xml::UriReader* entity_reso
   }
 }
 
-
 /// Process XML unit and adopt all data from source structure.
 void DetectorLoad::processXML(const xml::Handle_t& base, const string& xmlfile, xml::UriReader* entity_resolver) {
   try {
@@ -77,6 +80,33 @@ void DetectorLoad::processXML(const xml::Handle_t& base, const string& xmlfile, 
   }
   catch (...) {
     throw runtime_error("dd4hep: UNKNOWN exception while parsing " + xmlfile);
+  }
+}
+
+/// Process XML unit and adopt all data from source string in momory.
+void DetectorLoad::processXMLString(const char* xmldata)   {
+  processXMLString(xmldata, 0);
+}
+
+/// Process XML unit and adopt all data from source string in momory. Subsequent parsers may use the entity resolver.
+void DetectorLoad::processXMLString(const char* xmldata, xml::UriReader* entity_resolver) {
+  try {
+    if ( xmldata)   {
+      xml::DocumentHolder doc(xml::DocumentHandler().parse(xmldata,::strlen(xmldata),"In-Memory",entity_resolver));
+      xml::Handle_t handle = doc.root();
+      processXMLElement("In-Memory-XML",handle);
+      return;
+    }
+    throw runtime_error("DetectorLoad::processXMLString: Invalid XML In-memory source [NULL]");
+  }
+  catch (const xml::XmlException& e) {
+    throw runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception while parsing XML in-memory string.");
+  }
+  catch (const exception& e) {
+    throw runtime_error(string(e.what()) + "\ndd4hep: while parsing XML in-memory string.");
+  }
+  catch (...) {
+    throw runtime_error("dd4hep: UNKNOWN exception while parsing XML in-memory string.");
   }
 }
 

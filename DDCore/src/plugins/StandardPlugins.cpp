@@ -33,6 +33,7 @@
 #include "TGeoElement.h"
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
+#include "TSystem.h"
 #include "TClass.h"
 #include "TRint.h"
 
@@ -144,6 +145,53 @@ static long display(Detector& description, int argc, char** argv) {
   return 0;
 }
 DECLARE_APPLY(DD4hep_GeometryDisplay,display)
+
+/// Basic entry point to execute a public function from a library
+/**
+ *  Factory: DD4hep_Function
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long run_function(Detector&, int argc, char** argv) {
+  string lib, func;
+  std::vector<char*> args;
+  for(int i = 0; i < argc && argv[i]; ++i)  {
+    if ( 0 == ::strncmp("-library",argv[i],4) )
+      lib = argv[++i];
+    else if ( 0 == ::strncmp("-function",argv[i],4) )
+      func = argv[++i];
+    else
+      args.push_back(argv[i]);
+  }
+  if ( lib.empty() || func.empty() )  {
+    cout <<
+      "Usage: -plugin <name> -arg [-arg]                                \n"
+      "     -library   <string> Library to be loaded                    \n"
+      "     -function  <string> name of the entry point to be executed. \n"
+      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+  Func_t f = gSystem->DynFindSymbol("*",func.c_str());
+  int ret;
+  if ( !f )  {
+    ret = gSystem->Load(lib.c_str());
+    if ( ret != 0 )  {
+      except("DD4hep_Function","+++ Failed to load library: %s",lib.c_str());
+    }
+    f = gSystem->DynFindSymbol("*",func.c_str());
+    if ( !f )  {
+      except("DD4hep_Function","+++ Failed to find function %s in library: %s",
+             func.c_str(),lib.c_str());
+    }
+  }
+  typedef int (*call_t)(int, char**);
+  call_t ff  = (call_t)f;
+  ret = (*ff)(args.size(),&args[0]);
+  return ret;
+}
+DECLARE_APPLY(DD4hep_Function,run_function)
 
 /// Basic entry point to start the ROOT interpreter.
 /**

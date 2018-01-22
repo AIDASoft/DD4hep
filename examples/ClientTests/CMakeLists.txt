@@ -185,6 +185,14 @@ endforeach()
 #
 foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiCollections )
   #
+  #  Read data from XML file. Then parse the pure XML string.
+  dd4hep_add_test_reg( ClientTests_parse_xml_string_${test}
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  geoPluginRun -destroy -print WARNING
+          -plugin DD4hep_XML_InMemory -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+          -plugin DD4hep_VolumeDump   -materials
+      REGEX_PASS "\\+\\+\\+ Checked [1-9][0-9]* materials in volume placements.   0 are BAD." )
+  #
   # ROOT Geometry checks
   dd4hep_add_test_reg( ClientTests_check_geometry_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
