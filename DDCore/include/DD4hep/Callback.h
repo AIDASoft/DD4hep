@@ -39,9 +39,9 @@ namespace dd4hep {
   public:
     typedef unsigned long (*func_t)(void* obj, const void* fun, const void* args[]);
     /// Structure definition to store callback related data  \ingroup DD4HEP
-    typedef struct {
+    struct mfunc_t {
       void *first, *second;
-    } mfunc_t;
+    };
     typedef unsigned long ulong;
 
     void* par;

@@ -34,7 +34,7 @@ namespace dd4hep {
    * \version 1.0
    * \ingroup DD4HEP_EVE
    */
-  class dd4hepMenu : public PopupMenu {
+  class DD4hepMenu : public PopupMenu {
   public:
 
   protected:
@@ -43,9 +43,9 @@ namespace dd4hep {
     EventControl* m_evtCtrl;
   public:
     /// Standard constructor
-    dd4hepMenu(Display* eve);
+    DD4hepMenu(Display* eve);
     /// Default destructor
-    virtual ~dd4hepMenu();
+    virtual ~DD4hepMenu();
 
     /// Add the menu to the menu bar
     virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal)  override;
@@ -67,7 +67,7 @@ namespace dd4hep {
     /// Callback when the geometry was loaded
     void OnGeometryLoaded();
     /// ROOT implementation macro
-    ClassDefOverride(dd4hepMenu,0);
+    ClassDefOverride(DD4hepMenu,0);
   };
 
 }      /* End namespace dd4hep      */

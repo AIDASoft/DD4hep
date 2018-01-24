@@ -23,6 +23,8 @@
 #include "DDCond/ConditionsRootPersistency.h"
 #include "DDCond/ConditionsTreePersistency.h"
 
+namespace { class ConditionsDictionary {};   }
+
 // -------------------------------------------------------------------------
 // Regular dd4hep dictionaries
 // -------------------------------------------------------------------------
@@ -36,35 +38,38 @@
 #pragma link C++ namespace dd4hep::cond;
 
 using namespace dd4hep;
+using namespace dd4hep::cond;
 
 // These are necessary to support interactivity
-#pragma link C++ class cond::UserPool-;
-#pragma link C++ class cond::UpdatePool-;
-#pragma link C++ class cond::ConditionsPool-;
-#pragma link C++ class cond::ConditionsManager-;
-#pragma link C++ class cond::ConditionsManagerObject-;
-#pragma link C++ class cond::ConditionsIOVPool-;
-#pragma link C++ class cond::ConditionsContent-;
-#pragma link C++ class cond::ConditionsLoadInfo-;
-#pragma link C++ class cond::ConditionsContent::LoadInfo<std::string>-;
-#pragma link C++ class std::map<Condition::key_type,cond::ConditionsLoadInfo* >-;
-#pragma link C++ class std::map<Condition::key_type,cond::ConditionDependency* >-;
+#pragma link C++ class UserPool-;
+#pragma link C++ class UpdatePool-;
+#pragma link C++ class ConditionsPool-;
+#pragma link C++ class ConditionsManager-;
+#pragma link C++ class ConditionsManagerObject-;
+#pragma link C++ class ConditionsIOVPool-;
+#pragma link C++ class ConditionsContent-;
+#pragma link C++ class ConditionsLoadInfo-;
+#pragma link C++ class ConditionsContent::LoadInfo<std::string>-;
+#pragma link C++ class std::map<Condition::key_type,ConditionsLoadInfo* >-;
+#pragma link C++ class std::map<Condition::key_type,ConditionDependency* >-;
 
 // std::shared_ptr<T> is not yet supported by ROOT!
-//#pragma link C++ class std::shared_ptr<cond::ConditionsPool>-;
-//#pragma link C++ class std::map<IOV::Key,std::shared_ptr<cond::ConditionsPool> >-;
+//#pragma link C++ class std::shared_ptr<ConditionsPool>-;
+//#pragma link C++ class std::map<IOV::Key,std::shared_ptr<ConditionsPool> >-;
 
 // This one we need to save conditions pool to file
 #pragma link C++ class std::pair<std::string,IOV::Key>+;
 #pragma link C++ class std::pair<std::pair<std::string,int>, IOV::Key>+;
 #pragma link C++ class std::pair<std::string,std::pair<std::pair<std::string,int>,IOV::Key> >+;
-#pragma link C++ class std::list<std::pair<std::pair<std::string,std::pair<std::pair<std::string,int>,IOV::Key> >, std::vector<Condition> >+;
 
-//#pragma link C++ class std::list<cond::ConditionsRootPersistency::Pool>+;
-//#pragma link C++ class std::list<cond::ConditionsRootPersistency::IOVPool>+;
+template class std::list< std::pair< std::pair< std::string, std::pair< std::pair<std::string,int>, IOV::Key> >, std::vector<Condition> > >;
+#pragma link C++ class std::list<std::pair<std::pair<std::string,std::pair<std::pair<std::string,int>,IOV::Key> >, std::vector<Condition> > >+;
 
-#pragma link C++ class cond::ConditionsRootPersistency+;
-#pragma link C++ class cond::ConditionsTreePersistency+;
+//#pragma link C++ class std::list<ConditionsRootPersistency::Pool>+;
+//#pragma link C++ class std::list<ConditionsRootPersistency::IOVPool>+;
+
+#pragma link C++ class ConditionsRootPersistency+;
+#pragma link C++ class ConditionsTreePersistency+;
 
 #endif
 

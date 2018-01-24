@@ -22,8 +22,15 @@
 #include "DDG4/Python/Geant4PythonDetectorConstruction.h"
 #include "DDG4/Python/PyDDG4.h"
 
+/// Namespace for the AIDA detector description toolkit
+namespace  {  class DDG4Python {};   }
+
 // CINT configuration
-#if defined(__MAKECINT__)
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
 #pragma link C++ namespace dd4hep;
 #pragma link C++ namespace dd4hep::sim;
 #pragma link C++ class dd4hep::sim::Geant4PythonCall;

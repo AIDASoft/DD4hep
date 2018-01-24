@@ -332,7 +332,7 @@ void Display::BuildMenus(TGMenuBar* bar)   {
     bar = m_eve->GetBrowser()->GetMenuBar();
   }
   if ( 0 == m_dd4Menu )  {
-    m_dd4Menu = new dd4hepMenu(this);
+    m_dd4Menu = new DD4hepMenu(this);
     AddMenu(bar, m_dd4Menu);
   }
   if ( 0 == m_viewMenu && !m_viewConfigs.empty() )  {
