@@ -40,7 +40,7 @@ namespace dd4hep {
   // Forward declarations
   class View;
   class ViewMenu;
-  class dd4hepMenu;
+  class DD4hepMenu;
   class EventHandler;
   class ViewConfiguration;
   class CalodataConfiguration;
@@ -95,7 +95,7 @@ namespace dd4hep {
     /// Reference to the view menu
     ViewMenu*            m_viewMenu;
     /// Reference to the specialized ddeve menu
-    dd4hepMenu*          m_dd4Menu;
+    DD4hepMenu*          m_dd4Menu;
     /// Geometry data topics
     Topics               m_geoTopics;
     /// Event data topics

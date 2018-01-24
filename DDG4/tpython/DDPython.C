@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -26,8 +25,14 @@ struct dd4hepPython {
 };
 
 // CINT configuration
-#if defined(__MAKECINT__)
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
+using namespace dd4hep;
+
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
 #pragma link C++ namespace dd4hep;
-#pragma link C++ class dd4hep::DDPython;
+#pragma link C++ class DDPython;
 #pragma link C++ class dd4hepPython;
 #endif

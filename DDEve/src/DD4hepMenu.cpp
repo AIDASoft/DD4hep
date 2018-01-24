@@ -38,41 +38,41 @@ class TEveWindowSlot;
 using namespace std;
 using namespace dd4hep;
 
-ClassImp(dd4hepMenu)
+ClassImp(DD4hepMenu)
 
 /// Initializing constructor
-dd4hepMenu::dd4hepMenu(Display* display) 
+DD4hepMenu::DD4hepMenu(Display* display) 
 : PopupMenu(display->client().GetRoot()), m_display(display), m_evtCtrl(0)
 {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-dd4hepMenu::~dd4hepMenu()  {
+DD4hepMenu::~DD4hepMenu()  {
   detail::deletePtr(m_evtCtrl);
   InstanceCount::decrement(this);
 }
 
 /// Add the menu to the menu bar
-void dd4hepMenu::Build(TGMenuBar* bar, int hints)    {
+void DD4hepMenu::Build(TGMenuBar* bar, int hints)    {
   int id;
   PopupMenu& m = *this;
-  m.AddEntry("&Load XML",          this, &dd4hepMenu::OnLoadXML);
-  //Not for now: m.AddEntry("&Load ROOT Geometry",this, &dd4hepMenu::OnLoadRootGeometry);
-  id = m.AddEntry("&Show Event I/O",    this, &dd4hepMenu::OnCreateEventIO);
+  m.AddEntry("&Load XML",          this, &DD4hepMenu::OnLoadXML);
+  //Not for now: m.AddEntry("&Load ROOT Geometry",this, &DD4hepMenu::OnLoadRootGeometry);
+  id = m.AddEntry("&Show Event I/O",    this, &DD4hepMenu::OnCreateEventIO);
   m.menu().DisableEntry(id);
-  id = m.AddEntry("&Open Event Data",   this, &dd4hepMenu::OnOpenEventData);
+  id = m.AddEntry("&Open Event Data",   this, &DD4hepMenu::OnOpenEventData);
   m.menu().DisableEntry(id);
-  id = m.AddEntry("&Next Event",        this, &dd4hepMenu::OnNextEvent);
+  id = m.AddEntry("&Next Event",        this, &DD4hepMenu::OnNextEvent);
   m.menu().DisableEntry(id);
-  id = m.AddEntry("&Previous Event",    this, &dd4hepMenu::OnPreviousEvent);
+  id = m.AddEntry("&Previous Event",    this, &DD4hepMenu::OnPreviousEvent);
   m.menu().DisableEntry(id);
-  m.AddEntry("&Exit",              this, &dd4hepMenu::OnExit);
+  m.AddEntry("&Exit",              this, &DD4hepMenu::OnExit);
   bar->AddPopup("&dd4hep",*this, new TGLayoutHints(hints, 0, 4, 0, 0));
 }
 
 /// Callback when the geometry was loaded
-void dd4hepMenu::OnGeometryLoaded()   {
+void DD4hepMenu::OnGeometryLoaded()   {
   TGPopupMenu& m = menu();
   m.DisableEntry(m.GetEntry("Load XML")->GetEntryId());
   m.EnableEntry(m.GetEntry("Show Event I/O")->GetEntryId());
@@ -82,7 +82,7 @@ void dd4hepMenu::OnGeometryLoaded()   {
 }
 
 /// Callback when loading the configuration
-void dd4hepMenu::OnLoadXML(TGMenuEntry* /* entry */, void* /* ptr */)  {
+void DD4hepMenu::OnLoadXML(TGMenuEntry* /* entry */, void* /* ptr */)  {
   std::string fname = m_display->OpenXmlFileDialog(".");
   if ( !fname.empty() )  {
     m_display->LoadXML(fname.c_str());
@@ -91,7 +91,7 @@ void dd4hepMenu::OnLoadXML(TGMenuEntry* /* entry */, void* /* ptr */)  {
 }
 
 /// Callback when loading the configuration
-void dd4hepMenu::OnLoadRootGeometry(TGMenuEntry* /* entry */, void* /* ptr */)  {
+void DD4hepMenu::OnLoadRootGeometry(TGMenuEntry* /* entry */, void* /* ptr */)  {
   std::string fname = m_display->OpenEventFileDialog(".");
   if ( !fname.empty() )  {
     m_display->LoadGeometryRoot(fname.c_str());
@@ -99,7 +99,7 @@ void dd4hepMenu::OnLoadRootGeometry(TGMenuEntry* /* entry */, void* /* ptr */)  
 }
 
 /// Callback to show the event I/O panel
-void dd4hepMenu::OnCreateEventIO(TGMenuEntry* /* entry */, void* /* ptr */)  {
+void DD4hepMenu::OnCreateEventIO(TGMenuEntry* /* entry */, void* /* ptr */)  {
   if ( 0 == m_evtCtrl )  {
     TEveBrowser* browser = m_display->manager().GetBrowser();
     browser->StartEmbedding(TRootBrowser::kLeft);
@@ -112,7 +112,7 @@ void dd4hepMenu::OnCreateEventIO(TGMenuEntry* /* entry */, void* /* ptr */)  {
 }
 
 /// Callback when loading a new event data file
-void dd4hepMenu::OnOpenEventData(TGMenuEntry* /* entry */, void* /* ptr */)  {
+void DD4hepMenu::OnOpenEventData(TGMenuEntry* /* entry */, void* /* ptr */)  {
   if ( 0 == m_evtCtrl )  {
     OnCreateEventIO(0,0);
   }
@@ -125,17 +125,17 @@ void dd4hepMenu::OnOpenEventData(TGMenuEntry* /* entry */, void* /* ptr */)  {
 }
 
 /// Callback when loading the next event
-void dd4hepMenu::OnNextEvent(TGMenuEntry* /* entry */, void* /* ptr */)  {
+void DD4hepMenu::OnNextEvent(TGMenuEntry* /* entry */, void* /* ptr */)  {
   m_display->eventHandler().NextEvent();
 }
 
 /// Callback when loading the previous event
-void dd4hepMenu::OnPreviousEvent(TGMenuEntry* /* entry */, void* /* ptr */)  {
+void DD4hepMenu::OnPreviousEvent(TGMenuEntry* /* entry */, void* /* ptr */)  {
   m_display->eventHandler().PreviousEvent();
 }
 
 /// Callback when exiting the display
-void dd4hepMenu::OnExit(TGMenuEntry* /* entry */, void* /* ptr */)    {
+void DD4hepMenu::OnExit(TGMenuEntry* /* entry */, void* /* ptr */)    {
   delete m_display;
   printout(INFO,"DDEve","+++ The life of this display instance ended.... good bye!");
   gSystem->Exit(0,kTRUE);

@@ -43,6 +43,8 @@ namespace dd4hep {
   namespace sim { }
 }
 
+namespace { class DDG4Dict {};   }
+
 // CINT configuration
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 #pragma link off all globals;

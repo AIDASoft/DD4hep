@@ -16,6 +16,10 @@ dd4hep_package(    DDEve
 #---Add Plugin Library-----------------------------------------------------
 dd4hep_add_dictionary ( G__DDEve
   SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h include/DDEve/*.h
+  EXCLUDE include/DDEve/Utilities.h
+  include/DDEve/ParticleActors.h
+  include/DDEve/HitActors.h
+  include/DDEve/Factories.h
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
   )
 #

@@ -32,6 +32,8 @@
 #include "DDG4/DDG4Dict.h"
 #include "DDEve/DDEveEventData.h"
 
+namespace { class DDG4IO {}; }
+
 // CINT configuration
 #if defined(__MAKECINT__) || defined(__CINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 namespace dd4hep { namespace sim {
@@ -39,6 +41,7 @@ namespace dd4hep { namespace sim {
     typedef Geant4Calorimeter SimpleCalorimeter;
     typedef Geant4HitData     SimpleHit;
   }}
+
 #else
 
 // C/C++ include files
