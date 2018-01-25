@@ -119,12 +119,15 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       printout(ALWAYS,"DD4hepRootPersistency","+++ loaded %ld nominals....",persist->nominals.size());
       DetectorData* tar_data = dynamic_cast<DetectorData*>(&description);
       DetectorData* src_data = dynamic_cast<DetectorData*>(source);
-      tar_data->adoptData(*src_data,false);
-      TTimeStamp stop;
-      printout(ALWAYS,"DD4hepRootPersistency",
-               "+++ Successfully loaded detector description from file:%s  [%8.3f seconds]",
-               fname, stop.AsDouble()-start.AsDouble());
-      return 1;
+      if( tar_data != nullptr && src_data != nullptr ){
+        tar_data->adoptData(*src_data,false);
+        TTimeStamp stop;
+        printout(ALWAYS,"DD4hepRootPersistency",
+                 "+++ Successfully loaded detector description from file:%s  [%8.3f seconds]",
+                 fname, stop.AsDouble()-start.AsDouble());
+        return 1;
+      }
+      return 0;
     }
     printout(ERROR,"DD4hepRootPersistency",
              "+++ Cannot Cannot load instance '%s' from file '%s'.",
