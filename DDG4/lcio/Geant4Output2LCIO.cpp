@@ -152,17 +152,19 @@ Geant4Output2LCIO::~Geant4Output2LCIO()  {
 }
 
 // Callback to store the Geant4 run information
-void Geant4Output2LCIO::beginRun(const G4Run* )  {
+void Geant4Output2LCIO::beginRun(const G4Run* run)  {
   if ( 0 == m_file && !m_output.empty() )   {
     G4AutoLock protection_lock(&action_mutex);
     m_file = lcio::LCFactory::getInstance()->createLCWriter();
     m_file->open(m_output,lcio::LCIO::WRITE_NEW);
   }
+  
+  saveRun(run);
 }
 
 /// Callback to store the Geant4 run information
 void Geant4Output2LCIO::endRun(const G4Run* run)  {
-  saveRun(run);
+  // saveRun(run);
 }
 
 /// Commit data at end of filling procedure
