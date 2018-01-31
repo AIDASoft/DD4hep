@@ -59,7 +59,7 @@ BUILD_FLAVOUR=x86_64-${OS}-${COMPILER_VERSION}-${BUILD_TYPE}
 #--------------------------------------------------------------------------------
 
 if [[ ${COMPILER_TYPE} == "gcc" && ${OS} != "mac1013" ]]; then
-    source ${CLICREPO}/compilers/gcc/7.2.0/x86_64-${OS}/setup.sh
+    source ${CLICREPO}/compilers/gcc/7.3.0/x86_64-${OS}/setup.sh
 fi
 if [[ ${COMPILER_TYPE} == "llvm" && ${OS} != "mac1013" ]]; then
     source ${CLICREPO}/compilers/llvm/5.0.0/x86_64-${OS}/setup.sh
