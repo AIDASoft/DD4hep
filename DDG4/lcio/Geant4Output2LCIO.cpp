@@ -53,7 +53,12 @@ namespace dd4hep {
     protected:
       lcio::LCWriter*  m_file;
       int              m_runNo;
+      int              m_runNumberOffset;
+      int              m_eventNumberOffset;
       std::map< std::string, std::string > m_runHeader;
+      std::map< std::string, std::string > m_eventParametersInt;
+      std::map< std::string, std::string > m_eventParametersFloat;
+      std::map< std::string, std::string > m_eventParametersString;
 
       /// Data conversion interface for MC particles to LCIO format
       lcio::LCCollectionVec* saveParticles(Geant4ParticleMap* particles);
@@ -78,7 +83,33 @@ namespace dd4hep {
 
       /// begin-of-event callback - creates LCIO event and adds it to the event context
       virtual void begin(const G4Event* event);
+    protected:
+      /// Fill event parameters in LCIO event
+      template <typename T>
+      void saveEventParameters(lcio::LCEventImpl* event, const std::map<std::string, std::string >& parameters);
     };
+    
+    /// Fill event parameters in LCIO event
+    template <typename T>
+    inline void Geant4Output2LCIO::saveEventParameters(lcio::LCEventImpl* event, const std::map<std::string, std::string >& parameters)  {
+      for(std::map<std::string, std::string >::const_iterator iter = parameters.begin(), endIter = parameters.end() ; iter != endIter ; ++iter)  {
+        T parameter;
+        std::istringstream iss(iter->second);
+        if ( (iss >> parameter).fail() )  {
+          printout(FATAL,"saveEventParameters","+++ Event parameter %s: FAILED to convert to type :%s",iter->first.c_str(),typeid(T).name());
+          continue;
+        }
+        event->parameters().setValue(iter->first,parameter);
+      }
+    }
+
+    /// Fill event parameters in LCIO event - std::string specialization
+    template <>
+    inline void Geant4Output2LCIO::saveEventParameters<std::string>(lcio::LCEventImpl* event, const std::map<std::string, std::string >& parameters)  {
+      for(std::map<std::string, std::string >::const_iterator iter = parameters.begin(), endIter = parameters.end() ; iter != endIter ; ++iter)  {
+        event->parameters().setValue(iter->first,iter->second);
+      }
+    }
 
   }    // End namespace sim
 }      // End namespace dd4hep
@@ -135,9 +166,14 @@ DECLARE_GEANT4ACTION(Geant4Output2LCIO)
 
 /// Standard constructor
 Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
-: Geant4OutputAction(ctxt,nam), m_file(0), m_runNo(0)
+: Geant4OutputAction(ctxt,nam), m_file(0), m_runNo(0), m_runNumberOffset(0), m_eventNumberOffset(0)
 {
   declareProperty("RunHeader", m_runHeader);
+  declareProperty("EventParametersInt",    m_eventParametersInt);
+  declareProperty("EventParametersFloat",  m_eventParametersFloat);
+  declareProperty("EventParametersString", m_eventParametersString);
+  declareProperty("RunNumberOffset", m_runNumberOffset);
+  declareProperty("EventNumberOffset", m_eventNumberOffset);
   InstanceCount::increment(this);
 }
 
@@ -163,7 +199,7 @@ void Geant4Output2LCIO::beginRun(const G4Run* run)  {
 }
 
 /// Callback to store the Geant4 run information
-void Geant4Output2LCIO::endRun(const G4Run* run)  {
+void Geant4Output2LCIO::endRun(const G4Run* /*run*/)  {
   // saveRun(run);
 }
 
@@ -186,9 +222,10 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   for (std::map< std::string, std::string >::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {
     rh->parameters().setValue( it->first, it->second );
   }
+  m_runNo = m_runNumberOffset > 0 ? m_runNumberOffset + run->GetRunID() : run->GetRunID();
   rh->parameters().setValue("GEANT4Version", G4Version);
   rh->parameters().setValue("DD4HEPVersion", versionString());
-  rh->setRunNumber(m_runNo=run->GetRunID());
+  rh->setRunNumber(m_runNo);
   rh->setDetectorName(context()->detectorDescription().header().name());
   m_file->writeRunHeader(rh);
 }
@@ -312,10 +349,14 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
+  const int eventNumber = m_eventNumberOffset > 0 ? m_eventNumberOffset + ctxt.context->GetEventID() : ctxt.context->GetEventID();
+  print("+++ Saving LCIO event %d run %d ....", eventNumber, m_runNo);
   e->setRunNumber(m_runNo);
-  e->setEventNumber(ctxt.context->GetEventID());
+  e->setEventNumber(eventNumber);
   e->setDetectorName(context()->detectorDescription().header().name());
-  e->setRunNumber(m_runNo);
+  saveEventParameters<int>(e, m_eventParametersInt);
+  saveEventParameters<float>(e, m_eventParametersFloat);
+  saveEventParameters<std::string>(e, m_eventParametersString);
   lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
   Geant4ParticleMap* part_map = context()->event().extension<Geant4ParticleMap>(false);
   if ( part_map )   {
@@ -339,3 +380,4 @@ void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
   lcio::LCCollectionVec* col = cnv(_Args(context(),collection));
   evt->addCollection(col,hc_nam);
 }
+
