@@ -22,8 +22,12 @@
 #define DD4HEP_DDCORE_BASICGRAMMAR_INL_H
 
 // Framework include files
+#include "DD4hep/config.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/detail/Grammar.h"
+#include "Evaluator/Evaluator.h"
+#include "Parsers/spirit/Parsers.h"
+#include "Parsers/spirit/ToStream.h"
 
 #if defined(DD4HEP_PARSER_HEADER)
 
@@ -32,13 +36,9 @@
 // and the dd4hep namespace is renamed!
 #include DD4HEP_PARSER_HEADER
 
-#else
-
-#include "DDParsers/Parsers.h"
-#include "DDParsers/ToStream.h"
-#include "DDParsers/Evaluator.h"
-namespace dd4hep { XmlTools::Evaluator& g4Evaluator();  }
 #endif
+
+namespace dd4hep { XmlTools::Evaluator& g4Evaluator();  }
 namespace {  static XmlTools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 
 // C/C++ include files

@@ -10,9 +10,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONFIG_H
-#define DD4HEP_CONFIG_H
+//
+// Setup XML parsing for the use of Apache Xerces-C and TiXml
+//
+//==========================================================================
+#ifndef DD4HEP_DDCORE_CONFIG_H
+#define DD4HEP_DDCORE_CONFIG_H
 
+#include "Parsers/config.h"
 #define DD4HEP_INSTANCE_COUNTS 1
 #define DD4HEP_USE_SAFE_CAST   1
 
@@ -24,12 +29,4 @@
 #define DECREMENT_COUNTER
 #endif
 
-/// Namespace for the AIDA detector description toolkit
-namespace dd4hep {
-
-  /// Namespace for implementation details of the AIDA detector description toolkit
-  namespace detail {
-
-  } /* End namespace detail  */
-} /*   End namespace dd4hep    */
-#endif    /* DD4HEP_CONFIG_H         */
+#endif // DD4HEP_DDCORE_CONFIG_H

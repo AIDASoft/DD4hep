@@ -12,7 +12,6 @@
 //==========================================================================
 
 // Framework include files
-#include "XML/XMLDetector.h"
 #include "XML/XMLDimension.inl"
 #include "XML/XMLChildValue.inl"
 
@@ -20,6 +19,5 @@
 #define DD4HEP_DIMENSION_NS xml
 using namespace dd4hep::DD4HEP_DIMENSION_NS;
 
-#include "XML/detail/Detector.imp"
-#include "XML/detail/Dimension.imp"
-#include "XML/detail/ChildValue.imp"
+#include "Parsers/detail/Dimension.imp"
+#include "Parsers/detail/ChildValue.imp"

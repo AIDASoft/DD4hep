@@ -12,6 +12,7 @@
 //  \version  1.0
 //
 //==========================================================================
+#ifndef DD4HEP_NONE
 
 // Framework include files
 #include "DD4hep/Objects.h"
@@ -130,3 +131,5 @@ void dd4hep::xml::parse_sequence(xml_h e, OpaqueDataBlock& block)    {
            "++ Failed to convert unknown sequence conditions type: %s",typ.c_str());
   }
 }
+
+#endif

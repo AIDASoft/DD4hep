@@ -18,7 +18,7 @@
 #include "XML/XMLChildValue.h"
 
 #define DD4HEP_DIMENSION_NS xml
-#include "XML/detail/ChildValue.inl"
+#include "Parsers/detail/ChildValue.inl"
 #undef  DD4HEP_DIMENSION_NS
 
 #endif    /* DD4HEP_XML_XMLCHILDVALUE_INL */

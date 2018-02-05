@@ -10,6 +10,7 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#ifndef DD4HEP_NONE
 
 // Framework include files
 #include "XML/Utilities.h"
@@ -130,3 +131,4 @@ void  dd4hep::xml::setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElem
              det_name.c_str() ) ; 
   }
 }
+#endif

@@ -21,7 +21,6 @@
 
 // Framework include files
 #include "XML/config.h"
-//#include "DD4hep/Primitives.h"
 
 #ifndef RAD_2_DEGREE
 #define RAD_2_DEGREE 57.295779513082320876798154814105

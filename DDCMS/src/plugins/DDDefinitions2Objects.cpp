@@ -30,6 +30,7 @@
 #include "DDCMS/DDCMS.h"
 
 // Root/TGeo include files
+#include "TSystem.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
 
@@ -636,10 +637,16 @@ template <> void Converter<box>::operator()(xml_h element) const {
 
 /// DD4hep specific Converter for <Include/> tags: process only the constants
 template <> void Converter<include_load>::operator()(xml_h element) const   {
-  xml::Document doc = xml::DocumentHandler().load(element, element.attr_value(_U(ref)));
-  string fname = xml::DocumentHandler::system_path(doc.root());
+  TString fname = element.attr<string>(_U(ref)).c_str();
+  const char* path = gSystem->Getenv("DDCMS_XML_PATH");
+  xml::Document doc;
+  if ( path && gSystem->FindFile(path,fname) )
+    doc = xml::DocumentHandler().load(fname.Data());
+  else
+    doc = xml::DocumentHandler().load(element, element.attr_value(_U(ref)));
+  fname = xml::DocumentHandler::system_path(doc.root());
   printout(_param<ParsingContext>()->debug_includes ? ALWAYS : DEBUG,
-           "DDCMS","+++ Processing the CMS detector description %s",fname.c_str());
+           "DDCMS","+++ Processing the CMS detector description %s",fname.Data());
   _option<resolve>()->includes.push_back(doc);
 }
 

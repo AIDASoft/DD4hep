@@ -10,15 +10,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_XML_PRINTOUT_H
-#define DD4HEP_DDCORE_XML_PRINTOUT_H
+#ifndef DD4HEP_XML_PRINTOUT_H
+#define DD4HEP_XML_PRINTOUT_H
 
 // Forwarding printout functionality to dd4hep
-/** Note: This is necessary to use the XML functionality as a standalone 
+/** Note: This is necessary to use the JSON functionality as a standalone 
  *        utility without the need to externalize the world.
  *
  *  See the externalized header in doc/externalize for details.
  */
-#include "DD4hep/Printout.h"
+#include "Parsers/Printout.h"
 
-#endif   /* DD4HEP_DDCORE_XML_PRINTOUT_H  */
+#endif   /* DD4HEP_XML_PRINTOUT_H  */

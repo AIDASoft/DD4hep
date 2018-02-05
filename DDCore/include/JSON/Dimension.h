@@ -18,7 +18,7 @@
 #include "JSON/Tags.h"
 
 #define DD4HEP_DIMENSION_NS json
-#include "XML/detail/Dimension.h"
+#include "Parsers/detail/Dimension.h"
 #undef DD4HEP_DIMENSION_NS
 
 #endif    /* DD4HEP_JSON_DIMENSION_H   */

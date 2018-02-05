@@ -18,7 +18,7 @@
 #include "DDG4/Geant4Vertex.h"
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4GeneratorAction.h"
-#include "DDParsers/Parsers.h"
+#include "Parsers/Parsers.h"
 
 // C/C++ include files
 #include <vector>
@@ -73,15 +73,15 @@ namespace dd4hep  {
        */
       template <typename T>
       void _getParameterValue( std::map< std::string, std::string > & parameters,
-			       std::string const& parameterName,
-			       T& parameter, T defaultValue ) {
+                               std::string const& parameterName,
+                               T& parameter, T defaultValue ) {
 
-	if( parameters.find( parameterName ) != parameters.end() ) {
-	  dd4hep::Parsers::parse( parameter, parameters.at( parameterName ) );
-	  parameters.erase( parameterName );
-	} else {
-	  parameter = defaultValue;
-	}
+        if( parameters.find( parameterName ) != parameters.end() ) {
+          dd4hep::Parsers::parse( parameter, parameters.at( parameterName ) );
+          parameters.erase( parameterName );
+        } else {
+          parameter = defaultValue;
+        }
       }
 
     public:
@@ -158,8 +158,8 @@ namespace dd4hep  {
     public:
       /// Read an event and return a LCCollectionVec of MCParticles.
       int readParticles(int event_number,
-			Vertices&  vertices,
-			Particles& particles);
+                        Vertices&  vertices,
+                        Particles& particles);
       /// helper to report Geant4 exceptions
       std::string issue(int i) const;
 

@@ -18,7 +18,7 @@
 
 /// Include the implementation in the proper namespace
 #define DD4HEP_DIMENSION_NS json
-#include "XML/detail/Detector.h"
+#include "Parsers/detail/Detector.h"
 #undef DD4HEP_DIMENSION_NS
 
 #endif    /* DD4HEP_JSON_DETECTOR_H   */

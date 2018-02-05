@@ -10,13 +10,15 @@
 #
 #=================================================================================
 dd4hep_package(    DDParsers
-  USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
+  USES             [ROOT REQUIRED]
+  OPTIONAL         XERCESC
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDParsers )
+  INSTALL_INCLUDES include/Evaluator include/Parsers )
 
 dd4hep_add_package_library ( DDParsers
   INCLUDE_DIRS
   LINK_LIBRARIES
-  SOURCES        src/*.cpp src/Evaluator/*.cpp 
-  OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
+  SOURCES        src/Parsers/*.cpp src/Evaluator/*.cpp
+  OPTIONAL       [BOOST SOURCES src/Spirit/*.cpp]
   )
+

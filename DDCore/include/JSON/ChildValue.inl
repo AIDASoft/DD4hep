@@ -17,7 +17,7 @@
 #include "JSON/ChildValue.h"
 
 #define DD4HEP_DIMENSION_NS json
-#include "XML/detail/ChildValue.inl"
+#include "Parsers/detail/ChildValue.inl"
 #undef  DD4HEP_DIMENSION_NS
 
 #endif /* DD4HEP_JSONCHILDVALUE_INL  */

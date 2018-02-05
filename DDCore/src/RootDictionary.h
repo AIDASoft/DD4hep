@@ -17,7 +17,7 @@
 #define DD4HEP_DDCORE_ROOTDICTIONARY_H
 
 // Framework include files
-#include "DDParsers/Evaluator.h"
+#include "Evaluator/Evaluator.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/detail/Grammar.h"

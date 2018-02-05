@@ -18,7 +18,7 @@
 #include "XML/XMLTags.h"
 
 #define DD4HEP_DIMENSION_NS xml
-#include "XML/detail/Dimension.h"
+#include "Parsers/detail/Dimension.h"
 #undef  DD4HEP_DIMENSION_NS
 
 #endif    /* DD4HEP_XML_XMLDIMENSION_H   */

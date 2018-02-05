@@ -12,7 +12,6 @@
 //==========================================================================
 
 // Framework include files
-#include "JSON/Detector.h"
 #include "JSON/Dimension.inl"
 #include "JSON/ChildValue.inl"
 
@@ -20,6 +19,5 @@
 #define DD4HEP_DIMENSION_NS json
 using namespace dd4hep::DD4HEP_DIMENSION_NS;
 
-#include "XML/detail/Detector.imp"
-#include "XML/detail/Dimension.imp"
-#include "XML/detail/ChildValue.imp"
+#include "Parsers/detail/Dimension.imp"
+#include "Parsers/detail/ChildValue.imp"

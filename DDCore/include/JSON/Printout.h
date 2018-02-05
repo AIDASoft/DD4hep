@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_JSON_PRINTOUT_H
-#define DD4HEP_DDCORE_JSON_PRINTOUT_H
+#ifndef DD4HEP_JSON_PRINTOUT_H
+#define DD4HEP_JSON_PRINTOUT_H
 
 // Forwarding printout functionality to dd4hep
 /** Note: This is necessary to use the JSON functionality as a standalone 
@@ -19,6 +19,6 @@
  *
  *  See the externalized header in doc/externalize for details.
  */
-#include "DD4hep/Printout.h"
+#include "Parsers/Printout.h"
 
-#endif   /* DD4HEP_DDCORE_JSON_PRINTOUT_H  */
+#endif   /* DD4HEP_JSON_PRINTOUT_H  */
