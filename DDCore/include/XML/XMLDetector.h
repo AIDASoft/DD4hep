@@ -17,7 +17,7 @@
 #include "XML/XMLDimension.h"
 
 #define DD4HEP_DIMENSION_NS xml
-#include "XML/detail/Detector.h"
+#include "Parsers/detail/Detector.h"
 #undef  DD4HEP_DIMENSION_NS
 
 #endif    /* DD4HEP_XMLDETECTOR_H    */

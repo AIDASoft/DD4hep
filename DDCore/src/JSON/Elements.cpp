@@ -15,7 +15,6 @@
 #include "JSON/Printout.h"
 #include "JSON/Evaluator.h"
 #include "JSON/Elements.h"
-//#include "XML/XMLTags.h"
 
 // C/C++ include files
 #include <iostream>

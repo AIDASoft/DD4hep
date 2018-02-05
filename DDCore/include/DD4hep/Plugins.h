@@ -13,6 +13,9 @@
 #ifndef DD4HEP_PLUGINS_H
 #define DD4HEP_PLUGINS_H
 
+// Framework include files
+#include "DD4hep/config.h"
+
 // ROOT include files
 #ifndef __CINT__
 #include <string>

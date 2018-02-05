@@ -13,6 +13,9 @@
 #ifndef DD4HEP_DDG4_BASICGRAMMAR_H
 #define DD4HEP_DDG4_BASICGRAMMAR_H
 
+// Framework include files
+#include "DD4hep/config.h"
+
 // C/C++ include files
 #include <string>
 #include <typeinfo>

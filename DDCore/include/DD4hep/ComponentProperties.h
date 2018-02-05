@@ -14,6 +14,7 @@
 #define DD4HEP_DDG4_COMPONENTPROPERTIES_H
 
 // Framework include files
+#include "DD4hep/config.h"
 
 // C/C++ include files
 #include <algorithm>
@@ -205,6 +206,10 @@ namespace dd4hep {
     size_t size()  const;
     /// Check for existence
     bool exists(const std::string& name) const;
+    /// Access to the property container
+    Properties& properties()  {  return m_properties;  }
+    /// Access to the property container
+    const Properties& properties()  const  {  return m_properties;  }
     /// Access property by name (CONST)
     const Property& property(const std::string& name) const;
     /// Access property by name

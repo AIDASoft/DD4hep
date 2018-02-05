@@ -17,6 +17,8 @@
 #ifndef DD4HEP_XML_CONFIG_H
 #define DD4HEP_XML_CONFIG_H
 
+#include "Parsers/config.h"
+
 #if      defined(DD4HEP_USE_TINYXML)
 #define  __TIXML__
 #endif
@@ -56,4 +58,4 @@ namespace dd4hep {
 #else   // Xerces-C
 #define XML_IMPLEMENTATION_TYPE " Apache Xerces-C DOM Parser"
 #endif  // __TIXML__
-#endif // DD4HEP_XML_CONFIG_H
+#endif  // DD4HEP_XML_CONFIG_H

@@ -64,8 +64,7 @@ void AlignmentObject::clear()   {
 }
 
 
-#include "DDParsers/Parsers.h"
-#include "DDParsers/ToStream.h"
+#include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentObject)
 
 #include "DD4hep/detail/BasicGrammar_inl.h"

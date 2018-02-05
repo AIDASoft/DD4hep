@@ -14,7 +14,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/detail/Handle.inl"
-#include "DDParsers/Evaluator.h"
+#include "Evaluator/Evaluator.h"
 #include <iostream>
 #include <iomanip>
 #include <climits>

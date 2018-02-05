@@ -10,9 +10,9 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
-#include "DDParsers/Evaluator.h"
-#include "DDParsers/DD4hepUnits.h"
+#include "Parsers/config.h"
+#include "Evaluator/Evaluator.h"
+#include "Evaluator/DD4hepUnits.h"
 namespace units = dd4hep;
 
 namespace {
@@ -53,6 +53,7 @@ namespace {
 }
 
 namespace dd4hep {
+
   XmlTools::Evaluator& evaluator() {
     static XmlTools::Evaluator* e = 0;
     if ( !e )   {

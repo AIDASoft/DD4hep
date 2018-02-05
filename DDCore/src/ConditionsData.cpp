@@ -77,8 +77,7 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
   return *this;
 }
 
-#include "DDParsers/Parsers.h"
-#include "DDParsers/ToStream.h"
+#include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(AbstractMap)
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ConditionsInterna.h"

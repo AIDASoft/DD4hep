@@ -10,6 +10,7 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#ifndef DD4HEP_NONE
 
 // Framework include files
 #include "DD4hep/Primitives.h"
@@ -128,4 +129,4 @@ Layering::~Layering(){
   for_each(layers.begin(), layers.end(), detail::deletePtr<Layer>);
   layers.clear();
 }
-
+#endif

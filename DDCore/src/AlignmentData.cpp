@@ -201,8 +201,7 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
-#include "DDParsers/Parsers.h"
-#include "DDParsers/ToStream.h"
+#include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(Delta)
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
 
