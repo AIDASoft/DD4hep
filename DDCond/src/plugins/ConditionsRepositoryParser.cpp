@@ -430,7 +430,7 @@ namespace dd4hep {
  */
 static long setup_repository_loglevel(Detector& /* description */, int argc, char** argv)  {
   if ( argc == 1 )  {
-    s_parseLevel = printLevel(argv[1]);
+    s_parseLevel = printLevel(argv[0]);
     return 1;
   }
   except("ConditionsXMLRepositoryPrintLevel","++ Invalid plugin arguments: %s",
