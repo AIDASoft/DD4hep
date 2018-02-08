@@ -24,7 +24,7 @@ namespace dd4hep {
       StructExtension() : T()  { } 
       StructExtension(const StructExtension<T>& t) : T(t) {} 
       StructExtension(const T& t) : T(t) {} 
-      StructExtension(const DetElement&) : T()  {}
+      StructExtension(const DetElement& d) : T( *d.extension<T>() )  {}
       StructExtension(const StructExtension<T>& t, const DetElement&) : T(t) {}
     };
 
