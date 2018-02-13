@@ -24,6 +24,7 @@
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
 
+#include <sstream>
 #include <iostream>
 
 using namespace dd4hep;
@@ -304,19 +305,75 @@ void Geant4ParticleHandle::dumpWithMomentumAndVertex(int level, const std::strin
            text);
 }
 
+void Geant4ParticleHandle::header4(int level, const std::string& src, const char* tag)  {
+  printout((dd4hep::PrintLevel)level,src,
+           "+++ %s %10s/%-7s %12s/%-10s %6s/%-6s %4s %4s "
+           "%-4s %-3s %-3s %-10s "
+           "%-5s %-6s %-3s %-3s  %-20s %s",
+           tag,"ID", "G4-ID", "Part-Name","PDG", "Parent","G4-ID", "#Par","#Dau",
+           "Prim","Sec",">E","Energy",
+           "EMPTY","STAB","DEC","DOC", 
+           "Process", "Processing Flags");
+}
+
 void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* tag) const  {
   Geant4ParticleHandle p(*this);
-  char equiv[32];
+  //char equiv[32];
   PropertyMask mask(p->reason);
   PropertyMask status(p->status);
   std::string proc_name = p.processName();
   std::string proc_type = p.processTypeName();
+  std::string proc = '['+proc_name+(p->process ? "/" : "")+proc_type+']';
   int parent_id = p->parents.empty() ? -1 : *(p->parents.begin());
 
-  equiv[0] = 0;
-  if ( p->parents.end() == p->parents.find(p->g4Parent) )  {
-    ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
-  }
+  //equiv[0] = 0;
+  //if ( p->parents.end() == p->parents.find(p->g4Parent) )  {
+  //  ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
+  //}
+  std::stringstream str;
+  str << "Parents: ";
+  for( const auto i : p->parents )
+    str << i << " ";
+  str << " Daughters: ";
+  for( const auto i : p->daughters )
+    str << i << " ";
+  printout((dd4hep::PrintLevel)level,src,
+           "+++ %s ID:%7d/%-7d %12s/%-10d %6d/%-6d %4d %4d %-4s %-3s %-3s %+.3e  "
+           "%-5s %-4s %-3s %-3s  %-20s %c%c%c%c -- %c%c%c%c%c%c%c%c%c  %s",
+           tag,
+           p->id,p->originalG4ID,
+           p.particleName().c_str(),
+           p->pdgID,
+           parent_id,p->g4Parent,
+           p.numParent(),
+           int(p->daughters.size()),
+           yes_no(mask.isSet(G4PARTICLE_PRIMARY)),
+           yes_no(mask.isSet(G4PARTICLE_HAS_SECONDARIES)),
+           yes_no(mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD)),
+           p.energy(),
+           //
+           yes_no(mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT)),
+           yes_no(mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT)),
+           yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),
+           mask.isSet(G4PARTICLE_KEEP_PARENT) ? "YES" : "",
+           proc.c_str(),
+           // 13 flags in total
+           status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',               // 1
+           status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
+           status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
+           status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.',
+           status.isSet(G4PARTICLE_GEN_BEAM) ? 'B' : '.',                // 5
+           status.isSet(G4PARTICLE_GEN_OTHER) ? 'o' : '.',
+           status.isSet(G4PARTICLE_SIM_CREATED) ? 's' : '.',
+           status.isSet(G4PARTICLE_SIM_BACKSCATTER) ? 'b' : '.',
+           status.isSet(G4PARTICLE_SIM_PARENT_RADIATED) ? 'v' : '.',
+           status.isSet(G4PARTICLE_SIM_DECAY_TRACKER) ? 't' : '.',       // 10
+           status.isSet(G4PARTICLE_SIM_DECAY_CALO) ? 'c' : '.',
+           status.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ? 'l' : '.',
+           status.isSet(G4PARTICLE_SIM_STOPPED) ? 's' : '.',
+           str.str().c_str()
+           );
+#if 0
   printout((dd4hep::PrintLevel)level,src,
            "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c -- %c%c%c%c%c%c%c",
            tag,
@@ -351,6 +408,7 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
            status.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ? 'l' : '.',
            status.isSet(G4PARTICLE_SIM_STOPPED) ? 's' : '.'
            );
+#endif
 }
 
 /// Default destructor

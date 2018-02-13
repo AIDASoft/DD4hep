@@ -306,7 +306,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   ph->vey = p.y();
   ph->vez = p.z();
 
-
   // Set the simulator status bits
   PropertyMask simStatus(m_currTrack.status);
 
@@ -388,8 +387,10 @@ void Geant4ParticleHandler::beginEvent(const G4Event* event)  {
 
 /// Debugging: Dump Geant4 particle map
 void Geant4ParticleHandler::dumpMap(const char* tag)  const  {
+  const string& n = name();
+  Geant4ParticleHandle::header4(INFO,n,tag);
   for(ParticleMap::const_iterator iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
-    Geant4ParticleHandle((*i).second).dump4(INFO,name(),tag);
+    Geant4ParticleHandle((*i).second).dump4(INFO,n,tag);
   }
 }
 
@@ -398,14 +399,14 @@ void Geant4ParticleHandler::endEvent(const G4Event* event)  {
   int count = 0;
   int level = outputLevel();
   do {
-    if ( level <= VERBOSE ) dumpMap("Particle");
+    if ( level <= VERBOSE ) dumpMap("Particle  ");
     debug("+++ Iteration:%d Tracks:%d Equivalents:%d",++count,m_particleMap.size(),m_equivalentTracks.size());
   } while( recombineParents() > 0 );
 
-  if ( level <= VERBOSE ) dumpMap("Recombined");
+  if ( level <= VERBOSE ) dumpMap(  "Recombined");
   // Rebase the simulated tracks, so that they fit to the generator particles
   rebaseSimulatedTracks(0);
-  if ( level <= VERBOSE ) dumpMap("Rebased");
+  if ( level <= VERBOSE ) dumpMap(  "Rebased   ");
   // Consistency check....
   checkConsistency();
   /// Call the user particle handler
@@ -466,8 +467,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
     TrackEquivalents::mapped_type equiv = (*ie).second;
     if ( ipar != m_particleMap.end() )   {
-      equivalents[(*ie).first] = (*ipar).second->id;  // requires (1) !
       Geant4ParticleHandle p = (*ipar).second;
+      equivalents[(*ie).first] = p->id;  // requires (1) to be filled properly!
       const G4ParticleDefinition* def = p.definition();
       int pdg = int(fabs(def->GetPDGEncoding())+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
@@ -486,22 +487,65 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   // (3) Compute the particle's parents and daughters.
   //     Replace the original Geant4 track with the
   //     equivalent particle still present in the record.
-  for(iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
+  // Note:
+  //     We rely here on the ordering of the particles accoding to their
+  //     Processing by Geant4 to establish mother daughter relationships.
+  //     == > use finalParticles map and NOT m_particleMap.
+  int equiv_id = -1;
+  for(iend=finalParticles.end(), i=finalParticles.begin(); i!=iend; ++i)  {
     Particle* p = (*i).second;
     if ( p->g4Parent > 0 )  {
-      int equiv_id = equivalents[p->g4Parent];
-      if ( (ipar=finalParticles.find(equiv_id)) != finalParticles.end() )  {
-        Particle* q = (*ipar).second;
-        q->daughters.insert(p->id);
-        p->parents.insert(q->id);
+      TrackEquivalents::iterator iequ = equivalents.find(p->g4Parent);
+      if ( iequ != equivalents.end() )  {
+        equiv_id = (*iequ).second;//equivalents[p->g4Parent];
+        if ( (ipar=finalParticles.find(equiv_id)) != finalParticles.end() )  {
+          Particle* q = (*ipar).second;
+          bool      prim = (p->reason&G4PARTICLE_PRIMARY) == G4PARTICLE_PRIMARY;
+          // We assume that the mother daughter relationship
+          // is filled by the event readers!
+          if ( !prim )  {
+            p->parents.insert(q->id);
+          }
+          if ( !p->parents.empty() )  {
+            int parent_id = (*p->parents.begin());
+            if ( parent_id == q->id )
+              q->daughters.insert(p->id);
+            else if ( !prim )
+              error("+++ Inconsistency in equivalent record! Parent: %d Daughter:%d",q->id, p->id);
+          }
+          else   {
+            error("+++ Inconsistency in parent relashionship: %d NO parent!", p->id);
+          }
+          continue;
+        }
       }
-      else   {
-        error("+++ Inconsistency in particle record: Geant4 parent %d "
-              "of particle %d (equiv:%d) not in record!",
-              p->g4Parent,p->id,equiv_id);
-      }
+      error("+++ Inconsistency in particle record: Geant4 parent %d "
+            "of particle %d not in record of final particles!",
+            p->g4Parent,p->id);
     }
   }
+#if 0
+  for(iend=finalParticles.end(), i=finalParticles.begin(); i!=iend; ++i)  {
+    Particle* p = (*i).second;
+    if ( p->g4Parent > 0 )  {
+      int parent_id = (*p->parents.begin());
+      if ( (ipar=finalParticles.find(parent_id)) != finalParticles.end() )  {
+        Particle* q = (*ipar).second;
+        // Generator particles have a proper history.
+        // We only deal with particles, which are not of MC origin.
+        //p->parents.insert(q->id);
+        if ( parent_id == q->id )
+          q->daughters.insert(p->id);
+        else
+          error("+++ Inconsistency in equivalent record! Parent: %d Daughter:%d",q->id, p->id);
+        continue;
+      }
+      error("+++ Inconsistency in particle record: Geant4 parent %d "
+            "of particle %d not in record of final particles!",
+            p->g4Parent,p->id);
+    }
+  }
+#endif
   m_equivalentTracks = equivalents;
   m_particleMap = finalParticles;
 }

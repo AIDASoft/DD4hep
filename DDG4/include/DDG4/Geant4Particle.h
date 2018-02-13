@@ -226,6 +226,7 @@ namespace dd4hep {
       void dumpWithVertex(int level, const std::string& src, const char* tag) const;
       void dumpWithMomentum(int level, const std::string& src, const char* tag) const;
       void dumpWithMomentumAndVertex(int level, const std::string& src, const char* tag) const;
+      static void header4(int level, const std::string& src, const char* tag);
       void dump4(int level, const std::string& src, const char* tag) const;
 
       /// Handlers
