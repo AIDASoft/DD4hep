@@ -33,7 +33,6 @@ typedef dd4hep::xml::DetElement      xml_det_t;
 typedef dd4hep::xml::Component       xml_comp_t;
 typedef dd4hep::xml::ChildValue      xml_val_t;
 typedef dd4hep::xml::Document        xml_doc_t;
-typedef dd4hep::xml::Document        xml_doc_t;
 typedef dd4hep::xml::DocumentHolder  xml_doc_holder_t;
 typedef dd4hep::xml::DocumentHandler xml_handler_t;
 

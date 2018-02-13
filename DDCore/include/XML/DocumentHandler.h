@@ -63,6 +63,8 @@ namespace dd4hep {
       /// Write xml document to output file (stdout if file name empty)
       virtual int output(Document doc, const std::string& fname) const;
 
+      /// Set minimum print level
+      static int setMinimumPrintLevel(int level);
       /// System ID of a given XML entity
       static std::string system_path(Handle_t base);
       /// System ID of a new XML entity in the same directory as base

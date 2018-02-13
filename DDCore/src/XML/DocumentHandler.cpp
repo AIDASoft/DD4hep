@@ -40,6 +40,7 @@ namespace {
     }
     return fn;
   }
+  int s_minPrintLevel = INFO;
 }
 
 #ifndef __TIXML__
@@ -177,8 +178,10 @@ namespace dd4hep {
               string baseURI(_toString(id->getBaseURI()));
               string schema(_toString(id->getSchemaLocation()));
               string ns(_toString(id->getNameSpace()));
-              printout(INFO,"XercesC","+++ Resolved URI: sysID:%s uri:%s ns:%s schema:%s",
-                       systemID.c_str(), baseURI.c_str(), ns.c_str(), schema.c_str());
+              if ( s_minPrintLevel <= INFO ) {
+                printout(INFO,"XercesC","+++ Resolved URI: sysID:%s uri:%s ns:%s schema:%s",
+                         systemID.c_str(), baseURI.c_str(), ns.c_str(), schema.c_str());
+              }
 #endif
               return new MemBufInputSource(input,buf.length(),systemID.c_str(),true);
             }
@@ -481,7 +484,7 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
     printout(WARNING,"DocumentHandler","+++ Loading document URI: %s %s",
              fname.c_str(),"[URI Resolution is not supported by TiXML]");
   }
-  else  {
+  else if ( s_minPrintLevel <= INFO ) {
     printout(INFO,"DocumentHandler","+++ Loading document URI: %s [Resolved:'%s']",
              fname.c_str(),clean.c_str());
   }
@@ -506,8 +509,10 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
     printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(path):%s",e.what());
   }
   if ( result ) {
-    printout(INFO,"DocumentHandler","+++ Document %s succesfully parsed with TinyXML .....",
-             fname.c_str());
+    if ( s_minPrintLevel <= INFO ) {
+      printout(INFO,"DocumentHandler","+++ Document %s succesfully parsed with TinyXML .....",
+               fname.c_str());
+    }
     return (XmlDocument*)doc;
   }
   delete doc;
@@ -608,6 +613,13 @@ DocumentHandler::DocumentHandler() {}
 
 /// Default destructor of a document handler using TiXml
 DocumentHandler::~DocumentHandler() {}
+
+/// Set minimum print level
+int DocumentHandler::setMinimumPrintLevel(int level)    {
+  int tmp = s_minPrintLevel;
+  s_minPrintLevel = level;
+  return tmp;
+}
 
 /// Default comment string
 std::string DocumentHandler::defaultComment()  {

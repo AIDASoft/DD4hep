@@ -132,8 +132,6 @@ namespace dd4hep {
     void _toDictionary(const XmlChar* name, float  value);
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
     void _toDictionary(const XmlChar* name, double value);
-    /// Helper function to lookup environment from the expression evaluator
-    std::string getEnviron(const std::string& env);
 
     /// Conversion function from raw unicode string to bool  \ingroup DD4HEP_XML
     bool _toBool(const XmlChar* value);
@@ -146,6 +144,11 @@ namespace dd4hep {
     /// Conversion function from raw unicode string to double  \ingroup DD4HEP_XML
     double _toDouble(const XmlChar* value);
 
+    /// Helper function to lookup environment from the expression evaluator
+    std::string getEnviron(const std::string& env);
+    /// Enable/disable environment resolution when parsing strings
+    bool enableEnvironResolution(bool new_value);
+    
     /// Helper class to encapsulate a unicode string.
     /**
      *  Simple conversion from ascii strings to unicode strings.
@@ -448,6 +451,8 @@ namespace dd4hep {
       void setAttrs(Handle_t e) const;
       /// Access typed attribute value by it's unicode name
       template <class T> T attr(const XmlChar* name) const;
+      /// Access typed attribute value by it's unicode name. If not existing returns default value
+      template <class T> T attr(const XmlChar* name, T default_value) const;
 
       /// Generic attribute setter with unicode value
       Attribute setAttr(const XmlChar* t, const XmlChar* v) const;
@@ -471,6 +476,11 @@ namespace dd4hep {
       /// Access typed attribute value by it's name
       template <class T> T attr(const char* name) const {
         return this->attr<T>(Strng_t(name));
+      }
+      /// Access typed attribute value by it's name
+      template <class T> T attr(const char* name, const T& default_value) const {
+        Strng_t tag(name);
+        return this->hasAttr(tag) ? this->attr<T>(tag) : default_value;
       }
       /// Generic attribute setter with text value
       Attribute setAttr(const XmlChar* t, const char* v) const;
@@ -537,6 +547,37 @@ namespace dd4hep {
     template <> INLINE std::string Handle_t::attr<std::string>(const XmlChar* tag_value) const {
       return _toString(attr_value(tag_value));
     }
+
+    template <> INLINE bool Handle_t::attr<bool>(const XmlChar* tag_value, bool default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toBool(attr_value(a)) : default_value;
+    }
+
+    template <> INLINE int Handle_t::attr<int>(const XmlChar* tag_value, int default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toInt(attr_value(a)) : default_value;
+    }
+    
+    template <> INLINE long Handle_t::attr<long>(const XmlChar* tag_value, long default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toLong(attr_value(a)) : default_value;
+    }
+
+    template <> INLINE float Handle_t::attr<float>(const XmlChar* tag_value, float default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toFloat(attr_value(a)) : default_value;
+    }
+
+    template <> INLINE double Handle_t::attr<double>(const XmlChar* tag_value, double default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toDouble(attr_value(a)) : default_value;
+    }
+
+    template <> INLINE std::string Handle_t::attr<std::string>(const XmlChar* tag_value, std::string default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toString(attr_value(a)) : default_value;
+    }
+
 #if 0
     template<> INLINE bool Handle_t::attr<bool>(const Attribute tag_value) const
     { return _toBool(attr_value(tag_value));}
@@ -778,10 +819,18 @@ namespace dd4hep {
       template <class T> T attr(const XmlChar* tag_value) const {
         return m_element.attr<T>(tag_value);
       }
+      /// Access attribute with implicit return type conversion
+      template <class T> T attr(const XmlChar* tag_value, T default_value) const {
+        return m_element.attr<T>(tag_value, default_value);
+      }
 #ifndef __TIXML__
       /// Access typed attribute value by it's name
       template <class T> T attr(const char* name) const {
         return this->attr<T>(Strng_t(name));
+      }
+      /// Access typed attribute value by it's name
+      template <class T> T attr(const char* name, T default_value) const {
+        return this->attr<T>(Strng_t(name), default_value);
       }
 #endif
       /// Access attribute name (throws exception if not present)

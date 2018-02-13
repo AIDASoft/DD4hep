@@ -33,10 +33,15 @@ namespace dd4hep {
 }
 // Static storage
 namespace {
+  bool s_resolve_environment = true;
+
   XmlTools::Evaluator& eval(dd4hep::evaluator());
   string _checkEnviron(const string& env)  {
-    string r = getEnviron(env);
-    return r.empty() ? env : r;
+    if ( s_resolve_environment )  {
+      string r = getEnviron(env);
+      return r.empty() ? env : r;
+    }
+    return env;
   }
 }
 
@@ -422,6 +427,13 @@ string dd4hep::xml::getEnviron(const string& env)   {
     v += env.substr(id2+1);
     return v;
   }
+}
+
+/// Enable/disable environment resolution when parsing strings
+bool dd4hep::xml::enableEnvironResolution(bool new_value)   {
+  bool tmp = s_resolve_environment;
+  s_resolve_environment = new_value;
+  return tmp;
 }
 
 template <typename B>
