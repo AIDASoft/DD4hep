@@ -464,6 +464,9 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
 	    }
 	  }
 	}
+        if(caller->outputLevel() <= VERBOSE){
+          v4->Print();
+        }
       }
     }
     for(map<int,G4PrimaryParticle*>::iterator i=prim.begin(); i!=prim.end(); ++i)  {
