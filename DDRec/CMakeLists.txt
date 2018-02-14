@@ -27,12 +27,19 @@ endif()
 #  OPTIONAL [GEAR REQUIRED]
 #)  
 
+dd4hep_add_dictionary( G__DDRec
+  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h include/DDRec/*.h
+  LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
+  OPTIONAL [GEAR REQUIRED]
+  )
+
 dd4hep_add_package_library(DDRec 
   SOURCES        src/*.cpp
 #  GENERATED      G__DDRec.cxx
   OPTIONAL       [GEAR COMPONENTS geartgeo SOURCES src/gear/DDGear.cpp DEFINITIONS DD4HEP_USE_GEAR ]
 )
 dd4hep_add_plugin(DDRecPlugins 
+  GENERATED   G__DDRec.cxx
   SOURCES  src/plugins/*.cpp 
   OPTIONAL [GEAR SOURCES src/gear/createGearForILD.cpp src/gear/createGearForCLIC.cpp src/gear/createGearForSiD.cpp DEFINITIONS DD4HEP_USE_GEAR]
 )
@@ -47,3 +54,4 @@ else()
 endif()
 
 
+dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)
