@@ -97,6 +97,9 @@ void Geant4ExtraParticles::constructParticle(Constructor& ) {
     // do add particles that don't fly
     // if (lifetime == 0) continue;
 
+    //unstable particles with too small lifetime have width -1
+    bool stable = (width > 0 or width < -0.5) ? false : true;
+
     if(width<0) width = 0;
 
     // normalize to G4 units
@@ -143,7 +146,7 @@ void Geant4ExtraParticles::constructParticle(Constructor& ) {
                                      0,          // lepton number
                                      0,          // baryon number
                                      pdg,        // PDG encoding
-                                     width==0?true:false,      // stable
+                                     stable,     // stable
                                      lifetime,   // lifetime
                                      NULL,       // decay table
                                      false);      // short lived
