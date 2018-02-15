@@ -33,7 +33,7 @@
 bin/
 lib/
 /include
-python/
+#python/
 build/
 
 # CMake config files
