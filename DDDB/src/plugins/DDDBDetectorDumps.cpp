@@ -95,7 +95,7 @@ namespace {
           n = "DDDBDetectorDump";
         else if ( flg == 5 )
           n = "DetElementConditionDump";
-        else if ( flg == 5 )
+        else if ( flg == 6 )
           n = "DDDBDetectorDumpAll";
         return n;
       }
