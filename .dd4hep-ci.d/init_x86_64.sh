@@ -62,7 +62,7 @@ if [[ ${COMPILER_TYPE} == "gcc" && ${OS} != "mac1013" ]]; then
     source ${CLICREPO}/compilers/gcc/7.3.0/x86_64-${OS}/setup.sh
 fi
 if [[ ${COMPILER_TYPE} == "llvm" && ${OS} != "mac1013" ]]; then
-    source ${CLICREPO}/compilers/llvm/5.0.0/x86_64-${OS}/setup.sh
+    source ${CLICREPO}/compilers/llvm/5.0.1/x86_64-${OS}/setup.sh
 fi
 
 #--------------------------------------------------------------------------------
