@@ -704,6 +704,7 @@ class Geant4:
     # Finally generate Geant4 primaries
     if have_mctruth:
       gen = GeneratorAction(self.kernel(),"Geant4PrimaryHandler/PrimaryHandler")
+      gen.RejectPDGs="{1,2,3,4,5,6,21,23,24}"
       gen.enableUI()
       if output_level is not None:
         gen.OutputLevel = output_level
