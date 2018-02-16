@@ -39,6 +39,11 @@ namespace dd4hep {
       virtual ~Geant4PrimaryHandler();
       /// Event generation action callback
       virtual void operator()(G4Event* event);
+
+    public:
+      /// particles with these PDG IDs are not passed to geant for simulation
+      std::set<int> m_rejectPDGs={1,2,3,4,5,6,21,23,24};
+
     };
   }    // End namespace sim
 }      // End namespace dd4hep

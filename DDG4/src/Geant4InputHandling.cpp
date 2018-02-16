@@ -16,6 +16,7 @@
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Action.h"
+#include "DDG4/Geant4PrimaryHandler.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
 
@@ -358,6 +359,7 @@ static vector< pair<Geant4Particle*,G4PrimaryParticle*> >
 getRelevant(set<int>& visited,
             map<int,G4PrimaryParticle*>& prim,
             Geant4PrimaryInteraction::ParticleMap& pm,
+            const set<int>& rejectPDGs,
             const Geant4ParticleHandle p)
 {
   typedef vector< pair<Geant4Particle*,G4PrimaryParticle*> > Primaries;
@@ -381,7 +383,6 @@ getRelevant(set<int>& visited,
     double proper_time = fabs(dp->time-p->time) * me;
 
     // -- remove original --- if the pdgID is not known (generator "strings") or the particle is quark, gluon, Z, W, etc.
-    const std::set<int> rejectPDGs{1, 2, 3, 4, 5, 6, 21, 23, 24};
     if (p.definition() && rejectPDGs.count(abs(p->pdgID)) == 0) {
       map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
@@ -392,7 +393,7 @@ getRelevant(set<int>& visited,
         Primaries daughters;
         for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
           if ( visited.find(*i) == visited.end() )  {
-            Primaries tmp = getRelevant(visited,prim,pm,pm[*i]);
+            Primaries tmp = getRelevant(visited,prim,pm,rejectPDGs,pm[*i]);
             daughters.insert(daughters.end(), tmp.begin(),tmp.end());
           }
         }
@@ -404,7 +405,7 @@ getRelevant(set<int>& visited,
     else  {
       for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
         if ( visited.find(*i) == visited.end() )  {
-          Primaries tmp = getRelevant(visited,prim,pm,pm[*i]);
+          Primaries tmp = getRelevant(visited,prim,pm,rejectPDGs,pm[*i]);
           res.insert(res.end(), tmp.begin(),tmp.end());
         }
       }
@@ -426,6 +427,11 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
   Interaction::VertexMap&   vm  = interaction->vertices;
   map<int,G4PrimaryParticle*> prim;
   set<int> visited;
+
+  auto const* primHandler = dynamic_cast<const Geant4PrimaryHandler*>(caller);
+  auto const& rejectPDGs = primHandler ? primHandler->m_rejectPDGs : std::set<int>();
+
+  caller->debug("Rejecting PDGs: %s", [&rejectPDGs](){ std::stringstream str; for (int i: rejectPDGs) { str  << i << ", "; } return str;}().str().c_str());
 
   if ( interaction->locked )  {
     caller->abortRun("Locked interactions may not be used to generate primaries!",
@@ -449,7 +455,7 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
 	    mask.set(G4PARTICLE_HAS_SECONDARIES);
 	  }
 	  if ( p->parents.size() == 0 )  {
-	    Primaries relevant = getRelevant(visited,prim,pm,p);
+	    Primaries relevant = getRelevant(visited,prim,pm,rejectPDGs,p);
 	    for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {
 	      Geant4ParticleHandle r = (*j).first;
 	      G4PrimaryParticle* p4 = (*j).second;
