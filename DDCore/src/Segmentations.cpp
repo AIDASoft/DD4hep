@@ -140,6 +140,15 @@ DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridYZ);
 #include "DDSegmentation/CartesianGridXYZ.h"
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXYZ);
 
+#include "DDSegmentation/CartesianStripX.h"
+DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianStripX);
+
+#include "DDSegmentation/CartesianStripY.h"
+DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianStripY);
+
+#include "DDSegmentation/CartesianStripZ.h"
+DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianStripZ);
+
 #include "DDSegmentation/TiledLayerGridXY.h"
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::TiledLayerGridXY);
 

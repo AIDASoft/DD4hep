@@ -40,6 +40,15 @@ DECLARE_SEGMENTATION(CartesianGridYZ,create_segmentation<dd4hep::DDSegmentation:
 #include "DDSegmentation/CartesianGridXYZ.h"
 DECLARE_SEGMENTATION(CartesianGridXYZ,create_segmentation<dd4hep::DDSegmentation::CartesianGridXYZ>)
 
+#include "DDSegmentation/CartesianStripX.h"
+DECLARE_SEGMENTATION(CartesianStripX,create_segmentation<dd4hep::DDSegmentation::CartesianStripX>)
+
+#include "DDSegmentation/CartesianStripY.h"
+DECLARE_SEGMENTATION(CartesianStripY,create_segmentation<dd4hep::DDSegmentation::CartesianStripY>)
+
+#include "DDSegmentation/CartesianStripZ.h"
+DECLARE_SEGMENTATION(CartesianStripZ,create_segmentation<dd4hep::DDSegmentation::CartesianStripZ>)
+
 #include "DDSegmentation/TiledLayerGridXY.h"
 DECLARE_SEGMENTATION(TiledLayerGridXY,create_segmentation<dd4hep::DDSegmentation::TiledLayerGridXY>)
 
