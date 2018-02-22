@@ -15,7 +15,7 @@ logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 # We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
 def compileAClick(dictionary,g4=True):
   from ROOT import gInterpreter, gSystem
-  import sys, imp, exceptions
+  import sys, imp
   import os.path
   dd4hep = os.environ['DD4hepINSTALL']
   inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
@@ -71,7 +71,7 @@ def import_root(nam):
 try:
   dd4hep = loaddd4hep() 
   import ROOT
-except Exception,X:
+except Exception as X:
   import sys
   logging.info('+--%-100s--+',100*'-')
   logging.info('|  %-100s  |','Failed to load dd4hep base library:')

@@ -121,7 +121,6 @@ def _registerGlobalFilter(self,filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
-  import exceptions
   #logging.info('_getKernelProperty: %s  %s',str(type(self)),name)
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
@@ -131,16 +130,15 @@ def _getKernelProperty(self, name):
   elif hasattr(self,name):
     return getattr(self,name)
   msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.'+name
-  raise exceptions.KeyError(msg)
+  raise KeyError(msg)
 
 #---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
-  import exceptions
   #logging.info('_setKernelProperty: %s %s',name,str(value))
   if Interface.setPropertyKernel(self.get(),name,str(value)):
     return
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
-  raise exceptions.KeyError(msg)
+  raise KeyError(msg)
 
 #---------------------------------------------------------------------------
 def _kernel_phase(self,name):        return self.addSimplePhase(name,False)
@@ -250,7 +248,7 @@ _import_class('CLHEP','HepRandomEngine')
 
 #---------------------------------------------------------------------------
 def _get(self, name):
-  import exceptions, traceback
+  import traceback
   #logging.info('_get: %s  %s',str(type(self)),name)
   a = Interface.toAction(self)
   ret = Interface.getProperty(a,name)
@@ -264,16 +262,15 @@ def _get(self, name):
   #  return getattr(self,name)
   #traceback.print_stack()
   msg = 'Geant4Action::GetProperty [Unhandled]: Cannot access property '+a.name()+'.'+name
-  raise exceptions.KeyError(msg)
+  raise KeyError(msg)
 
 def _set(self, name, value):
-  import exceptions
   #logging.info('_set: %s %s',name,str(value))
   a = Interface.toAction(self)
   if Interface.setProperty(a,name,str(value)):
     return
   msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set '+a.name()+'.'+name+' = '+str(value)
-  raise exceptions.KeyError(msg)
+  raise KeyError(msg)
 
 def _props(obj):
   _import_class('Sim',obj)
@@ -383,7 +380,7 @@ class Geant4:
     if worker:
       init_action.setWorkerSetup(worker, worker_args)
     else:
-      raise exceptions.RuntimeError('Invalid argument for Geant4 worker initialization')
+      raise RuntimeError('Invalid argument for Geant4 worker initialization')
     #
     if master:
       init_action.setMasterSetup(master,master_args)
