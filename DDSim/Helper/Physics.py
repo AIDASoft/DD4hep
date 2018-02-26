@@ -55,20 +55,6 @@ class Physics( ConfigHelper ):
     self._pdgfile = os.path.abspath( val )
 
 
-  @property
-  def pdgfile( self ):
-    """ location of particle.tbl file containing extra particles and their lifetime information
-    """
-    return self._pdgfile
-  @pdgfile.setter
-  def pdgfile( self, val ):
-    if not val:
-      self._pdgfile = None
-      return
-    if not os.path.exists( val ):
-      raise RuntimeError( "PDGFile: %s not found" % os.path.abspath( val ) )
-    self._pdgfile = os.path.abspath( val )
-
   def setupPhysics( self, kernel, name=None):
     seq = kernel.physicsList()
     seq.extends  = name if name is not None else self.list
