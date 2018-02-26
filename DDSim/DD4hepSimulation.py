@@ -196,7 +196,7 @@ class DD4hepSimulation(object):
                         help="print an example steering file to stdout")
 
     #output, or do something smarter with fullHelp only for example
-    self.__addAllHelper( parser )
+    ConfigHelper.addAllHelper(self, parser)
     ## now parse everything. The default values are now taken from the
     ## steeringFile if they were set so that the steering file parameters can be
     ## overwritten from the command line
@@ -545,30 +545,6 @@ class DD4hepSimulation(object):
       vSmear.Mask = mask
       actionList.append(vSmear)
 
-  def __addAllHelper( self , parser ):
-    """all configHelper objects to commandline args"""
-    for name, obj in vars(self).iteritems():
-      if isinstance( obj, ConfigHelper ):
-        for var,valAndDoc in obj.getOptions().iteritems():
-          if var.startswith("enable"):
-            parser.add_argument("--%s.%s" % (name, var),
-                                action="store_true",
-                                dest="%s.%s" % (name, var),
-                                default = valAndDoc[0],
-                                help = valAndDoc[1],
-                                #choices = valAndDoc[2], ##not allowed for store_true
-                                # type = type(val),
-                               )
-          else:
-            parser.add_argument("--%s.%s" % (name, var),
-                                action="store",
-                                dest="%s.%s" % (name, var),
-                                default = valAndDoc[0],
-                                help = valAndDoc[1],
-                                choices = valAndDoc[2],
-                                # type = type(val),
-                               )
-
 
   def __parseAllHelper( self, parsed ):
     """ parse all the options for the helper """
@@ -607,8 +583,8 @@ class DD4hepSimulation(object):
     for parName, parameter in parameters.iteritems():
       if isinstance( parameter, ConfigHelper ):
         options = parameter.getOptions()
-        for opt,valAndDoc in options.iteritems():
-          runHeader["%s.%s"%(parName, opt)] = str(valAndDoc[0])
+        for opt,optionsDict in options.iteritems():
+          runHeader["%s.%s"%(parName, opt)] = str(optionsDict['default'])
       else:
         runHeader[parName] = str(parameter)
 
@@ -687,12 +663,12 @@ SIM = DD4hepSimulation()
         steeringFileBase += "## %s \n" % "\n## ".join( parameter.__doc__.splitlines() )
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
-        for opt,valAndDoc in sorted( options.iteritems(), sortParameters ):
+        for opt, optionsDict in sorted( options.iteritems(), sortParameters ):
           if opt.startswith("_"):
             continue
-          parValue, parDoc, _parOptions = valAndDoc
-          if parDoc:
-            steeringFileBase += "\n## %s\n" % "\n## ".join(parDoc.splitlines())
+          parValue = optionsDict['default']
+          if isinstance(optionsDict.get('help'), basestring):
+            steeringFileBase += "\n## %s\n" % "\n## ".join(optionsDict.get('help').splitlines())
           ## add quotes if it is a string
           if isinstance( parValue, basestring ):
             steeringFileBase += "SIM.%s.%s = \"%s\"\n" %(parName, opt, parValue)
