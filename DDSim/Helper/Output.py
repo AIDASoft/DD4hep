@@ -7,16 +7,16 @@ class Output( ConfigHelper ):
   """Configuration for the output levels of DDG4 components"""
   def __init__( self ):
     super(Output, self).__init__()
-    self._kernel_OPTIONS = (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')
+    self._kernel_EXTRA = {'choices': (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')}
     self._kernel = outputLevel('INFO')
 
-    self._part_OPTIONS = (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')
+    self._part_EXTRA = {'choices': (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')}
     self._part = outputLevel('INFO')
 
-    self._inputStage_OPTIONS = (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')
+    self._inputStage_EXTRA = {'choices': (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')}
     self._inputStage = outputLevel('INFO')
 
-    self._random_OPTIONS = (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')
+    self._random_EXTRA = {'choices': (1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS')}
     self._random = outputLevel('FATAL')
 
   @property

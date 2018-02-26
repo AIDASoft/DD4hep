@@ -1,7 +1,14 @@
-"""
-
-Helper object to identify configuration parameters so we can easily overwrite
+"""Helper object to identify configuration parameters so we can easily overwrite
 them via command line magic or via the steering file
+
+To add additional arguments create either a member variable or a property to a
+subclass of the ConfigHelper. To add additional arguments to the add_argument
+call for the parser object create an additional member::
+
+  self.member = [1,2]
+  self._member_EXTRA = {'help': 'description for parameter',
+                        'nargs': '+',
+                       }
 
 """
 
@@ -19,18 +26,23 @@ class ConfigHelper( object ):
     allVars = vars(self)
     for var,val in allVars.iteritems():
       if not var.startswith('_'):
-        helpName = "_%s_HELP" % var
-        optName = "_%s_OPTIONS" % var
-        doc = getattr(self, helpName) if hasattr(self, helpName) else ''
-        choices = getattr(self, optName) if hasattr(self, optName) else None
-        finalVars[var] = (val, doc, choices)
+        extraArgumentsName = "_%s_EXTRA" % var
+        options = getattr(self, extraArgumentsName) if hasattr(self, extraArgumentsName) else None
+        finalVars[var] = {'default': val}
+        if options:
+          finalVars[var].update(options)
 
     # now get things defined with @property
     props = [(p, getattr(type(self),p)) for p in dir(type(self)) if isinstance(getattr(type(self),p),property)]
     for propName, prop in props:
-      optName =  "_%s_OPTIONS" % propName
-      choices = getattr(self, optName) if hasattr(self, optName) else None
-      finalVars[propName] = (getattr(self, propName), prop.__doc__, choices)
+      optName =  "_%s_EXTRA" % propName
+      doc = prop.__doc__
+      options = getattr(self, optName) if hasattr(self, optName) else None
+      finalVars[propName] = {'default': getattr(self, propName)}
+      if doc:
+        finalVars[propName]['help'] = doc
+      if options:
+        finalVars[propName].update(options)
 
     return finalVars
 
@@ -84,3 +96,16 @@ class ConfigHelper( object ):
       elif val.lower() == 'false':
         return False
     raise RuntimeError( val )
+
+
+  @staticmethod
+  def addAllHelper(ddsim, parser):
+    """all configHelper objects to commandline args"""
+    for name, obj in vars(ddsim).iteritems():
+      if isinstance(obj, ConfigHelper):
+        for var,optionsDict in obj.getOptions().iteritems():
+          optionsDict['action']='store_true' if var.startswith("enable") else 'store'
+          parser.add_argument("--%s.%s" % (name, var),
+                              dest="%s.%s" % (name, var),
+                              **optionsDict
+                             )

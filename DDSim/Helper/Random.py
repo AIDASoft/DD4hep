@@ -15,8 +15,9 @@ class Random (ConfigHelper):
     self.file = None
     self._random = None
 
-    self._enableEventSeed_HELP = "If True, calculate random seed for each event based on eventID and runID\n" \
-                              "allows reproducibility even when SkippingEvents"
+    self._enableEventSeed_EXTRA = {'help': "If True, calculate random seed for each event based" \
+                                           "on eventID and runID\nAllows reproducibility even when" \
+                                           "SkippingEvents"}
     self.enableEventSeed = False
 
   def initialize(self, DDG4, kernel, output):

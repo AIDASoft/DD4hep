@@ -14,13 +14,15 @@ class Gun( ConfigHelper ):
     self._isotrop = False
     self._direction = (0,0,1)
 
-    self._phiMin_HELP = "Minimal azimuthal angle for random distribution"
+    self._phiMin_EXTRA = {'help': "Minimal azimuthal angle for random distribution"}
     self.phiMin = None
     self.phiMax = None
     self.thetaMin = None
     self.thetaMax = None
 
-    self._distribution_OPTIONS = ['uniform', 'cos(theta)', 'eta', 'pseudorapidity', 'ffbar'] ## (1+cos^2 theta)
+    self._distribution_EXTRA = {'choices': ['uniform', 'cos(theta)',
+                                            'eta', 'pseudorapidity',
+                                            'ffbar']} ## (1+cos^2 theta)
     self._distribution = None
 
 
