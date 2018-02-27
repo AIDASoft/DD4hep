@@ -40,7 +40,7 @@ Geant4EventReader::~Geant4EventReader()   {
 /// Get the context (from the input action)
 Geant4Context* Geant4EventReader::context() const {
   if( 0 == m_inputAction ) {
-    printout(FATAL,"Geant4EventReader: %s", "No input action registered!");
+    printout(FATAL,"Geant4EventReader", "No input action registered!");
     throw std::runtime_error("Geant4EventReader: No input action registered!");
   }
   return m_inputAction->context();
