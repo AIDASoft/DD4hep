@@ -32,6 +32,8 @@ namespace dd4hep  {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim  {
+    
+    class Geant4InputAction;
 
     /// Basic geant4 event reader class. This interface/base-class must be implemented by concrete readers.
     /**
@@ -39,6 +41,7 @@ namespace dd4hep  {
      *
      *  \author  P.Kostka (main author)
      *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \author  R.Ete    (added context from input action)
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
@@ -66,6 +69,8 @@ namespace dd4hep  {
       bool m_directAccess;
       /// Current event number
       int  m_currEvent;
+      /// The input action context
+      Geant4InputAction *m_inputAction;
 
       /// transform the string parameter value into the type of parameter
       /**
@@ -89,6 +94,10 @@ namespace dd4hep  {
       Geant4EventReader(const std::string& nam);
       /// Default destructor
       virtual ~Geant4EventReader();
+      /// Get the context (from the input action)
+      Geant4Context* context() const;
+      /// Set the input action
+      void setInputAction(Geant4InputAction* action);
       /// File name
       const std::string& name()  const   {  return m_name;         }
       /// Flag if direct event access (by event sequence number) is supported (Default: false)
