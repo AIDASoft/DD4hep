@@ -17,6 +17,7 @@
 // Framework include files
 #include "DD4hep/VolumeManager.h"
 #include "DDG4/Geant4OutputAction.h"
+#include "LCIOEventParameters.h"
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
@@ -46,6 +47,7 @@ namespace dd4hep {
     /// Base class to output Geant4 event data to media
     /**
      *  \author  M.Frank
+     *  \author  R.Ete    (added event parameters treatment)
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
@@ -349,10 +351,19 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
-  const int eventNumber = m_eventNumberOffset > 0 ? m_eventNumberOffset + ctxt.context->GetEventID() : ctxt.context->GetEventID();
-  print("+++ Saving LCIO event %d run %d ....", eventNumber, m_runNo);
-  e->setRunNumber(m_runNo);
-  e->setEventNumber(eventNumber);
+  LCIOEventParameters* parameters = context()->event().extension<LCIOEventParameters>(false);
+  if ( parameters ) {
+    e->setRunNumber(parameters->runNumber());
+    e->setEventNumber(parameters->eventNumber());
+    LCIOEventParameters::copyLCParameters(parameters->eventParameters(),e->parameters());
+    print("+++ Saving LCIO event %d run %d ....", e->getEventNumber(), e->getRunNumber());
+  }
+  else {
+    const int eventNumber = m_eventNumberOffset > 0 ? m_eventNumberOffset + ctxt.context->GetEventID() : ctxt.context->GetEventID();
+    e->setRunNumber(m_runNo);
+    e->setEventNumber(eventNumber);
+    print("+++ Saving LCIO event %d run %d ....", eventNumber, m_runNo);
+  }
   e->setDetectorName(context()->detectorDescription().header().name());
   saveEventParameters<int>(e, m_eventParametersInt);
   saveEventParameters<float>(e, m_eventParametersFloat);
