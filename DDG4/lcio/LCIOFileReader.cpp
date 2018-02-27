@@ -27,6 +27,7 @@
 
 // Framework include files
 #include "LCIOEventReader.h"
+#include "LCIOEventParameters.h"
 #include "lcio.h"
 
 using namespace lcio ;
@@ -44,6 +45,7 @@ namespace dd4hep  {
     /**
      *  \author  P.Kostka (main author)
      *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \author  R.Ete    (added event parameters in event context)
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
@@ -121,6 +123,12 @@ dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT:
     if ( *particles ) {
       printout(INFO,"LCIOFileReader","read collection %s from event %d in run %d ", 
                m_collectionName.c_str(), evt->getEventNumber(), evt->getRunNumber());
+      
+      // Create input event parameters context
+      LCIOEventParameters *parameters = new LCIOEventParameters();
+      parameters->setParameters(evt->getRunNumber(), evt->getEventNumber(), evt->parameters());
+      context()->event().addExtension<LCIOEventParameters>( parameters );
+      
       return EVENT_READER_OK;
     }
   }
