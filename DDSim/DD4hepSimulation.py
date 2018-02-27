@@ -44,6 +44,7 @@ from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Physics import Physics
 from DDSim.Helper.GuineaPig import GuineaPig
 from DDSim.Helper.LCIO import LCIO
+from DDSim.Helper.Meta import Meta
 
 import os
 import sys
@@ -73,9 +74,6 @@ class DD4hepSimulation(object):
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.enableDetailedShowerMode = False
-    self.eventParameters = []
-    self.runNumberOffset = 0
-    self.eventNumberOffset = 0
 
     self._errorMessages = []
     self._dumpParameter = False
@@ -90,6 +88,7 @@ class DD4hepSimulation(object):
     self.action = Action()
     self.guineapig = GuineaPig()
     self.lcio = LCIO()
+    self.meta = Meta()
 
     self.filter = Filter()
     self.physics = Physics()
@@ -197,15 +196,6 @@ class DD4hepSimulation(object):
 
     parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile", default=self._dumpSteeringFile,
                         help="print an example steering file to stdout")
-    
-    parser.add_argument("--eventParameters", nargs='+', dest="eventParameters", action="store", default=[],
-                        help="Event parameters to write in every event. Use C/F/I ids to specify parameter type. E.g parameterName/F=0.42 to set a float parameter" )
-    
-    parser.add_argument("--runNumberOffset", action="store", dest="runNumberOffset", default=self.runNumberOffset, type=int,
-                        help="The run number offset to write in slcio output file. E.g setting it to 42 will start counting runs from 42 instead of 0")
-
-    parser.add_argument("--eventNumberOffset", action="store", dest="eventNumberOffset", default=self.eventNumberOffset, type=int,
-                        help="The event number offset to write in slcio output file. E.g setting it to 42 will start counting events from 42 instead of 0")
 
     #output, or do something smarter with fullHelp only for example
     ConfigHelper.addAllHelper(self, parser)
@@ -238,9 +228,6 @@ class DD4hepSimulation(object):
     self.enableDetailedShowerMode = parsed.enableDetailedShowerMode
     self.vertexOffset = parsed.vertexOffset
     self.vertexSigma = parsed.vertexSigma
-    self.eventParameters = parsed.eventParameters
-    self.runNumberOffset = parsed.runNumberOffset if parsed.runNumberOffset > 0 else 0
-    self.eventNumberOffset = parsed.eventNumberOffset if parsed.eventNumberOffset > 0 else 0
 
     self._consistencyChecks()
 
@@ -346,9 +333,9 @@ class DD4hepSimulation(object):
     if self.outputFile.endswith(".slcio"):
       lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
       lcOut.RunHeader = self.__addParametersToRunHeader()
-      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = self.__addParametersToEvent( self.eventParameters )
-      lcOut.RunNumberOffset = self.runNumberOffset
-      lcOut.EventNumberOffset = self.eventNumberOffset
+      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = self.__addParametersToEvent( self.meta.eventParameters )
+      lcOut.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
+      lcOut.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
     elif self.outputFile.endswith(".root"):
       simple.setupROOTOutput('RootOutput', self.outputFile)
 
@@ -643,41 +630,30 @@ class DD4hepSimulation(object):
     
     :param parameters: list of command line parameters to parse
     """
-    print parameters
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
     for p in parameters:
       parameterAndValue = p.split( "=", 1 )
-      if len(parameterAndValue) is not 2:
-        self._errorMessages.append("ERROR: Couldn't decode event parameter '%s'" %(p))
+      if len(parameterAndValue) != 2:
         raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" %(p))
-        continue
       parameterAndType = parameterAndValue[0].split( "/", 1 )
-      if len(parameterAndType) is not 2:
-        self._errorMessages.append("ERROR: Couldn't decode event parameter '%s'" %(p))
+      if len(parameterAndType) != 2:
         raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" %(p))
-        continue
       pname = parameterAndType[0]
       ptype = parameterAndType[1]
       pvalue = parameterAndValue[1]
       if ptype.lower() not in ["c", "f", "i"]:
-        self._errorMessages.append("ERROR: Event parameter '%s' with invalid type '%s'" %(pname, ptype))
         raise ValueError("ERROR: Event parameter '%s' with invalid type '%s'" %(pname, ptype))
-        continue
       if pname in allParameters:
-        self._errorMessages.append("ERROR: Event parameter '%s' specified twice" %(pname))
         raise RuntimeError("ERROR: Event parameter '%s' specified twice" %(pname))
-        continue
-      if not len(pvalue):
-        self._errorMessages.append("ERROR: Event parameter '%s' has empty value" %(pname))
+      if not pvalue:
         raise RuntimeError("ERROR: Event parameter '%s' has empty value" %(pname))
-        continue
       allParameters.append(pname)
       print "Event parameter '%s', type '%s', value='%s'"%(pname, ptype, pvalue)
-      if ptype.lower() is "c":
+      if ptype.lower() == "c":
         stringParameters[pname] = pvalue
-      elif ptype.lower() is "f":
+      elif ptype.lower() == "f":
         floatParameters[pname] = pvalue
-      elif ptype.lower() is "i":
+      elif ptype.lower() == "i":
         intParameters[pname] = pvalue
     return stringParameters, intParameters, floatParameters
             
