@@ -29,12 +29,26 @@ typedef Geant4InputAction::Vertices Vertices ;
 
 /// Initializing constructor
 Geant4EventReader::Geant4EventReader(const std::string& nam)
-  : m_name(nam), m_directAccess(false), m_currEvent(0)
+  : m_name(nam), m_directAccess(false), m_currEvent(0), m_inputAction(0)
 {
 }
 
 /// Default destructor
 Geant4EventReader::~Geant4EventReader()   {
+}
+
+/// Get the context (from the input action)
+Geant4Context* Geant4EventReader::context() const {
+  if( 0 == m_inputAction ) {
+    printout(FATAL,"Geant4EventReader: %s", "No input action registered!");
+    throw std::runtime_error("Geant4EventReader: No input action registered!");
+  }
+  return m_inputAction->context();
+}
+
+/// Set the input action
+void Geant4EventReader::setInputAction(Geant4InputAction* action) {
+  m_inputAction = action;
 }
 
 /// Skip event. To be implemented for sequential sources
@@ -148,6 +162,7 @@ int Geant4InputAction::readParticles(int evt_number,
       }
       m_reader->setParameters( m_parameters );
       m_reader->checkParameters( m_parameters );
+      m_reader->setInputAction( this );
     }
     catch(const exception& e)  {
       err = e.what();
