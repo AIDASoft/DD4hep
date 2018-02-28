@@ -33,7 +33,7 @@ namespace dd4hep {
       MaterialManager(Volume world);
 
       /// default c'tor
-      [[gnu::deprecated("use MaterialManager(Volume world) instead")]]
+//      [[gnu::deprecated("use MaterialManager(Volume world) instead")]]
       MaterialManager();
       
       ~MaterialManager();

@@ -52,9 +52,9 @@ namespace dd4hep{
       try{
 
 	DetElement tpcDE = description.detector("TPC") ;
-	
-	FixedPadSizeTPCData* tpc = tpcDE.extension<FixedPadSizeTPCData>() ;
-	
+	FixedPadSizeTPCData tpcData( tpcDE ) ;
+	FixedPadSizeTPCData* tpc = &tpcData ; //tpcDE.extension<FixedPadSizeTPCData>() ;
+
 	gear::TPCParametersImpl* gearTPC = new gear::TPCParametersImpl( tpc->driftLength /dd4hep::mm , gear::PadRowLayout2D::POLAR ) ;
 	
 	gearTPC->setPadLayout( new gear::FixedPadSizeDiskLayout( tpc->rMinReadout/dd4hep::mm , tpc->rMaxReadout/dd4hep::mm, tpc->padHeight/dd4hep::mm,
