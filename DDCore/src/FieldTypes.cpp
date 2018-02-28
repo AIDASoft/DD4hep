@@ -99,16 +99,16 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     double y2 = y*y;
     switch(coefficents.size())  {
     case 4:      // Ocupole momentum
-      by +=  coefficents[3] * (x2*x - 3.0*x*y2) + skews[3]*(y2*y - 3.0*x*y2);
+      by +=  coefficents[3] * (x2*x - 3.0*x*y2) + skews[3]*(y2*y - 3.0*x2*y);
       bx +=  coefficents[3] * (3.0*x2*y - y2*y) + skews[3]*(x2*x - 3.0*x*y2);
       [[fallthrough]];
     case 3:      // Sextupole momentum:
-      by += -coefficents[2] * (x2 - y2) + skews[2] * 2.0 * xy;
+      by +=  coefficents[2] * (x2 - y2) - skews[2] * 2.0 * xy;
       bx +=  coefficents[2] * 2.0 * xy + skews[2] * (x2 - y2);
       [[fallthrough]];
     case 2:      // Quadrupole momentum:
-      bx += coefficents[1] * x - skews[1]*y;
-      by += coefficents[1] * y + skews[1]*x;
+      bx += coefficents[1] * y + skews[1]*x;
+      by += coefficents[1] * x - skews[1]*y;
       [[fallthrough]];
     case 1:      // Dipole momentum:
       bx += skews[0];
