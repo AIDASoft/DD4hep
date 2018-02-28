@@ -1,0 +1,93 @@
+#==========================================================================
+#  AIDA Detector description implementation 
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
+import logging
+import DD4hep as core
+
+def loadDDRec():
+  from ROOT import gSystem
+  result = gSystem.Load("libDDRec")
+  if result < 0:
+    raise Exception('DDG4.py: Failed to load the DDG4 library libDDRec: '+gSystem.GetErrorStr())
+  from ROOT import dd4hep as module
+  return module
+
+# We are nearly there ....
+name_space = __import__(__name__)
+def import_namespace_item(ns,nam):  
+  scope = getattr(name_space,ns)
+  attr  = getattr(scope,nam)
+  setattr(name_space,nam,attr)
+  return attr
+
+#---------------------------------------------------------------------------
+#
+try:
+  dd4hep = loadDDRec()
+  rec = dd4hep.rec
+except Exception as X:
+  logging.info('+--%-100s--+',100*'-')
+  logging.info('|  %-100s  |','Failed to load DDRec library:')
+  logging.info('|  %-100s  |',str(X))
+  logging.info('+--%-100s--+',100*'-')
+  exit(1)
+
+
+def import_rec():
+  import_namespace_item('rec','CellIDPositionConverter')
+
+  import_namespace_item('rec','FixedPadSizeTPCStruct')
+
+  import_namespace_item('rec','ZPlanarStruct')
+  import_namespace_item('rec','ZPlanarStruct::LayerLayout')
+
+  import_namespace_item('rec','ZDiskPetalsStruct')
+  import_namespace_item('rec','ZDiskPetalsStruct::LayerLayout')
+
+  import_namespace_item('rec','ConicalSupportStruct')
+
+  import_namespace_item('rec','LayeredCalorimeterStruct')
+  import_namespace_item('rec','LayeredCalorimeterStruct::Layer')
+
+  import_namespace_item('rec','NeighbourSurfacesStruct')
+  import_namespace_item('rec','DetectorSurfaces')
+
+  import_namespace_item('rec','IMaterial')
+  import_namespace_item('rec','ISurface')
+  import_namespace_item('rec','ICylinder')
+  import_namespace_item('rec','ICone')
+  import_namespace_item('rec','SurfaceType')
+  import_namespace_item('rec','MaterialData')
+  import_namespace_item('rec','MaterialManager')
+  import_namespace_item('rec','VolSurfaceBase')
+  import_namespace_item('rec','VolSurface')
+  import_namespace_item('rec','VolSurfaceList')
+  import_namespace_item('rec','VolPlaneImpl')
+  import_namespace_item('rec','VolCylinderImpl')
+  import_namespace_item('rec','VolConeImpl')
+  import_namespace_item('rec','Surface')
+  import_namespace_item('rec','CylinderSurface')
+  import_namespace_item('rec','ConeSurface')
+  import_namespace_item('rec','SurfaceList')
+  import_namespace_item('rec','Vector2D')
+  import_namespace_item('rec','Vector3D')
+  import_namespace_item('rec','SurfaceManager')
+
+  import_namespace_item('rec','StructExtension<FixedPadSizeTPCStruct>')
+  import_namespace_item('rec','StructExtension<ZPlanarStruct>')
+  import_namespace_item('rec','StructExtension<ZDiskPetalsStruct>')
+  import_namespace_item('rec','StructExtension<ConicalSupportStruct>')
+  import_namespace_item('rec','StructExtension<LayeredCalorimeterStruct>')
+  import_namespace_item('rec','StructExtension<NeighbourSurfacesStruct>')
+
+# Now instantiate the entire thing
+import_rec()
+std_list_ISurface   = core.std_list('ISurface*')
+std_list_VolSurface = core.std_list('VolSurface')

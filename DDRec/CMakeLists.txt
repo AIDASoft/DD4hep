@@ -1,4 +1,3 @@
-# $Id: $
 #==========================================================================
 #  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
@@ -22,14 +21,15 @@ if(DD4HEP_USE_GEAR)
   add_definitions("-D DD4HEP_USE_GEAR")
 endif()
 
-#dd4hep_add_dictionary( G__DDRec
-#  SOURCES include/DDRec/*.h
-#  OPTIONAL [GEAR REQUIRED]
-#)  
+dd4hep_add_dictionary( G__DDRec
+  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h src/RecDictionary.h
+  LINKDEF include/ROOT/LinkDef.h
+)
 
 dd4hep_add_package_library(DDRec 
+  SOURCES include/ROOT/Warnings.h
   SOURCES        src/*.cpp
-#  GENERATED      G__DDRec.cxx
+  GENERATED      G__DDRec.cxx
   OPTIONAL       [GEAR COMPONENTS geartgeo SOURCES src/gear/DDGear.cpp DEFINITIONS DD4HEP_USE_GEAR ]
 )
 dd4hep_add_plugin(DDRecPlugins 
@@ -46,4 +46,5 @@ else()
     OPTIONAL [GEAR COMPONENTS geartgeo SOURCES src/convertToGear.cc DEFINITIONS DD4HEP_USE_GEAR] )
 endif()
 
+dd4hep_install_files(FILES python/*.py DESTINATION python)
 
