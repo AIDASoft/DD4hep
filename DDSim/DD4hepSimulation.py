@@ -333,7 +333,7 @@ class DD4hepSimulation(object):
     if self.outputFile.endswith(".slcio"):
       lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
       lcOut.RunHeader = self.__addParametersToRunHeader()
-      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = self.__addParametersToEvent( self.meta.eventParameters )
+      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = self.meta.parseEventParameters()
       lcOut.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
       lcOut.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
     elif self.outputFile.endswith(".root"):
@@ -622,41 +622,6 @@ class DD4hepSimulation(object):
     runHeader["User"] = getpass.getuser()
 
     return runHeader
-
-
-  def __addParametersToEvent(self, parameters):
-    """ extract event parameters from the command line, to write in the header
-    of each event.
-    
-    :param parameters: list of command line parameters to parse
-    """
-    stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
-    for p in parameters:
-      parameterAndValue = p.split( "=", 1 )
-      if len(parameterAndValue) != 2:
-        raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" %(p))
-      parameterAndType = parameterAndValue[0].split( "/", 1 )
-      if len(parameterAndType) != 2:
-        raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" %(p))
-      pname = parameterAndType[0]
-      ptype = parameterAndType[1]
-      pvalue = parameterAndValue[1]
-      if ptype.lower() not in ["c", "f", "i"]:
-        raise ValueError("ERROR: Event parameter '%s' with invalid type '%s'" %(pname, ptype))
-      if pname in allParameters:
-        raise RuntimeError("ERROR: Event parameter '%s' specified twice" %(pname))
-      if not pvalue:
-        raise RuntimeError("ERROR: Event parameter '%s' has empty value" %(pname))
-      allParameters.append(pname)
-      print "Event parameter '%s', type '%s', value='%s'"%(pname, ptype, pvalue)
-      if ptype.lower() == "c":
-        stringParameters[pname] = pvalue
-      elif ptype.lower() == "f":
-        floatParameters[pname] = pvalue
-      elif ptype.lower() == "i":
-        intParameters[pname] = pvalue
-    return stringParameters, intParameters, floatParameters
-            
 
   def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None):
     """ attach sensitive detector actions for all subdetectors
