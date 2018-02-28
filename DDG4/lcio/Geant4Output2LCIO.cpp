@@ -352,18 +352,23 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
   LCIOEventParameters* parameters = context()->event().extension<LCIOEventParameters>(false);
+  int runNumber(0), eventNumber(0);
+  const int eventNumberOffset(m_eventNumberOffset > 0 ? m_eventNumberOffset : 0);
+  const int runNumberOffset(m_runNumberOffset > 0 ? m_runNumberOffset : 0);
+  // Get event number, run number and parameters from extension ...
   if ( parameters ) {
-    e->setRunNumber(parameters->runNumber());
-    e->setEventNumber(parameters->eventNumber());
+    runNumber = parameters->runNumber() + runNumberOffset;
+    eventNumber = parameters->eventNumber() + eventNumberOffset;
     LCIOEventParameters::copyLCParameters(parameters->eventParameters(),e->parameters());
-    print("+++ Saving LCIO event %d run %d ....", e->getEventNumber(), e->getRunNumber());
   }
+  // ... or from DD4hep framework 
   else {
-    const int eventNumber = m_eventNumberOffset > 0 ? m_eventNumberOffset + ctxt.context->GetEventID() : ctxt.context->GetEventID();
-    e->setRunNumber(m_runNo);
-    e->setEventNumber(eventNumber);
-    print("+++ Saving LCIO event %d run %d ....", eventNumber, m_runNo);
+    runNumber = m_runNo + runNumberOffset;
+    eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
   }
+  print("+++ Saving LCIO event %d run %d ....", eventNumber, runNumber);
+  e->setRunNumber(runNumber);
+  e->setEventNumber(eventNumber);
   e->setDetectorName(context()->detectorDescription().header().name());
   saveEventParameters<int>(e, m_eventParametersInt);
   saveEventParameters<float>(e, m_eventParametersFloat);
