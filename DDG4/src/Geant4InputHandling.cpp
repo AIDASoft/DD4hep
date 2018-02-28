@@ -431,7 +431,7 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
   auto const* primHandler = dynamic_cast<const Geant4PrimaryHandler*>(caller);
   auto const& rejectPDGs = primHandler ? primHandler->m_rejectPDGs : std::set<int>();
 
-  caller->debug("Rejecting PDGs: %s", [&rejectPDGs](){ std::stringstream str; for (int i: rejectPDGs) { str  << i << ", "; } return str;}().str().c_str());
+  caller->debug("Rejecting PDGs: %s", [&rejectPDGs]{ std::stringstream str; for (int i: rejectPDGs) { str << i << ", "; } return str.str();}().c_str());
 
   if ( interaction->locked )  {
     caller->abortRun("Locked interactions may not be used to generate primaries!",
