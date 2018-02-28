@@ -25,8 +25,11 @@ namespace dd4hep {
      */
 
     class CellIDPositionConverter {
-      
+#if defined(G__ROOT)
+      CellIDPositionConverter() = default ;
+#else
       CellIDPositionConverter() = delete ;
+#endif
       CellIDPositionConverter(const CellIDPositionConverter&) = delete ;
       void operator=(const CellIDPositionConverter&) = delete ;
       

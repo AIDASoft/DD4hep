@@ -29,8 +29,11 @@ namespace dd4hep {
       SurfaceManager(Detector& theDetector);
 
       /// No default constructor
+#if defined(G__ROOT)
+      SurfaceManager() = default ;
+#else
       SurfaceManager() = delete ;
-
+#endif
       /// No copy constructor
       SurfaceManager(const SurfaceManager& copy) = delete;
       

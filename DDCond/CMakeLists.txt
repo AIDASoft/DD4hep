@@ -17,7 +17,8 @@ dd4hep_package(    DDCond
 dd4hep_add_dictionary( G__DDCond
   SOURCES include/ROOT/Warnings.h
   src/ConditionsDictionary.h
-  LINKDEF include/ROOT/LinkDef.h )
+  LINKDEF include/ROOT/LinkDef.h
+  )
 
 #---DDCond library --------------------------------------------------------------
 dd4hep_add_package_library(DDCond
