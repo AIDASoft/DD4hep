@@ -132,7 +132,7 @@ namespace dd4hep {
    *  \f{eqnarray*}{
    *  B_y + i B_x &=& (b_4 +ia_4) (x^3 + 3ix^2y - 3xy^2 -iy^3)  \\
    *  B_y &=& b_4 x^3 - 3 b_4 x y^2 - 3 a_4 x^2 y + a_4 y^3     \\
-   *  B_x &=& 3 b_4 x^2 y + b_4 y^3 + a_4 x^3 - 3 a_4 x y^2     \\
+   *  B_x &=& 3 b_4 x^2 y - b_4 y^3 + a_4 x^3 - 3 a_4 x y^2     \\
    *  \f}
    *
    *  The defined field components only apply within the shape 'volume'.
