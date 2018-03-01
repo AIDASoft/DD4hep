@@ -100,7 +100,7 @@ namespace dd4hep{
 	//      handle->addMaterial( "VXDSupportMaterial", 2.075865162e+01, 1.039383117e+01, 2.765900000e+02, 1.014262421e+03, 3.341388059e+03)  ; 
 	
 	// -------- better: get right averaged material from first ladder:  ------------------
-	MaterialManager matMgr ;
+	MaterialManager matMgr( Detector::getInstance().world().volume() ) ;
       
 	const rec::ZPlanarData::LayerLayout& l = vxd->layers[0] ;
 	

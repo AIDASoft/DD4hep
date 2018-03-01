@@ -18,10 +18,6 @@ namespace dd4hep {
     }
 
 
-    MaterialManager::MaterialManager() : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
-
-      _tgeoMgr = Detector::getInstance().world().volume()->GetGeoManager();
-   }
     
     MaterialManager::~MaterialManager(){
       

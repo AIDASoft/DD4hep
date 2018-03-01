@@ -32,10 +32,12 @@ namespace dd4hep {
       /// Instantiate the MaterialManager for this (world) volume
       MaterialManager(Volume world);
 
-      /// default c'tor
-      [[gnu::deprecated("use MaterialManager(Volume world) instead")]]
-      MaterialManager();
-      
+#if defined(G__ROOT)
+      MaterialManager() = default ;
+#else
+      MaterialManager() = delete ;
+#endif
+
       ~MaterialManager();
       
       /** Get a vector with all the materials between the two points p0 and p1 with the corresponding thicknesses -
