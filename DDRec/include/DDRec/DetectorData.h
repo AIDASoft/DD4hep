@@ -24,9 +24,16 @@ namespace dd4hep {
       StructExtension() : T()  { } 
       StructExtension(const StructExtension<T>& t) : T(t) {} 
       StructExtension(const T& t) : T(t) {} 
-      StructExtension(const DetElement&) : T()  {}
+      StructExtension(const DetElement& d) : T( *d.extension<StructExtension<T> >() )  {}
       StructExtension(const StructExtension<T>& t, const DetElement&) : T(t) {}
+      std::string toString(){
+	std::stringstream s ;
+	s << *this ;
+	return s.str();
+      }
     };
+
+
 
     /** Simple data structure with key parameters for
      *  reconstruction of a cylindrical TPC with a pad plane that
