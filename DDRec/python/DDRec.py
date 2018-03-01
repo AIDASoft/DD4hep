@@ -80,12 +80,12 @@ def import_rec():
   import_namespace_item('rec','Vector3D')
   import_namespace_item('rec','SurfaceManager')
 
-  import_namespace_item('rec','StructExtension<FixedPadSizeTPCStruct>')
-  import_namespace_item('rec','StructExtension<ZPlanarStruct>')
-  import_namespace_item('rec','StructExtension<ZDiskPetalsStruct>')
-  import_namespace_item('rec','StructExtension<ConicalSupportStruct>')
-  import_namespace_item('rec','StructExtension<LayeredCalorimeterStruct>')
-  import_namespace_item('rec','StructExtension<NeighbourSurfacesStruct>')
+  import_namespace_item('rec','FixedPadSizeTPCData')
+  import_namespace_item('rec','ZPlanarData')
+  import_namespace_item('rec','ZDiskPetalsData')
+  import_namespace_item('rec','ConicalSupportData')
+  import_namespace_item('rec','LayeredCalorimeterData')
+  import_namespace_item('rec','NeighbourSurfacesData')
 
 # Now instantiate the entire thing
 import_rec()
