@@ -139,8 +139,8 @@ namespace dd4hep {
    *  If 'volume' is an invalid shape (ie. not defined), then the field
    *  components are valied throughout the 'universe'.
    *
-   *  \see http://cas.web.cern.ch/cas/Belgium-2009/Lectures/PDFs/Wolski-1.pdf
-   *  \see http://cas.web.cern.ch/cas/Bulgaria-2010/Talks-web/Brandt-1-web.pdf
+   *  \see http://cas.web.cern.ch/sites/cas.web.cern.ch/files/lectures/bruges-2009/wolski-1.pdf
+   *  \see http://cas.web.cern.ch/sites/cas.web.cern.ch/files/lectures/varna-2010/brandt-1-web.pdf
    *  \see https://en.wikipedia.org/wiki/Multipole_magnet
    *
    *  \author  M.Frank
