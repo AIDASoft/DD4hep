@@ -17,7 +17,8 @@ def loadDDRec():
   if result < 0:
     raise Exception('DDG4.py: Failed to load the DDG4 library libDDRec: '+gSystem.GetErrorStr())
   from ROOT import dd4hep as module
-  return module
+  core.rec = module.rec
+  return module.rec
 
 # We are nearly there ....
 name_space = __import__(__name__)
@@ -30,8 +31,7 @@ def import_namespace_item(ns,nam):
 #---------------------------------------------------------------------------
 #
 try:
-  dd4hep = loadDDRec()
-  rec = dd4hep.rec
+  rec = loadDDRec()
 except Exception as X:
   logging.info('+--%-100s--+',100*'-')
   logging.info('|  %-100s  |','Failed to load DDRec library:')
