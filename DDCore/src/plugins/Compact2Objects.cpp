@@ -391,7 +391,9 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
     }
     mix->SetRadLen(0e0);
-
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
+    mix->ComputeDerivedQuantities();
+#endif
     //fg: calling SetDensity for TGeoMixture results in incorrect radLen and intLen ( computed only from first element ) 
     // // Update estimated density if not provided.
     // if ( has_density )   {

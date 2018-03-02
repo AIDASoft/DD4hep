@@ -277,6 +277,10 @@ void Geant4PhysicsList::constructProcesses(G4VUserPhysicsList* physics_pointer) 
   }
 }
 
+/// Enable physics list: actions necessary to be propagated to Geant4.
+void Geant4PhysicsList::enable(G4VUserPhysicsList* /* physics */)  {
+}
+
 /// Standard constructor
 Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* ctxt, const string& nam)
   : Geant4Action(ctxt, nam), m_transportation(false), m_decays(false), m_rangecut(0.7*CLHEP::mm) {
@@ -375,5 +379,10 @@ void Geant4PhysicsListActionSequence::constructDecays(G4VUserPhysicsList* physic
       mgr->SetProcessOrdering(decay, idxAtRest);
     }
   }
+}
+
+/// Enable physics list: actions necessary to be propagated to Geant4.
+void Geant4PhysicsListActionSequence::enable(G4VUserPhysicsList* physics_pointer)   {
+  m_actors(&Geant4PhysicsList::enable, physics_pointer);
 }
 
