@@ -169,6 +169,8 @@ namespace dd4hep {
       virtual void constructParticles(G4VUserPhysicsList* physics);
       /// Callback to construct processes (uses the G4 particle table)
       virtual void constructProcesses(G4VUserPhysicsList* physics);
+      /// Enable physics list: actions necessary to be propagated to Geant4.
+      virtual void enable(G4VUserPhysicsList* physics);
     };
 
     /// The implementation of the single Geant4 physics list action sequence
@@ -246,6 +248,8 @@ namespace dd4hep {
       virtual void constructParticles(G4VUserPhysicsList* physics);
       /// Execute sequence of G4  physics constructors
       virtual void constructPhysics(G4VModularPhysicsList* physics);
+      /// Enable physics list: actions necessary to be propagated to Geant4.
+      virtual void enable(G4VUserPhysicsList* physics);
       /// Extend physics list from factory:
       G4VUserPhysicsList* extensionList();
     };

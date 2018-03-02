@@ -30,7 +30,7 @@
 using namespace std;
 using namespace dd4hep;
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,13,1)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,13,0)
 
 /// ROOT GDML reader plugin
 /**

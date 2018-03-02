@@ -593,6 +593,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   physics->SetCuts();
   if( DEBUG == printLevel() ) physics->DumpCutValuesTable();
 #endif
+  phys_seq->enable(physics);
   runManager.SetUserInitialization(physics);
 
   // Construct the remaining user initialization in multi-threaded mode

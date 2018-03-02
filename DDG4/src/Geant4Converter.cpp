@@ -864,7 +864,7 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
       if (l.name == "step_length_max")
         g4->SetMaxAllowedStep(l.value*CLHEP::mm/units::mm);
       else if (l.name == "track_length_max")
-        g4->SetMaxAllowedStep(l.value*CLHEP::mm/units::mm);
+        g4->SetUserMaxTrackLength(l.value*CLHEP::mm/units::mm);
       else if (l.name == "time_max")
         g4->SetUserMaxTime(l.value*CLHEP::ns/units::ns);
       else if (l.name == "ekin_min")
