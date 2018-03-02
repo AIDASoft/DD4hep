@@ -14,6 +14,7 @@
 // Framework include files
 #include "DDG4/Geant4PhysicsList.h"
 #include "DDG4/Geant4UIMessenger.h"
+#include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Kernel.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
@@ -63,34 +64,6 @@ namespace {
     }
     virtual void ConstructParticle()     {  seq->constructParticles(phys);     }
   };
-
-  void _findDef(const string& expression, vector<G4ParticleDefinition*>& results) {
-    string exp = expression;   //'^'+expression+"$";
-    G4ParticleTable* pt = G4ParticleTable::GetParticleTable();
-    G4ParticleTable::G4PTblDicIterator* iter = pt->GetIterator();
-    char msgbuf[128];
-    regex_t reg;
-    int ret = ::regcomp(&reg, exp.c_str(), 0);
-    if (ret) {
-      throw runtime_error(format("Geant4PhysicsList", "REGEX: Failed to compile particle name %s", exp.c_str()));
-    }
-    results.clear();
-    iter->reset();
-    while ((*iter)()) {
-      G4ParticleDefinition* p = iter->value();
-      ret = ::regexec(&reg, p->GetParticleName().c_str(), 0, NULL, 0);
-      if (!ret)
-        results.push_back(p);
-      else if (ret == REG_NOMATCH)
-        continue;
-      else {
-        ::regerror(ret, &reg, msgbuf, sizeof(msgbuf));
-        ::regfree(&reg);
-        throw runtime_error(format("Geant4PhysicsList", "REGEX: Failed to match particle name %s err=%s", exp.c_str(), msgbuf));
-      }
-    }
-    ::regfree(&reg);
-  }
 }
 
 /// Default constructor
@@ -253,8 +226,7 @@ void Geant4PhysicsList::constructProcesses(G4VUserPhysicsList* physics_pointer) 
   for (PhysicsProcesses::const_iterator i = m_processes.begin(); i != m_processes.end(); ++i) {
     const string& part_name = (*i).first;
     const ParticleProcesses& procs = (*i).second;
-    vector<G4ParticleDefinition*> defs;
-    _findDef(part_name, defs);
+    vector<G4ParticleDefinition*> defs(Geant4ParticleHandle::g4DefinitionsRegEx(part_name));
     if (defs.empty()) {
       except("Particle:%s Cannot find the corresponding entry in the particle table.", part_name.c_str());
     }

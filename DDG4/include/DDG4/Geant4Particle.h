@@ -27,6 +27,7 @@ class G4VProcess;
 // C/C++ include files
 #include <set>
 #include <map>
+#include <vector>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -234,6 +235,10 @@ namespace dd4hep {
       /// Offset all particle identifiers (id, parents, daughters) by a constant number
       void offset(int off)  const;
 
+      /// Access Geant4 particle definitions by regular expression
+      static std::vector<G4ParticleDefinition*> g4DefinitionsRegEx(const std::string& expression);
+      /// Access Geant4 particle definitions by exact match
+      static G4ParticleDefinition* g4DefinitionsExact(const std::string& expression);
     };
 
     inline Geant4ParticleHandle::Geant4ParticleHandle(const Geant4ParticleHandle& c)
