@@ -18,7 +18,6 @@ def run():
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
-  kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
 
   simple = DDG4.Simple(kernel,tracker='LcioTestTrackerAction')
   simple.printDetectors()
@@ -125,6 +124,7 @@ def run():
   ph.addParticleConstructor('G4BosonConstructor')
   ph.addParticleConstructor('G4LeptonConstructor')
   ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
+  ph.addPhysicsConstructor('G4StepLimiterPhysics')
   ph.addPhysicsConstructor('G4OpticalPhysics')
   ph.enableUI()
   phys.add(ph)

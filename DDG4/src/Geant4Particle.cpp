@@ -26,6 +26,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <regex.h>
 
 using namespace dd4hep;
 using namespace dd4hep::sim;
@@ -153,6 +154,44 @@ std::string Geant4ParticleHandle::particleType() const   {
   char text[32];
   ::snprintf(text,sizeof(text),"PDG:%d",particle->pdgID);
   return text;
+}
+
+/// Access Geant4 particle definitions by regular expression
+std::vector<G4ParticleDefinition*> Geant4ParticleHandle::g4DefinitionsRegEx(const std::string& expression)   {
+  std::vector<G4ParticleDefinition*> results;
+  std::string exp = expression;   //'^'+expression+"$";
+  G4ParticleTable* pt = G4ParticleTable::GetParticleTable();
+  G4ParticleTable::G4PTblDicIterator* iter = pt->GetIterator();
+  char msgbuf[128];
+  regex_t reg;
+  int ret = ::regcomp(&reg, exp.c_str(), 0);
+  if (ret) {
+    throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to compile particle name %s", exp.c_str()));
+  }
+  results.clear();
+  iter->reset();
+  while ((*iter)()) {
+    G4ParticleDefinition* p = iter->value();
+    ret = ::regexec(&reg, p->GetParticleName().c_str(), 0, NULL, 0);
+    if (!ret)
+      results.push_back(p);
+    else if (ret == REG_NOMATCH)
+      continue;
+    else {
+      ::regerror(ret, &reg, msgbuf, sizeof(msgbuf));
+      ::regfree(&reg);
+      throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to match particle name %s err=%s", exp.c_str(), msgbuf));
+    }
+  }
+  ::regfree(&reg);
+  return results;
+}
+
+/// Access Geant4 particle definitions by exact match
+G4ParticleDefinition* Geant4ParticleHandle::g4DefinitionsExact(const std::string& expression)   {
+  G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
+  G4ParticleDefinition* def = tab->FindParticle(expression);
+  return def;
 }
 
 /// Access to the creator process name
