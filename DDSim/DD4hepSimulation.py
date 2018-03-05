@@ -474,15 +474,10 @@ class DD4hepSimulation(object):
     # Now build the physics list:
     _phys = self.physics.setupPhysics( kernel, name=self.physicsList )
 
-    #fg: do we need these really ?
-    #fg:  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-    #fg:  ph.addParticleConstructor('G4BosonConstructor')
-    #fg:  ph.addParticleConstructor('G4LeptonConstructor')
-    #fg:  ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
-    #fg:  ph.addPhysicsConstructor('G4OpticalPhysics')
-    #fg:  ph.enableUI()
-    #fg:  phys.add(ph)
-    #fg:  phys.dump()
+    ## add the G4StepLimiterPhysics to activate the max step limits in volumes
+    ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
+    ph.addPhysicsConstructor('G4StepLimiterPhysics')
+    _phys.add(ph)
 
     DD4hep.setPrintLevel(self.printLevel)
 
