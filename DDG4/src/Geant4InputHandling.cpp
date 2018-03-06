@@ -381,9 +381,14 @@ getRelevant(set<int>& visited,
     double me = en > std::numeric_limits<double>::epsilon() ? p->mass / en : 0.0;
     //  fix by S.Morozov for real != 0
     double proper_time = fabs(dp->time-p->time) * me;
+    double proper_time_Precision = pow(10.,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));
+    bool isProperTimeZero = (proper_time <= proper_time_Precision);
 
-    // -- remove original --- if the pdgID is not known (generator "strings") or the particle is quark, gluon, Z, W, etc.
-    if (p.definition() && rejectPDGs.count(abs(p->pdgID)) == 0) {
+    // -- remove original if ---
+    bool rejectParticle = not p.definition() // completely unknown to geant4
+      or (rejectPDGs.count(abs(p->pdgID)) != 0) // quarks, gluon, "strings", W, Z etc.
+      or (isProperTimeZero and p.definition()->GetPDGStable()); // initial state electrons, etc.
+    if (not rejectParticle) {
       map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
       if ( !p4 )  {
