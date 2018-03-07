@@ -362,11 +362,17 @@ namespace dd4hep {
    */
   class Limit {
   public:
+    /// Particle the limit should be applied to
     std::string particles;
+    /// Limit name
     std::string name;
+    /// Units
     std::string unit;
+    /// Content
     std::string content;
+    /// Double value
     double value = 0.0;
+  public:
     /// Default constructor
     Limit() = default;
     /// Copy constructor

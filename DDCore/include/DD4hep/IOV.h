@@ -71,12 +71,17 @@ namespace dd4hep {
     typedef long Key_second_type;
     typedef std::pair<Key_first_type,Key_second_type> Key;
 
-    const IOVType* iovType;
-    Key            keyData;
-    int            optData;
-    /// IOV buffer type: Must be a bitmap!
-    unsigned int   type;
+    enum { INVALID_KEY = 0 };
 
+    /// Reference to IOV type
+    const IOVType* iovType = 0;
+    /// IOV key (if second==first, discrete, otherwise range)
+    Key            keyData{INVALID_KEY,INVALID_KEY};
+    /// Optional user data
+    int            optData = 0;
+    /// IOV buffer type: Must be a bitmap!
+    unsigned int   type    = IOVType::UNKNOWN_IOV;
+    
     /// Initializing constructor
     explicit IOV(const IOVType* typ);
     /// Specialized copy constructor for range IOVs
