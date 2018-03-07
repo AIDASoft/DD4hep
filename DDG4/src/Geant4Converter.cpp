@@ -22,6 +22,7 @@
 
 #include "DDG4/Geant4Field.h"
 #include "DDG4/Geant4Converter.h"
+#include "DDG4/Geant4UserLimits.h"
 #include "DDG4/Geant4SensitiveDetector.h"
 
 // ROOT includes
@@ -856,11 +857,12 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVolume*>& /* volumes */) const {
   G4UserLimits* g4 = data().g4Limits[limitset];
   if (!g4) {
+    g4 = new Geant4UserLimits(limitset);
+    /*
     LimitSet ls = limitset;
-    g4 = new G4UserLimits(limitset->GetName());
+    g4 = new G4UserLimits(limitset);
     const set<Limit>& limits = ls.limits();
-    for (LimitSet::Object::const_iterator i = limits.begin(); i != limits.end(); ++i) {
-      const Limit& l = *i;
+    for (const auto& l : limits)  {
       if (l.name == "step_length_max")
         g4->SetMaxAllowedStep(l.value*CLHEP::mm/units::mm);
       else if (l.name == "track_length_max")
@@ -874,6 +876,7 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
       else
         throw runtime_error("Unknown Geant4 user limit: " + l.toString());
     }
+    */
     data().g4Limits[limitset] = g4;
   }
   return g4;

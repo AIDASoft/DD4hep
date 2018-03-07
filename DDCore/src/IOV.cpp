@@ -41,22 +41,22 @@ std::string IOVType::str()  const   {
 }
 
 /// Initializing constructor
-IOV::IOV(const IOVType* t) : iovType(t), keyData(0,0), optData(0)  {
-  type = t ? t->type : int(IOVType::UNKNOWN_IOV);
+IOV::IOV(const IOVType* t) : iovType(t)  {
+  if ( t ) type = t->type;
 }
 
 /// Specialized copy constructor for discrete IOVs
 IOV::IOV(const IOVType* t, Key_first_type iov_value)
-  : iovType(t), keyData(iov_value,iov_value), optData(0)
+  : iovType(t), keyData(iov_value,iov_value)
 {
-  type = t ? t->type : int(IOVType::UNKNOWN_IOV);
+  if ( t ) type = t->type;
 }
 
 /// Copy constructor
 IOV::IOV(const IOVType* t, const Key& k)
-  : iovType(t), keyData(k), optData(0)
+  : iovType(t), keyData(k)
 {
-  type = t ? t->type : int(IOVType::UNKNOWN_IOV);
+  if ( t ) type = t->type;
 }
 
 /// Set discrete IOV value
