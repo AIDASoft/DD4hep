@@ -177,6 +177,36 @@ int main_wrapper(int argc, char** argv)   {
     h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
     scanmap["lambda"] = h2slice;
 
+    hn = "slice"; hn+=isl; hn+="_Bx";
+    hnn = "Bx[T] "; hnn += XYZ; hnn+="="; hnn += Form("%7.3f",sz); hnn+=" [cm]";
+    h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+    scanmap["Bx"] = h2slice;
+
+    hn = "slice"; hn+=isl; hn+="_By";
+    hnn = "By[T] "; hnn += XYZ; hnn+="="; hnn += Form("%7.3f",sz); hnn+=" [cm]";
+    h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+    scanmap["By"] = h2slice;
+
+    hn = "slice"; hn+=isl; hn+="_Bz";
+    hnn = "Bz[T] "; hnn += XYZ; hnn+="="; hnn += Form("%7.3f",sz); hnn+=" [cm]";
+    h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+    scanmap["Bz"] = h2slice;
+
+    hn = "slice"; hn+=isl; hn+="_Ex";
+    hnn = "Ex[V/m] "; hnn += XYZ; hnn+="="; hnn += Form("%7.3f",sz); hnn+=" [cm]";
+    h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+    scanmap["Ex"] = h2slice;
+
+    hn = "slice"; hn+=isl; hn+="_Ey";
+    hnn = "Ey[V/m] "; hnn += XYZ; hnn+="="; hnn += Form("%7.3f",sz); hnn+=" [cm]";
+    h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+    scanmap["Ey"] = h2slice;
+
+    hn = "slice"; hn+=isl; hn+="_Ez";
+    hnn = "Ez[V/m] "; hnn += XYZ; hnn+="="; hnn += Form("%7.3f",sz); hnn+=" [cm]";
+    h2slice = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+    scanmap["Ez"] = h2slice;
+
 
     for (int ix=1; ix<=h2slice->GetNbinsX(); ix++) {  // loop over one axis of slice
 
@@ -187,6 +217,24 @@ int main_wrapper(int argc, char** argv)   {
 
         double ymin = h2slice->GetYaxis()->GetBinLowEdge(iy);
         double ymax = h2slice->GetYaxis()->GetBinUpEdge(iy);
+
+	// first get b field components in centre of bin
+	double posV[3];
+	posV[index[0]] = sz;
+	posV[index[1]] = 0.5*(xmin+xmax);
+	posV[index[2]] = 0.5*(ymin+ymax);
+
+        double fieldV[3] ;
+	description.field().combinedMagnetic( posV  , fieldV  ) ;
+	scanmap["Bx"]->SetBinContent(ix, iy, fieldV[0] / dd4hep::tesla );
+	scanmap["By"]->SetBinContent(ix, iy, fieldV[1] / dd4hep::tesla );
+	scanmap["Bz"]->SetBinContent(ix, iy, fieldV[2] / dd4hep::tesla );
+
+	description.field().combinedElectric( posV  , fieldV  ) ;
+	scanmap["Ex"]->SetBinContent(ix, iy, fieldV[0] / ( dd4hep::volt/dd4hep::meter ) );
+	scanmap["Ey"]->SetBinContent(ix, iy, fieldV[1] / ( dd4hep::volt/dd4hep::meter ) );
+	scanmap["Ez"]->SetBinContent(ix, iy, fieldV[2] / ( dd4hep::volt/dd4hep::meter ) );
+
 
         // for this bin, estimate the material
         double sum_lambda(0);
