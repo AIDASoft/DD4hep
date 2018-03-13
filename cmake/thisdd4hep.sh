@@ -92,9 +92,9 @@ if [ ${Geant4_DIR} ]; then
     if [ @GEANT4_USE_CLHEP@ ] ; then
 	dd4hep_add_library_path @CLHEP_LIBRARY_PATH@;
     fi;
-    export CLHEP_DIR=@CLHEP_ROOT_DIR@;
-    export CLHEP_ROOT_DIR=@CLHEP_ROOT_DIR@;
-    export CLHEP_LIBRARY_PATH=@CLHEP_LIBRARY_PATH@;
+    export CLHEP_DIR=@CLHEP_INCLUDE_DIR@/../;
+    export CLHEP_ROOT_DIR=@CLHEP_INCLUDE_DIR@/../;
+    export CLHEP_INCLUDE_DIR=@CLHEP_INCLUDE_DIR@;
     dd4hep_add_library_path ${G4LIB_DIR};
     unset G4ENV_INIT;
     unset G4LIB_DIR;
