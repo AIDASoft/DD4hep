@@ -103,7 +103,7 @@ export LD_LIBRARY_PATH="$XercesC_HOME/lib:$LD_LIBRARY_PATH"
 #--------------------------------------------------------------------------------
 #Determine which Geant4 version to use
 if [ -z ${GEANT4_VERSION} ]; then
-GEANT4_VERSION="10.03.p03"
+GEANT4_VERSION="10.04"
 fi
 
 export G4INSTALL=${CLICREPO}/software/Geant4/${GEANT4_VERSION}/${BUILD_FLAVOUR}
