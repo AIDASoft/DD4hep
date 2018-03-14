@@ -104,8 +104,8 @@ void ConditionsSnapshotRootLoader::load_source(const std::string& nam)  {
   buffers.push_back(p.release());
 }
 
-size_t ConditionsSnapshotRootLoader::load_single(key_type key,
-                                                 const IOV& req_validity,
+size_t ConditionsSnapshotRootLoader::load_single(key_type   /* key */,
+                                                 const IOV& /* req_validity */,
                                                  RangeConditions& conditions)
 {
   size_t len = conditions.size();
@@ -113,16 +113,17 @@ size_t ConditionsSnapshotRootLoader::load_single(key_type key,
     load_source(s.first);
 
   m_sources.clear();
-  return 0;
+  return conditions.size()-len;
 }
 
 size_t ConditionsSnapshotRootLoader::load_range(key_type key,
-                                                const IOV& req_validity,
+                                                const IOV& /* req_validity */,
                                                 RangeConditions& conditions)
 {
+  size_t len = conditions.size();
   for(const auto& s : m_sources )
     load_source(s.first);
   m_sources.clear();
-  return 0;
+  return conditions.size()-len;
 }
 
