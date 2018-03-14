@@ -116,7 +116,7 @@ size_t ConditionsSnapshotRootLoader::load_single(key_type   /* key */,
   return conditions.size()-len;
 }
 
-size_t ConditionsSnapshotRootLoader::load_range(key_type key,
+size_t ConditionsSnapshotRootLoader::load_range(key_type   /* key */,
                                                 const IOV& /* req_validity */,
                                                 RangeConditions& conditions)
 {
