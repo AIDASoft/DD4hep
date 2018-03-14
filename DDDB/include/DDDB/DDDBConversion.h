@@ -479,14 +479,18 @@ namespace dd4hep {
       StringPairMap params;
       StringMap     conditioninfo;
       std::string   type, path, author, version, logvol, condition, support, npath;
-      int           level, typeID;
+      int           level = 0, typeID = 0, classID = 0;
       /// Default constructor
       DDDBCatalog();
-      DDDBCatalog(const DDDBCatalog&, const DetElement&) : level(0), typeID(0) {}
+      /// Extension constructor (not used)
+      DDDBCatalog(const DDDBCatalog& copy, const DetElement& de);
       /// Default destructor
       virtual ~DDDBCatalog();
+      /// Assignemtn operator
+      DDDBCatalog& operator=(const DDDBCatalog& copy) = default;
       /// Reference count mechanism
       DDDBCatalog* addRef()  {  ++refCount; return this;  }
+      /// Access to parent
       std::pair<const DDDBCatalog*,std::string> parent(const std::string& nam)  const;
     };
 

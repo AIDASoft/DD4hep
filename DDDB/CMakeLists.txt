@@ -29,5 +29,5 @@ dd4hep_package(    DDDB
 # If need arises, this can be changed easily.
 #
 #---DDDB plugin library -------------------------------------------------------
-dd4hep_add_plugin ( DDDB SOURCES src/*.cpp src/plugins/*.cpp
+dd4hep_add_plugin ( DDDB SOURCES src/*.cpp src/plugins/*.cpp src/Detector/*.cpp
   USES  DDCore DDAlign DDCond )

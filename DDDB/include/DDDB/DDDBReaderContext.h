@@ -41,7 +41,7 @@ namespace dd4hep {
       long long int event_time  = 0;
       long long int valid_since = 0;
       long long int valid_until = 0;
-      std::string doc, channel;
+      std::string doc, channel, match;
       /// Standard constructor
       DDDBReaderContext() = default;
       /// Copy constructor

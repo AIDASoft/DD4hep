@@ -215,8 +215,13 @@ namespace dd4hep  {
   }
  
   /// Default constructor
-  DDDBCatalog::DDDBCatalog() : DDDBNamed(), level(0), typeID(0) {
+  DDDBCatalog::DDDBCatalog() {
     InstanceCount::increment(this);
+  }
+
+  /// Extension constructor
+  DDDBCatalog::DDDBCatalog(const DDDBCatalog& copy, const DetElement&) {
+    *this = copy;
   }
 
   /// Default destructor

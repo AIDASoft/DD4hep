@@ -65,6 +65,21 @@ namespace dd4hep {
     struct DDDBConditionParamVector {};
     struct DDDBConditionParamSpecific {};
 
+
+    /// C++ version to convert a string to lower case
+    std::string str_lower(const std::string& str) {
+      std::string res = str.c_str();
+      for(char* p=(char*)res.c_str(); *p; ++p) *p = ::tolower(*p);
+      return res;
+    }
+
+    /// C++ version to convert a string to upper case
+    std::string str_upper(const std::string& str) {
+      std::string res = str.c_str();
+      for(char* p=(char*)res.c_str(); *p; ++p) *p = ::toupper(*p);
+      return res;
+    }
+    
     /// Main processing context
     /**   \ingroup DD4HEP_DDDB
      */
@@ -1425,6 +1440,8 @@ namespace dd4hep {
                    );
         }
         // Now extract all availible information from the xml
+        if ( x_det.hasAttr(_LBU(classID)) )
+          det->classID = x_det.attr<int>(_LBU(classID));
         if ( (elt=x_det.child(_U(author),false)) )
           Conv<DDDBAuthor>(description,context,&det->author)(elt);
         if ( (elt=x_det.child(_U(version),false)) )
@@ -1711,8 +1728,10 @@ namespace dd4hep {
       size_t hash = ref.find("#");
       if ( hash != 0 )  {
         try {
+          xml::UriReader*    rdr       = context->resolver;
+          DDDBReaderContext* ctx       = (DDDBReaderContext*)rdr->context();
           string doc_path = element.ptr() ? reference_href(element,ref) : ref;
-          if ( ref == "conddb:/Conditions/Online" )
+          if ( ref == ctx->match+"/Conditions/Online" )
             doc_path = reference_href(element,ref);
           hash = doc_path.find('#');
           if ( hash != string::npos ) doc_path = doc_path.substr(0,hash);
@@ -1733,8 +1752,6 @@ namespace dd4hep {
             key = doc_path.substr(idx+1,idq-idx-1);
             fp = doc_path.substr(0,idx);
           }
-          xml::UriReader*    rdr       = context->resolver;
-          DDDBReaderContext* ctx       = (DDDBReaderContext*)rdr->context();
           DDDBDocument*      xml_doc   = new DDDBDocument();
           xml_doc->id                  = doc_path;
           xml_doc->name                = context->locals.obj_path;
@@ -1743,6 +1760,9 @@ namespace dd4hep {
           xml_doc->context.valid_since = 0;
           xml_doc->context.valid_until = 0;
           docs.insert(make_pair(doc_path,xml_doc->addRef()));
+          //if ( str_upper(doc_path).find("VELO") != string::npos )   {
+          //printout(ALWAYS,"load_dddb","Loading document: %s",doc_path.c_str());
+          //}
           xml::UriContextReader reader(rdr, &xml_doc->context);
           xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
           xml_h e = doc.root();
@@ -1816,9 +1836,10 @@ namespace dd4hep {
       DDDBHelper* hlp = description.extension<DDDBHelper>(false);
       if ( hlp )   {
         DDDBContext ctxt(description);
-        string sys_id = "conddb://lhcb.xml";
-        string obj_path = "/";
         xml::UriReader* rdr = hlp->xmlReader();
+        DDDBReaderContext* ctx = (DDDBReaderContext*)rdr->context();
+        string sys_id = ctx->match+"//lhcb.xml";
+        string obj_path = "/";
         if ( argc == 0 )   {
           return 0;
         }
@@ -1833,7 +1854,6 @@ namespace dd4hep {
         }
         if ( argc >= 4 && argv[3] != 0 )  {
           long evt_time = *(long*)argv[3];
-          DDDBReaderContext*  ctx = (DDDBReaderContext*)rdr->context();
           ctx->event_time = evt_time;
         }
         config_context(ctxt, rdr, sys_id, obj_path);
@@ -1862,7 +1882,9 @@ namespace dd4hep {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
         DDDBContext context(description);
-        config_context(context, helper->xmlReader(), "conddb://lhcb.xml", "/");
+        xml::UriReader* rdr = helper->xmlReader();
+        DDDBReaderContext*  ctx = (DDDBReaderContext*)rdr->context();
+        config_context(context, helper->xmlReader(), ctx->match+"//lhcb.xml", "/");
         /// Convert the XML information
         Conv<dddb> converter(description, &context);
         converter( element );

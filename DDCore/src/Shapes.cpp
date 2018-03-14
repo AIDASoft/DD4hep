@@ -17,27 +17,14 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/Printout.h"
 
 // C/C++ include files
 #include <stdexcept>
 
 // ROOT includes
 #include "TClass.h"
-#include "TGeoShape.h"
-#include "TGeoHype.h"
-#include "TGeoPcon.h"
-#include "TGeoPgon.h"
-#include "TGeoTube.h"
-#include "TGeoEltu.h"
-#include "TGeoTrd1.h"
-#include "TGeoTrd2.h"
-#include "TGeoArb8.h"
-#include "TGeoCone.h"
-#include "TGeoParaboloid.h"
-#include "TGeoSphere.h"
-#include "TGeoTorus.h"
 #include "TGeoMatrix.h"
-#include "TGeoHalfSpace.h"
 #include "TGeoBoolNode.h"
 #include "TGeoCompositeShape.h"
 
@@ -45,8 +32,11 @@ using namespace std;
 using namespace dd4hep;
 namespace units = dd4hep;
 
+namespace {
+}
+
 /// Pretty print of solid attributes
-std::string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
+string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
   stringstream log;
 
   if ( !shape )  {
@@ -137,6 +127,16 @@ std::string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
         << " H1:" << sh->GetH1() << " Bl1:"   << sh->GetBl1()   << " Tl1:" << sh->GetTl1() << " Alpha1:" << sh->GetAlpha1()
         << " H2:" << sh->GetH2() << " Bl2:"   << sh->GetBl2()   << " Tl2:" << sh->GetTl2() << " Alpha2:" << sh->GetAlpha2();
   }
+  else if (cl == TGeoXtru::Class()) {
+    const TGeoXtru* sh = (const TGeoXtru*) shape;
+    log << " X:   " << sh->GetX(0)
+        << " Y:   " << sh->GetY(0)
+        << " Z:   " << sh->GetZ(0)
+        << " Xoff:" << sh->GetXOffset(0)
+        << " Yoff:" << sh->GetYOffset(0)
+        << " Nvtx:" << sh->GetNvert()
+        << " Nz:  " << sh->GetNz();
+  }
   else if (shape->IsA() == TGeoCompositeShape::Class()) {
     const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
     const TGeoBoolNode* boolean = sh->GetBoolNode();
@@ -180,7 +180,7 @@ template <typename T> Solid_type<T>& Solid_type<T>::setName(const char* value)  
 }
 
 /// Set new shape name
-template <typename T> Solid_type<T>& Solid_type<T>::setName(const std::string& value)    {
+template <typename T> Solid_type<T>& Solid_type<T>::setName(const string& value)    {
   this->access()->SetName(value.c_str());
   return *this;
 }
@@ -230,11 +230,14 @@ Polycone::Polycone(double start, double delta) {
 }
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
-Polycone::Polycone(double start, double delta, const vector<double>& rmin, const vector<double>& rmax,
-                   const vector<double>& z) {
+Polycone::Polycone(double start, double delta,
+                   const vector<double>& rmin, const vector<double>& rmax, const vector<double>& z) {
   vector<double> params;
   if (rmin.size() < 2) {
-    throw runtime_error("dd4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
+    throw runtime_error("dd4hep: PolyCone Not enough Z planes. minimum is 2!");
+  }
+  if((z.size()!=rmin.size()) || (z.size()!=rmax.size()) )    {
+    throw runtime_error("dd4hep: Polycone: vectors z,rmin,rmax not of same length");
   }
   params.push_back(start/units::deg);
   params.push_back(delta/units::deg);
@@ -243,6 +246,26 @@ Polycone::Polycone(double start, double delta, const vector<double>& rmin, const
     params.push_back(z[i] );
     params.push_back(rmin[i] );
     params.push_back(rmax[i] );
+  }
+  _assign(new TGeoPcon(&params[0]), "", "polycone", true);
+}
+
+/// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
+Polycone::Polycone(double start, double delta, const vector<double>& r, const vector<double>& z) {
+  vector<double> params;
+  if (r.size() < 2) {
+    throw runtime_error("dd4hep: PolyCone Not enough Z planes. minimum is 2!");
+  }
+  if((z.size()!=r.size()) )    {
+    throw runtime_error("dd4hep: Polycone: vectors z,r not of same length");
+  } 
+  params.push_back(start/units::deg);
+  params.push_back(delta/units::deg);
+  params.push_back(r.size());
+  for (size_t i = 0; i < r.size(); ++i) {
+    params.push_back(z[i] );
+    params.push_back(0.0 );
+    params.push_back(r[i] );
   }
   _assign(new TGeoPcon(&params[0]), "", "polycone", true);
 }
@@ -302,6 +325,65 @@ Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, d
   //double params[] = { z, rmin, rmax, rmin, rmax, startPhi/units::deg,deltaPhi/units::deg };
   _setDimensions(params);
   return *this;
+}
+
+/// Constructor to be used when creating a new object with attribute initialization
+CutTube::CutTube(double rmin, double rmax, double dz, double phi1, double phi2,
+                 double lx, double ly, double lz, double tx, double ty, double tz)  {
+  make(rmin,rmax,dz,phi1/units::deg,phi2/units::deg,lx,ly,lz,tx,ty,tz);
+}
+
+/// Constructor to be used when creating a new object with attribute initialization
+void CutTube::make(double rmin, double rmax, double dz, double phi1, double phi2,
+                   double lx, double ly, double lz, double tx, double ty, double tz)  {
+  _assign(new TGeoCtub(rmin,rmax,dz,phi1,phi2,lx,ly,lz,tx,ty,tz),"","cuttube",true);
+}
+
+/// Constructor to create a truncated tube object with attribute initialization
+TruncatedTube::TruncatedTube(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+                             double cutAtStart, double cutAtDelta, bool cutInside)
+{  make(zHalf, rIn, rOut, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
+
+/// Internal helper method to support object construction
+void TruncatedTube::make(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+                         double cutAtStart, double cutAtDelta, bool cutInside)   {
+  // check the parameters
+  if( rIn <= 0 || rOut <=0 || cutAtStart <=0 || cutAtDelta <= 0 )
+    except("TruncatedTube","++ 0 <= rIn,cutAtStart,rOut,cutAtDelta,rOut violated!");
+  else if( rIn >= rOut )
+    except("TruncatedTube","++ rIn<rOut violated!");
+  else if( startPhi != 0. )
+    except("TruncatedTube","++ startPhi != 0 not supported!");
+
+  double r         = cutAtStart;
+  double R         = cutAtDelta;
+  // exaggerate dimensions - does not matter, it's subtracted!
+  double boxX      = rOut;
+  double boxY      = rOut;
+  // width of the box > width of the tubs
+  double boxZ      = 1.1 * zHalf;
+  // angle of the box w.r.t. tubs
+  double cath      = r - R * std::cos( deltaPhi*units::deg );
+  double hypo      = std::sqrt( r * r + R * R - 2. * r * R * cos( deltaPhi*units::deg ));
+  double cos_alpha = cath / hypo;
+  double alpha     = -std::acos( cos_alpha );
+         
+  // rotationmatrix of box w.r.t. tubs
+  RotationZYX rot;
+  rot *= RotationX(M_PI/2.);
+  rot *= RotationZ(alpha);
+         
+  // center point of the box
+  double xBox;
+  if( !cutInside )
+    xBox = r + boxX / std::sin( fabs( alpha ));
+  else
+    xBox = - ( boxX / std::sin( fabs( alpha )) - r );
+
+  Box  box(boxX, boxZ, boxY);
+  Tube tubs(rIn, rOut, zHalf, startPhi, deltaPhi);
+  SubtractionSolid sub(tubs, box, Transform3D(rot,Position(xBox, 0., 0.)));
+  _assign(sub.ptr(),"","trunctube",true);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
@@ -411,8 +493,64 @@ Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double 
   return *this;
 }
 
+/// Internal helper method to support object construction
+void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, double r, bool atMinusZ)    {
+  double x = atMinusZ ? x1 : x2;
+  double h = 0;
+  bool intersec = false; // union or intersection solid
+  double halfOpeningAngle = std::asin( x / std::abs( r ))/units::deg;
+  double displacement = 0;
+  double startPhi = 0;
+  double halfZ = z/2.;
+  /* calculate the displacement of the tubs w.r.t. to the trap, determine the opening angle of the tubs */
+  double delta = std::sqrt( r * r - x * x );
+ 
+  if( r < 0 && std::abs( r ) >= x )  {
+    intersec = true; // intersection solid
+    h = y1 < y2 ? y2 : y1; // tubs half height
+    h += h/20.; // enlarge a bit - for subtraction solid
+    if( atMinusZ )    {
+      displacement = - halfZ - delta; 
+      startPhi = 90. - halfOpeningAngle;
+    }
+    else    {
+      displacement =   halfZ + delta;
+      startPhi = -90.- halfOpeningAngle;
+    }
+  }
+  else if( r > 0 && std::abs(r) >= x )  {
+    if( atMinusZ )    {
+      displacement = - halfZ + delta;
+      startPhi = 270.- halfOpeningAngle;
+      h = y1;
+    }
+    else
+    {
+      displacement =   halfZ - delta; 
+      startPhi = 90. - halfOpeningAngle;
+      h = y2;
+    }    
+  }
+  else  {
+    except("PseudoTrap","Check parameters of the PseudoTrap!");   
+  }
+ 
+  Solid trap(new TGeoTrd2(x1, x2, y1, y2, halfZ));
+  Solid tubs(new TGeoTubeSeg(0.,std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.));
+  UnionSolid solid;
+  if( intersec )  {
+    solid = SubtractionSolid(trap, tubs, Transform3D(RotationX(M_PI/2.), Position(0.,0.,displacement)));
+    return;
+  }
+  else  {
+    SubtractionSolid sub(tubs, Box(1.1*x, 1.1*h, std::sqrt(r*r-x*x)), Transform3D(RotationX(M_PI/2.)));
+    solid = UnionSolid(trap, sub, Transform3D(RotationX(M_PI/2.), Position(0,0,displacement)));
+  }
+  _assign(solid.ptr(),"","pseudo-trap", true);
+}
+
 /// Helper function to create poly hedron
-void PolyhedraRegular::_create(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta) {
+void PolyhedraRegular::make(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta) {
   if (rmin < 0e0 || rmin > rmax)
     throw runtime_error("dd4hep: PolyhedraRegular: Illegal argument rmin:<" + _toString(rmin) + "> is invalid!");
   else if (rmax < 0e0)
@@ -424,17 +562,79 @@ void PolyhedraRegular::_create(int nsides, double rmin, double rmax, double zpos
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zlen) {
-  _create(nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 360.);
+  make(nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 360.);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, double rmax, double zlen) {
-  _create(nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart/units::deg, 360.);
+  make(nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart/units::deg, 360.);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2]) {
-  _create(nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 360.);
+  make(nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 360.);
+}
+
+/// Helper function to create poly hedron
+void Polyhedra::make(int nsides, double start, double delta,
+                     const vector<double>& z, const vector<double>& rmin, const vector<double>& rmax)  {
+  vector<double> temp;
+  if ( rmin.size() != z.size() || rmax.size() != z.size() )  {
+    except("Polyhedra",
+           "Number of values to define zplanes are incorrect: z:%ld rmin:%ld rmax:%ld",
+           z.size(), rmin.size(), rmax.size());
+  }
+  // No need to transform coordinates to cm. We are in the dd4hep world: all is already in cm.
+  temp.reserve(4+z.size()*2);
+  temp.push_back(start);
+  temp.push_back(delta);
+  temp.push_back(double(nsides));
+  temp.push_back(double(z.size()));
+  for(size_t i=0; i<z.size(); ++i)   {
+    temp.push_back(z[i]);
+    temp.push_back(rmin[i]);
+    temp.push_back(rmax[i]);
+  }
+  _assign(new TGeoPgon(&temp[0]), "", "polyhedra", false);
+}
+
+/// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
+Polyhedra::Polyhedra(int nsides, double start, double delta, const vector<double>& z, const vector<double>& r)  {
+  vector<double> rmin(r.size(), 0.);
+  make(nsides, start/units::deg, delta/units::deg, z, rmin, r);
+}
+
+/// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
+Polyhedra::Polyhedra(int nsides, double start, double delta,
+                     const vector<double>& z, const vector<double>& rmin, const vector<double>& rmax)  {
+  make(nsides, start/units::deg, delta/units::deg, z, rmin, rmax);
+}
+
+/// Helper function to create the polyhedron
+void ExtrudedPolygon::make(const vector<double>& x,
+                           const vector<double>& y,
+                           const vector<double>& z,
+                           const vector<double>& zx,
+                           const vector<double>& zy,
+                           const vector<double>& zscale)
+{
+  TGeoXtru* solid = new TGeoXtru(z.size());
+  _assign(solid, "", "polyhedra", false);
+  // No need to transform coordinates to cm. We are in the dd4hep world: all is already in cm.
+  solid->DefinePolygon(x.size(), &(*x.begin()), &(*y.begin()));
+  for( size_t i = 0; i < z.size(); ++i )
+    solid->DefineSection(i, z[i], zx[i], zy[i], zscale[i]);
+}
+
+/// Constructor to create a new object. 
+ExtrudedPolygon::ExtrudedPolygon(const vector<double>& x,
+                                 const vector<double>& y,
+                                 const vector<double>& z,
+                                 const vector<double>& zx,
+                                 const vector<double>& zy,
+                                 const vector<double>& zscale)
+{
+  make(x, y, z, zx, zy, zscale);
 }
 
 /// Creator method
@@ -547,6 +747,7 @@ INSTANTIATE(TGeoTorus);
 INSTANTIATE(TGeoTube);
 INSTANTIATE(TGeoTubeSeg);
 INSTANTIATE(TGeoEltu);
+INSTANTIATE(TGeoXtru);
 INSTANTIATE(TGeoHype);
 INSTANTIATE(TGeoTrap);
 INSTANTIATE(TGeoTrd1);

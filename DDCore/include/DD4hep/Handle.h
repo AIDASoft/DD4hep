@@ -247,6 +247,9 @@ namespace dd4hep {
   template <typename T> std::string _toString(const T* p, const char* fmt = "%p")
   {      return _ptrToString((void*)p, fmt);       }
 
+  /// Generic type conversion from string to primitive value  \ingroup DD4HEP_CORE
+  template <typename T> T _toType(const std::string& value);
+  
   /// String conversions: string to boolean value  \ingroup DD4HEP_CORE
   bool   _toBool(const std::string& value);
   /// String conversions: string to integer value  \ingroup DD4HEP_CORE

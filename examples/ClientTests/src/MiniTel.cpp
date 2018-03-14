@@ -112,10 +112,13 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   pv = motherVol.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
 
   xml_comp_t dtctr = x_det;
+  m_volume.setRegion(description,x_det.regionStr());
   if ( dtctr.isSensitive() ) {
     sens.setType("tracker");
     pv.addPhysVolID("system",detectors_id);
     m_volume.setSensitiveDetector(sens);
+    // Set volume attributes
+    m_volume.setLimitSet(description,x_det.limitsStr());
   }
   sdet.setPlacement(pv);
   // Support additional test if Detector_InhibitConstants is set to TRUE

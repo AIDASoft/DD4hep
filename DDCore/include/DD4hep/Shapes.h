@@ -37,6 +37,7 @@
 #include "TGeoTrd2.h"
 #include "TGeoTube.h"
 #include "TGeoEltu.h"
+#include "TGeoXtru.h"
 #include "TGeoHype.h"
 #include "TGeoTorus.h"
 #include "TGeoHalfSpace.h"
@@ -211,10 +212,12 @@ namespace dd4hep {
     template <typename Q> Polycone(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new polycone object
     Polycone(double start, double delta);
-
     /// Constructor to create a new polycone object. Add at the same time all Z planes
-    Polycone(double start, double delta, const std::vector<double>& rmin, const std::vector<double>& rmax,
-             const std::vector<double>& z);
+    Polycone(double start, double delta,
+             const std::vector<double>& r, const std::vector<double>& z);
+    /// Constructor to create a new polycone object. Add at the same time all Z planes
+    Polycone(double start, double delta,
+             const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
     /// Assignment operator
     Polycone& operator=(const Polycone& copy) = default;
 
@@ -314,6 +317,69 @@ namespace dd4hep {
     Tube& setDimensions(double rmin, double rmax, double z, double startPhi=0.0, double deltaPhi=2*M_PI);
   };
 
+  /// Class describing a tube shape of a section of a cut tube segment
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoCtub.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class CutTube: public Solid_type<TGeoCtub> {
+  protected:
+    /// Internal helper method to support object construction
+    void make(double rmin, double rmax, double dz, double phi1, double phi2,
+              double lx, double ly, double lz, double tx, double ty, double tz);
+
+  public:
+    /// Default constructor
+    CutTube() = default;
+    /// Constructor to be used when passing an already created object
+    CutTube(const CutTube& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> CutTube(const Q* p) : Solid_type<Object>(p) {  }
+    /// Constructor to assign an object
+    template <typename Q> CutTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+    /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
+    CutTube(double rmin, double rmax, double dz, double phi1, double phi2,
+            double lx, double ly, double lz, double tx, double ty, double tz);
+    /// Assignment operator
+    CutTube& operator=(const CutTube& copy) = default;
+  };
+
+  
+  /// Class describing a truncated tube shape (CMS'ism)
+  /**
+   *   No real correspondance to TGeo. In principle it's a boolean Solid based on a tube.
+   *   \see http://cmssdt.cern.ch/lxr/source/DetectorDescription/Core/src/TruncTubs.h
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class TruncatedTube: public Solid_type<TGeoCompositeShape> {
+  protected:
+    /// Internal helper method to support object construction
+    void make(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+                  double cutAtStart, double cutAtDelta, bool cutInside);
+
+  public:
+    /// Default constructor
+    TruncatedTube() = default;
+    /// Constructor to be used when passing an already created object
+    TruncatedTube(const TruncatedTube& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> TruncatedTube(const Q* p) : Solid_type<Object>(p) {  }
+    /// Constructor to assign an object
+    template <typename Q> TruncatedTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+    /// Constructor to create a truncated tube object with attribute initialization
+    TruncatedTube(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+                  double cutAtStart, double cutAtDelta, bool cutInside);
+    /// Assignment operator
+    TruncatedTube& operator=(const TruncatedTube& copy) = default;
+  };
+  
   /// Class describing a elliptical tube shape of a section of a tube
   /**
    *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
@@ -423,6 +489,35 @@ namespace dd4hep {
     Trap& setDimensions(double z, double theta, double phi, 
                         double y1, double x1, double x2, double alpha1, 
                         double y2, double x3, double x4, double alpha2);
+  };
+
+  /// Class describing a pseudo trap shape (CMS'ism)
+  /**
+   *   No real correspondance to TGeo. In principle it's a boolean Solid based on a tube.
+   *   \see http://cmssdt.cern.ch/lxr/source/DetectorDescription/Core/src/PseudoTrap.h
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class PseudoTrap: public Solid_type<TGeoCompositeShape> {
+  private:
+    /// Internal helper method to support object construction
+    void make(double x1, double x2, double y1, double y2, double z, double radius, bool minusZ);
+  public:
+    /// Default constructor
+    PseudoTrap() = default;
+    /// Constructor to be used when passing an already created object
+    PseudoTrap(const PseudoTrap& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> PseudoTrap(const Q* p) : Solid_type<Object>(p) { }
+    /// Constructor to be used when passing an already created object
+    template <typename Q> PseudoTrap(const Handle<Q>& e) : Solid_type<Object>(e) { }
+    /// Constructor to create a new anonymous object with attribute initialization
+    PseudoTrap(double x1, double x2, double y1, double y2, double z, double radius, bool minusZ)
+    {  make(x1, x2, y1, y2, z, radius, minusZ);    }
+    /// Assignment operator
+    PseudoTrap& operator=(const PseudoTrap& copy) = default;
   };
 
   /// Class describing a Trapezoid shape
@@ -592,7 +687,7 @@ namespace dd4hep {
   class PolyhedraRegular: public Solid_type<TGeoPgon> {
   protected:
     /// Helper function to create the polyhedron
-    void _create(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta);
+    void make(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta);
   public:
     /// Default constructor
     PolyhedraRegular() = default;
@@ -610,6 +705,77 @@ namespace dd4hep {
     PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen);
     /// Assignment operator
     PolyhedraRegular& operator=(const PolyhedraRegular& copy) = default;
+  };
+
+  /// Class describing a regular polyhedron shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoPgon.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class Polyhedra : public Solid_type<TGeoPgon> {
+  protected:
+    /// Helper function to create the polyhedron
+    void make(int nsides, double start, double delta,
+              const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax);
+  public:
+    /// Default constructor
+    Polyhedra() = default;
+    /// Constructor to be used when passing an already created object
+    Polyhedra(const Polyhedra& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> Polyhedra(const Q* p) : Solid_type<Object>(p) {  }
+    /// Constructor to be used when passing an already created object
+    template <typename Q> Polyhedra(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+    /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
+    Polyhedra(int nsides, double start, double delta,
+              const std::vector<double>& z, const std::vector<double>& r);
+    /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
+    Polyhedra(int nsides, double start, double delta,
+              const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax);
+    /// Assignment operator
+    Polyhedra& operator=(const Polyhedra& copy) = default;
+  };
+
+  /// Class describing a extruded polygon shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoXtru.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class ExtrudedPolygon : public Solid_type<TGeoXtru> {
+  protected:
+    /// Helper function to create the polyhedron
+    void make(const std::vector<double> & x,
+              const std::vector<double> & y,
+              const std::vector<double> & z,
+              const std::vector<double> & zx,
+              const std::vector<double> & zy,
+              const std::vector<double> & zscale);
+  public:
+    /// Default constructor
+    ExtrudedPolygon() = default;
+    /// Constructor to be used when passing an already created object
+    ExtrudedPolygon(const ExtrudedPolygon& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> ExtrudedPolygon(const Q* p) : Solid_type<Object>(p) {  }
+    /// Constructor to be used when passing an already created object
+    template <typename Q> ExtrudedPolygon(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+    /// Constructor to create a new object. 
+    ExtrudedPolygon(const std::vector<double> & x,
+                    const std::vector<double> & y,
+                    const std::vector<double> & z,
+                    const std::vector<double> & zx,
+                    const std::vector<double> & zy,
+                    const std::vector<double> & zscale);
+    /// Assignment operator
+    ExtrudedPolygon& operator=(const ExtrudedPolygon& copy) = default;
   };
 
   /// Class describing an arbitray solid defined by 8 vertices.
