@@ -36,6 +36,7 @@ DDDBReader::DDDBReader(const std::string& dir)
 	m_context.valid_since = detail::makeTime(1970,1,1);
 	m_context.valid_until = detail::makeTime(2030,1,1);
 	m_context.event_time  = detail::makeTime(2015,7,1,12,0,0);
+  m_context.match       = m_match;
 }
 
 /// Resolve a given URI to a string containing the data
@@ -50,8 +51,9 @@ bool DDDBReader::load(const string& system_id,
 {
   if ( system_id.substr(0,m_match.length()) == m_match )  {
     string mm = m_match + "//";
+    size_t mm_len = mm.length();
     const string& sys = system_id;
-    string id = sys.c_str() + (sys.substr(0,mm.length()) == mm ? 9 : 7);
+    string id = sys.c_str() + (sys.substr(0,mm_len) == mm ? mm_len : mm_len-2);
     // Extract the COOL field name from the condition path
     // "conddb:/path/to/field@folder"
     string::size_type at_pos = id.find('@');

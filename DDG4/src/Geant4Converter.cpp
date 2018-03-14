@@ -70,6 +70,7 @@
 #include "G4UnionSolid.hh"
 #include "G4Paraboloid.hh"
 #include "G4Ellipsoid.hh"
+#include "G4ExtrudedSolid.hh"
 #include "G4EllipticalTube.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
@@ -137,7 +138,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
 
   ImprintsCountPlus();
 
-  std::vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
+  vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
   //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
 
   for( unsigned int i = 0; i < triplets.size(); i++ )  {
@@ -164,7 +165,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
       // YYY - the name of a log. volume we want to make a placement of
       // ZZZ - the log. volume index inside the assembly volume
       //
-      std::stringstream pvName;
+      stringstream pvName;
       pvName << "av_"
              << GetAssemblyID()
              << "_impr_"
@@ -173,7 +174,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
              << triplets[i].GetVolume()->GetName().c_str()
              << "_pv_"
              << i
-             << std::ends;
+             << ends;
 
       // Generate a new physical volume instance inside a mother
       // (as we allow 3D transformation use G4ReflectionFactory to
@@ -449,6 +450,21 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
                          sh->GetStIn() * DEGREE_2_RAD, sh->GetStOut() * DEGREE_2_RAD,
                          sh->GetDz() * CM_2_MM);
     }
+    else if (shape->IsA() == TGeoXtru::Class()) {
+      const TGeoXtru* sh = (const TGeoXtru*) shape;
+      size_t nz = sh->GetNz();
+      vector<G4ExtrudedSolid::ZSection> z;
+      vector<G4TwoVector> polygon;
+      z.reserve(nz);
+      polygon.reserve(nz);
+      for(size_t i=0; i<nz; ++i)   {
+        z.push_back(G4ExtrudedSolid::ZSection(sh->GetZ(i) * CM_2_MM,
+                                              {sh->GetXOffset(i), sh->GetYOffset(i)},
+                                              sh->GetScale(i)));
+        polygon.push_back(G4TwoVector(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM));
+      }
+      solid = new G4ExtrudedSolid(name, polygon, z);
+    }
     else if (shape->IsA() == TGeoPgon::Class()) {
       const TGeoPgon* sh = (const TGeoPgon*) shape;
       double phi_start = sh->GetPhi1() * DEGREE_2_RAD;
@@ -682,7 +698,7 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
 }
 
 /// Dump volume placement in GDML format to output stream
-void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* node) const {
+void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) const {
   TGeoVolume* mot_vol = node->GetVolume();
   if ( mot_vol->IsA() != TGeoVolumeAssembly::Class() )    {
     return 0;

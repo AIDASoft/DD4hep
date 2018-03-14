@@ -38,21 +38,21 @@
 
   <detectors>
 
-    <detector name="MyLHCBdetector1" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="1" sensitive="true" readout="MyLHCBdetector1Hits">
+    <detector name="MyLHCBdetector1" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="1" sensitive="true" readout="MyLHCBdetector1Hits" limits="minitel_limits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="0*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
     </detector>
 
-    <detector name="MyLHCBdetector2" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="2" sensitive="true" readout="MyLHCBdetector2Hits" >
+    <detector name="MyLHCBdetector2" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="2" sensitive="true" readout="MyLHCBdetector2Hits"  limits="minitel_limits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="10*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
     </detector>
 
-    <detector name="MyLHCBdetector3" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="3"  sensitive="true" readout="MyLHCBdetector3Hits">
+    <detector name="MyLHCBdetector3" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="3"  sensitive="true" readout="MyLHCBdetector3Hits" limits="minitel_limits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="20*mm" y="0*cm" x="0*cm" />
@@ -60,7 +60,7 @@
     </detector>
 
 
-    <detector name="MyLHCBdetector4" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="4"  sensitive="true"  readout="MyLHCBdetector4Hits">
+    <detector name="MyLHCBdetector4" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="4"  sensitive="true"  readout="MyLHCBdetector4Hits" limits="minitel_limits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm"/>
       <position z="30*mm" y="0*cm" x="0*cm" />
@@ -68,7 +68,7 @@
     </detector>
 
 
-    <detector name="MyLHCBdetector5" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="5"  sensitive="true" readout="MyLHCBdetector5Hits">
+    <detector name="MyLHCBdetector5" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="5"  sensitive="true" readout="MyLHCBdetector5Hits" limits="minitel_limits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm"/>
       <position z="40*mm" y="0*cm" x="0*cm" />
@@ -76,7 +76,7 @@
     </detector>
 
 
-    <detector name="MyLHCBdetector6" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="6"  sensitive="true" readout="MyLHCBdetector6Hits">
+    <detector name="MyLHCBdetector6" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="6"  sensitive="true" readout="MyLHCBdetector6Hits" limits="minitel_limits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="50*mm" y="0*cm" x="0*cm" />
@@ -84,7 +84,7 @@
     </detector>
 
 
-    <detector name="MyLHCBdetector7" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="7"  sensitive="true" readout="MyLHCBdetector7Hits">
+    <detector name="MyLHCBdetector7" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="7"  sensitive="true" readout="MyLHCBdetector7Hits" limits="minitel_limits">
 
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="60*mm" y="0*cm" x="0*cm" />
@@ -92,21 +92,21 @@
     </detector>
 
 
-    <detector name="MyLHCBdetector8" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="8"  sensitive="true" readout="MyLHCBdetector8Hits">
+    <detector name="MyLHCBdetector8" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="8"  sensitive="true" readout="MyLHCBdetector8Hits" limits="minitel_limits">
 
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="70*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
     </detector>
 
-    <detector name="MyLHCBdetector9" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="9"  sensitive="true" readout="MyLHCBdetector9Hits">
+    <detector name="MyLHCBdetector9" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="9"  sensitive="true" readout="MyLHCBdetector9Hits" limits="minitel_limits">
 
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="80*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
     </detector>
 
-    <detector name="MyLHCBdetector10" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="10" sensitive="true" readout="MyLHCBdetector10Hits">
+    <detector name="MyLHCBdetector10" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="10" sensitive="true" readout="MyLHCBdetector10Hits" limits="minitel_limits">
 
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="90*mm" y="0*cm" x="0*cm" />
@@ -115,6 +115,14 @@
 
 
   </detectors>
+
+  <limits>
+    <limitset name="minitel_limits">
+      <limit name="step_length_max" particles="e[+-]" value="1.0" unit="mm" />
+      <limit name="step_length_max" particles="mu[+-]" value="3.0" unit="mm" />
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
 
   <readouts>
     <readout name="MyLHCBdetector1Hits">

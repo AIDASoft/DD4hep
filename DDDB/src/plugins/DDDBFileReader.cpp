@@ -67,7 +67,11 @@ int dd4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
                                             UserContext* /* ctxt */,
                                             std::string& buffer)
 {
-  std::string path = m_directory+system_id;
+  std::string path;
+  std::string p = m_directory+system_id;
+  if ( p.substr(0,7) == "file://" ) path = p.substr(6);
+  else if ( p.substr(0,5) == "file:" ) path = p.substr(5);
+  else path = p;
   int fid  = ::open(path.c_str(), O_RDONLY);
   if ( fid != -1 )   {
     struct stat buff;
