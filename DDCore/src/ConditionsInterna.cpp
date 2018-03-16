@@ -35,14 +35,13 @@ namespace {
 
 /// Default constructor
 detail::ConditionObject::ConditionObject()
-  : NamedObject(), value(), validity(), address(), comment(), data()
 {
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
 detail::ConditionObject::ConditionObject(const string& nam,const string& tit)
-  : NamedObject(nam, tit), value(), validity(), address(), comment(), data()
+  : NamedObject(nam, tit), data()
 {
   InstanceCount::increment(this);
 }

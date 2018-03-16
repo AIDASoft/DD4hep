@@ -66,7 +66,8 @@ namespace dd4hep {
       mutable size_t numCondition = 0;
       /// Counter: number of empty conditions
       mutable size_t numEmptyCondition = 0;
-
+      /// Flag to print summary
+      bool           summary = true;
     public:
       /// Initializing constructor
       ConditionsPrinter(ConditionsMap* m,
@@ -83,6 +84,7 @@ namespace dd4hep {
       /// Callback to output conditions information
       virtual int operator()(Condition condition)  const;
     };
+    
   }    /* End namespace cond           */
 }      /* End namespace dd4hep               */
 #endif /* DD4HEP_DDCORE_CONDITIONSPRINTER_H  */

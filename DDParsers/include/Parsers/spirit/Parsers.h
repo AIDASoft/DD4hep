@@ -24,12 +24,19 @@
 #include <set>
 #include <map>
 #include <deque>
+#include <iostream>
 
 // ============================================================================
 #define PARSERS_DECL_FOR_SINGLE(Type)                                   \
   namespace dd4hep { namespace Parsers {                                \
       int parse(Type& result, const std::string& input);                \
     }}
+
+/// Macro to define dummy (local) ostreams
+#define DD4HEP_DEFINE_OSTREAM_DUMMY(x)                                  \
+  namespace {                                                           \
+    std::ostream& operator<<(std::ostream& s,const x&)  {  return s; }  \
+  }
 
 #define DD4HEP_DEFINE_PARSER_DUMMY(Type)                                \
   PARSERS_DECL_FOR_SINGLE(Type)                                         \

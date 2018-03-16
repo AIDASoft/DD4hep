@@ -71,7 +71,7 @@ if (DD4HEP_USE_XERCESC)
     -config    DD4hep_ConditionsManagerInstaller
     -exec      DDDB_ConditionsSummary
     DEPENDS    DDDB_extract_LONGTEST
-    REGEX_PASS "\\+ DDDB Total Number of parameters:    13650  " 
+    REGEX_PASS "\\+ DDDB Total Number of parameters:    13642  " 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -137,7 +137,7 @@ if (DD4HEP_USE_XERCESC)
     -config    DD4hep_ConditionsManagerInstaller
     -plugin    DDDB_DetElementConditionDump -print DEBUG
     DEPENDS    DDDB_extract_LONGTEST
-    REGEX_PASS "\\+ DDDB: Total number of DetElement parameters:    13144"
+    REGEX_PASS "\\+ DDDB: Total number of DetElement parameters:    13136"
   )
   #
   #---Testing: Load the geometry + conditions + conditions derives
@@ -147,7 +147,7 @@ if (DD4HEP_USE_XERCESC)
     -config    DD4hep_ConditionsManagerInstaller
     -plugin    DDDB_DerivedCondTest -print DEBUG
     DEPENDS    DDDB_extract_LONGTEST
-    REGEX_PASS "\\+ DDDB: Total Number of callbacks:    16215"
+    REGEX_PASS "\\+ DDDB: Total Number of callbacks:    16221"
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
@@ -169,7 +169,7 @@ if (DD4HEP_USE_XERCESC)
     -config    DD4hep_ConditionsManagerInstaller
     -plugin    DDDB_AlignmentsAccessTest -print DEBUG
     DEPENDS    DDDB_extract_LONGTEST
-    REGEX_PASS "\\+ DDDB: Accessed 5405 alignments from 5405 DetElement objects" 
+    REGEX_PASS "\\+ DDDB: Accessed 5407 alignments from 5407 DetElement objects" 
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #

@@ -20,6 +20,7 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cond;
 
+
 /// Callback to output conditions information
 template <typename T>
 int ConditionsCollector<T>::operator()(DetElement de, int)  const  {

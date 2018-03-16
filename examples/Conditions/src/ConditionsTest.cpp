@@ -111,7 +111,12 @@ namespace dd4hep {
       string type = c.type();
       printout(INFO,"Cond_Value","%-32s  [%16s] :  %s [%s] ", 
                c.name(), c.type().c_str(),
-               c.value().c_str(), c->validity.c_str());
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+               c.value().c_str(), c->validity.c_str()
+#else
+               "", ""
+#endif
+               );
       if ( type == "alignment" )
         print_bound_value<string>(c);
       else if ( type == "temperature" )

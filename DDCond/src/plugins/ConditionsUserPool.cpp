@@ -110,22 +110,22 @@ namespace dd4hep {
                         const Condition::Processor& processor) const  override;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual ConditionsManager::Result prepare(const IOV&              required,
-                             ConditionsSlice&        slice,
-                             void*                   user_param)  override;
+      virtual ConditionsManager::Result prepare(const IOV&                  required,
+                                                ConditionsSlice&            slice,
+                                                ConditionUpdateUserContext* user_param)  override;
 
       /// Evaluate and register all derived conditions from the dependency list
-      virtual size_t compute(const Dependencies&     dependencies,
-                             void*                   user_param,
-                             bool                    force)  override;
+      virtual size_t compute(const Dependencies&         dependencies,
+                             ConditionUpdateUserContext* user_param,
+                             bool                        force)  override;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual ConditionsManager::Result load   (const IOV&              required,
                              ConditionsSlice&        slice);
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual ConditionsManager::Result compute(const IOV&              required,
-                             ConditionsSlice&        slice,
-                             void*                   user_param);
+      virtual ConditionsManager::Result compute(const IOV&                  required,
+                                                ConditionsSlice&            slice,
+                                                ConditionUpdateUserContext* user_param);
     };
 
   }    /* End namespace cond               */
@@ -320,7 +320,7 @@ bool ConditionsMappedUserPool<MAPPING>::insert(DetElement detector,
 /// ConditionsMap overload: Access a condition
 template<typename MAPPING>
 Condition ConditionsMappedUserPool<MAPPING>::get(DetElement detector, unsigned int item_key)  const  {
-  ConditionKey::KeyMaker m(detector.key(),item_key);
+  ConditionKey::KeyMaker m(detector.key(), item_key);
   return get(m.hash);
 }
   
@@ -395,25 +395,23 @@ bool ConditionsMappedUserPool<MAPPING>::remove(Condition::key_type hash_key)    
 /// Evaluate and register all derived conditions from the dependency list
 template<typename MAPPING>
 size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
-                                                  void* user_param,
+                                                  ConditionUpdateUserContext* user_param,
                                                   bool force)
 {
-  size_t num_updates = 0;
   if ( !deps.empty() )  {
-    vector<const ConditionDependency*> missing;
+    Dependencies missing;
     // Loop over the dependencies and check if they have to be upgraded
-    missing.reserve(deps.size());
     for ( const auto& i : deps )  {
       typename MAPPING::iterator j = m_conditions.find(i.first);
       if ( j != m_conditions.end() )  {
         if ( !force )  {
           Condition::Object* c = (*j).second;
           // Remeber: key ist first, test is second!
-          if ( IOV::key_is_contained(m_iov.keyData,c->iov->keyData) )  {
+          if ( !IOV::key_is_contained(m_iov.keyData,c->iov->keyData) )  {
             /// This condition is no longer valid. remove it!
-            /// This condition will be added again by the handler.
+            /// It will be added again by the handler.
             m_conditions.erase(j);
-            missing.push_back(i.second);
+            missing.insert(i);
           }
           continue;
         }
@@ -421,18 +419,19 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
           m_conditions.erase(j);
         }
       }
-      missing.push_back(i.second);      
+      missing.insert(i);
     }
     if ( !missing.empty() )  {
       ConditionsManagerObject*    m(m_manager.access());
-      ConditionsDependencyHandler h(m, *this, deps, user_param);
-      for ( const ConditionDependency* d : missing )  {
-        Condition::Object* c = h(d);
-        if ( c ) ++num_updates;
-      }
+      ConditionsDependencyHandler handler(m, *this, missing, user_param);
+      /// 1rst pass: Compute/create the missing condiions
+      handler.compute();
+      /// 2nd pass:  Resolve missing dependencies
+      handler.resolve();
+      return handler.num_callback;
     }
   }
-  return num_updates;
+  return 0;
 }
 
 namespace {
@@ -454,9 +453,9 @@ namespace {
 }
 
 template<typename MAPPING> ConditionsManager::Result
-ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required, 
-                                           ConditionsSlice&        slice,
-                                           void*                   user_param)
+ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required, 
+                                           ConditionsSlice&            slice,
+                                           ConditionUpdateUserContext* user_param)
 {
   typedef vector<pair<Condition::key_type,ConditionDependency*> > CalcMissing;
   typedef vector<pair<Condition::key_type,ConditionsLoadInfo*> >  CondMissing;
@@ -550,22 +549,16 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&              required,
     if ( do_load )  {
       map<Condition::key_type,const ConditionDependency*> deps(calc_missing.begin(),last_calc);
       ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
-      for( const auto& i : deps )   {
-        const ConditionDependency* d = i.second;
-        typename MAPPING::iterator j = m_conditions.find(d->key());
-        // If we would know, that dependencies are only ONE level, we could skip this search....
-        if ( j == m_conditions.end() )  {
-          handler(d);
-          continue;
-        }
-        // printout(INFO,"UserPool","Already calcluated: %s",d->name());
-        continue;
-      }
+      /// 1rst pass: Compute/create the missing condiions
+      handler.compute();
+      /// 2nd pass:  Resolve missing dependencies
+      handler.resolve();
+      
       result.computed = handler.num_callback;
       result.missing -= handler.num_callback;
       if ( do_output_miss && result.computed < deps.size() )  {
         // Is this cheaper than an intersection ?
-        for( auto i = calc_missing.begin(); i != last_calc; ++i)   {
+        for( auto i = calc_missing.begin(); i != last_calc; ++i )   {
           typename MAPPING::iterator j = m_conditions.find((*i).first);
           if ( j == m_conditions.end() )
             slice_miss_calc.insert(*i);
@@ -651,9 +644,9 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&              required,
 }
 
 template<typename MAPPING> ConditionsManager::Result
-ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required, 
-                                           ConditionsSlice&        slice,
-                                           void*                   user_param)
+ConditionsMappedUserPool<MAPPING>::compute(const IOV&                  required, 
+                                           ConditionsSlice&            slice,
+                                           ConditionUpdateUserContext* user_param)
 {
   typedef vector<pair<Condition::key_type,ConditionDependency*> > CalcMissing;
   const auto& slice_calc = slice.content->derived();
@@ -690,17 +683,12 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&              required,
     if ( do_load )  {
       map<Condition::key_type,const ConditionDependency*> deps(calc_missing.begin(),last_calc);
       ConditionsDependencyHandler handler(m_manager, *this, deps, user_param);
-      for( const auto& i : deps )   {
-        const ConditionDependency* d = i.second;
-        typename MAPPING::iterator j = m_conditions.find(d->key());
-        // If we would know, that dependencies are only ONE level, we could skip this search....
-        if ( j == m_conditions.end() )  {
-          handler(d);
-          continue;
-        }
-        // printout(INFO,"UserPool","Already calcluated: %s",d->name());
-        continue;
-      }
+
+      /// 1rst pass: Compute/create the missing condiions
+      handler.compute();
+      /// 2nd pass:  Resolve missing dependencies
+      handler.resolve();
+
       result.computed = handler.num_callback;
       result.missing -= handler.num_callback;
       if ( do_output && result.computed < deps.size() )  {

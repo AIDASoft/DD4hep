@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -15,6 +15,7 @@
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/DetElement.h"
 #include "DD4hep/OpaqueData.h"
 #include "DD4hep/Primitives.h"
 
@@ -54,6 +55,34 @@ void Delta::clear()   {
   rotation    = RotationZYX();
 }
 
+/// Compute the alignment delta for one detector element and it's alignment condition
+void Delta::computeMatrix(TGeoHMatrix& tr_delta)  const   {
+  const Delta&       delta = *this;
+  const Position&      pos = delta.translation;
+  const Translation3D& piv = delta.pivot;
+  const RotationZYX&   rot = delta.rotation;
+
+  switch(delta.flags)   {
+  case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
+    detail::matrix::_transform(tr_delta, Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse())));
+    break;
+  case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION:
+    detail::matrix::_transform(tr_delta, Transform3D(rot,pos));
+    break;
+  case Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
+    detail::matrix::_transform(tr_delta, Transform3D(piv*rot*(piv.Inverse())));
+    break;
+  case Delta::HAVE_ROTATION:
+    detail::matrix::_transform(tr_delta, rot);
+    break;
+  case Delta::HAVE_TRANSLATION:
+    detail::matrix::_transform(tr_delta, pos);
+    break;
+  default:
+    break;
+  }
+}
+
 /// print alignment delta object
 ostream& operator << (ostream& s, const Delta& data)   {
   string res;
@@ -74,7 +103,7 @@ AlignmentData::AlignmentData()
 
 /// Copy constructor
 AlignmentData::AlignmentData(const AlignmentData& copy)
-  : delta(copy.delta), worldTrafo(copy.worldTrafo), worldDelta(copy.worldDelta),
+  : delta(copy.delta), worldTrafo(copy.worldTrafo),
     detectorTrafo(copy.detectorTrafo),
     nodes(copy.nodes), trToWorld(copy.trToWorld), detector(copy.detector),
     placement(copy.placement), flag(copy.flag), magic(magic_word())
@@ -91,7 +120,6 @@ AlignmentData::~AlignmentData()  {
 AlignmentData& AlignmentData::operator=(const AlignmentData& copy)  {
   if ( this != &copy )  {
     delta         = copy.delta;
-    worldTrafo    = copy.worldTrafo;
     detectorTrafo = copy.detectorTrafo;
     nodes         = copy.nodes;
     trToWorld     = copy.trToWorld;
@@ -201,15 +229,24 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
+// The map is used by the Alignments calculator
+typedef std::map<DetElement, Delta> DeltaMap;
+
+// Have only a weak reference here!
+inline ostream& operator << (ostream& s, const DetElement& )   { return s; }
+
 #include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(Delta)
+DD4HEP_DEFINE_PARSER_DUMMY(DeltaMap)
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
 
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR(Delta,eval_none<Delta>)
+DD4HEP_DEFINE_PARSER_GRAMMAR(DeltaMap,eval_none<DeltaMap>)
 DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentData,eval_none<AlignmentData>)
 
 DD4HEP_DEFINE_CONDITIONS_TYPE(Delta)
+DD4HEP_DEFINE_CONDITIONS_TYPE(DeltaMap)
 DD4HEP_DEFINE_CONDITIONS_TYPE(AlignmentData)
 

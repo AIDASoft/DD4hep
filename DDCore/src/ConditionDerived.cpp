@@ -21,6 +21,10 @@
 using namespace dd4hep;
 using namespace dd4hep::cond;
 
+/// Default destructor
+ConditionUpdateUserContext::~ConditionUpdateUserContext()   {
+}
+
 /// Standard destructor
 ConditionUpdateCall::ConditionUpdateCall() : m_refCount(1)  {
   InstanceCount::increment(this);
@@ -39,12 +43,12 @@ ConditionResolver::~ConditionResolver()  {
 void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const   {
   except("ConditionUpdateCall",
          "%s [%016llX]: FAILED to access non-existing item:%s [%016llX]",
-         dependency.target.name.c_str(), dependency.target.hash,
+         dependency->target.name.c_str(), dependency->target.hash,
          key_value.name.c_str(), key_value.hash);
 }
 
 /// Initializing constructor
-ConditionDependency::ConditionDependency(DetElement de,
+ConditionDependency::ConditionDependency(DetElement           de,
                                          unsigned int         item_key,
                                          ConditionUpdateCall* call)
   : m_refCount(0), detector(de), target(de, item_key), callback(call)
@@ -75,7 +79,7 @@ ConditionDependency::~ConditionDependency()  {
 }
 
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(DetElement de,
+DependencyBuilder::DependencyBuilder(DetElement           de,
                                      unsigned int         item_key,
                                      ConditionUpdateCall* call)
   : m_dependency(new ConditionDependency(de,item_key,call))
@@ -83,7 +87,7 @@ DependencyBuilder::DependencyBuilder(DetElement de,
 }
 
 /// Initializing constructor
-DependencyBuilder::DependencyBuilder(DetElement de,
+DependencyBuilder::DependencyBuilder(DetElement           de,
                                      const std::string&   item,
                                      ConditionUpdateCall* call)
   : m_dependency(new ConditionDependency(de,item,call))
