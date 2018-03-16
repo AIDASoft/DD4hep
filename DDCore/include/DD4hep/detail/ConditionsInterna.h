@@ -31,6 +31,7 @@
 // C/C++ include files
 #include <map>
 
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -59,12 +60,14 @@ namespace dd4hep {
     public:
       /// Condition value (in string form)
       std::string          value;
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
       /// Condition validity (in string form)
       std::string          validity;
       /// Condition address
       std::string          address;
       /// Comment string
       std::string          comment;
+#endif
       /// Data block
       OpaqueDataBlock      data;
       /// Interval of validity

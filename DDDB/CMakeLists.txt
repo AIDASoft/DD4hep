@@ -19,15 +19,12 @@
 dd4hep_package(    DDDB
   USES             DDCore DDAlign DDCond
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDDB)
-
+  INSTALL_INCLUDES include/DDDB include/Detector include/Kernel)
 #
-# We only create only library for DDDB. The whole package is a single component
-# library. A priory there is no need to seperate the implementation from the
-# plugins....
-#
-# If need arises, this can be changed easily.
+#---DDCond library --------------------------------------------------------------
+dd4hep_add_package_library(DDDB
+  SOURCES        src/*.cpp src/Detector/*.cpp )
 #
 #---DDDB plugin library -------------------------------------------------------
-dd4hep_add_plugin ( DDDB SOURCES src/*.cpp src/plugins/*.cpp src/Detector/*.cpp
+dd4hep_add_plugin(DDDBPlugins SOURCES src/plugins/*.cpp
   USES  DDCore DDAlign DDCond )

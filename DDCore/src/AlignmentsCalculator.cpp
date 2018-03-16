@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -39,7 +39,7 @@ namespace dd4hep {
        *  Uses internally the conditions mechanism to calculator the alignment conditions.
        *
        *  \author  M.Frank
-       *  \version 1.0
+       *  \version 2.0
        *  \ingroup DD4HEP_ALIGNMENTS
        */
       class Calculator {
@@ -52,10 +52,6 @@ namespace dd4hep {
         Calculator() = default;
         /// Default destructor
         ~Calculator() = default;
-        /// Compute the alignment delta for one detector element and it's alignment condition
-        void computeDelta(const Delta& delta, TGeoHMatrix& tr_delta)  const;
-        /// Compute the transformation from the closest detector element of the alignment to the world system
-        Result to_world(Context& context, DetElement det, TGeoHMatrix& mat)  const;
         /// Compute all alignment conditions of the lower levels
         Result compute(Context& context, Entry& entry) const;
         /// Resolve child dependencies for a given context
@@ -106,102 +102,9 @@ namespace dd4hep {
   }       /* End namespace align */
 }         /* End namespace dd4hep     */
 
-static PrintLevel s_PRINT   = WARNING;
-//static PrintLevel s_PRINT = INFO;
+//static PrintLevel s_PRINT = DEBUG;
+static PrintLevel s_PRINT = INFO;
 
-Result Calculator::to_world(Context&      context,
-                            DetElement    det,
-                            TGeoHMatrix&  delta_to_world)  const
-{
-  Result result;
-  DetElement par = det.parent();
-
-  while( par.isValid() )   {
-    // Mapping creation mode:
-    // If we find that the parent also got updated, directly take this transformation.
-    // Since we compute top-down, it is already valid!
-    Context::Keys::const_iterator i = context.keys.find(par.key());
-    if ( i != context.keys.end() )  {
-      Entry& e = context.entries[(*i).second];
-      // The parent entry is (not yet) valid. need to compute it first
-      if ( 0 == e.valid )  {
-        result += compute(context, e);
-      }
-      AlignmentCondition cond(e.cond);
-      AlignmentData&     align(cond.data());
-      if ( s_PRINT <= INFO )  {
-        ::printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
-        ::printf("  with ALIGN(world) %s :", par.path().c_str());    align.worldDelta.Print();
-      }
-      delta_to_world.MultiplyLeft(&align.worldDelta);
-      if ( s_PRINT <= INFO )  {
-        ::printf("  Result :"); delta_to_world.Print();
-      }
-      ++result.computed;
-      return result;
-    }
-    // Mapping update mode:
-    // Check if there is already a transformation in the cache. If yes, take it.
-    // We assume it is a good one, because higher level changes are already processed.
-    AlignmentCondition cond = context.mapping.get(par,Keys::alignmentKey);
-    if ( cond.isValid() )  {
-      AlignmentData&     align(cond.data());
-      if ( s_PRINT <= INFO )  {
-        ::printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
-        ::printf("  with ALIGN(world) %s :", par.path().c_str());    align.worldDelta.Print();
-      }
-      delta_to_world.MultiplyLeft(&align.worldDelta);
-      if ( s_PRINT <= INFO )  {
-        ::printf("  Result :"); delta_to_world.Print();
-      }
-      ++result.computed;
-      return result;
-    }
-    // There is no special alignment for this detector element.
-    // Hence to nominal (relative) transformation to the parent is valid
-    if ( s_PRINT <= INFO )  {
-      ::printf("Multiply-left ALIGNMENT %s:", det.path().c_str()); delta_to_world.Print();
-      ::printf("  with NOMINAL(det) %s :",    par.path().c_str());
-      par.nominal().detectorTransformation().Print();
-    }
-    delta_to_world.MultiplyLeft(&par.nominal().detectorTransformation());
-    if ( s_PRINT <= INFO )  {
-      ::printf("  Result :"); delta_to_world.Print();
-    }
-    par = par.parent();
-  }
-  ++result.computed;
-  return result;
-}
-
-/// Compute the alignment delta for one detector element and it's alignment condition
-void Calculator::computeDelta(const Delta& delta,
-                              TGeoHMatrix& tr_delta)  const
-{
-  const Position&        pos = delta.translation;
-  const Translation3D&   piv = delta.pivot;
-  const RotationZYX&     rot = delta.rotation;
-
-  switch(delta.flags)   {
-  case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
-    detail::matrix::_transform(tr_delta, Transform3D(Translation3D(pos)*piv*rot*(piv.Inverse())));
-    break;
-  case Delta::HAVE_TRANSLATION+Delta::HAVE_ROTATION:
-    detail::matrix::_transform(tr_delta, Transform3D(rot,pos));
-    break;
-  case Delta::HAVE_ROTATION+Delta::HAVE_PIVOT:
-    detail::matrix::_transform(tr_delta, Transform3D(piv*rot*(piv.Inverse())));
-    break;
-  case Delta::HAVE_ROTATION:
-    detail::matrix::_transform(tr_delta, rot);
-    break;
-  case Delta::HAVE_TRANSLATION:
-    detail::matrix::_transform(tr_delta, pos);
-    break;
-  default:
-    break;
-  }
-}
 
 /// Compute all alignment conditions of the lower levels
 Result Calculator::compute(Context& context, Entry& e)   const  {
@@ -212,23 +115,37 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
     printout(DEBUG,"ComputeAlignment","================ IGNORE %s (already valid)",det.path().c_str());
     return result;
   }
-  AlignmentCondition c = context.mapping.get(e.det, Keys::alignmentKey);
+  AlignmentCondition c = context.mapping.get(det, Keys::alignmentKey);
   AlignmentCondition cond = c.isValid() ? c : AlignmentCondition("alignment");
   AlignmentData&     align = cond.data();
   const Delta*       delta = e.delta ? e.delta : &identity_delta;
-  TGeoHMatrix        tr_delta;
+  TGeoHMatrix        transform_for_delta;
 
   printout(DEBUG,"ComputeAlignment",
            "============================== Compute transformation of %s",det.path().c_str());
   e.valid = 1;
   e.cond  = cond.ptr();
-  computeDelta(*delta, tr_delta);
   align.delta         = *delta;
-  align.worldDelta    = tr_delta;
-  result += to_world(context, det, align.worldDelta);
-  align.worldTrafo    = det.nominal().worldTransformation()*align.worldDelta;
-  align.detectorTrafo = det.nominal().detectorTransformation()*tr_delta;
-  align.trToWorld     = detail::matrix::_transform(&align.worldDelta);
+  delta->computeMatrix(transform_for_delta);
+
+  DetElement parent_det = det.parent();
+  AlignmentCondition parent_cond = context.mapping.get(parent_det, Keys::alignmentKey);
+  TGeoHMatrix parent_transform;
+  if (parent_cond.isValid()) {
+    AlignmentData&     parent_align = parent_cond.data();
+    parent_transform = parent_align.worldTrafo;
+  }
+  else if ( det.parent().isValid() )   {
+    parent_transform = parent_det.nominal().worldTransformation();
+  }
+  else {
+    // The tranformation from the "world" to its parent is non-existing i.e. unity
+  }
+
+  align.detectorTrafo = det.nominal().detectorTransformation() * transform_for_delta;
+  align.worldTrafo    = parent_transform * align.detectorTrafo;
+  align.trToWorld     = detail::matrix::_transform(&align.worldTrafo);
+  ++result.computed;
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;
@@ -239,13 +156,17 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
     printout(INFO,"ComputeAlignment","Level:%d Path:%s DetKey:%08X: Cond:%s key:%16llX",
              det.level(), det.path().c_str(), det.key(),
              yes_no(e.delta != 0), (long long int)cond.key());
-    if ( s_PRINT <= DEBUG )  {  
-      ::printf("DetectorTrafo: '%s' -> '%s' ",det.path().c_str(), det.parent().path().c_str());
+    if ( s_PRINT <= DEBUG )  {
+      ::printf("Nominal:     '%s' ", det.path().c_str());
+      det.nominal().worldTransformation().Print();
+      ::printf("Parent: '%s' -> '%s' ", det.path().c_str(), parent_det.path().c_str());
+      parent_transform.Print();
+      ::printf("DetectorTrafo: '%s' -> '%s' ", det.path().c_str(), det.parent().path().c_str());
       det.nominal().detectorTransformation().Print();
-      ::printf("Delta:       '%s' ",det.path().c_str()); tr_delta.Print();
-      ::printf("World-Delta: '%s' ",det.path().c_str()); align.worldDelta.Print();
-      ::printf("Nominal:     '%s' ",det.path().c_str()); det.nominal().worldTransformation().Print();
-      ::printf("Result:      '%s' ",det.path().c_str()); align.worldTrafo.Print();
+      ::printf("Delta:       '%s' ", det.path().c_str());
+      transform_for_delta.Print();
+      ::printf("Result:      '%s' ", det.path().c_str());
+      align.worldTrafo.Print();
     }
   }
   return result;
@@ -267,23 +188,9 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
   Result  result;
   Calculator obj;
   Calculator::Context context(alignments);
-  // This is a tricky one. We absolutely need the detector elements ordered
-  // by their depth aka. the distance to /world.
-  // Unfortunately one cannot use the raw pointer of the DetElement here,
-  // But has to insert them in a map which is ordered by the DetElement path.
-  //
-  // Otherwise memory randomization gives us the wrong order and the
-  // corrections are calculated in the wrong order ie. not top -> down the
-  // hierarchy, but in "some" order depending on the pointer values!
-  //
-  std::map<DetElement,Delta,Calculator::Context::PathOrdering> ordered_deltas;
-
   for( const auto& i : deltas )
-    ordered_deltas.insert(i);
-  
-  for( const auto& i : ordered_deltas )
     context.insert(i.first, &(i.second));
-  for( const auto& i : ordered_deltas )
+  for( const auto& i : deltas )
     obj.resolve(context,i.first);
   for( auto& i : context.entries )
     result += obj.compute(context, i);

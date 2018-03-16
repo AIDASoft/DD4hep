@@ -49,21 +49,24 @@ Condition::Condition(const string& nam,const string& typ, size_t memory)
 string Condition::str(int flags)  const   {
   stringstream output;
   Object* o = access();
-  const IOV* ptr_iov = o->iovData();
   if ( 0 == (flags&NO_NAME) )
     output << setw(16) << left << o->name;
-  if ( flags&WITH_IOV )
+  if ( flags&WITH_IOV )  {
+    const IOV* ptr_iov = o->iovData();
     output << " " << (ptr_iov ? ptr_iov->str().c_str() : "IOV:[UNKNOWN]");
+  }
   if ( flags&WITH_TYPE )
     output << " (" << o->type << ")";
-  if ( flags&WITH_ADDRESS )
-    output << " " << o->address;
   if ( flags&WITH_DATATYPE )
     output << " -> " << o->data.dataType();
   if ( flags&WITH_DATA )
     output << " Data:" << o->data.str();
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+  if ( flags&WITH_ADDRESS )
+    output << " " << o->address;
   if ( flags&WITH_COMMENT )
     output << " \"" << o->comment << "\"";
+#endif
   return output.str();
 }
 
@@ -92,6 +95,7 @@ const string& Condition::type()  const   {
   return access()->type;
 }
 
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
 /// Access the value field of the condition as a string
 const string& Condition::value()  const   {
   return access()->value;
@@ -106,6 +110,7 @@ const string& Condition::comment()  const   {
 const string& Condition::address()  const   {
   return access()->address;
 }
+#endif
 
 /// Access to the type information
 const type_info& Condition::typeInfo() const   {
@@ -125,6 +130,11 @@ Condition::detkey_type Condition::detector_key()  const   {
 /// Item part of the identifier
 Condition::itemkey_type Condition::item_key()  const   {
   return ConditionKey::KeyMaker(access()->hash).values.item_key;
+}
+
+/// Flag operations: Get flags
+Condition::mask_type Condition::flags()  const    {
+  return access()->flags;
 }
 
 /// Flag operations: Set a conditons flag
@@ -177,9 +187,26 @@ ConditionsSelect::~ConditionsSelect()   {
 }
 
 /// Constructor from string
-ConditionKey::ConditionKey(DetElement detector, const string& value)  {
+ConditionKey::KeyMaker::KeyMaker(DetElement detector, const std::string& value)   {
   KeyMaker m(detector.key(), detail::hash32(value));
   hash = m.hash;
+}
+
+/// Constructor from detector element and item sub-key
+ConditionKey::KeyMaker::KeyMaker(DetElement detector, Condition::itemkey_type item_key)  {
+  KeyMaker m(detector.key(), item_key);
+  hash = m.hash;
+}
+
+/// Constructor from string
+ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det, const std::string& value)   {
+  KeyMaker m(det, detail::hash32(value));
+  hash = m.hash;
+}
+
+/// Constructor from string
+ConditionKey::ConditionKey(DetElement detector, const string& value)  {
+  hash = KeyMaker(detector,value).hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   name = detector.path()+"#"+value;
 #endif
@@ -187,8 +214,7 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value)    {
-  KeyMaker m(det_key, detail::hash32(value));
-  hash = m.hash;
+  hash = KeyMaker(det_key,value).hash;
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   char text[32];
   ::snprintf(text,sizeof(text),"%08X#",det_key);
@@ -208,12 +234,12 @@ ConditionKey::ConditionKey(DetElement detector, Condition::itemkey_type item_key
 
 /// Hash code generation from input string
 Condition::key_type ConditionKey::hashCode(DetElement detector, const char* value)  {
-  return KeyMaker(detector.key(), detail::hash32(value)).hash;
+  return KeyMaker(detector.key(), value).hash;
 }
 
 /// Hash code generation from input string
 Condition::key_type ConditionKey::hashCode(DetElement detector, const string& value)  {
-  return KeyMaker(detector.key(), detail::hash32(value)).hash;
+  return KeyMaker(detector, value).hash;
 }
 
 /// 32 bit hashcode of the item

@@ -14,6 +14,7 @@
 // Framework includes
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorProcessor.h"
+#include "DD4hep/detail/ContainerHelpers.h"
 
 using namespace dd4hep;
 
@@ -34,3 +35,23 @@ int DetectorProcessor::process(DetElement de, int level, bool recursive)  const 
   except("Detector","Cannot process an invalid detector element");
   return 0;
 }
+
+/// Callback to output conditions information
+template <typename T>
+int DetElementsCollector<T>::operator()(DetElement de, int level)  const  {
+  insert_item(elements, de, level);
+  return 1;
+}
+
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+  //template class DetElementsCollector<T>;
+  template class DetElementsCollector<std::set<DetElement> >;
+  template class DetElementsCollector<std::list<DetElement> >;
+  template class DetElementsCollector<std::vector<DetElement> >;
+
+  template class DetElementsCollector<std::set<std::pair<DetElement, int> > >;
+  template class DetElementsCollector<std::list<std::pair<DetElement, int> > >;
+  template class DetElementsCollector<std::vector<std::pair<DetElement, int> > >;
+}  /* End namespace dd4hep   */
+

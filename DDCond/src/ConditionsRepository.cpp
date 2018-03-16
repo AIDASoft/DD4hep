@@ -67,7 +67,9 @@ namespace {
       root.append(cond = xml_elt_t(doc, _U(ref)));
       cond.setAttr(_U(key), text);
       cond.setAttr(_U(name), c.name());
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
       cond.setAttr(_U(ref), c.address());
+#endif
     }
     printout(ALWAYS,"ConditionsRepository","++ Handled %ld conditions.",all.size());
     if ( !output.empty() )  {
@@ -102,9 +104,10 @@ namespace {
   }
   
   int createText(const string& output, const AllConditions& all, char sep)   {
+    ofstream out(output);
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
     size_t siz_nam=0, siz_add=0, siz_tot=0;
     char fmt[64], text[2*PATH_MAX+64];
-    ofstream out(output);
     if ( !out.good() )  {
       except("ConditionsRepository",
              "++ Failed to open output file:%s [errno:%d %s]",
@@ -134,6 +137,7 @@ namespace {
       ::snprintf(text, sizeof(text), fmt, c.key(), c.name(), c.address().c_str());
       out << text << endl;
     }
+#endif
     out.close();
     return 1;
   }

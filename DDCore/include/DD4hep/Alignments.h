@@ -56,6 +56,7 @@ namespace dd4hep {
       static const Condition::itemkey_type alignmentKey;
     };
   }
+
   
   /// Main handle class to hold an alignment conditions object
   /**

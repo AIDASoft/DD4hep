@@ -442,13 +442,13 @@ Manager_Type1::getRange(Condition::key_type key, const IOV& iov)
 
 /// Prepare all updates for the given keys to the clients with the defined IOV
 ConditionsManager::Result
-Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice)
+Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)
 {
   __get_checked_pool(req_iov, slice.pool);
   /// First push any pending updates and register them to pending pools...
   pushUpdates();
   /// Now update/fill the user pool
-  return slice.pool->prepare(req_iov, slice);
+  return slice.pool->prepare(req_iov, slice, ctx);
 }
 
 /// Create empty user pool object

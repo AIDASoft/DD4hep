@@ -164,6 +164,11 @@ namespace dd4hep  {
     return _toDouble(value);
   }
 
+  /// Generic type conversion from string to primitive value
+  template <> string _toType<string>(const string& value)  {
+    return value;
+  }
+
   template <> char _multiply<char>(const string& left, const string& right) {
     double val = _toDouble(left + "*" + right);
     if ( val >= double(SCHAR_MIN) && val <= double(SCHAR_MAX) )
