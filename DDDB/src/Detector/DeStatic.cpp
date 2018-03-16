@@ -105,6 +105,6 @@ const ParameterMap::Parameters& DeStatic::params()  const    {
 
 /// Access single parameter
 const ParameterMap::Parameter&
-DeStatic::param(const std::string& nam, bool throw_if_not_present)   const    {
-  return access()->parameters.param(nam, throw_if_not_present);
+DeStatic::parameter(const std::string& nam, bool throw_if_not_present)   const    {
+  return access()->parameters.parameter(nam, throw_if_not_present);
 }

@@ -42,7 +42,7 @@ namespace gaudi   {
   }
   
   /// Access single parameter
-  const ParameterMap::Parameter& ParameterMap::param(const std::string& nam, bool throw_if)   const  {
+  const ParameterMap::Parameter& ParameterMap::parameter(const std::string& nam, bool throw_if)   const  {
     const auto i = m_params.find(nam);
     if ( i != m_params.end() )
       return (*i).second;
@@ -54,7 +54,7 @@ namespace gaudi   {
 
   /// Type dependent accessor to a named parameter
   template <typename T> T ParameterMap::param(const std::string& nam, bool throw_if)   const  {
-    return param(nam, throw_if).get<T>();
+    return parameter(nam, throw_if).template get<T>();
   }
 
 #define INST(x) template x ParameterMap::Parameter::get()  const;       \
