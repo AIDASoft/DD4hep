@@ -33,6 +33,9 @@ DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DeVPSensorObject,DeIOVObject,ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DeVPGenericObject,DeIOVObject,ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DeVPObject,DeVPGenericObject,DeIOVObject,ConditionObject);
 
+// These folks are not really conditions. Condition::get<T>() is never called for these types.
+#if 0
+
 inline std::ostream& operator << (std::ostream& s, const DeVPStaticObject&)        { return s; }
 inline std::ostream& operator << (std::ostream& s, const DeVPSensorStaticObject&)  { return s; }
 inline std::ostream& operator << (std::ostream& s, const DeVPGenericStaticObject&) { return s; }
@@ -63,3 +66,4 @@ DD4HEP_DEFINE_CONDITIONS_TYPE(DeVPGenericStaticObject)
 DD4HEP_DEFINE_CONDITIONS_TYPE(DeVPObject)
 DD4HEP_DEFINE_CONDITIONS_TYPE(DeVPSensorObject)
 DD4HEP_DEFINE_CONDITIONS_TYPE(DeVPGenericObject)
+#endif

@@ -59,9 +59,9 @@ namespace gaudi   {
   
 #define DE_CTORS_DEFAULT(X)                     \
   X() = default;                                \
-  X(const X& c) = default;                      \
+  X(const X& c) = delete;                       \
   virtual ~X() = default;                       \
-  X& operator=(const X& c) = default
+  X& operator=(const X& c) = delete
 
 #define DE_CTORS_HANDLE(X,B)                                    \
   X() = default;                                                \
