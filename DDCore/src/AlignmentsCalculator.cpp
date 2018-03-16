@@ -188,9 +188,23 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
   Result  result;
   Calculator obj;
   Calculator::Context context(alignments);
+  // This is a tricky one. We absolutely need the detector elements ordered
+  // by their depth aka. the distance to /world.
+  // Unfortunately one cannot use the raw pointer of the DetElement here,
+  // But has to insert them in a map which is ordered by the DetElement path.
+  //
+  // Otherwise memory randomization gives us the wrong order and the
+  // corrections are calculated in the wrong order ie. not top -> down the
+  // hierarchy, but in "some" order depending on the pointer values!
+  //
+  std::map<DetElement,Delta,Calculator::Context::PathOrdering> ordered_deltas;
+
   for( const auto& i : deltas )
+    ordered_deltas.insert(i);
+  
+  for( const auto& i : ordered_deltas )
     context.insert(i.first, &(i.second));
-  for( const auto& i : deltas )
+  for( const auto& i : ordered_deltas )
     obj.resolve(context,i.first);
   for( auto& i : context.entries )
     result += obj.compute(context, i);
