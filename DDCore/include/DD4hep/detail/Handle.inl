@@ -83,7 +83,7 @@ namespace dd4hep {
 
 #define DD4HEP_SAFE_CAST_IMPLEMENTATION(FROM, TO)                                                  \
   namespace dd4hep {  namespace detail  {                                                          \
-    template <> FROM* safe_cast<FROM>::cast(FROM* p)                                               \
+    template <> template <> FROM* safe_cast<FROM>::cast(FROM* p)                                   \
     {  return dynamic_cast<FROM*>(p);  }                                                           \
     template <> template <> FROM* safe_cast<FROM>::cast_non_null(FROM* p)  {                       \
        FROM* ptr = const_cast<FROM*>(dynamic_cast<const FROM*>(p));                                \

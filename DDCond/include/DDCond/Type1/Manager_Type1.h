@@ -167,7 +167,7 @@ namespace dd4hep {
        *
        *   @return   
        */
-      Result prepare(const IOV& req_iov, ConditionsSlice& slice)  final;
+      Result prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctxt)  final;
 
     };
   }        /* End namespace cond               */

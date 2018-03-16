@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -27,7 +27,7 @@ namespace dd4hep {
   // Forward declarations
   class Alignment;
   class AlignmentCondition;
-    
+
   /// Class describing an condition to re-adjust an alignment
   /**
    *
@@ -85,6 +85,8 @@ namespace dd4hep {
     bool hasRotation() const                {  return checkFlag(HAVE_ROTATION);    }
     /// Access flags: Check if the delta operation contains a pivot
     bool hasPivot() const                   {  return checkFlag(HAVE_PIVOT);       }
+    /// Compute the alignment delta for one detector element and it's alignment condition
+    void computeMatrix(TGeoHMatrix& tr_delta)  const;
   };
 
   /// Derived condition data-object definition
@@ -114,8 +116,6 @@ namespace dd4hep {
     Delta                delta;
     /// Intermediate buffer to store the transformation to the world coordination system
     mutable TGeoHMatrix  worldTrafo;
-    /// Delta transformation to the world coordination system
-    mutable TGeoHMatrix  worldDelta;
     /// Intermediate buffer to store the transformation to the parent detector element
     mutable TGeoHMatrix  detectorTrafo;
     /// The list of TGeoNodes (physical placements)

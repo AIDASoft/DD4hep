@@ -149,6 +149,7 @@ namespace dd4hep {
     template <typename T> inline
     ConditionsCollector<typename std::remove_reference<T>::type> conditionsCollector(ConditionsMap& m, T&& conditions)
     {  return ConditionsCollector<typename std::remove_reference<T>::type>(m, conditions); }
+    
 
   }       /* End namespace cond               */
 }         /* End namespace dd4hep                   */

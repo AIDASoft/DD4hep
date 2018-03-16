@@ -80,11 +80,11 @@ namespace dd4hep {
       ONSTACK             = 1<<4,
       // Flags for specific conditions
       TEMPERATURE         = 1<<5,
-      TEMPERATURE_DERIVED = TEMPERATURE|DERIVED,
-      PRESSURE            = 1<<6,
-      PRESSURE_DERIVED    = PRESSURE|DERIVED,
-      ALIGNMENT_DELTA     = 1<<7,
-      ALIGNMENT_DERIVED   = ALIGNMENT_DELTA|DERIVED,
+      TEMPERATURE_DERIVED = 1<<6|DERIVED,
+      PRESSURE            = 1<<7,
+      PRESSURE_DERIVED    = 1<<8|DERIVED,
+      ALIGNMENT_DELTA     = 1<<9,
+      ALIGNMENT_DERIVED   = 1<<10|DERIVED,
       // Keep bit 8-15 for other generic types
       // Bit 16-31 is reserved for user classifications
       USER_FLAGS_FIRST    = 1<<16,
@@ -148,18 +148,21 @@ namespace dd4hep {
     detkey_type  detector_key()  const;
     /// Item part of the identifier
     itemkey_type item_key()  const;
-      
-    
+
     /** Direct data items in string form */
     /// Access the type field of the condition
     const std::string& type()  const;
-    /// Access the comment field of the condition
-    const std::string& comment()  const;
+
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
     /// Access the value field of the condition as a string
     const std::string& value()  const;
+    /// Access the comment field of the condition
+    const std::string& comment()  const;
     /// Access the address string [e.g. database identifier]
     const std::string& address()  const;
-
+#endif
+    /// Flag operations: Get condition flags
+    mask_type flags()  const;
     /// Flag operations: Set a conditons flag
     void setFlag(mask_type option);
     /// Flag operations: UN-Set a conditons flag
@@ -246,7 +249,14 @@ namespace dd4hep {
         this->values.det_key  = det;
         this->values.item_key = item;
       }
+      /// Constructor from string
+      KeyMaker(Condition::detkey_type det, const std::string& value);
+      /// Constructor from string
+      KeyMaker(DetElement detector, const std::string& value);
+      /// Constructor from detector element and item sub-key
+      KeyMaker(DetElement detector, Condition::itemkey_type item_key);
     };
+    
     /// Compare keys by the hash value
     /**
      *  \author  M.Frank

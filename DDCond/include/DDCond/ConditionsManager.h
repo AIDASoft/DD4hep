@@ -34,6 +34,7 @@ namespace dd4hep {
     class ConditionsIOVPool;
     class ConditionsDataLoader;
     class ConditionsManagerObject;
+    class ConditionUpdateUserContext;
     
     /// Manager class for condition handles
     /**
@@ -162,8 +163,9 @@ namespace dd4hep {
       std::unique_ptr<UserPool> createUserPool(const IOVType* iovT)  const;
 
       /// Prepare all updates to the clients with the defined IOV
-      Result prepare(const IOV&              required_validity,
-                     ConditionsSlice&        slice)  const;
+      Result prepare(const IOV&                  required_validity,
+                     ConditionsSlice&            slice,
+                     ConditionUpdateUserContext* ctxt=0)  const;
     };
     
     /// Add results

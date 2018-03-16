@@ -117,6 +117,46 @@ namespace dd4hep {
     {  return (*processor)(de, level);                 }
   };
 
+  /// Generic detector element collector of a sub-tree
+  /**
+   *   To be used with utilities like DetElementProcessor etc.
+   *
+   *  
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2016
+   */
+  template <typename T> class DetElementsCollector  {
+  public:
+    /// Collection container
+    T&             elements;
+  public:
+    /// Default constructor
+    DetElementsCollector(T& d) : elements(d) {}
+    /// Default move constructor is disabled
+    DetElementsCollector(T&& p) = delete;
+    /// R-value copy from a temporary
+    DetElementsCollector(DetElementsCollector&& copy) = default;
+    /// Copy constructor
+    DetElementsCollector(const DetElementsCollector& copy) = default;
+    /// Default destructor
+    ~DetElementsCollector() = default;
+    /// Assignment operator
+    DetElementsCollector& operator=(const DetElementsCollector& copy) = default;
+    /// Callback to output elements information
+    /** Note: Valid implementations exist for the container types:
+     *        std::set<DetElement>
+     *        std::list<DetElement>
+     *        std::vector<DetElement>
+     */
+    virtual int operator()(DetElement de, int level)  const final;
+  };
+  
+  /// Creator utility function for DetElementsCollector objects
+  template <typename T> inline
+  DetElementsCollector<typename std::remove_reference<T>::type> detElementsCollector(T&& container)
+  {  return DetElementsCollector<typename std::remove_reference<T>::type>(container); }
+
   /// Helper to run DetElement scans
   /**
    *   This wrapper converts any object, which has the signature

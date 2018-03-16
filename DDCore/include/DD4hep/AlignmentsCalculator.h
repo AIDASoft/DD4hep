@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -32,6 +32,8 @@ namespace dd4hep {
      */
     class AlignmentsCalculator  {
     public:
+
+      typedef std::map<DetElement, Delta> Deltas;
       
       /// Object encapsulating the result of a computation call to the alignments calculator
       /**
@@ -65,7 +67,7 @@ namespace dd4hep {
       /// Assignment operator
       AlignmentsCalculator& operator=(const AlignmentsCalculator& mgr) = delete;
       /// Compute all alignment conditions of the internal dependency list
-      Result compute(const std::map<DetElement, Delta>& deltas, ConditionsMap& alignments)  const;
+      Result compute(const Deltas& deltas, ConditionsMap& alignments)  const;
     };
 
     /// Add results

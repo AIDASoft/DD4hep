@@ -65,7 +65,9 @@ namespace {
       root.append(cond = xml_elt_t(doc, _U(ref)));
       cond.setAttr(_U(key),  text);
       cond.setAttr(_U(name), c.second.name());
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
       cond.setAttr(_U(ref),  c.second.address());
+#endif
     }
     printout(ALWAYS,"ConditionsRepository","++ Handled %ld conditions.",all.size());
     if ( !output.empty() )  {
@@ -100,9 +102,10 @@ namespace {
   }
   
   int createText(const string& output, const AllConditions& all, char sep)   {
+    ofstream out(output);
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
     size_t siz_nam=0, siz_add=0, siz_tot=0;
     char fmt[64], text[2*PATH_MAX+64];
-    ofstream out(output);
     if ( !out.good() )  {
       except("ConditionsTextRepository",
              "++ Failed to open output file:%s [errno:%d %s]",
@@ -116,8 +119,8 @@ namespace {
         Condition::Object* c = i.second.ptr();
         size_t siz_n = c->name.length();
         size_t siz_a = c->address.length();
-        if ( siz_nam < siz_n ) siz_nam = siz_n;
         if ( siz_add < siz_a ) siz_add = siz_a;
+        if ( siz_nam < siz_n ) siz_nam = siz_n;
         if ( siz_tot < (siz_n+siz_a) ) siz_tot = siz_n+siz_a;
       }
       siz_tot += 8+2+1;
@@ -132,6 +135,7 @@ namespace {
       ::snprintf(text, sizeof(text), fmt, c.key(), c.name(), c.address().c_str());
       out << text << endl;
     }
+#endif
     out.close();
     return 1;
   }

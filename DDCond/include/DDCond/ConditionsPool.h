@@ -208,13 +208,13 @@ namespace dd4hep {
                         const Condition::Processor& processor) const = 0;
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
-      virtual ConditionsManager::Result prepare(const IOV&               required, 
-                                                ConditionsSlice&         slice,
-                                                void*                    user_param = 0) = 0;
+      virtual ConditionsManager::Result prepare(const IOV&                  required, 
+                                                ConditionsSlice&            slice,
+                                                ConditionUpdateUserContext* user_param = 0) = 0;
 
       /// Evaluate and register all derived conditions from the dependency list
       virtual size_t compute(const Dependencies& dependencies,
-                             void* user_param,
+                             ConditionUpdateUserContext* user_param,
                              bool force) = 0;
     };
   }        /* End namespace cond                     */

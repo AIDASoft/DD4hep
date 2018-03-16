@@ -119,11 +119,13 @@ ConditionsPrinter::ConditionsPrinter(ConditionsMap* m, const string& pref, int f
 
 /// Default destructor
 ConditionsPrinter::~ConditionsPrinter()   {
-  printout(INFO,name,"++ %s +++++++++++++ Printout summary:", prefix.c_str());
-  printout(INFO,name,"++ %s Number of conditions:       %8ld  [  dto. empty:%ld]",
-           prefix.c_str(), numCondition, numEmptyCondition);
-  printout(INFO,name,"++ %s Total Number of parameters: %8ld  [%7.3f Parameters/Condition]",
-           prefix.c_str(), numParam, double(numParam)/std::max(double(numCondition),1e0));
+  if ( summary )   {
+    printout(INFO,name,"++ %s +++++++++++++ Printout summary:", prefix.c_str());
+    printout(INFO,name,"++ %s Number of conditions:       %8ld  [  dto. empty:%ld]",
+             prefix.c_str(), numCondition, numEmptyCondition);
+    printout(INFO,name,"++ %s Total Number of parameters: %8ld  [%7.3f Parameters/Condition]",
+             prefix.c_str(), numParam, double(numParam)/std::max(double(numCondition),1e0));
+  }
   detail::deletePtr(m_print);
 }
 
@@ -133,15 +135,19 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
   if ( cond.isValid() )   {
     string repr = cond.str(m_flag);
     Condition::Object* ptr    = cond.ptr();
-    const type_info&   type   = cond.typeInfo();
-    const OpaqueData&  opaque = cond.data();
 
     if ( repr.length() > lineLength )
       repr = repr.substr(0,lineLength)+"...";
     printout(this->printLevel,name, "++ %s%s", prefix.c_str(), repr.c_str());
-
     string new_prefix = prefix;
     new_prefix.assign(prefix.length(),' ');
+    if ( !cond.is_bound() )   {
+      printout(this->printLevel,name,"++ %s \tPath:%s Key:%16llX Type:%s",
+               new_prefix.c_str(), cond.name(), cond.key(), "<Unbound-Condition>");
+      return 1;
+    }
+    const type_info&   type   = cond.typeInfo();
+    const OpaqueData&  opaque = cond.data();
     printout(this->printLevel,name,"++ %s \tPath:%s Key:%16llX Type:%s",
              new_prefix.c_str(), cond.name(), cond.key(), opaque.dataType().c_str());
     //string values = opaque.str();

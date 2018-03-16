@@ -65,7 +65,6 @@ namespace dd4hep {
     struct DDDBConditionParamVector {};
     struct DDDBConditionParamSpecific {};
 
-
     /// C++ version to convert a string to lower case
     std::string str_lower(const std::string& str) {
       std::string res = str.c_str();
@@ -588,7 +587,7 @@ namespace dd4hep {
 
       if ( !g.fromString(&pos,data) ) g.invalidConversion(data, g.type());
       if ( nam == "dPosXYZ" )  {
-        a->translation = pos;
+        a->translation = pos/10.0;
         a->flags |= Delta::HAVE_TRANSLATION;
       }
       else if ( nam == "dRotXYZ" )   {
@@ -622,7 +621,12 @@ namespace dd4hep {
         if ( element.hasAttr(_U(comment)) )  {
           cond->comment = element.attr<string>(_U(comment));
         }
-
+#if 0
+        if ( str_upper(path).find("/VP/") != string::npos )   {
+          printout(ALWAYS,"Conditions","Loading condition: %s", path.c_str());
+        }
+#endif
+        
         int cls_id = -1;
         if ( element.hasAttr(_LBU(classID)) )  {
           cls_id = element.attr<int>(_LBU(classID));
@@ -635,7 +639,7 @@ namespace dd4hep {
           ++num_align;
         }
 #endif
-        if ( cls_id == AbstractMap::ALIGNMENT )   {
+        if ( cls_id == AbstractMap::ALIGNMENT || cls_id == 1008106 )   {
           AbstractMap& d = cond.bind<AbstractMap>();
           pair<string,OpaqueDataBlock>  block;
           Delta&  align = block.second.bind<Delta>();
@@ -1439,9 +1443,10 @@ namespace dd4hep {
                    det->name.c_str()
                    );
         }
+        if ( x_det.hasAttr(_LBU(classID)) )  {
+          det->classID = element.attr<int>(_LBU(classID));
+        }
         // Now extract all availible information from the xml
-        if ( x_det.hasAttr(_LBU(classID)) )
-          det->classID = x_det.attr<int>(_LBU(classID));
         if ( (elt=x_det.child(_U(author),false)) )
           Conv<DDDBAuthor>(description,context,&det->author)(elt);
         if ( (elt=x_det.child(_U(version),false)) )
@@ -1760,9 +1765,11 @@ namespace dd4hep {
           xml_doc->context.valid_since = 0;
           xml_doc->context.valid_until = 0;
           docs.insert(make_pair(doc_path,xml_doc->addRef()));
-          //if ( str_upper(doc_path).find("VELO") != string::npos )   {
-          //printout(ALWAYS,"load_dddb","Loading document: %s",doc_path.c_str());
+
+          //if ( str_upper(doc_path).find("/VP/") != string::npos )   {
+          //  printout(ALWAYS,"load_dddb","Loading document: %s",doc_path.c_str());
           //}
+
           xml::UriContextReader reader(rdr, &xml_doc->context);
           xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
           xml_h e = doc.root();
@@ -1835,9 +1842,9 @@ namespace dd4hep {
     long load_dddb_objects(Detector& description, int argc, char** argv) {
       DDDBHelper* hlp = description.extension<DDDBHelper>(false);
       if ( hlp )   {
-        DDDBContext ctxt(description);
-        xml::UriReader* rdr = hlp->xmlReader();
+        xml::UriReader*    rdr = hlp->xmlReader();
         DDDBReaderContext* ctx = (DDDBReaderContext*)rdr->context();
+        DDDBContext ctxt(description);
         string sys_id = ctx->match+"//lhcb.xml";
         string obj_path = "/";
         if ( argc == 0 )   {

@@ -93,6 +93,7 @@ namespace dd4hep {
       virtual int operator()(Alignment cond)  const  override;
     };
 
+    
     /// Default printout of an alignment entry
     void printAlignment(PrintLevel prt_level, const std::string& prefix, Alignment alignment);
 
