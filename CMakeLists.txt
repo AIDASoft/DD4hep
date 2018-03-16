@@ -7,7 +7,7 @@ PROJECT( DD4hep LANGUAGES NONE)
 #################
 
 SET( DD4hep_VERSION_MAJOR 1 )
-SET( DD4hep_VERSION_MINOR 5 )
+SET( DD4hep_VERSION_MINOR 6 )
 SET( DD4hep_VERSION_PATCH 0 )
 
 #######################

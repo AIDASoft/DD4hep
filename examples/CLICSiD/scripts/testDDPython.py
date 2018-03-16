@@ -3,6 +3,7 @@ from ROOT import gSystem
 import os, logging, platform
 if platform.system()=="Darwin":
   gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
+gSystem.Load('libglapi')
 gSystem.Load('libDDPython')
 from ROOT import dd4hep as Core
 

@@ -1447,6 +1447,8 @@ namespace dd4hep {
           det->classID = element.attr<int>(_LBU(classID));
         }
         // Now extract all availible information from the xml
+        if ( x_det.hasAttr(_LBU(classID)) )
+          det->classID = x_det.attr<int>(_LBU(classID));
         if ( (elt=x_det.child(_U(author),false)) )
           Conv<DDDBAuthor>(description,context,&det->author)(elt);
         if ( (elt=x_det.child(_U(version),false)) )
@@ -1769,7 +1771,9 @@ namespace dd4hep {
           //if ( str_upper(doc_path).find("/VP/") != string::npos )   {
           //  printout(ALWAYS,"load_dddb","Loading document: %s",doc_path.c_str());
           //}
-
+          //if ( str_upper(doc_path).find("VELO") != string::npos )   {
+          //printout(ALWAYS,"load_dddb","Loading document: %s",doc_path.c_str());
+          //}
           xml::UriContextReader reader(rdr, &xml_doc->context);
           xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
           xml_h e = doc.root();
