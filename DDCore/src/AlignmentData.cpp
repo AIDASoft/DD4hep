@@ -232,8 +232,10 @@ Alignment AlignmentData::nominal() const   {
 // The map is used by the Alignments calculator
 typedef std::map<DetElement, Delta> DeltaMap;
 
+// Have only a weak reference here!
+inline ostream& operator << (ostream& s, const DetElement& )   { return s; }
+
 #include "Parsers/Parsers.h"
-DD4HEP_DEFINE_OSTREAM_DUMMY(DetElement)
 DD4HEP_DEFINE_PARSER_DUMMY(Delta)
 DD4HEP_DEFINE_PARSER_DUMMY(DeltaMap)
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
