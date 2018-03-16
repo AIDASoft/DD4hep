@@ -85,7 +85,7 @@ namespace gaudi   {
     /// Access parameters set
     const Parameters& params()  const   {  return m_params; }
     /// Access single parameter
-    const Parameter& param(const std::string& nam, bool throw_if_not_present=true)   const;
+    const Parameter& parameter(const std::string& nam, bool throw_if_not_present=true)   const;
     /// Type dependent accessor to a named parameter
     template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const;
   };

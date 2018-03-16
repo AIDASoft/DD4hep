@@ -67,7 +67,7 @@ namespace gaudi   {
 
       /// Type dependent accessor to a named parameter
       template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const
-      {  return parameters.param(nam,throw_if_not_present).get<T>();     }
+      {  return parameters.parameter(nam,throw_if_not_present).template get<T>();     }
 
       /// Access daughter elements: Static part
       DeStaticObject* child(DetElement de)  const;
@@ -117,11 +117,11 @@ namespace gaudi   {
     const ParameterMap::Parameters& params()  const;
 
     /// Access single parameter
-    const ParameterMap::Parameter& param(const std::string& nam, bool throw_if_not_present=true)   const;
+    const ParameterMap::Parameter& parameter(const std::string& nam, bool throw_if_not_present=true)   const;
 
     /// Type dependent accessor to a named parameter
     template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const
-    {  return param(nam,throw_if_not_present).get<T>();     }
+    {  return parameter(nam,throw_if_not_present).template get<T>();     }
   };
 }      // End namespace gaudi
 #endif // DETECTOR_DESTATIC_H

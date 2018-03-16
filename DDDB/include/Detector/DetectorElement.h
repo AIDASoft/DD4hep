@@ -211,11 +211,11 @@ namespace gaudi    {
     const ParameterMap& params()   const
     {  return static_data().parameters;                                         }
     /// Access single parameter
-    const Parameter& param(const std::string& nam, bool throw_if_not_present=true)   const
-    {   return params().param(nam, throw_if_not_present);                       }
+    const Parameter& parameter(const std::string& nam, bool throw_if_not_present=true)   const
+    {   return params().parameter(nam, throw_if_not_present);                   }
     /// Type dependent accessor to a named parameter
     template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const
-    {   return params().param<T>(nam, throw_if_not_present);                    }
+    {   return params().template param<T>(nam, throw_if_not_present);           }
     /// Access the parent detector element
     DetElement parent()  const
     {   return static_data().detector.parent();                                 }
