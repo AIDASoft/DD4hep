@@ -1,3 +1,220 @@
+# v01-06
+
+* 2018-01-31 Ete Remi ([PR#297](https://github.com/aidasoft/dd4hep/pull/297))
+  - Geant4Output2LCIO
+     - Switch run header writing order at beginning of run instead of end of run
+
+* 2018-03-15 Marko Petric ([PR#335](https://github.com/aidasoft/dd4hep/pull/335))
+  - Deduce CLHEP location from `CLHEP_INCLUDE_DIR` ( Fixes #314 )
+  - Add `gSystem.Load('libglapi')` to `testDDPython.py` which failed due to TLS issues on local machine
+  - Add Geant4 10.4 to test suite
+
+* 2018-03-14 Markus Frank ([PR#336](https://github.com/aidasoft/dd4hep/pull/336))
+  - New shape definitions for CMS
+    Generic Polyhedra, ExtrudedPolygon, CutTube, TruncatedTube, PseudoTrap.
+  - DDDB: allow to configure the match for the entity resolver.
+
+* 2018-03-13 Daniel Jeans ([PR#333](https://github.com/aidasoft/dd4hep/pull/333))
+  - changed utility name from graphicalMaterialScan -> graphicalScan
+  - add visualisation of electric and magnetic fields (switched by parameter)
+  - change order of x/y/z range parameters for ease of use
+  - added parameter for name of output root file
+
+* 2018-03-12 Markus Frank ([PR#334](https://github.com/aidasoft/dd4hep/pull/334))
+  - `step_length_max` not propagated to Geant4 for `G4UserLimit` instances.
+   - All limits can now be set separately for each particle type (or for all as a catchall situation if the particle type is '*'.
+   - Fixes #327
+
+* 2017-11-29 Markus Frank ([PR#271](https://github.com/aidasoft/dd4hep/pull/271))
+  - Add `LHeD` example (contribution from Peter Kostka)
+  - Fix to support `python3` in `DDG4`
+  - Fix issue in Volumes.h for backwards compatibility with gcc version < 5
+  - Fix type definition of `XmlChar` to also support Xerces-C 3.2.0
+  - Fix `AClick` initialization files in `DDG4` (remove dependency on `libDDSegmentation`)
+
+* 2017-11-29 Marko Petric ([PR#270](https://github.com/aidasoft/dd4hep/pull/270))
+  - Fields: Remove pessimizing move and shadow warnings
+
+* 2018-02-06 Ete Remi ([PR#301](https://github.com/aidasoft/dd4hep/pull/301))
+  - Geant4Output2LCIO plugin
+     - Added run number and event number offset properties. Enable steering of run and event counters from outside
+     - Added 3 event parameters properties for int, float and string event parameters
+
+* 2018-02-05 Markus Frank ([PR#304](https://github.com/aidasoft/dd4hep/pull/304))
+  - Restructure the files a bit to simplify the use of the `XML` and `JSON` parsers and the spirit utilities in other projects.
+
+* 2018-02-28 Frank Gaede ([PR#323](https://github.com/aidasoft/dd4hep/pull/323))
+  - make Geant4InputHandling.cpp compatible w/ gcc49 
+       - avoid stringstream move operation
+       - fixes #320
+
+* 2018-01-24 Markus Frank ([PR#292](https://github.com/aidasoft/dd4hep/pull/292))
+  -  Fix bug in Alignment test:
+     - A long standing bug was fixed for the test `t_AlignDet_Telescope_align_new`.
+     - It was assumed that the `DetElements` were ordered in memory, which is **not** true (probably due to memory randomization).
+     - Moved to path dependent ordering. Test now OK.
+     - Closes #282 
+  
+  -  Removed a Bunch of `rootcling` warnings
+     - Apparently `rootcling` now expects a class with the name of the dictionary header file.
+     - To satify this some dummy anonymous classes were added.
+     - Closes #290
+
+* 2018-01-26 Marko Petric ([PR#296](https://github.com/aidasoft/dd4hep/pull/296))
+  -  Check dynamic cast if it was successful
+
+* 2018-01-22 Markus Frank ([PR#289](https://github.com/aidasoft/dd4hep/pull/289))
+  - Add possibility to parse `XML` from string
+    - Please see  #288 for details.
+    - The main interface was not changed. Rather a view to the Detector class supports this functionality.
+     - The existing view `dd4hep::DetectorLoad` was enhanced to allow the required functionality:
+     ```cpp
+      Detector detector = ....;
+      /// So here is the actual test: We parse the raw XML string
+      DetectorLoad loader(detector);
+      loader.processXMLString(buffer,0);
+     ```
+     - An example was added (`ClientTests/src/XML_InMemory.cpp`, which illustrates the usage).
+  
+  - Improve DDCond manual
+    - Improve that the DDCond manual reflects the source code.
+    - The possible plugins provided are not all described. This shall be future work.
+  
+  - Enable the GDML reader plugin
+    - Closes #275
+
+* 2018-03-01 Markus Frank ([PR#325](https://github.com/aidasoft/dd4hep/pull/325))
+  - Add dictionaries to `DDRec`. 
+    - Consequently add the python interface to access the exported classes.
+
+* 2018-03-01 Ete Remi ([PR#321](https://github.com/aidasoft/dd4hep/pull/321))
+  - Geant4InputAction and Geant4EventReader : 
+      - Register input action pointer to event reader, enabling the event reader to access the Geant4 context
+  - Added new class LCIOEventParameters to handle LCIO input event parameters
+  - LCIOFileReader : 
+      - Add extension with LCIO input event parameters to Geant4event
+  - Geant4Output2LCIO : 
+      - Get LCIO event parameters from event extension (if any) and write them to LCIO output event
+
+* 2018-03-01 David Blyth ([PR#317](https://github.com/aidasoft/dd4hep/pull/317))
+  - DDCore: added CartesianStrip segmentations
+
+* 2018-03-02 Frank Gaede ([PR#328](https://github.com/aidasoft/dd4hep/pull/328))
+  - finalize the python bindings for DDRec:
+      - implement StructExtension(DetElement&) and toString() 
+      - add DetectorData classes to python 
+      - add example `dumpDetectorData.py`
+      - closes #306 
+  - remove deprecated methods and classes in DDRec
+      - resolves #326
+
+* 2018-03-06 Andre Sailer ([PR#331](https://github.com/aidasoft/dd4hep/pull/331))
+  - Geant4InputHandling: reject stable particles without lifetime (e.g., initial state electrons), fixes #330
+
+* 2018-03-07 Markus Frank ([PR#329](https://github.com/aidasoft/dd4hep/pull/329))
+  - Fixes #324
+  - Call `TGeoMixture::ComputeDerivedQuantities()` for ROOT >= 6.12.0 (Resolves #281)
+  - Start to address issue: https://github.com/AIDASoft/DD4hep/issues/327
+
+* 2018-03-07 Daniel Jeans ([PR#322](https://github.com/aidasoft/dd4hep/pull/322))
+  - correct coded expressions for quadrupole, sextupole and octopole fields.
+  - correct expression for octopole field in documentation
+
+* 2018-03-09 Ercan Pilicer ([PR#319](https://github.com/aidasoft/dd4hep/pull/319))
+  - Remove unnecessary `import exceptions` from python
+
+* 2017-11-30 Markus Frank ([PR#272](https://github.com/aidasoft/dd4hep/pull/272))
+  ### DDG4 enhancements
+  - Enable framework support in DDG4. The `Geant4Context` is the main thread specific accessor to the `dd4hep`, `DDG4` and the user framework.
+      - The access to the `dd4hep` objects is via the `Geant4Context::detectorDescription()` call,
+      - the access to `DDG4` as a whole is supported via `Geant4Context::kernel()` and
+      - the access to the user gframework using a specialized implementation of:
+      `template <typename T> T& userFramework()  const;`
+   
+      A user defined implementations must be specialized somewhere in a compilation unit of the user framework, not in a header file. The framework object could host e.g. references for histogramming, logging, data access etc.
+    
+      This way any experiment/user related data processing framework can exhibit it's essential tools to `DDG4` actions.
+    
+      A possible specialized implementations would look like the following:
+    ```cpp
+      struct Gaudi  {
+        IMessageSvc*   msg;
+        IHistogramSvc* histos;
+        ....
+      };
+      template<> Gaudi& Geant4Context::userFramework<Gaudi>()  const  {
+        UserFramework& fw = m_kernel->userFramework();
+        if ( fw.first && &typeid(T) == fw.second ) return *(T*)fw.first;
+        throw std::runtime_error("No user specified framework context present!");
+      }
+    ```  
+      To access the user framework then use the following call:
+      ```cpp
+      Gaudi* fw = context->userFramework<Gaudi>();
+      ```
+      of course after having initialized it:
+    ```cpp
+      Gaudi * fw = ...;
+      GaudiKernel& kernel = ...;
+      kernel.setUserFramework(fw);
+    ```
+  
+  - `G4RunManager` is now a plugin. To enable user defined run managers in `DDG4`, the run manager is encapsulated in a `Geant4Action`. See `DDG4/plugins/Geant4RunManagers.cpp` how to implement such plugins. Currently there are to factories implemented: 
+     -  `G4RunManager` -> factory invokes the single threaded `G4RunManager`
+     -  `G4MTRunManager `-> factory invokes the multi threaded `G4MTRunManager`
+  
+    The factory names here are identical to the names of the native G4 classes.
+
+* 2017-11-30 Marko Petric ([PR#268](https://github.com/aidasoft/dd4hep/pull/268))
+  - Introduce new DD4hep web-site: http://dd4hep.cern.ch/
+    - Page is automatically build from [this repo](https://gitlab.cern.ch/CLICdp/DetectorSoftware/DD4hep-website)
+  - Restructured `doc` folder and removed not doc related stuff to `etc` 
+  - Fixes to Doxygen configuration
+    - create reference manual `make reference`
+  - Better integration of DD4hep tex documentation and cmake
+    - create manuals in PDF format `make pdf` create manuals in HTML format `make html`
+    - allow creation of documentation if dependencies are not present
+  - extended gitlab runners to automatically build documentation PDF and HTML and also reference manual and publish to web-site, thus ensuring always up to date information.
+
+* 2018-02-14 Markus Frank ([PR#310](https://github.com/aidasoft/dd4hep/pull/310))
+  - Fix MC truth problem in DDG4
+  - Update of the `XML` reader to simplify externalization
+
+* 2018-02-15 David Blyth ([PR#302](https://github.com/aidasoft/dd4hep/pull/302))
+  - Added "NOINSTALL" option to cmake build function dd4hep_add_library
+
+* 2018-02-16 Andre Sailer ([PR#315](https://github.com/aidasoft/dd4hep/pull/315))
+  - DDG4::ExtraParticles: particles with too small life time were tagged as stable, now correctly marked unstable
+  - DDG4::Geant4InputHandling: pass all particles except strings, quarks and gluons to Geant4 to get completely consistent MCParticle History, fixes #307 
+  - DDG4::Geant4PrimaryHandler: add property RejectPDGs
+  - DDG4::Geant4InputHandling: print geant4 primary particle chains if VERBOSE
+
+* 2017-11-16 David Blyth ([PR#258](https://github.com/aidasoft/dd4hep/pull/258))
+  - Corrected `EcalBarrel` constructor after finding significant layer overlaps
+  - Corrected `CylindricalEndcapCalorimeter` factors of 2 in layer/slice thickness
+  - Corrected `ForwardDetector` factors of 2 in layer/slice thickness
+
+* 2017-12-05 Marko Petric ([PR#278](https://github.com/aidasoft/dd4hep/pull/278))
+  - Remove `DD4HEP_USE_CXX11` and `DD4HEP_USE_CXX14` and use [CMake default way](https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html)`CMAKE_CXX_STANDARD` to define C++ standard
+
+* 2017-12-05 Marko Petric ([PR#277](https://github.com/aidasoft/dd4hep/pull/277))
+  - Fix logic for ignoring warnings in dictionary creation
+  - Add `-Wno-overlength-strings` to all generated targets
+
+* 2017-12-05 peterkostka ([PR#276](https://github.com/aidasoft/dd4hep/pull/276))
+  - Update of LHeD example - overlaps (problem with SubdetectorAssembly)
+
+* 2017-12-01 Markus Frank ([PR#275](https://github.com/aidasoft/dd4hep/pull/275))
+  - Add Support to Export and Import GDML Data
+    - Allow extorts and imports of partial geometry trees with GDML. **This requires however a future version of ROOT**, since some changes were necessary in the ROOT GDML handlers. The code is commented out for the time being. The plugin implementation is in `DDCore/src/gdml/GdmlPlugin.cpp`
+  - Remove print statements from DDG4 scripts
+     - Replace prints with calls to the python logging utility. Hopefully this shall give at some point python3 compatibility.
+  - Update `G4Stepper` factories
+    - Add some missing steppers
+
+* 2017-12-01 Marko Petric ([PR#274](https://github.com/aidasoft/dd4hep/pull/274))
+  - Revert `DDG4.py` Geant4 initialization parameters back to values specified in Geant4 (see discussion #266)
+
 # v01-05
 
 * 2017-11-10 Dan Protopopescu ([PR#262](https://github.com/aidaSoft/DD4hep/pull/262))
