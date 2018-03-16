@@ -45,9 +45,9 @@ namespace gaudi   {
       /// Standard constructors and assignment
       DE_CTORS_DEFAULT(DeVPGenericStaticObject);
       /// Initialization of sub-classes
-      virtual void initialize();
+      virtual void initialize()  override;
       /// Printout method to stdout
-      void print(int indent, int flg)  const;
+      virtual void print(int indent, int flg)  const  override;
     };
   }    // End namespace detail
 
@@ -98,9 +98,9 @@ namespace gaudi   {
       /// Standard constructors and assignment
       DE_CTORS_DEFAULT(DeVPGenericObject);
       /// Initialization of sub-classes
-      virtual void initialize();
+      virtual void initialize()  override;
       /// Printout method to stdout
-      void print(int indent, int flg)  const;
+      virtual void print(int indent, int flg)  const  override;
     };
   }    // End namespace detail
 

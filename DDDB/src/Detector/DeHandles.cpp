@@ -33,15 +33,14 @@ DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DeVPSensorObject,DeIOVObject,ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DeVPGenericObject,DeIOVObject,ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(DeVPObject,DeVPGenericObject,DeIOVObject,ConditionObject);
 
+inline std::ostream& operator << (std::ostream& s, const DeVPStaticObject&)        { return s; }
+inline std::ostream& operator << (std::ostream& s, const DeVPSensorStaticObject&)  { return s; }
+inline std::ostream& operator << (std::ostream& s, const DeVPGenericStaticObject&) { return s; }
+inline std::ostream& operator << (std::ostream& s, const DeVPObject&)              { return s; }
+inline std::ostream& operator << (std::ostream& s, const DeVPSensorObject&)        { return s; }
+inline std::ostream& operator << (std::ostream& s, const DeVPGenericObject&)       { return s; }
 
 #include "Parsers/Parsers.h"
-DD4HEP_DEFINE_OSTREAM_DUMMY(DeVPStaticObject)
-DD4HEP_DEFINE_OSTREAM_DUMMY(DeVPSensorStaticObject)
-DD4HEP_DEFINE_OSTREAM_DUMMY(DeVPGenericStaticObject)
-DD4HEP_DEFINE_OSTREAM_DUMMY(DeVPObject)
-DD4HEP_DEFINE_OSTREAM_DUMMY(DeVPSensorObject)
-DD4HEP_DEFINE_OSTREAM_DUMMY(DeVPGenericObject)
-
 DD4HEP_DEFINE_PARSER_DUMMY(DeVPStaticObject)
 DD4HEP_DEFINE_PARSER_DUMMY(DeVPSensorStaticObject)
 DD4HEP_DEFINE_PARSER_DUMMY(DeVPGenericStaticObject)
