@@ -82,8 +82,6 @@ namespace dd4hep {
                                   ConditionUpdateUserContext* user_param);
       /// Default destructor
       ~ConditionsDependencyHandler();
-      /// ConditionResolver implementation: Access to the detector description instance
-      Detector& detectorDescription() const;
 
       /// Access the conditions created during processing
       const CreatedConditions& created()  const                  { return m_created;         }
@@ -93,7 +91,9 @@ namespace dd4hep {
       void resolve();
 
       /** ConditionResolver interface implementation         */
-      /// ConditionResolver implementation: Access to the conditions manager
+      /// Access to the detector description instance
+      virtual Detector& detectorDescription() const  override;
+      /// Access to the conditions manager
       virtual Ref_t manager() const  override                    { return m_manager;         }
       /// Access to pool IOV
       virtual const IOV& requiredValidity()  const  override     { return m_pool.validity(); }
