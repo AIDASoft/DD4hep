@@ -1,0 +1,180 @@
+//==============================================================================
+//  AIDA Detector description implementation for LHCb
+//------------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//  \author   Markus Frank
+//  \date     2018-03-08
+//  \version  1.0
+//
+//==============================================================================
+
+// Framework include files
+#include "Detector/DeVPConditionCalls.h"
+#include "DD4hep/DetectorProcessor.h"
+#include "DDDB/DDDBConversion.h"
+
+using namespace gaudi;
+
+/// Interface to client Callback in order to update the condition
+dd4hep::Condition DeVPStaticConditionCall::operator()(const ConditionKey& key, const Context& context)  {
+  VeloUpdateContext* ctxt = dynamic_cast<VeloUpdateContext*>(context.parameter);
+  KeyMaker   km(key.hash);
+  auto       ide = ctxt->detectors.find(km.values.det_key);
+  auto*      cat = (*ide).second.second;
+  DetElement det = (*ide).second.first;
+  DeStatic s;
+  if ( cat->classID == 1008205 )       // DeVPSensor
+    s = DeStatic(new detail::DeVPSensorStaticObject());
+  else if ( cat->classID == 8200 )     // DeVP Velo main element
+    s = DeStatic(new detail::DeVPStaticObject());
+  else                                     // All other in the hierarchy
+    s = DeStatic(new detail::DeVPGenericStaticObject());
+  return s->fill_info(det, cat);
+}
+
+/// Interface to client callback for resolving references or to use data from other conditions
+void DeVPStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
+  DeStatic s(c);
+  if ( s->classID == 8200 )  {   // Velo main element
+    DeVPStatic vp = s;
+    DeVPSensorStatic sens;
+    DeVPGenericStatic side, support, module, ladder;
+    std::vector<std::pair<DetElement, int> > elts;
+    dd4hep::DetectorScanner(dd4hep::detElementsCollector(elts), s->detector);
+
+    vp->vp_flags |= DeVPGenericStatic::MAIN;
+    vp->sensors.resize(200);
+    for ( const auto& i : elts )   {
+      DetElement de = i.first;
+      KeyMaker   key(de.key(), Keys::staticKey);
+      DeStatic   cond = resolver.get(key.hash);
+      const std::string& path = de.path();
+      if ( path.find("/VPLeft") != std::string::npos || path.find("/VPRight") != std::string::npos )   {
+        switch( i.second )   {
+        case 0:  // Self!
+          break;
+        case 1:
+          side = cond;
+          side->parent = vp.access();
+          side->vp_flags |= DeVPGeneric::SIDE;
+          vp->sides.push_back(side);
+          printout(INFO,"DeVPStatic","Add Side[%03ld]:    %s",vp->sides.size()-1,path.c_str());
+          break;
+        case 2:
+          support = cond;
+          support->parent = side.access();
+          support->vp_flags |= DeVPGeneric::SUPPORT;
+          vp->supports.push_back(support);
+          printout(INFO,"DeVPStatic","Add Support[%03ld]: %s",vp->supports.size()-1,path.c_str());
+          break;
+        case 3:
+          module = cond;
+          module->parent = support.access();
+          module->vp_flags |= DeVPGeneric::MODULE;
+          vp->modules.push_back(module);
+          printout(INFO,"DeVPStatic","Add Module[%03ld]:  %s",vp->modules.size()-1,path.c_str());
+          break;
+        case 4:
+          ladder = cond;
+          ladder->parent = module.access();
+          ladder->vp_flags |= DeVPGeneric::LADDER;
+          vp->ladders.push_back(ladder);
+          printout(INFO,"DeVPStatic","Add Ladder[%03ld]:  %s",vp->ladders.size()-1,path.c_str());
+          break;
+        case 5:
+          sens = cond;
+          sens->parent = ladder.access();
+          if ( sens->sensorNumber >= vp->sensors.size() )
+            vp->sensors.resize(sens->sensorNumber+1);
+          vp->sensors[sens->sensorNumber] = sens;
+          ladder->sensors.push_back(sens);
+          module->sensors.push_back(sens);
+          support->sensors.push_back(sens);
+          side->sensors.push_back(sens);
+          printout(INFO,"DeVPStatic","Add Sensor[%03ld]:  %s",long(sens->sensorNumber),path.c_str());
+          break;
+        default:
+          break;
+        }
+      }
+      else   {
+        printout(INFO,"DeVPStatic","Aux.DetElmenet:   %s",path.c_str());
+      }
+    }
+  }
+  s->initialize();
+}
+
+/// Interface to client Callback in order to update the condition
+dd4hep::Condition DeVPIOVConditionCall::operator()(const ConditionKey&, const Context&)   {
+  DeIOV iov((catalog->classID == 1008205) ? new detail::DeVPSensorObject() : new detail::DeIOVObject());
+  if ( catalog->classID == 1008205 )       // DeVPSensor
+    iov = DeIOV(new detail::DeVPSensorObject());
+  else if ( catalog->classID == 8200 )     // DeVP Velo main element
+    iov = DeIOV(new detail::DeVPObject());
+  else                                     // All other in the hierarchy
+    iov = DeIOV(new detail::DeVPGenericObject());
+  return iov->fill_info(detector, catalog);
+}
+
+/// Interface to client callback for resolving references or to use data from other conditions
+void DeVPIOVConditionCall::resolve(Condition cond, Resolver& resolver)   {
+  DeIOV iov(cond);
+  Condition::detkey_type det_key = iov->detector.key();
+  KeyMaker kalign(det_key,dd4hep::align::Keys::alignmentKey);
+  KeyMaker kstatic(det_key,Keys::staticKey);
+
+  /// Check that the alignments are computed. We need them here!
+  if ( !context->alignments_done.isValid() )  {
+    context->alignments_done = resolver.get(Keys::alignmentsComputedKey);
+  }
+  
+  std::vector<Condition> conds = resolver.get(det_key);
+  iov->de_static = resolver.get(kstatic.hash);
+  iov->detectorAlignment = resolver.get(kalign.hash);
+  for ( Condition c : conds )
+    iov->conditions.insert(std::make_pair(c.item_key(),c));
+  iov->initialize();
+}
+
+void DeVPConditionCall::add_generic( detail::DeVPObject* vp,
+                                     std::vector<DeVPGeneric>& cont,
+                                     const std::vector<DeVPGenericStatic>& src,
+                                     Resolver& resolver)  const
+{
+  for ( const auto& i : src )   {
+    KeyMaker    key(i->detector.key(), Keys::deKey);
+    DeVPGeneric gen = resolver.get(key.hash);
+    cont.push_back(gen);
+    for ( const auto& j : i->sensors )
+      gen->sensors.push_back(vp->sensors[j->sensorNumber]);
+    printout(INFO,"DeVP","Add [%03ld]:    %s",cont.size()-1,gen->detector.path().c_str());
+  }
+}
+
+/// Interface to client callback for resolving references or to use data from other conditions
+void DeVPConditionCall::resolve(Condition cond, Resolver& resolver)   {
+  DeIOV iov(cond);
+  DeVP  vp(cond);
+  DeVPIOVConditionCall::resolve(cond, resolver);
+  DeVPStatic s = vp.access()->vp_static;
+
+  vp->sensors.resize(s->sensors.size());
+  for ( const auto& i : s->sensors )   {
+    if ( i.isValid() )   {
+      KeyMaker   key(i->detector.key(), Keys::deKey);
+      DeVPSensor sens = resolver.get(key.hash);
+      vp->sensors[i->sensorNumber] = sens;
+      printout(INFO,"DeVP","Add Sensor[%03ld]:  %s",long(i->sensorNumber),i->detector.path().c_str());
+    }
+  }
+  add_generic(vp.ptr(), vp->sides,    s->sides,    resolver);
+  add_generic(vp.ptr(), vp->supports, s->supports, resolver);
+  add_generic(vp.ptr(), vp->modules,  s->modules,  resolver);
+  add_generic(vp.ptr(), vp->ladders,  s->ladders,  resolver);
+}

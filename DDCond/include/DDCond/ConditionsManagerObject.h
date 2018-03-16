@@ -162,7 +162,7 @@ namespace dd4hep {
       virtual std::unique_ptr<UserPool> createUserPool(const IOVType* iovT) const = 0;
 
       /// Prepare all updates to the clients with the defined IOV
-      virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice) = 0;
+      virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx=0) = 0;
 
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */

@@ -252,6 +252,6 @@ std::unique_ptr<UserPool> ConditionsManager::createUserPool(const IOVType* iovT)
 
 /// Prepare all updates to the clients with the defined IOV
 ConditionsManager::Result
-ConditionsManager::prepare(const IOV& req_iov, ConditionsSlice& slice)  const  {
-  return access()->prepare(req_iov, slice);
+ConditionsManager::prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)  const  {
+  return access()->prepare(req_iov, slice, ctx);
 }

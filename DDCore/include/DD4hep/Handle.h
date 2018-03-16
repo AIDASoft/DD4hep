@@ -88,7 +88,9 @@ namespace dd4hep {
     /** Type definitions and class specific abbreviations and forward declarations */
     /// Extern accessible definition of the contained element type
     typedef T Object;
-
+    /// Self type: used by sub-classes
+    typedef Handle<T> Base;
+    
     /// Single and only data member: Reference to the actual element.
     T* m_element = 0;
 
