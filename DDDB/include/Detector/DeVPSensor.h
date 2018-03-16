@@ -15,6 +15,9 @@
 #ifndef DETECTOR_DEVPSENSOR_H 
 #define DETECTOR_DEVPSENSOR_H 1
 
+// C/C++ include files
+#include <array>
+
 // Framework include files
 #include "Detector/DetectorElement.h"
 #include "Detector/DeStatic.h"
