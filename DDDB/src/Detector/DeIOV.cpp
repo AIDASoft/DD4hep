@@ -35,7 +35,7 @@ using namespace gaudi::detail;
 /// Helper to initialize the basic information
 DeIOVObject* DeIOVObject::fill_info(DetElement de, Catalog* /* cat */)   {
   name      = Keys::deKeyName;
-  key       = Keys::deKey;
+  item_key  = Keys::deKey;
   detector  = de;
   return this;
 }
@@ -58,26 +58,26 @@ void DeIOVObject::initialize()    {
 /// Printout method to stdout
 void DeIOVObject::print(int indent, int flg)  const   {
   std::string prefix = DE::indent(indent);
-  printout(INFO, "DeIOVObject",
+  if ( flg&DePrint::STATIC)  {
+    de_static.print(indent, flg&~DePrint::CHILDREN);
+  }
+  printout(INFO, "DeIOV",
            "%s+ Name:%s Hash:%016lX Type:%s Flags:%08X IOV:%s",
            prefix.c_str(), name.c_str(), hash,
            is_bound() ? data.dataType().c_str() : "<UNBOUND>",
            flags, iov ? iov->str().c_str()      : "--");
-  if ( flg&DePrint::STATIC)  {
-    de_static.print(indent, flg);
-  }
   if ( flg&DePrint::DETAIL)  { 
-   printout(INFO, "DeIOVObject","%s+  >> Conditions:%ld Alignment:%s VolAlign:%ld",
+   printout(INFO, "DeIOV","%s+  >> Conditions:%ld Alignment:%s VolAlign:%ld",
              prefix.c_str(), conditions.size(),
              yes_no(detectorAlignment.isValid()),
              volumeAlignments.size());
     for(const auto& cc : conditions)  {
       Condition c = cc.second;
-      printout(INFO, "DeIOVObject","%s+  >> Condition [%08X] %s Hash:%016X Flags:%08X Type:%s",
+      printout(INFO, "DeIOV","%s+  >> Condition [%08X] %s Hash:%016X Flags:%08X Type:%s",
                prefix.c_str(), cc.first, c.name(), c.key(), c.flags(),
                c.is_bound() ? c.data().dataType().c_str() : "<UNBOUND>");
       if ( c->iov )  {
-        printout(INFO, "DeIOVObject","%s+  >> + IOV:%s",
+        printout(INFO, "DeIOV","%s+  >> + IOV:%s",
                  prefix.c_str(), c->iov ? c.iov().str().c_str()   : "--");
       }
     }
@@ -101,14 +101,14 @@ void DeIOVObject::print(int indent, int flg)  const   {
       else
       ::snprintf(txt3,sizeof(txt3),"Pivot: ------- ");
 
-      printout(INFO,"DeIOVObject","%s+  >> Aligment [%p] Typ:%s \tData:(%11s-%8s-%5s)",
+      printout(INFO,"DeIOV","%s+  >> Aligment [%p] Typ:%s \tData:(%11s-%8s-%5s)",
                prefix.c_str(), detectorAlignment.ptr(),
                dd4hep::typeName(typeid(*ptr)).c_str(),
                D.hasTranslation() ? "Translation" : "",
                D.hasRotation() ? "Rotation" : "",
                D.hasPivot() ? "Pivot" : "");
       if ( D.hasTranslation() || D.hasRotation() || D.hasPivot() )  {
-        printout(INFO,"DeIOVObject","%s+  >> Aligment-Delta %s %s %s",prefix.c_str(), txt1,txt2,txt3);
+        printout(INFO,"DeIOV","%s+  >> Aligment-Delta %s %s %s",prefix.c_str(), txt1,txt2,txt3);
       }
     }
   }
@@ -142,48 +142,30 @@ DeIOVObject* DeIOVObject::child(DetElement de)   const   {
   return (*i).second;
 }
 
-/// Printout method to stdout
-void DeIOV::print(int indent, int flags)  const    {
-  return access()->print(indent, flags);
-}
-
 /// Access condition by name
-DeIOV::Condition DeIOV::condition(const std::string& nam)  const   {
+DeIOV::Condition DeIOVObject::condition(const std::string& nam)  const   {
   return this->condition(dd4hep::ConditionKey::itemCode(nam));
 }
 
 /// Access condition by name
-DeIOV::Condition DeIOV::condition(const std::string& nam, bool throw_if)  const   {
+DeIOV::Condition DeIOVObject::condition(const std::string& nam, bool throw_if)  const   {
   return this->condition(dd4hep::ConditionKey::itemCode(nam), throw_if);
 }
 
 /// Access condition by name
-DeIOV::Condition DeIOV::condition(itemkey_type key)  const   {
-  const auto* o = access();
-  auto i = o->conditions.find(key);
-  return (i == o->conditions.end()) ? (*i).second : Condition();
+DeIOV::Condition DeIOVObject::condition(itemkey_type k)  const   {
+  auto i = conditions.find(k);
+  return (i == conditions.end()) ? (*i).second : Condition();
 }
 
 /// Access condition by name
-DeIOV::Condition DeIOV::condition(itemkey_type key, bool throw_if)  const   {
-  const auto* o = access();
-  auto i = o->conditions.find(key);
-  if (i != o->conditions.end())  {
+DeIOV::Condition DeIOVObject::condition(itemkey_type k, bool throw_if)  const   {
+  auto i = conditions.find(k);
+  if (i != conditions.end())  {
     return (*i).second;
   }
   if ( throw_if )  {
-    except("DeIOV","Attempt to access non-existing condition.");
+    except("DeIOV","Attempt to access non-existing condition with key: %d.",k);
   }
  return Condition();
 }
-
-/// Access all conditions which belong to this detector element
-const DeIOV::Conditions& DeIOV::conditions()  const    {
-  return access()->conditions;
-}
-
-/// Access the volume alignments
-const DeIOV::VolumeAlignments& DeIOV::volumeAlignments()  const   {
-  return access()->volumeAlignments;
-}
-

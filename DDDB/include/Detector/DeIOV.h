@@ -22,9 +22,6 @@
 /// Gaudi namespace declaration
 namespace gaudi   {
 
-  // Forward declarations
-  class DeIOV;
-  
   /// Gaudi::detail namespace declaration
   namespace detail   {
 
@@ -55,7 +52,8 @@ namespace gaudi   {
      */
     class DeIOVObject : public detail::ConditionObject    {
       DE_CONDITIONS_TYPEDEFS;
-      
+      typedef DeStatic::Object static_t;
+
     public:
       /// Helper to initialize the basic information
       DeIOVObject* fill_info(DetElement de, Catalog* cat);
@@ -95,13 +93,48 @@ namespace gaudi   {
       /// We want to cache here the delta matrix
       TGeoHMatrix       deltaMatrix;
       /// Initialization flags to steer actions
-      int               de_flags = 0;
+      unsigned short    de_flags = 0;
+      unsigned short    de_user  = 0;
       /// Item key
-      itemkey_type      key = 0;
+      itemkey_type      item_key = 0;
+
+    public:
+
+      /// Compute key value for caching
+      static itemkey_type key(const std::string& value)
+      {  return dd4hep::ConditionKey::itemCode(value);         }
+      /// Compute key value for caching
+      static itemkey_type key(const char* value)
+      {  return dd4hep::ConditionKey::itemCode(value);         }
+
+      /// Check if the condition identified by 'key' is in the list of conditionrefs.
+      bool hasCondition(itemkey_type key) const
+      {   return this->condition(key, false).isValid();        }
+      /// Access condition by hash-key (fast)
+      Condition condition(itemkey_type key)  const;
+      /// Access condition by hash-key (fast)
+      Condition condition(itemkey_type key, bool throw_if)  const;
+
+      /// Check if the condition called 'name' is in the list of conditionrefs.
+      bool hasCondition(const std::string& nam) const
+      {   return this->condition(nam, false).isValid();        }
+      /// Access condition by name (slow)
+      Condition condition(const std::string& name)  const;
+      /// Access condition by name (slow)
+      Condition condition(const std::string& name, bool throw_if)  const;
+     
+      /// Local -> Global and Global -> Local transformations
+      XYZPoint toLocal( const XYZPoint& global ) const
+      {  return XYZPoint(detectorAlignment.worldToLocal(XYZVector(global)));     }
+      XYZPoint toGlobal( const XYZPoint& local ) const
+      {  return XYZPoint(detectorAlignment.localToWorld(XYZVector(local)));      }
+      XYZVector toLocal( const XYZVector& globalDirection ) const
+      {  return detectorAlignment.worldToLocal(globalDirection);                 }
+      XYZVector toGlobal( const XYZVector& localDirection  ) const
+      {  return detectorAlignment.localToWorld(localDirection);                  }
     };
   }    // End namespace detail
 
-
   /// Geometry access
   /**
    *
@@ -109,94 +142,17 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class TransformationInfo : public dd4hep::Handle<detail::DeIOVObject>  {
+  class DeIOVElement : public dd4hep::Handle<detail::DeIOVObject>  {
     DE_CONDITIONS_TYPEDEFS;
-
-  public:
-    /// Standard handle assignments and constructors
-    DE_CTORS_HANDLE(TransformationInfo,Base);
-
-    /*
-    /// Initialization from detector element base
-    template<typename s, typename i>
-    TransformationInfo(const DetectorElementBase<s,i>& base);
-    */
-    /// Access to the alignmant object to transformideal coordinates 
-    Alignment detectorAlignment()   const
-    {  return ptr()->detectorAlignment;                                        }
-
-    /// Access to transformation matrices
-    const TGeoHMatrix& toLocalMatrix() const
-    {  return ptr()->toLocalMatrix;                                            }
-    const TGeoHMatrix& toGlobalMatrix() const
-    {  return detectorAlignment().worldTransformation();                       }
-    const TGeoHMatrix& toLocalMatrixNominal() const
-    {  return ptr()->deltaMatrix;                                              }
-
-    /// Local -> Global and Global -> Local transformations
-    XYZPoint toLocal( const XYZPoint& global ) const
-    {  return XYZPoint(detectorAlignment().worldToLocal(XYZVector(global)));   }
-    XYZPoint toGlobal( const XYZPoint& local ) const
-    {  return XYZPoint(detectorAlignment().localToWorld(XYZVector(local)));    }
-    XYZVector toLocal( const XYZVector& globalDirection ) const
-    {  return detectorAlignment().worldToLocal(globalDirection);               }
-    XYZVector toGlobal( const XYZVector& localDirection  ) const
-    {  return detectorAlignment().localToWorld(localDirection);                }
-  };
-
-  /// Geometry access
-  /**
-   *
-   *  \author  Markus Frank
-   *  \date    2018-03-08
-   *  \version  1.0
-   */
-  class DeIOV : public TransformationInfo  {
-    DE_CONDITIONS_TYPEDEFS;
-
     /// Forward definition of the static type for facades
     typedef detail::DeStaticObject static_t;
-    
+    typedef detail::DeIOVObject    iov_t;
+
   public:
     /// Standard handle assignments and constructors
-    DE_CTORS_HANDLE(DeIOV,TransformationInfo);
-    DeIOV(const TransformationInfo& c) : TransformationInfo(c) {}
-    
-    /// Printout method to stdout
-    void print(int indent, int flags)  const;
+    DE_CTORS_HANDLE(DeIOVElement,Base);    
     /// Access to the static data
-    static_t& staticData()  const
-    {  return access()->de_static;                           }
-
-    /// Compute key value for caching
-    static itemkey_type key(const std::string& value)
-    {  return dd4hep::ConditionKey::itemCode(value);         }
-    /// Compute key value for caching
-    static itemkey_type key(const char* value)
-    {  return dd4hep::ConditionKey::itemCode(value);         }
-
-    /// Access all conditions which belong to this detector element
-    const Conditions& conditions()  const;
-
-    /// Check if the condition identified by 'key' is in the list of conditionrefs.
-    bool hasCondition(itemkey_type key) const
-    {   return this->condition(key, false).isValid();        }
-    /// Access condition by hash-key (fast)
-    Condition condition(itemkey_type key)  const;
-    /// Access condition by hash-key (fast)
-    Condition condition(itemkey_type key, bool throw_if)  const;
-
-    /// Check if the condition called 'name' is in the list of conditionrefs.
-    bool hasCondition(const std::string& nam) const
-    {   return this->condition(nam, false).isValid();        }
-    /// Access condition by name (slow)
-    Condition condition(const std::string& name)  const;
-    /// Access condition by name (slow)
-    Condition condition(const std::string& name, bool throw_if)  const;
-
-    /// Access the volume alignments
-    const VolumeAlignments& volumeAlignments()  const;
-    
+    static_t& staticData()  const  {  return access()->de_static;                }
   };
 }      // End namespace gaudi
 

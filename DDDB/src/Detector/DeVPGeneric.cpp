@@ -26,13 +26,18 @@ void DeVPGenericStaticObject::initialize()    {
 
 /// Printout method to stdout
 void DeVPGenericStaticObject::print(int indent, int flg)  const   {
-  if ( flg & DePrint::SPECIFIC )  {
-    printout(INFO,"DeVPGenStatic", "%s*========== %ld Sensors %s",
-             DE::indent(indent).c_str(), sensors.size(), detector.path().c_str());
-  }
+  std::string prefix = DE::indent(indent);
   DeStaticObject::print(indent, flg);
+  if ( flg & DePrint::SPECIFIC )  {
+    printout(INFO,"DeVPGenStatic", "%s+ >> %ld Sensor(s)", prefix.c_str(), sensors.size());
+  }
+  for(size_t i=0; i<sensors.size(); ++i)   {
+    if ( sensors[i].isValid() )  {
+      printout(INFO,"DeVeloGenStatic", "%s+   >> [%ld] %s",
+               prefix.c_str(), i, sensors[i]->detector.path().c_str());
+    }
+  }
 }
-
 
 /// Initialization of sub-classes
 void DeVPGenericObject::initialize()    {
@@ -41,9 +46,15 @@ void DeVPGenericObject::initialize()    {
 
 /// Printout method to stdout
 void DeVPGenericObject::print(int indent, int flg)  const   {
-  if ( flg & DePrint::SPECIFIC )  {
-    printout(INFO,"DeVPGen", "%s*========== %ld Sensors %s",
-             DE::indent(indent).c_str(), sensors.size(), detector.path().c_str());
-  }
+  std::string prefix = DE::indent(indent);
   DeIOVObject::print(indent, flg);
+  if ( flg & DePrint::SPECIFIC )  {
+    printout(INFO,"DeVPGen", "%s+ >> %ld Sensor(s)", prefix.c_str(), sensors.size());
+  }
+  for(size_t i=0; i<sensors.size(); ++i)   {
+    if ( sensors[i].isValid() )  {
+      printout(INFO,"DeVeloGenStatic", "%s+   >> [%ld] %s",
+               prefix.c_str(), i, sensors[i]->detector.path().c_str());
+    }
+  }
 }

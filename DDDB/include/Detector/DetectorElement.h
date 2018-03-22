@@ -76,18 +76,19 @@ namespace gaudi   {
     std::string indent(int level);
   }
   namespace DePrint {
-    enum PrintFlags { BASICS     = 1,
-                      PARAMS     = 2,
-                      DETAIL     = 4,
-                      SPECIFIC   = 5,
-                      STATIC     = 6,
-                      ALIGNMENTS = 7,
-                      ALL        = BASICS|PARAMS|DETAIL|SPECIFIC|STATIC
+    enum PrintFlags { BASICS     = 1<<1,
+                      PARAMS     = 1<<2,
+                      DETAIL     = 1<<4,
+                      SPECIFIC   = 1<<5,
+                      STATIC     = 1<<6,
+                      ALIGNMENTS = 1<<7,
+                      CHILDREN   = 1<<8,
+                      ALL        = BASICS|PARAMS|DETAIL|SPECIFIC|STATIC|CHILDREN
     };
   }
   namespace DeInit {
     enum InitFlags  { FILLCACHE = 1,
-                      INITIALIZED = 1<<31
+                      INITIALIZED = 1<<15
     };
   }
   struct DeHelpers {
@@ -145,7 +146,92 @@ namespace gaudi   {
   };
 }      // End namespace gaudi
 
+
+/// ------------------- Generic handle layer for STATIC objects -----------------
 #include "Detector/DeStatic.h"
+
+/// Gaudi::detail namespace declaration
+namespace gaudi    {
+
+  template<typename TYPE>
+  class DetectorStaticElement : public TYPE {
+    DE_CONDITIONS_TYPEDEFS;
+    typedef DetectorStaticElement<TYPE>      self_t;
+    typedef TYPE                             base_t;
+    typedef typename TYPE::static_t          static_t;
+    typedef typename DetElement::Children    children_t;
+  protected:
+    /// Static detelement accessor. Used internally - may be specialized for optimization
+    const static_t& static_data()  const;
+    /// Access to the base implementation
+    base_t& base()  { return *this; }
+
+  public:
+    /// Standard constructor
+    DetectorStaticElement() = default;
+    /// Copy constructoe
+    DetectorStaticElement(const DetectorStaticElement&) = default;
+    /// Copy assignment
+    DetectorStaticElement& operator=(const DetectorStaticElement&) = default;
+    /// Constructor from base class pointer
+    DetectorStaticElement(const typename base_t::Object* p) : base_t(p) {}
+    /// Constructor from other polymorph pointers
+    template <typename Q> DetectorStaticElement(Q* p) : base_t(dd4hep::Handle<Q>(p)) {}
+
+    /// Constructor from other polymorph handle
+    template <typename Q> DetectorStaticElement(const dd4hep::Handle<Q>& p) : base_t() {
+      base() = p;
+      if ( p.ptr() && !this->ptr() ) { this->bad_assignment(typeid(p),typeid(self_t)); }
+    }
+
+    /// Copy assignment from polymorph handle
+    template <typename Q> DetectorStaticElement& operator=(const dd4hep::Handle<Q>& p) {
+      base() = p;
+      if ( p.ptr() && !this->ptr() ) { this->bad_assignment(typeid(p),typeid(self_t)); }
+      return *this;
+    }
+
+    /// Access to the classID
+    static int classID()                    { return static_t::classID;         }  
+
+    /// Print the detector element's information to stdout. No-inline, allow specialization
+    void print(int indent, int flg)  const;
+
+    /** Simplification accessors. Do not check validity here   */
+    /// Access parameters directory
+    const ParameterMap::Parameters& params()  const
+    {  return static_data().params();                                           }
+
+    /// Access single parameter
+    const ParameterMap::Parameter& parameter(const std::string& nam, bool throw_if_not_present=true)   const
+    {  return static_data().parameter(nam, throw_if_not_present);               }
+
+    /// Type dependent accessor to a named parameter
+    template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const
+    {  return static_data().template parameter<T>(nam,throw_if_not_present);    }
+
+    /// Access daughter elements: Static part
+    DeStaticElement child(DetElement de)  const
+    {  return static_data().child(de);                                          }
+  };
+  
+  
+  /// Static detelement accessor. Used internally - may be specialized for optimization
+  template <typename TYPE> inline
+  const typename DetectorStaticElement<TYPE>::static_t&
+  DetectorStaticElement<TYPE>::static_data()  const
+  {  return this->TYPE::staticData();                                           }
+
+  /// Print the detector element's information to stdout. Allow specialization
+  template <typename TYPE> inline
+  void DetectorStaticElement<TYPE>::print(int indent, int flg)  const
+  {  this->base_t::access()->print(indent, flg);                                }
+
+  /// For the fully enabled object, we have to combine it with the generic stuff
+  typedef  DetectorStaticElement<DeStaticElement>  DeStatic;
+}      // End namespace gaudi
+
+/// ------------------- Generic handle layer for IOV objects -------------------
 #include "Detector/DeIOV.h"
 
 /// Gaudi::detail namespace declaration
@@ -161,8 +247,8 @@ namespace gaudi    {
   template<typename TYPE>
   class DetectorElement : public TYPE {
     DE_CONDITIONS_TYPEDEFS;
-    typedef DetectorElement<TYPE>   self_t;
-    typedef TYPE                    base_t;
+    typedef DetectorElement<TYPE>            self_t;
+    typedef TYPE                             base_t;
     typedef typename TYPE::Object            iov_t;
     typedef typename TYPE::static_t          static_t;
     typedef typename DetElement::Children    children_t;
@@ -172,8 +258,9 @@ namespace gaudi    {
     const static_t& static_data()  const;
     /// Access the time dependent data block. Used internally - may be specialized for optimization
     const iov_t& iovData()  const;
-
+    /// Access to the base implementation
     base_t& base()  { return *this; }
+
   public: 
     /// Standard constructor
     DetectorElement() = default;
@@ -196,11 +283,22 @@ namespace gaudi    {
       if ( p.ptr() && !this->ptr() ) { this->bad_assignment(typeid(p),typeid(self_t)); }
       return *this;
     }
-    
+
+    /// Access to the classID
+    static int classID()                    { return static_t::classID;         }  
+    /// Print the detector element's information to stdout
+    void print(int indent, int flg)  const;
+    /// Compute key value for caching
+    static itemkey_type key(const std::string& value)
+    {  return dd4hep::ConditionKey::itemCode(value);                            }
+    /// Compute key value for caching
+    static itemkey_type key(const char* value)
+    {  return dd4hep::ConditionKey::itemCode(value);                            }
+
     /** Access to static detector element data                                */
-    /// Detector element Class ID
-    int classID()  const
-    {  return static_data().classID;                                            }
+    /// Detector element Class ID (real one from XML, not the enum!)
+    int clsID()  const
+    {  return static_data().clsID;                                              }
     /// Accessor to detector structure
     DetElement   detector() const
     {  return static_data().detector;                                           }
@@ -241,7 +339,7 @@ namespace gaudi    {
     {  return iovData().detectorAlignment;                                      }
     /// Access the volume alignments
     const VolumeAlignments& volumeAlignments()  const
-    {  return iovData().volumeAlignments();                                     }
+    {  return iovData().volumeAlignments;                                       }
 
     /// helper member using IGeometryInfo::isInside
     bool isInside(const XYZPoint& globalPoint) const
@@ -257,11 +355,11 @@ namespace gaudi    {
 
     /// Access to transformation matrices
     const TGeoHMatrix& toLocalMatrix() const
-    {  return iovData().toLocalMatrix();                                        }
+    {  return iovData().toLocalMatrix;                                          }
     const TGeoHMatrix& toGlobalMatrix() const 
-    {  return iovData().toGlobalMatrix();                                       }
+    {  return iovData().toGlobalMatrix;                                         }
     const TGeoHMatrix& toLocalMatrixNominal() const
-    {  return iovData().toLocalMatrixNominal();                                 }
+    {  return iovData().toLocalMatrixNominal;                                   }
 
     /// Local -> Global and Global -> Local transformations
     XYZPoint toLocal( const XYZPoint& global ) const
@@ -273,7 +371,7 @@ namespace gaudi    {
     XYZVector toGlobal( const XYZVector& localDirection  ) const
     {  return iovData().toGlobal(localDirection);                               }
   };
-  
+
   /// Static detelement accessor. Used internally - may be specialized for optimization
   template <typename TYPE> inline
   const typename DetectorElement<TYPE>::static_t&
@@ -285,6 +383,14 @@ namespace gaudi    {
   const typename DetectorElement<TYPE>::iov_t&
   DetectorElement<TYPE>::iovData()  const
   {  return *(this->TYPE::access());                                            }
+
+  /// Print the detector element's information to stdout. Allow specialization
+  template <typename TYPE> inline
+  void DetectorElement<TYPE>::print(int indent, int flg)  const
+  {  this->base_t::access()->print(indent, flg);                                }
   
+  /// For the fully enabled object, we have to combine it with the generic stuff
+  typedef  DetectorElement<DeIOVElement>  DeIOV;
 }      // End namespace gaudi
+
 #endif

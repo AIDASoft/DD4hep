@@ -40,6 +40,7 @@ namespace gaudi   {
      */
     class DeVPSensorStaticObject : public detail::DeStaticObject  {
     public:
+      enum { classID = 1008205 };
       /// Cache of local x-cooordinates
       std::array<double,VP::NSensorColumns> local_x;
       /// Cache of x-pitch
@@ -68,7 +69,6 @@ namespace gaudi   {
       /// Sensor ans module number
       unsigned int sensorNumber = 0;
       unsigned int module       = 0;
-      bool         isLeft       = false;
 
     public:
       /// Standard constructors and assignment
@@ -89,15 +89,20 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPSensorStatic : public dd4hep::Handle<detail::DeVPSensorStaticObject>   {
+  class DeVPSensorStaticElement
+    : public dd4hep::Handle<detail::DeVPSensorStaticObject>
+  {
     DE_CONDITIONS_TYPEDEFS;
+    /// This is needed by the DetectorElement<TYPE> to properly forward requests.
+    typedef Object static_t;
   public:
     /// Standard constructors and assignment
-    DE_CTORS_HANDLE(DeVPSensorStatic,Base);
-    /// Printout method to stdout
-    void print(int indent, int flags)  const;
+    DE_CTORS_HANDLE(DeVPSensorStaticElement,Base);
   };
   
+  /// For the full sensor object, we have to combine it with the geometry stuff:
+  typedef  DetectorStaticElement<DeVPSensorStaticElement>  DeVPSensorStatic;
+
   /// Gaudi::detail namespace declaration
   namespace detail   {
 
@@ -110,6 +115,7 @@ namespace gaudi   {
      */
     class DeVPSensorObject : public DeIOVObject  {
       DE_CONDITIONS_TYPEDEFS;
+      typedef DeVPSensorStatic::Object static_t;
 
       /// The static part of the detector element
       DeVPSensorStatic sensor_static;
@@ -142,9 +148,10 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPSensor : public dd4hep::Handle<detail::DeVPSensorObject>   {
+  class DeVPSensorElement : public dd4hep::Handle<detail::DeVPSensorObject>   {
     DE_CONDITIONS_TYPEDEFS;
-    typedef detail::DeVPSensorStaticObject static_t;
+    typedef Object::static_t static_t;
+    typedef Object           iov_t;
 
   public:
     /** Define conditions access keys for optimization     */
@@ -152,9 +159,15 @@ namespace gaudi   {
     static const itemkey_type key_noise;
     static const itemkey_type key_readout;
     /// Standard constructors and assignment
-    DE_CTORS_HANDLE(DeVPSensor,Base);
-    /// Printout method to stdout
-    void print(int indent, int flags)  const;
+    DE_CTORS_HANDLE(DeVPSensorElement,Base);
+    /// Access to the static data. Does this need to be optionized???
+    static_t& staticData()  const    {  return access()->sensor_static;         }
+    bool isLeft()   const            {  return (ptr()->de_user&VP::LEFT) != 0;  }
+    bool isRight()   const           {  return (ptr()->de_user&VP::LEFT) == 0;  }
   };
+
+  /// For the full sensor object, we have to combine it with the geometry stuff:
+  typedef  DetectorStaticElement<DeVPSensorElement>  DeVPSensor;
+
 }      // End namespace gaudi
 #endif // DETECTOR_DEVPSENSORIOV_H

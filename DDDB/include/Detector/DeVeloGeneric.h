@@ -12,11 +12,11 @@
 //  \version  1.0
 //
 //==============================================================================
-#ifndef DETECTOR_DEVPGENERIC_H 
-#define DETECTOR_DEVPGENERIC_H 1
+#ifndef DETECTOR_DEVELOGENERIC_H 
+#define DETECTOR_DEVELOGENERIC_H 1
 
 // Framework include files
-#include "Detector/DeVPSensor.h"
+#include "Detector/DeVeloSensor.h"
 #include "Detector/DeStatic.h"
 #include "Detector/DeIOV.h"
 
@@ -33,18 +33,20 @@ namespace gaudi   {
      *  \date    2018-03-08
      *  \version  1.0
      */
-    class DeVPGenericStaticObject : public DeStaticObject    {
+    class DeVeloGenericStaticObject : public DeStaticObject    {
       DE_CONDITIONS_TYPEDEFS;
       /// Unique classID
       enum { classID = 2 };
 
     public:
-      typedef  std::vector<DeVPSensorStatic>  Sensors;
+      typedef  std::vector<DeVeloGenericStaticObject*> Children;
+      typedef  std::vector<DeVeloSensorStatic>         Sensors;
+      Children children;  // Note: Sensors are no children. They go extra
       Sensors  sensors;
 
     public:
       /// Standard constructors and assignment
-      DE_CTORS_DEFAULT(DeVPGenericStaticObject);
+      DE_CTORS_DEFAULT(DeVeloGenericStaticObject);
       /// Initialization of sub-classes
       virtual void initialize()  override;
       /// Printout method to stdout
@@ -60,20 +62,19 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPGenericStaticElement
-    : public dd4hep::Handle<detail::DeVPGenericStaticObject>
-  {
+  class DeVeloGenericStaticElement : public dd4hep::Handle<detail::DeVeloGenericStaticObject>   {
     DE_CONDITIONS_TYPEDEFS;
-    typedef Object           static_t;
-    typedef Object::Sensors  Sensors;
+    typedef Object static_t;
   public:
     /// Standard constructors and assignment
-    DE_CTORS_HANDLE(DeVPGenericStaticElement,Base);
+    DE_CTORS_HANDLE(DeVeloGenericStaticElement,Base);
     /// Export access to the sensors from the detector element
     Object::Sensors& sensors()  const   {   return access()->sensors;    }
+    /// Export access to the children from the detector element
+    Object::Children& children()  const {   return access()->children;   }
   };
   /// For the fully enabled object, we have to combine it with the generic stuff
-  typedef  DetectorStaticElement<DeVPGenericStaticElement>  DeVPGenericStatic;
+  typedef  DetectorStaticElement<DeVeloGenericStaticElement>  DeVeloGenericStatic;
 
   /// Gaudi::detail namespace declaration
   namespace detail   {
@@ -85,16 +86,18 @@ namespace gaudi   {
      *  \date    2018-03-08
      *  \version  1.0
      */
-    class DeVPGenericObject : public DeIOVObject    {
+    class DeVeloGenericObject : public DeIOVObject    {
       DE_CONDITIONS_TYPEDEFS;
 
     public:
-      typedef  std::vector<DeVPSensor>  Sensors;
+      typedef  std::vector<DeVeloGenericObject*> Children;
+      typedef  std::vector<DeVeloSensor>         Sensors;
+      Children children;  // Note: Sensors are no children. They go extra
       Sensors  sensors;
 
     public:
       /// Standard constructors and assignment
-      DE_CTORS_DEFAULT(DeVPGenericObject);
+      DE_CTORS_DEFAULT(DeVeloGenericObject);
       /// Initialization of sub-classes
       virtual void initialize()  override;
       /// Printout method to stdout
@@ -110,24 +113,24 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPGenericElement : public dd4hep::Handle<detail::DeVPGenericObject>   {
+  class DeVeloGenericElement : public dd4hep::Handle<detail::DeVeloGenericObject>   {
     DE_CONDITIONS_TYPEDEFS;
     /// These two are needed by the DetectorElement<TYPE> to properly forward requests.
-    typedef Object           iov_t;
     typedef Object::static_t static_t;
-    typedef Object::Sensors  Sensors;
-    
+    typedef Object           iov_t;
   public:
     /// Standard constructors and assignment
-    DE_CTORS_HANDLE(DeVPGenericElement,Base);
-    /// Access to the static data
-    static_t& staticData()  const    { return access()->de_static;   }
+    DE_CTORS_HANDLE(DeVeloGenericElement,Base);
+    /// Access to the static data. Must define here, not in DetectorElement to preserve types.
+    static_t& staticData()  const       {  return access()->de_static;  }
     /// Export access to the sensors from the detector element
     Object::Sensors& sensors()  const   {   return access()->sensors;   }
+    /// Export access to the children from the detector element
+    Object::Children& children()  const {   return access()->children;  }
   };
-  
-  /// For the fully enabled object, we have to combine it with the generic stuff
-  typedef  DetectorElement<DeVPGenericElement>  DeVPGeneric;
 
+  /// For the fully enabled object, we have to combine it with the generic stuff
+  typedef  DetectorElement<DeVeloGenericElement>  DeVeloGeneric;
+  
 }      // End namespace gaudi
-#endif // DETECTOR_DEVPGENERIC_H
+#endif // DETECTOR_DEVELOGENERIC_H

@@ -124,8 +124,6 @@ namespace dd4hep {
         if ( ret ) dep->addRef();
         return ret;
       }
-      /// Create load-info object
-      template <typename T> static LoadInfo<T> loadInfo(const T& t) { return LoadInfo<T>(t);  }
     };
   }        /* End namespace cond               */
 }          /* End namespace dd4hep                   */

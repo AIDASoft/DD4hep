@@ -110,6 +110,18 @@ namespace dd4hep {
         if ( i != std::end(params) ) return (*i).second.get<T>();
         throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
       }
+      /// Simplify access to mapped item of the parameter list (const access)
+      template <typename T> const T& get(const std::string& item)  const   {
+        Params::const_iterator i=params.find(item);
+        if ( i != std::end(params) ) return (*i).second.get<T>();
+        throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
+      }
+      /// Simplify access to mapped item of the parameter list
+      template <typename T> T& get(const std::string& item)   {
+        Params::iterator i=params.find(item);
+        if ( i != std::end(params) ) return (*i).second.get<T>();
+        throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
+      }
     };
 
   } /* End namespace cond             */

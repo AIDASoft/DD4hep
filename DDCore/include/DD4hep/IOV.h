@@ -98,6 +98,8 @@ namespace dd4hep {
     IOV& operator=(const IOV& c) = default;
     /// Move assignment operator
     IOV& operator=(IOV&& c) = default;
+    /// Allow for IOV sorting in maps
+    bool operator<(const IOV& test)  const;
     /// Move the data content: 'from' will be reset to NULL
     void move(IOV& from);
     /// Create string representation of the IOV
@@ -166,6 +168,14 @@ namespace dd4hep {
     static bool partial_match(const IOV& iov, const IOV& test)
     {   return same_type(iov,test) && key_partially_contained(iov.keyData,test.keyData);      }
   };
-    
+
+  /// Allow for IOV sorting in maps
+  inline bool IOV::operator<(const IOV& test)  const   {
+    if ( type > test.type ) return false; // Actually this should never happen!
+    if ( keyData.first > test.keyData.first ) return false;
+    if ( keyData.second > test.keyData.second ) return false;
+    return true;
+  }
+
 } /* End namespace dd4hep                   */
 #endif    /* DD4HEP_DDCORE_IOV_H        */

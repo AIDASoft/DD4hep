@@ -22,15 +22,15 @@ using namespace gaudi;
 
 /// Interface to client Callback in order to update the condition
 dd4hep::Condition DeVPStaticConditionCall::operator()(const ConditionKey& key, const Context& context)  {
-  VeloUpdateContext* ctxt = dynamic_cast<VeloUpdateContext*>(context.parameter);
+  VPUpdateContext* ctxt = dynamic_cast<VPUpdateContext*>(context.parameter);
   KeyMaker   km(key.hash);
   auto       ide = ctxt->detectors.find(km.values.det_key);
   auto*      cat = (*ide).second.second;
   DetElement det = (*ide).second.first;
   DeStatic s;
-  if ( cat->classID == 1008205 )       // DeVPSensor
+  if ( cat->classID == DeVPSensor::classID() )      // DeVPSensor
     s = DeStatic(new detail::DeVPSensorStaticObject());
-  else if ( cat->classID == 8200 )     // DeVP Velo main element
+  else if ( cat->classID == DeVP::classID()  )     // DeVP Velo main element
     s = DeStatic(new detail::DeVPStaticObject());
   else                                     // All other in the hierarchy
     s = DeStatic(new detail::DeVPGenericStaticObject());
@@ -40,14 +40,14 @@ dd4hep::Condition DeVPStaticConditionCall::operator()(const ConditionKey& key, c
 /// Interface to client callback for resolving references or to use data from other conditions
 void DeVPStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
   DeStatic s(c);
-  if ( s->classID == 8200 )  {   // Velo main element
+  if ( s->clsID == DeVP::classID() )  {   // Velo main element
     DeVPStatic vp = s;
     DeVPSensorStatic sens;
     DeVPGenericStatic side, support, module, ladder;
     std::vector<std::pair<DetElement, int> > elts;
     dd4hep::DetectorScanner(dd4hep::detElementsCollector(elts), s->detector);
 
-    vp->vp_flags |= DeVPGenericStatic::MAIN;
+    vp->de_user |= VP::MAIN;
     vp->sensors.resize(200);
     for ( const auto& i : elts )   {
       DetElement de = i.first;
@@ -61,28 +61,28 @@ void DeVPStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
         case 1:
           side = cond;
           side->parent = vp.access();
-          side->vp_flags |= DeVPGeneric::SIDE;
+          side->de_user |= VP::SIDE;
           vp->sides.push_back(side);
           printout(INFO,"DeVPStatic","Add Side[%03ld]:    %s",vp->sides.size()-1,path.c_str());
           break;
         case 2:
           support = cond;
           support->parent = side.access();
-          support->vp_flags |= DeVPGeneric::SUPPORT;
+          support->de_user |= VP::SUPPORT;
           vp->supports.push_back(support);
           printout(INFO,"DeVPStatic","Add Support[%03ld]: %s",vp->supports.size()-1,path.c_str());
           break;
         case 3:
           module = cond;
           module->parent = support.access();
-          module->vp_flags |= DeVPGeneric::MODULE;
+          module->de_user |= VP::MODULE;
           vp->modules.push_back(module);
           printout(INFO,"DeVPStatic","Add Module[%03ld]:  %s",vp->modules.size()-1,path.c_str());
           break;
         case 4:
           ladder = cond;
           ladder->parent = module.access();
-          ladder->vp_flags |= DeVPGeneric::LADDER;
+          ladder->de_user |= VP::LADDER;
           vp->ladders.push_back(ladder);
           printout(INFO,"DeVPStatic","Add Ladder[%03ld]:  %s",vp->ladders.size()-1,path.c_str());
           break;
@@ -112,10 +112,10 @@ void DeVPStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
 
 /// Interface to client Callback in order to update the condition
 dd4hep::Condition DeVPIOVConditionCall::operator()(const ConditionKey&, const Context&)   {
-  DeIOV iov((catalog->classID == 1008205) ? new detail::DeVPSensorObject() : new detail::DeIOVObject());
-  if ( catalog->classID == 1008205 )       // DeVPSensor
+  DeIOV iov;
+  if ( catalog->classID == DeVPSensor::classID() )     // DeVPSensor
     iov = DeIOV(new detail::DeVPSensorObject());
-  else if ( catalog->classID == 8200 )     // DeVP Velo main element
+  else if ( catalog->classID == DeVP::classID()  )     // DeVP Velo main element
     iov = DeIOV(new detail::DeVPObject());
   else                                     // All other in the hierarchy
     iov = DeIOV(new detail::DeVPGenericObject());

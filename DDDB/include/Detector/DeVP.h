@@ -19,6 +19,15 @@
 #include "Detector/DeVPSensor.h"
 #include "Detector/DeVPGeneric.h"
 
+#define DE_VP_TYPEDEFS(TYP) public:                       \
+  DE_CONDITIONS_TYPEDEFS;                                 \
+  typedef std::vector<DeVPSensor##TYP>  Sensors;          \
+  typedef std::vector<DeVPGeneric##TYP> Sides;            \
+  typedef std::vector<DeVPGeneric##TYP> ModuleSupports;   \
+  typedef std::vector<DeVPGeneric##TYP> Modules;          \
+  typedef std::vector<DeVPGeneric##TYP> Ladders
+
+  
 /// Gaudi namespace declaration
 namespace gaudi   {
 
@@ -33,13 +42,10 @@ namespace gaudi   {
      *  \version  1.0
      */
     class DeVPStaticObject : public DeVPGenericStaticObject  {
-      DE_CONDITIONS_TYPEDEFS;
-      typedef  std::vector<DeVPGenericStatic> Sides;
-      typedef  std::vector<DeVPGenericStatic> ModuleSupports;
-      typedef  std::vector<DeVPGenericStatic> Modules;
-      typedef  std::vector<DeVPGenericStatic> Ladders;
+      DE_VP_TYPEDEFS(Static);
 
     public:
+      enum { classID = 8200 };
       Sides          sides;
       ModuleSupports supports;
       Modules        modules;
@@ -65,21 +71,21 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPStatic : public dd4hep::Handle<detail::DeVPStaticObject>   {
-    DE_CONDITIONS_TYPEDEFS;
+  class DeVPStaticElement : public dd4hep::Handle<detail::DeVPStaticObject>   {
+    DE_VP_TYPEDEFS(Static);
+    typedef Object static_t;
 
   public:
     /// Standard constructors and assignment
-    DE_CTORS_HANDLE(DeVPStatic,Base);
-    /// Printout method to stdout
-    void print(int indent, int flags)  const;
+    DE_CTORS_HANDLE(DeVPStaticElement,Base);
     /// Return the number of sensors.
-    unsigned int numberSensors() const
-    { return ptr()->sensors.size(); }
+    size_t numberSensors() const                         { return ptr()->sensors.size(); }
     /// Return vector of sensors.
-    const std::vector<DeVPSensorStatic>& sensors() const
-    { return ptr()->sensors;        }
+    const std::vector<DeVPSensorStatic>& sensors() const { return ptr()->sensors;        }
   };
+
+  /// For the fully enabled object, we have to combine it with the generic stuff
+  typedef  DetectorStaticElement<DeVPStaticElement>  DeVPStatic;
 
   /// Gaudi::detail namespace declaration
   namespace detail   {
@@ -92,11 +98,8 @@ namespace gaudi   {
      *  \version  1.0
      */
     class DeVPObject : public DeVPGenericObject  {
-      DE_CONDITIONS_TYPEDEFS;
-      typedef std::vector<DeVPGeneric> Sides;
-      typedef std::vector<DeVPGeneric> ModuleSupports;
-      typedef std::vector<DeVPGeneric> Modules;
-      typedef std::vector<DeVPGeneric> Ladders;
+      DE_VP_TYPEDEFS();
+      typedef DeVPStatic::Object static_t;
 
     public:
       DeVPStatic     vp_static;
@@ -123,24 +126,24 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVP : public dd4hep::Handle<detail::DeVPObject>   {
-    DE_CONDITIONS_TYPEDEFS;
-    typedef detail::DeVPStaticObject static_t;
+  class DeVPElement : public dd4hep::Handle<detail::DeVPObject>   {
+    DE_VP_TYPEDEFS();
+    typedef Object::static_t static_t;
+    typedef Object           iov_t;
 
   public:
     /// Standard constructors and assignment
-    DE_CTORS_HANDLE(DeVP,Base);
-    /// Printout method to stdout
-    void print(int indent, int flags)  const;
+    DE_CTORS_HANDLE(DeVPElement,Base);
     /// Access to the static data
-    static_t& staticData()  const
-    { return access()->vp_static;   }
+    static_t& staticData()  const                  { return access()->vp_static;   }
     /// Return the number of sensors.
-    unsigned int numberSensors() const
-    { return ptr()->sensors.size(); }
+    size_t numberSensors() const                   { return ptr()->sensors.size(); }
     /// Return vector of sensors.
-    const std::vector<DeVPSensor>& sensors() const
-    { return ptr()->sensors;        }
+    const std::vector<DeVPSensor>& sensors() const { return ptr()->sensors;        }
   };
+
+  /// For the fully enabled object, we have to combine it with the generic stuff
+  typedef  DetectorElement<DeVPElement>  DeVP;
+  
 }      // End namespace gaudi
 #endif // DETECTOR_DEVP_H
