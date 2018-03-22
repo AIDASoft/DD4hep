@@ -32,7 +32,7 @@ DeStaticObject* DeStaticObject::fill_info(DetElement de, Catalog* cat)    {
   geometry = de.placement();
   name     = Keys::staticKeyName;
   key      = Keys::staticKey;
-  classID  = cat->classID;
+  clsID    = cat->classID;
   catalog  = cat;
   for( const auto& p : cat->params )
     parameters.set(p.first, p.second.second, p.second.first);
@@ -52,24 +52,27 @@ void DeStaticObject::initialize()   {
 /// Printout method to stdout
 void DeStaticObject::print(int indent, int flg)  const   {
   std::string prefix = DE::indent(indent);
-  printout(INFO, "DeStatic", "%s+ Detector:%s",
+  printout(INFO, "DeStatic", "%s*========== Detector:%s",
            prefix.c_str(), detector.path().c_str());
-  printout(INFO, "DeStatic",
-           "%s+ Name:%s Hash:%016lX Type:%s Flags:%08X IOV:%s",
-           prefix.c_str(), name.c_str(), hash,
-           is_bound() ? data.dataType().c_str() : "<UNBOUND>",
-           flags, iov ? iov->str().c_str()      : "--");
-  if ( flg & DePrint::BASICS )  {
-    const DetElement::Children& c = detector.children();
-    printout(INFO, "DeStatic", "%s+ Detector:%s Class:%d key:%08X #Dau:%d",
-             prefix.c_str(), detector.name(), classID, key, int(c.size()));
-  }
   if ( flg & DePrint::PARAMS )  {
     for( const auto& p : parameters.params() )   {
       printout(INFO, "DeStatic", "%s+ Param: %s -> %s [%s]",
                prefix.c_str(), p.first.c_str(),
                p.second.value.c_str(), p.second.type.c_str());
     }
+  }
+  printout(INFO, "DeStatic",
+           "%s+ Name:%s Hash:%016lX Type:%s Flags:%08X %s%s",
+           prefix.c_str(), name.c_str(), hash,
+           is_bound() ? data.dataType().c_str() : "<UNBOUND>",
+           flags, iov ? "" : "IOV:", iov ? "" : "---");
+  if ( iov )  {
+    printout(INFO, "DeStatic","%s+ IOV: %s", prefix.c_str(), iov->str().c_str());
+  }
+  if ( flg & DePrint::BASICS )  {
+    const DetElement::Children& c = detector.children();
+    printout(INFO, "DeStatic", "%s+ Detector:%s Class:%d key:%08X #Dau:%d",
+             prefix.c_str(), detector.name(), clsID, key, int(c.size()));
   }
 }
 
@@ -93,18 +96,13 @@ void DeStaticObject::fillCache(ConditionsMap& m)    {
          Keys::staticKeyName.c_str(), detector.path().c_str());
 }
 
-/// Printout method to stdout
-void DeStatic::print(int indent, int flags)  const    {
-  return access()->print(indent, flags);
-}
-
 /// Access parameters directory
-const ParameterMap::Parameters& DeStatic::params()  const    {
-  return access()->parameters.params();
+const ParameterMap::Parameters& DeStaticObject::params()  const    {
+  return this->parameters.params();
 }
 
 /// Access single parameter
 const ParameterMap::Parameter&
-DeStatic::parameter(const std::string& nam, bool throw_if_not_present)   const    {
-  return access()->parameters.parameter(nam, throw_if_not_present);
+DeStaticObject::parameter(const std::string& nam, bool throw_if_not_present)   const    {
+  return this->parameters.parameter(nam, throw_if_not_present);
 }

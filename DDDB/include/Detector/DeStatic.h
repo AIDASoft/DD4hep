@@ -19,6 +19,9 @@
 #ifndef DETECTOR_DESTATIC_H
 #define DETECTOR_DESTATIC_H
 
+/// Framework include files
+#include "Detector/DetectorElement.h"
+
 /// gaudi namespace declaration
 namespace gaudi   {
 
@@ -65,12 +68,19 @@ namespace gaudi   {
       /// Fill the child cache. May only be called while the condition is NOT active
       void fillCache(ConditionsMap& m);
 
+      /// Access daughter elements: Static part
+      DeStaticObject* child(DetElement de)  const;
+
+      /** Simplification accessors. Do not check validity here   */
+      /// Access parameters directory
+      const ParameterMap::Parameters& params()  const;
+      
+      /// Access single parameter
+      const ParameterMap::Parameter& parameter(const std::string& nam, bool throw_if_not_present=true)   const;
+
       /// Type dependent accessor to a named parameter
       template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const
       {  return parameters.parameter(nam,throw_if_not_present).template get<T>();     }
-
-      /// Access daughter elements: Static part
-      DeStaticObject* child(DetElement de)  const;
 
     public:
       /// Cache of static information of the children.
@@ -84,9 +94,10 @@ namespace gaudi   {
       /// The parameter map of this detector element
       ParameterMap         parameters;
       /// Detector element Class ID
-      int                  classID = 0;
+      int                  clsID = 0;
       /// Initialization flags to steer actions
-      int                  de_flags = 0;
+      unsigned short       de_flags = 0;
+      unsigned short       de_user  = 0;
       /// Item key
       itemkey_type         key = 0;
 
@@ -95,33 +106,33 @@ namespace gaudi   {
     };
   }    // End namespace detail
 
-  /// Base class for static DetectorElement data
+  /// Handle definition to an instance of a handle to static detector element data
   /**
+   *  This object defines the behaviour of the objects's data.
+   *  We implement here only the behaviour of the object specific
+   *  stuff. The geometry interactions are then combined with this
+   *  implementation and the specialized detector element
+   *  DetectorElementStatic<TYPE> to the real data accessor.
+   *  The DetectorElementStatic<TYPE> by non-virtual inheritance
+   *  automatically exposes the specific stuff here.
+   *
+   *  See the corresponding typedef below.
+   *
+   *  Note: in this class the is no big deal of specialization!
+   *        this for the time being is only for illustration about the mechanism.
    *
    *  \author  Markus Frank
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeStatic : public dd4hep::Handle<detail::DeStaticObject>  {
+  class DeStaticElement : public dd4hep::Handle<detail::DeStaticObject>  {
     DE_CONDITIONS_TYPEDEFS;
-
+    /// This is needed by the DetectorElement<TYPE> to properly forward requests.
+    typedef detail::DeStaticObject static_t;
   public:
     /// Standard handle assignments and constructors
-    DE_CTORS_HANDLE(DeStatic,Base);
-    
-    /// Printout method to stdout
-    void print(int indent, int flags)  const;
-
-    /** Simplification accessors. Do not check validity here   */
-    /// Access parameters directory
-    const ParameterMap::Parameters& params()  const;
-
-    /// Access single parameter
-    const ParameterMap::Parameter& parameter(const std::string& nam, bool throw_if_not_present=true)   const;
-
-    /// Type dependent accessor to a named parameter
-    template <typename T> T param(const std::string& nam, bool throw_if_not_present=true)   const
-    {  return parameter(nam,throw_if_not_present).template get<T>();     }
+    DE_CTORS_HANDLE(DeStaticElement,Base);
   };
+
 }      // End namespace gaudi
 #endif // DETECTOR_DESTATIC_H

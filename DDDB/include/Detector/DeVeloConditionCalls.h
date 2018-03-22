@@ -16,7 +16,7 @@
 #define DETECTOR_DEVPCONDITIONCALLS_H 1
 
 // Framework include files
-#include "Detector/DeVP.h"
+#include "Detector/DeVelo.h"
 #include "DD4hep/ConditionDerived.h"
 
 /// Gaudi namespace declaration
@@ -29,7 +29,7 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class VPUpdateContext : public dd4hep::cond::ConditionUpdateUserContext   {
+  class VeloUpdateContext : public dd4hep::cond::ConditionUpdateUserContext   {
   public:
     std::map<dd4hep::Condition::detkey_type,std::pair<dd4hep::DetElement,dd4hep::DDDB::DDDBCatalog*> > detectors;
     dd4hep::Condition alignments_done;
@@ -60,12 +60,12 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPStaticConditionCall : public dd4hep::cond::ConditionUpdateCall, public DeConditionCallDefs  {
+  class DeVeloStaticConditionCall : public dd4hep::cond::ConditionUpdateCall, public DeConditionCallDefs  {
   public:
     /// Initializing constructor
-    DeVPStaticConditionCall() = default;
+    DeVeloStaticConditionCall() = default;
     /// Default destructor
-    virtual ~DeVPStaticConditionCall() = default;
+    virtual ~DeVeloStaticConditionCall() = default;
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, const Context& context) override final;
     /// Interface to client callback for resolving references or to use data from other conditions
@@ -79,16 +79,16 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPIOVConditionCall : public dd4hep::cond::ConditionUpdateCall, public DeConditionCallDefs  {
+  class DeVeloIOVConditionCall : public dd4hep::cond::ConditionUpdateCall, public DeConditionCallDefs  {
   public:
     DetElement detector;
     Catalog*   catalog = 0;
-    VPUpdateContext* context = 0;    
+    VeloUpdateContext* context = 0;    
     /// Initializing constructor
-    DeVPIOVConditionCall(DetElement de, Catalog* cat, VPUpdateContext* ctx)
+    DeVeloIOVConditionCall(DetElement de, Catalog* cat, VeloUpdateContext* ctx)
       : detector(de), catalog(cat), context(ctx)  {}
     /// Default destructor
-    virtual ~DeVPIOVConditionCall() = default;
+    virtual ~DeVeloIOVConditionCall() = default;
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, const Context& context) override final;
     /// Interface to client callback for resolving references or to use data from other conditions
@@ -102,19 +102,15 @@ namespace gaudi   {
    *  \date    2018-03-08
    *  \version  1.0
    */
-  class DeVPConditionCall : public DeVPIOVConditionCall   {
+  class DeVeloConditionCall : public DeVeloIOVConditionCall   {
   public:
     /// Initializing constructor
-    DeVPConditionCall(DetElement de, Catalog* cat, VPUpdateContext* ctx)
-      : DeVPIOVConditionCall(de,cat,ctx) {}
+    DeVeloConditionCall(DetElement de, Catalog* cat, VeloUpdateContext* ctx)
+      : DeVeloIOVConditionCall(de,cat,ctx) {}
     /// Default destructor
-    virtual ~DeVPConditionCall() = default;
+    virtual ~DeVeloConditionCall() = default;
     /// Interface to client callback for resolving references or to use data from other conditions
     virtual void resolve(Condition c, Resolver& resolver)  override final;
-    void add_generic(detail::DeVPObject* vp,
-                     std::vector<DeVPGeneric>& cont,
-                     const std::vector<DeVPGenericStatic>& src,
-                     Resolver& resolver)  const;
   };
   
 }      // End namespace gaudi

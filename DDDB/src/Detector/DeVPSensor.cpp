@@ -19,32 +19,30 @@
 #include "DD4hep/Printout.h"
 
 namespace gaudi  {
-  const DeVPSensor::itemkey_type DeVPSensor::key_info    = dd4hep::ConditionKey::itemCode("StripInfo");
-  const DeVPSensor::itemkey_type DeVPSensor::key_noise   = dd4hep::ConditionKey::itemCode("StripNoise");
-  const DeVPSensor::itemkey_type DeVPSensor::key_readout = dd4hep::ConditionKey::itemCode("StripReadout");
+  const DeVPSensorElement::itemkey_type DeVPSensorElement::key_info    = dd4hep::ConditionKey::itemCode("StripInfo");
+  const DeVPSensorElement::itemkey_type DeVPSensorElement::key_noise   = dd4hep::ConditionKey::itemCode("StripNoise");
+  const DeVPSensorElement::itemkey_type DeVPSensorElement::key_readout = dd4hep::ConditionKey::itemCode("StripReadout");
 }
 
 /// Printout method to stdout
 void gaudi::detail::DeVPSensorStaticObject::print(int indent, int flg)  const   {
 
+  this->DeStaticObject::print(indent, flg);
   if ( flg & DePrint::SPECIFIC )  {
-    printout(INFO,"DeVPSensorStatic", "%s*==========%s",
-             DE::indent(indent).c_str(), detector.path().c_str());
     printout(INFO,"DeVPSensorStatic",
-             "%s%s >> Module:%d Sensor:%d %s %d Chips Rows:%d Cols:%d",
-             DE::indent(indent).c_str(),"+ ",
-             module, sensorNumber, isLeft ? "Left" : "Right", nChips, nCols, nRows);
+             "%s+  >> Module:%d Sensor:%d %s %d Chips Rows:%d Cols:%d",
+             DE::indent(indent).c_str(),
+             module, sensorNumber, (de_user&VP::LEFT) ? "Left" : "Right", nChips, nCols, nRows);
   }
   if ( flg & DePrint::DETAIL )  {
     printout(INFO,"DeVPSensorStatic",
-             "%s%s >> Thickness:%g ChipSize:%g Dist:%g Pix-Size:%g Dist:%g",
-             DE::indent(indent).c_str(),"+ ",
+             "%s+  >> Thickness:%g ChipSize:%g Dist:%g Pix-Size:%g Dist:%g",
+             DE::indent(indent).c_str(),
              thickness, chipSize, interChipDist, pixelSize, interChipPixelSize);
     printout(INFO,"DeVPSensorStatic",
-             "%s%s >> SizeX: %g SizeY: %g local:%ld pitch:%ld",
-             DE::indent(indent).c_str(), "+ ", sizeX, sizeY, local_x.size(), x_pitch.size());
+             "%s+  >> SizeX: %g SizeY: %g local:%ld pitch:%ld",
+             DE::indent(indent).c_str(), sizeX, sizeY, local_x.size(), x_pitch.size());
   }
-  this->DeStaticObject::print(indent, flg);
 }
 
 /// Initialization of sub-classes
@@ -53,7 +51,7 @@ void gaudi::detail::DeVPSensorStaticObject::initialize()   {
 
   sensorNumber       = param<int>("SensorNumber");
   module             = param<int>("Module");
-  isLeft             = side.find("Left") == 0; 
+  side.find("Left") == 0 ? de_user |= VP::LEFT : de_user &= ~VP::LEFT;
 
   thickness          = param<double>("Thickness");
   nChips             = param<int>("NChips");
@@ -99,19 +97,13 @@ void gaudi::detail::DeVPSensorStaticObject::initialize()   {
 }
 
 /// Printout method to stdout
-void gaudi::DeVPSensorStatic::print(int indent, int flg)  const    {
-  access()->print(indent,flg);
-}
-
-
-/// Printout method to stdout
 void gaudi::detail::DeVPSensorObject::print(int indent, int flg)  const   {
-  printout(INFO,"DeVPSensor", "%s+ Info: %s Noise:%s Readout:%s",
+  DeIOVObject::print(indent, flg);
+  printout(INFO,"DeVPSensor", "%s+  >> Info: %s Noise:%s Readout:%s",
            DE::indent(indent).c_str(),
            yes_no(info.isValid()),
            yes_no(noise.isValid()),
            yes_no(readout.isValid()));
-  DeIOVObject::print(indent, flg);
 }
 
 /// Initialization of sub-classes
@@ -119,6 +111,7 @@ void gaudi::detail::DeVPSensorObject::initialize()   {
   DeIOVObject::initialize();
 
   sensor_static = de_static;
+  de_user = de_static->de_user;
   // We require a valid alignment object for sensors!
   checkAlignment();
   for(const auto& c : conditions)   {
@@ -136,9 +129,4 @@ void gaudi::detail::DeVPSensorObject::initialize()   {
   if ( !readout.isValid() )  {
     // except(DeVPSensor", "Invalid IOV dependent sensor readout!");
   }
-}
-
-/// Printout method to stdout
-void gaudi::DeVPSensor::print(int indent, int flg)  const    {
-  access()->print(indent, flg);
 }
