@@ -40,7 +40,7 @@ inline double radiusFromXYZ(const Vector3D& position) {
 
 /// Calculates cosine of the polar angle theat from Cartesian coodinates
 inline double cosThetaFromXYZ(const Vector3D& position) {
-	return position.Z / radiusFromXYZ(position);
+	return position.Z / magFromXYZ(position);
 }
 
 /// calculates the polar angle theta from Cartesian coordinates
