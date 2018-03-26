@@ -116,7 +116,6 @@ if( DEFINED DD4HEP_WITH_GEANT4 OR DEFINED DD4HEP_WITH_GEAR )
 endif()
 
 include(DD4hep_XML_setup)
-add_subdirectory(DDSegmentation)
 add_subdirectory(DDParsers)
 add_subdirectory(DDCore)
 add_subdirectory(DDRec)
