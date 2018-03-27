@@ -6,7 +6,7 @@
 #include "DDRec/DDGear.h"
 #include "DDRec/MaterialManager.h"
 
-#include "DDSurfaces/Vector3D.h"
+#include "DDRec/Vector3D.h"
 
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
@@ -20,8 +20,6 @@ namespace dd4hep{
   namespace rec{
     
     using namespace detail ;
-    //    using namespace gear ;
-    using DDSurfaces::Vector3D ;
 
     /** Plugin that creates Gear objects for DetElements and attaches them 
      *  as extensions. Called from DDGear::createGearMgr().
