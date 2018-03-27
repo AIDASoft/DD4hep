@@ -499,11 +499,12 @@ class DD4hepSimulation(object):
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     if self.printLevel <= 3:
-      eventTime = totalTimeUser - startUpTime
-      perEventTime =  eventTime / float(self.numberOfEvents)
       print "DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)"% (totalTimeUser, totalTimeSys)
-      print "DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) " \
-        % (startUpTime, eventTime, perEventTime)
+      if self.numberOfEvents != 0:
+        eventTime = totalTimeUser - startUpTime
+        perEventTime =  eventTime / float(self.numberOfEvents)
+        print "DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) " \
+            % (startUpTime, eventTime, perEventTime)
 
 
   def __setMagneticFieldOptions(self, simple):
