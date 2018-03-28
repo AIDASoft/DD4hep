@@ -1,3 +1,23 @@
+# v01-07
+
+* 2018-03-26 Javier Cervantes Villanueva ([PR#343](https://github.com/AIDASoft/DD4hep/pull/343))
+  - Fix bug in calculating eta, introduced in #138 
+    - use `magFromXYZ` instead of `radiusFromXYZ` to calculate pseudorapidity
+
+* 2018-03-19 Frank Gaede ([PR#338](https://github.com/AIDASoft/DD4hep/pull/338))
+  - Include fixes from Chris Burr for the alignments calculator.
+   - Add a small study for the LHCb upgrade defining reasonable detector element conditions for the Velo pixel detector using the DDCond derived condition mechanism.
+   - To be done: somehow get an example for this mechanism, which works outside Gaudi.
+
+* 2018-03-23 Markus Frank ([PR#340](https://github.com/AIDASoft/DD4hep/pull/340))
+  - Improvement for DDDB - case study to implement real-world detector elements.
+
+* 2018-03-28 Frank Gaede ([PR#345](https://github.com/AIDASoft/DD4hep/pull/345))
+  - Remove `DDSurfaces` folder as it was merged in `DDRec`
+
+* 2018-03-28 Frank Gaede ([PR#341](https://github.com/AIDASoft/DD4hep/pull/341))
+  - Remove top level `DDSegmentation` folder as it is not needed anymore
+
 # v01-06
 
 * 2018-01-31 Ete Remi ([PR#297](https://github.com/aidasoft/dd4hep/pull/297))
