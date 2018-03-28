@@ -1,0 +1,88 @@
+% Temporary TODO commands
+% \newcommand{\comment}[1]{#1} % DRAFT
+\newcommand{\comment}[1]{} % FINAL
+
+\newcommand{\needcite}{\comment{[CITE?] }}
+\newcommand{\needref}{\comment{[REF?] }}
+\newcommand{\todo}[1]{\comment{[TODO: #1] }}
+
+\newcommand{\wip}{\textit{This section is not written yet.}}
+
+% Paragraph with new line
+\newcommand{\nlparagraph}[1]{\paragraph{#1}\mbox{}\\}
+
+% Typeset framework parameter and escape underscores:
+\DeclareUrlCommand\parameter{\bfseries\urlstyle{tt}}
+\newcommand{\command}[1]{\parameter{#1}}
+
+% Typeset directory and file names
+\DeclareUrlCommand\dir{\urlstyle{tt}}
+\newcommand{\file}[1]{\dir{#1}}
+
+% Define ini format used in the converted Markdown files
+\lstdefinelanguage{Ini}
+{
+    basicstyle=\ttfamily\small,
+    columns=fullflexible,
+    morecomment=[s][\color{blue}\bfseries]{[}{]},
+    morecomment=[l]{\#},
+    morecomment=[l]{;},
+    commentstyle=\color{gray}\ttfamily,
+    alsoletter={=},
+    morekeywords={=},
+    otherkeywords={},
+    keywordstyle={\color{green}\bfseries}
+}
+
+% Warning box
+\newsavebox{\warningbox}
+\newenvironment{warning}
+  {\newcommand\colboxcolor{pink}%
+   \begin{lrbox}{\warningbox}%
+   \begin{minipage}{\dimexpr\linewidth-2em\relax}}
+  {\end{minipage}\end{lrbox}%
+   \begin{center}
+     \setlength\fboxsep{0pt}
+     \colorbox{\colboxcolor}{\setlength\fboxsep{1em}\fbox{\usebox{\warningbox}}}
+  \end{center}}
+
+% Command to add all modules
+\newcommand{\includemodulesmd}{\def\temp{@DD4HEP_MODULE_FILES@}\ifx\temp\empty
+  \textit{Module documentation not added because Markdown to \LaTeX~conversion was not possible}
+\else
+  \foreach \n in @DD4HEP_MODULE_FILES@ {\input{\n}}
+\fi}
+
+% Command to add all examples
+\newcommand{\includeexamplesmd}{\def\temp{@DD4HEP_EXAMPLE_FILES@}\ifx\temp\empty
+  \textit{Example documentation not added because Markdown to \LaTeX~conversion was not possible}
+\else
+  \foreach \n in @DD4HEP_EXAMPLE_FILES@ {\input{\n}}
+\fi}
+
+% Command to add a single converted markdown file
+\newcommand{\inputmd}[1]{\input{md/#1}}
+
+% Set bibliography
+\addbibresource{references.bib}
+
+% Set DD4hep version
+\newcommand{\version}{\lstinline|@DD4HEP_VERSION@|}
+\newcommand{\project}{@CMAKE_PROJECT_NAME@}
+
+% Create addreferences command (overwritten for HTML in config)
+\newcommand{\addreferencesline}{\addcontentsline{toc}{chapter}{References}}
+
+% Command to add the license (overwritten for HTML in config)
+\newcommand{\addlicense}{
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}% Spread rows out...
+\begin{tabular}{>{\centering\arraybackslash}m{.10\textwidth}>{\raggedright\arraybackslash}m{.90\textwidth}}
+ \Large{\ccLogo \ccAttribution} & \footnotesize{This manual is licensed under the Creative Commons Attribution 4.0 International License.\newline To view a copy of this license, visit \url{http://creativecommons.org/licenses/by/4.0/}.} \\
+\end{tabular}
+\end{table}
+}
+
+% Use new lines in FAQ (fixed for HTML in config)
+\setlist[description]{style=nextline}

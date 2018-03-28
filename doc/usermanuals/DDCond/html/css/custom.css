@@ -18,6 +18,14 @@ h2 a, h3 a, h4 a, h5 a {
 .ec-lmr-6 {
     margin-right: 8px;
 }
+.ec-lmr-5:before {
+    content: '';
+    clear: right;
+    display: block;
+}
+.ec-lmr-5 {
+    margin-right: 8px;
+}
 .fancyvrb {
     font-size: 80%;
 }
