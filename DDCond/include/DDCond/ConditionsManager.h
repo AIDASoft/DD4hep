@@ -31,6 +31,7 @@ namespace dd4hep {
     class UserPool;
     class ConditionsPool;
     class ConditionsSlice;
+    class ConditionsCleanup;
     class ConditionsIOVPool;
     class ConditionsDataLoader;
     class ConditionsManagerObject;
@@ -155,6 +156,9 @@ namespace dd4hep {
        *  This does not yet make the new conditions availible to the clients
        */
       void pushUpdates() const;
+
+      /// Invoke cache cleanup with user defined policy
+      void clean(const ConditionsCleanup& cleaner)  const;
 
       /// Clean conditions, which are above the age limit.
       void clean(const IOVType* typ, int max_age) const;

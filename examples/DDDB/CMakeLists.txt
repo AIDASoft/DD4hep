@@ -158,7 +158,7 @@ if (DD4HEP_USE_XERCESC)
     -config    DD4hep_ConditionsManagerInstaller
     -plugin    DDDB_DerivedAlignmentsTest -print DEBUG -turns 1 -access 3
     DEPENDS    DDDB_extract_LONGTEST
-    REGEX_PASS "\\+ DDDB: AlignmentManager:    9352 conditions \\(S:0,L:9352,C:0,M:0\\) alignments: \\(A:6200,M:0\\) for IOV:epoch\\(0\\)" 
+    REGEX_PASS "\\+ DDDB: AlignmentManager:    9352 conditions \\(S:9352,L:0,C:0,M:0\\) alignments: \\(A:6200,M:0\\) for IOV:epoch\\(0\\)"
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #

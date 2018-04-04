@@ -213,7 +213,6 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
                                      ConditionsMap& alignments)  const
 {
   Result  result;
-  Calculator obj;
   Calculator::Context context(alignments);
   // This is a tricky one. We absolutely need the detector elements ordered
   // by their depth aka. the distance to /world.
@@ -235,7 +234,6 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, const Delta*>& d
                                      ConditionsMap& alignments)  const
 {
   Result  result;
-  Calculator obj;
   Calculator::Context context(alignments);
   // This is a tricky one. We absolutely need the detector elements ordered
   // by their depth aka. the distance to /world.

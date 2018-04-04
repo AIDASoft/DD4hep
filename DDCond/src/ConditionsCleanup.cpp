@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -16,7 +16,26 @@
 
 using namespace dd4hep::cond;
 
-/// Cleanup operation
-void ConditionsFullCleanup::operator()(ConditionsManager mgr) const    {
-  mgr.clear();
+/// Request cleanup operation of IOV POOL
+bool ConditionsCleanup::operator()(const ConditionsIOVPool & /* iov_pool */) const
+{
+  return false;
+}
+
+/// Request cleanup operation of regular conditiions pool
+bool ConditionsCleanup::operator()(const ConditionsPool & /* iov_pool */) const
+{
+  return true;
+}
+
+/// Request cleanup operation of IOV POOL
+bool ConditionsFullCleanup::operator()(const ConditionsIOVPool & /* iov_pool */) const
+{
+  return true;
+}
+
+/// Request cleanup operation of regular conditiions pool
+bool ConditionsFullCleanup::operator()(const ConditionsPool & /* iov_pool */) const
+{
+  return true;
 }

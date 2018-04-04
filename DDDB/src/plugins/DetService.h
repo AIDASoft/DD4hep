@@ -131,8 +131,7 @@ namespace gaudi  {
                             const std::string &address) override;
 
     /// Add a condition functor for a derived condition to the content
-    virtual void addContent(Content &content,
-                            Dependency *call);
+    virtual void addContent(Content &content, Dependency *call) override;
 
     /// Close content creation context
     virtual void closeContent(Content &content) override;

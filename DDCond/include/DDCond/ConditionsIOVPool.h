@@ -66,6 +66,10 @@ namespace dd4hep {
       /// Remove all key based pools with an age beyon the minimum age. 
       /** @return Number of conditions cleaned up and removed.                       */
       int clean(int max_age);
+
+      /// Invoke cache cleanup with user defined policy
+      /** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
+      int clean(const ConditionsCleanup& cleaner);
     };
 
   } /* End namespace cond             */

@@ -168,6 +168,9 @@ namespace dd4hep {
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */
       virtual int clean(const IOVType* typ, int max_age) = 0;
 
+      /// Invoke cache cleanup with user defined policy
+      virtual std::pair<int,int> clean(const ConditionsCleanup& cleaner)  = 0;
+
       /// Full cleanup of all managed conditions.
       /** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
       virtual std::pair<int,int> clear() = 0;

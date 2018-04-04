@@ -167,7 +167,6 @@ namespace {
       /// __________________________________________________________________________________
       long dump()  {
         shared_ptr<dd4hep::cond::ConditionsSlice> slice;
-        IDetService::ConditionsManager manager = m_service->manager();
         const IDetService::IOVType* iov_typ = m_service->iovType("epoch");
 
         printout(INFO,"ConditionsManager","+++ Starting conditions dump loop");
@@ -202,10 +201,12 @@ namespace {
           }
         }
         m_service->cleanup(dd4hep::cond::ConditionsFullCleanup());
+        printout(dd4hep::ALWAYS,"ServiceTest","Test finished....");
         return 1;
       }
     };
 
+    dd4hep::setPrintFormat("%-18s %5s %s");
     for(int i=0; i<argc; ++i)  {
       if ( ::strcmp(argv[i],"-print")==0 )  {
         s_PrintLevel = dd4hep::printLevel(argv[++i]);

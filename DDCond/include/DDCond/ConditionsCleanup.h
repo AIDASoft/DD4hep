@@ -14,7 +14,7 @@
 #define DDCOND_CONDITIONSCLEANUP_H
 
 // Framework include files
-#include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsPool.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -39,8 +39,10 @@ namespace dd4hep {
       virtual ~ConditionsCleanup() = default;
       /// Assignment operator
       ConditionsCleanup& operator=(const ConditionsCleanup& c) = default;
-      /// Cleanup operation
-      virtual void operator()(ConditionsManager mgr) const = 0;
+      /// Request cleanup operation of IOV POOL
+      virtual bool operator()(const ConditionsIOVPool& iov_pool)  const;
+      /// Request cleanup operation of regular conditiions pool
+      virtual bool operator()(const ConditionsPool& pool)  const;
     };
 
    /// Base class to handle conditions cleanups
@@ -60,10 +62,12 @@ namespace dd4hep {
       virtual ~ConditionsFullCleanup() = default;
       /// Assignment operator
       ConditionsFullCleanup& operator=(const ConditionsFullCleanup& c) = default;
-      /// Cleanup operation
-      virtual void operator()(ConditionsManager mgr) const override;
+      /// Request cleanup operation of IOV POOL
+      virtual bool operator()(const ConditionsIOVPool& iov_pool)  const  override;
+      /// Request cleanup operation of regular conditiions pool
+      virtual bool operator()(const ConditionsPool& pool)  const  override;
     };
-  } /* End namespace cond             */
+  } /* End namespace cond                   */
 } /* End namespace dd4hep                   */
 
 #endif     /* DDCOND_CONDITIONSCLEANUP_H    */

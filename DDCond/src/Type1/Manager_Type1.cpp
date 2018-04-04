@@ -29,6 +29,7 @@
 
 #include "DDCond/ConditionsPool.h"
 #include "DDCond/ConditionsEntry.h"
+#include "DDCond/ConditionsCleanup.h"
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsDataLoader.h"
@@ -307,6 +308,19 @@ int Manager_Type1::clean(const IOVType* typ, int max_age)   {
   ConditionsIOVPool* pool = m_rawPool[typ->type];
   if ( pool )  {
     count += pool->clean(max_age);
+  }
+  return count;
+}
+
+/// Invoke cache cleanup with user defined policy
+pair<int,int> Manager_Type1::clean(const ConditionsCleanup& cleaner)   {
+  pair<int,int> count(0,0);
+  for( TypedConditionPool::iterator i=m_rawPool.begin(); i != m_rawPool.end(); ++i)  {
+    ConditionsIOVPool* p = *i;
+    if ( p && cleaner(*p) )  {
+      ++count.first;
+      count.second += p->clean(cleaner);
+    }
   }
   return count;
 }

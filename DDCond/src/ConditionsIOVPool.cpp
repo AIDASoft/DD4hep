@@ -15,8 +15,10 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDCond/ConditionsIOVPool.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include "DDCond/ConditionsCleanup.h"
 #include "DDCond/ConditionsDataLoader.h"
+
+#include "DD4hep/detail/ConditionsInterna.h"
 
 using namespace dd4hep;
 using namespace dd4hep::cond;
@@ -64,6 +66,23 @@ size_t ConditionsIOVPool::selectRange(Condition::key_type key, const IOV& req_va
       e.second->select(key, result);
   }
   return result.size() - len;
+}
+
+/// Invoke cache cleanup with user defined policy
+int ConditionsIOVPool::clean(const ConditionsCleanup& cleaner)   {
+ Elements rest;
+  int count = 0;
+  for( const auto& e : elements )  {
+    const ConditionsPool* p = e.second.get();
+    if ( cleaner (*p) )   {
+      count += e.second->size();
+      e.second->print("Remove");
+      continue;
+    }
+    rest.insert(e);
+  }
+  elements = std::move(rest);
+  return count;  
 }
 
 /// Remove all key based pools with an age beyon the minimum age
