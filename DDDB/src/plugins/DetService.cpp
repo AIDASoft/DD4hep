@@ -314,5 +314,5 @@ DetService::Slice DetService::project(const string& content,
 
 /// Invoke slice cleanup
 void DetService::cleanup(const Cleanup &cleaner)   {
-  cleaner(m_manager);
+  m_manager.clean(cleaner);
 }

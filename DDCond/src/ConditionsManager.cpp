@@ -245,6 +245,11 @@ void ConditionsManager::clean(const IOVType* typ, int max_age)  const  {
   access()->clean(typ, max_age);
 }
 
+/// Invoke cache cleanup with user defined policy
+void ConditionsManager::clean(const ConditionsCleanup& cleaner)  const   {
+  access()->clean(cleaner);  
+}
+
 /// Full cleanup of all managed conditions.
 void ConditionsManager::clear()  const  {
   access()->clear();

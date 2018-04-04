@@ -80,11 +80,16 @@ namespace  {
     }
     virtual ~ConditionUpdate1() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ctxt) override final {
+    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ) override final {
       printout(context.level,"ConditionUpdate1","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
+      target.bind<AlignmentData>();
+      return target;
+    }
+    /// Interface to client Callback in order to update the condition
+    void resolve(Condition target, ConditionUpdateContext& ctxt) override final {
       try  {
-        AlignmentData& data = target.bind<AlignmentData>();
+        AlignmentData& data = target.get<AlignmentData>();
         Condition    cond0  = ctxt.condition(ctxt.key(0));
         const Delta& delta  = cond0.get<Delta>();
         data.delta          = delta;
@@ -94,9 +99,8 @@ namespace  {
       catch(const exception& exc)   {
         ++context.numFail1;
         printout(ERROR,"ConditionUpdate2","++ Failed to build condition %s: %s",
-                 key.name.c_str(), exc.what());
+                 ctxt.key(0).name.c_str(), exc.what());
       }
-      return target;
     }
   };
   /// Specialized conditions update callback for alignments
@@ -115,11 +119,16 @@ namespace  {
     }
     virtual ~ConditionUpdate2() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ctxt)  override final  {
+    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext&)  override final  {
       printout(context.level,"ConditionUpdate2","++ Building dependent condition: %s",key.name.c_str());
       Condition     target(key.name,"Alignment");
+      target.bind<AlignmentData>();
+      return target;
+    }
+    /// Interface to client Callback in order to update the condition
+    void resolve(Condition target, ConditionUpdateContext& ctxt) override final {
       try  {
-        AlignmentData& data  = target.bind<AlignmentData>();
+        AlignmentData& data  = target.get<AlignmentData>();
         Condition     cond0  = ctxt.condition(ctxt.key(0));
         const Delta&  delta0 = cond0.get<Delta>();
         const AlignmentData& data1  = ctxt.get<AlignmentData>(ctxt.key(1));
@@ -131,9 +140,8 @@ namespace  {
       catch(const exception& exc)   {
         ++context.numFail2;
         printout(ERROR,"ConditionUpdate2","++ Failed to build condition %s: %s",
-                 key.name.c_str(), exc.what());
+                 ctxt.key(0).name.c_str(), exc.what());
       }
-      return target;
     }
   };
   /// Specialized conditions update callback for alignments
@@ -152,15 +160,20 @@ namespace  {
     }
     virtual ~ConditionUpdate3() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ctxt)  override final  {
+    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext&)  override final  {
       printout(context.level,"ConditionUpdate3","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
+      target.bind<AlignmentData>();
+      return target;
+    }
+    /// Interface to client Callback in order to update the condition
+    void resolve(Condition target, ConditionUpdateContext& ctxt) override final {
       try  {
-        AlignmentData& data = target.bind<AlignmentData>();
-        Condition    cond0 = ctxt.condition(ctxt.key(0));
+        AlignmentData& data  = target.get<AlignmentData>();
+        Condition     cond0 = ctxt.condition(ctxt.key(0));
         const Delta& delta0 = cond0.get<Delta>();
-        const AlignmentData&  data1  = ctxt.get<AlignmentData>(1);
-        const AlignmentData&  data2  = ctxt.get<AlignmentData>(2);
+        const AlignmentData&  data1  = ctxt.get<AlignmentData>(ctxt.key(1));
+        const AlignmentData&  data2  = ctxt.get<AlignmentData>(ctxt.key(2));
         data.delta          = delta0;
         data.delta          = data1.delta;
         data.delta          = data2.delta;
@@ -170,9 +183,8 @@ namespace  {
       catch(const exception& exc)   {
         ++context.numFail3;
         printout(ERROR,"ConditionUpdate3","++ Failed to build condition %s: %s",
-                 key.name.c_str(), exc.what());
+                 ctxt.key(0).name.c_str(), exc.what());
       }
-      return target;
     }
   };
 

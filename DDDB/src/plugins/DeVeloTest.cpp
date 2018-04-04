@@ -27,6 +27,7 @@
 
 #include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsIOVPool.h"
+#include "DDCond/ConditionsCleanup.h"
 #include "DDCond/ConditionsManager.h"
 
 #include "DDDB/DDDBHelper.h"
@@ -200,11 +201,13 @@ namespace {
             cout << "Exception(This is GOOD!): " << e.what() << endl;
           }
         }
-        m_manager.clear();
+        m_manager.clean(dd4hep::cond::ConditionsFullCleanup());
+        printout(dd4hep::ALWAYS,"ServiceTest","Test finished....");
         return 1;
       }
     };
 
+    dd4hep::setPrintFormat("%-18s %5s %s");
     for(int i=0; i<argc; ++i)  {
       if ( ::strcmp(argv[i],"-print")==0 )  {
         s_PrintLevel = dd4hep::printLevel(argv[++i]);
