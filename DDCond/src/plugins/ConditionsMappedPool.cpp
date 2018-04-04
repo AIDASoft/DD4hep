@@ -207,7 +207,9 @@ using namespace dd4hep::cond;
 
 /// Default constructor
 template<typename MAPPING, typename BASE>
-ConditionsMappedPool<MAPPING,BASE>::ConditionsMappedPool(ConditionsManager mgr) : BASE(mgr)  {
+ConditionsMappedPool<MAPPING,BASE>::ConditionsMappedPool(ConditionsManager mgr) : BASE(mgr,0)  {
+  this->BASE::SetName("");
+  this->BASE::SetTitle("ConditionsMappedPool");
   InstanceCount::increment(this);
 }
 

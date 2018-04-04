@@ -158,9 +158,9 @@ void Manager_Type1::initialize()  {
   if ( !m_updatePool.get() )  {
     string typ = "DD4hep_Conditions_"+m_loaderType+"_Loader";
     const void* argv_loader[] = {"ConditionsDataLoader", this, 0};
-    const void* argv_pool[] = {this, 0};
+    const void* argv_pool[] = {this, 0, 0};
     m_loader.reset(createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv_loader));
-    m_updatePool.reset(createPlugin<UpdatePool>(m_updateType,m_detDesc,1,argv_pool));
+    m_updatePool.reset(createPlugin<UpdatePool>(m_updateType,m_detDesc,2,argv_pool));
     if ( !m_updatePool.get() )  {
       except("ConditionsManager","+++ The update pool of type %s cannot be created. [%s]",
              m_updateType.c_str(),Errors::noSys().c_str());
@@ -224,13 +224,13 @@ ConditionsPool* Manager_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
   if ( i != pool->elements.end() )   {
     return (*i).second.get();
   }
-  const void* argv_pool[] = {this, 0};
-  shared_ptr<ConditionsPool> cond_pool(createPlugin<ConditionsPool>(m_poolType,m_detDesc,1,argv_pool));
   IOV* iov = new IOV(&typ);
   iov->type      = typ.type;
   iov->keyData   = key;
-  cond_pool->iov = iov;
+  const void* argv_pool[] = {this, iov, 0};
+  shared_ptr<ConditionsPool> cond_pool(createPlugin<ConditionsPool>(m_poolType,m_detDesc,2,argv_pool));
   pool->elements.insert(make_pair(key,cond_pool));
+  printout(INFO,"ConditionsManager","Created IOV Pool for:%s",iov->str().c_str());
   return cond_pool.get();
 }
 
@@ -245,6 +245,10 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
     cond->iov  = pool.iov;
     cond->setFlag(Condition::ACTIVE);
     pool.insert(cond);
+#if 0
+    printout(INFO,"ConditionsManager","Register condition %016lX %s [%s] IOV:%s",
+             cond->hash, cond.name(), cond->address.c_str(), pool.iov->str().c_str());
+#endif
     __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);
     return true;
   }

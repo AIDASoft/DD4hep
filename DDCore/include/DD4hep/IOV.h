@@ -15,6 +15,7 @@
 
 // C/C++ include files
 #include <string>
+#include <limits>
 #include <algorithm>
 
 /// Namespace for the AIDA detector description toolkit
@@ -71,8 +72,12 @@ namespace dd4hep {
     typedef long Key_second_type;
     typedef std::pair<Key_first_type,Key_second_type> Key;
 
-    enum { INVALID_KEY = 0 };
-
+    enum {
+      INVALID_KEY = 0,
+      MIN_KEY = std::numeric_limits<long>::min(),
+      MAX_KEY = std::numeric_limits<long>::max()
+    };
+    
     /// Reference to IOV type
     const IOVType* iovType = 0;
     /// IOV key (if second==first, discrete, otherwise range)

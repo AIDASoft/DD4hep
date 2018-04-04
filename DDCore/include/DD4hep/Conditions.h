@@ -62,6 +62,7 @@ namespace dd4hep {
     typedef unsigned int           mask_type;
 
   public:
+    /// Flags to steer the conditions conversion to string
     enum StringFlags  {
       WITH_IOV           = 1<<0,
       WITH_ADDRESS       = 1<<1,
@@ -72,6 +73,7 @@ namespace dd4hep {
       NO_NAME            = 1<<20,
       NONE
     };
+    /// Flags to indicate the conditions type ans state
     enum ConditionState {
       INACTIVE            = 0,
       ACTIVE              = 1<<0,
@@ -85,10 +87,25 @@ namespace dd4hep {
       PRESSURE_DERIVED    = 1<<8|DERIVED,
       ALIGNMENT_DELTA     = 1<<9,
       ALIGNMENT_DERIVED   = 1<<10|DERIVED,
-      // Keep bit 8-15 for other generic types
+      // Keep bit 10-15 for other generic types
       // Bit 16-31 is reserved for user classifications
       USER_FLAGS_FIRST    = 1<<16,
       USER_FLAGS_LAST     = 1<<31
+    };
+    /// Flags to indicate conditions item ranges (low word of the conditions key)
+    enum ConditionItemRangeKeys {
+      FIRST_ITEM_KEY =  0x0U,
+      LAST_ITEM_KEY  = ~0x0U
+    };
+    /// Flags to indicate conditions detector ranges (high word of the conditions key)
+    enum ConditionDetectorRangeKeys {
+      FIRST_DET_KEY =  0x0U,
+      LAST_DET_KEY  = ~0x0U
+    };
+    /// Flags to indicate global conditions ranges
+    enum {
+      FIRST_KEY  =  0x0ULL,
+      LAST_KEY   = ~0x0ULL        
     };
 
     /// Abstract base for processing callbacks to conditions objects

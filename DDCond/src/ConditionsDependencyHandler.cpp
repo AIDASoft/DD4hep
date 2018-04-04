@@ -28,11 +28,24 @@ ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
     m_userParam(user_param), num_callback(0)
 {
   const IOV& iov = m_pool.validity();
+  //IOV full_iov(iov.iovType,IOV::Key(IOV::MIN_KEY,IOV::MAX_KEY));
+  IOV full_iov(iov.iovType,IOV::Key(0,detail::makeTime(2099,12,31)));
   m_iovPool = m_manager->registerIOV(*iov.iovType, iov.keyData);
+  unsigned char* p = new unsigned char[dependencies.size()*sizeof(Work)];
+  Dependencies::const_iterator idep = dependencies.begin();
+  m_block = (Work*)p;
+  for(size_t i=0; i<dependencies.size(); ++i, ++idep, p+=sizeof(Work))  {
+    Work* w = new(p) Work(this,(*idep).second,user_param,full_iov);
+    m_todo.insert(std::make_pair((*idep).first,w));
+  }
 }
 
 /// Default destructor
 ConditionsDependencyHandler::~ConditionsDependencyHandler()   {
+  m_todo.clear();
+  m_created.clear();
+  if ( m_block ) delete [] m_block;
+  m_block = 0;
 }
 
 /// ConditionResolver implementation: Access to the detector description instance
@@ -43,12 +56,9 @@ Detector& ConditionsDependencyHandler::detectorDescription() const  {
 /// 1rst pass: Compute/create the missing conditions
 void ConditionsDependencyHandler::compute()   {
   m_state = CREATED;
-  for( const auto& i : m_dependencies )   {
-    const ConditionDependency* dep = i.second;
-    Condition c = m_pool.get(dep->key());
-    // If we would know, that dependencies are only ONE level, we could skip this search....
-    if ( !c.isValid() )  {
-      do_callback(dep);
+  for( const auto& i : m_todo )   {
+    if ( !i.second->condition )  {
+      do_callback(i.second);
       continue;
     }
     // printout(INFO,"UserPool","Already calcluated: %s",d->name());
@@ -58,11 +68,28 @@ void ConditionsDependencyHandler::compute()   {
 
 /// 2nd pass:  Handler callback for the second turn to resolve missing dependencies
 void ConditionsDependencyHandler::resolve()    {
+  size_t num_resolved = 0;
+  std::map<IOV::Key,ConditionsPool*> pools;
   m_state = RESOLVED;
   for( auto& c : m_created )   {
-    if ( c.second.state == RESOLVED ) continue;
-    c.second.state = RESOLVED;
-    c.second.dependency->callback->resolve(c.second.condition, *this);    
+    Work* w = c.second;
+    if ( w->state == RESOLVED ) continue;
+    w->state = RESOLVED;
+    w->context.dependency->callback->resolve(w->condition, w->context);
+    ++num_resolved;
+  }
+  // Optimize pool interactions: Cache pool in map assuming there are only few pools created
+  for( auto& c : m_created ) {
+    Work* w = c.second;
+    ConditionsPool* p = 0;
+    auto res = pools.insert(make_pair(w->iov.keyData,p));
+    if ( res.second )   {
+      p = m_manager->registerIOV(*w->iov.iovType, w->iov.keyData);
+      (*res.first).second = p;
+    }
+    p = (*res.first).second;
+    w->condition->iov = p->iov;
+    m_manager->registerUnlocked(*p, w->condition);
   }
 }
 
@@ -84,38 +111,31 @@ std::vector<Condition> ConditionsDependencyHandler::get(Condition::detkey_type d
 }
 
 /// ConditionResolver implementation: Interface to access conditions
-Condition ConditionsDependencyHandler::get(Condition::key_type key)  {
+Condition ConditionsDependencyHandler::get(Condition::key_type key, bool throw_if_not)  {
   /// Check if the required condition is one of the newly created ones:
   auto e = m_created.find(key);
   if ( e != m_created.end() )  {
-    Created& c = (*e).second;
-    if ( c.state == CREATED )  {
-      c.state = RESOLVED;
-      c.dependency->callback->resolve(c.condition, *this);
-      return c.condition;
+    Work* w = (*e).second;
+    if ( w->state == CREATED )  {
+      w->state = RESOLVED;
+      w->context.dependency->callback->resolve(w->condition, w->context);
+      return w->condition;
     }
   }
   /// If we are not already resolving here, we follow the normal procedure
   Condition c = m_pool.get(key);
   if ( c.isValid() )  {
-    Condition::Object* obj = c.ptr();
-    const IOV& required = m_pool.validity();
-    if ( obj && obj->iov && IOV::key_is_contained(required.keyData,obj->iov->keyData) )
+    return c;
+  }
+  auto i = m_todo.find(key);
+  if ( i != m_todo.end() )   {
+    c = do_callback((*i).second);
+    if ( c.isValid() )  {
       return c;
-    /// We should with normal pools never end up here, because the existing conditions
-    /// in a reasonable pool are valid for the IOV and we should have returned above.
-    Dependencies::const_iterator i = m_dependencies.find(key);
-    if ( i != m_dependencies.end() )  {
-      /// This condition is no longer valid. remove it! Will be added again afterwards.
-      const ConditionDependency* dep = (*i).second;
-      m_pool.remove(key);
-      return do_callback(dep);
     }
   }
-  Dependencies::const_iterator i = m_dependencies.find(key);
-  if ( i != m_dependencies.end() )   {
-    const ConditionDependency* dep = (*i).second;
-    return do_callback(dep);
+  if ( throw_if_not )  {
+    except("ConditionsDependencyHandler","Failed to resolve conditon:%16lX",key);
   }
   return Condition();
 }
@@ -123,23 +143,23 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key)  {
 
 /// Internal call to trigger update callback
 Condition::Object* 
-ConditionsDependencyHandler::do_callback(const ConditionDependency* dep)   {
+ConditionsDependencyHandler::do_callback(Work* work)   {
+  const ConditionDependency* dep  = work->context.dependency;
   try  {
-    IOV iov(m_pool.validity().iovType);
-    ConditionUpdateContext ctxt(this, dep, m_userParam, &iov.reset().invert());
-    Condition          cond = (*dep->callback)(dep->target, ctxt);
-    Condition::Object* obj  = cond.ptr();
-    if ( obj )  {
-      obj->hash = dep->target.hash;
-      cond->setFlag(Condition::DERIVED);
-      cond->iov = m_pool.validityPtr();
+    work->condition = (*dep->callback)(dep->target, work->context).ptr();
+    if ( work->condition )  {
+      work->condition->iov  = &work->iov;
+      work->condition->hash = dep->target.hash;
+      work->condition->setFlag(Condition::DERIVED);
+      work->state = CREATED;
+      //TEST  cond->iov = m_pool.validityPtr();
       // Must IMMEDIATELY insert to handle inter-dependencies.
       ++num_callback;
-      m_created[dep->target.hash] = Created(dep, obj);
-      m_pool.insert(cond);
-      m_manager->registerUnlocked(*m_iovPool, cond);
+      m_created[dep->target.hash] = work;
+      //TEST m_manager->registerUnlocked(*m_iovPool, work.condition);
+      m_pool.insert(work->condition);
     }
-    return obj;
+    return work->condition;
   }
   catch(const std::exception& e)   {
     printout(ERROR,"ConditionDependency",

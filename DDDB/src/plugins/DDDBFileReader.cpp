@@ -19,6 +19,7 @@
 
 // Framework includes
 #include "DDDB/DDDBReader.h"
+#include "DD4hep/IOV.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -34,13 +35,20 @@ namespace dd4hep {
      *  \ingroup DD4HEP_XML
      */
     class DDDBFileReader : public DDDBReader   {
+      long m_validityLowerLimit = 0;
+      long m_validityUpperLimit = IOV::MAX_KEY;
+
     public:
       /// Standard constructor
-      DDDBFileReader() : DDDBReader() {}
+      DDDBFileReader();
       /// Default destructor
       virtual ~DDDBFileReader()  {}
       /// Read raw XML object from the database / file
       virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id);
+      /// Inform reader about a locally (e.g. by XercesC) handled source load
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt);
       /// Resolve a given URI to a string containing the data
       virtual bool load(const std::string& system_id, std::string& buffer);
       /// Resolve a given URI to a string containing the data
@@ -63,16 +71,30 @@ namespace dd4hep {
 #include <unistd.h>
 #include <fcntl.h>
 
-int dd4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
-                                            UserContext* /* ctxt */,
-                                            std::string& buffer)
+/// Standard constructor
+dd4hep::DDDB::DDDBFileReader::DDDBFileReader()
+  : DDDBReader()
 {
-  std::string path;
-  std::string p = m_directory+system_id;
-  if ( p.substr(0,7) == "file://" ) path = p.substr(6);
-  else if ( p.substr(0,5) == "file:" ) path = p.substr(5);
-  else path = p;
+  declareProperty("ValidityLower",     m_context.valid_since);
+  declareProperty("ValidityUpper",     m_context.valid_until);
+  declareProperty("ValidityLowerLimit",m_validityLowerLimit);
+  declareProperty("ValidityUpperLimit",m_validityUpperLimit);
+}
+
+int dd4hep::DDDB::DDDBFileReader::getObject(const std::string& system_id,
+                                            UserContext*       /* ctxt */,
+                                            std::string&       buffer)
+{
+  std::string path = system_id;
   int fid  = ::open(path.c_str(), O_RDONLY);
+
+  if ( fid == -1 )   {
+    std::string p = m_directory+system_id;
+    if ( p.substr(0,7) == "file://" ) path = p.substr(6);
+    else if ( p.substr(0,5) == "file:" ) path = p.substr(5);
+    else path = p;
+    fid  = ::open(path.c_str(), O_RDONLY);
+  }
   if ( fid != -1 )   {
     struct stat buff;
     if ( 0 == ::fstat(fid, &buff) )  {
@@ -108,13 +130,31 @@ bool dd4hep::DDDB::DDDBFileReader::load(const std::string& system_id,
                                         UserContext*  ctxt,
                                         std::string& buffer)
 {
-  bool result = DDDBReader::load(system_id, ctxt, buffer);
-  if ( result )  {
-    DDDBReaderContext* c = (DDDBReaderContext*)ctxt;
-    c->valid_since = c->event_time;
-    c->valid_until = c->event_time;
-  }
-  return result;
+  return DDDBReader::load(system_id, ctxt, buffer);
+}
+
+/// Inform reader about a locally (e.g. by XercesC) handled source load
+void dd4hep::DDDB::DDDBFileReader::parserLoaded(const std::string& system_id)  {
+  DDDBReader::parserLoaded(system_id);
+}
+
+/// Inform reader about a locally (e.g. by XercesC) handled source load
+void dd4hep::DDDB::DDDBFileReader::parserLoaded(const std::string& /* system_id */, UserContext* ctxt)  {
+  DDDBReaderContext *ct = (DDDBReaderContext *)ctxt;
+  // Adjust IOV period according to setup (files have no IOV)
+  ct->valid_since = m_context.valid_since;
+  ct->valid_until = m_context.valid_until;
+  // Check lower bound
+  if (ct->valid_since < m_validityLowerLimit)
+    ct->valid_since = m_validityLowerLimit;
+  else if (ct->valid_since > m_validityUpperLimit)
+    ct->valid_since = m_validityUpperLimit;
+  // Check upper bound
+  if (ct->valid_until < m_validityLowerLimit)
+    ct->valid_until = m_validityLowerLimit;
+  else if (ct->valid_until > m_validityUpperLimit)
+    ct->valid_until = m_validityUpperLimit;
+  //DDDBReader::parserLoaded(system_id, ctxt);
 }
 
 namespace {

@@ -26,19 +26,23 @@
 #include "DD4hep/DetectorProcessor.h"
 
 #include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsIOVPool.h"
 
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
 
+#include "DetService.h"
 #include "Detector/DeVelo.h"
 #include "Detector/DeAlignmentCall.h"
 #include "Detector/DeVeloConditionCalls.h"
 
 using namespace std;
 using namespace gaudi;
+
+
+// C/C++ include files
 
 
 /// Anonymous namespace for plugins
@@ -65,18 +69,17 @@ namespace {
      *  \date    01/04/2014
      */
     struct DumpActor {
-      dd4hep::Detector&                             m_detDesc;
       dd4hep::DetElement                            m_de;
       unique_ptr<VeloUpdateContext>                 m_context;
-      dd4hep::cond::ConditionsManager               m_manager;
-      shared_ptr<dd4hep::cond::ConditionsContent>   m_content;
-      const dd4hep::IOVType*                        m_iovtype = 0;
+      
       dd4hep::DDDB::DDDBReader*                     m_reader = 0;
-
+      shared_ptr<IDetService>                       m_service;
+      
       /// Configure file based reader
       void configReader(long iov_start, long iov_end)   {
         try   {
-          dd4hep::IOV iov_range(m_iovtype);
+          const DetService::IOVType* iov_typ = m_service->iovType("epoch");
+          dd4hep::IOV iov_range(iov_typ);
           iov_range.keyData.first  = iov_start;
           iov_range.keyData.second = iov_end;
           m_reader->property("ValidityLower").set(iov_range.keyData.first);
@@ -88,37 +91,37 @@ namespace {
         }
       }
 
-
       /// Standard constructor
-      DumpActor(dd4hep::Detector& dsc, const string& path) : m_detDesc(dsc)     {
+      DumpActor(dd4hep::Detector& dsc, const string& path)   {
+        IDetService::Slice                     slice;
+        IDetService::Content                   cont;
+        vector<pair<dd4hep::DetElement, int> > elts;
         dd4hep::DDDB::DDDBHelper* helper = dsc.extension<dd4hep::DDDB::DDDBHelper>(false);
-        shared_ptr<dd4hep::cond::ConditionsSlice>   slice;
-        shared_ptr<dd4hep::cond::ConditionsContent> cont;
-        vector<pair<dd4hep::DetElement, int> >      elts;
+        dd4hep::cond::ConditionsManager manager = dd4hep::cond::ConditionsManager(dsc);
 
-        m_de      = dd4hep::detail::tools::findElement(m_detDesc, path);
-        m_manager = dd4hep::cond::ConditionsManager::from(m_detDesc);
-        m_iovtype = m_manager.iovType("epoch");
-        m_reader  = helper->reader<dd4hep::DDDB::DDDBReader>();
+        m_de     = dd4hep::detail::tools::findElement(dsc, path);
+        m_reader = helper->reader<dd4hep::DDDB::DDDBReader>();
+        m_service.reset(new DetService(manager));
+        const DetService::IOVType* iov_typ = m_service->iovType("epoch");
+        dd4hep::IOV                iov(iov_typ,dd4hep::detail::makeTime(2018,1,1));
+        IDetService::Content       content = m_service->openContent("DDDB");
         configReader(dd4hep::detail::makeTime(2008,1,1), dd4hep::detail::makeTime(2018,12,31));
 
-        dd4hep::IOV iov(m_iovtype, 0);
         cont.reset(new dd4hep::cond::ConditionsContent());
-        slice.reset(new dd4hep::cond::ConditionsSlice(m_manager,cont));
-        dd4hep::cond::fill_content(m_manager, *cont, *m_iovtype);
-        dd4hep::cond::ConditionsManager::Result res = m_manager.prepare(iov, *slice);
-        printout(dd4hep::ALWAYS,"ConditionsManager","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
+        slice.reset(new dd4hep::cond::ConditionsSlice(manager,cont));
+        dd4hep::cond::fill_content(manager, *cont, *iov_typ);
+        dd4hep::cond::ConditionsManager::Result res = manager.prepare(iov, *slice);
+        printout(dd4hep::ALWAYS,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
                  res.total(), res.selected, res.loaded, res.computed, res.missing, iov.str().c_str());
 
         m_context.reset(new VeloUpdateContext());
-        m_content.reset(new dd4hep::cond::ConditionsContent());
         dd4hep::DetectorScanner(dd4hep::detElementsCollector(elts), m_de);    
-        dd4hep::cond::DependencyBuilder align_builder(m_detDesc.world(),
+        dd4hep::cond::DependencyBuilder align_builder(dsc.world(),
                                                       Keys::alignmentsComputedKey,
                                                       new DeAlignmentCall(m_de));
         auto* dep = align_builder.release();
         dep->target.hash = Keys::alignmentsComputedKey;
-        m_content->insertDependency(dep);
+        m_service->addContent(content, dep);
 
         std::unique_ptr<DeVeloStaticConditionCall> static_update(new DeVeloStaticConditionCall());
         for(const auto& e : elts)   {
@@ -133,26 +136,28 @@ namespace {
             auto first = cont->conditions().lower_bound(lower.hash);
             for(; first != cont->conditions().end() && (*first).first <= upper.hash; ++first)  {
               std::unique_ptr<dd4hep::cond::ConditionsLoadInfo> ptr((*first).second->clone());
-              m_content->insertKey((*first).first, ptr);
+              m_service->addContent(content, (*first).first, *ptr->data<string>());
             }
           }
           {
             auto first = cont->derived().lower_bound(lower.hash);
-            for(; first != cont->derived().end() && (*first).first <= upper.hash; ++first)
-              m_content->insertDependency((*first).second);
+            for(; first != cont->derived().end() && (*first).first <= upper.hash; ++first)   {
+              m_service->addContent(content, (*first).second);
+            }
           }
 
           dd4hep::cond::DependencyBuilder static_builder(de, Keys::staticKey, static_update->addRef());
-          m_content->insertDependency(static_builder.release());
+          m_service->addContent(content, static_builder.release());
 
           dd4hep::cond::ConditionUpdateCall* call = (e.first == m_de)
             ? new DeVeloConditionCall(de, cat, m_context.get())
             : new DeVeloIOVConditionCall(de, cat, m_context.get());
           dd4hep::cond::DependencyBuilder iov_builder(de, Keys::deKey, call);
-          m_content->insertDependency(iov_builder.release());
+          m_service->addContent(content, iov_builder.release());
         }
         static_update.release()->release();
-        m_manager.clear();
+        m_service->closeContent(content);
+        manager.clear();
       }
 
       /// Standard destructor
@@ -162,27 +167,23 @@ namespace {
       /// __________________________________________________________________________________
       long dump()  {
         shared_ptr<dd4hep::cond::ConditionsSlice> slice;
-        dd4hep::cond::ConditionsIOVPool* iovp = m_manager.iovPool(*m_iovtype);
-        
-        printout(INFO,"ConditionsManager","+++ Dump pools at dump:");
-        for(const auto& e : iovp->elements)
-          e.second->print();
-        printout(INFO,"ConditionsManager","+++ Starting conditions dump loop");
-        long start_time = dd4hep::detail::makeTime(2016,5,20,0,0,0);
-        for(size_t i=0; i<10; ++i)   {
-          long stamp = start_time + i*3600 + 1800; // Middle of 1 hour run
-          dd4hep::IOV iov(m_iovtype, stamp);
-          configReader(stamp-1800, stamp+1799);    // Run duration 1 hour - 1 second
-          slice.reset(new dd4hep::cond::ConditionsSlice(m_manager, m_content));
-          m_context->alignments_done = dd4hep::Condition();
-          dd4hep::cond::ConditionsManager::Result res = m_manager.prepare(iov, *slice, m_context.get());
-          printout(dd4hep::ALWAYS,"ConditionsManager","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
-                   res.total(), res.selected, res.loaded, res.computed, res.missing, iov.str().c_str());
-          for(const auto& e : iovp->elements)
-            e.second->print();
-          DeVelo devp = slice->get(m_de,Keys::deKey);
-          devp.print(0,DePrint::ALL);
+        IDetService::ConditionsManager manager = m_service->manager();
+        const IDetService::IOVType* iov_typ = m_service->iovType("epoch");
 
+        printout(INFO,"ConditionsManager","+++ Starting conditions dump loop");
+        for(size_t i=0; i<10; ++i)   {
+          long stamp = dd4hep::detail::makeTime(2016,5,20,i,30,0);
+          dd4hep::IOV iov(iov_typ, stamp);
+          configReader(stamp-1800, stamp+1799);    // Run duration 1 hour - 1 second
+          // Reset context. Need at some point a better mechanism
+          m_context->alignments_done = dd4hep::Condition();
+          /// The next line is what would show up in the client code:
+          slice = m_service->project("DDDB", m_context.get(), "epoch", stamp);
+          printout(INFO,"ConditionsManager","+++ Prepared slice Round: %ld for IOV:%s", 
+                   i, slice->iov().str().c_str());
+
+          DeVelo devp = slice->get(m_de,Keys::deKey);
+          //devp.print(0,DePrint::ALL);
           DetectorElement<DeVelo> detVP = devp;
           cout << "TEST: Got detector element:"
                << " " << detVP.conditions().size()
@@ -200,7 +201,7 @@ namespace {
             cout << "Exception(This is GOOD!): " << e.what() << endl;
           }
         }
-        m_manager.clear();
+        m_service->cleanup(dd4hep::cond::ConditionsFullCleanup());
         return 1;
       }
     };
@@ -223,5 +224,5 @@ namespace {
 } /* End anonymous namespace  */
 
 using namespace dd4hep;
-DECLARE_APPLY(DDDB_DeVeloTest,dump_det)
+DECLARE_APPLY(DDDB_DeVeloServiceTest,dump_det)
 //==========================================================================

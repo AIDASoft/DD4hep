@@ -38,7 +38,7 @@ namespace gaudi   {
     virtual ~DeAlignmentCall() = default;
     /// Interface to client Callback in order to update the condition
     virtual dd4hep::Condition operator()(const dd4hep::ConditionKey& /* key */,
-                                         const dd4hep::cond::ConditionUpdateContext& ctxt) override final;
+                                         dd4hep::cond::ConditionUpdateContext& ctxt) override final;
   };
   
 }      // End namespace gaudi

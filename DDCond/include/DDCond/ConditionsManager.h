@@ -94,7 +94,7 @@ namespace dd4hep {
       ConditionsManager(Object* p) : Handle<Object>(p) {}
 
       /// Constructor to assing handle of the same type
-      ConditionsManager(const ConditionsManager& c) : Handle<Object>(c) {}
+      ConditionsManager(const ConditionsManager& c) = default;
 
       /// Constructor to be used assigning from different type
       template <typename Q> ConditionsManager(const Handle<Q>& e) : Handle<Object>(e) {}
@@ -108,6 +108,9 @@ namespace dd4hep {
       /// Initialize the object after having set the properties
       ConditionsManager& initialize();
 
+      /// Access the detector description
+      Detector& detectorDescription()  const;
+      
       /// Access to properties
       Property& operator[](const std::string& property_name) const;
 

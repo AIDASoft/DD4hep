@@ -21,6 +21,9 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /// Namespace for the conditions part of the AIDA detector description toolkit
+  namespace cond   { class ConditionUpdateContext;  }
+  
   /// Namespace for the alignment part of the AIDA detector description toolkit
   namespace align {
 
@@ -33,8 +36,6 @@ namespace dd4hep {
     class AlignmentsCalculator  {
     public:
 
-      typedef std::map<DetElement, Delta> Deltas;
-      
       /// Object encapsulating the result of a computation call to the alignments calculator
       /**
        *  \author  M.Frank
@@ -58,6 +59,64 @@ namespace dd4hep {
         size_t total() const { return computed+missing; }
       };
 
+      /// Functor for path ordered maps as they are needed for the calculator
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class PathOrdering {
+      public:
+        bool operator()(const DetElement& a, const DetElement& b) const
+        { return a.path() < b.path(); }
+      };
+
+      typedef std::map<DetElement,const Delta*,PathOrdering> OrderedDeltas;
+
+
+      /// Scanner to find all alignment deltas in the detector hierarchy
+      /**
+       *  The deltas are collected in the appropriate container suited for the
+       *  calculator object, so that no re-ordering is necessary.
+       *  
+       *  Usage:
+       *
+       *  /// Interface to client Callback in order to update the condition
+       *  Condition AlignmentCall::operator()(const ConditionKey& key,
+       *                                      ConditionUpdateContext& ctxt)  {
+       *  ....
+       *   DetectorScanner().scan(AlignmentsCalculator::Scanner(ctxt,deltas),top);
+       *  ....
+       *  }
+       *
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Scanner  {
+      public:
+        /// Reference to the user pool taking into account IOV intersections
+        cond::ConditionUpdateContext& context;
+        /// Collection container
+        OrderedDeltas&                deltas;
+      public:
+        /// Default constructor
+        Scanner() = delete;
+        /// Initializing constructor
+        Scanner(cond::ConditionUpdateContext& m, OrderedDeltas& d) : context(m), deltas(d) {}
+        /// Default move constructor is disabled
+        Scanner(cond::ConditionUpdateContext& m, OrderedDeltas&& p) = delete;
+        /// R-value copy from a temporary
+        Scanner(Scanner&& copy) = default;
+        /// Copy constructor
+        Scanner(const Scanner& copy) = default;
+        /// Default destructor
+        ~Scanner() = default;
+        /// Assignment operator
+        Scanner& operator=(const Scanner& copy) = default;
+        /// Callback to output alignments information
+        virtual int operator()(DetElement de, int)  const final;
+      };
     public:
 
       /// Default constructor
@@ -67,7 +126,13 @@ namespace dd4hep {
       /// Assignment operator
       AlignmentsCalculator& operator=(const AlignmentsCalculator& mgr) = delete;
       /// Compute all alignment conditions of the internal dependency list
-      Result compute(const Deltas& deltas, ConditionsMap& alignments)  const;
+      Result compute(const std::map<DetElement, Delta>& deltas,
+                     ConditionsMap& alignments)  const;
+      /// Compute all alignment conditions of the internal dependency list
+      Result compute(const std::map<DetElement, const Delta*>& deltas,
+                     ConditionsMap& alignments)  const;
+      /// Optimized call using already properly ordered Deltas
+      Result compute(const OrderedDeltas& deltas, ConditionsMap& alignments)  const;
     };
 
     /// Add results

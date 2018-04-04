@@ -18,6 +18,7 @@
 #include "DD4hep/ConditionsMap.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/ConditionDerived.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
 
 using namespace dd4hep;
@@ -69,11 +70,7 @@ namespace dd4hep {
 
       class Calculator::Context  {
       public:
-        struct PathOrdering {
-          bool operator()(const DetElement& a, const DetElement& b) const
-          { return a.path() < b.path(); }
-        };
-        typedef std::map<DetElement,size_t,PathOrdering>  DetectorMap;
+        typedef std::map<DetElement,size_t,AlignmentsCalculator::PathOrdering>  DetectorMap;
         typedef std::map<unsigned int,size_t>             Keys;
         typedef std::vector<Entry>                        Entries;
 
@@ -103,8 +100,22 @@ namespace dd4hep {
 }         /* End namespace dd4hep     */
 
 //static PrintLevel s_PRINT = DEBUG;
-static PrintLevel s_PRINT = INFO;
+//static PrintLevel s_PRINT = INFO;
+static PrintLevel s_PRINT = WARNING;
 
+/// Callback to output alignments information
+int AlignmentsCalculator::Scanner::operator()(DetElement de, int)  const  {
+  if ( de.isValid() )  {
+    Condition::key_type key(ConditionKey::KeyMaker(de.key(),align::Keys::deltaKey).hash);
+    Condition c = context.condition(key, false);
+    if ( c.isValid() )  {
+      const Delta& d = c.get<Delta>();
+      deltas.insert(std::make_pair(de,&d));
+    }
+    return 1;
+  }
+  return 0;  
+}
 
 /// Compute all alignment conditions of the lower levels
 Result Calculator::compute(Context& context, Entry& e)   const  {
@@ -181,6 +192,22 @@ void Calculator::resolve(Context& context, DetElement detector) const   {
     resolve(context, c.second);
 }
 
+/// Optimized call using already properly ordered Deltas
+Result AlignmentsCalculator::compute(const OrderedDeltas& deltas,
+                                     ConditionsMap& alignments)  const
+{
+  Result  result;
+  Calculator obj;
+  Calculator::Context context(alignments);
+  for( const auto& i : deltas )
+    context.insert(i.first, i.second);
+  for( const auto& i : deltas )
+    obj.resolve(context,i.first);
+  for( auto& i : context.entries )
+    result += obj.compute(context, i);
+  return result;
+}
+
 /// Compute all alignment conditions of the internal dependency list
 Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
                                      ConditionsMap& alignments)  const
@@ -197,16 +224,42 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
   // corrections are calculated in the wrong order ie. not top -> down the
   // hierarchy, but in "some" order depending on the pointer values!
   //
-  std::map<DetElement,Delta,Calculator::Context::PathOrdering> ordered_deltas;
+  OrderedDeltas ordered_deltas;
+  for( const auto& i : deltas )
+    ordered_deltas.insert(std::make_pair(i.first, &i.second));
+  return compute(ordered_deltas, alignments);
+}
 
+/// Compute all alignment conditions of the internal dependency list
+Result AlignmentsCalculator::compute(const std::map<DetElement, const Delta*>& deltas,
+                                     ConditionsMap& alignments)  const
+{
+  Result  result;
+  Calculator obj;
+  Calculator::Context context(alignments);
+  // This is a tricky one. We absolutely need the detector elements ordered
+  // by their depth aka. the distance to /world.
+  // Unfortunately one cannot use the raw pointer of the DetElement here,
+  // But has to insert them in a map which is ordered by the DetElement path.
+  //
+  // Otherwise memory randomization gives us the wrong order and the
+  // corrections are calculated in the wrong order ie. not top -> down the
+  // hierarchy, but in "some" order depending on the pointer values!
+  //
+  OrderedDeltas ordered_deltas;
   for( const auto& i : deltas )
     ordered_deltas.insert(i);
-  
-  for( const auto& i : ordered_deltas )
-    context.insert(i.first, &(i.second));
-  for( const auto& i : ordered_deltas )
-    obj.resolve(context,i.first);
-  for( auto& i : context.entries )
-    result += obj.compute(context, i);
-  return result;
+  return compute(ordered_deltas, alignments);
 }
+
+// The map is used by the Alignments calculator
+typedef AlignmentsCalculator::OrderedDeltas OrderedMap;
+// Have only a weak reference here!
+inline std::ostream& operator << (std::ostream& s, const DetElement& )   { return s; }
+
+#include "Parsers/Parsers.h"
+DD4HEP_DEFINE_PARSER_DUMMY(OrderedMap)
+#include "DD4hep/detail/BasicGrammar_inl.h"
+#include "DD4hep/detail/ConditionsInterna.h"
+DD4HEP_DEFINE_PARSER_GRAMMAR(OrderedMap,eval_none<OrderedMap>)
+DD4HEP_DEFINE_CONDITIONS_TYPE(OrderedMap)

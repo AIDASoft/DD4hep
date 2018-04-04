@@ -1762,18 +1762,21 @@ namespace dd4hep {
           xml_doc->name                = context->locals.obj_path;
           xml_doc->context.doc         = xml_doc->id;
           xml_doc->context.event_time  = ctx->event_time;
-          xml_doc->context.valid_since = 0;
-          xml_doc->context.valid_until = 0;
+          xml_doc->context.valid_since = 0;//ctx->valid_since;
+          xml_doc->context.valid_until = 0;//ctx->valid_until;
           docs.insert(make_pair(doc_path,xml_doc->addRef()));
-
-          //if ( str_upper(doc_path).find("/VP/") != string::npos )   {
-          //  printout(ALWAYS,"load_dddb","Loading document: %s",doc_path.c_str());
-          //}
 
           xml::UriContextReader reader(rdr, &xml_doc->context);
           xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
           xml_h e = doc.root();
           context->print(xml_doc);
+          //if ( str_upper(doc_path).find("/VP/") != string::npos )
+          printout(DEBUG,"load_dddb","Loading document: %s IOV: %ld [%ld,%ld]",
+                    xml_doc->id.c_str(), 
+                    xml_doc->context.event_time,
+                    xml_doc->context.valid_since,
+                    xml_doc->context.valid_until);
+
           if ( e )   {
             if ( !key.empty() )  {
               stringstream str;
@@ -1859,9 +1862,16 @@ namespace dd4hep {
         if ( argc >= 3 && argv[2] != 0 )  {
           obj_path = argv[2];
         }
-        if ( argc >= 4 && argv[3] != 0 )  {
-          long evt_time = *(long*)argv[3];
-          ctx->event_time = evt_time;
+        if ( argc == 4 && argv[3] != 0 )  {
+          long long int evt_time = *(long long int*)argv[3];
+          ctx->event_time  = evt_time;
+        }
+        if ( argc == 5 && argv[3] != 0 && argv[4] != 0)  {
+          long long int iov_start = *(long long int*)argv[3];
+          long long int iov_end   = *(long long int*)argv[4];
+          ctx->event_time  = (iov_start+iov_end)/2;
+          ctx->valid_since = iov_start;
+          ctx->valid_until = iov_end;
         }
         config_context(ctxt, rdr, sys_id, obj_path);
         load_dddb_entity<ACTION>(&ctxt,0,0,ctxt.locals.xml_doc->id);

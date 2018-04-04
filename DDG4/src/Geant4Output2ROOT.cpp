@@ -36,6 +36,8 @@ Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const string& nam)
   : Geant4OutputAction(ctxt, nam), m_file(0), m_tree(0) {
   declareProperty("Section", m_section = "EVENT");
   declareProperty("HandleMCTruth", m_handleMCTruth = true);
+  declareProperty("DisabledCollections",  m_disabledCollections);
+  declareProperty("DisableParticles",     m_disableParticles);
   InstanceCount::increment(this);
 }
 
@@ -140,17 +142,19 @@ void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
 
 /// Callback to store the Geant4 event
 void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
-  Geant4ParticleMap* parts = context()->event().extension<Geant4ParticleMap>();
-  if ( parts )   {
-    typedef Geant4HitWrapper::HitManipulator Manip;
-    typedef Geant4ParticleMap::ParticleMap ParticleMap;
-    Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
-    const ParticleMap& pm = parts->particles();
-    vector<void*> particles;
-    for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end(); ++i)    {
-      particles.push_back((ParticleMap::mapped_type*)(*i).second);
+  if ( !m_disableParticles )  {
+    Geant4ParticleMap* parts = context()->event().extension<Geant4ParticleMap>();
+    if ( parts )   {
+      typedef Geant4HitWrapper::HitManipulator Manip;
+      typedef Geant4ParticleMap::ParticleMap ParticleMap;
+      Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
+      const ParticleMap& pm = parts->particles();
+      vector<void*> particles;
+      for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end(); ++i)    {
+        particles.push_back((ParticleMap::mapped_type*)(*i).second);
+      }
+      fill("MCParticles",manipulator->vec_type,&particles);
     }
-    fill("MCParticles",manipulator->vec_type,&particles);
   }
 }
 
@@ -158,8 +162,13 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
 void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection) {
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
   string hc_nam = collection->GetName();
-  vector<void*> hits;
+  for(const auto& n : m_disabledCollections)  {
+    if ( n == hc_nam )   {
+      return;
+    }
+  }
   if (coll) {
+    vector<void*> hits;
     coll->getHitsUnchecked(hits);
     size_t nhits = coll->GetSize();
     if ( m_handleMCTruth && m_truth && nhits > 0 )   {

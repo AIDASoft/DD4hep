@@ -167,8 +167,10 @@ namespace dd4hep {
 #define DD4HEP_PLUGINSVC_FACTORY(type,name,signature,serial)            \
   namespace {                                                           \
     struct DD4HEP_PLUGINSVC_CNAME(__typeFactory__,serial)  {            \
-      DD4HEP_PLUGINSVC_CNAME(__typeFactory__,serial)()  { DD4HEP_FACTORY_CALL(type,#name,signature); } \
-    } DD4HEP_PLUGINSVC_CNAME(s____typeFactory__,serial);                \
+      DD4HEP_PLUGINSVC_CNAME(__typeFactory__,serial)()  {               \
+        DD4HEP_FACTORY_CALL(type,#name,signature); }};                  \
+    static const DD4HEP_PLUGINSVC_CNAME(__typeFactory__,serial)         \
+    DD4HEP_PLUGINSVC_CNAME(s____typeFactory__,serial);                  \
   }
 
 

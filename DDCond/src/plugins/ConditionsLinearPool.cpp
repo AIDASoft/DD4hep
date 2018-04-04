@@ -54,7 +54,7 @@ namespace dd4hep {
       }
     public:
       /// Default constructor
-      ConditionsLinearPool(ConditionsManager mgr);
+      ConditionsLinearPool(ConditionsManager mgr, IOV* iov);
 
       /// Default destructor
       virtual ~ConditionsLinearPool();
@@ -113,13 +113,15 @@ namespace dd4hep {
     {
     public:
       /// Default constructor
-      ConditionsLinearUpdatePool(ConditionsManager mgr)
-        : ConditionsLinearPool<MAPPING,BASE>(mgr) 
+      ConditionsLinearUpdatePool(ConditionsManager mgr, IOV*)
+        : ConditionsLinearPool<MAPPING,BASE>(mgr,0)
       {
+        this->BASE::SetTitle("ConditionsLinearUpdatePool");
       }
 
       /// Default destructor
-      virtual ~ConditionsLinearUpdatePool()  {}
+      virtual ~ConditionsLinearUpdatePool()  {
+      }
 
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
       virtual size_t popEntries(UpdatePool::UpdateEntries& entries)   final  {
@@ -193,7 +195,12 @@ using namespace dd4hep::cond;
 
 /// Default constructor
 template<typename MAPPING, typename BASE>
-ConditionsLinearPool<MAPPING,BASE>::ConditionsLinearPool(ConditionsManager mgr) : BASE(mgr)  {
+ConditionsLinearPool<MAPPING,BASE>::ConditionsLinearPool(ConditionsManager mgr, IOV* i)
+  : BASE(mgr, i)
+{
+  
+  this->BASE::SetName(i ? i->str().c_str() : "Unknown IOV");
+  this->BASE::SetTitle("ConditionsLinearPool");
   InstanceCount::increment(this);
 }
 
@@ -201,6 +208,7 @@ ConditionsLinearPool<MAPPING,BASE>::ConditionsLinearPool(ConditionsManager mgr) 
 template<typename MAPPING, typename BASE>
 ConditionsLinearPool<MAPPING,BASE>::~ConditionsLinearPool()  {
   clear();
+  detail::deletePtr(this->BASE::iov);
   InstanceCount::decrement(this);
 }
 
@@ -225,9 +233,17 @@ namespace {
     dd4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[0] = ConditionManager!");
     return ConditionsManager(0);
   }
+  IOV* _iov(int argc, char** argv)  {
+    if ( argc > 1 )  {
+      IOV* i = (IOV*)argv[1];
+      return i;
+    }
+    dd4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[1] = IOV!");
+    return nullptr;
+  }
 
 #define _CR(fun,x,b,y) void* fun(dd4hep::Detector&, int argc, char** argv) \
-  {  return new b<x<Condition::Object*>,y>(_mgr(argc,argv));  }
+  {  return new b<x<Condition::Object*>,y>(_mgr(argc,argv), _iov(argc,argv));  }
   /// Create a conditions pool based on STL vectors
   _CR(create_vector_pool,std::vector,ConditionsLinearPool,ConditionsPool)
   /// Create a conditions pool based on STL lists

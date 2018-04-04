@@ -35,51 +35,68 @@ ConditionsManager dd4hep::ConditionExamples::installManager(Detector& descriptio
 }
 
 /// Interface to client Callback in order to update the condition
-Condition ConditionUpdate1::operator()(const ConditionKey& key, const ConditionUpdateContext& context)  {
+Condition ConditionUpdate1::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
 #else
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX",key.hash);
 #endif
   Condition    target(key.name,"derived");
-  vector<int>& data  = target.bind<vector<int> >();
-  Condition    cond0 = context.condition(0);
-  data.push_back(cond0.get<int>());
-  data.push_back(cond0.get<int>()*2);
+  target.bind<vector<int> >();
   return target;
 }
 
 /// Interface to client Callback in order to update the condition
-Condition ConditionUpdate2::operator()(const ConditionKey& key, const ConditionUpdateContext& context)  {
+void ConditionUpdate1::resolve(Condition target, ConditionUpdateContext& context)  {
+  vector<int>& data  = target.get<vector<int> >();
+  Condition    cond0 = context.condition(context.key(0));
+  data.push_back(cond0.get<int>());
+  data.push_back(cond0.get<int>()*2);
+}
+
+/// Interface to client Callback in order to update the condition
+Condition ConditionUpdate2::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
 #else
   printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX",key.hash);
 #endif
   Condition    target(key.name,"derived");
-  vector<int>& data  = target.bind<vector<int> >();
-  Condition    cond0 = context.condition(0);
-  Condition    cond1 = context.condition(1);
+  target.bind<vector<int> >();
+  return target;
+}
+
+/// Interface to client Callback in order to update the condition
+void ConditionUpdate2::resolve(Condition target, ConditionUpdateContext& context)  {
+  vector<int>& data  = target.get<vector<int> >();
+  Condition    cond0 = context.condition(context.key(0));
+  Condition    cond1 = context.condition(context.key(1));
 
   data.push_back(cond0.get<int>());
   data.push_back(cond0.get<int>()*2);
   vector<int>& c1 = cond1.get<vector<int> >();
   data.insert(data.end(), c1.begin(), c1.end());
-  return target;
 }
 
+
 /// Interface to client Callback in order to update the condition
-Condition ConditionUpdate3::operator()(const ConditionKey& key, const ConditionUpdateContext& context)  {
+Condition ConditionUpdate3::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
 #ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
   printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
 #else
   printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX",key.hash);
 #endif
   Condition    target(key.name,"derived");
-  vector<int>& data  = target.bind<vector<int> >();
-  Condition    cond0 = context.condition(0);
-  Condition    cond1 = context.condition(1);
-  Condition    cond2 = context.condition(2);
+  target.bind<vector<int> >();
+  return target;
+}
+
+/// Interface to client Callback in order to update the condition
+void ConditionUpdate3::resolve(Condition target, ConditionUpdateContext& context)  {
+  vector<int>& data  = target.get<vector<int> >();
+  Condition    cond0 = context.condition(context.key(0));
+  Condition    cond1 = context.condition(context.key(1));
+  Condition    cond2 = context.condition(context.key(2));
 
   data.push_back(cond0.get<int>());
   data.push_back(cond0.get<int>()*2);
@@ -88,7 +105,6 @@ Condition ConditionUpdate3::operator()(const ConditionKey& key, const ConditionU
 
   vector<int>& c2 = cond2.get<vector<int> >();
   data.insert(data.end(), c2.begin(), c2.end());
-  return target;
 }
 
 /// Initializing constructor

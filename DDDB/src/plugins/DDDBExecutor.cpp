@@ -80,11 +80,16 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
     std::vector<string> setup, xmlFiles, executors, config;
     std::map<std::string, std::vector<char*> > e_args, s_args, c_args;
     long result = 0, visualize = 0, dump = 0;
+    long event_time = detail::makeTime(2016,4,1,12);
+    long iov_start  = -1;
+    long iov_end    = -1;
     char last = 0, c;
+
     for(int i=0; i<argc;++i) {
+      const char* arg = argv[i];
       c = 0;
-      if ( argv[i][0] == '-' )  {
-        c = ::toupper(argv[i][1]);
+      if ( arg[0] == '-' )  {
+        c = ::toupper(arg[1]);
         switch(c)  {
         case 'A':
           attr = argv[++i];
@@ -105,7 +110,12 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
           last = c;
           break;
         case 'I':
-          sys_id = argv[++i];
+          if ( ::strncasecmp(arg+1,"IOV_START",5)==0 )
+            iov_start = detail::makeTime(argv[++i]);
+          else if ( ::strncasecmp(arg+1,"IOV_END",5)==0 )
+            iov_end = detail::makeTime(argv[++i]);
+          else
+            sys_id = argv[++i];
           last = 0;
           break;
         case 'L':
@@ -161,8 +171,9 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
     }
 
     DDDBHelper* helper = description.extension<DDDBHelper>();
+    DDDBReader* resolver = 0;
     if ( !loader_name.empty() )  {
-      DDDBReader* resolver = (DDDBReader*)dd4hep::PluginService::Create<void*>(loader_name,(const char*)0);
+      resolver = (DDDBReader*)dd4hep::PluginService::Create<void*>(loader_name,(const char*)0);
       resolver->setMatch(match);
       resolver->setDirectory(path.parent_path().c_str());
       helper->setXmlReader(resolver);
@@ -190,9 +201,12 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
 
     /// Process XML
     if ( !sys_id.empty() )   {
-      long long int init_time = detail::makeTime(2016,4,1,12);
-      const void* args[] = {0, sys_id.c_str(), "/", &init_time, 0};
       printout(INFO,"DDDBExecutor","+++ Processing DDDB: %s", sys_id.c_str());
+      if ( iov_start >= 0 && iov_end >= 0 )   {
+        resolver->property("ValidityLower").set(iov_start);
+        resolver->property("ValidityUpper").set(iov_end);
+      }
+      const void* args[] = {0, sys_id.c_str(), "/", &event_time, 0};
       result = description.apply("DDDB_Loader", 4, (char**)args);
       check_result(result);
       printout(INFO,"DDDBExecutor","                         .... done");

@@ -59,12 +59,12 @@ namespace dd4hep {
   class ConditionsMap   {
   public:
     enum {
-      FIRST_ITEM =  0x0,
-      LAST_ITEM  = ~0x0        
+      FIRST_ITEM = Condition::FIRST_ITEM_KEY,
+      LAST_ITEM  = Condition::LAST_ITEM_KEY
     };
     enum {
-      FIRST_KEY  =  0x0ULL,
-      LAST_KEY   = ~0x0ULL        
+      FIRST_KEY  = Condition::FIRST_KEY,
+      LAST_KEY   = Condition::LAST_KEY
     };
 
   public:

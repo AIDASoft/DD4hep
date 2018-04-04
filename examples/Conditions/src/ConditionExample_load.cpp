@@ -126,7 +126,6 @@ static int condition_example (Detector& description, int argc, char** argv)  {
     if ( 0 == i )  { // First one we print...
       Scanner(ConditionsPrinter(slice.get(),"Example"),description.world());
     }
-    // Now compute the tranformation matrices
     printout(ALWAYS,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
              r.total(), r.selected, r.loaded, r.computed, r.missing, req_iov.str().c_str());
   }  
