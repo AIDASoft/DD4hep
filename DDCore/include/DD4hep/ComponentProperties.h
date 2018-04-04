@@ -247,7 +247,26 @@ namespace dd4hep {
    *  \author  M.Frank
    *  \version 1.0
    */
-  class PropertyConfigurable  {
+  class PropertyInterface  {
+  public:
+    /// Default destructor
+    virtual ~PropertyInterface() = default;
+    /// Access to the properties of the object
+    virtual PropertyManager& properties() = 0;
+    /// Check property for existence
+    virtual bool hasProperty(const std::string& name) const = 0;
+    /// Access single property
+    virtual Property& property(const std::string& name) = 0;
+  };
+  
+  /// Property object as base class for all objects supporting properties
+  /** 
+   *  Note: This class cannot be saved to a ROOT file!
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   */
+  class PropertyConfigurable : virtual public PropertyInterface {
   protected:
     /// Property pool
     PropertyManager m_properties;
@@ -258,13 +277,13 @@ namespace dd4hep {
     /// Default destructor
     virtual ~PropertyConfigurable();
     /// Access to the properties of the object
-    PropertyManager& properties() {
+    virtual PropertyManager& properties() override {
       return m_properties;
     }
     /// Check property for existence
-    bool hasProperty(const std::string& name) const;
+    virtual bool hasProperty(const std::string& name) const override;
     /// Access single property
-    Property& property(const std::string& name);
+    virtual Property& property(const std::string& name) override;
     /// Declare property
     template <typename T> void declareProperty(const std::string& nam, T& val);
     /// Declare property

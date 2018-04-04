@@ -46,6 +46,14 @@ ConditionsSlice::~ConditionsSlice()   {
   InstanceCount::decrement(this);  
 }
 
+/// Access the combined IOV of the slice from the pool
+const IOV& ConditionsSlice::iov()  const    {
+  if ( pool.get() ) return pool->validity();
+  dd4hep::except("ConditionsSlice",
+                 "pool-iov: Failed to access validity of non-existing pool.");
+  return pool->validity();
+}
+
 /// Clear the conditions access and the user pool.
 void ConditionsSlice::reset()   {
   if ( pool.get() ) pool->clear();

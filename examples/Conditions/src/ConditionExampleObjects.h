@@ -75,7 +75,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~ConditionUpdate1() = default;
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& context) final;
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+      /// Interface to client Callback in order to update the condition
+      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
     };
 
     /// Specialized conditions update callback 
@@ -93,7 +95,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~ConditionUpdate2() = default;
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& context)  final;
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override   final;
+      /// Interface to client Callback in order to update the condition
+      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
     };
 
     /// Specialized conditions update callback 
@@ -111,7 +115,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~ConditionUpdate3() = default;
       /// Interface to client Callback in order to update the condition
-      virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& context)  final;
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+      /// Interface to client Callback in order to update the condition
+      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
     };
     
     /// This is important, otherwise the register and forward calls won't find them!

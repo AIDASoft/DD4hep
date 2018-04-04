@@ -19,6 +19,7 @@
 
 // Framework includes
 #include "DDDB/DDDBReader.h"
+#include "DDDB/DDDBReaderContext.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 
@@ -37,6 +38,11 @@ DDDBReader::DDDBReader(const std::string& dir)
 	m_context.valid_until = detail::makeTime(2030,1,1);
 	m_context.event_time  = detail::makeTime(2015,7,1,12,0,0);
   m_context.match       = m_match;
+}
+
+/// Access to local context
+xml::UriReader::UserContext* DDDBReader::context()    {
+  return &m_context;
 }
 
 /// Resolve a given URI to a string containing the data
@@ -73,7 +79,7 @@ bool DDDBReader::load(const string& system_id,
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
 void DDDBReader::parserLoaded(const std::string& system_id)  {
-  return xml::UriReader::parserLoaded(system_id);
+  xml::UriReader::parserLoaded(system_id);
 }
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
@@ -82,11 +88,3 @@ void DDDBReader::parserLoaded(const std::string& /* system_id */, UserContext* c
   c->valid_since = c->event_time;
   c->valid_until = c->event_time;
 }
-
-int DDDBReader::getObject(const string& sys_id, UserContext* /* ctxt */, string& /* out */)
-{
-  except("DDDBReader","DDDBReader::getObject is a virtual method, "
-         "which must be overloaded by the concrete instance!! sys_id:%s", sys_id.c_str());
-  return 0;
-}
-

@@ -74,7 +74,7 @@ namespace dd4hep {
 
     public:
       /// Default constructor
-      ConditionsPool(ConditionsManager mgr);
+      ConditionsPool(ConditionsManager mgr, IOV* iov);
       /// Default destructor. Note: pool must be cleared by the subclass!
       virtual ~ConditionsPool();
       /// Print pool basics
@@ -115,7 +115,7 @@ namespace dd4hep {
 
     public:
       /// Default constructor
-      UpdatePool(ConditionsManager mgr);
+      UpdatePool(ConditionsManager mgr, IOV* iov);
       /// Default destructor.
       virtual ~UpdatePool();
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool

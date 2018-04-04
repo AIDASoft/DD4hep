@@ -487,15 +487,17 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(cond_missing), COMP());
   long num_cond_miss = last_cond-begin(cond_missing);
+  cond_missing.resize(num_cond_miss);
   printout(num_cond_miss==0 ? DEBUG : INFO,"UserPool",
-           "Found %ld missing conditions out of %ld conditions.",
+           "%ld conditions out of %ld conditions are MISSING.",
            num_cond_miss, slice_cond.size());
   CalcMissing::iterator last_calc = set_difference(begin(slice_calc),   end(slice_calc),
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(calc_missing), COMP());
   long num_calc_miss = last_calc-begin(calc_missing);
+  calc_missing.resize(num_calc_miss);
   printout(num_calc_miss==0 ? DEBUG : INFO,"UserPool",
-           "Found %ld missing derived conditions out of %ld conditions.",
+           "%ld derived conditions out of %ld conditions are MISSING.",
            num_calc_miss, slice_calc.size());
 #if 0
   auto iter = begin(calc_missing);
@@ -513,6 +515,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
   if ( num_cond_miss > 0 )  {
     if ( do_load )  {
       ConditionsDataLoader::LoadedItems loaded;
+      //size_t updates = m_loader->load_many(required, cond_missing, loaded, pool_iov);
       size_t updates = m_loader->load_many(required, cond_missing, loaded, pool_iov);
       if ( updates > 0 )  {
         // Need to compute the intersection: All missing entries are required....
@@ -523,7 +526,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
                                                          begin(load_missing), COMP());
         long num_load_miss = load_last-begin(load_missing);
         printout(num_load_miss==0 ? DEBUG : ERROR,"UserPool",
-                 "Found %ld out of %ld conditions, which CANNOT be loaded...",
+                 "%ld out of %ld conditions CANNOT be loaded...",
                  num_load_miss, loaded.size());
         if ( do_output_miss )  {
           copy(begin(load_missing), load_last, inserter(slice_miss_cond, slice_miss_cond.begin()));

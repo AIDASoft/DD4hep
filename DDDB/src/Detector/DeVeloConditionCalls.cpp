@@ -22,7 +22,7 @@ using namespace std;
 using namespace gaudi;
 
 /// Interface to client Callback in order to update the condition
-dd4hep::Condition DeVeloStaticConditionCall::operator()(const ConditionKey& key, const Context& context)  {
+dd4hep::Condition DeVeloStaticConditionCall::operator()(const ConditionKey& key, Context& context)  {
   VeloUpdateContext* ctxt = dynamic_cast<VeloUpdateContext*>(context.parameter);
   KeyMaker   km(key.hash);
   auto       ide = ctxt->detectors.find(km.values.det_key);
@@ -39,7 +39,7 @@ dd4hep::Condition DeVeloStaticConditionCall::operator()(const ConditionKey& key,
 }
 
 /// Interface to client callback for resolving references or to use data from other conditions
-void DeVeloStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
+void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
   DeStatic s(c);
   if ( s->clsID == DeVelo::classID() )  {   // Velo main element
     DeVeloStatic vp = s;
@@ -54,7 +54,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
     for ( const auto& i : elts )   {
       DetElement de = i.first;
       KeyMaker   key(de.key(), Keys::staticKey);
-      DeStatic   cond = resolver.get(key.hash);
+      DeStatic   cond = context.condition(key.hash);
       const string& path = de.path();
       bool   left  = path.find("/VeloLeft/Module") != string::npos   || path.find("/VeloLeft")  == path.length()-9;
       bool   right = path.find("/VeloRight/Module") != string::npos  || path.find("/VeloRight") == path.length()-10;
@@ -119,7 +119,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Resolver& resolver)    {
 }
 
 /// Interface to client Callback in order to update the condition
-dd4hep::Condition DeVeloIOVConditionCall::operator()(const ConditionKey&, const Context&)   {
+dd4hep::Condition DeVeloIOVConditionCall::operator()(const ConditionKey&, Context&)   {
   DeIOV iov;
   if ( catalog->classID == DeVeloSensor::classID() || catalog->classID == 1008102 || catalog->classID == 1008103 )     // DeVeloSensor
     iov = DeIOV(new detail::DeVeloSensorObject());
@@ -131,20 +131,20 @@ dd4hep::Condition DeVeloIOVConditionCall::operator()(const ConditionKey&, const 
 }
 
 /// Interface to client callback for resolving references or to use data from other conditions
-void DeVeloIOVConditionCall::resolve(Condition cond, Resolver& resolver)   {
+void DeVeloIOVConditionCall::resolve(Condition cond, Context& context)   {
   DeIOV iov(cond);
   Condition::detkey_type det_key = iov->detector.key();
   KeyMaker kalign(det_key,dd4hep::align::Keys::alignmentKey);
   KeyMaker kstatic(det_key,Keys::staticKey);
 
   /// Check that the alignments are computed. We need them here!
-  if ( !context->alignments_done.isValid() )  {
-    context->alignments_done = resolver.get(Keys::alignmentsComputedKey);
+  if ( !velo_context->alignments_done.isValid() )  {
+    velo_context->alignments_done = context.condition(Keys::alignmentsComputedKey);
   }
   
-  vector<Condition> conds = resolver.get(det_key);
-  iov->de_static = resolver.get(kstatic.hash);
-  iov->detectorAlignment = resolver.get(kalign.hash);
+  vector<Condition> conds = context.conditions(det_key);
+  iov->de_static = context.condition(kstatic.hash);
+  iov->detectorAlignment = context.condition(kalign.hash);
   for ( Condition c : conds )
     iov->conditions.insert(make_pair(c.item_key(),c));
   iov->initialize();
@@ -164,7 +164,7 @@ namespace {
   void add_sensors( DeVeloGeneric                    gen,
                     DeVeloGenericStatic              src,
                     map<DeVeloSensorStatic,DeVeloSensor>& mapping,
-                    dd4hep::cond::ConditionResolver& resolver)
+                    dd4hep::cond::ConditionUpdateContext& context)
   {
     gen->sensors.reserve(src->sensors.size());
     for (DeVeloSensorStatic i : src->sensors)   {
@@ -176,18 +176,18 @@ namespace {
     }
     for (detail::DeVeloGenericStaticObject* i : src->children)   {
       dd4hep::ConditionKey::KeyMaker key(i->detector.key(), Keys::deKey);
-      DeVeloGeneric child = resolver.get(key.hash);
+      DeVeloGeneric child = context.condition(key.hash);
       gen->children.push_back(child.ptr());
-      add_sensors(child, DeVeloGenericStatic(i), mapping, resolver);
+      add_sensors(child, DeVeloGenericStatic(i), mapping, context);
     }
   }
 }
 
 /// Interface to client callback for resolving references or to use data from other conditions
-void DeVeloConditionCall::resolve(Condition cond, Resolver& resolver)  {
+void DeVeloConditionCall::resolve(Condition cond, Context& context)  {
   DeIOV iov(cond);
   DeVelo  vp(cond);
-  DeVeloIOVConditionCall::resolve(cond, resolver);
+  DeVeloIOVConditionCall::resolve(cond, context);
   DeVeloStatic s = vp.access()->vp_static;
   map<DeVeloSensorStatic,DeVeloSensor>   sensorMapping;
   
@@ -195,7 +195,7 @@ void DeVeloConditionCall::resolve(Condition cond, Resolver& resolver)  {
   for ( const auto& i : s->sensors[DeVeloFlags::ALL] )   {
     if ( i.isValid() )   {
       KeyMaker     key(i->detector.key(), Keys::deKey);
-      DeVeloSensor sens = resolver.get(key.hash);
+      DeVeloSensor sens = context.condition(key.hash);
       if ( !sens.isValid() )  {
         cout << "Problem Mapping " << (void*)i.ptr()
              << " ---> " << (void*)sens.ptr() << " " << i->detector.path()
@@ -207,16 +207,16 @@ void DeVeloConditionCall::resolve(Condition cond, Resolver& resolver)  {
   }
 
   for(size_t iside = 0; iside<3; ++iside)   {
-    add_sensors(vp->sensors[iside], s->sensors[iside], sensorMapping);
-    add_sensors(vp->rSensors[iside], s->rSensors[iside], sensorMapping);
-    add_sensors(vp->phiSensors[iside], s->phiSensors[iside], sensorMapping);
+    add_sensors(vp->sensors[iside],     s->sensors[iside],     sensorMapping);
+    add_sensors(vp->rSensors[iside],    s->rSensors[iside],    sensorMapping);
+    add_sensors(vp->phiSensors[iside],  s->phiSensors[iside],  sensorMapping);
     add_sensors(vp->rphiSensors[iside], s->rphiSensors[iside], sensorMapping);
-    add_sensors(vp->puSensors[iside], s->puSensors[iside], sensorMapping);
+    add_sensors(vp->puSensors[iside],   s->puSensors[iside],   sensorMapping);
   }
   for ( auto side : s->sides )   {
     dd4hep::ConditionKey::KeyMaker key(side->detector.key(), Keys::deKey);
-    DeVeloGeneric child = resolver.get(key.hash);
+    DeVeloGeneric child = context.condition(key.hash);
     vp->sides.push_back(child);
-    add_sensors(child, side, sensorMapping, resolver);
+    add_sensors(child, side, sensorMapping, context);
   }
 }

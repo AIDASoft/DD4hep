@@ -29,19 +29,22 @@ using namespace dd4hep::align;
 
 /// Interface to client Callback in order to update the condition
 Condition gaudi::DeAlignmentCall::operator()(const ConditionKey& /* key */,
-                                             const ConditionUpdateContext& ctxt)  {
+                                             ConditionUpdateContext& ctxt)  {
+
   namespace tools = dd4hep::detail::tools;
   Condition       cond;
   UserPool* conditions = dynamic_cast<UserPool*>(&ctxt.resolver->conditionsMap());
   if ( conditions )    {
+    typedef AlignmentsCalculator::OrderedDeltas Deltas;
     ConditionsHashMap    slice;
     AlignmentsCalculator calc;
     const IOV&        iov = conditions->validity();
     ConditionsManager mgr = ctxt.resolver->manager();
     cond = Condition(gaudi::Keys::alignmentsComputedKeyName,"Calculator");
-    AlignmentsCalculator::Deltas& deltas = cond.bind<AlignmentsCalculator::Deltas>();
-    DetectorScanner(deltaCollector(*conditions, deltas), top);
-    //slice->pool->flags |= cond::UserPool::PRINT_INSERT;
+    Deltas& deltas = cond.bind<Deltas>();
+    conditions->print("");
+    // Test. Need to be replaced by a special scanner
+    DetectorScanner().scan(AlignmentsCalculator::Scanner(ctxt,deltas),top);
     AlignmentsCalculator::Result ares = calc.compute(deltas, slice);
     ConditionsPool* iov_pool = mgr.registerIOV(*iov.iovType,iov.key());
     for(auto i=std::begin(slice.data); i != std::end(slice.data); ++i)   {
@@ -49,7 +52,8 @@ Condition gaudi::DeAlignmentCall::operator()(const ConditionKey& /* key */,
       mgr.registerUnlocked(*iov_pool,c);
       conditions->insert(c);
     }
-    printout(INFO,"Align","Alignments:(C:%ld,M:%ld)", ares.computed, ares.missing);
+    printout(INFO,"Align","Alignments:(C:%ld,M:%ld) IOV:%s",
+             ares.computed, ares.missing, ctxt.iov->str().c_str());
     return cond;
   }
   except("DeAlignmentCall","No conditions slice present!");

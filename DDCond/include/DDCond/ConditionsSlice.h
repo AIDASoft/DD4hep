@@ -131,6 +131,8 @@ namespace dd4hep {
       ConditionsSlice(const ConditionsSlice& copy);
       /// Default destructor. 
       virtual ~ConditionsSlice();
+
+      /// Total size of all conditions contained in the slice
       size_t size() const  {  return content->conditions().size()+content->derived().size(); }
       /// Access the map of conditions from the desired content
       const ConditionsContent::Conditions& conditions() const { return content->conditions();}
@@ -140,6 +142,8 @@ namespace dd4hep {
       ConditionsContent::Conditions& missingConditions()      { return m_missingConditions;  }
       /// Access the map of missing computational conditions (only valid after preparation)
       ConditionsContent::Dependencies& missingDerivations()   { return m_missingDerivations; }
+      /// Access the combined IOV of the slice from the pool
+      const IOV& iov()  const;
       /// Clear the conditions content and the user pool.
       void reset();
       /// Insert a set of conditions to the slice AND register them to the conditions manager.

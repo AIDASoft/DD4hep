@@ -14,17 +14,19 @@
 // Framework include files
 #include "XML/UriReader.h"
 
+using namespace std;
+
 /// Default destructor
 dd4hep::xml::UriReader::~UriReader()   {
 }
 
 /// Resolve a given URI to a string containing the data
-bool dd4hep::xml::UriReader::load(const std::string& system_id, std::string& data)   {
+bool dd4hep::xml::UriReader::load(const string& system_id, string& data)   {
   return this->load(system_id, context(), data);
 }
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
-void dd4hep::xml::UriReader::parserLoaded(const std::string& system_id)  {
+void dd4hep::xml::UriReader::parserLoaded(const string& system_id)  {
   this->parserLoaded(system_id, context());
 }
 
@@ -45,21 +47,21 @@ dd4hep::xml::UriContextReader::~UriContextReader()   {
 }
 
 /// Resolve a given URI to a string containing the data
-bool dd4hep::xml::UriContextReader::load(const std::string& system_id, std::string& data)   {
+bool dd4hep::xml::UriContextReader::load(const string& system_id, string& data)   {
   return m_reader->load(system_id, context(), data);
 }
 
 /// Resolve a given URI to a string containing the data
-bool dd4hep::xml::UriContextReader::load(const std::string& system_id, UserContext* ctxt, std::string& data)   {
+bool dd4hep::xml::UriContextReader::load(const string& system_id, UserContext* ctxt, string& data)   {
   return m_reader->load(system_id, ctxt, data);
 }
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
-void dd4hep::xml::UriContextReader::parserLoaded(const std::string& system_id)  {
+void dd4hep::xml::UriContextReader::parserLoaded(const string& system_id)  {
   m_reader->parserLoaded(system_id, context());
 }
 
 /// Inform reader about a locally (e.g. by XercesC) handled source load
-void dd4hep::xml::UriContextReader::parserLoaded(const std::string& system_id, UserContext* ctxt)  {
+void dd4hep::xml::UriContextReader::parserLoaded(const string& system_id, UserContext* ctxt)  {
   m_reader->parserLoaded(system_id, ctxt);
 }

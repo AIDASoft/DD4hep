@@ -38,9 +38,9 @@ namespace dd4hep {
      */
     class DDDBReaderContext : public xml::UriReader::UserContext  {
     public:
-      long long int event_time  = 0;
-      long long int valid_since = 0;
-      long long int valid_until = 0;
+      long event_time  = 0;
+      long valid_since = 0;
+      long valid_until = 0;
       std::string doc, channel, match;
       /// Standard constructor
       DDDBReaderContext() = default;

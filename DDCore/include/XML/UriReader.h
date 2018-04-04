@@ -43,17 +43,17 @@ namespace dd4hep {
        *  \ingroup DD4HEP_XML
        */
       struct UserContext {
-        UserContext() {}
-        UserContext(const UserContext&) {}
-        virtual ~UserContext() {}
+        UserContext() = default;
+        UserContext(const UserContext&) = default;
+        virtual ~UserContext() = default;
       };
     public:
       /// Default constructor
-      UriReader()  {}
+      UriReader()  = default;
       /// Default destructor
       virtual ~UriReader();
       /// Access to local context
-      virtual UserContext* context()  {  return 0;  }
+      virtual UserContext* context() = 0;
       /// Resolve a given URI to a string containing the data
       virtual bool load(const std::string& system_id, std::string& data);
       /// Resolve a given URI to a string containing the data with context

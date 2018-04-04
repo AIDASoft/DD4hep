@@ -45,6 +45,7 @@ namespace dd4hep {
 
       virtual const std::type_info& type() const = 0;
       virtual const void*           ptr()  const = 0;
+      virtual ConditionsLoadInfo*   clone()  const = 0;
       template<typename T> T*       data() const {  return (T*)ptr(); }
     };
 
@@ -75,8 +76,9 @@ namespace dd4hep {
         LoadInfo(const LoadInfo& c) = default;
         virtual ~LoadInfo()         = default;
         LoadInfo& operator=(const LoadInfo& copy) = default;
-        virtual const std::type_info& type() const { return typeid(T); }
-        virtual const void*           ptr()  const { return &info;     }
+        virtual const std::type_info& type()   const { return typeid(T); }
+        virtual const void*           ptr()    const { return &info;     }
+        virtual ConditionsLoadInfo*   clone()  const { return new LoadInfo<T>(info);     }
       };
      
       typedef std::map<Condition::key_type,ConditionDependency* > Dependencies;
@@ -112,11 +114,16 @@ namespace dd4hep {
         return m_conditions.insert(std::make_pair(hash,(ConditionsLoadInfo*)0)).second;
       }
       /// Add a new conditions key. T must inherit from class ConditionsContent::Info
-      template <typename T> bool insertKey(Condition::key_type hash, const T& info)   {
-        ConditionsLoadInfo* i = new LoadInfo<T>(info);
-        bool ret = m_conditions.insert(std::make_pair(hash,i)).second;
-        if ( !ret ) delete i;
+      bool insertKey(Condition::key_type hash, std::unique_ptr<ConditionsLoadInfo>& info)   {
+        bool ret = m_conditions.insert(std::make_pair(hash,info.get())).second;
+        if ( ret ) info.release();
+        else       info.reset();
         return ret;
+      }
+      /// Add a new conditions key. T must inherit from class ConditionsContent::Info
+      template <typename T> bool insertKey(Condition::key_type hash, const T& info)   {
+        std::unique_ptr<ConditionsLoadInfo> ptr(new LoadInfo<T>(info));
+        return insertKey(hash, ptr);
       }
       /// Add a new shared conditions dependency
       bool insertDependency(ConditionDependency* dep)   {

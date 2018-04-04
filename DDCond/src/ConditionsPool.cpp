@@ -17,6 +17,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/detail/Handle.inl"
+#include "DD4hep/ConditionsPrinter.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 
 using std::string;
@@ -27,8 +28,8 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(UpdatePool);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsPool);
 
 /// Default constructor
-ConditionsPool::ConditionsPool(ConditionsManager mgr)
-  : NamedObject(), m_manager(mgr), iov(0), age_value(AGE_NONE)
+ConditionsPool::ConditionsPool(ConditionsManager mgr, IOV* i)
+  : NamedObject(), m_manager(mgr), iov(i), age_value(AGE_NONE)
 {
   InstanceCount::increment(this);
 }
@@ -42,13 +43,22 @@ ConditionsPool::~ConditionsPool()   {
 /// Print pool basics
 void ConditionsPool::print()   const  {
   printout(INFO,"ConditionsPool","+++ Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
-           iov->str().c_str(), age_value, size());
+           GetName(), age_value, size());
 }
 
 /// Print pool basics
 void ConditionsPool::print(const string& opt)   const  {
   printout(INFO,"ConditionsPool","+++ %s Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
-           opt.c_str(), iov->str().c_str(), age_value, size());
+           opt.c_str(), GetName(), age_value, size());
+  if ( opt == "*" || opt == "ALL" )   {
+    ConditionsPrinter printer(0);
+    RangeConditions   range;
+    printer.summary    = false;
+    printer.lineLength = 132;
+    const_cast<ConditionsPool*>(this)->select_all(range);
+    for( auto c : range )
+      printer(c);
+  }
 }
 
 /// Listener invocation when a condition is registered to the cache
@@ -62,7 +72,7 @@ void ConditionsPool::onRemove(Condition condition)   {
 }
 
 /// Default constructor
-UpdatePool::UpdatePool(ConditionsManager mgr) : ConditionsPool(mgr)
+UpdatePool::UpdatePool(ConditionsManager mgr, IOV* i) : ConditionsPool(mgr, i)
 {
 }
 

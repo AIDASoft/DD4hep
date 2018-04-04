@@ -20,6 +20,7 @@
 #define DD4HEP_DDDB_DDDBHELPER_H
 
 // Framework includes
+#include "DD4hep/ComponentProperties.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/FieldTypes.h"
@@ -49,7 +50,7 @@ namespace dd4hep {
      *  \version  1.0
      *  \ingroup DD4HEP_XML
      */
-    class DDDBHelper   {
+    class DDDBHelper : public PropertyConfigurable  {
     public:
       typedef std::vector<std::pair<std::string, VisAttr> > VisAttrs;
       typedef std::map<std::string,std::pair<DetElement,std::string> > Det_Conditions;
@@ -61,11 +62,13 @@ namespace dd4hep {
       virtual ~DDDBHelper();
 
       /// Access XML reader object
-      xml::UriReader*  xmlReader() const       {  return m_xmlReader; }
+      xml::UriReader*  xmlReader() const       {  return m_xmlReader;                   }
+      /// Access XML reader object
+      template<typename T> T* reader() const   {  return dynamic_cast<T*>(m_xmlReader); }
       /// Set XML reader object
-      void setXmlReader(xml::UriReader* rdr)   {  m_xmlReader = rdr;  }
+      void setXmlReader(xml::UriReader* rdr)   {  m_xmlReader = rdr;                    }
       /// Access local database representation
-      dddb* detectorDescription() const        {  return m_detDesc;   }
+      dddb* detectorDescription() const        {  return m_detDesc;                     }
       /// Set XML reader object
       void setDetectorDescription(dddb* geo);
       /// Access visualization attribute for a given volume by path

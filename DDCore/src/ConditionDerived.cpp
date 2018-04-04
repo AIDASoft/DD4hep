@@ -25,6 +25,53 @@ using namespace dd4hep::cond;
 ConditionUpdateUserContext::~ConditionUpdateUserContext()   {
 }
 
+/// Access to condition object by dependency key
+Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  const  {
+  Condition c = resolver->get(key_value);
+  if ( c.isValid() )  {
+    /// Update result IOV according by and'ing the new iov structure
+    iov->iov_intersection(c.iov());
+    return c;
+  }
+  throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing condition:"+key_value.name);
+}
+   
+/// Access to all conditions of a detector element. Careful: This limits the validity!
+std::vector<Condition> ConditionUpdateContext::conditions(Condition::detkey_type det_key)  const   {
+  std::vector<Condition> v = resolver->get(det_key);
+  for(Condition c : v)   {
+    /// Update result IOV according by and'ing the new iov structure
+    iov->iov_intersection(c.iov());
+  }
+  return v;
+}
+
+/// Access to condition object by dependency key
+Condition ConditionUpdateContext::condition(Condition::key_type key_value)  const   {
+  Condition c = resolver->get(key_value);
+  if ( c.isValid() )  {
+    /// Update result IOV according by and'ing the new iov structure
+    iov->iov_intersection(c.iov());
+    return c;
+  }
+  throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing condition.");
+}
+
+/// Access to condition object by dependency key
+Condition ConditionUpdateContext::condition(Condition::key_type key_value,
+                                            bool throw_if_not)  const   {
+  Condition c = resolver->get(key_value, throw_if_not);
+  if ( c.isValid() )  {
+    /// Update result IOV according by and'ing the new iov structure
+    iov->iov_intersection(c.iov());
+    return c;
+  }
+  else if ( throw_if_not )  {
+    throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing condition.");
+  }
+  return Condition();
+}
+
 /// Standard destructor
 ConditionUpdateCall::ConditionUpdateCall() : m_refCount(1)  {
   InstanceCount::increment(this);

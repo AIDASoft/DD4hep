@@ -161,6 +161,11 @@ PropertyManager& ConditionsManager::properties()  const   {
   return access()->properties();
 }
 
+/// Access the detector description
+Detector& ConditionsManager::detectorDescription()  const   {
+  return access()->detectorDescription();
+}
+
 /// Access to properties
 Property& ConditionsManager::operator[](const std::string& property_name) const    {
   return access()->properties().property(property_name);

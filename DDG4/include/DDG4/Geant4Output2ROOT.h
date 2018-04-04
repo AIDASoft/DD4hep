@@ -50,6 +50,11 @@ namespace dd4hep {
       TTree* m_tree;
       /// Flag if Monte-Carlo truth should be followed and checked
       bool m_handleMCTruth;
+      /// Property: vector with disabled collections
+      std::vector<std::string> m_disabledCollections;
+      /// Property: vector with disabled collections
+      bool  m_disableParticles = false;
+      
     public:
       /// Standard constructor
       Geant4Output2ROOT(Geant4Context* context, const std::string& nam);

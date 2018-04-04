@@ -142,8 +142,9 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
     string new_prefix = prefix;
     new_prefix.assign(prefix.length(),' ');
     if ( !cond.is_bound() )   {
-      printout(this->printLevel,name,"++ %s \tPath:%s Key:%16llX Type:%s",
-               new_prefix.c_str(), cond.name(), cond.key(), "<Unbound-Condition>");
+      printout(this->printLevel,name,"++ %s \tPath:%s Key:%16llX Type:%s (%s)",
+               new_prefix.c_str(), cond.name(), cond.key(), "<Unbound-Condition>",
+               typeName(typeid(*ptr)).c_str());
       return 1;
     }
     const type_info&   type   = cond.typeInfo();

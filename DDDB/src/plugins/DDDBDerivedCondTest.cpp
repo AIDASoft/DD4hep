@@ -80,12 +80,12 @@ namespace  {
     }
     virtual ~ConditionUpdate1() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& ctxt)  {
+    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ctxt) override final {
       printout(context.level,"ConditionUpdate1","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
       try  {
         AlignmentData& data = target.bind<AlignmentData>();
-        Condition    cond0  = ctxt.condition(0);
+        Condition    cond0  = ctxt.condition(ctxt.key(0));
         const Delta& delta  = cond0.get<Delta>();
         data.delta          = delta;
         data.flag           = AlignmentData::HAVE_NONE;
@@ -115,14 +115,14 @@ namespace  {
     }
     virtual ~ConditionUpdate2() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& ctxt)  {
+    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ctxt)  override final  {
       printout(context.level,"ConditionUpdate2","++ Building dependent condition: %s",key.name.c_str());
       Condition     target(key.name,"Alignment");
       try  {
         AlignmentData& data  = target.bind<AlignmentData>();
-        Condition     cond0  = ctxt.condition(0);
+        Condition     cond0  = ctxt.condition(ctxt.key(0));
         const Delta&  delta0 = cond0.get<Delta>();
-        const AlignmentData&   data1  = ctxt.get<AlignmentData>(1);   // Equivalent to ctxt.condition(1).get<AlignmentData>()
+        const AlignmentData& data1  = ctxt.get<AlignmentData>(ctxt.key(1));
         data.delta           = delta0;
         data.delta           = data1.delta;
         data.flag            = AlignmentData::HAVE_NONE;
@@ -152,12 +152,12 @@ namespace  {
     }
     virtual ~ConditionUpdate3() {    }
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const ConditionUpdateContext& ctxt)  {
+    virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ctxt)  override final  {
       printout(context.level,"ConditionUpdate3","++ Building dependent condition: %s",key.name.c_str());
       Condition    target(key.name,"Alignment");
       try  {
         AlignmentData& data = target.bind<AlignmentData>();
-        Condition    cond0 = ctxt.condition(0);
+        Condition    cond0 = ctxt.condition(ctxt.key(0));
         const Delta& delta0 = cond0.get<Delta>();
         const AlignmentData&  data1  = ctxt.get<AlignmentData>(1);
         const AlignmentData&  data2  = ctxt.get<AlignmentData>(2);

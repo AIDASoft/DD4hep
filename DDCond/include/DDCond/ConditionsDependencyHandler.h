@@ -38,18 +38,24 @@ namespace dd4hep {
      */
     class ConditionsDependencyHandler : public ConditionResolver {
     public:
-      enum State  {  CREATED, RESOLVED };
-      struct Created  {
-        const ConditionDependency* dependency;
-        Condition::Object*         condition;
-        State                      state;
-        Created() = default;
-        Created(const Created&) = default;
-        Created& operator=(const Created&) = default;
-        Created(const ConditionDependency* d, Condition::Object* o) : dependency(d), condition(o), state(CREATED) {}
+      enum State  {  INVALID, CREATED, RESOLVED };
+      struct Work  {
+        IOV                        iov;
+        ConditionUpdateContext     context;
+        Condition::Object*         condition = 0;
+        State                      state = INVALID;
+        Work() = delete;
+        Work(ConditionResolver* r,
+             const ConditionDependency* d,
+             ConditionUpdateUserContext* u,
+             const IOV& i)
+          : iov(i), context(r,d,&iov,u) {}
+        Work(const Work&) = default;
+        Work& operator=(const Work&) = default;
       };
       typedef std::map<Condition::key_type, const ConditionDependency*>  Dependencies;
-      typedef std::map<Condition::key_type, Created> CreatedConditions;
+      typedef std::map<Condition::key_type, Work*> WorkConditions;
+
     protected:
       /// Reference to conditions manager 
       ConditionsManagerObject*    m_manager;
@@ -62,17 +68,18 @@ namespace dd4hep {
       /// User defined optional processing parameter
       ConditionUpdateUserContext* m_userParam;
       /// The objects created during processing
-      CreatedConditions           m_created;
+      WorkConditions           m_created, m_todo;
       /// Handler's state
       State                       m_state = CREATED;
-
+      Work*                    m_block;
+      
     public:
       /// Number of callbacks to the handler for monitoring
       mutable size_t              num_callback;
 
     protected:
       /// Internal call to trigger update callback
-      Condition::Object* do_callback(const ConditionDependency* dep);
+      Condition::Object* do_callback(Work* dep);
 
     public:
       /// Initializing constructor
@@ -84,7 +91,7 @@ namespace dd4hep {
       ~ConditionsDependencyHandler();
 
       /// Access the conditions created during processing
-      const CreatedConditions& created()  const                  { return m_created;         }
+      //const CreatedConditions& created()  const                  { return m_created;         }
       /// 1rst pass: Compute/create the missing conditions
       void compute();
       /// 2nd pass:  Handler callback for the second turn to resolve missing dependencies
@@ -101,8 +108,13 @@ namespace dd4hep {
       virtual ConditionsMap& conditionsMap() const override      { return m_pool;            }
       /// ConditionResolver implementation: Interface to access conditions.
       virtual Condition get(const ConditionKey& key) override    { return get(key.hash);     }
+      /// Interface to access conditions by conditions key
+      virtual Condition get(const ConditionKey& key, bool throw_if_not)  override
+      {  return get(key.hash, throw_if_not);                                                 }
       /// ConditionResolver implementation: Interface to access conditions
-      virtual Condition get(Condition::key_type key) override;
+      virtual Condition get(Condition::key_type key) override    { return get(key, true);    }
+      /// Interface to access conditions by hash value
+      virtual Condition get(Condition::key_type key, bool throw_if_not)  override;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
       virtual std::vector<Condition> get(DetElement de) override;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)

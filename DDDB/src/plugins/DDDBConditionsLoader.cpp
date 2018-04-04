@@ -107,22 +107,29 @@ namespace {
   private:
     Loaded&    loaded;
     const IOV& req_iov;
-
   public:
-    IOV        iov;
-
+    /// Resulting IOV
+    IOV iov;
   public:
     /// Initializing constructor
     GroupCollector(const IOV& i, Loaded& l)
-      : loaded(l), req_iov(i), iov(req_iov.iovType)  {}
+      : loaded(l), req_iov(i), iov(req_iov.iovType)
+    {
+      iov.reset().invert();
+    }
     /// ConditionsListener overload: onRegister new condition
     virtual void onRegisterCondition(Condition cond, void* param)  {
       Condition::Object* c = cond.ptr();
       if ( c && param == this &&
            req_iov.iovType == c->iov->iovType &&
-           IOV::key_is_contained(c->iov->keyData,req_iov.keyData) )
+           IOV::key_is_contained(req_iov.keyData,c->iov->keyData) )
       {
         loaded.insert(make_pair(c->hash,cond));
+        /// This is not entirely correct:
+        /// There may be more conditions loaded than required
+        /// and hence the interval of the pool bigger.
+        /// But we do not want to make another map-lookup!
+        iov.iov_intersection(c->iov->keyData);
       }
     }
   };
@@ -296,25 +303,25 @@ size_t DDDBConditionsLoader::load_many(const IOV&      req_iov,
     bool   print_results = isActivePrintLevel(DEBUG);
     m_mgr->callOnRegister(make_pair(&listener,&listener),true);
     listener.iov.reset().invert();
-    for(const auto& url : urls )  {
+    for( const auto& url : urls )  {
       loadDocument(local_reader, url.first, url.second);
       if ( !print_results ) continue;
       printout(DEBUG,"DDDBLoader","++ Loaded %3ld conditions from %s.",loaded.size()-loaded_len,url.first.c_str());
       loaded_len = loaded.size();
     }
     if ( print_results )  {
-      for(const auto& e : loaded )  {
+      for( const auto& e : loaded )  {
         const Condition& cond = e.second;
         printout(INFO,"DDDBLoader","++ %16llX: %s -> %s",cond.key(),cond->value.c_str(),cond.name());
       }
     }
     conditions_validity = listener.iov;
   }
-  catch(const exception& e)  {
+  catch( const exception& e )  {
     printout(ERROR,"DDDBLoader","+++ Load exception: %s",e.what());
     throw;
   }
-  catch(...)  {
+  catch( ... )  {
     printout(ERROR,"DDDBLoader","+++ UNKNWON Load exception.");
     throw;    
   }

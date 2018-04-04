@@ -67,9 +67,9 @@ namespace gaudi   {
     /// Default destructor
     virtual ~DeVPStaticConditionCall() = default;
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& context) override final;
+    virtual Condition operator()(const ConditionKey& key, Context& context) override final;
     /// Interface to client callback for resolving references or to use data from other conditions
-    virtual void resolve(Condition c, Resolver& resolver)  override final;
+    virtual void resolve(Condition c, Context& context)  override final;
   };
 
   /// Condition derivation call to build the dynamic Velo-pixel DetElement condition information
@@ -83,16 +83,16 @@ namespace gaudi   {
   public:
     DetElement detector;
     Catalog*   catalog = 0;
-    VPUpdateContext* context = 0;    
+    VPUpdateContext* velo_context = 0;    
     /// Initializing constructor
     DeVPIOVConditionCall(DetElement de, Catalog* cat, VPUpdateContext* ctx)
-      : detector(de), catalog(cat), context(ctx)  {}
+      : detector(de), catalog(cat), velo_context(ctx)  {}
     /// Default destructor
     virtual ~DeVPIOVConditionCall() = default;
     /// Interface to client Callback in order to update the condition
-    virtual Condition operator()(const ConditionKey& key, const Context& context) override final;
+    virtual Condition operator()(const ConditionKey& key, Context& context) override final;
     /// Interface to client callback for resolving references or to use data from other conditions
-    virtual void resolve(Condition c, Resolver& resolver)  override;
+    virtual void resolve(Condition c, Context& context)  override;
   };
   
   /// Condition derivation call to build the dynamic Velo-pixel DetElement condition information
@@ -110,11 +110,7 @@ namespace gaudi   {
     /// Default destructor
     virtual ~DeVPConditionCall() = default;
     /// Interface to client callback for resolving references or to use data from other conditions
-    virtual void resolve(Condition c, Resolver& resolver)  override final;
-    void add_generic(detail::DeVPObject* vp,
-                     std::vector<DeVPGeneric>& cont,
-                     const std::vector<DeVPGenericStatic>& src,
-                     Resolver& resolver)  const;
+    virtual void resolve(Condition c, Context& context)  override final;
   };
   
 }      // End namespace gaudi

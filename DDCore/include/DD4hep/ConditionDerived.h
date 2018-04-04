@@ -28,9 +28,12 @@ namespace dd4hep {
   namespace cond   {
 
     /// Forward declarations
+    class DependencyBuilder;
     class ConditionResolver;
     class ConditionDependency;
     class ConditionUpdateCall;
+    class ConditionUpdateContext;
+    class ConditionUpdateUserContext;
 
     /// ConditionUpdateUserContext class used by the derived conditions calculation mechanism
     /** 
@@ -66,8 +69,12 @@ namespace dd4hep {
       virtual ConditionsMap& conditionsMap() const = 0;
       /// Interface to access conditions by conditions key
       virtual Condition get(const ConditionKey& key) = 0;
+      /// Interface to access conditions by conditions key
+      virtual Condition get(const ConditionKey& key, bool throw_if_not) = 0;
       /// Interface to access conditions by hash value
       virtual Condition get(Condition::key_type key) = 0;
+      /// Interface to access conditions by hash value
+      virtual Condition get(Condition::key_type key, bool throw_if_not) = 0;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
       virtual std::vector<Condition> get(DetElement de) = 0;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
@@ -76,69 +83,119 @@ namespace dd4hep {
 
     /// ConditionUpdateContext class used by the derived conditions calculation mechanism
     /** 
+     *  This is the central object used by the functional callbacks to
+     *  build derived conditions. All optionally necessary information
+     *  can and must be accessed by this object.
+     *
+     *  Please node:
+     *  1) Be careful when resolving other conditions
+     *     These calls are IN GENERAL ONLY VALID AT RESOLVE !
+     *     Otherwise the resulting IOV shall be wrong !
+     *  2) Only accessing the conditions using the context ensure that the
+     *     IOV of the resulting derived condition is correct.
+     *     The conditions resolver does not affect the resulting IOV.
+     *  3) Though the access to the resolver under certain circumstances
+     *     is useful, you should always be aware that to IOV intersection
+     *     shall be wrong, since these accessed conditions are not taken 
+     *     into account.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionUpdateContext  {
+    class ConditionUpdateContext final  {
     public:
+      /// Internal reference to the resolver to access other conditions (Be careful)
       ConditionResolver*          resolver;
+      /// The dependency to be handled within this context
       const ConditionDependency*  dependency;
-      ConditionUpdateUserContext* parameter;
+      /// The reference to the combined IOV resulting from the cumputation
       IOV*                        iov;
+      /// A refernce to the user parameter
+      ConditionUpdateUserContext* parameter;
+
+    public:
       /// Initializing constructor
       ConditionUpdateContext(ConditionResolver* r,
                              const ConditionDependency* d,
-                             ConditionUpdateUserContext* parameter,
-                             IOV* iov);
+                             IOV* iov,
+                             ConditionUpdateUserContext* parameter);
+      
       /// Throw exception on conditions access failure
       void accessFailure(const ConditionKey& key_value)  const;
+
       /// Access to dependency keys
-      const ConditionKey& key(size_t which)  const;
-      /// Access to condition object by dependency index
-      Condition condition(size_t which)  const;
-      /// Access to condition object by dependency key
-      Condition condition(const ConditionKey& key_value)  const;
-      /// Access to condition object by dependency key
-      Condition conditionByHash(Condition::key_type key_value)  const;
+      const ConditionKey& key(size_t which)  const ;
+
       /// Access user parameter
       template<typename Q> Q* param()  const  {
         return static_cast<Q*>(parameter);
       }
-      /// Access of other conditions data from the resolver
-      template<typename T> T& get(const ConditionKey& key_value)  {
-        Condition cond = resolver->get(key_value);
-        if ( cond.isValid() )  {
-          T& data = cond.get<T>();	    /// Bind data to wanted type
-          /// Update result IOV according by and'ing the new iov structure
-          iov->iov_intersection(cond.iov());
-          return data;
-        }
-        accessFailure(key_value);
-        throw std::runtime_error("ConditionUpdateCall");
+
+      /// Access to all conditions of a detector element.
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      std::vector<Condition> conditions(DetElement det)  const    {
+        return conditions(det.key());
       }
+
+      /// Access to all conditions of a detector element.
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      std::vector<Condition> conditions(Condition::detkey_type det_key)  const;
+
+      /// Access to condition object by dependency key
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      Condition condition(const ConditionKey& key_value)  const;
+
+      /// Access to condition object by dependency key
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      Condition condition(Condition::key_type key_value)  const;
+
+      /// Access to condition object by dependency key
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      Condition condition(Condition::key_type key_value, bool throw_if_not)  const;
+
       /// Access of other conditions data from the resolver
-      template<typename T> const T& get(const ConditionKey& key_value)  const {
-        Condition cond = resolver->get(key_value);
-        if ( cond.isValid() )  {
-          const T& data = cond.get<T>();  /// Bind data to wanted type
-          /// Update result IOV according by and'ing the new iov structure
-          iov->iov_intersection(cond.iov());
-          return data;
-        }
-        accessFailure(key_value);
-        throw std::runtime_error("ConditionUpdateCall");
-      }
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      template<typename T> T& get(const ConditionKey& key_value);
+
       /// Access of other conditions data from the resolver
-      template<typename T> T& get(size_t key_id)  {
-        const ConditionKey& key_value = this->key(key_id);
-        return this->get<T>(key_value);
-      }
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      template<typename T> const T& get(const ConditionKey& key_value)  const;
+
       /// Access of other conditions data from the resolver
-      template<typename T> const T& get(size_t key_id)  const {
-        const ConditionKey& key_value = this->key(key_id);
-        return this->get<T>(key_value);
-      }
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      template<typename T> T& get(Condition::key_type key_value);
+
+      /// Access of other conditions data from the resolver
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      template<typename T> const T& get(Condition::key_type key_value)  const;
     };
 
     /// Callback interface
@@ -173,9 +230,9 @@ namespace dd4hep {
       }
       /// Interface to client callback in order to update/create the condition
       virtual Condition operator()(const ConditionKey& target,
-                                   const ConditionUpdateContext& ctxt) = 0;
+                                   ConditionUpdateContext& ctxt) = 0;
       /// Interface to client callback for resolving references or to use data from other conditions
-      virtual void resolve(Condition /* c */, ConditionResolver& /* resolver */)   {}
+      virtual void resolve(Condition /* c */, ConditionUpdateContext& /* ctxt */)   {}
     };
 
     /// Condition dependency definition
@@ -216,13 +273,13 @@ namespace dd4hep {
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
-      Condition::key_type key()  const           {  return target.hash;         }
+      Condition::key_type key()  const    {  return target.hash;                   }
       /// Access the dependency key
-      const char* name()  const                  {  return target.name.c_str(); }
+      const char* name()  const           {  return target.name.c_str();           }
       /// Add use count to the object
-      ConditionDependency* addRef()              {  ++m_refCount; return this;  }
+      ConditionDependency* addRef()       {  ++m_refCount; return this;            }
       /// Release object. May not be used any longer
-      void release()                             {  if ( --m_refCount <= 0 ) delete this; }
+      void release()                      {  if ( --m_refCount <= 0 ) delete this; }
     };
 
     /// Condition dependency builder
@@ -253,37 +310,52 @@ namespace dd4hep {
     /// Initializing constructor
     inline ConditionUpdateContext::ConditionUpdateContext(ConditionResolver* resolv,
                                                           const ConditionDependency* dep,
-                                                          ConditionUpdateUserContext* user_param,
-                                                          IOV* i)
-      : resolver(resolv), dependency(dep), parameter(user_param), iov(i)
+                                                          IOV* i,
+                                                          ConditionUpdateUserContext* user_param)
+      : resolver(resolv), dependency(dep), iov(i), parameter(user_param)
     {
     }
 
     /// Access to dependency keys
-    inline const ConditionKey& ConditionUpdateContext::key(size_t which)  const  {
+    inline const ConditionKey&
+    ConditionUpdateContext::key(size_t which)  const  {
       return dependency->dependencies[which];
     }
 
-    /// Access to condition object by dependency key
-    inline Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  const  {
-      Condition c = resolver->get(key_value);
-      if ( c.isValid() ) return c;
-      throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing condition:"+key_value.name);
-    }
-   
-    /// Access to condition object by dependency index
-    inline Condition ConditionUpdateContext::condition(size_t which)  const   {
-      const ConditionKey& key_value = this->key(which);
-      return this->condition(key_value);
+    /// Access of other conditions data from the resolver
+    template<typename T> inline T&
+    ConditionUpdateContext::get(const ConditionKey& key_value)   {
+      Condition cond = condition(key_value);
+      if ( cond.isValid() )  {
+        return cond.get<T>();	    /// return already bound data to wanted type
+      }
+      accessFailure(key_value);
+      throw std::runtime_error("ConditionUpdateCall");
     }
 
-    /// Access to condition object by dependency key
-    inline Condition ConditionUpdateContext::conditionByHash(Condition::key_type key_value)  const   {
-      Condition c = resolver->get(key_value);
-      if ( c.isValid() ) return c;
-      throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing condition.");
+    /// Access of other conditions data from the resolver
+    template<typename T> inline const T&
+    ConditionUpdateContext::get(const ConditionKey& key_value)  const  {
+      Condition cond = condition(key_value);
+      if ( cond.isValid() )  {
+        return cond.get<T>();	    /// return already bound data to wanted type
+      }
+      accessFailure(key_value);
+      throw std::runtime_error("ConditionUpdateCall");
     }
- 
+
+    /// Access of other conditions data from the resolver
+    template<typename T> inline T&
+    ConditionUpdateContext::get(Condition::key_type key_value)    {
+      return condition(key_value).get<T>();
+    }
+
+    /// Access of other conditions data from the resolver
+    template<typename T> inline const T&
+    ConditionUpdateContext::get(Condition::key_type key_value)  const   {
+      return condition(key_value).get<T>();
+    }
+
   }       /* End namespace cond               */
 }         /* End namespace dd4hep                   */
 #endif    /* DD4HEP_DDCORE_CONDITIONDERIVED_H     */
