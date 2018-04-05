@@ -155,9 +155,11 @@ namespace {
   void add_sensors( vector<DeVeloSensor>& cont,
                     const vector<DeVeloSensorStatic>& src,
                      map<DeVeloSensorStatic,DeVeloSensor>& mapping)    {
-    cont.reserve(src.size());
-    for (DeVeloSensorStatic i : src)
-      cont.push_back(mapping[i]);
+    if ( !src.empty() )  {
+      cont.reserve(src.size());
+      for (DeVeloSensorStatic i : src)
+        cont.push_back(mapping[i]);
+    }
   }
 
   /// Resolve generic parent-sensor dependencies
@@ -166,13 +168,15 @@ namespace {
                     map<DeVeloSensorStatic,DeVeloSensor>& mapping,
                     dd4hep::cond::ConditionUpdateContext& context)
   {
-    gen->sensors.reserve(src->sensors.size());
-    for (DeVeloSensorStatic i : src->sensors)   {
-      DeVeloSensor sens = mapping[i];
-      if ( !sens.isValid() )  {
-        except("DeVelo","Problem: Invalid sensor refernce encountered.");
+    if ( !gen->sensors.empty() )  {
+      gen->sensors.reserve(src->sensors.size());
+      for (DeVeloSensorStatic i : src->sensors)   {
+        DeVeloSensor sens = mapping[i];
+        if ( !sens.isValid() )  {
+          except("DeVelo","Problem: Invalid sensor refernce encountered.");
+        }
+        gen->sensors.push_back(sens);
       }
-      gen->sensors.push_back(sens);
     }
     for (detail::DeVeloGenericStaticObject* i : src->children)   {
       dd4hep::ConditionKey::KeyMaker key(i->detector.key(), Keys::deKey);
@@ -205,7 +209,12 @@ void DeVeloConditionCall::resolve(Condition cond, Context& context)  {
     }
   }
 
-  for(size_t iside = 0; iside<3; ++iside)   {
+  for(size_t iside = 0; iside<2; ++iside)   {
+    vp->sensors[iside].clear();
+    vp->rSensors[iside].clear();
+    vp->phiSensors[iside].clear();
+    vp->rphiSensors[iside].clear();
+    vp->puSensors[iside].clear();
     add_sensors(vp->sensors[iside],     s->sensors[iside],     sensorMapping);
     add_sensors(vp->rSensors[iside],    s->rSensors[iside],    sensorMapping);
     add_sensors(vp->phiSensors[iside],  s->phiSensors[iside],  sensorMapping);

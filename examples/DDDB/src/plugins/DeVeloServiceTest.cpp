@@ -216,7 +216,7 @@ namespace {
     for(int i=0; i<argc; ++i)  {
       if ( ::strcmp(argv[i],"-print")==0 )  {
         s_PrintLevel = dd4hep::printLevel(argv[++i]);
-        printout(INFO,"DDDB","Setting print level for %s to %s [%d]",__FILE__,argv[i-1],s_PrintLevel);
+        printout(INFO,"ServiceTest","Setting print level for %s to %s [%d]",__FILE__,argv[i-1],s_PrintLevel);
       }
       else if ( ::strcmp(argv[i],"--help")==0 )      {
         printout(INFO,"Plugin-Help","Usage: DDDB_DeVeloServiceTest --opt [--opt]            ");
