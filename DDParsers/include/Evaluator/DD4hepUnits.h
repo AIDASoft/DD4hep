@@ -29,8 +29,9 @@
 
 #include "RVersion.h"
 
-// We use the ROOT system units if they are avalible
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
+// We use the ROOT system units if they are avalible (FAILS SOME TESTS FOR NOW)
+#if 0
+/// ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
 #include "TGeoSystemOfUnits.h"
 /// Main dd4hep namespace. We must import here the ROOT TGeo units
 namespace dd4hep {
