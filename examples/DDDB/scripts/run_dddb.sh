@@ -33,6 +33,7 @@ params="-params file:${DDDB_DIR}/Parameters.xml";
 input="-input file:${DDDB_DIR}/DDDB/lhcb.xml";
 config="";
 exec="";
+opts="";
 vis="";
 debug="";
 last_cmd="";
@@ -88,6 +89,14 @@ while [[ "$1" == -* ]]; do
             input="";
             last_cmd="";
             ;;
+	-iov_start)
+            opts="${opts} -iov_start $2";
+            shift;
+            ;;
+	-iov_end)
+            opts="${opts} -iov_end $2";
+            shift;
+            ;;
 	-input)
             input="-input $2";
             last_cmd="";
@@ -124,7 +133,7 @@ if [ "$(uname)" == "Darwin" ]; then
   export DYLD_LIBRARY_PATH=${DD4HEP_LIBRARY_PATH}
 fi
 export DD4HEP_TRACE=ON;
-ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${config} ${exec} ${vis} ${plugins}`;
+ARGS=`echo -plugin DDDB_Executor ${loader} ${params} ${input} ${opts} ${config} ${exec} ${vis} ${plugins}`;
 echo "Command: ${debug} `which geoPluginRun` -destroy $ARGS";
 if test -z "${debug}";then
     exec `which geoPluginRun` -destroy ${ARGS};

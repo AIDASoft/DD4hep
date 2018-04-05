@@ -189,6 +189,30 @@ if (DD4HEP_USE_XERCESC)
     REGEX_FAIL "EXCEPTION;Exception"
   )
   #
+  #---Testing: Load the geometry + conditions + create DeVelo detector elements
+  dd4hep_add_test_reg( DDDB_DeVelo_LONGTEST
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
+    EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+    -iov_start 31-12-2000-00:00:00 -iov_end 31-12-2019-00:00:00
+    -config DD4hep_ConditionsManagerInstaller
+    -plugin DDDB_DeVeloTest -print DEBUG
+    DEPENDS    DDDB_extract_LONGTEST
+    REGEX_PASS "TestSummary              Total 9110 conditions load summary \\(S:2286,L:4020,C:2804,M:0\\)" 
+    REGEX_FAIL "EXCEPTION"
+  )
+  #
+  #---Testing: As above, but access conditions using Gaudi-like service
+  dd4hep_add_test_reg( DDDB_DeVelo_Gaudi_LONGTEST
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
+    EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+    -iov_start 31-12-2000-00:00:00 -iov_end 31-12-2019-00:00:00
+    -config DD4hep_ConditionsManagerInstaller
+    -plugin DDDB_DeVeloServiceTest -print DEBUG
+    DEPENDS    DDDB_extract_LONGTEST
+    REGEX_PASS "TestSummary              Total 10 slices created and accessed during the test." 
+    REGEX_FAIL "EXCEPTION"
+  )
+  #
   #---Testing: Extract DDDB data from zip archive -------------------------------
   dd4hep_add_test_reg( DDDB_clean_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
@@ -206,6 +230,8 @@ if (DD4HEP_USE_XERCESC)
     DDDB_conditions_dump_simple_LONGTEST
     DDDB_conditions_LONGTEST
     DDDB_load_LONGTEST
+    DDDB_DeVelo_Gaudi_LONGTEST
+    DDDB_DeVelo_LONGTEST
     DDDB_extract_LONGTEST
     REGEX_PASS "DDDB Database successfully removed" )
 

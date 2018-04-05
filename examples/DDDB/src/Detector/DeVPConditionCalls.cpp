@@ -96,14 +96,14 @@ void DeVPStaticConditionCall::resolve(Condition c, Context& context)    {
           module->sensors.push_back(sens);
           support->sensors.push_back(sens);
           side->sensors.push_back(sens);
-          printout(INFO,"DeVPStatic","Add Sensor[%03ld]:  %s",long(sens->sensorNumber),path.c_str());
+          printout(DEBUG,"DeVPStatic","Add Sensor[%03ld]:  %s",long(sens->sensorNumber),path.c_str());
           break;
         default:
           break;
         }
       }
       else   {
-        printout(INFO,"DeVPStatic","Aux.DetElmenet:   %s",path.c_str());
+        printout(DEBUG,"DeVPStatic","Aux.DetElmenet:   %s",path.c_str());
       }
     }
   }
@@ -153,7 +153,7 @@ static void add_generic( detail::DeVPObject* vp,
     cont.push_back(gen);
     for ( const auto& j : i->sensors )
       gen->sensors.push_back(vp->sensors[j->sensorNumber]);
-    printout(INFO,"DeVP","Add [%03ld]:    %s",cont.size()-1,gen->detector.path().c_str());
+    printout(DEBUG,"DeVP","Add [%03ld]:    %s",cont.size()-1,gen->detector.path().c_str());
   }
 }
 
@@ -170,7 +170,7 @@ void DeVPConditionCall::resolve(Condition cond, Context& context)   {
       KeyMaker   key(i->detector.key(), Keys::deKey);
       DeVPSensor sens = context.condition(key.hash);
       vp->sensors[i->sensorNumber] = sens;
-      printout(INFO,"DeVP","Add Sensor[%03ld]:  %s",long(i->sensorNumber),i->detector.path().c_str());
+      printout(DEBUG,"DeVP","Add Sensor[%03ld]:  %s",long(i->sensorNumber),i->detector.path().c_str());
     }
   }
   add_generic(vp.ptr(), vp->sides,    s->sides,    context);
