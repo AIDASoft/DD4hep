@@ -78,3 +78,7 @@ dd4hep_add_plugin ( DDCorePlugins SOURCES src/plugins/*.cpp )
 dd4hep_add_plugin(DDGDMLPlugins
   OPTIONAL    [ROOT REQUIRED COMPONENTS Gdml SOURCES src/gdml/*.cpp]
 )
+#
+#
+#---Package installation procedure(s) ----------------------------------------------
+dd4hep_install_files(FILES python/*.py DESTINATION python)
