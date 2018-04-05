@@ -44,7 +44,7 @@ def _import_class(ns,nam):
 #---------------------------------------------------------------------------
 #
 try:
-  dd4hep     = loadDDG4() 
+  dd4hep = loadDDG4() 
 except Exception as X:
   logging.info('+--%-100s--+',100*'-')
   logging.info('|  %-100s  |','Failed to load DDG4 library:')
@@ -59,8 +59,11 @@ Simulation = dd4hep.sim
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
 Detector   = Core.Detector
-from DD4hep import std, std_vector, std_list, std_map, std_pair
-
+#
+from   dd4hep_base import std, std_vector, std_list, std_map, std_pair
+from   dd4hep_base import TGeoUnits
+import g4units     as     G4Units
+#
 #---------------------------------------------------------------------------
 def _constant(self,name):
   return self.constantAsString(name)
