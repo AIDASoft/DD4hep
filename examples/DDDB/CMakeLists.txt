@@ -27,8 +27,24 @@ if (DD4HEP_USE_XERCESC)
   dd4hep_package (DDDB MAJOR 0 MINOR 0 PATCH 1
     USES  [XERCESC REQUIRED]
           [ROOT    REQUIRED COMPONENTS Geom] 
-          [DD4hep  REQUIRED COMPONENTS DDCore DDDB]
+          [DD4hep  REQUIRED COMPONENTS DDCore DDCond]
+    INCLUDE_DIRS     include
+    INSTALL_INCLUDES include/DDDB include/Detector include/Kernel
     )
+
+  #
+  #---DDDB library --------------------------------------------------------------
+  dd4hep_add_package_library(DDDB
+    SOURCES src/*.cpp src/Detector/*.cpp
+    USES    [ROOT    REQUIRED COMPONENTS Geom GenVector]
+    )
+  #
+  #---DDDB plugin library -------------------------------------------------------
+  dd4hep_add_plugin(DDDBPlugins
+    SOURCES src/plugins/*.cpp
+    USES    [ROOT    REQUIRED COMPONENTS Geom GenVector] DDDB
+    )
+
   #---Package installation procedure(s) -----------------------------------------
   install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)
   install ( PROGRAMS scripts/display_dddb.sh DESTINATION bin)
