@@ -164,14 +164,14 @@ namespace {
       long dump()  {
         shared_ptr<dd4hep::cond::ConditionsSlice> slice;
         dd4hep::cond::ConditionsIOVPool* iovp = m_manager.iovPool(*m_iovtype);
-        
+        dd4hep::cond::ConditionsManager::Result total;
         printout(INFO,"ConditionsManager","+++ Dump pools at dump:");
         for(const auto& e : iovp->elements)
           e.second->print();
         printout(INFO,"ConditionsManager","+++ Starting conditions dump loop");
-        long start_time = dd4hep::detail::makeTime(2016,5,20,0,0,0);
+        long daq_start = dd4hep::detail::makeTime(2016,5,20,0,0,0);
         for(size_t i=0; i<10; ++i)   {
-          long stamp = start_time + i*3600 + 1800; // Middle of 1 hour run
+          long stamp = daq_start + i*3600 + 1800; // Middle of 1 hour run
           dd4hep::IOV iov(m_iovtype, stamp);
           configReader(stamp-1800, stamp+1799);    // Run duration 1 hour - 1 second
           slice.reset(new dd4hep::cond::ConditionsSlice(m_manager, m_content));
@@ -179,6 +179,7 @@ namespace {
           dd4hep::cond::ConditionsManager::Result res = m_manager.prepare(iov, *slice, m_context.get());
           printout(dd4hep::ALWAYS,"ConditionsManager","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
                    res.total(), res.selected, res.loaded, res.computed, res.missing, iov.str().c_str());
+          total += res;
           for(const auto& e : iovp->elements)
             e.second->print();
           DeVelo devp = slice->get(m_de,Keys::deKey);
@@ -202,6 +203,8 @@ namespace {
           }
         }
         m_manager.clean(dd4hep::cond::ConditionsFullCleanup());
+        printout(dd4hep::ALWAYS,"TestSummary","Total %ld conditions load summary (S:%ld,L:%ld,C:%ld,M:%ld)",
+                 total.total(), total.selected, total.loaded, total.computed, total.missing);
         printout(dd4hep::ALWAYS,"ServiceTest","Test finished....");
         return 1;
       }

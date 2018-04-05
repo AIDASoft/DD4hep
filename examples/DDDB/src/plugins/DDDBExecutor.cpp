@@ -111,9 +111,9 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
           break;
         case 'I':
           if ( ::strncasecmp(arg+1,"IOV_START",5)==0 )
-            iov_start = detail::makeTime(argv[++i]);
+            iov_start = detail::makeTime(argv[++i],"%d-%m-%Y-%H:%M:%S");
           else if ( ::strncasecmp(arg+1,"IOV_END",5)==0 )
-            iov_end = detail::makeTime(argv[++i]);
+            iov_end = detail::makeTime(argv[++i],"%d-%m-%Y-%H:%M:%S");
           else
             sys_id = argv[++i];
           last = 0;

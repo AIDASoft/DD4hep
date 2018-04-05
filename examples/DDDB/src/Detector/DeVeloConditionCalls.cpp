@@ -60,7 +60,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
       bool   right = path.find("/VeloRight/Module") != string::npos  || path.find("/VeloRight") == path.length()-10;
       size_t sideNo  = left ? DeVeloFlags::LEFT : right ? DeVeloFlags::RIGHT : 99999;
 
-      printout(INFO,"DeVelo"," %03d DetElement: %s",i.second, de.path().c_str());
+      printout(DEBUG,"DeVelo"," %03d DetElement: %s",i.second, de.path().c_str());
       if ( left || right )   {
         switch( i.second )   {
         case 0:  // Self!
@@ -104,14 +104,14 @@ void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
           support->sensors.push_back(sens);
           module->sensors.push_back(sens);
           side->sensors.push_back(sens);
-          printout(INFO,"DeVeloStatic","Add Sensor[%03ld]:  %s",long(sens->sensorNumber),path.c_str());
+          printout(DEBUG,"DeVeloStatic","Add Sensor[%03ld]:  %s",long(sens->sensorNumber),path.c_str());
           break;
         default:
           break;
         }
       }
       else   {
-        printout(INFO,"DeVeloStatic","Aux.DetElmenet:   %s",path.c_str());
+        printout(DEBUG,"DeVeloStatic","Aux.DetElmenet:   %s",path.c_str());
       }
     }
   }
@@ -170,7 +170,7 @@ namespace {
     for (DeVeloSensorStatic i : src->sensors)   {
       DeVeloSensor sens = mapping[i];
       if ( !sens.isValid() )  {
-        cout << "Problem" << endl;
+        except("DeVelo","Problem: Invalid sensor refernce encountered.");
       }
       gen->sensors.push_back(sens);
     }
@@ -197,9 +197,8 @@ void DeVeloConditionCall::resolve(Condition cond, Context& context)  {
       KeyMaker     key(i->detector.key(), Keys::deKey);
       DeVeloSensor sens = context.condition(key.hash);
       if ( !sens.isValid() )  {
-        cout << "Problem Mapping " << (void*)i.ptr()
-             << " ---> " << (void*)sens.ptr() << " " << i->detector.path()
-             << endl;
+        except("DeVelo","Problem Mapping %p ---> %p [%s]",
+               (void*)i.ptr(), (void*)sens.ptr(), i->detector.path().c_str());
       }
       sensorMapping[i] = sens;
       continue;

@@ -166,18 +166,20 @@ namespace {
 
       /// __________________________________________________________________________________
       long dump()  {
+        size_t num_round = 10;
+        long   daq_start = dd4hep::detail::makeTime(2016,5,20,0,0,0);
         shared_ptr<dd4hep::cond::ConditionsSlice> slice;
         const IDetService::IOVType* iov_typ = m_service->iovType("epoch");
 
         printout(INFO,"ConditionsManager","+++ Starting conditions dump loop");
-        for(size_t i=0; i<10; ++i)   {
-          long stamp = dd4hep::detail::makeTime(2016,5,20,i,30,0);
-          dd4hep::IOV iov(iov_typ, stamp);
-          configReader(stamp-1800, stamp+1799);    // Run duration 1 hour - 1 second
+        for(size_t i=0; i<num_round; ++i)   {
+          long event_stamp = daq_start + (i*3600) + 1800;
+          dd4hep::IOV iov(iov_typ, event_stamp);
+          configReader(event_stamp-1800, event_stamp+1799);    // Run duration 1 hour - 1 second
           // Reset context. Need at some point a better mechanism
           m_context->alignments_done = dd4hep::Condition();
           /// The next line is what would show up in the client code:
-          slice = m_service->project("DDDB", m_context.get(), "epoch", stamp);
+          slice = m_service->project("DDDB", m_context.get(), "epoch", event_stamp);
           printout(INFO,"ConditionsManager","+++ Prepared slice Round: %ld for IOV:%s", 
                    i, slice->iov().str().c_str());
 
@@ -201,6 +203,9 @@ namespace {
           }
         }
         m_service->cleanup(dd4hep::cond::ConditionsFullCleanup());
+        printout(dd4hep::ALWAYS,"TestSummary",
+                 "Total %ld slices created and accessed during the test.", num_round);
+
         printout(dd4hep::ALWAYS,"ServiceTest","Test finished....");
         return 1;
       }
