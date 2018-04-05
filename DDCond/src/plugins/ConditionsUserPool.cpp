@@ -572,6 +572,11 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
       copy(begin(calc_missing), last_calc, inserter(slice_miss_calc, slice_miss_calc.begin()));
     }
   }
+  slice.status = result;
+  slice.used_pools.clear();
+  if ( slice.flags&ConditionsSlice::REF_POOLS )   {
+    m_iovPool->select(required, slice.used_pools);
+  }
   return result;
 }
 
@@ -643,6 +648,7 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&              required,
       copy(begin(cond_missing), last_cond, inserter(slice_miss_cond, slice_miss_cond.begin()));
     }
   }
+  slice.status = result;
   return result;
 }
 
@@ -705,6 +711,11 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&                  required,
     else if ( do_output )  {
       copy(begin(calc_missing), last_calc, inserter(slice_miss_calc, slice_miss_calc.begin()));
     }
+  }
+  slice.status += result;
+  slice.used_pools.clear();
+  if ( slice.flags&ConditionsSlice::REF_POOLS )   {
+    m_iovPool->select(required, slice.used_pools);
   }
   return result;
 }

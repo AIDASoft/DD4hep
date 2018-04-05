@@ -52,12 +52,16 @@ namespace dd4hep {
      */
     class ConditionsSlice : public ConditionsMap  {
     public:
-      typedef Condition::key_type                key_type;
+      typedef Condition::key_type                           key_type;
+      typedef std::vector<std::shared_ptr<ConditionsPool> > ContainedPools;
 
       enum ManageFlag {
         REGISTER_MANAGER= 1<<0,
         REGISTER_POOL   = 1<<1,
         REGISTER_FULL   = REGISTER_MANAGER|REGISTER_POOL
+      };
+      enum LoadFlags  {
+        REF_POOLS       = 1<<1
       };
       
       /// Helper to simplify the registration of new condtitions from arbitrary containers.
@@ -104,6 +108,13 @@ namespace dd4hep {
       /// Container of conditions required by this slice
       std::shared_ptr<ConditionsContent> content;
 
+      /// Store the result of the prepare step
+      ConditionsManager::Result status;
+      /// If requested refence the used pools with a shared pointer to inhibit cleanup
+      ContainedPools            used_pools;
+      /// Flag to steer conditions management
+      unsigned long             flags = 0;
+      
     protected:
       /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
       ConditionsContent::Conditions   m_missingConditions;
@@ -133,7 +144,11 @@ namespace dd4hep {
       virtual ~ConditionsSlice();
 
       /// Total size of all conditions contained in the slice
-      size_t size() const  {  return content->conditions().size()+content->derived().size(); }
+      size_t size() const   { return content->conditions().size()+content->derived().size(); }
+      /// Set flag to reference the used pools during prepare
+      void refPools()       { this->flags |= REF_POOLS;                                      }
+      /// Set flag to not reference the used pools during prepare (and drop possibly pending)
+      void derefPools();
       /// Access the map of conditions from the desired content
       const ConditionsContent::Conditions& conditions() const { return content->conditions();}
       /// Access the map of computational conditions from the desired content
@@ -146,6 +161,7 @@ namespace dd4hep {
       const IOV& iov()  const;
       /// Clear the conditions content and the user pool.
       void reset();
+
       /// Insert a set of conditions to the slice AND register them to the conditions manager.
       /** Note: The conditions already require a valid hash key                           */
       template <typename T> void manage(const T& conds, ManageFlag flg)  {

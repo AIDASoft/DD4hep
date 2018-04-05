@@ -128,7 +128,7 @@ size_t ConditionsIOVPool::select(const IOV&              req_validity,
                                  const ConditionsSelect& predicate_processor,
                                  IOV&                    cond_validity)
 {
-  size_t num_selected = 0;
+  size_t num_selected = 0, pool_selected = 0;
   if ( !elements.empty() )  {
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
     for( const auto& i : elements )  {
@@ -137,7 +137,8 @@ size_t ConditionsIOVPool::select(const IOV&              req_validity,
         continue;
       }
       cond_validity.iov_intersection(i.first);
-      num_selected += i.second->select_all(predicate_processor);
+      pool_selected = i.second->select_all(predicate_processor);
+      num_selected += pool_selected;
       i.second->age_value = 0;
     }
   }
@@ -149,17 +150,53 @@ size_t ConditionsIOVPool::select(const IOV& req_validity,
                                  Elements&  valid,
                                  IOV&       cond_validity)
 {
+  size_t num_selected = select(req_validity, valid);
+  cond_validity.invert().reset();
+  for( const auto& i : valid )
+    cond_validity.iov_intersection(*(i.second->iov));
+  return num_selected;
+}
+
+/// Select all ACTIVE conditions, which do match the IOV requirement
+size_t ConditionsIOVPool::select(const IOV& req_validity, Elements&  valid)
+{
   size_t num_selected = 0;
   if ( !elements.empty() )   {
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
     for( const auto& i : elements )  {
       if ( !IOV::key_contains_range(i.first, req_key) )  {
-        ++i.second->age_value;
         continue;
       }
-      cond_validity.iov_intersection(i.first);
       valid[i.first] = i.second;
-      i.second->age_value = 0;
+      ++num_selected;
+    }
+  }
+  return num_selected;
+}
+
+/// Select all ACTIVE conditions, which do match the IOV requirement
+size_t ConditionsIOVPool::select(const IOV&        req_validity, 
+                                 std::vector<Element>&  valid,
+                                 IOV&              cond_validity)
+{
+  size_t num_selected = select(req_validity, valid);
+  cond_validity.invert().reset();
+  for( const auto& i : valid )
+    cond_validity.iov_intersection(*(i->iov));
+  return num_selected;
+}
+
+/// Select all ACTIVE conditions, which do match the IOV requirement
+size_t ConditionsIOVPool::select(const IOV& req_validity, std::vector<Element>& valid)
+{
+  size_t num_selected = 0;
+  if ( !elements.empty() )   {
+    const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
+    for( const auto& i : elements )  {
+      if ( !IOV::key_contains_range(i.first, req_key) )  {
+        continue;
+      }
+      valid.push_back(i.second);
       ++num_selected;
     }
   }
