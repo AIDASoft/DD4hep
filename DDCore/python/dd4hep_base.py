@@ -241,7 +241,7 @@ import_geometry()
 #
 try:
   from ROOT import TGeoUnit as TGeoUnits
-  def import_units(ns):
+  def import_units(ns=None):
     def import_unit(ns,nam):
       setattr(ns,nam,getattr(TGeoUnits,nam))
     items = dir(TGeoUnits)
