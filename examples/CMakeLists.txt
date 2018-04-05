@@ -52,7 +52,7 @@ dd4hep_enable_tests (
   AlignDet
   ClientTests
   Conditions
-  DDCMSTests
+  DDCMS
   DDDB
   DDG4
   Persistency
