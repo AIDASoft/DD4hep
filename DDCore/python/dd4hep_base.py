@@ -225,3 +225,18 @@ def import_tgeo():
 
 import_tgeo()
 import_geometry()
+
+try:
+  from ROOT import TGeoUnit as TGeoUnits
+  def import_units():
+    def import_unit(nam):
+      setattr(name_space,nam,getattr(TGeoUnits,nam))
+    items = dir(TGeoUnits)
+    for u in items:
+      if u[0] != '_':
+        import_unit(u)
+    return len(items)    
+except:
+  print 'WARNING: No units from TGeoUnit can be imported. This is normal for ROOT < 6.12.0'
+  def import_units():
+    return 0

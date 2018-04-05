@@ -27,7 +27,18 @@
 #ifndef DD4HEP_TGEOUNITS_H
 #define DD4HEP_TGEOUNITS_H
 
-/// Utility namespace to support TGeo units.
+#include "RVersion.h"
+
+// We use the ROOT system units if they are avalible
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
+#include "TGeoSystemOfUnits.h"
+/// Main dd4hep namespace. We must import here the ROOT TGeo units
+namespace dd4hep {
+  using namespace TGeoUnit;
+}
+#else
+
+/// Main dd4hep namespace. We must import here the ROOT TGeo units
 namespace dd4hep {
 
   //namespace units  {
@@ -392,4 +403,6 @@ namespace dd4hep {
     static const double universe_mean_density = 1.e-25 * g / cm3;
   //}
 }
+#endif
+
 #endif /* DD4HEP_TGEOUNITS_H */

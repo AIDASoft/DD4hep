@@ -8,10 +8,5 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-#
-#  BACKWARDS COMPATIBILITY FILE!
-#  The namespace "DD4hep" is deprecated. Please use "dd4hep" instead.
-#
-#==========================================================================
-from g4units import *
-print 'DEPRECATION WARNING  The namespace "SystemOfUnits" is deprecated. Please use "g4units" instead.'
+from dd4hep_base import *
+import_units()
