@@ -128,7 +128,7 @@ namespace {
           dd4hep::Condition::detkey_type det_key = de.key();
           dd4hep::ConditionKey::KeyMaker lower(det_key, dd4hep::Condition::FIRST_ITEM_KEY);
           dd4hep::ConditionKey::KeyMaker upper(det_key, dd4hep::Condition::LAST_ITEM_KEY);
-          printout(DEBUG, "ServiceTest","Processing %ld class %d  -> %s",
+          printout(DEBUG, "DeVeloTest","Processing %ld class %d  -> %s",
                    e.second, cat->classID, de.path().c_str());
           m_context->detectors.insert(make_pair(det_key,make_pair(de,cat)));
           {
@@ -206,7 +206,7 @@ namespace {
         m_manager.clean(dd4hep::cond::ConditionsFullCleanup());
         printout(dd4hep::ALWAYS,"TestSummary","Total %ld conditions load summary (S:%ld,L:%ld,C:%ld,M:%ld)",
                  total.total(), total.selected, total.loaded, total.computed, total.missing);
-        printout(dd4hep::ALWAYS,"ServiceTest","Test finished....");
+        printout(dd4hep::ALWAYS,"DeVeloTest","Test finished....");
         return 1;
       }
     };
@@ -218,7 +218,7 @@ namespace {
         printout(INFO,"DDDB","Setting print level for %s to %s [%d]",__FILE__,argv[i-1],s_PrintLevel);
       }
       else if ( ::strcmp(argv[i],"--help")==0 )      {
-        printout(INFO,"Plugin-Help","Usage: DDDBDetectorDump --opt [--opt]            ");
+        printout(INFO,"Plugin-Help","Usage: DDDB_DeVeloTest --opt [--opt]            ");
         printout(INFO,"Plugin-Help","  -print <value>      Printlevel for output      ");
         printout(INFO,"Plugin-Help","  -help               Print this help message    ");
         return 0;

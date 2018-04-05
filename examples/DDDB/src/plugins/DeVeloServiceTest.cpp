@@ -130,7 +130,8 @@ namespace {
           dd4hep::Condition::detkey_type det_key = de.key();
           dd4hep::ConditionKey::KeyMaker lower(det_key, dd4hep::Condition::FIRST_ITEM_KEY);
           dd4hep::ConditionKey::KeyMaker upper(det_key, dd4hep::Condition::LAST_ITEM_KEY);
-          cout << "Processing " << e.second << " class " << cat->classID << "  -> " << de.path() << endl;
+          printout(DEBUG, "ServiceTest","Processing %ld class %d  -> %s",
+                   e.second, cat->classID, de.path().c_str());
           m_context->detectors.insert(make_pair(det_key,make_pair(de,cat)));
           {
             auto first = cont->conditions().lower_bound(lower.hash);
@@ -218,7 +219,7 @@ namespace {
         printout(INFO,"DDDB","Setting print level for %s to %s [%d]",__FILE__,argv[i-1],s_PrintLevel);
       }
       else if ( ::strcmp(argv[i],"--help")==0 )      {
-        printout(INFO,"Plugin-Help","Usage: DDDBDetectorDump --opt [--opt]            ");
+        printout(INFO,"Plugin-Help","Usage: DDDB_DeVeloServiceTest --opt [--opt]            ");
         printout(INFO,"Plugin-Help","  -print <value>      Printlevel for output      ");
         printout(INFO,"Plugin-Help","  -help               Print this help message    ");
         return 0;
