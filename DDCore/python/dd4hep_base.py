@@ -158,17 +158,27 @@ def import_geometry():
   import_namespace_item('core','PlacedVolume')
 
   #// Shapes.h
+  import_namespace_item('core','Solid')
+  import_namespace_item('core','Box')
+  import_namespace_item('core','HalfSpace')
   import_namespace_item('core','Polycone')
   import_namespace_item('core','ConeSegment')
-  import_namespace_item('core','Box')
-  import_namespace_item('core','Torus')
-  import_namespace_item('core','Cone')
   import_namespace_item('core','Tube')
+  import_namespace_item('core','CutTube')
+  import_namespace_item('core','TruncatedTube')
+  import_namespace_item('core','EllipticalTube')
+  import_namespace_item('core','Cone')
   import_namespace_item('core','Trap')
+  import_namespace_item('core','PseudoTrap')
   import_namespace_item('core','Trapezoid')
+  import_namespace_item('core','Torus')
   import_namespace_item('core','Sphere')
   import_namespace_item('core','Paraboloid')
+  import_namespace_item('core','Hyperboloid')
   import_namespace_item('core','PolyhedraRegular')
+  import_namespace_item('core','Polyhedra')
+  import_namespace_item('core','ExtrudedPolygon')
+  import_namespace_item('core','EightPointSolid')
   import_namespace_item('core','BooleanSolid')
   import_namespace_item('core','SubtractionSolid')
   import_namespace_item('core','UnionSolid')
@@ -225,16 +235,22 @@ def import_tgeo():
 
 import_tgeo()
 import_geometry()
-
+#
+#  Import units from TGeo.
+#  Calling import_units makes all the units local to the dd4hep module.
+#
 try:
   from ROOT import TGeoUnit as TGeoUnits
-  def import_units():
-    def import_unit(nam):
-      setattr(name_space,nam,getattr(TGeoUnits,nam))
+  def import_units(ns):
+    def import_unit(ns,nam):
+      setattr(ns,nam,getattr(TGeoUnits,nam))
     items = dir(TGeoUnits)
+    if ns is None:
+      ns = name_space
+    print 'Importing TGeoUnits into namespace '+str(ns)
     for u in items:
       if u[0] != '_':
-        import_unit(u)
+        import_unit(ns, u)
     return len(items)    
 except:
   print 'WARNING: No units from TGeoUnit can be imported. This is normal for ROOT < 6.12.0'
