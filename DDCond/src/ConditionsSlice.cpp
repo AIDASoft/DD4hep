@@ -43,7 +43,14 @@ ConditionsSlice::ConditionsSlice(const ConditionsSlice& copy)
 
 /// Default destructor. 
 ConditionsSlice::~ConditionsSlice()   {
+  reset();
   InstanceCount::decrement(this);  
+}
+
+/// Set flag to not reference the used pools during prepare (and drop possibly pending)
+void ConditionsSlice::derefPools()     {
+  used_pools.clear(); // Drop all refs possibly pending
+  this->flags &= ~REF_POOLS;
 }
 
 /// Access the combined IOV of the slice from the pool
@@ -56,6 +63,7 @@ const IOV& ConditionsSlice::iov()  const    {
 
 /// Clear the conditions access and the user pool.
 void ConditionsSlice::reset()   {
+  derefPools();
   if ( pool.get() ) pool->clear();
 }
 
