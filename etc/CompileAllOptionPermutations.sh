@@ -15,6 +15,7 @@ INSTALL_G4=${SW}/g4_${GEANT_VERSION}_dbg/lib/Geant4-10.3.2;
 #ROOT_VERSION=6.06.06;
 ROOT_VERSION=6.08.00;
 ROOT_VERSION=6.10.04;
+ROOT_VERSION=6.12.06;
 source ${INSTALL_G4}/../../bin/geant4.sh;
 num_threads=2
 #
