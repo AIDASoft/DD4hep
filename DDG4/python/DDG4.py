@@ -9,7 +9,7 @@
 #
 #==========================================================================
 import logging
-from DD4hep import *
+from dd4hep_base import *
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 def loadDDG4():
@@ -33,6 +33,7 @@ def loadDDG4():
     raise Exception('DDG4.py: Failed to load the DDG4 library libDDG4Plugins: '+gSystem.GetErrorStr())
   from ROOT import dd4hep as module
   return module
+
 
 # We are nearly there ....
 current = __import__(__name__)

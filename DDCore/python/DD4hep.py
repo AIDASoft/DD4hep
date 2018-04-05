@@ -13,5 +13,5 @@
 #  The namespace "DD4hep" is deprecated. Please use "dd4hep" instead.
 #
 #==========================================================================
-from g4units import *
-print 'DEPRECATION WARNING  The namespace "SystemOfUnits" is deprecated. Please use "g4units" instead.'
+from dd4hep_base import *
+print 'DEPRECATION WARNING  The namespace "DD4hep" is deprecated. Please use "dd4hep" instead.'
