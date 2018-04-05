@@ -9,4 +9,5 @@
 #
 #==========================================================================
 from dd4hep_base import *
-import_units()
+self = __import__(__name__)
+import_units(self)
