@@ -70,7 +70,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
           side->parent = vp.access();
           side->de_user |= DeVeloFlags::SIDE;
           vp->sides[sideNo] = side;
-          printout(INFO,"DeVeloStatic","Add Side[%03ld]:    %s",vp->sides.size()-1,path.c_str());
+          printout(DEBUG,"DeVeloStatic","Add Side[%03ld]:    %s",vp->sides.size()-1,path.c_str());
           break;
         case 2:
           module = cond;
@@ -78,7 +78,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
           module->de_user |= DeVeloFlags::MODULE;
           side->children.push_back(module.ptr());
           vp->modules.push_back(module);
-          printout(INFO,"DeVeloStatic","Add Module[%03ld]:  %s",vp->modules.size()-1,path.c_str());
+          printout(DEBUG,"DeVeloStatic","Add Module[%03ld]:  %s",vp->modules.size()-1,path.c_str());
           break;
         case 3:
           support = cond;
@@ -86,7 +86,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
           support->de_user |= DeVeloFlags::SUPPORT;
           vp->supports.push_back(support);
           module->children.push_back(support.ptr());
-          printout(INFO,"DeVeloStatic","Add Support[%03ld]:  %s",vp->supports.size()-1,path.c_str());
+          printout(DEBUG,"DeVeloStatic","Add Support[%03ld]: %s",vp->supports.size()-1,path.c_str());
           break;
         case 4:
           sens = cond;

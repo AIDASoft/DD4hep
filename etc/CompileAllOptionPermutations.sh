@@ -163,7 +163,6 @@ build_all()
                     OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DCLHEP_INCLUDE_DIR=${INSTALL_G4}/../../include/Geant4/CLHEP -DCLHEP_LIBRARY=${INSTALL_G4}/../libG4clhep.so \
                     -DROOTSYS=${ROOTSYS} -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
 		    CMD="cd ${dir_name}/$folder ; cmake ${BUILD_TYPE} ${OPTS} ${CHECKOUT};";
                     make_build;
@@ -174,7 +173,6 @@ build_all()
                     OPTS_ex="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO    -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DCLHEP_INCLUDE_DIR=${INSTALL_G4}/../../include/Geant4/CLHEP -DCLHEP_LIBRARY=${INSTALL_G4}/../libG4clhep.so \
                     -DROOTSYS=${ROOTSYS}";
 		    source ${DD4hep_DIR}/bin/thisdd4hep.sh;
    		    CMD="cd ${WORK_DIR}/EX; cmake ${BUILD_TYPE} ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";
