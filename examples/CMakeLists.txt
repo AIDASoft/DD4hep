@@ -43,9 +43,6 @@ dd4hep_package ( dd4hepExample MAJOR 0 MINOR 15 PATCH 0
                  [dd4hep REQUIRED COMPONENTS DDCore]
 )
 #
-
-add_subdirectory(DDCMS)
-
 dd4hep_enable_tests (
   CLICSiD
   LHeD
