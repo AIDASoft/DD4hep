@@ -254,5 +254,6 @@ try:
     return len(items)    
 except:
   print 'WARNING: No units from TGeoUnit can be imported. This is normal for ROOT < 6.12.0'
+  TGeoUnits = {}
   def import_units():
     return 0
