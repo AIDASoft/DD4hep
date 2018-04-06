@@ -98,3 +98,4 @@ std::pair<DetElement,std::string> DDDBHelper::getConditionEntry(const std::strin
     return (*i).second;
   return make_pair(DetElement(),"");
 }
+

@@ -38,6 +38,8 @@ namespace dd4hep {
     UNICODE(alp2);
     UNICODE(author);
 
+    UNICODE(block);
+
     UNICODE(catalog);
     UNICODE(catalogref);
     UNICODE(classID);

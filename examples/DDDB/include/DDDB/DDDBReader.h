@@ -24,6 +24,8 @@
 #include "DDDB/DDDBReaderContext.h"
 #include "DD4hep/ComponentProperties.h"
 
+/// C++ include files
+#include <set>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -74,9 +76,20 @@ namespace dd4hep {
       /// Read raw XML object from the database / file
       virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data) = 0;
 
+
+      /** Helpers for selective parsing  */
+      /// Add a blocked path entry
+      void blockPath(const std::string& path);
+      /// Check if a URI path is blocked
+      bool isBlocked(const std::string& path)  const;
+      
     protected:
+      /// File directory
       std::string       m_directory;
+      /// URI match string to invoke entity resolution
       std::string       m_match;
+      /// Blocked URI pathes
+      std::set<std::string> m_blockedPathes;
       /// Reader context
       DDDBReaderContext m_context;
     };

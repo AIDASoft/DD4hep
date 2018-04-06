@@ -19,8 +19,9 @@
 
 // Framework includes
 #include "DDDB/DDDBTags.h"
-#include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
+#include "DDDB/DDDBReader.h"
+#include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBConversion.h"
 
 #include "DD4hep/Detector.h"
@@ -62,7 +63,8 @@ namespace dd4hep {
     struct Context  {
       typedef set<string> StringSet;
 
-      Context(Detector& l, dddb* g) : description(l), geo(g)      {
+      Context(Detector& l, DDDB::DDDBHelper* h) : description(l), geo(h->detectorDescription()), helper(h)     {
+        reader = h->reader<DDDB::DDDBReader>();
       }
       ~Context()  {
         //printout(INFO,"Context","Destructor calling....");
@@ -77,6 +79,7 @@ namespace dd4hep {
       Detector&   description;
       DDDB::dddb*       geo = 0;
       DDDB::DDDBHelper* helper = 0;
+      DDDB::DDDBReader* reader = 0;
       typedef std::map<DDDBIsotope*,  TGeoIsotope*>   Isotopes;
       typedef std::map<DDDBElement*,  TGeoElement*>   Elements;
       typedef std::map<DDDBMaterial*, TGeoMedium*>    Materials;
@@ -162,8 +165,9 @@ namespace dd4hep {
       }
     };
 
-    template <typename T> struct CNV : Converter<T,T*>  {
+    template <typename T> struct CNV : public Converter<T,T*>  {
     public:
+      typedef Converter<T,T*> Base_t;
       /// Initializing constructor of the functor with initialization of the user parameter
       CNV(Detector& l, void* p, void* o=0) : Converter<T,T*>(l,p,o) {}
       template<typename Q> CNV<Q> cnv() const {  return CNV<Q>(this->description,this->param,this->optional);   }
@@ -180,6 +184,9 @@ namespace dd4hep {
             operator()(arg.second);
             return;
           }
+          Context* c = (Context*)this->Base_t::param;//_param<Context>();
+          if ( c && c->reader && c->reader->isBlocked(arg.first) )
+            return;
           printout(INFO,typeName(typeid(T)),"SKIP invalid object: %s",arg.first.c_str());
         }
         catch(const exception& e)  {
@@ -212,8 +219,8 @@ namespace dd4hep {
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
       if ( obj )   {
         typedef IOV::Key _K;
-        Context* context = _param<Context>();
-        Condition cond = obj;
+        Context*      context = _param<Context>();
+        Condition        cond = obj;
         AbstractMap&        d = cond.get<AbstractMap>();
         DDDBDocument*     doc = d.option<DDDBDocument>();
         _K::first_type  since = doc->context.valid_since;
@@ -610,6 +617,8 @@ namespace dd4hep {
           if ( !place.isValid() )  {
             Volume daughter = this->get<Volume>(pv->logvol);
             if ( !daughter.isValid() )  {
+              if ( context->reader && context->reader->isBlocked(pv->c_id()) )
+                continue;
               printout(WARNING,"Cnv<PhysVol>","++ Failed to convert placement: %s."
                        " Unknown daughter vol:%s.",pv->c_id(), pv->logvol.c_str());
               continue;
@@ -1047,8 +1056,7 @@ namespace dd4hep {
     long dddb_2_dd4hep(Detector& description, int , char** ) {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
-        Context context(description, helper->detectorDescription());
-        context.helper              = helper;
+        Context context(description, helper);
         context.print_materials     = false;
         context.print_logvol        = false;
         context.print_shapes        = false;
@@ -1089,8 +1097,7 @@ namespace dd4hep {
     long dddb_conditions_2_dd4hep(Detector& description, int , char** ) {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
-        Context context(description, helper->detectorDescription());
-        context.helper              = helper;
+        Context context(description, helper);
         context.print_conditions    = false;
         context.conditions_only     = true;
         CNV<dddb> cnv(description,&context);
