@@ -79,6 +79,7 @@ namespace dd4hep {
       void addVisAttr(const std::string& path, VisAttr attr);
       /// Add new conditions entry
       bool addConditionEntry(const std::string& val, DetElement det, const std::string& item);
+
       /// Access conditions entry
       std::pair<DetElement,std::string> getConditionEntry(const std::string& item)  const;
       

@@ -79,6 +79,7 @@ UNICODE (comment);
 UNICODE (component);
 UNICODE (composite);
 UNICODE (cone);
+UNICODE (config);
 UNICODE (cons);
 UNICODE (constant);
 UNICODE (crossing_angle);

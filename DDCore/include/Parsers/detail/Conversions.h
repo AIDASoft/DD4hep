@@ -44,13 +44,18 @@ namespace dd4hep {
    *  \ingroup DD4HEP_XML
    */
   template <typename T, typename ARG=DD4HEP_CONVERSION_NS::Handle_t> struct Converter {
-    typedef T to_type;
-    typedef void* user_param;
+  public:
+    typedef T                to_type;
+    typedef Converter<T,ARG> self_type;
+    typedef void*            user_param;
+  public:
     /// Reference to the detector description object
     Detector& description;
     /// Reference to optional user defined parameter
     user_param param;
+    /// Reference to second optional user defined parameter
     user_param optional;
+  public:
     /// Initializing constructor of the functor
     Converter(Detector& l) : description(l), param(0), optional(0) { }
     /// Initializing constructor of the functor with initialization of the user parameter

@@ -55,7 +55,11 @@ bool DDDBReader::load(const string& system_id,
                       UserContext*  ctxt,
                       string& buffer)
 {
-  if ( system_id.substr(0,m_match.length()) == m_match )  {
+  if ( isBlocked(system_id) )  {
+    buffer = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>  <DDDB></DDDB>";
+    return true;
+  }
+  else if ( system_id.substr(0,m_match.length()) == m_match )  {
     string mm = m_match + "//";
     size_t mm_len = mm.length();
     const string& sys = system_id;
@@ -87,4 +91,17 @@ void DDDBReader::parserLoaded(const std::string& /* system_id */, UserContext* c
   DDDBReaderContext* c = (DDDBReaderContext*)ctxt;
   c->valid_since = c->event_time;
   c->valid_until = c->event_time;
+}
+
+/// Add a blocked path entry
+void DDDBReader::blockPath(const std::string& path)  {
+  m_blockedPathes.insert(path);
+}
+
+/// Check if a URI path is blocked
+bool DDDBReader::isBlocked(const std::string& path)  const  {
+  for(const auto& p : m_blockedPathes)  {
+    if ( path.find(p) != string::npos ) return true;
+  }
+  return false;
 }

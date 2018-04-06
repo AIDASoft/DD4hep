@@ -22,8 +22,9 @@
 #include "DD4hep/Alignments.h"
 #include "DD4hep/OpaqueDataBinder.h"
 #include "DDDB/DDDBTags.h"
-#include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
+#include "DDDB/DDDBReader.h"
+#include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBConversion.h"
 #include "Math/Polar2D.h"
 
@@ -58,6 +59,8 @@ namespace dd4hep {
     struct DDDBConditionInfo  {};
     struct DDDBDetElem  {};
     struct DDDBParam {};
+    struct DDDBBlock {};
+    struct DDDBConfig {};
     struct DDDBParameter  {};
     struct DDDBGeometryInfo  {};
     struct DDDBConditionParam {};
@@ -154,46 +157,32 @@ namespace dd4hep {
       };
 
     public:
-      Detector&     description;
-      xml::UriReader* resolver;
-      dddb*       geo;
+      Detector*   description = 0;
+      DDDBReader* resolver = 0;
+      dddb*       geo = 0;
       Locals      locals;
-      bool        check;
-      bool        print_xml;
-      bool        print_docs;
-      bool        print_materials;
-      bool        print_logvol;
-      bool        print_shapes;
-      bool        print_physvol;
-      bool        print_params;
-      bool        print_detelem;
-      bool        print_detelem_ref;
-      bool        print_detelem_xml;
-      bool        print_condition;
-      bool        print_condition_ref;
-      bool        print_catalog;
-      bool        print_catalog_ref;
-      bool        print_tabprop;
+      bool        check = true;
+      bool        print_xml = false;
+      bool        print_file_load = false;
+      bool        print_docs = false;
+      bool        print_materials = false;
+      bool        print_logvol = false;
+      bool        print_shapes = false;
+      bool        print_physvol = false;
+      bool        print_params = false;
+      bool        print_detelem = false;
+      bool        print_detelem_ref = false;
+      bool        print_detelem_xml = false;
+      bool        print_condition = false;
+      bool        print_condition_ref = false;
+      bool        print_catalog = false;
+      bool        print_catalog_ref = false;
+      bool        print_tabprop = false;
 
       /// Default constructor
-      DDDBContext(Detector& l) 
-        : description(l), resolver(0), geo(0), check(true),
-          print_xml(false),
-          print_docs(false),
-          print_materials(false), 
-          print_logvol(false), 
-          print_shapes(false), 
-          print_physvol(false), 
-          print_params(false), 
-          print_detelem(false),
-          print_detelem_ref(false), 
-          print_detelem_xml(false),
-          print_condition(false), 
-          print_condition_ref(false), 
-          print_catalog(false),
-          print_catalog_ref(false),
-          print_tabprop(false)
-      {     }
+      DDDBContext() = default;
+      /// Initializing constructor
+      DDDBContext(Detector* d);
       /// Default destructor
       ~DDDBContext()  {
       }
@@ -244,8 +233,15 @@ namespace dd4hep {
         }
         geo->conditionPaths[path] = object.ptr();
       }
-    };
+    } s_config;
 
+    /// Initializing constructor
+    DDDBContext::DDDBContext(Detector* d)   {
+      *this = s_config;
+      description = d;
+    }
+
+    
     /// Converter to incept processing exceptions
     /**   \ingroup DD4HEP_DDDB
      */
@@ -317,6 +313,8 @@ namespace dd4hep {
     template <> void Conv<DDDBZPlane>::convert(xml_h element) const;
     template <> void Conv<dddb>::convert(xml_h element) const;
     template <> void Conv<DDDBLogVol>::convert(xml_h element) const;
+    template <> void Conv<DDDBBlock>::convert(xml_h element) const;
+    template <> void Conv<DDDBConfig>::convert(xml_h element) const;
     template <> void Conv<DDDBLogVolRef>::convert(xml_h element) const;
     template <> void Conv<DDDBPhysVol>::convert(xml_h element) const;
     template <> void Conv<DDDBParamPhysVol>::convert(xml_h element) const;
@@ -445,14 +443,17 @@ namespace dd4hep {
     }
 
     void fixCatalogs(DDDBContext* context)  {
-      dddb* geo = context->geo;
+      dddb*       geo = context->geo;
+      DDDBReader* rdr = context->resolver;
       for(dddb::Catalogs::iterator i=geo->catalogs.begin(); i!=geo->catalogs.end(); ++i)  {
         DDDBCatalog* det = (*i).second;
         for(dddb::Catalogs::iterator j=det->catalogrefs.begin(); j!=det->catalogrefs.end(); ++j)  {
           const string& child_id = (*j).first;
           dddb::Catalogs::const_iterator k = geo->catalogs.find(child_id);
           if ( k == geo->catalogs.end() )   {
-            printout(ERROR,"fixCatalogs","++  MISSING ID: %s child:%s",det->id.c_str(),child_id.c_str());
+            if ( !rdr->isBlocked(child_id) )  {
+              printout(ERROR,"fixCatalogs","++  MISSING ID: %s child:%s",det->id.c_str(),child_id.c_str());
+            }
             continue;
           }
           DDDBCatalog* c = (*k).second;
@@ -464,12 +465,16 @@ namespace dd4hep {
         for(dddb::Volumes::iterator j=det->logvolrefs.begin(); j!=det->logvolrefs.end(); ++j)  {
           DDDBLogVol* c = (*j).second;
           if ( !c )  {
-            printout(ERROR,"fixCatalogs","++  MISSING Volume: %s child:%s",det->id.c_str(),(*j).first.c_str());
+            if ( !rdr->isBlocked(det->id) )  {
+              printout(ERROR,"fixCatalogs","++  MISSING Volume: %s child:%s",det->id.c_str(),(*j).first.c_str());
+            }
             continue;
           }
           dddb::Volumes::const_iterator k = geo->volumes.find(c->id);
           if ( k == geo->volumes.end() )   {
-            printout(ERROR,"fixCatalogs","++  MISSING VolID: %s child:%s",det->id.c_str(),c->id.c_str());
+            if ( !rdr->isBlocked(det->id) )  {
+              printout(ERROR,"fixCatalogs","++  MISSING VolID: %s child:%s",det->id.c_str(),c->id.c_str());
+            }
           }
           det->logvols[c->name] = c;
           if ( 0 == (*j).second )  {
@@ -756,6 +761,52 @@ namespace dd4hep {
       string   type  = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
       string   value = element.text();
       det->params[name] = make_pair(type,value);
+    }
+
+    /// Specialized conversion of <param/> entities
+    template <> void Conv<DDDBBlock>::convert(xml_h element) const {
+      DDDBContext* context = _param<DDDBContext>();
+      context->resolver->blockPath(element.attr<string>(_U(name)));
+    }
+
+    /// Specialized conversion of <param/> entities
+    template <> void Conv<DDDBConfig>::convert(xml_h element) const {
+      DDDBContext* ctx = &s_config;
+      for(xml_coll_t c(element,_U(param)); c; ++c)   {
+        xml_dim_t p = c;
+        if ( p.nameStr() == "print_file_load" )
+          ctx->print_file_load = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_xml" )
+          ctx->print_xml = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_docs" )
+          ctx->print_docs = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_materials" )
+          ctx->print_materials = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_logvol" )
+          ctx->print_logvol = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_shapes" )
+          ctx->print_shapes = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_physvol" )
+          ctx->print_physvol = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_params" )
+          ctx->print_params = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_detelem" )
+          ctx->print_detelem = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_detelem_ref" )
+          ctx->print_detelem_ref = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_detelem_xml" )
+          ctx->print_detelem_xml = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_condition" )
+          ctx->print_condition = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_condition_ref" )
+          ctx->print_condition_ref = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_catalog" )
+          ctx->print_catalog = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_catalog_ref" )
+          ctx->print_catalog_ref = p.attr<bool>(_U(value));
+        else if ( p.nameStr() == "print_tabprop" )
+          ctx->print_tabprop = p.attr<bool>(_U(value));
+      }
     }
 
     /// Specialized conversion of <ConditionInfo/> entities
@@ -1562,6 +1613,8 @@ namespace dd4hep {
     template <> void Conv<dddb>::convert(xml_h e) const {
       DDDBCatalog* catalog = 0;
       DDDBContext* context = _param<DDDBContext>();
+      xml_coll_t(e, _LBU(block)).for_each(Conv<DDDBBlock>(description,context,catalog));
+      xml_coll_t(e, _U(config)).for_each(Conv<DDDBConfig>(description,context,catalog));
       xml_coll_t(e, _U(parameter)).for_each(Conv<DDDBParameter>(description,context,catalog));
       xml_coll_t(e, _U(isotope)).for_each(Conv<DDDBIsotope>(description,context,catalog));
       xml_coll_t(e, _U(element)).for_each(Conv<DDDBElement>(description,context,catalog));
@@ -1733,7 +1786,7 @@ namespace dd4hep {
       size_t hash = ref.find("#");
       if ( hash != 0 )  {
         try {
-          xml::UriReader*    rdr       = context->resolver;
+          DDDBReader*        rdr       = context->resolver;
           DDDBReaderContext* ctx       = (DDDBReaderContext*)rdr->context();
           string doc_path = element.ptr() ? reference_href(element,ref) : ref;
           if ( ref == ctx->match+"/Conditions/Online" )
@@ -1766,41 +1819,46 @@ namespace dd4hep {
           xml_doc->context.valid_until = 0;//ctx->valid_until;
           docs.insert(make_pair(doc_path,xml_doc->addRef()));
 
-          xml::UriContextReader reader(rdr, &xml_doc->context);
-          xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
-          xml_h e = doc.root();
-          context->print(xml_doc);
-          //if ( str_upper(doc_path).find("/VP/") != string::npos )
-          printout(DEBUG,"load_dddb","Loading document: %s IOV: %ld [%ld,%ld]",
-                    xml_doc->id.c_str(), 
-                    xml_doc->context.event_time,
-                    xml_doc->context.valid_since,
-                    xml_doc->context.valid_until);
+          if ( !rdr->isBlocked(doc_path) )   {
+            xml::UriContextReader reader(rdr, &xml_doc->context);
+            xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
+            xml_h e = doc.root();
+            context->print(xml_doc);
+            printout(context->print_file_load ? INFO : DEBUG,
+                     "load_dddb","Loading document: %s IOV: %ld [%ld,%ld]",
+                     xml_doc->id.c_str(), 
+                     xml_doc->context.event_time,
+                     xml_doc->context.valid_since,
+                     xml_doc->context.valid_until);
 
-          if ( e )   {
-            if ( !key.empty() )  {
-              stringstream str;
-              xml::dump_tree(e, str);
-              string buffer = str.str();
-              while( (idx=buffer.find("-KEY-")) != string::npos )
-                buffer.replace(idx,5,key);
-              doc.assign(xml_handler_t().parse(buffer.c_str(),
-                                               buffer.length(),
-                                               doc_path.c_str(),
-                                               &reader));
-              e = doc.root();
+            if ( e )   {
+              if ( !key.empty() )  {
+                stringstream str;
+                xml::dump_tree(e, str);
+                string buffer = str.str();
+                while( (idx=buffer.find("-KEY-")) != string::npos )
+                  buffer.replace(idx,5,key);
+                doc.assign(xml_handler_t().parse(buffer.c_str(),
+                                                 buffer.length(),
+                                                 doc_path.c_str(),
+                                                 &reader));
+                e = doc.root();
+              }
+              DDDBContext::PreservedLocals locals(context);
+              context->locals.xml_doc  = xml_doc;
+              Conv<ACTION> converter(*context->description, context, catalog);
+              context->print_condition = prt;
+              if ( prt || context->print_xml )  xml::dump_tree(e);
+              converter(e);
             }
-            DDDBContext::PreservedLocals locals(context);
-            context->locals.xml_doc  = xml_doc;
-            Conv<ACTION> converter(context->description, context, catalog);
-            context->print_condition = prt;
-            if ( prt || context->print_xml )  xml::dump_tree(e);
-            converter(e);
+            return;
           }
+          printout(context->print_file_load ? INFO : DEBUG,
+                   "load_dddb","Ignore BLOCKED load %s",ref.c_str());
         }
         catch(const exception& e)  {
-          printout(INFO,"load_dddb","Failed to load %s [%s]",ref.c_str(),e.what());
-        }
+          printout(INFO,"load_dddb","Failed to load %s [%s]",ref.c_str(),e.what()); 
+       }
         catch(...)   {
           printout(INFO,"load_dddb","Failed to load %s",ref.c_str());
         }
@@ -1808,9 +1866,10 @@ namespace dd4hep {
     }
 
     void config_context(DDDBContext& context, 
-                        xml::UriReader* rdr, 
+                        DDDBHelper*  hlp, 
                         const std::string& doc_path,
                         const std::string& obj_path)  {
+      DDDBReader*         rdr     = hlp->reader<DDDBReader>();
       DDDBReaderContext*  ctx     = (DDDBReaderContext*)rdr->context();
       DDDBDocument*       doc     = new DDDBDocument();
       doc->name                   = obj_path;
@@ -1823,21 +1882,6 @@ namespace dd4hep {
       context.locals.obj_path     = obj_path;
       context.locals.xml_doc      = doc;
       context.geo->documents.insert(make_pair("Initial_dummy_doc",doc->addRef()));
-      context.print_xml           = false;
-
-      context.print_docs          = false;
-      context.print_materials     = false;
-      context.print_logvol        = false;
-      context.print_shapes        = false;
-      context.print_physvol       = false;
-      context.print_params        = false;
-      context.print_detelem       = false;
-      context.print_detelem_ref   = false;
-      context.print_detelem_xml   = false;
-      context.print_condition     = false;
-      context.print_condition_ref = false;
-      context.print_catalog       = false;
-      context.print_catalog_ref   = false;
     }
 
     /// Plugin entry point.
@@ -1847,7 +1891,7 @@ namespace dd4hep {
       if ( hlp )   {
         xml::UriReader*    rdr = hlp->xmlReader();
         DDDBReaderContext* ctx = (DDDBReaderContext*)rdr->context();
-        DDDBContext ctxt(description);
+        DDDBContext ctxt(&description);
         string sys_id = ctx->match+"//lhcb.xml";
         string obj_path = "/";
         if ( argc == 0 )   {
@@ -1873,7 +1917,7 @@ namespace dd4hep {
           ctx->valid_since = iov_start;
           ctx->valid_until = iov_end;
         }
-        config_context(ctxt, rdr, sys_id, obj_path);
+        config_context(ctxt, hlp, sys_id, obj_path);
         load_dddb_entity<ACTION>(&ctxt,0,0,ctxt.locals.xml_doc->id);
         checkParents( &ctxt );
         fixCatalogs( &ctxt );
@@ -1898,10 +1942,10 @@ namespace dd4hep {
     long load_dddb_from_handle(Detector& description, xml_h element) {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
-        DDDBContext context(description);
+        DDDBContext context(&description);
         xml::UriReader* rdr = helper->xmlReader();
         DDDBReaderContext*  ctx = (DDDBReaderContext*)rdr->context();
-        config_context(context, helper->xmlReader(), ctx->match+"//lhcb.xml", "/");
+        config_context(context, helper, ctx->match+"//lhcb.xml", "/");
         /// Convert the XML information
         Conv<dddb> converter(description, &context);
         converter( element );
