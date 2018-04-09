@@ -233,6 +233,7 @@ if (DD4HEP_USE_XERCESC)
     DDDB_DeVelo_Gaudi_LONGTEST
     DDDB_DeVelo_LONGTEST
     DDDB_extract_LONGTEST
-    REGEX_PASS "DDDB Database successfully removed" )
+    REGEX_PASS "DDDB Database successfully removed"
+  )
 
 endif()
