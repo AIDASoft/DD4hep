@@ -54,6 +54,11 @@ namespace dd4hep {
       virtual ~UriReader();
       /// Access to local context
       virtual UserContext* context() = 0;
+      /** Helpers for selective parsing  */
+      /// Add a blocked path entry
+      virtual void blockPath(const std::string&  /* path */)  {}
+      /// Check if a URI path is blocked
+      virtual bool isBlocked(const std::string& /* path */)  const  { return false; }
       /// Resolve a given URI to a string containing the data
       virtual bool load(const std::string& system_id, std::string& data);
       /// Resolve a given URI to a string containing the data with context
@@ -90,6 +95,11 @@ namespace dd4hep {
       virtual ~UriContextReader();
       /// Access to local context
       virtual UserContext* context()  override  {  return m_context;  }
+      /** Helpers for selective parsing  */
+      /// Add a blocked path entry
+      virtual void blockPath(const std::string& path)  override;
+      /// Check if a URI path is blocked
+      virtual bool isBlocked(const std::string& path)  const  override;
       /// Resolve a given URI to a string containing the data
       virtual bool load(const std::string& system_id, std::string& data)  override;
       /// Resolve a given URI to a string containing the data with context

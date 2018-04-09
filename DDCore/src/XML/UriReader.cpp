@@ -46,6 +46,16 @@ dd4hep::xml::UriContextReader::UriContextReader(const UriContextReader& copy)
 dd4hep::xml::UriContextReader::~UriContextReader()   {
 }
 
+/// Add a blocked path entry
+void dd4hep::xml::UriContextReader::blockPath(const std::string& path)  {
+  return m_reader->blockPath(path);
+}
+
+/// Check if a URI path is blocked
+bool dd4hep::xml::UriContextReader::isBlocked(const std::string& path)  const  {
+  return m_reader->isBlocked(path);
+}
+
 /// Resolve a given URI to a string containing the data
 bool dd4hep::xml::UriContextReader::load(const string& system_id, string& data)   {
   return m_reader->load(system_id, context(), data);
