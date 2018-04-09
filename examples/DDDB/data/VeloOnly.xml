@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<DDDB>
+  <config>
+    <param name="print_file_load" value="true"/>
+  </config>
+  <block name="/DDDB/DDDB/Rich1/"/>
+  <block name="/DDDB/DDDB/Rich2/"/>
+  <block name="/DDDB/DDDB/TT/"/>
+  <block name="/DDDB/DDDB/Bcm/"/>
+  <block name="/DDDB/DDDB/Bls/"/>
+  <block name="/DDDB/DDDB/T/"/>
+  <block name="/DDDB/DDDB/T/IT/"/>
+  <block name="/DDDB/DDDB/T/OT/"/>
+  <block name="/DDDB/DDDB/Spd/"/>
+  <block name="/DDDB/DDDB/Prs/"/>
+  <block name="/DDDB/DDDB/Ecal/"/>
+  <block name="/DDDB/DDDB/Hcal/"/>
+  <block name="/DDDB/DDDB/Muon/"/>
+  <block name="/DDDB/DDDB/Pipe/"/>
+  <block name="/DDDB/DDDB/MagnetRegion/"/>
+  <block name="/DDDB/DDDB/Downstream/"/>
+  <block name="/DDDB/DDDB/Upstream/"/>
+  <block name="/DDDB/DDDB/BeforeVelo/"/>
+  <block name="/DDDB/DDDB/AfterMuon/"/>
+  <block name="/DDDB/DDDB/AfterMagnet/"/>
+  <block name="/DDDB/DDDB/BlockWall"/>
+  <block name="/DDDB/DDDB/MBXWMagnets/"/>
+  <block name="/DDDB/DDDB/Infrastructure/"/>
+
+  <block name="/DDDB/DDDB/materials/IT"/>
+  <block name="/DDDB/DDDB/materials/TT"/>
+  <block name="/DDDB/DDDB/materials/OT"/>
+  <block name="/DDDB/DDDB/materials/Ecal"/>
+  <block name="/DDDB/DDDB/materials/Hcal"/>
+  <block name="/DDDB/DDDB/materials/Spd"/>
+  <block name="/DDDB/DDDB/materials/Prs"/>
+  <block name="/DDDB/DDDB/materials/Muon"/>
+  <block name="/DDDB/DDDB/materials/Blockwall"/>
+  <block name="/DDDB/DDDB/materials/Bcm"/>
+  <block name="/DDDB/DDDB/materials/Bls"/>
+  <block name="/DDDB/DDDB/materials/GValve"/>
+  <block name="/DDDB/DDDB/materials/MBXW"/>
+  <block name="/DDDB/DDDB/materials/Magnet"/>
+<!--
+  <block name="/DDDB/DDDB/materials/Pipe"/>
+  <block name="/DDDB/DDDB/materials/Rich"/>
+-->
+  <block name="/DDDB/DDDB/Conditions/Rich1/"/>
+  <block name="/DDDB/DDDB/Conditions/Rich2/"/>
+  <block name="/DDDB/DDDB/Conditions/TT/"/>
+  <block name="/DDDB/DDDB/Conditions/IT/"/>
+  <block name="/DDDB/DDDB/Conditions/OT/"/>
+  <block name="/DDDB/DDDB/Conditions/Spd/"/>
+  <block name="/DDDB/DDDB/Conditions/Prs/"/>
+  <block name="/DDDB/DDDB/Conditions/Ecal/"/>
+  <block name="/DDDB/DDDB/Conditions/Hcal/"/>
+  <block name="/DDDB/DDDB/Conditions/Calo/"/>
+  <block name="/DDDB/DDDB/Conditions/Muon/"/>
+  <block name="/DDDB/DDDB/Conditions/LHCb/"/>
+</DDDB>
