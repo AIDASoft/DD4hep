@@ -19,10 +19,10 @@
 #include <array>
 
 // Framework include files
+#include "Kernel/VPConstants.h"
 #include "Detector/DetectorElement.h"
 #include "Detector/DeStatic.h"
 #include "Detector/DeIOV.h"
-#include "Kernel/VPConstants.h"
 
 /// Gaudi namespace declaration
 namespace gaudi   {
@@ -161,9 +161,9 @@ namespace gaudi   {
     /// Standard constructors and assignment
     DE_CTORS_HANDLE(DeVPSensorElement,Base);
     /// Access to the static data. Does this need to be optionized???
-    static_t& staticData()  const    {  return access()->sensor_static;         }
-    bool isLeft()   const            {  return (ptr()->de_user&VP::LEFT) != 0;  }
-    bool isRight()   const           {  return (ptr()->de_user&VP::LEFT) == 0;  }
+    static_t& staticData()  const  {  return access()->sensor_static;            }
+    //bool isLeft()   const          {  return (ptr()->de_user & VP::RIGHT) == 0;  }
+    //bool isRight()   const         {  return (ptr()->de_user & VP::RIGHT) != 0;  }
   };
 
   /// For the full sensor object, we have to combine it with the geometry stuff:

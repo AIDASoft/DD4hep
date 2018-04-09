@@ -158,7 +158,7 @@ namespace dd4hep {
 
     public:
       Detector*   description = 0;
-      DDDBReader* resolver = 0;
+      xml::UriReader* resolver = 0;
       dddb*       geo = 0;
       Locals      locals;
       bool        check = true;
@@ -444,7 +444,7 @@ namespace dd4hep {
 
     void fixCatalogs(DDDBContext* context)  {
       dddb*       geo = context->geo;
-      DDDBReader* rdr = context->resolver;
+      xml::UriReader* rdr = context->resolver;
       for(dddb::Catalogs::iterator i=geo->catalogs.begin(); i!=geo->catalogs.end(); ++i)  {
         DDDBCatalog* det = (*i).second;
         for(dddb::Catalogs::iterator j=det->catalogrefs.begin(); j!=det->catalogrefs.end(); ++j)  {
@@ -1786,7 +1786,7 @@ namespace dd4hep {
       size_t hash = ref.find("#");
       if ( hash != 0 )  {
         try {
-          DDDBReader*        rdr       = context->resolver;
+          xml::UriReader*        rdr       = context->resolver;
           DDDBReaderContext* ctx       = (DDDBReaderContext*)rdr->context();
           string doc_path = element.ptr() ? reference_href(element,ref) : ref;
           if ( ref == ctx->match+"/Conditions/Online" )
@@ -1869,7 +1869,7 @@ namespace dd4hep {
                         DDDBHelper*  hlp, 
                         const std::string& doc_path,
                         const std::string& obj_path)  {
-      DDDBReader*         rdr     = hlp->reader<DDDBReader>();
+      xml::UriReader*         rdr     = hlp->reader<xml::UriReader>();
       DDDBReaderContext*  ctx     = (DDDBReaderContext*)rdr->context();
       DDDBDocument*       doc     = new DDDBDocument();
       doc->name                   = obj_path;

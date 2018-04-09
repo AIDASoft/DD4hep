@@ -79,9 +79,9 @@ namespace dd4hep {
 
       /** Helpers for selective parsing  */
       /// Add a blocked path entry
-      void blockPath(const std::string& path);
+      virtual void blockPath(const std::string& path)  override;
       /// Check if a URI path is blocked
-      bool isBlocked(const std::string& path)  const;
+      virtual bool isBlocked(const std::string& path)  const  override;
       
     protected:
       /// File directory
