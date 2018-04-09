@@ -28,27 +28,18 @@ int main(int /* argc */, char** /* argv */ ){
 
     Detector& det = Detector::getInstance();
 
-    //computing geometry bfield
-    double bfield(0.0);
-    const double position[3]={0,0,0}; // position to calculate magnetic field at (the origin in this case)
-    double magneticFieldVector[3]={0,0,0}; // initialise object to hold magnetic field
-    det.field().magneticField(position,magneticFieldVector); // get the magnetic field vector from DD4hep
-    bfield = magneticFieldVector[2]/dd4hep::tesla; // z component at (0,0,0)
+    //std::cout << "Build type: " << det.buildType()<< std::endl;
 
-    test( det.field().isValid(), "The detector has valid field" );
+    //check if a VALID geometry was created and check if the bfield is valid
+    if(det.buildType() == BUILD_NONE){
 
-    if ( det.field().isValid() ) {
+      test( det.field().isValid(), 0, "The geometry is not valid and has invalid field!" );
 
-      // the most important thing is that bfield is not zero
-      test( bfield != 0.0, "The field has non-zero value" );
+    } else {
 
-      // if is needed, it is also possible to test a specific value of bfield (in Tesla)
-      //test( bfield, 4.0, "The field has value 4.0" );
+      test( det.field().isValid(), "The geometry is valid and has valid field!" );
 
     }
-
-    // --------------------------------------------------------------------
-
 
   } catch( exception &e ){
     test.log( e.what() );
