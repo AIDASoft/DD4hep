@@ -165,18 +165,21 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
     Path path = sys_id;
     sys_id = path.normalize().c_str();
 
+    xml::UriReader* resolver = 0;
+    if ( !loader_name.empty() )  {
+      DDDBReader* rdr = (DDDBReader*)dd4hep::PluginService::Create<void*>(loader_name,(const char*)0);
+      rdr->setMatch(match);
+      rdr->setDirectory(path.parent_path().c_str());
+      if ( iov_start >= 0 && iov_end >= 0 )   {
+        rdr->property("ValidityLower").set(iov_start);
+        rdr->property("ValidityUpper").set(iov_end);
+      }
+      resolver = rdr;
+    }
     /// Install helper
     {
-      description.apply("DDDB_InstallHelper", 0, 0);
-    }
-
-    DDDBHelper* helper = description.extension<DDDBHelper>();
-    DDDBReader* resolver = 0;
-    if ( !loader_name.empty() )  {
-      resolver = (DDDBReader*)dd4hep::PluginService::Create<void*>(loader_name,(const char*)0);
-      resolver->setMatch(match);
-      resolver->setDirectory(path.parent_path().c_str());
-      helper->setXmlReader(resolver);
+      const void *args[] = {resolver, 0};
+      description.apply("DDDB_InstallHelper", 1, (char**)args);
     }
 
     /// Execute config plugins without arguments
@@ -202,10 +205,6 @@ static long load_xml_dddb(Detector& description, int argc, char** argv) {
     /// Process XML
     if ( !sys_id.empty() )   {
       printout(INFO,"DDDBExecutor","+++ Processing DDDB: %s", sys_id.c_str());
-      if ( iov_start >= 0 && iov_end >= 0 )   {
-        resolver->property("ValidityLower").set(iov_start);
-        resolver->property("ValidityUpper").set(iov_end);
-      }
       const void* args[] = {0, sys_id.c_str(), "/", &event_time, 0};
       result = description.apply("DDDB_Loader", 4, (char**)args);
       check_result(result);
