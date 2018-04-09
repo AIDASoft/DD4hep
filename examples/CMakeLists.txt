@@ -49,8 +49,25 @@ dd4hep_enable_tests (
   AlignDet
   ClientTests
   Conditions
-  DDCMS
-  DDDB
   DDG4
   Persistency
-  SimpleDetector)
+  SimpleDetector
+  )
+#
+# XercesC dependent stuff
+if ( DD4HEP_USE_XERCESC )
+  dd4hep_print("|++> XercesC PRESENT. Building DDDB examples.")
+  dd4hep_enable_tests (DDDB)
+else()
+  dd4hep_print("|++> XercesC is not present. NOT building DDDB examples.")
+endif()
+#
+# CLHEP dependent stuff:
+find_package (CLHEP QUIET)
+string(FIND "${CLHEP_DIR}" "NOTFOUND" HaveDDCMS)
+if ( NOT ${HaveDDCMS} GREATER 0 )
+  dd4hep_print("|++> XercesC PRESENT. Building DDCMS examples.")
+  dd4hep_enable_tests (DDCMS)
+else()
+  dd4hep_print("|++> CLHEP is not present. NOT building DDCMS examples.")
+endif()
