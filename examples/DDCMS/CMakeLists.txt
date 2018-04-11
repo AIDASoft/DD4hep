@@ -50,7 +50,7 @@ dd4hep_add_test_reg( DDCMS_TestShapes
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun  -destroy -print WARNING -plugin DD4hep_XMLLoader 
   file:${CMAKE_CURRENT_SOURCE_DIR}/data/cms_test_solids.xml
-  REGEX_PASS "Request to process unknown shape para \\[Parallelepiped\\]"
+  REGEX_PASS "Request to process unknown shape 'para' \\[Parallelepiped\\]"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
