@@ -286,7 +286,7 @@ template <> void Converter<solidsection>::operator()(xml_h element) const   {
       Converter<shapeless>(description,_ns.context,optional)(solid);
     else  {
       string nam = xml_dim_t(solid).nameStr();
-      printout(ERROR,"DDCMS","+++ Request to process unknown shape %s [%s]",
+      printout(ERROR,"DDCMS","+++ Request to process unknown shape '%s' [%s]",
                nam.c_str(), tag.c_str());
     }
   }
@@ -718,7 +718,7 @@ template <> void Converter<ellipsoid>::operator()(xml_h element) const   {
   double zTop = _ns.attr<double>(e,_CMU(zTopCut),0.0);
 
   printout(WARNING, "DDCMS",
-           "+   Ellipsoid UNSUPPORTED. %s REPLACED BY BOX "
+           "+   Ellipsoid UNSUPPORTED. '%s' REPLACED BY BOX "
            " xSemiAxis=%8.3f ySemiAxis=%8.3f zSemiAxis=%8.3f zBottomCut=%8.3f zTopCut=%8.3f [cm]",
            nam.c_str(), dx, dy, dz, zBot, zTop);
   _ns.addSolid(nam, Box(1,1,1));
