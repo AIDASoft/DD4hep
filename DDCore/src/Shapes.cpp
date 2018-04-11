@@ -193,6 +193,11 @@ template <typename T> const char* Solid_type<T>::type() const  {
   return "";
 }
 
+/// Constructor to create an anonymous new box object (retrieves name from volume)
+ShapelessSolid::ShapelessSolid(const string& nam)  {
+  _assign(new TGeoShapeAssembly(), nam, "assembly", true);
+}
+
 void Box::make(double x_val, double y_val, double z_val) {
   _assign(new TGeoBBox(x_val, y_val, z_val), "", "box", true);
 }
@@ -225,12 +230,12 @@ void HalfSpace::make(const double* const point, const double* const normal)   {
 }
 
 /// Constructor to be used when creating a new object
-Polycone::Polycone(double start, double delta) {
-  _assign(new TGeoPcon(start/units::deg, delta/units::deg, 0), "", "polycone", false);
+Polycone::Polycone(double startPhi, double deltaPhi) {
+  _assign(new TGeoPcon(startPhi/units::deg, deltaPhi/units::deg, 0), "", "polycone", false);
 }
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
-Polycone::Polycone(double start, double delta,
+Polycone::Polycone(double startPhi, double deltaPhi,
                    const vector<double>& rmin, const vector<double>& rmax, const vector<double>& z) {
   vector<double> params;
   if (rmin.size() < 2) {
@@ -239,8 +244,8 @@ Polycone::Polycone(double start, double delta,
   if((z.size()!=rmin.size()) || (z.size()!=rmax.size()) )    {
     throw runtime_error("dd4hep: Polycone: vectors z,rmin,rmax not of same length");
   }
-  params.push_back(start/units::deg);
-  params.push_back(delta/units::deg);
+  params.push_back(startPhi/units::deg);
+  params.push_back(deltaPhi/units::deg);
   params.push_back(rmin.size());
   for (size_t i = 0; i < rmin.size(); ++i) {
     params.push_back(z[i] );
@@ -251,7 +256,7 @@ Polycone::Polycone(double start, double delta,
 }
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
-Polycone::Polycone(double start, double delta, const vector<double>& r, const vector<double>& z) {
+Polycone::Polycone(double startPhi, double deltaPhi, const vector<double>& r, const vector<double>& z) {
   vector<double> params;
   if (r.size() < 2) {
     throw runtime_error("dd4hep: PolyCone Not enough Z planes. minimum is 2!");
@@ -259,8 +264,8 @@ Polycone::Polycone(double start, double delta, const vector<double>& r, const ve
   if((z.size()!=r.size()) )    {
     throw runtime_error("dd4hep: Polycone: vectors z,r not of same length");
   } 
-  params.push_back(start/units::deg);
-  params.push_back(delta/units::deg);
+  params.push_back(startPhi/units::deg);
+  params.push_back(deltaPhi/units::deg);
   params.push_back(r.size());
   for (size_t i = 0; i < r.size(); ++i) {
     params.push_back(z[i] );
@@ -298,7 +303,8 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 ConeSegment::ConeSegment(double dz, 
 			 double rmin1, double rmax1,
 			 double rmin2, double rmax2,
-			 double phi1, double phi2) {
+			 double phi1, double phi2)
+{
   _assign(new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/units::deg, phi2/units::deg), "", "cone_segment", true);
 }
 
@@ -396,6 +402,7 @@ void Cone::make(double z, double rmin1, double rmax1, double rmin2, double rmax2
   _assign(new TGeoCone(z, rmin1, rmax1, rmin2, rmax2 ), "", "cone", true);
 }
 
+/// Set the box dimensions (startPhi=0.0, deltaPhi=2*pi)
 Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
   double params[] = { z, rmin1, rmax1, rmin2, rmax2  };
   _setDimensions(params);
@@ -611,30 +618,30 @@ Polyhedra::Polyhedra(int nsides, double start, double delta,
 }
 
 /// Helper function to create the polyhedron
-void ExtrudedPolygon::make(const vector<double>& x,
-                           const vector<double>& y,
-                           const vector<double>& z,
-                           const vector<double>& zx,
-                           const vector<double>& zy,
-                           const vector<double>& zscale)
+void ExtrudedPolygon::make(const vector<double>& pt_x,
+                           const vector<double>& pt_y,
+                           const vector<double>& sec_z,
+                           const vector<double>& sec_x,
+                           const vector<double>& sec_y,
+                           const vector<double>& sec_scale)
 {
-  TGeoXtru* solid = new TGeoXtru(z.size());
+  TGeoXtru* solid = new TGeoXtru(sec_z.size());
   _assign(solid, "", "polyhedra", false);
   // No need to transform coordinates to cm. We are in the dd4hep world: all is already in cm.
-  solid->DefinePolygon(x.size(), &(*x.begin()), &(*y.begin()));
-  for( size_t i = 0; i < z.size(); ++i )
-    solid->DefineSection(i, z[i], zx[i], zy[i], zscale[i]);
+  solid->DefinePolygon(pt_x.size(), &(*pt_x.begin()), &(*pt_y.begin()));
+  for( size_t i = 0; i < sec_z.size(); ++i )
+    solid->DefineSection(i, sec_z[i], sec_x[i], sec_y[i], sec_scale[i]);
 }
 
 /// Constructor to create a new object. 
-ExtrudedPolygon::ExtrudedPolygon(const vector<double>& x,
-                                 const vector<double>& y,
-                                 const vector<double>& z,
-                                 const vector<double>& zx,
-                                 const vector<double>& zy,
-                                 const vector<double>& zscale)
+ExtrudedPolygon::ExtrudedPolygon(const vector<double>& pt_x,
+                                 const vector<double>& pt_y,
+                                 const vector<double>& sec_z,
+                                 const vector<double>& sec_y,
+                                 const vector<double>& sec_x,
+                                 const vector<double>& sec_scale)
 {
-  make(x, y, z, zx, zy, zscale);
+  make(pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale);
 }
 
 /// Creator method
