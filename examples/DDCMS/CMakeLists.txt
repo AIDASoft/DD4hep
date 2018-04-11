@@ -45,6 +45,7 @@ dd4hep_install_dir( scripts DESTINATION ${DD4hep_DIR}/examples/DDCMS )
 #---Testing--------------------------------------------------------------------
 dd4hep_configure_scripts ( DDCMS DEFAULT_SETUP WITH_TESTS )
 #
+#
 #  Test CMS tracker detector construction
 dd4hep_add_test_reg( DDCMS_TestShapes
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
