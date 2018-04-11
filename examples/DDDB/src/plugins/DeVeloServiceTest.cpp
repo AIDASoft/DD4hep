@@ -78,7 +78,7 @@ namespace {
       /// Configure file based reader
       void configReader(long iov_start, long iov_end)   {
         try   {
-          const DetService::IOVType* iov_typ = m_service->iovType("epoch");
+          const IDetService::IOVType* iov_typ = m_service->iovType("epoch");
           dd4hep::IOV iov_range(iov_typ);
           iov_range.keyData.first  = iov_start;
           iov_range.keyData.second = iov_end;
@@ -102,9 +102,9 @@ namespace {
         m_de     = dd4hep::detail::tools::findElement(dsc, path);
         m_reader = helper->reader<dd4hep::DDDB::DDDBReader>();
         m_service.reset(new DetService(manager));
-        const DetService::IOVType* iov_typ = m_service->iovType("epoch");
-        dd4hep::IOV                iov(iov_typ,dd4hep::detail::makeTime(2018,1,1));
-        IDetService::Content       content = m_service->openContent("DDDB");
+        const IDetService::IOVType* iov_typ = m_service->iovType("epoch");
+        dd4hep::IOV                 iov(iov_typ,dd4hep::detail::makeTime(2018,1,1));
+        IDetService::Content        content = m_service->openContent("DDDB");
         configReader(dd4hep::detail::makeTime(2008,1,1), dd4hep::detail::makeTime(2018,12,31));
 
         cont.reset(new dd4hep::cond::ConditionsContent());

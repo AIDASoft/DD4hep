@@ -109,6 +109,32 @@ namespace dd4hep {
   };
   typedef Solid_type<TGeoShape> Solid;
 
+  /// Class describing a shape-less solid shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoShapeAssembly.html
+   *
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class ShapelessSolid: public Solid_type<TGeoShapeAssembly> {
+  public:
+    /// Default constructor
+    ShapelessSolid() = default;
+    /// Constructor to be used when passing an already created object
+    ShapelessSolid(const ShapelessSolid& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> ShapelessSolid(const Q* p) : Solid_type<TGeoShapeAssembly>(p) { }
+    /// Constructor to be used with an existing object
+    template <typename Q> ShapelessSolid(const Handle<Q>& e) : Solid_type<TGeoShapeAssembly>(e) { }
+    /// Constructor to create an anonymous new shapeless solid
+    ShapelessSolid(const std::string& name);
+    /// Assignment operator
+    ShapelessSolid& operator=(const ShapelessSolid& copy) = default;
+  };
+
   /// Class describing a box shape
   /**
    *   For any further documentation please see the following ROOT documentation:
@@ -211,12 +237,12 @@ namespace dd4hep {
     /// Constructor to be used when reading the already parsed polycone object
     template <typename Q> Polycone(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new polycone object
-    Polycone(double start, double delta);
+    Polycone(double startPhi, double deltaPhi);
     /// Constructor to create a new polycone object. Add at the same time all Z planes
-    Polycone(double start, double delta,
+    Polycone(double startPhi, double deltaPhi,
              const std::vector<double>& r, const std::vector<double>& z);
     /// Constructor to create a new polycone object. Add at the same time all Z planes
-    Polycone(double start, double delta,
+    Polycone(double startPhi, double deltaPhi,
              const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
     /// Assignment operator
     Polycone& operator=(const Polycone& copy) = default;
@@ -752,11 +778,11 @@ namespace dd4hep {
   class ExtrudedPolygon : public Solid_type<TGeoXtru> {
   protected:
     /// Helper function to create the polyhedron
-    void make(const std::vector<double> & x,
-              const std::vector<double> & y,
-              const std::vector<double> & z,
-              const std::vector<double> & zx,
-              const std::vector<double> & zy,
+    void make(const std::vector<double> & pt_x,
+              const std::vector<double> & pt_y,
+              const std::vector<double> & sec_z,
+              const std::vector<double> & sec_x,
+              const std::vector<double> & sec_y,
               const std::vector<double> & zscale);
   public:
     /// Default constructor
@@ -768,11 +794,11 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> ExtrudedPolygon(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new object. 
-    ExtrudedPolygon(const std::vector<double> & x,
-                    const std::vector<double> & y,
-                    const std::vector<double> & z,
-                    const std::vector<double> & zx,
-                    const std::vector<double> & zy,
+    ExtrudedPolygon(const std::vector<double> & pt_x,
+                    const std::vector<double> & pt_y,
+                    const std::vector<double> & sec_z,
+                    const std::vector<double> & sec_x,
+                    const std::vector<double> & sec_y,
                     const std::vector<double> & zscale);
     /// Assignment operator
     ExtrudedPolygon& operator=(const ExtrudedPolygon& copy) = default;
