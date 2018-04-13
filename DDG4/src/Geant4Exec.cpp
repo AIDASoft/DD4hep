@@ -165,9 +165,9 @@ namespace dd4hep {
       virtual ~Geant4UserRunAction() {
       }
       /// Begin-of-run callback
-      virtual void BeginOfRunAction(const G4Run* run);
+      virtual void BeginOfRunAction(const G4Run* run)  final;
       /// End-of-run callback
-      virtual void EndOfRunAction(const G4Run* run);
+      virtual void EndOfRunAction(const G4Run* run)  final;
     };
 
     /// Concrete implementation of the Geant4 event action
@@ -192,9 +192,9 @@ namespace dd4hep {
       virtual ~Geant4UserEventAction() {
       }
       /// Begin-of-event callback
-      virtual void BeginOfEventAction(const G4Event* evt);
+      virtual void BeginOfEventAction(const G4Event* evt)  final;
       /// End-of-event callback
-      virtual void EndOfEventAction(const G4Event* evt);
+      virtual void EndOfEventAction(const G4Event* evt)  final;
     };
 
     /// Concrete implementation of the Geant4 tracking action
@@ -218,12 +218,12 @@ namespace dd4hep {
       virtual ~Geant4UserTrackingAction() {
       }
       /// Pre-track action callback
-      virtual void PreUserTrackingAction(const G4Track* trk) {
+      virtual void PreUserTrackingAction(const G4Track* trk)  final  {
         m_sequence->context()->kernel().setTrackMgr(fpTrackingManager);
         m_sequence->begin(trk);
       }
       /// Post-track action callback
-      virtual void PostUserTrackingAction(const G4Track* trk) {
+      virtual void PostUserTrackingAction(const G4Track* trk)   final  {
         m_sequence->end(trk);
         m_sequence->context()->kernel().setTrackMgr(0);
       }
@@ -250,11 +250,11 @@ namespace dd4hep {
       virtual ~Geant4UserStackingAction() {
       }
       /// New-stage callback
-      virtual void NewStage() {
+      virtual void NewStage()  final  {
         m_sequence->newStage();
       }
       /// Preparation callback
-      virtual void PrepareNewEvent() {
+      virtual void PrepareNewEvent()  final  {
         m_sequence->prepare();
       }
     };
@@ -281,7 +281,7 @@ namespace dd4hep {
       virtual ~Geant4UserGeneratorAction() {
       }
       /// Generate primary particles
-      virtual void GeneratePrimaries(G4Event* event);
+      virtual void GeneratePrimaries(G4Event* event)  final;
     };
 
     /// Concrete implementation of the Geant4 stepping action
@@ -305,7 +305,7 @@ namespace dd4hep {
       virtual ~Geant4UserSteppingAction() {
       }
       /// User stepping callback
-      virtual void UserSteppingAction(const G4Step* s) {
+      virtual void UserSteppingAction(const G4Step* s)   final  {
         (*m_sequence)(s, fpSteppingManager);
       }
     };
@@ -333,9 +333,9 @@ namespace dd4hep {
       virtual ~Geant4UserDetectorConstruction() {
       }
       /// Call the actions for the construction of the sensitive detectors and the field
-      virtual void ConstructSDandField();
+      virtual void ConstructSDandField()  final;
       /// Call the actions to construct the detector geometry
-      virtual G4VPhysicalVolume* Construct();
+      virtual G4VPhysicalVolume* Construct()  final;
     };
 
     /// Concrete implementation of the Geant4 user initialization action sequence
@@ -354,12 +354,12 @@ namespace dd4hep {
         : G4VUserActionInitialization(), Base(ctxt, seq) {
       }
       /// Default destructor
-      virtual ~Geant4UserActionInitialization() {
+      virtual ~Geant4UserActionInitialization()  {
       }
       /// Build the actions for the worker thread
-      virtual void Build()  const;
+      virtual void Build()  const  final;
       /// Build the action sequences for the master thread
-      virtual void BuildForMaster()  const;
+      virtual void BuildForMaster()  const  final;
     };
 
     /// Begin-of-run callback

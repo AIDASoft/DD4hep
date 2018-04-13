@@ -77,12 +77,6 @@ namespace dd4hep  {
     InstanceCount::decrement(this);
   }
 
-  /// Default constructor
-  DDDBNamed::DDDBNamed()
-    : name(), id(), document(0), refCount(0)
-  {
-  }
-
   /// Initializing constructor
   DDDBNamed::DDDBNamed(const std::string& c)
     : name(c), id(), document(0), refCount(0)

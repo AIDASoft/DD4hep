@@ -119,14 +119,10 @@ namespace dd4hep {
       class Locals  {
       public:
         string obj_path;
-        DDDBDocument* xml_doc;
-        Locals() : obj_path(), xml_doc(0) {}
-        Locals(const Locals& c) : obj_path(c.obj_path), xml_doc(c.xml_doc) {}
-        Locals& operator=(const Locals& c)  {
-          obj_path = c.obj_path;
-          xml_doc  = c.xml_doc;
-          return *this;
-        }
+        DDDBDocument* xml_doc = 0;
+        Locals() = default;
+        Locals(const Locals& c) = default;
+        Locals& operator=(const Locals& c) = default;
       };
 
       /// Helper class to preserve local processing environment
@@ -184,8 +180,7 @@ namespace dd4hep {
       /// Initializing constructor
       DDDBContext(Detector* d);
       /// Default destructor
-      ~DDDBContext()  {
-      }
+      ~DDDBContext() = default;
 
       /** Printout helpers                                                                             */
       void print(const DDDBIsotope* obj)   const               { if ( print_materials ) dddb_print(obj);    }
@@ -222,7 +217,7 @@ namespace dd4hep {
       void collectPath(const string& path, DDDBMaterial*  obj) { collect_p(geo->materialPaths,  path, obj); }
       void collectPath(const string& path, DDDBPhysVol*   obj) { collect_p(geo->placementPaths, path, obj); }
       void collectPath(const string& path, DDDBLogVol*    obj) { collect_p(geo->volumePaths,    path, obj); }
-      void collectPath(const string& path, DDDBTabProperty*   obj) { collect_p(geo->tabpropertyPaths, path, obj); }
+      void collectPath(const string& path, DDDBTabProperty* obj) { collect_p(geo->tabpropertyPaths, path, obj); }
       void collectPath(const string& path, DDDBCatalog*   obj) { collect_p(geo->catalogPaths,   path, obj); }
       void collectPath(const string& path, Condition& object) {
         dddb::Conditions::const_iterator i=geo->conditionPaths.find(path);

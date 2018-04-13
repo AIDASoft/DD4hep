@@ -50,11 +50,11 @@ namespace dd4hep {
       typedef std::map<std::string, std::string> StringMap;
       typedef std::map<std::string, std::pair<std::string,std::string > > StringPairMap;
       std::string  name, id;
-      DDDBDocument*    document;
-      int          refCount;
+      DDDBDocument* document = 0;
+      int           refCount = 0;
 
       /// Default constructor
-      DDDBNamed();
+      DDDBNamed() = default;
       /// Initializing constructor
       DDDBNamed(const std::string& c);
       /// Copy constructor

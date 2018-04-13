@@ -76,9 +76,12 @@ namespace dd4hep {
         LoadInfo(const LoadInfo& c) = default;
         virtual ~LoadInfo()         = default;
         LoadInfo& operator=(const LoadInfo& copy) = default;
-        virtual const std::type_info& type()   const { return typeid(T); }
-        virtual const void*           ptr()    const { return &info;     }
-        virtual ConditionsLoadInfo*   clone()  const { return new LoadInfo<T>(info);     }
+        virtual const std::type_info& type()   const  override
+        { return typeid(T);                      }
+        virtual const void*           ptr()    const  override
+        { return &info;                          }
+        virtual ConditionsLoadInfo*   clone()  const  override
+        { return new LoadInfo<T>(info);          }
       };
      
       typedef std::map<Condition::key_type,ConditionDependency* > Dependencies;
