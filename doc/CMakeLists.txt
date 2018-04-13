@@ -24,7 +24,7 @@ ENDIF(DOXYGEN_FOUND)
 FIND_PACKAGE(LATEX)
 
 # Only add target if we have LaTeX
-IF(LATEX_COMPILER)
+IF(LATEX_COMPILER AND BIBER_COMPILER)
     MESSAGE(STATUS "Found LaTeX compiler.")
     SET(LATEX_COMPILER_FLAGS "-shell-escape" "-interaction nonstopmode" "-halt-on-error" "-file-line-error" CACHE STRING "Flags passed to latex.")
     INCLUDE(${CMAKE_SOURCE_DIR}/cmake/LATEX.cmake)
@@ -39,6 +39,6 @@ IF(LATEX_COMPILER)
     ADD_SUBDIRECTORY(usermanuals/DDG4)
     ADD_SUBDIRECTORY(usermanuals/DDRec)
     
-ELSE(LATEX_COMPILER)
-    MESSAGE(STATUS "No LaTeX found, cannot compile user manual.")
-ENDIF(LATEX_COMPILER)
+ELSE()
+    MESSAGE(STATUS "No LaTeX/Biber found, cannot compile user manual.")
+ENDIF()
