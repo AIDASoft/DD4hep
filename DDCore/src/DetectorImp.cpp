@@ -38,9 +38,6 @@
 
 #include "XML/DocumentHandler.h"
 
-#if DD4HEP_USE_PYROOT
-#include "TPython.h"
-#endif
 #ifndef __TIXML__
 #include "xercesc/dom/DOMException.hpp"
 namespace dd4hep {
@@ -504,6 +501,7 @@ void DetectorImp::endDocument() {
     patcher.patchShapes();
     mapDetectorTypes();
   }
+  m_state = READY;
 }
 
 /// Initialize the geometry and set the bounding box of the world volume
@@ -543,23 +541,20 @@ void DetectorImp::init() {
     m_trackers.setPlacement(m_worldVol.placeVolume(tracking));
     m_world.add(m_trackers);
 #endif
+
     m_detectors.append(m_world);
     m_manager->SetTopVolume(m_worldVol.ptr());
     m_world.setPlacement(mgr->GetTopNode());
+
+    m_field = OverlayedField("global");
+    m_state = LOADING;
   }
 }
 
 /// Read any geometry description or alignment file
 void DetectorImp::fromXML(const string& xmlfile, DetectorBuildType build_type) {
   TypePreserve build_type_preserve(m_buildType = build_type);
-#if DD4HEP_USE_PYROOT
-  string cmd;
-  TPython::Exec("import description");
-  cmd = "description.fromXML('" + xmlfile + "')";
-  TPython::Exec(cmd.c_str());
-#else
   processXML(xmlfile,0);
-#endif
 }
 
 /// Read any geometry description or alignment file with external XML entity resolution

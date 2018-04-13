@@ -73,10 +73,14 @@ dd4hep_add_package_library ( DDCore
 # Generate DDCore plugins---------------------------------------------------------
 dd4hep_add_plugin ( DDCorePlugins SOURCES src/plugins/*.cpp )
 
-#---------------------------  Specialized  GDML  plugins  --------------------------
+#---------------------------  Specialized  GDML  plugin ----------------------------
 # This plugins depends on the ROOT GDML readers. Hence, extra library
 dd4hep_add_plugin(DDGDMLPlugins
   OPTIONAL    [ROOT REQUIRED COMPONENTS Gdml SOURCES src/gdml/*.cpp]
+)
+#---------------------------  Specialized PYTHON plugin ----------------------------
+dd4hep_add_plugin(DDPythonPlugins
+  OPTIONAL    [ROOT REQUIRED COMPONENTS PyROOT SOURCES src/python/*.cpp]
 )
 #
 #

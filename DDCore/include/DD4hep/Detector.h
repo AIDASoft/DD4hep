@@ -73,6 +73,16 @@ namespace dd4hep {
     typedef std::map<std::string, std::string>          PropertyValues;
     typedef std::map<std::string, PropertyValues>       Properties;
 
+    /// The detector description states
+    enum State   {
+      /// The detector description object is freshly created. No geometry nothing.
+      VIRGIN  = 1<<0,
+      /// The geometry is being created and loaded. (parsing ongoing)
+      LOADING = 1<<1,
+      /// The geometry is loaded.
+      READY   = 1<<2
+    };
+    
     /// Destructor
     virtual ~Detector() = default;
 
@@ -83,6 +93,8 @@ namespace dd4hep {
     /// Finalize the geometry
     virtual void endDocument() = 0;
 
+    /// Access the state of the geometry
+    virtual State state()  const = 0;
     /// Access the geometry manager of this instance
     virtual TGeoManager& manager() const = 0;
     /// Access to properties map
