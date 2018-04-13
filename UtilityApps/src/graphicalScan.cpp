@@ -60,8 +60,8 @@ int main_wrapper(int argc, char** argv)   {
                 << " nSlices                       : number of slices (equally spaced along chose axis)" << std::endl 
                 << " nBins                         : number of bins along each axis of histograms" << std::endl 
                 << " nSamples                      : the number of times each bin is sampled " << std::endl 
-		<< " FieldOrMaterial               : scan field or material? F = field, M = material, FM or MF = both" << std::endl
-		<< " OutfileName                   : output root file name" << std::endl
+                << " FieldOrMaterial               : scan field or material? F = field, M = material, FM or MF = both" << std::endl
+                << " OutfileName                   : output root file name" << std::endl
                 << "        -> produces graphical scans of material and/or fields defined in a compact xml description"
                 << std::endl;
       exit(1);
@@ -188,7 +188,7 @@ int main_wrapper(int argc, char** argv)   {
     }
 
 
-    TH2F* h2slice;
+    TH2F* h2slice = 0;
 
     if (scanMaterial) {
 
@@ -244,82 +244,82 @@ int main_wrapper(int argc, char** argv)   {
         double ymin = h2slice->GetYaxis()->GetBinLowEdge(iy);
         double ymax = h2slice->GetYaxis()->GetBinUpEdge(iy);
 
-	if (scanField) {
-	  // first get b field components in centre of bin
-	  double posV[3];
-	  posV[index[0]] = sz;
-	  posV[index[1]] = 0.5*(xmin+xmax);
-	  posV[index[2]] = 0.5*(ymin+ymax);
+        if (scanField) {
+          // first get b field components in centre of bin
+          double posV[3];
+          posV[index[0]] = sz;
+          posV[index[1]] = 0.5*(xmin+xmax);
+          posV[index[2]] = 0.5*(ymin+ymax);
 
-	  double fieldV[3] ;
-	  description.field().combinedMagnetic( posV  , fieldV  ) ;
-	  scanmap["Bx"]->SetBinContent(ix, iy, fieldV[0] / dd4hep::tesla );
-	  scanmap["By"]->SetBinContent(ix, iy, fieldV[1] / dd4hep::tesla );
-	  scanmap["Bz"]->SetBinContent(ix, iy, fieldV[2] / dd4hep::tesla );
+          double fieldV[3] ;
+          description.field().combinedMagnetic( posV  , fieldV  ) ;
+          scanmap["Bx"]->SetBinContent(ix, iy, fieldV[0] / dd4hep::tesla );
+          scanmap["By"]->SetBinContent(ix, iy, fieldV[1] / dd4hep::tesla );
+          scanmap["Bz"]->SetBinContent(ix, iy, fieldV[2] / dd4hep::tesla );
 	  
-	  description.field().combinedElectric( posV  , fieldV  ) ;
-	  scanmap["Ex"]->SetBinContent(ix, iy, fieldV[0] / ( dd4hep::volt/dd4hep::meter ) );
-	  scanmap["Ey"]->SetBinContent(ix, iy, fieldV[1] / ( dd4hep::volt/dd4hep::meter ) );
-	  scanmap["Ez"]->SetBinContent(ix, iy, fieldV[2] / ( dd4hep::volt/dd4hep::meter ) );
-	}
+          description.field().combinedElectric( posV  , fieldV  ) ;
+          scanmap["Ex"]->SetBinContent(ix, iy, fieldV[0] / ( dd4hep::volt/dd4hep::meter ) );
+          scanmap["Ey"]->SetBinContent(ix, iy, fieldV[1] / ( dd4hep::volt/dd4hep::meter ) );
+          scanmap["Ez"]->SetBinContent(ix, iy, fieldV[2] / ( dd4hep::volt/dd4hep::meter ) );
+        }
 
-	if (scanMaterial) {
+        if (scanMaterial) {
 
-	  // for this bin, estimate the material
-	  double sum_lambda(0);
-	  double sum_x0(0);
-	  double sum_length(0);
+          // for this bin, estimate the material
+          double sum_lambda(0);
+          double sum_x0(0);
+          double sum_length(0);
 
-	  std::map < std::string , float > materialmap;
+          std::map < std::string , float > materialmap;
 
-	  for (unsigned int jx=0; jx<2*mm_count; jx++) {
-	    if ( jx<mm_count ) {
-	      double xcom = xmin + (1+jx)*( xmax - xmin )/(mm_count+1.);
-	      p0.array()[index[1]] = xcom;  p0.array()[index[2]] = ymin;
-	      p1.array()[index[1]] = xcom;  p1.array()[index[2]] = ymax;
-	    } else {
-	      double ycom =  ymin + (jx-mm_count+1)*( ymax - ymin )/(mm_count+1.);
-	      p0.array()[index[1]] = xmin;  p0.array()[index[2]] = ycom;
-	      p1.array()[index[1]] = xmax;  p1.array()[index[2]] = ycom;
-	    }
+          for (unsigned int jx=0; jx<2*mm_count; jx++) {
+            if ( jx<mm_count ) {
+              double xcom = xmin + (1+jx)*( xmax - xmin )/(mm_count+1.);
+              p0.array()[index[1]] = xcom;  p0.array()[index[2]] = ymin;
+              p1.array()[index[1]] = xcom;  p1.array()[index[2]] = ymax;
+            } else {
+              double ycom =  ymin + (jx-mm_count+1)*( ymax - ymin )/(mm_count+1.);
+              p0.array()[index[1]] = xmin;  p0.array()[index[2]] = ycom;
+              p1.array()[index[1]] = xmax;  p1.array()[index[2]] = ycom;
+            }
 
-	    const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
-	    for( unsigned i=0,n=materials.size();i<n;++i){
-	      TGeoMaterial* mat =  materials[i].first->GetMaterial();
-	      double length = materials[i].second;
-	      sum_length += length;
-	      double nx0 = length / mat->GetRadLen();
-	      sum_x0 += nx0;
-	      double nLambda = length / mat->GetIntLen();
-	      sum_lambda += nLambda;
+            const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
+            for( unsigned i=0,n=materials.size();i<n;++i){
+              TGeoMaterial* mat =  materials[i].first->GetMaterial();
+              double length = materials[i].second;
+              sum_length += length;
+              double nx0 = length / mat->GetRadLen();
+              sum_x0 += nx0;
+              double nLambda = length / mat->GetIntLen();
+              sum_lambda += nLambda;
 
-	      std::string mname = mat->GetName();
-	      if ( materialmap.find( mname )!=materialmap.end() ) {
-		materialmap[mname]+=length;
-	      } else {
-		materialmap[mname]=length;
-	      }
+              std::string mname = mat->GetName();
+              if ( materialmap.find( mname )!=materialmap.end() ) {
+                materialmap[mname]+=length;
+              } else {
+                materialmap[mname]=length;
+              }
 
-	    }
+            }
 
-	  }
+          }
 	
-	  scanmap["x0"]->SetBinContent(ix, iy, sum_x0/sum_length); // normalise to cm (ie x0/cm density: indep of bin size)
-	  scanmap["lambda"]->SetBinContent(ix, iy, sum_lambda/sum_length);
+          scanmap["x0"]->SetBinContent(ix, iy, sum_x0/sum_length); // normalise to cm (ie x0/cm density: indep of bin size)
+          scanmap["lambda"]->SetBinContent(ix, iy, sum_lambda/sum_length);
 
-	  for (  std::map < std::string , float >::iterator jj = materialmap.begin(); jj!=materialmap.end(); jj++) {
-	    if ( scanmap.find( jj->first )==scanmap.end() ) {
-	      hn = "slice"; hn+=isl; hn+="_"+jj->first;
-	      hnn = jj->first; hnn += " "+XYZ; hnn+="="; 
-	      // hnn+=sz; 
-	      hnn += Form("%7.3f",sz);
-	      hnn+=" [cm]";
-	      scanmap[jj->first] = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
-	    }
-	    scanmap[jj->first]->SetBinContent(ix, iy, jj->second / sum_length );
-	  }
+          for (  std::map < std::string , float >::iterator jj = materialmap.begin(); jj!=materialmap.end(); jj++) {
+            if ( scanmap.find( jj->first )==scanmap.end() ) {
+              hn = "slice"; hn+=isl; hn+="_"+jj->first;
+              hnn = jj->first; hnn += " "+XYZ; hnn+="="; 
+              // hnn+=sz; 
+              hnn += Form("%7.3f",sz);
+              hnn+=" [cm]";
+              scanmap[jj->first] = new TH2F( hn, hnn, nbins, mmin[index[1]], mmax[index[1]], nbins, mmin[index[2]], mmax[index[2]] );
+            }
+            scanmap[jj->first]->SetBinContent(ix, iy, jj->second / sum_length );
+          }
 
-	} // if (scanMaterial)
+        } // if (scanMaterial)
 
       }
     }
