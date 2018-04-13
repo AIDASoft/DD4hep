@@ -57,20 +57,20 @@ namespace dd4hep {
       /// Access data match
       const std::string& match() const           { return m_match;      }
       /// Access to local context
-      virtual UserContext* context();
+      virtual UserContext* context()   override;
 
       /// Process load request. Calls getObject at the end.            */
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, std::string& buffer);
+      virtual bool load(const std::string& system_id, std::string& buffer)  override;
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer);
+      virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer)  override;
       /** If you have to modify intervals of validity, do it in here.
        *  Only this routine is called by EVERY parsing request
        */
       /// Inform reader about a locally (e.g. by XercesC) handled source load
-      virtual void parserLoaded(const std::string& system_id);
+      virtual void parserLoaded(const std::string& system_id)  override;
       /// Inform reader about a locally (e.g. by XercesC) handled source load
-      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt);
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt)  override;
 
       /** Main object reader routine                                   */
       /// Read raw XML object from the database / file
