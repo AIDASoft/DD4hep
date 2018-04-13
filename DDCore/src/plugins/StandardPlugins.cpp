@@ -232,8 +232,6 @@ DECLARE_APPLY(DD4hep_Rint,run_interpreter)
  */
 static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
   char cmd[256];
-  //DD4hepUI* ui = new DD4hepUI(description);
-  //::snprintf(cmd,sizeof(cmd),"dd4hep::detail::DD4hepUI* gDD4hepUI = (dd4hep::detail::DD4hepUI*)%p;",(void*)ui);
   ::snprintf(cmd,sizeof(cmd),
              "dd4hep::detail::DD4hepUI* gDD4hepUI = new "
              "dd4hep::detail::DD4hepUI(*(dd4hep::Detector*)%p);",

@@ -152,7 +152,7 @@ namespace {
 /// Default constructor
 DetectorData::DetectorData()
   : m_manager(0), m_world(), m_trackers(), m_worldVol(),
-    m_trackingVol(), m_field("global"),
+    m_trackingVol(), m_field(),
     m_buildType(BUILD_DEFAULT), m_extensions(typeid(DetectorData)), m_volManager(),
     m_inhibitConstants(false)
 {
