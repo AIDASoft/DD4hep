@@ -60,7 +60,7 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~ParticleRejectFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const;
+      virtual bool operator()(const G4Step* step) const  final;
     };
 
     /// Geant4 sensitive detector filter implementing a particle selector
@@ -75,7 +75,7 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~ParticleSelectFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const;
+      virtual bool operator()(const G4Step* step) const  final;
     };
 
     /// Geant4 sensitive detector filter implementing a Geantino rejector
@@ -90,7 +90,7 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~GeantinoRejectFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const;
+      virtual bool operator()(const G4Step* step) const  final;
     };
 
     /// Geant4 sensitive detector filter implementing an energy cut.
@@ -108,7 +108,7 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~EnergyDepositMinimumCut();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const;
+      virtual bool operator()(const G4Step* step) const  final;
     };
   }
 }

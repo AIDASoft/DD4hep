@@ -44,15 +44,15 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DDDBFileReader()  {}
       /// Read raw XML object from the database / file
-      virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data);
+      virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data)  override;
       /// Inform reader about a locally (e.g. by XercesC) handled source load
-      virtual void parserLoaded(const std::string& system_id);
+      virtual void parserLoaded(const std::string& system_id)  override;
       /// Inform reader about a locally (e.g. by XercesC) handled source load
-      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt);
+      virtual void parserLoaded(const std::string& system_id, UserContext* ctxt)  override;
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, std::string& buffer);
+      virtual bool load(const std::string& system_id, std::string& buffer)  override;
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer);
+      virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer)  override;
 
     };
   }    /* End namespace DDDB            */
