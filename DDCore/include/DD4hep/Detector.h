@@ -76,11 +76,11 @@ namespace dd4hep {
     /// The detector description states
     enum State   {
       /// The detector description object is freshly created. No geometry nothing.
-      VIRGIN  = 1<<0,
+      NOT_READY = 1<<0,
       /// The geometry is being created and loaded. (parsing ongoing)
-      LOADING = 1<<1,
+      LOADING   = 1<<1,
       /// The geometry is loaded.
-      READY   = 1<<2
+      READY     = 1<<2
     };
     
     /// Destructor

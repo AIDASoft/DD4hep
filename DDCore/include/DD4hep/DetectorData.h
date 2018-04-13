@@ -131,7 +131,7 @@ namespace dd4hep {
     VolumeManager            m_volManager;
 
     /// Detector description state
-    Detector::State          m_state = Detector::VIRGIN;
+    Detector::State          m_state = Detector::NOT_READY;
     
     /// Flag to inhibit the access to global constants. Value set by constants section 'Detector_InhibitConstants'
     bool                     m_inhibitConstants;
