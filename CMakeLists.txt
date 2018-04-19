@@ -28,10 +28,13 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ###############################################
 
 OPTION(BUILD_DOCS_ONLY "Build documentation only" OFF)
+OPTION(BUILD_DOCS "Build documentation" ON)
 
 # Add targets for Doxygen code reference and LaTeX User manual
 
-ADD_SUBDIRECTORY(doc)
+if (BUILD_DOCS)
+    ADD_SUBDIRECTORY(doc)
+ENDIF()
 
 # If only building docs, stop processing the rest of the CMake file:
 IF(BUILD_DOCS_ONLY)
