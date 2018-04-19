@@ -9,7 +9,7 @@
 #
 #==========================================================================
 import logging
-import DD4hep as core
+import dd4hep as core
 
 def loadDDRec():
   from ROOT import gSystem
