@@ -73,7 +73,7 @@ except ImportError,X:
   sys.exit(errno.ENOENT)
 
 try:
-  import DD4hep
+  import dd4hep
 except ImportError,X:
   logging.error('dd4hep python interface not accessible: %s',str(X))
   logging.error("%s",parser.format_help())
@@ -87,12 +87,12 @@ except ImportError,X:
   sys.exit(errno.ENOENT)
 #
 
-DD4hep.setPrintLevel(DD4hep.OutputLevel.ERROR)
+dd4hep.setPrintLevel(dd4hep.OutputLevel.ERROR)
 logging.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
 
 
 
-description = DD4hep.Detector.getInstance()
+description = dd4hep.Detector.getInstance()
 description.fromXML(opts.compact)
 
 
