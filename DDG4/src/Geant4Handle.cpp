@@ -116,11 +116,14 @@ namespace dd4hep {
         _ST* object = (_ST*)_create_object<TYPE>(kernel,s_type);
         CONT& container = (k.*pmf)();
         TYPE* value = 0;
-        // Need to protect the global action sequence!
-        G4AutoLock protection_lock(&creation_mutex);    {
+        { // Need to protect the global action sequence!
+          G4AutoLock protection_lock(&creation_mutex);
           value = container.get(typ.second);
-          if ( !value ) value = _create_object<TYPE>(k,typ);
-          container.adopt(value);
+          if ( !value ) {
+            value = _create_object<TYPE>(k,typ);
+            container.adopt(value);
+            value->release();
+          }
         }
         object->use(value);
         value->info("+++ Created shared object for %s of type %s.",
