@@ -55,8 +55,8 @@ def run():
   logging.info("""
   Configure I/O
   """)
-  evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  evt_lcio.OutputLevel = Output.ERROR
+  #evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  #evt_lcio.OutputLevel = Output.ERROR
 
   evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
@@ -126,7 +126,7 @@ def run():
   user.enableUI()
   part.adopt(user)
 
-  logging.info("#  Setup global filters fur use in sensntive detectors")
+  logging.info("#  Setup global filters fur use in sensitive detectors")
   f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
   f2 = DDG4.Filter(kernel,'ParticleRejectFilter/OpticalPhotonRejector')
   f2.particle = 'opticalphoton'

@@ -25,7 +25,7 @@ def setupWorker(geant4):
   run1.Property_int    = int(12345)
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
-  logging.info("%s %f %d",run1.Property_string, run1.Property_double, run1.Property_int)
+  logging.info("%s %s %s",run1.Property_string, str(run1.Property_double), str(run1.Property_int))
   run1.enableUI()
   kernel.runAction().adopt(run1)
 
@@ -36,8 +36,8 @@ def setupWorker(geant4):
   kernel.eventAction().adopt(prt)
 
   logging.info("\n#PYTHON:  Configure I/O\n")
-  evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  evt_lcio.OutputLevel = Output.ERROR
+  #evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  #evt_lcio.OutputLevel = Output.ERROR
 
   evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
@@ -106,7 +106,7 @@ def setupWorker(geant4):
   
 def setupMaster(geant4):
   kernel = geant4.master()
-  logging.info('#PYTHON: +++ Setting up master thread for %d workers',kernel.NumberOfThreads)
+  logging.info('#PYTHON: +++ Setting up master thread for %d workers',int(kernel.NumberOfThreads))
   return 1
 
 def setupSensitives(geant4):
@@ -139,13 +139,14 @@ def run():
   DDG4.importConstants(description)
 
   kernel.NumberOfThreads = 3
+  kernel.RunManagerType  = 'G4MTRunManager'
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   logging.info("#  Configure UI")
   geant4.setupCshUI()
 
   logging.info("#  Geant4 user initialization action")
   geant4.addUserInitialization(worker=setupWorker, worker_args=(geant4,),
-                               master=setupMaster,master_args=(geant4,))
+                               master=setupMaster, master_args=(geant4,))
 
   logging.info("#  Configure G4 geometry setup")
   seq,act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
