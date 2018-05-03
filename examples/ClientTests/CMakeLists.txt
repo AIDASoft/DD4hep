@@ -233,4 +233,12 @@ if (DD4HEP_USE_GEANT4)
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
+
+  dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelEnergyDeposits.py batch
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "Entries :      200 "
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+
 endif(DD4HEP_USE_GEANT4)

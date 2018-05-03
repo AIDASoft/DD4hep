@@ -21,6 +21,22 @@ dd4hep_package ( DDG4 MAJOR 0 MINOR 0 PATCH 1
 #
 if (DD4HEP_USE_GEANT4)
   #
+  #----  Dictionary of classes to be written to the ROOT file   --------------------
+  dd4hep_add_dictionary(G__DDG4UserDict
+  SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h
+  LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
+  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/lib
+  )
+  #----  Example of a client library with user defined plugins  --------------------
+  dd4hep_add_plugin( DDG4UserLib
+    GENERATED G__DDG4UserDict.cxx
+    SOURCES   src/*.cpp
+    USES      [GEANT4 REQUIRED]
+              [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
+              [DD4hep REQUIRED COMPONENTS DDCore DDG4]
+    )
+  #
+  #
   dd4hep_install_dir(data DESTINATION ${DD4hep_DIR}/examples/DDG4 )
   #
   dd4hep_configure_scripts (DDG4 DEFAULT_SETUP WITH_TESTS)

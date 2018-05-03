@@ -1249,7 +1249,7 @@ function( dd4hep_add_dictionary dictionary )
   if ( "${enabled}" STREQUAL "OFF" )
     dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
   else()
-    cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;INCLUDES" ${ARGN} )
+    cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;INCLUDES;OUTPUT" ${ARGN} )
     dd4hep_print ( "|++> ${tag} Building dictionary ..." ) 
     if("${ARG_LINKDEF}" STREQUAL "")
       set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
@@ -1311,14 +1311,16 @@ function( dd4hep_add_dictionary dictionary )
     dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
     dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
     #
+    set ( output_dir ${CMAKE_CURRENT_BINARY_DIR}/../lib )
+    if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
+      set ( output_dir ${ARG_OUTPUT} )
+    endif()
     add_custom_command(OUTPUT ${dictionary}.cxx
       COMMAND ${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx
-      -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${CMAKE_CXX_STANDARD} ${inc_dirs} ${headers} ${linkdefs}
+      -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${CMAKE_CXX_STANDARD} ${inc_dirs} ${headers} ${linkdefs}
       DEPENDS ${headers} ${linkdefs} )
     #  Install the binary to the destination directory
-    #set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm DESTINATION lib)
-    #set_source_files_properties( ${dictionary}.h ${dictionary}.cxx PROPERTIES GENERATED TRUE )
+    install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
     endif()
 endfunction()
 
