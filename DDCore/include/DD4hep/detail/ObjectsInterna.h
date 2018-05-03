@@ -88,9 +88,9 @@ namespace dd4hep {
   class VisAttrObject: public NamedObject {
   public:
     unsigned long magic;
-    TColor* col;
-    int color;
-    float alpha;
+    TColor*       col;
+    int           color;
+    float         alpha;
     unsigned char drawingStyle, lineStyle, showDaughters, visible;
     /// Standard constructor
     VisAttrObject();
@@ -169,11 +169,11 @@ namespace dd4hep {
   class ReadoutObject: public NamedObject {
   public:
     /// Handle to the readout segmentation
-    Segmentation segmentation;  //! not ROOT-persistent
+    Segmentation  segmentation;  //! not ROOT-persistent
     /// Handle to the volume
-    Volume readoutWorld;
+    Volume        readoutWorld;
     /// Handle to the field descriptor
-    IDDescriptor id;
+    IDDescriptor  id;
     /// Hit collection container (if defined)
     std::vector<HitCollection> hits;
     /// Standard constructor
@@ -195,9 +195,9 @@ namespace dd4hep {
     typedef std::vector<std::pair<std::string, const BitFieldElement*> > FieldMap;
     typedef std::vector<std::pair<size_t, std::string> >         FieldIDs;
     /// Map of id-fields in the descriptor
-    FieldMap fieldMap;
+    FieldMap      fieldMap;
     /// String map of id descriptors
-    FieldIDs fieldIDs;
+    FieldIDs      fieldIDs;
     /// Decoder object
     BitFieldCoder decoder;
     

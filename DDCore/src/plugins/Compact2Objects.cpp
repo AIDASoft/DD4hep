@@ -595,11 +595,11 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<Region>::operator()(xml_h elt) const {
-  xml_dim_t  e = elt;
-  Region     region(e.nameStr());
-  vector<string>&limits = region.limits();
-  xml_attr_t cut = elt.attr_nothrow(_U(cut));
-  xml_attr_t threshold = elt.attr_nothrow(_U(threshold));
+  xml_dim_t       e = elt;
+  Region          region(e.nameStr());
+  vector<string>& limits       = region.limits();
+  xml_attr_t      cut          = elt.attr_nothrow(_U(cut));
+  xml_attr_t      threshold    = elt.attr_nothrow(_U(threshold));
   xml_attr_t store_secondaries = elt.attr_nothrow(_U(store_secondaries));
   double ene = e.eunit(1.0), len = e.lunit(1.0);
 
