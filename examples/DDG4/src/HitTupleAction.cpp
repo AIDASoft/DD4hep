@@ -175,7 +175,7 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
         }
       }
       else   {
-        except("HitTupleAction","Failed to open ROOT N-tuple file: "+m_outFileName);
+        except("HitTupleAction","Failed to open ROOT N-tuple file: %s",m_outFileName.c_str());
       }
     }
     for ( auto& e : m_deposits )  {
