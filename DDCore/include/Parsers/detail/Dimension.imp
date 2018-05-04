@@ -120,6 +120,7 @@ XML_ATTR_ACCESSOR(double, phi_size_max)
 XML_ATTR_ACCESSOR(double, r_size)
 
 XML_ATTR_ACCESSOR_DOUBLE(skew)
+XML_ATTR_ACCESSOR_DOUBLE(scale)
 XML_ATTR_ACCESSOR_DOUBLE(coefficient)
 
 XML_ATTR_ACCESSOR(double, gap)

@@ -37,11 +37,14 @@
       <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
     </limitset>
     <limitset name="VXD_RegionLimitSet">
-      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="step_length_max"  particles="*" value="5.0" unit="mm" />
       <limit name="track_length_max" particles="*" value="5.0" unit="mm" />
-      <limit name="time_max" particles="*" value="5.0" unit="ns" />
-      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
-      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+      <limit name="time_max"         particles="*" value="5.0" unit="ns" />
+      <limit name="ekin_min"         particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min"        particles="*" value="5.0" unit="mm" />
+      <cut   particles="e+"          value="2.0"   unit="mm" />
+      <cut   particles="e-"          value="2.0"   unit="mm" />
+      <cut   particles="gamma"       value="5.0"   unit="mm" />
     </limitset>
   </limits>
   <regions>

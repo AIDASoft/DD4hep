@@ -69,7 +69,8 @@ class CLICSid:
     seq,act = self.geant4.setupCalorimeter('LumiCal')
     seq,act = self.geant4.setupCalorimeter('BeamCal')
     return self
-  
+
+  # Test the configuration
   def test_config(self, have_geo=True):
     self.kernel.configure()
     if have_geo:

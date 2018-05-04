@@ -126,7 +126,6 @@ void myanalysis::HitTupleAction::beginRun(const G4Run* /* run */)   {
 void myanalysis::HitTupleAction::endRun(const G4Run* /* run */)    {
   if ( m_outFile )   {
     if ( m_outTree )   {
-      m_outTree->Write();
       m_outTree->Print();
     }
     m_outFile->Write();

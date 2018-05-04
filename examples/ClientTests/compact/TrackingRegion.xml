@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+ 
+  <info name="SiliconBlock"
+	title="Test with 2 simple silicon boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleRed"               r="1.0" g="0.0" b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="VisibleBlue"              r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" showDaughters="true"  visible="true" drawingStyle="solid" lineStyle="solid"/>
+  </display>
+
+  <limits>
+    <limitset name="SiRegionLimitSet">
+      <limit name="step_length_max"  particles="*" value="5.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="1.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <regions>
+    <region name="SiRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="SiRegionLimitSet"/>
+    </region>
+  </regions>
+
+  <tracking_volume mother="/world" vis="VisibleBlue">
+    <material name="Air"/>
+    <shape type="BooleanShape" operation="Subtraction">
+      <shape type="BooleanShape" operation="Subtraction">
+        <shape type="BooleanShape" operation="Subtraction"  >
+          <shape type="Tube" rmin="0*cm" rmax="100*cm" dz="100*cm"/>
+          <shape type="Cone" rmin2="0*cm" rmax2="60*cm" rmin1="0*cm" rmax1="30*cm" z="40*cm"/>
+          <position x="0*cm" y="0*cm" z="65*cm"/>
+        </shape>
+        <shape type="Cone" rmin1="0*cm" rmax1="60*cm" rmin2="0*cm" rmax2="30*cm" z="40*cm"/>
+        <position x="0" y="0" z="-65*cm"/>
+      </shape>
+      <shape type="Cone" rmin2="0*cm" rmax2="55*cm" rmin1="0*cm" rmax1="55*cm" z="30*cm"/>
+      <position x="0" y="0" z="0*cm"/>
+    </shape>
+    <position x="0"  y="0"  z="0"/>
+    <rotation x="0"  y="0"  z="0"/> 
+  </tracking_volume>
+
+  <detectors>
+    <detector id="1" name="SiliconBlock" type="DD4hep_BoxSegment" readout="SiliconHits" vis="VisibleGreen" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
+      <material name="Silicon"/>
+      <sensitive type="tracker"/>
+      <box      x="20*cm" y="20*cm" z="20*cm"/>
+      <position x="0"  y="0"  z="0"/>
+      <rotation x="0"  y="0"  z="0"/>
+    </detector>
+  </detectors>
+  
+  <readouts>
+    <readout name="SiliconHits">
+      <id>system:8</id>
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

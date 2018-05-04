@@ -88,10 +88,13 @@ namespace dd4hep {
   class VisAttrObject: public NamedObject {
   public:
     unsigned long magic;
-    TColor*       col;
-    int           color;
-    float         alpha;
-    unsigned char drawingStyle, lineStyle, showDaughters, visible;
+    TColor*       col    = 0;
+    int           color  = 0;
+    float         alpha  = 0;
+    unsigned char drawingStyle  = VisAttr::SOLID;
+    unsigned char lineStyle     = VisAttr::SOLID;
+    unsigned char showDaughters = true;
+    unsigned char visible       = true;
     /// Standard constructor
     VisAttrObject();
     /// Default destructor
@@ -108,11 +111,12 @@ namespace dd4hep {
   class RegionObject: public NamedObject {
   public:
     unsigned long magic;
-    double        threshold;
-    double        cut;
-    bool          store_secondaries;
-    bool          use_default_cut;
-    bool          was_threshold_set;
+    double        threshold         = 10.0;
+    double        cut               = 10.0;
+    bool          store_secondaries = false;
+    bool          use_default_cut   = true;
+    bool          was_threshold_set = false;
+    /// References to user limits
     std::vector<std::string> user_limits;
     /// Standard constructor
     RegionObject();
@@ -127,7 +131,16 @@ namespace dd4hep {
    *  \version 1.0
    *  \ingroup DD4HEP_CORE
    */
-  class LimitSetObject: public NamedObject, public std::set<Limit> {
+  class LimitSetObject: public NamedObject  {
+  public:
+    /// Iterator definitions
+    typedef std::set<Limit>::iterator       iterator;
+    typedef std::set<Limit>::const_iterator const_iterator;
+  public:
+    /// Particle specific limits
+    std::set<Limit> limits;
+    /// Particle specific production cuts
+    std::set<Limit> cuts;
   public:
     /// Standard constructor
     LimitSetObject();

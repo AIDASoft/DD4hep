@@ -389,11 +389,19 @@ namespace dd4hep {
 
   /// Handle class describing a set of limits as they are used for simulation
   /**
+   *  The class manages the production cuts and the limits for a given simulation region.
+   *  Currently known clients of this objects are simulation programs.
+   *
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP_CORE
    */
   class LimitSet: public Handle<LimitSetObject> {
+  public:
+    /// Iterator definitions
+    typedef std::set<Limit>                 Set;
+    typedef std::set<Limit>::iterator       iterator;
+    typedef std::set<Limit>::const_iterator const_iterator;
   public:
     /// Constructor to be used when reading the already parsed DOM tree
     LimitSet() = default;
@@ -413,6 +421,10 @@ namespace dd4hep {
     bool addLimit(const Limit& limit);
     /// Accessor to limits container
     const std::set<Limit>& limits() const;
+    /// Add new limit. Returns true if the new limit was added, false if it already existed.
+    bool addCut(const Limit& limit);
+    /// Accessor to limits container
+    const std::set<Limit>& cuts() const;
   };
 
   /// Handle class describing a region as used in simulation
@@ -438,9 +450,15 @@ namespace dd4hep {
     /// Assignment operator
     Region& operator=(const Region& c)  = default;
 
+    /// Set flag to store secondaries
     Region& setStoreSecondaries(bool value);
+    /// Set threshold in MeV
     Region& setThreshold(double value);
+    /// Set default production cut
     Region& setCut(double value);
+    /// Set particle type specific cut (Geant4 accepts e+, e-, gamma, and proton)
+    Region& setCut(double value, const std::string& particle);
+
     /// Access references to user limits
     std::vector<std::string>& limits() const;
 

@@ -48,7 +48,7 @@ namespace {
 Geant4UIMessenger::Geant4UIMessenger(const string& name, const string& path)
   : G4UImessenger(), m_directory(0), m_properties(0), m_name(name), m_path(path) {
   m_directory = new G4UIdirectory(path.c_str());
-  printout(INFO, "Geant4UIMessenger", "+++ %s> Install Geant4 control directory:%s", name.c_str(), path.c_str());
+  printout(INFO, "Geant4UI", "+++ %s> Install Geant4 control directory:%s", name.c_str(), path.c_str());
   m_directory->SetGuidance(("Control hierarchy for Geant4 action:" + name).c_str());
 }
 
@@ -81,7 +81,7 @@ G4String Geant4UIMessenger::GetCurrentValue(G4UIcommand * c) {
     const string& n = (*i).second;
     return (*m_properties)[n].str();
   }
-  printout(INFO, "Geant4UIMessenger",
+  printout(INFO, "Geant4UI",
            "+++ %s> Failed to access property value.", m_name.c_str());
   return "";
 }
@@ -95,23 +95,23 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
       if (!v.empty()) {
         Property& p = (*m_properties)[n];
         p.str(v);
-        printout(INFO, "Geant4UIMessenger",
+        printout(INFO, "Geant4UI",
                  "+++ %s> Setting property value %s = %s  native:%s.",
                  m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
       }
       else {
         string value = (*m_properties)[n].str();
-        printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
+        printout(INFO, "Geant4UI", "+++ %s> Unchanged property value %s = %s.",
                  m_name.c_str(), n.c_str(), value.c_str());
       }
     }
     catch(const exception& e)   {
-      printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to change property %s = '%s'.",
+      printout(INFO, "Geant4UI", "+++ %s> Exception: Failed to change property %s = '%s'.",
                m_name.c_str(), n.c_str(), v.c_str());
-      printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s", m_name.c_str(), e.what());
+      printout(INFO, "Geant4UI", "+++ %s> Exception: %s", m_name.c_str(), e.what());
     }
     catch(...)   {
-      printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to change property %s = '%s'.",
+      printout(INFO, "Geant4UI", "+++ %s> UNKNOWN Exception: Failed to change property %s = '%s'.",
                m_name.c_str(), n.c_str(), v.c_str());
     }
     return;
@@ -123,16 +123,16 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
         (*j).second.execute(0);
       }
       catch(const exception& e)   {
-        printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to exec action '%s' [%s].",
+        printout(INFO, "Geant4UI", "+++ %s> Exception: Failed to exec action '%s' [%s].",
                  m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
-        printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s",e.what());
+        printout(INFO, "Geant4UI", "+++ %s> Exception: %s",e.what());
       }
       catch(...)   {
-        printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to exec action '%s' [%s].",
+        printout(INFO, "Geant4UI", "+++ %s> UNKNOWN Exception: Failed to exec action '%s' [%s].",
                  m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
       }
       return;
     }
   }
-  printout(INFO, "Geant4UIMessenger", "+++ %s> Unknown command callback!", m_name.c_str());
+  printout(INFO, "Geant4UI", "+++ %s> Unknown command callback!", m_name.c_str());
 }

@@ -334,7 +334,8 @@ PlacedVolume::Processor::~Processor()   {
 
 /// Default constructor
 PlacedVolumeExtension::PlacedVolumeExtension()
-  : TGeoExtension(), magic(0), refCount(0), volIDs() {
+  : TGeoExtension(), volIDs()
+{
   magic = magic_word();
   INCREMENT_COUNTER;
 }
@@ -457,7 +458,7 @@ ClassImp(VolumeExtension)
 
 /// Default constructor
 VolumeExtension::VolumeExtension()
-: TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0) {
+: TGeoExtension(), region(), limits(), vis(), sens_det()   {
   INCREMENT_COUNTER;
 }
 
@@ -537,7 +538,25 @@ Volume& Volume::import()    {
   except("dd4hep","Volume: Attempt to import invalid Volume handle.");
   return *this;
 }
-    
+
+/// Set user flags in bit-field
+void Volume::setFlagBit(unsigned int bit)   {
+  if ( bit <= 31 )   {
+    data()->flags |= 1<<bit;
+    return;
+  }
+  except("Volume","+++ Volume flag bit outsize range [0...31]: %d",bit);
+}
+
+/// Test the user flag bit
+bool Volume::testFlagBit(unsigned int bit)   const    {
+  if ( bit <= 31 )   {
+    return (data()->flags & 1<<bit) != 0;
+  }
+  except("Volume","+++ Volume flag bit outsize range [0...31]: %d",bit);
+  return false; // Anyhow never called. Only to satisfy the compiler.
+}    
+
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   if ( !parent )   {

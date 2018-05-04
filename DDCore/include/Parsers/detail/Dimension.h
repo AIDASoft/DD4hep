@@ -419,6 +419,11 @@ namespace dd4hep {
       /// Access attribute values: coefficient
       double coefficient(double default_value) const;
 
+      /// Access attribute values: scale
+      double scale() const;
+      /// Access attribute values: scale
+      double scale(double default_value) const;
+
       /// Access attribute values: skew
       double skew() const;
       /// Access attribute values: skew
