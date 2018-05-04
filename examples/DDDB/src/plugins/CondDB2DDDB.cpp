@@ -179,8 +179,6 @@ namespace dd4hep {
       DDDBContext() = default;
       /// Initializing constructor
       DDDBContext(Detector* d);
-      /// Default destructor
-      ~DDDBContext() = default;
 
       /** Printout helpers                                                                             */
       void print(const DDDBIsotope* obj)   const               { if ( print_materials ) dddb_print(obj);    }
