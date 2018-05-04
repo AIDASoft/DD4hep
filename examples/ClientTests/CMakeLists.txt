@@ -215,7 +215,7 @@ endforeach()
 if (DD4HEP_USE_GEANT4)
   #
   # Geant4 test if production cuts are processed
-  dd4hep_add_test_reg( ClientTests_MiniTel_prod_cuts
+  dd4hep_add_test_reg( ClientTests_sim_MiniTel_prod_cuts
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelRegions.py batch
     REQUIRES   DDG4 Geant4
@@ -223,7 +223,7 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
   # Geant4 test if production cuts are processed
-  dd4hep_add_test_reg( ClientTests_MiniTel_limitset
+  dd4hep_add_test_reg( ClientTests_sim_MiniTel_limitset
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelRegions.py batch
     REQUIRES   DDG4 Geant4
