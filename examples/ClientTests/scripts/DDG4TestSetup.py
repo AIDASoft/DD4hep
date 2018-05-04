@@ -1,6 +1,6 @@
 import os, sys, time, logging, DDG4
 from DDG4 import OutputLevel as Output
-from g4Units import *
+from SystemOfUnits import *
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 
