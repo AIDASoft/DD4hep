@@ -18,7 +18,7 @@ def run():
   m.setupGun()
   m.setupGenerator()
   # This is the actual test:
-  hit_tuple = DDG4.EventAction(kernel,'HitTupleAction/MiniTelTuple',True)
+  hit_tuple = DDG4.EventAction(m.kernel,'HitTupleAction/MiniTelTuple',True)
   hit_tuple.OutputFile = 'MiniTel_EnergyDeposits_'+time.strftime('%Y-%m-%d_%H-%M')+'.root'
   hit_tuple.Collections = ['*']
   m.kernel.eventAction().add(hit_tuple)

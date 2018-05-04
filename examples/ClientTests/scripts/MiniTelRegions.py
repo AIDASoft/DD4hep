@@ -7,6 +7,7 @@
 """
 if __name__ == "__main__":
   from MiniTelSetup import Setup as MiniTel
+  import logging
   m = MiniTel()
   m.configure()
   logging.info("#  Configure G4 geometry setup")

@@ -29,4 +29,4 @@ class Setup(DDG4TestSetup.Setup):
     return self
 
   def defineOutput(self,output='MiniTel_'+time.strftime('%Y-%m-%d_%H-%M')):
-    return DDG4TestSetup.Setup.configure(self,output)
+    return DDG4TestSetup.Setup.defineOutput(self,output)
