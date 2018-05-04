@@ -20,6 +20,14 @@
 
 using namespace std;
 using namespace gaudi;
+namespace {
+  void _cond_error(const char* func, int line, const std::exception& e)   {
+    dd4hep::printout(dd4hep::ERROR,"Cond-Callback",
+		     "%s:%d Load Condition failed: %s",func,line,e.what());
+  }
+}
+#define LOAD_COND(expr) try{ expr; }catch(const std::exception& e) {_cond_error(__func__,__LINE__,e); throw; }
+
 
 /// Interface to client Callback in order to update the condition
 dd4hep::Condition DeVeloStaticConditionCall::operator()(const ConditionKey& key, Context& context)  {
@@ -54,7 +62,7 @@ void DeVeloStaticConditionCall::resolve(Condition c, Context& context)    {
     for ( const auto& i : elts )   {
       DetElement de = i.first;
       KeyMaker   key(de.key(), Keys::staticKey);
-      DeStatic   cond = context.condition(key.hash);
+      DeStatic   cond; LOAD_COND(cond = context.condition(key.hash));
       const string& path = de.path();
       bool   left  = path.find("/VeloLeft/Module") != string::npos   || path.find("/VeloLeft")  == path.length()-9;
       bool   right = path.find("/VeloRight/Module") != string::npos  || path.find("/VeloRight") == path.length()-10;
@@ -141,13 +149,12 @@ void DeVeloIOVConditionCall::resolve(Condition cond, Context& context)   {
   if ( !velo_context->alignments_done.isValid() )  {
     velo_context->alignments_done = context.condition(Keys::alignmentsComputedKey);
   }
-  
   vector<Condition> conds = context.conditions(det_key);
-  iov->de_static = context.condition(kstatic.hash);
-  iov->detectorAlignment = context.condition(kalign.hash);
+  LOAD_COND(iov->de_static = context.condition(kstatic.hash));
+  LOAD_COND(iov->detectorAlignment = context.condition(kalign.hash));
   for ( Condition c : conds )
-    iov->conditions.insert(make_pair(c.item_key(),c));
-  iov->initialize();
+    LOAD_COND(iov->conditions.insert(make_pair(c.item_key(),c)));
+  LOAD_COND(iov->initialize());
 }
 
 namespace {
@@ -180,7 +187,7 @@ namespace {
     }
     for (detail::DeVeloGenericStaticObject* i : src->children)   {
       dd4hep::ConditionKey::KeyMaker key(i->detector.key(), Keys::deKey);
-      DeVeloGeneric child = context.condition(key.hash);
+      DeVeloGeneric child; LOAD_COND(child = context.condition(key.hash));
       gen->children.push_back(child.ptr());
       add_sensors(child, DeVeloGenericStatic(i), mapping, context);
     }
@@ -199,7 +206,7 @@ void DeVeloConditionCall::resolve(Condition cond, Context& context)  {
   for ( const auto& i : s->sensors[DeVeloFlags::ALL] )   {
     if ( i.isValid() )   {
       KeyMaker     key(i->detector.key(), Keys::deKey);
-      DeVeloSensor sens = context.condition(key.hash);
+      DeVeloSensor sens; LOAD_COND(sens = context.condition(key.hash));
       if ( !sens.isValid() )  {
         except("DeVelo","Problem Mapping %p ---> %p [%s]",
                (void*)i.ptr(), (void*)sens.ptr(), i->detector.path().c_str());
@@ -223,7 +230,7 @@ void DeVeloConditionCall::resolve(Condition cond, Context& context)  {
   }
   for ( auto side : s->sides )   {
     dd4hep::ConditionKey::KeyMaker key(side->detector.key(), Keys::deKey);
-    DeVeloGeneric child = context.condition(key.hash);
+    DeVeloGeneric child; LOAD_COND(child = context.condition(key.hash));
     vp->sides.push_back(child);
     add_sensors(child, side, sensorMapping, context);
   }

@@ -59,12 +59,27 @@ namespace dd4hep {
     typedef cond::ConditionsPool    ConditionsPool;
     typedef cond::AbstractMap       AbstractMap;
 
+    /// Printout steering for debugging
+    struct PrintFlags  {
+      bool              materials  = false;
+      bool              volumes    = false;
+      bool              logvol     = false;
+      bool              shapes     = false;
+      bool              physvol    = false;
+      bool              params     = false;
+      bool              detelem    = false;
+      bool              conditions = false;
+      bool              vis        = false;
+    };
+    static PrintFlags s_printFlags;
+
     /// Helper class to facilitate conversion. Purely local.
     struct Context  {
       typedef set<string> StringSet;
 
       Context(Detector& l, DDDB::DDDBHelper* h) : description(l), geo(h->detectorDescription()), helper(h)     {
         reader = h->reader<DDDB::DDDBReader>();
+	print  = s_printFlags;
       }
       ~Context()  {
         //printout(INFO,"Context","Destructor calling....");
@@ -103,22 +118,14 @@ namespace dd4hep {
       Volume         lvDummy;
       ConditionsManager manager;
       const IOVType*    epoch = 0;
+      PrintFlags        print;
       int               max_volume_depth = 9999;
       int               unmatched_deltas = 0;
       int               delta_conditions = 0;
       int               matched_conditions = 0;
       int               unmatched_conditions = 0;
       int               badassigned_conditions = 0;
-      bool              print_materials = false;
-      bool              print_volumes = false;
-      bool              print_logvol = false;
-      bool              print_shapes = false;
-      bool              print_physvol = false;
-      bool              print_params = false;
-      bool              print_detelem = false;
-      bool              print_conditions = false;
-      bool              print_vis = false;
-      bool              conditions_only = false;
+      bool              conditions_only  = false;
 
       static PlacedVolume placement(DetElement de)   {
         if ( de.isValid() )  {
@@ -273,7 +280,7 @@ namespace dd4hep {
         iso = TGeoIsotope::FindIsotope(o->c_name());
         if ( !iso ) iso = new TGeoIsotope(o->c_name(),o->Z,o->A,o->density);
         context->isotopes.insert(make_pair(o,iso));
-        if ( context->print_materials ) dddb_print(iso);
+        if ( context->print.materials ) dddb_print(iso);
       }
       return iso;
     }
@@ -306,7 +313,7 @@ namespace dd4hep {
           except("Cnv<Element>","Failed to insert Element: %s into table!", nam);
           return 0;
         }
-        if ( context->print_materials ) dddb_print(e);
+        if ( context->print.materials ) dddb_print(e);
       }
       DDDBMaterial* material = Context::find(context->geo->materials,string(nam));
       if ( !material )  {
@@ -401,7 +408,7 @@ namespace dd4hep {
           medium->SetUniqueID(unique_mat_id);
         }
         context->materials.insert(make_pair(object,medium));
-        if ( context->print_materials ) dddb_print(medium);
+        if ( context->print.materials ) dddb_print(medium);
       }
       return medium;
     }
@@ -422,11 +429,13 @@ namespace dd4hep {
         mat = Context::find(context->geo->materials,mat_name);
       }
       if ( !mat )  {
-        printout(ERROR,"Cnv<Material>",
-                 "++  Failed to find component material: %s "
-                 "---> Matrial table dump.", material_name.c_str());
-        for(auto im=context->geo->materials.begin(); im != context->geo->materials.end(); ++im)
-          dddb_print((*im).second);
+	if ( context->print.materials )   {
+	  printout(ERROR,"Cnv<Material>",
+		   "++  Failed to find component material: %s "
+		   "---> Material table dump.", material_name.c_str());
+	  for(auto im=context->geo->materials.begin(); im != context->geo->materials.end(); ++im)
+	    dddb_print((*im).second);
+	}
         except("Materials","++ Undefined material %s",material_name.c_str());
       }
       TGeoMedium* medium = (TGeoMedium*)CNV<DDDBMaterial>(context->description,context).convert(mat);
@@ -546,7 +555,7 @@ namespace dd4hep {
                  object->c_id(), object->type);
         }
         shape->SetTitle(object->path.c_str());
-        if ( context->print_shapes )  {
+        if ( context->print.shapes )  {
           printout(INFO,"Cnv<Shape>","++ Converted shape: %s",object->c_id());
         }
         context->shapes.insert(make_pair(object, shape));
@@ -597,7 +606,7 @@ namespace dd4hep {
         mother->SetTitle(object->path.c_str());
         VisAttr vis = context->helper->visAttr(object->path);
         if ( vis.isValid() )  {
-          if ( context->print_vis )  {
+          if ( context->print.vis )  {
             printout(INFO,"Cnv<LogVol>","++ Vol:%s  Vis:%s",mother->GetTitle(), vis.name());
           }
           mother.setVisAttributes(vis);
@@ -711,7 +720,7 @@ namespace dd4hep {
               break;
             }
             context->placements.insert(make_pair(pv, place.ptr()));
-            if ( context->print_physvol )    {
+            if ( context->print.physvol )    {
               Position pos;
               pv->trafo.GetTranslation(pos);
               printout(INFO,"Cnv<PhysVol>","++ Converted physVol: depth:%d typ:%d places:%d [%p lv:%p] %s",
@@ -722,7 +731,7 @@ namespace dd4hep {
             }
           }
         }
-        if ( context->print_logvol )  {
+        if ( context->print.logvol )  {
           printout(INFO,"Cnv<LogVol>","++ Converted   logVol: [%p -> %p] %s NDau:%d",
                    (void*)object, (void*)mother.ptr(), object->path.c_str(),
                    mother->GetNdaughters());
@@ -751,9 +760,11 @@ namespace dd4hep {
           lv = (*iv).second;
           return lv;
         }
+#if 0
         for(iv = c->logvols.begin(); iv != c->logvols.end(); ++iv)
           printout(WARNING,"Cnv<LogVol>","++ %s --volume--> %s",
                    c->id.c_str(), (*iv).second->name.c_str());
+#endif
       }
       printout(WARNING,"Cnv<LogVol>","++ Undefined logical volume: %s", nam.c_str());
       return 0;
@@ -779,7 +790,7 @@ namespace dd4hep {
       Volume  vol;
       DDDBCatalog*   support = 0;
       DetElement det, parent_element;
-      if ( context->print_detelem )  {
+      if ( context->print.detelem )  {
         printout(INFO,"CNV<Catalog>","++ Starting catalog %p %s [cref:%d/%d lref:%d/%d lv:%s sup:%s np:%s] Cond:%s ",
                  (void*)object,
                  object->path.c_str(),
@@ -859,12 +870,11 @@ namespace dd4hep {
           if ( !object->npath.empty() )  {
             PlacedVolume place = context->supportPlacement(parent_element, object->npath);
             if ( !place.isValid() )   {
-              char txt[64];
-              ::snprintf(txt,sizeof(txt),"++ %%%lds %%s %%s",long(object->path.length()));
-              printout(WARNING,"CNV<DetElem>",txt,
-                       object->path.c_str(), "Placement: ", object->logvol.c_str());
-              printout(WARNING,"CNV<DetElem>",txt,"    --> INVALID PLACEMENT...",
-                       "Vol.N-path:", object->npath.c_str());
+              printout(WARNING,"CNV<DetElem>","++ %s Placement: %s",
+                       object->path.c_str(), object->logvol.c_str());
+              printout(WARNING,"CNV<DetElem>",
+		       "++     --> INVALID PLACEMENT... Vol.N-path: %s",
+                       object->npath.c_str());
             }
             else   {
               det.setPlacement(place);
@@ -926,7 +936,7 @@ namespace dd4hep {
           }
         }
       }
-      if ( context->print_detelem )  {
+      if ( context->print.detelem )  {
         printout(INFO,"CNV<Catalog>","++ Converting catalog %p -> %p [cref:%d/%d lref:%d/%d lv:%s [%p] sup:%s np:%s] %s ",
                  (void*)object, det.ptr(),
                  int(object->catalogrefs.size()),
@@ -1057,15 +1067,15 @@ namespace dd4hep {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
         Context context(description, helper);
-        context.print_materials     = false;
-        context.print_logvol        = false;
-        context.print_shapes        = false;
-        context.print_physvol       = false;
-        context.print_volumes       = false;
-        context.print_params        = false;
-        context.print_detelem       = false;
-        context.print_conditions    = false;
-        context.print_vis           = false;
+        context.print.materials     = false;
+        context.print.logvol        = false;
+        context.print.shapes        = false;
+        context.print.physvol       = false;
+        context.print.volumes       = false;
+        context.print.params        = false;
+        context.print.detelem       = false;
+        context.print.conditions    = false;
+        context.print.vis           = false;
         context.max_volume_depth    = 11;
 
         CNV<dddb> cnv(description,&context);
@@ -1098,7 +1108,7 @@ namespace dd4hep {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
         Context context(description, helper);
-        context.print_conditions    = false;
+        context.print.conditions    = false;
         context.conditions_only     = true;
         CNV<dddb> cnv(description,&context);
         cnv(make_pair(string(),context.geo));

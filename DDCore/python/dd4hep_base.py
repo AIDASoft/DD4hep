@@ -105,11 +105,11 @@ std_pair   = std.pair
 #---------------------------------------------------------------------------
 core   = dd4hep
 cond   = dd4hep.cond
+tools  = dd4hep.tools
 align  = dd4hep.align
 detail = dd4hep.detail
 
-import_root('XmlTools')
-import_namespace_item('XmlTools','Evaluator')
+import_namespace_item('tools','Evaluator')
 #---------------------------------------------------------------------------
 import_namespace_item('core','NamedObject')
 import_namespace_item('core','run_interpreter')

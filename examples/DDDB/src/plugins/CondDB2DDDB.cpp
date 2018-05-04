@@ -29,6 +29,7 @@
 #include "Math/Polar2D.h"
 
 // C/C++ include files
+#include <climits>
 
 using namespace std;
 using namespace dd4hep;
@@ -174,11 +175,14 @@ namespace dd4hep {
       bool        print_catalog = false;
       bool        print_catalog_ref = false;
       bool        print_tabprop = false;
-
+      bool        print_tree_on_error = true;
+      bool        print_eval_error = true;
       /// Default constructor
       DDDBContext() = default;
       /// Initializing constructor
       DDDBContext(Detector* d);
+      /// Default destructor
+      ~DDDBContext() = default;
 
       /** Printout helpers                                                                             */
       void print(const DDDBIsotope* obj)   const               { if ( print_materials ) dddb_print(obj);    }
@@ -250,12 +254,15 @@ namespace dd4hep {
           convert(element);
         }
         catch(const exception& e)  {
-          printout(INFO,typeName(typeid(T)),"Failed to convert XML object: %s", e.what());
-          xml::dump_tree(element.parent());
+	  bool eval_err = ::strstr(e.what(),"error during expression evaluation");
+	  if ( !eval_err ) eval_err = ::strstr(e.what(),"Evaluator : unknown variable");
+	  if ( !eval_err || (eval_err && s_config.print_eval_error) )
+	    printout(INFO,typeName(typeid(T)),"Failed to convert XML object: %s", e.what());
+	  if ( s_config.print_tree_on_error ) xml::dump_tree(element.parent());
         }
         catch(...)   {
           printout(INFO,typeName(typeid(T)),"Failed to convert XML object.");
-          xml::dump_tree(element.parent());
+	  if ( s_config.print_tree_on_error ) xml::dump_tree(element.parent());
         }
       }
     };
@@ -274,11 +281,11 @@ namespace dd4hep {
         }
         catch(const exception& e)  {
           printout(INFO,typeName(typeid(T)),"Failed to convert object: %s",e.what());
-          xml::dump_tree(element.parent());
+          //xml::dump_tree(element.parent());
         }
         catch(...)   {
           printout(INFO,typeName(typeid(T)),"Failed to convert object.");
-          xml::dump_tree(element.parent());
+          //xml::dump_tree(element.parent());
         }
       }
       void convert(xml::Handle_t element, DDDBShape*& ptr_shape) const;
@@ -764,7 +771,7 @@ namespace dd4hep {
 
     /// Specialized conversion of <param/> entities
     template <> void Conv<DDDBConfig>::convert(xml_h element) const {
-      DDDBContext* ctx = &s_config;
+      DDDBContext* ctx = _param<DDDBContext>();
       for(xml_coll_t c(element,_U(param)); c; ++c)   {
         xml_dim_t p = c;
         if ( p.nameStr() == "print_file_load" )
@@ -799,6 +806,10 @@ namespace dd4hep {
           ctx->print_catalog_ref = p.attr<bool>(_U(value));
         else if ( p.nameStr() == "print_tabprop" )
           ctx->print_tabprop = p.attr<bool>(_U(value));
+	else if ( p.nameStr() == "print_tree_on_error" )
+	  ctx->print_tree_on_error = p.attr<bool>(_U(value));
+	else if ( p.nameStr() == "print_eval_error" )
+	  ctx->print_eval_error = p.attr<bool>(_U(value));
       }
     }
 
@@ -900,7 +911,7 @@ namespace dd4hep {
       if ( i == context->geo->materials.end() )  {
         printout(ERROR,"MaterialRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
       }
-      if ( catalog )  {
+      else if ( catalog )  {
         DDDBMaterial* m = (*i).second;
         string path = object_path(context,m->name);
         context->collectPath(path, m);
@@ -1429,9 +1440,17 @@ namespace dd4hep {
       DDDBContext* context  = _param<DDDBContext>();
       string name  = element.attr<string>(_U(name));
       string value = element.attr<string>(_U(value));
-      _toDictionary(name,value);
       if ( context->print_params )  {
         printout(INFO,"Parameter","++  %s = %s",name.c_str(),value.c_str());
+      }
+      try  {
+	_toDictionary(name,value);
+      }
+      catch(const exception& e)  {
+	if ( context->print_eval_error )  {
+	  printout(ERROR,"DDDBParameter","++  FAILED  %s = %s [%s]",name.c_str(),value.c_str(),e.what());
+	}
+	throw;
       }
     }
 
@@ -1607,6 +1626,7 @@ namespace dd4hep {
       DDDBCatalog* catalog = 0;
       DDDBContext* context = _param<DDDBContext>();
       xml_coll_t(e, _LBU(block)).for_each(Conv<DDDBBlock>(description,context,catalog));
+      xml_coll_t(e, _U(config)).for_each(Conv<DDDBConfig>(description,&s_config,catalog));
       xml_coll_t(e, _U(config)).for_each(Conv<DDDBConfig>(description,context,catalog));
       xml_coll_t(e, _U(parameter)).for_each(Conv<DDDBParameter>(description,context,catalog));
       xml_coll_t(e, _U(isotope)).for_each(Conv<DDDBIsotope>(description,context,catalog));
@@ -1809,7 +1829,7 @@ namespace dd4hep {
           xml_doc->context.doc         = xml_doc->id;
           xml_doc->context.event_time  = ctx->event_time;
           xml_doc->context.valid_since = 0;//ctx->valid_since;
-          xml_doc->context.valid_until = 0;//ctx->valid_until;
+          xml_doc->context.valid_until = LONG_MAX;//ctx->valid_until;
           docs.insert(make_pair(doc_path,xml_doc->addRef()));
 
           if ( !rdr->isBlocked(doc_path) )   {
@@ -1818,7 +1838,7 @@ namespace dd4hep {
             xml_h e = doc.root();
             context->print(xml_doc);
             printout(context->print_file_load ? INFO : DEBUG,
-                     "load_dddb","Loading document: %s IOV: %ld [%ld,%ld]",
+                     "load_dddb","Loaded document: %s IOV: %ld [%ld,%ld]",
                      xml_doc->id.c_str(), 
                      xml_doc->context.event_time,
                      xml_doc->context.valid_since,
@@ -1843,6 +1863,7 @@ namespace dd4hep {
               context->print_condition = prt;
               if ( prt || context->print_xml )  xml::dump_tree(e);
               converter(e);
+	      return;
             }
             return;
           }
@@ -1862,7 +1883,7 @@ namespace dd4hep {
                         DDDBHelper*  hlp, 
                         const std::string& doc_path,
                         const std::string& obj_path)  {
-      xml::UriReader*         rdr     = hlp->reader<xml::UriReader>();
+      xml::UriReader*     rdr     = hlp->reader<xml::UriReader>();
       DDDBReaderContext*  ctx     = (DDDBReaderContext*)rdr->context();
       DDDBDocument*       doc     = new DDDBDocument();
       doc->name                   = obj_path;

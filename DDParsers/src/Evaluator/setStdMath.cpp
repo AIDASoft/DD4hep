@@ -7,8 +7,8 @@
 /// Utility namespace to support TGeo units.
 namespace dd4hep {
   //namespace units  {
-    static const double radian = 1. ;
-    static const double degree = (3.14159265358979323846/180.0)*radian;
+  static const double radian = 1. ;
+  static const double degree = (3.14159265358979323846/180.0)*radian;
   //}
 }
 #else
@@ -62,67 +62,71 @@ static double eval_isnan(double a)           { return std::isnan(a);           }
 static double eval_isinf(double a)           { return std::isinf(a);           }
 static double eval_nearbyint(double a)       { return ::nearbyint(a);          }
 
-namespace XmlTools {
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep  {
 
-  void Evaluator::setStdMath() {
+  namespace tools {
 
-    //   S E T   S T A N D A R D   C O N S T A N T S
+    void Evaluator::setStdMath() {
 
-    setVariable("pi",     3.14159265358979323846);
-    setVariable("e",      2.7182818284590452354);
-    setVariable("gamma",  0.577215664901532861);
+      //   S E T   S T A N D A R D   C O N S T A N T S
+
+      setVariable("pi",     3.14159265358979323846);
+      setVariable("e",      2.7182818284590452354);
+      setVariable("gamma",  0.577215664901532861);
 
 
-    // setVariable("radian", 1.0);
-    // setVariable("rad",    1.0);
-    // setVariable("degree", 3.14159265358979323846/180.);
-    // setVariable("deg",    3.14159265358979323846/180.);
-    setVariable("radian", units::radian );
-    setVariable("rad",    units::radian );
-    setVariable("degree", units::degree );
-    setVariable("deg",    units::degree );
+      // setVariable("radian", 1.0);
+      // setVariable("rad",    1.0);
+      // setVariable("degree", 3.14159265358979323846/180.);
+      // setVariable("deg",    3.14159265358979323846/180.);
+      setVariable("radian", units::radian );
+      setVariable("rad",    units::radian );
+      setVariable("degree", units::degree );
+      setVariable("deg",    units::degree );
 
-    //   S E T   S T A N D A R D   F U N C T I O N S
+      //   S E T   S T A N D A R D   F U N C T I O N S
 
-    setFunction("abs",        eval_abs);
-    setFunction("fabs",       eval_fabs);
-    setFunction("fmod",       eval_fmod);
-    setFunction("min",        eval_min);
-    setFunction("max",        eval_max);
-    setFunction("sqrt",       eval_sqrt);
-    setFunction("cbrt",       eval_cbrt);
-    setFunction("pow",        eval_pow);
-    setFunction("sin",        eval_sin);
-    setFunction("cos",        eval_cos);
-    setFunction("tan",        eval_tan);
-    setFunction("asin",       eval_asin);
-    setFunction("acos",       eval_acos);
-    setFunction("atan",       eval_atan);
-    setFunction("atan2",      eval_atan2);
-    setFunction("sinh",       eval_sinh);
-    setFunction("cosh",       eval_cosh);
-    setFunction("tanh",       eval_tanh);
-    setFunction("exp",        eval_exp);
-    setFunction("exp2",       eval_exp2);
-    setFunction("exp10",      eval_exp10);
-    setFunction("expm1",      eval_expm1);
-    setFunction("log",        eval_log);
-    setFunction("logb",       eval_logb);
-    setFunction("log10",      eval_log10);
-    setFunction("log1p",      eval_log1p);
-    setFunction("hypot",      eval_hypot);
-    setFunction("erf",        eval_erf);
-    setFunction("erfc",       eval_erfc);
-    setFunction("gamma",      eval_gamma);
-    setFunction("double",     eval_double);
-    setFunction("int",        eval_int);
-    setFunction("nint",       eval_nint);
-    setFunction("floor",      eval_floor);
-    setFunction("round",      eval_round);
-    setFunction("ceil",       eval_ceil);
-    setFunction("isnan",      eval_isnan);
-    setFunction("isinf",      eval_isinf);
-    setFunction("nearbyint",  eval_nearbyint);
-  }
+      setFunction("abs",        eval_abs);
+      setFunction("fabs",       eval_fabs);
+      setFunction("fmod",       eval_fmod);
+      setFunction("min",        eval_min);
+      setFunction("max",        eval_max);
+      setFunction("sqrt",       eval_sqrt);
+      setFunction("cbrt",       eval_cbrt);
+      setFunction("pow",        eval_pow);
+      setFunction("sin",        eval_sin);
+      setFunction("cos",        eval_cos);
+      setFunction("tan",        eval_tan);
+      setFunction("asin",       eval_asin);
+      setFunction("acos",       eval_acos);
+      setFunction("atan",       eval_atan);
+      setFunction("atan2",      eval_atan2);
+      setFunction("sinh",       eval_sinh);
+      setFunction("cosh",       eval_cosh);
+      setFunction("tanh",       eval_tanh);
+      setFunction("exp",        eval_exp);
+      setFunction("exp2",       eval_exp2);
+      setFunction("exp10",      eval_exp10);
+      setFunction("expm1",      eval_expm1);
+      setFunction("log",        eval_log);
+      setFunction("logb",       eval_logb);
+      setFunction("log10",      eval_log10);
+      setFunction("log1p",      eval_log1p);
+      setFunction("hypot",      eval_hypot);
+      setFunction("erf",        eval_erf);
+      setFunction("erfc",       eval_erfc);
+      setFunction("gamma",      eval_gamma);
+      setFunction("double",     eval_double);
+      setFunction("int",        eval_int);
+      setFunction("nint",       eval_nint);
+      setFunction("floor",      eval_floor);
+      setFunction("round",      eval_round);
+      setFunction("ceil",       eval_ceil);
+      setFunction("isnan",      eval_isnan);
+      setFunction("isinf",      eval_isinf);
+      setFunction("nearbyint",  eval_nearbyint);
+    }
 
-} // namespace XmlTools
+  } // namespace tools
+}  // namespace dd4hep

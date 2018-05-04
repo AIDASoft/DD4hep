@@ -28,11 +28,11 @@ static const size_t INVALID_NODE = ~0U;
 
 // Forward declarations
 namespace dd4hep {
-  XmlTools::Evaluator& evaluator();
+  dd4hep::tools::Evaluator& evaluator();
 }
 // Static storage
 namespace {
-  XmlTools::Evaluator& eval(dd4hep::evaluator());
+  dd4hep::tools::Evaluator& eval(dd4hep::evaluator());
   string _checkEnviron(const string& env)  {
     string r = getEnviron(env);
     return r.empty() ? env : r;
@@ -150,7 +150,7 @@ long dd4hep::json::_toLong(const char* value) {
     while (s[0] == ' ')
       s.erase(0, 1);
     double result = eval.evaluate(s.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
+    if (eval.status() != tools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
       throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
@@ -169,7 +169,7 @@ int dd4hep::json::_toInt(const char* value) {
     while (s[0] == ' ')
       s.erase(0, 1);
     double result = eval.evaluate(s.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
+    if (eval.status() != tools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
       throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
@@ -192,7 +192,7 @@ float dd4hep::json::_toFloat(const char* value) {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
 
-    if (eval.status() != XmlTools::Evaluator::OK) {
+    if (eval.status() != tools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
       throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
@@ -206,7 +206,7 @@ double dd4hep::json::_toDouble(const char* value) {
   if (value) {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
+    if (eval.status() != tools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
       throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
@@ -224,7 +224,7 @@ void dd4hep::json::_toDictionary(const char* name, const char* value) {
   while (v[0] == ' ')
     v.erase(0, 1);
   double result = eval.evaluate(v.c_str());
-  if (eval.status() != XmlTools::Evaluator::OK) {
+  if (eval.status() != tools::Evaluator::OK) {
     cerr << v << ": ";
     eval.print_error();
     throw runtime_error("dd4hep: Severe error during expression evaluation of " + v);
@@ -258,7 +258,7 @@ string dd4hep::json::getEnviron(const string& env)   {
   else  {
     string v = env.substr(0,id2+1);
     const char* ret = eval.getEnviron(v.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
+    if (eval.status() != tools::Evaluator::OK) {
       cerr << env << ": ";
       eval.print_error();
       throw runtime_error("dd4hep: Severe error during environment lookup of " + env);

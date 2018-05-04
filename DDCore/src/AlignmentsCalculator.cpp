@@ -134,10 +134,11 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
 
   printout(DEBUG,"ComputeAlignment",
            "============================== Compute transformation of %s",det.path().c_str());
-  e.valid = 1;
-  e.cond  = cond.ptr();
-  align.delta         = *delta;
+  e.valid     = 1;
+  e.cond      = cond.ptr();
+  align.delta = *delta;
   delta->computeMatrix(transform_for_delta);
+  result.multiply += 2;
 
   DetElement parent_det = det.parent();
   AlignmentCondition parent_cond = context.mapping.get(parent_det, Keys::alignmentKey);
@@ -157,6 +158,7 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
   align.worldTrafo    = parent_transform * align.detectorTrafo;
   align.trToWorld     = detail::matrix::_transform(&align.worldTrafo);
   ++result.computed;
+  result.multiply += 3;
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;

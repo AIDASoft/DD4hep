@@ -34,10 +34,10 @@
 #include <stdexcept>
 
 namespace dd4hep {
-  XmlTools::Evaluator& g4Evaluator();
+  dd4hep::tools::Evaluator& g4Evaluator();
 }
 namespace {
-  XmlTools::Evaluator& eval(dd4hep::g4Evaluator());
+  dd4hep::tools::Evaluator& eval(dd4hep::g4Evaluator());
 }
 
 //==============================================================================
@@ -48,7 +48,7 @@ namespace dd4hep {  namespace Parsers {
 
     template <> double evaluate_string<double>(const std::string& value)   {
       double result = eval.evaluate(value.c_str());
-      if (eval.status() != XmlTools::Evaluator::OK) {
+      if (eval.status() != tools::Evaluator::OK) {
         std::cerr << value << ": ";
         eval.print_error();
         throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + value);
@@ -57,7 +57,7 @@ namespace dd4hep {  namespace Parsers {
     }
     template <> float evaluate_string<float>(const std::string& value)   {
       double result = eval.evaluate(value.c_str());
-      if (eval.status() != XmlTools::Evaluator::OK) {
+      if (eval.status() != tools::Evaluator::OK) {
         std::cerr << value << ": ";
         eval.print_error();
         throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + value);

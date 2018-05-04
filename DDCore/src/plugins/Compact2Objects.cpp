@@ -1075,7 +1075,8 @@ template <> void Converter<TrackingVolume>::operator()(xml_h element) const {
 
   if ( !mother.isValid() )
     except("TrackingVolume",
-           "+++ Cannot identify the mother of the tracking volume: '%s'",path.c_str());
+           "++ FAILED    Cannot identify the mother of the tracking volume: '%s'",
+           path.c_str());
   if ( pos )
     position = Position(pos.x(), pos.y(), pos.z());
   if ( rot )
@@ -1087,6 +1088,10 @@ template <> void Converter<TrackingVolume>::operator()(xml_h element) const {
   Volume       par(mother.placement().volume());
   PlacedVolume pv;
 
+  if ( !par.isValid() )
+    except("TrackingVolume",
+           "++ FAILED    Cannot identify the volume of parent: '%s'",
+           mother.path().c_str());
   if ( !trackers.materialStr().empty() )
     mat = description.material(trackers.materialStr());
   if ( trackers.visStr().empty() )
@@ -1107,7 +1112,7 @@ template <> void Converter<TrackingVolume>::operator()(xml_h element) const {
     pv = par.placeVolume(vol);
   if ( !pv.isValid() )   {
     except("TrackingVolume",
-           "++ Failed to place the tracking volume inside the mother '%s'",path.c_str());
+           "++ FAILED    to place the tracking volume inside the mother '%s'",path.c_str());
   }
 }
 

@@ -38,8 +38,8 @@
 
 #endif
 
-namespace dd4hep { XmlTools::Evaluator& g4Evaluator();  }
-namespace {  static XmlTools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
+namespace dd4hep { dd4hep::tools::Evaluator& g4Evaluator();  }
+namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 
 // C/C++ include files
 #include <string>
@@ -238,7 +238,7 @@ namespace dd4hep {
     while (val[0] == ' ')
       val.erase(0, 1);
     double result = s__eval.evaluate(val.c_str());
-    if (s__eval.status() != XmlTools::Evaluator::OK) {
+    if (s__eval.status() != tools::Evaluator::OK) {
       return 0;
     }
     *ptr = (T)result;

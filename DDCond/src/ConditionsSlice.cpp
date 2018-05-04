@@ -170,13 +170,6 @@ namespace  {
         content.insertKey(c->hash,c->address);
         return true;
       }
-#if 0
-      // test load info access
-      const ConditionsContent::Conditions& cc=content.conditions();
-      auto i = cc.find(c->hash);
-      string* address = (*i).second->data<string>();
-      if ( address ) {}
-#endif
       return true;
     }
     /// Return number of conditions selected
