@@ -239,7 +239,7 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
   # Test of an example user analysis creating an N-tuple instead of an output file with events
-  dd4hep_add_test_reg( ClientTests_sim_TrackinRegion
+  dd4hep_add_test_reg( ClientTests_sim_TrackingRegion
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/TrackingRegion.py batch
     REQUIRES   DDG4 Geant4
