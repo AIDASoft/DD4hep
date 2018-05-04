@@ -154,35 +154,34 @@ namespace dd4hep {
       };
 
     public:
-      Detector*   description = 0;
-      xml::UriReader* resolver = 0;
-      dddb*       geo = 0;
       Locals      locals;
-      bool        check = true;
-      bool        print_xml = false;
-      bool        print_file_load = false;
-      bool        print_docs = false;
-      bool        print_materials = false;
-      bool        print_logvol = false;
-      bool        print_shapes = false;
-      bool        print_physvol = false;
-      bool        print_params = false;
-      bool        print_detelem = false;
-      bool        print_detelem_ref = false;
-      bool        print_detelem_xml = false;
-      bool        print_condition = false;
+      Detector*   description         = 0;
+      xml::UriReader* resolver        = 0;
+      dddb*       geo                 = 0;
+      bool        check               = true;
+      /// Debug flags: can be set by parsing specialized XML
+      bool        print_xml           = false;
+      bool        print_file_load     = false;
+      bool        print_docs          = false;
+      bool        print_materials     = false;
+      bool        print_logvol        = false;
+      bool        print_shapes        = false;
+      bool        print_physvol       = false;
+      bool        print_params        = false;
+      bool        print_detelem       = false;
+      bool        print_detelem_ref   = false;
+      bool        print_detelem_xml   = false;
+      bool        print_condition     = false;
       bool        print_condition_ref = false;
-      bool        print_catalog = false;
-      bool        print_catalog_ref = false;
-      bool        print_tabprop = false;
+      bool        print_catalog       = false;
+      bool        print_catalog_ref   = false;
+      bool        print_tabprop       = false;
       bool        print_tree_on_error = true;
-      bool        print_eval_error = true;
+      bool        print_eval_error    = true;
       /// Default constructor
       DDDBContext() = default;
       /// Initializing constructor
       DDDBContext(Detector* d);
-      /// Default destructor
-      ~DDDBContext() = default;
 
       /** Printout helpers                                                                             */
       void print(const DDDBIsotope* obj)   const               { if ( print_materials ) dddb_print(obj);    }
