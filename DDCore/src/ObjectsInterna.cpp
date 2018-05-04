@@ -24,9 +24,7 @@ using namespace dd4hep::detail;
 DD4HEP_INSTANTIATE_HANDLE_NAMED(VisAttrObject);
 
 /// Standard constructor
-VisAttrObject::VisAttrObject()
-  : magic(magic_word()), col(0), color(0), alpha(0),
-    drawingStyle(VisAttr::SOLID), lineStyle(VisAttr::SOLID), showDaughters(true), visible(true) {
+VisAttrObject::VisAttrObject() : magic(magic_word())   {
   InstanceCount::increment(this);
 }
 
@@ -70,10 +68,7 @@ ConstantObject::~ConstantObject() {
 DD4HEP_INSTANTIATE_HANDLE_NAMED(RegionObject);
 
 /// Standard constructor
-RegionObject::RegionObject()
-  : magic(magic_word()), threshold(10.0), cut(10.0), store_secondaries(false),
-    use_default_cut(true), was_threshold_set(false)
-{
+RegionObject::RegionObject() : magic(magic_word())   {
   InstanceCount::increment(this);
 }
 

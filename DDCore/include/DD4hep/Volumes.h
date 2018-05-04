@@ -104,9 +104,9 @@ namespace dd4hep {
       std::string str()  const;
     };
     /// Magic word to detect memory corruptions
-    unsigned long magic;
+    unsigned long magic = 0;
     /// Reference count on object (used to implement Grab/Release)
-    long   refCount;
+    long   refCount     = 0;
     /// ID container
     VolIDs volIDs;
     /// Default constructor
@@ -201,9 +201,13 @@ namespace dd4hep {
   class VolumeExtension : public TGeoExtension {
   public:
     /// Magic word to detect memory corruptions
-    unsigned long       magic;
+    unsigned long       magic      = 0;
     /// Reference count on object (used to implement Grab/Release)
-    long                refCount;
+    long                refCount   = 0;
+    ///
+    int                 referenced = 0;
+    /// Bit field to determine the usage. Bit 0...15 reserverd for system usage. 16...31 user space.
+    int                 flags      = 0;
     /// Region reference
     Region              region;
     /// Limit sets used for simulation
@@ -212,8 +216,7 @@ namespace dd4hep {
     VisAttr             vis;
     /// Reference to the sensitive detector
     Handle<NamedObject> sens_det;
-
-    int                 referenced;
+    
     /// Default constructor
     VolumeExtension();
     /// Default destructor
@@ -249,7 +252,12 @@ namespace dd4hep {
   class Volume: public Handle<TGeoVolume> {
   public:
     typedef VolumeExtension Object;
-
+    /// Flag bit numbers for special volume treatments
+    enum  {
+      VETO_SIMU     = 1,
+      VETO_RECO     = 2,
+      VETO_DISPLAY  = 3
+    };
   public:
     /// Default constructor
     Volume() = default;
@@ -299,6 +307,11 @@ namespace dd4hep {
     /// Place rotated daughter volume. The position is automatically the identity position
     PlacedVolume placeVolume(const Volume& vol, int copy_no, const Rotation3D& rot) const;
 
+    /// Set user flags in bit-field
+    void setFlagBit(unsigned int bit);
+    /// Test the user flag bit
+    bool testFlagBit(unsigned int bit)   const;
+    
     /// Attach attributes to the volume
     const Volume& setAttributes(const Detector& description, const std::string& region, const std::string& limits,
                                 const std::string& vis) const;

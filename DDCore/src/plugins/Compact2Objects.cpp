@@ -13,6 +13,7 @@
 
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/DetectorTools.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/FieldTypes.h"
@@ -50,6 +51,7 @@ namespace dd4hep {
   class Property;
   class XMLFile;
   class JsonFile;
+  class TrackingVolume;
   class DetElementInclude;
 
   /// Converter instances implemented in this compilation unit
@@ -73,6 +75,7 @@ namespace dd4hep {
   template <> void Converter<XMLFile>::operator()(xml_h element) const;
   template <> void Converter<Header>::operator()(xml_h element) const;
   template <> void Converter<DetElementInclude>::operator()(xml_h element) const;
+  template <> void Converter<TrackingVolume>::operator()(xml_h element) const;
   template <> void Converter<Compact>::operator()(xml_h element) const;
 }
 
@@ -784,17 +787,25 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
  *  ... </limitset>
  */
 template <> void Converter<LimitSet>::operator()(xml_h e) const {
+  Limit limit;
   LimitSet ls(e.attr<string>(_U(name)));
   printout(s_debug_limits ? ALWAYS : DEBUG, "Compact",
            "++ Converting LimitSet structure: %s.",ls.name());
   for (xml_coll_t c(e, _U(limit)); c; ++c) {
-    Limit limit;
+    limit.name      = c.attr<string>(_U(name));
     limit.particles = c.attr<string>(_U(particles));
-    limit.name = c.attr<string>(_U(name));
-    limit.content = c.attr<string>(_U(value));
-    limit.unit = c.attr<string>(_U(unit));
-    limit.value = _multiply<double>(limit.content, limit.unit);
+    limit.content   = c.attr<string>(_U(value));
+    limit.unit      = c.attr<string>(_U(unit));
+    limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addLimit(limit);
+  }
+  limit.name      = "cut";
+  for (xml_coll_t c(e, _U(cut)); c; ++c) {
+    limit.particles = c.attr<string>(_U(particles));
+    limit.content   = c.attr<string>(_U(value));
+    limit.unit      = c.attr<string>(_U(unit));
+    limit.value     = _multiply<double>(limit.content, limit.unit);
+    ls.addCut(limit);
   }
   description.addLimitSet(ls);
 }
@@ -1052,6 +1063,55 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
+template <> void Converter<TrackingVolume>::operator()(xml_h element) const {
+  xml_det_t    trackers(element);
+  xml_dim_t    shape  = trackers.child(_U(shape));
+  xml_dim_t    pos    = element.child(_U(position),false);
+  xml_dim_t    rot    = element.child(_U(position),false);
+  string       path   = element.attr<string>(_U(mother));
+  DetElement   mother(detail::tools::findElement(description, path));
+  RotationZYX  rotation;
+  Position     position;
+
+  if ( !mother.isValid() )
+    except("TrackingVolume",
+           "+++ Cannot identify the mother of the tracking volume: '%s'",path.c_str());
+  if ( pos )
+    position = Position(pos.x(), pos.y(), pos.z());
+  if ( rot )
+    rotation = RotationZYX(rot.z(), rot.y(), rot.x());
+
+  Material     mat(description.vacuum());
+  Solid        sol(xml_comp_t(shape).createShape());
+  Volume       vol("TrackingVolume", sol, mat);
+  Volume       par(mother.placement().volume());
+  PlacedVolume pv;
+
+  if ( !trackers.materialStr().empty() )
+    mat = description.material(trackers.materialStr());
+  if ( trackers.visStr().empty() )
+    vol.setVisAttributes(description.invisible());
+  else
+    vol.setVisAttributes(description,trackers.visStr());
+  /// Need to inhibit that this atrifical volume gets translated to Geant4!
+  vol.setFlagBit(Volume::VETO_SIMU);
+
+  /// Now place the volume in the mother frame
+  if ( pos && rot )
+    pv = par.placeVolume(vol, Transform3D(rotation, position));
+  else if ( pos )
+    pv = par.placeVolume(vol, pos);
+  else if ( rot )
+    pv = par.placeVolume(vol, rot);
+  else
+    pv = par.placeVolume(vol);
+  if ( !pv.isValid() )   {
+    except("TrackingVolume",
+           "++ Failed to place the tracking volume inside the mother '%s'",path.c_str());
+  }
+}
+
+/// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   string type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("xml");
   if ( type == "xml" )  {
@@ -1135,6 +1195,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(description));
+
   printout(DEBUG, "Compact", "++ Converting readout  structures...");
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter<Readout>(description));
   printout(DEBUG, "Compact", "++ Converting region   structures...");
@@ -1148,6 +1209,10 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(includes)).for_each(_U(xml), Converter<XMLFile>(description));
   xml_coll_t(compact, _U(fields)).for_each(_U(field), Converter<CartesianField>(description));
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter<SensitiveDetector>(description));
+
+  if (element.hasChild(_U(tracking_volume)))   {
+    (Converter<TrackingVolume>(description))(xml_h(compact.child(_U(tracking_volume))));
+  }
   ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
   description.addConstant(Constant("compact_checksum", text));
   if ( --num_calls == 0 && close_geometry )  {

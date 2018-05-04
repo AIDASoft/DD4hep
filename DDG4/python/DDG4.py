@@ -340,8 +340,19 @@ class Geant4:
     self.sensitive_types['escape_counter'] = 'Geant4EscapeCounter'
 
 
+  """
+     Access the worker kernel object.
+     
+     \author  M.Frank
+  """
   def kernel(self):
     return self._kernel.worker()
+
+  """
+     Access the master kernel object.
+     
+     \author  M.Frank
+  """
   def master(self):
     return self._kernel
 

@@ -610,14 +610,18 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
 /// Dump logical volume in GDML format to output stream
 void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume) const {
   Geant4GeometryInfo& info = data();
+  PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
   Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
-  if (volIt == info.g4Volumes.end() ) {
-    PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
+  Volume     _v(volume);
+  if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
+    printout(lvl, "Geant4Converter", "++ Volume %s not converted [Veto'ed for simulation]",volume->GetName());
+    return 0;
+  }
+  else if (volIt == info.g4Volumes.end() ) {
     const TGeoVolume* v = volume;
-    Volume _v(v);
-    string  n = v->GetName();
+    string      n   = v->GetName();
     TGeoMedium* med = v->GetMedium();
-    TGeoShape* sh = v->GetShape();
+    TGeoShape* sh   = v->GetShape();
     G4VSolid* solid = (G4VSolid*) handleSolid(sh->GetName(), sh);
     G4Material* medium = 0;
     bool assembly = sh->IsA() == TGeoShapeAssembly::Class() || v->IsA() == TGeoVolumeAssembly::Class();
@@ -700,14 +704,19 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) const {
   TGeoVolume* mot_vol = node->GetVolume();
+  PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
   if ( mot_vol->IsA() != TGeoVolumeAssembly::Class() )    {
+    return 0;
+  }
+  Volume _v(mot_vol);
+  if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
+    printout(lvl, "Geant4Converter", "++ AssemblyNode %s not converted [Veto'ed for simulation]",node->GetName());
     return 0;
   }
   Geant4GeometryInfo& info = data();
   Geant4AssemblyVolume* g4 = info.g4AssemblyVolumes[node];
 
   if ( !g4 )  {
-    PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
     g4 = new Geant4AssemblyVolume();
     for(Int_t i=0; i < mot_vol->GetNdaughters(); ++i)   {
       TGeoNode*   d = mot_vol->GetNode(i);
@@ -750,11 +759,17 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node) const {
   Geant4GeometryInfo& info = data();
+  PrintLevel lvl = debugPlacements ? ALWAYS : outputLevel;
   Geant4GeometryMaps::PlacementMap::const_iterator g4it = info.g4Placements.find(node);
   G4VPhysicalVolume* g4 = (g4it == info.g4Placements.end()) ? 0 : (*g4it).second;
+  TGeoVolume* vol = node->GetVolume();
+  Volume _v(vol);
+  if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
+    printout(lvl, "Geant4Converter", "++ Placement %s not converted [Veto'ed for simulation]",node->GetName());
+    return 0;
+  }
   if (!g4) {
     TGeoVolume* mot_vol = node->GetMotherVolume();
-    TGeoVolume* vol = node->GetVolume();
     TGeoMatrix* tr = node->GetMatrix();
     if (!tr) {
       except("Geant4Converter", "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p", node,
@@ -765,7 +780,6 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
              node->IsA()->GetName(), vol);
     }
     else {
-      PrintLevel lvl = debugPlacements ? ALWAYS : outputLevel;
       int copy = node->GetNumber();
       bool node_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
       bool mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
@@ -828,17 +842,12 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     PrintLevel lvl = debugRegions ? ALWAYS : outputLevel;
     Region r = region;
     g4 = new G4Region(r.name());
-    // set production cut
-    if( not r.useDefaultCut() ) {
-      G4ProductionCuts* cuts = new G4ProductionCuts();
-      cuts->SetProductionCut(r.cut()*CLHEP::mm/units::mm);
-      g4->SetProductionCuts(cuts);
-    }
 
     // create region info with storeSecondaries flag
     if( not r.wasThresholdSet() and r.storeSecondaries() ) {
       throw runtime_error("G4Region: StoreSecondaries is True, but no explicit threshold set:");
     }
+    printout(lvl, "Geant4Converter", "++ Setting up region: %s", r.name());
     G4UserRegionInformation* info = new G4UserRegionInformation();
     info->region = r;
     info->threshold = r.threshold()*CLHEP::MeV/units::MeV;
@@ -847,23 +856,50 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 
     printout(lvl, "Geant4Converter", "++ Converted region settings of:%s.", r.name());
     vector < string > &limits = r.limits();
+    G4ProductionCuts* cuts = 0;
+    // set production cut
+    if( not r.useDefaultCut() ) {
+      cuts = new G4ProductionCuts();
+      cuts->SetProductionCut(r.cut()*CLHEP::mm/units::mm);
+      printout(lvl, "Geant4Converter", "++ %s: Using default cut: %f [mm]",
+               r.name(), r.cut()*CLHEP::mm/units::mm);
+    }
     for (const auto& nam : limits )  {
       LimitSet ls = m_detDesc.limitSet(nam);
       if (ls.isValid()) {
+        const LimitSet::Set& cts = ls.cuts();
+        for (const auto& c : cts )   {
+          int pid;
+          if ( c.particles == "*" ) pid = -1;
+          else if ( c.particles == "e-"     ) pid = idxG4ElectronCut;
+          else if ( c.particles == "e+"     ) pid = idxG4PositronCut;
+          else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
+          else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
+          else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
+          if ( !cuts ) cuts = new G4ProductionCuts();
+          cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
+          printout(lvl, "Geant4Converter", "++ %s: Set cut  [%s/%d] = %f [mm]",
+                   r.name(), c.particles.c_str(), pid, c.value*CLHEP::mm/units::mm);
+        }
         bool found = false;
         const auto& lm = data().g4Limits;
         for (const auto& j : lm )   {
           if (nam == j.first->GetName()) {
             g4->SetUserLimits(j.second);
+            printout(lvl, "Geant4Converter", "++ %s: Set limits %s to region type %s",
+                     r.name(), nam.c_str(), j.second->GetType().c_str());
             found = true;
             break;
           }
         }
-        if (found)
+        if ( found )   {
           continue;
+        }
       }
       throw runtime_error("G4Region: Failed to resolve user limitset:" + nam);
     }
+    /// Assign cuts to region if they were created
+    if ( cuts ) g4->SetProductionCuts(cuts);
     data().g4Regions[region] = g4;
   }
   return g4;
@@ -873,26 +909,34 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVolume*>& /* volumes */) const {
   G4UserLimits* g4 = data().g4Limits[limitset];
   if (!g4) {
-    g4 = new Geant4UserLimits(limitset);
-    /*
-    LimitSet ls = limitset;
-    g4 = new G4UserLimits(limitset);
-    const set<Limit>& limits = ls.limits();
-    for (const auto& l : limits)  {
-      if (l.name == "step_length_max")
-        g4->SetMaxAllowedStep(l.value*CLHEP::mm/units::mm);
-      else if (l.name == "track_length_max")
-        g4->SetUserMaxTrackLength(l.value*CLHEP::mm/units::mm);
-      else if (l.name == "time_max")
-        g4->SetUserMaxTime(l.value*CLHEP::ns/units::ns);
-      else if (l.name == "ekin_min")
-        g4->SetUserMinEkine(l.value*CLHEP::MeV/units::MeV);
-      else if (l.name == "range_min")
-        g4->SetUserMinRange(l.value);
-      else
-        throw runtime_error("Unknown Geant4 user limit: " + l.toString());
+    struct LimitPrint  {
+      const LimitSet& ls;
+      LimitPrint(const LimitSet& lset) : ls(lset) {}
+      const LimitPrint& operator()(const std::string& pref, const Geant4UserLimits::Handler& h)  const {
+        if ( !h.particleLimits.empty() )  {
+          printout(ALWAYS,"Geant4Converter",
+                   "+++ LimitSet: Limit %s.%s applied for particles:",ls.name(), pref.c_str());
+          for(const auto& p : h.particleLimits)
+            printout(ALWAYS,"Geant4Converter","+++ LimitSet:    Particle type: %-18s PDG: %-6d : %f",
+                     p.first->GetParticleName().c_str(), p.first->GetPDGEncoding(), p.second);
+        }
+        else  {
+          printout(ALWAYS,"Geant4Converter",
+                   "+++ LimitSet: Limit %s.%s NOT APPLIED.",ls.name(), pref.c_str());
+        }
+        return *this;
+      }
+    };
+    Geant4UserLimits* limits = new Geant4UserLimits(limitset);
+    g4 = limits;
+    if ( debugRegions )    {
+      LimitPrint print(limitset);
+      print("maxTime",    limits->maxTime)
+        ("minEKine",      limits->minEKine)
+        ("minRange",      limits->minRange)
+        ("maxStepLength", limits->maxStepLength)
+        ("maxTrackLength",limits->maxTrackLength);
     }
-    */
     data().g4Limits[limitset] = g4;
   }
   return g4;

@@ -214,6 +214,38 @@ endforeach()
 #
 if (DD4HEP_USE_GEANT4)
   #
+  # Geant4 test if production cuts are processed
+  dd4hep_add_test_reg( ClientTests_MiniTel_prod_cuts
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelRegions.py batch
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "minitel_region_1: Set cut  \\[gamma/0\\] = 5.000"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  #
+  # Geant4 test if production cuts are processed
+  dd4hep_add_test_reg( ClientTests_MiniTel_limitset
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelRegions.py batch
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "LimitSet:    Particle type: mu-                PDG: 13     : 3.000000"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  #
+  # Test of an example user analysis creating an N-tuple instead of an output file with events
+  dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelEnergyDeposits.py batch
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "Entries :      200 "
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  #
+  # Test of an example user analysis creating an N-tuple instead of an output file with events
+  dd4hep_add_test_reg( ClientTests_sim_TrackinRegion
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/TrackingRegion.py batch
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "Placement TrackingVolume_1 not converted \\[Veto'ed for simulation\\]"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  #
   # Geant4 full simulation checks of simple detectors
   foreach(script Assemblies LheD_tracker MiniTel NestedDetectors )
     dd4hep_add_test_reg( ClientTests_sim_${script}
@@ -223,6 +255,7 @@ if (DD4HEP_USE_GEANT4)
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
+  #
   # Geant4 full simulation checks of multi-collection/segmentation detectors
   foreach(script MultiCollections MultiSegmentations MultiSegmentCollections )
     dd4hep_add_test_reg( ClientTests_sim_${script}
@@ -233,12 +266,5 @@ if (DD4HEP_USE_GEANT4)
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
-
-  dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
-    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelEnergyDeposits.py batch
-    REQUIRES   DDG4 Geant4
-    REGEX_PASS "Entries :      200 "
-    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
 
 endif(DD4HEP_USE_GEANT4)

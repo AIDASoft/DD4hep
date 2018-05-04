@@ -777,7 +777,7 @@ namespace dd4hep {
    */
   class ExtrudedPolygon : public Solid_type<TGeoXtru> {
   protected:
-    /// Helper function to create the polyhedron
+    /// Helper function to create the polygon
     void make(const std::vector<double> & pt_x,
               const std::vector<double> & pt_y,
               const std::vector<double> & sec_z,

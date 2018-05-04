@@ -71,6 +71,20 @@ static Handle<TObject> create_Tube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Tube__shape_constructor,create_Tube)
 
+static Handle<TObject> create_CutTube(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  return CutTube(e.rmin(0.0),e.rmax(),e.dz(),
+                 e.attr<double>(_U(phi1)),
+                 e.attr<double>(_U(phi2)),
+                 e.attr<double>(_U(lx)),
+                 e.attr<double>(_U(ly)),
+                 e.attr<double>(_U(lz)),
+                 e.attr<double>(_U(tx)),
+                 e.attr<double>(_U(ty)),
+                 e.attr<double>(_U(tz)));
+}
+DECLARE_XML_SHAPE(CutTube__shape_constructor,create_CutTube)
+
 static Handle<TObject> create_EllipticalTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   return EllipticalTube(e.a(),e.b(),e.dz());
@@ -91,6 +105,12 @@ static Handle<TObject> create_Trap(Detector&, xml_h element)   {
   return Trap(e.z(0.0),e.theta(),e.phi(0),e.y1(),e.x1(),e.x2(),e.alpha(),e.y2(),e.x3(),e.x4(),e.alpha2());
 }
 DECLARE_XML_SHAPE(Trap__shape_constructor,create_Trap)
+
+static Handle<TObject> create_PseudoTrap(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  return PseudoTrap(e.x1(),e.x2(),e.y1(),e.y2(),e.z(),e.radius(),e.attr<double>(xml_tag_t("minusZ")));
+}
+DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
 
 static Handle<TObject> create_Trapezoid(Detector&, xml_h element)   {
   xml_dim_t e(element);
@@ -127,6 +147,38 @@ static Handle<TObject> create_PolyhedraRegular(Detector&, xml_h element)   {
   return PolyhedraRegular(e.numsides(),e.rmin(),e.rmax(),e.dz());
 }
 DECLARE_XML_SHAPE(PolyhedraRegular__shape_constructor,create_PolyhedraRegular)
+
+static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  std::vector<double> z, rmin, rmax;
+  for ( xml_coll_t c(e,_U(plane)); c; ++c )  {
+    xml_comp_t plane(c);
+    rmin.push_back(plane.rmin());
+    rmax.push_back(plane.rmax());
+    z.push_back(plane.z());
+  }
+  return Polyhedra(e.numsides(),e.startphi(),e.deltaphi(),z,rmin,rmax);
+}
+DECLARE_XML_SHAPE(Polyhedra__shape_constructor,create_Polyhedra)
+
+static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  std::vector<double> pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale;
+  for ( xml_coll_t sec(element, _U(section)); sec; ++sec )   {
+    xml_dim_t section(sec);
+    sec_z.push_back(section.attr<double>(_U(z)));
+    sec_x.push_back(section.attr<double>(_U(x)));
+    sec_y.push_back(section.attr<double>(_U(y)));
+    sec_scale.push_back(section.attr<double>(_U(scale),1.0));
+  }
+  for ( xml_coll_t pt(element, _U(point)); pt; ++pt )   {
+    xml_dim_t point(pt);
+    pt_x.push_back(point.attr<double>(_U(x)));
+    pt_y.push_back(point.attr<double>(_U(y)));
+  }
+  return ExtrudedPolygon(pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale);
+}
+DECLARE_XML_SHAPE(ExtrudedPolygon__shape_constructor,create_ExtrudedPolygon)
 
 static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);

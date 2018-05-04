@@ -17,7 +17,6 @@
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4PhysicsList.h"
 #include "DDG4/Geant4InputAction.h"
-#include "DDG4/Geant4Converter.h"
 
 // Geant4 include files
 #include "G4VSensitiveDetector.hh"

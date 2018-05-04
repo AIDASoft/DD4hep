@@ -384,9 +384,9 @@ bool Limit::operator==(const Limit& c) const {
 
 /// operator less
 bool Limit::operator<(const Limit& c) const {
-  if (value < c.value)
-    return true;
   if (name < c.name)
+    return true;
+  if (value < c.value)
     return true;
   if (particles < c.particles)
     return true;
@@ -409,14 +409,25 @@ LimitSet::LimitSet(const string& nam) {
 
 /// Add new limit. Returns true if the new limit was added, false if it already existed.
 bool LimitSet::addLimit(const Limit& limit) {
-  pair<Object::iterator, bool> ret = data<Object>()->insert(limit);
+  pair<Object::iterator, bool> ret = data<Object>()->limits.insert(limit);
   return ret.second;
 }
 
 /// Accessor to limits container
 const set<Limit>& LimitSet::limits() const {
   const Object* o = data<Object>();
-  return *o;
+  return o->limits;
+}
+
+/// Add new limit. Returns true if the new limit was added, false if it already existed.
+bool LimitSet::addCut(const Limit& cut_obj)   {
+  pair<Object::iterator, bool> ret = data<Object>()->cuts.insert(cut_obj);
+  return ret.second;
+}
+
+/// Accessor to limits container
+const std::set<Limit>& LimitSet::cuts() const    {
+  return data<Object>()->cuts;
 }
 
 /// Constructor to be used when creating a new DOM tree
