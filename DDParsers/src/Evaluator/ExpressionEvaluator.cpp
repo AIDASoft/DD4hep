@@ -16,17 +16,17 @@
 namespace units = dd4hep;
 
 namespace {
-  void _init(XmlTools::Evaluator& e) {
+  void _init(dd4hep::tools::Evaluator& e) {
     // Initialize numerical expressions parser with the standard math functions
     // and the system of units used by Gaudi (Geant4)
     e.setStdMath();
   }
-  void _cgsUnits(XmlTools::Evaluator& e) {
+  void _cgsUnits(dd4hep::tools::Evaluator& e) {
     // ===================================================================================
     // CGS units
     e.setSystemOfUnits(100., 1000., 1.0, 1.0, 1.0, 1.0, 1.0);
   }
-  void _tgeoUnits(XmlTools::Evaluator& e) {
+  void _tgeoUnits(dd4hep::tools::Evaluator& e) {
     // ===================================================================================
     // DDG4 units (TGeo) 1 sec = 10^9 [nsec]
     //                   1 Coulomb = 1/e As
@@ -44,7 +44,7 @@ namespace {
                         units::candela,
                         units::rad );
   }
-  void _g4Units(XmlTools::Evaluator& e) {
+  void _g4Units(dd4hep::tools::Evaluator& e) {
     // ===================================================================================
     // Geant4 units
     // Geant4:  kilogram = joule*s*s/(m*m) 1/e_SI * 1e-6 * 1e9 1e9 / 1e3 / 1e3 = 1. / 1.60217733e-25
@@ -52,12 +52,13 @@ namespace {
   }
 }
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  XmlTools::Evaluator& evaluator() {
-    static XmlTools::Evaluator* e = 0;
+  tools::Evaluator& evaluator() {
+    static tools::Evaluator* e = 0;
     if ( !e )   {
-      static XmlTools::Evaluator ev;
+      static tools::Evaluator ev;
       _init(ev);
       _tgeoUnits(ev);
       e = &ev;
@@ -66,10 +67,10 @@ namespace dd4hep {
   }
 
   /// Access to G4 evaluator. Note: Uses Geant4 units!
-  XmlTools::Evaluator& g4Evaluator()   {
-    static XmlTools::Evaluator* e = 0;
+  tools::Evaluator& g4Evaluator()   {
+    static tools::Evaluator* e = 0;
     if ( !e )   {
-      static XmlTools::Evaluator ev;
+      static tools::Evaluator ev;
       _init(ev);
       _g4Units(ev);
       e = &ev;
@@ -78,10 +79,10 @@ namespace dd4hep {
   }
 
   /// Access to G4 evaluator. Note: Uses cgs units!
-  XmlTools::Evaluator& cgsEvaluator()   {
-    static XmlTools::Evaluator* e = 0;
+  tools::Evaluator& cgsEvaluator()   {
+    static tools::Evaluator* e = 0;
     if ( !e )   {
-      static XmlTools::Evaluator ev;
+      static tools::Evaluator ev;
       _init(ev);
       _cgsUnits(ev);
       e = &ev;

@@ -46,6 +46,7 @@ namespace dd4hep {
       public:
         size_t computed = 0;
         size_t missing  = 0;
+	size_t multiply = 0;
         Result() = default;
         /// Copy constructor
         Result(const Result& result) = default;
@@ -138,6 +139,7 @@ namespace dd4hep {
     /// Add results
     inline AlignmentsCalculator::Result&
     AlignmentsCalculator::Result::operator +=(const Result& result)  {
+      multiply += result.multiply;
       computed += result.computed;
       missing  += result.missing;
       return *this;
@@ -145,6 +147,7 @@ namespace dd4hep {
     /// Subtract results
     inline AlignmentsCalculator::Result&
     AlignmentsCalculator::Result::operator -=(const Result& result)  {
+      multiply -= result.multiply;
       computed -= result.computed;
       missing  -= result.missing;
       return *this;

@@ -17,6 +17,7 @@
 
 // Framework include files
 #include "Detector/DeVP.h"
+#include "Detector/DeConditionCallDefs.h"
 #include "DD4hep/ConditionDerived.h"
 
 /// Gaudi namespace declaration
@@ -33,24 +34,6 @@ namespace gaudi   {
   public:
     std::map<dd4hep::Condition::detkey_type,std::pair<dd4hep::DetElement,dd4hep::DDDB::DDDBCatalog*> > detectors;
     dd4hep::Condition alignments_done;
-  };
-
-  /// Base class to share common type definitions
-  /**
-   *
-   *  \author  Markus Frank
-   *  \date    2018-03-08
-   *  \version  1.0
-   */
-  class DeConditionCallDefs {
-  public:
-    typedef dd4hep::DetElement                   DetElement;
-    typedef dd4hep::Condition                    Condition;
-    typedef dd4hep::ConditionKey                 ConditionKey;
-    typedef dd4hep::ConditionKey::KeyMaker       KeyMaker;
-    typedef dd4hep::cond::ConditionResolver      Resolver;
-    typedef dd4hep::cond::ConditionUpdateContext Context;
-    typedef dd4hep::DDDB::DDDBCatalog            Catalog;
   };
 
   /// Condition derivation call to build the static Velo-pixel DetElement condition information

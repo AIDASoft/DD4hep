@@ -8,19 +8,20 @@
 #include "stack.src"
 #include "string.src"
 #include "hash_map.src"
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <stdlib.h>     // for strtod()
+#include <sstream>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>     // for strtod()
 
 // Disable some diagnostics, which we know, but need to ignore
 #if defined(__GNUC__) && !defined(__APPLE__) && !defined(__llvm__)
 /*  This is OK:
-../DDCore/src/Evaluator/Evaluator.cpp: In function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
-../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this function [-Wmaybe-uninitialized]
-     result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
-....
- */
+    ../DDCore/src/Evaluator/Evaluator.cpp: In function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
+    ../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this function [-Wmaybe-uninitialized]
+    result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
+    ....
+*/
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
@@ -68,10 +69,10 @@ namespace {
 }
 
 //---------------------------------------------------------------------------
-#define EVAL XmlTools::Evaluator
+#define EVAL dd4hep::tools::Evaluator
 
-#define REMOVE_BLANKS                                                 \
-  for(pointer=name;;pointer++) if (!isspace(*pointer)) break;         \
+#define REMOVE_BLANKS							\
+  for(pointer=name;;pointer++) if (!isspace(*pointer)) break;		\
   for(n=strlen(pointer);n>0;n--) if (!isspace(*(pointer+n-1))) break
 
 #define SKIP_BLANKS                             \
@@ -261,9 +262,9 @@ static int operand(pchar begin, pchar end, double & result,
         par_end = pointer-1;
         EVAL_STATUS = engine(par_begin, par_end, value, par_end, dictionary);
         if (EVAL_STATUS == EVAL::WARNING_BLANK_STRING)
-        { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
+	  { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
         if (EVAL_STATUS != EVAL::OK)
-        { EVAL_EXIT( EVAL_STATUS, par_end ); }
+	  { EVAL_EXIT( EVAL_STATUS, par_end ); }
         par.push(value);
         par_begin = pointer + 1;
       }
@@ -281,7 +282,7 @@ static int operand(pchar begin, pchar end, double & result,
           break;
         case EVAL::WARNING_BLANK_STRING:
           if (par.size() != 0)
-          { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
+	    { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
           break;
         default:
           EVAL_EXIT( EVAL_STATUS, par_end );
@@ -589,228 +590,233 @@ static void setItem(const char * prefix, const char * name,
 }
 
 //---------------------------------------------------------------------------
-namespace XmlTools {
+using namespace dd4hep::tools;
 
-  //---------------------------------------------------------------------------
-  Evaluator::Evaluator() {
-    Struct * s = new Struct();
-    p = (void *) s;
+//---------------------------------------------------------------------------
+Evaluator::Evaluator() {
+  Struct * s = new Struct();
+  p = (void *) s;
+  s->theExpression = 0;
+  s->thePosition   = 0;
+  s->theStatus     = OK;
+  s->theResult     = 0.0;
+}
+
+//---------------------------------------------------------------------------
+Evaluator::~Evaluator() {
+  Struct * s = reinterpret_cast<Struct*>(p);
+  if (s->theExpression != 0) {
+    delete[] s->theExpression;
     s->theExpression = 0;
-    s->thePosition   = 0;
-    s->theStatus     = OK;
-    s->theResult     = 0.0;
   }
+  delete reinterpret_cast<Struct*>(p);
+}
 
-  //---------------------------------------------------------------------------
-  Evaluator::~Evaluator() {
-    Struct * s = reinterpret_cast<Struct*>(p);
-    if (s->theExpression != 0) {
-      delete[] s->theExpression;
-      s->theExpression = 0;
-    }
-    delete reinterpret_cast<Struct*>(p);
+//---------------------------------------------------------------------------
+double Evaluator::evaluate(const char * expression) {
+  Struct * s = reinterpret_cast<Struct*>(p);
+  if (s->theExpression != 0) { delete[] s->theExpression; }
+  s->theExpression = 0;
+  s->thePosition   = 0;
+  s->theStatus     = WARNING_BLANK_STRING;
+  s->theResult     = 0.0;
+  if (expression != 0) {
+    s->theExpression = new char[strlen(expression)+1];
+    strcpy(s->theExpression, expression);
+    s->theStatus = engine(s->theExpression,
+			  s->theExpression+strlen(expression)-1,
+			  s->theResult,
+			  s->thePosition,
+			  s->theDictionary);
   }
+  return s->theResult;
+}
 
-  //---------------------------------------------------------------------------
-  double Evaluator::evaluate(const char * expression) {
-    Struct * s = reinterpret_cast<Struct*>(p);
-    if (s->theExpression != 0) { delete[] s->theExpression; }
-    s->theExpression = 0;
-    s->thePosition   = 0;
-    s->theStatus     = WARNING_BLANK_STRING;
-    s->theResult     = 0.0;
-    if (expression != 0) {
-      s->theExpression = new char[strlen(expression)+1];
-      strcpy(s->theExpression, expression);
-      s->theStatus = engine(s->theExpression,
-                            s->theExpression+strlen(expression)-1,
-                            s->theResult,
-                            s->thePosition,
-                            s->theDictionary);
-    }
-    return s->theResult;
+//---------------------------------------------------------------------------
+int Evaluator::status() const {
+  return (reinterpret_cast<Struct*>(p))->theStatus;
+}
+
+//---------------------------------------------------------------------------
+int Evaluator::error_position() const {
+  return (reinterpret_cast<Struct*>(p))->thePosition - (reinterpret_cast<Struct*>(p))->theExpression;
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::print_error() const {
+  std::stringstream str;
+  print_error(str);
+  if ( str.str().empty() )  return;
+  std::cerr << str.str() << std::endl;
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::print_error(std::ostream& os) const {
+  static char prefix[] = "Evaluator : ";
+  Struct * s = reinterpret_cast<Struct*>(p);
+  const char* opt = (s->thePosition ? s->thePosition : "");
+  switch (s->theStatus) {
+  case ERROR_NOT_A_NAME:
+    os << prefix << "invalid name : " << opt;
+    return;
+  case ERROR_SYNTAX_ERROR:
+    os << prefix << "systax error"        ;
+    return;
+  case ERROR_UNPAIRED_PARENTHESIS:
+    os << prefix << "unpaired parenthesis";
+    return;
+  case ERROR_UNEXPECTED_SYMBOL:
+    os << prefix << "unexpected symbol : " << opt;
+    return;
+  case ERROR_UNKNOWN_VARIABLE:
+    os << prefix << "unknown variable : " << opt;
+    return;
+  case ERROR_UNKNOWN_FUNCTION:
+    os << prefix << "unknown function : " << opt;
+    return;
+  case ERROR_EMPTY_PARAMETER:
+    os << prefix << "empty parameter in function call: " << opt;
+    return;
+  case ERROR_CALCULATION_ERROR:
+    os << prefix << "calculation error";
+    return;
+  default:
+    return;
   }
+}
 
-  //---------------------------------------------------------------------------
-  int Evaluator::status() const {
-    return (reinterpret_cast<Struct*>(p))->theStatus;
-  }
-
-  //---------------------------------------------------------------------------
-  int Evaluator::error_position() const {
-    return (reinterpret_cast<Struct*>(p))->thePosition - (reinterpret_cast<Struct*>(p))->theExpression;
-  }
-
-  //---------------------------------------------------------------------------
-  void Evaluator::print_error() const {
-    char prefix[] = "Evaluator : ";
-    Struct * s = reinterpret_cast<Struct*>(p);
-    const char* opt = (s->thePosition ? s->thePosition : "");
-    switch (s->theStatus) {
-    case ERROR_NOT_A_NAME:
-      std::cerr << prefix << "invalid name : " << opt << std::endl;
-      return;
-    case ERROR_SYNTAX_ERROR:
-      std::cerr << prefix << "systax error"         << std::endl;
-      return;
-    case ERROR_UNPAIRED_PARENTHESIS:
-      std::cerr << prefix << "unpaired parenthesis" << std::endl;
-      return;
-    case ERROR_UNEXPECTED_SYMBOL:
-      std::cerr << prefix << "unexpected symbol : " << opt << std::endl;
-      return;
-    case ERROR_UNKNOWN_VARIABLE:
-      std::cerr << prefix << "unknown variable : " << opt << std::endl;
-      return;
-    case ERROR_UNKNOWN_FUNCTION:
-      std::cerr << prefix << "unknown function : " << opt << std::endl;
-      return;
-    case ERROR_EMPTY_PARAMETER:
-      std::cerr << prefix << "empty parameter in function call: " << opt << std::endl;
-      return;
-    case ERROR_CALCULATION_ERROR:
-      std::cerr << prefix << "calculation error"    << std::endl;
-      return;
-    default:
-      return;
-    }
-  }
-
-  //---------------------------------------------------------------------------
-  void Evaluator::setEnviron(const char* name, const char* value)  {
-    Struct* s = reinterpret_cast<Struct*>(p);
-    string prefix = "${";
-    string item_name = prefix + string(name) + string("}");
-    dic_type::iterator iter = (s->theDictionary).find(item_name);
-    Item item;
-    item.what = Item::STRING;
-    item.expression = value;
-    item.function = 0;
-    item.variable = 0;
-    //std::cout << " ++++++++++++++++++++++++++++ Saving env:" << name << " = " << value << std::endl;
-    if (iter != (s->theDictionary).end()) {
-      iter->second = item;
-      if (item_name == name) {
-        s->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
-      }else{
-        s->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
-      }
+//---------------------------------------------------------------------------
+void Evaluator::setEnviron(const char* name, const char* value)  {
+  Struct* s = reinterpret_cast<Struct*>(p);
+  string prefix = "${";
+  string item_name = prefix + string(name) + string("}");
+  dic_type::iterator iter = (s->theDictionary).find(item_name);
+  Item item;
+  item.what = Item::STRING;
+  item.expression = value;
+  item.function = 0;
+  item.variable = 0;
+  //std::cout << " ++++++++++++++++++++++++++++ Saving env:" << name << " = " << value << std::endl;
+  if (iter != (s->theDictionary).end()) {
+    iter->second = item;
+    if (item_name == name) {
+      s->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
     }else{
-      (s->theDictionary)[item_name] = item;
+      s->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
+    }
+  }else{
+    (s->theDictionary)[item_name] = item;
+    s->theStatus = EVAL::OK;
+  }
+}
+//---------------------------------------------------------------------------
+const char* Evaluator::getEnviron(const char* name)  {
+  Struct* s = reinterpret_cast<Struct*>(p);
+  string item_name = name;
+  //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
+  dic_type::iterator iter = (s->theDictionary).find(item_name);
+  if (iter != (s->theDictionary).end()) {
+    s->theStatus = EVAL::OK;
+    return iter->second.expression.c_str();
+  }
+  if ( ::strlen(item_name.c_str()) > 3 )  {
+    // Need to remove braces from ${xxxx} for call to getenv()
+    string env_name(name+2,::strlen(name)-3);
+    const char* env_str = ::getenv(env_name.c_str());
+    if ( 0 != env_str )    {
       s->theStatus = EVAL::OK;
+      return env_str;
     }
   }
-  //---------------------------------------------------------------------------
-  const char* Evaluator::getEnviron(const char* name)  {
-    Struct* s = reinterpret_cast<Struct*>(p);
-    string item_name = name;
-    //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
-    dic_type::iterator iter = (s->theDictionary).find(item_name);
-    if (iter != (s->theDictionary).end()) {
-      s->theStatus = EVAL::OK;
-      return iter->second.expression.c_str();
-    }
-    if ( ::strlen(item_name.c_str()) > 3 )  {
-      // Need to remove braces from ${xxxx} for call to getenv()
-      string env_name(name+2,::strlen(name)-3);
-      const char* env_str = ::getenv(env_name.c_str());
-      if ( 0 != env_str )    {
-        s->theStatus = EVAL::OK;
-        return env_str;
-      }
-    }
-    s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
-    return 0;
-  }
+  s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
+  return 0;
+}
 
-  //---------------------------------------------------------------------------
-  void Evaluator::setVariable(const char * name, double value)
-  { setItem("", name, Item(value), reinterpret_cast<Struct*>(p)); }
+//---------------------------------------------------------------------------
+void Evaluator::setVariable(const char * name, double value)
+{ setItem("", name, Item(value), reinterpret_cast<Struct*>(p)); }
 
-  void Evaluator::setVariable(const char * name, const char * expression)
-  { setItem("", name, Item(expression), reinterpret_cast<Struct*>(p)); }
+void Evaluator::setVariable(const char * name, const char * expression)
+{ setItem("", name, Item(expression), reinterpret_cast<Struct*>(p)); }
 
-  //---------------------------------------------------------------------------
-  void Evaluator::setFunction(const char * name,double (*fun)())   {
-    FCN fcn(fun);
-    setItem("0", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
-  }
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const char * name,double (*fun)())   {
+  FCN fcn(fun);
+  setItem("0", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
+}
 
-  void Evaluator::setFunction(const char * name,double (*fun)(double))   {
-    FCN fcn(fun);
-    setItem("1", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
-  }
+void Evaluator::setFunction(const char * name,double (*fun)(double))   {
+  FCN fcn(fun);
+  setItem("1", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
+}
 
-  void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
-    FCN fcn(fun);
-    setItem("2", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
-  }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
+  FCN fcn(fun);
+  setItem("2", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
+}
 
-  void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
-    FCN fcn(fun);
-    setItem("3", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
-  }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
+  FCN fcn(fun);
+  setItem("3", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
+}
 
-  void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
-    FCN fcn(fun);
-    setItem("4", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
-  }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
+  FCN fcn(fun);
+  setItem("4", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
+}
 
-  void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
-    FCN fcn(fun);
-    setItem("5", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
-  }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
+  FCN fcn(fun);
+  setItem("5", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
+}
 
-  //---------------------------------------------------------------------------
-  bool Evaluator::findVariable(const char * name) const {
-    if (name == 0 || *name == '\0') return false;
-    const char * pointer; int n; REMOVE_BLANKS;
-    if (n == 0) return false;
-    Struct * s = reinterpret_cast<Struct*>(p);
-    return
-      ((s->theDictionary).find(string(pointer,n)) == (s->theDictionary).end()) ?
-      false : true;
-  }
+//---------------------------------------------------------------------------
+bool Evaluator::findVariable(const char * name) const {
+  if (name == 0 || *name == '\0') return false;
+  const char * pointer; int n; REMOVE_BLANKS;
+  if (n == 0) return false;
+  Struct * s = reinterpret_cast<Struct*>(p);
+  return
+    ((s->theDictionary).find(string(pointer,n)) == (s->theDictionary).end()) ?
+    false : true;
+}
 
-  //---------------------------------------------------------------------------
-  bool Evaluator::findFunction(const char * name, int npar) const {
-    if (name == 0 || *name == '\0')    return false;
-    if (npar < 0  || npar > MAX_N_PAR) return false;
-    const char * pointer; int n; REMOVE_BLANKS;
-    if (n == 0) return false;
-    Struct * s = reinterpret_cast<Struct*>(p);
-    return ((s->theDictionary).find(sss[npar]+string(pointer,n)) ==
-            (s->theDictionary).end()) ? false : true;
-  }
+//---------------------------------------------------------------------------
+bool Evaluator::findFunction(const char * name, int npar) const {
+  if (name == 0 || *name == '\0')    return false;
+  if (npar < 0  || npar > MAX_N_PAR) return false;
+  const char * pointer; int n; REMOVE_BLANKS;
+  if (n == 0) return false;
+  Struct * s = reinterpret_cast<Struct*>(p);
+  return ((s->theDictionary).find(sss[npar]+string(pointer,n)) ==
+	  (s->theDictionary).end()) ? false : true;
+}
 
-  //---------------------------------------------------------------------------
-  void Evaluator::removeVariable(const char * name) {
-    if (name == 0 || *name == '\0') return;
-    const char * pointer; int n; REMOVE_BLANKS;
-    if (n == 0) return;
-    Struct * s = reinterpret_cast<Struct*>(p);
-    (s->theDictionary).erase(string(pointer,n));
-  }
+//---------------------------------------------------------------------------
+void Evaluator::removeVariable(const char * name) {
+  if (name == 0 || *name == '\0') return;
+  const char * pointer; int n; REMOVE_BLANKS;
+  if (n == 0) return;
+  Struct * s = reinterpret_cast<Struct*>(p);
+  (s->theDictionary).erase(string(pointer,n));
+}
 
-  //---------------------------------------------------------------------------
-  void Evaluator::removeFunction(const char * name, int npar) {
-    if (name == 0 || *name == '\0')    return;
-    if (npar < 0  || npar > MAX_N_PAR) return;
-    const char * pointer; int n; REMOVE_BLANKS;
-    if (n == 0) return;
-    Struct * s = reinterpret_cast<Struct*>(p);
-    (s->theDictionary).erase(sss[npar]+string(pointer,n));
-  }
+//---------------------------------------------------------------------------
+void Evaluator::removeFunction(const char * name, int npar) {
+  if (name == 0 || *name == '\0')    return;
+  if (npar < 0  || npar > MAX_N_PAR) return;
+  const char * pointer; int n; REMOVE_BLANKS;
+  if (n == 0) return;
+  Struct * s = reinterpret_cast<Struct*>(p);
+  (s->theDictionary).erase(sss[npar]+string(pointer,n));
+}
 
-  //---------------------------------------------------------------------------
-  void Evaluator::clear() {
-    Struct * s = reinterpret_cast<Struct*>(p);
-    s->theDictionary.clear();
-    s->theExpression = 0;
-    s->thePosition   = 0;
-    s->theStatus     = OK;
-    s->theResult     = 0.0;
-  }
-
-  //---------------------------------------------------------------------------
-} // namespace XmlTools
+//---------------------------------------------------------------------------
+void Evaluator::clear() {
+  Struct * s = reinterpret_cast<Struct*>(p);
+  s->theDictionary.clear();
+  s->theExpression = 0;
+  s->thePosition   = 0;
+  s->theStatus     = OK;
+  s->theResult     = 0.0;
+}

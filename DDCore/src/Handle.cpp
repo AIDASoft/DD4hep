@@ -26,16 +26,26 @@
 #endif
 
 namespace dd4hep {
-  XmlTools::Evaluator& evaluator();
+  dd4hep::tools::Evaluator& evaluator();
 }
 
 namespace {
-  XmlTools::Evaluator& eval(dd4hep::evaluator());
+  dd4hep::tools::Evaluator& eval(dd4hep::evaluator());
 }
 
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
+
+namespace   {
+  void check_evaluation(const string& value, int status)   {
+    if (status != tools::Evaluator::OK) {
+      stringstream str;
+      eval.print_error(str);
+      throw runtime_error("dd4hep: "+str.str()+" : value="+value+" [Evaluation error]");
+    }
+  }
+}
 
 namespace dd4hep  {
   
@@ -47,11 +57,7 @@ namespace dd4hep  {
     while (s[0] == ' ')
       s.erase(0, 1);
     double result = eval.evaluate(s.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
-      cerr << value << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
-    }
+    check_evaluation(value, eval.status());
     return (short) result;
   }
 
@@ -63,11 +69,7 @@ namespace dd4hep  {
     while (s[0] == ' ')
       s.erase(0, 1);
     double result = eval.evaluate(s.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
-      cerr << value << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
-    }
+    check_evaluation(value, eval.status());
     return (int) result;
   }
 
@@ -79,11 +81,7 @@ namespace dd4hep  {
     while (s[0] == ' ')
       s.erase(0, 1);
     double result = eval.evaluate(s.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
-      cerr << value << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
-    }
+    check_evaluation(value, eval.status());
     return (long) result;
   }
 
@@ -94,22 +92,14 @@ namespace dd4hep  {
   /// String conversions: string to float value
   float _toFloat(const string& value) {
     double result = eval.evaluate(value.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
-      cerr << value << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
-    }
+    check_evaluation(value, eval.status());
     return (float) result;
   }
 
   /// String conversions: string to double value
   double _toDouble(const string& value) {
     double result = eval.evaluate(value.c_str());
-    if (eval.status() != XmlTools::Evaluator::OK) {
-      cerr << value << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + value);
-    }
+    check_evaluation(value, eval.status());
     return result;
   }
 
@@ -254,11 +244,7 @@ namespace dd4hep  {
       while (v[0] == ' ')
         v.erase(0, 1);
       double result = eval.evaluate(v.c_str());
-      if (eval.status() != XmlTools::Evaluator::OK) {
-        cerr << value << ": ";
-        eval.print_error();
-        throw runtime_error("dd4hep: Severe error during expression evaluation " + name + "=" + value);
-      }
+      check_evaluation(v, eval.status());
       eval.setVariable(n.c_str(), result);
     }
   }

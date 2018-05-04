@@ -52,8 +52,8 @@ namespace dd4hep {
     TRint app(name.c_str(), &a.first, a.second);
     app.Run();
   }
-  XmlTools::Evaluator& evaluator();
-  XmlTools::Evaluator& g4Evaluator();
+  tools::Evaluator& evaluator();
+  tools::Evaluator& g4Evaluator();
 }
 
 namespace dd4hep   {   namespace Parsers   {
@@ -71,12 +71,13 @@ namespace dd4hep   {   namespace Parsers   {
 
 using namespace std;
 
-#pragma link C++ namespace XmlTools;
-#pragma link C++ class XmlTools::Evaluator;
+#pragma link C++ namespace dd4hep;
+
+#pragma link C++ namespace dd4hep::tools;
+#pragma link C++ class dd4hep::tools::Evaluator;
 #pragma link C++ function dd4hep::evaluator;
 #pragma link C++ function dd4hep::g4Evaluator;
 
-#pragma link C++ namespace dd4hep;
 #pragma link C++ namespace dd4hep::detail;
 #pragma link C++ namespace dd4hep::cond;
 #pragma link C++ namespace dd4hep::align;

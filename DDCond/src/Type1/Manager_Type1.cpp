@@ -94,13 +94,13 @@ namespace {
   template <typename T> void __check_values__(const Manager_Type1* o, Condition::key_type key, const IOV* iov)  
   {
     if ( !iov )  {
-      except("ConditionsManager","+++ Invalid IOV to access condition: %16llX. [Null-reference]",key);
+      except("ConditionsMgr","+++ Invalid IOV to access condition: %16llX. [Null-reference]",key);
     }
     const IOVType* typ = check_iov_type<T>(o,iov);
     if ( !typ )  {
       // Severe: We have an unknown IOV type. This is not allowed, 
       // because we do not known hot to handle it.....
-      except("ConditionsManager","+++ Invalid IOV type [%d] to access condition: %16llX.",
+      except("ConditionsMgr","+++ Invalid IOV type [%d] to access condition: %16llX.",
              iov->type, key);
     }
   }
@@ -163,7 +163,7 @@ void Manager_Type1::initialize()  {
     m_loader.reset(createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv_loader));
     m_updatePool.reset(createPlugin<UpdatePool>(m_updateType,m_detDesc,2,argv_pool));
     if ( !m_updatePool.get() )  {
-      except("ConditionsManager","+++ The update pool of type %s cannot be created. [%s]",
+      except("ConditionsMgr","+++ The update pool of type %s cannot be created. [%s]",
              m_updateType.c_str(),Errors::noSys().c_str());
     }
     Ref_t ref(m_updatePool.get());
@@ -182,7 +182,7 @@ pair<bool, const IOVType*> Manager_Type1::registerIOVType(size_t iov_index, cons
       return make_pair(false,&typ);
     }
     else if ( typ.type != 0 && eq_type && !eq_name )  {
-      except("ConditionsManager","Cannot register IOV %s. Type %d already in use!",
+      except("ConditionsMgr","Cannot register IOV %s. Type %d already in use!",
              iov_name.c_str(), iov_index);
     }
     typ.name = iov_name;
@@ -190,7 +190,7 @@ pair<bool, const IOVType*> Manager_Type1::registerIOVType(size_t iov_index, cons
     m_rawPool[typ.type] = new ConditionsIOVPool(&typ);
     return make_pair(true,&typ);
   }
-  except("ConditionsManager","Cannot register IOV section %d of type %d. Value out of bounds: [%d,%d]",
+  except("ConditionsMgr","Cannot register IOV section %d of type %d. Value out of bounds: [%d,%d]",
          iov_name.c_str(), iov_index, 0, int(m_iovTypes.size()));
   return make_pair(false,(IOVType*)0);
 }
@@ -201,7 +201,7 @@ const IOVType* Manager_Type1::iovType (size_t iov_index) const  {
     const IOVType& typ = m_iovTypes[iov_index];
     if ( typ.type == iov_index ) return &typ;
   }
-  except("ConditionsManager","Request to access an unregistered IOV type: %d.", iov_index);
+  except("ConditionsMgr","Request to access an unregistered IOV type: %d.", iov_index);
   return 0;
 }
 
@@ -209,7 +209,7 @@ const IOVType* Manager_Type1::iovType (size_t iov_index) const  {
 const IOVType* Manager_Type1::iovType (const string& iov_name) const   {
   for( const auto& i : m_iovTypes ) 
     if ( i.name == iov_name ) return &i;
-  except("ConditionsManager","Request to access an unregistered IOV type: %s.", iov_name.c_str());
+  except("ConditionsMgr","Request to access an unregistered IOV type: %s.", iov_name.c_str());
   return 0;
 }
 
@@ -231,7 +231,7 @@ ConditionsPool* Manager_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
   const void* argv_pool[] = {this, iov, 0};
   shared_ptr<ConditionsPool> cond_pool(createPlugin<ConditionsPool>(m_poolType,m_detDesc,2,argv_pool));
   pool->elements.insert(make_pair(key,cond_pool));
-  printout(INFO,"ConditionsManager","Created IOV Pool for:%s",iov->str().c_str());
+  printout(INFO,"ConditionsMgr","Created IOV Pool for:%s",iov->str().c_str());
   return cond_pool.get();
 }
 
@@ -247,14 +247,14 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
     cond->setFlag(Condition::ACTIVE);
     pool.insert(cond);
 #if 0
-    printout(INFO,"ConditionsManager","Register condition %016lX %s [%s] IOV:%s",
+    printout(INFO,"ConditionsMgr","Register condition %016lX %s [%s] IOV:%s",
              cond->hash, cond.name(), cond->address.c_str(), pool.iov->str().c_str());
 #endif
     __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);
     return true;
   }
   else if ( !cond.isValid() )
-    except("ConditionsManager","+++ Invalid condition objects may not be registered. [%s]",
+    except("ConditionsMgr","+++ Invalid condition objects may not be registered. [%s]",
            Errors::invalidArg().c_str());
   return false;
 }
@@ -297,7 +297,7 @@ void Manager_Type1::__get_checked_pool(const IOV& req_iov,
     return;
   }
   // Invalid IOV type. Throw exception
-  except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
+  except("ConditionsMgr","+++ Unknown IOV type requested to enable conditions. [%s]",
          Errors::invalidArg().c_str());
 }
 
@@ -411,20 +411,20 @@ Manager_Type1::get(Condition::key_type key, const IOV& iov)
     return conditions[0];
   }
   else if ( conditions.empty() )   {
-    except("ConditionsManager","+++ Condition %16llX for the requested IOV %s do not exist.",
+    except("ConditionsMgr","+++ Condition %16llX for the requested IOV %s do not exist.",
            key, iov.str().c_str());
   }
   else if ( conditions.size() > 1 )  {
     RC::const_iterator start = conditions.begin();
     Condition first = *start;
-    printout(ERROR,"ConditionsManager","+++ Condition %s [%16llX] is ambiguous for IOV %s:",
+    printout(ERROR,"ConditionsMgr","+++ Condition %s [%16llX] is ambiguous for IOV %s:",
              first.name(), key, iov.str().c_str());
     for(RC::const_iterator i=start; i!=conditions.end(); ++i)  {
       Condition c = *i;
-      printout(ERROR,"ConditionsManager","+++ %s [%s] = %s",
+      printout(ERROR,"ConditionsMgr","+++ %s [%s] = %s",
                c.name(), c->iov->str().c_str(), c->value.c_str());
     }
-    except("ConditionsManager","+++ Condition %s [%16llX] is ambiguous for IOV %s:",
+    except("ConditionsMgr","+++ Condition %s [%16llX] is ambiguous for IOV %s:",
            first.name(), key, iov.str().c_str());
   }
   return Condition();
@@ -444,14 +444,14 @@ Manager_Type1::getRange(Condition::key_type key, const IOV& iov)
     dd4hep_lock_t locked_load(m_updateLock);
     m_loader->load_range(key, iov, conditions);
     if ( conditions.empty() )  {
-      except("ConditionsManager","+++ Conditions %16llX for IOV %s do not exist.",
+      except("ConditionsMgr","+++ Conditions %16llX for IOV %s do not exist.",
              key, iov.str().c_str());
     }
     conditions.clear();
   }
   rc = select_range(key, iov, conditions);
   if ( !rc )  {
-    except("ConditionsManager","+++ Conditions %16llX for IOV %s do not exist.",
+    except("ConditionsMgr","+++ Conditions %16llX for IOV %s do not exist.",
            key, iov.str().c_str());
   }
   return conditions;
@@ -478,7 +478,7 @@ std::unique_ptr<UserPool> Manager_Type1::createUserPool(const IOVType* iovT)  co
     return pool;
   }
   // Invalid IOV type. Throw exception
-  except("ConditionsManager","+++ Unknown IOV type requested to enable conditions. [%s]",
+  except("ConditionsMgr","+++ Unknown IOV type requested to enable conditions. [%s]",
          Errors::invalidArg().c_str());
   return std::unique_ptr<UserPool>();
 }

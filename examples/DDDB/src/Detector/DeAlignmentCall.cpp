@@ -42,7 +42,7 @@ Condition gaudi::DeAlignmentCall::operator()(const ConditionKey& /* key */,
     ConditionsManager mgr = ctxt.resolver->manager();
     cond = Condition(gaudi::Keys::alignmentsComputedKeyName,"Calculator");
     Deltas& deltas = cond.bind<Deltas>();
-    conditions->print("");
+    //conditions->print("");
     // Test. Need to be replaced by a special scanner
     DetectorScanner().scan(AlignmentsCalculator::Scanner(ctxt,deltas),top);
     AlignmentsCalculator::Result ares = calc.compute(deltas, slice);
@@ -52,8 +52,8 @@ Condition gaudi::DeAlignmentCall::operator()(const ConditionKey& /* key */,
       mgr.registerUnlocked(*iov_pool,c);
       conditions->insert(c);
     }
-    printout(INFO,"Align","Alignments:(C:%ld,M:%ld) IOV:%s",
-             ares.computed, ares.missing, ctxt.iov->str().c_str());
+    printout(INFO,"Align","Alignments:(C:%ld,M:%ld,*:%ld) IOV:%s",
+             ares.computed, ares.missing, ares.multiply, ctxt.iov->str().c_str());
     return cond;
   }
   except("DeAlignmentCall","No conditions slice present!");
