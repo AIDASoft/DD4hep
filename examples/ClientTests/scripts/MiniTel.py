@@ -9,12 +9,10 @@ import os, sys
 
 """
 def run():
-  from MiniTelSetup import Setup as MiniTel
-  m = MiniTel()
-
+  from MiniTelSetup import Setup
+  m = Setup()
   if len(sys.argv) >= 2 and sys.argv[1] =="batch":
     m.kernel.UI = ''
-
   m.configure()
   m.defineOutput()
   m.setupGun()
