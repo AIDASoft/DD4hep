@@ -246,7 +246,6 @@ Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, co
   /// Update the sensitive detector type, so that the proper instance is created
   m_sensitive = context()->detectorDescription().sensitiveDetector(nam);
   m_sensitiveType = m_sensitive.type();
-  m_sensitive.setType("Geant4SensDet");
   InstanceCount::increment(this);
 }
 

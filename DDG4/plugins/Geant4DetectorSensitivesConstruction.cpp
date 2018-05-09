@@ -52,6 +52,7 @@ namespace dd4hep {
 #include "DD4hep/Detector.h"
 
 #include "DDG4/Geant4Mapping.h"
+#include "DDG4/Geant4Kernel.h"
 #include "DDG4/Factories.h"
 
 // ROOT include files
@@ -82,25 +83,30 @@ Geant4DetectorSensitivesConstruction::~Geant4DetectorSensitivesConstruction() {
 /// Sensitive detector construction callback. Called at "ConstructSDandField()"
 void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorConstructionContext* ctxt)   {
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
+  const Geant4Kernel& kernel = context()->kernel();
+  const auto&   types = kernel.sensitiveDetectorTypes();
+  const string& dflt  = kernel.defaultSensitiveDetectorType();
   for(const auto& iv : p->sensitives )  {
     SensitiveDetector sd = iv.first;
-    string typ = sd.type(), nam = sd.name();
+    string nam = sd.name();
+    auto   iter = types.find(nam);
+      string typ = (iter != types.end()) ? (*iter).second : dflt;
     G4VSensitiveDetector* g4sd = 
       PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
-    if (!g4sd) {
-      string tmp = typ;
-      tmp[0] = ::toupper(tmp[0]);
-      typ = "Geant4" + tmp;
+    if (g4sd) {
+      print("Geant4SDConstruction", "+++ Subdetector: %-32s  type: %-16s factory: %s.",
+            nam.c_str(), sd.type().c_str(), typ.c_str());
+    }
+    else  {
+      PluginDebug dbg;
       g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
-      if ( !g4sd ) {
-        PluginDebug dbg;
-        g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
-        if ( !g4sd )  {
-          throw runtime_error("ConstructSDandField: FATAL Failed to "
-                              "create Geant4 sensitive detector " + nam + 
-                              " of type " + typ + ".");
-        }
+      if ( !g4sd )  {
+        throw runtime_error("ConstructSDandField: FATAL Failed to "
+                            "create Geant4 sensitive detector " + nam + 
+                            " (" + sd.type() + ") of type " + typ + ".");
       }
+      print("Geant4SDConstruction", "+++ Subdetector: %-32s  type: %-16s factory: %s.",
+            nam.c_str(), sd.type().c_str(), typ.c_str());
     }
     g4sd->Activate(true);
     G4SDManager::GetSDMpointer()->AddNewDetector(g4sd);
@@ -113,5 +119,5 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
       ctxt->setSensitiveDetector(g4v,g4sd);
     }
   }
-  print("Geant4Converter", "++ Handled %ld sensitive detectors.",p->sensitives.size());
+  print("Geant4SDConstruction", "+++ Handled %ld sensitive detectors.",p->sensitives.size());
 }
