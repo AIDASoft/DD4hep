@@ -128,7 +128,7 @@
                     OutputLevel="3"
 		    energy="5*GeV"
             particle="'tau-'"
-		    multiplicity="1"A
+		    multiplicity="1"
 		    direction="(1,1,1)"/>
       </action>
       <action name="Geant4ParticleHandler/ParticleHandler">
