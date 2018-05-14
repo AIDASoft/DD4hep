@@ -28,7 +28,7 @@
     <vis name="Invisible" showDaughters="false" visible="false"/>
     <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
     <vis name="VisibleRed"               r="1.0" g="0.0" b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="VisibleBlue"              r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleBlue"              r="0.0" g="0.0" b="1.0" showDaughters="true"  visible="true"/>
     <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" showDaughters="true"  visible="true" drawingStyle="solid" lineStyle="solid"/>
   </display>
 
@@ -45,8 +45,12 @@
     </region>
   </regions>
 
-  <tracking_volume mother="/world" vis="VisibleBlue">
-    <material name="Air"/>
+  <!--
+       If the volume should be connected to the world:   connected="true"
+       else if the wolume is part of the parallelworld: connected="false"
+       The wolume is always connected to the top level!
+  -->
+  <parallelworld_volume name="tracking_volume" anchor="/world" material="Air" connected="true" vis="VisibleBlue">
     <shape type="BooleanShape" operation="Subtraction">
       <shape type="BooleanShape" operation="Subtraction">
         <shape type="BooleanShape" operation="Subtraction"  >
@@ -60,9 +64,9 @@
       <shape type="Cone" rmin2="0*cm" rmax2="55*cm" rmin1="0*cm" rmax1="55*cm" z="30*cm"/>
       <position x="0" y="0" z="0*cm"/>
     </shape>
-    <position x="0"  y="0"  z="0"/>
-    <rotation x="0"  y="0"  z="0"/> 
-  </tracking_volume>
+    <position x="0*cm"   y="50*cm" z="0*cm"/>
+    <rotation x="pi/2.0" y="0"     z="0"/>
+  </parallelworld_volume>
 
   <detectors>
     <detector id="1" name="SiliconBlock" type="DD4hep_BoxSegment" readout="SiliconHits" vis="VisibleGreen" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">

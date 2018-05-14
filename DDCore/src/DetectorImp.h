@@ -148,8 +148,16 @@ namespace dd4hep {
       return m_worldVol;
     }
     /// Return handle to the world volume containing the volume with the tracking devices
+    virtual Volume parallelWorldVolume() const override  {
+      return m_parallelWorldVol;
+    }
+    /// Return handle to the world volume containing the volume with the tracking devices
     virtual Volume trackingVolume() const  override {
       return m_trackingVol;
+    }
+    /// Set the tracking volume of the detector
+    virtual void setTrackingVolume(Volume vol)  override {
+      m_trackingVol = vol;
     }
     /// Return handle to the VolumeManager
     virtual VolumeManager volumeManager() const  override {
