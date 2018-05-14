@@ -115,6 +115,7 @@ namespace dd4hep {
     DetElement               m_world;
     DetElement               m_trackers;
     Volume                   m_worldVol;
+    Volume                   m_parallelWorldVol;
     Volume                   m_trackingVol;
 
     Material                 m_materialAir;
@@ -168,6 +169,8 @@ namespace dd4hep {
     dd4hep::DetElement trackers() const                   {    return m_trackers;         }
     /// Return handle to the world volume containing everything
     dd4hep::Volume worldVolume() const                    {    return m_worldVol;         }
+    /// Return handle to the world volume containing the volume with the tracking devices
+    dd4hep::Volume parallelWorldVolume() const            {    return m_parallelWorldVol; }
     /// Return handle to the world volume containing the volume with the tracking devices
     dd4hep::Volume trackingVolume() const                 {    return m_trackingVol;      }
     /// Return handle to the VolumeManager

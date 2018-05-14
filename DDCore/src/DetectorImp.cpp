@@ -510,6 +510,8 @@ void DetectorImp::init() {
     TGeoManager* mgr = m_manager;
     Constant     air_const = getRefChild(m_define, "Air", false);
     Constant     vac_const = getRefChild(m_define, "Vacuum", false);
+
+    /// Construct the top level world element
     Box worldSolid("world_x", "world_y", "world_z");
     printout(INFO,"Detector"," *********** created World volume with size : %7.0f %7.0f %7.0f",
              worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
@@ -519,7 +521,7 @@ void DetectorImp::init() {
     Volume world_vol("world_volume", worldSolid, m_materialAir);
     m_world = DetElement(new WorldObject(*this,"world"));
     m_worldVol = world_vol;
-    // Set the world volume to invisible.
+    /// Set the world volume to invisible.
     VisAttr worldVis("WorldVis");
     worldVis.setAlpha(1.0);
     worldVis.setVisible(false);
@@ -533,19 +535,17 @@ void DetectorImp::init() {
     m_worldVol->SetVisContainers(kTRUE);
     add(worldVis);
 
-#if 0
-    Tube trackingSolid(0.,"tracking_region_radius","2*tracking_region_zmax",2*M_PI);
-    Volume tracking("tracking_volume",trackingSolid, m_materialAir);
-    m_trackers = TopDetElement("tracking");
-    m_trackingVol = tracking;
-    m_trackers.setPlacement(m_worldVol.placeVolume(tracking));
-    m_world.add(m_trackers);
-#endif
-
+    /// Set the top level volume to the TGeomanager
     m_detectors.append(m_world);
     m_manager->SetTopVolume(m_worldVol.ptr());
     m_world.setPlacement(mgr->GetTopNode());
 
+    /// Construct the parallel world
+    Box parallelWorldSolid("world_x", "world_y", "world_z");
+    parallelWorldSolid->SetName("parallel_world_solid");
+    m_parallelWorldVol = Volume("parallel_world_volume", worldSolid, m_materialAir);
+
+    /// Construct the field envelope
     m_field = OverlayedField("global");
     m_state = LOADING;
   }
