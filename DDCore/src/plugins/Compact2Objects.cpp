@@ -1111,6 +1111,7 @@ template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) cons
            "++ FAILED    to place the tracking volume inside the anchor '%s'",path.c_str());
   }
   if ( name == "tracking_volume" )   {
+    description.setTrackingVolume(vol);
   }
   printout(INFO, "Compact", "++ Converted successfully parallelworld_volume %s. anchor: %s vis:%s.",
            name.c_str(), anchor.path().c_str(), parallel.visStr().c_str());
