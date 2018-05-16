@@ -637,8 +637,8 @@ void ExtrudedPolygon::make(const vector<double>& pt_x,
 ExtrudedPolygon::ExtrudedPolygon(const vector<double>& pt_x,
                                  const vector<double>& pt_y,
                                  const vector<double>& sec_z,
-                                 const vector<double>& sec_y,
                                  const vector<double>& sec_x,
+                                 const vector<double>& sec_y,
                                  const vector<double>& sec_scale)
 {
   make(pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale);
