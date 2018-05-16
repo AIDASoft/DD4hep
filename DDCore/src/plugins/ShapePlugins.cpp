@@ -176,7 +176,7 @@ static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
     pt_x.push_back(point.attr<double>(_U(x)));
     pt_y.push_back(point.attr<double>(_U(y)));
   }
-  return ExtrudedPolygon(pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale);
+  return ExtrudedPolygon(pt_x, pt_y, sec_z, sec_y, sec_x, sec_scale);
 }
 DECLARE_XML_SHAPE(ExtrudedPolygon__shape_constructor,create_ExtrudedPolygon)
 
