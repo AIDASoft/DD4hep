@@ -1,3 +1,9 @@
+# v01-07-01
+
+* 2018-05-17 Frank Gaede
+   - fix bug in input handling, for details see discussion [#387](https://github.com/AIDASoft/DD4hep/issues/387)
+     - exclude leptons with zero lifetime from Geant4
+
 # v01-07
 
 * 2018-03-26 Javier Cervantes Villanueva ([PR#343](https://github.com/AIDASoft/DD4hep/pull/343))
