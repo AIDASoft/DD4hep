@@ -1,5 +1,5 @@
 """Configuration Helper for ParticleHandler"""
-from SystemOfUnits import MeV, mm
+from g4units import MeV, mm
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 

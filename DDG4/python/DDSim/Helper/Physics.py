@@ -3,7 +3,7 @@
 import os
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
-from SystemOfUnits import mm
+from g4units import mm
 
 class Physics( ConfigHelper ):
   """Configuration for the PhysicsList"""
