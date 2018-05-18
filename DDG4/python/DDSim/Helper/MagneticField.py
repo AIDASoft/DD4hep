@@ -1,5 +1,5 @@
 """Helper object for Magnetic Field properties"""
-from SystemOfUnits import mm, m
+from g4units import mm, m
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class MagneticField( ConfigHelper ):

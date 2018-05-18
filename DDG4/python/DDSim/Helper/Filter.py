@@ -6,7 +6,7 @@ The default filters are a GeantinoRejector and a 1keV minimum energy cut
 """
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
-from SystemOfUnits import keV
+from g4units import keV
 
 class Filter( ConfigHelper ):
   """Configuration for sensitive detector filters

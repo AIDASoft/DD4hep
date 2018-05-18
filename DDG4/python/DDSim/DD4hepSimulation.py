@@ -7,7 +7,7 @@ Based on M. Frank and F. Gaede runSim.py
 
 """
 __RCSID__ = "$Id$"
-from SystemOfUnits import *
+from g4units import *
 import argparse
 try:
   import argcomplete
@@ -649,7 +649,7 @@ class DD4hepSimulation(object):
     """print the parameters formated as a steering file"""
 
     steeringFileBase="""from DDSim.DD4hepSimulation import DD4hepSimulation
-from SystemOfUnits import mm, GeV, MeV
+from g4units import mm, GeV, MeV
 SIM = DD4hepSimulation()
 
 """

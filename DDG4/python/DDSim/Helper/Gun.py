@@ -1,7 +1,7 @@
 """Helper object for particle gun properties"""
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
-from SystemOfUnits import GeV
+from g4units import GeV
 
 class Gun( ConfigHelper ):
   """Configuration for the DDG4 ParticleGun"""
