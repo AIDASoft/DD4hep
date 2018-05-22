@@ -609,8 +609,8 @@ namespace dd4hep {
       DDDBCatalog *top, *structure, *geometry;
     };
 
-    /// Declaration of a not implemented tag-class to handle conditions
-    class dddb_conditions;
+    /// Declaration of a tag-class to handle conditions
+    class dddb_conditions  {};
 
     template <typename T> class Increment {
     public:
