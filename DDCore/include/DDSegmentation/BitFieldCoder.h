@@ -1,3 +1,14 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+
 #ifndef DDSegmentation_BitFieldCoder_H
 #define DDSegmentation_BitFieldCoder_H 1
 
@@ -17,10 +28,8 @@ namespace DDSegmentation {
 
   class StringTokenizer ; 
 
-      /** Helper class for BitFieldCoder that corresponds to one field value. 
-     */
-
-    class BitFieldElement{
+  /// Helper class for BitFieldCoder that corresponds to one field value. 
+  class BitFieldElement{
   
     public :
   
@@ -86,8 +95,8 @@ namespace DDSegmentation {
 
 
   
-  /** Helper class for decoding and encoding a bit field of 64bits for convenient declaration and 
-   *  manipulation of sub fields of various widths.<br>
+  /// Helper class for decoding and encoding a bit field of 64bits for convenient declaration
+  /** and manipulation of sub fields of various widths.<br>
    *  This is a thread safe re-implementation of the functionality in the deprected BitField64.
    *  
    *  Example:<br>
@@ -253,7 +262,8 @@ namespace DDSegmentation {
   };
 
 
- /** Helper class  for string tokenization. Usage:<br>
+  /// Helper class  for string tokenization.
+  /**  Usage:<br>
    *    std::vector<std::string> tokens ; <br>
    *    StringTokenizer t( tokens ,',') ; <br>
    *    std::for_each( aString.begin(), aString.end(), t ) ;  <br>

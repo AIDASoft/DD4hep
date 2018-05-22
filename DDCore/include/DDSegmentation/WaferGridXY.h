@@ -1,3 +1,14 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+
 /*
  * WaferGridXY.h
  *
@@ -16,6 +27,7 @@
 namespace dd4hep {
   namespace DDSegmentation {
 
+    /// A segmentation class to describe wafer grids in X-Y
     class WaferGridXY: public CartesianGrid {
     public:
       /// Default constructor passing the encoding string

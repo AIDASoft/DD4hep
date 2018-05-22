@@ -4,8 +4,8 @@
 
 namespace dd4hep{
 
-  /** Simple class for defining unit tests.
-   *  Use in main program that is added as a test to ctest:
+  /// Simple class for defining unit tests.
+  /**  Use in main program that is added as a test to ctest:
    *  
    *    DDTest test = DDTest( "example" ) ; 
    *    test.log( "example test" );

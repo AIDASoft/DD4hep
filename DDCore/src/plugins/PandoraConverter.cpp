@@ -28,6 +28,7 @@ namespace dd4hep {
    */
   namespace detail {
 
+    /// Converter to create Pandora structures from dd4hep (NOT IMPLEMENTED)
     /** @class PandoraConverter PandoraConverter.h XML/PandoraConverter.h
      *
      * Geometry converter from dd4hep to Geant 4.
@@ -37,6 +38,7 @@ namespace dd4hep {
      */
     struct PandoraConverter: public GeoHandler {
     protected:
+      /// Helper class
       struct GeometryInfo: public GeoHandler::GeometryInfo {
         xml_doc_t doc;
         xml_elt_t doc_root, doc_calorimeters, doc_detector, doc_coil, doc_tracking;

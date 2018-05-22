@@ -12,6 +12,8 @@
 #include <utility>
 #include "string.src"
 
+
+/// Internal expression evaluato class
 /*
  * Simplified hash_map class.
  * It provides only basic functions of the standard <hash_map> and

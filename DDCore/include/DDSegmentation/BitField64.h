@@ -1,3 +1,14 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+
 #ifndef DDSegmentation_BitField64_H
 #define DDSegmentation_BitField64_H 1
 
@@ -17,13 +28,12 @@ namespace dd4hep {
   
   namespace DDSegmentation {
     
-    /** Lightweight helper class for BitField64 that corresponds to one field value.
-     *  (Not thread safe - only use directly through BitField64).
+    /// Lightweight helper class for BitField64 that corresponds to one field value.
+    /**  (Not thread safe - only use directly through BitField64).
      *
      *    @author F.Gaede, DESY
      *    @date  2017-09
      */
-
     class BitFieldValue{
 
       long64& _value ;
@@ -79,8 +89,8 @@ namespace dd4hep {
     } ;
     
   
-    /** A bit field of 64bits that allows convenient declaration and 
-     *  manipulation of sub fields of various widths.<br>
+    /// A bit field of 64bits that allows convenient declaration
+    /**  and manipulation of sub fields of various widths.<br>
      *  Example:<br>
      *    BitField64 b("layer:7,system:-3,barrel:3,theta:32:11,phi:11" ) ; <br> 
      *    b[ "layer"  ]  = 123 ;         <br> 

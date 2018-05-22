@@ -1,3 +1,14 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+
 /*
  * CartesianStripX.h
  *
@@ -13,6 +24,8 @@
 
 namespace dd4hep {
 namespace DDSegmentation {
+
+      /// Segmentation base class describing cartesian strip segmentation in X
 class CartesianStripX : public DDSegmentation::CartesianStrip {
    public:
     /// Default constructor passing the encoding string

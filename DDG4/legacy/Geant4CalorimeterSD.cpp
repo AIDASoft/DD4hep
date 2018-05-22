@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -31,6 +30,13 @@ namespace dd4hep {  namespace sim {
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<Calorimeter>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    /// Legacy class. Deprecated. Not supported!  Not supported by the DDG4 kernel.
+    /**  \deprecated
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
     struct Calorimeter {};
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4GenericSD<Calorimeter>::buildHits(G4Step* step,G4TouchableHistory*) {
@@ -64,7 +70,21 @@ namespace dd4hep {  namespace sim {
     ///               Geant4GenericSD<OpticalCalorimeter>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     enum { Edep_type=0, Cerenkov_type=1 };
+
+    /// Legacy class. Deprecated. Not supported!  Not supported by the DDG4 kernel.
+    /**  \deprecated
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
     struct OpticalCalorimeter {};
+
+    /// Legacy class. Deprecated. Not supported!  Not supported by the DDG4 kernel.
+    /**  \deprecated
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
     template <> class Geant4GenericSD<OpticalCalorimeter> : public Geant4GenericSD<Calorimeter>  {
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
