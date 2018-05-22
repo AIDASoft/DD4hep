@@ -12,7 +12,7 @@
     
        To run batch: set UI=""
   -->
-  <kernel UI="" NumEvents="10"/>  
+  <kernel UI="" NumEvents="100"/>
 
   <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
        object and may be retrieved by there using the action name.
@@ -126,8 +126,8 @@
       <action name="Geant4ParticleGun/Gun">
         <properties Control="true"
                     OutputLevel="3"
-		    energy="500*MeV"
-  	  	    particle="'e-'"
+		    energy="5*GeV"
+            particle="'tau-'"
 		    multiplicity="1"
 		    direction="(1,1,1)"/>
       </action>
