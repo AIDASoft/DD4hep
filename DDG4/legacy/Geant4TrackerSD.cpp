@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -29,7 +28,15 @@ namespace dd4hep {  namespace sim {
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<Tracker>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    /// Legacy class. Deprecated. Not supported!  Not supported by the DDG4 kernel.
+    /**  \deprecated
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
     struct Tracker {};
+
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4GenericSD<Tracker>::buildHits(G4Step* step,G4TouchableHistory* /*hist*/ ) {
 

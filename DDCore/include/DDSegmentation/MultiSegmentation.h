@@ -29,7 +29,7 @@ namespace dd4hep {
      */
     class MultiSegmentation : public Segmentation {
     public:
-      
+      /// Heler structure to describe a sub-segmentation entry
       struct Entry {
         long key_min, key_max;
         Segmentation* segmentation;

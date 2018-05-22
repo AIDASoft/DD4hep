@@ -38,7 +38,9 @@ namespace dd4hep {
      */
     class ConditionsDependencyHandler : public ConditionResolver {
     public:
+      /// Obect state definitions
       enum State  {  INVALID, CREATED, RESOLVED };
+      /// Helper structure to define the current update item
       struct Work  {
         IOV                        iov;
         ConditionUpdateContext     context;
@@ -68,10 +70,11 @@ namespace dd4hep {
       /// User defined optional processing parameter
       ConditionUpdateUserContext* m_userParam;
       /// The objects created during processing
-      WorkConditions           m_created, m_todo;
+      WorkConditions              m_created, m_todo;
       /// Handler's state
       State                       m_state = CREATED;
-      Work*                    m_block;
+      /// Current blocking work item
+      Work*                       m_block;
       
     public:
       /// Number of callbacks to the handler for monitoring

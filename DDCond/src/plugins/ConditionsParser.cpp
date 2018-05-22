@@ -61,8 +61,10 @@ using std::string;
 using namespace dd4hep;
 using namespace dd4hep::cond;
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /// Helper structure for data conversion
   struct ConversionArg {
     DetElement         detector;
     ConditionsStack*   stack;

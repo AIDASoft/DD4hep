@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -24,6 +23,13 @@ namespace dd4hep {  namespace sim {
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<TrackerCombine>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    /// Legacy class. Deprecated. Not supported!  Not supported by the DDG4 kernel.
+    /**  \deprecated
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
     struct TrackerCombine {
       Geant4TrackerHit  pre;
       Geant4TrackerHit  post;

@@ -1,3 +1,14 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+
 /*
  * MegatileLayerGridXY.h
  *
@@ -12,31 +23,28 @@
 
 #include <cassert>
 
-/*
-
-  a megatile is a rectangule in x-y, split into a grid along x and y, with an exactly integer number of cells in x and y.
-
-  this class assumes a mostly-common megatile size, with possibility for a number of "special" megatiles of non-standard size / segmentation
-
-  the segmentation of standard megatiles is defined layer-by-layer.
-
-  some changes wrt previous version from Kotera et al.
-  - significantly simplified. 
-  - complications due to end-of-slab moved to higher level detector drivers.
-
-  D. Jeans - Nov 2016
-
-  July 2017 - DJeans
-  some changes for easier use of multi-layer segmentations
-  - for uniform segmentation, allow setting of ncellsx/y via parameter
-  - use std::vector, rather than fixed array to store ncells values
-
-*/
-
 
 namespace dd4hep {
   namespace DDSegmentation {
 
+    ///  a megatile is a rectangule in x-y, split into a grid along x and y, with an exactly integer number of cells in x and y.
+    /**
+     * this class assumes a mostly-common megatile size, with possibility for a number of "special" megatiles of non-standard size / segmentation
+     *
+     *  the segmentation of standard megatiles is defined layer-by-layer.
+     *
+     *  some changes wrt previous version from Kotera et al.
+     *  - significantly simplified. 
+     *  - complications due to end-of-slab moved to higher level detector drivers.
+     *
+     *  D. Jeans - Nov 2016
+     *
+     *  July 2017 - DJeans
+     *  some changes for easier use of multi-layer segmentations
+     *  - for uniform segmentation, allow setting of ncellsx/y via parameter
+     *  - use std::vector, rather than fixed array to store ncells values
+     *
+     */
     class MegatileLayerGridXY: public CartesianGrid {
     public:
       /// Default constructor passing the encoding string
@@ -106,7 +114,7 @@ namespace dd4hep {
       int getUnifNCellsX() {return _unif_nCellsX;}
       int getUnifNCellsY() {return _unif_nCellsY;}
 
-      
+      /// Helper structure
       struct segInfo {
         double megaTileSizeX = 0;
         double megaTileSizeY = 0;

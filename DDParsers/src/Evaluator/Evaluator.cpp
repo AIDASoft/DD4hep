@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 // ---------------------------------------------------------------------------
 
@@ -26,6 +27,8 @@
 #endif
 
 //---------------------------------------------------------------------------
+
+/// Internal expression evaluator helper class
 struct Item {
   enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION, STRING } what;
   double variable;
@@ -42,6 +45,8 @@ typedef char * pchar;
 typedef hash_map<string,Item> dic_type;
 
 namespace {
+
+  /// Internal expression evaluator helper class
   struct Struct {
     dic_type theDictionary;
     pchar    theExpression;
@@ -50,6 +55,7 @@ namespace {
     double   theResult;
   };
 
+  /// Internal expression evaluator helper union
   union FCN {
     void* ptr;
     double (*f0)();
