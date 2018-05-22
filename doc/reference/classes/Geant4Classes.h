@@ -17,6 +17,10 @@ class G4UserEventAction		{};
 
 /// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
 /** Class of the Geant4 toolkit. \see http://www-geant4.kek.jp/Reference  */
+class G4UserLimits		{};
+
+/// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
+/** Class of the Geant4 toolkit. \see http://www-geant4.kek.jp/Reference  */
 class G4UserRunAction		{};
 
 /// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
