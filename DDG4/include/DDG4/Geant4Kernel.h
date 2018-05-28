@@ -79,6 +79,10 @@ namespace dd4hep {
       std::string m_uiName;
       /// Property: Name of the G4 run manager factory to be used. Default: Geant4RunManager
       std::string m_runManagerType;
+      /// Property: Name of the default factory to create G4VSensitiveDetector instances
+      std::string m_dfltSensitiveDetectorType;
+      /// Property: Names with specialized factories to create G4VSensitiveDetector instances
+      std::map<std::string, std::string> m_sensitiveDetectorTypes;
       /// Property: Number of events to be executed in batch mode
       long        m_numEvent;
       /// Property: Output level
@@ -171,6 +175,15 @@ namespace dd4hep {
       template <typename T> void setUserFramework(T* object)   {
         m_userFramework = UserFramework(object,&typeid(T));
       }
+      /// Property access: Name of the default factory to create G4VSensitiveDetector instances
+      const std::string defaultSensitiveDetectorType()  const  {
+        return m_dfltSensitiveDetectorType;
+      }
+      /// Property access: Names with specialized factories to create G4VSensitiveDetector instances
+      const std::map<std::string, std::string>& sensitiveDetectorTypes()  const   {
+        return m_sensitiveDetectorTypes;
+      }
+      
       /** Property access                            */
       /// Access to the properties of the object
       PropertyManager& properties()             {        return m_properties;      }

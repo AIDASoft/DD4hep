@@ -869,15 +869,23 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
       if (ls.isValid()) {
         const LimitSet::Set& cts = ls.cuts();
         for (const auto& c : cts )   {
-          int pid;
+          int pid = 0;
           if ( c.particles == "*" ) pid = -1;
           else if ( c.particles == "e-"     ) pid = idxG4ElectronCut;
           else if ( c.particles == "e+"     ) pid = idxG4PositronCut;
+          else if ( c.particles == "e[+-]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
+          else if ( c.particles == "e[-+]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
           else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
           else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
           else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
           if ( !cuts ) cuts = new G4ProductionCuts();
-          cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
+          if ( pid == -(idxG4PositronCut+idxG4ElectronCut) )  {
+            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4PositronCut);
+            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4ElectronCut);
+          }
+          else  {
+            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
+          }
           printout(lvl, "Geant4Converter", "++ %s: Set cut  [%s/%d] = %f [mm]",
                    r.name(), c.particles.c_str(), pid, c.value*CLHEP::mm/units::mm);
         }

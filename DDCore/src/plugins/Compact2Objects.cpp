@@ -14,6 +14,7 @@
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/DetectorTools.h"
+#include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/FieldTypes.h"
@@ -51,7 +52,7 @@ namespace dd4hep {
   class Property;
   class XMLFile;
   class JsonFile;
-  class TrackingVolume;
+  class Parallelworld_Volume;
   class DetElementInclude;
 
   /// Converter instances implemented in this compilation unit
@@ -75,7 +76,7 @@ namespace dd4hep {
   template <> void Converter<XMLFile>::operator()(xml_h element) const;
   template <> void Converter<Header>::operator()(xml_h element) const;
   template <> void Converter<DetElementInclude>::operator()(xml_h element) const;
-  template <> void Converter<TrackingVolume>::operator()(xml_h element) const;
+  template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) const;
   template <> void Converter<Compact>::operator()(xml_h element) const;
 }
 
@@ -1063,57 +1064,57 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
-template <> void Converter<TrackingVolume>::operator()(xml_h element) const {
-  xml_det_t    trackers(element);
-  xml_dim_t    shape  = trackers.child(_U(shape));
+template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) const {
+  xml_det_t    parallel(element);
+  xml_dim_t    shape  = parallel.child(_U(shape));
   xml_dim_t    pos    = element.child(_U(position),false);
-  xml_dim_t    rot    = element.child(_U(position),false);
-  string       path   = element.attr<string>(_U(mother));
-  DetElement   mother(detail::tools::findElement(description, path));
+  xml_dim_t    rot    = element.child(_U(rotation),false);
+  string       name   = element.attr<string>(_U(name));
+  string       path   = element.attr<string>(_U(anchor));
+  bool         conn   = element.attr<bool>(_U(connected),false);
+  DetElement   anchor(detail::tools::findElement(description, path));
   RotationZYX  rotation;
   Position     position;
 
-  if ( !mother.isValid() )
-    except("TrackingVolume",
-           "++ FAILED    Cannot identify the mother of the tracking volume: '%s'",
+  if ( !anchor.isValid() )
+    except("Parallelworld_Volume",
+           "++ FAILED    Cannot identify the anchor of the tracking volume: '%s'",
            path.c_str());
   if ( pos )
     position = Position(pos.x(), pos.y(), pos.z());
   if ( rot )
     rotation = RotationZYX(rot.z(), rot.y(), rot.x());
 
-  Material     mat(description.vacuum());
+  /// Create the shape and the corresponding volume
+  Transform3D  tr_volume(detail::matrix::_transform(&anchor.nominal().worldTransformation().Inverse()));
   Solid        sol(xml_comp_t(shape).createShape());
-  Volume       vol("TrackingVolume", sol, mat);
-  Volume       par(mother.placement().volume());
+  Material     mat(description.vacuum());
+  Volume       vol(name, sol, mat);
+  Volume       par = conn ? description.worldVolume() : description.parallelWorldVolume();
   PlacedVolume pv;
 
-  if ( !par.isValid() )
-    except("TrackingVolume",
-           "++ FAILED    Cannot identify the volume of parent: '%s'",
-           mother.path().c_str());
-  if ( !trackers.materialStr().empty() )
-    mat = description.material(trackers.materialStr());
-  if ( trackers.visStr().empty() )
-    vol.setVisAttributes(description.invisible());
-  else
-    vol.setVisAttributes(description,trackers.visStr());
-  /// Need to inhibit that this atrifical volume gets translated to Geant4!
-  vol.setFlagBit(Volume::VETO_SIMU);
+  if ( parallel.hasAttr(_U(material)) )
+    mat = description.material(parallel.attr<string>(_U(material)));
 
-  /// Now place the volume in the mother frame
-  if ( pos && rot )
-    pv = par.placeVolume(vol, Transform3D(rotation, position));
-  else if ( pos )
-    pv = par.placeVolume(vol, pos);
-  else if ( rot )
-    pv = par.placeVolume(vol, rot);
-  else
-    pv = par.placeVolume(vol);
+  /// In case the volume is connected, we may use visualization
+  vol.setVisAttributes(parallel.visStr().empty()
+                       ? description.invisible()
+                       : description.visAttributes(parallel.visStr()));
+  /// Need to inhibit that this artifical volume gets translated to Geant4 (connected only)!
+  vol.setFlagBit(Volume::VETO_SIMU);
+  
+  /// Now place the volume in the anchor frame
+  Transform3D trafo = tr_volume * Transform3D(rotation,position); // Is this the correct order ?
+  pv = par.placeVolume(vol, trafo);
   if ( !pv.isValid() )   {
-    except("TrackingVolume",
-           "++ FAILED    to place the tracking volume inside the mother '%s'",path.c_str());
+    except("Parallelworld_Volume",
+           "++ FAILED    to place the tracking volume inside the anchor '%s'",path.c_str());
   }
+  if ( name == "tracking_volume" )   {
+    description.setTrackingVolume(vol);
+  }
+  printout(INFO, "Compact", "++ Converted successfully parallelworld_volume %s. anchor: %s vis:%s.",
+           name.c_str(), anchor.path().c_str(), parallel.visStr().c_str());
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1214,10 +1215,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(includes)).for_each(_U(xml), Converter<XMLFile>(description));
   xml_coll_t(compact, _U(fields)).for_each(_U(field), Converter<CartesianField>(description));
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter<SensitiveDetector>(description));
+  xml_coll_t(compact, _U(parallelworld_volume)).for_each(Converter<Parallelworld_Volume>(description));
 
-  if (element.hasChild(_U(tracking_volume)))   {
-    (Converter<TrackingVolume>(description))(xml_h(compact.child(_U(tracking_volume))));
-  }
   ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
   description.addConstant(Constant("compact_checksum", text));
   if ( --num_calls == 0 && close_geometry )  {

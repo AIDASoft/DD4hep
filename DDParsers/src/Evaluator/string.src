@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string.h>
 
+/// Internal expression evaluato class
 /*
  * Simplified string class.
  * It provides only few basic functions of the standard <string> and

@@ -577,13 +577,13 @@ class Geant4:
 
   def setupCalorimeter(self,name,type=None,collections=None):
     sd = self.description.sensitiveDetector(name)
-    sd.setType('calorimeter')
+    ### sd.setType('calorimeter')
     if type is None: type = self.sensitive_types['calorimeter']
     return self.setupDetector(name,type,collections)
 
   def setupTracker(self,name,type=None,collections=None):
     sd = self.description.sensitiveDetector(name)
-    sd.setType('tracker')
+    ### sd.setType('tracker')
     if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type,collections)
 

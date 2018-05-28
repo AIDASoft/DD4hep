@@ -243,7 +243,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/TrackingRegion.py batch
     REQUIRES   DDG4 Geant4
-    REGEX_PASS "Placement TrackingVolume_1 not converted \\[Veto'ed for simulation\\]"
+    REGEX_PASS "Placement tracking_volume_1 not converted \\[Veto'ed for simulation\\]"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
   # Geant4 full simulation checks of simple detectors

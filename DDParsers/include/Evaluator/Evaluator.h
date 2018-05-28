@@ -52,18 +52,18 @@ namespace dd4hep  {
        * @see print_error
        */
       enum {
-	OK, /**< Everything OK */
-	WARNING_EXISTING_VARIABLE, /**< Redefinition of existing variable */
-	WARNING_EXISTING_FUNCTION, /**< Redefinition of existing function */
-	WARNING_BLANK_STRING, /**< Empty input string */
-	ERROR_NOT_A_NAME, /**< Not allowed sysmbol in the name of variable or function */
-	ERROR_SYNTAX_ERROR, /**< Systax error */
-	ERROR_UNPAIRED_PARENTHESIS, /**< Unpaired parenthesis */
-	ERROR_UNEXPECTED_SYMBOL, /**< Unexpected sysbol */
-	ERROR_UNKNOWN_VARIABLE, /**< Non-existing variable */
-	ERROR_UNKNOWN_FUNCTION, /**< Non-existing function */
-	ERROR_EMPTY_PARAMETER, /**< Function call has empty parameter */
-	ERROR_CALCULATION_ERROR /**< Error during calculation */
+        OK, /**< Everything OK */
+        WARNING_EXISTING_VARIABLE, /**< Redefinition of existing variable */
+        WARNING_EXISTING_FUNCTION, /**< Redefinition of existing function */
+        WARNING_BLANK_STRING, /**< Empty input string */
+        ERROR_NOT_A_NAME, /**< Not allowed sysmbol in the name of variable or function */
+        ERROR_SYNTAX_ERROR, /**< Systax error */
+        ERROR_UNPAIRED_PARENTHESIS, /**< Unpaired parenthesis */
+        ERROR_UNEXPECTED_SYMBOL, /**< Unexpected sysbol */
+        ERROR_UNKNOWN_VARIABLE, /**< Non-existing variable */
+        ERROR_UNKNOWN_FUNCTION, /**< Non-existing function */
+        ERROR_EMPTY_PARAMETER, /**< Function call has empty parameter */
+        ERROR_CALCULATION_ERROR /**< Error during calculation */
       };
 
       /**
@@ -273,7 +273,7 @@ namespace dd4hep  {
        * @endcode
        */
       void setSystemOfUnits(double meter = 1.0, double kilogram = 1.0, double second = 1.0, double ampere = 1.0, double kelvin =
-			    1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
+                            1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
 
     private:
       void * p;                                 // private data

@@ -48,7 +48,7 @@ namespace {
         usage();
       }
     }
-    if ( arguments.plugins.empty() )  {
+    if ( !arguments.ui && !arguments.interpreter && arguments.plugins.empty() )  {
       usage();
     }
     unique_ptr<TRint> interpreter;

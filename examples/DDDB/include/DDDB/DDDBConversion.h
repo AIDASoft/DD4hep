@@ -608,8 +608,15 @@ namespace dd4hep {
       /// Detector element hierarchy
       DDDBCatalog *top, *structure, *geometry;
     };
-    class dddb_conditions {};
 
+    /// Declaration of a tag-class to handle conditions
+    /**   \ingroup DD4HEP_DDDB
+     */
+    class dddb_conditions  {};
+
+    /// Helper to implement reference counting depending on types.
+    /**   \ingroup DD4HEP_DDDB
+     */
     template <typename T> class Increment {
     public:
       static int& counter() { static int cnt=0; return cnt; }

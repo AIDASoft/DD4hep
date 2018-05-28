@@ -4,6 +4,7 @@
 #ifndef HEP_STACK_SRC
 #define HEP_STACK_SRC
 
+/// Internal expression evaluato class
 /*
  * Simplified stack class.
  * It is intended to be used as a replacement of the standard class where

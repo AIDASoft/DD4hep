@@ -113,8 +113,12 @@ namespace dd4hep {
 
     /// Return handle to the world volume containing everything
     virtual Volume worldVolume() const = 0;
+    /// Return handle to the parallel world volume
+    virtual Volume parallelWorldVolume() const = 0;
     /// Return handle to the volume containing the tracking devices
     virtual Volume trackingVolume() const = 0;
+    /// Set the tracking volume of the detector
+    virtual void setTrackingVolume(Volume vol) = 0;
 
     /// Return handle to the VolumeManager
     virtual VolumeManager volumeManager() const = 0;
