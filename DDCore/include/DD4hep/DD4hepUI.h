@@ -36,7 +36,9 @@ namespace dd4hep {
       Detector& m_detDesc;
       Handle<NamedObject> m_condMgr;
       Handle<NamedObject> m_alignMgr;
-    
+      /// Default visualiztion level
+      int visLevel = 4;
+
     public:
       /// Default constructor
       DD4hepUI(Detector& instance);
@@ -48,12 +50,20 @@ namespace dd4hep {
       Detector* detectorDescription()  const;
       /// Set the printout level from the interactive prompt
       PrintLevel setPrintLevel(PrintLevel level)   const;
+      /// Set the visualization level when invoking the display
+      int setVisLevel(int level);
 
       /// Install the dd4hep conditions manager object
       Handle<NamedObject> conditionsMgr()  const;
       /// Load conditions from file
       long loadConditions(const std::string& fname)  const;
-    
+
+      /// Dump the entire detector description object to a root file
+      long saveROOT(const char* file_name)    const;
+
+      /// Import the entire detector description object from a root file
+      long importROOT(const char* file_name)    const;
+
       /// Install the dd4hep alignment manager object
       Handle<NamedObject> alignmentMgr()  const;
 
@@ -66,12 +76,23 @@ namespace dd4hep {
       virtual long apply(const char* factory, int argc, char** argv) const;
       /// Detector interface: Read any geometry description or alignment file
       virtual void fromXML(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) const;
+
+      /// Detector interface: Draw the scene on a OpenGL pane
+      virtual void draw() const;
       /// Detector interface: Re-draw the entire scene
       virtual void redraw() const;
+
+      /// Detector interface: Draw detector sub-tree the scene on a OpenGL pane
+      virtual void drawSubtree(const char* path) const;
+      /// Detector interface: Re-draw the entire sub-tree scene
+      virtual void redrawSubtree(const char* path) const;
+
       /// Dump the volume tree
       virtual long dumpVols(int argc=0, char** argv=0)  const;
-      /// Dump the DetElement tree
+      /// Dump the DetElement tree with placement volumes
       virtual long dumpDet()  const;
+      /// Dump the raw DetElement tree 
+      virtual long dumpStructure()  const;
     };
     
   }  

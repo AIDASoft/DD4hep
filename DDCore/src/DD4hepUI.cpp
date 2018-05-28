@@ -20,6 +20,14 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
+namespace {
+  string _visLevel(int lvl)    {
+    char text[32];
+    ::snprintf(text,sizeof(text),"%d",lvl);
+    return text;
+  }
+}
+
 /// Default constructor
 DD4hepUI::DD4hepUI(Detector& instance) : m_detDesc(instance)  {
 }
@@ -41,6 +49,13 @@ Detector* DD4hepUI::detectorDescription()  const   {
 /// Set the printout level from the interactive prompt
 PrintLevel DD4hepUI::setPrintLevel(PrintLevel level)   const   {
   return dd4hep::setPrintLevel(level);
+}
+
+/// Set the visualization level when invoking the display
+int DD4hepUI::setVisLevel(int value)     {
+  int old_value = visLevel;
+  visLevel = value;
+  return old_value;
 }
 
 /// Install the dd4hep conditions manager object
@@ -83,7 +98,7 @@ Handle<NamedObject> DD4hepUI::alignmentMgr()  const  {
 
 /// Detector interface: Manipulate geometry using facroy converter
 long DD4hepUI::apply(const char* factory, int argc, char** argv) const   {
-  return m_detDesc.apply(factory,argc,argv);
+  return m_detDesc.apply(factory, argc, argv);
 }
 
 /// Detector interface: Read any geometry description or alignment file
@@ -91,9 +106,26 @@ void DD4hepUI::fromXML(const std::string& fname, DetectorBuildType type) const  
   return m_detDesc.fromXML(fname, type);
 }
 
+/// Detector interface: Draw the scene on a OpenGL pane
+void DD4hepUI::draw() const   {
+  drawSubtree("/world");
+}
+
 /// Detector interface: Re-draw the entire scene
 void DD4hepUI::redraw() const   {
-  m_detDesc.worldVolume()->Draw("oglsame");
+  redrawSubtree("/world");
+}
+
+/// Detector interface: Draw detector sub-tree the scene on a OpenGL pane
+void DD4hepUI::drawSubtree(const char* path) const    {
+  const void* av[] = {"-detector", path, "-option", "ogl", "-level", _visLevel(visLevel).c_str(), 0};
+  m_detDesc.apply("DD4hep_GeometryDisplay", 2, (char**)av);
+}
+
+/// Detector interface: Re-draw the entire sub-tree scene
+void DD4hepUI::redrawSubtree(const char* path) const    {
+  const void* av[] = {"-detector", path, "-option", "oglsame", "-level", _visLevel(visLevel).c_str(), 0};
+  m_detDesc.apply("DD4hep_GeometryDisplay", 4, (char**)av);
 }
 
 /// Dump the volume tree
@@ -105,9 +137,34 @@ long DD4hepUI::dumpVols(int argc, char** argv)  const   {
   return m_detDesc.apply("DD4hep_VolumeDump",argc,argv);
 }
 
-/// Dump the DetElement tree
+/// Dump the DetElement tree with placements
 long DD4hepUI::dumpDet()  const   {
   return m_detDesc.apply("DD4hep_DetectorVolumeDump",0,0);
+}
+
+/// Dump the DetElement tree with placements
+long DD4hepUI::dumpStructure()  const   {
+  return m_detDesc.apply("DD4hep_DetectorDump",0,0);
+}
+
+/// Dump the entire detector description object to a root file
+long DD4hepUI::saveROOT(const char* file_name)    const     {
+  if ( file_name )  {
+    const void* av[] = {"-output",file_name,0};
+    return m_detDesc.apply("DD4hep_Geometry2ROOT",2,(char**)av);
+  }
+  printout(WARNING,"DD4hepUI","++ saveROOT: No valid output file name supplied");
+  return 0;
+}
+
+/// Import the entire detector description object from a root file
+long DD4hepUI::importROOT(const char* file_name)    const    {
+  if ( file_name )  {
+    const void* av[] = {"-input",file_name,0};
+    return m_detDesc.apply("DD4hep_RootLoader",2,(char**)av);
+  }
+  printout(WARNING,"DD4hepUI","++ importROOT: No valid output file name supplied");
+  return 0;
 }
 
 /// Create ROOT interpreter instance
@@ -135,3 +192,4 @@ long DD4hepUI::runInterpreter()  const   {
   except("DD4hepUI","++ No ROOT interpreter instance present!");
   return 0;
 }
+
