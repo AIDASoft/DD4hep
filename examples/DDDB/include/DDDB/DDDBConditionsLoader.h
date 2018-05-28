@@ -38,7 +38,7 @@ namespace dd4hep {
     /** 
      *  \author   M.Frank
      *  \version  1.0
-     *  \ingroup  DD4HEP_CONDITIONS
+     *  \ingroup  DD4HEP_DDDB
      */
     class DDDBConditionsLoader : public cond::ConditionsDataLoader  {
       typedef std::pair<std::string, std::string> Key;
@@ -46,7 +46,7 @@ namespace dd4hep {
       /** 
        *  \author   M.Frank
        *  \version  1.0
-       *  \ingroup  DD4HEP_CONDITIONS
+       *  \ingroup  DD4HEP_DDDB
        */
       class KeyCollector : public cond::ConditionsListener  {
       public:

@@ -38,7 +38,7 @@ namespace dd4hep {
      *
      *  \author   M.Frank
      *  \version  1.0
-     *  \ingroup DD4HEP_XML
+     *  \ingroup  DD4HEP_DDDB
      */
     class DDDBReader : public dd4hep::xml::UriReader,
                        public PropertyConfigurable
