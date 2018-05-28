@@ -132,6 +132,11 @@ namespace gaudi   {
       {  return detectorAlignment.worldToLocal(globalDirection);                 }
       XYZVector toGlobal( const XYZVector& localDirection  ) const
       {  return detectorAlignment.localToWorld(localDirection);                  }
+
+      const TGeoHMatrix& toGlobalMatrix() const {
+        return detectorAlignment.worldTransformation();
+      }
+
     };
   }    // End namespace detail
 
