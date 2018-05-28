@@ -357,7 +357,7 @@ namespace gaudi    {
     const TGeoHMatrix& toLocalMatrix() const
     {  return iovData().toLocalMatrix;                                          }
     const TGeoHMatrix& toGlobalMatrix() const 
-    {  return iovData().toGlobalMatrix;                                         }
+    {  return iovData().toGlobalMatrix();                                         }
     const TGeoHMatrix& toLocalMatrixNominal() const
     {  return iovData().toLocalMatrixNominal;                                   }
 

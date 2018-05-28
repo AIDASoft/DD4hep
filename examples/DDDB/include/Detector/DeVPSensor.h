@@ -136,6 +136,7 @@ namespace gaudi   {
       virtual void initialize()  override;
       /// Printout method to stdout
       virtual void print(int indent, int flags)  const  override;
+
     };
   }    // End namespace detail
 
@@ -164,10 +165,11 @@ namespace gaudi   {
     static_t& staticData()  const  {  return access()->sensor_static;            }
     //bool isLeft()   const          {  return (ptr()->de_user & VP::RIGHT) == 0;  }
     //bool isRight()   const         {  return (ptr()->de_user & VP::RIGHT) != 0;  }
+
   };
 
   /// For the full sensor object, we have to combine it with the geometry stuff:
-  typedef  DetectorStaticElement<DeVPSensorElement>  DeVPSensor;
+  typedef  DetectorElement<DeVPSensorElement>  DeVPSensor;
 
 }      // End namespace gaudi
 #endif // DETECTOR_DEVPSENSORIOV_H
