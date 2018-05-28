@@ -126,7 +126,7 @@ namespace dd4hep {
     /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
     virtual void Release() const  override;
     /// Enable ROOT persistency
-    ClassDefOverride(PlacedVolumeExtension,1);
+    ClassDefOverride(PlacedVolumeExtension,200);
   };
 
   /// Handle class holding a placed volume (also called physical volume)
@@ -235,7 +235,7 @@ namespace dd4hep {
     /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
     virtual void Release() const  override;
     /// Enable ROOT persistency
-    ClassDefOverride(VolumeExtension,1);
+    ClassDefOverride(VolumeExtension,200);
   };
 
   /// Handle class holding a placed volume (also called physical volume)
