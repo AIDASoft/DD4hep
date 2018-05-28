@@ -117,6 +117,7 @@ DECLARE_CONSTRUCTOR(Detector_constructor,create_description_instance)
 static long display(Detector& description, int argc, char** argv) {
   TGeoManager& mgr = description.manager();
   int vislevel = 4, visopt = 1;
+  string detector = "/world";
   const char* opt = "ogl";
   for(int i = 0; i < argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-option",argv[i],4) )
@@ -125,12 +126,15 @@ static long display(Detector& description, int argc, char** argv) {
       vislevel = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-visopt",argv[i],4) )
       visopt = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("-detector",argv[i],4) )
+      detector = argv[++i];
     else  {
       cout <<
-        "Usage: -plugin <name> -arg [-arg]                                                 \n"
-        "     -option <string> ROOT Draw option.    Default: 'ogl'                         \n"
-        "     -level  <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
-        "     -visopt <number> Visualization option [TGeoManager::SetVisOption] Default: 1 \n"       
+        "Usage: -plugin <name> -arg [-arg]                                                   \n"
+        "     -detector <string> Top level DetElement path. Default: '/world'                \n"
+        "     -option   <string> ROOT Draw option.    Default: 'ogl'                         \n"
+        "     -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
+        "     -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1 \n"       
         "\tArguments given: " << arguments(argc,argv) << endl << flush;
       ::exit(EINVAL);
     }
@@ -138,7 +142,17 @@ static long display(Detector& description, int argc, char** argv) {
   mgr.SetVisLevel(vislevel);
   mgr.SetVisOption(visopt);
   TGeoVolume* vol = mgr.GetTopVolume();
-  if (vol) {
+  if ( detector != "/world" )   {
+    DetElement elt = detail::tools::findElement(description,detector);
+    if ( !elt.isValid() )  {
+      except("DD4hep_GeometryDisplay","+++ Invalid DetElement path: %s",detector.c_str());
+    }
+    if ( !elt.placement().isValid() )   {
+      except("DD4hep_GeometryDisplay","+++ Invalid DetElement placement: %s",detector.c_str());
+    }
+    vol = elt.placement().volume();
+  }
+  if ( vol )   {
     vol->Draw(opt);
     return 1;
   }
@@ -232,6 +246,8 @@ DECLARE_APPLY(DD4hep_Rint,run_interpreter)
  */
 static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
   char cmd[256];
+  //DD4hepUI* ui = new DD4hepUI(description);
+  //::snprintf(cmd,sizeof(cmd),"dd4hep::detail::DD4hepUI* gDD4hepUI = (dd4hep::detail::DD4hepUI*)%p;",(void*)ui);
   ::snprintf(cmd,sizeof(cmd),
              "dd4hep::detail::DD4hepUI* gDD4hepUI = new "
              "dd4hep::detail::DD4hepUI(*(dd4hep::Detector*)%p);",
@@ -643,7 +659,19 @@ DECLARE_APPLY(DD4hep_Geometry2ROOT,dump_geometry2root)
  */
 static long load_geometryFromroot(Detector& description, int argc, char** argv) {
   if ( argc > 0 )   {
-    string input = argv[0];
+    string input = argv[0];  // <-- for backwards compatibility
+    for(int i = 0; i < argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-input",argv[i],4) )
+        input = argv[++i];
+    }
+    if ( input.empty() )   {
+      cout <<
+        "Usage: DD4hep_RootLoader -arg [-arg]                                          \n"
+        "     name:   factory name     DD4hepGeometry2ROOT                             \n"
+        "     -input  <string>         Input file name.                                \n"
+        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      ::exit(EINVAL);
+    }
     printout(INFO,"DD4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
     if ( 1 == DD4hepRootPersistency::load(description,input.c_str(),"Geometry") )  {
       return 1;

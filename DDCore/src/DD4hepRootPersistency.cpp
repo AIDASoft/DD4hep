@@ -43,13 +43,20 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
         persist->m_segments[ro].second = ro.segmentation().segmentation();
       }
     }
-    for( const auto& mgr : persist->m_data->m_volManager->managers )  {
-      for( const auto& v : mgr.second->volumes )  {
-        persist->nominals[v.second->element] = v.second->element.nominal();
+    if ( persist->volumeManager().isValid() )   {
+      for( const auto& mgr : persist->m_data->m_volManager->managers )  {
+        for( const auto& v : mgr.second->volumes )  {
+          persist->nominals[v.second->element] = v.second->element.nominal();
+        }
       }
+      printout(ALWAYS,"DD4hepRootPersistency","+++ Saving %ld nominals....",persist->nominals.size());
     }
-    printout(ALWAYS,"DD4hepRootPersistency","+++ Saving %ld nominals....",persist->nominals.size());
-
+    else  {
+      printout(ALWAYS,
+               "DD4hepRootPersistency","+++ No valid Volume manager. No nominals saved.",
+               persist->nominals.size());
+    }
+    
     /// Now we write the object
     int nBytes = persist->Write(instance);
     f->Close();
@@ -95,28 +102,33 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       printout(ALWAYS,"DD4hepRootPersistency",
                "+++ Fixed %ld segmentation objects.",persist->m_segments.size());
       persist->m_segments.clear();
-      const auto& sdets = persist->volumeManager()->subdetectors;
-      size_t num[3] = {0,0,0};
-      for( const auto& vm : sdets )  {
-        VolumeManager::Object* obj = vm.second.ptr();
-        obj->system = obj->id.field("system");
-        if ( 0 != obj->system )   {
+      if ( persist->volumeManager().isValid() )   {
+        const auto& sdets = persist->volumeManager()->subdetectors;
+        size_t num[3] = {0,0,0};
+        for( const auto& vm : sdets )  {
+          VolumeManager::Object* obj = vm.second.ptr();
+          obj->system = obj->id.field("system");
+          if ( 0 != obj->system )   {
+            printout(ALWAYS,"DD4hepRootPersistency",
+                     "+++ Fixed VolumeManager.system for %-24s  %6ld volumes %4ld sdets %4ld mgrs.",
+                     obj->detector.path().c_str(), obj->volumes.size(),
+                     obj->subdetectors.size(), obj->managers.size());
+            num[0] += obj->volumes.size();
+            num[1] += obj->subdetectors.size();
+            num[2] += obj->managers.size();
+            continue;
+          }
           printout(ALWAYS,"DD4hepRootPersistency",
-                   "+++ Fixed VolumeManager.system for %-24s  %6ld volumes %4ld sdets %4ld mgrs.",
-                   obj->detector.path().c_str(), obj->volumes.size(),
-                   obj->subdetectors.size(), obj->managers.size());
-          num[0] += obj->volumes.size();
-          num[1] += obj->subdetectors.size();
-          num[2] += obj->managers.size();
-          continue;
+                   "+++ FAILED to fix VolumeManager.system for '%s: %s'.",
+                   obj->detector.path().c_str(), "[No IDDescriptor field 'system']");
         }
         printout(ALWAYS,"DD4hepRootPersistency",
-                 "+++ FAILED to fix VolumeManager.system for '%s: %s'.",
-                 obj->detector.path().c_str(), "[No IDDescriptor field 'system']");
+                 "+++ Fixed VolumeManager TOTALS     %-24s  %6ld volumes %4ld sdets %4ld mgrs.","",num[0],num[1],num[2]);
+        printout(ALWAYS,"DD4hepRootPersistency","+++ loaded %ld nominals....",persist->nominals.size());
       }
-      printout(ALWAYS,"DD4hepRootPersistency",
-               "+++ Fixed VolumeManager TOTALS     %-24s  %6ld volumes %4ld sdets %4ld mgrs.","",num[0],num[1],num[2]);
-      printout(ALWAYS,"DD4hepRootPersistency","+++ loaded %ld nominals....",persist->nominals.size());
+      else   {
+        printout(ALWAYS,"DD4hepRootPersistency","+++ Volume manager NOT restored. [Was it ever up when saved?]");
+      }
       DetectorData* tar_data = dynamic_cast<DetectorData*>(&description);
       DetectorData* src_data = dynamic_cast<DetectorData*>(source);
       if( tar_data != nullptr && src_data != nullptr ){
