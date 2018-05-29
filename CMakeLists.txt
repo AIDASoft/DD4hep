@@ -59,8 +59,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
-option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
-option(BUILD_TESTING      "Enable and build tests"   ON)
+option(DD4HEP_USE_LCIO    "Build lcio extensions"     OFF)
+option(BUILD_TESTING      "Enable and build tests"    ON)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 
 #####################
@@ -123,10 +123,13 @@ add_subdirectory(DDParsers)
 add_subdirectory(DDCore)
 add_subdirectory(DDRec)
 add_subdirectory(DDDetectors)
-add_subdirectory(DDG4)
 add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
 add_subdirectory(DDEve)
+if ( DD4HEP_USE_GEANT4 )
+  add_subdirectory(DDG4)
+endif()
+
 dd4hep_enable_tests( DDTest )
 add_subdirectory(UtilityApps)
 
@@ -142,11 +145,11 @@ endif()
 #########################
 # Configure and install #
 #########################
-configure_file(cmake/thisdd4hep.csh bin/thisdd4hep.csh @ONLY)
-configure_file(cmake/thisdd4hep.sh  bin/thisdd4hep.sh @ONLY)
+configure_file(cmake/thisdd4hep.csh      bin/thisdd4hep.csh      @ONLY)
+configure_file(cmake/thisdd4hep.sh       bin/thisdd4hep.sh       @ONLY)
 configure_file(cmake/thisdd4hep_only.csh bin/thisdd4hep_only.csh @ONLY)
-configure_file(cmake/thisdd4hep_only.sh  bin/thisdd4hep_only.sh @ONLY)
-configure_file(cmake/run_test.sh    bin/run_test.sh @ONLY)
+configure_file(cmake/thisdd4hep_only.sh  bin/thisdd4hep_only.sh  @ONLY)
+configure_file(cmake/run_test.sh         bin/run_test.sh         @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/bin/thisdd4hep.csh ${CMAKE_BINARY_DIR}/bin/thisdd4hep.sh DESTINATION bin )
 install(FILES ${CMAKE_BINARY_DIR}/bin/thisdd4hep_only.csh ${CMAKE_BINARY_DIR}/bin/thisdd4hep_only.sh DESTINATION bin )
@@ -173,7 +176,7 @@ if(APPLE)
   SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
 else()
   SET ( ENV{DD4HEP_LIBRARY_PATH} ${LD_LIBRARY_PATH} )
-  SET ( DD4HEP_LIBRARY_PATH ${LD_LIBRARY_PATH} )
+  SET ( DD4HEP_LIBRARY_PATH      ${LD_LIBRARY_PATH} )
 endif()
 
 #######################

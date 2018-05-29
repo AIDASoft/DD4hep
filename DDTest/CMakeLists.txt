@@ -8,11 +8,18 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #=================================================================================
-dd4hep_package(    DDTest
-  USES             DDCore DDRec
-  OPTIONAL         DDG4
-  INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DD4hep )
+if (DD4HEP_USE_GEANT4)
+  dd4hep_package(    DDTest
+    USES             DDCore DDRec
+    OPTIONAL         DDG4
+    INCLUDE_DIRS     include
+    INSTALL_INCLUDES include/DD4hep )
+else()
+  dd4hep_package(    DDTest
+    USES             DDCore DDRec
+    INCLUDE_DIRS     include
+    INSTALL_INCLUDES include/DD4hep )
+endif()
 
 dd4hep_add_test_reg ( test_example             BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_units               BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
@@ -29,6 +36,6 @@ dd4hep_add_test_reg ( test_cellDimensionsRPhi2 BUILD_EXEC REGEX_FAIL "TEST_FAILE
 dd4hep_add_test_reg ( test_segmentationHandles BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 
 if (DD4HEP_USE_GEANT4)
-  dd4hep_add_test_reg ( test_EventReaders BUILD_EXEC REGEX_FAIL "TEST_FAILED"
+  dd4hep_add_test_reg ( test_EventReaders      BUILD_EXEC REGEX_FAIL "TEST_FAILED"
     EXEC_ARGS ${CMAKE_CURRENT_SOURCE_DIR} )
 endif()

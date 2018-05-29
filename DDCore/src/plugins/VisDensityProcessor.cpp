@@ -29,7 +29,7 @@ namespace dd4hep  {
   public:
     Detector&              description;
     std::string            name;
-    VisAttr                vis;
+    VisAttr                minVis;
     double                 minDensity  = 5e0;
     size_t                 numInactive = 0;
     bool                   show = false;
@@ -76,27 +76,27 @@ VisDensityProcessor::VisDensityProcessor(Detector& desc) : description(desc), na
 
 /// Default destructor
 VisDensityProcessor::~VisDensityProcessor()   {
-  if ( show && vis.isValid() )  {
-    printout(ALWAYS,name,"++       %8ld vis-attrs applied: %s", numInactive, vis.name());
+  if ( show && minVis.isValid() )  {
+    printout(ALWAYS,name,"++       %8ld vis-attrs applied: %s", numInactive, minVis.name());
   }
 }
 
 /// Print properties
 void VisDensityProcessor::_show()   {
-  if ( show && vis.isValid() )   {
+  if ( show && minVis.isValid() )   {
     printout(ALWAYS,name,
              "++ SETUP Minimal material density: %.4f [g/cm3]  Vis: %s",
-             minDensity,vis.name());
+             minDensity,minVis.name());
   }
 }
 
 /// Callback to output PlacedVolume information of an single Placement
 int VisDensityProcessor::operator()(PlacedVolume pv, int /* level */)   {
-  Volume vol = pv.volume();
+  Volume   vol = pv.volume();
   Material mat = vol.material();
-  if ( vol.visAttributes().ptr() != vis.ptr() )  {
+  if ( vol.visAttributes().ptr() != minVis.ptr() )  {
     if ( mat.density() <= minDensity )  {
-      vol.setVisAttributes(vis);
+      vol.setVisAttributes(minVis);
     }
     ++numInactive;
   }
@@ -110,7 +110,12 @@ static void* create_object(Detector& description, int argc, char** argv)   {
     if ( argv[i] )    {
       if ( ::strncmp(argv[i],"-vis",6) == 0 )   {
         VisAttr vis = description.visAttributes(argv[++i]);
-        if ( vis.isValid() ) proc->vis = vis;
+        if ( vis.isValid() ) proc->minVis = vis;
+        continue;
+      }
+      else if ( ::strncmp(argv[i],"-min-vis",6) == 0 )   {
+        VisAttr vis = description.visAttributes(argv[++i]);
+        if ( vis.isValid() ) proc->minVis = vis;
         continue;
       }
       else if ( ::strncmp(argv[i],"-min-density",6) == 0 )   {
@@ -130,6 +135,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
       cout <<
         "Usage: DD4hep_VisDensityProcessor -arg [-arg]                                       \n"
         "     -vis          <name>     Set the visualization attribute for inactive materials\n"
+        "     -min-vis      <name>     Set the visualization attribute for inactive materials\n"
         "     -min-density  <number>   Minimal density to show the volume.                   \n"
         "     -show                    Print setup to output device (stdout)                 \n"
         "\tArguments given: " << arguments(argc,argv) << endl << flush;
@@ -143,4 +149,3 @@ static void* create_object(Detector& description, int argc, char** argv)   {
 
 // first argument is the type from the xml file
 DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_VisDensityProcessor,create_object)
-
