@@ -76,7 +76,7 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
     m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0),
     m_threadContext(0), phase(this)
 {
-  m_detDesc->addExtension < Geant4Kernel > (this);
+  //m_detDesc->addExtension < Geant4Kernel > (this);
   m_ident = -1;
   declareProperty("UI",m_uiName);
   declareProperty("OutputLevel",      m_outputLevel = DEBUG);
@@ -133,7 +133,7 @@ Geant4Kernel::~Geant4Kernel() {
   Geant4ActionContainer::terminate();
   if ( m_detDesc && isMaster() )  {
     try  {
-      m_detDesc->removeExtension < Geant4Kernel > (false);
+      //m_detDesc->removeExtension < Geant4Kernel > (false);
       m_detDesc->destroyInstance();
       m_detDesc = 0;
     }
@@ -321,7 +321,7 @@ int Geant4Kernel::terminate() {
   }
   Geant4ActionContainer::terminate();
   if ( ptr == this && m_detDesc )  {
-    m_detDesc->removeExtension < Geant4Kernel > (false);
+    //m_detDesc->removeExtension < Geant4Kernel > (false);
     m_detDesc->destroyInstance();
     m_detDesc = 0;
   }

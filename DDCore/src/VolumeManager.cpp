@@ -34,10 +34,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
 
 
 namespace {
-
-  static bool s_useAllocator = false;
-
-  class ContextExtension  {
+  class ContextExtension : public VolumeManagerContext {
   public:
     /// The placement of the (sensitive) volume
     PlacedVolume placement{0};
@@ -48,110 +45,6 @@ namespace {
     /// Default destructor
     ~ContextExtension() = default;
   };
-    
-  static size_t ALLOCATE_SIZE = 1000;
-  class VolumeContextAllocator  {
-
-  public:
-    struct Small   {
-      unsigned char  context[sizeof(VolumeManagerContext)];
-      unsigned int   chunk = 0;
-      unsigned short  slot = 0;
-      unsigned char   type = 0;
-      unsigned char   used = 0;
-      /// Default constructor
-      Small() : type(1)   {}
-      /// Default destructor
-      virtual ~Small() = default;
-      /// Inhibit copy constructor
-      Small(const Small& copy) = delete;
-      /// Inhibit assignment operator
-      Small& operator=(const Small& copy) = delete;
-    };
-    struct Large : public Small  {
-      unsigned char extension[sizeof(ContextExtension)];
-      /// Default constructor
-      Large() : Small()  { type = 2; }
-      /// Default destructor
-      virtual ~Large() = default;
-      /// Inhibit copy constructor
-      Large(const Large& copy) = delete;
-      /// Inhibit assignment operator
-      Large& operator=(const Large& copy) = delete;
-    };
-
-    std::vector<std::pair<size_t,Small*> > small;
-    std::vector<std::pair<size_t,Large*> > large;
-    std::list<Small*> free_small;
-    std::list<Large*> free_large;
-
-    VolumeContextAllocator()  {}
-    static VolumeContextAllocator* instance()  {
-      static VolumeContextAllocator _s;
-      return &_s;
-    }
-    void clear()  {
-      free_small.clear();
-      for( auto& i : small ) delete i.second;
-      small.clear();
-
-      free_large.clear();
-      for( auto& i : large ) delete i.second;
-      large.clear();
-    }
-    void freeBlock(void* ctxt)    {
-      Small* s = (Small*)ctxt;
-      switch(s->type)   {
-      case 1:
-        s->used = 0;
-        free_small.push_back(s);
-        return;
-      case 2:
-        s->used = 0;
-        free_large.push_back((Large*)s);
-        return;
-      default:
-        printout(ERROR,"VolumeManager",
-                 "++ Hit invalid context slot:%p type:%4X",
-                 (void*)s, s->type);
-        return;
-      }
-    }
-    void* alloc_large()  {
-      if ( s_useAllocator )  {
-        if ( !free_large.empty() )  {
-          Large* entry = free_large.back();
-          free_large.pop_back();
-          entry->used = 1;
-          return entry->context;
-        }
-        Large* blk = new Large[ALLOCATE_SIZE];
-        for(size_t i=0; i<ALLOCATE_SIZE;++i) free_large.push_back(&blk[i]);
-        large.push_back(make_pair(ALLOCATE_SIZE,blk));
-        return alloc_large();
-      }
-      return new VolumeContextAllocator::Large();
-    }
-    void* alloc_small()  {
-      if ( s_useAllocator )  {
-        if ( !free_small.empty() )  {
-          Small* entry = free_small.back();
-          free_small.pop_back();
-          entry->used = 1;
-          return entry->context;
-        }
-        Small* blk = new Small[ALLOCATE_SIZE];
-        for(size_t i=0; i<ALLOCATE_SIZE;++i) free_small.push_back(&blk[i]);
-        small.push_back(make_pair(ALLOCATE_SIZE,blk));
-        return alloc_small();
-      }
-      return new VolumeContextAllocator::Small();
-    }
-  };
-  inline ContextExtension* _getExtension(const VolumeManagerContext* ctxt)  {
-    VolumeContextAllocator::Large* p = (VolumeContextAllocator::Large*)ctxt;
-    return (ContextExtension*)p->extension;
-  }
 }
 
 /// Namespace for the AIDA detector description toolkit
@@ -370,16 +263,15 @@ namespace dd4hep {
 
             //m_debug = true;
             // This is the block, we effectively have to save for each physical volume with a VolID
-            void* mem = nodes.empty()
-              ? VolumeContextAllocator::instance()->alloc_small()
-              : VolumeContextAllocator::instance()->alloc_large();
-            VolumeManagerContext* context = new(mem) VolumeManagerContext;
+            VolumeManagerContext* context = nodes.empty()
+              ? new VolumeManagerContext
+              : new ContextExtension;
             context->identifier = code.first;
             context->mask       = code.second;
             context->element    = e;
             context->flag       = nodes.empty() ? 0 : 1;
             if ( context->flag )  {
-              ContextExtension* ext = new(_getExtension(context)) ContextExtension();
+              ContextExtension* ext = (ContextExtension*)context;
               ext->placement  = PlacedVolume(n);
               for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
                 TGeoMatrix* m = nodes[i-1]->GetMatrix();
@@ -424,7 +316,6 @@ namespace dd4hep {
 /// Default destructor
 VolumeManagerContext::~VolumeManagerContext() {
   if ( 0 == flag ) return;
-  _getExtension(this)->~ContextExtension();
 }
 
 /// Acces the sensitive volume placement
@@ -436,13 +327,16 @@ PlacedVolume VolumeManagerContext::elementPlacement()  const   {
 PlacedVolume VolumeManagerContext::volumePlacement()  const   {
   if ( 0 == flag )
     return element.placement();
-  return _getExtension(this)->placement;
+  const ContextExtension* ext = (const ContextExtension*)this;
+  return ext->placement;
 }
 
 /// Access the transformation to the closest detector element
 const TGeoHMatrix& VolumeManagerContext::toElement()  const   {
   static TGeoHMatrix identity;
-  return ( 0 == flag ) ? identity : _getExtension(this)->toElement;
+  if ( 0 == flag ) return identity;
+  const ContextExtension* ext = (const ContextExtension*)this;
+  return ext->toElement;
 }
 
 /// Initializing constructor to create a new object
@@ -770,12 +664,7 @@ std::ostream& dd4hep::operator<<(std::ostream& os, const VolumeManager& m) {
 /// Default destructor
 VolumeManagerObject::~VolumeManagerObject() {
   /// Cleanup volume tree
-  if ( s_useAllocator )  {
-    VolumeContextAllocator::instance()->clear();
-  }
-  else   {
-    destroyObjects(volumes);
-  }
+  destroyObjects(volumes);
   /// Cleanup dependent managers
   destroyHandles(managers);
   managers.clear();

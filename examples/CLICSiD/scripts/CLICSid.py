@@ -4,15 +4,19 @@ from SystemOfUnits import *
 class CLICSid:
   def __init__(self,tracker='Geant4TrackerCombineAction'):
     self.kernel = DDG4.Kernel()
-    self.description   = self.kernel.detectorDescription()
+    self.description = self.kernel.detectorDescription()
     self.geant4 = DDG4.Geant4(self.kernel,tracker=tracker)
     self.kernel.UI = ""
     self.noPhysics()
  
-  def loadGeometry(self):
+  def loadGeometry(self, file=None):
     import os
-    install_dir = os.environ['DD4hepINSTALL']
-    self.kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+    if file is None:
+      install_dir = os.environ['DD4hepINSTALL']
+      self.kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+    else:
+      ui = DDG4.DD4hepUI(self.description)
+      ui.importROOT(file)
     return self
 
   # Example to show how to configure G4 magnetic field tracking

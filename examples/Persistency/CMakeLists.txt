@@ -202,3 +202,16 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Readouts_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 14 readout objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
   )
+#
+if (DD4HEP_USE_GEANT4)
+  #
+  #
+  #  Test restoring geometry from ROOT file and start Geant4
+  dd4hep_add_test_reg( Persist_CLICSiD_Geant4_LONGTEST
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
+    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/scripts/CLICSiD_LoadROOTGeo.py  batch
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "\\+\\+\\+ Finished run 0 after 10 events \\(10 events in total\\)"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR"
+    )
+endif()

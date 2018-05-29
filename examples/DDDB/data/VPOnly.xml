@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<DDDB>
+  <config>
+    <param name="print_file_load" value="true"/>
+  </config>
+  <block name="/Prs/"/>
+  <block name="/Spd/"/>
+  <block name="/Ecal/"/>
+  <block name="/Hcal/"/>
+  <block name="/Muon/"/>
+  <block name="/Infrastructure/"/>
+
+  <block name="/materials/Ecal"/>
+  <block name="/materials/Hcal"/>
+  <block name="/materials/Spd"/>
+  <block name="/materials/Prs"/>
+  <block name="/materials/Muon"/>
+  <block name="/materials/Blockwall"/>
+  <block name="/materials/Bcm"/>
+  <block name="/materials/Bls"/>
+  <block name="/materials/GValve"/>
+  <block name="/materials/MBXW"/>
+  <block name="/materials/Magnet"/>
+
+  <block name="/Conditions/Rich1/"/>
+  <block name="/Conditions/Rich2/"/>
+  <block name="/Conditions/Spd/"/>
+  <block name="/Conditions/Prs/"/>
+  <block name="/Conditions/Ecal/"/>
+  <block name="/Conditions/Hcal/"/>
+  <block name="/Conditions/Calo/"/>
+  <block name="/Conditions/Muon/"/>
+  <block name="/Conditions/LHCb/"/>
+</DDDB>
