@@ -790,6 +790,7 @@ DECLARE_APPLY(DD4hep_CheckNominals,check_nominals)
  */
 static long dump_volume_tree(Detector& description, int argc, char** argv) {
   struct Actor {
+    Detector& description;
     bool m_printPathes = false;
     bool m_printVolIDs = false;
     bool m_printPointers = false;
@@ -801,13 +802,15 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
     long m_numMaterial    = 0;
     long m_numMaterialERR = 0;
     bool m_topStat        = false;
+    std::string m_detector;
     map<string,long> top_counts;
     string currTop;
     
-    Actor(int ac, char** av)  {
+    Actor(Detector& desc, int ac, char** av) : description(desc)  {
       for(int i=0; i<ac; ++i)  {
         char c = ::tolower(av[i][0]);
         char* p = av[i];
+        m_detector = "/world";
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
         if      ( ::strncmp(p,"volume_ids",3) == 0  ) m_printVolIDs         = true;
@@ -817,6 +820,20 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         else if ( ::strncmp(p,"pointers",3)   == 0  ) m_printPointers       = true;
         else if ( ::strncmp(p,"sensitive",3)  == 0  ) m_printSensitivesOnly = true;
         else if ( ::strncmp(p,"topstats",3)   == 0  ) m_topStat             = true;
+        else if ( ::strncmp(p,"detector",3)   == 0  ) m_detector            = av[++i];
+        else if ( ::strncmp(p,"help",3)       == 0  )   {
+          cout <<
+            "Usage: -plugin <name> -arg [-arg]                                                   \n"
+            "     -detector <string> Top level DetElement path. Default: '/world'                \n"
+            "     -pathes            Print DetElement pathes                                     \n"
+            "     -positions         Print placement positions                                   \n"
+            "     -volume_ids        Print placement volume IDs                                  \n"
+            "     -materials         Print volume materials                                      \n"       
+            "     -pointers          Debug: Print pointer values                                 \n"       
+            "     -sensitive         Only print information for sensitive volumes                \n"       
+            "     -topstats          Print statistics about top level node                       \n"       
+            "\tArguments given: " << arguments(ac,av) << endl << flush;
+        }
       }
     }
     ~Actor()  {
@@ -953,13 +970,28 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       }
       return 1;
     }
+    int operator()()   {
+      PlacedVolume pv;
+      DetElement   top = description.world();
+      detail::tools::PlacementPath path;
+
+      if ( m_detector != "/world" )   {
+        top = detail::tools::findElement(description,m_detector);
+        if ( !top.isValid() )  {
+          except("DD4hep_GeometryDisplay","+++ Invalid DetElement path: %s",m_detector.c_str());
+        }
+      }
+      if ( !top.placement().isValid() )   {
+        except("DD4hep_GeometryDisplay","+++ Invalid DetElement placement: %s",m_detector.c_str());
+      }
+      string place = top.placementPath();
+      detail::tools::placementPath(top, path);
+      pv = detail::tools::findNode(top.placement(),place);
+      return this->dump("", top.placement().ptr(), pv.ptr(), 0, PlacedVolume::VolIDs());
+    }
   };
-  string place = description.world().placementPath();
-  detail::tools::PlacementPath path;
-  detail::tools::placementPath(description.world(), path);
-  PlacedVolume  pv = detail::tools::findNode(description.world().placement(),place);
-  Actor actor(argc,argv);
-  return actor.dump("",description.world().placement().ptr(),pv.ptr(),0,PlacedVolume::VolIDs());
+  Actor actor(description, argc,argv);
+  return actor();
 }
 DECLARE_APPLY(DD4hep_VolumeDump,dump_volume_tree)
 
