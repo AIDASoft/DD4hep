@@ -281,5 +281,12 @@ void DetectorData::adoptData(DetectorData& source, bool clr)   {
   m_properties       = source.m_properties;
   //m_extensions     = source.m_extensions;
   m_volManager       = source.m_volManager;
+
+  // Update world element
+  m_world.setPlacement(m_manager->GetTopNode());
+  // Need to update some global stuff
+  if ( gGeoManager != m_manager ) delete gGeoManager;
+  gGeoManager        = m_manager;
+  
   if ( clr ) source.clearData();
 }

@@ -114,6 +114,9 @@ import_namespace_item('tools','Evaluator')
 import_namespace_item('core','NamedObject')
 import_namespace_item('core','run_interpreter')
 
+def import_detail():
+  import_namespace_item('detail','DD4hepUI')
+  
 def import_geometry():
   import_namespace_item('core','setPrintLevel')
   import_namespace_item('core','setPrintFormat')
@@ -235,6 +238,7 @@ def import_tgeo():
 
 import_tgeo()
 import_geometry()
+import_detail()
 #
 #  Import units from TGeo.
 #  Calling import_units makes all the units local to the dd4hep module.
