@@ -125,10 +125,11 @@ add_subdirectory(DDRec)
 add_subdirectory(DDDetectors)
 add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
-add_subdirectory(DDEve)
 if ( DD4HEP_USE_GEANT4 )
   add_subdirectory(DDG4)
 endif()
+# Note the order: DDEve partially depends on variables from DDG4!
+add_subdirectory(DDEve)
 
 dd4hep_enable_tests( DDTest )
 add_subdirectory(UtilityApps)
