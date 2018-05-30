@@ -452,7 +452,9 @@ Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, do
 
 /// Constructor to be used when creating a new object with attribute initialization
 Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  _assign(new TGeoSphere(rmin, rmax, theta/units::deg, delta_theta/units::deg, phi/units::deg, delta_phi/units::deg), "", "sphere", true);
+  _assign(new TGeoSphere(rmin, rmax,
+                         theta/units::deg, delta_theta/units::deg,
+                         phi/units::deg, delta_phi/units::deg), "", "sphere", true);
 }
 
 /// Set the Sphere dimensions
@@ -475,42 +477,51 @@ Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, doub
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
-Trap::Trap(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2, double x3, double x4,
-           double alpha2) {
-  _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1/units::deg, y2, x3, x4, alpha2/units::deg), "", "trap", true);
+Trap::Trap(double z, double theta, double phi,
+           double h1, double bl1, double tl1, double alpha1,
+           double h2, double bl2, double tl2, double alpha2) {
+  _assign(new TGeoTrap(z, theta/units::deg, phi/units::deg,
+                       h1, bl1, tl1, alpha1/units::deg,
+                       h2, bl2, tl2, alpha2/units::deg), "", "trap", true);
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
 void Trap::make(double pz, double py, double px, double pLTX) {
-  double z = pz / 2e0;
-  double theta = 0e0;
-  double phi = 0e0;
-  double y1 = py / 2e0;
-  double x1 = px / 2e0;
-  double x2 = pLTX / 2e0;
+  double z      = pz / 2e0;
+  double theta  = 0e0;
+  double phi    = 0e0;
+  double h      = py / 2e0;
+  double bl     = px / 2e0;
+  double tl     = pLTX / 2e0;
   double alpha1 = (pLTX - px) / py;
-  _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1/units::deg, y1, x1, x2, alpha1/units::deg), "", "trap", true);
+  _assign(new TGeoTrap(z, theta, phi,
+                       h, bl, tl, alpha1/units::deg,
+                       h, bl, tl, alpha1/units::deg), "", "trap", true);
 }
 
 /// Set the trap dimensions
-Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2,
-                          double x3, double x4, double alpha2) {
-  double params[] = { z, theta, phi, y1, x1, x2, alpha1/units::deg, y2, x3, x4, alpha2/units::deg };
+Trap& Trap::setDimensions(double z, double theta, double phi,
+                          double h1, double bl1, double tl1, double alpha1,
+                          double h2, double bl2, double tl2, double alpha2) {
+  double params[] = { z,  theta/units::deg, phi/units::deg,
+                      h1, bl1, tl1, alpha1/units::deg,
+                      h2, bl2, tl2, alpha2/units::deg };
   _setDimensions(params);
   return *this;
 }
 
 /// Internal helper method to support object construction
 void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, double r, bool atMinusZ)    {
-  double x = atMinusZ ? x1 : x2;
-  double h = 0;
-  bool intersec = false; // union or intersection solid
-  double halfOpeningAngle = std::asin( x / std::abs( r ))/units::deg;
+  double x            = atMinusZ ? x1 : x2;
+  double h            = 0;
+  bool   intersec     = false; // union or intersection solid
   double displacement = 0;
-  double startPhi = 0;
-  double halfZ = z/2.;
-  /* calculate the displacement of the tubs w.r.t. to the trap, determine the opening angle of the tubs */
-  double delta = std::sqrt( r * r - x * x );
+  double startPhi     = 0;
+  double halfZ        = z;
+  double halfOpeningAngle = std::asin( x / std::abs( r ))/units::deg;
+  
+  /// calculate the displacement of the tubs w.r.t. to the trap, determine the opening angle of the tubs
+  double delta        = std::sqrt( r * r - x * x );
  
   if( r < 0 && std::abs( r ) >= x )  {
     intersec = true; // intersection solid
