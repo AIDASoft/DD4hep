@@ -406,7 +406,7 @@ namespace dd4hep {
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
   };
   
-  /// Class describing a elliptical tube shape of a section of a tube
+  /// Class describing a elliptical tube shape
   /**
    *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
    *            Semi axis of ellipsis in x and y and half-length dz.
