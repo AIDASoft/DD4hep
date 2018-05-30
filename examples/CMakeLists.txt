@@ -58,6 +58,7 @@ dd4hep_enable_tests (
 if ( DD4HEP_USE_XERCESC )
   dd4hep_print("|++> XercesC PRESENT. Building DDDB examples.")
   dd4hep_enable_tests (DDDB)
+  dd4hep_enable_tests (DDCodex)
 else()
   dd4hep_print("|++> XercesC is not present. NOT building DDDB examples.")
 endif()

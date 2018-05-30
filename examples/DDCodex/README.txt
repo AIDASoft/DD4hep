@@ -5,7 +5,40 @@ CODEX starting kit
 Small geometry driver for CODEX-b sketch.
 
 
-To execute:
+First save a snapshot of the upgrade geometry in DD4hep
+-------------------------------------------------------
+You will need a proper checkout of the git repository of Ben provided for testing the
+upgrade with DD4hep.
+
+Comamnds:
+$> `which python` `which gaudirun.py` GeoExtract.py
+root [0] gDD4hepUI->saveROOT("Upgrade.root")
+root [1] .q
+
+Output:
+DetElement-Info  INFO  ++            ->  +++++++++++++ Printout summary:
+DetElement-Info  INFO  ++            ->  Number of conditions:              0  [  dto. empty:0]
+DetElement-Info  INFO  ++            ->  Total Number of parameters:        0  [  0.000 Parameters/Condition]
+DD4hepUI               Use the ROOT interpreter variable gDD4hepUI to interact with the detector description.
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.10/06                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag v6-10-06, 19 September 2017                       |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+DD4hepRint       INFO  ++ Created ROOT interpreter instance for DD4hepUI.
+root [0] gDD4hepUI->saveROOT("VPGeo.root")
+Geometry2ROOT    INFO  +++ Dump geometry to root file:VPGeo.root
+DD4hepRootPersistency       +++ No valid Volume manager. No nominals saved.
+DD4hepRootPersistency       +++ Wrote 992746 Bytes of geometry data 'Geometry' to 'VPGeo.root'  [   0.772 seconds].
+DD4hepRootPersistency       +++ Successfully saved geometry data to file.
+(long) 1
+root [1] .q
+
+
+Then to execute:
 ----------------------------------------------------------------------------
 $> geoPluginRun -ui -inter
 ...
