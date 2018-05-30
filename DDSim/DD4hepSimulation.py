@@ -279,12 +279,12 @@ class DD4hepSimulation(object):
     import ROOT
     ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-    import DDG4, DD4hep
+    import DDG4, dd4hep
 
     self.printLevel = getOutputLevel(self.printLevel)
 
     kernel = DDG4.Kernel()
-    DD4hep.setPrintLevel(self.printLevel)
+    dd4hep.setPrintLevel(self.printLevel)
     #kernel.setOutputLevel('Compact',1)
 
     kernel.loadGeometry("file:"+ self.compactFile )
@@ -479,7 +479,7 @@ class DD4hepSimulation(object):
     ph.addPhysicsConstructor('G4StepLimiterPhysics')
     _phys.add(ph)
 
-    DD4hep.setPrintLevel(self.printLevel)
+    dd4hep.setPrintLevel(self.printLevel)
 
     kernel.configure()
     kernel.initialize()
