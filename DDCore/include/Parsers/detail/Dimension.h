@@ -554,6 +554,16 @@ namespace dd4hep {
       Dimension position(bool throw_if_not_present = true) const;
       /// Child access: rotation
       Dimension rotation(bool throw_if_not_present = true) const;
+      /// Child access: cone
+      Dimension cone(bool throw_if_not_present = true) const;
+      /// Child access: sphere
+      Dimension sphere(bool throw_if_not_present = true) const;
+      /// Child access: torus
+      Dimension torus(bool throw_if_not_present = true) const;
+      /// Child access: trap
+      Dimension trap(bool throw_if_not_present = true) const;
+      /// Child access: trapezoid
+      Dimension trapezoid(bool throw_if_not_present = true) const;
       /// Child access: trd
       Dimension trd(bool throw_if_not_present = true) const;
       /// Child access: tubs
@@ -562,6 +572,8 @@ namespace dd4hep {
       Dimension staves(bool throw_if_not_present = true) const;
       /// Child access: beampipe
       Dimension beampipe(bool throw_if_not_present = true) const;
+      /// Child access: beampipe
+      Dimension envelope(bool throw_if_not_present = true) const;
 
       /// Access "name" attribute as STL string
       std::string nameStr() const;

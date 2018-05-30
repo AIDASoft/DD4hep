@@ -1,0 +1,53 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+<!--
+  <includes>
+    <gdmlFile  ref="elements.xml"/>
+    <gdmlFile  ref="materials.xml"/>
+  </includes>
+-->
+  <define>
+    <constant name="COBEX_beam_angle" value="60*degree"/>
+    <constant name="COBEX_cone_len" value="40*m"/>
+  </define> 
+
+  <comment>Common Generic visualization attributes</comment>
+  <display>
+    <vis name="BlackVis"              alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
+    <vis name="Codex_Envelope_Vis"    alpha=".3" r="0.7" g="0.7" b="0.7" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module1_Vis"     alpha="1"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module2_Vis"     alpha="1"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module3_Vis"     alpha="1"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Shield_Pb_Vis"   alpha="1"  r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
+    <vis name="Codex_Shield_Veto_Vis" alpha="1"  r="0.9" g="0.9" b="0.0" showDaughters="true"  visible="true"/>
+  </display>
+
+  <geometry  open="false" close="false"/>
+
+  <!--  Includes for sensitives and support                -->
+  <detectors>
+
+    <detector name="COBEXb" type="DD4hep_CODEXb" vis="Codex_Envelope_Vis">
+      <envelope angle="COBEX_beam_angle" dz="COBEX_cone_len" rmax="4*m"/>
+      <shield name="Pb-shield-1" z="7*m"   dz="1.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
+      <shield name="Shield-veto" z="8.5*m" dz="0.1*m" material="Si"   sensitive="true"  vis="Codex_Shield_Veto_Vis"/>
+      <shield name="Pb-shield-2" z="8.6*m" dz="0.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
+
+      <station z="12*m" width="10*m" height="10*m" thickness="2*cm" 
+               material="Si" sensitive="true" vis="Codex_Module1_Vis"
+               repeat="3" distance="20*cm"/>
+      <station width="10*m" height="10*m" thickness="2*cm"
+               material="Si" sensitive="true" vis="Codex_Module2_Vis"
+               repeat="8" distance="30*cm"/>
+      <station width="10*m" height="10*m" thickness="2*cm"
+               material="Si" sensitive="true" vis="Codex_Module3_Vis"
+               repeat="5" distance="40*cm"/>
+
+      <position x="-sin(COBEX_beam_angle)*COBEX_cone_len/2" y="0"   z="cos(COBEX_beam_angle)*COBEX_cone_len/2"/>
+      <rotation x="0"     y="COBEX_beam_angle"   z="0"/>
+
+    </detector>
+  </detectors>
+
+</lccdd>

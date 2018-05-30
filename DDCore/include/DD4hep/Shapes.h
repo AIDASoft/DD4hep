@@ -502,8 +502,8 @@ namespace dd4hep {
     template <typename Q> Trap(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
     Trap(double z, double theta, double phi,
-         double y1, double x1, double x2, double alpha1,
-         double y2, double x3, double x4, double alpha2);
+         double h1, double bl1, double tl1, double alpha1,
+         double h2, double bl2, double tl2, double alpha2);
     /// Constructor to create a new anonymous object for right angular wedge from STEP (Se G4 manual for details)
     Trap(double pz, double py, double px, double pLTX)  {  make(pz,py,px,pLTX);  }
     /// Constructor to create a new anonymous object with attribute initialization
@@ -512,9 +512,9 @@ namespace dd4hep {
     /// Assignment operator
     Trap& operator=(const Trap& copy) = default;
     /// Set the trap dimensions
-    Trap& setDimensions(double z, double theta, double phi, 
-                        double y1, double x1, double x2, double alpha1, 
-                        double y2, double x3, double x4, double alpha2);
+    Trap& setDimensions(double z, double theta, double phi,
+                        double h1, double bl1, double tl1, double alpha1,
+                        double h2, double bl2, double tl2, double alpha2);
   };
 
   /// Class describing a pseudo trap shape (CMS'ism)
