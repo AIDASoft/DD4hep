@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+ 
+  <info name="SiliconBlock"
+	title="Test with 2 simple silicon boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+
+  <!-- Note: 
+       You can either see the world volume itself (showDaughters="false") 
+       or the children (showDaughters="true")  not both.
+  -->
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="WorldVis"     alpha="0.8" r="1.0" g="1.0" b="0.0" showDaughters="false"  visible="true"  drawingStyle="solid" lineStyle="solid"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" showDaughters="true"  visible="true"  drawingStyle="solid" lineStyle="solid"/>
+  </display>
+
+  <world material="Air">
+    <shape type="BooleanShape" operation="Union">
+      <shape type="BooleanShape" operation="Union">
+        <shape type="Tube" rmin="0*cm" rmax="100*cm" dz="100*cm"/>
+        <shape type="Cone" rmin2="0*cm" rmax2="90*cm" rmin1="0*cm" rmax1="30*cm" z="150*cm"/>
+        <position x="0*cm" y="0*cm" z="85*cm"/>
+      </shape>
+      <shape type="Cone" rmin2="0*cm" rmax2="90*cm" rmin1="0*cm" rmax1="30*cm" z="150*cm"/>
+      <position x="0*cm" y="0*cm" z="-85*cm"/>
+      <rotation x="pi"  y="0"  z="0"/>
+    </shape>
+  </world>
+
+  <detectors>
+    <detector id="1" name="SiliconBlock" type="DD4hep_BoxSegment" vis="VisibleGreen">
+      <material name="Silicon"/>
+      <sensitive type="tracker"/>
+      <box      x="20*cm" y="20*cm" z="20*cm"/>
+      <position x="0"  y="0"  z="0"/>
+      <rotation x="0"  y="0"  z="0"/>
+    </detector>
+  </detectors>
+</lccdd>
