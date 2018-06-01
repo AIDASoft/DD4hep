@@ -61,7 +61,6 @@ Interface  = Sim.Geant4ActionCreation
 Detector   = Core.Detector
 #
 from   dd4hep_base import std, std_vector, std_list, std_map, std_pair
-from   dd4hep_base import TGeoUnits
 import g4units     as     G4Units
 #
 #---------------------------------------------------------------------------

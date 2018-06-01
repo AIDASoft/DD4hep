@@ -1044,10 +1044,14 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<GdmlFile>::operator()(xml_h element) const   {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
-  xml_h materials = doc.root();
-  xml_coll_t(materials, _U(isotope)).for_each(Converter<Isotope>(this->description,0,0));
-  xml_coll_t(materials, _U(element)).for_each(Converter<Atom>(this->description));
-  xml_coll_t(materials, _U(material)).for_each(Converter<Material>(this->description));
+  xml_h root = doc.root();
+  if ( root.tag() == "materials" || root.tag() == "elements" )   {
+    xml_coll_t(root, _U(isotope)).for_each(Converter<Isotope>(this->description,0,0));
+    xml_coll_t(root, _U(element)).for_each(Converter<Atom>(this->description));
+    xml_coll_t(root, _U(material)).for_each(Converter<Material>(this->description));
+    return;
+  }
+  this->description.fromXML(doc.uri());
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry

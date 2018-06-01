@@ -13,7 +13,14 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/Printout.h"
 #include "TGeoShapeAssembly.h"
+#include "TSystem.h"
+#include "TClass.h"
+
+// C/C++ include files
+#include <iomanip>
+#include <fstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -61,7 +68,7 @@ DECLARE_XML_SHAPE(Polycone__shape_constructor,create_Polycone)
 
 static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
   xml_dim_t e(element);
-  return ConeSegment(e.rmin(0.0),e.rmax(),e.dz(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
+  return ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),e.phi1(0.0),e.phi2(2*M_PI));
 }
 DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
 
@@ -102,13 +109,13 @@ static Handle<TObject> create_Trap(Detector&, xml_h element)   {
   xml_dim_t e(element);
   if ( e.hasAttr(_U(dz)) )
     return Trap(e.dz(),e.dy(),e.dx(),_toDouble(_Unicode(pLTX)));
-  return Trap(e.z(0.0),e.theta(),e.phi(0),e.y1(),e.x1(),e.x2(),e.alpha(),e.y2(),e.x3(),e.x4(),e.alpha2());
+  return Trap(e.z(0.0),e.theta(),e.phi(0),e.y1(),e.x1(),e.x2(),e.alpha1(),e.y2(),e.x3(),e.x4(),e.alpha2());
 }
 DECLARE_XML_SHAPE(Trap__shape_constructor,create_Trap)
 
 static Handle<TObject> create_PseudoTrap(Detector&, xml_h element)   {
   xml_dim_t e(element);
-  return PseudoTrap(e.x1(),e.x2(),e.y1(),e.y2(),e.z(),e.radius(),e.attr<double>(xml_tag_t("minusZ")));
+  return PseudoTrap(e.x1(),e.x2(),e.y1(),e.y2(),e.z(),e.radius(),e.attr<bool>(xml_tag_t("minusZ")));
 }
 DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
 
@@ -280,3 +287,144 @@ static Handle<TObject> create_BooleanShape(Detector&, xml_h element)   {
   return resultSolid ;
 }
 DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanShape)
+
+static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
+  xml_det_t    x_det  = e;
+  string       name   = x_det.nameStr();
+  xml_comp_t   x_test = x_det.child(xml_tag_t("test"), false);
+  DetElement   det     (name,x_det.id());
+  Assembly     assembly(name);
+  PlacedVolume pv;
+  int count = 0;
+  for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )   {
+    xml_dim_t   x_check = itm;
+    xml_comp_t  shape  (x_check.child(_U(shape)));
+    xml_dim_t   pos    (x_check.child(_U(position), false));
+    xml_dim_t   rot    (x_check.child(_U(rotation), false));
+    Solid       solid  (shape.createShape());
+    Volume      volume (name+_toString(count,"_vol_%d"),solid, description.air());
+    Transform3D trafo  (Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),
+                        Position(pos.x(),pos.y(),pos.z()));
+
+    pv = assembly.placeVolume(volume,trafo);
+    volume.setVisAttributes(description, x_check.visStr());
+    if ( x_check.hasAttr(_U(id)) )  {
+      pv.addPhysVolID("check",x_check.id());
+    }
+    solid->SetName(shape.typeStr().c_str());
+    printout(INFO,"TestShape","Created successfull shape of type: %s",
+             shape.typeStr().c_str());
+  }
+  pv = description.worldVolume().placeVolume(assembly);
+  det.setPlacement(pv);
+  if ( x_test.ptr() )  {
+    string typ = x_test.typeStr();
+    const void* argv[] = { &e, &pv, 0};
+    Ref_t result = (NamedObject*)PluginService::Create<void*>(typ, &description, 2, (char**)argv);
+    if ( !result.isValid() )  {
+      printout(INFO,"TestShape","+++ Shape verification FAILED. [Plugin not found]");
+      except("TestShape","+++ Shape verification FAILED.");
+    }
+    else if ( ::strcmp(result->GetName(),"SUCCESS") == 0 )  {
+      printout(INFO,"TestShape","+++ Shape verification SUCCESSFUL. [type=%s]",name.c_str());
+      delete result.ptr();
+    }
+    else   {
+      printout(INFO,"TestShape","+++ Shape verification FAILED [result=%s]",result->GetName());
+      printout(INFO,"TestShape","+++ Diagnosis: \n%s",result->GetTitle());
+      delete result.ptr();
+      except("TestShape","+++ Shape verification FAILED.");
+    }
+  }
+  return det;
+}
+
+// first argument is the type from the xml file
+DECLARE_DETELEMENT(DD4hep_TestShape_Creator,create_shape)
+
+void* shape_mesh_verifier(Detector& /* description */, int argc, char** argv)    {
+  if ( argc != 2 )   {  }
+  xml_det_t    x_det  = *(xml_h*)argv[0];
+  PlacedVolume pv     = *(PlacedVolume*)argv[1];
+  xml_comp_t   x_test = x_det.child(xml_tag_t("test"));
+  int          ref_cr = x_test.hasAttr(_U(create)) ? x_test.attr<int>(_U(create)) : 0;
+  TString      ref    = x_test.refStr().c_str();
+  string       ref_str;  
+  stringstream os;
+
+  Volume      v = pv.volume();
+  for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
+    PlacedVolume place = v->GetNode(ipv);
+    Volume       vol   = place->GetVolume();
+    TGeoMatrix*  mat   = place->GetMatrix();
+    Solid        sol   = vol.solid();
+    // Prints shape parameters
+    Int_t nvert = 0, nsegs = 0, npols = 0;
+    sol->GetMeshNumbers(nvert, nsegs, npols);
+    Double_t* points = new Double_t[3*nvert];
+    sol->SetPoints(points);
+    Box box = sol;
+    const Double_t* org = box->GetOrigin();
+
+    os << "ShapeCheck[" << ipv << "] "
+       << setw(16) << left << sol->IsA()->GetName()
+       << " " << nvert << " Mesh-points:" << endl;
+    os << setw(16) << left << sol->IsA()->GetName() << " " << sol->GetName()
+       << " N(mesh)=" << sol->GetNmeshVertices()
+       << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << endl;
+    
+    for(Int_t i=0; i<nvert; ++i)   {
+      Double_t* p = points + 3*i;
+      Double_t global[3], local[3] = {p[0], p[1], p[2]};
+      mat->LocalToMaster(local, global);
+      os << setw(16) << left << sol->IsA()->GetName() << " " << setw(3) << left << i
+         << " Local  ("  << setw(7) << setprecision(2) << fixed << right << local[0]
+         << ", "         << setw(7) << setprecision(2) << fixed << right << local[1]
+         << ", "         << setw(7) << setprecision(2) << fixed << right << local[2]
+         << ") Global (" << setw(7) << setprecision(2) << fixed << right << global[0]
+         << ", "         << setw(7) << setprecision(2) << fixed << right << global[1]
+         << ", "         << setw(7) << setprecision(2) << fixed << right << global[2]
+         << ")" << endl;
+    }
+    os << setw(16) << left << sol->IsA()->GetName()
+       << " Bounding box: "
+       << " dx="        << setw(7) << setprecision(2) << fixed << right << box->GetDX()
+       << " dy="        << setw(7) << setprecision(2) << fixed << right << box->GetDY()
+       << " dz="        << setw(7) << setprecision(2) << fixed << right << box->GetDZ()
+       << " Origin: x=" << setw(7) << setprecision(2) << fixed << right << org[0]
+       << " y="         << setw(7) << setprecision(2) << fixed << right << org[1]
+       << " z="         << setw(7) << setprecision(2) << fixed << right << org[2]
+       << endl;
+  
+    /// -------------------- DONE --------------------
+    delete [] points;
+  }
+  gSystem->ExpandPathName(ref);
+  if ( ref_cr )   {
+    ofstream out(ref, ofstream::out);
+    if ( !out.is_open() )   {
+      except("Mesh_Verifier","+++ FAILED to open(WRITE) reference file: "+x_test.refStr());
+    }
+    out << os.str();
+    out.close();
+    printout(INFO,"Mesh_Verifier","+++ Successfully wrote reference file: "+x_test.refStr());
+  }
+  else if ( ref.Length() > 0 )  {
+    char c;
+    ifstream in(ref.Data(), ofstream::in);
+    if ( !in.is_open() )   {
+      except("Mesh_Verifier","+++ FAILED to access reference file: "+x_test.refStr());
+    }
+    while (in.get(c))          // loop getting single characters
+      ref_str += c;
+    in.close();
+    printout(INFO,"Mesh_Verifier","+++ Successfully read reference file: "+x_test.refStr());
+    if ( ref_str != os.str() )  {
+      printout(ERROR,"Mesh_Verifier","+++ Output and reference differ! Please check.");
+      return Constant("FAILURE",os.str().c_str()).ptr();
+    }
+  }
+  return Constant("SUCCESS",os.str().c_str()).ptr();
+}
+
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Mesh_Verifier,shape_mesh_verifier)

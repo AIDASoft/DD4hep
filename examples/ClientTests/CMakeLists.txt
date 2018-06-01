@@ -23,7 +23,7 @@ dd4hep_add_plugin( ClientTests SOURCES src/*.cpp
   OPTIONAL       [BOOST SOURCES src_boost/*.cpp]
   )
 #
-dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTests )
+dd4hep_install_dir( compact scripts ref DESTINATION ${DD4hep_DIR}/examples/ClientTests )
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
@@ -130,6 +130,14 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
   -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.xml
   -plugin DD4hep_Geometry2ROOT -output MiniTel_geometry.root
   REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file.")
+#
+#  Test basic shapes by comparing mesh vertices with reference file
+foreach (test Box Cone ConeSegment Tube ElTube CutTube Hyperboloid Paraboloid Polycone PseudoTrap Sphere Torus Trap Trapezoid)
+  dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  geoDisplay file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Check_Shape_${test}.xml -load -destroy
+      REGEX_PASS "Shape verification SUCCESSFUL." )
+endforeach()
 #
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 

@@ -1,0 +1,18 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Trap" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="Trap" z="30*cm" theta="pi/4*rad" phi="pi*rad"
+               x1="30*cm" x2="50*cm" y1="15*cm" alpha1="0.1*rad"
+               x3="30*cm" x4="50*cm" y2="90*cm" alpha2="pi*rad"/>
+        <position x="30*cm"  y="30*cm" z="50*cm"/>
+        <rotation x="0"      y="0"     z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_Trap.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

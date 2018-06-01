@@ -1,0 +1,11 @@
+ShapeCheck[0] TGeoTrd2         8 Mesh-points:
+TGeoTrd2         Trapezoid N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
+TGeoTrd2         0   Local  ( -30.00,  -15.00,  -30.00) Global (   0.00,   15.00,   20.00)
+TGeoTrd2         1   Local  ( -30.00,   15.00,  -30.00) Global (   0.00,   45.00,   20.00)
+TGeoTrd2         2   Local  (  30.00,   15.00,  -30.00) Global (  60.00,   45.00,   20.00)
+TGeoTrd2         3   Local  (  30.00,  -15.00,  -30.00) Global (  60.00,   15.00,   20.00)
+TGeoTrd2         4   Local  ( -50.00,  -30.00,   30.00) Global ( -20.00,    0.00,   80.00)
+TGeoTrd2         5   Local  ( -50.00,   30.00,   30.00) Global ( -20.00,   60.00,   80.00)
+TGeoTrd2         6   Local  (  50.00,   30.00,   30.00) Global (  80.00,   60.00,   80.00)
+TGeoTrd2         7   Local  (  50.00,  -30.00,   30.00) Global (  80.00,    0.00,   80.00)
+TGeoTrd2         Bounding box:  dx=  50.00 dy=  30.00 dz=  30.00 Origin: x=   0.00 y=   0.00 z=   0.00

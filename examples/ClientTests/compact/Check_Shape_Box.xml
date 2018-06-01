@@ -1,0 +1,16 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Box" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="Box" dx="30*cm" dy="20*cm" dz="10*cm"/>
+        <position x="30"  y="30"   z="30"/>
+        <rotation x="0"   y="0"    z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_Box.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

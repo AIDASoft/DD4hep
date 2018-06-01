@@ -68,6 +68,19 @@ string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
     log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " dz:" << sh->GetDz()
         << " Phi1:" << sh->GetPhi1() << " Phi2:" << sh->GetPhi2();
   }
+  else if (cl == TGeoCtub::Class()) {
+    const TGeoCtub* sh = (const TGeoCtub*) shape;
+    const Double_t*	hi = sh->GetNhigh();
+    const Double_t*	lo = sh->GetNlow();
+    log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " dz:" << sh->GetDz()
+        << " Phi1:" << sh->GetPhi1() << " Phi2:" << sh->GetPhi2()
+        << " lx:" << lo[0] << " ly:" << lo[1] << " lz:" << lo[2]
+        << " hx:" << hi[0] << " hy:" << hi[1] << " hz:" << hi[2];
+  }
+  else if (cl == TGeoEltu::Class()) {
+    const TGeoEltu* sh = (const TGeoEltu*) shape;
+    log << " A:" << sh->GetA() << " B:" << sh->GetB() << " dz:" << sh->GetDz();
+  }
   else if (cl == TGeoTrd1::Class()) {
     const TGeoTrd1* sh = (const TGeoTrd1*) shape;
     log << " x1:" << sh->GetDx1() << " x2:" << sh->GetDx2() << " y:" << sh->GetDy() << " z:" << sh->GetDz();
@@ -76,6 +89,12 @@ string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
     const TGeoTrd2* sh = (const TGeoTrd2*) shape;
     log << " x1:" << sh->GetDx1() << " x2:" << sh->GetDx2()
         << " y1:" << sh->GetDy1() << " y2:" << sh->GetDy2() << " z:" << sh->GetDz();
+  }
+  else if (cl == TGeoTrap::Class()) {
+    const TGeoTrap* sh = (const TGeoTrap*) shape;
+    log << " dz:" << sh->GetDz() << " Theta:" << sh->GetTheta() << " Phi:" << sh->GetPhi()
+        << " H1:" << sh->GetH1() << " Bl1:"   << sh->GetBl1()   << " Tl1:" << sh->GetTl1() << " Alpha1:" << sh->GetAlpha1()
+        << " H2:" << sh->GetH2() << " Bl2:"   << sh->GetBl2()   << " Tl2:" << sh->GetTl2() << " Alpha2:" << sh->GetAlpha2();
   }
   else if (cl == TGeoHype::Class()) {
     const TGeoHype* sh = (const TGeoHype*) shape;
@@ -99,6 +118,12 @@ string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
           << " r:[" << sh->GetRmin(i) << "," << sh->GetRmax(i) << "]";
     }
   }
+  else if (cl == TGeoCone::Class()) {
+    const TGeoCone* sh = (const TGeoCone*) shape;
+    log << " rmin1:" << sh->GetRmin1() << " rmax1:" << sh->GetRmax1()
+        << " rmin2:" << sh->GetRmin2() << " rmax2:" << sh->GetRmax2()
+        << " dz:"    << sh->GetDz();
+  }
   else if (cl == TGeoConeSeg::Class()) {
     const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
     log << " rmin1:" << sh->GetRmin1() << " rmax1:" << sh->GetRmax1()
@@ -121,11 +146,14 @@ string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
     log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " r:" << sh->GetR()
         << " Phi1:" << sh->GetPhi1() << " dPhi:" << sh->GetDphi();
   }
-  else if (cl == TGeoTrap::Class()) {
-    const TGeoTrap* sh = (const TGeoTrap*) shape;
-    log << " dz:" << sh->GetDz() << " Theta:" << sh->GetTheta() << " Phi:" << sh->GetPhi()
-        << " H1:" << sh->GetH1() << " Bl1:"   << sh->GetBl1()   << " Tl1:" << sh->GetTl1() << " Alpha1:" << sh->GetAlpha1()
-        << " H2:" << sh->GetH2() << " Bl2:"   << sh->GetBl2()   << " Tl2:" << sh->GetTl2() << " Alpha2:" << sh->GetAlpha2();
+  else if (cl == TGeoArb8::Class()) {
+    TGeoArb8* sh = (TGeoArb8*) shape;
+    const Double_t* v = sh->GetVertices();
+    log << " dz:" << sh->GetDz();
+    for(int i=0; i<8; ++i) {
+      log << " x[" << i << "]:" << *v; ++v;
+      log << " y[" << i << "]:" << *v; ++v;
+    }
   }
   else if (cl == TGeoXtru::Class()) {
     const TGeoXtru* sh = (const TGeoXtru*) shape;

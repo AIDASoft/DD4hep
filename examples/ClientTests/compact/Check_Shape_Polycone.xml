@@ -1,0 +1,27 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Polycone" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="Polycone" startphi="pi/4*rad" deltaphi="pi/2*rad">
+           <zplane z="0*cm" rmin="40*cm" rmax="80*cm"/>
+           <zplane z="10*cm" rmin="10*cm" rmax="50*cm"/>
+           <zplane z="20*cm" rmin="40*cm" rmax="80*cm"/>
+           <zplane z="30*cm" rmin="10*cm" rmax="50*cm"/>
+           <zplane z="40*cm" rmin="40*cm" rmax="80*cm"/>
+           <zplane z="50*cm" rmin="10*cm" rmax="50*cm"/>
+           <zplane z="60*cm" rmin="40*cm" rmax="80*cm"/>
+           <zplane z="70*cm" rmin="10*cm" rmax="50*cm"/>
+           <zplane z="80*cm" rmin="40*cm" rmax="80*cm"/>
+           <zplane z="90*cm" rmin="10*cm" rmax="50*cm"/>
+        </shape>
+        <position x="30"  y="30"   z="30"/>
+        <rotation x="0"   y="0"    z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_Polycone.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

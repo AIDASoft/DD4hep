@@ -1,0 +1,19 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_CutTube" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="CutTube" rmin="10*cm" rmax="30*cm" dz="50*cm"
+               lx="5*cm" ly="5*cm"  lz="5*cm"
+               tx="8*cm" ty="15*cm" tz="6*cm"
+               phi1="0" phi2="pi"/>
+        <position x="30"  y="30"   z="50"/>
+        <rotation x="0"   y="pi/4" z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_CutTube.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>
