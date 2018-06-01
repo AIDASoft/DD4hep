@@ -1,0 +1,23 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_TruncatedTube" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
+               startphi="0*rad" deltaphi="pi/2.*rad" 
+               cutAtStart="25*cm" cutAtDelta="35*cm" cutInside="1"/>
+      </check>
+      <check vis="Shape2_vis">
+        <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
+               startphi="0*rad" deltaphi="pi/2*rad" 
+               cutAtStart="25*cm" cutAtDelta="35*cm" cutInside="0"/>
+        <position x="30*cm"  y="30*cm"   z="-90*cm"/>
+        <rotation x="0*cm"   y="0*cm"    z="0*cm"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

@@ -98,6 +98,16 @@ static Handle<TObject> create_EllipticalTube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(EllipticalTube__shape_constructor,create_EllipticalTube)
 
+static Handle<TObject> create_TruncatedTube(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  double sp = e.startphi(0.0), dp = e.deltaphi(2*M_PI);
+  return TruncatedTube(e.zhalf(), e.rmin(0.0), e.rmax(), sp, dp,
+                       e.attr<double>(xml_tag_t("cutAtStart")),
+                       e.attr<double>(xml_tag_t("cutAtDelta")),
+                       e.attr<bool>(xml_tag_t("cutInside")));
+}
+DECLARE_XML_SHAPE(TruncatedTube__shape_constructor,create_TruncatedTube)
+
 static Handle<TObject> create_Cone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
@@ -303,10 +313,21 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     xml_dim_t   rot    (x_check.child(_U(rotation), false));
     Solid       solid  (shape.createShape());
     Volume      volume (name+_toString(count,"_vol_%d"),solid, description.air());
-    Transform3D trafo  (Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),
-                        Position(pos.x(),pos.y(),pos.z()));
 
-    pv = assembly.placeVolume(volume,trafo);
+    if ( pos.ptr() && rot.ptr() )  {
+      Transform3D trafo(Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),
+                        Position(pos.x(),pos.y(),pos.z()));
+      pv = assembly.placeVolume(volume,trafo);
+    }
+    else if ( pos.ptr() )  {
+      pv = assembly.placeVolume(volume,Position(pos.x(),pos.y(),pos.z()));
+    }
+    else if ( rot.ptr() )  {
+      pv = assembly.placeVolume(volume,Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())));
+    }
+    else {
+      pv = assembly.placeVolume(volume);
+    }
     volume.setVisAttributes(description, x_check.visStr());
     if ( x_check.hasAttr(_U(id)) )  {
       pv.addPhysVolID("check",x_check.id());

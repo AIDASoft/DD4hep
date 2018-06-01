@@ -387,7 +387,7 @@ namespace dd4hep {
   class TruncatedTube: public Solid_type<TGeoCompositeShape> {
   protected:
     /// Internal helper method to support object construction
-    void make(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+    void make(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                   double cutAtStart, double cutAtDelta, bool cutInside);
 
   public:
@@ -400,7 +400,7 @@ namespace dd4hep {
     /// Constructor to assign an object
     template <typename Q> TruncatedTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a truncated tube object with attribute initialization
-    TruncatedTube(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+    TruncatedTube(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                   double cutAtStart, double cutAtDelta, bool cutInside);
     /// Assignment operator
     TruncatedTube& operator=(const TruncatedTube& copy) = default;

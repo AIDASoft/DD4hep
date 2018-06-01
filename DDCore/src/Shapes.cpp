@@ -374,17 +374,17 @@ void CutTube::make(double rmin, double rmax, double dz, double phi1, double phi2
 }
 
 /// Constructor to create a truncated tube object with attribute initialization
-TruncatedTube::TruncatedTube(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+TruncatedTube::TruncatedTube(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                              double cutAtStart, double cutAtDelta, bool cutInside)
-{  make(zHalf, rIn, rOut, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
+{  make(zhalf, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
 
 /// Internal helper method to support object construction
-void TruncatedTube::make(double zHalf, double rIn, double rOut, double startPhi, double deltaPhi,
+void TruncatedTube::make(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                          double cutAtStart, double cutAtDelta, bool cutInside)   {
   // check the parameters
-  if( rIn <= 0 || rOut <=0 || cutAtStart <=0 || cutAtDelta <= 0 )
+  if( rmin <= 0 || rmax <= 0 || cutAtStart <= 0 || cutAtDelta <= 0 )
     except("TruncatedTube","++ 0 <= rIn,cutAtStart,rOut,cutAtDelta,rOut violated!");
-  else if( rIn >= rOut )
+  else if( rmin >= rmax )
     except("TruncatedTube","++ rIn<rOut violated!");
   else if( startPhi != 0. )
     except("TruncatedTube","++ startPhi != 0 not supported!");
@@ -392,10 +392,10 @@ void TruncatedTube::make(double zHalf, double rIn, double rOut, double startPhi,
   double r         = cutAtStart;
   double R         = cutAtDelta;
   // exaggerate dimensions - does not matter, it's subtracted!
-  double boxX      = rOut;
-  double boxY      = rOut;
+  double boxX      = rmax;
+  double boxY      = rmax;
   // width of the box > width of the tubs
-  double boxZ      = 1.1 * zHalf;
+  double boxZ      = 1.1 * zhalf;
   // angle of the box w.r.t. tubs
   double cath      = r - R * std::cos( deltaPhi*units::deg );
   double hypo      = std::sqrt( r * r + R * R - 2. * r * R * cos( deltaPhi*units::deg ));
@@ -410,12 +410,16 @@ void TruncatedTube::make(double zHalf, double rIn, double rOut, double startPhi,
   // center point of the box
   double xBox;
   if( !cutInside )
-    xBox = r + boxX / std::sin( fabs( alpha ));
+    xBox = r + boxX / std::sin( std::fabs( alpha ));
   else
-    xBox = - ( boxX / std::sin( fabs( alpha )) - r );
-
+    xBox = - ( boxX / std::sin( std::fabs( alpha )) - r );
+#if 0
+  cout << "Box:  " << boxX << " " << boxZ << " " << boxY << endl;
+  cout << "Tubs: " << rmin << " " << rmax << " " << zhalf << " " << startPhi << " " << deltaPhi << endl;
+  cout << "Pos:  " << xBox << " " << 0 << " " << 0 << endl;
+#endif
   Box  box(boxX, boxZ, boxY);
-  Tube tubs(rIn, rOut, zHalf, startPhi, deltaPhi);
+  Tube tubs(rmin, rmax, zhalf, startPhi*units::deg, (startPhi+deltaPhi)*units::deg);
   SubtractionSolid sub(tubs, box, Transform3D(rot,Position(xBox, 0., 0.)));
   _assign(sub.ptr(),"","trunctube",true);
 }

@@ -1,0 +1,27 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_ExtrudedPolygon" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="ExtrudedPolygon">
+          <point x="-30*cm" y="-30*cm"/>
+          <point x="-30*cm" y=" 30*cm"/>
+          <point x=" 30*cm" y=" 30*cm"/>
+          <point x=" 30*cm" y="-30*cm"/>
+          <point x=" 15*cm" y="-30*cm"/>
+          <point x=" 15*cm" y=" 15*cm"/>
+          <point x="-15*cm" y=" 15*cm"/>
+          <point x="-15*cm" y="-30*cm"/>
+          <section z="-60*cm" x="0*cm" y="30*cm" scale="0.8"/>
+          <section z="-15*cm" x="0*cm" y="-30*cm" scale="1."/>
+          <section z="10*cm" x="0*cm" y="0*cm" scale="0.6"/>
+          <section z="60*cm" x="0*cm" y="30*cm" scale="1.2"/>
+        </shape>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_ExtrudedPolygon.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>
