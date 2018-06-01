@@ -1,0 +1,21 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_ConeSegment" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="ConeSegment" rmin1="10*cm" rmax1="30*cm" rmin2="15*cm" rmax2="60*cm" dz="40*cm" phi1="0*rad" phi2="7./8.*pi*rad"/>
+        <position x="30*cm"  y="30*cm"   z="30*cm"/>
+        <rotation x="0"   y="0"    z="0"/>
+      </check>
+      <check>
+        <shape type="ConeSegment" rmin1="10*cm" rmax1="30*cm" rmin2="15*cm" rmax2="60*cm" dz="40*cm" phi1="pi/5.*rad" phi2="1./8.*pi*rad"/>
+        <position x="30*cm"  y="30*cm"   z="-80*cm"/>
+        <rotation x="0"   y="0"    z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_ConeSegment.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

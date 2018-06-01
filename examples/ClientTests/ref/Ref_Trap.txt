@@ -1,0 +1,11 @@
+ShapeCheck[0] TGeoTrap         8 Mesh-points:
+TGeoTrap         Trap N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
+TGeoTrap         0   Local  (  -1.51,  -15.00,  -30.00) Global (  28.49,   15.00,   20.00)
+TGeoTrap         1   Local  ( -18.49,   15.00,  -30.00) Global (  11.51,   45.00,   20.00)
+TGeoTrap         2   Local  (  81.51,   15.00,  -30.00) Global ( 111.51,   45.00,   20.00)
+TGeoTrap         3   Local  (  58.49,  -15.00,  -30.00) Global (  88.49,   15.00,   20.00)
+TGeoTrap         4   Local  ( -60.00,  -90.00,   30.00) Global ( -30.00,  -60.00,   80.00)
+TGeoTrap         5   Local  ( -80.00,   90.00,   30.00) Global ( -50.00,  120.00,   80.00)
+TGeoTrap         6   Local  (  20.00,   90.00,   30.00) Global (  50.00,  120.00,   80.00)
+TGeoTrap         7   Local  (   0.00,  -90.00,   30.00) Global (  30.00,  -60.00,   80.00)
+TGeoTrap         Bounding box:  dx=  80.75 dy=  90.00 dz=  30.00 Origin: x=   0.75 y=   0.00 z=   0.00

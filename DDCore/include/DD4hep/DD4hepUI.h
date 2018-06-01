@@ -88,11 +88,13 @@ namespace dd4hep {
       virtual void redrawSubtree(const char* path) const;
 
       /// Dump the volume tree
-      virtual long dumpVols(int argc=0, char** argv=0)  const;
+      virtual long dumpVols(int argc = 0, char** argv = 0)  const;
       /// Dump the DetElement tree with placement volumes
-      virtual long dumpDet()  const;
+      virtual long dumpDet(const char* path = 0)  const;
+      /// Dump the DetElement tree with volume materials
+      virtual long dumpDetMaterials(const char* path = 0)  const;
       /// Dump the raw DetElement tree 
-      virtual long dumpStructure()  const;
+      virtual long dumpStructure(const char* path = 0)  const;
     };
     
   }  

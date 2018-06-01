@@ -138,13 +138,21 @@ long DD4hepUI::dumpVols(int argc, char** argv)  const   {
 }
 
 /// Dump the DetElement tree with placements
-long DD4hepUI::dumpDet()  const   {
-  return m_detDesc.apply("DD4hep_DetectorVolumeDump",0,0);
+long DD4hepUI::dumpDet(const char* path)  const   {
+  const void* args[] = {"--detector", path ? path : "/world", 0};
+  return m_detDesc.apply("DD4hep_DetectorVolumeDump",2,(char**)args);
 }
 
 /// Dump the DetElement tree with placements
-long DD4hepUI::dumpStructure()  const   {
-  return m_detDesc.apply("DD4hep_DetectorDump",0,0);
+long DD4hepUI::dumpDetMaterials(const char* path)  const   {
+  const void* args[] = {"--detector", path ? path : "/world", "--materials", "--shapes", 0};
+  return m_detDesc.apply("DD4hep_DetectorVolumeDump",4,(char**)args);
+}
+
+/// Dump the DetElement tree with placements
+long DD4hepUI::dumpStructure(const char* path)  const   {
+  const void* args[] = {"--detector", path ? path : "/world", 0};
+  return m_detDesc.apply("DD4hep_DetectorDump",2,(char**)args);
 }
 
 /// Dump the entire detector description object to a root file
