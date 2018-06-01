@@ -21,6 +21,7 @@
 
 // C/C++ include files
 #include <stdexcept>
+#include <iomanip>
 
 // ROOT includes
 #include "TClass.h"
@@ -181,6 +182,49 @@ string dd4hep::toStringSolid(const TGeoShape* shape, int precision)   {
   }
   log << setprecision(prec);
   return log.str();
+}
+
+/// Output mesh vertices to string
+std::string dd4hep::toStringMesh(const TGeoShape* shape, int prec)  {
+  Solid sol(shape);
+  stringstream os;
+
+  // Prints shape parameters
+  Int_t nvert = 0, nsegs = 0, npols = 0;
+
+  sol->GetMeshNumbers(nvert, nsegs, npols);
+  Double_t* points = new Double_t[3*nvert];
+  sol->SetPoints(points);
+
+  os << setw(16) << left << sol->IsA()->GetName()
+     << " " << nvert << " Mesh-points:" << endl;
+  os << setw(16) << left << sol->IsA()->GetName() << " " << sol->GetName()
+     << " N(mesh)=" << sol->GetNmeshVertices()
+     << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << endl;
+    
+  for(Int_t i=0; i<nvert; ++i)   {
+    Double_t* p = points + 3*i;
+    os << setw(16) << left << sol->IsA()->GetName() << " " << setw(3) << left << i
+       << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << p[0]
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << p[1]
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << p[2]
+       << ")" << endl;
+  }
+  Box box = sol;
+  const Double_t* org = box->GetOrigin();
+  os << setw(16) << left << sol->IsA()->GetName()
+     << " Bounding box: "
+     << " dx="        << setw(7) << setprecision(prec) << fixed << right << box->GetDX()
+     << " dy="        << setw(7) << setprecision(prec) << fixed << right << box->GetDY()
+     << " dz="        << setw(7) << setprecision(prec) << fixed << right << box->GetDZ()
+     << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << org[0]
+     << " y="         << setw(7) << setprecision(prec) << fixed << right << org[1]
+     << " z="         << setw(7) << setprecision(prec) << fixed << right << org[2]
+     << endl;
+  
+  /// -------------------- DONE --------------------
+  delete [] points;
+  return os.str();
 }
 
 template <typename T> void Solid_type<T>::_setDimensions(double* param) {

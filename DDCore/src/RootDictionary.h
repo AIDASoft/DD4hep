@@ -299,6 +299,9 @@ template class dd4hep::Handle<TNamed>;
 
 #pragma link C++ function dd4hep::run_interpreter(const string& name);
 #pragma link C++ function dd4hep::_toDictionary(const string&, const string&);
+#pragma link C++ function dd4hep::toStringSolid(const TGeoShape*, int);
+#pragma link C++ function dd4hep::toStringMesh(const TGeoShape*, int);
+#pragma link C++ function dd4hep::toStringMesh(dd4hep::PlacedVolume, int);
 
 #include "DD4hep/ConditionsData.h"
 #pragma link C++ class dd4hep::cond::ClientData+;

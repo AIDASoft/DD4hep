@@ -44,6 +44,7 @@ using namespace dd4hep;
 namespace dd4hep {
 
   class Debug;
+  class World;
   class Isotope;
   class Plugin;
   class Compact;
@@ -57,6 +58,7 @@ namespace dd4hep {
 
   /// Converter instances implemented in this compilation unit
   template <> void Converter<Debug>::operator()(xml_h element) const;
+  template <> void Converter<World>::operator()(xml_h element) const;
   template <> void Converter<Plugin>::operator()(xml_h element) const;
   template <> void Converter<Constant>::operator()(xml_h element) const;
   template <> void Converter<Material>::operator()(xml_h element) const;
@@ -285,6 +287,7 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
   _toDictionary(nam, val, typ);
   description.addConstant(c);
 }
+
 /** Convert compact constant objects (defines)
  *
  *
@@ -1068,42 +1071,58 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
+template <> void Converter<World>::operator()(xml_h element) const {
+  xml_det_t  world(element);
+  xml_comp_t shape = world.child(_U(shape));
+  VisAttr    vis = description.visAttributes("WorldVis");
+  Material   mat = world.hasAttr(_U(material))
+    ? description.material(world.attr<string>(_U(material))) : description.air();
+
+  if ( !vis.isValid() ) vis = description.invisible();
+  /// Create the shape and the corresponding volume
+  Solid    sol(shape.createShape());
+  Volume   vol("world_volume", sol, mat);
+  vol.setVisAttributes(vis);
+  description.manager().SetTopVolume(vol.ptr());
+  printout(INFO, "Compact", "++ Converted successfully world %s. vis:%s material:%s.",
+           vol.name(), vis.name(), mat.name());
+}
+
+/// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) const {
   xml_det_t    parallel(element);
-  xml_dim_t    shape  = parallel.child(_U(shape));
+  xml_comp_t   shape  = parallel.child(_U(shape));
   xml_dim_t    pos    = element.child(_U(position),false);
   xml_dim_t    rot    = element.child(_U(rotation),false);
   string       name   = element.attr<string>(_U(name));
   string       path   = element.attr<string>(_U(anchor));
   bool         conn   = element.attr<bool>(_U(connected),false);
   DetElement   anchor(detail::tools::findElement(description, path));
-  RotationZYX  rotation;
-  Position     position;
+  Position     position = pos ? Position(pos.x(), pos.y(), pos.z())    : Position();
+  RotationZYX  rotation = rot ? RotationZYX(rot.z(), rot.y(), rot.x()) : RotationZYX();
 
-  if ( !anchor.isValid() )
+  Material mat = parallel.hasAttr(_U(material))
+    ? description.material(parallel.attr<string>(_U(material)))
+    : description.air();
+  VisAttr vis = parallel.hasAttr(_U(vis))
+    ? description.invisible()
+    : description.visAttributes(parallel.visStr());
+
+  if ( !anchor.isValid() )   {
     except("Parallelworld_Volume",
            "++ FAILED    Cannot identify the anchor of the tracking volume: '%s'",
            path.c_str());
-  if ( pos )
-    position = Position(pos.x(), pos.y(), pos.z());
-  if ( rot )
-    rotation = RotationZYX(rot.z(), rot.y(), rot.x());
+  }
 
   /// Create the shape and the corresponding volume
   Transform3D  tr_volume(detail::matrix::_transform(&anchor.nominal().worldTransformation().Inverse()));
-  Solid        sol(xml_comp_t(shape).createShape());
-  Material     mat(description.vacuum());
+  Solid        sol(shape.createShape());
   Volume       vol(name, sol, mat);
   Volume       par = conn ? description.worldVolume() : description.parallelWorldVolume();
   PlacedVolume pv;
 
-  if ( parallel.hasAttr(_U(material)) )
-    mat = description.material(parallel.attr<string>(_U(material)));
-
   /// In case the volume is connected, we may use visualization
-  vol.setVisAttributes(parallel.visStr().empty()
-                       ? description.invisible()
-                       : description.visAttributes(parallel.visStr()));
+  vol.setVisAttributes(vis);
   /// Need to inhibit that this artifical volume gets translated to Geant4 (connected only)!
   vol.setFlagBit(Volume::VETO_SIMU);
   
@@ -1118,7 +1137,7 @@ template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) cons
     description.setTrackingVolume(vol);
   }
   printout(INFO, "Compact", "++ Converted successfully parallelworld_volume %s. anchor: %s vis:%s.",
-           name.c_str(), anchor.path().c_str(), parallel.visStr().c_str());
+           vol.name(), anchor.path().c_str(), vis.name());
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1201,10 +1220,14 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
-  if ( open_geometry ) description.init();
-  xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(description));
+
+  if (element.hasChild(_U(world)))
+    (Converter<World>(description))(xml_h(compact.child(_U(world))));
+
+  if ( open_geometry ) description.init();
+  xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(description));
 
   printout(DEBUG, "Compact", "++ Converting readout  structures...");
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter<Readout>(description));
