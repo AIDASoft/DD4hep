@@ -384,5 +384,8 @@ namespace dd4hep {
     /// Assignment operator (must match copy constructor)
     Assembly& operator=(const Assembly& a) = default;
   };
+
+  /// Output mesh vertices to string
+  std::string toStringMesh(PlacedVolume solid, int precision=2);
 }         /* End namespace dd4hep          */
 #endif    /* DD4HEP_DDCORE_VOLUMES_H       */

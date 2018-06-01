@@ -35,6 +35,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
+#include <iomanip>
 
 using namespace std;
 using namespace dd4hep;
@@ -681,7 +682,6 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 
     m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
     m_element->SetVisContainers(kTRUE);
-    //m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
     printout(DEBUG,"setVisAttributes",
              "Set color %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
@@ -864,3 +864,52 @@ Assembly::Assembly(const string& nam) {
   m_element = _createTGeoVolumeAssembly(nam);
 }
 
+
+/// Output mesh vertices to string
+std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
+  Volume       vol   = place->GetVolume();
+  TGeoMatrix*  mat   = place->GetMatrix();
+  Solid        sol   = vol.solid();
+  stringstream os;
+
+  // Prints shape parameters
+  Int_t nvert = 0, nsegs = 0, npols = 0;
+  sol->GetMeshNumbers(nvert, nsegs, npols);
+  Double_t* points = new Double_t[3*nvert];
+  sol->SetPoints(points);
+
+  os << setw(16) << left << sol->IsA()->GetName()
+     << " " << nvert << " Mesh-points:" << endl;
+  os << setw(16) << left << sol->IsA()->GetName() << " " << sol->GetName()
+     << " N(mesh)=" << sol->GetNmeshVertices()
+     << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << endl;
+    
+  for(Int_t i=0; i<nvert; ++i)   {
+    Double_t* p = points + 3*i;
+    Double_t global[3], local[3] = {p[0], p[1], p[2]};
+    mat->LocalToMaster(local, global);
+    os << setw(16) << left << sol->IsA()->GetName() << " " << setw(3) << left << i
+       << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << local[0]
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << local[1]
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << local[2]
+       << ") Global (" << setw(7) << setprecision(prec) << fixed << right << global[0]
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << global[1]
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << global[2]
+       << ")" << endl;
+  }
+  Box box = sol;
+  const Double_t* org = box->GetOrigin();
+  os << setw(16) << left << sol->IsA()->GetName()
+     << " Bounding box: "
+     << " dx="        << setw(7) << setprecision(prec) << fixed << right << box->GetDX()
+     << " dy="        << setw(7) << setprecision(prec) << fixed << right << box->GetDY()
+     << " dz="        << setw(7) << setprecision(prec) << fixed << right << box->GetDZ()
+     << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << org[0]
+     << " y="         << setw(7) << setprecision(prec) << fixed << right << org[1]
+     << " z="         << setw(7) << setprecision(prec) << fixed << right << org[2]
+     << endl;
+  
+  /// -------------------- DONE --------------------
+  delete [] points;
+  return os.str();
+}

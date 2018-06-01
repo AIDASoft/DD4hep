@@ -50,9 +50,15 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+
+  /** Utitlity functions   */
   /// Pretty print of solid attributes
   std::string toStringSolid(const TGeoShape* shape, int precision=2);
 
+  /// Output mesh vertices to string
+  std::string toStringMesh(const TGeoShape* shape, int precision=2);
+  
+  
   ///  Base class for Solid (shape) objects
   /**
    *   Generic handle holding an object of base TGeoShape.

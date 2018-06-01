@@ -510,39 +510,53 @@ void DetectorImp::init() {
     TGeoManager* mgr = m_manager;
     Constant     air_const = getRefChild(m_define, "Air", false);
     Constant     vac_const = getRefChild(m_define, "Vacuum", false);
-
-    /// Construct the top level world element
-    Box worldSolid("world_x", "world_y", "world_z");
-    printout(INFO,"Detector"," *********** created World volume with size : %7.0f %7.0f %7.0f",
-             worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
+    Box          worldSolid;
+    
     m_materialAir    = material(air_const.isValid() ? air_const->GetTitle() : "Air");
     m_materialVacuum = material(vac_const.isValid() ? vac_const->GetTitle() : "Vacuum");
 
-    Volume world_vol("world_volume", worldSolid, m_materialAir);
+    m_worldVol = m_manager->GetTopVolume();
+    if ( m_worldVol.isValid() )   {
+      worldSolid = m_worldVol.solid();
+      printout(INFO,"Detector", "*********** Use Top Node from manager as "
+               "world volume [%s].  BBox: %4.0f %4.0f %4.0f",
+               worldSolid->IsA()->GetName(),
+               worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
+    }
+    else   {
+      /// Construct the top level world element
+      Solid parallelWorldSolid = Box("world_x", "world_y", "world_z");
+      worldSolid = Box("world_x", "world_y", "world_z");
+      m_worldVol = Volume("world_volume", worldSolid, m_materialAir);
+      parallelWorldSolid->SetName("parallel_world_solid");
+      printout(INFO,"Detector","*********** Created World volume with size: %4.0f %4.0f %4.0f",
+               worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
+    }
     m_world = DetElement(new WorldObject(*this,"world"));
-    m_worldVol = world_vol;
     /// Set the world volume to invisible.
-    VisAttr worldVis("WorldVis");
-    worldVis.setAlpha(1.0);
-    worldVis.setVisible(false);
-    worldVis.setShowDaughters(true);
-    worldVis.setColor(1.0, 1.0, 1.0);
-    worldVis.setLineStyle(VisAttr::SOLID);
-    worldVis.setDrawingStyle(VisAttr::WIREFRAME);
-    //m_worldVol.setVisAttributes(worldVis);
-    m_worldVol->SetVisibility(kFALSE);
-    m_worldVol->SetVisDaughters(kTRUE);
-    m_worldVol->SetVisContainers(kTRUE);
-    add(worldVis);
+    VisAttr worldVis = visAttributes("WorldVis");
+    if ( !worldVis.isValid() )  {
+      worldVis = VisAttr("WorldVis");
+      worldVis.setAlpha(1.0);
+      worldVis.setVisible(false);
+      worldVis.setShowDaughters(true);
+      worldVis.setColor(1.0, 1.0, 1.0);
+      worldVis.setLineStyle(VisAttr::SOLID);
+      worldVis.setDrawingStyle(VisAttr::WIREFRAME);
+      //m_worldVol.setVisAttributes(worldVis);
+      m_worldVol->SetVisibility(kFALSE);
+      m_worldVol->SetVisDaughters(kTRUE);
+      m_worldVol->SetVisContainers(kTRUE);
+      add(worldVis);
+    }
+    m_worldVol.setVisAttributes(worldVis);
+    m_manager->SetTopVolume(m_worldVol.ptr());
 
     /// Set the top level volume to the TGeomanager
     m_detectors.append(m_world);
-    m_manager->SetTopVolume(m_worldVol.ptr());
     m_world.setPlacement(mgr->GetTopNode());
 
     /// Construct the parallel world
-    Box parallelWorldSolid("world_x", "world_y", "world_z");
-    parallelWorldSolid->SetName("parallel_world_solid");
     m_parallelWorldVol = Volume("parallel_world_volume", worldSolid, m_materialAir);
 
     /// Construct the field envelope
