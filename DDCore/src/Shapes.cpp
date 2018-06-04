@@ -436,13 +436,13 @@ void TruncatedTube::make(double zhalf, double rmin, double rmax, double startPhi
   double r         = cutAtStart;
   double R         = cutAtDelta;
   // exaggerate dimensions - does not matter, it's subtracted!
-  double boxX      = rmax;
-  double boxY      = rmax;
+  double boxX      = 30.*rmax;
+  double boxY      = 20.*rmax;
   // width of the box > width of the tubs
   double boxZ      = 1.1 * zhalf;
   // angle of the box w.r.t. tubs
   double cath      = r - R * std::cos( deltaPhi*units::deg );
-  double hypo      = std::sqrt( r * r + R * R - 2. * r * R * cos( deltaPhi*units::deg ));
+  double hypo      = std::sqrt( r * r + R * R - 2. * r * R * std::cos( deltaPhi*units::deg ));
   double cos_alpha = cath / hypo;
   double alpha     = -std::acos( cos_alpha );
          
@@ -456,15 +456,15 @@ void TruncatedTube::make(double zhalf, double rmin, double rmax, double startPhi
   if( !cutInside )
     xBox = r + boxX / std::sin( std::fabs( alpha ));
   else
-    xBox = - ( boxX / std::sin( std::fabs( alpha )) - r );
+    xBox = - (boxX / std::sin( std::fabs( alpha )) - r);
 #if 0
   cout << "Box:  " << boxX << " " << boxZ << " " << boxY << endl;
   cout << "Tubs: " << rmin << " " << rmax << " " << zhalf << " " << startPhi << " " << deltaPhi << endl;
   cout << "Pos:  " << xBox << " " << 0 << " " << 0 << endl;
 #endif
-  Box  box(boxX, boxZ, boxY);
+  Box  box(boxX, boxY, boxZ);
   Tube tubs(rmin, rmax, zhalf, startPhi*units::deg, (startPhi+deltaPhi)*units::deg);
-  SubtractionSolid sub(tubs, box, Transform3D(rot,Position(xBox, 0., 0.)));
+  SubtractionSolid sub(tubs, box, Transform3D(rot,Position(xBox,0.,0.)));
   _assign(sub.ptr(),"","trunctube",true);
 }
 
