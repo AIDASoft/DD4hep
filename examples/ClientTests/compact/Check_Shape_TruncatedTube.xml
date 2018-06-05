@@ -13,6 +13,7 @@
         <shape type="TruncatedTube" zhalf="6.57005*m" rmin="6.9551*m" rmax="9*m" 
                startphi="0*deg" deltaphi="15*deg" 
                cutAtStart="6.9551*m" cutAtDelta="7.20045*m" cutInside="1"/>
+        <position z="-28.9*m" y="5.9*m" x="0."/>
       </check>
 
 <!--
