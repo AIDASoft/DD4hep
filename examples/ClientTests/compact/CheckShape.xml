@@ -43,7 +43,7 @@
     <constant name="world_x" value="world_side"/>
     <constant name="world_y" value="world_side"/>
     <constant name="world_z" value="world_side"/>
-    <constant name="CheckShape_create" value="0"/>
+    <constant name="CheckShape_create" value="1"/>
   </define>
 
   <display>
