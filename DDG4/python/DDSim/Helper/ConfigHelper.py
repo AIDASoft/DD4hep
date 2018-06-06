@@ -71,6 +71,25 @@ class ConfigHelper( object ):
       return stringVal.split(sep)
 
   @staticmethod
+  def makeSet(stringVal, sep=" "):
+    """returns a set from a string separated by sep"""
+    if not stringVal:
+      return set()
+    if isinstance(stringVal, (list, set, tuple)):
+      return set(stringVal)
+    else:
+      return set(stringVal.split(sep))
+
+
+  @staticmethod
+  def makeString(container):
+    """Return a string that can be parsed by dd4hep into a vector."""
+    if not container:
+      return ""
+    if isinstance(container, set):
+      return '{%s}' % ','.join([str(s) for s in container])
+
+  @staticmethod
   def makeTuple( val ):
     """ returns a tuple of the string, separators are space or comma """
     myTuple = None

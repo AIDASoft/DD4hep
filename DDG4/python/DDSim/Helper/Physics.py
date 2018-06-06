@@ -13,7 +13,18 @@ class Physics( ConfigHelper ):
     self.list ="FTFP_BERT"
     self.decays = True
     self._pdgfile = None
+    self._rejectPDGs = {1,2,3,4,5,6,21,23,24}
 
+  @property
+  def rejectPDGs( self ):
+    """Set of PDG IDs that will not be passed from the input record to Geant4.
+
+    Quarks, gluons and W's Z's etc should not be treated by Geant4
+    """
+    return self._rejectPDGs
+  @rejectPDGs.setter
+  def rejectPDGs( self, val ):
+    self._rejectPDGs = val
 
   @property
   def rangecut( self ):
