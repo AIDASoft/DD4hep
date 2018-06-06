@@ -7,26 +7,46 @@
     <detector id="1" name="Shape_TruncatedTube" type="DD4hep_TestShape_Creator">
 <!--
       <TruncTubs name="trunctubs2" rMin="6.9551*m" rMax="9*m" cutAtStart="6.9551*m" cutAtDelta="7.20045*m" cutInside="true" startPhi="0*deg" deltaPhi="15*deg" zHalf="6.57005*m"/>
--->
 
+        <position z="-28.9*m" y="5.9*m" x="0."/>
+-->
+<!--
       <check vis="Shape1_vis">
         <shape type="TruncatedTube" zhalf="6.57005*m" rmin="6.9551*m" rmax="9*m" 
                startphi="0*deg" deltaphi="15*deg" 
-               cutAtStart="6.9551*m" cutAtDelta="7.20045*m" cutInside="1"/>
-        <position z="-28.9*m" y="5.9*m" x="0."/>
+               cutAtStart="6.9551*m" cutAtDelta="7.20045*m" cutInside="true"/>
       </check>
-
-<!--
+-->
       <check vis="Shape1_vis">
         <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
-               startphi="0*rad" deltaphi="pi/2.*rad" 
-               cutAtStart="25*cm" cutAtDelta="35*cm" cutInside="1"/>
+               startphi="0*deg" deltaphi="90*deg" 
+               cutAtStart="25*cm" cutAtDelta="35*cm" cutInside="true"/>
+        <position x="0*cm"  y="0*cm"   z="100*cm"/>
       </check>
+      <check vis="Shape1_vis">
+        <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
+               startphi="0*deg" deltaphi="90*deg" 
+               cutAtStart="25*cm" cutAtDelta="35*cm" cutInside="false"/>
+        <position x="0*cm"  y="0*cm"   z="-100*cm"/>
+      </check>
+      <check vis="Shape2_vis">
+        <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
+               startphi="0*deg" deltaphi="45*deg" 
+               cutAtStart="20*cm" cutAtDelta="30*cm" cutInside="true"/>
+        <position x="0*cm"  y="150*cm"   z="-100*cm"/>
+      </check>
+      <check vis="Shape3_vis">
+        <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
+               startphi="0*deg" deltaphi="150*deg" 
+               cutAtStart="20*cm" cutAtDelta="35*cm" cutInside="true"/>
+        <position x="90*cm"  y="150*cm"   z="100*cm"/>
+      </check>
+<!--
       <check vis="Shape2_vis">
         <shape type="TruncatedTube" zhalf="50*cm" rmin="20*cm" rmax="40*cm" 
                startphi="0*rad" deltaphi="pi/2*rad" 
                cutAtStart="25*cm" cutAtDelta="35*cm" cutInside="0"/>
-        <position x="30*cm"  y="30*cm"   z="-90*cm"/>
+        <position x="0*cm"  y="90*cm"   z="0*cm"/>
         <rotation x="0*cm"   y="0*cm"    z="0*cm"/>
       </check>
 -->
