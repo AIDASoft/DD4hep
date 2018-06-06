@@ -435,37 +435,61 @@ void TruncatedTube::make(double zhalf, double rmin, double rmax, double startPhi
 
   double r         = cutAtStart;
   double R         = cutAtDelta;
-  // exaggerate dimensions - does not matter, it's subtracted!
-  double boxX      = 30.*rmax;
-  double boxY      = 20.*rmax;
-  // width of the box > width of the tubs
-  double boxZ      = 1.1 * zhalf;
   // angle of the box w.r.t. tubs
   double cath      = r - R * std::cos( deltaPhi*units::deg );
-  double hypo      = std::sqrt( r * r + R * R - 2. * r * R * std::cos( deltaPhi*units::deg ));
+  double hypo      = std::sqrt( r*r + R*R - 2.*r*R * std::cos( deltaPhi*units::deg ));
   double cos_alpha = cath / hypo;
-  double alpha     = -std::acos( cos_alpha );
-         
-  // rotationmatrix of box w.r.t. tubs
-  RotationZYX rot;
-  rot *= RotationX(M_PI/2.);
-  rot *= RotationZ(alpha);
-         
-  // center point of the box
-  double xBox;
-  if( !cutInside )
-    xBox = r + boxX / std::sin( std::fabs( alpha ));
+  double alpha     = std::acos( cos_alpha );
+  double sin_alpha = std::sin( std::fabs(alpha) );
+  
+  // exaggerate dimensions - does not matter, it's subtracted!
+  // If we don't, the **edge** of the box would cut into the tube segment
+  // for larger delta-phi values
+  double boxX      = 1.1*rmax + rmax/sin_alpha; // Need to adjust for move!
+  double boxY      = rmax;
+  // width of the box > width of the tubs
+  double boxZ      = 1.1 * zhalf;
+  double xBox;      // center point of the box
+  if( cutInside )
+    xBox = r - boxY / sin_alpha;
   else
-    xBox = - (boxX / std::sin( std::fabs( alpha )) - r);
+    xBox = r + boxY / sin_alpha;
+
+  // rotationmatrix of box w.r.t. tubs
+  TGeoRotation rot;
+  //rot.RotateX( 90.0 );
+  rot.RotateZ( -alpha/dd4hep::deg );
+  TGeoTranslation trans(xBox, 0., 0.);  
+  TGeoBBox* box  = new TGeoBBox(boxX, boxY, boxZ);
+  TGeoTubeSeg* tubs = new TGeoTubeSeg(rmin, rmax, zhalf, startPhi, deltaPhi);
+  TGeoSubtraction* sub = new TGeoSubtraction(tubs, box, nullptr, new TGeoCombiTrans(trans, rot));
+  // For debugging:
+  // TGeoUnion* sub = new TGeoUnion(tubs, box, nullptr, new TGeoCombiTrans(trans, rot));
+  _assign(new TGeoCompositeShape("", sub),"","trunctube",true);
 #if 0
-  cout << "Box:  " << boxX << " " << boxZ << " " << boxY << endl;
-  cout << "Tubs: " << rmin << " " << rmax << " " << zhalf << " " << startPhi << " " << deltaPhi << endl;
-  cout << "Pos:  " << xBox << " " << 0 << " " << 0 << endl;
+  cout << "Trans:";  trans.Print(); cout << endl;
+  cout << "Rot:  ";  rot.Print();   cout << endl;
+  cout << " Zhalf:        " << zhalf
+       << " rmin:         " << rmin
+       << " rmax:         " << rmax
+       << " r/cutAtStart: " << r
+       << " R/cutAtDelta: " << R
+       << " cutInside:    " << (cutInside ? "YES" : "NO ")
+       << endl;
+  cout << " cath:      " << cath
+       << " hypo:      " << hypo
+       << " cos_alpha: " << cos_alpha
+       << " alpha:     " << alpha
+       << " alpha(deg):" << alpha/dd4hep::deg
+       << endl;
+  cout << " Deg:       " << dd4hep::deg
+       << " cm:        " << dd4hep::cm
+       << " xBox:      " << xBox
+       << endl;
+  cout << "Box:" << "x:" << box->GetDX() << " y:" << box->GetDY() << " z:" << box->GetDZ() << endl;
+  cout << "Tubs:" << " rmin:" << rmin << " rmax" << rmax << "zhalf" << zhalf
+       << " startPhi:" <<  startPhi << " deltaPhi:" << deltaPhi << endl;
 #endif
-  Box  box(boxX, boxY, boxZ);
-  Tube tubs(rmin, rmax, zhalf, startPhi*units::deg, (startPhi+deltaPhi)*units::deg);
-  SubtractionSolid sub(tubs, box, Transform3D(rot,Position(xBox,0.,0.)));
-  _assign(sub.ptr(),"","trunctube",true);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
