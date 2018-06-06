@@ -396,8 +396,8 @@ class DD4hepSimulation(object):
       self.__applyBoostOrSmear(kernel, actionList, index)
 
     if actionList:
-      simple.buildInputStage( actionList , output_level=self.output.inputStage,
-                              have_mctruth = self._enablePrimaryHandler() )
+      self._buildInputStage(simple, actionList, output_level=self.output.inputStage,
+                            have_mctruth=self._enablePrimaryHandler() )
 
     #================================================================================================
 
@@ -489,8 +489,6 @@ class DD4hepSimulation(object):
       self._g4gun.generator()
     if self._g4gps is not None:
       self._g4gps.generator()
-
-    #DDG4.setPrintLevel(Output.DEBUG)
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
@@ -726,6 +724,53 @@ SIM = DD4hepSimulation()
       print "Disabling the PrimaryHandler"
     return enablePrimaryHandler
 
+
+  def _buildInputStage(self, simple, generator_input_modules, output_level=None, have_mctruth=True):
+    """
+    Generic build of the input stage with multiple input modules.
+    Actions executed are:
+    1) Register Generation initialization action
+    2) Append all modules to build the complete input record
+    These modules are readers/particle sources, boosters and/or smearing actions.
+    3) Merge all existing interaction records
+    4) Add the MC truth handler
+    """
+    from DDG4 import GeneratorAction
+    ga = simple.kernel().generatorAction()
+
+    # Register Generation initialization action
+    gen = GeneratorAction(simple.kernel(),"Geant4GeneratorActionInit/GenerationInit")
+    if output_level is not None:
+      gen.OutputLevel = output_level
+    ga.adopt(gen)
+
+    # Now append all modules to build the complete input record
+    # These modules are readers/particle sources, boosters and/or smearing actions
+    for gen in generator_input_modules:
+      gen.enableUI()
+      if output_level is not None:
+        gen.OutputLevel = output_level
+      ga.adopt(gen)
+
+    # Merge all existing interaction records
+    gen = GeneratorAction(simple.kernel(),"Geant4InteractionMerger/InteractionMerger")
+    gen.enableUI()
+    if output_level is not None:
+      gen.OutputLevel = output_level
+    ga.adopt(gen)
+
+    # Finally generate Geant4 primaries
+    if have_mctruth:
+      gen = GeneratorAction(simple.kernel(),"Geant4PrimaryHandler/PrimaryHandler")
+      gen.RejectPDGs=ConfigHelper.makeString(self.physics.rejectPDGs)
+      gen.enableUI()
+      if output_level is not None:
+        gen.OutputLevel = output_level
+      ga.adopt(gen)
+    # Puuuhh! All done.
+    return None
+
+
 ################################################################################
 ### MODULE FUNCTIONS GO HERE
 ################################################################################
@@ -756,3 +801,4 @@ def getOutputLevel(level):
              6: OutputLevel.FATAL,
              7: OutputLevel.ALWAYS }
   return levels[level]
+
