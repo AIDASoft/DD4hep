@@ -11,13 +11,14 @@
         <position x="30*cm"  y="30*cm" z="50*cm"/>
         <rotation x="0"      y="0"     z="0"/>
       </check>
-
+<!-- Creates a different mesh on different platforms.
       <check vis="Shape2_vis">
         <shape type="PseudoTrap" z="30*cm" radius="5*cm"
                x1="3*cm" x2="10*cm" y1="30*cm" y2="10*cm" minusZ="true"/>
         <position x="30*cm"  y="30*cm" z="-50*cm"/>
         <rotation x="0"      y="0"     z="0"/>
       </check>
+-->
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
