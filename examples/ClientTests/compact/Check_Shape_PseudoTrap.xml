@@ -7,14 +7,14 @@
     <detector id="1" name="Shape_PseudoTrap" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
         <shape type="PseudoTrap" z="30*cm" radius="10*cm"
-               x1="10*cm" x2="3*cm" y1="30*cm" y2="10*cm" minusZ="0"/>
+               x1="10*cm" x2="3*cm" y1="30*cm" y2="10*cm" minusZ="false"/>
         <position x="30*cm"  y="30*cm" z="50*cm"/>
         <rotation x="0"      y="0"     z="0"/>
       </check>
 
       <check vis="Shape2_vis">
         <shape type="PseudoTrap" z="30*cm" radius="5*cm"
-               x1="10*cm" x2="3*cm" y1="30*cm" y2="10*cm" minusZ="1"/>
+               x1="3*cm" x2="10*cm" y1="30*cm" y2="10*cm" minusZ="true"/>
         <position x="30*cm"  y="30*cm" z="-50*cm"/>
         <rotation x="0"      y="0"     z="0"/>
       </check>
