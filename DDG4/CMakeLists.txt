@@ -12,7 +12,7 @@ dd4hep_package(    DDG4
   USES            [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
                   [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
                    BOOST DDCore
-  OPTIONAL         CLHEP [XercesC QUIET]
+  OPTIONAL         ${CLHEP} [XercesC QUIET]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDG4 )
 MESSAGE(STATUS "CLHEP_LIBRARIES ${CLHEP_LIBRARIES} ${CLHEP_LIBRARY}")
