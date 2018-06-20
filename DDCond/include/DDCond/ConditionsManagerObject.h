@@ -86,16 +86,16 @@ namespace dd4hep {
       virtual ~ConditionsManagerObject();
 
       /// Access to the detector description instance
-      Detector& detectorDescription() const                    {  return m_detDesc;              }
+      Detector& detectorDescription() const {  return m_detDesc;              }
 
       /// Access to the data loader
-      ConditionsDataLoader* loader()  const {  return m_loader.get();      }
+      ConditionsDataLoader* loader()  const {  return m_loader.get();         }
 
       /// Access to load flag
-      bool doLoadConditions()  const        {  return m_doLoad;            }
+      bool doLoadConditions()  const        {  return m_doLoad;               }
 
       /// Access to flag to indicate if unloaded items should be saved to the slice (or not)
-      bool doOutputUnloaded()  const        {  return m_doOutputUnloaded;  }
+      bool doOutputUnloaded()  const        {  return m_doOutputUnloaded;     }
 
       /// Listener invocation when a condition is registered to the cache
       void onRegister(Condition condition);
@@ -163,6 +163,14 @@ namespace dd4hep {
 
       /// Prepare all updates to the clients with the defined IOV
       virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx=0) = 0;
+
+      /// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
+      /** Note:
+       *  This may be convenient under certain circumstances, however at the expense of
+       *  more flexible approaches to perform the conditions data cleanup.
+       *  Any previously registered instance shall be deleted.
+       */
+      virtual void adoptCleanup(ConditionsCleanup* cleaner) = 0;
 
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */

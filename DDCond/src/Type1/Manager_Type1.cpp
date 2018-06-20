@@ -301,6 +301,11 @@ void Manager_Type1::__get_checked_pool(const IOV& req_iov,
          Errors::invalidArg().c_str());
 }
 
+/// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
+void Manager_Type1::adoptCleanup(ConditionsCleanup* cleaner)     {
+  m_cleaner.reset(cleaner);
+}
+
 /// Clean conditions, which are above the age limit.
 int Manager_Type1::clean(const IOVType* typ, int max_age)   {
   int count = 0;
@@ -466,7 +471,12 @@ Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpda
   /// First push any pending updates and register them to pending pools...
   pushUpdates();
   /// Now update/fill the user pool
-  return slice.pool->prepare(req_iov, slice, ctx);
+  Result res = slice.pool->prepare(req_iov, slice, ctx);
+  /// Invoke auto cleanup if registered
+  if ( m_cleaner.get() )   {
+    this->clean(*m_cleaner);
+  }
+  return res;
 }
 
 /// Create empty user pool object

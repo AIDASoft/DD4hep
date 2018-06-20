@@ -157,6 +157,14 @@ namespace dd4hep {
        */
       void pushUpdates() const;
 
+      /// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
+      /** Note:
+       *  This may be convenient under certain circumstances, however at the expense of
+       *  more flexible approaches to perform the conditions data cleanup.
+       *  Any previously registered instance shall be deleted.
+       */
+      void adoptCleanup(ConditionsCleanup* cleaner)  const;
+      
       /// Invoke cache cleanup with user defined policy
       void clean(const ConditionsCleanup& cleaner)  const;
 
