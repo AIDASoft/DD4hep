@@ -240,6 +240,11 @@ bool ConditionsManager::registerUnlocked(ConditionsPool& pool, Condition cond)  
 void ConditionsManager::pushUpdates()  const {
 }
 
+/// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
+void ConditionsManager::adoptCleanup(ConditionsCleanup* cleaner)  const   {
+  access()->adoptCleanup(cleaner);
+}
+
 /// Clean conditions, which are above the age limit.
 void ConditionsManager::clean(const IOVType* typ, int max_age)  const  {
   access()->clean(typ, max_age);

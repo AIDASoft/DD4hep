@@ -73,7 +73,9 @@ namespace dd4hep {
       dd4hep_mutex_t          m_poolLock;
       /// Reference to update conditions pool
       std::unique_ptr<UpdatePool>  m_updatePool;
-
+      /// Reference to the default conditions cleanup object (if registered)
+      std::unique_ptr<ConditionsCleanup> m_cleaner;
+      
     public:
       /// Managed pool of typed conditions indexed by IOV-type and IOV key
       TypedConditionPool      m_rawPool;
@@ -132,22 +134,25 @@ namespace dd4hep {
       virtual ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key)  final;
 
       /// Access conditions multi IOV pool by iov type
-      ConditionsIOVPool* iovPool(const IOVType& type)  const  final;
+      virtual ConditionsIOVPool* iovPool(const IOVType& type)  const  final;
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       virtual bool registerUnlocked(ConditionsPool& pool, Condition cond)  final;
 
+      /// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
+      virtual void adoptCleanup(ConditionsCleanup* cleaner)  final;
+      
       /// Clean conditions, which are above the age limit.
       /** @return Number of conditions cleaned/removed from the IOV pool of the given type   */
-      int clean(const IOVType* typ, int max_age)  final;
+      virtual int clean(const IOVType* typ, int max_age)  final;
 
       /// Invoke cache cleanup with user defined policy
       /** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
-      std::pair<int,int> clean(const ConditionsCleanup& cleaner)  final;
+      virtual std::pair<int,int> clean(const ConditionsCleanup& cleaner)  final;
 
       /// Full cleanup of all managed conditions.
       /** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
-      std::pair<int,int> clear()  final;
+      virtual std::pair<int,int> clear()  final;
 
       /// Push all pending updates to the conditions store. 
       /** Note:
