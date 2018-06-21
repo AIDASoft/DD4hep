@@ -54,7 +54,7 @@
       </check>
 -->
 
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="CheckShape_create"/>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>

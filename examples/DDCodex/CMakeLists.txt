@@ -25,8 +25,8 @@ dd4hep_add_plugin(DDCodexPlugins
 )
 #
 #
-dd4hep_install_dir( compact python DESTINATION ${DD4hep_DIR}/examples/DDCodex )
-dd4hep_install_files(FILES Upgrade.root DESTINATION ${DD4hep_DIR}/examples/DDCodex )
+dd4hep_install_dir( compact python DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
+dd4hep_install_files(FILES Upgrade.root DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
 #--------------------------------------------------------------------------
 #
 dd4hep_configure_scripts ( DDCodex DEFAULT_SETUP WITH_TESTS )

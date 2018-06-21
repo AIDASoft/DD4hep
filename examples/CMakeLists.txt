@@ -36,6 +36,7 @@ find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
 include(${ROOT_USE_FILE})
 #
 dd4hep_set_compiler_flags()
+SET( ENV{DD4hepExamplesINSTALL} ${CMAKE_INSTALL_PREFIX} )
 #
 dd4hep_configure_output()
 dd4hep_package ( dd4hepExample MAJOR 0 MINOR 15 PATCH 0 

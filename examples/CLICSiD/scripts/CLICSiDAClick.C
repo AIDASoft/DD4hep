@@ -1,4 +1,3 @@
-// $Id$
 //====================================================================
 //  AIDA Detector description implementation
 //--------------------------------------------------------------------
@@ -43,7 +42,7 @@ Geant4SensDetActionSequence* setupDetector(Geant4Kernel& kernel, const std::stri
 
 int setupG4_CINT(bool interactive)  {
   Geant4Kernel& kernel = Geant4Kernel::instance(Detector::getInstance());
-  string install_dir = getenv("DD4hepINSTALL");
+  string install_dir = getenv("DD4hepExamplesINSTALL");
   Phase p;
 
   kernel.loadGeometry(("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml").c_str());

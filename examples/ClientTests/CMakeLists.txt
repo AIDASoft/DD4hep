@@ -23,7 +23,8 @@ dd4hep_add_plugin( ClientTests SOURCES src/*.cpp
   OPTIONAL       [BOOST SOURCES src_boost/*.cpp]
   )
 #
-dd4hep_install_dir( compact scripts ref DESTINATION ${DD4hep_DIR}/examples/ClientTests )
+set(ClientTestsEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
+dd4hep_install_dir( compact scripts ref DESTINATION ${ClientTestsEx_INSTALL} )
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
@@ -34,7 +35,7 @@ dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -destroy -plugin DD4hep_JsonDumper
-  ${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.json
+  ${ClientTestsEx_INSTALL}/compact/MiniTel.json
   REGEX_PASS "Successfully dumped json input"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
@@ -44,7 +45,7 @@ dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Detector
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_XMLLoader
-  file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel_json.xml
+  file:${ClientTestsEx_INSTALL}/compact/MiniTel_json.xml
   REGEX_PASS "Successfully processed JSON input"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
@@ -54,7 +55,7 @@ dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Detector
 dd4hep_add_test_reg( ClientTests_DumpMaterials
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.xml
+  -input file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -volmgr -destroy -plugin DD4hep_MaterialTable -type xml
   REGEX_PASS "material name=\"PEEK\""
   REGEX_FAIL "Exception"
@@ -65,7 +66,7 @@ dd4hep_add_test_reg( ClientTests_DumpMaterials
 dd4hep_add_test_reg( ClientTests_DumpElements
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.xml
+  -input file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -volmgr -destroy -plugin DD4hep_ElementTable -type xml
   REGEX_PASS "formula=\"UUB\" name=\"UUB\""
   REGEX_FAIL "Exception"
@@ -77,7 +78,7 @@ dd4hep_add_test_reg( ClientTests_DumpElements
 dd4hep_add_test_reg( ClientTests_MultiPlace
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
+  -input file:${ClientTestsEx_INSTALL}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
   -plugin DD4hep_VolumeMgrTest SiTrackerBarrel
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
@@ -88,7 +89,7 @@ dd4hep_add_test_reg( ClientTests_MultiPlace
 dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
+  -input file:${ClientTestsEx_INSTALL}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
   -plugin DD4hep_VolumeMgrTest SiTrackerBarrel
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
@@ -99,7 +100,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
 dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Bitfield_SidesTest.xml -volmgr -destroy
+  -input file:${ClientTestsEx_INSTALL}/compact/Bitfield_SidesTest.xml -volmgr -destroy
   -plugin DD4hep_DetectorVolumeDump
   -plugin DD4hep_VolumeDump volids
   -plugin DD4hep_VolumeMgrTest all
@@ -109,7 +110,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
 dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Bitfield_SidesTest2.xml -volmgr -destroy
+  -input file:${ClientTestsEx_INSTALL}/compact/Bitfield_SidesTest2.xml -volmgr -destroy
   -plugin DD4hep_DetectorVolumeDump
   -plugin DD4hep_VolumeDump volids
   -plugin DD4hep_VolumeMgrTest all
@@ -119,7 +120,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
 dd4hep_add_test_reg( ClientTests_Check_Handle_Casts
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Check_Handles.xml
+  -volmgr -destroy -input file:${ClientTestsEx_INSTALL}/compact/Check_Handles.xml
   -plugin DD4hep_DetectorVolumeDump
   REGEX_PASS "|   164  casts PASSED     90 casts FAILED                         |")
 #
@@ -127,7 +128,7 @@ dd4hep_add_test_reg( ClientTests_Check_Handle_Casts
 dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
-  -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/MiniTel.xml
+  -volmgr -destroy -input file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -plugin DD4hep_Geometry2ROOT -output MiniTel_geometry.root
   REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file.")
 #
@@ -138,7 +139,7 @@ foreach (test Box Cone ConeSegment Tube ElTube
     Trap Trapezoid TruncatedTube ExtrudedPolygon)
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  geoDisplay file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Check_Shape_${test}.xml -load -destroy
+      EXEC_ARGS  geoDisplay file:${ClientTestsEx_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
       REGEX_PASS "Shape verification SUCCESSFUL." )
 endforeach()
 #
@@ -152,7 +153,7 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
   dd4hep_add_test_reg( ClientTests_volume_materials_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy
-      -input  file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+      -input  file:${ClientTestsEx_INSTALL}/compact/${test}.xml
       -plugin DD4hep_VolumeDump -materials
       REGEX_PASS "\\+\\+\\+ Checked [1-9][0-9]* materials in volume placements.   0 are BAD." )
             
@@ -161,7 +162,7 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
     dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}
-                              -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                              -input file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                               -output file:${test}.${type}
       REGEX_PASS " Handled [1-9][0-9]* volumes" )
   endforeach(type)
@@ -178,7 +179,7 @@ foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBloc
   # Test material scans in [origine to 10 meters in y]
   dd4hep_add_test_reg( ClientTests_material_scan_${test}
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  materialScan file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml 0 0 0 0 10000 0
+    EXEC_ARGS  materialScan file:${ClientTestsEx_INSTALL}/compact/${test}.xml 0 0 0 0 10000 0
     REGEX_PASS " Average Material " )
   #
   # Geant4 material scan. From position=0,0,0 to end-of-world 
@@ -186,7 +187,7 @@ foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBloc
     dd4hep_add_test_reg( ClientTests_g4material_scan_${test}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
-                        --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                        --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                         "--position=0,0,0" "--direction=0,1,0"
       REGEX_PASS " Terminate Geant4 and delete associated actions." )
   endif(DD4HEP_USE_GEANT4)
@@ -200,7 +201,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiColl
   dd4hep_add_test_reg( ClientTests_parse_xml_string_${test}
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  geoPluginRun -destroy -print WARNING
-          -plugin DD4hep_XML_InMemory -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+          -plugin DD4hep_XML_InMemory -input ${ClientTestsEx_INSTALL}/compact/${test}.xml
           -plugin DD4hep_VolumeDump   -materials
       REGEX_PASS "\\+\\+\\+ Checked [1-9][0-9]* materials in volume placements.   0 are BAD." )
   #
@@ -208,7 +209,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiColl
   dd4hep_add_test_reg( ClientTests_check_geometry_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
-                      --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                      --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                       --full=true --ntracks=10
     REGEX_PASS " Execution finished..." )
   #
@@ -216,7 +217,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiColl
   dd4hep_add_test_reg( ClientTests_check_overlaps_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
-                      --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                      --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                       --tolerance=0.1
     REGEX_PASS " Execution finished..." )
 endforeach()
@@ -228,7 +229,7 @@ if (DD4HEP_USE_GEANT4)
   # Geant4 test if production cuts are processed
   dd4hep_add_test_reg( ClientTests_sim_MiniTel_prod_cuts
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelRegions.py batch
+    EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MiniTelRegions.py batch
     REQUIRES   DDG4 Geant4
     REGEX_PASS "minitel_region_1: Set cut  \\[gamma/0\\] = 5.000"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
@@ -236,7 +237,7 @@ if (DD4HEP_USE_GEANT4)
   # Geant4 test if production cuts are processed
   dd4hep_add_test_reg( ClientTests_sim_MiniTel_limitset
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelRegions.py batch
+    EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MiniTelRegions.py batch
     REQUIRES   DDG4 Geant4
     REGEX_PASS "LimitSet:    Particle type: mu-                PDG: 13     : 3.000000"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
@@ -244,7 +245,7 @@ if (DD4HEP_USE_GEANT4)
   # Test of an example user analysis creating an N-tuple instead of an output file with events
   dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTelEnergyDeposits.py batch
+    EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MiniTelEnergyDeposits.py batch
     REQUIRES   DDG4 Geant4
     REGEX_PASS "Entries :      200 "
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
@@ -252,7 +253,7 @@ if (DD4HEP_USE_GEANT4)
   # Test of an example user analysis creating an N-tuple instead of an output file with events
   dd4hep_add_test_reg( ClientTests_sim_TrackingRegion
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/TrackingRegion.py batch
+    EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/TrackingRegion.py batch
     REQUIRES   DDG4 Geant4
     REGEX_PASS "Placement tracking_volume_1 not converted \\[Veto'ed for simulation\\]"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
@@ -261,7 +262,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script Assemblies LheD_tracker MiniTel NestedDetectors )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch
+      EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/${script}.py batch
       REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
@@ -271,8 +272,8 @@ if (DD4HEP_USE_GEANT4)
   foreach(script MultiCollections MultiSegmentations MultiSegmentCollections )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MultiCollections.py 
-                        -compact ${CMAKE_CURRENT_SOURCE_DIR}/compact/${script}.xml -batch
+      EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MultiCollections.py 
+                        -compact ${ClientTestsEx_INSTALL}/compact/${script}.xml -batch
       REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )

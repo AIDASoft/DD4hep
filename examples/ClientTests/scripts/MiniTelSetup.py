@@ -9,7 +9,7 @@ import os, time, DDG4TestSetup
 """
 class Setup(DDG4TestSetup.Setup):
   def __init__(self):
-    install_dir = os.environ['DD4hepINSTALL']
+    install_dir = os.environ['DD4hepExamplesINSTALL']
     DDG4TestSetup.Setup.__init__(self, "file:"+install_dir+"/examples/ClientTests/compact/MiniTel.xml")
 
   def configure(self):

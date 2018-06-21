@@ -7,8 +7,8 @@
 #
 
 #----- initialize environment for this package - including DD4hep 
-source @CMAKE_INSTALL_PREFIX@/bin/this@PackageName@.sh
-
+export DD4hepExamplesINSTALL=@CMAKE_INSTALL_PREFIX@;
+source @CMAKE_INSTALL_PREFIX@/bin/this@PackageName@.sh;
 #----- parse command line - first argument is the 
 #      test to run
 command=$1

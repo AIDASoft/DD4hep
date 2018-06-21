@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #==========================================================================
 #  AIDA Detector description implementation 
 #--------------------------------------------------------------------------
@@ -23,7 +22,7 @@ if test -n "$USER"; then
 else
     target=/tmp;
 fi;
-source=${DD4hepINSTALL}/examples/DDDB/DDDB.tar.gz;
+source=${DD4hepExamplesINSTALL}/examples/DDDB/DDDB.tar.gz;
 clean="NO";
 #
 # Check for arguments:

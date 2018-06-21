@@ -26,7 +26,7 @@ using namespace std;
 using namespace dd4hep::sim::Setup;
 
 int setupG4_XML(bool interactive)  {
-  string install_dir = getenv("DD4hepINSTALL");
+  string install_dir = getenv("DD4hepExamplesINSTALL");
   string prefix = "file:"+install_dir+"/examples/";
   Kernel& kernel = Kernel::instance(dd4hep::Detector::getInstance());
   kernel.loadGeometry((prefix+"CLICSiD/compact/compact.xml").c_str());
