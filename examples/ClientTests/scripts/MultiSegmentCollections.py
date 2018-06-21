@@ -14,7 +14,7 @@ from SystemOfUnits import *
 def run():
   batch = False
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
+  install_dir = os.environ['DD4hepExamplesINSTALL']
   geometry = "file:"+install_dir+"/examples/ClientTests/compact/MultiSegmentCollections.xml"
   kernel.setOutputLevel('Geant4Converter',Output.DEBUG)
   kernel.setOutputLevel('Gun',Output.INFO)

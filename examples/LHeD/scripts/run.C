@@ -9,7 +9,7 @@
 void run(const char* macro)  {
   int status;
   char cmd[1024];
-  const char* dd4hep_install = getenv("DD4hepINSTALL");
+  const char* dd4hep_install = getenv("DD4hepExamplesINSTALL");
   const char* dd4hep = getenv("DD4hep");
   if ( dd4hep_install )  {
     ::sprintf(cmd,".L %s/examples/LHeD/scripts/initAClick.C+",dd4hep_install);

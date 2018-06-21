@@ -21,7 +21,7 @@
           <section z="60*cm" x="0*cm" y="30*cm" scale="1.2"/>
         </shape>
       </check>
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_ExtrudedPolygon.txt" create="CheckShape_create"/>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_ExtrudedPolygon.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>

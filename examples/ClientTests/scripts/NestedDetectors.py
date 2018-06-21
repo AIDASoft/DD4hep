@@ -13,7 +13,7 @@ from SystemOfUnits import *
 """
 def run():
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
+  install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.setOutputLevel('Geant4Converter',Output.DEBUG)
   kernel.setOutputLevel('Gun',Output.INFO)
   kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/NestedDetectors.xml")

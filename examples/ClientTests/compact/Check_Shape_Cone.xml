@@ -10,7 +10,7 @@
         <position x="30"  y="30"   z="30"/>
         <rotation x="0"   y="0"    z="0"/>
       </check>
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepINSTALL}/examples/ClientTests/ref/Ref_Cone.txt" create="CheckShape_create"/>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Cone.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>

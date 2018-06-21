@@ -17,7 +17,8 @@ dd4hep_package ( LHeD MAJOR 0 MINOR 0 PATCH 1
   USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
                  [DD4hep REQUIRED COMPONENTS DDRec DDCore DDCond DDAlign]
   )
-dd4hep_install_dir( src compact scripts sim DESTINATION ${DD4hep_DIR}/examples/LHeD )
+set(LHeDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/LHeD)
+dd4hep_install_dir( src compact scripts sim DESTINATION ${LHeDEx_INSTALL} )
 #-----------------------------------------------------------------------------------
 set(LIBRARY_OUTPUT_PATH    ${PROJECT_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -41,7 +42,7 @@ foreach ( typ description gdml vis )
   dd4hep_add_test_reg ( "LHeD_converter_${typ}_LONGTEST" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 
-                            -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
+                            -input file:${LHeDEx_INSTALL}/compact/compact.xml
                             -output file:LHeD.${typ}
     REGEX_PASS " Handled [1-9][0-9][0-9]+ volumes" )
 endforeach()
@@ -50,7 +51,7 @@ endforeach()
 dd4hep_add_test_reg( LHeD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
-                    --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
+                    --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
@@ -58,7 +59,7 @@ dd4hep_add_test_reg( LHeD_check_geometry_LONGTEST
 dd4hep_add_test_reg( LHeD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
-                    --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
+                    --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -70,7 +71,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script LHeDMagField LHeDPhysics LHeDRandom LHeDScan)
     dd4hep_add_test_reg( LHeD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py
+      EXEC_ARGS  python ${LHeDEx_INSTALL}/scripts/${script}.py
       REQUIRES   DDG4 Geant4
       REGEX_PASS "TEST_PASSED"
       REGEX_FAIL "Exception;EXCEPTION;ERROR" )
@@ -80,7 +81,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( LHeD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
-                      --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml 
+                      --compact=file:${LHeDEx_INSTALL}/compact/compact.xml 
                       "--position=0,0,0" "--direction=0,1,0"
     REQUIRES   DDG4 Geant4
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
@@ -91,7 +92,7 @@ if (DD4HEP_USE_GEANT4)
     # Build ACLick from the source file
     dd4hep_add_test_reg( LHeD_DDG4_${script}_as_ACLick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-      EXEC_ARGS  root.exe -b -x -n -q -l "${CMAKE_CURRENT_SOURCE_DIR}/scripts/run.C(\"${DD4hep_DIR}/examples/LHeD/scripts/${script}\")"
+      EXEC_ARGS  root.exe -b -x -n -q -l "${LHeDEx_INSTALL}/scripts/run.C(\"${LHeDEx_INSTALL}/scripts/${script}\")"
       REQUIRES   DDG4 Geant4
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )

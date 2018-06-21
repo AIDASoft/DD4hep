@@ -11,7 +11,7 @@ def run():
 
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
+  install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/examples/LHeD/compact/compact.xml")
   DDG4.Core.setPrintFormat("%-32s %6s %s")
   geant4 = DDG4.Geant4(kernel)

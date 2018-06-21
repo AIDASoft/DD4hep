@@ -15,7 +15,7 @@ from SystemOfUnits import *
 """
 def run():
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
+  install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/SiliconBlock.xml")
 
   DDG4.importConstants(kernel.detectorDescription(),debug=False)
