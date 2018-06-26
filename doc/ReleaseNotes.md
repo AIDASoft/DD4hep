@@ -1,3 +1,11 @@
+# v01-07-02
+
+* 2018-06-26 Frank Gaede [PR#413](https://github.com/AIDASoft/DD4hep/pull/413)
+  - bug fix in Geant4EventReaderGuineaPig
+    - fix ignoring input lines with 'nan'
+    - did not work on SL6 w/ gcc
+
+
 # v01-07-01
 
 * 2018-05-17 Frank Gaede
