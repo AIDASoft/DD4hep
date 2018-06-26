@@ -16,6 +16,8 @@
 
 // C/C++ include files
 #include <fstream>
+#include <algorithm>
+#include <sstream>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -160,18 +162,13 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
 
 
   // First check the input file status
-  if ( !m_input.good() || m_input.eof() )   {
+  if ( m_input.eof() )   {
+    return EVENT_READER_EOF;
+  }
+  else if ( !m_input.good() )   {
     return EVENT_READER_IO_ERROR;
   }
 
-  // Vertex* vtx = new Vertex ;
-  // vtx->x = 0 ;
-  // vtx->y = 0 ;
-  // vtx->z = 0 ;
-  // vtx->time = 0 ;
-  // vertices.push_back( vtx ) ;
-
-  
   double Energy;
   double betaX;
   double betaY;
@@ -183,36 +180,31 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
   //  Loop over particles
   for( int counter = 0; counter < m_part_num ; ++counter ){      
 
-    m_input  >> Energy
-             >> betaX   >> betaY >> betaZ
-             >> posX    >> posY  >> posZ ;
-    
-
-    if( std::isnan( Energy ) ||
-        std::isnan( betaX  ) ||
-        std::isnan( betaY  ) ||
-        std::isnan( betaZ  ) ||
-        std::isnan( posX   ) ||
-        std::isnan( posY   ) ||
-        std::isnan( posZ   ) ){
-
-      printout(WARNING,"EventReader","### Read line with 'nan' entries - particle will be ignored  ! " ) ;
-
-      continue ;
-    }
-
+    // need to check for NAN as not all ifstream implementations can handle this directly
+    std::string lineStr ;
+    std::getline( m_input, lineStr ) ;
 
     if( m_input.eof() ) {
-      
       if( counter==0 ) { 
         return EVENT_READER_IO_ERROR ;  // reading first particle of event failed 
-
       } else{
-
         ++m_currEvent;
         return EVENT_READER_OK ; // simply EOF
       }
     }
+
+    std::transform(lineStr.begin(), lineStr.end(), lineStr.begin(), ::tolower);
+    if( lineStr.find("nan") != std::string::npos){
+
+      printout(WARNING,"EventReader","### Read line with 'nan' entries - particle will be ignored  ! " ) ;
+      continue ;
+    }
+    std::stringstream m_input_str( lineStr ) ;
+
+    m_input_str  >> Energy
+		 >> betaX   >> betaY >> betaZ
+		 >> posX    >> posY  >> posZ ;
+
     
     //    printf(" ------- %e  %e  %e  %e  %e  %e  %e \n", Energy,betaX, betaY,betaZ,posX,posY,posZ ) ;
 
