@@ -21,6 +21,8 @@ dd4hep_package ( DDG4 MAJOR 0 MINOR 0 PATCH 1
 #
 if (DD4HEP_USE_GEANT4)
   #
+  dd4hep_set_compiler_flags()
+  #
   #----  Dictionary of classes to be written to the ROOT file   --------------------
   dd4hep_add_dictionary(G__DDG4UserDict
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h

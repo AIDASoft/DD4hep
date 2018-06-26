@@ -53,6 +53,7 @@ dd4hep_enable_tests (
   DDG4
   Persistency
   SimpleDetector
+  DDG4_MySensDet
   )
 #
 # XercesC dependent stuff
