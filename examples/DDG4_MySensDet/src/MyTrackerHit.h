@@ -67,39 +67,11 @@ namespace SomeExperiment {
     /// Default destructor
     virtual ~MyTrackerHit() = default;
     /// Assignment operator
-    MyTrackerHit& operator=(const MyTrackerHit& c)  {
-      if ( &c != this )  {
-        position = c.position;
-        momentum = c.momentum;
-        length = c.length;
-        truth = c.truth;
-      }
-      return *this;
-    }
+    MyTrackerHit& operator=(const MyTrackerHit& c);
     /// Clear hit content
-    MyTrackerHit& clear() {
-      position.SetXYZ(0, 0, 0);
-      momentum.SetXYZ(0, 0, 0);
-      length = 0.0;
-      truth.clear();
-      return *this;
-    }
-
+    MyTrackerHit& clear();
     /// Store Geant4 point and step information into tracker hit structure.
-    MyTrackerHit& storePoint(const G4Step* step, const G4StepPoint* pnt) {
-      G4Track* trk = step->GetTrack();
-      G4ThreeVector pos = pnt->GetPosition();
-      G4ThreeVector mom = pnt->GetMomentum();
-
-      truth.trackID = trk->GetTrackID();
-      truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
-      truth.deposit = step->GetTotalEnergyDeposit();
-      truth.time    = trk->GetGlobalTime();
-      position.SetXYZ(pos.x(), pos.y(), pos.z());
-      momentum.SetXYZ(mom.x(), mom.y(), mom.z());
-      length = 0;
-      return *this;
-    }
+    MyTrackerHit& storePoint(const G4Step* step, const G4StepPoint* pnt);
   };
 }
 
