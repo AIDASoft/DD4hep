@@ -13,9 +13,8 @@
 #ifndef SOMEEXPERIMENT_MYTRACKERHIT_H
 #define SOMEEXPERIMENT_MYTRACKERHIT_H
 
+/// Framework include files
 #include "DDG4/Geant4Data.h"
-#include "G4Track.hh"
-#include "G4Step.hh"
 
 namespace SomeExperiment {
 
