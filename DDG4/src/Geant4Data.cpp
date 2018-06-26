@@ -75,6 +75,7 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
   Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),length,pos);
   return contrib;
 }
+
 /// Extract the MC contribution for a given hit from the step information with BirksLaw effect option
 Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* step, bool ApplyBirksLaw) {
   Geant4StepHandler h(step);
