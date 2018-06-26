@@ -26,7 +26,7 @@ def run():
   geant4.setupCshUI()
 
   # Configure field
-  field = geant4.setupfield(prt=True)
+  field = geant4.setupTrackingField(prt=True)
   # Configure I/O
   evt_root = geant4.setupROOTOutput('RootOutput','FCC_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=False)
   # Setup particle gun
