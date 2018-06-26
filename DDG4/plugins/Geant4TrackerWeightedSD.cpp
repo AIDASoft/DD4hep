@@ -77,6 +77,7 @@ namespace dd4hep {
       Position              mean_pos;
       Geant4Sensitive*      sensitive            = 0;
       G4VSensitiveDetector* thisSD               = 0;
+      G4VPhysicalVolume*    thisPV               = 0;
       double                distance_to_inside   = 0.0;
       double                distance_to_outside  = 0.0;
       double                mean_time            = 0.0;
@@ -102,6 +103,7 @@ namespace dd4hep {
         distance_to_outside = 0;
         mean_time = 0;
         step_length  = 0;
+        thisPV = nullptr;
         post.clear();
         pre.clear();
         current  = -1;
@@ -116,6 +118,12 @@ namespace dd4hep {
 
       /// Start a new hit
       TrackerWeighted& start(const G4Step* step, const G4StepPoint* point)   {
+	if( DEBUG == printLevel() ) {
+	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::start(const G4Step* step, const G4StepPoint* point) ...."<<std::endl;
+	  Geant4StepHandler h(step);
+	  dumpStep( h, step);
+	}
+
         clear();
         pre.storePoint(step,point);
         pre.truth.deposit = 0.0;
@@ -125,11 +133,21 @@ namespace dd4hep {
         post = pre;
         parent = step->GetTrack()->GetParentID();
         g4ID = step->GetTrack()->GetTrackID();
+
+        Geant4StepHandler startVolume(step);
+        thisPV = startVolume.preVolume();
+
         return *this;
       }
 
       /// Update energy and track information during hit info accumulation
       TrackerWeighted& update(const G4Step* step)   {
+	if( DEBUG == printLevel() ) {
+	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::update(const G4Step* step) ...."<<std::endl;
+	  Geant4StepHandler h(step);
+	  dumpStep( h, step);
+	}
+
         post.storePoint(step,step->GetPostStepPoint());
         Position mean    = (post.position+pre.position)*0.5;
         double   mean_tm = (post.truth.time+pre.truth.time)*0.5;
@@ -178,6 +196,11 @@ namespace dd4hep {
       }
 
       void extractHit(Geant4HitCollection* collection, EInside ended)   {
+	if( DEBUG == printLevel() ) {
+	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::extractHit(Geant4HitCollection* collection, EInside ended) ...."<<std::endl;
+	  std::cout<<" DEBUG: =================================================="<<std::endl;
+	}
+
         double deposit  = pre.truth.deposit;
         if ( current != -1 )  {
           Position pos;
@@ -244,6 +267,10 @@ namespace dd4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       G4bool process(const G4Step* step, G4TouchableHistory* )   {
         Geant4StepHandler h(step);
+	if( DEBUG == printLevel() ) {
+	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::process(const G4Step* step, G4TouchableHistory* ) ...."<<std::endl;
+	  dumpStep( h, step);
+	}
 
 	// std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
 	// 	  << " edep: " << h.deposit() << std::endl ;
@@ -260,8 +287,18 @@ namespace dd4hep {
         const void* postSD = h.postSD();
         const void* preSD  = h.preSD();
         G4VSolid* solid = (preSD == thisSD) ? preSolid : postSolid;
+        // Track went into new Volume, extracted the hit in prePV, then start a new hit in thisPV.
+        if ( current == h.trkID() && thisPV != 0 && prePV != thisPV )  {
+	  if( DEBUG == printLevel() ) {
+	    std::cout<<" DEBUG: Geant4TrackerWeightedSD: if ( current == h.trkID() && thisPV != 0 && prePV != thisPV ),"
+		     <<" Track went into new Volume, extracted the hit in prePV, then start a new hit in thisPV."
+		     << std::endl;
+	  }
+          extractHit(post_inside);
+          start(step, h.pre);
+        }
         // 1) Track killed inside SD: trace incomplete. This deposition must be added as well.
-        if ( current == h.trkID() && !h.trkAlive() )  {
+        else if ( current == h.trkID() && !h.trkAlive() )  {
           hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
           update(step).calc_dist_out(solid).extractHit(post_inside);
           return true;
@@ -365,6 +402,25 @@ namespace dd4hep {
       /// Pre event action callback
       void startEvent()   {
         thisSD = dynamic_cast<G4VSensitiveDetector*>(&sensitive->detector());
+      }
+
+      ///dumpStep
+      void dumpStep( Geant4StepHandler h, const G4Step* s){
+
+	std::cout << " ----- step in detector " << h.sdName( s->GetPreStepPoint() )
+		  << " prePos  " << h.prePos()
+		  << " postPos " << h.postPos()
+		  << " preStatus  " << h.preStepStatus()
+		  << " postStatus  " << h.postStepStatus()
+		  << " preVolume " << h.volName( s->GetPreStepPoint() )
+		  << " postVolume " << h.volName( s->GetPostStepPoint() )
+		  << std::endl
+		  << "     momentum : "  << std::scientific
+		  <<  s->GetPreStepPoint()->GetMomentum()[0] << ", " <<  s->GetPreStepPoint()->GetMomentum()[1]<< ", " <<  s->GetPreStepPoint()->GetMomentum()[2]
+		  << " / "
+		  << s->GetPostStepPoint()->GetMomentum()[0] << ", " <<  s->GetPostStepPoint()->GetMomentum()[1]<< ", " <<  s->GetPostStepPoint()->GetMomentum()[2]
+		  << ", PDG: " << s->GetTrack()->GetDefinition()->GetPDGEncoding()
+		  << std::endl ;
       }
     };
 
