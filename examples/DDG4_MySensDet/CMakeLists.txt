@@ -27,8 +27,15 @@ dd4hep_configure_scripts(DDG4_MySensDet DEFAULT_SETUP WITH_TESTS)
 if (DD4HEP_USE_GEANT4)
   #
   dd4hep_set_compiler_flags()
+  #---------------------------  Plugin library for the simulation framework  ---------
+  dd4hep_add_dictionary(G__DDG4_MySensDet
+    SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/MyTrackerHit.h
+    LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
+    )
+
   #----  Example of a client library with user defined plugins  --------------------
   dd4hep_add_plugin( DDG4_MySensDet
+    GENERATED G__DDG4_MySensDet.cxx
     SOURCES   src/*.cpp
     USES      [GEANT4 REQUIRED]
               [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]

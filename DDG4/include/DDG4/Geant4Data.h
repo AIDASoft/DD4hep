@@ -118,11 +118,11 @@ namespace dd4hep {
         HIT_ENDED_OUTSIDE   = 1<<15
       };
       /// cellID
-      long long int cellID;
+      long long int cellID = 0;
       /// User flag to classify hits
-      long flag;
+      long flag = 0;
       /// Original Geant 4 track identifier of the creating track (debugging)
-      long g4ID;
+      long g4ID = -1;
       /// User data extension if required
 #ifdef DD4HEP_DD4HEP_PTR_AUTO
       dd4hep_ptr<DataExtension> extension;
