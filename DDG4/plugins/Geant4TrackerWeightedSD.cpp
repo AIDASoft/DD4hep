@@ -118,11 +118,11 @@ namespace dd4hep {
 
       /// Start a new hit
       TrackerWeighted& start(const G4Step* step, const G4StepPoint* point)   {
-	if( DEBUG == printLevel() ) {
-	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::start(const G4Step* step, const G4StepPoint* point) ...."<<std::endl;
-	  Geant4StepHandler h(step);
-	  dumpStep( h, step);
-	}
+        if( DEBUG == printLevel() ) {
+          std::cout<<" DEBUG: Geant4TrackerWeightedSD::start(const G4Step* step, const G4StepPoint* point) ...."<<std::endl;
+          Geant4StepHandler h(step);
+          dumpStep( h, step);
+        }
 
         clear();
         pre.storePoint(step,point);
@@ -142,11 +142,11 @@ namespace dd4hep {
 
       /// Update energy and track information during hit info accumulation
       TrackerWeighted& update(const G4Step* step)   {
-	if( DEBUG == printLevel() ) {
-	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::update(const G4Step* step) ...."<<std::endl;
-	  Geant4StepHandler h(step);
-	  dumpStep( h, step);
-	}
+        if( DEBUG == printLevel() ) {
+          std::cout<<" DEBUG: Geant4TrackerWeightedSD::update(const G4Step* step) ...."<<std::endl;
+          Geant4StepHandler h(step);
+          dumpStep( h, step);
+        }
 
         post.storePoint(step,step->GetPostStepPoint());
         Position mean    = (post.position+pre.position)*0.5;
@@ -196,10 +196,10 @@ namespace dd4hep {
       }
 
       void extractHit(Geant4HitCollection* collection, EInside ended)   {
-	if( DEBUG == printLevel() ) {
-	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::extractHit(Geant4HitCollection* collection, EInside ended) ...."<<std::endl;
-	  std::cout<<" DEBUG: =================================================="<<std::endl;
-	}
+        if( DEBUG == printLevel() ) {
+          std::cout<<" DEBUG: Geant4TrackerWeightedSD::extractHit(Geant4HitCollection* collection, EInside ended) ...."<<std::endl;
+          std::cout<<" DEBUG: =================================================="<<std::endl;
+        }
 
         double deposit  = pre.truth.deposit;
         if ( current != -1 )  {
@@ -267,13 +267,13 @@ namespace dd4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       G4bool process(const G4Step* step, G4TouchableHistory* )   {
         Geant4StepHandler h(step);
-	if( DEBUG == printLevel() ) {
-	  std::cout<<" DEBUG: Geant4TrackerWeightedSD::process(const G4Step* step, G4TouchableHistory* ) ...."<<std::endl;
-	  dumpStep( h, step);
-	}
+        if( DEBUG == printLevel() ) {
+          std::cout<<" DEBUG: Geant4TrackerWeightedSD::process(const G4Step* step, G4TouchableHistory* ) ...."<<std::endl;
+          dumpStep( h, step);
+        }
 
-	// std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
-	// 	  << " edep: " << h.deposit() << std::endl ;
+        // std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
+        // 	  << " edep: " << h.deposit() << std::endl ;
 
         G4VSolid*     preSolid    = h.solid(h.pre);
         G4VSolid*     postSolid   = h.solid(h.post);
@@ -289,11 +289,11 @@ namespace dd4hep {
         G4VSolid* solid = (preSD == thisSD) ? preSolid : postSolid;
         // Track went into new Volume, extracted the hit in prePV, then start a new hit in thisPV.
         if ( current == h.trkID() && thisPV != 0 && prePV != thisPV )  {
-	  if( DEBUG == printLevel() ) {
-	    std::cout<<" DEBUG: Geant4TrackerWeightedSD: if ( current == h.trkID() && thisPV != 0 && prePV != thisPV ),"
-		     <<" Track went into new Volume, extracted the hit in prePV, then start a new hit in thisPV."
-		     << std::endl;
-	  }
+          if( DEBUG == printLevel() ) {
+            std::cout<<" DEBUG: Geant4TrackerWeightedSD: if ( current == h.trkID() && thisPV != 0 && prePV != thisPV ),"
+                     <<" Track went into new Volume, extracted the hit in prePV, then start a new hit in thisPV."
+                     << std::endl;
+          }
           extractHit(post_inside);
           start(step, h.pre);
         }
@@ -405,22 +405,25 @@ namespace dd4hep {
       }
 
       ///dumpStep
-      void dumpStep( Geant4StepHandler h, const G4Step* s){
-
-	std::cout << " ----- step in detector " << h.sdName( s->GetPreStepPoint() )
-		  << " prePos  " << h.prePos()
-		  << " postPos " << h.postPos()
-		  << " preStatus  " << h.preStepStatus()
-		  << " postStatus  " << h.postStepStatus()
-		  << " preVolume " << h.volName( s->GetPreStepPoint() )
-		  << " postVolume " << h.volName( s->GetPostStepPoint() )
-		  << std::endl
-		  << "     momentum : "  << std::scientific
-		  <<  s->GetPreStepPoint()->GetMomentum()[0] << ", " <<  s->GetPreStepPoint()->GetMomentum()[1]<< ", " <<  s->GetPreStepPoint()->GetMomentum()[2]
-		  << " / "
-		  << s->GetPostStepPoint()->GetMomentum()[0] << ", " <<  s->GetPostStepPoint()->GetMomentum()[1]<< ", " <<  s->GetPostStepPoint()->GetMomentum()[2]
-		  << ", PDG: " << s->GetTrack()->GetDefinition()->GetPDGEncoding()
-		  << std::endl ;
+      void dumpStep(const Geant4StepHandler& h, const G4Step* s)  {
+        std::cout << " ----- step in detector " << h.sdName( s->GetPreStepPoint() )
+                  << " prePos  " << h.prePos()
+                  << " postPos " << h.postPos()
+                  << " preStatus  " << h.preStepStatus()
+                  << " postStatus  " << h.postStepStatus()
+                  << " preVolume " << h.volName( s->GetPreStepPoint() )
+                  << " postVolume " << h.volName( s->GetPostStepPoint() )
+                  << std::endl
+                  << "     momentum : "  << std::scientific
+                  <<  s->GetPreStepPoint()->GetMomentum()[0] << ", "
+                  <<  s->GetPreStepPoint()->GetMomentum()[1]<< ", "
+                  <<  s->GetPreStepPoint()->GetMomentum()[2]
+                  << " / "
+                  << s->GetPostStepPoint()->GetMomentum()[0] << ", "
+                  <<  s->GetPostStepPoint()->GetMomentum()[1] << ", "
+                  <<  s->GetPostStepPoint()->GetMomentum()[2]
+                  << ", PDG: " << s->GetTrack()->GetDefinition()->GetPDGEncoding()
+                  << std::endl ;
       }
     };
 

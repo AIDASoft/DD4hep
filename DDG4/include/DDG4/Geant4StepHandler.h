@@ -59,8 +59,14 @@ namespace dd4hep {
         track = s->GetTrack();
         applyBirksLaw = false;
       }
+      /// No copy constructor
+      Geant4StepHandler(const Geant4StepHandler& copy) = delete;
+      /// No move constructor
+      Geant4StepHandler(Geant4StepHandler&& copy) = delete;
       /// Assignment operator inhibited. Should not be copied
       Geant4StepHandler& operator=(const Geant4StepHandler& copy) = delete;
+      /// Move operator inhibited. Should not be copied
+      Geant4StepHandler& operator=(Geant4StepHandler&& copy) = delete;
       
       G4ParticleDefinition* trackDef() const {
         return track->GetDefinition();
