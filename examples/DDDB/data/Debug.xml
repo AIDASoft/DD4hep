@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<DDDB> 
+  <config type="CondDB2DDDB">
+    <param name="print_file_load"      value="false"/>
+    <param name="print_xml"            value="false"/>
+    <param name="print_docs"           value="false"/>
+    <param name="print_materials"      value="false"/>
+    <param name="print_logvol"         value="false"/>
+    <param name="print_shapes"         value="false"/>
+    <param name="print_physvol"        value="false"/>
+    <param name="print_params"         value="false"/>
+    <param name="print_detelem"        value="false"/>
+    <param name="print_detelem_ref"    value="false"/>
+    <param name="print_detelem_xml"    value="false"/>
+    <param name="print_condition"      value="false"/>
+    <param name="print_condition_ref"  value="false"/>
+    <param name="print_catalog"        value="false"/>
+    <param name="print_catalog_ref"    value="false"/>
+    <param name="print_tabprop"        value="false"/>
+    <param name="print_tree_on_error"  value="false"/>
+    <param name="print_eval_error"     value="false"/>
+  </config>
+
+  <config type="DDDB2Objects">
+    <param name="print_materials"      value="false"/>
+    <param name="print_logvol"         value="false"/>
+    <param name="print_shapes"         value="false"/>
+    <param name="print_physvol"        value="false"/>
+    <param name="print_params"         value="false"/>
+    <param name="print_detelem"        value="false"/>
+    <param name="print_condition"      value="false"/>
+    <param name="print_vis"            value="false"/>
+    <param name="max_volume_depth"     value="9"/>
+  </config>
+</DDDB> 
