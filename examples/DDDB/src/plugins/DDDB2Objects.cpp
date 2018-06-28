@@ -23,6 +23,7 @@
 #include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBConversion.h"
+#include "DDDBConfig.h"
 
 #include "DD4hep/Detector.h"
 #include "DD4hep/Path.h"
@@ -51,27 +52,22 @@ namespace dd4hep {
 
   /// Keep all in here anonymous. Does not have to be visible outside.
   namespace  {
+    static DDDB2Objects::PrintConfig s_config;
+  }
+  
+  /// Access global instance for xml configuration
+  DDDB2Objects::PrintConfig& DDDB2Objects::PrintConfig::instance()   {
+    return s_config;
+  }
+  
+  /// Keep all in here anonymous. Does not have to be visible outside.
+  namespace  {
 
     struct DDDBDetElem;
-
     typedef detail::ConditionObject GeoCondition;
     typedef cond::ConditionsManager ConditionsManager;
     typedef cond::ConditionsPool    ConditionsPool;
     typedef cond::AbstractMap       AbstractMap;
-
-    /// Printout steering for debugging
-    struct PrintFlags  {
-      bool              materials  = false;
-      bool              volumes    = false;
-      bool              logvol     = false;
-      bool              shapes     = false;
-      bool              physvol    = false;
-      bool              params     = false;
-      bool              detelem    = false;
-      bool              conditions = false;
-      bool              vis        = false;
-    };
-    static PrintFlags s_printFlags;
 
     /// Helper class to facilitate conversion. Purely local.
     struct Context  {
@@ -79,7 +75,7 @@ namespace dd4hep {
 
       Context(Detector& l, DDDB::DDDBHelper* h) : description(l), geo(h->detectorDescription()), helper(h)     {
         reader = h->reader<DDDB::DDDBReader>();
-	print  = s_printFlags;
+        print  = s_config;
       }
       ~Context()  {
         //printout(INFO,"Context","Destructor calling....");
@@ -115,11 +111,10 @@ namespace dd4hep {
       DetElement        detectors;
       DetectorMap       catalogPaths;
       DetectorElements  detelements;
-      Volume         lvDummy;
+      Volume            lvDummy;
       ConditionsManager manager;
       const IOVType*    epoch = 0;
-      PrintFlags        print;
-      int               max_volume_depth = 9999;
+      DDDB2Objects::PrintConfig  print;
       int               unmatched_deltas = 0;
       int               delta_conditions = 0;
       int               matched_conditions = 0;
@@ -584,7 +579,7 @@ namespace dd4hep {
       Volume mother = Context::find(context->volumes, object);
 
       if ( !mother.isValid() )  {
-        if ( depth.counter() >= context->max_volume_depth )   {
+        if ( depth.counter() >= context->print.max_volume_depth )   {
           mother = context->lvDummy;
           context->volumes.insert(make_pair(object, mother.ptr()));
           context->volumePaths[object->path] = mother.ptr();
@@ -1014,7 +1009,7 @@ namespace dd4hep {
 
         if ( obj->top )   {
           if ( !context->lvDummy.isValid() )   {
-            description.manager().SetVisLevel(context->max_volume_depth);
+            description.manager().SetVisLevel(context->print.max_volume_depth);
             context->lvDummy = Volume("Dummy",Box(0.0001,0.0001, 0.0001),description.vacuum());
             context->lvDummy.setVisAttributes(description.invisible());
           }
@@ -1067,17 +1062,6 @@ namespace dd4hep {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
         Context context(description, helper);
-        context.print.materials     = false;
-        context.print.logvol        = false;
-        context.print.shapes        = false;
-        context.print.physvol       = false;
-        context.print.volumes       = false;
-        context.print.params        = false;
-        context.print.detelem       = false;
-        context.print.conditions    = false;
-        context.print.vis           = false;
-        context.max_volume_depth    = 11;
-
         CNV<dddb> cnv(description,&context);
         cnv(make_pair(string("World"),context.geo));
         printout(INFO,"DDDB","+========================= Conversion summary =========================+");
@@ -1108,8 +1092,8 @@ namespace dd4hep {
       DDDBHelper* helper = description.extension<DDDBHelper>(false);
       if ( helper )   {
         Context context(description, helper);
-        context.print.conditions    = false;
-        context.conditions_only     = true;
+        context.print.condition = false;
+        context.conditions_only = true;
         CNV<dddb> cnv(description,&context);
         cnv(make_pair(string(),context.geo));
         helper->setDetectorDescription(0);
