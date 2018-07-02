@@ -9,7 +9,7 @@
 -->
   <define>
     <constant name="COBEX_beam_angle" value="60*degree"/>
-    <constant name="COBEX_cone_len" value="40*m"/>
+    <constant name="COBEX_cone_len" value="50*m"/>
   </define> 
 
   <comment>Common Generic visualization attributes</comment>
@@ -28,11 +28,13 @@
   <!--  Includes for sensitives and support                -->
   <detectors>
 
-    <detector name="COBEXb" type="DD4hep_CODEXb" vis="Codex_Envelope_Vis">
-      <envelope angle="COBEX_beam_angle" dz="COBEX_cone_len" rmax="4*m"/>
-      <shield name="Pb-shield-1" z="7*m"   dz="1.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
+    <detector id="1" name="CODEXb" type="DD4hep_CODEXb" vis="Codex_Envelope_Vis" readout="CodexHits">
+<!-- limits="codex_limits" -->
+
+      <envelope angle="COBEX_beam_angle" dz="COBEX_cone_len" rmax="8*m"/>
+      <shield name="Pb-shield-1" z="7*m"   dz="1.5*m" material="Lead" sensitive="true" vis="Codex_Shield_Pb_Vis"/>
       <shield name="Shield-veto" z="8.5*m" dz="0.1*m" material="Si"   sensitive="true"  vis="Codex_Shield_Veto_Vis"/>
-      <shield name="Pb-shield-2" z="8.6*m" dz="0.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
+      <shield name="Pb-shield-2" z="8.6*m" dz="0.5*m" material="Lead" sensitive="true" vis="Codex_Shield_Pb_Vis"/>
 
       <station z="12*m" width="10*m" height="10*m" thickness="2*cm" 
                material="Si" sensitive="true" vis="Codex_Module1_Vis"
@@ -49,5 +51,19 @@
 
     </detector>
   </detectors>
+  <limits>
+    <limitset name="codex_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+  <readouts>
+    <readout name="CodexHits">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm" />
+      <id>system:8,type:3,station:10,x:32:-16,y:-16</id>
+    </readout>        
+  </readouts>
+
+  <fields>
+  </fields>
 
 </lccdd>

@@ -363,6 +363,7 @@ UNICODE (rmin);
 UNICODE (rmin1);
 UNICODE (rmin2);
 UNICODE (RL);
+UNICODE (rootFile);
 UNICODE (row);
 UNICODE (rpc);
 UNICODE (RowID);
