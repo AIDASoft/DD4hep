@@ -25,7 +25,7 @@ dd4hep_add_plugin(DDCodexPlugins
 )
 #
 #
-dd4hep_install_dir( compact python DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
+dd4hep_install_dir( compact python eve DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
 dd4hep_install_files(FILES Upgrade.root DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
 #--------------------------------------------------------------------------
 #

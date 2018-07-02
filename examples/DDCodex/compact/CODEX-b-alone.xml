@@ -1,0 +1,44 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <!-- Have the materials    -->
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <!--  Define the world box  -->
+    <constant name="world_side" value="50000*mm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+  </define>
+  <display>
+    <vis name="BeamPipeVis" r="0.0" g="0.99" b="0.0" showDaughters="false" visible="true"/>
+    <vis name="WALL_vis" alpha="0.6" r="0.5" g="0.5" b="0.5" showDaughters="true" visible="true"/>
+    <vis name="B2_vis" alpha="0.6" r="0" g="0.5" b="0.5" showDaughters="true" visible="true"/>
+  </display>
+  <detectors>
+    <include ref="CODEX-b.xml" type="xml"/>
+    <detector id="3" name="LHCb" type="DD4hep_BoxSegment" vis="B2_vis">
+      <material name="Air"/>
+      <box      x="1000*cm"  y="1000*cm"   z="2500*cm"/>
+      <position x="0" y="0"   z="1000*cm"/>
+      <rotation x="0" y="0"   z="0"/>
+    </detector>
+    <detector id="4" name="WALL" type="DD4hep_BoxSegment" vis="WALL_vis">
+      <material name="Air"/>
+      <box      x="200*cm"  y="1000*cm"   z="2500*cm"/>
+      <position x="1210*cm" y="0"   z="1000*cm"/>
+      <rotation x="0" y="0"   z="0"/>
+    </detector>
+    <detector name="Beampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+      <material name="Be" />
+      <tubs rmin="5*cm" rmax="5.1*cm" zhalf="2600*cm" />
+      <position x="0" y="0"   z="1000*cm"/>
+      <rotation x="0" y="0"   z="0"/>
+    </detector>
+  </detectors>
+</lccdd>
