@@ -108,3 +108,22 @@ root [2] gDD4hepUI->draw()
 Info in <TGeoManager::SetVisLevel>: Automatic visible depth disabled
 Info in <TCanvas::MakeDefCanvas>:  created default TCanvas with name c1
 root [3] 
+
+
+
+Running Standalone
+==================
+
+Display:
+
+$> geoDisplay -input file:checkout/examples/DDCodex/compact/CODEX-b-alone.xml
+
+DDG4 simulation:
+
+$> python ../DD4hep//examples/DDCodex/python/CODEX-b-alone.py
+
+Visualisation of the hits:
+
+$> root.exe ../DD4hep/examples/DDEve/DDEve.C
+
+
