@@ -1,3 +1,276 @@
+# v01-08
+
+* 2018-07-02 Markus Frank ([PR#418](https://github.com/aidasoft/dd4hep/pull/418))
+  - Add DDCodexB in standalone mode with simulation script and basic skeleton for DDEve
+
+* 2018-06-28 Markus Frank ([PR#417](https://github.com/aidasoft/dd4hep/pull/417))
+  - Steer debug printouts in CondDB2DDDB and DDDB2Objects by parsing xml files.
+
+* 2018-06-26 Markus Frank ([PR#416](https://github.com/aidasoft/dd4hep/pull/416))
+  - Separate the hit class and add dictionary. No base class - entirely independent.
+  - Allow to save the hit class to ROOT (but without MC truth)
+    See MyTrackerHit.h for details.
+
+* 2018-06-26 Markus Frank ([PR#415](https://github.com/aidasoft/dd4hep/pull/415))
+  - Add small example how to specialize a new sensitive action and attach it to a detector in DDG4.
+
+* 2018-06-26 Frank Gaede ([PR#414](https://github.com/aidasoft/dd4hep/pull/414))
+  - bug fix in Geant4EventReaderGuineaPig
+       - fix ignoring input lines with 'nan'
+
+* 2018-06-26 Shaojun Lu ([PR#412](https://github.com/aidasoft/dd4hep/pull/412))
+  - Added one more if statement: If the track went into new Volume, 
+    - then extracted the hit in previous Volume,
+    - and start a new hit in this current Volume,
+      - in this current process, also allow the same following treatments for the new hit.
+
+* 2018-06-21 Markus Frank ([PR#409](https://github.com/aidasoft/dd4hep/pull/409))
+  - Support out-of-source builds of DD4hep examples.
+    Comes with an expense: A new environment DD4hepExamplesINSTALL.
+    has to be defined to support internal file accesses and loads.
+    The builds were also checked with read-only installation directories.
+    Solves issue https://github.com/AIDASoft/DD4hep/issues/382
+  - Smallish improvement to the ConditionsManager.
+
+* 2018-06-21 Andre Sailer ([PR#408](https://github.com/aidasoft/dd4hep/pull/408))
+  - Cmake: fix for configuring with Geant4 with internal CLHEP, fixes #406 
+  - Cmake: fix for configuring with BUILD_TESTING=OFF, fixes #407
+
+* 2018-06-07 Markus Frank ([PR#404](https://github.com/aidasoft/dd4hep/pull/404))
+  - Fix basic shape tests for PseudoTrap
+
+* 2018-06-07 Markus Frank ([PR#403](https://github.com/aidasoft/dd4hep/pull/403))
+  - patch for truncated tubes shapes.
+
+* 2018-06-04 Markus Frank ([PR#402](https://github.com/aidasoft/dd4hep/pull/402))
+  - Fix truncated tube shape
+
+* 2018-06-04 Markus Frank ([PR#400](https://github.com/aidasoft/dd4hep/pull/400))
+  - Allow for world volumes other than boxes. See `examples/ClientTests/compact/WorldVolume.xml` how to set it up. The effective thing is that the top level volume must be set to the TGeoManager before `Detector::init()`. If a top level volume is set, it is implicitly assumed to be the world volume. Otherwise the already existing mechanism (box volume) is activated.
+  - Add new basic shape tests.
+
+* 2018-06-01 Markus Frank ([PR#399](https://github.com/aidasoft/dd4hep/pull/399))
+  - As discussed in issue #398 The use of TGeoUnits is inconvenient. The dd4hep units are now exposed in the python modules.
+  - Basic shapes are now tested in the regular ctest executions. The mesh vertices of the shapes were 
+  saved to a reference file and are compared to in subsequent runs. The reference files reside in 
+  `examples/ClienTests/ref`. See `examples/ClientTests/compact/Check_Shape_*.xml` for details.
+  - The ROOT UI  and some dump plugins were enhanced to expose more information.
+
+* 2018-05-30 Markus Frank ([PR#397](https://github.com/aidasoft/dd4hep/pull/397))
+  - Enable to start DDG4 using a saved detector description in a ROOT file.
+     -  Added corresponding test: `Persist_CLICSiD_Geant4_LONGTEST`
+  - Fix shape constructors for Trap and PseudoTrap
+  - The python module `DD4hep.py` is gone as discussed in the developers meeting use `dd4hep.py` instead.
+      - on masOS : your "git pull" possibly deletes both files. you may have to checkout `dd4hep.py` again, due to fact that the filesystem is case-insensitive. 
+  - Add example for LHCb CODEX-b.
+
+* 2018-05-29 Markus Frank ([PR#394](https://github.com/aidasoft/dd4hep/pull/394))
+  - Consistently handle cmake command line options in case no Geant4 or no documentation should be built.
+
+* 2018-05-28 Markus Frank ([PR#393](https://github.com/aidasoft/dd4hep/pull/393))
+  - Improvements to `geoPluginRun`.
+    `$> geoPluginRun -ui -interactive`
+    results in DD4hep enabled ROOT prompt.
+  - DD4hepUI: improvements to interact with DD4hep instance from ROOT prompt
+  - DDDB improve configuration for printing and debugging
+  - DDDB: allow to block certain XML branches
+
+* 2018-05-22 Frank Gaede ([PR#389](https://github.com/aidasoft/dd4hep/pull/389))
+  - fix bug in input handling, for details see discussion #387 
+     - exclude leptons with zero lifetime from Geant4
+
+* 2018-05-22 Markus Frank ([PR#388](https://github.com/aidasoft/dd4hep/pull/388))
+  - Update doxygen information for some undocumented classes. 
+   - Add licence header to files where not present.
+
+* 2018-05-22 Marko Petric ([PR#380](https://github.com/aidasoft/dd4hep/pull/380))
+  - Update LICENSE to LGPLv3
+    - The name of the file containing the LICENSE has ben changed from LICENCE->LICENSE as all source files reference `For the licensing terms see $DD4hepINSTALL/LICENSE.`
+
+* 2018-05-16 Markus Frank ([PR#386](https://github.com/aidasoft/dd4hep/pull/386))
+  - Fix bug in variable order of `ExtrudedPolygon` (x<->y)
+
+* 2018-05-15 Markus Frank ([PR#384](https://github.com/aidasoft/dd4hep/pull/384))
+  # Implementation of non-cylindrical tracking region (resolves #371)
+    -  It is possible to define volumes in a parallel world such as e.g. a tracking region. In principle any volume hierarchy may be attached to the parallel world. None of these volumes participate in the tracking as long as the "connected" attribute is set to false. The hierarchy of parallel world volumes can be accessed from the main detector object using
+       ```cpp
+       dd4hep::Volume parallel = dd4hep::Description::parallelWorldVolume()
+       ```
+    This parallel world volume is created when the geometry is opened together (and with the same dimensions) as the world volume itself.
+    -  IF the NAME of the volumes is "tracking_volume" within the compact notation it is declared as the Detector's trackingVolume entity and is accessible as well:
+       ```cpp
+       dd4hep::Volume trackers = dd4hep::Description::trackingVolume()
+       ```
+    -  Although the concept is available in the DD4hep core, it's configuration from XML is only implemented for the compact notation. For details see the example `examples/ClientTests/compact/TrackingRegion.xml`.
+     -  If the volume should be connected to the world:   connected="true". This is useful for debugging because  the volume can be visualized else if the volume is part of the parallelworld: connected="false". The volume is always connected to the top level. The anchor detector element defines the base transformation to place the volume within the (parallel) world.
+  
+  ```xml
+       <parallelworld_volume name="tracking_volume" anchor="/world" material="Air" connected="true" vis="VisibleBlue">
+         <shape type="BooleanShape" operation="Subtraction">
+           <shape type="BooleanShape" operation="Subtraction">
+             <shape type="BooleanShape" operation="Subtraction"  >
+               <shape type="Tube" rmin="0*cm" rmax="100*cm" dz="100*cm"/>
+               <shape type="Cone" rmin2="0*cm" rmax2="60*cm" rmin1="0*cm" rmax1="30*cm" z="40*cm"/>
+               <position x="0*cm" y="0*cm" z="65*cm"/>
+             </shape>
+             <shape type="Cone" rmin1="0*cm" rmax1="60*cm" rmin2="0*cm" rmax2="30*cm" z="40*cm"/>
+             <position x="0" y="0" z="-65*cm"/>
+           </shape>
+           <shape type="Cone" rmin2="0*cm" rmax2="55*cm" rmin1="0*cm" rmax1="55*cm" z="30*cm"/>
+           <position x="0" y="0" z="0*cm"/>
+         </shape>
+         <position x="0*cm"   y="50*cm" z="0*cm"/>
+         <rotation x="pi/2.0" y="0"     z="0"/>
+       </parallelworld_volume>
+  ```
+  
+  
+  # Enhancement of assemblies, regions and production cuts (resolves #373)
+  On request from FCC particle specific production cuts may be specified in the compact notation. These production cuts (Geant4 currently supports these for e+, e-, gammas and protons) are specified as "cut" entities in the limitset. (See the example `examples/ClientTests/compact/Assemblies.xml`).
+  
+    - The hierarchy of cuts being applied is:
+        - If present particle specific production cuts for a region are applied.
+        - else the "cut" attribute of the compact region specification is used
+        - else the global Geant4 cut is automaticallly applied by Geant4.
+  
+  ```xml
+    <limits>
+      <limitset name="VXD_RegionLimitSet">
+        <!--
+             These are particle specific limits applied to the region
+             ending in Geant4 in a G4UserLimits instance
+        -->
+        <limit name="step_length_max"  particles="*" value="5.0" unit="mm" />
+        <limit name="track_length_max" particles="*" value="5.0" unit="mm" />
+        <limit name="time_max"         particles="*" value="5.0" unit="ns" />
+        <limit name="ekin_min"         particles="*" value="0.01" unit="MeV" />
+        <limit name="range_min"        particles="*" value="5.0" unit="mm" />
+  
+        <!--
+             These are particle specific production cuts applied to the region
+             ending in Geant4 in a G4ProductionCuts instance
+        -->
+        <cut   particles="e+"          value="2.0"   unit="mm" />
+        <cut   particles="e-"          value="2.0"   unit="mm" />
+        <cut   particles="gamma"       value="5.0"   unit="mm" />
+      </limitset>
+    </limits>
+  ```
+  
+  # SensitiveDetector types not changed by Geant4SensDetActionSequence (resolves #378)
+  The sensitive detector type defined in the detector constructors is no longer changed intransparently in the back of the users. This may have side-effects for creative detector constructor writers, who invent sd types out of the sky. These obviously will not work with Geant4, because in Geant4 a mapping of these types must be applied to supported sensitive detectors. Now the mapping of a sd type (e.g. "tracker") is strict in the python setup. The default factory to create any sensitive detector instance in Geant4 (ie. an object of type G4VSensitiveDetector, G4VSDFilter, Geant4ActionSD) is a property of the Geant4Kernel  instance and defaults to:
+    ```cpp
+     declareProperty("DefaultSensitiveType", m_dfltSensitiveDetectorType = "Geant4SensDet");
+    ```
+     - Since the actual behavior is defined in the sequencer instanciated therein this default should be sufficient for 99.99 % of all cases. Otherwise the factory named "Geant4SensDet" may be overloaded.
+
+* 2018-05-15 David Blyth ([PR#379](https://github.com/aidasoft/dd4hep/pull/379))
+  - Geant4FieldTrackingConstruction now properly overrides `constructField()`
+
+* 2018-05-03 David Blyth ([PR#377](https://github.com/aidasoft/dd4hep/pull/377))
+  - Geant4Handle unhandled reference to shared actions.  This affected the destruction of shared actions.
+
+* 2018-05-03 Markus Frank ([PR#375](https://github.com/aidasoft/dd4hep/pull/375))
+  - Development of a small user example on how to do analysis in `DDG4`.
+     - See `examples/DDG4/src/HitTupleAction.cpp`
+     - Simply collect the energy deposits of hits and write an N-tuple with them.
+     - The example shows how to access the hit collections and to extract the data in order to write other more sophisticated analyses.
+  
+   - This `DDG4` action is used in one of the Minitel examples: `examples/ClientTests/srcipts/MiniTelEnergyDeposits.py`
+
+* 2018-05-02 Markus Frank ([PR#374](https://github.com/aidasoft/dd4hep/pull/374))
+  - recommission the multithreaded SiD example 
+     - `DDG4/examples/SiDSim_MT.py` vs. `DDG4/examples/SiDSim.py`
+
+* 2018-04-19 Markus Frank ([PR#370](https://github.com/aidasoft/dd4hep/pull/370))
+  * Allow to disable building the documentation cmake option BUILD_DOCS. By default ON and backwards compatible. If set to OFF no doc shall be built. (not everybody has biber installed)
+  * Move from `DD4hep.py` to `dd4hep.py`, since `DD4hep.py` has to disappear due to conflicts on MAC.
+
+* 2018-04-13 Markus Frank ([PR#367](https://github.com/aidasoft/dd4hep/pull/367))
+  - resolves #361
+    The Detector object has a state `Detector::state()` with three values:
+    ```cpp
+      /// The detector description states
+      enum State   {
+        /// The detector description object is freshly created. No geometry nothing.
+        NOT_READY = 1<<0,
+        /// The geometry is being created and loaded. (parsing ongoing)
+        LOADING   = 1<<1,
+        /// The geometry is loaded.
+        READY     = 1<<2
+      };
+    ```
+      It starts with `NOT_READY`, moves to `LOADING` once the geometry is opened and goes to `READY` once the geometry is closed. As suggested in the developers meeting: the initial field object is invalid and gets created only once the geometry is opened. As a corollary, the field may not be accessed before. Geometry parsers must take this behavior into account! 
+  
+  - Address some compiler warnings.
+    - Mainly add override/final statements in header files.
+  - Implement a module to invoke python as a DD4hep plugin:
+    invoked e.g. by: `geoPluginRun -plugin DD4hep_Python -dd4hep -prompt`
+    ```
+    geoPluginRun -plugin DD4hep_Python -help
+    Usage: -plugin <name> -arg [-arg]                                                  
+       name:   factory name     DD4hep_Python                                        
+       -import  <string>        import a python module, making its classes available.
+       -macro   <string>        load a python script as if it were a macro.          
+       -exec    <string>        execute a python statement (e.g. import ROOT.    
+       -eval    <string>        evaluate a python expression (e.g. 1+1)          
+       -prompt                  enter an interactive python session (exit with ^D)   
+       -dd4hep                  Equivalent to -exec "import dd4hep"                
+       -help                    Show this online help message.                       
+  
+       Note: entries can be given multiple times and are executed in exactly the     
+             order specified at the command line!                      
+    ```
+    Implementation wise the plugin is a simple CLI wrapper for TPython.
+
+* 2018-04-12 Marko Petric ([PR#362](https://github.com/aidasoft/dd4hep/pull/362))
+  - Update DD4hepManual
+
+* 2018-04-12 Markus Frank ([PR#360](https://github.com/aidasoft/dd4hep/pull/360))
+  - Examples: only build some examples depending on the availability of dependencies.
+  - DDCore: Add interface to allow URI blocking during file parsing. Default is as now.
+  - DDCMS: Add conversion of new shapes.
+
+* 2018-04-10 Markus Frank ([PR#359](https://github.com/aidasoft/dd4hep/pull/359))
+  - Bunch of fixes. Mostly in `examples/DDDB`
+  - Only build `examples/DDDB` if XercesC is present.
+  - Only build `examples/DDCMS` if CLHEP is present
+
+* 2018-04-09 Markus Frank ([PR#357](https://github.com/aidasoft/dd4hep/pull/357))
+  - Add configuration options for loading DDDB
+
+* 2018-04-05 Markus Frank ([PR#351](https://github.com/aidasoft/dd4hep/pull/351))
+  - To avoid unwanted disappearing conditions sub pools, a conditions slice may be instructed to collect shared references to the used pools in the slice.
+  - For python:
+    - Move DDG4/SystemOfUnits.py to DDG4/g4units.py
+      Keep SystemOfUnits.py with deprecation warning
+    - move DD4hep.py to dd4hep.py. 
+      import dd4hep also imports all TGeoUnit units into its namespace.
+      Hence: import dd4hep; print dd4hep.m  gives: "100.0"
+    - DD4hep.py is kept for backwards compatibility issuing a deprecation warning
+    - DDG4.py: imports g4units    as G4Units:         DDG4.G4Units.m etc.
+    - DDG4.py: imports TGeoUnit as TGeo4Units:  DDG4.TGeoUnits.m etc.
+    - Some problem with replacing DD4hepUnits.h with TGeoSystemOfUnits.h
+      Surface test complains. To be investigated. Keep old DD4hepUnits for the time being.
+
+* 2018-04-05 Markus Frank ([PR#350](https://github.com/aidasoft/dd4hep/pull/350))
+  - Merge `DDCMS` and `DDCMSTests` to `DDCMS`
+  - Move `DDDB` to the `examples/`
+  - Add tests `DDDB_DeVelo` and `DDDB_DeVelo_Gaudi` missing from #349
+
+* 2018-04-05 Markus Frank ([PR#349](https://github.com/aidasoft/dd4hep/pull/349))
+  - Resolves #339 
+  - DDDB conditions had a bug when loading from file base. The IOV was not handled properly. Now the resulting IOV is configurable using properties.
+  - Added Gaudi like example use case for options handling with the DeVelo detector elements.
+  - Configuration improvement in DDG4 action Output2ROOT:
+    - New property "DisableParticles" allows to suppress the MCParticle record from being written to the ROOT file.
+    - dto. the option "DisabledCollections" allows to NOT write any hit collection.
+    - Unit tests for these options are not (yet) present.
+  - DDCond: allow for user defined conditions cleanup policies. Base class `dd4hep::cond::ConditionsCleanup`. Callbacks are issued to the class for IOV type pools and IOV dependent pools asking if the pools should be processed.
+
+* 2018-04-05 Marko Petric ([PR#344](https://github.com/aidasoft/dd4hep/pull/344))
+  - Move `DDCMS` into examples as it is not core functionality
+
 # v01-07-02
 
 * 2018-06-26 Frank Gaede [PR#413](https://github.com/AIDASoft/DD4hep/pull/413)
