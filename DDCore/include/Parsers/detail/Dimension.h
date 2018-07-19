@@ -554,29 +554,33 @@ namespace dd4hep {
 
       /// Access child element with tag "dimensions" as Dimension object
       Dimension dimensions(bool throw_if_not_present = true) const;
-      /// Child access: position
+      /// Access child element with tag "params" as Dimension object
+      Dimension params(bool throw_if_not_present = true) const;
+      /// Access child element with tag "parameters" as Dimension object
+      Dimension parameters(bool throw_if_not_present = true) const;
+      /// Access child element with tag "position" as Dimension object
       Dimension position(bool throw_if_not_present = true) const;
-      /// Child access: rotation
+      /// Access child element with tag "rotation" as Dimension object
       Dimension rotation(bool throw_if_not_present = true) const;
-      /// Child access: cone
+      /// Access child element with tag "cone" as Dimension object
       Dimension cone(bool throw_if_not_present = true) const;
-      /// Child access: sphere
+      /// Access child element with tag "sphere" as Dimension object
       Dimension sphere(bool throw_if_not_present = true) const;
-      /// Child access: torus
+      /// Access child element with tag "torus" as Dimension object
       Dimension torus(bool throw_if_not_present = true) const;
-      /// Child access: trap
+      /// Access child element with tag "trap" as Dimension object
       Dimension trap(bool throw_if_not_present = true) const;
-      /// Child access: trapezoid
+      /// Access child element with tag "trapezoid" as Dimension object
       Dimension trapezoid(bool throw_if_not_present = true) const;
-      /// Child access: trd
+      /// Access child element with tag "trd" as Dimension object
       Dimension trd(bool throw_if_not_present = true) const;
-      /// Child access: tubs
+      /// Access child element with tag "tubs" as Dimension object
       Dimension tubs(bool throw_if_not_present = true) const;
-      /// Child access: staves
+      /// Access child element with tag "staves" as Dimension object
       Dimension staves(bool throw_if_not_present = true) const;
-      /// Child access: beampipe
+      /// Access child element with tag "beampipe" as Dimension object
       Dimension beampipe(bool throw_if_not_present = true) const;
-      /// Child access: beampipe
+      /// Access child element with tag "beampipe" as Dimension object
       Dimension envelope(bool throw_if_not_present = true) const;
 
       /// Access "name" attribute as STL string

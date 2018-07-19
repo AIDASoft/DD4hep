@@ -279,13 +279,20 @@ template <> void Converter<Plugin>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<Constant>::operator()(xml_h e) const {
-  xml_ref_t constant(e);
-  string nam = constant.attr<string>(_U(name));
-  string val = constant.attr<string>(_U(value));
-  string typ = constant.hasAttr(_U(type)) ? constant.attr<string>(_U(type)) : "number";
-  Constant c(nam, val, typ);
-  _toDictionary(nam, val, typ);
-  description.addConstant(c);
+  if ( e.tag() != "include" )   {
+    xml_ref_t constant(e);
+    string nam = constant.attr<string>(_U(name));
+    string val = constant.attr<string>(_U(value));
+    string typ = constant.hasAttr(_U(type)) ? constant.attr<string>(_U(type)) : "number";
+    Constant c(nam, val, typ);
+    _toDictionary(nam, val, typ);
+    description.addConstant(c);
+    return;
+  }
+  xml::DocumentHolder doc(xml::DocumentHandler().load(e, e.attr_value(_U(ref))));
+  xml_h root = doc.root();
+  xml_coll_t(root, _U(define)).for_each(_U(constant), Converter<Constant>(description));
+  xml_coll_t(root, _U(constant)).for_each(Converter<Constant>(description));
 }
 
 /** Convert compact constant objects (defines)

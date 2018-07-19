@@ -7,7 +7,21 @@
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
-
+  <materials>
+    <material name="Concrete">
+      <D value="2.30" unit="g/cm3" />
+      <fraction n="0.529" ref="O"/>
+      <fraction n="0.337" ref="Si"/>
+      <fraction n="0.044" ref="Ca"/>
+      <fraction n="0.039" ref="Al"/>
+      <fraction n="0.016" ref="Na"/>
+      <fraction n="0.014" ref="Fe"/>
+      <fraction n="0.013" ref="K"/>
+      <fraction n="0.010" ref="H"/>
+      <fraction n="0.002" ref="Mg"/>
+      <fraction n="0.001" ref="C"/>
+    </material>
+  </materials>
   <define>
     <!--  Define the world box  -->
     <constant name="world_side" value="50000*mm"/>
@@ -24,14 +38,14 @@
     <include ref="CODEX-b.xml" type="xml"/>
     <detector id="3" name="LHCb" type="DD4hep_BoxSegment" vis="B2_vis">
       <material name="Air"/>
-      <box      x="1000*cm"  y="1000*cm"   z="2500*cm"/>
+      <box      x="500*cm"  y="500*cm"   z="2500*cm"/>
       <position x="0" y="0"   z="1000*cm"/>
       <rotation x="0" y="0"   z="0"/>
     </detector>
     <detector id="4" name="WALL" type="DD4hep_BoxSegment" vis="WALL_vis">
-      <material name="Air"/>
-      <box      x="200*cm"  y="1000*cm"   z="2500*cm"/>
-      <position x="1210*cm" y="0"   z="1000*cm"/>
+      <material name="Concrete"/>
+      <box      x="200*cm"  y="500*cm"   z="2500*cm"/>
+      <position x="2250*cm*sin(60*degree)" y="0"   z="2500*cm*cos(60*degree)"/>
       <rotation x="0" y="0"   z="0"/>
     </detector>
     <detector name="Beampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">

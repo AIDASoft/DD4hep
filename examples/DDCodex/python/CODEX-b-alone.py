@@ -39,8 +39,9 @@ def run():
   evt_root = geant4.setupROOTOutput('RootOutput','CodexB_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun",particle='pi+',
-                        energy=50*GeV,
+  #gun = geant4.setupGun("Gun",particle='pi+',
+  gun = geant4.setupGun("Gun",particle='mu-',
+                        energy=1000*GeV,
                         multiplicity=1,
                         isotrop=False,Standalone=True,
                         direction=(0.866025,0,0.5),
@@ -48,6 +49,8 @@ def run():
   setattr(gun,'print',True)
   #seq,action = geant4.setupTracker('CODEXb')
   seq,action = geant4.setupCalorimeter('CODEXb')
+  action.OutputLevel = Output.ERROR
+  seq,action = geant4.setupCalorimeter('Shield')
   action.OutputLevel = Output.ERROR
   #geant4.setupTracker('CODEX-b-Shield')
   #geant4.setupTracker('CODEX-b-Stations')

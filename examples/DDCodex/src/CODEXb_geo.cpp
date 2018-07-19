@@ -43,16 +43,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   SensitiveDetector sd = sens;
 
   sd.setType("tracker");
-
-#if 0
-  Box b(2000,2000,2000);
-  Volume vb(det_name+"_bbb",b,description.material("Si"));
-  pv = env_vol.placeVolume(vb, Position(0,0,0));
-  vb.setSensitiveDetector(sd);
-  pv.addPhysVolID("type", 0);
-  pv.addPhysVolID("station", 20);
-#endif
-  
   // Set visualization, limits and region (if present)
   env_vol.setRegion(description, x_det.regionStr());
   env_vol.setLimitSet(description, x_det.limitsStr());
@@ -65,7 +55,7 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   tub_vol.setVisAttributes(description, "BlackVis");
   pv = env_vol.placeVolume(tub_vol, Position(0,0,0));
 
-  int num_sensitive = 0;
+  int num_sensitive = 1;
   for(xml_coll_t i(x_det,_U(shield)); i; ++i)  {
     xml_comp_t shield = i;
     double     z  = shield.z(), dz = shield.dz();
@@ -82,53 +72,10 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
     if ( shield.isSensitive() )   {
       DetElement det(sdet, "shield_"+nam, x_det.id());
       vol.setSensitiveDetector(sd);
-      pv.addPhysVolID("type", 0);
+//      pv.addPhysVolID("type", 0);
       pv.addPhysVolID("station", num_sensitive);
       det.setPlacement(pv);
       ++num_sensitive;
-    }
-  }
-
-  int type_num = 0, station_number = 0;
-  double z0 = 0.0, x0 = 0.0, x_tot = 0.0;
-  for(xml_coll_t i(x_det,_U(station)); i; ++i, ++type_num)  {
-    xml_comp_t station = i;
-    x_tot += double(station.repeat())*(station.distance()+station.thickness());
-  }
-  printout(INFO,"CODEX-b","%s X_tot= %g",det_name.c_str(), x_tot);
-  for(xml_coll_t i(x_det,_U(station)); i; ++i, ++type_num)  {
-    xml_comp_t station = i;
-    int        repeat = station.repeat();
-    string     nam = _toString(station_number,"CODEX_station_type%d");
-    Box        box(station.width()/2., station.height()/2., station.thickness()/2.);
-    Material   mat(description.material(station.attr<string>(_U(material))));
-    Volume     vol(nam,box,mat);
-    double     dist = station.thickness()+station.distance();
-    double     dx = dist/sin_beam;
-    double     dz = dist/cos_beam;
-    if ( station.hasAttr(_U(z)) ) {
-      z0 = station.z()+x_tot/2.0/cos_beam;
-      x0 = -x_tot/2.0/sin_beam;
-    }
-    // Set visualization, limits and region (if present)
-    vol.setVisAttributes(description, station.visStr());
-    vol.setLimitSet(description,  station.limitsStr());
-    vol.setRegion(description, station.regionStr());
-    if ( station.isSensitive() )   {
-      vol.setSensitiveDetector(sd);
-    }
-    for(int j=0; j < repeat; ++j)    {
-      DetElement det(sdet, _toString(station_number,"module%d"), station_number);
-      pv = env_vol.placeVolume(vol, Transform3D(RotationZYX(0,M_PI/2.0-env_angle,0), Position(x0,0,z0)));
-      pv.addPhysVolID("type", 1);
-      pv.addPhysVolID("station", station_number);
-      printout(INFO,"CODEX-b","%s Module: %2d %-12s x=%g y=%g z=%7g Dist:%g dx:%g dz:%g",
-               det_name.c_str(), station_number, ('['+string(mat.name())+']').c_str(),
-               x0, 0.0, z0, dist, dx, dz);
-      det.setPlacement(pv);
-      x0 += dx;
-      z0 += dz;
-      ++station_number;
     }
   }
 
@@ -144,5 +91,5 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(DD4hep_CODEXb,create_element)
+DECLARE_DETELEMENT(DD4hep_CODEXb_shield,create_element)
 

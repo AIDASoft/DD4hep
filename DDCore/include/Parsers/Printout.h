@@ -58,6 +58,13 @@ namespace dd4hep {
    *  @return String containing the concatenated arguments
    */
   std::string arguments(int argc, char** argv);
+
+  /// Decode printlevel from string to value
+  /**
+   *  @arg level_as_string       [string,read-only]      String value of print level
+   *  @return Print level as enumeration
+   */
+  PrintLevel decodePrintLevel(const std::string& level_as_string);
   
   /// Calls the display action with a given severity level
   /**
