@@ -117,7 +117,7 @@ namespace {
   //______________________________________________________________________________
   struct Args  {
     bool        volmgr, dry_run, destroy, interpreter, ui;
-    int         print;
+    dd4hep::PrintLevel  print;
     std::vector<const char*> geo_files, build_types;
     std::vector<std::vector<const char*> > plugins;
 
@@ -148,7 +148,7 @@ namespace {
       else if ( ::strncmp(argv[i],"-dry-run",5)==0 )
         dry_run = true;
       else if ( ::strncmp(argv[i],"-print",4)==0 )
-        dd4hep::setPrintLevel(dd4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
+        dd4hep::setPrintLevel(dd4hep::PrintLevel(print = dd4hep::decodePrintLevel(argv[++i])));
       else if ( ::strncmp(argv[i],"-destroy",5)==0 )
         destroy = true;
       else if ( ::strncmp(argv[i],"-no-destroy",8)==0 )
@@ -213,36 +213,6 @@ namespace {
       }
       result = run_plugin(description,name,a.first,a.second);
       return result;
-    }
-
-    //____________________________________________________________________________
-    int decodePrintLevel(const std::string& val)   {
-      switch(::toupper(val[0]))  {
-      case '1':
-      case 'V':
-        return dd4hep::VERBOSE;
-      case '2':
-      case 'D':
-        return dd4hep::DEBUG;
-      case '3':
-      case 'I':
-        return dd4hep::INFO;
-      case '4':
-      case 'W':
-        return dd4hep::WARNING;
-      case '5':
-      case 'E':
-        return dd4hep::ERROR;
-      case '6':
-      case 'F':
-        return dd4hep::FATAL;
-      case '7':
-      case 'A':
-        return dd4hep::FATAL;
-      default:
-        std::cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << std::endl;
-        throw std::runtime_error("Invalid printLevel:"+val);
-      }
     }
   };
 

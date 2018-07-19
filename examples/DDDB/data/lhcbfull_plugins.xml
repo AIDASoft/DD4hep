@@ -1,0 +1,336 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="lhcb_full"
+        title="LHCb detector geometry imported from plain ROOT file"
+        author="Markus Frank"
+        url="http://lhcb.cern.ch"
+        status="development"
+        version="1.0">
+    <comment>The conversion of a detector in plain ROOT format</comment>        
+  </info>
+
+  <geometry open="false" close="false">
+  </geometry>
+
+  <display>
+     <vis name="Velo_Inactive_vis"   alpha="0.5"   r="0"    g="0.4"  b="0.6" showDaughters="true"  visible="true"/>
+     <vis name="Velo_Active_vis"     alpha="1.0"   r="0"    g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+     <vis name="TT_Inactive_vis"     alpha="0.5"   r="0"    g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
+     <vis name="TT_Active_vis"       alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+     <vis name="OT_Inactive_vis"     alpha="0.5"   r="0.4"  g="0.0"  b="0.4" showDaughters="true"  visible="true"/>
+     <vis name="OT_Active_vis"       alpha="1.0"   r="0.8"  g="0.0"  b="0.8" showDaughters="true"  visible="true"/>
+
+  </display>
+
+  <plugins>
+
+    <!-- Load the geometry file in ROOT format  -->
+    <plugin name="DD4hep_PlainROOT">
+      <argument value="-input"/>
+      <argument value="checkout/examples/DDDB/data/lhcbfull.root"/>
+      <argument value="-import"/>
+      <argument value="-air"/>
+      <argument value="sAir"/>
+      <argument value="-vacuum"/>
+      <argument value="sVacuum"/>
+      <argument value="-level"/>
+      <argument value="11"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+    </plugin>
+
+    <!-- execute the VELO processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sSilicon"/>
+      <argument value="-match"/>
+      <argument value="VelolvVelo"/>
+      <argument value="-veto"/>
+      <argument value="VeloSupports"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+    <!-- execute the IT   processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sSilicon"/>
+      <argument value="-match"/>
+      <argument value="ITITS"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+    <!-- execute the OT   processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sTrackerOTPassiveMix"/>
+      <argument value="-match"/>
+      <argument value="OTlvOTStation"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+    <!-- execute the PRS  processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sPrsPrsScin"/>
+      <argument value="-match"/>
+      <argument value="PrsInstallationPrs"/>
+      <argument value="-type"/>
+      <argument value="calorimeter"/>
+    </plugin>
+
+    <!-- execute the SPD  processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sSpdSpdScin"/>
+      <argument value="-match"/>
+      <argument value="SpdInstallationSpd"/>
+      <argument value="-type"/>
+      <argument value="calorimeter"/>
+    </plugin>
+
+    <!-- execute the ECAL processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sEcalEcalSc"/>
+      <argument value="-match"/>
+      <argument value="EcalInstallationEcal"/>
+      <argument value="-type"/>
+      <argument value="calorimeter"/>
+    </plugin>
+
+    <!-- execute the HCAL processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sHcalHcalSc"/>
+      <argument value="-match"/>
+      <argument value="HcalInstallationlvHcal"/>
+      <argument value="-type"/>
+      <argument value="calorimeter"/>
+    </plugin>
+
+
+    <!-- execute the MUON processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sMuonS_CPC_gas"/>
+      <argument value="-match"/>
+      <argument value="Muon"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+    <!-- execute the RICH1 processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sRichMaterialsAerogel"/>
+      <argument value="-match"/>
+      <argument value="Rich1lvRich1Master"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+    <!-- execute the RICH2 processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-print"/>
+      <argument value="DEBUG"/>
+      <argument value="-level"/>
+      <argument value="2"/>
+      <argument value="-material"/>
+      <argument value="sRichMaterialsRich2Nitrogen"/>
+      <argument value="-match"/>
+      <argument value="Rich2lvRich2Master"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+    <!-- execute the RICH2 processor to generate readout and sensitive structure(s) -->
+    <plugin name="DD4hep_DetElementProcessor">
+      <argument value="-recursive"/>
+      <argument value="-processor"/>
+      <argument value="DD4hep_DetNominalCreator"/>
+      <argument value="-type"/>
+      <argument value="tracker"/>
+    </plugin>
+
+
+    <plugin name="DD4hep_VolumeManager"/>
+    <plugin name="DD4hep_InteractiveUI"/>
+
+    <plugin name="DD4hep_CheckSensitives"/>
+    <plugin name="DD4hep_CheckReadouts"/>
+    <plugin name="DD4hep_CheckVolumeManager"/>
+
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <arg value="-recursive"/>
+      <arg value="-detector"/>
+      <arg value="VelolvVelo_4842"/>
+      <arg value="-processor"/>
+      <arg value="DD4hep_VisMaterialProcessor"/>
+      <arg value="-name"/>
+      <arg value="Si_Vis"/>
+      <arg value="-vis-active"/>
+      <arg value="Velo_Active_Vis"/>
+      <arg value="-vis-inactive"/>
+      <arg value="Velo_Inactive_Vis"/>
+      <arg value="-mat-active"/>
+      <arg value="sSilicon"/>
+      <arg value="-show"/>
+    </plugin>
+
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <arg value="-recursive"/>
+      <arg value="-detector"/>
+      <arg value="ITITS5lvITS5_4831"/>
+      <arg value="-processor"/>
+      <arg value="DD4hep_VisMaterialProcessor"/>
+      <arg value="-name"/>
+      <arg value="Si_Vis"/>
+      <arg value="-vis-active"/>
+      <arg value="TT_Active_Vis"/>
+      <arg value="-vis-inactive"/>
+      <arg value="TT_Inactive_Vis"/>
+      <arg value="-mat-active"/>
+      <arg value="sSilicon"/>
+      <arg value="-show"/>
+    </plugin>
+
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <arg value="-recursive"/>
+      <arg value="-detector"/>
+      <arg value="ITITS4lvITS4_4832"/>
+      <arg value="-processor"/>
+      <arg value="DD4hep_VisMaterialProcessor"/>
+      <arg value="-name"/>
+      <arg value="Si_Vis"/>
+      <arg value="-vis-active"/>
+      <arg value="TT_Active_Vis"/>
+      <arg value="-vis-inactive"/>
+      <arg value="TT_Inactive_Vis"/>
+      <arg value="-mat-active"/>
+      <arg value="sSilicon"/>
+      <arg value="-show"/>
+    </plugin>
+
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <arg value="-recursive"/>
+      <arg value="-detector"/>
+      <arg value="ITITS3lvITS3_4833"/>
+      <arg value="-processor"/>
+      <arg value="DD4hep_VisMaterialProcessor"/>
+      <arg value="-name"/>
+      <arg value="Si_Vis"/>
+      <arg value="-vis-active"/>
+      <arg value="TT_Active_Vis"/>
+      <arg value="-vis-inactive"/>
+      <arg value="TT_Inactive_Vis"/>
+      <arg value="-mat-active"/>
+      <arg value="sSilicon"/>
+      <arg value="-show"/>
+    </plugin>
+
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <arg value="-recursive"/>
+      <arg value="-detector"/>
+      <arg value="ITITS2lvITS2_4834"/>
+      <arg value="-processor"/>
+      <arg value="DD4hep_VisMaterialProcessor"/>
+      <arg value="-name"/>
+      <arg value="Si_Vis"/>
+      <arg value="-vis-active"/>
+      <arg value="TT_Active_Vis"/>
+      <arg value="-vis-inactive"/>
+      <arg value="TT_Inactive_Vis"/>
+      <arg value="-mat-active"/>
+      <arg value="sSilicon"/>
+      <arg value="-show"/>
+    </plugin>
+
+    <plugin name="DD4hep_PlacedVolumeProcessor">
+      <arg value="-recursive"/>
+      <arg value="-detector"/>
+      <arg value="ITITS1lvITS1_4835"/>
+      <arg value="-processor"/>
+      <arg value="DD4hep_VisMaterialProcessor"/>
+      <arg value="-name"/>
+      <arg value="Si_Vis"/>
+      <arg value="-vis-active"/>
+      <arg value="TT_Active_Vis"/>
+      <arg value="-vis-inactive"/>
+      <arg value="TT_Inactive_Vis"/>
+      <arg value="-mat-active"/>
+      <arg value="sSilicon"/>
+      <arg value="-show"/>
+    </plugin>
+
+  </plugins>
+</lccdd>

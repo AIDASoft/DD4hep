@@ -167,17 +167,8 @@ DetectorData::DetectorData()
       cl->AdoptStreamer(new TClassStreamer(stream_opaque_datablock));
       printout(INFO,"PersistencyIO","+++ Set Streamer to %s",cl->GetName());
     }
-    TDataMember* m = 0;
-    cl = TGeoVolume::Class();
-    printout(INFO,"PersistencyIO","+++ Patching %s.fUserExtension to persistent",cl->GetName());    
-    m = cl->GetDataMember("fUserExtension");
-    m->SetTitle(m->GetTitle()+2);
-    m->SetBit(BIT(2));
-    cl = TGeoNode::Class();
-    printout(INFO,"PersistencyIO","+++ Patching %s.fUserExtension to persistent",cl->GetName());    
-    m = cl->GetDataMember("fUserExtension");
-    m->SetTitle(m->GetTitle()+2);
-    m->SetBit(BIT(2));
+    DetectorData::patchRootStreamer(TGeoVolume::Class());
+    DetectorData::patchRootStreamer(TGeoNode::Class());
   }
   InstanceCount::increment(this);
 }
@@ -186,6 +177,28 @@ DetectorData::DetectorData()
 DetectorData::~DetectorData() {
   clearData();
   InstanceCount::decrement(this);
+}
+
+/// Patch the ROOT streamers to adapt for DD4hep
+void DetectorData::patchRootStreamer(TClass* cl)   {
+  TDataMember* m = 0;
+  printout(INFO,"PersistencyIO",
+           "+++ Set data member %s.fUserExtension as PERSISTENT.",
+           cl->GetName());
+  m = cl->GetDataMember("fUserExtension");
+  m->SetTitle(m->GetTitle()+2);
+  m->SetBit(BIT(2));
+}
+
+/// UNPatch the ROOT streamers to adapt for DD4hep
+void DetectorData::unpatchRootStreamer(TClass* cl)   {
+  TDataMember* m = 0;
+  printout(INFO,"PersistencyIO",
+           "+++ Set data member %s.fUserExtension as TRANSIENT.",
+           cl->GetName());
+  m = cl->GetDataMember("fUserExtension");
+  m->SetTitle((std::string("! ")+m->GetTitle()).c_str());
+  m->ResetBit(BIT(2));
 }
 
 /// Clear data content: releases all allocated resources

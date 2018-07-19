@@ -87,6 +87,35 @@ namespace {
   }
 }
 
+dd4hep::PrintLevel dd4hep::decodePrintLevel(const std::string& val)   {
+  switch(::toupper(val[0]))  {
+  case '1':
+  case 'V':
+    return dd4hep::VERBOSE;
+  case '2':
+  case 'D':
+    return dd4hep::DEBUG;
+  case '3':
+  case 'I':
+    return dd4hep::INFO;
+  case '4':
+  case 'W':
+    return dd4hep::WARNING;
+  case '5':
+  case 'E':
+    return dd4hep::ERROR;
+  case '6':
+  case 'F':
+    return dd4hep::FATAL;
+  case '7':
+  case 'A':
+    return dd4hep::FATAL;
+  default:
+    std::cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << std::endl;
+    throw std::runtime_error("Invalid printLevel:"+val);
+  }
+}
+
 /// Helper function to serialize argument list to a single string
 /**
  *  \arg argc       [int,read-only]      Number of arguments.

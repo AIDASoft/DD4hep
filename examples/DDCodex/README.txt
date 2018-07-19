@@ -115,15 +115,100 @@ Running Standalone
 ==================
 
 Display:
-
+--------
 $> geoDisplay -input file:checkout/examples/DDCodex/compact/CODEX-b-alone.xml
 
 DDG4 simulation:
+----------------
+$> python ../DD4hep/examples/DDCodex/python/CODEX-b-alone.py
 
-$> python ../DD4hep//examples/DDCodex/python/CODEX-b-alone.py
+Reading the output file:
+------------------------
+$> root.exe
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.12/06                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag v6-12-06, 9 February 2018                         |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+root [0] gSystem->Load("libDDG4Plugins.so")
+(int) 0
+root [1] TFile*f=TFile::Open("CodexB_2018-07-18_20-34.root");
+root [2] TTree* t=(TTree*)f->Get("EVENT")
+(TTree *) 0x2f53670
+root [3] TBranch* br=t->GetBranch("MCParticles")
+(TBranch *) 0x444a1b0
+root [4] std::vector<dd4hep::sim::Geant4Particle*> particles;
+root [5] std::vector<dd4hep::sim::Geant4Particle*>* p_particles = &particles;
+root [6] br->SetAddress(&p_particles);
+root [7] br->GetEntry(1)
+(int) 1014
+root [8] particles.size()
+(unsigned long) 4
+root [9] particles[0]->psx
+(double) 866025.30
+root [10] particles[1]->psx
+(double) 127.60460
+root [11] particles[2]->psx
+(double) 419.25210
+root [12] particles[3]->psx
+(double) 359.89637
+root [13] 
+
 
 Visualisation of the hits:
-
+--------------------------
 $> root.exe ../DD4hep/examples/DDEve/DDEve.C
+
+
+Setup:
+
+********************************************************************************
+*                         ---- LHCb Login v9r2p4 ----                          *
+*      Building with gcc62 on slc6 x86_64 system (x86_64-slc6-gcc62-opt)       *
+********************************************************************************
+ --- User_release_area is set to /afs/cern.ch/user/j/jongho/cmtuser
+ --- LHCBPROJECTPATH is set to:
+    /cvmfs/lhcb.cern.ch/lib/lhcb
+    /cvmfs/lhcb.cern.ch/lib/lcg/releases
+    /cvmfs/lhcb.cern.ch/lib/lcg/app/releases
+    /cvmfs/lhcb.cern.ch/lib/lcg/external
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Install command:
+$ git clone https://github.com/MarkusFrankATcernch/DD4hep.git
+$ source dd4hep-ci.d/init_x86_64.sh
+
+==================================================
+   Add new environment command in init_x86_64.sh:
+   export Geant4_DIR=${G4INSTALL}/lib/Geant4-10.4.0
+=================================================
+
+$ mkdir build && cd build/
+$ cmake -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.4.0 -DROOT_DIR=$ROOTSYS ..
+$ make -j4
+$ make install
+
+move to upper directory
+$ cd ../
+$ source bin/thisdd4hep.sh
+
+then go to examples directory 
+$ cd examples
+$ mkdir build
+$ cd build
+$ cmake ..
+
+$ make -j5 install
+
+$ source /afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/examples/bin/thisDDCodex.sh
+$ geoDisplay -input file:/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/examples/DDCodex/compact/CODEX-b-alone.xml 
+$ python /afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/examples/DDCodex/python/CODEX-b-alone.py
+$ root.exe $DD4hepINSTALL/examples/DDEve/DDEve.C
+
+
+======================================================================================
 
 

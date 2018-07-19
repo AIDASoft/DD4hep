@@ -14,6 +14,8 @@
 // Specialized generic detector constructor
 // 
 //==========================================================================
+#ifndef DD4HEP_DDCMSDETELEMENTCREATOR_H
+#define DD4HEP_DDCMSDETELEMENTCREATOR_H
 
 // Framework include files
 #include "DD4hep/VolumeProcessor.h"
@@ -53,9 +55,9 @@ namespace dd4hep {
       Count& operator=(const Count&) = default;
     };
     typedef std::vector<Data> VolumeStack;
-    typedef std::map<std::string,dd4hep::DetElement> Detectors;
-    typedef std::map<dd4hep::DetElement,Count> Counters;
-    typedef std::map<std::pair<dd4hep::DetElement,int>, std::pair<int,int> > LeafCount;
+    typedef std::map<std::string,DetElement> Detectors;
+    typedef std::map<DetElement,Count> Counters;
+    typedef std::map<std::pair<DetElement,int>, std::pair<int,int> > LeafCount;
 
     Counters          counters;
     LeafCount         leafCount;
@@ -83,7 +85,7 @@ namespace dd4hep {
     virtual int process(PlacedVolume pv, int level, bool recursive);
   };
 }
-
+#endif   /* DD4HEP_DDCMSDETELEMENTCREATOR_H  */
 
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/DetFactoryHelper.h"

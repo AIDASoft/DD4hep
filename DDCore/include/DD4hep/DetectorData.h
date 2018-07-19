@@ -148,6 +148,11 @@ namespace dd4hep {
     /// Assignment operator
     //DetectorData& operator=(const DetectorData& copy) = delete;
   public:
+    /// Patch the ROOT streamers to adapt for DD4hep (set fUserExtension persistent)
+    static void patchRootStreamer(TClass* cl);
+    /// UNPatch the ROOT streamers to adapt for DD4hep (set fUserExtension transient)
+    static void unpatchRootStreamer(TClass* cl);
+
     /// Clear data content: releases all allocated resources
     void destroyData(bool destroy_mgr=true);
     /// Clear data content: DOES NOT RELEASEW ALLOCATED RESOURCES!

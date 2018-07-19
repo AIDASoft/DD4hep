@@ -10,14 +10,17 @@
   <define>
     <constant name="COBEX_beam_angle" value="60*degree"/>
     <constant name="COBEX_cone_len" value="50*m"/>
+    <constant name="Global_gap" value="3*cm" />
+    <constant name="Layer_thickness" value="1*cm" />
+    <constant name="Layer_pitch" value="4*cm" />
   </define> 
 
   <comment>Common Generic visualization attributes</comment>
   <display>
     <vis name="BlackVis"              alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
-    <vis name="Codex_Envelope_Vis"    alpha=".3" r="0.7" g="0.7" b="0.7" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module1_Vis"     alpha="1"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module2_Vis"     alpha="1"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Envelope_Vis"    alpha="0.7" r="0.2" g="0.2" b="0.7" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module1_Vis"     alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module2_Vis"     alpha="0.4"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
     <vis name="Codex_Module3_Vis"     alpha="1"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
     <vis name="Codex_Shield_Pb_Vis"   alpha="1"  r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
     <vis name="Codex_Shield_Veto_Vis" alpha="1"  r="0.9" g="0.9" b="0.0" showDaughters="true"  visible="true"/>
@@ -28,29 +31,30 @@
   <!--  Includes for sensitives and support                -->
   <detectors>
 
-    <detector id="1" name="CODEXb" type="DD4hep_CODEXb" vis="Codex_Envelope_Vis" readout="CodexHits">
-<!-- limits="codex_limits" -->
+    <detector id="1" name="Shield" type="DD4hep_CODEXb_shield" vis="Codex_Envelope_Vis" readout="ShieldHits">
 
-      <envelope angle="COBEX_beam_angle" dz="COBEX_cone_len" rmax="8*m"/>
-      <shield name="Pb-shield-1" z="7*m"   dz="1.5*m" material="Lead" sensitive="true" vis="Codex_Shield_Pb_Vis"/>
+      <envelope angle="COBEX_beam_angle" dz="COBEX_cone_len" rmax="8*m" />
+      <shield name="Pb-shield-1" z="7*m"   dz="1.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
       <shield name="Shield-veto" z="8.5*m" dz="0.1*m" material="Si"   sensitive="true"  vis="Codex_Shield_Veto_Vis"/>
-      <shield name="Pb-shield-2" z="8.6*m" dz="0.5*m" material="Lead" sensitive="true" vis="Codex_Shield_Pb_Vis"/>
-
-      <station z="12*m" width="10*m" height="10*m" thickness="2*cm" 
-               material="Si" sensitive="true" vis="Codex_Module1_Vis"
-               repeat="3" distance="20*cm"/>
-      <station width="10*m" height="10*m" thickness="2*cm"
-               material="Si" sensitive="true" vis="Codex_Module2_Vis"
-               repeat="8" distance="30*cm"/>
-      <station width="10*m" height="10*m" thickness="2*cm"
-               material="Si" sensitive="true" vis="Codex_Module3_Vis"
-               repeat="5" distance="40*cm"/>
+      <shield name="Pb-shield-2" z="8.6*m" dz="0.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
 
       <position x="-sin(COBEX_beam_angle)*COBEX_cone_len/2" y="0"   z="cos(COBEX_beam_angle)*COBEX_cone_len/2"/>
       <rotation x="0"     y="COBEX_beam_angle"   z="0"/>
-
     </detector>
-  </detectors>
+
+    
+    <detector id="2" name="CODEXb" type="DD4hep_CODEXb_layer" vis="Codex_Envelope_Vis" readout="CodexHits" >
+       <envelope width="5*m" length="5*m" height="5*m" vis="Codex_Module1_Vis" />
+       <station material="Al" width="5*m" thickness="60*cm" height="5*m" 
+                x="1.67*m" y="0" z="0" gap="1.67*m" repeat="5" vis="Codex_Module1_Vis" />
+       <layer material="Si" width="5*m" thickness="Layer_thickness" height="5*m" sensitive="true"
+              x="0" y="0" z="0" gap="Global_gap" distance="Layer_pitch*10" repeat="3" vis="Codex_Module2_Vis" />
+       
+       <position x="2500*cm*sin(60*degree)+500*cm" y="0" z="2500*cm*cos(60*degree)" />
+    </detector>
+   
+
+   </detectors>
   <limits>
     <limitset name="codex_limits">
       <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
@@ -59,8 +63,13 @@
   <readouts>
     <readout name="CodexHits">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm" />
-      <id>system:8,type:3,station:10,x:32:-16,y:-16</id>
-    </readout>        
+      <id>system:8,station:5,layer:5,x:32:-16,y:-16</id>
+    </readout>
+    <readout name="ShieldHits">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm" />
+      <id>system:8,station:5,x:32:-16,y:-16</id>
+    </readout>
+
   </readouts>
 
   <fields>
