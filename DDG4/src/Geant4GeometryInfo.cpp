@@ -12,8 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "G4VPhysicalVolume.hh"
 #include "DDG4/Geant4GeometryInfo.h"
+
+// Geant4 include files
+#include "G4VPhysicalVolume.hh"
 
 // C/C++ include files
 #include <stdexcept>
@@ -39,7 +41,7 @@ string Geant4GeometryInfo::placementPath(const Geant4PlacementPath& path, bool r
 
 /// Default constructor
 Geant4GeometryInfo::Geant4GeometryInfo()
-  : TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), valid(false) {
+  : TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), printLevel(DEBUG), valid(false) {
 }
 
 /// Default destructor

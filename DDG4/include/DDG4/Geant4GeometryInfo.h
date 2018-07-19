@@ -16,6 +16,7 @@
 
 // Framework include files
 #include "DD4hep/Objects.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
 #include "DDG4/Geant4Primitives.h"
 
@@ -100,7 +101,8 @@ namespace dd4hep {
       std::map<Region,           std::set<const TGeoVolume*> > regions;
       std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
       G4VPhysicalVolume*                                       m_world;
-      bool valid;
+      PrintLevel                                               printLevel;
+      bool                                                     valid;
     private:
       friend class Geant4Mapping;
       /// Default constructor

@@ -32,8 +32,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   double     env_angle  = x_envelope.angle();
   double     env_dz     = x_envelope.dz()/2.0;
   double     sin_cone   = std::sin(std::atan(x_envelope.rmax()/env_dz/2.0));
-  double     cos_beam   = std::cos(env_angle);
-  double     sin_beam   = std::sin(env_angle);
   //Cone       env_cone(env_dz,0,0.0001,x_envelope.rmax(),x_envelope.rmax()+0.0001);
   //Volume     env_vol (det_name,env_cone,description.air());
   // If the cone should be removed and replaced by an assembly,

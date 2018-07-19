@@ -15,17 +15,19 @@
 #define DD4HEP_GEANT4DETECTORCONSTRUCTION_H
 
 // Framework include files
+#include "DD4hep/DetElement.h"
 #include "DDG4/Geant4Action.h"
-#if !defined(__CINT__)
-#include "DDG4/Geant4GeometryInfo.h"
-#endif
 
 // Forward declarations
 class G4VUserDetectorConstruction;
 class G4VSensitiveDetector;
 class G4VPhysicalVolume;
 class G4LogicalVolume;
-
+class G4UserLimits;
+class G4Material;
+class G4Element;
+class G4VSolid;
+class G4Region;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -39,6 +41,7 @@ namespace dd4hep {
     // Forward declarations
     class Geant4Kernel;
     class Geant4GeometryInfo;
+    class Geant4AssemblyVolume;
     class Geant4DetectorConstruction;
     class Geant4DetectorConstructionContext;
     class Geant4DetectorConstructionSequence;

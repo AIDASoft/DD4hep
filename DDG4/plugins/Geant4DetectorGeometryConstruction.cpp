@@ -51,7 +51,9 @@ namespace dd4hep {
       bool m_printPlacements = false;
       /// Property: Flag to dump all sensitives after the conversion procedure
       bool m_printSensitives = false;
-     
+
+      /// Property: Printout level of info object
+      int  m_geoInfoPrintLevel;
       /// Property: G4 GDML dump file name (default: empty. If non empty, dump)
       std::string m_dumpGDML;
 
@@ -92,18 +94,19 @@ DECLARE_GEANT4ACTION(Geant4DetectorGeometryConstruction)
 Geant4DetectorGeometryConstruction::Geant4DetectorGeometryConstruction(Geant4Context* ctxt, const string& nam)
   : Geant4DetectorConstruction(ctxt,nam)
 {
-  declareProperty("DebugMaterials",   m_debugMaterials);
-  declareProperty("DebugElements",    m_debugElements);
-  declareProperty("DebugShapes",      m_debugShapes);
-  declareProperty("DebugVolumes",     m_debugVolumes);
-  declareProperty("DebugPlacements",  m_debugPlacements);
-  declareProperty("DebugRegions",     m_debugRegions);
+  declareProperty("DebugMaterials",    m_debugMaterials);
+  declareProperty("DebugElements",     m_debugElements);
+  declareProperty("DebugShapes",       m_debugShapes);
+  declareProperty("DebugVolumes",      m_debugVolumes);
+  declareProperty("DebugPlacements",   m_debugPlacements);
+  declareProperty("DebugRegions",      m_debugRegions);
 
-  declareProperty("PrintPlacements",  m_printPlacements);
-  declareProperty("PrintSensitives",  m_printSensitives);
+  declareProperty("PrintPlacements",   m_printPlacements);
+  declareProperty("PrintSensitives",   m_printSensitives);
+  declareProperty("GeoInfoPrintLevel", m_geoInfoPrintLevel = DEBUG);
 
-  declareProperty("DumpHierarchy",    m_dumpHierarchy);
-  declareProperty("DumpGDML",         m_dumpGDML="");
+  declareProperty("DumpHierarchy",     m_dumpHierarchy);
+  declareProperty("DumpGDML",          m_dumpGDML="");
   InstanceCount::increment(this);
 }
 
@@ -114,8 +117,8 @@ Geant4DetectorGeometryConstruction::~Geant4DetectorGeometryConstruction() {
 
 /// Geometry construction callback. Called at "Construct()"
 void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstructionContext* ctxt)   {
-  Geant4Mapping& g4map = Geant4Mapping::instance();
-  DetElement world = ctxt->description.world();
+  Geant4Mapping&  g4map = Geant4Mapping::instance();
+  DetElement      world = ctxt->description.world();
   Geant4Converter conv(ctxt->description, outputLevel());
   conv.debugMaterials  = m_debugMaterials;
   conv.debugElements   = m_debugElements;
@@ -124,7 +127,8 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   conv.debugPlacements = m_debugPlacements;
   conv.debugRegions    = m_debugRegions;
 
-  ctxt->geometry = conv.create(world).detach();
+  ctxt->geometry       = conv.create(world).detach();
+  ctxt->geometry->printLevel = PrintLevel(m_geoInfoPrintLevel);
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
   // Create Geant4 volume manager only if not yet available
