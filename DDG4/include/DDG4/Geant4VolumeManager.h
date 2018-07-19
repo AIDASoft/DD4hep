@@ -17,10 +17,11 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DDG4/Geant4Primitives.h"
-#include "DDG4/Geant4GeometryInfo.h"
 
 // Geant4 forward declarations
 class G4VTouchable;
+class G4VPhysicalVolume;
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -66,6 +67,7 @@ namespace dd4hep {
       }
       /// Assignment operator
       Geant4VolumeManager& operator=(const Geant4VolumeManager& c) = default;
+
       /// Helper: Generate placement path from touchable object
       std::vector<const G4VPhysicalVolume*>
       placementPath(const G4VTouchable* touchable, bool exception = true) const;

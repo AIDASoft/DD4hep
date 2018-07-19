@@ -30,7 +30,6 @@ using namespace dd4hep;
 using namespace dd4hep::sim;
 using namespace dd4hep::sim::Test;
 using namespace dd4hep::sim::Setup;
-using namespace dd4hep::sim::Geant4GeometryMaps;
 
 Geant4SensDetActionSequence* setupDetector(Geant4Kernel& kernel, const std::string& name)   {
   SensitiveSeq sd = SensitiveSeq(kernel,"Geant4SensDetActionSequence/"+name);
