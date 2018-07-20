@@ -418,29 +418,7 @@ class DD4hepSimulation(object):
     if self.part.enableDetailedHitsAndParticleInfo:
       self.part.setDumpDetailedParticleInfo( kernel, DDG4 )
 
-    #----------------------------------
-
-
-
-
-    user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
-    try:
-      user.TrackingVolume_Zmax = DDG4.tracker_region_zmax
-      user.TrackingVolume_Rmax = DDG4.tracker_region_rmax
-
-      print " *** definition of tracker region *** "
-      print "    tracker_region_zmax = " ,  user.TrackingVolume_Zmax
-      print "    tracker_region_rmax = " ,  user.TrackingVolume_Rmax
-      print " ************************************ "
-
-    except AttributeError as e:
-      print "ERROR - attribute of tracker region missing in detector model   ", str(e)
-      print "   make sure to specify the global constants tracker_region_zmax and tracker_region_rmax "
-      print "   this is needed for the MC-truth link of created sim-hits  !  "
-      exit(1)
-      
-    #  user.enableUI()
-    part.adopt(user)
+    self.part.setupUserParticleHandler(part)
 
     #=================================================================================
 
