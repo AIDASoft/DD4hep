@@ -332,7 +332,7 @@ class DD4hepSimulation(object):
     # Configure I/O
     if self.outputFile.endswith(".slcio"):
       lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
-      lcOut.RunHeader = self.__addParametersToRunHeader()
+      lcOut.RunHeader = self.meta.addParametersToRunHeader(self)
       lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = self.meta.parseEventParameters()
       lcOut.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
       lcOut.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
@@ -574,48 +574,6 @@ class DD4hepSimulation(object):
     except KeyError:
       self._errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
       return -1
-
-  def __addParametersToRunHeader( self ):
-    """add the parameters to the (lcio) run Header"""
-    runHeader = {}
-    parameters = vars(self)
-    for parName, parameter in parameters.iteritems():
-      if isinstance( parameter, ConfigHelper ):
-        options = parameter.getOptions()
-        for opt,optionsDict in options.iteritems():
-          runHeader["%s.%s"%(parName, opt)] = str(optionsDict['default'])
-      else:
-        runHeader[parName] = str(parameter)
-
-    ### steeringFile content
-    if self.steeringFile and os.path.exists(self.steeringFile) and os.path.isfile(self.steeringFile):
-      with open(self.steeringFile) as sFile:
-        runHeader["SteeringFileContent"] = sFile.read()
-
-    ### macroFile content
-    if self.macroFile and os.path.exists(self.macroFile) and os.path.isfile(self.macroFile):
-      with open(self.macroFile) as mFile:
-        runHeader["MacroFileContent"] = mFile.read()
-
-    ### add command line
-    if self._argv:
-      runHeader["CommandLine"] = " ".join(self._argv)
-
-    ### add current working directory (where we call from)
-    runHeader["WorkingDirectory"] = os.getcwd()
-
-    ### ILCSoft, LCGEo location from environment variables, names from init_ilcsoft.sh
-    runHeader["ILCSoft_location"] = os.environ.get("ILCSOFT", "Unknown")
-    runHeader["lcgeo_location"] = os.environ.get("lcgeo_DIR", "Unknown")
-
-    ### add date
-    runHeader["DateUTC"] = str(datetime.datetime.utcnow())+" UTC"
-
-    ### add User
-    import getpass
-    runHeader["User"] = getpass.getuser()
-
-    return runHeader
 
   def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None):
     """ attach sensitive detector actions for all subdetectors
