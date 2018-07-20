@@ -1,5 +1,8 @@
 """Helper object for configuring the LCIO output file (meta)"""
 
+import datetime
+import os
+
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class Meta( ConfigHelper ):
@@ -45,4 +48,46 @@ class Meta( ConfigHelper ):
       elif ptype.lower() == "i":
         intParameters[pname] = pvalue
     return stringParameters, intParameters, floatParameters
-    
+
+  @staticmethod
+  def addParametersToRunHeader(sim):
+    """add the parameters to the (lcio) run Header"""
+    runHeader = {}
+    parameters = vars(sim)
+    for parName, parameter in parameters.iteritems():
+      if isinstance( parameter, ConfigHelper ):
+        options = parameter.getOptions()
+        for opt,optionsDict in options.iteritems():
+          runHeader["%s.%s"%(parName, opt)] = str(optionsDict['default'])
+      else:
+        runHeader[parName] = str(parameter)
+
+    ### steeringFile content
+    if sim.steeringFile and os.path.exists(sim.steeringFile) and os.path.isfile(sim.steeringFile):
+      with open(sim.steeringFile) as sFile:
+        runHeader["SteeringFileContent"] = sFile.read()
+
+    ### macroFile content
+    if sim.macroFile and os.path.exists(sim.macroFile) and os.path.isfile(sim.macroFile):
+      with open(sim.macroFile) as mFile:
+        runHeader["MacroFileContent"] = mFile.read()
+
+    ### add command line
+    if sim._argv:
+      runHeader["CommandLine"] = " ".join(sim._argv)
+
+    ### add current working directory (where we call from)
+    runHeader["WorkingDirectory"] = os.getcwd()
+
+    ### ILCSoft, LCGEo location from environment variables, names from init_ilcsoft.sh
+    runHeader["ILCSoft_location"] = os.environ.get("ILCSOFT", "Unknown")
+    runHeader["lcgeo_location"] = os.environ.get("lcgeo_DIR", "Unknown")
+
+    ### add date
+    runHeader["DateUTC"] = str(datetime.datetime.utcnow())+" UTC"
+
+    ### add User
+    import getpass
+    runHeader["User"] = getpass.getuser()
+
+    return runHeader
