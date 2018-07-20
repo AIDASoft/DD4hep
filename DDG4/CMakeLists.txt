@@ -72,3 +72,5 @@ dd4hep_add_executable(pyddg4
 #---Package installation procedure(s) ----------------------------------------------
 dd4hep_install_dir(examples DESTINATION examples/DDG4)
 dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)
+install(PROGRAMS python/DDSim/bin/ddsim DESTINATION bin )
+dd4hep_install_dir(python/DDSim DESTINATION python)
