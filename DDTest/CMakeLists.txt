@@ -38,4 +38,10 @@ dd4hep_add_test_reg ( test_segmentationHandles BUILD_EXEC REGEX_FAIL "TEST_FAILE
 if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg ( test_EventReaders      BUILD_EXEC REGEX_FAIL "TEST_FAILED"
     EXEC_ARGS ${CMAKE_CURRENT_SOURCE_DIR} )
+
+  ADD_TEST( test_ddsim "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+    ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -G -N=2 --outputFile=testSid.root
+    --part.userParticleHandler=)
+  SET_TESTS_PROPERTIES( test_ddsim PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+
 endif()
