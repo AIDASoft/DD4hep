@@ -58,6 +58,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
+option(DD4HEP_IGNORE_GEANT4_TLS "Ignore the tls flag Geant4 was compiled with" OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"     OFF)
 option(BUILD_TESTING      "Enable and build tests"    ON)
@@ -97,6 +98,11 @@ add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
 if(DD4HEP_USE_GEANT4)
   find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all )
   include( ${Geant4_USE_FILE} )
+
+  IF((NOT ${Geant4_TLS_MODEL} STREQUAL "global-dynamic") AND NOT ${DD4HEP_IGNORE_GEANT4_TLS})
+    MESSAGE(FATAL_ERROR "Geant4 was built with ${Geant4_TLS_MODEL}, DD4hep requires 'global-dynamic'! Ignore this ERROR with DD4HEP_IGNORE_GEANT4_TLS=True ")
+  ENDIF()
+
 endif()
 
 ######################
