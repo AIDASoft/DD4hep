@@ -418,7 +418,7 @@ class DD4hepSimulation(object):
     if self.part.enableDetailedHitsAndParticleInfo:
       self.part.setDumpDetailedParticleInfo( kernel, DDG4 )
 
-    self.part.setupUserParticleHandler(part)
+    self.part.setupUserParticleHandler(part, kernel, DDG4)
 
     #=================================================================================
 

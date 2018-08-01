@@ -102,7 +102,7 @@ class ParticleHandler( ConfigHelper ):
     kernel.eventAction().adopt(evt)
     evt.enableUI()
 
-  def setupUserParticleHandler(self, part):
+  def setupUserParticleHandler(self, part, kernel, DDG4):
     """Create the UserParticleHandler and configure it.
 
     FIXME: this is not extensible at the moment
