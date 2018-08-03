@@ -549,7 +549,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         obj.setAttr(_U(unit), "cm");
       }
       if (lm->IsRotation()) {
-        TGeoMatrix& linv = lm->Inverse();
+        TGeoMatrix const & linv = lm->Inverse();
         XYZRotation  rot = getXYZangles(linv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
           first_solid.append(obj = xml_elt_t(geo.doc, _U(firstrotation)));
@@ -568,7 +568,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         solid.setRef(_U(positionref), pos.name());
       }
       if (rm->IsRotation()) {
-        TGeoMatrix& rinv = rm->Inverse();
+        TGeoMatrix const & rinv = rm->Inverse();
         XYZRotation rot = getXYZangles(rinv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
           xml_ref_t xml_rot = handleRotation(rnam+"_rot", &rinv);
