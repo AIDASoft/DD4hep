@@ -112,6 +112,19 @@ Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)    {
                      0e0,0e0,0e0,t[1]*MM_2_CM,
                      0e0,0e0,0e0,t[2]*MM_2_CM);
 }
+// add another implementation that takes const reference
+Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix)    {
+  const Double_t* t = matrix.GetTranslation();
+  if ( matrix.IsRotation() )  {
+    const Double_t* r = matrix.GetRotationMatrix();
+    return Transform3D(r[0],r[1],r[2],t[0]*MM_2_CM,
+                       r[3],r[4],r[5],t[1]*MM_2_CM,
+                       r[6],r[7],r[8],t[2]*MM_2_CM);
+  }
+  return Transform3D(0e0,0e0,0e0,t[0]*MM_2_CM,
+                     0e0,0e0,0e0,t[1]*MM_2_CM,
+                     0e0,0e0,0e0,t[2]*MM_2_CM);
+}
 
 dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const TGeoMatrix* m) {
   return m->IsRotation() ? _xyzAngles(m->GetRotationMatrix()) : XYZAngles(0,0,0);
