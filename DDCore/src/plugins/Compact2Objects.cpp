@@ -1115,7 +1115,7 @@ template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) cons
   }
 
   /// Create the shape and the corresponding volume
-  Transform3D  tr_volume(detail::matrix::_transform(&anchor.nominal().worldTransformation().Inverse()));
+  Transform3D  tr_volume(detail::matrix::_transform(anchor.nominal().worldTransformation().Inverse()));
   Solid        sol(shape.createShape());
   Volume       vol(name, sol, mat);
   Volume       par = conn ? description.worldVolume() : description.parallelWorldVolume();
