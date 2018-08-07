@@ -14,6 +14,7 @@
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4GeneratorAction.h"
+#include "DDG4/Geant4Kernel.h"
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"

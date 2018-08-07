@@ -140,8 +140,14 @@ void Geant4UIManager::start() {
 
   // No UI. Pure batch mode: Simply execute requested number of events
   long numEvent = context()->kernel().property("NumEvents").value<long>();
+  if(numEvent < 0) numEvent = std::numeric_limits<int>::max();
   printout(INFO,"Geant4UIManager","++ Start run with %d events.",numEvent);
-  context()->kernel().runManager().BeamOn(numEvent);
+  try {
+    context()->kernel().runManager().BeamOn(numEvent);
+  } catch (DD4hep_End_Of_File& e) {
+    printout(INFO,"Geant4UIManager","++ End of file reached, ending run...");
+    context()->kernel().runManager().RunTermination();
+  }
 }
 
 /// Stop and release resources
