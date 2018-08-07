@@ -20,6 +20,13 @@
 #include <map>
 #include <typeinfo>
 
+class DD4hep_End_Of_File : public std::exception {
+public:
+  DD4hep_End_Of_File() : std::exception() {}
+  virtual const char* what() const noexcept { return "Reached end of input file"; }
+
+};
+
 // Forward declarations
 class G4RunManager;
 class G4UIdirectory;

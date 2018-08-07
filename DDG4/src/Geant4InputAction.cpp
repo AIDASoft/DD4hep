@@ -17,6 +17,7 @@
 #include "DD4hep/Plugins.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Context.h"
+#include "DDG4/Geant4Kernel.h"
 #include "DDG4/Geant4InputAction.h"
 
 #include "G4Event.hh"
@@ -174,6 +175,14 @@ int Geant4InputAction::readParticles(int evt_number,
     }
   }
   int status = m_reader->moveToEvent(evid);
+  if(status == Geant4EventReader::EVENT_READER_EOF ) {
+    long nEvents = context()->kernel().property("NumEvents").value<long>();
+    if(nEvents < 0) {
+      //context()->kernel().runManager().AbortRun(true);
+      throw DD4hep_End_Of_File();
+    }
+  }
+
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
     string msg = issue(evid)+"Error when moving to event - ";
     if ( status == Geant4EventReader::EVENT_READER_EOF ) msg += " EOF: [end of file].";
@@ -187,6 +196,13 @@ int Geant4InputAction::readParticles(int evt_number,
     return status;
   }
   status = m_reader->readParticles(evid, vertices, particles);
+  if(status == Geant4EventReader::EVENT_READER_EOF ) {
+    long nEvents = context()->kernel().property("NumEvents").value<long>();
+    if(nEvents < 0) {
+      //context()->kernel().runManager().AbortRun(true);
+      throw DD4hep_End_Of_File();
+    }
+  }
 
 
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
