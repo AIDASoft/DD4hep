@@ -63,6 +63,7 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
   ++m_currEvent;
   EventReaderStatus sc = readParticles(m_currEvent,vertices,particles);
   for_each(particles.begin(),particles.end(),detail::deleteObject<Particle>);
+  for_each(vertices.begin(),vertices.end(),detail::deleteObject<Vertex>);
   return sc;
 }
 

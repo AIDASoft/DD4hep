@@ -16,6 +16,7 @@ dd4hep_configure_output ()
 dd4hep_package ( DDG4 MAJOR 0 MINOR 0 PATCH 1
   USES  [DD4hep REQUIRED COMPONENTS DDCore]
 )
+set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
 #
 #---Geant4 Testsing-----------------------------------------------------------------
 #
@@ -47,7 +48,14 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( test_DDG4_HepMC_reader
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
-                      ${CMAKE_INSTALL_PREFIX}/examples/DDG4/data/hepmc_geant4.dat
+                      ${DDG4examples_INSTALL}/data/hepmc_geant4.dat
     REQUIRES   DDG4 Geant4
-    REGEX_PASS "EventReaderHepMC::moveToEvent INFO  Current event number: 9")
+    REGEX_PASS "Geant4InputAction\\[Input\\]: Event 10 Error when moving to event -  EOF")
+  # Test HepMC input reader
+  dd4hep_add_test_reg( test_DDG4_HepMC_reader_minbias
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
+    EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
+                      ${DDG4examples_INSTALL}/data/LHCb_MinBias_HepMC.txt
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "Geant4InputAction\\[Input\\]: Event 27 Error when moving to event -  EOF")
 endif()
