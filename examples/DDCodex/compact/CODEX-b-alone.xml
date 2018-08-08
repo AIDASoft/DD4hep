@@ -22,6 +22,7 @@
       <fraction n="0.001" ref="C"/>
     </material>
   </materials>
+
   <define>
     <!--  Define the world box  -->
     <constant name="world_side" value="50000*mm"/>

@@ -59,11 +59,11 @@ namespace dd4hep {
      *  \version 1.0
      */
     class VolumeManager_Populator {
-      typedef PlacedVolume::VolIDs VolIDs;
-      typedef vector<TGeoNode*> Chain;
+      typedef vector<TGeoNode*>        Chain;
+      typedef PlacedVolume::VolIDs     VolIDs;
       typedef pair<VolumeID, VolumeID> Encoding;
       /// Reference to the Detector instance
-      Detector& m_detDesc;
+      Detector&     m_detDesc;
       /// Reference to the volume manager to be populated
       VolumeManager m_volManager;
       /// Set of already added entries
@@ -283,6 +283,9 @@ namespace dd4hep {
             }
             m_entries.insert(code.first);
             ++m_numNodes;
+            //if ( (m_numNodes%1000) == 0 )   {
+            //  printout(INFO, "VolumeManager","++ Added %ld volume entries.",m_numNodes);
+            //}
           }
         }
       }

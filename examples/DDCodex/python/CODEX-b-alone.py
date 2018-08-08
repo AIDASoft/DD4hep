@@ -31,7 +31,7 @@ def run():
   field = geant4.setupTrackingField(prt=True)
   # Configure Event actions
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
-  prt.OutputLevel = Output.WARNING
+  prt.OutputLevel = Output.DEBUG
   prt.OutputType  = 3 # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
@@ -39,7 +39,7 @@ def run():
   evt_root = geant4.setupROOTOutput('RootOutput','CodexB_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  #gun = geant4.setupGun("Gun",particle='pi+',
+  """
   gun = geant4.setupGun("Gun",particle='mu-',
                         energy=1000*GeV,
                         multiplicity=1,
@@ -47,13 +47,18 @@ def run():
                         direction=(0.866025,0,0.5),
                         position='(0,0,0)')
   setattr(gun,'print',True)
+  """
+  gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/InputO1");
+  gen.Input = "Geant4EventReaderHepMC|../DD4hep/examples/DDG4/data/LHCb_MinBias_HepMC.txt"
+  gen.MomentumScale = 1.0
+  gen.Mask = 1
+  geant4.buildInputStage([gen],output_level=Output.DEBUG)
+  
   #seq,action = geant4.setupTracker('CODEXb')
-  seq,action = geant4.setupCalorimeter('CODEXb')
-  action.OutputLevel = Output.ERROR
-  seq,action = geant4.setupCalorimeter('Shield')
-  action.OutputLevel = Output.ERROR
-  #geant4.setupTracker('CODEX-b-Shield')
-  #geant4.setupTracker('CODEX-b-Stations')
+  seq,action = geant4.setupTracker('CODEXb')
+  action.OutputLevel = Output.DEBUG
+  seq,action = geant4.setupTracker('Shield')
+  action.OutputLevel = Output.DEBUG
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -65,7 +70,8 @@ def run():
   user.TrackingVolume_Rmax = 999999.*m
   user.enableUI()
   part.adopt(user)
-
+  """
+  """
 
   # Now build the physics list:
   ##phys = kernel.physicsList()

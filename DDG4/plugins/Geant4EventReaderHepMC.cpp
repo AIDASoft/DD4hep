@@ -31,8 +31,11 @@ namespace dd4hep {
 
     /// Class to populate Geant4 primaries from StdHep files.
     /**
-     * Class to populate Geant4 primary particles and vertices from a
-     * file in HepMC format (ASCII)
+     *  Class to populate Geant4 primary particles and vertices from a
+     *  file in HepMC format (ASCII)
+     *
+     *  For details also see:
+     *  http://hepmc.web.cern.ch/hepmc/ReaderAsciiHepMC2_8cc_source.html
      *
      *  \author  P.Kostka (main author)
      *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
@@ -182,6 +185,10 @@ namespace dd4hep {
   }
 }
 
+// For debugging specify here vertex numbers
+//#define DD4HEP_DEBUG_HEP_MC_VERTEX   -390
+//#define DD4HEP_DEBUG_HEP_MC_PARTICLE 418
+
 /// Initializing constructor
 Geant4EventReaderHepMC::Geant4EventReaderHepMC(const string& nam)
   : Geant4EventReader(nam), m_input(), m_events(0)
@@ -206,14 +213,14 @@ Geant4EventReaderHepMC::~Geant4EventReaderHepMC()    {
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderHepMC::moveToEvent(int event_number) {
   if( m_currEvent < event_number && event_number != 0 ) {
-    printout(INFO,"EventReaderHepMC::moveToEvent","Skipping the first %d events", event_number);
-    printout(INFO,"EventReaderHepMC::moveToEvent","Event number before skipping: %d", m_currEvent);
+    printout(INFO,"EventReaderHepMC::moveToEvent","Current event:%d Skipping the next %d events",
+             m_currEvent, event_number);
     while ( m_currEvent < event_number ) {
       if ( not m_events->read() ) return EVENT_READER_ERROR;
       ++m_currEvent;
     }
   }
-  printout(INFO,"EventReaderHepMC::moveToEvent","Current event number: %d",m_currEvent);
+  printout(DEBUG,"EventReaderHepMC::moveToEvent","Current event number: %d",m_currEvent);
   return EVENT_READER_OK;
 }
 
@@ -264,7 +271,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
                p->parents.size());
       //output.push_back(p);
 
-      //ad particles to the 'primary vertex'
+      //add particles to the 'primary vertex'
       if ( p->parents.size() == 0 )  {
         PropertyMask status(p->status);
         if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
@@ -272,7 +279,6 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
         else
           primary_vertex->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
       }
-      
     }
     ++m_currEvent;
     return EVENT_READER_OK;
@@ -282,7 +288,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
 
 void HepMC::fix_particles(EventStream& info)  {
   EventStream::Particles& parts = info.particles();
-  EventStream::Vertices& verts = info.vertices();
+  EventStream::Vertices&  verts = info.vertices();
   EventStream::Particles::iterator i;
   std::set<int>::const_iterator id, ip;
   for(i=parts.begin(); i != parts.end(); ++i)  {
@@ -290,13 +296,25 @@ void HepMC::fix_particles(EventStream& info)  {
     int end_vtx_id = p->secondaries;
     p->secondaries = 0;
     Geant4Vertex* v = vertex(info,end_vtx_id);
+#if defined(DD4HEP_DEBUG_HEP_MC_VERTEX)
+    if ( end_vtx_id == DD4HEP_DEBUG_HEP_MC_VERTEX )   {
+      cout << "End-vertex:" << end_vtx_id << endl;
+    }
+#endif
     if ( v )   {
       p->vex = v->x;
       p->vey = v->y;
       p->vez = v->z;
       v->in.insert(p->id);
-      for(id=v->out.begin(); id!=v->out.end();++id)
+      for(id=v->out.begin(); id!=v->out.end();++id)    {
+        EventStream::Particles::iterator ipp = parts.find(*id);
+        Geant4Particle* dau = ipp != parts.end() ? (*ipp).second : 0;
         p->daughters.insert(*id);
+        if ( !p )    {
+          cout << "ERROR: Invalid daughter particle: " << *id << endl;
+        }
+        dau->parents.insert(p->id);
+      }
     }
   }
   EventStream::Vertices::iterator j;
@@ -408,6 +426,11 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
   // check that the input stream is still OK after reading item
   input >> p->id >> p->pdgID >> p->psx >> p->psy >> p->psz >> ene;
   p->id = info.particles().size();
+#if defined(DD4HEP_DEBUG_HEP_MC_PARTICLE)
+  if ( p->id == DD4HEP_DEBUG_HEP_MC_PARTICLE )   {
+    cout << "Particle id: " << p->id << endl;
+  }
+#endif
   p->psx *= info.mom_unit;
   p->psy *= info.mom_unit;
   p->psz *= info.mom_unit;
@@ -423,19 +446,25 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
   }
   // Reuse here the secondaries to store the end-vertex ID
   input >> stat >> theta >> phi >> p->secondaries >> size;
-  if(!input)
+  if( !input )   {
     return 0;
-
+  }
   //
   //  Generator status
   //  Simulator status 0 until simulator acts on it
   status.clear();
-  if ( stat == 0 )      status.set(G4PARTICLE_GEN_EMPTY);
+  if ( stat == 0 )        status.set(G4PARTICLE_GEN_EMPTY);
   else if ( stat == 0x1 ) status.set(G4PARTICLE_GEN_STABLE);
   else if ( stat == 0x2 ) status.set(G4PARTICLE_GEN_DECAYED);
   else if ( stat == 0x3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
   else if ( stat == 0x4 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
   else if ( stat == 0xB ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+  else                    status.set(G4PARTICLE_GEN_OTHER);
+  /// If there is an end vertex, the particle already decayed
+  if ( p->secondaries != 0 )  {
+    status.set(G4PARTICLE_GEN_DECAYED);
+  }
+  /// Keep a copy of the full generator status
   p->genStatus = stat&G4PARTICLE_GEN_STATUS_MASK;
   
   // read flow patterns if any exist
@@ -458,29 +487,31 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
   }
   input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
         >> num_orphans_in >> num_particles_out >> weights_size;
-
+#if defined(DD4HEP_DEBUG_HEP_MC_VERTEX)
+  if ( id == DD4HEP_DEBUG_HEP_MC_VERTEX )   {
+    printout(ALWAYS,"HepMC","++ Created Vertex ID=%d",id);
+  }
+#endif
   v->x *= info.pos_unit;
   v->y *= info.pos_unit;
   v->z *= info.pos_unit;
   weights.resize(weights_size);
   for (int i1 = 0; i1 < weights_size; ++i1) {
     input >> weights[i1];
-    if(!input) {
+    if( !input ) {
       delete v;
       return 0;
     }
   }
   info.vertices().insert(make_pair(id,v));
-  //cout << "Add Vertex:" << id << endl;
-
   for(char value = is.peek(); value=='P'; value=is.peek())  {
     value = get_input(is,input);
     if( !input || value < 0 )
       return 0;
 
     read_particle(info, input,p = new Geant4Particle());
-    if(!input)   {
-      cerr << "Failed to read particle!" << endl;
+    if( !input )   {
+      printout(ERROR,"HepMC","++ Vertex %d Failed to daughter read particle!",id);
       delete p;
       return 0;
     }
@@ -493,14 +524,22 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
       p->vex = v->x;
       p->vey = v->y;
       p->vez = v->z;
-      //cout << "Add INGOING  Particle:" << p->id << endl;
+#if defined(DD4HEP_DEBUG_HEP_MC_VERTEX)
+      if ( id == DD4HEP_DEBUG_HEP_MC_VERTEX )   {
+        printout(ALWAYS,"HepMC","++ Vertex %d Add INGOING  Particle: %d",id,p->id);
+      }
+#endif
     }
     else if ( num_particles_out >= 0 )   {
       v->out.insert(p->id);
       p->vsx = v->x;
       p->vsy = v->y;
       p->vsz = v->z;
-      //cout << "Add OUTGOING Particle:" << p->id << endl;
+#if defined(DD4HEP_DEBUG_HEP_MC_VERTEX)
+      if ( id == DD4HEP_DEBUG_HEP_MC_VERTEX )   {
+        printout(ALWAYS,"HepMC","++ Vertex %d Add OUTGOING Particle: %d",id,p->id);
+      }
+#endif
     }
     else  {
       delete p;
@@ -530,7 +569,7 @@ int HepMC::read_event_header(EventStream &info, istringstream & input, EventHead
     input >> header.bp1 >> header.bp2;
 
   input >> random_states_size;
-  cout << input.str() << endl;
+  printout(DEBUG,"HepMC","++ Event header: %s",input.str().c_str());
   input.clear();
   if( input.fail() ) return 0;
 
@@ -662,9 +701,6 @@ bool HepMC::EventStream::read()   {
   detail::releaseObjects(particles());
 
   ++num_evt;
-  if ( num_evt == 998 )  {
-    cout << "Hallo";
-  }
   while( instream.good() ) {
     char value = instream.peek();
     istringstream input_line;
@@ -783,3 +819,4 @@ bool HepMC::EventStream::read()   {
   detail::releaseObjects(vertices());
   return true;
 }
+

@@ -45,6 +45,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="VELO"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -64,6 +66,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="IT"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -81,6 +85,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="OT"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -98,6 +104,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="PRS"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -115,6 +123,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="SPD"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -132,6 +142,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="ECAL"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -149,6 +161,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="HCAL"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -167,6 +181,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="MUON"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -184,6 +200,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="RICH1"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>
@@ -201,6 +219,8 @@
       <argument value="-recursive"/>
       <argument value="-processor"/>
       <argument value="DD4hep_DetElementCreator"/>
+      <argument value="-detector"/>
+      <argument value="RICH2"/>
       <argument value="-print"/>
       <argument value="DEBUG"/>
       <argument value="-level"/>

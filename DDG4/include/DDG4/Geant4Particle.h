@@ -78,7 +78,7 @@ namespace dd4hep {
       G4PARTICLE_GEN_GENERATOR       =        // Particle comes from generator
       (  G4PARTICLE_GEN_EMPTY+G4PARTICLE_GEN_STABLE+
          G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION+
-	 G4PARTICLE_GEN_BEAM+G4PARTICLE_GEN_OTHER),
+         G4PARTICLE_GEN_BEAM+G4PARTICLE_GEN_OTHER),
       G4PARTICLE_GEN_STATUS          = 0x3FF, // Mask for generator status (bit 0...9)
       G4PARTICLE_GEN_STATUS_MASK     = 0xFFFF,// Mask for the raw generator status (max 65k values)
       // Simulation status of a given particle
