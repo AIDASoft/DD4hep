@@ -51,6 +51,7 @@ if (DD4HEP_USE_GEANT4)
                       ${DDG4examples_INSTALL}/data/hepmc_geant4.dat
     REQUIRES   DDG4 Geant4
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 10 Error when moving to event -  EOF")
+  #
   # Test HepMC input reader with slightly non-standard HEPMC file
   dd4hep_add_test_reg( test_DDG4_HepMC_reader_minbias
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
