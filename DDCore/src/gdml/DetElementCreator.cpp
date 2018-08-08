@@ -36,6 +36,7 @@ namespace dd4hep {
       DetElement   element {};
       bool         sensitive = false;
       bool         has_sensitive = false;
+      int          level = 0;
       int          vol_count = 0;
       int          daughter_count = 0;
       int          sensitive_count = 0;
@@ -57,7 +58,7 @@ namespace dd4hep {
     typedef std::map<std::string,DetElement> Detectors;
     typedef std::map<DetElement,Count>       Counters;
     typedef std::map<std::pair<DetElement,int>, std::pair<int,int> > LeafCount;
-
+    typedef std::map<PlacedVolume, std::pair<int,int> > AllPlacements;
     Detector&         description;
     Material          sensitive_material;
     Counters          counters;
@@ -65,6 +66,7 @@ namespace dd4hep {
     VolumeStack       stack;
     Detectors         subdetectors;
     DetElement        current_detector;
+    std::string       detector;
     std::string       sensitive_material_name;
     std::string       sensitive_type;
     std::string       detector_volume_match;
@@ -73,7 +75,7 @@ namespace dd4hep {
     int               max_volume_level = 9999;
     PrintLevel        printLevel = INFO;
     SensitiveDetector current_sensitive;
-    std::map<PlacedVolume, std::pair<int,int> > all_placements;
+    AllPlacements     all_placements;
     
     /// Add new subdetector to the detector description
     DetElement addSubdetector(const std::string& nam, PlacedVolume pv, bool volid);
@@ -85,7 +87,9 @@ namespace dd4hep {
     std::string detElementName(PlacedVolume pv)  const;
   public:
     /// Initializing constructor
-    DetElementCreator(Detector& desc, const std::string& sd_type,
+    DetElementCreator(Detector& desc,
+                      const std::string& detector,
+                      const std::string& sd_type,
                       const std::string& sd_match, 
                       const std::string& sd_veto,
                       const std::string& sd_mat,
@@ -114,12 +118,14 @@ using namespace std;
 using namespace dd4hep;
 
 /// Initializing constructor
-DetElementCreator::DetElementCreator(Detector& desc, const string& sd_match,
+DetElementCreator::DetElementCreator(Detector& desc,
+                                     const std::string& det,
+                                     const string& sd_match,
                                      const string& sd_veto,
                                      const string& sd_type,
                                      const string& sd_mat, int sd_lvl,
                                      PrintLevel p)
-  : description(desc), sensitive_material_name(sd_mat),
+  : description(desc), detector(det), sensitive_material_name(sd_mat),
     sensitive_type(sd_type), detector_volume_match(sd_match),
     detector_volume_veto(sd_veto), max_volume_level(sd_lvl), printLevel(p)
 {
@@ -294,7 +300,7 @@ int DetElementCreator::operator()(PlacedVolume pv, int vol_level)   {
 
 /// Callback to output PlacedVolume information of an entire Placement
 int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
-  int ret;
+  int ret = 0;
   string pv_nam = pv.name();
   if ( detector_volume_level > 0 ||
        ( (!detector_volume_match.empty() &&
@@ -312,7 +318,7 @@ int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
     if ( stack.size() > detector_volume_level )   {
       // Note: short-cuts to entries in the stack MUST be local and
       // initialized AFTER the call to "process"! The vector may be resized!
-      auto& data = stack.back();
+      auto& data   = stack.back();
       auto& parent = stack[stack.size()-2];
       auto& counts = counters[current_detector];
       if ( data.sensitive )   {
@@ -345,13 +351,22 @@ int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
       if ( data.has_sensitive )    {
         // If we have sensitive elements at this level or below,
         // we must complete the DetElement hierarchy
+        if ( data.pv.volIDs().empty() )   {
+          char text[32];
+          ::snprintf(text, sizeof(text), "Lv%d", lvl);
+          data.pv.addPhysVolID(text, data.pv->GetMotherVolume()->GetIndex(data.pv.ptr())+1);
+        }
+        else   {
+          AllPlacements::const_iterator e = all_placements.find(data.pv);
+          if ( e != all_placements.end() && (*e).second.first != lvl)  {
+            printout(ERROR,"DetElementCreator","PLacement VOLID error: %d <> %d",lvl,(*e).second.first);
+          }
+        }
+
         for(size_t i=1; i<stack.size(); ++i)   {
           auto& d = stack[i];
           auto& p = stack[i-1];
           if ( !d.element.isValid() )    {
-            char text[32];
-            ::snprintf(text, sizeof(text), "Lv%d", lvl);
-            d.pv.addPhysVolID(text, d.pv->GetMotherVolume()->GetIndex(d.pv.ptr())+1);
             d.element = createElement("Element", d.pv, current_detector.id());
             (i==1 ? current_detector : p.element).add(d.element);
             ++counts.elements;
@@ -399,16 +414,18 @@ int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
 static void* create_object(Detector& description, int argc, char** argv)   {
   PrintLevel prt  = DEBUG;
   size_t sd_level = 99999;
-  string sd_mat, sd_match, sd_veto, sd_type;
+  string sd_mat, sd_match, sd_veto, sd_type, detector;
   for(int i = 0; i < argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-material",argv[i],5) )
-      sd_mat = argv[++i];
+      sd_mat   = argv[++i];
     else if ( 0 == ::strncmp("-match",argv[i],5) )
       sd_match = argv[++i];
+    else if ( 0 == ::strncmp("-detector",argv[i],5) )
+      detector = argv[++i];
     else if ( 0 == ::strncmp("-veto",argv[i],5) )
-      sd_veto = argv[++i];
+      sd_veto  = argv[++i];
     else if ( 0 == ::strncmp("-type",argv[i],5) )
-      sd_type = argv[++i];
+      sd_type  = argv[++i];
     else if ( 0 == ::strncmp("-level",argv[i],5) )
       sd_level = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-print",argv[i],5) )
@@ -425,7 +442,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
-  PlacedVolumeProcessor* proc = new DetElementCreator(description, sd_match, sd_veto, sd_type, sd_mat, sd_level, prt);
+  PlacedVolumeProcessor* proc = new DetElementCreator(description, detector, sd_match, sd_veto, sd_type, sd_mat, sd_level, prt);
   return (void*)proc;
 }
 

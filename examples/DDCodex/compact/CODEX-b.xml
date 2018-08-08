@@ -17,13 +17,16 @@
 
   <comment>Common Generic visualization attributes</comment>
   <display>
-    <vis name="BlackVis"              alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
-    <vis name="Codex_Envelope_Vis"    alpha="0.7" r="0.2" g="0.2" b="0.7" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module1_Vis"     alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module2_Vis"     alpha="0.4"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module3_Vis"     alpha="1"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Shield_Pb_Vis"   alpha="1"  r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
-    <vis name="Codex_Shield_Veto_Vis" alpha="1"  r="0.9" g="0.9" b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="BlackVis"                alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
+    <vis name="Codex_Envelope_Vis"      alpha="0.7" r="0.2" g="0.2" b="0.7" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module_center_Vis" alpha="0.4"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module_front_Vis"  alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module_back_Vis"   alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module1_Vis"       alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module2_Vis"       alpha="0.4"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module3_Vis"       alpha="1"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Shield_Pb_Vis"     alpha="1"  r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
+    <vis name="Codex_Shield_Veto_Vis"   alpha="1"  r="0.9" g="0.9" b="0.0" showDaughters="true"  visible="true"/>
   </display>
 
   <geometry  open="false" close="false"/>
@@ -42,7 +45,7 @@
       <rotation x="0"     y="COBEX_beam_angle"   z="0"/>
     </detector>
 
-    
+    <!--
     <detector id="2" name="CODEXb" type="DD4hep_CODEXb_layer" vis="Codex_Envelope_Vis" readout="CodexHits" >
        <envelope width="5*m" length="5*m" height="5*m" vis="Codex_Module1_Vis" />
        <station material="Al" width="5*m" thickness="60*cm" height="5*m" 
@@ -52,7 +55,30 @@
        
        <position x="2500*cm*sin(60*degree)+500*cm" y="0" z="2500*cm*cos(60*degree)" />
     </detector>
-   
+   -->
+
+    <detector id="13" name="CODEXb" type="DD4hep_CODEXb_detector" vis="Codex_Envelope_Vis" readout="CodexHits" >
+       <envelope thickness="23*m" length="6*m" height="6*m" vis="Codex_Module1_Vis">
+       </envelope>
+       <layer material="Si" width="5*m" thickness="Layer_thickness" height="5*m" sensitive="true"
+                x="0" y="0" z="0" vis="Codex_Module2_Vis" />
+       <station name="front_station" material="Al" width="5*m" thickness="40*cm" height="5*m" 
+                repeat="6" distance="15*cm" vis="Codex_Module_front_Vis">
+         <layers number="6" gap="Layer_pitch" />
+         <position x="1*m" y="0" z="0" />
+       </station>
+       <station name="center_station" material="Al" width="5*m" thickness="40*cm" height="5*m" 
+                repeat="5" distance="15*cm" vis="Codex_Module_center_Vis">
+         <layers number="5" gap="Layer_pitch" />
+         <position x="8*m" y="0" z="0" />
+       </station>
+       <station name="back_station" material="Al" width="5*m" thickness="60*cm" height="5*m" 
+                repeat="6" distance="15*cm" vis="Codex_Module_back_Vis">
+         <layers number="5" gap="Layer_pitch" />
+         <position x="15*m" y="0" z="0" />
+       </station>
+       <position x="3300*cm*sin(60*degree)+500*cm" y="0" z="2500*cm*cos(60*degree)" />
+    </detector>
 
    </detectors>
   <limits>
@@ -63,7 +89,7 @@
   <readouts>
     <readout name="CodexHits">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm" />
-      <id>system:8,station:5,layer:5,x:32:-16,y:-16</id>
+      <id>system:8,super:5,station:5,layer:5,x:32:-16,y:-16</id>
     </readout>
     <readout name="ShieldHits">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm" />
