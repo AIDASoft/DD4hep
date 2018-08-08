@@ -16,17 +16,17 @@ def run(input_file):
   description = kernel.detectorDescription()
   gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/Input")
   kernel.generatorAction().adopt(gen)
-  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/hepmc_geant4.dat"
-  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/"
   gen.Input = "Geant4EventReaderHepMC|"+input_file
   gen.OutputLevel = Output.DEBUG
   gen.HaveAbort = False
   prim_vtx = DDG4.std_vector('dd4hep::sim::Geant4Vertex*')()
   parts = gen.new_particles()
   ret = 1
+  evtid=0
   while ret:
     try:
-      ret = gen.readParticles(0,prim_vtx,parts)
+      ret = gen.readParticles(evtid,prim_vtx,parts)
+      evtid = evtid + 1
     except Exception,X:
       logging.info( '\nException: readParticles: %s',str(X))
       ret = None

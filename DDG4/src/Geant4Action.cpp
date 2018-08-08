@@ -257,8 +257,8 @@ void Geant4Action::fatal(const char* fmt, ...) const {
 void Geant4Action::except(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  dd4hep::printout(dd4hep::FATAL, m_name, fmt, args);
   string err = dd4hep::format(m_name, fmt, args);
+  dd4hep::printout(dd4hep::FATAL, m_name, err.c_str());
   va_end(args);
   throw runtime_error(err);
 }
