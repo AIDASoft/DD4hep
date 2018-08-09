@@ -18,9 +18,10 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #------------------------------------------------------------------------------
 dd4hep_configure_output ()
 
+#                   [CLHEP REQUIRED]
+
 dd4hep_package(    DDCMS
   USES             [DD4hep REQUIRED COMPONENTS DDCore]
-                   [CLHEP REQUIRED]
 		   [ROOT REQUIRED COMPONENTS Geom GenVector]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDCMS)

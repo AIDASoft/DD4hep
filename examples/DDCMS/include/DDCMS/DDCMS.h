@@ -73,13 +73,16 @@ namespace dd4hep {
       /// Return the namespace name of a component
       static std::string ns_name(const std::string& n);
       template <typename T> T attr(xml_elt_t elt,const xml_tag_t& n) const   {
-        std::string val = real_name(elt.attr<std::string>(n));
+        std::string raw = elt.attr<std::string>(n);
+        std::string val = real_name(raw);
         elt.setAttr(n,val);
         return elt.attr<T>(n);
       }
+      /// Resolve attribute with name resolution
       template <typename T> T attr(xml_elt_t elt,const xml_tag_t& n, T default_value) const   {
         if ( elt.hasAttr(n) )   {
-          std::string val = real_name(elt.attr<std::string>(n));
+          std::string raw = elt.attr<std::string>(n);
+          std::string val = real_name(raw);
           elt.setAttr(n,val);
           return elt.attr<T>(n);
         }
@@ -243,5 +246,7 @@ namespace dd4hep {
 
   }   /* End namespace cms      */
 }     /* End namespace dd4hep   */
+
+#define NAMESPACE_SEP ':'
 
 #endif /* DD4HEP_DDCMS_DDCMS_H  */
