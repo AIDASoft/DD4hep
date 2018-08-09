@@ -45,7 +45,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_configure_scripts (DDG4 DEFAULT_SETUP WITH_TESTS)
   #
   # Test HepMC input reader
-  dd4hep_add_test_reg( test_DDG4_HepMC_reader
+  dd4hep_add_test_reg( DDG4_HepMC_reader
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/hepmc_geant4.dat
@@ -53,7 +53,7 @@ if (DD4HEP_USE_GEANT4)
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 10 Error when moving to event -  EOF")
   #
   # Test HepMC input reader with slightly non-standard HEPMC file
-  dd4hep_add_test_reg( test_DDG4_HepMC_reader_minbias
+  dd4hep_add_test_reg( DDG4_HepMC_reader_minbias
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/LHCb_MinBias_HepMC.txt
