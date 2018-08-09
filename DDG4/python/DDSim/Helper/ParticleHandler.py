@@ -110,6 +110,10 @@ class ParticleHandler( ConfigHelper ):
     if not self.userParticleHandler:
       return
 
+    if self.userParticleHandler not in ["Geant4TCUserParticleHandler"]:
+      print "ERROR: unknown UserParticleHandler: %r" % self.userParticleHandler
+      exit(1)
+
     if self.userParticleHandler == "Geant4TCUserParticleHandler":
       user = DDG4.Action(kernel,"%s/UserParticleHandler" % self.userParticleHandler)
       try:
@@ -127,5 +131,4 @@ class ParticleHandler( ConfigHelper ):
         exit(1)
       part.adopt(user)
 
-    print "ERROR: unknown UserParticleHandler: %r" % self.userParticleHandler
-    exit(1)
+    return
