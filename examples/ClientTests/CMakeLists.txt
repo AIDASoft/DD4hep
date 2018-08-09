@@ -31,6 +31,16 @@ dd4hep_install_dir( compact scripts ref DESTINATION ${ClientTestsEx_INSTALL} )
 dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #---  Testing  ------------------------------------------------------------
 #
+#  Test namespaces for constants 
+dd4hep_add_test_reg( ClientTests_namespace_constants
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/NamespaceConstants.xml
+  -destroy -plugin DD4hep_VolumeDump -plugin DD4hep_TestConstantsMultiplier
+  REGEX_PASS "Constant: world_z          = world::Z         \\[number\\]  -> 10\\*world_z          =     1e\\+03"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+  )
+#
 #  Test JSON based parser
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

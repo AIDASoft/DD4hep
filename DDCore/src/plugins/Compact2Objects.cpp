@@ -96,6 +96,7 @@ namespace {
   bool s_debug_elements     = false;
   bool s_debug_materials    = false;
   bool s_debug_segmentation = false;
+  bool s_debug_constants    = false;
 }
 
 static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
@@ -249,6 +250,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "readou" ) s_debug_readout      = (0 != val);
     else if ( nam.substr(0,6) == "limits" ) s_debug_limits       = (0 != val);
     else if ( nam.substr(0,6) == "segmen" ) s_debug_segmentation = (0 != val);
+    else if ( nam.substr(0,6) == "consta" ) s_debug_constants    = (0 != val);
   }
 }
   
@@ -287,6 +289,10 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
     Constant c(nam, val, typ);
     _toDictionary(nam, val, typ);
     description.addConstant(c);
+    if ( s_debug_constants )   {
+      printout(ALWAYS, "Compact",
+               "++ Converting constant %-16s = %-32s [%s]", nam.c_str(), val.c_str(), typ.c_str());
+    }
     return;
   }
   xml::DocumentHolder doc(xml::DocumentHandler().load(e, e.attr_value(_U(ref))));
