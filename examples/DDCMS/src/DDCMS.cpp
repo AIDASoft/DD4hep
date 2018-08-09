@@ -31,8 +31,6 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cms;
 
-#define NAMESPACE_SEP '_'
-
 /// Create 3D rotation matrix from angles.
 Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
                                         double thetaY, double phiY,
@@ -48,10 +46,8 @@ Rotation3D dd4hep::cms::make_rotation3D(double thetaX, double phiX,
 string dd4hep::cms::detElementName(PlacedVolume pv)   {
   if ( pv.isValid() )  {
     string nam = pv.name();
-    string nnam = nam.substr(nam.find('_')+1);
+    string nnam = nam.substr(nam.find(NAMESPACE_SEP)+1);
     return nnam;
-    //size_t idx = nnam.rfind('_');
-    //return idx == string::npos ? nnam : nnam.substr(0,idx);
   }
   except("DDCMS","++ Cannot deduce name from invalid PlacedVolume handle!");
   return string();
@@ -137,24 +133,21 @@ string Namespace::real_name(const string& v)  const  {
   string val = v;
   while ( (idx=val.find('[')) != string::npos )  {
     val.erase(idx,1);
-    idp = val.find(':');
-    idq = val.find(']');
+    idp = val.find(NAMESPACE_SEP,idx);
+    idq = val.find(']',idx);
     val.erase(idq,1);
     if ( idp == string::npos || idp > idq )
       val.insert(idx,name);
     else if ( idp != string::npos && idp < idq )
       val[idp] = NAMESPACE_SEP;
   }
-  while ( (idx=val.find(':')) != string::npos ) val[idx]=NAMESPACE_SEP;
   return val;
 }
 
 /// Return the namespace name of a component
 string Namespace::ns_name(const string& nam)    {
   size_t idx;
-  if ( (idx=nam.find(':')) != string::npos )
-    return nam.substr(0,idx);
-  else if ( (idx=nam.find('_')) != string::npos )
+  if ( (idx=nam.find(NAMESPACE_SEP)) != string::npos )
     return nam.substr(0,idx);
   return "";
 }
@@ -162,9 +155,7 @@ string Namespace::ns_name(const string& nam)    {
 /// Strip off the namespace part of a given name
 string Namespace::obj_name(const string& nam)   {
   size_t idx;
-  if ( (idx=nam.find(':')) != string::npos )
-    return nam.substr(idx+1);
-  else if ( (idx=nam.find('_')) != string::npos )
+  if ( (idx=nam.find(NAMESPACE_SEP)) != string::npos )
     return nam.substr(idx+1);
   return "";
 }
@@ -205,10 +196,10 @@ const Rotation3D& Namespace::rotation(const string& nam)  const   {
     return (*i).second;
   else if ( nam == "NULL" )
     return s_null;
-  else if ( nam.find("_NULL") == nam.length()-5 )
+  else if ( nam.find(":NULL") == nam.length()-5 )
     return s_null;
   string n = nam;
-  if ( (idx=nam.find(':')) != string::npos )  {
+  if ( (idx=nam.find(NAMESPACE_SEP)) != string::npos )  {
     n[idx] = NAMESPACE_SEP;
     i = context->rotations.find(n);
     if ( i != context->rotations.end() )
@@ -252,7 +243,7 @@ Volume Namespace::volume(const string& nam, bool exc)  const   {
   if ( i != context->volumes.end() )  {
     return (*i).second;
   }
-  if ( (idx=nam.find(':')) != string::npos )  {
+  if ( (idx=nam.find(NAMESPACE_SEP)) != string::npos )  {
     string n = nam;
     n[idx] = NAMESPACE_SEP;
     i = context->volumes.find(n);
@@ -284,7 +275,7 @@ Solid Namespace::solid(const string& nam)  const   {
   auto i = context->shapes.find(n);
   if ( i != context->shapes.end() )
     return (*i).second;
-  if ( (idx=nam.find(':')) != string::npos )  {
+  if ( (idx=nam.find(NAMESPACE_SEP)) != string::npos )  {
     n = real_name(nam);
     n[idx] = NAMESPACE_SEP;
     i = context->shapes.find(n);
