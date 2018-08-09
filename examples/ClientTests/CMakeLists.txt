@@ -36,7 +36,7 @@ dd4hep_add_test_reg( ClientTests_namespace_constants
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/NamespaceConstants.xml
   -destroy -plugin DD4hep_VolumeDump -plugin DD4hep_TestConstantsMultiplier
-  REGEX_PASS "Constant: world_z          = world::Z         \\[number\\]  -> 10\\*world_z          =     1e\\+03"
+  REGEX_PASS "Constant: world_z          = world::Z         \\[number\\]  -> world_z          =       100"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
