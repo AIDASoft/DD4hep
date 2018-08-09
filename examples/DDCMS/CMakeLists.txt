@@ -57,6 +57,17 @@ dd4hep_add_test_reg( DDCMS_TestShapes
   )
 #
 #  Test CMS tracker detector construction
+dd4hep_add_test_reg( DDCMS_NamespaceConstants
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
+  EXEC_ARGS  geoPluginRun  -destroy -print WARNING
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/cms_tracker.xml
+  -plugin DD4hep_TestConstantsMultiplier
+  REGEX_PASS "Tested 2551 numeric constants for expression evaluation"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+  )
+#
+#  Test CMS tracker detector construction
 dd4hep_add_test_reg( DDCMS_LoadGeometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun

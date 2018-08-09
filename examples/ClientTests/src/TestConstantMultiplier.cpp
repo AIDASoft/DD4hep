@@ -57,19 +57,23 @@ static int multiply_constants (Detector& detector, int argc, char** argv)  {
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
+  int num_test = 0;
   const auto& constants = detector.constants();
   for(const auto e : constants)  {
     Constant c = e.second;
     if ( c.dataType() == "number" )   {
       try {
-        double res = _multiply(c.name(),10.0);
-        printout(INFO,"TestConstantsMultiplier","+++ Constant: %-16s = %-16s [%s]  -> 10*%-16s = %9.3g",
+        double res = _multiply(c.name(),1.0);
+        printout(INFO,"TestConstantsMultiplier","+++ Constant: %-16s = %-16s [%s]  -> %-16s = %9.3g",
                  c.name(), c->GetTitle(), c.dataType().c_str(), c.name(), res);
+        ++num_test;
       }
       catch(...)   {
       }
     }
   }
+  printout(ALWAYS,"TestConstantsMultiplier",
+           "+++ Tested %d numeric constants for expression evaluation.",num_test);
   return 1;
 }
 
