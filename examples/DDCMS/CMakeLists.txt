@@ -73,7 +73,7 @@ dd4hep_add_test_reg( DDCMS_DumpMaterials
   EXEC_ARGS  geoPluginRun -print WARNING
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -plugin DD4hep_MaterialTable -type xml
-  REGEX_PASS "material name=\"tobmaterial_TOB_ax_services_C18\""
+  REGEX_PASS "material name=\"tobmaterial:TOB_ax_services_C18\""
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
