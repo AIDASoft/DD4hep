@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+       xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <define>
+    <constant name="world_side"             value="2*m"/>
+    <constant name="world:X"                value="world_side/2"/>
+    <constant name="world:Y"                value="world:X"/>
+    <constant name="world:Z"                value="world:Y"/>
+    <constant name="world::Z"               value="world:Y"/>
+    <constant name="world_x"                value="world:X"/>
+    <constant name="world_y"                value="world:Y"/>
+    <constant name="world_z"                value="world::Z"/>
+  </define>
+  <debug>
+    <type name="constants" value="1"/>
+  </debug>
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  <!--
+  <plugins>
+    <plugin name="DD4hep_TestConstantsMultiplier"/>
+  </plugins>
+  -->
+</lccdd>

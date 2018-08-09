@@ -232,7 +232,7 @@ static int operand(pchar begin, pchar end, double & result,
 
   while(pointer <= end) {
     c = *pointer;
-    if (c != '_' && !isalnum(c)) break;
+    if ( !(c == '_' || c == ':') && !isalnum(c)) break;
     pointer++;
   }
   c = *pointer;
@@ -572,7 +572,7 @@ static void setItem(const char * prefix, const char * name,
   }
   for(int i=0; i<n; i++) {
     char c = *(pointer+i);
-    if (c != '_' && !isalnum(c)) {
+    if ( !(c == '_' || c== ':') && !isalnum(c)) {
       s->theStatus = EVAL::ERROR_NOT_A_NAME;
       return;
     }
