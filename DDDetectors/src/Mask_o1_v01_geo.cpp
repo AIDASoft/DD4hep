@@ -19,8 +19,10 @@
 
 using dd4hep::Transform3D;
 using dd4hep::Position;
+using dd4hep::RotationX;
 using dd4hep::RotationY;
 using dd4hep::RotateY;
+using dd4hep::RotateX;
 using dd4hep::ConeSegment;
 using dd4hep::SubtractionSolid;
 using dd4hep::Material;
@@ -47,12 +49,14 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 
   dd4hep::DetElement tube(  name, xmlMask.id()  ) ;
 
-  const double phi1 = 0 ;
-  const double phi2 = 360.0*units::degree;
+  bool rotationX= false;
 
   //Parameters we have to know about
   dd4hep::xml::Component xmlParameter = xmlMask.child(_Unicode(parameter));
   const double crossingAngle  = xmlParameter.attr< double >(_Unicode(crossingangle))*0.5; //  only half the angle
+
+  if (xmlParameter.hasAttr(_Unicode(rotationX)))
+    rotationX = xmlParameter.attr< bool >(_Unicode(rotationX));
 
   for(xml_coll_t c( xmlMask ,Unicode("section")); c; ++c) {
 
@@ -69,6 +73,13 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
     Material sectionMat  = description.material(xmlSection.materialStr());
     const std::string volName      = "tube_" + xmlSection.nameStr();
 
+    double phi1 = 0 ;
+    double phi2 = 360.0*units::degree;
+    if (xmlSection.hasAttr(_U(phi1)))
+      phi1 = xmlSection.attr< double > (_U(phi1));
+    if (xmlSection.hasAttr(_U(phi2)))
+      phi2 = xmlSection.attr< double > (_U(phi2));
+
     std::stringstream pipeInfo;
     pipeInfo << std::setw(8) << zStart      /units::mm
 	     << std::setw(8) << zEnd        /units::mm
@@ -79,7 +90,9 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	     << std::setw(8) << thickness   /units::mm
 	     << std::setw(8) << crossType
 	     << std::setw(35) << volName
-	     << std::setw(15) << sectionMat.name();
+	     << std::setw(15) << sectionMat.name()
+	     << std::setw(8) << phi1
+	     << std::setw(8) << phi2;
 
     printout(dd4hep::INFO, "DD4hep_Mask", pipeInfo.str() );
 
@@ -102,11 +115,16 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
     case ODH::kUpstream:
     case ODH::kDnstream: {
       // a volume on the z-axis, on the upstream branch, or on the downstream branch
-
-      // absolute transformations for the placement in the world
-      Transform3D transformer(RotationY(rotateAngle), RotateY( Position(0, 0, zPosition), rotateAngle) );
-      Transform3D transmirror(RotationY(mirrorAngle), RotateY( Position(0, 0, zPosition), mirrorAngle) );
-
+      Transform3D transformer, transmirror;
+      if( rotationX == true) {
+        // absolute transformations for the placement in the world, rotate over X
+        transformer = Transform3D(RotationX(rotateAngle), RotateX( Position(0, 0, zPosition), rotateAngle) );
+        transmirror = Transform3D(RotationX(mirrorAngle), RotateX( Position(0, 0, zPosition), mirrorAngle) );
+      } else{
+	// absolute transformations for the placement in the world
+	transformer = Transform3D(RotationY(rotateAngle), RotateY( Position(0, 0, zPosition), rotateAngle) );
+	transmirror = Transform3D(RotationY(mirrorAngle), RotateY( Position(0, 0, zPosition), mirrorAngle) );
+      }
       // solid for the tube (including vacuum and wall): a solid cone
       ConeSegment tubeSolid( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
 
