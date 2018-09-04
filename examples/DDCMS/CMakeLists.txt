@@ -17,14 +17,20 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #------------------------------------------------------------------------------
 dd4hep_configure_output ()
-
+#
+#---Trick to allow building with Geant4 internal CLHEP
+if ( DD4HEP_USE_GEANT4 AND Geant4_builtin_clhep_FOUND)
+  set(CLHEP "")
+else()
+  set(CLHEP CLHEP)
+endif()
+#
 dd4hep_package(    DDCMS
   USES             [DD4hep REQUIRED COMPONENTS DDCore]
-                   [CLHEP REQUIRED]
-		   [ROOT REQUIRED COMPONENTS Geom GenVector]
+                   [ROOT REQUIRED COMPONENTS Geom GenVector]
+  OPTIONAL         ${CLHEP}
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDCMS)
-#
 #
 # We only create only library for DDCMS. The whole package is a single component
 # library. A priory there is no need to seperate the implementation from the

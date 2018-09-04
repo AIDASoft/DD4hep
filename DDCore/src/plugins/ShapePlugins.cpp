@@ -247,12 +247,12 @@ static Handle<TObject> create_BooleanShape(Detector&, xml_h element)   {
   if( e.hasChild( _U(position) ) ) {
     usePos = true ;
     xml_comp_t x_pos = e.position();
-    pos = Position( x_pos.x(),x_pos.y(),x_pos.z() );  
+    pos = Position( x_pos.x(0.0),x_pos.y(0.0),x_pos.z(0.0) );  
   }
   if( e.hasChild( _U(rotation) ) ) {
     useRot = true ;
     xml_comp_t  x_rot = e.rotation();
-    rot = RotationZYX( x_rot.z(),x_rot.y(),x_rot.x() ) ;
+    rot = RotationZYX( x_rot.z(0.0),x_rot.y(0.0),x_rot.x(0.0) ) ;
   }
 
   if( op == "subtraction" ) {
