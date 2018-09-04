@@ -508,6 +508,36 @@ namespace dd4hep {
       double start() const;
       /// Access attribute values: start
       double start(double default_value) const;
+      /// Access attribute values: start_x
+      double start_x() const;
+      /// Access attribute values: start_x
+      double start_x(double default_value) const;
+      /// Access attribute values: start_y
+      double start_y() const;
+      /// Access attribute values: start_y
+      double start_y(double default_value) const;
+      /// Access attribute values: start_z
+      double start_z() const;
+      /// Access attribute values: start_z
+      double start_z(double default_value) const;
+
+      /// Access attribute values: step
+      double step() const;
+      /// Access attribute values: step
+      double step(double default_value) const;
+      /// Access attribute values: step_x
+      double step_x() const;
+      /// Access attribute values: step_x
+      double step_x(double default_value) const;
+      /// Access attribute values: step_y
+      double step_y() const;
+      /// Access attribute values: step_y
+      double step_y(double default_value) const;
+      /// Access attribute values: step_z
+      double step_z() const;
+      /// Access attribute values: step_z
+      double step_z(double default_value) const;
+
       /// Access attribute values: end
       double end() const;
       /// Access attribute values: end
@@ -522,6 +552,10 @@ namespace dd4hep {
       /// Access attribute values: show_daughters
       bool   show_daughters() const;
 
+      /// Access min/max parameters: correction
+      double correction() const;
+      /// Access min/max parameters: correction
+      double correction(double default_value) const;
       /// Access min/max parameters: cut
       double cut() const;
       /// Access min/max parameters: cut

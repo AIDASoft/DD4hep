@@ -15,7 +15,7 @@ dd4hep_package(    DDG4
   OPTIONAL         ${CLHEP} [XercesC QUIET]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDG4 )
-MESSAGE(STATUS "CLHEP_LIBRARIES ${CLHEP_LIBRARIES} ${CLHEP_LIBRARY}")
+dd4hep_print ( "|++> CLHEP_LIBRARIES ${CLHEP_LIBRARIES} ${CLHEP_LIBRARY}" )
 #---Add Library---------------------------------------------------------------------
 dd4hep_add_package_library(DDG4 SOURCES src/*.cpp )
 #---------------------------  Legacy libraries (for Frank) -------------------------
