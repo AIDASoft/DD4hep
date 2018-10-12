@@ -110,7 +110,7 @@ namespace dd4hep {
     virtual Handle<NamedObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not = true) const;
 
     /// Register new mother volume using the detector name.
-    virtual void   declareMotherVolume(const std::string& detector_name, const Volume& vol)  override;
+    virtual void   declareParent(const std::string& detector_name, const DetElement& parent)  override;
 
     /// Access mother volume by detector element
     virtual Volume pickMotherVolume(const DetElement& sd) const  override;
@@ -212,9 +212,8 @@ namespace dd4hep {
       return getRefChild(m_readouts, name);
     }
     /// Retrieve a subdetector element by it's name from the detector description
-    virtual DetElement detector(const std::string& name) const  override {
-      return getRefChild(m_detectors, name);
-    }
+    virtual DetElement detector(const std::string& name) const  override;
+    //{      return getRefChild(m_detectors, name);    }
     /// Retrieve a sensitive detector by it's name from the detector description
     virtual SensitiveDetector sensitiveDetector(const std::string& name) const  override {
       return getRefChild(m_sensitive, name, false);

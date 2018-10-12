@@ -69,6 +69,9 @@ namespace dd4hep {
       /// Access parameters: id, if not present returns default
       int id(int default_value) const;
 
+      /// Access parameters: station
+      int station() const;
+
       /// Access parameters: type
       int type() const;
       /// Access rotation constants: combineHits

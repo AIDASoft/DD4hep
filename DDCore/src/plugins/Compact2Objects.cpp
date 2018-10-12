@@ -992,22 +992,23 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
   if (ign_typs && strstr(ign_typs, type_match.c_str()))
     return;
   try {
+    string par_name;
     xml_attr_t attr_par = element.attr_nothrow(_U(parent));
-    if (attr_par) {
+    xml_elt_t  elt_par(0);
+    if (attr_par)
+      par_name = element.attr<string>(attr_par);
+    else if ( (elt_par=element.child(_U(parent),false)) )
+      par_name = elt_par.attr<string>(_U(name));
+    if ( !par_name.empty() ) {
       // We have here a nested detector. If the mother volume is not yet registered
       // it must be done here, so that the detector constructor gets the correct answer from
       // the call to Detector::pickMotherVolume(DetElement).
-      string par_name = element.attr<string>(attr_par);
-      DetElement parent_detector = description.detector(par_name);
-      if ( !parent_detector.isValid() )  {
+      if ( par_name[0] == '$' ) par_name = xml::getEnviron(par_name);
+      DetElement parent = description.detector(par_name);
+      if ( !parent.isValid() )  {
         except("Compact","Failed to access valid parent detector of %s",name.c_str());
       }
-      Volume parent_volume = parent_detector.placement().volume();
-      if ( !parent_volume.isValid() )   {
-        except("Compact","Failed to access valid parent volume of %s from %s",
-               name.c_str(), par_name.c_str());
-      }
-      description.declareMotherVolume(name, parent_volume);
+      description.declareParent(name, parent);
     }
     xml_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
@@ -1203,7 +1204,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 
   if (element.hasChild(_U(debug)))
     (Converter<Debug>(description))(xml_h(compact.child(_U(debug))));
-  
+
   if ( steer_geometry )   {
     xml_elt_t steer = compact.child(_U(geometry));
     if ( steer.hasAttr(_U(open))  ) open_geometry  = steer.attr<bool>(_U(open));
@@ -1257,9 +1258,9 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter<SensitiveDetector>(description));
   xml_coll_t(compact, _U(parallelworld_volume)).for_each(Converter<Parallelworld_Volume>(description));
 
-  ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
-  description.addConstant(Constant("compact_checksum", text));
   if ( --num_calls == 0 && close_geometry )  {
+    ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
+    description.addConstant(Constant("compact_checksum", text));
     description.endDocument();
   }
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter<Plugin> (description));

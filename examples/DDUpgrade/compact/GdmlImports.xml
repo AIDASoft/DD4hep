@@ -1,0 +1,60 @@
+<lccdd>
+
+  <detectors>
+    <detector id="200" name="VP" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/VP.gdml"/>
+      <region name="BeforeMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="0*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="201" name="Rich1" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Rich1.gdml"/>
+      <region name="BeforeMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="150*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="202" name="UT" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/UT.gdml"/>
+      <region name="BeforeMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="248.5*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="208" name="FT" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/FT.gdml"/>
+      <region name="AfterMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="-123.05*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="208" name="Rich2" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Rich2.gdml"/>
+      <region name="AfterMagnetRegion"/>
+      <position x="0.027*cm" y="-4.32*cm" z="90.435*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="210" name="Ecal" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Ecal.gdml"/>
+      <region name="DownstreamRegion"/>
+      <position x="0*cm" y="-0.019*cm" z="-296.75*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="211" name="Hcal" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Hcal.gdml"/>
+      <region name="DownstreamRegion"/>
+      <position x="0*cm" y="-0.082*cm" z="-168.25*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="212" name="Muon" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Muon.gdml"/>
+      <region name="DownstreamRegion"/>
+      <position x="0*cm" y="0*cm" z="160.*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+  </detectors>
+</lccdd>

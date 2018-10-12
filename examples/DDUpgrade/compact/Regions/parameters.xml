@@ -1,0 +1,74 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the LHCb detector region parameters                     -->
+<!-- ========================================================================== -->
+<lccdd>
+
+  <define>
+    <!-- Upstream parameters -->
+    <constant name="Regions:UpstreamXSize" value="20000*mm" />
+    <constant name="Regions:UpstreamYSize" value="20000*mm" />
+    <!-- UpstreamZSize = 22700 mm - 2700 mm-->
+    <constant name="Regions:UpstreamZSize" value="20000*mm" />
+
+    <!-- BeforeMagnet parameters -->
+    <constant name="Regions:BeforeMagnetXSize" value="20000*mm" />
+    <constant name="Regions:BeforeMagnetYSize" value="20000*mm" />
+    <!-- BeforeMagnetZSize = 2700 mm + 2700 mm -->
+    <constant name="Regions:BeforeMagnetZSize" value="5400*mm" />
+
+    <!-- Magnet parameters -->
+    <constant name="Regions:MagnetRegionXSize" value="20000*mm" />
+    <constant name="Regions:MagnetRegionYSize" value="20000*mm" />
+    <!-- MagnetZSize = 7620 mm - 2700 mm -->
+    <constant name="Regions:MagnetRegionZSize" value="4920*mm" />
+
+    <!-- AfterMagnet parameters -->
+    <constant name="Regions:AfterMagnetXSize" value="20000*mm" />
+    <constant name="Regions:AfterMagnetYSize" value="20000*mm" />
+    <!-- IT1 starts at 7620mm = 7628mm - 8mm (=3950*4mrad) -->
+    <!-- AfterMagnetZSize = 11900 mm - 7620 mm -->
+    <constant name="Regions:AfterMagnetZSize" value="4280*mm" />
+
+    <!-- DownStream parameters -->
+    <constant name="Regions:DownstreamXSize" value="20000*mm" />
+    <constant name="Regions:DownstreamYSize" value="20000*mm" />
+    <!-- AfterMagnetZSize = 22900 mm - 11900 mm -->
+    <constant name="Regions:DownstreamZSize" value="8000*mm" />
+
+    <!-- Z_center coordinates of the regions -->
+    <constant name="Regions:UpstreamZPos"
+	   value="-.5*(Regions:UpstreamZSize+Regions:BeforeMagnetZSize)" />
+    <!-- BeforeMagnet region is centered about the LHCb origin -->
+    <constant name="Regions:BeforeMagnetZPos" value="0" />
+    <constant name="Regions:MagnetRegionZPos" value=".5*(Regions:BeforeMagnetZSize+Regions:MagnetRegionZSize)" />
+    <constant name="Regions:AfterMagnetZPos"
+              value="Regions:MagnetRegionZSize+.5*(Regions:BeforeMagnetZSize+Regions:AfterMagnetZSize)" />
+    <constant name="Regions:DownstreamZPos"
+              value="Regions:MagnetRegionZSize+Regions:AfterMagnetZSize+.5*(Regions:BeforeMagnetZSize+Regions:DownstreamZSize)" />
+
+    <constant name="Regions:BeforeVeloXSize" value="3100*mm"/>
+    <constant name="Regions:BeforeVeloYSize" value="3100*mm"/>
+    <constant name="Regions:BeforeVeloZSize" value="1815*mm"/>
+  </define>
+
+  <display>
+    <vis name="Regions:UpstreamVis"     alpha="0.3" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="Regions:BeforeMagnetVis" alpha="0.3" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="Regions:BeforeVeloVis"   alpha="0.5" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="Regions:MagnetVis"       alpha="0.3" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="Regions:AfterMagnetVis"  alpha="0.3" r="1.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="Regions:DownstreamVis"   alpha="0.3" r="1.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+  </display>
+
+</lccdd>

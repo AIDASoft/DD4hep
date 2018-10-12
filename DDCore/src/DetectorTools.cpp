@@ -212,7 +212,7 @@ string detail::tools::elementPath(DetElement element)  {
 }
 
 /// Find DetElement as child of the top level volume by it's absolute path
-DetElement detail::tools::findElement(Detector& description, const string& path)   {
+DetElement detail::tools::findElement(const Detector& description, const string& path)   {
   return findDaughterElement(description.world(),path);
 }
 

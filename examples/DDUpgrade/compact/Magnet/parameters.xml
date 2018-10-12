@@ -1,0 +1,169 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the LHCb magnet parameters                              -->
+<!-- ========================================================================== -->
+<lccdd>
+
+  <define>
+    <!-- ******************************************************************* -->
+    <!--                     Magnet Parameters Definition                    -->
+    <!-- ******************************************************************* -->
+    <constant name="Mag:SizeX"                value="11000*mm"/>
+    <constant name="Mag:SizeY"                value="8010*mm"/>
+    <constant name="Mag:SizeZ"                value="6000*mm"/>
+
+    <constant name="Mag:Aperture"             value="0.25*rad"/>
+    <!-- ******************************************************************* -->
+    <!--                   Yoke Parameters Definition                        -->
+    <!--              Names of the Yoke Parameters : Yoke*                   -->
+    <!-- ******************************************************************* -->
+
+    <!-- %%% Vertical parts of Yoke %%% -->
+    <constant name="Mag:YokeVertSizeX"        value="2300*mm"/>
+    <constant name="Mag:YokeVertSizeY"        value="4000*mm"/>
+    <constant name="Mag:YokeVertSizeZ"        value="3100*mm"/>
+
+    <constant name="Mag:YokeVertH1"           value="1832.2*mm"/>
+    <constant name="Mag:YokeVertL1"           value="2758*mm"/>
+
+    <constant name="Mag:YokeVertH20"          value="1461.7*mm"/>
+    <constant name="Mag:YokePlateThick"       value="100*mm"/>
+
+    <constant name="Mag:YokeCut"              value="18*degree"/>
+
+    <!-- %%% Horizontal parts of Yoke: trapezoids  %%% -->
+    <constant name="Mag:YokeHorBase1"         value="2969.8*mm"/>
+    <constant name="Mag:YokeHorBase2"         value="2280.4*mm"/>
+    <constant name="Mag:YokeHorHeight"        value="2700.0*mm"/>
+    <constant name="Mag:YokeHorAvBase"        value="0.5*(Mag:YokeHorBase1+Mag:YokeHorBase2)"/>
+
+    <!-- %%% Cut-outs trapezoids (for coil installation)
+            (defined as in engineering drawings) %%% -->
+
+    <constant name="Mag:YokeHorA1"            value="2785.0*mm"/>
+    <constant name="Mag:YokeHorA27"           value="1685.5*mm"/>
+
+    <constant name="Mag:YokeHorC1"            value="3352.0*mm"/>
+    <constant name="Mag:YokeHorC27"           value="2277.0*mm"/>
+
+    <constant name="Mag:YokeHorD1"            value="3836.5*mm"/>
+    <constant name="Mag:YokeHorD27"           value="3045.0*mm"/>
+
+    <constant name="Mag:YokeHorE1"            value="484.5*mm"/>
+    <constant name="Mag:YokeHorE27"           value="768.0*mm"/>
+    <!-- ******************************************************************* -->
+    <!--                   Coil Parameters Definition                        -->
+    <!--              Names of the Coil Parameters : Coil*                   -->
+    <!-- ******************************************************************* -->
+
+    <constant name="Mag:CoilSizeX"            value="7282*mm"/>
+    <constant name="Mag:CoilSizeY"            value="2134*mm"/>
+    <constant name="Mag:CoilSizeZ"            value="4549*mm"/>
+
+    <!-- Basic sizes of unbended "pancake" -->
+    <constant name="Mag:CoilThick"            value="815.5*mm"/>
+    <constant name="Mag:CoilWidth"            value="799.5*mm"/>
+
+    <constant name="Mag:CoilInnRadius"        value="400*mm"/>
+    <constant name="Mag:CoilCylX1"            value="1880*mm"/>
+    <constant name="Mag:CoilCylX2"            value="2857.3*mm"/>
+    <constant name="Mag:CoilInnZ"             value="2150*mm"/>
+
+    <constant name="Mag:CoilLatLength"        value="2361.7*mm"/>
+
+    <!--  Bending line angle and basic sizes -->
+    <constant name="Mag:CoilBendLine"         value="0.29*rad"/>
+    <constant name="Mag:CoilS1"               value="1103*mm"/>
+    <constant name="Mag:CoilS5"               value="1386.4*mm"/>
+
+    <!-- installation offsets -->
+    <constant name="Mag:CoilOffset1"          value="200*mm"/>
+    <constant name="Mag:CoilOffset2"          value="100*mm"/>
+    <!-- Jan Amoraal: I want the Magnet to fit in its envelope -->
+    <!-- This is just some arbitrary offset for now -->
+    <constant name="Mag:CoilOffset3"          value="18.5*mm"/>
+
+    <!-- ******************************************************************** -->
+    <!-- %%% Parameters of Coil subtractions %%% -->
+    <!--  XZ plate: unbended "pancake" basic trapezia (x_half_size) -->
+    <!-- ******************************************************************** -->
+    <constant name ="Mag:CoilOutRadius"  value="Mag:CoilInnRadius+Mag:CoilWidth"/>
+    <constant name ="Mag:CoilAngle"      value="acos(Mag:CoilInnZ/Mag:CoilLatLength)"/>
+    <constant name ="Mag:TrapUpX"        value="Mag:CoilCylX1+(Mag:CoilInnRadius+Mag:CoilWidth)*tan(45*degree-0.5*Mag:CoilAngle)"/>
+    <constant name ="Mag:TrapLowX"       value="Mag:CoilCylX2+(Mag:CoilInnRadius+Mag:CoilWidth)*tan(45*degree+0.5*Mag:CoilAngle)"/>
+
+    <!-- basic bended trapezoid (before subtractions) -->
+    <constant name="Mag:CoilHoleZ"       value="Mag:CoilInnZ+2*Mag:CoilInnRadius"/>
+    <constant name="Mag:CoilUpDeltaX"    value="Mag:CoilWidth*tan(Mag:CoilBendLine)"/>
+    <constant name="Mag:CoilLowDeltaX"   value="(Mag:CoilHoleZ+Mag:CoilWidth)*tan(Mag:CoilBendLine)"/>
+
+    <!-- inner subtracted trapezoid -->
+    <constant name="Mag:InnBendUpX"      value="Mag:CoilS1-Mag:CoilUpDeltaX"/>
+    <constant name="Mag:InnBendLowX"     value="Mag:CoilS1+Mag:CoilLowDeltaX"/>
+
+    <!--  "inner" plate of bended "pancake" -->
+    <constant name ="Mag:PlateUpY"       value="(Mag:TrapUpX-Mag:InnBendUpX)*cos(45*degree)"/>
+    <constant name ="Mag:PlateLowY"      value="(Mag:TrapLowX-Mag:InnBendLowX)*cos(45*degree)"/>
+
+    <!--  lateral angle of vertical cut   -->
+    <constant name ="Mag:CutAngle"       value="atan((Mag:InnBendLowX+Mag:PlateLowY-Mag:InnBendUpX-Mag:PlateUpY)/Mag:CoilSizeZ)"/>
+
+    <!-- parameters of  cylindrical hole bending -->
+    <constant name ="Mag:UpCylDeltaX"    value="(Mag:CoilCylX1-Mag:CoilS5)*(1-cos(45*degree))"/>
+    <constant name ="Mag:LowCylDeltaX"   value="(Mag:CoilCylX2-Mag:CoilS5-Mag:CoilInnZ*tan(Mag:CoilBendLine))*(1-cos(45*degree))"/>
+
+    <!-- "lateral box" bending -->
+    <constant name ="Mag:BoxDeltaX"      value="0.5*(Mag:UpCylDeltaX+Mag:LowCylDeltaX)"/>
+
+    <!-- tolerances  -->
+    <constant name ="Mag:CoilTolerance"         value="1*mm"/>
+    <constant name ="Mag:TolAngle1"             value="2.1*degree"/>
+    <constant name ="Mag:TolAngle2"             value="2*degree"/>
+    <constant name ="Mag:Delta"                 value="250*mm"/>
+  </define>
+
+  <!-- ******************************************************************** -->
+  <!--                        Yoke Parts Geometry                           -->
+  <!-- ******************************************************************** -->
+  <define>
+    <!-- %%% Parameters of cut-out trapezoids (in horizontal parts )%%%-->
+    <constant name="Mag:CutTrapTheta"          value="atan((Mag:YokeHorE27-1*Mag:YokeHorE1)/Mag:YokeHorHeight)"/>
+    <constant name="Mag:HoleAngle"             value="atan((Mag:YokeHorA1-1*Mag:YokeHorA27)/Mag:YokeHorHeight)"/>
+    <constant name="Mag:YokeCutBase1"          value="(Mag:YokeHorD1-1*Mag:YokeHorA1)*cos(Mag:HoleAngle)"/>
+    <constant name="Mag:YokeCutBase2"          value="(Mag:YokeHorC1-1*Mag:YokeHorA1)*cos(Mag:HoleAngle)"/>
+    <constant name="Mag:CutTrapAlp"            value="atan((Mag:YokeHorD1-Mag:YokeHorC1)/(2*Mag:YokeHorE27))"/>
+    <constant name="Mag:CutX"                  value="-0.5*(Mag:YokeHorAvBase-1*Mag:YokeHorE27+Mag:YokeHorHeight*sin(Mag:CutTrapTheta))"/>
+    <constant name="Mag:CutTolerance"          value="1*mm"/>
+  </define>
+
+  <comment>Magnet visualization attributes</comment>
+  <display>
+    <vis name="Mag:BlackVis"  alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
+    <vis name="Mag:YokeVis"   alpha="1"  r="0."  g="0.1" b="1.0" showDaughters="false"  visible="true"/>
+    <vis name="Mag:CoilVis"   alpha="1"  r="0.8" g="0."  b="0.8" showDaughters="false"  visible="true"/>
+  </display>
+
+  <comment>Magnet specific material definitions</comment>
+  <materials>
+    <material name="Magnet/YokeSteel">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="0.998" ref="Fe"/>
+      <fraction n=".002" ref="C"/>
+    </material>
+    <material name="Magnet/CoilAl">
+      <D value="2.699" unit="g/cm3"/>
+      <fraction n="1.0" ref="Al"/>
+    </material>
+  </materials>
+
+</lccdd>

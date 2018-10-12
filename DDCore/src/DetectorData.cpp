@@ -204,7 +204,7 @@ void DetectorData::unpatchRootStreamer(TClass* cl)   {
 /// Clear data content: releases all allocated resources
 void DetectorData::destroyData(bool destroy_mgr)   {
   m_extensions.clear();
-  m_motherVolumes.clear();
+  m_detectorParents.clear();
 
   destroyHandle(m_world);
   destroyHandle(m_field);
@@ -240,7 +240,7 @@ void DetectorData::destroyData(bool destroy_mgr)   {
 /// Clear data content: releases all allocated resources
 void DetectorData::clearData()   {
   m_extensions.clear(false);
-  m_motherVolumes.clear();
+  m_detectorParents.clear();
   m_world.clear();
   m_field.clear();
   m_header.clear();
@@ -280,7 +280,7 @@ void DetectorData::adoptData(DetectorData& source, bool clr)   {
   m_fields           = source.m_fields;
   m_define           = source.m_define;
 
-  m_motherVolumes    = source.m_motherVolumes;
+  m_detectorParents  = source.m_detectorParents;
   m_world            = source.m_world;
   m_trackers         = source.m_trackers;
   m_worldVol         = source.m_worldVol;
