@@ -1,0 +1,1453 @@
+<?xml version="1.0"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTFrame0x84385a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTBox0x8439290in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvModuleStaveA0x843aeb0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvKaptonCableA10x843d4b0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="0" z="-0.17965" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvKaptonCableA20x843c8a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="0" z="0.17965" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvHybridFlexNorm0x843eb90in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos" x="0" y="-1" z="0.013000000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvMetalLayerNorm0x84403f0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos" x="0" y="0" z="0.0016500000000000002" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvGuardRingNorm0x84427b0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos" x="0" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNorm_pvSensorNorm0x84424a0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNormpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvSectorNorm10x8442870in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos" x="0" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvAsicNorm0x8443510in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos" x="0" y="-5.4739999999999993" z="0.00033932038834951492" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA10x8443640in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-62.451999999999998" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA20x84436f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-52.843999999999994" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA20x84436f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA30x8443870in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-43.236000000000004" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA40x8443920in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-33.628" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA40x8443920in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA50x8443a50in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-24.02" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA60x8443b30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-14.412000000000001" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA60x8443b30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA70x8443cf0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="-4.8040000000000003" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA80x8443d80in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="4.8040000000000003" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA80x8443d80in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA90x8443eb0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="14.412000000000001" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA90x8443eb0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA100x8443fe0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="24.02" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA100x8443fe0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA110x8444110in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="33.628" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA110x8444110in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA120x8444240in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="43.236000000000004" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA120x8444240in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA130x8444370in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="52.843999999999994" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA130x8444370in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA140x84444a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos" x="0" y="62.451999999999998" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA140x84444a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module10x84446e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-72.1965" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module10x84446e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module20x8444810in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-62.335000000000008" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module30x84448f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-52.941499999999998" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module30x84448f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module40x8444a50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-43.158000000000001" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module50x8444b30in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-33.686500000000002" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module50x8444b30in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module60x8444cb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-23.981000000000002" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvModuleStaveB0x8444e10in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvKaptonCableB10x8444ef0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="0" z="-0.17965" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvKaptonCableB20x8444fd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="0" z="0.17965" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB10x84450e0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-62.451999999999998" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB20x84451c0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-52.843999999999994" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB20x84451c0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB30x8445340in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-43.236000000000004" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB40x84453f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-33.628" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB40x84453f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB50x8445520in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-24.02" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvHybridFlexDual0x8445850in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos" x="0" y="-1" z="0.013000000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvMetalLayerDual0x84461f0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos" x="0" y="0" z="0.0016500000000000002" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvGuardRingDual0x84462b0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos" x="0" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDual_pvSensorDual0x84457f0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDualpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvSectorDual10x84463d0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos" x="-2.4320000000000004" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvSectorDual20x84464c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos" x="2.4320000000000004" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvAsicDual0x8445aa0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos" x="0" y="-5.4739999999999993" z="-0.00097135922330097058" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB60x8446780in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-14.412000000000001" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB60x8446780in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB70x84468b0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="-4.8040000000000003" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB80x8446940in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="4.8040000000000003" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB80x8446940in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB90x8446a70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="14.412000000000001" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB90x8446a70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB100x8446ba0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="24.02" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB100x8446ba0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB110x8446cd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="33.628" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB110x8446cd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB120x8446e00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="43.236000000000004" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB120x8446e00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB130x8446f30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="52.843999999999994" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB130x8446f30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB140x8447060in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos" x="0" y="62.451999999999998" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB140x8447060in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module10x8445a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-14.4315" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module10x8445a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvModuleStaveC0x81073f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvKaptonCableC10x8107450in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="0" z="-0.17965" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvKaptonCableC20x8107530in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="0" z="0.17965" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC10x8107640in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-62.451999999999998" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC20x8107720in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-52.843999999999994" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC20x8107720in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC30x81078a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-43.236000000000004" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC40x8107950in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-33.628" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC40x8107950in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC50x8107a80in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-24.02" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC60x8107b60in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-14.412000000000001" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC60x8107b60in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvHybridFlexQuad0x81084c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="0" y="-1" z="0.013000000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvMetalLayerHole0x844e1c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="0" y="0" z="0.0016500000000000002" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvGuardRingQuadFrame0x844e160in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="0" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvGuardRingQuadArc0x844e420in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="0" y="0" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad_pvSensorQuad0x8109ee0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuadpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad10x844e510in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="-2.4320000000000004" y="-2.4320000000000004" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad20x844e690in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="2.4320000000000004" y="-2.4320000000000004" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad30x844e750in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="-2.4320000000000004" y="2.4320000000000004" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHole_pvSensorHole0x8109ae0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHolepos" x="0" y="0" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad40x844e840in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="2.4320000000000004" y="2.4320000000000004" z="-0.011350000000000001" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvAsicQuad0x844e3c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos" x="0" y="-5.4739999999999993" z="-0.003592718446601942" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC70x844eae0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="-4.8040000000000003" z="-0.21040000000000003" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC80x844eb70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="4.8040000000000003" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC80x844eb70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC90x844eca0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="14.412000000000001" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC90x844eca0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC100x844edd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="24.02" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC100x844edd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC110x844ef00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="33.628" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC110x844ef00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC120x844f030in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="43.236000000000004" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC120x844f030in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC130x844f160in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="52.843999999999994" z="-0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC130x844f160in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="0" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC140x844f290in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos" x="0" y="62.451999999999998" z="0.21040000000000003" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC140x844f290in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot" x="180" y="-0" z="0" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module20x8107c90in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="-4.8040000000000003" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module30x844f520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="4.8040000000000003" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module30x844f520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module40x844f6e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="14.392500000000002" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module10x844f770in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="24.059000000000001" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module10x844f770in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module20x844f8a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="33.569499999999998" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module30x844f980in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="43.314" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module30x844f980in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module40x844fab0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="52.746499999999997" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module50x844fb90in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="62.568999999999996" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module50x844fb90in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module60x844fcc0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="71.923500000000004" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXBalconyTop0x844fe50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="0" y="83.596000000000004" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXBalconyBottom0x844f650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos" x="0" y="-83.596000000000004" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa_pvUTaXLayer0x84500f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTapos" x="0" y="0" z="-2.25" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module10x8450640in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-72.47227890119828" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module10x8450640in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module20x8450740in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-62.57310957326456" y="-7.1054273576010023e-16" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module20x8450740in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module30x8450840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-53.143727929301136" y="7.1054273576010023e-16" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module30x8450840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module40x84509a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-43.322856548695782" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module40x84509a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module50x8450ad0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-33.81517695740397" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module50x8450ad0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module60x8450c50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-24.072603524127011" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module60x8450c50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module10x8450d50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-14.486625985506819" y="1.7763568394002501e-16" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module10x8450d50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module20x8450e80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-4.7857193296327454" y="0.41869618815974996" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module20x8450e80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module30x8450fb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="4.7857193296327454" y="-0.41869618815974996" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module30x8450fb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module40x8451170in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="14.447477011842631" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module40x8451170in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module10x8451250in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="24.150901471455402" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module10x8451250in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module20x8451380in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="33.697730036411393" y="3.5527136788005011e-16" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module20x8451380in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module30x84514b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="43.479452443352564" y="-7.1054273576010023e-16" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module30x84514b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module40x84515e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="52.947983060980192" y="-7.1054273576010023e-16" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module40x84515e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module50x8451710in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="62.808003415249715" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module50x8451710in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="180" y="-0" z="175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module60x8451840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="72.198236085548942" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module60x8451840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot" x="0" y="-0" z="5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaUBalconyTop0x8451b60in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="7.3304676252470991" y="84.107683488751704" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaUBalconyBottom0x84510e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos" x="-7.3304676252470991" y="-84.107683488751704" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa_pvUTaULayer0x8451e00in_dd_Geometry_BeforeMagnetRegion_UT_lvUTapos" x="0" y="0" z="2.25" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTa0x8451ec0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="-13.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module10x8452910in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-81.842635938714182" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module10x8452910in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module20x8452a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-72.455414727927561" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module20x8452a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module30x8452b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-62.587564578925189" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module30x8452b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module40x8452c70in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-53.13168209125061" y="7.1054273576010023e-16" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module40x8452c70in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module50x8452da0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-43.332493219136211" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module50x8452da0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module60x8452f20in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-33.807949454573667" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module60x8452f20in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module70x8453020in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-24.077421859347222" y="3.5527136788005011e-16" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module70x8453020in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module10x8453150in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-14.484216817896712" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module10x8453150in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module20x8453280in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-4.7857193296327454" y="-0.41869618815974996" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module20x8453280in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module30x8453440in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="4.7857193296327454" y="0.41869618815974996" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module30x8453440in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module40x8453520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="14.449886179452731" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module40x8453520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module10x8453650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="24.146083136235191" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module10x8453650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module20x8453780in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="33.704957539241711" y="0" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module20x8453780in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module30x84538b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="43.469815772912135" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module30x84538b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module40x84539e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="52.960028899030704" y="7.1054273576010023e-16" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module40x84539e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module50x8453b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="62.793548409589086" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module50x8453b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module60x8453c40in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="72.215100258819675" y="-7.1054273576010023e-16" z="-0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module60x8453c40in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="0" y="-0" z="-5" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module70x84533b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="82.117281046266044" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module70x84533b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot" x="180" y="0" z="-175" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVBalconyTop0x8454110in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="-7.3304676252470991" y="84.107683488751704" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVBalconyBottom0x84541f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos" x="7.3304676252470991" y="-84.107683488751704" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb_pvUTbVLayer0x8454330in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbpos" x="0" y="0" z="-2.25" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module10x84548c0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-81.531199999999998" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module20x8454970in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-72.179700000000011" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module20x8454970in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module30x8454a70in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-62.349400000000003" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module40x8454b80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-52.929499999999997" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module40x8454b80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module50x8454cb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-43.1676" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module60x8454de0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-33.679299999999991" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module60x8454de0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module70x8454ee0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-23.985800000000001" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module10x8454fc0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-14.4291" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module10x8454fc0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module20x84550f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="-4.8040000000000003" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module30x8455260in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="4.8040000000000003" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module30x8455260in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module40x8455340in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="14.394900000000002" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module10x8455420in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="24.054200000000002" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module10x8455420in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module20x8455550in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="33.576700000000002" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module30x8455630in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="43.304400000000001" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module30x8455630in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module40x8455760in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="52.758499999999998" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module50x8455840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="62.554599999999994" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module50x8455840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module60x8455970in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="71.940300000000008" y="0" z="-0.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module70x84551d0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="81.8048" y="0" z="0.5" unit="cm"/>
+    <rotation name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module70x84551d0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot" x="180" y="-0" z="180" unit="deg"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXBalconyTop0x8455df0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="0" y="83.596000000000004" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXBalconyBottom0x8455ed0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos" x="0" y="-83.596000000000004" z="0" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb_pvUTbXLayer0x8456010in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbpos" x="0" y="0" z="2.25" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTb0x84560d0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="13.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTJacket_pvUTCylJacket0x8456980in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="-10" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTJacket_pvUTConeJacket0x8457920in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="11.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Cyl07B0x84585f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="-10" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Cone08A0x8458650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="11.5" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Vacuum07B0x8458730in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="-10" unit="cm"/>
+    <position name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Vacuum08A0x84588a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos" x="0" y="0" z="11.5" unit="cm"/>
+  </define>
+  <materials>
+    <element name="ALUMINIUM_elm" formula="AL" Z="13">
+      <atom unit="g/mole" value="26.981538"/>
+    </element>
+    <element name="BERYLLIUM_elm" formula="BE" Z="4">
+      <atom unit="g/mole" value="9.0121800000000007"/>
+    </element>
+    <element name="CARBON_elm" formula="C" Z="6">
+      <atom unit="g/mole" value="12.0107"/>
+    </element>
+    <element name="CHROMIUM_elm" formula="CR" Z="24">
+      <atom unit="g/mole" value="51.996099999999998"/>
+    </element>
+    <element name="COPPER_elm" formula="CU" Z="29">
+      <atom unit="g/mole" value="63.545999999999999"/>
+    </element>
+    <element name="IRON_elm" formula="FE" Z="26">
+      <atom unit="g/mole" value="55.844999999999999"/>
+    </element>
+    <element name="MAGNESIUM_elm" formula="MG" Z="12">
+      <atom unit="g/mole" value="24.305"/>
+    </element>
+    <element name="MANGANESE_elm" formula="MN" Z="25">
+      <atom unit="g/mole" value="54.938048999999999"/>
+    </element>
+    <element name="NICKEL_elm" formula="NI" Z="28">
+      <atom unit="g/mole" value="58.693399999999997"/>
+    </element>
+    <element name="OXYGEN_elm" formula="O" Z="8">
+      <atom unit="g/mole" value="15.9994"/>
+    </element>
+    <element name="SILICON_elm" formula="SI" Z="14">
+      <atom unit="g/mole" value="28.0855"/>
+    </element>
+    <element name="TITANIUM_elm" formula="TI" Z="22">
+      <atom unit="g/mole" value="47.866999999999997"/>
+    </element>
+    <material name="_dd_Materials_Pipe_PipeBeTV56">
+      <D unit="g/cm3" value="1.849999026605875"/>
+      <fraction n="0.00018000000272877514" ref="ALUMINIUM_elm"/>
+      <fraction n="0.9779999852180481" ref="BERYLLIUM_elm"/>
+      <fraction n="0.012509999796748161" ref="CARBON_elm"/>
+      <fraction n="0.00026999998954124749" ref="CHROMIUM_elm"/>
+      <fraction n="0.00013000000035390258" ref="COPPER_elm"/>
+      <fraction n="0.001500000013038516" ref="IRON_elm"/>
+      <fraction n="0.00011999999696854502" ref="MAGNESIUM_elm"/>
+      <fraction n="0.00011999999696854502" ref="MANGANESE_elm"/>
+      <fraction n="0.00011999999696854502" ref="NICKEL_elm"/>
+      <fraction n="0.0065999999642372131" ref="OXYGEN_elm"/>
+      <fraction n="0.00026000000070780516" ref="SILICON_elm"/>
+      <fraction n="0.0001900000061141327" ref="TITANIUM_elm"/>
+    </material>
+    <element name="HYDROGEN_elm" formula="H" Z="1">
+      <atom unit="g/mole" value="1.0079400000000001"/>
+    </element>
+    <material name="_dd_Materials_Vacuum">
+      <D unit="g/cm3" value="1e-25"/>
+      <fraction n="1" ref="HYDROGEN_elm"/>
+    </material>
+    <material name="_dd_Materials_Silicon">
+      <D unit="g/cm3" value="2.329998774049562"/>
+      <fraction n="1" ref="SILICON_elm"/>
+    </material>
+    <material name="_dd_Materials_Aluminium" Z="13">
+      <D unit="g/cm3" value="2.6999985793707371"/>
+      <atom unit="g/mole" value="26.979985804230552"/>
+    </material>
+    <element name="NITROGEN_elm" formula="N" Z="7">
+      <atom unit="g/mole" value="14.006740000000001"/>
+    </element>
+    <material name="_dd_Materials_UT_BoxWall">
+      <D unit="g/cm3" value="1.789999058175415"/>
+      <fraction n="0.89718258380889893" ref="CARBON_elm"/>
+      <fraction n="0.021243453025817871" ref="HYDROGEN_elm"/>
+      <fraction n="0.023638980463147163" ref="NITROGEN_elm"/>
+      <fraction n="0.05793500691652298" ref="OXYGEN_elm"/>
+    </material>
+    <material name="_dd_Materials_UT_ModuleStave">
+      <D unit="g/cm3" value="0.71399962432248376"/>
+      <fraction n="0.0024999999441206455" ref="ALUMINIUM_elm"/>
+      <fraction n="0.80899912118911743" ref="CARBON_elm"/>
+      <fraction n="0.01460062712430954" ref="HYDROGEN_elm"/>
+      <fraction n="0.040677230805158615" ref="NITROGEN_elm"/>
+      <fraction n="0.073222994804382324" ref="OXYGEN_elm"/>
+      <fraction n="0.059999998658895493" ref="TITANIUM_elm"/>
+    </material>
+    <element name="GOLD_elm" formula="AU" Z="79">
+      <atom unit="g/mole" value="196.96655000000001"/>
+    </element>
+    <material name="_dd_Materials_UT_KaptonCable">
+      <D unit="g/cm3" value="2.6449986083094812"/>
+      <fraction n="0.26810115575790405" ref="CARBON_elm"/>
+      <fraction n="0.24816000461578369" ref="COPPER_elm"/>
+      <fraction n="0.01128000020980835" ref="GOLD_elm"/>
+      <fraction n="0.034683834761381149" ref="HYDROGEN_elm"/>
+      <fraction n="0.30456000566482544" ref="NICKEL_elm"/>
+      <fraction n="0.13321499526500702" ref="OXYGEN_elm"/>
+    </material>
+    <material name="_dd_Materials_UT_HybridFlex">
+      <D unit="g/cm3" value="1.82109904181187"/>
+      <fraction n="0.30000001192092896" ref="ALUMINIUM_elm"/>
+      <fraction n="0.37986758351325989" ref="CARBON_elm"/>
+      <fraction n="0.05544000118970871" ref="COPPER_elm"/>
+      <fraction n="0.0025200000964105129" ref="GOLD_elm"/>
+      <fraction n="0.043890558183193207" ref="HYDROGEN_elm"/>
+      <fraction n="0.068039998412132263" ref="NICKEL_elm"/>
+      <fraction n="0.15024186670780182" ref="OXYGEN_elm"/>
+    </material>
+    <material name="_dd_Materials_Air">
+      <D unit="g/cm3" value="0.001204999365978422"/>
+      <fraction n="0.69999998807907104" ref="NITROGEN_elm"/>
+      <fraction n="0.30000001192092896" ref="OXYGEN_elm"/>
+    </material>
+    <material name="_dd_Materials_UT_UTAsic">
+      <D unit="g/cm3" value="2.401998736166115"/>
+      <fraction n="0.22067199647426605" ref="ALUMINIUM_elm"/>
+      <fraction n="0.77932798862457275" ref="SILICON_elm"/>
+    </material>
+    <material name="_dd_Materials_UT_BeamPipeJacket">
+      <D unit="g/cm3" value="0.30099984162614513"/>
+      <fraction n="0.0037238926161080599" ref="ALUMINIUM_elm"/>
+      <fraction n="0.27695122361183167" ref="CARBON_elm"/>
+      <fraction n="0.037603303790092468" ref="HYDROGEN_elm"/>
+      <fraction n="0.43368974328041077" ref="OXYGEN_elm"/>
+      <fraction n="0.24157923460006714" ref="SILICON_elm"/>
+      <fraction n="0.0064525902271270752" ref="TITANIUM_elm"/>
+    </material>
+  </materials>
+  <solids>
+    <box name="UTbox_shape_0x55ad79b6e340" x="258.60000000000002" y="262.80000000000001" z="43" lunit="cm"/>
+    <box name="ttFrameBoxOuter" x="258.60000000000002" y="262.80000000000001" z="1.5" lunit="cm"/>
+    <box name="ttFrameBoxInner" x="196" y="200" z="1.6500000000000001" lunit="cm"/>
+    <subtraction name="ttFrame_shape_0x55ad79b64af0">
+      <first ref="ttFrameBoxOuter"/>
+      <second ref="ttFrameBoxInner"/>
+    </subtraction>
+    <box name="ttBoxOuter" x="196" y="200" z="43" lunit="cm"/>
+    <box name="ttBoxInner" x="195.92000000000002" y="199.92000000000002" z="42.920000000000002" lunit="cm"/>
+    <subtraction name="ttBoxOuter-Child_For_ttBox">
+      <first ref="ttBoxOuter"/>
+      <second ref="ttBoxInner"/>
+    </subtraction>
+    <tube name="ttBoxPipeHole" rmin="0" rmax="3.3300000000000001" z="47.300000000000011" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="ttBox_shape_0x55ad79b65770">
+      <first ref="ttBoxOuter-Child_For_ttBox"/>
+      <second ref="ttBoxPipeHole"/>
+    </subtraction>
+    <box name="UTaBox" x="190" y="190" z="7" lunit="cm"/>
+    <tube name="UTaBeamPipe" rmin="0" rmax="3.3300000000000001" z="7.7000000000000002" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="UTaBoxSub_shape_0x55ad79b6c440">
+      <first ref="UTaBox"/>
+      <second ref="UTaBeamPipe"/>
+    </subtraction>
+    <box name="UTaXLayerBox" x="190" y="190" z="2.5" lunit="cm"/>
+    <tube name="UTaXLayerBeamPipe" rmin="0" rmax="3.3300000000000001" z="2.75" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="UTaXLBoxSub_shape_0x55ad79b6b610">
+      <first ref="UTaXLayerBox"/>
+      <second ref="UTaXLayerBeamPipe"/>
+    </subtraction>
+    <box name="ttModuleA_shape_0x55ad79b66d40" x="9.8879999999999999" y="153.79200000000003" z="0.46900000000000008" lunit="cm"/>
+    <box name="ttModuleStave_shape_0x55ad79b65850" x="9.8879999999999999" y="153.79200000000003" z="0.1757" lunit="cm"/>
+    <box name="ttKaptonCableOut1" x="9.8879999999999999" y="153.79200000000003" z="0.013300000000000001" lunit="cm"/>
+    <box name="ttKaptonCableIn1" x="19.776" y="23.496000000000002" z="0.026600000000000002" lunit="cm"/>
+    <subtraction name="ttKaptonCable_shape_0x55ad79b65f00">
+      <first ref="ttKaptonCableOut1"/>
+      <second ref="ttKaptonCableIn1"/>
+    </subtraction>
+    <box name="ttHybridNorm_shape_0x55ad79b66c50" x="9.8879999999999999" y="13.888" z="0.0482" lunit="cm"/>
+    <box name="ttHybridFlexFull_shape_0x55ad79b66020" x="9.8879999999999999" y="11.888" z="0.021700000000000001" lunit="cm"/>
+    <box name="ttMetalLayerFull_shape_0x55ad79b66150" x="9.8879999999999999" y="9.8879999999999999" z="0.001" lunit="cm"/>
+    <box name="ttGuardRingBox11" x="9.8879999999999999" y="9.8879999999999999" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttGuardRingBox12" x="9.7280000000000015" y="9.7280000000000015" z="0.050000000000000003" lunit="cm"/>
+    <subtraction name="ttGuardRingFull_shape_0x55ad79b66850">
+      <first ref="ttGuardRingBox11"/>
+      <second ref="ttGuardRingBox12"/>
+    </subtraction>
+    <box name="ttSectorNorm_shape_0x55ad79b66a70" x="9.7280000000000015" y="9.7280000000000015" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttSensorNorm_shape_0x55ad79b66960" x="9.7280000000000015" y="9.7280000000000015" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttAsic4_shape_0x55ad79b66b60" x="9.8879999999999999" y="0.66000000000000003" z="0.0026213592233009712" lunit="cm"/>
+    <box name="ttModuleB_shape_0x55ad79b671f0" x="9.8879999999999999" y="153.79200000000003" z="0.46900000000000008" lunit="cm"/>
+    <box name="ttHybridDual_shape_0x55ad79b67100" x="9.8879999999999999" y="13.888" z="0.0482" lunit="cm"/>
+    <box name="ttSectorDual_shape_0x55ad79b66f20" x="4.8640000000000008" y="9.7280000000000015" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttSensorDual_shape_0x55ad79b66e30" x="4.8640000000000008" y="9.7280000000000015" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttAsic8_shape_0x55ad79b67010" x="9.8879999999999999" y="0.66000000000000003" z="0.0052427184466019424" lunit="cm"/>
+    <box name="ttModuleC_shape_0x55ad79b6ae80" x="9.8879999999999999" y="153.79200000000003" z="0.46900000000000008" lunit="cm"/>
+    <box name="ttModuleStaveBox" x="9.8879999999999999" y="153.79200000000003" z="0.1757" lunit="cm"/>
+    <tube name="ttModuleStaveCyl" rmin="0" rmax="3.3399999999999999" z="0.35139999999999999" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="ttModuleStaveHole_shape_0x55ad79b67a40">
+      <first ref="ttModuleStaveBox"/>
+      <second ref="ttModuleStaveCyl"/>
+      <position name="ttModuleStaveHole_shape_0x55ad79b67a40ttModuleStaveCylpos" x="4.8040000000000003" y="0" z="0" unit="cm"/>
+    </subtraction>
+    <box name="ttHybridQuad_shape_0x55ad79b6ad90" x="9.8879999999999999" y="13.888" z="0.0482" lunit="cm"/>
+    <box name="ttHybridFlexBox2" x="9.8879999999999999" y="11.888" z="0.021700000000000001" lunit="cm"/>
+    <tube name="ttHybridFlexCyl2" rmin="0" rmax="3.3399999999999999" z="0.043400000000000001" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="ttHybridFlexHole_shape_0x55ad79b68270">
+      <first ref="ttHybridFlexBox2"/>
+      <second ref="ttHybridFlexCyl2"/>
+      <position name="ttHybridFlexHole_shape_0x55ad79b68270ttHybridFlexCyl2pos" x="4.8040000000000003" y="5.8040000000000003" z="0" unit="cm"/>
+    </subtraction>
+    <box name="ttMetalLayerBox2" x="9.8879999999999999" y="9.8879999999999999" z="0.001" lunit="cm"/>
+    <tube name="ttMetalLayerCyl2" rmin="0" rmax="3.3399999999999999" z="0.002" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="ttMetalLayerHole_shape_0x55ad79b68aa0">
+      <first ref="ttMetalLayerBox2"/>
+      <second ref="ttMetalLayerCyl2"/>
+      <position name="ttMetalLayerHole_shape_0x55ad79b68aa0ttMetalLayerCyl2pos" x="4.8040000000000003" y="4.8040000000000003" z="0" unit="cm"/>
+    </subtraction>
+    <box name="ttGuardRingBox21" x="9.8879999999999999" y="9.8879999999999999" z="0.025000000000000001" lunit="cm"/>
+    <tube name="ttGuardRingCyl21" rmin="0" rmax="3.4200000000000004" z="0.050000000000000003" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="ttGuardRingBox21-Child_For_ttGuardRingFrame">
+      <first ref="ttGuardRingBox21"/>
+      <second ref="ttGuardRingCyl21"/>
+      <position name="ttGuardRingBox21-Child_For_ttGuardRingFramettGuardRingCyl21pos" x="4.8040000000000003" y="4.8040000000000003" z="0" unit="cm"/>
+    </subtraction>
+    <box name="ttGuardRingBox22" x="9.7280000000000015" y="9.7280000000000015" z="0.075000000000000011" lunit="cm"/>
+    <subtraction name="ttGuardRingFrame_shape_0x55ad79b69880">
+      <first ref="ttGuardRingBox21-Child_For_ttGuardRingFrame"/>
+      <second ref="ttGuardRingBox22"/>
+    </subtraction>
+    <box name="ttGuardRingBox31" x="9.8879999999999999" y="9.8879999999999999" z="0.025000000000000001" lunit="cm"/>
+    <tube name="ttGuardRingCyl31" rmin="3.3399999999999999" rmax="3.4200000000000004" z="0.050000000000000003" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <intersection name="ttGuardRingArc_shape_0x55ad79b6a0c0">
+      <first ref="ttGuardRingBox31"/>
+      <second ref="ttGuardRingCyl31"/>
+      <position name="ttGuardRingArc_shape_0x55ad79b6a0c0ttGuardRingCyl31pos" x="4.8040000000000003" y="4.8040000000000003" z="0" unit="cm"/>
+    </intersection>
+    <box name="ttSectorQuad_shape_0x55ad79b6a2d0" x="4.8640000000000008" y="4.8640000000000008" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttSensorQuad_shape_0x55ad79b6a1e0" x="4.8640000000000008" y="4.8640000000000008" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttSectorHole_shape_0x55ad79b6abb0" x="4.8640000000000008" y="4.8640000000000008" z="0.025000000000000001" lunit="cm"/>
+    <box name="ttSensorQuadBox4" x="4.8640000000000008" y="4.8640000000000008" z="0.025000000000000001" lunit="cm"/>
+    <tube name="ttSensorQuadCyl4" rmin="0" rmax="3.4200000000000004" z="0.050000000000000003" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="ttSensorHole_shape_0x55ad79b6aa90">
+      <first ref="ttSensorQuadBox4"/>
+      <second ref="ttSensorQuadCyl4"/>
+      <position name="ttSensorHole_shape_0x55ad79b6aa90ttSensorQuadCyl4pos" x="2.3719999999999999" y="2.3719999999999999" z="0" unit="cm"/>
+    </subtraction>
+    <box name="ttAsic16_shape_0x55ad79b6aca0" x="9.8879999999999999" y="0.66000000000000003" z="0.01048543689320388" lunit="cm"/>
+    <box name="ttUTaXBalcony_shape_0x55ad79b6af70" x="155" y="13" z="0.80000000000000004" lunit="cm"/>
+    <box name="UTaULayerBox" x="190" y="190" z="2.5" lunit="cm"/>
+    <tube name="UTaULayerBeamPipe" rmin="0" rmax="3.3300000000000001" z="5" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="UTaULBoxSub_shape_0x55ad79b6bdd0">
+      <first ref="UTaULayerBox"/>
+      <second ref="UTaULayerBeamPipe"/>
+    </subtraction>
+    <box name="ttUTaUBalcony_shape_0x55ad79b6b730" x="155" y="12.885" z="0.80000000000000004" lunit="cm"/>
+    <box name="UTbBox" x="190" y="190" z="7" lunit="cm"/>
+    <tube name="UTbBeamPipe" rmin="0" rmax="3.3300000000000001" z="7.7000000000000002" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="UTbBoxSub_shape_0x55ad79b6da30">
+      <first ref="UTbBox"/>
+      <second ref="UTbBeamPipe"/>
+    </subtraction>
+    <box name="UTbVLayerBox" x="190" y="190" z="2.5" lunit="cm"/>
+    <tube name="UTbVLayerBeamPipe" rmin="0" rmax="3.3300000000000001" z="2.75" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="UTbVLBoxSub_shape_0x55ad79b6cc00">
+      <first ref="UTbVLayerBox"/>
+      <second ref="UTbVLayerBeamPipe"/>
+    </subtraction>
+    <box name="ttUTbVBalcony_shape_0x55ad79b6c560" x="175" y="12.885" z="0.80000000000000004" lunit="cm"/>
+    <box name="UTbXLayerBox" x="190" y="190" z="2.5" lunit="cm"/>
+    <tube name="UTbXLayerBeamPipe" rmin="0" rmax="3.3300000000000001" z="2.75" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="UTbXLBoxSub_shape_0x55ad79b6d3c0">
+      <first ref="UTbXLayerBox"/>
+      <second ref="UTbXLayerBeamPipe"/>
+    </subtraction>
+    <box name="ttUTbXBalcony_shape_0x55ad79b6cd20" x="175" y="13" z="0.80000000000000004" lunit="cm"/>
+    <tube name="UTCylJacket_shape_0x55ad79b6db50" rmin="2.6010000000000004" rmax="3.1010000000000004" z="23" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <cone name="UTConeJacket_shape_0x55ad79b6dc90" z="20" rmin1="2.6010000000000004" rmin2="2.8010900036001463" rmax1="3.1010000000000004" rmax2="3.3010900036001463" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="UX85-1-Cylinder-07B_shape_0x55ad79b6ddb0" rmin="2.5" rmax="2.6000000000000001" z="23" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <cone name="UX85-1-Cone10mrad-08A_shape_0x55ad79b6df00" z="20" rmin1="2.5" rmin2="2.7000900036001463" rmax1="2.6000000000000001" rmax2="2.8000900036001464" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="UX85-1-Vacuum-07B_shape_0x55ad79b6e090" rmin="0" rmax="2.5" z="23" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <cone name="UX85-1-Vacuum-08A_shape_0x55ad79b6e1b0" z="20" rmin1="0" rmin2="0" rmax1="2.5" rmax2="2.7000900036001463" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+  </solids>
+  <structure>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTFrame">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttFrame_shape_0x55ad79b64af0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTBox">
+      <materialref ref="_dd_Materials_UT_BoxWall"/>
+      <solidref ref="ttBox_shape_0x55ad79b65770"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleStave">
+      <materialref ref="_dd_Materials_UT_ModuleStave"/>
+      <solidref ref="ttModuleStave_shape_0x55ad79b65850"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable">
+      <materialref ref="_dd_Materials_UT_KaptonCable"/>
+      <solidref ref="ttKaptonCable_shape_0x55ad79b65f00"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridFlexFull">
+      <materialref ref="_dd_Materials_UT_HybridFlex"/>
+      <solidref ref="ttHybridFlexFull_shape_0x55ad79b66020"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvMetalLayerFull">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttMetalLayerFull_shape_0x55ad79b66150"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingFull">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttGuardRingFull_shape_0x55ad79b66850"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorNorm">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttSensorNorm_shape_0x55ad79b66960"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNorm">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttSectorNorm_shape_0x55ad79b66a70"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNorm_pvSensorNorm0x84424a0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNorm_pvSensorNorm0x84424a0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNormpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvAsic4">
+      <materialref ref="_dd_Materials_UT_UTAsic"/>
+      <solidref ref="ttAsic4_shape_0x55ad79b66b60"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttHybridNorm_shape_0x55ad79b66c50"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvHybridFlexNorm0x843eb90" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridFlexFull"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvHybridFlexNorm0x843eb90in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvMetalLayerNorm0x84403f0" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvMetalLayerFull"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvMetalLayerNorm0x84403f0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvGuardRingNorm0x84427b0" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingFull"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvGuardRingNorm0x84427b0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvSectorNorm10x8442870" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvGroupNorm_pvSectorNorm10x8442870in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvAsicNorm0x8443510" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvAsic4"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm_pvAsicNorm0x8443510in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNormpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttModuleA_shape_0x55ad79b66d40"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvModuleStaveA0x843aeb0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleStave"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvModuleStaveA0x843aeb0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvKaptonCableA10x843d4b0" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvKaptonCableA10x843d4b0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvKaptonCableA20x843c8a0" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvKaptonCableA20x843c8a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA10x8443640" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA10x8443640in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA20x84436f0" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA20x84436f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA20x84436f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA30x8443870" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA30x8443870in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA40x8443920" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA40x8443920in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA40x8443920in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA50x8443a50" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA50x8443a50in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA60x8443b30" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA60x8443b30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA60x8443b30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA70x8443cf0" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA70x8443cf0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA80x8443d80" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA80x8443d80in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA80x8443d80in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA90x8443eb0" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA90x8443eb0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA90x8443eb0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA100x8443fe0" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA100x8443fe0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA100x8443fe0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA110x8444110" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA110x8444110in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA110x8444110in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA120x8444240" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA120x8444240in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA120x8444240in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA130x8444370" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA130x8444370in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA130x8444370in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA140x84444a0" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA140x84444a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleApos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA_pvHybridA140x84444a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleArot"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorDual">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttSensorDual_shape_0x55ad79b66e30"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDual">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttSectorDual_shape_0x55ad79b66f20"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDual_pvSensorDual0x84457f0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDual_pvSensorDual0x84457f0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDualpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvAsic8">
+      <materialref ref="_dd_Materials_UT_UTAsic"/>
+      <solidref ref="ttAsic8_shape_0x55ad79b67010"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttHybridDual_shape_0x55ad79b67100"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvHybridFlexDual0x8445850" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridFlexFull"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvHybridFlexDual0x8445850in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvMetalLayerDual0x84461f0" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvMetalLayerFull"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvMetalLayerDual0x84461f0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvGuardRingDual0x84462b0" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingFull"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvGuardRingDual0x84462b0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvSectorDual10x84463d0" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvSectorDual10x84463d0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvSectorDual20x84464c0" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvGroupDual_pvSectorDual20x84464c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvAsicDual0x8445aa0" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvAsic8"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual_pvAsicDual0x8445aa0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDualpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttModuleB_shape_0x55ad79b671f0"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvModuleStaveB0x8444e10" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleStave"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvModuleStaveB0x8444e10in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvKaptonCableB10x8444ef0" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvKaptonCableB10x8444ef0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvKaptonCableB20x8444fd0" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvKaptonCableB20x8444fd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB10x84450e0" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB10x84450e0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB20x84451c0" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB20x84451c0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB20x84451c0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB30x8445340" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB30x8445340in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB40x84453f0" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB40x84453f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB40x84453f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB50x8445520" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB50x8445520in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB60x8446780" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB60x8446780in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB60x8446780in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB70x84468b0" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB70x84468b0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB80x8446940" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB80x8446940in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB80x8446940in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB90x8446a70" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB90x8446a70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB90x8446a70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB100x8446ba0" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB100x8446ba0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB100x8446ba0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB110x8446cd0" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB110x8446cd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB110x8446cd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB120x8446e00" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB120x8446e00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB120x8446e00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB130x8446f30" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB130x8446f30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB130x8446f30in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB140x8447060" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB140x8447060in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB_pvHybridB140x8447060in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleBrot"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleStaveHole">
+      <materialref ref="_dd_Materials_UT_ModuleStave"/>
+      <solidref ref="ttModuleStaveHole_shape_0x55ad79b67a40"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridFlexHole">
+      <materialref ref="_dd_Materials_UT_HybridFlex"/>
+      <solidref ref="ttHybridFlexHole_shape_0x55ad79b68270"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvMetalLayerHole">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttMetalLayerHole_shape_0x55ad79b68aa0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingFrame">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttGuardRingFrame_shape_0x55ad79b69880"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingArc">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttGuardRingArc_shape_0x55ad79b6a0c0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorQuad">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttSensorQuad_shape_0x55ad79b6a1e0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttSectorQuad_shape_0x55ad79b6a2d0"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad_pvSensorQuad0x8109ee0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorQuad"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad_pvSensorQuad0x8109ee0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuadpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorHole">
+      <materialref ref="_dd_Materials_Silicon"/>
+      <solidref ref="ttSensorHole_shape_0x55ad79b6aa90"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHole">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttSectorHole_shape_0x55ad79b6abb0"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHole_pvSensorHole0x8109ae0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSensorHole"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHole_pvSensorHole0x8109ae0in_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHolepos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvAsic16">
+      <materialref ref="_dd_Materials_UT_UTAsic"/>
+      <solidref ref="ttAsic16_shape_0x55ad79b6aca0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttHybridQuad_shape_0x55ad79b6ad90"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvHybridFlexQuad0x81084c0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridFlexHole"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvHybridFlexQuad0x81084c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvMetalLayerHole0x844e1c0" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvMetalLayerHole"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvMetalLayerHole0x844e1c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvGuardRingQuadFrame0x844e160" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingFrame"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvGuardRingQuadFrame0x844e160in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvGuardRingQuadArc0x844e420" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvGuardRingArc"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvGuardRingQuadArc0x844e420in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad10x844e510" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad10x844e510in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad20x844e690" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad20x844e690in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad30x844e750" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorQuad"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad30x844e750in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad40x844e840" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Sensors_lvSectorHole"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvGroupQuad_pvSectorQuad40x844e840in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvAsicQuad0x844e3c0" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvAsic16"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad_pvAsicQuad0x844e3c0in_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuadpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="ttModuleC_shape_0x55ad79b6ae80"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvModuleStaveC0x81073f0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleStaveHole"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvModuleStaveC0x81073f0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvKaptonCableC10x8107450" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvKaptonCableC10x8107450in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvKaptonCableC20x8107530" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvKaptonCable"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvKaptonCableC20x8107530in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC10x8107640" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC10x8107640in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC20x8107720" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC20x8107720in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC20x8107720in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC30x81078a0" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC30x81078a0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC40x8107950" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC40x8107950in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC40x8107950in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC50x8107a80" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC50x8107a80in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC60x8107b60" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC60x8107b60in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC60x8107b60in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC70x844eae0" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC70x844eae0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC80x844eb70" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridQuad"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC80x844eb70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC80x844eb70in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC90x844eca0" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridDual"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC90x844eca0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC90x844eca0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC100x844edd0" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC100x844edd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC100x844edd0in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC110x844ef00" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC110x844ef00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC110x844ef00in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC120x844f030" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC120x844f030in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC120x844f030in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC130x844f160" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC130x844f160in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC130x844f160in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC140x844f290" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Hybrids_lvHybridNorm"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC140x844f290in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC_pvHybridC140x844f290in_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleCrot"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTaXBalcony">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttUTaXBalcony_shape_0x55ad79b6af70"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTaXLBoxSub_shape_0x55ad79b6b610"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module10x84446e0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module10x84446e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module10x84446e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module20x8444810" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module20x8444810in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module30x84448f0" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module30x84448f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module30x84448f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module40x8444a50" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module40x8444a50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module50x8444b30" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module50x8444b30in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module50x8444b30in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module60x8444cb0" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR1Module60x8444cb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module10x8445a10" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module10x8445a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module10x8445a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module20x8107c90" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module20x8107c90in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module30x844f520" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module30x844f520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module30x844f520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module40x844f6e0" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR2Module40x844f6e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module10x844f770" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module10x844f770in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module10x844f770in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module20x844f8a0" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module20x844f8a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module30x844f980" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module30x844f980in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module30x844f980in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module40x844fab0" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module40x844fab0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module50x844fb90" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module50x844fb90in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module50x844fb90in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module60x844fcc0" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXLayerR3Module60x844fcc0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXBalconyTop0x844fe50" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTaXBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXBalconyTop0x844fe50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXBalconyBottom0x844f650" copynumber="1017">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTaXBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer_pvUTaXBalconyBottom0x844f650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayerpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTaUBalcony">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttUTaUBalcony_shape_0x55ad79b6b730"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTaULBoxSub_shape_0x55ad79b6bdd0"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module10x8450640" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module10x8450640in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module10x8450640in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module20x8450740" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module20x8450740in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module20x8450740in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module30x8450840" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module30x8450840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module30x8450840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module40x84509a0" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module40x84509a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module40x84509a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module50x8450ad0" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module50x8450ad0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module50x8450ad0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module60x8450c50" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module60x8450c50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR1Module60x8450c50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module10x8450d50" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module10x8450d50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module10x8450d50in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module20x8450e80" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module20x8450e80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module20x8450e80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module30x8450fb0" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module30x8450fb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module30x8450fb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module40x8451170" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module40x8451170in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR2Module40x8451170in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module10x8451250" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module10x8451250in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module10x8451250in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module20x8451380" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module20x8451380in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module20x8451380in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module30x84514b0" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module30x84514b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module30x84514b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module40x84515e0" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module40x84515e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module40x84515e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module50x8451710" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module50x8451710in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module50x8451710in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module60x8451840" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module60x8451840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaULayerR3Module60x8451840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaUBalconyTop0x8451b60" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTaUBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaUBalconyTop0x8451b60in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaUBalconyBottom0x84510e0" copynumber="1017">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTaUBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer_pvUTaUBalconyBottom0x84510e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayerpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTaBoxSub_shape_0x55ad79b6c440"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa_pvUTaXLayer0x84500f0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaXLayer"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa_pvUTaXLayer0x84500f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTapos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa_pvUTaULayer0x8451e00" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTaULayer"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa_pvUTaULayer0x8451e00in_dd_Geometry_BeforeMagnetRegion_UT_lvUTapos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTbVBalcony">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttUTbVBalcony_shape_0x55ad79b6c560"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTbVLBoxSub_shape_0x55ad79b6cc00"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module10x8452910" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module10x8452910in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module10x8452910in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module20x8452a10" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module20x8452a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module20x8452a10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module30x8452b10" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module30x8452b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module30x8452b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module40x8452c70" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module40x8452c70in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module40x8452c70in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module50x8452da0" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module50x8452da0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module50x8452da0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module60x8452f20" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module60x8452f20in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module60x8452f20in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module70x8453020" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module70x8453020in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR1Module70x8453020in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module10x8453150" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module10x8453150in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module10x8453150in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module20x8453280" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module20x8453280in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module20x8453280in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module30x8453440" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module30x8453440in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module30x8453440in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module40x8453520" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module40x8453520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR2Module40x8453520in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module10x8453650" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module10x8453650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module10x8453650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module20x8453780" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module20x8453780in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module20x8453780in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module30x84538b0" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module30x84538b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module30x84538b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module40x84539e0" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module40x84539e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module40x84539e0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module50x8453b10" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module50x8453b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module50x8453b10in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module60x8453c40" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module60x8453c40in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module60x8453c40in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module70x84533b0" copynumber="1017">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module70x84533b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVLayerR3Module70x84533b0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVBalconyTop0x8454110" copynumber="1018">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTbVBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVBalconyTop0x8454110in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVBalconyBottom0x84541f0" copynumber="1019">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTbVBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer_pvUTbVBalconyBottom0x84541f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayerpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTbXBalcony">
+      <materialref ref="_dd_Materials_Aluminium"/>
+      <solidref ref="ttUTbXBalcony_shape_0x55ad79b6cd20"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTbXLBoxSub_shape_0x55ad79b6d3c0"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module10x84548c0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module10x84548c0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module20x8454970" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module20x8454970in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module20x8454970in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module30x8454a70" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module30x8454a70in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module40x8454b80" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module40x8454b80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module40x8454b80in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module50x8454cb0" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module50x8454cb0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module60x8454de0" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module60x8454de0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module60x8454de0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module70x8454ee0" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR1Module70x8454ee0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module10x8454fc0" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module10x8454fc0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module10x8454fc0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module20x84550f0" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module20x84550f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module30x8455260" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleC"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module30x8455260in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module30x8455260in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module40x8455340" copynumber="1010">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleB"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR2Module40x8455340in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module10x8455420" copynumber="1011">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module10x8455420in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module10x8455420in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module20x8455550" copynumber="1012">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module20x8455550in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module30x8455630" copynumber="1013">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module30x8455630in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module30x8455630in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module40x8455760" copynumber="1014">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module40x8455760in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module50x8455840" copynumber="1015">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module50x8455840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module50x8455840in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module60x8455970" copynumber="1016">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module60x8455970in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module70x84551d0" copynumber="1017">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Modules_lvModuleA"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module70x84551d0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+        <rotationref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXLayerR3Module70x84551d0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerrot"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXBalconyTop0x8455df0" copynumber="1018">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTbXBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXBalconyTop0x8455df0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXBalconyBottom0x8455ed0" copynumber="1019">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTbXBalcony"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer_pvUTbXBalconyBottom0x8455ed0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayerpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTbBoxSub_shape_0x55ad79b6da30"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb_pvUTbVLayer0x8454330" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbVLayer"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb_pvUTbVLayer0x8454330in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb_pvUTbXLayer0x8456010" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTbXLayer"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb_pvUTbXLayer0x8456010in_dd_Geometry_BeforeMagnetRegion_UT_lvUTbpos"/>
+      </physvol>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTCylJacket">
+      <materialref ref="_dd_Materials_UT_BeamPipeJacket"/>
+      <solidref ref="UTCylJacket_shape_0x55ad79b6db50"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTConeJacket">
+      <materialref ref="_dd_Materials_UT_BeamPipeJacket"/>
+      <solidref ref="UTConeJacket_shape_0x55ad79b6dc90"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Cyl07B">
+      <materialref ref="_dd_Materials_Pipe_PipeBeTV56"/>
+      <solidref ref="UX85-1-Cylinder-07B_shape_0x55ad79b6ddb0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Cone08A">
+      <materialref ref="_dd_Materials_Pipe_PipeBeTV56"/>
+      <solidref ref="UX85-1-Cone10mrad-08A_shape_0x55ad79b6df00"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Vacuum07B">
+      <materialref ref="_dd_Materials_Vacuum"/>
+      <solidref ref="UX85-1-Vacuum-07B_shape_0x55ad79b6e090"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Vacuum08A">
+      <materialref ref="_dd_Materials_Vacuum"/>
+      <solidref ref="UX85-1-Vacuum-08A_shape_0x55ad79b6e1b0"/>
+    </volume>
+    <volume name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT">
+      <materialref ref="_dd_Materials_Air"/>
+      <solidref ref="UTbox_shape_0x55ad79b6e340"/>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTFrame0x84385a0" copynumber="1000">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTFrame"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTFrame0x84385a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTBox0x8439290" copynumber="1001">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTBox"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTBox0x8439290in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTa0x8451ec0" copynumber="1002">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTa"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTa0x8451ec0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTb0x84560d0" copynumber="1003">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUTb"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTb0x84560d0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTJacket_pvUTCylJacket0x8456980" copynumber="1004">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTCylJacket"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTJacket_pvUTCylJacket0x8456980in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTJacket_pvUTConeJacket0x8457920" copynumber="1005">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_Box_lvUTConeJacket"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTJacket_pvUTConeJacket0x8457920in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Cyl07B0x84585f0" copynumber="1006">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Cyl07B"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Cyl07B0x84585f0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Cone08A0x8458650" copynumber="1007">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Cone08A"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Cone08A0x8458650in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Vacuum07B0x8458730" copynumber="1008">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Vacuum07B"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Vacuum07B0x8458730in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+      <physvol name="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Vacuum08A0x84588a0" copynumber="1009">
+        <volumeref ref="_dd_Geometry_BeforeMagnetRegion_UT_PipeInUT_lvUX851Vacuum08A"/>
+        <positionref ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUX851InUT_pvUX851Vacuum08A0x84588a0in_dd_Geometry_BeforeMagnetRegion_UT_lvUTpos"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="default" version="1.0">
+    <world ref="_dd_Geometry_BeforeMagnetRegion_UT_lvUT"/>
+  </setup>
+</gdml>

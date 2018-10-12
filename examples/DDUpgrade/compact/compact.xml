@@ -1,0 +1,128 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <!-- Have the materials    -->
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <!--  Define the world box  -->
+    <constant name="world_side" value="50000*mm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+
+    <constant name="VeloRad" value="590*mm"/>
+
+    <constant name="COBEX_beam_angle" value="60*degree"/>
+    <constant name="COBEX_cone_len" value="50*m"/>
+  </define> 
+
+  <comment>Common Generic visualization attributes</comment>
+  <display>
+    <vis name="BlackVis"              alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
+    <vis name="Codex_Envelope_Vis"    alpha=".3" r="0.7" g="0.7" b="0.7" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module1_Vis"     alpha="1"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module2_Vis"     alpha="1"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Module3_Vis"     alpha="1"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Shield_Pb_Vis"   alpha="1"  r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
+    <vis name="Codex_Shield_Veto_Vis" alpha="1"  r="0.9" g="0.9" b="0.0" showDaughters="true"  visible="true"/>
+  </display>
+
+  <geometry  open="false" close="false"/>
+
+  <include ref="Magnet.xml"/>
+  <!--  Includes for sensitives and support                -->
+  <detectors>
+
+    <detector id="1" name="VeloPix" type="DD4hep_VeloPix" vis="VeloPix_Envelope_Vis" readout="VeloPixHits">
+      <parameter name = "OpenX"               value = "0.0*mm"/>
+      <parameter name = "Epsilon"             value = "0.01*mm"/>
+      <parameter name = "VeloZ"               value = "1670*mm"/>
+      <parameter name = "VeloRad"             value = "590*mm"/>
+      <parameter name = "VeloDSEndStartZ"     value = "VeloZ/2"/>
+      <parameter name = "VeloDSEndDeltaZ"     value = "135*mm"/>
+      <parameter name = "VeloEWFlangeZExcess" value = "5*mm"/>
+
+      <!--       <parameter name = "VPRotation"          value = "0*degree"/> -->
+      <parameter name = "VPRotation"          value = "45*degree"/>
+
+      <parameter name = "VPEpsilon"           value = "0.001*mm"/> <!-- original 0.000001 -->
+
+      <!-- Z positions of stations -->
+      <parameter name = "Right2LeftDist"  value = "12.5*mm"/>
+
+      <!--       regularised layout -->
+      <parameter name="Station00Z"          value="-28.125*cm"/>
+      <parameter name="Station01Z"          value="-25.625*cm"/>
+      <parameter name="Station02Z"          value="-23.125*cm"/>
+      <parameter name="Station03Z"          value="-20.625*cm"/>
+      <parameter name="Station04Z"          value="-13.125*cm"/>
+      <parameter name="Station05Z"          value="-5.625*cm"/>
+      <parameter name="Station06Z"          value="-3.125*cm"/>
+      <parameter name="Station07Z"          value="-0.625*cm"/>
+      <parameter name="Station08Z"          value="1.875*cm"/>
+      <parameter name="Station09Z"          value="4.375*cm"/>
+      <parameter name="Station10Z"          value="6.875*cm"/>
+      <parameter name="Station11Z"          value="9.375*cm"/>
+      <parameter name="Station12Z"          value="11.875*cm"/>
+      <parameter name="Station13Z"          value="14.375*cm"/>
+      <parameter name="Station14Z"          value="16.875*cm"/>
+      <parameter name="Station15Z"          value="19.375*cm"/>
+      <parameter name="Station16Z"          value="21.875*cm"/>
+      <parameter name="Station17Z"          value="24.375*cm"/>
+      <parameter name="Station18Z"          value="26.875*cm"/>
+      <parameter name="Station19Z"          value="31.875*cm"/>
+      <parameter name="Station20Z"          value="39.375*cm"/>
+      <parameter name="Station21Z"          value="49.375*cm"/>
+      <parameter name="Station22Z"          value="59.375*cm"/>
+      <parameter name="Station23Z"          value="64.375*cm"/>
+      <parameter name="Station24Z"          value="69.375*cm"/>
+      <parameter name="Station25Z"          value="74.375*cm"/>
+
+      <LadderParam>
+        <!-- Distance between two readout chips -->
+        <parameter name = "Chip2ChipDist"     value = "0.165*mm"/>
+        <!-- Chip dimensions -->
+        <parameter name = "ChipThick"         value = "0.200*mm"/>       <!-- PJ original: 0.150 -->
+        <parameter name = "ChipSizeX"         value = "14.08*mm"/>
+        <parameter name = "ChipSizeY"         value = "15.08*mm"/>
+        <!-- Thickness of glue layer -->
+        <parameter name = "GlueThick"         value = "0.03*mm"/>
+        <!-- Sensor dimensions (active area) -->
+        <parameter name = "SiThick"           value = "0.200*mm"/>
+        <parameter name = "SiSizeX"           value = "3*(ChipSizeX+Chip2ChipDist)-Chip2ChipDist"/>
+        <parameter name = "SiSizeY"           value = "ChipSizeX"/>
+        <!-- Width of inactive edge -->
+        <parameter name = "SiEdge"            value = "0.45*mm"/>
+        <!-- Distance of closest pixel cell to beam line-->
+        <parameter name = "ClosestPixel"      value = "5.100*mm"/>
+        <!-- Distance between the two adjacent (same-side) sensors -->
+        <parameter name = "Sensor2SensorDist" value = "0.1*mm"/>        <!-- was 0.715*mm-2*GR (0.3mm)-->
+        <!-- Shift between ladders on opposite sides -->
+        <parameter name = "LadderShift"       value = "0.110*mm"/>       <!-- 0.110 mm for MicroChannel, 0.550 mm for PocoFoam -->
+      </LadderParam>
+
+    </detector>
+  </detectors>
+  <limits>
+    <limitset name="codex_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+  <readouts>
+    <readout name="CodexHits">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm" />
+      <id>system:8,type:3,station:10,x:32:-16,y:-16</id>
+    </readout>        
+  </readouts>
+
+  <fields>
+  </fields>
+
+</lccdd>
+
+
+

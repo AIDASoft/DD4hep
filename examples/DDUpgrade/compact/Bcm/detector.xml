@@ -1,0 +1,22 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the BCM stations                                        -->
+<!-- ========================================================================== -->
+<lccdd>
+  <!--
+       XML description of the 2 BCM stations
+  <include ref="BcmDown.xml"/>
+  -->
+  <include ref="BcmUp.xml"/>
+
+</lccdd>

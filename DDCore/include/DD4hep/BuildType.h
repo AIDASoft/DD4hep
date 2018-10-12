@@ -43,5 +43,8 @@ namespace dd4hep {
   /// Translate string representation of the geometry build type to value
   DetectorBuildType buildType(const std::string& value);
 
+  /// Check if a build type matches the current 
+  bool buildMatch(const std::string& value, DetectorBuildType match);
+
 } /* End namespace dd4hep             */
 #endif  // DD4HEP_BUILDTYPES_H

@@ -48,3 +48,21 @@ dd4hep::DetectorBuildType dd4hep::buildType(const char* value)   {
 dd4hep::DetectorBuildType dd4hep::buildType(const std::string& value)   {
   return buildType(value.c_str());
 }
+
+/// Check if a build type matches the current 
+bool dd4hep::buildMatch(const std::string& value, DetectorBuildType match)   {
+  switch(match)   {
+  case BUILD_RECO:
+    return value.find("REC") != std::string::npos;
+  case BUILD_ENVELOPE:
+    return value.find("ENV") != std::string::npos;
+  case BUILD_DISPLAY:
+    return value.find("DIS") != std::string::npos;
+  //case BUILD_SIMU:
+    //return value.find("SIM") != std::string::npos;
+  case BUILD_DEFAULT:
+    return true;
+  default:
+    return true;
+  }
+}

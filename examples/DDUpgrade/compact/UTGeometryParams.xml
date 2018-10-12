@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<define>
+
+  <!-- UT Geometry parameters -->
+  <!-- *  Author: Jianchun Wang  * -->
+
+  <!-- Aluminium frame -->
+  <constant name="UTFrameThickness"     value="15*mm" />
+  <constant name="UTFrameOuterWidth"    value="2586*mm" />
+  <constant name="UTFrameOuterHeight"   value="2628*mm" />
+  <constant name="UTFrameInnerWidth"    value="1960*mm" />
+  <constant name="UTFrameInnerHeight"   value="2000*mm" />
+
+  <!-- UT light tight box -->
+  <constant name="UTBoxOuterThickness"  value="430.0*mm" />
+  <constant name="UTBoxOuterWidth"      value="UTFrameInnerWidth" />
+  <constant name="UTBoxOuterHeight"     value="UTFrameInnerHeight" />
+  <constant name="UTBoxInnerThickness"  value="UTBoxOuterThickness-2*UTBoxWallThickness" />
+  <constant name="UTBoxInnerWidth"      value="UTBoxOuterWidth-2*UTBoxWallThickness" />
+  <constant name="UTBoxInnerHeight"     value="UTBoxOuterHeight-2*UTBoxWallThickness" />
+  <constant name="UTBoxWallThickness"   value="0.4*mm" />
+  <constant name="UTBoxBeamHoleRadius"  value="28.2*mm" />
+
+  <!-- Kapton beam pipe jacket -->
+  <constant name="UTCylJacketThickness"   value="0.1*mm" />
+  <constant name="UTCylJacketZpos"        value="UTCylJacketLength*0.5" />
+  <constant name="UTCylJacketLength"      value="UX851Cyl07BLenght" /> <!-- 230 -->
+  <constant name="UTCylJacketRadius"      value="UX851Cyl07Radius+UX851Cyl07Thick+0.01*mm" /> <!-- 25+1+0.01 -->
+
+  <constant name="UTConeJacketThickness"  value="0.1*mm" />
+  <constant name="UTConeJacketZpos"       value="UTCylJacketLength+UTConeJacketLength*0.5" />
+  <constant name="UTConeJacketLength"     value="UX851Cone08ALenght" /> <!-- 200 -->
+  <constant name="UTConeJacketRadiusZmax" value="UX851Cone08ARadiusZmax+UX851Cone08AThick+0.01*mm" /> <!-- 27.0009+1+0.01 -->
+  <constant name="UTConeJacketRadiusZmin" value="UX851Cone08ARadiusZmin+UX851Cone08AThick+0.01*mm" /> <!-- 25+1+0.01 -->
+
+  <!-- Detector Z positions -->
+  <constant name="UTSystemZ"           value="2485*mm" />
+  <constant name="UTStationDz"         value="270*mm" />
+  <constant name="UTLayerDz"           value="45*mm" />
+  <constant name="UTModuleDz"          value="10*mm" />
+
+  <!-- virtual thickness -->
+  <constant name="UTStationThickness"  value="70*mm" />
+  <constant name="UTLayerThickness"    value="25*mm" />
+  <constant name="UTVirtualBoxWidth"   value="1900*mm" />
+  <constant name="UTVirtualBoxHeight"  value="1900*mm" />
+  <constant name="UTVirtualHoleRadius" value="UTBeamHoleRadius"/>
+
+  <!-- Beam pipe hole -->
+  <constant name="UTBeamHoleRadius"    value="27.6*mm"/>
+
+  <!-- Balcony for each UT layer -->
+  <constant name="UTBalconyThickness" value="8.0*mm"/>
+  <constant name="UTBalconyWidthUTa"  value="1500*mm"/>
+  <constant name="UTBalconyWidthUTb"  value="1677*mm"/>
+  <constant name="UTBalconyHeightX"   value="130.0*mm"/>
+  <constant name="UTBalconyHeightU"   value="UTBalconyHeightX-1.15*mm"/>
+  <constant name="UTBalconyYposX"     value="0.5*(UTModuleHeight+UTBalconyHeightX)+2.0*mm" />
+  <constant name="UTBalconyYposU"     value="0.5*(UTModuleHeight*UTCosAngle+UTModuleWidth*UTSinAngle+UTBalconyHeightU)+2.0*mm" />
+
+  <!-- UT sensors -->
+  <constant name="UTSensorAlThickness"    value="0.01*mm" />
+  <constant name="UTSensorSiThickness"    value="0.25*mm" />
+  <constant name="UTSensorHeight"         value="100.0*mm" />
+  <constant name="UTSensorWidth"          value="92.0*mm" />
+  <constant name="UTSensorWidthSlim"      value="2*UTBeamHoleRadius+2*UTModuleOverlapX -0.2*mm" /> <!-- 57.8 -->
+  <constant name="UTSensorThickness"      value="UTSensorAlThickness+UTSensorSiThickness" />
+
+  <constant name="UTSensorGRWidth"        value="0.5*mm" />
+  <constant name="UTSensorGRSiThickness"  value="UTSensorSiThickness" />
+  <constant name="UTSensorWidthInner"     value="UTSensorWidth-2*UTSensorGRWidth" />
+  <constant name="UTSensorWidthInnerSlim" value="UTSensorWidthSlim-2*UTSensorGRWidth" />
+  <constant name="UTSensorHeightInner"    value="UTSensorHeight-2*UTSensorGRWidth" />
+
+  <constant name="UTSensorMiddleDistY"     value="10*mm" /> <!-- the closest edge to Y=0 -->
+  <constant name="UTSensorOverlapY"        value="1.2*mm" />
+
+  <!-- Asic -->
+  <constant name="UTAsicWidth"       value="5.4*mm" />
+  <constant name="UTAsicHeight"      value="6.6*mm" />
+  <constant name="UTAsicThickness"   value="0.12*mm" />
+
+  <constant name="UTAsicThicknessAve"       value="UTAsicThickness*UTAsicWidth/UTSensorWidth" />
+  <constant name="UTAsicThicknessAveSlim"   value="UTAsicThickness*UTAsicWidth/UTSensorWidthSlim" />
+
+  <!-- Substrate -->
+  <constant name="UTSubstrateWidth"         value="UTSensorWidth" />
+  <constant name="UTSubstrateWidthSlim"     value="UTSensorWidthSlim" />
+  <constant name="UTSubstrateHeight"        value="110*mm" />
+  <constant name="UTSubstrateThickness"     value="0.356*mm" />
+
+  <!-- Hybrid -->
+  <constant name="UTHybridWidth"          value="UTSubstrateWidth" />
+  <constant name="UTHybridWidthSlim"      value="UTSubstrateWidthSlim" />
+  <constant name="UTHybridHeight"         value="UTSubstrateHeight" />
+  <constant name="UTHybridThickness"      value="UTSubstrateThickness+UTSensorThickness" />
+
+  <!-- 0.0 + (100) + 2 + (6.6) + 1.4 = 110 -->
+  <constant name="UTHybridSubstrateZ"   value="UTSensorThickness/2" />
+  <constant name="UTHybridSensorZ"      value="-UTSubstrateThickness/2" />
+  <constant name="UTHybridAsicZ"        value="(UTSensorThickness-UTSubstrateThickness-UTAsicThickness)/2" />
+  <constant name="UTHybridAsicZbase"    value="(UTSensorThickness-UTSubstrateThickness)/2" />
+  <constant name="UTHybridSensorEdge1"  value="0.0*mm" />
+  <constant name="UTHybridSensorEdge2"  value="UTHybridHeight-UTSensorHeight-UTHybridSensorEdge1" />
+  <constant name="UTHybridSensorY"      value="(UTHybridHeight-UTSensorHeight)/2-UTHybridSensorEdge1" />
+  <constant name="UTHybridAsicEdge1"    value="1.4*mm" />
+  <constant name="UTHybridAsicEdge2"    value="UTHybridHeight-UTAsicHeight-UTHybridAsicEdge1" />
+  <constant name="UTHybridAsicY"        value="-(UTHybridHeight-UTAsicHeight)/2+UTHybridAsicEdge1" />
+
+  <!-- Module Support -->
+  <constant name="UTModuleSupportEndHeight"     value="75.0*mm" />
+  <constant name="UTModuleSupportWidth"         value="UTSensorWidth" />
+  <constant name="UTModuleSupportHeight"        value="UTSensorHeight*13-UTSensorOverlapY*12+UTHybridSensorEdge2*2+UTModuleSupportEndHeight*2" /> <!-- 1456.8 -->
+  <constant name="UTModuleSupportWidthSlim"     value="UTSensorWidthSlim" />
+  <constant name="UTModuleSupportHeightSlim"    value="UTModuleSupportHeight/2-UTSensorMiddleDistY" /> <!-- 718.4 -->
+  <constant name="UTModuleSupportEndHeightSlim" value="UTModuleSupportHeightSlim-(UTSensorHeight*6-UTSensorOverlapY*5+UTHybridSensorEdge1+UTHybridSensorEdge2)" />
+
+  <constant name="UTModuleSupportThickness"     value="1.982*mm" />
+  <constant name="UTModuleSupportTrueThickness" value="3.3*mm" />
+
+  <!-- Kapton foil-->
+  <constant name="UTKaptonWidthX"          value="20.0*mm" />
+  <constant name="UTKaptonWidthY"          value="UTKaptonWidthX" />
+  <constant name="UTKaptonFoilWidth"       value="UTModuleSupportWidth" />
+  <constant name="UTKaptonFoilWidthSlim"   value="UTModuleSupportWidthSlim" />
+  <constant name="UTKaptonFoilHeight"      value="UTModuleSupportHeight" />
+  <constant name="UTKaptonFoilHeightSlim"  value="UTModuleSupportHeightSlim" />
+  <constant name="UTKaptonFoilThickness"   value="0.122*mm" />
+
+  <!-- UT module -->
+  <constant name="UTModuleWidth"       value="UTModuleSupportWidth" />
+  <constant name="UTModuleWidthSlim"   value="UTModuleSupportWidthSlim" />
+  <constant name="UTModuleHeight"      value="UTModuleSupportHeight" />
+  <constant name="UTModuleHeightSlim"  value="UTModuleSupportHeightSlim" />
+  <constant name="UTModuleThickness"   value="UTHybridThickness*2+UTKaptonFoilThickness*2+UTModuleSupportTrueThickness" />
+
+  <constant name="UTModuleHybridStepY"  value="UTSensorHeight-UTSensorOverlapY" />
+  <constant name="UTModuleHybridStepY0" value="UTModuleHybridStepY - 0.090*mm" />  <!-- upstream -->
+  <constant name="UTModuleHybridStepY1" value="UTModuleHybridStepY + 0.090*mm" />  <!-- downstream -->
+  <constant name="UTModuleSlimY7"       value="UTModuleHeightSlim/2-UTHybridHeight/2" />
+  <constant name="UTModuleSlimYOffset1" value="0.109*mm" />
+
+  <constant name="UTModuleKaptonFoilZ" value="UTModuleSupportTrueThickness/2+UTKaptonFoilThickness/2" />
+  <constant name="UTModuleHybridZ"     value="UTModuleSupportTrueThickness/2+UTHybridThickness/2+UTKaptonFoilThickness" />
+
+  <!-- Stereo angle -->
+  <constant name="UTAngle"    value="5.0*degree"/>
+  <constant name="UTSinAngle" value="sin(UTAngle)"/>
+  <constant name="UTCosAngle" value="cos(UTAngle)"/>
+
+  <!-- Module positions -->
+  <constant name="UTModuleOverlapX" value="1.4*mm" />
+
+  <constant name="UTModuleXposXLR"   value="UTBeamHoleRadius+UTSensorWidth/2.0" />
+  <constant name="UTModuleYposXTB"   value="UTSensorMiddleDistY+UTModuleHeightSlim/2" />
+  <constant name="UTModuleStepUTaX0" value="UTSensorWidth-UTModuleOverlapX - 0.195*mm" />
+  <constant name="UTModuleStepUTaX1" value="UTSensorWidth-UTModuleOverlapX + 0.195*mm" />
+  <constant name="UTModuleStepUTbX0" value="UTSensorWidth-UTModuleOverlapX - 0.171*mm" />
+  <constant name="UTModuleStepUTbX1" value="UTSensorWidth-UTModuleOverlapX + 0.171*mm" />
+  <constant name="UTModuleXposUTaXOffset0" value="-0.316*mm" />
+  <constant name="UTModuleXposUTbXOffset0" value="-0.278*mm" />
+
+  <constant name="UTModuleXposULR"   value="UTModuleXposXLR/UTCosAngle" />
+  <constant name="UTModuleXposUTB"   value="UTModuleYposXTB*UTSinAngle" />
+  <constant name="UTModuleYposUTB"   value="UTModuleYposXTB*UTCosAngle" />
+  <constant name="UTModuleStepUTaU0" value="(UTSensorWidth-UTModuleOverlapX - 0.191*mm)/UTCosAngle" />
+  <constant name="UTModuleStepUTaU1" value="(UTSensorWidth-UTModuleOverlapX + 0.191*mm)/UTCosAngle" />
+  <constant name="UTModuleStepUTbV0" value="(UTSensorWidth-UTModuleOverlapX - 0.174*mm)/UTCosAngle" />
+  <constant name="UTModuleStepUTbV1" value="(UTSensorWidth-UTModuleOverlapX + 0.174*mm)/UTCosAngle" />
+  <constant name="UTModuleXposUTaUOffset0" value="-0.310*mm/UTCosAngle" />
+  <constant name="UTModuleXposUTbVOffset0" value="-0.283*mm/UTCosAngle" />
+
+
+</define>

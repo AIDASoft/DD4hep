@@ -110,7 +110,7 @@ namespace dd4hep {
     // GDML fields
     ObjectHandleMap          m_define;
 
-    std::map<std::string,Volume> m_motherVolumes;
+    std::map<std::string,DetElement> m_detectorParents;
 
     DetElement               m_world;
     DetElement               m_trackers;
