@@ -104,25 +104,15 @@
 <!--
 -->
      <physvol element="Bls" id="3" logvol="lvBls34" >
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX34"   y="Bls:OffsetY34" />
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX34" y="Bls:OffsetY34" />
        <rotation z="-90.0*degree" />
      </physvol>
      <physvol element="Bls" id="4" logvol="lvBls34">
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX34"   y="-Bls:OffsetY34" />
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX34" y="-Bls:OffsetY34" />
        <rotation z="-90.0*degree" />
      </physvol>
      <physvol element="Bls" id="5" logvol="lvBls56" >
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX56"   y="Bls:OffsetY56"/>
-       <rotation z="-90*degree"/>
-     </physvol>
-     <physvol element="Bls" id="6" logvol="lvBls56">
-       <position z="-Bls:OffsetZ" x="+Bls:OffsetX56"  y="-Bls:OffsetY56"/>
-       <rotation z="-90*degree"/>
-     </physvol>
-     <physvol element="Bls" id="7" logvol="lvBls78" >
-       <position z="-Bls:OffsetZ" x="-Bls:OffsetX78"  y="Bls:OffsetY78"/>
-     </physvol>
-     <physvol element="Bls" id="8" logvol="lvBls78">
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX56"  y="Bls:OffsetY56"/>
        <position z="-Bls:OffsetZ" x="Bls:OffsetX78"   y="Bls:OffsetY78"/>
      </physvol>
 <!--
