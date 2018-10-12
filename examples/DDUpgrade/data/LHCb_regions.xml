@@ -1,0 +1,169 @@
+<lccdd>
+  <info name="LHCbUpgrade"
+        title="LHCb upgrade detector study"
+        author="Markus Frank"
+        url="https://lhcb.cern.ch"
+        status="development"
+        version="$Id$">
+    <comment>Example to load LHCb subdetectors from GDML files</comment>        
+  </info>
+  <define>
+    <!--
+    <constant name="Air"     value="/dd/Materials/Air"     type="string"/>
+    <constant name="Vacuum"  value="/dd/Materials/Vacuum"  type="string"/>
+   -->
+    <constant name="world_side" value="30*m"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="30*m"/>
+    <constant name="Hcal_Model" value="3"/>
+  </define>
+
+  <materials>
+    <element Z="7" formula="N" name="N" >
+      <atom type="A" unit="g/mol" value="14.0068" />
+    </element>
+    <material formula="N" name="Nitrogen" state="gas" >
+      <RL type="X0" unit="cm" value="32602.2" />
+      <NIL type="lambda" unit="cm" value="72430.3" />
+      <D type="density" unit="g/cm3" value="0.0011652" />
+      <composite n="1" ref="N" />
+    </material>
+
+    <element Z="8" formula="O" name="O" >
+      <atom type="A" unit="g/mol" value="15.9994" />
+    </element>
+    <material formula="O" name="Oxygen" state="gas" >
+      <RL type="X0" unit="cm" value="25713.8" />
+      <NIL type="lambda" unit="cm" value="66233.9" />
+      <D type="density" unit="g/cm3" value="0.00133151" />
+      <composite n="1" ref="O" />
+    </material>
+
+    <element Z="18" formula="Ar" name="Ar" >
+      <atom type="A" unit="g/mol" value="39.9477" />
+    </element>
+    <material formula="Ar" name="Argon" state="gas" >
+      <RL type="X0" unit="cm" value="11762.1" />
+      <NIL type="lambda" unit="cm" value="71926" />
+      <D type="density" unit="g/cm3" value="0.00166201" />
+      <composite n="1" ref="Ar" />
+    </material>
+
+    <material name="Air">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    <material name="Vacuum">  
+      <D type="density" unit="g/cm3" value="0.0000000001" />
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+  </materials>
+
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="GreenVis" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="RedVis" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="BlueVis" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="YellowVis" r="1.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector name="UpstreamRegion" type="DD4hep_DetectorRegion" vis="GreenVis">
+      <volume type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="1000*cm"/>
+      <position x="0*cm" y="0*cm" z="-1270*cm"/>
+    </detector>
+
+    <detector name="BeforeMagnetRegion" type="DD4hep_DetectorRegion" vis="GreenVis">
+      <volume type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="270*cm"/>
+      <position x="0*cm" y="0*cm" z="0*cm"/>
+    </detector>
+
+    <detector name="MagnetRegion" type="DD4hep_DetectorRegion" vis="RedVis">
+      <volume type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="246*cm"/>
+      <position x="0*cm" y="0*cm" z="516*cm"/>
+    </detector>
+
+    <detector name="AfterMagnetRegion" type="DD4hep_DetectorRegion" vis="BlueVis">
+      <volume type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="214*cm"/>
+      <position x="0*cm" y="0*cm" z="976*cm"/>
+    </detector>
+
+    <detector name="DownstreamRegion" type="DD4hep_DetectorRegion" vis="YellowVis">
+      <volume type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="400*cm"/>
+      <position x="0*cm" y="0*cm" z="1590*cm"/>
+    </detector>
+
+    <detector id="200" name="VP" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/VP.gdml"/>
+      <region name="BeforeMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="0*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="201" name="Rich1" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Rich1.gdml"/>
+      <region name="BeforeMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="150*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="202" name="UT" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/UT.gdml"/>
+      <region name="BeforeMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="248.5*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="208" name="FT" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/FT.gdml"/>
+      <region name="AfterMagnetRegion"/>
+      <position x="0*cm" y="0*cm" z="-123.05*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="208" name="Rich2" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Rich2.gdml"/>
+      <region name="AfterMagnetRegion"/>
+      <position x="0.027*cm" y="-4.32*cm" z="90.435*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="210" name="Ecal" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Ecal.gdml"/>
+      <region name="DownstreamRegion"/>
+      <position x="0*cm" y="-0.019*cm" z="-296.75*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="211" name="Hcal" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Hcal.gdml"/>
+      <region name="DownstreamRegion"/>
+      <position x="0*cm" y="-0.082*cm" z="-168.25*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+
+    <detector id="212" name="Muon" type="DD4hep_GdmlImport">
+      <gdmlFile  ref="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/Muon.gdml"/>
+      <region name="DownstreamRegion"/>
+      <position x="0*cm" y="0*cm" z="10.*cm"/>
+      <rotation x="0"    y="0"    z="0"/>
+    </detector>
+  </detectors>
+<!--
+-->
+<!--
+  <plugins>
+    <plugin name="DD4hep_ROOTGDMLParse">
+      <arg value="-input"/>
+      <arg value="${DD4hepExamplesINSTALL}/examples/DDUpgrade/data/LHCb.gdml.orig"/>
+      <arg value="-world"/>
+    </plugin>
+  </plugins>
+-->  
+</lccdd>

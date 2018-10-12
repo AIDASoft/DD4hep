@@ -184,12 +184,15 @@ namespace dd4hep {
 
     /** Miscaneleous accessors to the detexctor description  */
 
-    /// Register new mother volume using the detector name.
+    /// Register new parent detector using the detector name.
     /** Volumes must be registered/declared PRIOR to be picked up!
+     *  Once registered, Detector::pickMotherVolume(detector) will automatically return the
+     *  proper parent volume!
+     * 
      *  The method throws an exception if another volume was already declared for this subdetector
      *  The method throws an exception if the volume to be registered is invalid.
      */
-    virtual void   declareMotherVolume(const std::string& detector_name, const Volume& vol) = 0;
+    virtual void   declareParent(const std::string& detector_name, const DetElement& det) = 0;
 
     /// Access mother volume by detector element
     /** The method uses the detector element's name for volume identification. 

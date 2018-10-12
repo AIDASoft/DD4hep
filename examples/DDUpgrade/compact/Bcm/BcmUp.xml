@@ -1,0 +1,84 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the BCM stations                                        -->
+<!-- ========================================================================== -->
+<lccdd>
+
+  <detectors>
+    <!--
+             BCM detector: upper module
+    -->
+    <detector id="BcmUp:ID" name="BcmUp" type="LHCb_Bcm" 
+              parent="${BcmUp:Parent}"
+              station="0" readout="BcmUpHits" vis="Bcm:BcmVis">
+      <position z="-2135.0*mm + Regions:BeforeMagnetZSize/2 - Regions:BeforeVeloZSize/2"/>
+
+      <!-- G10 contact plate -->
+      <volume name="lvBcmUpContact" material="Bcm/G10"  vis="Bcm:ContactVis" build="DEFAULT,SIM,REC">
+         <shape type="Tube"
+                dz="Bcm:ContactThick/2"
+                rmin="Bcm:UpContactInRad"
+                rmax="Bcm:UpContactOutRad"/>
+      </volume>
+
+      <!-- Wire -->
+      <volume name="lvBcmUpWire" material="Bcm/Wire" vis="Bcm:WireVis" build="DEFAULT,SIM">
+        <shape type="BooleanShape" operation="union">
+          <shape type="Tube" dz="Bcm:UpWireStartLength/2" rmax="Bcm:UpWireOutRad" rmin="0*mm"/>
+          <shape type="Tube" dz="Bcm:UpWireLongLength/2"  rmax="Bcm:UpWireOutRad" rmin="0*mm"/>
+          <position x="Bcm:UpWireLongPosX" z="Bcm:UpWireLongPosZ"/>
+          <rotation y="90.0*degree"/>
+        </shape>
+      </volume>
+
+      <!-- Upstream mount -->
+      <volume name="lvBcmUpMount" material="Bcm/Aluminium" vis="Bcm:MountVis" build="DEFAULT,SIM,REC,DISPLAY">
+        <shape type="BooleanShape" operation="subtraction">
+          <shape type="BooleanShape" operation="subtraction">
+            <shape type="Box"  dx="Bcm:UpMountWidth/2" dy="Bcm:UpMountHeight/2" dz="Bcm:UpMountThick/2"/>
+            <shape type="Tube" dz="Bcm:UpMountHoleThick/2" rmax="Bcm:UpMountHoleRad" rmin="0.0*mm"/>
+          </shape>
+          <shape type="Box" dx="Bcm:UpMountSlotWidth/2" dy="Bcm:UpMountSlotLength/2" dz="Bcm:UpMountSlotThick/2"/>
+          <position y="Bcm:UpMountSlotPosY"/>
+        </shape>
+      </volume>
+
+      <physvol logvol="lvBcmUpWire">
+        <positionRPhiZ r="Bcm:UpWireRad" phi="270.0*degree" z="Bcm:UpWirePosZ"/>
+        <rotation x="90.0*degree"/>
+        <position/>
+        <rotation x="270.0*degree"/>
+      </physvol>
+      <physvol logvol="lvBcmUpMount" element="Mount"/>
+      <physvol logvol="lvBcmUpContact" element="Contact">
+        <position z="Bcm:UpContactPosZ"/>
+      </physvol>
+
+      <!-- Diamond sensor -->
+      <sensor material="Bcm/Diamond"  vis="Bcm:SensorVis"
+              dx="Bcm:SensorWidth/2."
+              dy="Bcm:SensorWidth/2"
+              dz="Bcm:SensorThick/2">
+        <position r="Bcm:UpSensorRad" phi="90.0*degree" z="Bcm:UpSensorPosZ"/>
+      </sensor>
+
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="BcmUpHits">
+      <id>system:8,station:8,sensor:16</id>
+    </readout>        
+  </readouts>
+
+</lccdd>

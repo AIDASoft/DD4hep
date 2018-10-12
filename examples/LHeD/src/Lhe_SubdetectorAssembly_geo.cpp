@@ -61,7 +61,7 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t)  {
   for(xml_coll_t c(x_det,_U(composite)); c; ++c)  {
     xml_dim_t component = c;
     string nam = component.nameStr();
-    description.declareMotherVolume(nam, vol);
+    description.declareParent(nam, sdet);
   }
 
   vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());

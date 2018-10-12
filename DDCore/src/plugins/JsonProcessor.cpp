@@ -80,12 +80,7 @@ template <> void Converter<detector>::operator()(json_h element) const {
       if ( !parent_detector.isValid() )  {
         except("Compact","Failed to access valid parent detector of %s",name.c_str());
       }
-      Volume parent_volume = parent_detector.placement().volume();
-      if ( !parent_volume.isValid() )   {
-        except("Compact","Failed to access valid parent volume of %s from %s",
-               name.c_str(), par_name.c_str());
-      }
-      description.declareMotherVolume(name, parent_volume);
+      description.declareParent(name, parent_detector);
     }
     json_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;

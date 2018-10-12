@@ -798,6 +798,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
     bool             m_printPositions      = false;
     bool             m_printMaterials      = false;
     bool             m_printSensitivesOnly = false;
+    long             m_printMaxLevel       = 999999;
     long             m_numNodes            = 0;
     long             m_numShapes           = 0;
     long             m_numSensitive        = 0;
@@ -816,9 +817,10 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
         if ( c == '-' ) { ++p; c = ::tolower(av[i][1]); }
         if      ( ::strncmp(p,"volume_ids",3) == 0  ) m_printVolIDs         = true;
+        else if ( ::strncmp(p,"level",3)      == 0  ) m_printMaxLevel       = ::atol(av[++i]);
+        else if ( ::strncmp(p,"materials",3)  == 0  ) m_printMaterials      = true;
         else if ( ::strncmp(p,"pathes",3)     == 0  ) m_printPathes         = true;
         else if ( ::strncmp(p,"positions",3)  == 0  ) m_printPositions      = true;
-        else if ( ::strncmp(p,"materials",3)  == 0  ) m_printMaterials      = true;
         else if ( ::strncmp(p,"pointers",3)   == 0  ) m_printPointers       = true;
         else if ( ::strncmp(p,"shapes",3)     == 0  ) m_printShapes         = true;
         else if ( ::strncmp(p,"sensitive",3)  == 0  ) m_printSensitivesOnly = true;
@@ -829,6 +831,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
             "Usage: -plugin <name> -arg [-arg]                                                   \n"
             "     -detector <string> Top level DetElement path. Default: '/world'                \n"
             "     -pathes            Print DetElement pathes                                     \n"
+            "     -level    <number> Maximal depth to be explored by the scan                    \n"
             "     -positions         Print placement positions                                   \n"
             "     -volume_ids        Print placement volume IDs                                  \n"
             "     -materials         Print volume materials                                      \n"       
@@ -839,6 +842,15 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
             "\tArguments given: " << arguments(ac,av) << endl << flush;
         }
       }
+      if ( m_printMaxLevel < 999999 )
+        printout(ALWAYS,"VolumeDump","+++ Maximal print level:   %ld",m_printMaxLevel);
+      if ( !m_detector.empty() )
+        printout(ALWAYS,"VolumeDump","+++ Subdetector path:      %s",m_detector.c_str());
+      printout(ALWAYS,"VolumeDump","+++ Printing positions:    %s",yes_no(m_printPositions));
+      printout(ALWAYS,"VolumeDump","+++ Printing shapes:       %s",yes_no(m_printShapes));
+      printout(ALWAYS,"VolumeDump","+++ Printing materials:    %s",yes_no(m_printMaterials));
+      printout(ALWAYS,"VolumeDump","+++ Printing volume ids:   %s",yes_no(m_printVolIDs));
+      printout(ALWAYS,"VolumeDump","+++ Print only sensitives: %s",yes_no(m_printSensitivesOnly));
     }
     ~Actor()  {
       printout(ALWAYS,"VolumeDump",
@@ -867,6 +879,9 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       bool sensitive = false;
       string opt_info, pref = prefix;
 
+      if ( level >= m_printMaxLevel )    {
+        return 1;
+      }
       ++m_numNodes;
       if ( level == 0 )
         currTop = "";
@@ -877,6 +892,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       else if ( level > 1 )   {
         ++top_counts[currTop];
       }
+
       if ( m_printPathes )   {
         pref += "/";
         pref += aligned->GetName();

@@ -1,0 +1,56 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the LHCb detector region definitions                    -->
+<!-- ========================================================================== -->
+<lccdd>
+  <detectors>
+    <detector name="UpstreamRegion" type="DD4hep_VolumeAssembly" vis="Regions:UpstreamVis">
+      <envelope name="UpstreamRegionEnvelope" type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="1000*cm"/>
+      <position x="0*cm" y="0*cm" z="-1270*cm"/>
+    </detector>
+
+    <detector name="BeforeMagnetRegion" type="DD4hep_VolumeAssembly" vis="Regions:BeforeMagnetVis">
+      <envelope material="Air">
+        <shape type="Box" dx="1000*cm" dy="1000*cm" dz="270*cm"/>
+      </envelope>
+      <position x="0*cm" y="0*cm" z="0*cm"/>
+      <volume name="lvBeforeVelo" material="Air" vis="Regions:BeforeVeloVis">
+        <shape type="Box"
+               dx="Regions:BeforeVeloXSize/2"
+               dy="Regions:BeforeVeloYSize/2"
+               dz="Regions:BeforeVeloZSize/2"/>
+      </volume>
+      <physvol element="BeforeVelo" volume="lvBeforeVelo">
+        <position x="0*mm" y="0*mm" z="-1792.5*mm"/>
+      </physvol>
+    </detector>
+
+    <detector name="MagnetRegion" type="DD4hep_VolumeAssembly" vis="Regions:MagnetVis">
+      <envelope type="Box" material="Air"
+                dx="Regions:MagnetRegionXSize/2" dy="Regions:MagnetRegionYSize/2" dz="Regions:MagnetRegionZSize/2"/>
+      <position x="0*cm" y="0*cm" z="516*cm"/>
+    </detector>
+
+    <detector name="AfterMagnetRegion" type="DD4hep_VolumeAssembly" vis="Regions:AfterMagnetVis">
+      <envelope type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="214*cm"/>
+      <position x="0*cm" y="0*cm" z="976*cm"/>
+    </detector>
+
+    <detector name="DownstreamRegion" type="DD4hep_VolumeAssembly" vis="Regions:DownstreamVis">
+      <envelope material="Air">
+        <shape type="Box" dx="1000*cm" dy="1000*cm" dz="400*cm"/>
+      </envelope>
+      <position x="0*cm" y="0*cm" z="1590*cm"/>
+    </detector>
+  </detectors>
+</lccdd>

@@ -16,6 +16,8 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/DetectorHelper.h"
+#include "DD4hep/DetectorTools.h"
+
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
@@ -168,48 +170,68 @@ void* DetectorImp::userExtension(unsigned long long int key, bool alert) const {
 }
 
 /// Register new mother volume using the detector name.
-void DetectorImp::declareMotherVolume(const string& detector_name, const Volume& vol)  {
+void DetectorImp::declareParent(const string& detector_name, const DetElement& parent)  {
   if ( !detector_name.empty() )  {
-    if ( vol.isValid() )  {
-      auto i = m_motherVolumes.find(detector_name);
-      if (i == m_motherVolumes.end())   {
-        m_motherVolumes.insert(make_pair(detector_name,vol));
-        return;
+    if ( parent.isValid() )  {
+      auto i = m_detectorParents.find(detector_name);
+      if (i == m_detectorParents.end())   {
+        Volume parent_volume = parent.placement().volume();
+        if ( parent_volume.isValid() )   {
+          m_detectorParents.insert(make_pair(detector_name,parent));
+          return;
+        }
+        except("DD4hep","+++ Failed to access valid parent volume of %s from %s",
+               detector_name.c_str(), parent.name());
       }
       except("DD4hep",
-             "+++ A mother volume to the detector %s was already registered.",
+             "+++ A parent to the detector %s was already registered.",
              detector_name.c_str());
     }
     except("DD4hep",
-           "+++ Attempt to register invalid mother volume for detector: %s [Invalid-Handle].",
+           "+++ Attempt to register invalid parent for detector: %s [Invalid-Handle].",
            detector_name.c_str());
   }
   except("DD4hep",
-         "+++ Attempt to register mother volume to invalid detector [Invalid-detector-name].");
+         "+++ Attempt to register parent to invalid detector [Invalid-detector-name].");
 }
 
 /// Access mother volume by detector element
 Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
   if ( de.isValid() )   {
     string de_name = de.name();
-    auto i = m_motherVolumes.find(de_name);
-    if (i == m_motherVolumes.end())   {
+    auto i = m_detectorParents.find(de_name);
+    if (i == m_detectorParents.end())   {
       if ( m_worldVol.isValid() )  {
         return m_worldVol;
       }
       except("DD4hep",
-             "+++ The world volume is not (yet) valid. Are you correctly building detector %s?",
+             "+++ The world volume is not (yet) valid. "
+             "Are you correctly building detector %s?",
              de.name());
     }
     if ( (*i).second.isValid() )  {
-      return (*i).second;
+      Volume vol = (*i).second.volume();
+      if ( vol.isValid() )  {
+        return vol;
+      }
     }
     except("DD4hep",
-           "+++ The mother volume of %s is not valid. Are you correctly building detectors?",
+           "+++ The mother volume of %s is not valid. "
+           "Are you correctly building detectors?",
            de.name());
   }
   except("DD4hep","Detector: Attempt access mother volume of invalid detector [Invalid-handle]");
   return 0;
+}
+
+/// Retrieve a subdetector element by it's name from the detector description
+DetElement DetectorImp::detector(const std::string& name) const  {
+  HandleMap::const_iterator i = m_detectors.find(name);
+  if (i != m_detectors.end()) {
+    return (*i).second;
+  }
+  DetElement de = detail::tools::findElement(*this,name);
+  return de;
 }
 
 Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
@@ -230,21 +252,33 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
   det_element->flag |= DetElement::Object::IS_TOP_LEVEL_DETECTOR;
   Volume volume = det_element.placement()->GetMotherVolume();
   if ( volume == m_worldVol )  {
-    printout(DEBUG,"Detector","Added detector %s to the world instance.",det_element.name());
+    printout(DEBUG,"DD4hep","+++ Detector: Added detector %s to the world instance.",
+             det_element.name());
     m_world.add(det_element);
     return *this;
   }
+  /// Check if the parent is part of the compounds
+  auto ipar = m_detectorParents.find(det_element.name());
+  if (ipar != m_detectorParents.end())   {
+    DetElement parent = (*ipar).second;
+    parent.add(det_element);
+    printout(DEBUG,"DD4hep","+++ Detector: Added detector %s to parent %s.",
+             det_element.name(), parent.name());
+    return *this;
+  }
+
   // The detector's placement must be one of the existing detectors
-  for(HandleMap::iterator i = m_detectors.begin(); i!=m_detectors.end(); ++i)  {
-    DetElement parent((*i).second);
+  for(HandleMap::iterator idet = m_detectors.begin(); idet != m_detectors.end(); ++idet)  {
+    DetElement parent((*idet).second);
     Volume vol = parent.placement().volume();
     if ( vol == volume )  {
-      printout(INFO,"Detector","Added detector %s to the parent:%s.",det_element.name(),parent.name());
+      printout(INFO,"DD4hep","+++ Detector: Added detector %s to the parent:%s.",
+               det_element.name(),parent.name());
       parent.add(det_element);
       return *this;
     }
   }
-  except("DD4hep","Detector: The detector %s has no known parent.", det_element.name());
+  except("DD4hep","+++ Detector: The detector %s has no known parent.", det_element.name());
   throw runtime_error("Detector-Error"); // Never called....
 }
 

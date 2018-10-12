@@ -1,0 +1,125 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the BLS parameter definitions                           -->
+<!-- ========================================================================== -->
+<lccdd>
+
+  <detectors>
+    <!--
+             BCM detector: upper module
+    -->
+    <detector id="BcmDown:ID" name="BcmDown" type="LHCb_Bcm" parent="${BcmDown:Parent}"
+              station="1" readout="BcmDownHits" vis="Bcm:BcmVis">
+      <position x="0*mm" y="0*mm" z="2766.0*mm - Regions:MagnetRegionZPos"/>
+
+      <!-- G10 contact plate -->
+      <volume name="lvBcmDownContact" material="Bcm/G10" vis="Bcm:ContactVis">
+        <shape type="Tube"
+               dz="Bcm:ContactThick/2"
+               rmin="Bcm:DownContactInRad"
+               rmax="Bcm:DownContactOutRad"/>
+      </volume>
+
+      <!-- Wire -->
+      <volume name="lvBcmDownWire" material="Bcm/Wire" vis="Bcm:WireVis">
+        <shape type="BooleanShape" operation="union">
+          <shape type="BooleanShape" operation="union">
+            <shape type="Tube" dz="Bcm:DownWireStartLength/2" rmax="Bcm:DownWireOutRad" rmin="0*mm"/>
+            <shape type="Tube" dz="Bcm:DownWireLongLength/2"  rmax="Bcm:DownWireOutRad" rmin="0*mm"/>
+            <position x="Bcm:DownWireLongPosX" z="Bcm:DownWireLongPosZ"/>
+          </shape>
+          <shape type="Tube" dz="Bcm:DownWireCrossLength/2" rmax="Bcm:DownWireOutRad" rmin="0*mm"/>
+          <transformation>
+            <position x="Bcm:DownWireCrossPosX" z="Bcm:DownWireCrossPosZ"/>
+            <rotation y="90.0*degree"/>
+          </transformation>
+        </shape>
+      </volume>
+
+      <!-- Back part of downstream mount -->
+      <volume name="lvBcmDownMountBackSection" material="Bcm/Tekapeek" vis="Bcm:MountVis">
+        <shape type="BooleanShape" operation="subtraction">
+          <shape type="BooleanShape" operation="subtraction">
+            <shape type="Tube" dz="Bcm:DownMountBackSectionLength/2" 
+                               rmax="Bcm:DownMountBackSectionOutRad" rmin="Bcm:DownMountBackSecitonInRad"
+                               startphi="44.9*degree" deltaphi="89.8*degree"/>
+            <shape type="Tube" dz="Bcm:DownMountBackSectionHoleLength/2" rmax="Bcm:DownMountBackSectionHoleRad" rmin="0.0*mm"/>
+            <transformation>
+              <position z="Bcm:DownMountBackSectionHolePosZ" y="Bcm:DownMountBackSectionHolePosY" />
+              <rotation x="90.0*degree"/>
+            </transformation>
+          </shape>
+          <shape type="Box" dx="Bcm:DownMountBackSectionSlotWidth"
+                            dy="Bcm:DownMountBackSectionSlotThick"
+                            dz="Bcm:DownMountBackSectionSlotLenght"/>
+          <position z="Bcm:DownMountBackSectionSlotPosZ" y="Bcm:DownMountBackSectionSlotPosY"/>
+        </shape>
+      </volume>
+
+      <!-- Front part of downstream mount -->
+      <volume name="lvBcmDownMountFront" material="Bcm/Tekapeek" vis="Bcm:MountVis">
+        <shape type="Tube" dz="Bcm:DownMountFrontLength/2"
+               rmax="Bcm:DownMountFrontOutRad"
+               rmin="Bcm:DownMountFrontInRad"/>
+      </volume>
+
+      <!-- Assembly of front and back part    -->
+      <volume name="lvBcmDownMount" assembly="1">
+        <physvol logvol="lvBcmDownMountFront">
+          <position/>
+        </physvol>
+        <physvol logvol="lvBcmDownMountBackSection">
+          <position z="Bcm:DownMountFrontLength/2 + Bcm:DownMountBackSectionLength/2 + 0.01*mm"/>
+          <rotation z="45*degree"/>
+        </physvol>
+        <physvol logvol="lvBcmDownMountBackSection">
+          <position z="Bcm:DownMountFrontLength/2 + Bcm:DownMountBackSectionLength/2 + 0.01*mm"/>
+          <rotation z="135*degree"/>
+        </physvol>
+        <physvol logvol="lvBcmDownMountBackSection">
+          <position z="Bcm:DownMountFrontLength/2 + Bcm:DownMountBackSectionLength/2 + 0.01*mm"/>
+          <rotation z="225*degree"/>
+        </physvol>
+        <physvol logvol="lvBcmDownMountBackSection">
+          <position z="Bcm:DownMountFrontLength/2 + Bcm:DownMountBackSectionLength/2 + 0.01*mm"/>
+          <rotation z="315*degree"/>
+        </physvol>
+      </volume>
+
+      <physvol logvol="lvBcmDownMount"  element="Mount"/>
+      <physvol logvol="lvBcmDownWire">
+        <positionRPhiZ r="Bcm:DownWireRad" phi="180.0*degree" z="0*mm"/>
+        <rotation y="270.0*degree"/>
+        <position x="0*mm" y="0*mm" z="0*mm"/>
+        <rotation z="45.0*degree"/>
+      </physvol>
+      <physvol logvol="lvBcmDownContact" element="Contact">
+        <position z="Bcm:DownContactPosZ"/>
+      </physvol>
+
+      <!-- Diamond sensor with start of placement positioning -->
+      <sensor material="Bcm/Diamond" vis="Bcm:SensorVis"
+              dx="Bcm:SensorWidth/2" dy="Bcm:SensorWidth/2" dz="Bcm:SensorThick/2">
+        <position r="Bcm:DownSensorRad" phi="90.0*degree" z="Bcm:DownSensorPosZ"/>
+      </sensor>
+
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="BcmDownHits">
+      <id>system:8,station:8,sensor:16</id>
+    </readout>        
+  </readouts>
+
+</lccdd>
