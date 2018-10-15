@@ -57,7 +57,7 @@
         <positionRPhiZ r="Bcm:UpWireRad" phi="270.0*degree" z="Bcm:UpWirePosZ"/>
         <rotation x="90.0*degree"/>
         <position/>
-        <rotation x="270.0*degree"/>
+        <rotation z="270.0*degree"/>
       </physvol>
       <physvol logvol="lvBcmUpMount" element="Mount"/>
       <physvol logvol="lvBcmUpContact" element="Contact">
