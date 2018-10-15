@@ -56,12 +56,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t)  {
     vol = Assembly(det_name);
   }
 
-  for(xml_coll_t c(x_det,_U(composite)); c; ++c)  {
-    xml_dim_t component = c;
-    string nam = component.nameStr();
-    description.declareParent(nam, sdet);
-  }
-
   vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   Volume mother = description.pickMotherVolume(sdet);
@@ -75,8 +69,12 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t)  {
   } else {
     pv = mother.placeVolume(vol);
   }
-
   sdet.setPlacement(pv);
+  for(xml_coll_t c(x_det,_U(composite)); c; ++c)  {
+    xml_dim_t component = c;
+    string nam = component.nameStr();
+    description.declareParent(nam, sdet);
+  }
   return sdet;
 }
 
