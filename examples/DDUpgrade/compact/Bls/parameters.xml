@@ -71,23 +71,23 @@
 
     <material name="Bls/Steel">
       <D type="density" value="7.87" unit="g/cm3"/>
-      <component name="Iron" fractionmass="0.97" />
-      <component name="Carbon" fractionmass="0.03" />
+      <component name="Iron"      fraction="0.97" />
+      <component name="Carbon"    fraction="0.03" />
     </material>
 
     <material name="Bls/Resin">
       <D type="density" value="0.04" unit="g/cm3"/>
-      <component name="Carbon" natoms="36" />
-      <component name="Hydrogen" natoms="4" />
-      <component name="Oxygen" natoms="10" />
-      <component name="Nitrogen" natoms="1" />
+      <component name="Carbon"    natoms="36" />
+      <component name="Hydrogen"  natoms="4" />
+      <component name="Oxygen"    natoms="10" />
+      <component name="Nitrogen"  natoms="1" />
     </material>
 
     <material name="Bls/Vinyp">
       <D type="density" value="1.38" unit="g/cm3"/>
-      <component name="Carbon" natoms="2" />
-      <component name="Hydrogen" natoms="3" />
-      <component name="Chlorine" natoms="1" />
+      <component name="Carbon"    natoms="2" />
+      <component name="Hydrogen"  natoms="3" />
+      <component name="Chlorine"  natoms="1" />
     </material>
 
     <material name="Bls/Alu">

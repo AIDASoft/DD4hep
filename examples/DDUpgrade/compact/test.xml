@@ -62,10 +62,11 @@
     <constant name="Bls:ID"         value="30"/>
     <constant name="BcmUp:ID"       value="22"/>
     <constant name="BcmDown:ID"     value="23"/>
-
     <constant name="Bls:Parent"     value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
     <constant name="BcmUp:Parent"   value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
     <constant name="BcmDown:Parent" value="/world/MagnetRegion" type="string"/>
+<!--
+-->
 <!--
     <constant name="BcmUp:Parent"   value="/world" type="string"/>
     <constant name="BcmDown:Parent" value="/world" type="string"/>
@@ -84,12 +85,13 @@
   <include ref="Magnet/parameters.xml"/>
 
   <include ref="Regions/detector.xml"/>
-  <include ref="Bcm/detector.xml"/>
   <include ref="Bls/detector.xml"/>
-  <include ref="Magnet/detector.xml"/>
 <!--
+  <include ref="Bcm/detector.xml"/>
+  <include ref="Magnet/detector.xml"/>
   <include ref="GdmlImports.xml"/>
 -->
+  <include ref="Bcm/detector.xml"/>
 
   <detectors>
   </detectors>

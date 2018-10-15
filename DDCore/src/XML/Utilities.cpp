@@ -29,40 +29,34 @@ using namespace dd4hep::xml::tools;
 
 /// Create layered transformation from xml information
 Transform3D dd4hep::xml::createTransformation(xml::Element e)   {
-  int cnt = 0;
-  Position pos;
-  RotationZYX rot;
-  Transform3D result;
+  int flag = 0;
+  Transform3D position, rotation, result;
   for( xml_coll_t c(e,_U(star)); c; ++c )    {
     string tag = c.tag();
     xml_dim_t x_elt = c;
     if ( tag == "positionRPhiZ" )   {
-      Transform3D trafo = Transform3D(pos);
-      if ( cnt > 1 ) trafo *= Transform3D(rot);
-      result = trafo * result;
-      ROOT::Math::Polar2D<double> dim(x_elt.r(0.0), x_elt.phi(0.0));
-      pos.SetXYZ(dim.X(), dim.Y(), x_elt.z(0.0));
-      rot.SetComponents(0,0,0);
-      cnt = 1;
+      if      ( flag == 1 ) result = position  * result;
+      else if ( flag == 2 ) result = (position * rotation) * result;
+      ROOT::Math::RhoZPhiVector pos(x_elt.r(0), x_elt.z(0), x_elt.phi(0));
+      position = Transform3D(pos);
+      rotation = Transform3D();
+      flag = 1;
     }
     else if ( tag == "position" )   {
-      Transform3D trafo = Transform3D(pos);
-      if ( cnt > 1 ) trafo *= Transform3D(rot);
-      result = trafo * result;
-      pos.SetXYZ(x_elt.x(0), x_elt.y(0), x_elt.z(0));
-      rot.SetComponents(0,0,0);
-      cnt = 1;
+      if      ( flag == 1 ) result = position  * result;
+      else if ( flag == 2 ) result = (position * rotation) * result;
+      Position pos(x_elt.x(0), x_elt.y(0), x_elt.z(0));
+      position = Transform3D(pos);
+      rotation = Transform3D();
+      flag = 1;
     }
     else if ( tag == "rotation" )   {
-      rot = RotationZYX(x_elt.z(0), x_elt.y(0), x_elt.x(0));
-      cnt = 2;
+      rotation = Transform3D(RotationZYX(x_elt.z(0), x_elt.y(0), x_elt.x(0)));
+      flag = 2;
     }
   }
-  if ( cnt > 0 )   {
-    Transform3D trafo = Transform3D(pos);
-    if ( cnt > 1 ) trafo *= Transform3D(rot);
-    result = trafo * result;
-  }
+  if      ( flag == 1 ) result = position  * result;
+  else if ( flag == 2 ) result = (position * rotation) * result;
   return result;
 }
 

@@ -29,7 +29,7 @@
       </volume>
       <volume name="lvBlsFiber" material="Bls/Resin" vis="Bls:FiberVis">
         <shape type="Trapezoid" z="Bls:FiberCoverH/2"
-               x1="Bls:ScintLSizeX" y1="Bls:ScintSSizeZ" x2="Bls:ScintSSizeX" y2="Bls:ScintSSizeZ"/>
+               x1="Bls:ScintLSizeX/2" y1="Bls:ScintSSizeZ/2" x2="Bls:ScintSSizeX/2" y2="Bls:ScintSSizeZ/2"/>
       </volume>
       <volume name="lvBlsRing" material="Bls/Vinyp" vis="Bls:PassiveVis">
         <shape type="Tube" dz="Bls:RingH/2" rmin="Bls:RingInnerD / 2.0 + Bls:GeometryPrecision" rmax="Bls:RingOuterD / 2.0"/>
@@ -104,15 +104,15 @@
 <!--
 -->
      <physvol element="Bls" id="3" logvol="lvBls34" >
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX34" y="Bls:OffsetY34" />
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX34"   y="Bls:OffsetY34" />
        <rotation z="-90.0*degree" />
      </physvol>
      <physvol element="Bls" id="4" logvol="lvBls34">
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX34" y="-Bls:OffsetY34" />
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX34"   y="-Bls:OffsetY34" />
        <rotation z="-90.0*degree" />
      </physvol>
      <physvol element="Bls" id="5" logvol="lvBls56" >
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX56"  y="Bls:OffsetY56"/>
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX56"   y="Bls:OffsetY56"/>
        <rotation z="-90*degree"/>
      </physvol>
      <physvol element="Bls" id="6" logvol="lvBls56">
@@ -123,7 +123,7 @@
        <position z="-Bls:OffsetZ" x="-Bls:OffsetX78"  y="Bls:OffsetY78"/>
      </physvol>
      <physvol element="Bls" id="8" logvol="lvBls78">
-       <position z="-Bls:OffsetZ" x="Bls:OffsetX78"  y="Bls:OffsetY78"/>
+       <position z="-Bls:OffsetZ" x="Bls:OffsetX78"   y="Bls:OffsetY78"/>
      </physvol>
 <!--
 -->
