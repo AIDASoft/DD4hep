@@ -45,3 +45,6 @@ Version.h
 *~
 
 *.DS_Store
+
+# XML files for DDUpgrade that are downloaded with cmake
+/examples/DDUpgrade/data
