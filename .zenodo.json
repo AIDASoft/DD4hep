@@ -1,0 +1,82 @@
+{
+    "license": "LGPL-3.0",
+    "contributors": [
+        {
+            "affiliation": "University of Bonn", 
+            "type": "Other", 
+            "name": "Grefe, Christian"
+        }, 
+        {
+            "affiliation": "CERN", 
+            "type": "Other", 
+            "name": "Mato, Pere"
+        }, 
+        {
+            "affiliation": "CERN", 
+            "type": "Other", 
+            "name": "Munnich, Astrid"
+        }, 
+        {
+            "affiliation": "CERN", 
+            "type": "Other", 
+            "name": "Nikiforou, Nikiforos"
+        }, 
+        {
+            "affiliation": "University of Liverpool", 
+            "type": "Other", 
+            "name": "Kostka, Peter"
+        }, 
+        {
+            "affiliation": "DESY", 
+            "type": "Other", 
+            "name": "Rosemann, Christoph"
+        }, 
+        {
+            "affiliation": "DESY", 
+            "type": "Other", 
+            "name": "Lu, Shaojun"
+        }, 
+        {
+            "affiliation": "ANL", 
+            "type": "Other", 
+            "name": "Blyth, David"
+        }
+    ], 
+    "notes": "webpage: http://dd4hep.cern.ch/", 
+    "language": "eng", 
+    "grants": [
+        {
+            "id": "10.13039/501100000780::654168"
+        }
+    ], 
+    "upload_type": "software", 
+    "keywords": [
+        "Detector Description, Deterctor Simulation, Conditions, Alignment"
+    ],
+    "creators": [
+        {
+            "affiliation": "CERN", 
+            "name": "Frank, Markus"
+        }, 
+        {
+            "affiliation": "DESY", 
+            "name": "Gaede, Frank"
+        }, 
+        {
+            "affiliation": "CERN", 
+            "name": "Petric, Marko"
+        }, 
+        {
+            "affiliation": "CERN", 
+            "name": "Sailer, Andre"
+        }
+    ], 
+    "access_right": "open",
+    "related_identifiers": [
+        {
+            "scheme": "doi", 
+            "identifier": "10.5281/zenodo.592244", 
+            "relation": "isVersionOf"
+        }
+    ]
+}
