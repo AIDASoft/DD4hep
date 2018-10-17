@@ -325,7 +325,10 @@ int dd4hep::xml::_toInt(const XmlChar* value) {
 bool dd4hep::xml::_toBool(const XmlChar* value) {
   if (value) {
     string s = _toString(value);
-    return s == "true" || s == "1" || s == "True" || s == "TRUE";
+    char   c = ::toupper(s[0]);
+    if ( c == 'T' || c == '1' ) return true;
+    if ( c == 'F' || c == '0' ) return false;
+    return _toInt(value) != 0;
   }
   return false;
 }

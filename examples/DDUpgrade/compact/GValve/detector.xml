@@ -1,0 +1,47 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- * "Green Valve"                                                          * -->
+<!-- * Author: Magnus Lieng                                                   * -->
+<!-- * Description: Simple approximation of the "Green Valve".                * -->
+<!-- ************************************************************************** -->
+
+<lccdd>
+  <detectors>
+
+    <detector name="GValve" type="DD4hep_VolumeAssembly" parent="${GValve:parent}" vis="GValve:Vis">
+      <envelope name="lvGValve" vis="GValve:SteelVis">
+        <shape type="Assembly"/>
+      </envelope>
+      <position x="250.0*mm" z="-1600.0*mm + Regions:BeforeMagnetZSize/2 - Regions:BeforeVeloZSize/2"/>
+
+      <!-- Main tube -->
+      <volume name="lvGValveCyl" material="GValve/Steel" vis="GValve:SteelVis">
+        <shape type="Tube" dz="GValve:CylLength/2" rmin="GValve:CylRad" rmax="GValve:CylRad + GValve:CylThick"/>
+      </volume>
+      <!-- End plug -->
+      <volume name="lvGValvePlug" material="GValve/Steel" vis="GValve:SteelVis">
+        <shape type="Tube" dz="GValve:PlugLength/2" rmax="GValve:PlugRad"/>
+      </volume>
+
+      <!-- Green Valve -->
+      <physvol volume="lvGValveCyl" name="pvGValveCyl"/>
+      <physvol volume="lvGValvePlug" name="pvGValvePlug1">
+        <position z="GValve:Plug1PosZ"/>
+      </physvol>
+      <physvol volume="lvGValvePlug" name="pvGValvePlug2">
+        <position z="GValve:Plug2PosZ"/>
+      </physvol>
+    </detector>
+
+  </detectors>
+</lccdd>

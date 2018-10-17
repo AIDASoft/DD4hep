@@ -29,6 +29,8 @@ dd4hep_add_plugin(DDUpgradePlugins
 #
 #
 include(ExternalProject)
+#
+message(status "CMAKE_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}  ${CMAKE_CURRENT_BINARY_DIR}/data/src/DDUpgrade_data.tgz  ")
 ExternalProject_Add(
     DDUpgrade_data
     PREFIX "data"
@@ -38,7 +40,7 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
-    PATCH_COMMAND tar -xzf ${CMAKE_BINARY_DIR}/data/src/DDUpgrade_data.tgz -C ${CMAKE_SOURCE_DIR}
+    PATCH_COMMAND tar -xzf ${CMAKE_CURRENT_BINARY_DIR}/data/src/DDUpgrade_data.tgz  -C ${CMAKE_CURRENT_SOURCE_DIR}
 )
 #
 #

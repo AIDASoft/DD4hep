@@ -14,12 +14,12 @@
 <!-- ========================================================================== -->
 <lccdd>
   <detectors>
-    <detector name="UpstreamRegion" type="DD4hep_VolumeAssembly" vis="Regions:UpstreamVis">
+    <detector name="UpstreamRegion" type="DD4hep_VolumeAssembly" parent="/world" ignore="UpstreamRegion:ignore" vis="Regions:UpstreamVis">
       <envelope name="UpstreamRegionEnvelope" type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="1000*cm"/>
       <position x="0*cm" y="0*cm" z="-1270*cm"/>
     </detector>
 
-    <detector name="BeforeMagnetRegion" type="DD4hep_VolumeAssembly" vis="Regions:BeforeMagnetVis">
+    <detector name="BeforeMagnetRegion" type="DD4hep_VolumeAssembly" parent="/world" ignore="BeforeMagnetRegion:ignore" vis="Regions:BeforeMagnetVis">
       <envelope material="Air">
         <shape type="Box" dx="1000*cm" dy="1000*cm" dz="270*cm"/>
       </envelope>
@@ -35,22 +35,35 @@
       </physvol>
     </detector>
 
-    <detector name="MagnetRegion" type="DD4hep_VolumeAssembly" vis="Regions:MagnetVis">
+    <detector name="MagnetRegion" type="DD4hep_VolumeAssembly" parent="/world" ignore="MagnetRegion:ignore" vis="Regions:MagnetVis">
       <envelope type="Box" material="Air"
                 dx="Regions:MagnetRegionXSize/2" dy="Regions:MagnetRegionYSize/2" dz="Regions:MagnetRegionZSize/2"/>
       <position x="0*cm" y="0*cm" z="516*cm"/>
     </detector>
 
-    <detector name="AfterMagnetRegion" type="DD4hep_VolumeAssembly" vis="Regions:AfterMagnetVis">
+    <detector name="AfterMagnetRegion" type="DD4hep_VolumeAssembly" parent="/world" ignore="AfterMagnetRegion:ignore" vis="Regions:AfterMagnetVis">
       <envelope type="Box" material="Air" dx="1000*cm" dy="1000*cm" dz="214*cm"/>
       <position x="0*cm" y="0*cm" z="976*cm"/>
     </detector>
 
-    <detector name="DownstreamRegion" type="DD4hep_VolumeAssembly" vis="Regions:DownstreamVis">
+    <detector name="DownstreamRegion" type="DD4hep_VolumeAssembly" parent="/world" ignore="DownstreamRegion:ignore" vis="Regions:DownstreamVis">
       <envelope material="Air">
         <shape type="Box" dx="1000*cm" dy="1000*cm" dz="400*cm"/>
       </envelope>
       <position x="0*cm" y="0*cm" z="1590*cm"/>
+      <volume name="lvAfterMuon" material="Air" vis="Regions:AfterMuonVis">
+        <shape type="BooleanShape" operation="union" name="AfterMuonUnion">
+          <shape type="Box" name="AfterMuonBox"
+                 dx="Regions:AfterMuonMainXSize/2" dy="Regions:AfterMuonMainYSize/2" dz="Regions:AfterMuonMainZSize/2"/>
+          <shape type="Box" name="AfterMuonBox2"
+                 dx="Regions:AfterMuonHoleXSize/2" dy="Regions:AfterMuonHoleYSize/2" dz="Regions:AfterMuonHoleZSize"/>
+          <position z="-Regions:AfterMuonMainZSize/2"/>
+        </shape>
+      </volume>
+      <physvol element="AfterMuon" volume="lvAfterMuon">
+        <position x="0*mm" y="0*mm" z="19730.0*mm + 2000.0*mm/2 + 500.0*mm - Regions:DownstreamZPos"/>
+      </physvol>
     </detector>
+
   </detectors>
 </lccdd>

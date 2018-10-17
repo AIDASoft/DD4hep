@@ -10,13 +10,31 @@
 <!--   @date    14/10/2018                                                      -->
 <!--                                                                            -->
 <!-- ========================================================================== -->
-<!-- XML description of the BCM stations                                        -->
+<!--                                                                            -->
 <!-- ========================================================================== -->
-<lccdd>
-  <!--
-       XML description of the 2 BCM stations
-  -->
-  <include ref="BcmDown.xml"/>
-  <include ref="BcmUp.xml"/>
 
+<lccdd>
+  <detectors>
+
+    <detector name="MBXWUp" type="LHCb_MBXW" parent="/world/UpstreamRegion" vis="MBXW:Vis">
+      <position z="-5250.0*mm - Regions:UpstreamZPos"/>
+      <parameter name="MBXW:CoilZ" value="MBXW:CoilZ_Up"/>
+      <materials>
+        <material name="yoke"   value="MBXW:YokeIron"/>
+        <material name="coil"   value="MBXW:CoilCopper"/>
+        <material name="spacer" value="MBXW:G10"/>
+      </materials>
+    </detector>
+
+    <detector name="MBXWSUp" type="LHCb_MBXW" parent="/world/UpstreamRegion" vis="MBXW:Vis">
+      <position z="-21455.0*mm + 1275.0*mm/2 -  - Regions:UpstreamZPos"/>
+      <parameter name="MBXW:CoilZ" value="MBXW:CoilZ_SUp"/>
+      <materials>
+        <material name="yoke"   value="MBXW:YokeIron"/>
+        <material name="coil"   value="MBXW:CoilCopper"/>
+        <material name="spacer" value="MBXW:G10"/>
+      </materials>
+    </detector>
+
+  </detectors>
 </lccdd>

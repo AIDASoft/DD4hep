@@ -1,0 +1,84 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the MBWX magnet parameters                              -->
+<!-- ========================================================================== -->
+<lccdd>
+
+  <define>
+    <!-- General Coil -->
+    <constant name = "MBXW:CoilX"                  value="137.0*mm"  />
+    <constant name = "MBXW:CoilY"                  value="127*mm"  />
+    <constant name = "MBXW:CoilZ_Up"               value="3370.0*mm/2"  />
+    <constant name = "MBXW:CoilZ_SUp"              value="750.0*mm/2"  />
+    <constant name = "MBXW:CoilZ_Down"             value="750.0*mm/2"  />
+
+    <!-- Yoke -->
+    <constant name = "MBXW:YokeX"                  value="800.0*mm"  />
+    <constant name = "MBXW:YokeY"                  value="595.0*mm"  />
+
+    <constant name = "MBXW:CenterHoleX"            value="241.0*mm"  />
+    <constant name = "MBXW:CenterHoleY"            value="61.0*mm"  />
+    <constant name = "MBXW:CoilHoleY"              value="317.0*mm"  />
+    <constant name = "MBXW:CoilHolePosX"           value="189.0*mm"  />
+
+    <!-- Coil Up -->
+    <constant name = "MBXW:UpCurveRad"             value="9.0*mm"  />
+
+    <!-- Coil Down -->
+    <constant name = "MBXW:DownCurveRad"           value="25*mm"  />
+
+    <!-- Spacer -->
+    <constant name = "MBXW:SpacerY"                value="60.0*mm"  />
+
+  </define>
+
+  <materials>
+    <!-- %%%%%%         epoxy           %%%%%%%% -->
+    <material name="MBXW:Epoxy" state="solid">
+      <D type="density" value="1.3" unit="g/cm3"/>
+      <composite ref="C" n="15"/>
+      <composite ref="H" n="44"/>
+      <composite ref="O" n="7"/>
+    </material>
+    <!-- %%%%%%         SiO2 (amorph)   %%%%%%%% -->
+    <material name="MBXW:SiO2" state="solid">
+      <D type="density" value="2.196" unit="g/cm3"/>
+      <composite ref="Si" n="1"/>
+      <composite ref="O"  n="2"/>
+    </material>
+    <!-- %%%%%%         G10             %%%%%%%% -->
+    <material name="MBXW:G10" state="solid">
+      <D type="density" value="1.7" unit="g/cm3"/>
+      <fraction ref="MBXW:SiO2" n="0.853"/>
+      <fraction ref="MBXW:Epoxy" n="0.147"/>
+    </material>
+    <!-- %%%%%%         Copper coil     %%%%%%%% -->
+    <material name="MBXW:CoilCopper" state="solid">
+      <D type="density" value="6.72" unit="g/cm3"/>
+      <fraction ref="Cu" n="1.0"/>
+    </material>
+    <!-- %%%%%%         Yoke iron     %%%%%%%% -->
+    <material name="MBXW:YokeIron" state="solid">
+      <D type="density" value="7.87" unit="g/cm3"/>
+      <fraction ref="Fe" n="1.0"/>
+    </material>
+  </materials>
+
+  <display>
+    <vis name="MBXW:Vis"       alpha="0.8" r="0.3" g="0.3" b="0.3" showDaughters="true"  visible="true"/>
+    <vis name="MBXW:YokeVis"   alpha="0.9" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="MBXW:CoilVis"   alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="false" visible="true"/>
+    <vis name="MBXW:SpacerVis" alpha="1.0" r="1.0" g="0.6" b="0.3" showDaughters="false" visible="true"/>
+  </display>
+
+</lccdd>

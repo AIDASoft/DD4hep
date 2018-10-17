@@ -991,6 +991,16 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     return;
   if (ign_typs && strstr(ign_typs, type_match.c_str()))
     return;
+  xml_attr_t attr_ignore = element.attr_nothrow(_U(ignore));
+  if ( attr_ignore )   {
+    bool ignore = element.attr<bool>(_U(ignore));
+    if ( ignore )  {
+      printout(INFO, "Compact",
+               "+++ Do not build subdetector:%s [ignore flag set]",
+               name.c_str());
+      return;
+    }
+  }
   try {
     string par_name;
     xml_attr_t attr_par = element.attr_nothrow(_U(parent));

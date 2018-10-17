@@ -60,6 +60,14 @@
     <constant name="Regions:BeforeVeloXSize" value="3100*mm"/>
     <constant name="Regions:BeforeVeloYSize" value="3100*mm"/>
     <constant name="Regions:BeforeVeloZSize" value="1815*mm"/>
+
+    <constant name="Regions:AfterMuonMainXSize" value="2000*mm" />
+    <constant name="Regions:AfterMuonMainYSize" value="2000*mm" />
+    <constant name="Regions:AfterMuonMainZSize" value="2000*mm" />
+    <constant name="Regions:AfterMuonHoleXSize" value="499*mm" />
+    <constant name="Regions:AfterMuonHoleYSize" value="550*mm" />
+    <constant name="Regions:AfterMuonHoleZSize" value="500*mm" />
+
   </define>
 
   <display>

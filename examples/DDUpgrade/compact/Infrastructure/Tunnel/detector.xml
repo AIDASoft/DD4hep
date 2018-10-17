@@ -1,0 +1,83 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+
+<lccdd>
+  <detectors>
+
+    <detector name="Tunnel" type="DD4hep_VolumeAssembly" parent="${Tunnel:Parent}" vis="Tunnel:Vis">
+      <!--  the main volume , you can add any component you need-->
+      <envelope name="Tunnel" material="Infrastructure:Concrete" vis="Infrastructure:ConcreteVis">
+        <shape type="BooleanShape" operation="union" name="TunnelCombined">
+          <shape type="Tube" name="Tunnel_Total"
+                 dz="TunnelLength/2"
+                 rmax="TunnelRadius+WallThick"
+                 rmin="TunnelRadius"
+                 startphi="TunnelStartAngle"
+                 deltaphi="TunnelDeltaAngle"/>
+        
+          <shape type="Tube" name="Tunnel_Total2"
+                 dz="TunnelLength/2"
+                 rmax="TunnelRadius+WallThick"
+                 rmin="TunnelRadius"
+                 startphi="TunnelStartAngle"
+                 deltaphi="TunnelDeltaAngle"/>
+          <position z="TunnelLength+TunnelSeparation"/>
+          <rotation rotY="0.*degree" />
+        
+          <shape type="Box" name="TunnelFloorBox1"
+                 dx="TunnelRadius+WallThick" dy="WallThick/2" dz="TunnelLength/2"/>
+             <position y="TunnelFlooryPos-0.5*WallThick"/>
+          <shape type="Box" name="TunnelFloorBox2"
+                 dx="TunnelRadius+WallThick" dy="WallThick/2" dz="TunnelLength/2"/> 
+          <position y="TunnelFlooryPos-0.5*WallThick" z="TunnelLength+TunnelSeparation"/>
+          <rotition rotY="0.0*degree" />
+        
+          <shape type="BooleanShape" operation="subtraction" name="TunnelPlugsSubtraction">
+            <shape type="Tube" name="DownstreamPlug" 
+                   dz="DownstreamPlugLength/2" rmax="TunnelRadius"/>
+            <shape type="Box" name="DownstreamFloorBox1" 
+                   dx="TunnelRadius+WallThick" dy="TunnelRadius/2" dz="TunnelLength/2"/>
+            <position y="TunnelFlooryPos-0.5*TunnelRadius"/>
+            <shape type="Box" name="DownstreamBeamBox"
+                   dx="DownstreamBeamWidth/2" dy="DownstreamBeamWidth/2" dz="DownstreamPlugLength/2"/>
+            <position x="DownstreamBeamxPos" y="DownstreamBeamyPos" z="DownstreamBeamzPos" />
+          </shape>
+          <position x="DownstreamPlugxPos" y="DownstreamPlugyPos" z="DownstreamPlugzPos"/>
+  
+          <shape type="BooleanShape" operation="subtraction" name="TunnelUpPlugSubtraction">
+            <shape type="Tube" name="UpstreamPlug"
+                   dz="UpstreamPlugLength/2" rmax="TunnelRadius"/>
+            <shape type="Box" name="UpstreamFloorBox1"
+                   dx="TunnelRadius+WallThick" dy="TunnelRadius/2" dz="TunnelLength/2"/>
+            <position y="TunnelFlooryPos-0.5*TunnelRadius"/>
+            <shape type="Tube" name="UpstreamBeamHole"
+                   dz="UpstreamPlugLength/2" rmax="UpstreamBeamWidth"/>
+            <position x="UpstreamBeamxPos" y="UpstreamBeamyPos" z="UpstreamBeamzPos"/>
+          </shape>
+          <position x="UpstreamPlugxPos" y="UpstreamPlugyPos" z="UpstreamPlugzPos"/>
+         
+          <shape type="BooleanShape" operation="subtraction" name="TunnelUpstreamMagnet">
+            <shape type="Box" name="UpstreamMagnetBox"
+                   dx="UpstreamMagnetWidth/2" dy="UpstreamMagnetWidth/2" dz="UpstreamMagnetLength/2"/>
+            <shape type="Tube" name="UpstreamMagnetBeam"
+                   dz="UpstreamMagnetLength/2"  rmax="UpstreamBeamWidth" />
+            <position x="UpstreamMagnetBeamxPos" y="UpstreamMagnetBeamyPos" z="UpstreamMagnetBeamzPos"/>
+          </shape>
+          <position x="UpstreamMagnetxPos" y="UpstreamMagnetyPos" z="UpstreamMagnetzPos"/>
+        </shape>
+      </envelope>
+      <position x="TunnelxPos" y="TunnelyPos" z="TunnelzPos"/>
+
+    </detector>
+  </detectors>
+</lccdd>

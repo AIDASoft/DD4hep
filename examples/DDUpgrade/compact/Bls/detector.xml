@@ -15,7 +15,7 @@
 <lccdd>
 
   <detectors>
-    <detector id="Bls:ID" name="Bls" type="LHCb_Bls" parent="${Bls:Parent}" readout="BlsHits" vis="Bls:BlsVis">
+    <detector id="Bls:ID" name="Bls" type="LHCb_Bls" parent="${Bls:parent}" readout="BlsHits" vis="Bls:BlsVis">
 
       <!-- Since all volumes have the same positioning within the mother, we include it here -->
       <volume name="lvBlsScintS" material="Bls/Sc" vis="Bls:ScintillatorVis" sensitive="true">
