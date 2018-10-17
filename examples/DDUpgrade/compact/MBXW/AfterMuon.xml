@@ -1,0 +1,29 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+
+<lccdd>
+  <detectors>
+
+    <detector name="MBXWDown" type="LHCb_MBXW" parent="/world/DownstreamRegion/AfterMuon" vis="MBXW:Vis">
+      <position z="20180.0*mm - 19730.0*mm + 1274.6*mm/2 - Regions:AfterMuonMainZSize/2 - Regions:AfterMuonHoleZSize"/>
+      <parameter name="MBXW:CoilZ" value="MBXW:CoilZ_Down"/>
+      <materials>
+        <material name="yoke"   value="MBXW:YokeIron"/>
+        <material name="coil"   value="MBXW:CoilCopper"/>
+        <material name="spacer" value="MBXW:G10"/>
+      </materials>
+    </detector>
+  </detectors>
+</lccdd>

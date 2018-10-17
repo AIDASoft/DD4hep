@@ -84,7 +84,18 @@ DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
 
 static Handle<TObject> create_Tube(Detector&, xml_h element)   {
   xml_dim_t e(element);
-  Solid solid = Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
+  Solid solid;
+  xml_attr_t aphi = element.attr_nothrow(_U(phi1));
+  if ( aphi )  {
+    double phi1 = e.phi1();
+    double phi2 = e.phi2(2*M_PI);
+    solid = Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),phi1, phi2);
+  }
+  else  {
+    double phi1 = e.startphi(0.0);
+    double phi2 = phi1 + e.deltaphi(2*M_PI);
+    solid = Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),phi1,phi2);
+  }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
@@ -354,7 +365,104 @@ static Handle<TObject> create_BooleanShape(Detector&, xml_h element)   {
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
-DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanShape)
+DECLARE_XML_SHAPE(BooleanShapeOld__shape_constructor,create_BooleanShape)
+
+
+static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)   {
+  xml_det_t e(element);
+  // get the two shape elements
+  Solid tmp, solid, result;
+  int flag = 0;
+  Transform3D position, rotation, trafo;
+
+  xml_attr_t attr = 0;
+  std::string op = e.attr<std::string>(_U(operation)) ;
+  std::transform( op.begin(), op.end(), op.begin(), ::tolower);
+  for (xml_coll_t i(e ,_U(star)); i; ++i )   {
+    xml_comp_t x_elt = i;
+    string tag = x_elt.tag();
+    if ( tag == "shape" && !result.isValid() )  {
+      result = xml::createShape(description, x_elt.typeStr(), x_elt);
+      if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<string>(attr).c_str());
+      flag = 1;
+    }
+    else if ( tag == "shape" && !solid.isValid() )  {
+      solid = xml::createShape(description,  x_elt.typeStr(), x_elt); 
+      if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<string>(attr).c_str());
+      flag = 3;
+    }
+    else if ( result.isValid() && solid.isValid() )  {
+      if ( tag == "position" )  {
+        if      ( flag == 4 ) trafo = position  * trafo;
+        else if ( flag == 5 ) trafo = (position * rotation) * trafo;
+        Position pos(x_elt.x(0), x_elt.y(0), x_elt.z(0));
+        position = Transform3D(pos);
+        rotation = Transform3D();
+        flag = 4;
+      }
+      else if ( tag == "positionRZPhi" )  {
+        if      ( flag == 4 ) trafo = position  * trafo;
+        else if ( flag == 5 ) trafo = (position * rotation) * trafo;
+        ROOT::Math::RhoZPhiVector pos(x_elt.r(0), x_elt.z(0), x_elt.phi(0));
+        position = Transform3D(pos);
+        rotation = Transform3D();
+        flag = 4;
+      }
+      else if ( tag == "transformation" )   {
+        if      ( flag == 4 ) trafo = position  * trafo;
+        else if ( flag == 5 ) trafo = (position * rotation) * trafo;
+        Transform3D tr = xml::createTransformation(x_elt);
+        trafo   = tr * trafo;
+        position = rotation = Transform3D();
+        flag = 3;
+      }
+      else if ( tag == "rotation" )  {
+        rotation = Transform3D(RotationZYX(x_elt.z(0), x_elt.y(0), x_elt.x(0)));
+        flag = 5;
+      }
+      else if ( tag == "shape" )   {
+        //cout << solid.name() << " Flag:" << flag << endl;
+        if      ( flag == 4 ) trafo = position  * trafo;
+        else if ( flag == 5 ) trafo = (position * rotation) * trafo;
+        tmp = Solid();
+        if( op == "subtraction" )
+          tmp = SubtractionSolid(result, solid, trafo);
+        else if( op == "union" )
+          tmp = UnionSolid(result, solid, trafo);
+        else if( op == "intersection" )
+          tmp = IntersectionSolid(result, solid, trafo);
+        else  {          // Error!
+          throw std::runtime_error(" create_BooleanShape - unknown operation given: " + op + 
+                                   " - needs to be one of 'subtraction','union' or 'intersection' ");  
+        }
+        result = tmp;
+        trafo  = position = rotation = Transform3D();
+        solid = xml::createShape(description,  x_elt.typeStr(), x_elt); 
+        if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<string>(attr).c_str());
+        flag = 3;
+      }
+    }
+  }
+  if ( flag >= 3 )  {
+    //cout << solid.name() << " Flag:" << flag << endl;
+    if      ( flag == 4 ) trafo = position  * trafo;
+    else if ( flag == 5 ) trafo = (position * rotation) * trafo;
+    if( op == "subtraction" )
+      tmp = SubtractionSolid(result, solid, trafo);
+    else if( op == "union" )
+      tmp = UnionSolid(result, solid, trafo);
+    else if( op == "intersection" )
+      tmp = IntersectionSolid(result, solid, trafo);
+    else  {          // Error!
+      throw std::runtime_error(" create_BooleanShape - unknown operation given: " + op + 
+                               " - needs to be one of 'subtraction','union' or 'intersection' ");  
+    }
+    result = tmp;
+  }
+  if ( e.hasAttr(_U(name)) ) result->SetName(e.attr<string>(_U(name)).c_str());
+  return result;
+}
+DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanMulti)
 
 static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
   xml_det_t    x_det  = e;

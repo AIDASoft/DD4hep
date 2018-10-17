@@ -1,0 +1,66 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the BlockWall                                           -->
+<!-- ========================================================================== -->
+
+<lccdd>
+
+  <detectors>
+    <detector name="Infrastructure" type="DD4hep_VolumeAssembly" parent="/world" vis="Infrastructure:Vis">
+      <envelope name="lvInfrastructureTilt" type="Assembly" vis="Infrastructure:Vis">
+      </envelope>
+
+      <comment>The main volume, you can add any component you need </comment>
+      <volume name="lvInfrastructure" material="Air" vis="Infrastructure:Vis">
+        <shape type="BooleanShape" operation="subtraction" name="Infrastructure_Total">
+          <shape type="Box" name="InfrastructureBox"
+                 dx="120.0*m/2" dy="100.0*m/2" dz="90.0*m/2"/>
+
+          <shape type="BooleanShape" operation="union" name="Holes_Total">
+            <shape type="Box" name="UpstreamBox"
+                   dx="Regions:UpstreamXSize/2" dy="Regions:UpstreamYSize/2" dz="Regions:UpstreamZSize/2"/>
+            <shape type="Box" name="BeforeMagnetVeloBox" 
+                   dx="(Regions:BeforeMagnetXSize-1.5*m)/2" dy="(Regions:BeforeMagnetYSize-1.5*m)/2" dz="Regions:BeforeMagnetZSize/2"/>
+            <position z="Regions:BeforeMagnetZPos-Regions:UpstreamZPos"/>
+    
+            <shape type="Box" name="BeforeMagnetRichBox"
+                   dx="Regions:BeforeMagnetXSize/2"         dy="Regions:BeforeMagnetYSize/2"         dz="0.25*(Regions:BeforeMagnetZSize+VeloZ)"/>
+            <position z="Regions:BeforeMagnetZPos-Regions:UpstreamZPos+0.5*VeloZ+0.25*(Regions:BeforeMagnetZSize+VeloZ)"/>
+          
+            <shape type="Box" name="MagnetRegionBox"
+                   dx="Regions:MagnetRegionXSize/2"         dy="Regions:MagnetRegionYSize/2"         dz="Regions:MagnetRegionZSize/2"/>
+            <position z="Regions:MagnetRegionZPos-Regions:UpstreamZPos"/>
+          
+            <shape type="Box" name="AfterMagnetBox"
+                   dx="Regions:AfterMagnetXSize/2"          dy="Regions:AfterMagnetYSize/2"          dz="Regions:AfterMagnetZSize/2"/>
+            <position z="Regions:AfterMagnetZPos-Regions:UpstreamZPos"/>
+          
+            <shape type="Box" name="DownstreamMuonBox"
+                   dx="(Regions:DownstreamXSize-5.2*m)/2"   dy="(Regions:DownstreamYSize-5.2*m)/2"   dz="Regions:DownstreamZSize/2"/>
+            <position z="Regions:DownstreamZPos-Regions:UpstreamZPos"/>
+            <shape type="Box" name="DownstreamFilterBox"
+                   dx="Regions:DownstreamXSize/2"           dy="Regions:DownstreamYSize/2"           dz="(Regions:DownstreamZSize-0.8*m)/2"/>
+
+            <position z="Regions:DownstreamZPos-Regions:UpstreamZPos-0.4*m"/>
+          </shape>
+        </shape>
+      </volume>
+
+      <physvol name="pvInfrastructure" volume="lvInfrastructure">
+        <position x="Infra:xPos" y="Infra:yPos" z="Infra:zPos"/>
+        <rotation x="Infra:Rotate"/>
+      </physvol>
+
+    </detector>
+  </detectors>
+</lccdd>

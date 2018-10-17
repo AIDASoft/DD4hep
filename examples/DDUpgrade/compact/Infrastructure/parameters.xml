@@ -1,0 +1,42 @@
+<!-- ========================================================================== -->
+<!--                                                                            -->
+<!--  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)  -->
+<!--  All rights reserved.                                                      -->
+<!--                                                                            -->
+<!--  For the licensing terms see $DD4hepINSTALL/LICENSE.                       -->
+<!--  For the list of contributors see $DD4hepINSTALL/doc/CREDITS.              -->
+<!--                                                                            -->
+<!--   @author  M.Frank                                                         -->
+<!--   @date    14/10/2018                                                      -->
+<!--                                                                            -->
+<!-- ========================================================================== -->
+<!-- XML description of the BlockWall parameter definitions                     -->
+<!-- ========================================================================== -->
+<lccdd>
+
+  <define>
+    <!-- The general parameters for Infrastructure Box -->
+    <constant name="Infra:xPos"              value="0.0*m"/>
+    <constant name="Infra:yPos"              value="0.0*m"/>
+    <constant name="Infra:zPos"              value="0.0*m"/>
+    <constant name="Infra:Rotate"            value="0.003601*rad" />
+  </define>
+
+  <materials>
+    <!-- Concrete -->
+    <material name="Infrastructure:Concrete" state="solid">
+      <D type="density" value="2.5" unit="g/cm3"/>
+      <component fraction="0.520" name="Oxygen"/>
+      <component fraction="0.325" name="Silicon"/>
+      <component fraction="0.060" name="Calcium"/>
+      <component fraction="0.015" name="Sodium"/>
+      <component fraction="0.020" name="Iron"/>
+      <component fraction="0.040" name="Aluminium"/>
+    </material>
+  </materials>
+
+  <display>
+    <vis name="Infrastructure:Vis"         alpha="0.2" r="0.7" g="0.7" b="0.7" showDaughters="true" visible="true"/>
+    <vis name="Infrastructure:ConcreteVis" alpha="0.5" r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
+  </display>
+</lccdd>

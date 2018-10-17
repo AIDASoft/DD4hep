@@ -19,7 +19,7 @@
              BCM detector: upper module
     -->
     <detector id="BcmUp:ID" name="BcmUp" type="LHCb_Bcm" 
-              parent="${BcmUp:Parent}"
+              parent="${BcmUp:parent}"
               station="0" readout="BcmUpHits" vis="Bcm:BcmVis">
       <position z="-2135.0*mm + Regions:BeforeMagnetZSize/2 - Regions:BeforeVeloZSize/2"/>
 

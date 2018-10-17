@@ -18,7 +18,7 @@
     <!--
              BCM detector: upper module
     -->
-    <detector id="BcmDown:ID" name="BcmDown" type="LHCb_Bcm" parent="${BcmDown:Parent}"
+    <detector id="BcmDown:ID" name="BcmDown" type="LHCb_Bcm" parent="${BcmDown:parent}"
               station="1" readout="BcmDownHits" vis="Bcm:BcmVis">
       <position x="0*mm" y="0*mm" z="2766.0*mm - Regions:MagnetRegionZPos"/>
 

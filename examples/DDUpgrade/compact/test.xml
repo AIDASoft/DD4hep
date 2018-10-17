@@ -55,43 +55,75 @@
 -->
   <define>
     <!--  Define the world box  -->
-    <constant name="world_side" value="50000*mm"/>
-    <constant name="world_x" value="world_side"/>
-    <constant name="world_y" value="world_side"/>
-    <constant name="world_z" value="world_side"/>
+    <constant name="world_side"     value="50000*mm"/>
+    <constant name="world_x"        value="world_side"/>
+    <constant name="world_y"        value="world_side"/>
+    <constant name="world_z"        value="world_side"/>
+
+    <constant name="VeloZ"            value="1670*mm"  />
+
     <constant name="Bls:ID"         value="30"/>
     <constant name="BcmUp:ID"       value="22"/>
     <constant name="BcmDown:ID"     value="23"/>
-    <constant name="Bls:Parent"     value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
-    <constant name="BcmUp:Parent"   value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
-    <constant name="BcmDown:Parent" value="/world/MagnetRegion" type="string"/>
+    <constant name="Bls:parent"     value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
+    <constant name="BcmUp:parent"   value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
+    <constant name="GValve:parent"  value="/world/BeforeMagnetRegion/BeforeVelo" type="string"/>
+    <constant name="BcmDown:parent" value="/world/DownstreamRegion/AfterMuon"    type="string"/>
+
+    <constant name="Magnet:ignore"             value="0"/>
+    <constant name="UpstreamRegion:ignore"     value="0"/>
+    <constant name="BeforeMagnetRegion:ignore" value="0"/>
+    <constant name="MagnetRegion:ignore"       value="1"/>
+    <constant name="AfterMagnetRegion:ignore"  value="0"/>
+    <constant name="DownstreamRegion:ignore"   value="0"/>
+
 <!--
+    <constant name="MBXWUp:parent"  value="/world/UpstreamRegion"                type="string"/>
 -->
 <!--
-    <constant name="BcmUp:Parent"   value="/world" type="string"/>
-    <constant name="BcmDown:Parent" value="/world" type="string"/>
-    <constant name="Bls:Parent" value="/world" type="string"/>
+    <constant name="BcmUp:parent"   value="/world" type="string"/>
+    <constant name="BcmDown:parent" value="/world" type="string"/>
+    <constant name="Bls:parent"     value="/world" type="string"/>
+    <constant name="GValve:parent"  value="/world" type="string"/>
 -->
-  </define> 
+    <constant name="Tunnel:parent"  value="/world/Infrastructure"                type="string"/>
+  </define>
 
   <comment>Common Generic visualization attributes</comment>
   <display>
     <vis name="BlackVis"              alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
   </display>
 
+  <include ref="Infrastructure/parameters.xml"/>
+  <include ref="Infrastructure/Tunnel/parameters.xml"/>
+
+
   <include ref="Regions/parameters.xml"/>
+  <include ref="BlockWall/parameters.xml"/>
+  <include ref="GValve/parameters.xml"/>
   <include ref="Bls/parameters.xml"/>
   <include ref="Bcm/parameters.xml"/>
+  <include ref="MBXW/parameters.xml"/>
   <include ref="Magnet/parameters.xml"/>
 
   <include ref="Regions/detector.xml"/>
-  <include ref="Bls/detector.xml"/>
 <!--
+  <include ref="BlockWall/detector.xml"/>
+
+  <include ref="Bls/detector.xml"/>
   <include ref="Bcm/detector.xml"/>
+  <include ref="GValve/detector.xml"/>
+
   <include ref="Magnet/detector.xml"/>
+
+  <include ref="Infrastructure/detector.xml"/>
+  <include ref="Infrastructure/Tunnel/detector.xml"/>
+-->
+  <include ref="MBXW/Upstream.xml"/>
+  <include ref="MBXW/AfterMuon.xml"/>
+<!--
   <include ref="GdmlImports.xml"/>
 -->
-  <include ref="Bcm/detector.xml"/>
 
   <detectors>
   </detectors>
@@ -100,6 +132,3 @@
   </fields>
 
 </lccdd>
-
-
-

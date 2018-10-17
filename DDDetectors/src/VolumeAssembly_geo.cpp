@@ -103,11 +103,12 @@ namespace {
         Solid    solid = xml::createShape(description, x_envshape.typeStr(), x_envshape);
         assembly = Volume("lv"+det_name, solid, mat);
       }
+      if ( x_env.hasAttr(_U(name)) ) assembly->SetName(x_env.nameStr().c_str());
       assembly.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
       if ( x_det.hasAttr(_U(sensitive)) )  {
         sens.setType(x_det.attr<string>(_U(sensitive)));
       }
-  
+
       for(xml_coll_t coll(e,_U(volume)); coll; ++coll)   {
         xml_comp_t x_vol = coll;
         Volume vol = xml::createVolume(description,x_vol);

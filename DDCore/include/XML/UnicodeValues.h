@@ -203,6 +203,7 @@ UNICODE (identity_pos);
 UNICODE (idfield);
 UNICODE (idspec);
 UNICODE (idspecref);
+UNICODE (ignore);
 UNICODE (include);
 UNICODE (includes);
 UNICODE (incoming_r);
