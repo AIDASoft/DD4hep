@@ -1,3 +1,51 @@
+# v01-09
+
+* 2018-10-15 Markus Frank ([PR#442](https://github.com/aidasoft/DD4hep/pull/442))
+  - DDCMS: Update to support namespaces
+  - DDUpgrade test example for the LHCb upgrade
+  - Fix nested detectors (in fact worked only for first level parents)
+  - Add VolumeBuilder XML utility to work on XML-tree patterns
+
+* 2018-09-12 Hadrien Grasland ([PR#437](https://github.com/aidasoft/DD4hep/pull/437))
+  - Remove if string equals ON/OFF in cmake IF statements and check default CMake truth values
+
+* 2018-08-20 Oleksandr Viazlo ([PR#434](https://github.com/aidasoft/DD4hep/pull/434))
+  - DD4hep_Mask_o1_v01_geo
+    - allow rotation around x-axis (instead of y)
+    - phi1 and phi2 cone angles configurable from the xml-file
+
+* 2018-08-10 Markus Frank ([PR#433](https://github.com/aidasoft/DD4hep/pull/433))
+  - Fix DDCMS example to use true namespace names rather than using "_"
+    This should resolve issue https://github.com/AIDASoft/DD4hep/issues/421
+
+* 2018-08-09 Markus Frank ([PR#432](https://github.com/aidasoft/DD4hep/pull/432))
+  - Make the expression evaluator understand variable names with namespaces
+      - Variable names containing a `:` or `::` are now accepted by the expression evaluator. This is first step towars resolving #421 
+     - It has now to be seen what has to be done further. The DCMS example was not yet updated to use this feature.
+  - Add new example in `examples/ClientTests` to test this functionality.
+
+* 2018-08-09 Andre Sailer ([PR#429](https://github.com/aidasoft/DD4hep/pull/429))
+  - DDG4: add possibility to simulate all events in a file by passing NumberOfEvents < 0. Fixes #237 
+     * The de-facto limit is ~2 billion, which should be fine for input files.
+
+* 2018-08-08 Markus Frank ([PR#430](https://github.com/aidasoft/DD4hep/pull/430))
+  - Fix HEPMC reader for unknown generator status codes 
+  - Update DDCodex example, feature imports from plain ROOT file 
+  - Allow debugging Geant4VolumeManager
+
+* 2018-08-07 Mircho Rodozov ([PR#428](https://github.com/aidasoft/DD4hep/pull/428))
+  - Adapt to root interfaces changes for `TGeoMatrix::Inverse` (https://github.com/root-project/root/pull/2365), fixes #426
+
+* 2018-08-06 Andre Sailer ([PR#424](https://github.com/aidasoft/DD4hep/pull/424))
+  - CMake: Ensure proper tls flag (global-dynamic) for Geant4 build, added option DD4HEP_IGNORE_GEANT4_TLS  to override the check. Closes #419
+
+* 2018-07-31 Andre Sailer ([PR#420](https://github.com/aidasoft/DD4hep/pull/420))
+  - DDG4: Import the ddsim python program from https://github.com/iLCSoft/lcgeo
+    For example:
+     - `ddsim --help`
+     - `ddsim --dumpSteeringFile > mySteer.py`
+     - `ddsim --steeringFile=mySteer.py --compactFile myDetector.xml`
+
 # v01-08
 
 * 2018-07-02 Markus Frank ([PR#418](https://github.com/aidasoft/dd4hep/pull/418))
