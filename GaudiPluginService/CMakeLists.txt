@@ -13,7 +13,6 @@ target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-unused-function)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-deprecated)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-shadow)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 target_link_libraries(DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS})
 SET_TARGET_PROPERTIES(DD4hepGaudiPluginMgr PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
