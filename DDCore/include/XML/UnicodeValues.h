@@ -70,6 +70,7 @@ UNICODE (check);
 UNICODE (checksum);
 UNICODE (clear);
 UNICODE (close);
+UNICODE (close_geometry);
 UNICODE (cm);
 UNICODE (coefficient);
 UNICODE (coefficients);

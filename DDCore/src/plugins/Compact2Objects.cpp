@@ -1210,6 +1210,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_elt_t compact(element);
   bool steer_geometry = compact.hasChild(_U(geometry));
   bool open_geometry  = true;
+  bool close_document = true;
   bool close_geometry = true;
 
   if (element.hasChild(_U(debug)))
@@ -1217,8 +1218,12 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 
   if ( steer_geometry )   {
     xml_elt_t steer = compact.child(_U(geometry));
-    if ( steer.hasAttr(_U(open))  ) open_geometry  = steer.attr<bool>(_U(open));
-    if ( steer.hasAttr(_U(close)) ) close_geometry = steer.attr<bool>(_U(close));
+    if ( steer.hasAttr(_U(open))  )
+      open_geometry  = steer.attr<bool>(_U(open));
+    if ( steer.hasAttr(_U(close)) )
+      close_document = steer.attr<bool>(_U(close));
+    if ( steer.hasAttr(_U(close_geometry)) )
+      close_geometry = steer.attr<bool>(_U(close_geometry));
     for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
       string nam = clr.hasAttr(_U(name)) ? clr.attr<string>(_U(name)) : string();
       if ( nam.substr(0,6) == "elemen" )   {
@@ -1268,10 +1273,10 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter<SensitiveDetector>(description));
   xml_coll_t(compact, _U(parallelworld_volume)).for_each(Converter<Parallelworld_Volume>(description));
 
-  if ( --num_calls == 0 && close_geometry )  {
+  if ( --num_calls == 0 && close_document )  {
     ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
     description.addConstant(Constant("compact_checksum", text));
-    description.endDocument();
+    description.endDocument(close_geometry);
   }
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter<Plugin> (description));
 }
