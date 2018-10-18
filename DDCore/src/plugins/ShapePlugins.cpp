@@ -459,7 +459,11 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
     }
     result = tmp;
   }
-  if ( e.hasAttr(_U(name)) ) result->SetName(e.attr<string>(_U(name)).c_str());
+  attr = element.attr_nothrow(_U(name));
+  if ( attr )   {
+    string nam = element.attr<string>(attr);
+    result->SetName(nam.c_str());
+  }
   return result;
 }
 DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanMulti)

@@ -96,7 +96,7 @@ namespace dd4hep {
     virtual void init()  override;
 
     /// Close the geometry
-    virtual void endDocument()  override;
+    virtual void endDocument(bool close_geometry)  override;
 
     /// Add an extension object to the Detector instance
     virtual void* addUserExtension(unsigned long long int key, ExtensionEntry* entry)  override;

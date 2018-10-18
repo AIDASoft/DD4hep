@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/World.h"
 #include "DD4hep/Detector.h"
 #include "SimpleGDMLWriter.h"
 
@@ -289,9 +290,11 @@ void SimpleGDMLWriter::handleVisualisation(const set<VisAttr>& vis) const {
 
 void SimpleGDMLWriter::create(DetElement top) {
   GeometryInfo geo;
+  World world = top.world();
+  Detector& description = world.detectorDescription();
   collect(top, geo);
-  //handleSetup(Detector::getInstance().header());
-  handleDefines(Detector::getInstance().constants());
+  //handleSetup(description.header());
+  handleDefines(description.constants());
   handleVisualisation(geo.vis);
   handleTransformations(geo.trafos);
   handleSolids(geo.solids);

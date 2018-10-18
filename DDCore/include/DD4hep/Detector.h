@@ -91,7 +91,7 @@ namespace dd4hep {
     /// Initialize geometry
     virtual void init() = 0;
     /// Finalize the geometry
-    virtual void endDocument() = 0;
+    virtual void endDocument(bool close_geometry=true) = 0;
 
     /// Access the state of the geometry
     virtual State state()  const = 0;
@@ -311,9 +311,11 @@ namespace dd4hep {
 
     ///---Factory method-------
     static Detector& getInstance(void);
-    /// Destroy the instance
+    /// Destroy the singleton instance
     static void destroyInstance();
 
+    /// Create a new instance of the detector object
+    static Detector* newInstance(void);
   };
 
   /*

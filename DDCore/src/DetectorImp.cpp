@@ -95,6 +95,11 @@ Detector& Detector::getInstance() {
   return *s_description;
 }
 
+Detector* Detector::newInstance() {
+  Detector* description = new DetectorImp();
+  return description;
+}
+
 /// Destroy the instance
 void Detector::destroyInstance() {
   if (s_description)
@@ -110,9 +115,10 @@ DetectorImp::DetectorImp()
   set_terminate( description_unexpected ) ;
   
   InstanceCount::increment(this);
-  if (0 == gGeoManager) {
-    gGeoManager = new TGeoManager("world", "Detector Geometry");
-  }
+  //if (0 == gGeoManager) {
+  if ( gGeoManager ) delete gGeoManager;
+  gGeoManager = new TGeoManager("world", "Detector Geometry");
+  //}
   {
     m_manager = gGeoManager;
 #if 0 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
@@ -124,7 +130,7 @@ DetectorImp::DetectorImp()
     table->Print();
 #endif
   }
-  //if ( 0 == gGeoIdentity )
+  if ( 0 == gGeoIdentity )
   {
     gGeoIdentity = new TGeoIdentity();
   }
@@ -513,9 +519,9 @@ namespace {
 }
 
 /// Finalize/close the geometry
-void DetectorImp::endDocument() {
+void DetectorImp::endDocument(bool close_geometry)    {
   TGeoManager* mgr = m_manager;
-  if (!mgr->IsClosed()) {
+  if ( close_geometry && !mgr->IsClosed() )  {
 #if 0
     Region trackingRegion("TrackingRegion");
     trackingRegion.setThreshold(1);
@@ -531,10 +537,10 @@ void DetectorImp::endDocument() {
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
-    ShapePatcher patcher(m_volManager, m_world);
-    patcher.patchShapes();
-    mapDetectorTypes();
   }
+  ShapePatcher patcher(m_volManager, m_world);
+  patcher.patchShapes();
+  mapDetectorTypes();
   m_state = READY;
 }
 

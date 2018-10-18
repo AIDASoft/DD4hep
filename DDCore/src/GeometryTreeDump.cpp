@@ -292,15 +292,6 @@ static void dumpDetectors(DetElement parent, int level) {
 }
 
 void GeometryTreeDump::create(DetElement top) {
-  //PlacedVolume pv = top.placement();
   dumpDetectors(top, 0);
   dumpStructure(top.placement(), 0);
-  //GeometryInfo geo;
-  //collect(top,geo);
-  //handleSetup(Detector::getInstance().header());
-  //handleDefines(Detector::getInstance().constants());
-  //handleVisualisation(geo.vis);
-  //handleTransformations(geo.trafos);
-  //handleSolids(geo.solids);
-  //handleStructure(geo.volumes);
 }
