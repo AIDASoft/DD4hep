@@ -79,7 +79,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
   if ( a )   {
     nam = handle.attr<string>(a);
     auto is = shapes.find(nam);
-    if ( is == shapes.end() )  {
+    if ( is != shapes.end() )  {
       except("VolumeBuilder","+++ The named shape %s is already known to this builder unit. "
              "Cannot be overridded.",nam.c_str());
     }
@@ -87,7 +87,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
   /// Was it veto'ed before ?
   if ( !nam.empty() )   {
     auto iv = shape_veto.find(nam);
-    if ( iv == shape_veto.end() )  {
+    if ( iv != shape_veto.end() )  {
       return Solid();
     }
   }
@@ -190,6 +190,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       if ( c.attr_nothrow(_U(sensitive)) )   {
         vol.setSensitiveDetector(sensitive);
       }
+      printout(ALWAYS,"VolumeBuilder","+++ Building volume %s",nam.c_str());
       continue;
     }
     bool is_assembly = true;

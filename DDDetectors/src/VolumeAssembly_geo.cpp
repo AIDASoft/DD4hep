@@ -103,10 +103,17 @@ namespace {
         Solid    solid = xml::createShape(description, x_envshape.typeStr(), x_envshape);
         assembly = Volume("lv"+det_name, solid, mat);
       }
-      if ( x_env.hasAttr(_U(name)) ) assembly->SetName(x_env.nameStr().c_str());
+      /// Set generic associations
       assembly.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+      /// If specified more direct: use these ones.
+      if ( x_env.hasAttr(_U(vis)) )  {
+        assembly.setVisAttributes(description, x_env.visStr());
+      }
       if ( x_det.hasAttr(_U(sensitive)) )  {
         sens.setType(x_det.attr<string>(_U(sensitive)));
+      }
+      if ( x_env.hasAttr(_U(name)) )   {
+        assembly->SetName(x_env.nameStr().c_str());
       }
 
       for(xml_coll_t coll(e,_U(volume)); coll; ++coll)   {

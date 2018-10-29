@@ -59,7 +59,7 @@ namespace dd4hep {
     void imp_loadVolumeManager();
 
     /// Default constructor
-    DetectorImp();
+    DetectorImp(const std::string& name);
 
     /// Standard destructor
     virtual ~DetectorImp();

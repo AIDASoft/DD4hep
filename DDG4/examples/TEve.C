@@ -29,18 +29,13 @@ using namespace dd4hep::detail;
 
 void TEve()    {
   Detector& description = Detector::getInstance();
+  TGeoManager* mgr = description.manager();
   const char* fname = "file:../DD4hep/examples/CLICSiD/compact/compact.xml";
   description.apply("DD4hep_CompactLoader",1,(char**)&fname);
 
   TEveManager::Create();
-  //TFile::SetCacheFileDir(".");
-  //gGeoManager = gEve->GetGeometry("LHCb.gdml");
-  //gGeoManager = gEve->GetGeometry("lhcbfull_v1.root");
-
   gEve->fGeometries->Add(new TObjString(fname),&description.manager());
-  //gGeoManager->DefaultColors();
-
-  TEveGeoTopNode* tn = new TEveGeoTopNode(gGeoManager, gGeoManager->GetTopNode());
+  TEveGeoTopNode* tn = new TEveGeoTopNode(mgr, mgr->GetTopNode());
   tn->SetVisLevel(4);
   gEve->AddGlobalElement(tn);
 

@@ -48,7 +48,7 @@
 
   <display>
     <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
-    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true"  visible="false"/>
     <vis name="Shape1_vis" alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
     <vis name="Shape2_vis" alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
     <vis name="Shape3_vis" alpha="1.0" r="0" g="0" b="1" showDaughters="true" visible="true"/>

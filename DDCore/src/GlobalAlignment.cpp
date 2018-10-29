@@ -39,7 +39,6 @@ namespace  {
 /// Initializing constructor to create a new object
 GlobalAlignment::GlobalAlignment(const string& path) {
   //cout << "GlobalAlignment: path=" << path << endl;
-  //m_element = gGeoManager->MakePhysicalNode(path.c_str());
   m_element = new TGeoPhysicalNode(path.c_str());
 }
 

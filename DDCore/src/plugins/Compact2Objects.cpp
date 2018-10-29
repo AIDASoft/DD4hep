@@ -97,6 +97,7 @@ namespace {
   bool s_debug_materials    = false;
   bool s_debug_segmentation = false;
   bool s_debug_constants    = false;
+  bool s_debug_include      = false;
 }
 
 static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
@@ -251,6 +252,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "limits" ) s_debug_limits       = (0 != val);
     else if ( nam.substr(0,6) == "segmen" ) s_debug_segmentation = (0 != val);
     else if ( nam.substr(0,6) == "consta" ) s_debug_constants    = (0 != val);
+    else if ( nam.substr(0,6) == "includ" ) s_debug_include      = (0 != val);
   }
 }
   
@@ -296,6 +298,9 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
     return;
   }
   xml::DocumentHolder doc(xml::DocumentHandler().load(e, e.attr_value(_U(ref))));
+  if ( s_debug_include )   {
+    printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
+  }
   xml_h root = doc.root();
   xml_coll_t(root, _U(define)).for_each(_U(constant), Converter<Constant>(description));
   xml_coll_t(root, _U(constant)).for_each(Converter<Constant>(description));
@@ -1072,6 +1077,9 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 template <> void Converter<GdmlFile>::operator()(xml_h element) const   {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h root = doc.root();
+  if ( s_debug_include )   {
+    printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
+  }
   if ( root.tag() == "materials" || root.tag() == "elements" )   {
     xml_coll_t(root, _U(isotope)).for_each(Converter<Isotope>(this->description,0,0));
     xml_coll_t(root, _U(element)).for_each(Converter<Atom>(this->description));
@@ -1169,6 +1177,9 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   string type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("xml");
   if ( type == "xml" )  {
     xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
+    if ( s_debug_include )   {
+      printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
+    }
     xml_h node = doc.root();
     string tag = node.tag();
     if ( tag == "lccdd" )

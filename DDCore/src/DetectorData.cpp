@@ -228,8 +228,11 @@ void DetectorData::destroyData(bool destroy_mgr)   {
   m_materialVacuum.clear();
   m_materialAir.clear();
   m_inhibitConstants = false;
-  if ( destroy_mgr )
+  if ( destroy_mgr )  {
+    gGeoManager = m_manager;
     deletePtr(m_manager);
+    gGeoManager = 0;
+  }
   else  {
     gGeoManager = m_manager;
     m_manager = 0;
@@ -299,7 +302,6 @@ void DetectorData::adoptData(DetectorData& source, bool clr)   {
   m_world.setPlacement(m_manager->GetTopNode());
   // Need to update some global stuff
   if ( gGeoManager != m_manager ) delete gGeoManager;
-  gGeoManager        = m_manager;
-  
+  gGeoManager       = m_manager;
   if ( clr ) source.clearData();
 }

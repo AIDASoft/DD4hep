@@ -310,12 +310,9 @@ namespace dd4hep {
     }
 
     ///---Factory method-------
-    static Detector& getInstance(void);
+    static Detector& getInstance(const std::string& name="default");
     /// Destroy the singleton instance
-    static void destroyInstance();
-
-    /// Create a new instance of the detector object
-    static Detector* newInstance(void);
+    static void destroyInstance(const std::string& name="default");
   };
 
   /*
