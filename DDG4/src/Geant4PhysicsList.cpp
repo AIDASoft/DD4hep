@@ -128,6 +128,11 @@ void Geant4PhysicsList::addParticleConstructor(const std::string& part_name)   {
   particles().push_back(part_name);
 }
 
+/// Add physics particle constructor by name
+void Geant4PhysicsList::addParticleGroup(const std::string& part_name)   {
+  particlegroups().push_back(part_name);
+}
+
 /// Add particle process by name with arguments
 void Geant4PhysicsList::addParticleProcess(const std::string& part_name,
                                            const std::string& proc_name,
@@ -215,8 +220,17 @@ void Geant4PhysicsList::constructParticles(G4VUserPhysicsList* physics_pointer) 
       if (!result || *result != 1L) {
         except("Failed to create particle type '%s' result=%d", ctor.c_str(), result);
       }
+      info("Constructed Geant4 particle %s [using signature long (*)()]",ctor.c_str());
     }
-    info("Constructed Geant4 particle %s [using signature long (*)()]",ctor.c_str());
+  }
+  /// Now define all particles
+  for (ParticleConstructors::const_iterator i = m_particlegroups.begin(); i != m_particlegroups.end(); ++i) {
+    const ParticleConstructors::value_type& ctor = *i;
+    /// Check if we have here a particle group constructor
+    long* result = (long*) PluginService::Create<long>(ctor);
+    if (!result || *result != 1L) {
+      except("Failed to create particle type '%s' result=%d", ctor.c_str(), result);
+    }
   }
 }
 

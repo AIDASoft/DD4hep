@@ -101,8 +101,9 @@ namespace dd4hep {
       typedef std::vector<PhysicsConstructor> PhysicsConstructors;
 
       PhysicsProcesses     m_processes;
-      ParticleConstructors m_particles;
       PhysicsConstructors  m_physics;
+      ParticleConstructors m_particles;
+      ParticleConstructors m_particlegroups;
 
     public:
       /// Standard constructor with initailization parameters
@@ -133,6 +134,14 @@ namespace dd4hep {
       const ParticleConstructors& particles() const {
         return m_particles;
       }
+      /// Access all physics particlegroups
+      ParticleConstructors& particlegroups() {
+        return m_particlegroups;
+      }
+      /// Access all physics particlegroups
+      const ParticleConstructors& particlegroups() const {
+        return m_particlegroups;
+      }
       /// Access all physics constructors
       PhysicsConstructors& physics() {
         return m_physics;
@@ -144,6 +153,8 @@ namespace dd4hep {
 
       /// Add physics particle constructor by name
       void addParticleConstructor(const std::string& part_name);
+      /// Add physics particle group constructor by name (Leptons, Bosons, Mesons, etc.)
+      void addParticleGroup(const std::string& part_name);
       /// Add particle process by name with arguments
       void addParticleProcess(const std::string& part_name, const std::string& proc_name,
                               int ordAtRestDoIt,int ordAlongSteptDoIt,int ordPostStepDoIt);
