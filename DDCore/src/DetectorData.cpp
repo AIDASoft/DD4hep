@@ -270,38 +270,40 @@ void DetectorData::clearData()   {
 
 /// Adopt all data from source structure
 void DetectorData::adoptData(DetectorData& source, bool clr)   {
-  m_inhibitConstants = source.m_inhibitConstants;
+  m_inhibitConstants   = source.m_inhibitConstants;
   m_extensions.move(source.m_extensions);
-  m_manager          = source.m_manager;
-  m_readouts         = source.m_readouts;
-  m_idDict           = source.m_idDict;
-  m_limits           = source.m_limits;
-  m_regions          = source.m_regions;
-  m_detectors        = source.m_detectors;
-  m_sensitive        = source.m_sensitive;
-  m_display          = source.m_display;
-  m_fields           = source.m_fields;
-  m_define           = source.m_define;
+  m_manager            = source.m_manager;
+  m_readouts           = source.m_readouts;
+  m_idDict             = source.m_idDict;
+  m_limits             = source.m_limits;
+  m_regions            = source.m_regions;
+  m_detectors          = source.m_detectors;
+  m_sensitive          = source.m_sensitive;
+  m_display            = source.m_display;
+  m_fields             = source.m_fields;
+  m_define             = source.m_define;
 
-  m_detectorParents  = source.m_detectorParents;
-  m_world            = source.m_world;
-  m_trackers         = source.m_trackers;
-  m_worldVol         = source.m_worldVol;
-  m_trackingVol      = source.m_trackingVol;
-  m_parallelWorldVol = source.m_parallelWorldVol;
-  m_materialAir      = source.m_materialAir;
-  m_materialVacuum   = source.m_materialVacuum;
-  m_invisibleVis     = source.m_invisibleVis;
-  m_field            = source.m_field;
-  m_header           = source.m_header;
-  m_properties       = source.m_properties;
-  //m_extensions     = source.m_extensions;
-  m_volManager       = source.m_volManager;
+  m_detectorParents    = source.m_detectorParents;
+  m_world              = source.m_world;
+  World w              = m_world;
+  w->description       = dynamic_cast<Detector*>(this);
+  m_trackers           = source.m_trackers;
+  m_worldVol           = source.m_worldVol;
+  m_trackingVol        = source.m_trackingVol;
+  m_parallelWorldVol   = source.m_parallelWorldVol;
+  m_materialAir        = source.m_materialAir;
+  m_materialVacuum     = source.m_materialVacuum;
+  m_invisibleVis       = source.m_invisibleVis;
+  m_field              = source.m_field;
+  m_header             = source.m_header;
+  m_properties         = source.m_properties;
+  //m_extensions       = source.m_extensions;
+  m_volManager         = source.m_volManager;
 
   // Update world element
   m_world.setPlacement(m_manager->GetTopNode());
   // Need to update some global stuff
   if ( gGeoManager != m_manager ) delete gGeoManager;
-  gGeoManager       = m_manager;
+  gGeoManager         = m_manager;
   if ( clr ) source.clearData();
 }

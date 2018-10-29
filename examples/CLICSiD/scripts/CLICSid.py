@@ -37,9 +37,9 @@ class CLICSid:
     phys = self.geant4.setupPhysics(model)
     ph = DDG4.PhysicsList(self.kernel,'Geant4PhysicsList/Myphysics')
     # Add bosons to the model (redundant if already implemented by the model)
-    ph.addParticleConstructor('G4BosonConstructor')
+    ph.addParticleGroup('G4BosonConstructor')
     # Add leptons to the model (redundant if already implemented by the model)
-    ph.addParticleConstructor('G4LeptonConstructor')
+    ph.addParticleGroup('G4LeptonConstructor')
     # Add multiple scattering in the material
     ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
     # Add optical physics (RICH dets etc)
