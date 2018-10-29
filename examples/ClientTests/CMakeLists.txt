@@ -23,6 +23,11 @@ dd4hep_add_plugin( ClientTests SOURCES src/*.cpp
   OPTIONAL       [BOOST SOURCES src_boost/*.cpp]
   )
 #
+#-----------------------------------------------------------------------------------
+dd4hep_add_executable( multipleGeo   main/MultipleGeometries.cpp )
+#-----------------------------------------------------------------------------------
+#
+#
 set(ClientTestsEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 dd4hep_install_dir( compact scripts ref DESTINATION ${ClientTestsEx_INSTALL} )
 #--------------------------------------------------------------------------
@@ -68,6 +73,19 @@ dd4hep_add_test_reg( ClientTests_DumpMaterials
   -input file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -volmgr -destroy -plugin DD4hep_MaterialTable -type xml
   REGEX_PASS "material name=\"PEEK\""
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+  )
+#
+#  Test readout strings of the form: <id>system:8,barrel:-2</id>
+dd4hep_add_test_reg( ClientTests_MultipleGeometries
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS   multipleGeo
+  -compact file:${ClientTestsEx_INSTALL}/../CLICSiD/compact/compact.xml
+  -compact file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
+  -compact file:${ClientTestsEx_INSTALL}/compact/NestedDetectors.xml
+  -no-interp
+  REGEX_PASS "DELETE Geometry: .*/NestedDetectors.xml"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )

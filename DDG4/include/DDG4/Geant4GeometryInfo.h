@@ -86,6 +86,7 @@ namespace dd4hep {
     class Geant4GeometryInfo : public TNamed, public detail::GeoHandlerTypes::GeometryInfo {
     public:
       typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
+      TGeoManager*                         manager = 0;
       Geant4GeometryMaps::ElementMap       g4Elements;
       Geant4GeometryMaps::MaterialMap      g4Materials;
       Geant4GeometryMaps::SolidMap         g4Solids;

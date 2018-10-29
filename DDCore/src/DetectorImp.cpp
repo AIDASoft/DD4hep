@@ -28,6 +28,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cerrno>
+#include <mutex>
 
 // ROOT inlcude files
 #include "TGeoCompositeShape.h"
@@ -61,7 +62,32 @@ namespace {
       m_t = BUILD_NONE;
     }
   };
-  static Detector* s_description = 0;
+  struct Instances  {
+    recursive_mutex  lock;
+    map<string, Detector*> detectors;
+    Instances() = default;
+    ~Instances() = default;
+    Detector* get(const string& name)   {
+      auto i = detectors.find(name);
+      return i==detectors.end() ? 0 : (*i).second;
+    }
+    void insert(const string& name, Detector* detector)   {
+      auto i = detectors.find(name);
+      if ( i==detectors.end() )   {
+        detectors.insert(make_pair(name,detector));
+        return;
+      }
+      except("DD4hep","Cannot insert detector instance %s [Already present]",name.c_str());
+    }
+    Detector* remove(const string& name)   {
+      auto i = detectors.find(name);
+      if ( i==detectors.end() )  {
+        detectors.erase(i);
+        return (*i).second;
+      }
+      return 0;
+    }
+  } s_instances;
 
   void description_unexpected()    {
     try  {
@@ -89,38 +115,36 @@ string dd4hep::versionString(){
   return vs;
 }
 
-Detector& Detector::getInstance() {
-  if (!s_description)
-    s_description = new DetectorImp();
-  return *s_description;
-}
-
-Detector* Detector::newInstance() {
-  Detector* description = new DetectorImp();
-  return description;
+Detector& Detector::getInstance(const std::string& name)   {
+  lock_guard<recursive_mutex> lock(s_instances.lock);
+  Detector* description = s_instances.get(name);
+  if ( 0 == description )   {
+    gGeoManager = 0;
+    description = new DetectorImp(name);
+    s_instances.insert(name,description);
+  }
+  return *description;
 }
 
 /// Destroy the instance
-void Detector::destroyInstance() {
-  if (s_description)
-    delete s_description;
-  s_description = 0;
+void Detector::destroyInstance(const std::string& name) {
+  lock_guard<recursive_mutex> lock(s_instances.lock);
+  Detector* description = s_instances.remove(name);
+  if (description)
+    delete description;
 }
 
 /// Default constructor
-DetectorImp::DetectorImp()
+DetectorImp::DetectorImp(const string& name)
   : DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
   set_unexpected( description_unexpected ) ;
   set_terminate( description_unexpected ) ;
-  
   InstanceCount::increment(this);
-  //if (0 == gGeoManager) {
-  if ( gGeoManager ) delete gGeoManager;
-  gGeoManager = new TGeoManager("world", "Detector Geometry");
-  //}
+  //if ( gGeoManager ) delete gGeoManager;
+  m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
   {
-    m_manager = gGeoManager;
+    gGeoManager = m_manager;
 #if 0 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
     TGeoElementTable*	table = m_manager->GetElementTable();
     table->TGeoElementTable::~TGeoElementTable();
@@ -147,8 +171,15 @@ DetectorImp::DetectorImp()
 
 /// Standard destructor
 DetectorImp::~DetectorImp() {
-  if ( m_manager == gGeoManager ) gGeoManager = 0;
-  destroyData(false);
+  if ( m_manager )  {
+    lock_guard<recursive_mutex> lock(s_instances.lock);
+    if ( m_manager == gGeoManager ) gGeoManager = 0;
+    Detector* description = s_instances.get(m_manager->GetName());
+    if ( 0 != description )   {
+      s_instances.remove(m_manager->GetName());
+    }
+  }
+  destroyData(true);
   m_extensions.clear();
   InstanceCount::decrement(this);
 }

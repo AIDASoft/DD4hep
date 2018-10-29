@@ -623,29 +623,29 @@ void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, doub
   /// calculate the displacement of the tubs w.r.t. to the trap, determine the opening angle of the tubs
   double delta        = std::sqrt( r * r - x * x );
  
-  if( r < 0 && std::abs( r ) >= x )  {
+  if( r < 0 && std::abs(r) >= x )  {
     intersec = true; // intersection solid
     h = y1 < y2 ? y2 : y1; // tubs half height
     h += h/20.; // enlarge a bit - for subtraction solid
     if( atMinusZ )    {
       displacement = - halfZ - delta; 
-      startPhi = 90. - halfOpeningAngle;
+      startPhi     = 270.0 - halfOpeningAngle;
     }
     else    {
       displacement =   halfZ + delta;
-      startPhi = -90.- halfOpeningAngle;
+      startPhi     = 90.0 - halfOpeningAngle;
     }
   }
   else if( r > 0 && std::abs(r) >= x )  {
     if( atMinusZ )    {
       displacement = - halfZ + delta;
-      startPhi = 270.- halfOpeningAngle;
+      startPhi     = 90.0 - halfOpeningAngle;
       h = y1;
     }
     else
     {
       displacement =   halfZ - delta; 
-      startPhi = 90. - halfOpeningAngle;
+      startPhi     = 270.0 - halfOpeningAngle;
       h = y2;
     }    
   }
@@ -655,16 +655,15 @@ void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, doub
  
   Solid trap(new TGeoTrd2(x1, x2, y1, y2, halfZ));
   Solid tubs(new TGeoTubeSeg(0.,std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.));
-  UnionSolid solid;
+  TGeoCompositeShape* solid = 0;
   if( intersec )  {
-    solid = SubtractionSolid(trap, tubs, Transform3D(RotationX(M_PI/2.), Position(0.,0.,displacement)));
-    return;
+    solid = SubtractionSolid(trap, tubs, Transform3D(RotationX(M_PI/2.), Position(0.,0.,displacement))).ptr();
   }
   else  {
     SubtractionSolid sub(tubs, Box(1.1*x, 1.1*h, std::sqrt(r*r-x*x)), Transform3D(RotationX(M_PI/2.)));
-    solid = UnionSolid(trap, sub, Transform3D(RotationX(M_PI/2.), Position(0,0,displacement)));
+    solid = UnionSolid(trap, sub, Transform3D(RotationX(M_PI/2.), Position(0,0,displacement))).ptr();
   }
-  _assign(solid.ptr(),"","pseudo-trap", true);
+  _assign(solid,"","pseudo-trap", true);
 }
 
 /// Helper function to create poly hedron

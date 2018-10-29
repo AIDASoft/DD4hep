@@ -25,7 +25,7 @@
     <D type="density" value="1.3" unit="g/cm3"/>
     <composite n="44" ref="H"/>
     <composite n="15" ref="C"/>
-    <composite n="7" ref="O"/>
+    <composite n="7"  ref="O"/>
   </material>
 
   <material name="Quartz">
@@ -36,7 +36,7 @@
 
   <material name="G10">
     <D type="density" value="1.7" unit="g/cm3"/>
-    <fraction n="0.08" ref="Cl"/>
+    <fraction n="0.08"  ref="Cl"/>
     <fraction n="0.773" ref="Quartz"/>
     <fraction n="0.147" ref="Epoxy"/>
   </material>
@@ -50,7 +50,7 @@
   <material name="Steel235">
     <D value="7.85" unit="g/cm3"/>
     <fraction n="0.998" ref="Fe"/>
-    <fraction n=".002" ref="C"/>
+    <fraction n=".002"  ref="C"/>
   </material>
 
   <material name="SiliconOxide">

@@ -814,7 +814,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         ass->imprint(info,node,chain,ass,(*volIt).second, transform, copy, checkOverlaps);
         return 0;
       }
-      else if ( node != gGeoManager->GetTopNode() && volIt == info.g4Volumes.end() )  {
+      else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {
         throw logic_error("Geant4Converter: Invalid mother volume found!");
       }
       G4LogicalVolume* g4vol = info.g4Volumes[vol];
@@ -1116,7 +1116,9 @@ template <typename O, typename C, typename F> void handleRMap(const O* o, const 
 /// Create geometry conversion
 Geant4Converter& Geant4Converter::create(DetElement top) {
   Geant4GeometryInfo& geo = this->init();
+  World wrld = top.world();
   m_data->clear();
+  geo.manager = &wrld.detectorDescription().manager();
   collect(top, geo);
   checkOverlaps = false;
   // We do not have to handle defines etc.
