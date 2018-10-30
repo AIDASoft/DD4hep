@@ -3,7 +3,7 @@
        xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 <!-- #==========================================================================
      #  AIDA Detector description implementation 
-     #--------------------------------------------------------------------------
+     #==========================================================================
      # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
      # All rights reserved.
      #
