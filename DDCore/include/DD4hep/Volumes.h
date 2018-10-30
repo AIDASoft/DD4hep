@@ -181,6 +181,10 @@ namespace dd4hep {
     Volume volume() const;
     /// Parent volume (envelope)
     Volume motherVol() const;
+    /// Access the full transformation matrix to the parent volume
+    const TGeoMatrix& matrix()  const;
+    /// Access the translation vector to the parent volume
+    Position position()  const;
     /// Access to the volume IDs
     const PlacedVolumeExtension::VolIDs& volIDs() const;
     /// String dump

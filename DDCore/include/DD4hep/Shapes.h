@@ -325,28 +325,28 @@ namespace dd4hep {
     /// Constructor to assign an object
     template <typename Q> Tube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    Tube(double rmin, double rmax, double z)
-    {   make("", rmin, rmax, z, 0, 2*M_PI);               }
+    Tube(double rmin, double rmax, double dz)
+    {   make("", rmin, rmax, dz, 0, 2*M_PI);               }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    Tube(double rmin, double rmax, double z, double deltaPhi)
-    {   make("", rmin, rmax, z, 0, deltaPhi);             }
+    Tube(double rmin, double rmax, double dz, double deltaPhi)
+    {   make("", rmin, rmax, dz, 0, deltaPhi);             }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    Tube(double rmin, double rmax, double z, double startPhi, double deltaPhi)
-    {   make("", rmin, rmax, z, startPhi, deltaPhi);      }
+    Tube(double rmin, double rmax, double dz, double startPhi, double deltaPhi)
+    {   make("", rmin, rmax, dz, startPhi, deltaPhi);      }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-    Tube(const std::string& nam, double rmin, double rmax, double z)
-    {   make(nam, rmin, rmax, z, 0, 2*M_PI);              }
+    Tube(const std::string& nam, double rmin, double rmax, double dz)
+    {   make(nam, rmin, rmax, dz, 0, 2*M_PI);              }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-    Tube(const std::string& nam, double rmin, double rmax, double z, double deltaPhi)
-    {  make(nam, rmin, rmax, z, 0, deltaPhi);             }
+    Tube(const std::string& nam, double rmin, double rmax, double dz, double deltaPhi)
+    {  make(nam, rmin, rmax, dz, 0, deltaPhi);             }
     /// Constructor to create a new anonymous tube object with attribute initialization
     template <typename RMIN, typename RMAX, typename Z, typename DELTAPHI>
-    Tube(const RMIN& rmin, const RMAX& rmax, const Z& z, const DELTAPHI& deltaPhi)
-    {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(z), 0, _toDouble(deltaPhi));   }
+    Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const DELTAPHI& deltaPhi)
+    {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(deltaPhi));   }
     /// Assignment operator
     Tube& operator=(const Tube& copy) = default;
     /// Set the tube dimensions
-    Tube& setDimensions(double rmin, double rmax, double z, double startPhi=0.0, double deltaPhi=2*M_PI);
+    Tube& setDimensions(double rmin, double rmax, double dz, double startPhi=0.0, double deltaPhi=2*M_PI);
   };
 
   /// Class describing a tube shape of a section of a cut tube segment

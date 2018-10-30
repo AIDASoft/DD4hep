@@ -152,6 +152,7 @@ namespace dd4hep {
         Materials             materials;
         Transformations       transformations;
         std::set<std::string> shape_veto, vol_veto;
+        bool                  debug = false;
 
         /// Inhibit default constructor
         VolumeBuilder() = delete;
@@ -177,6 +178,12 @@ namespace dd4hep {
         Solid getShape(const std::string& nam)  const;
         /// Create a new shape from the information given in the xml handle
         Solid makeShape(Handle_t handle);
+        /// Access a registered volume by name
+        Volume volume(const std::string& nam)  const;
+        /// Register shape to map
+        void registerShape(const std::string& nam, Solid shape);
+        /// Register volume to map
+        void registerVolume(const std::string& nam, Volume volume);
         /// Build all <shape/> identifiers in the passed parent xml element
         size_t buildShapes(Handle_t handle);
         /// Build all <volume/> identifiers in the passed parent xml element
