@@ -53,6 +53,44 @@ size_t VolumeBuilder::collectMaterials(xml_h element)   {
   return materials.size()-len;
 }
 
+/// Register shape to map
+void VolumeBuilder::registerShape(const std::string& nam, Solid shape)   {
+  auto is = shapes.find(nam);
+  if ( is == shapes.end() )  {
+    shapes[nam] = make_pair(xml_h(0), shape);
+    return;
+  }
+  except("VolumeBuilder","+++ Shape %s is already known to this builder unit. ",nam.c_str());
+}
+
+/// Register volume to map
+void VolumeBuilder::registerVolume(const std::string& nam, Volume volume)   {
+  auto is = volumes.find(nam);
+  if ( is == volumes.end() )  {
+    volumes[nam] = make_pair(xml_h(0), volume);
+    return;
+  }
+  except("VolumeBuilder","+++ Volume %s is already known to this builder unit. ",nam.c_str());
+}
+
+/// Access a registered volume by name
+Volume VolumeBuilder::volume(const std::string& nam)  const    {
+  auto iv = volumes.find(nam);
+  if ( iv == volumes.end() )  {
+    auto ib = vol_veto.find(nam);
+    if ( ib != vol_veto.end() )  {
+      // Veto'ed shape. Ignore it.
+      return Volume();
+    }
+    except("VolumeBuilder","+++ Volume %s is not known to this builder unit. ",nam.c_str());
+  }
+  Volume vol = (*iv).second.second;
+  if ( !vol.isValid() )   {
+    except("VolumeBuilder","+++ Failed to access volume %s from the local cache.",nam.c_str());
+  }
+  return vol;
+}
+
 /// Access element from shape cache by name. Invalid returns means 'veto'. Otherwise exception
 Solid VolumeBuilder::getShape(const string& nam)  const   {
   auto is = shapes.find(nam);
@@ -190,7 +228,9 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       if ( c.attr_nothrow(_U(sensitive)) )   {
         vol.setSensitiveDetector(sensitive);
       }
-      printout(ALWAYS,"VolumeBuilder","+++ Building volume %s",nam.c_str());
+      if ( debug )  {
+        printout(ALWAYS,"VolumeBuilder","+++ Building volume %s",nam.c_str());
+      }
       continue;
     }
     bool is_assembly = true;

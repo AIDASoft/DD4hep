@@ -1138,11 +1138,11 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
     string path;
     long count = 0;
     int have_match = -1, analysis_level = 999999;
-    bool dump_materials = false, dump_shapes = false;
+    bool dump_materials = false, dump_shapes = false, dump_positions = false;
     bool sensitive_only = false;
 
-    Actor(const string& p, int level, bool mat, bool shap, bool sens)
-      : path(p), analysis_level(level), dump_materials(mat), dump_shapes(shap), sensitive_only(sens) {}
+    Actor(const string& p, int level, bool mat, bool shap, bool pos, bool sens)
+      : path(p), analysis_level(level), dump_materials(mat), dump_shapes(shap), dump_positions(pos), sensitive_only(sens) {}
     ~Actor() {
       printout(ALWAYS,"DetectorDump", "+++ Scanned a total of %ld elements.",count);
     }
@@ -1199,6 +1199,14 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
             ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Material: %%-12s Shape: %%s", level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", mat.name(), toStringSolid(vol->GetShape()).c_str());
           }
+          if ( dump_positions && place.isValid() )  {
+            Position pos = place.position();
+            Box box = place.volume().solid();
+            ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds BBox:     (%%9.4f,%%9.4f,%%9.4f) [cm]", level+1,2*level+3);
+            printout(INFO,"DetectorDump",fmt,"", box.x(), box.y(), box.z());
+            ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm]", level+1,2*level+3);
+            printout(INFO,"DetectorDump",fmt,"", pos.X(), pos.Y(), pos.Z());
+          }
         }
       }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
@@ -1207,7 +1215,7 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
     }
   };
   int  level = 999999;
-  bool sensitive_only = false, materials = false, shapes = false;
+  bool sensitive_only = false, materials = false, shapes = false, positions = false;
   string path;
   for(int i=0; i<argc; ++i)  {
     if      ( ::strncmp(argv[i],"--sensitive",     5)==0 ) { sensitive_only = true;    }
@@ -1217,6 +1225,8 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
     else if ( ::strncmp(argv[i], "--materials",    5)==0 ) { materials = true;         }
     else if ( ::strncmp(argv[i], "-shapes",        4)==0 ) { shapes = true;            }
     else if ( ::strncmp(argv[i], "--shapes",       5)==0 ) { shapes = true;            }
+    else if ( ::strncmp(argv[i], "-positions",     4)==0 ) { positions = true;         }
+    else if ( ::strncmp(argv[i], "--positions",    5)==0 ) { positions = true;         }
     else if ( ::strncmp(argv[i], "-no-sensitive",  7)==0 ) { sensitive_only = false;   }
     else if ( ::strncmp(argv[i], "--detector",     5)==0 ) { path = argv[++i];         }
     else if ( ::strncmp(argv[i], "-detector",      5)==0 ) { path = argv[++i];         }
@@ -1229,6 +1239,8 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
         "    -sensitive             dto.                                                           \n"
         "    --shapes               Print shape information.                                       \n"
         "    -shapes                dto.                                                           \n"
+        "    --positions            Print position information.                                    \n"
+        "    -positions             dto.                                                           \n"
         "    --materials            Print material information.                                    \n"
         "    -materials             dto.                                                           \n"
         "    --detector   <path>    Process elements only if <path> is part of the DetElement path.\n"
@@ -1237,7 +1249,7 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
       ::exit(EINVAL);
     }
   }
-  Actor a(path, level, materials, shapes, sensitive_only);
+  Actor a(path, level, materials, shapes, positions, sensitive_only);
   return a.dump(description.world(),0);
 }
 DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)

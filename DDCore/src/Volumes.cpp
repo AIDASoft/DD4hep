@@ -442,11 +442,26 @@ const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
   return _data(*this)->volIDs;
 }
 
+/// Translation vector within parent volume
+const TGeoMatrix& PlacedVolume::matrix()  const    {
+  if ( !isValid() )  {
+    except("PlacedVolume","+++ matrix: Failed to access invalid PlacedVolume! [Invalid handle]");
+  }
+  return *(m_element->GetMatrix());  
+}
+
+/// Translation vector within parent volume
+Position PlacedVolume::position()  const    {
+  const double* ptr = matrix().GetTranslation();
+  return Position(ptr[0],ptr[1],ptr[2]);
+}
+
 /// String dump
 string PlacedVolume::toString() const {
   stringstream s;
   Object* obj = _data(*this);
-  s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName() << "' mat:'" << m_element->GetMatrix()->GetName()
+  s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
+    << "' mat:'" << m_element->GetMatrix()->GetName()
     << "' volID[" << obj->volIDs.size() << "] ";
   for (VolIDs::const_iterator i = obj->volIDs.begin(); i != obj->volIDs.end(); ++i)
     s << (*i).first << "=" << (*i).second << "  ";
