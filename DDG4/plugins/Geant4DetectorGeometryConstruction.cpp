@@ -128,7 +128,7 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   conv.debugRegions    = m_debugRegions;
 
   ctxt->geometry       = conv.create(world).detach();
-  ctxt->geometry->printLevel = PrintLevel(m_geoInfoPrintLevel);
+  ctxt->geometry->printLevel = outputLevel();
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
   // Create Geant4 volume manager only if not yet available

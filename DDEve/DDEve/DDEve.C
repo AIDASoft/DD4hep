@@ -20,7 +20,7 @@
 #include "TSystem.h"
 #include "TInterpreter.h"
 
-void DDEve(const char* xmlConfig=0)  {
+void DDEve(const char* xmlConfig=0, const char* evtData=0)  {
   Long_t result;
   char text[1024];
   const char* dd4hep = gSystem->Getenv("DD4hepINSTALL");
@@ -74,8 +74,10 @@ void DDEve(const char* xmlConfig=0)  {
     gSystem->Exit(gSystem->GetErrno());
   }
 #endif
-  if ( xmlConfig )
-    ::snprintf(text,sizeof(text),"dd4hep::DDEve::run(\"%s\")",xmlConfig);
+  if ( xmlConfig && evtData )
+    ::snprintf(text,sizeof(text),"dd4hep::DDEve::run(\"%s\",\"%s\")", xmlConfig, evtData);
+  else if ( xmlConfig )
+    ::snprintf(text,sizeof(text),"dd4hep::DDEve::run(\"%s\")", xmlConfig);
   else 
     ::snprintf(text,sizeof(text),"dd4hep::DDEve::run(0)");
   gInterpreter->ProcessLine(text);

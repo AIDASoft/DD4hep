@@ -53,8 +53,8 @@ namespace dd4hep {
    */
   struct DDEve {
     /// ROOT interactive entry point for running DDEve
-    static void run(const char* xmlFile)  {
-      EveDisplay(xmlFile, nullptr);
+    static void run(const char* xmlFile, const char* evtData=0)  {
+      EveDisplay(xmlFile, evtData);
     }
   };
 }
