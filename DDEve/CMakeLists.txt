@@ -39,6 +39,9 @@ if(DD4HEP_USE_GEANT4)
     OPTIONAL  DDG4
     )
 endif()
+#-----------------------------------------------------------------------------------
+dd4hep_add_executable( ddeve      DDEve/DDEve.cpp )
+#-----------------------------------------------------------------------------------
 
 #---Package installation procedure(s) -------------------------------------
 dd4hep_install_dir ( DDEve DESTINATION examples )

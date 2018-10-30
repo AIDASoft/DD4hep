@@ -168,7 +168,7 @@ namespace {
                  int(control.size()),detail::tools::placementPath(control,true).c_str());
         goto Err;
       }
-      printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X"
+      printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: 0x%X"
                " [THIS SHOULD NEVER HAPPEN]", code);
 
     Err:

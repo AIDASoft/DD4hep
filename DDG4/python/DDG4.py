@@ -402,6 +402,10 @@ class Geant4:
     init_seq.adopt(init_action)
     return init_seq,init_action
 
+  def detectorConstruction(self):
+    seq = self.master().detectorConstruction(True)
+    return seq
+  
   """
      Configure Geant4 user initialization for optionasl multi-threading mode
 

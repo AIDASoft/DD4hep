@@ -143,6 +143,8 @@ namespace dd4hep {
       virtual void updateContext(Geant4Context* ctxt);
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4DetectorConstruction* action);
+      /// Access an actor by name
+      Geant4DetectorConstruction* get(const std::string& nam)  const;
       /// Geometry construction callback. Called at "Construct()"
       virtual void constructGeo(Geant4DetectorConstructionContext* ctxt);
       /// Electromagnetic field construction callback. Called at "ConstructSDandField()"

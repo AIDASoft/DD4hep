@@ -81,7 +81,18 @@ void Geant4DetectorConstructionSequence::adopt(Geant4DetectorConstruction* actio
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4RunActionSequence: Attempt to add invalid actor!");
+  except("Geant4RunActionSequence","++ Attempt to add an invalid actor!");
+}
+
+/// Access an actor by name
+Geant4DetectorConstruction* Geant4DetectorConstructionSequence::get(const std::string& nam)  const   {
+  for(auto* i : m_actors)  {
+    if ( i->name() == nam )  {
+      return i;
+    }
+  }
+  except("Geant4RunActionSequence","++ Attempt to access invalid actor %s!",nam.c_str());
+  return 0;
 }
 
 /// Geometry construction callback. Called at "Construct()"
