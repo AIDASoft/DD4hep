@@ -2,6 +2,7 @@
 // ----------------------------------------------------------------------
 
 #include "Evaluator/Evaluator.h"
+#include <limits>
 
 #ifdef DD4HEP_NONE
 /// Utility namespace to support TGeo units.
@@ -84,6 +85,10 @@ namespace dd4hep  {
       setVariable("rad",    units::radian );
       setVariable("degree", units::degree );
       setVariable("deg",    units::degree );
+      setVariable("int:epsilon",    std::numeric_limits<int>::epsilon());
+      setVariable("long:epsilon",   std::numeric_limits<long>::epsilon());
+      setVariable("float:epsilon",  std::numeric_limits<float>::epsilon());
+      setVariable("double:epsilon", std::numeric_limits<double>::epsilon());
 
       //   S E T   S T A N D A R D   F U N C T I O N S
 

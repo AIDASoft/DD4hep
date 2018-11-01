@@ -339,9 +339,12 @@ namespace dd4hep {
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz, double deltaPhi)
     {  make(nam, rmin, rmax, dz, 0, deltaPhi);             }
+    /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
+    Tube(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double deltaPhi)
+    {  make(nam, rmin, rmax, dz, startPhi, startPhi+deltaPhi); }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    template <typename RMIN, typename RMAX, typename Z, typename DELTAPHI>
-    Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const DELTAPHI& deltaPhi)
+    template <typename RMIN, typename RMAX, typename Z, typename DELTAPHI=double>
+    Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const DELTAPHI& deltaPhi = 2.0*M_PI)
     {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(deltaPhi));   }
     /// Assignment operator
     Tube& operator=(const Tube& copy) = default;

@@ -252,14 +252,29 @@ DetElement& DetElement::add(DetElement sdet) {
   throw runtime_error("dd4hep: DetElement::add: Self is not defined [Invalid Handle]");
 }
 
+/// Clone (Deep copy) the DetElement structure
+DetElement DetElement::clone(int flg) const   {
+  Object* o = access();
+  Object* n = o->clone(o->id, flg);
+  n->SetName(o->GetName());
+  n->SetTitle(o->GetTitle());
+  return DetElement(n);
+}
+
 DetElement DetElement::clone(const string& new_name) const {
   Object* o = access();
-  return DetElement(o->clone(o->id, COPY_NONE), new_name, o->GetTitle());
+  Object* n = o->clone(o->id, COPY_NONE);
+  n->SetName(new_name.c_str());
+  n->SetTitle(o->GetTitle());
+  return DetElement(n);
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id) const {
   Object* o = access();
-  return DetElement(o->clone(new_id, COPY_NONE), new_name, o->GetTitle());
+  Object* n = o->clone(new_id, COPY_NONE);
+  n->SetName(new_name.c_str());
+  n->SetTitle(o->GetTitle());
+  return DetElement(n);
 }
 
 /// Access to the ideal physical volume of this detector element

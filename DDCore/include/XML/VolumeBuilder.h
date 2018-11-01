@@ -144,6 +144,7 @@ namespace dd4hep {
         typedef std::map<std::string,std::pair<Handle_t,Transform3D> > Transformations;
         Detector&             description;
         Handle_t              x_det;
+        int                   id = -1;
         DetElement            detector;
         SensitiveDetector     sensitive;
         DetectorBuildType     buildType;
@@ -165,7 +166,7 @@ namespace dd4hep {
                       Handle_t x_parent,
                       SensitiveDetector sd=SensitiveDetector());
         /// Default constructor
-        ~VolumeBuilder() {}
+        virtual ~VolumeBuilder() {}
         /// Inhibit move assignment
         VolumeBuilder& operator=(VolumeBuilder&& copy) = delete;
         /// Inhibit copy assignment
