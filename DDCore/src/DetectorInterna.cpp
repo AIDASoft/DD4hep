@@ -107,9 +107,9 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->survey      = AlignmentCondition();
   obj->parent      = DetElement();
   if ( (flg & DetElement::COPY_PLACEMENT) == DetElement::COPY_PLACEMENT )  {
-    obj->placement  = placement;
-    obj->idealPlace = idealPlace;
-    obj->placementPath = placementPath;
+    obj->placement     = placement;
+    obj->idealPlace    = idealPlace;
+    obj->placementPath = "";
   }
   // This implicitly assumes that the children do not access the parent's extensions!
   obj->ObjectExtensions::clear();
@@ -117,16 +117,17 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
 
   obj->children.clear();
   for (const auto& i : children )  {
-    const NamedObject* pc = i.second.ptr();
     const DetElementObject& d = i.second._data();
-    DetElement child(d.clone(d.id, DetElement::COPY_PLACEMENT), pc->GetName(), pc->GetTitle());
-    pair<DetElement::Children::iterator, bool> r = obj->children.insert(make_pair(child.name(), child));
+    DetElement c = d.clone(d.id, DetElement::COPY_PLACEMENT);
+    c->SetName(d.GetName());
+    c->SetTitle(d.GetTitle());
+    pair<DetElement::Children::iterator, bool> r = obj->children.insert(make_pair(c.name(), c));
     if (r.second) {
-      child._data().parent = obj;
+      c._data().parent = obj;
     }
     else {
-      throw runtime_error("dd4hep: DetElement::copy: Element " + string(child.name()) +
-                          " is already present [Double-Insert]");
+      except("DetElement","+++ DetElement::copy: Element %s is already "
+             "present [Double-Insert]", c.name());
     }
   }
   return obj;
