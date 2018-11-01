@@ -296,6 +296,9 @@ namespace dd4hep {
     /// Assignment operator
     DetElement& operator=(const DetElement& e) = default;
 
+    /// Clone (Deep copy) the DetElement structure
+    DetElement clone(int flag) const;
+
     /// Clone (Deep copy) the DetElement structure with a new name
     DetElement clone(const std::string& new_name) const;
 

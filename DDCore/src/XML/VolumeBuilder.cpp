@@ -35,7 +35,8 @@ VolumeBuilder::VolumeBuilder(Detector& dsc, xml_h x_parent, SensitiveDetector sd
   if ( x_det )   {
     xml_det_t c(x_det);
     string name = c.nameStr();
-    detector = DetElement(name, c.id());
+    id          = c.id();
+    detector = DetElement(name, id);
   }
   buildType = description.buildType();
 }
@@ -180,6 +181,9 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
         except("VolumeBuilder","+++ Failed to create shape %s of type: %s",
                nam.c_str(), type.c_str());
       }
+      if ( debug )  {
+        printout(ALWAYS,"VolumeBuilder","+++ Building shape  from XML: %s",nam.c_str());
+      }
       shapes.insert(make_pair(nam,make_pair(c,solid)));
       continue;
     }
@@ -229,7 +233,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
         vol.setSensitiveDetector(sensitive);
       }
       if ( debug )  {
-        printout(ALWAYS,"VolumeBuilder","+++ Building volume %s",nam.c_str());
+        printout(ALWAYS,"VolumeBuilder","+++ Building volume from XML: %s",nam.c_str());
       }
       continue;
     }
@@ -314,14 +318,14 @@ VolumeBuilder& VolumeBuilder::placeDaughters(DetElement parent, Volume vol, xml_
         pv = vol.placeVolume((*iv).second.second, tr);
       }
       if ( (attr=c.attr_nothrow(_U(element))) )  {
-        int id = parent.id();
+        int parent_id = parent.id();
         string elt = c.attr<string>(attr);
         attr = c.attr_nothrow(_U(id));
         if ( attr )   {
           id = c.attr<int>(attr);
           elt += c.attr<string>(attr);
         }
-        DetElement de(parent,elt,id);
+        DetElement de(parent,elt,parent_id);
         de.setPlacement(pv);
       }
     }
