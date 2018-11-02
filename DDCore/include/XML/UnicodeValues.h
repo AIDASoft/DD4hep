@@ -338,6 +338,7 @@ UNICODE (physvolid);
 UNICODE (pitch);
 UNICODE (pivot);
 UNICODE (pivot_point);
+UNICODE (placement);
 UNICODE (plane);
 UNICODE (plugin);
 UNICODE (plugins);

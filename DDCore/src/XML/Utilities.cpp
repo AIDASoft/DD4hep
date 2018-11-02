@@ -98,6 +98,17 @@ Volume dd4hep::xml::createVolume(Detector& description, xml::Element element)   
     vol.setAttributes(description,e.regionStr(),e.limitsStr(),e.visStr());
     return vol;
   }
+  xml_h h = e;
+  xml_attr_t a = h.attr_nothrow(_U(type));
+  if ( a )   {
+    string typ = h.attr<string>(a);
+    if ( typ.substr(1) == "ssembly" )  {
+      Assembly vol("assembly");
+      if ( e.hasAttr(_U(name)) ) vol->SetName(e.attr<string>(_U(name)).c_str());
+      vol.setAttributes(description,e.regionStr(),e.limitsStr(),e.visStr());
+      return vol;
+    }
+  }
   except("xml::createVolume","Failed to create volume. No material specified!");
   return Volume();
 }

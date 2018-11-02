@@ -236,6 +236,7 @@ static long load_Compact(Detector& description, xml_h element) {
   return 1;
 }
 DECLARE_XML_DOC_READER(lccdd,load_Compact)
+DECLARE_XML_DOC_READER(compact,load_Compact)
 
 /** Convert parser debug flags.
  */

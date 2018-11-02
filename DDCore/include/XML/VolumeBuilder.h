@@ -145,6 +145,7 @@ namespace dd4hep {
         Detector&             description;
         Handle_t              x_det;
         int                   id = -1;
+        std::string           name;
         DetElement            detector;
         SensitiveDetector     sensitive;
         DetectorBuildType     buildType;
