@@ -34,8 +34,8 @@ VolumeBuilder::VolumeBuilder(Detector& dsc, xml_h x_parent, SensitiveDetector sd
 {
   if ( x_det )   {
     xml_det_t c(x_det);
-    string name = c.nameStr();
-    id          = c.id();
+    name     = c.nameStr();
+    id       = c.id();
     detector = DetElement(name, id);
   }
   buildType = description.buildType();
@@ -176,8 +176,8 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
         }
       }
       string type  = x.attr<string>(_U(type));
-      Solid  solid = xml::createShape(description, type,c);
-      if ( solid.isValid() )   {
+      Solid  solid = xml::createShape(description, type, c);
+      if ( !solid.isValid() )   {
         except("VolumeBuilder","+++ Failed to create shape %s of type: %s",
                nam.c_str(), type.c_str());
       }
@@ -235,6 +235,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       if ( debug )  {
         printout(ALWAYS,"VolumeBuilder","+++ Building volume from XML: %s",nam.c_str());
       }
+      buildVolumes(c);
       continue;
     }
     bool is_assembly = true;
@@ -245,6 +246,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       placeDaughters(detector, vol, x);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
       volumes.insert(make_pair(nam,make_pair(c,vol)));
+      buildVolumes(c);
       continue;
     }
     except("VolumeBuilder","+++ Failed to create volume %s. "
@@ -256,15 +258,21 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
 /// Build all <physvol/> identifiers as PlaceVolume daughters. Ignores structure
 VolumeBuilder& VolumeBuilder::placeDaughters(Volume vol, xml_h handle)   {
   for( xml_coll_t c(handle,_U(physvol)); c; ++c )   {
-    xml_comp_t x_comp = c;
-    string nam = x_comp.attr<string>(_U(logvol));
+    xml_attr_t attr = c.attr_nothrow(_U(logvol));
+    if ( !attr )   {
+      attr = c.attr_nothrow(_U(volume));
+    }
+    if ( !attr )   {
+      except("VolumeBuilder","+++ The xml volume element has no 'logvol' or 'volume' attribute!");
+    }
+    string nam = c.attr<string>(attr);
     if ( vol_veto.find(nam) == vol_veto.end() )   {
       auto iv = volumes.find(nam);
       if ( iv == volumes.end() )  {
         except("VolumeBuilder","+++ Failed to locate volume %s. [typo somewhere in the XML?]",
                nam.c_str());      
       }
-      xml_attr_t attr = c.attr_nothrow(_U(transformation));
+      attr = c.attr_nothrow(_U(transformation));
       if ( attr )   {
         string tr_nam = c.attr<string>(attr);
         auto it = transformations.find(tr_nam);
@@ -276,10 +284,12 @@ VolumeBuilder& VolumeBuilder::placeDaughters(Volume vol, xml_h handle)   {
         }
         const Transform3D& tr = (*it).second.second;
         vol.placeVolume((*iv).second.second, tr);
+        placeDaughters(vol, c);
       }
       else   {
         Transform3D tr = xml::createTransformation(c);
         vol.placeVolume((*iv).second.second, tr);
+        placeDaughters(vol, c);
       }
     }
   }
@@ -290,8 +300,14 @@ VolumeBuilder& VolumeBuilder::placeDaughters(Volume vol, xml_h handle)   {
 VolumeBuilder& VolumeBuilder::placeDaughters(DetElement parent, Volume vol, xml_h handle)
 {
   for( xml_coll_t c(handle,_U(physvol)); c; ++c )   {
-    xml_comp_t x_comp = c;
-    string nam = x_comp.attr<string>(_U(logvol));
+    xml_attr_t attr = c.attr_nothrow(_U(logvol));
+    if ( !attr )   {
+      attr = c.attr_nothrow(_U(volume));
+    }
+    if ( !attr )   {
+      except("VolumeBuilder","+++ The xml volume element has no 'logvol' or 'volume' attribute!");
+    }
+    string nam = c.attr<string>(attr);
     if ( vol_veto.find(nam) == vol_veto.end() )   {
       auto iv = volumes.find(nam);
       if ( iv == volumes.end() )  {
@@ -300,7 +316,7 @@ VolumeBuilder& VolumeBuilder::placeDaughters(DetElement parent, Volume vol, xml_
                nam.c_str());      
       }
       PlacedVolume pv;
-      xml_attr_t attr = c.attr_nothrow(_U(transformation));
+      attr = c.attr_nothrow(_U(transformation));
       if ( attr )   {
         string tr_nam = c.attr<string>(attr);
         auto it = transformations.find(tr_nam);
@@ -327,6 +343,10 @@ VolumeBuilder& VolumeBuilder::placeDaughters(DetElement parent, Volume vol, xml_
         }
         DetElement de(parent,elt,parent_id);
         de.setPlacement(pv);
+        placeDaughters(de, vol, c);
+      }
+      else  {
+        placeDaughters(parent, vol, c);
       }
     }
   }

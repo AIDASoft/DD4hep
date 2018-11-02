@@ -12,7 +12,7 @@
 -->
   <display visLevel="12" loadLevel="12"/>
 
-  <collection name="CodexHits"         hits="PointSet" color="kRed" size="0.8"   type="20"/>
+  <collection name="CodexHits"         hits="PointSet" color="kRed" size="1.4"   type="20"/>
   <collection name="MC_Particles"      hits="Particles" size="0.6" width="1" type="kCircle"/>
 
   <view name="3D Trackers" type="View3D">
