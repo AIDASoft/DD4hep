@@ -13,7 +13,7 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-# Locate the DD4hep install directory. This CMake file is installed in two
+# Locate the DD4hep install prefix. This CMake file is installed in two
 # different locations (root and "cmake" subdir) that we must disambiguate.
 get_filename_component(_thisdir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_lastdir "${_thisdir}" NAME)
