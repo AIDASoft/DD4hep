@@ -13,15 +13,23 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
+# Locate the DD4hep install directory. This CMake file is installed in two
+# different locations (root and "cmake" subdir) that we must disambiguate.
+get_filename_component(_thisdir "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_lastdir "${_thisdir}" NAME)
+if (_lastdir STREQUAL "cmake")
+  get_filename_component(_thisdir "${_thisdir}" PATH)
+endif()
+
 if( DEFINED ENV{DD4hep_DIR} )
   set ( DD4hep_DIR         "$ENV{DD4hep_DIR}" )
 else()
-  set ( DD4hep_DIR         "@CMAKE_INSTALL_PREFIX@" )
+  set ( DD4hep_DIR         "${_thisdir}" )
 endif()
 if( DEFINED ENV{DD4hep_ROOT} )
   set ( DD4hep_ROOT        "$ENV{DD4hep_ROOT}" )
 else()
-  set ( DD4hep_ROOT        "@CMAKE_INSTALL_PREFIX@" )
+  set ( DD4hep_ROOT        "${_thisdir}" )
 endif()
 set ( DD4hep_VERSION     "@DD4hep_VERSION@" )
 set ( DD4hep_SOVERSION   "@DD4hep_SOVERSION@" )
