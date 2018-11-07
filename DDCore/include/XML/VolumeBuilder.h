@@ -15,6 +15,7 @@
 
 // Framework include files
 #include "XML/XMLElements.h"
+#include "XML/XMLDetector.h"
 #include "DD4hep/Detector.h"
 
 // C/C++ include files
@@ -136,14 +137,15 @@ namespace dd4hep {
        *   \date    12/10/2018
        */
       class VolumeBuilder   {
-      public:
+      public:        
         typedef ::dd4hep::DetElement DetElement;
+        typedef ::dd4hep::xml::DetElement xml_det_h;
         typedef std::map<std::string,std::pair<Handle_t,Solid> >       Shapes;
         typedef std::map<std::string,std::pair<Handle_t,Volume> >      Volumes;
         typedef std::map<std::string,Material>                         Materials;
         typedef std::map<std::string,std::pair<Handle_t,Transform3D> > Transformations;
         Detector&             description;
-        Handle_t              x_det;
+        xml_det_h             x_det;
         int                   id = -1;
         std::string           name;
         DetElement            detector;
@@ -156,6 +158,13 @@ namespace dd4hep {
         std::set<std::string> shape_veto, vol_veto;
         bool                  debug = false;
 
+      protected:
+        /// Place single volumes
+        void _placeSingleVolume(DetElement de, Volume vol, Handle_t c);
+        /// Place parametrized volumes
+        void _placeParamVolumes(DetElement de, Volume vol, Handle_t c);
+
+      public:
         /// Inhibit default constructor
         VolumeBuilder() = delete;
         /// Inhibit move constructor
