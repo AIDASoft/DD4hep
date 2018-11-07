@@ -34,22 +34,23 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   Volume      assembly;
   xml::tools::VolumeBuilder builder(description, e, sens);
 
-  builder.debug = x_dbg != 0;
+  builder.debug = x_dbg != 0 || true;
+
+  // Need to keep these alive as long as the volumebuilder lives
+  map<string, unique_ptr<xml::DocumentHolder> > docs;
+  for( xml_coll_t c(x_det,_U(include)); c; ++c )   {
+    string ref = c.attr<string>(_U(ref));
+    docs[ref]  = unique_ptr<xml::DocumentHolder>(new xml::DocumentHolder(xml::DocumentHandler().load(e, c.attr_value(_U(ref)))));
+    xml_h vols = docs[ref]->root();
+    printout(builder.debug ? ALWAYS : DEBUG, "VolumeAssembly","++ Processing xml document %s.",
+             docs[ref]->uri().c_str());
+    builder.buildShapes(vols);
+    builder.buildVolumes(vols);
+  }
   builder.buildShapes(x_det);
   builder.buildShapes(x_env);
   builder.buildVolumes(x_det);
   builder.buildVolumes(x_env);
-
-  // Need to keep these alive as long as the volumebuilder lives
-  map<string, xml::DocumentHolder*> docs;
-  for( xml_coll_t c(x_det,_U(include)); c; ++c )   {
-    string ref = c.attr<string>(_U(ref));
-    docs[ref]  = new xml::DocumentHolder(xml::DocumentHandler().load(e, c.attr_value(_U(ref))));
-    xml_h vols = docs[ref]->root();
-    builder.buildShapes(vols);
-    builder.buildVolumes(vols);
-  }
-  for(auto& d : docs) delete d.second;
   
   // Now we build the envelope
   if ( !x_shp ) x_shp = x_env;
@@ -67,6 +68,12 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   if ( x_env.hasAttr(_U(vis)) )  {
     assembly.setVisAttributes(description, x_env.visStr());
   }
+  if ( x_env.hasAttr(_U(region)) )  {
+    assembly.setRegion(description, x_env.regionStr());
+  }
+  if ( x_env.hasAttr(_U(limits)) )  {
+    assembly.setLimitSet(description, x_env.limitsStr());
+  }
   if ( x_det.hasAttr(_U(sensitive)) )  {
     sens.setType(x_det.attr<string>(_U(sensitive)));
   }
@@ -80,7 +87,8 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   x_tr  = x_env.child(_U(transformation),false);
   builder.placeDetector(assembly, (x_pos || x_rot || x_tr) ? x_env : x_det);
   printout(builder.debug ? ALWAYS : DEBUG, "VolumeBuilder",
-           "+++ Created subdetector instance %s",builder.name.c_str());
+           "+++ Created subdetector instance %s vis:",
+           builder.name.c_str(), x_det.visStr().c_str());
   return builder.detector;
 }
 DECLARE_DETELEMENT(DD4hep_VolumeAssembly,create_element)

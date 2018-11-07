@@ -284,7 +284,12 @@ namespace {
 
 // Call function of the type [void* (*func)(dd4hep::Detector& description, xml_h handle)]
 #define DECLARE_XML_SHAPE(name,func)  DD4HEP_OPEN_PLUGIN(dd4hep,xml_element_##name)  {\
-    template <> Handle<TObject> XMLObjectFactory<xml_element_##name>::create(dd4hep::Detector& l,ns::xml_h e) {return func(l,e);} \
+    template <> Handle<TObject> XMLObjectFactory<xml_element_##name>::create(dd4hep::Detector& l,ns::xml_h e) {return func(l,e);}\
+    DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,TObject*(dd4hep::Detector*,ns::xml_h*),__LINE__)  }
+
+// Call function of the type [void* (*func)(dd4hep::Detector& description, xml_h handle)]
+#define DECLARE_XML_VOLUME(name,func)  DD4HEP_OPEN_PLUGIN(dd4hep,xml_element_##name)  {\
+    template <> Handle<TObject> XMLObjectFactory<xml_element_##name>::create(dd4hep::Detector& l,ns::xml_h e) {return func(l,e);}\
     DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,TObject*(dd4hep::Detector*,ns::xml_h*),__LINE__)  }
 
 // Call function of the type [long (*func)(dd4hep::Detector& description, xml_h handle)]

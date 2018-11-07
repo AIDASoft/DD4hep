@@ -37,7 +37,7 @@ Transform3D dd4hep::xml::createTransformation(xml::Element e)   {
     if ( tag == "positionRPhiZ" )   {
       if      ( flag == 1 ) result = position  * result;
       else if ( flag == 2 ) result = (position * rotation) * result;
-      ROOT::Math::RhoZPhiVector pos(x_elt.r(0), x_elt.z(0), x_elt.phi(0));
+      PositionRhoZPhi pos(x_elt.r(0), x_elt.z(0), x_elt.phi(0));
       position = Transform3D(pos);
       rotation = Transform3D();
       flag = 1;
@@ -78,7 +78,7 @@ Solid dd4hep::xml::createShape(Detector& description,
   Solid solid = Solid(PluginService::Create<TObject*>(fac, &description, &solid_elt));
   if ( !solid.isValid() )  {
     PluginDebug dbg;
-    PluginService::Create<TObject*>(shape_type, &description, &solid_elt);
+    PluginService::Create<TObject*>(fac, &description, &solid_elt);
     except("xml::createShape","Failed to create solid of type %s [%s]", 
            shape_type.c_str(),dbg.missingFactory(shape_type).c_str());
   }
@@ -86,7 +86,7 @@ Solid dd4hep::xml::createShape(Detector& description,
 }
 
 /// Create a volume using the plugin mechanism from the attributes of the XML element
-Volume dd4hep::xml::createVolume(Detector& description, xml::Element element)    {
+Volume dd4hep::xml::createStdVolume(Detector& description, xml::Element element)    {
   xml_dim_t e(element);
   if ( e.hasAttr(_U(material)) )   {
     xml_dim_t x_s = e.child(_U(shape));
@@ -110,6 +110,30 @@ Volume dd4hep::xml::createVolume(Detector& description, xml::Element element)   
     }
   }
   except("xml::createVolume","Failed to create volume. No material specified!");
+  return Volume();
+}
+
+/// Create a volume using the plugin mechanism from the attributes of the XML element
+Volume dd4hep::xml::createVolume(Detector& description,
+                                 const std::string& typ,
+                                 xml::Element element)   {
+  if ( !typ.empty() )   {
+    xml_dim_t e(element);
+    string fac = typ + "__volume_constructor";
+    xml::Handle_t elt = element;
+    TObject* obj = PluginService::Create<TObject*>(fac, &description, &elt);
+    Volume vol = Volume(dynamic_cast<TGeoVolume*>(obj));
+    if ( !vol.isValid() )  {
+      PluginDebug dbg;
+      PluginService::Create<TObject*>(fac, &description, &elt);
+      except("xml::createShape","Failed to create volume of type %s [%s]", 
+             typ.c_str(),dbg.missingFactory(typ).c_str());
+    }
+    if ( e.hasAttr(_U(name)) ) vol->SetName(e.attr<string>(_U(name)).c_str());
+    vol.setAttributes(description,e.regionStr(),e.limitsStr(),e.visStr());
+    return vol;
+  }
+  except("xml::createVolume","Failed to create volume. No materiaWNo type specified!");
   return Volume();
 }
 

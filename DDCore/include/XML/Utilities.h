@@ -50,8 +50,11 @@ namespace dd4hep {
      */
     Transform3D createTransformation(xml::Element element);
 
+    /// Create a simple volume using the shape plugin mechanism from the attributes of the XML element
+    Volume createStdVolume(Detector& description, xml::Element element);
+
     /// Create a volume using the plugin mechanism from the attributes of the XML element
-    Volume createVolume(Detector& description, xml::Element element);
+    Volume createVolume(Detector& description, const std::string& type, xml::Element element);
 
 
     /// Create a solid shape using the plugin mechanism from the attributes of the XML element

@@ -71,9 +71,12 @@ namespace dd4hep {
   class RegionObject;
   class LimitSetObject;
 
-  typedef ROOT::Math::XYZVector Position;
-  typedef ROOT::Math::XYZVector Direction;
-  typedef ROOT::Math::XYZVector XYZAngles;
+  typedef ROOT::Math::RhoZPhiVector PositionRhoZPhi;
+  typedef ROOT::Math::Polar3DVector PositionPolar;
+  typedef ROOT::Math::XYZVector     Position;
+  typedef ROOT::Math::XYZVector     Position;
+  typedef ROOT::Math::XYZVector     Direction;
+  typedef ROOT::Math::XYZVector     XYZAngles;
   
   template <class V> V RotateX(const V& v, double a) {
     return ROOT::Math::VectorUtil::RotateX(v, a);
