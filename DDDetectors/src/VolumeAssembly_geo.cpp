@@ -18,6 +18,7 @@
 #include "DD4hep/Printout.h"
 #include "XML/VolumeBuilder.h"
 #include "XML/Utilities.h"
+#include <memory>
 
 using namespace std;
 using namespace dd4hep;
