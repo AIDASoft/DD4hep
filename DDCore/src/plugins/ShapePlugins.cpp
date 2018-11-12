@@ -149,10 +149,17 @@ DECLARE_XML_SHAPE(Cone__shape_constructor,create_Cone)
 static Handle<TObject> create_Trap(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid;
-  if ( e.hasAttr(_U(dz)) )
+  if ( e.hasAttr(_U(dz)) )   {
     solid = Trap(e.dz(),e.dy(),e.dx(),_toDouble(_Unicode(pLTX)));
-  else
-    solid = Trap(e.z(0.0),e.theta(0),e.phi(0),e.y1(),e.x1(),e.x2(),e.alpha1(0),e.y2(),e.x3(),e.x4(),e.alpha2(0));
+  }
+  else   {
+    xml_attr_t attr = 0;
+    double x1 = e.x1();
+    double x2 = e.x2();
+    double x3 = (attr=element.attr_nothrow(_U(x3))) ? element.attr<double>(attr) : x1;
+    double x4 = (attr=element.attr_nothrow(_U(x4))) ? element.attr<double>(attr) : x2;
+    solid = Trap(e.z(0.0),e.theta(0),e.phi(0),e.y1(),x1,x2,e.alpha1(0),e.y2(),x3,x4,e.alpha2(0));
+  }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
@@ -378,6 +385,7 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
   xml_attr_t attr = 0;
   std::string op = e.attr<std::string>(_U(operation)) ;
   std::transform( op.begin(), op.end(), op.begin(), ::tolower);
+  //printout(ALWAYS,"","Boolean shape ---> %s",op.c_str());
   for (xml_coll_t i(e ,_U(star)); i; ++i )   {
     xml_comp_t x_elt = i;
     string tag = x_elt.tag();

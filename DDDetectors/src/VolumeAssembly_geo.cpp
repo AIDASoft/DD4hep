@@ -36,18 +36,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   xml::tools::VolumeBuilder builder(description, e, sens);
 
   builder.debug = x_dbg != 0 || true;
-
-  // Need to keep these alive as long as the volumebuilder lives
-  map<string, unique_ptr<xml::DocumentHolder> > docs;
-  for( xml_coll_t c(x_det,_U(include)); c; ++c )   {
-    string ref = c.attr<string>(_U(ref));
-    docs[ref]  = unique_ptr<xml::DocumentHolder>(new xml::DocumentHolder(xml::DocumentHandler().load(e, c.attr_value(_U(ref)))));
-    xml_h vols = docs[ref]->root();
-    printout(builder.debug ? ALWAYS : DEBUG, "VolumeAssembly","++ Processing xml document %s.",
-             docs[ref]->uri().c_str());
-    builder.buildShapes(vols);
-    builder.buildVolumes(vols);
-  }
+  builder.load(x_det, "include");
   builder.buildShapes(x_det);
   builder.buildShapes(x_env);
   builder.buildVolumes(x_det);
@@ -66,21 +55,23 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   /// Set generic associations
   assembly.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   /// If specified more direct: use these ones.
-  if ( x_env.hasAttr(_U(vis)) )  {
+  if ( x_env.hasAttr(_U(vis)) )
     assembly.setVisAttributes(description, x_env.visStr());
-  }
-  if ( x_env.hasAttr(_U(region)) )  {
+
+  if ( x_env.hasAttr(_U(region)) )
     assembly.setRegion(description, x_env.regionStr());
-  }
-  if ( x_env.hasAttr(_U(limits)) )  {
+
+  if ( x_env.hasAttr(_U(limits)) )
     assembly.setLimitSet(description, x_env.limitsStr());
-  }
-  if ( x_det.hasAttr(_U(sensitive)) )  {
+
+  if ( x_det.hasAttr(_U(sensitive)) )
     sens.setType(x_det.attr<string>(_U(sensitive)));
-  }
-  if ( x_env.hasAttr(_U(name)) )   {
+  else
+    builder.detector.setType("compound");
+
+  if ( x_env.hasAttr(_U(name)) )
     assembly->SetName(x_env.nameStr().c_str());
-  }
+
   builder.placeDaughters(builder.detector, assembly, x_env);
   builder.placeDaughters(builder.detector, assembly, x_det);
   x_pos = x_env.child(_U(position),false);

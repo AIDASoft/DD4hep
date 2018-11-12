@@ -21,6 +21,7 @@
 // C/C++ include files
 #include <set>
 #include <map>
+#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -144,6 +145,7 @@ namespace dd4hep {
         typedef std::map<std::string,std::pair<Handle_t,Volume> >      Volumes;
         typedef std::map<std::string,Material>                         Materials;
         typedef std::map<std::string,std::pair<Handle_t,Transform3D> > Transformations;
+        std::map<std::string, std::unique_ptr<xml::DocumentHolder> > included_docs;
         Detector&             description;
         xml_det_h             x_det;
         int                   id = -1;
@@ -201,6 +203,8 @@ namespace dd4hep {
         size_t buildVolumes(Handle_t handle);
         /// Build all <transformation/> identifiers in the passed parent xml element
         size_t buildTransformations(Handle_t handle);
+        /// Load include tags contained in the passed XML handle
+        size_t load(Handle_t element, const std::string& tag);
         /// Build all <physvol/> identifiers as PlaceVolume daughters. Ignores structure
         VolumeBuilder& placeDaughters(Volume vol, Handle_t handle);
         /// Build all <physvol/> identifiers as PlaceVolume daughters. Also handles structure
