@@ -246,6 +246,18 @@ namespace dd4hep {
   /**
    *   Handle describing a Volume
    *
+   *   One note about divisions:
+   *   =========================
+   *   Since dd4hep requires Volumes (aka TGeoVolume) and PlacedVolumes (aka TGeoNode)
+   *   to be enhaced with the user extension mechanism shape divisions MUST be
+   *   done using the division mechanism of the dd4hep shape or volume wrapper.
+   *   Otherwise the enhancements are not added and you shall get exception
+   *   when dd4hep is closing the geometry.
+   *   The same argument holds when a division is made from a Volume.
+   *   Unfortunately there is no reasonable way to intercept this call to the
+   *   TGeo objects - except to sub-class each of them, which is not really 
+   *   acceptable either.
+   *
    *   For any further documentation please see the following ROOT documentation:
    *   \see http://root.cern.ch/root/html/TGeoVolume.html
    *
@@ -286,7 +298,9 @@ namespace dd4hep {
 
     /// If we import volumes from external sources, we have to attach the extensions to the tree
     Volume& import();
-    
+
+    /// Divide volume into subsections (See the ROOT manuloa for details)
+    Volume divide(const std::string& divname, int iaxis, int ndiv, double start, double step, int numed = 0, const char* option = "");
     /** Daughter placements with auto-generated copy number for the daughter volume  */
     /// Place daughter volume. The position and rotation are the identity
     PlacedVolume placeVolume(const Volume& vol) const;
@@ -310,6 +324,35 @@ namespace dd4hep {
     PlacedVolume placeVolume(const Volume& vol, int copy_no, const RotationZYX& rot) const;
     /// Place rotated daughter volume. The position is automatically the identity position
     PlacedVolume placeVolume(const Volume& vol, int copy_no, const Rotation3D& rot) const;
+    /// Parametrized volume implementation
+    /** Embedding parametrized daughter placements in a mother volume
+     *  @param start  start transormation for the first placement
+     *  @param count  Number of entities to be placed
+     *  @param entity Daughter volume to be placed
+     *  @param inc    Transformation increment for each iteration
+     */
+    void paramVolume1D(const Transform3D& start, size_t count, Volume entity, const Transform3D& inc);
+    /// Parametrized volume implementation
+    /** Embedding parametrized daughter placements in a mother volume
+     *  @param count  Number of entities to be placed
+     *  @param entity Daughter volume to be placed
+     *  @param inc    Transformation increment for each iteration
+     */
+    void paramVolume1D(size_t count, Volume entity, const Transform3D& trafo);
+    /// Parametrized volume implementation
+    /** Embedding parametrized daughter placements in a mother volume
+     *  @param count  Number of entities to be placed
+     *  @param entity Daughter volume to be placed
+     *  @param inc    Transformation increment for each iteration
+     */
+    void paramVolume1D(size_t count, Volume entity, const Position& inc);
+    /// Parametrized volume implementation
+    /** Embedding parametrized daughter placements in a mother volume
+     *  @param count  Number of entities to be placed
+     *  @param entity Daughter volume to be placed
+     *  @param inc    Transformation increment for each iteration
+     */
+    void paramVolume1D(size_t count, Volume entity, const RotationZYX& inc);
 
     /// Set user flags in bit-field
     void setFlagBit(unsigned int bit);
@@ -364,7 +407,39 @@ namespace dd4hep {
     }
   };
 
-  /// Implementation class extending the ROOT assembly volumes (TGeoVolumeAsembly)
+  /// Implementation class extending the ROOT mulit-volumes (TGeoVolumeMulti)
+  /**
+   *  Handle describing a multi volume.
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoVolumeMulti.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class VolumeMulti : public Volume   {
+    void verifyVolumeMulti();
+  public:
+    /// Default constructor
+    VolumeMulti() = default;
+    /// Copy from handle
+    VolumeMulti(const VolumeMulti& v) = default;
+    /// Copy from pointer as a result of Solid->Divide()
+    VolumeMulti(TGeoVolume* v) : Volume(v)  {
+      verifyVolumeMulti();
+    }
+    /// Copy from arbitrary Element
+    template <typename T> VolumeMulti(const Handle<T>& v) : Volume(v) {
+      verifyVolumeMulti();
+    }
+    /// Constructor to be used when creating a new multi-volume object
+    VolumeMulti(const std::string& name, Material material);
+    /// Assignment operator (must match copy constructor)
+    VolumeMulti& operator=(const VolumeMulti& a) = default;
+  };
+
+  /// Implementation class extending the ROOT assembly volumes (TGeoVolumeAssembly)
   /**
    *  Handle describing a volume assembly.
    *
@@ -383,7 +458,7 @@ namespace dd4hep {
     Assembly(const Assembly& v) = default;
     /// Copy from arbitrary Element
     template <typename T> Assembly(const Handle<T>& v) : Volume(v) {  }
-    /// Constructor to be used when creating a new geometry tree.
+    /// Constructor to be used when creating a new assembly object
     Assembly(const std::string& name);
     /// Assignment operator (must match copy constructor)
     Assembly& operator=(const Assembly& a) = default;

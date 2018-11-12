@@ -265,6 +265,19 @@ template <typename T> const char* Solid_type<T>::type() const  {
   return "";
 }
 
+/// Divide volume into subsections (See the ROOT manuloa for details)
+template <typename T> TGeoVolume*
+Solid_type<T>::divide(const Volume& voldiv, const std::string& divname,
+                      int iaxis, int ndiv, double start, double step)   const {
+  T* p = this->ptr();
+  if ( p )  {
+    VolumeMulti mv(p->Divide(voldiv.ptr(), divname.c_str(), iaxis, ndiv, start, step));
+    return mv.ptr();
+  }
+  except("dd4hep","Volume: Attempt to divide an invalid logical volume.");
+  return 0;
+}
+
 /// Constructor to create an anonymous new box object (retrieves name from volume)
 ShapelessSolid::ShapelessSolid(const string& nam)  {
   _assign(new TGeoShapeAssembly(), nam, "assembly", true);

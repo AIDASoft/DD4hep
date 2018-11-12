@@ -21,7 +21,8 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "Math/Polar2D.h"
 
-class TObject;
+#include "TClass.h"
+
 
 using namespace std;
 using namespace dd4hep;
@@ -38,7 +39,6 @@ VolumeBuilder::VolumeBuilder(Detector& dsc, xml_h x_parent, SensitiveDetector sd
     detector = DetElement(name, id);
   }
   buildType = description.buildType();
-  debug = true;
 }
 
 /// Collect a set of materials from the leafs of an xml tag
@@ -153,7 +153,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
     solid.setName(nam);
     shapes.insert(make_pair(nam,make_pair(handle,solid)));
   }
-  printout(debug ? ALWAYS : INFO, "VolumeBuilder",
+  printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
            "+++ Created shape of type: %s name: %s",type.c_str(), nam.c_str());
   return solid;
 }
@@ -183,9 +183,9 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
         except("VolumeBuilder","+++ Failed to create shape %s of type: %s",
                nam.c_str(), type.c_str());
       }
-      if ( debug )  {
-        printout(ALWAYS,"VolumeBuilder","+++ Building shape  from XML: %s",nam.c_str());
-      }
+      printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+               "+++ Building shape  from XML: %s of type: %s",
+               nam.c_str(), solid->IsA()->GetName());
       shapes.insert(make_pair(nam,make_pair(c,solid)));
       continue;
     }
@@ -223,9 +223,10 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       if ( c.attr_nothrow(_U(sensitive)) )   {
         vol.setSensitiveDetector(sensitive);
       }
-      if ( debug )  {
-        printout(ALWAYS,"VolumeBuilder","+++ Building volume from XML: %s",nam.c_str());
-      }
+      solid = vol.solid();
+      printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+               "+++ Building volume   from XML: %-20s shape:%-24s vis:%s",
+               nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str());
       buildVolumes(c);
       continue;
     }
@@ -251,9 +252,9 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       if ( c.attr_nothrow(_U(sensitive)) )   {
         vol.setSensitiveDetector(sensitive);
       }
-      if ( debug )  {
-        printout(ALWAYS,"VolumeBuilder","+++ Building volume from XML: %s",nam.c_str());
-      }
+      printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+               "+++ Building volume   from XML: %-20s shape:%-24s vis:%s",
+               nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str());
       buildVolumes(c);
       continue;
     }
@@ -265,6 +266,9 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       placeDaughters(detector, vol, x);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
       volumes.insert(make_pair(nam,make_pair(c,vol)));
+      printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+               "+++ Building assembly from XML: %-20s shape:%-24s vis:%s",
+               nam.c_str(), vol->GetShape()->IsA()->GetName(), x.visStr().c_str());
       buildVolumes(c);
       continue;
     }
@@ -413,6 +417,23 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
     }
     transformation *= tr;
   }
+}
+
+/// Load include tags contained in the passed XML handle
+size_t VolumeBuilder::load(xml_h element, const string& tag)  {
+  size_t count = 0;
+  for( xml_coll_t c(element,Unicode(tag)); c; ++c )   {
+    string ref = c.attr<string>(_U(ref));
+    unique_ptr<xml::DocumentHolder> doc(new xml::DocumentHolder(xml::DocumentHandler().load(element, c.attr_value(_U(ref)))));
+    xml_h vols = doc->root();
+    printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
+             "++ Processing xml document %s.", doc->uri().c_str());
+    included_docs[ref] = unique_ptr<xml::DocumentHolder>(doc.release());
+    buildShapes(vols);
+    buildVolumes(vols);
+    ++count;
+  }
+  return count;
 }
 
 /// Build all <physvol/> identifiers as PlaceVolume daughters. Ignores structure

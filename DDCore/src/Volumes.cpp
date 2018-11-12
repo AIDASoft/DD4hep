@@ -304,16 +304,29 @@ namespace {
     e->SetUserExtension(new Assembly::Object());
     return e;
   }
+  TGeoVolumeMulti* _createTGeoVolumeMulti(const string& name, TGeoMedium* medium)  {
+    TGeoVolumeMulti* e = new TGeoVolumeMulti(name.c_str(), medium);
+    e->SetUserExtension(new VolumeMulti::Object());
+    return e;
+  }
   class VolumeImport   {
   public:
     void operator()(TGeoVolume* v)   {
+      TClass* c = v->IsA();
       if ( !v->GetUserExtension() )   {
-        if ( v->IsA() == geo_volume_t::Class() )
+        if ( c == geo_volume_t::Class() )
           v->SetUserExtension(new Volume::Object());
-        else if  ( v->IsA() == geo_assembly_t::Class() )
+        else if  ( c == geo_assembly_t::Class() )
           v->SetUserExtension(new Assembly::Object());
+        else if  ( c == TGeoVolumeMulti::Class() )
+          v->SetUserExtension(new VolumeMulti::Object());
         else
           except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",v->IsA()->GetName());
+      }
+      if  ( c == TGeoVolumeMulti::Class() )  {
+        TGeoVolumeMulti* mv = (TGeoVolumeMulti*)v;
+        for(int i=0, n=mv->GetNvolumes(); i<n; ++i)
+          (*this)(mv->GetVolume(i));
       }
       for(Int_t i=0; i<v->GetNdaughters(); ++i)  {
         geo_node_t* pv = v->GetNode(i);
@@ -547,8 +560,8 @@ Volume::Object* Volume::data() const   {
 /// If we import volumes from external sources, we have to attach the extensions to the tree
 Volume& Volume::import()    {
   if ( m_element )   {
-    VolumeImport import;
-    import(m_element);
+    VolumeImport imp;
+    imp(m_element);
     return *this;
   }
   except("dd4hep","Volume: Attempt to import invalid Volume handle.");
@@ -572,6 +585,20 @@ bool Volume::testFlagBit(unsigned int bit)   const    {
   except("Volume","+++ Volume flag bit outsize range [0...31]: %d",bit);
   return false; // Anyhow never called. Only to satisfy the compiler.
 }    
+
+/// Divide volume into subsections (See the ROOT manuloa for details)
+Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
+                      double start, double step, int numed, const char* option)   {
+  TGeoVolume* p = m_element;
+  if ( p )  {
+    VolumeImport imp;
+    TGeoVolume* mvp = p->Divide(divname.c_str(), iaxis, ndiv, start, step, numed, option);
+    imp(mvp);
+    return mvp;
+  }
+  except("dd4hep","Volume: Attempt to divide an invalid logical volume.");
+  return 0;
+}
 
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
@@ -663,6 +690,34 @@ PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Rotati
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Rotation3D& rot) const {
   return _addNode(m_element, volume, copy_no, detail::matrix::_rotation3D(rot));
+}
+
+/// Constructor to be used when creating a new parametrized volume object
+void Volume::paramVolume1D(size_t count, Volume entity, const Position& inc)   {
+  paramVolume1D(Transform3D(), count, entity, Transform3D(inc));
+}
+
+/// Constructor to be used when creating a new parametrized volume object
+void Volume::paramVolume1D(size_t count, Volume entity, const RotationZYX& inc)  {
+  paramVolume1D(Transform3D(), count, entity, Transform3D(inc));
+}
+
+/// Constructor to be used when creating a new parametrized volume object
+void Volume::paramVolume1D(size_t count, Volume entity, const Transform3D& inc)   {
+  paramVolume1D(Transform3D(), count, entity, inc);
+}
+
+/// Constructor to be used when creating a new parametrized volume object
+void Volume::paramVolume1D(const Transform3D& start,
+                           size_t count,
+                           Volume entity,
+                           const Transform3D& trafo)
+{
+  Transform3D transformation(start);
+  for(size_t i=0; i<count; ++i)    {
+    _addNode(m_element, entity, detail::matrix::_transform(transformation));
+    transformation *= trafo;
+  }
 }
 
 /// Set the volume's material
@@ -874,11 +929,30 @@ bool Volume::isSensitive() const {
   return _data(*this)->sens_det.isValid();
 }
 
-/// Constructor to be used when creating a new geometry tree.
+/// Constructor to be used when creating a new assembly object
 Assembly::Assembly(const string& nam) {
   m_element = _createTGeoVolumeAssembly(nam);
 }
 
+/// Constructor to be used when creating a new multi-volume object
+VolumeMulti::VolumeMulti(const string& nam, Material mat) {
+  m_element = _createTGeoVolumeMulti(nam, mat.ptr());
+}
+
+/// Copy from pointer as a result of Solid->Divide()
+void VolumeMulti::verifyVolumeMulti()   {
+  if ( m_element )  {
+    // This will lead to an exception if the type is not TGeoVolumeMulti
+    TGeoVolumeMulti* m = detail::safe_cast<TGeoVolumeMulti>::cast(m_element);
+    if ( m )  {
+      import();
+      return;
+    }
+    // Force a bad cast exception
+    Handle<TGeoVolumeMulti> h(m_element);
+    if ( h.isValid() )  {}
+  }
+}
 
 /// Output mesh vertices to string
 std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {

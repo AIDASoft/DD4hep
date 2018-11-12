@@ -81,9 +81,9 @@ namespace dd4hep {
 
 // Geant4 include files
 #include "G4PVPlacement.hh"
-#ifdef GEANT4_HAS_GDML
+//#ifdef GEANT4_HAS_GDML
 #include "G4GDMLParser.hh"
-#endif
+//#endif
 
 using namespace std;
 using namespace dd4hep;
@@ -137,16 +137,19 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
     Geant4HierarchyDump dmp(ctxt->description);
     dmp.dump("",w);
   }
-#ifdef GEANT4_HAS_GDML
-  const char* gdml_dmp = ::getenv("DUMP_GDML");
-  if ( !m_dumpGDML.empty() ||  ) {
+  //#ifdef GEANT4_HAS_GDML
+  if ( !m_dumpGDML.empty() ) {
     G4GDMLParser parser;
-    if ( !m_dumpGDML.empty() )
-      parser.Write(m_dumpGDML.c_str(), w);
-    else if ( gdml_dmp )
-      parser.Write(gdml_dmp, w);
+    parser.Write(m_dumpGDML.c_str(), w);
   }
-#endif
+  else {
+    const char* gdml_dmp = ::getenv("DUMP_GDML");
+    if ( gdml_dmp )    {
+      G4GDMLParser parser;
+      parser.Write(gdml_dmp, w);
+    }
+  }
+  //#endif
   ctxt->world = w;
 }
 

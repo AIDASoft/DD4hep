@@ -50,6 +50,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  class Volume;
 
   /** Utitlity functions   */
   /// Pretty print of solid attributes
@@ -62,6 +63,18 @@ namespace dd4hep {
   ///  Base class for Solid (shape) objects
   /**
    *   Generic handle holding an object of base TGeoShape.
+   *
+   *   One note about divisions:
+   *   =========================
+   *   Since dd4hep requires Volumes (aka TGeoVolume) and PlacedVolumes (aka TGeoNode)
+   *   to be enhaced with the user extension mechanism shape divisions MUST be
+   *   done using the division mechanism of the dd4hep shape or volume wrapper.
+   *   Otherwise the enhancements are not added and you shall get exception
+   *   when dd4hep is closing the geometry.
+   *   The same argument holds when a division is made from a Volume.
+   *   Unfortunately there is no reasonable way to intercept this call to the
+   *   TGeo objects - except to sub-class each of them, which is not really 
+   *   acceptable either.
    *
    *   For any further documentation please see the following ROOT documentation:
    *   \see http://root.cern.ch/root/html/TGeoShape.html
@@ -112,6 +125,9 @@ namespace dd4hep {
     std::string toString(int precision=2) const   {
       return toStringSolid(this->m_element,precision);
     }
+    /// Divide volume into subsections (See the ROOT manuloa for details)
+    TGeoVolume* divide(const Volume& voldiv, const std::string& divname,
+                       int iaxis, int ndiv, double start, double step)  const;
   };
   typedef Solid_type<TGeoShape> Solid;
 

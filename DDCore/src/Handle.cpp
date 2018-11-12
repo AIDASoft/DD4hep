@@ -373,6 +373,7 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
 DD4HEP_INSTANTIATE_HANDLE(TGeoVolumeAssembly,TGeoVolume,TGeoAtt);
+DD4HEP_INSTANTIATE_HANDLE(TGeoVolumeMulti,TGeoVolume,TGeoAtt);
 DD4HEP_INSTANTIATE_HANDLE(TGeoVolume,TGeoAtt,TAttLine,TAtt3D);
 DD4HEP_INSTANTIATE_HANDLE(TGeoShape);
 DD4HEP_INSTANTIATE_HANDLE(TGeoBBox,TGeoShape);
