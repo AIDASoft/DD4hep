@@ -11,6 +11,6 @@
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
   <detectors>
-    <detector id="1" name="VolumeMultiTester" type="VolumeMultiTester"/>
+    <detector id="1" name="VolumeMultiTester" type="VolumeDivisionTest"/>
   </detectors>
 </lccdd>

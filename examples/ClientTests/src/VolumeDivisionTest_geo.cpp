@@ -46,4 +46,4 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
   return det;
 }
 
-DECLARE_DETELEMENT(VolumeMultiTester,create_element)
+DECLARE_DETELEMENT(VolumeDivisionTest,create_element)

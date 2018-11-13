@@ -171,6 +171,14 @@ foreach (test Box Cone ConeSegment Tube ElTube
       REGEX_PASS "Shape verification SUCCESSFUL." )
 endforeach()
 #
+#  Test Volume division procedure.
+dd4hep_add_test_reg( ClientTests_Check_VolumeDivisionTest
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -destroy -input file:${ClientTestsEx_INSTALL}/compact/VolumeDivisionTest.xml
+  -plugin DD4hep_VolumeDump
+  REGEX_PASS "Checked 8 physical volume placements")
+#
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 
     MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
