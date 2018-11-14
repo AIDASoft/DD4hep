@@ -52,7 +52,7 @@ void DDEve(const char* xmlConfig=0, const char* evtData=0)  {
   else  {
     Error("DDEve","+++ No DDG4 IO library 'libDDG4IO'  present!");
   }
-  result = gSystem->Load("libDDEve");
+  result = gSystem->Load("libDDEvePlugins");
   if ( 0 != result )  {
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Error("DDEve","+++ Your dd4hep installation seems incomplete. FAILED to load the library 'libdd4hepEve'!      +++");

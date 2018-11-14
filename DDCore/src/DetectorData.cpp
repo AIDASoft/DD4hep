@@ -167,8 +167,6 @@ DetectorData::DetectorData()
       cl->AdoptStreamer(new TClassStreamer(stream_opaque_datablock));
       printout(INFO,"PersistencyIO","+++ Set Streamer to %s",cl->GetName());
     }
-    DetectorData::patchRootStreamer(TGeoVolume::Class());
-    DetectorData::patchRootStreamer(TGeoNode::Class());
   }
   InstanceCount::increment(this);
 }
