@@ -158,7 +158,9 @@ static Handle<TObject> create_Trap(Detector&, xml_h element)   {
     double x2 = e.x2();
     double x3 = (attr=element.attr_nothrow(_U(x3))) ? element.attr<double>(attr) : x1;
     double x4 = (attr=element.attr_nothrow(_U(x4))) ? element.attr<double>(attr) : x2;
-    solid = Trap(e.z(0.0),e.theta(0),e.phi(0),e.y1(),x1,x2,e.alpha1(0),e.y2(),x3,x4,e.alpha2(0));
+    double y1 = e.y1();
+    double y2 = (attr=element.attr_nothrow(_U(y2))) ? element.attr<double>(attr) : y1;
+    solid = Trap(e.z(0.0),e.theta(0),e.phi(0),y1,x1,x2,e.alpha1(0),y2,x3,x4,e.alpha2(0));
   }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;

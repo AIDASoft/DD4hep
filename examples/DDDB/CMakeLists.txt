@@ -29,7 +29,6 @@ if (DD4HEP_USE_XERCESC)
           [ROOT    REQUIRED COMPONENTS Geom] 
           [DD4hep  REQUIRED COMPONENTS DDCore DDCond]
     INCLUDE_DIRS     include
-    INSTALL_INCLUDES include/DDDB include/Detector include/Kernel
     )
 
   #

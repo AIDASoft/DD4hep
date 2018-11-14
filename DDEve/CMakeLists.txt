@@ -23,7 +23,7 @@ dd4hep_add_dictionary ( G__DDEve
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
   )
 #
-dd4hep_add_plugin ( DDEve SOURCES src/*.cpp 
+dd4hep_add_plugin ( DDEvePlugins SOURCES src/*.cpp 
   GENERATED   G__DDEve.cxx
   OPTIONAL    [LCIO EXTERNAL SOURCES lcio/LCIOEventHandler.cpp] )
 

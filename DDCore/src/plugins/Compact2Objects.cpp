@@ -266,17 +266,39 @@ template <> void Converter<Plugin>::operator()(xml_h e) const {
   vector<char*> argv;
   vector<string> arguments;
   string name = plugin.nameStr();
-  for (xml_coll_t coll(e, _U(arg)); coll; ++coll) {
-    string val = coll.attr<string>(_U(value));
-    arguments.push_back(val);
+  string type = "default";
+  xml_attr_t typ_attr = e.attr_nothrow(_U(type));
+  if ( typ_attr )   {
+    type = e.attr<string>(_U(type));
   }
-  for (xml_coll_t coll(e, _U(argument)); coll; ++coll) {
-    string val = coll.attr<string>(_U(value));
-    arguments.push_back(val);
+  if ( type == "default" )  {
+    for (xml_coll_t coll(e, _U(arg)); coll; ++coll) {
+      string val = coll.attr<string>(_U(value));
+      arguments.push_back(val);
+    }
+    for (xml_coll_t coll(e, _U(argument)); coll; ++coll) {
+      string val = coll.attr<string>(_U(value));
+      arguments.push_back(val);
+    }
+    for(vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
+      argv.push_back(&((*i)[0]));
+    description.apply(name.c_str(),int(argv.size()), &argv[0]);
+    return;
   }
-  for(vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
-    argv.push_back(&((*i)[0]));
-  description.apply(name.c_str(),int(argv.size()), &argv[0]);
+  // Call a custom plugin taking the xml element as an argument
+  long result = PluginService::Create<long>(name, &description, &e);
+  if (0 == result) {
+    PluginDebug dbg;
+    result = PluginService::Create<long>(name, &description, &e);
+    if ( 0 == result )  {
+      except("Compact","++ Failed to locate plugin %s - no factory: %s",
+             name.c_str(), dbg.missingFactory(name).c_str());
+    }
+  }
+  result = *(long*) result;
+  if (result != 1) {
+    except("Compact","++ Failed to execute plugin %s", name.c_str());
+  }
 }
 
 /** Convert compact constant objects (defines)
