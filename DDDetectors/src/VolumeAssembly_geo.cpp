@@ -35,7 +35,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   Volume      assembly;
   xml::tools::VolumeBuilder builder(description, e, sens);
 
-  builder.debug = x_dbg != 0 || true;
+  builder.debug = x_dbg != 0;
   builder.load(x_det, "include");
   builder.buildShapes(x_det);
   builder.buildShapes(x_env);
