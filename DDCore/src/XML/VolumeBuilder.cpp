@@ -68,6 +68,12 @@ void VolumeBuilder::registerShape(const std::string& nam, Solid shape)   {
 void VolumeBuilder::registerVolume(const std::string& nam, Volume volume)   {
   auto is = volumes.find(nam);
   if ( is == volumes.end() )  {
+    printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+             "+++ Register volume:            %-20s shape:%-24s vis:%s sensitive:%s",
+             nam.c_str(),
+             volume.solid()->IsA()->GetName(),
+             volume.visAttributes().name(),
+             yes_no(volume.isSensitive()));
     volumes[nam] = make_pair(xml_h(0), volume);
     return;
   }
@@ -213,6 +219,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
         continue;
       }
     }
+    bool   is_sensitive = c.attr_nothrow(_U(sensitive));
     /// Check if the volume is implemented by a factory
     if ( (attr=c.attr_nothrow(_U(type))) )   {
       string typ = c.attr<string>(attr);
@@ -220,13 +227,14 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
       volumes.insert(make_pair(nam,make_pair(c,vol)));
       /// Check if the volume is sensitive
-      if ( c.attr_nothrow(_U(sensitive)) )   {
+      if ( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
       }
       solid = vol.solid();
       printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
-               "+++ Building volume   from XML: %-20s shape:%-24s vis:%s",
-               nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str());
+               "+++ Building volume   from XML: %-20s shape:%-24s vis:%s sensitive:%s",
+               nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str(),
+               yes_no(is_sensitive));
       buildVolumes(c);
       continue;
     }
@@ -249,12 +257,13 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
       volumes.insert(make_pair(nam,make_pair(c,vol)));
       /// Check if the volume is sensitive
-      if ( c.attr_nothrow(_U(sensitive)) )   {
+      if ( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
       }
       printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
-               "+++ Building volume   from XML: %-20s shape:%-24s vis:%s",
-               nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str());
+               "+++ Building volume   from XML: %-20s shape:%-24s vis:%s sensitive:%s",
+               nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str(),
+               yes_no(is_sensitive));
       buildVolumes(c);
       continue;
     }

@@ -19,7 +19,7 @@ def run():
   kernel.loadGeometry("file:"+install_dir+"/examples/DDCodex/compact/CODEX-b-alone.xml")
 
   DDG4.importConstants(kernel.detectorDescription(),debug=False)
-  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerAction')
+  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI
   if len(sys.argv)>1:
@@ -31,7 +31,7 @@ def run():
   field = geant4.setupTrackingField(prt=True)
   # Configure Event actions
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
-  prt.OutputLevel = Output.DEBUG
+  prt.OutputLevel = Output.WARNING
   prt.OutputType  = 3 # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
@@ -39,26 +39,30 @@ def run():
   evt_root = geant4.setupROOTOutput('RootOutput','CodexB_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  """
+  
+  #gun = geant4.setupGun("Gun",particle='pi+',
   gun = geant4.setupGun("Gun",particle='mu-',
                         energy=1000*GeV,
                         multiplicity=1,
                         isotrop=False,Standalone=True,
-                        direction=(0.866025,0,0.5),
-                        position='(0,0,0)')
+                        direction=(1,0,0),
+                        #direction=(0.866025,0,0.5),
+                        position='(0,0,12650)')
+                        #position='(0,0,0)')
   setattr(gun,'print',True)
   """
-  gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/InputO1");
-  gen.Input = "Geant4EventReaderHepMC|../DD4hep/examples/DDG4/data/LHCb_MinBias_HepMC.txt"
+  gen =  DDG4.GeneratorAction(kernel,"Geant4InputAction/Input")
+  ##gen.Input = "Geant4EventReaderHepMC|"+ "/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/examples/DDG4/data/hepmc_geant4.dat"
+  gen.Input = "Geant4EventReaderHepMC|"+ "/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/DDG4/examples/MinBias_HepMC.txt"
   gen.MomentumScale = 1.0
   gen.Mask = 1
   geant4.buildInputStage([gen],output_level=Output.DEBUG)
-  
-  #seq,action = geant4.setupTracker('CODEXb')
+  """
+
   seq,action = geant4.setupTracker('CODEXb')
-  action.OutputLevel = Output.DEBUG
-  seq,action = geant4.setupTracker('Shield')
-  action.OutputLevel = Output.DEBUG
+  #action.OutputLevel = Output.ERROR
+  #seq,action = geant4.setupTracker('Shield')
+  #action.OutputLevel = Output.ERROR
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -70,8 +74,7 @@ def run():
   user.TrackingVolume_Rmax = 999999.*m
   user.enableUI()
   part.adopt(user)
-  """
-  """
+
 
   # Now build the physics list:
   ##phys = kernel.physicsList()
@@ -83,7 +86,6 @@ def run():
   ph.addParticleConstructor('G4BosonConstructor')
   ph.enableUI()
   phys.adopt(ph)
-  ##phys.extends = 'QGSP_BERT'
   phys.enableUI()
   phys.dump()
   # run

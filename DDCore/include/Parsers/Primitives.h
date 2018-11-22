@@ -30,6 +30,8 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  class DetElement;
+
   /// Namespace describing generic detector segmentations
   namespace DDSegmentation  {
     class BitFieldCoder;
@@ -438,7 +440,25 @@ namespace dd4hep {
     template <typename M> ReferenceObjects<typename M::value_type> reference2nd(M&) {
       return ReferenceObjects<typename M::value_type>();
     }
-
+    /// Helper to pass reference counted objects
+    template <typename T> class RefCountHandle {
+    public:
+      T* ptr;
+      RefCountHandle() : ptr(0) {}
+      RefCountHandle(T* p) : ptr(p)     { if ( ptr ) ptr->addRef(); }
+      RefCountHandle(const RefCountHandle& c) : ptr(c.ptr) { if ( ptr ) ptr->addRef(); }
+      RefCountHandle(const RefCountHandle& c, const DetElement& ) : ptr(c.ptr) { if ( ptr ) ptr->addRef(); }
+      virtual ~RefCountHandle()     { if ( ptr ) ptr->release(); }
+      RefCountHandle& operator=(const RefCountHandle& c) {
+        if ( &c != this )   {
+          if ( ptr ) ptr->release();
+          ptr = c.ptr;
+          if ( ptr ) ptr->addRef();
+        }
+        return *this;
+      }
+    };
+    
     /// Member function call-functor with no arguments
     template <typename R, typename T> struct ApplyMemFunc {
       typedef R (T::*memfunc_t)();

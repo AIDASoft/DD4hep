@@ -875,6 +875,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
 
     long dump(string prefix, TGeoNode* ideal, TGeoNode* aligned, int level, PlacedVolume::VolIDs volids)  {
       char fmt[128];
+      stringstream log;
       PlacedVolume pv(ideal);
       bool sensitive = false;
       string opt_info, pref = prefix;
@@ -898,7 +899,6 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         pref += aligned->GetName();
       }
       if ( m_printPositions || m_printVolIDs )  {
-        stringstream log;
         if ( m_printPointers )    {
           if ( ideal != aligned )
             ::snprintf(fmt,sizeof(fmt),"Ideal:%p Aligned:%p ",(void*)ideal,(void*)aligned);
@@ -929,16 +929,6 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
               }
             }
           }
-        }
-        if ( m_printPositions )  {
-          if ( ideal )  {
-            const double* trans = ideal->GetMatrix()->GetTranslation();
-            ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
-          }
-          else  {
-            ::snprintf(fmt, sizeof(fmt), " <ERROR: INVALID Translation matrix> ");
-          }
-          log << fmt;
         }
         opt_info = log.str();
       }
@@ -983,12 +973,23 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         printout(ok ? INFO : ERROR, "VolumeDump", fmt,
                  "  ->", "", mat.name(), mat.A(), mptr->GetA(), mat.Z(), mptr->GetZ());
       }
+      log.str("");
       if ( m_printShapes )   {
-        Volume   vol = pv.volume();
-        TGeoShape* sh = vol->GetShape();
-        ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds Shape: %%s",level+1,2*level+1);
-        printout(INFO, "VolumeDump", fmt, "  ->", "", toStringSolid(sh).c_str());
-        ++m_numShapes;
+        log << "Shape: " << toStringSolid(pv.volume().solid()) << " \t";
+      }
+      if ( m_printPositions )  {
+        if ( ideal )  {
+          const double* trans = ideal->GetMatrix()->GetTranslation();
+          ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+        }
+        else  {
+          ::snprintf(fmt, sizeof(fmt), " <ERROR: INVALID Translation matrix> ");
+        }
+        log << fmt << " \t";
+      }
+      if ( !log.str().empty() )  {
+        ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%s",level+1,2*level+1);
+        printout(INFO, "VolumeDump", fmt, "  ->", "", log.str().c_str());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         if ( ideal )   {
@@ -1201,11 +1202,16 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
           }
           if ( dump_positions && place.isValid() )  {
             Position pos = place.position();
-            Box box = place.volume().solid();
+            Box      box = place.volume().solid();
+            double   loc[3] = {0,0,0}, world[3] = {0,0,0};
+            TGeoHMatrix   tr = de.nominal().worldTransformation();
+            tr.LocalToMaster(loc, world);
             ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds BBox:     (%%9.4f,%%9.4f,%%9.4f) [cm]", level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", box.x(), box.y(), box.z());
-            ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm]", level+1,2*level+3);
+            ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to mother", level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", pos.X(), pos.Y(), pos.Z());
+            ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to world",  level+1,2*level+3);
+            printout(INFO,"DetectorDump",fmt,"", world[0], world[1], world[2]);
           }
         }
       }

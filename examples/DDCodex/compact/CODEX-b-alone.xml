@@ -2,18 +2,6 @@
        xmlns:xs="http://www.w3.org/2001/XMLSchema" 
        xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
-<!-- #==========================================================================
-     #  AIDA Detector description implementation 
-     #==========================================================================
-     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
-     # All rights reserved.
-     #
-     # For the licensing terms see $DD4hepINSTALL/LICENSE.
-     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
-     #
-     #==========================================================================
--->
-
   <!-- Have the materials    -->
   <includes>
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
@@ -49,23 +37,23 @@
   </display>
   <detectors>
     <include ref="CODEX-b.xml" type="xml"/>
-    <detector id="3" name="LHCb" type="DD4hep_BoxSegment" vis="B2_vis">
+    <!--detector id="3" name="LHCb" type="DD4hep_BoxSegment" vis="B2_vis">
       <material name="Air"/>
       <box      x="500*cm"  y="500*cm"   z="2500*cm"/>
       <position x="0" y="0"   z="1000*cm"/>
       <rotation x="0" y="0"   z="0"/>
-    </detector>
-    <detector id="4" name="WALL" type="DD4hep_BoxSegment" vis="WALL_vis">
+    </detector-->
+    <!--detector id="4" name="WALL" type="DD4hep_BoxSegment" vis="WALL_vis">
       <material name="Concrete"/>
-      <box      x="200*cm"  y="500*cm"   z="2500*cm"/>
-      <position x="2250*cm*sin(60*degree)" y="0"   z="2500*cm*cos(60*degree)"/>
+      <box      x="160*cm"  y="600*cm"   z="1265*cm"/>
+      <position x="2500*cm" y="0"   z="1265*cm"/>
       <rotation x="0" y="0"   z="0"/>
-    </detector>
-    <detector name="Beampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+    </detector-->
+    <!--detector name="Beampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
       <material name="Be" />
       <tubs rmin="5*cm" rmax="5.1*cm" zhalf="2600*cm" />
       <position x="0" y="0"   z="1000*cm"/>
       <rotation x="0" y="0"   z="0"/>
-    </detector>
+    </detector-->
   </detectors>
 </lccdd>

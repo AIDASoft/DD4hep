@@ -1,19 +1,6 @@
 <lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
        xmlns:xs="http://www.w3.org/2001/XMLSchema" 
        xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
-
-<!-- #==========================================================================
-     #  AIDA Detector description implementation 
-     #==========================================================================
-     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
-     # All rights reserved.
-     #
-     # For the licensing terms see $DD4hepINSTALL/LICENSE.
-     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
-     #
-     #==========================================================================
--->
-
 <!--
   <includes>
     <gdmlFile  ref="elements.xml"/>
@@ -24,7 +11,7 @@
     <constant name="COBEX_beam_angle" value="60*degree"/>
     <constant name="COBEX_cone_len" value="50*m"/>
     <constant name="Global_gap" value="3*cm" />
-    <constant name="Layer_thickness" value="1*cm" />
+    <constant name="Layer_thickness" value="0.5*cm" />
     <constant name="Layer_pitch" value="4*cm" />
   </define> 
 
@@ -32,12 +19,11 @@
   <display>
     <vis name="BlackVis"                alpha="1"  r="0.1" g="0.1" b="0.1" showDaughters="false"  visible="true"/>
     <vis name="Codex_Envelope_Vis"      alpha="0.7" r="0.2" g="0.2" b="0.7" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Box_Vis"           alpha="0.1"  r="0.8" g="0.8" b="0.8" showDaughters="true"  visible="true"/>
     <vis name="Codex_Module_center_Vis" alpha="0.4"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
     <vis name="Codex_Module_front_Vis"  alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module_back_Vis"   alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module1_Vis"       alpha="0.4"  r="0.8" g="0.2" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module2_Vis"       alpha="0.4"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="Codex_Module3_Vis"       alpha="1"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Layer1_Vis"        alpha="0.4"  r="0.2" g="0.2" b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="Codex_Layer2_Vis"        alpha="0.4"  r="0.2" g="0.8" b="0.2" showDaughters="true"  visible="true"/>
     <vis name="Codex_Shield_Pb_Vis"     alpha="1"  r="0.4" g="0.4" b="0.4" showDaughters="false" visible="true"/>
     <vis name="Codex_Shield_Veto_Vis"   alpha="1"  r="0.9" g="0.9" b="0.0" showDaughters="true"  visible="true"/>
   </display>
@@ -47,7 +33,7 @@
   <!--  Includes for sensitives and support                -->
   <detectors>
 
-    <detector id="1" name="Shield" type="DD4hep_CODEXb_shield" vis="Codex_Envelope_Vis" readout="ShieldHits">
+    <!--detector id="1" name="Shield" type="DD4hep_CODEXb_shield" vis="Codex_Envelope_Vis" readout="ShieldHits">
 
       <envelope angle="COBEX_beam_angle" dz="COBEX_cone_len" rmax="8*m" />
       <shield name="Pb-shield-1" z="7*m"   dz="1.5*m" material="Lead" sensitive="false" vis="Codex_Shield_Pb_Vis"/>
@@ -56,7 +42,7 @@
 
       <position x="-sin(COBEX_beam_angle)*COBEX_cone_len/2" y="0"   z="cos(COBEX_beam_angle)*COBEX_cone_len/2"/>
       <rotation x="0"     y="COBEX_beam_angle"   z="0"/>
-    </detector>
+    </detector-->
 
     <!--
     <detector id="2" name="CODEXb" type="DD4hep_CODEXb_layer" vis="Codex_Envelope_Vis" readout="CodexHits" >
@@ -70,27 +56,22 @@
     </detector>
    -->
 
-    <detector id="13" name="CODEXb" type="DD4hep_CODEXb_detector" vis="Codex_Envelope_Vis" readout="CodexHits" >
-       <envelope thickness="23*m" length="6*m" height="6*m" vis="Codex_Module1_Vis">
+    <detector id="13" name="CODEXb" type="DD4hep_CODEXb_detector" vis="Codex_Box_Vis" readout="CodexHits" >
+       <envelope thickness="16*m" length="8*m" height="8*m" vis="Codex_Box_Vis">
        </envelope>
-       <layer material="Si" width="5*m" thickness="Layer_thickness" height="5*m" sensitive="true"
-                x="0" y="0" z="0" vis="Codex_Module2_Vis" />
-       <station name="front_station" material="Al" width="5*m" thickness="40*cm" height="5*m" 
-                repeat="6" distance="15*cm" vis="Codex_Module_front_Vis">
-         <layers number="6" gap="Layer_pitch" />
-         <position x="1*m" y="0" z="0" />
+       <station name="inner_station" material="Air" width="5*m" thickness="40*cm" height="5*m" 
+                repeat="5" distance="1.67*m" angle="0" vis="Codex_Module_front_Vis">
+         <layers name="CODEX_layer_type_0" material="Si" width="5*m" thickness="Layer_thickness" height="5*m" sensitive="true" 
+                 vis="Codex_Layer1_Vis" number="3" gap="Layer_pitch" />
+         <position x="0" y="0" z="0" />
        </station>
-       <station name="center_station" material="Al" width="5*m" thickness="40*cm" height="5*m" 
-                repeat="5" distance="15*cm" vis="Codex_Module_center_Vis">
-         <layers number="5" gap="Layer_pitch" />
-         <position x="8*m" y="0" z="0" />
+       <station name="face_station" material="Air" width="6.2*m" thickness="40*cm" height="6.2*m" 
+                repeat="6" distance="1.3*m" angle="90*degree" vis="Codex_Module_center_Vis">
+         <layers name="CODEX_layer_type_1" material="Si" width="5*m" thickness="Layer_thickness" height="5*m" sensitive="true"
+                 vis="Codex_Layer2_Vis" number="6" gap="Layer_pitch" />
+         <position x="0" y="0" z="0" />
        </station>
-       <station name="back_station" material="Al" width="5*m" thickness="60*cm" height="5*m" 
-                repeat="6" distance="15*cm" vis="Codex_Module_back_Vis">
-         <layers number="5" gap="Layer_pitch" />
-         <position x="15*m" y="0" z="0" />
-       </station>
-       <position x="3300*cm*sin(60*degree)+500*cm" y="0" z="2500*cm*cos(60*degree)" />
+       <position x="2872.5*cm+500*cm" y="0" z="1265*cm" />
     </detector>
 
    </detectors>
