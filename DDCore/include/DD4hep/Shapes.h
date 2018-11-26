@@ -296,13 +296,16 @@ namespace dd4hep {
     /// Constructor to be used when reading the already parsed ConeSegment object
     template <typename Q> ConeSegment(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new ConeSegment object
-    ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1 = 0.0, double phi2 = 2.0 * M_PI);
+    ConeSegment(double dz, double rmin1, double rmax1,
+                double rmin2, double rmax2,
+                double phi1 = 0.0, double phi2 = 2.0 * M_PI);
     /// Assignment operator
     ConeSegment& operator=(const ConeSegment& copy) = default;
 
     /// Set the cone segment dimensions
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
-                               double rmin2, double rmax2, double phi1 = 0.0, double phi2 = 2.0 * M_PI);
+                               double rmin2, double rmax2,
+                               double phi1 = 0.0, double phi2 = 2.0 * M_PI);
   };
 #if 0
   /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
@@ -571,7 +574,43 @@ namespace dd4hep {
     PseudoTrap& operator=(const PseudoTrap& copy) = default;
   };
 
-  /// Class describing a Trapezoid shape
+  /// Class describing a Trd1 shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoTrd1.html
+   *
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class Trd1: public Solid_type<TGeoTrd1> {
+  private:
+    /// Internal helper method to support object construction
+    void make(double x1, double x2, double y, double z);
+
+  public:
+    /// Default constructor
+    Trd1() = default;
+    /// Constructor to be used when passing an already created object
+    Trd1(const Trd1& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> Trd1(const Q* p) : Solid_type<Object>(p) { }
+    /// Constructor to be used when passing an already created object
+    template <typename Q> Trd1(const Handle<Q>& e) : Solid_type<Object>(e) { }
+    /// Constructor to create a new anonymous object with attribute initialization
+    Trd1(double x1, double x2, double y, double z);
+    /// Constructor to create a new anonymous object with attribute initialization
+    template <typename X1,typename X2,typename Y,typename Z>
+    Trd1(X1 x1, X2 x2, Y y, Z z)
+    { make(_toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
+    /// Assignment operator
+    Trd1& operator=(const Trd1& copy) = default;
+    /// Set the Trd1 dimensions
+    Trd1& setDimensions(double x1, double x2, double y, double z);
+  };
+  
+  /// Class describing a Trd2 shape
   /**
    *   For any further documentation please see the following ROOT documentation:
    *   \see http://root.cern.ch/root/html/TGeoTrd2.html
@@ -581,32 +620,34 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Trapezoid: public Solid_type<TGeoTrd2> {
+  class Trd2: public Solid_type<TGeoTrd2> {
   private:
     /// Internal helper method to support object construction
     void make(double x1, double x2, double y1, double y2, double z);
 
   public:
     /// Default constructor
-    Trapezoid() = default;
+    Trd2() = default;
     /// Constructor to be used when passing an already created object
-    Trapezoid(const Trapezoid& e) = default;
+    Trd2(const Trd2& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Trapezoid(const Q* p) : Solid_type<Object>(p) { }
+    template <typename Q> Trd2(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> Trapezoid(const Handle<Q>& e) : Solid_type<Object>(e) { }
+    template <typename Q> Trd2(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
-    Trapezoid(double x1, double x2, double y1, double y2, double z);
+    Trd2(double x1, double x2, double y1, double y2, double z);
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
-    Trapezoid(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
+    Trd2(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
     { make(_toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
     /// Assignment operator
-    Trapezoid& operator=(const Trapezoid& copy) = default;
-    /// Set the Trapezoid dimensions
-    Trapezoid& setDimensions(double x1, double x2, double y1, double y2, double z);
+    Trd2& operator=(const Trd2& copy) = default;
+    /// Set the Trd2 dimensions
+    Trd2& setDimensions(double x1, double x2, double y1, double y2, double z);
   };
-
+  /// Shortcut name definition
+  typedef Trd2 Trapezoid;
+  
   /// Class describing a Torus shape
   /**
    *   For any further documentation please see the following ROOT documentation:
@@ -653,6 +694,9 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   class Sphere: public Solid_type<TGeoSphere> {
+  protected:
+    /// Constructor function to be used when creating a new object with attribute initialization
+    void make(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi);
   public:
     /// Default constructor
     Sphere() = default;
@@ -663,7 +707,19 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> Sphere(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous object with attribute initialization
-    Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0, double delta_phi = 2. * M_PI);
+    Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0, double delta_phi = 2. * M_PI)
+    {  make(rmin, rmax, theta, delta_theta, phi, delta_phi);     }
+    template<typename RMIN,         typename RMAX,
+             typename THETA=double, typename DELTA_THETA=double,
+             typename PHI=double,   typename DELTA_PHI=double>
+    /// Constructor to create a new anonymous object with attribute initialization
+    Sphere(RMIN rmin, RMAX rmax,
+           THETA theta = 0., DELTA_THETA delta_theta = M_PI,
+           PHI phi = 0.0, DELTA_PHI delta_phi = 2. * M_PI)  {
+      make(_toDOuble(rmin),  _toDouble(rmax),
+           _toDouble(theta), _toDouble(delta_theta),
+           _toDouble(phi),   _toDouble(delta_theta));
+    }
     /// Assignment operator
     Sphere& operator=(const Sphere& copy) = default;
     /// Set the Sphere dimensions
@@ -681,6 +737,8 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   class Paraboloid: public Solid_type<TGeoParaboloid> {
+    /// Constructor function to create a new anonymous object with attribute initialization
+    void make(double r_low, double r_high, double delta_z);
   public:
     /// Default constructor
     Paraboloid() = default;
@@ -691,7 +749,12 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> Paraboloid(const Handle<Q>& e) : Solid_type<Object>(e) { }
     /// Constructor to create a new anonymous object with attribute initialization
-    Paraboloid(double r_low, double r_high, double delta_z);
+    Paraboloid(double r_low, double r_high, double delta_z)
+    {  make(r_low, r_high, delta_z);  }
+    /// Constructor to create a new anonymous object with attribute initialization
+    template<typename R_LOW, typename R_HIGH, typename DELTA_Z>
+    Paraboloid(R_LOW r_low, R_HIGH r_high, DELTA_Z delta_z)
+    {  make(_toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
     /// Assignment operator
     Paraboloid& operator=(const Paraboloid& copy) = default;
     /// Set the Paraboloid dimensions
@@ -709,6 +772,8 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   class Hyperboloid: public Solid_type<TGeoHype> {
+    /// Constructor function to create a new anonymous object with attribute initialization
+    void make(double rin, double stin, double rout, double stout, double dz);
   public:
     /// Default constructor
     Hyperboloid() = default;
@@ -719,7 +784,14 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> Hyperboloid(const Handle<Q>& e) : Solid_type<Object>(e) {   }
     /// Constructor to create a new anonymous object with attribute initialization
-    Hyperboloid(double rin, double stin, double rout, double stout, double dz);
+    Hyperboloid(double rin, double stin, double rout, double stout, double dz)   {
+      make(rin, stin, rout, stout, dz);
+    }
+    /// Constructor to create a new anonymous object with attribute initialization
+    template <typename RIN, typename STIN, typename ROUT, typename STOUT, typename DZ>
+    Hyperboloid(RIN rin, STIN stin, ROUT rout, STOUT stout, DZ dz)  {
+      make(_toDouble(rin), _toDouble(stin), _toDouble(rout), _toDouble(stout), _toDouble(dz));
+    }
     /// Assignment operator
     Hyperboloid& operator=(const Hyperboloid& copy) = default;
     /// Set the Hyperboloid dimensions
