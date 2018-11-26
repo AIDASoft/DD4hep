@@ -523,24 +523,41 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
 }
 
 /// Constructor to create a new anonymous object with attribute initialization
-Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z)   {
+Trd1::Trd1(double x1, double x2, double y, double z)   {
+  make(x1,x2,y,z);
+}
+
+/// Constructor to be used when creating a new object with attribute initialization
+void Trd1::make(double x1, double x2, double y, double z) {
+  _assign(new TGeoTrd1(x1, x2, y, z ), "", "trd2", true);
+}
+
+/// Set the Trd1 dimensions
+Trd1& Trd1::setDimensions(double x1, double x2, double y, double z) {
+  double params[] = { x1, x2, y, z  };
+  _setDimensions(params);
+  return *this;
+}
+
+/// Constructor to create a new anonymous object with attribute initialization
+Trd2::Trd2(double x1, double x2, double y1, double y2, double z)   {
   make(x1,x2,y1,y2,z);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void Trapezoid::make(double x1, double x2, double y1, double y2, double z) {
+void Trd2::make(double x1, double x2, double y1, double y2, double z) {
   _assign(new TGeoTrd2(x1, x2, y1, y2, z ), "", "trd2", true);
 }
 
-/// Set the Trapezoid dimensions
-Trapezoid& Trapezoid::setDimensions(double x1, double x2, double y1, double y2, double z) {
+/// Set the Trd2 dimensions
+Trd2& Trd2::setDimensions(double x1, double x2, double y1, double y2, double z) {
   double params[] = { x1, x2, y1, y2, z  };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-Paraboloid::Paraboloid(double r_low, double r_high, double delta_z) {
+void Paraboloid::make(double r_low, double r_high, double delta_z) {
   _assign(new TGeoParaboloid(r_low, r_high, delta_z ), "", "paraboloid", true);
 }
 
@@ -552,7 +569,7 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
 }
 
 /// Constructor to create a new anonymous object with attribute initialization
-Hyperboloid::Hyperboloid(double rin, double stin, double rout, double stout, double dz) {
+void Hyperboloid::make(double rin, double stin, double rout, double stout, double dz) {
   _assign(new TGeoHype(rin, stin/units::deg, rout, stout/units::deg, dz), "", "hyperboloid", true);
 }
 
@@ -563,8 +580,8 @@ Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, do
   return *this;
 }
 
-/// Constructor to be used when creating a new object with attribute initialization
-Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
+/// Constructor function to be used when creating a new object with attribute initialization
+void Sphere::make(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
   _assign(new TGeoSphere(rmin, rmax,
                          theta/units::deg, delta_theta/units::deg,
                          phi/units::deg, delta_phi/units::deg), "", "sphere", true);
