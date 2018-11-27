@@ -1,0 +1,21 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Trd1" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="Trd1" z="80*cm" x1="25*cm" x2="50*cm" y="20*cm"/>
+        <position x="30"  y="30" z="50"/>
+        <rotation x="-pi/4"   y="pi/4"  z="pi/8"/>
+      </check>
+      <check vis="Shape2_vis">
+        <shape type="Trd1" z="120*cm" x1="44*cm" x2="10*cm" y="5*cm"/>
+        <position x="-30"  y="30" z="-100"/>
+        <rotation x="pi/2"   y="0"  z="pi/8"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Trd1.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

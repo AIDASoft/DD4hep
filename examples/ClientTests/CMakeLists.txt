@@ -164,7 +164,7 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
 foreach (test Box Cone ConeSegment Tube ElTube
     CutTube Hyperboloid Paraboloid
     Polycone PseudoTrap Sphere Torus
-    Trap Trapezoid TruncatedTube ExtrudedPolygon)
+    Trap Trd1 Trd2 TruncatedTube ExtrudedPolygon)
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoDisplay file:${ClientTestsEx_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
