@@ -707,18 +707,20 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> Sphere(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous object with attribute initialization
-    Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0, double delta_phi = 2. * M_PI)
+    Sphere(double rmin,        double rmax,
+           double theta = 0.0, double delta_theta = M_PI,
+           double phi   = 0.0, double delta_phi   = 2. * M_PI)
     {  make(rmin, rmax, theta, delta_theta, phi, delta_phi);     }
     /// Constructor to create a new anonymous object with generic attribute initialization
     template<typename RMIN,         typename RMAX,
              typename THETA=double, typename DELTA_THETA=double,
              typename PHI=double,   typename DELTA_PHI=double>
-    Sphere(RMIN rmin, RMAX rmax,
-           THETA theta = 0., DELTA_THETA delta_theta = M_PI,
-           PHI phi = 0.0, DELTA_PHI delta_phi = 2. * M_PI)  {
+    Sphere(RMIN  rmin,         RMAX        rmax,
+           THETA theta = 0.0,  DELTA_THETA delta_theta = M_PI,
+           PHI   phi   = 0.0,  DELTA_PHI   delta_phi   = 2. * M_PI)  {
       make(_toDOuble(rmin),  _toDouble(rmax),
            _toDouble(theta), _toDouble(delta_theta),
-           _toDouble(phi),   _toDouble(delta_theta));
+           _toDouble(phi),   _toDouble(delta_phi));
     }
     /// Assignment operator
     Sphere& operator=(const Sphere& copy) = default;
