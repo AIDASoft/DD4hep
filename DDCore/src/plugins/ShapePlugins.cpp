@@ -175,13 +175,22 @@ static Handle<TObject> create_PseudoTrap(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
 
-static Handle<TObject> create_Trapezoid(Detector&, xml_h element)   {
+static Handle<TObject> create_Trd1(Detector&, xml_h element)   {
   xml_dim_t e(element);
-  Solid solid = Trapezoid(e.x1(),e.x2(),e.y1(),e.y2(),e.z(0.0));
+  Solid solid = Trd1(e.x1(),e.x2(),e.y(),e.z(0.0));
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
-DECLARE_XML_SHAPE(Trapezoid__shape_constructor,create_Trapezoid)
+DECLARE_XML_SHAPE(Trd1__shape_constructor,create_Trd1)
+
+static Handle<TObject> create_Trd2(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  Solid solid = Trd2(e.x1(),e.x2(),e.y1(),e.y2(),e.z(0.0));
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  return solid;
+}
+DECLARE_XML_SHAPE(Trapezoid__shape_constructor,create_Trd2)
+DECLARE_XML_SHAPE(Trd2__shape_constructor,create_Trd2)
 
 static Handle<TObject> create_Torus(Detector&, xml_h element)   {
   xml_dim_t e(element);

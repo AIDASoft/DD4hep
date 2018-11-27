@@ -1,0 +1,22 @@
+ShapeCheck[0] TGeoTrd1         8 Mesh-points:
+TGeoTrd1         Trd1 N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
+TGeoTrd1         0   Local  ( -25.00,  -20.00,  -80.00) Global ( -37.49,  -22.11,   37.55)
+TGeoTrd1         1   Local  ( -25.00,   20.00,  -80.00) Global ( -48.31,   11.68,   19.07)
+TGeoTrd1         2   Local  (  25.00,   20.00,  -80.00) Global ( -15.65,    2.11,  -17.55)
+TGeoTrd1         3   Local  (  25.00,  -20.00,  -80.00) Global (  -4.82,  -31.68,    0.93)
+TGeoTrd1         4   Local  ( -50.00,  -20.00,   80.00) Global (  59.32,   62.67,  135.87)
+TGeoTrd1         5   Local  ( -50.00,   20.00,   80.00) Global (  48.49,   96.46,  117.39)
+TGeoTrd1         6   Local  (  50.00,   20.00,   80.00) Global ( 113.82,   77.33,   44.13)
+TGeoTrd1         7   Local  (  50.00,  -20.00,   80.00) Global ( 124.64,   43.54,   62.61)
+TGeoTrd1         Bounding box:  dx=  50.00 dy=  20.00 dz=  80.00 Origin: x=   0.00 y=   0.00 z=   0.00
+ShapeCheck[1] TGeoTrd1         8 Mesh-points:
+TGeoTrd1         Trd1 N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
+TGeoTrd1         0   Local  ( -44.00,   -5.00, -120.00) Global ( -68.74,  150.00, -121.46)
+TGeoTrd1         1   Local  ( -44.00,    5.00, -120.00) Global ( -72.56,  150.00, -112.22)
+TGeoTrd1         2   Local  (  44.00,    5.00, -120.00) Global (   8.74,  150.00,  -78.54)
+TGeoTrd1         3   Local  (  44.00,   -5.00, -120.00) Global (  12.56,  150.00,  -87.78)
+TGeoTrd1         4   Local  ( -10.00,   -5.00,  120.00) Global ( -37.33,  -90.00, -108.45)
+TGeoTrd1         5   Local  ( -10.00,    5.00,  120.00) Global ( -41.15,  -90.00,  -99.21)
+TGeoTrd1         6   Local  (  10.00,    5.00,  120.00) Global ( -22.67,  -90.00,  -91.55)
+TGeoTrd1         7   Local  (  10.00,   -5.00,  120.00) Global ( -18.85,  -90.00, -100.79)
+TGeoTrd1         Bounding box:  dx=  44.00 dy=   5.00 dz= 120.00 Origin: x=   0.00 y=   0.00 z=   0.00

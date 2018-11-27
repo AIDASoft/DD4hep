@@ -1,5 +1,5 @@
 ShapeCheck[0] TGeoTrd2         8 Mesh-points:
-TGeoTrd2         Trapezoid N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
+TGeoTrd2         Trd2 N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
 TGeoTrd2         0   Local  ( -30.00,  -15.00,  -30.00) Global (   0.00,   15.00,   20.00)
 TGeoTrd2         1   Local  ( -30.00,   15.00,  -30.00) Global (   0.00,   45.00,   20.00)
 TGeoTrd2         2   Local  (  30.00,   15.00,  -30.00) Global (  60.00,   45.00,   20.00)
