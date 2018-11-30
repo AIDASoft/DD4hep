@@ -97,7 +97,7 @@ ConditionResolver::~ConditionResolver()  {
 void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const   {
 #ifdef DD4HEP_CONDITIONS_DEBUG
   except("ConditionUpdateCall",
-         "%s [%016llX]: FAILED to access non-exoisting item:%s [%016llX]",
+         "%s [%016llX]: FAILED to access non-existing item:%s [%016llX]",
          dependency->target.name.c_str(), dependency->target.hash,
          key_value.name.c_str(), key_value.hash);
 #else
