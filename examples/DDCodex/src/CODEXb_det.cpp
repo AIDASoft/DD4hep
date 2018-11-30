@@ -67,7 +67,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
 
   /// Now we build the staions
   int type_st_num = 0;
-  int type_la_num = 0;
   typedef std::map<Volume,std::vector<PlacedVolume> > Stations;
   Stations station_layers;
   vector<Volume> station_vols;
