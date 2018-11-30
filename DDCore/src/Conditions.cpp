@@ -28,6 +28,18 @@ Condition::Processor::Processor() {
 }
 
 /// Initializing constructor for a pure, undecorated conditions object
+Condition::Condition(key_type hash_key) : Handle<Object>()
+{
+  if ( hash_key != 0 && hash_key != ~0x0ULL )  {
+    Object* o = new Object();
+    assign(o,"","");
+    o->hash = hash_key;
+    return;
+  }
+  except("Condition","+++ Cannot create a condition with an invalid key: %016llX",hash_key);
+}
+
+/// Initializing constructor for a pure, undecorated conditions object
 Condition::Condition(const std::string& nam, const std::string& typ) : Handle<Object>()
 {
   Object* o = new Object();
@@ -48,15 +60,19 @@ Condition::Condition(const string& nam,const string& typ, size_t memory)
 /// Output method
 string Condition::str(int flags)  const   {
   stringstream output;
-  Object* o = access();
+  Object* o = access(); 
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
   if ( 0 == (flags&NO_NAME) )
     output << setw(16) << left << o->name;
+#endif
   if ( flags&WITH_IOV )  {
     const IOV* ptr_iov = o->iovData();
     output << " " << (ptr_iov ? ptr_iov->str().c_str() : "IOV:[UNKNOWN]");
   }
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
   if ( flags&WITH_TYPE )
     output << " (" << o->type << ")";
+#endif
   if ( flags&WITH_DATATYPE )
     output << " -> " << o->data.dataType();
   if ( flags&WITH_DATA )
@@ -90,12 +106,12 @@ const dd4hep::IOV& Condition::iov() const   {
   return *(access()->iovData());
 }
 
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
 /// Access the type field of the condition
 const string& Condition::type()  const   {
   return access()->type;
 }
 
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
 /// Access the value field of the condition as a string
 const string& Condition::value()  const   {
   return access()->value;

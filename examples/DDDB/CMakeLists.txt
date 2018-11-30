@@ -36,12 +36,14 @@ if (DD4HEP_USE_XERCESC)
   dd4hep_add_package_library(DDDB
     SOURCES src/*.cpp src/Detector/*.cpp
     USES    [ROOT    REQUIRED COMPONENTS Geom GenVector]
+            [DD4hep  REQUIRED COMPONENTS DDCore DDCond]
     )
   #
   #---DDDB plugin library -------------------------------------------------------
   dd4hep_add_plugin(DDDBPlugins
     SOURCES src/plugins/*.cpp
     USES    [ROOT    REQUIRED COMPONENTS Geom GenVector] DDDB
+            [DD4hep  REQUIRED COMPONENTS DDCore DDCond]
     )
 
   #---Package installation procedure(s) -----------------------------------------

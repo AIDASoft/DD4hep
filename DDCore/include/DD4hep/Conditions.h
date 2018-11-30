@@ -21,8 +21,6 @@
 // C/C++ include files
 #include <vector>
 
-#define DD4HEP_CONDITIONKEY_HAVE_NAME 1
-
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -139,6 +137,8 @@ namespace dd4hep {
     /// Constructor to be used when reading the already parsed object
     template <typename Q> Condition(const Handle<Q>& e);
     /// Initializing constructor for a pure, undecorated conditions object
+    Condition(key_type hash_key);
+    /// Initializing constructor for a pure, undecorated conditions object
     Condition(const std::string& name, const std::string& type);
     /// Initializing constructor for a pure, undecorated conditions object with payload buffer
     Condition(const std::string& name, const std::string& type, size_t memory);
@@ -233,7 +233,7 @@ namespace dd4hep {
    */
   class ConditionKey  {
   public:
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_DEBUG
     /// Optional string identifier. Helps debugging a lot!
     std::string  name;
 #endif

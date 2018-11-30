@@ -36,6 +36,7 @@
 #include "DD4hep/DetectorData.h"
 #include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/ComponentProperties.h"
+#include "../src/DetectorImp.h"
 
 // C/C++ include files
 #include <vector>
@@ -122,6 +123,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::OpaqueDataBlock+;
 
 #pragma link C++ class dd4hep::Detector+;
+#pragma link C++ class dd4hep::DetectorImp+;
 #pragma link C++ class dd4hep::DetectorLoad+;
 #pragma link C++ class dd4hep::DetectorData+;
 #pragma link C++ class dd4hep::DetectorData::ObjectHandleMap+;

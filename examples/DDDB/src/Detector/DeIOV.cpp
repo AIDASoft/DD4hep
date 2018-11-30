@@ -18,6 +18,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/ConditionsMap.h"
+#include "DD4hep/ConditionsDebug.h"
 #include "DD4hep/AlignmentsPrinter.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
 
@@ -34,9 +35,12 @@ using namespace gaudi::detail;
 
 /// Helper to initialize the basic information
 DeIOVObject* DeIOVObject::fill_info(DetElement de, Catalog* /* cat */)   {
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
   name      = Keys::deKeyName;
+#endif
   item_key  = Keys::deKey;
   detector  = de;
+  hash      = dd4hep::ConditionKey::KeyMaker(de, Keys::deKey).hash;
   return this;
 }
 
@@ -63,7 +67,7 @@ void DeIOVObject::print(int indent, int flg)  const   {
   }
   printout(INFO, "DeIOV",
            "%s+ Name:%s Hash:%016lX Type:%s Flags:%08X IOV:%s",
-           prefix.c_str(), name.c_str(), hash,
+           prefix.c_str(), dd4hep::cond::cond_name(this).c_str(), hash,
            is_bound() ? data.dataType().c_str() : "<UNBOUND>",
            flags, iov ? iov->str().c_str()      : "--");
   if ( flg&DePrint::DETAIL)  { 
@@ -74,7 +78,7 @@ void DeIOVObject::print(int indent, int flg)  const   {
     for(const auto& cc : conditions)  {
       Condition c = cc.second;
       printout(INFO, "DeIOV","%s+  >> Condition [%08X] %s Hash:%016X Flags:%08X Type:%s",
-               prefix.c_str(), cc.first, c.name(), c.key(), c.flags(),
+               prefix.c_str(), cc.first, dd4hep::cond::cond_name(c).c_str(), c.key(), c.flags(),
                c.is_bound() ? c.data().dataType().c_str() : "<UNBOUND>");
       if ( c->iov )  {
         printout(INFO, "DeIOV","%s+  >> + IOV:%s",

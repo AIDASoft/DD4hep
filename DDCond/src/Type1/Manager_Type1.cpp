@@ -259,23 +259,34 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
   return false;
 }
 
-/// Set a single conditions value to be managed. 
+/// Set a single conditions value to be managed.
 /// Requires external lock on update pool!
 Condition Manager_Type1::__queue_update(cond::Entry* e)   {
   if ( e )  {
     ConditionsPool*  p = this->ConditionsManagerObject::registerIOV(e->validity);
+    ConditionKey::KeyMaker m(e->detector,e->name);
     Condition condition(e->name,e->type);
     Condition::Object* c = condition.ptr();
     c->value = e->value;
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
     c->comment = "----";
     c->address = "----";
     c->validity = e->validity;
+#endif
     c->iov  = p->iov;
+    c->hash = m.hash;
     p->insert(c);
     if ( s_debug > INFO )  {
+#if defined(DD4HEP_MINIMAL_CONDITIONS)
+      ConditionKey::KeyMaker key(c->hash);
+      printout(INFO,"Conditions","+++ Loaded condition: %s %08X.%08X to %s",
+               e->detector.path().c_str(), key.values.det_key, key.values.item_key,
+               c->value.c_str());
+#else
       printout(INFO,"Conditions","+++ Loaded condition: %s.%s to %s [%s] V: %s",
                e->detector.path().c_str(), c->name.c_str(),
                c->value.c_str(), c->type.c_str(), c->validity.c_str());
+#endif
     }
     return c;
   }

@@ -248,8 +248,10 @@ namespace dd4hep {
       /// Reference count
       int                                m_refCount;
     public:
+#ifdef DD4HEP_CONDITIONS_DEBUG
       /// Reference to the target's detector element
       DetElement                         detector;
+#endif
       /// Key to the condition to be updated
       ConditionKey                       target;
       /// Dependency keys this condition depends on
@@ -267,15 +269,19 @@ namespace dd4hep {
 
     public:
       /// Initializing constructor used by builder
-      ConditionDependency(DetElement de, Condition::itemkey_type item_key, ConditionUpdateCall* call);
+      ConditionDependency(Condition::key_type key, ConditionUpdateCall* call);
       /// Initializing constructor used by builder
       ConditionDependency(DetElement de, const std::string& item, ConditionUpdateCall* call);
+      /// Initializing constructor used by builder
+      ConditionDependency(DetElement de, Condition::itemkey_type item_key, ConditionUpdateCall* call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
       Condition::key_type key()  const    {  return target.hash;                   }
+#ifdef DD4HEP_CONDITIONS_DEBUG
       /// Access the dependency key
       const char* name()  const           {  return target.name.c_str();           }
+#endif
       /// Add use count to the object
       ConditionDependency* addRef()       {  ++m_refCount; return this;            }
       /// Release object. May not be used any longer

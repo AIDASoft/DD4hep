@@ -66,8 +66,8 @@ namespace {
       ::snprintf(text,sizeof(text),"0x%16llX",c.key());
       root.append(cond = xml_elt_t(doc, _U(ref)));
       cond.setAttr(_U(key), text);
-      cond.setAttr(_U(name), c.name());
 #if !defined(DD4HEP_MINIMAL_CONDITIONS)
+      cond.setAttr(_U(name), c.name());
       cond.setAttr(_U(ref), c.address());
 #endif
     }
