@@ -97,7 +97,11 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class dd4hep::Solid_type<TGeoTrap>+;
 #pragma link C++ class dd4hep::Handle<TGeoTrap>+;
 
-#pragma link C++ class dd4hep::Trapezoid+;
+#pragma link C++ class dd4hep::Trd1+;
+#pragma link C++ class dd4hep::Solid_type<TGeoTrd2>+;
+#pragma link C++ class dd4hep::Handle<TGeoTrd2>+;
+
+#pragma link C++ class dd4hep::Trd2+;
 #pragma link C++ class dd4hep::Solid_type<TGeoTrd2>+;
 #pragma link C++ class dd4hep::Handle<TGeoTrd2>+;
 

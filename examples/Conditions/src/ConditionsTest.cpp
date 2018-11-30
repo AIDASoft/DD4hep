@@ -15,8 +15,9 @@
 #include "ConditionsTest.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/DetectorTools.h"
-#include "DDCond/ConditionsDataLoader.h"
+#include "DD4hep/ConditionsDebug.h"
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsDataLoader.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 
@@ -55,13 +56,13 @@ namespace dd4hep {
     template <> void __print_bound_val<string>(Condition c, const char*)   {
       const string& v = access_val<string>(c);
       printout(INFO,"Cond_Value","  Bound value  %s : string value:%s  Type: %s Ptr:%016X",
-               c.name(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str(),
+               cond::cond_name(c).c_str(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str(),
                (void*)&v);
     }
     template <typename T> void __print_bound_container(Condition c, const char*)   {
       const T& v = access_val<T>(c);
       printout(INFO,"Cond_Value","  Bound value  %s : size:%d = %s Type: %s Ptr:%016X",
-               c.name(), int(v.size()), c.data().str().c_str(),
+               cond::cond_name(c).c_str(), int(v.size()), c.data().str().c_str(),
                typeName(c.typeInfo()).c_str(), (void*)&v);
     }
 
@@ -108,13 +109,17 @@ namespace dd4hep {
     TEMPLATE_TYPE(std::string,"%c")
 
     template <> void print_condition<void>(Condition c)   {
-      string type = c.type();
-      printout(INFO,"Cond_Value","%-32s  [%16s] :  %s [%s] ", 
-               c.name(), c.type().c_str(),
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
-               c.value().c_str(), c->validity.c_str()
+#if defined(DD4HEP_MINIMAL_CONDITIONS)
+      string type = "";
 #else
-               "", ""
+      string type = c.type();
+#endif
+      printout(INFO,"Cond_Value","%-32s  [%16s] :  %s [%s] ", 
+               cond_name(c).c_str(), 
+#if defined(DD4HEP_MINIMAL_CONDITIONS)
+               "", "", ""
+#else
+               c.type().c_str(), c.value().c_str(), c->validity.c_str()
 #endif
                );
       if ( type == "alignment" )
@@ -162,10 +167,10 @@ namespace dd4hep {
           return;
         }
         except("Example", "+++ The condition %s [%s] is not fully contained in iov:%s",
-               c->name.c_str(), i->str().c_str(), iov.str().c_str());
+               cond_name(c).c_str(), i->str().c_str(), iov.str().c_str());
       }
       except("Example", "+++ The condition %s [%s] has no discrete type matching iov:%s",
-             c->name.c_str(), i->str().c_str(), iov.str().c_str());
+             cond_name(c).c_str(), i->str().c_str(), iov.str().c_str());
     }
   }
 }

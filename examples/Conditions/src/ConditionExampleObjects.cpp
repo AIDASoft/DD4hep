@@ -36,12 +36,13 @@ ConditionsManager dd4hep::ConditionExamples::installManager(Detector& descriptio
 
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate1::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_DEBUG
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+  Condition    target(key.name,"derived");
 #else
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX",key.hash);
+  Condition    target(key.hash);
 #endif
-  Condition    target(key.name,"derived");
   target.bind<vector<int> >();
   return target;
 }
@@ -56,12 +57,13 @@ void ConditionUpdate1::resolve(Condition target, ConditionUpdateContext& context
 
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate2::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_DEBUG
   printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+  Condition    target(key.name,"derived");
 #else
   printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX",key.hash);
+  Condition    target(key.hash);
 #endif
-  Condition    target(key.name,"derived");
   target.bind<vector<int> >();
   return target;
 }
@@ -81,12 +83,13 @@ void ConditionUpdate2::resolve(Condition target, ConditionUpdateContext& context
 
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate3::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_DEBUG
   printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+  Condition    target(key.name,"derived");
 #else
   printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX",key.hash);
+  Condition    target(key.hash);
 #endif
-  Condition    target(key.name,"derived");
   target.bind<vector<int> >();
   return target;
 }

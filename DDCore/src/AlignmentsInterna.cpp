@@ -25,7 +25,11 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
+#if defined(DD4HEP_MINIMAL_CONDITIONS)
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentObject,ConditionObject);
+#else
 DD4HEP_INSTANTIATE_HANDLE_NAMED(AlignmentObject,ConditionObject);
+#endif
 
 /// Default constructor
 AlignmentObject::AlignmentObject()

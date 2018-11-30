@@ -10,30 +10,21 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONFIG_H
-#define DD4HEP_CONFIG_H
+#ifndef DDCORE_CONDITIONSDEBUG_H
+#define DDCORE_CONDITIONSDEBUG_H
 
-#define DD4HEP_INSTANCE_COUNTS 1
-#define DD4HEP_USE_SAFE_CAST   1
-/// Enable this if you want to minimize the footprint of conditions
-//#define DD4HEP_MINIMAL_CONDITIONS 1
-
-#define DD4HEP_CONDITIONS_DEBUG 1
-
-#ifdef DD4HEP_INSTANCE_COUNTS
-#define INCREMENT_COUNTER InstanceCount::increment(this)
-#define DECREMENT_COUNTER InstanceCount::decrement(this)
-#else
-#define INCREMENT_COUNTER
-#define DECREMENT_COUNTER
-#endif
+// Framework include files
+#include "DD4hep/Conditions.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
   /// Namespace for implementation details of the AIDA detector description toolkit
-  namespace detail {
+  namespace cond {
 
-  } /* End namespace detail  */
-} /*   End namespace dd4hep    */
-#endif    /* DD4HEP_CONFIG_H         */
+    std::string cond_name(Condition c);
+    std::string cond_name(const Condition::Object* c);
+    
+  } /* End namespace cond                 */
+} /* End namespace dd4hep                 */
+#endif     /* DDCORE_CONDITIONSDEBUG_H    */

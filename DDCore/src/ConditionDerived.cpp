@@ -33,7 +33,14 @@ Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  cons
     iov->iov_intersection(c.iov());
     return c;
   }
-  throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing condition:"+key_value.name);
+#ifdef DD4HEP_CONDITIONS_DEBUG
+  except("ConditionUpdateCall:","Failed to access non-existing condition:"+key_value.name);
+#else
+  ConditionKey::KeyMaker key(key_value.hash);
+  except("ConditionUpdateCall:","Failed to access non-existing condition with key [%08X %08X]:",
+         key.values.det_key, key.values.item_key);
+#endif
+  return Condition();
 }
    
 /// Access to all conditions of a detector element. Careful: This limits the validity!
@@ -88,17 +95,38 @@ ConditionResolver::~ConditionResolver()  {
 
 /// Throw exception on conditions access failure
 void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const   {
+#ifdef DD4HEP_CONDITIONS_DEBUG
   except("ConditionUpdateCall",
-         "%s [%016llX]: FAILED to access non-existing item:%s [%016llX]",
+         "%s [%016llX]: FAILED to access non-exoisting item:%s [%016llX]",
          dependency->target.name.c_str(), dependency->target.hash,
          key_value.name.c_str(), key_value.hash);
+#else
+  ConditionKey::KeyMaker key(key_value.hash);
+  ConditionKey::KeyMaker dep(dependency->target.hash);
+  except("ConditionUpdateCall",
+         "Derived condition [%08X %08X]: FAILED to access non-existing item:%s [%08X %08X]",
+         dep.values.det_key, dep.values.item_key, key.values.det_key, key.values.item_key);
+#endif
 }
 
 /// Initializing constructor
-ConditionDependency::ConditionDependency(DetElement           de,
-                                         unsigned int         item_key,
+ConditionDependency::ConditionDependency(Condition::key_type  key,
                                          ConditionUpdateCall* call)
-  : m_refCount(0), detector(de), target(de, item_key), callback(call)
+  : m_refCount(0),
+    target(key), callback(call)
+{
+  InstanceCount::increment(this);
+}
+
+/// Initializing constructor
+ConditionDependency::ConditionDependency(DetElement              de,
+                                         Condition::itemkey_type item_key,
+                                         ConditionUpdateCall*    call)
+  : m_refCount(0),
+#ifdef DD4HEP_CONDITIONS_DEBUG
+    detector(de),
+#endif
+    target(de, item_key), callback(call)
 {
   InstanceCount::increment(this);
 }
@@ -107,7 +135,7 @@ ConditionDependency::ConditionDependency(DetElement           de,
 ConditionDependency::ConditionDependency(DetElement de,
                                          const std::string&   item, 
                                          ConditionUpdateCall* call)
-  : m_refCount(0), detector(de), target(de, item), callback(call)
+  : m_refCount(0), /*detector(de),*/ target(de, item), callback(call)
 {
   InstanceCount::increment(this);
 }

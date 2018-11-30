@@ -17,6 +17,7 @@
 #include "Detector/DetectorElement_inl.h"
 #include "DD4hep/Printout.h"
 #include "DDDB/DDDBConversion.h"
+#include "DD4hep/ConditionsDebug.h"
 
 namespace gaudi {
   template std::map<dd4hep::DetElement, gaudi::detail::DeStaticObject*>
@@ -28,9 +29,11 @@ using namespace gaudi::detail;
 
 /// Helper to initialize the basic information
 DeStaticObject* DeStaticObject::fill_info(DetElement de, Catalog* cat)    {
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+  name      = Keys::staticKeyName;
+#endif
   detector = de;
   geometry = de.placement();
-  name     = Keys::staticKeyName;
   key      = Keys::staticKey;
   clsID    = cat->classID;
   catalog  = cat;
@@ -48,7 +51,6 @@ void DeStaticObject::initialize()   {
   except("DeStatic","initialize> Modifying a condition after initialization is not allowed!");
 }
 
-
 /// Printout method to stdout
 void DeStaticObject::print(int indent, int flg)  const   {
   std::string prefix = DE::indent(indent);
@@ -63,7 +65,7 @@ void DeStaticObject::print(int indent, int flg)  const   {
   }
   printout(INFO, "DeStatic",
            "%s+ Name:%s Hash:%016lX Type:%s Flags:%08X %s%s",
-           prefix.c_str(), name.c_str(), hash,
+           prefix.c_str(), dd4hep::cond::cond_name(this).c_str(), hash,
            is_bound() ? data.dataType().c_str() : "<UNBOUND>",
            flags, iov ? "" : "IOV:", iov ? "" : "---");
   if ( iov )  {

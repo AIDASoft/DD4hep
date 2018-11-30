@@ -52,6 +52,9 @@ namespace dd4hep {
 
 using namespace dd4hep;
 using namespace std;
+
+ClassImp(DetectorImp)
+
 namespace {
   struct TypePreserve {
     DetectorBuildType& m_t;
@@ -134,10 +137,17 @@ void Detector::destroyInstance(const std::string& name) {
     delete description;
 }
 
-/// Default constructor
-DetectorImp::DetectorImp(const string& name)
-  : DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
+/// Default constructor used by ROOT I/O
+DetectorImp::DetectorImp()
+  : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
+}
+
+/// Initializing constructor
+DetectorImp::DetectorImp(const string& name)
+  : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
+{
+  SetTitle("DD4hep detector description object");
   set_unexpected( description_unexpected ) ;
   set_terminate( description_unexpected ) ;
   InstanceCount::increment(this);
@@ -184,6 +194,29 @@ DetectorImp::~DetectorImp() {
   InstanceCount::decrement(this);
 }
 
+/// ROOT I/O call
+Int_t DetectorImp::saveObject(const char *name, Int_t option, Int_t bufsize) const   {
+  Int_t nbytes = 0;
+  try  {
+    DetectorData::patchRootStreamer(TGeoVolume::Class());
+    DetectorData::patchRootStreamer(TGeoNode::Class());
+    nbytes = TNamed::Write(name, option, bufsize);
+    DetectorData::unpatchRootStreamer(TGeoVolume::Class());
+    DetectorData::unpatchRootStreamer(TGeoNode::Class());
+    return nbytes;
+  }
+  catch (const exception& e) {
+    DetectorData::unpatchRootStreamer(TGeoVolume::Class());
+    DetectorData::unpatchRootStreamer(TGeoNode::Class());
+    except("Detector","Exception %s while saving dd4hep::Detector object",e.what());
+  }
+  catch (...) {
+    DetectorData::unpatchRootStreamer(TGeoVolume::Class());
+    DetectorData::unpatchRootStreamer(TGeoNode::Class());
+    except("Detector","UNKNOWN exception while saving dd4hep::Detector object.");
+  }
+  return nbytes;
+}
 
 // Load volume manager
 void DetectorImp::imp_loadVolumeManager()   {

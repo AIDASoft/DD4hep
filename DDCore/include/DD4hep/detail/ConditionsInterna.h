@@ -56,7 +56,11 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionObject : public NamedObject {
+    class ConditionObject
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+      : public NamedObject
+#endif
+    {
     public:
       /// Condition value (in string form)
       std::string          value;

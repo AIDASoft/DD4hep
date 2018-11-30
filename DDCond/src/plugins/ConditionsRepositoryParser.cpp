@@ -148,18 +148,20 @@ namespace {
     string typ = elt.hasAttr(_U(type)) ? elt.typeStr() : tag;
     string nam = elt.hasAttr(_U(name)) ? elt.nameStr() : tag;
     string add = xml::DocumentHandler::system_path(e);
-    Condition cond(det.path()+"#"+nam, typ);
-
+    string cond_nam = det.path()+"#"+nam;
+    Condition cond(cond_nam, typ);
     printout(s_parseLevel,"XMLConditions","++ Processing condition tag:%s name:%s type:%s [%s]",
              tag.c_str(), nam.c_str(), typ.c_str(),
              Path(add).filename().c_str());
+    cond->hash     = ConditionKey::hashCode(det,cond_nam);
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
     cond->address  = add;
     cond->value    = "";
     cond->validity = "";
-    cond->hash     = ConditionKey::hashCode(det,cond->name);
     if ( elt.hasAttr(_U(comment)) )  {
       cond->comment = elt.attr<string>(_U(comment));
     }
+#endif
     //ConditionsKeyAssign(det).addKey(cond.name());
     return cond;
   }

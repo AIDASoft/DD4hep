@@ -240,8 +240,12 @@ ConditionsMappedUserPool<MAPPING>::i_insert(Condition::Object* o)   {
   int ret = m_conditions.insert(make_pair(o->hash,o)).second;
   if ( flags&PRINT_INSERT )  {
     printout(INFO,"UserPool","++ %s condition [%016llX]: %s.",
-             ret ? "Successfully inserted" : "FAILED to insert",
-             o->hash, o->name.c_str());
+             ret ? "Successfully inserted" : "FAILED to insert", o->hash,
+#if defined(DD4HEP_MINIMAL_CONDITIONS)
+             "");
+#else
+             o->name.c_str());
+#endif
   }
   return ret;
 }

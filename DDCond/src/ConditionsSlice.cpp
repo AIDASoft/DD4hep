@@ -167,7 +167,9 @@ namespace  {
     }
     bool operator()(Condition::Object* c)  const  {
       if ( 0 == (c->flags&Condition::DERIVED) )   {
+#if !defined(DD4HEP_MINIMAL_CONDITIONS)
         content.insertKey(c->hash,c->address);
+#endif
         return true;
       }
       return true;

@@ -19,6 +19,20 @@
 using namespace dd4hep;
 using namespace dd4hep::cond;
 
+namespace {
+  std::string dependency_name(const ConditionDependency* d)  {
+#ifdef DD4HEP_CONDITIONS_DEBUG
+    return d->target.name;
+#else
+    char text[64];
+    ConditionKey::KeyMaker key(d->target.hash);
+    ::snprintf(text,sizeof(text),"%08X %08X",key.values.det_key, key.values.item_key);
+    return text;
+#endif
+  }
+
+}
+
 /// Default constructor
 ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
                                                          UserPool& pool,
@@ -164,17 +178,17 @@ ConditionsDependencyHandler::do_callback(Work* work)   {
   catch(const std::exception& e)   {
     printout(ERROR,"ConditionDependency",
              "+++ Exception while creating dependent Condition %s:",
-             dep->name());
+             dependency_name(dep).c_str());
     printout(ERROR,"ConditionDependency","\t\t%s", e.what());
   }
   catch(...)   {
     printout(ERROR,"ConditionDependency",
              "+++ UNKNOWN exception while creating dependent Condition %s.",
-             dep->name());
+             dependency_name(dep).c_str());
   }
   m_pool.print("*");
   except("ConditionDependency",
          "++ Exception while creating dependent Condition %s.",
-         dep->name());
+         dependency_name(dep).c_str());
   return 0;
 }

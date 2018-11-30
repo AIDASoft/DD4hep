@@ -17,6 +17,7 @@
 // Framework include files
 #include "DD4hep/DetectorData.h"
 #include "DD4hep/DetectorLoad.h"
+#include "TNamed.h"
 
 // Forward declarations
 class TGeoManager;
@@ -28,12 +29,16 @@ class TGeoManager;
 namespace dd4hep {
 
   /// Concrete implementation class of the Detector interface
-  /** @class DetectorImp   DetectorImp.h  src/DetectorImp.h
+  /** The main entry point to the DD4hep detector description
+   *
+   *  Please note:
+   *  The inheritance of the TNamed is necessary to properly access the 
+   *  object when loaded from ROOT.
    *
    * @author  M.Frank
    * @version 1.0
    */
-  class DetectorImp: public Detector, public DetectorData, public DetectorLoad  {
+  class DetectorImp: public TNamed, public Detector, public DetectorData, public DetectorLoad  {
   protected:
     /// Cached map with detector types:
     typedef std::map<std::string, std::vector<DetElement> > DetectorTypeMap;
@@ -45,6 +50,9 @@ namespace dd4hep {
     DetectorBuildType m_buildType;
 
   private:
+    /// Disable move constructor
+    DetectorImp(DetectorImp&& copy) = delete;
+
     /// Disable copy constructor
     DetectorImp(const DetectorImp& copy) = delete;
 
@@ -53,12 +61,18 @@ namespace dd4hep {
 
     /// Internal helper to map detector types once the geometry is closed
     void mapDetectorTypes();
+
+    /// ROOT I/O call
+    Int_t saveObject(const char *name=0, Int_t option=0, Int_t bufsize=0) const;
   public:
 
     /// Local method (no interface): Load volume manager.
     void imp_loadVolumeManager();
 
-    /// Default constructor
+    /// Default constructor used by ROOT I/O
+    DetectorImp();
+
+    /// Initializing constructor
     DetectorImp(const std::string& name);
 
     /// Standard destructor
@@ -364,7 +378,17 @@ namespace dd4hep {
     /// Add a field component by named reference to the detector description
     virtual Detector& addField(const Handle<NamedObject>& x)  override;
 #undef __R
+    /// TObject overload: We need to set the Volume and PlacedVolume extensions to be persistent
+    virtual Int_t       Write(const char *name=0, Int_t option=0, Int_t bufsize=0)  override  {
+      return saveObject(name, option, bufsize);
+    }
+    /// TObject overload: We need to set the Volume and PlacedVolume extensions to be persistent
+    virtual Int_t       Write(const char *name=0, Int_t option=0, Int_t bufsize=0) const override  {
+      return saveObject(name, option, bufsize);
+    }
 
+    ClassDefOverride(DetectorImp,100);
+    
   };
 } /* End namespace dd4hep   */
 
