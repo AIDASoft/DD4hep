@@ -332,7 +332,9 @@ namespace dd4hep {
     /// Operator less (for map insertions) using hash value
     bool operator<(const Condition::key_type compare)  const;
     /// Automatic conversion to the hashed representation of the key object
-    operator Condition::key_type () const             {  return hash;     }
+    operator Condition::key_type () const   {  return hash;     }
+    /// Conversion to string
+    std::string toString()  const;
   };
 
   /// Constructor from detector element key and item sub-key

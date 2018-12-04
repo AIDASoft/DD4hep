@@ -395,6 +395,8 @@ namespace dd4hep {
     const Volume& setSolid(const Solid& s) const;
     /// Access to Solid (Shape)
     Solid solid() const;
+    /// Access the bounding box of the volume (if available)
+    Box boundingBox() const;
 
     /// Set the volume's material
     const Volume& setMaterial(const Material& m) const;

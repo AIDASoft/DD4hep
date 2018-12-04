@@ -58,7 +58,7 @@ namespace {
     }
     catch(const std::exception& e)  {
       dd4hep::except("RunPlugin","++ Exception while executing plugin %s:\n\t\t%s",
-             name ? name : "<unknown>", e.what());
+                     name ? name : "<unknown>", e.what());
     }
     catch(...)  {
       dd4hep::except("RunPlugin","++ UNKNOWN Exception while executing plugin %s.",name ? name : "<unknown>");
@@ -197,7 +197,7 @@ namespace {
         result = run_plugin(description,plug[0],plug.size()-1,(char**)(num_args>0 ? &plug[1] : 0));
         if ( result == EINVAL )   {
           std::cout << "FAILED to execute dd4hep plugin: '" << plug[0] 
-               << "' with args (" << num_args << ") :[ ";
+                    << "' with args (" << num_args << ") :[ ";
           for(size_t j = 1; j < plug.size(); ++j)   {
             if ( plug[j] ) std::cout << plug[j] << " ";
           }
@@ -224,63 +224,180 @@ namespace {
       run_plugin(description,"DD4hep_CompactLoader",2,(char**)argv);
     }
   }
+}
 
-  //______________________________________________________________________________
-  int main_wrapper(const char* name, int argc, char** argv)  {
-    Args args;
-    for(int i=1; i<argc;++i) {
-      if ( argv[i][0]=='-' ) {
-        if ( args.handle(i,argc,argv) )
-          continue;
+
+namespace dd4hep  {
+  namespace execute  {
+
+    //______________________________________________________________________________
+    int main_wrapper(const char* name, int argc, char** argv)  {
+      Args args;
+      for(int i=1; i<argc;++i) {
+        if ( argv[i][0]=='-' ) {
+          if ( args.handle(i,argc,argv) )
+            continue;
+          else
+            usage_default(name);
+        }
+        else {  // This is the default
+          args.geo_files.push_back(argv[i]);
+          args.build_types.push_back("BUILD_DEFAULT");
+        }
+      }
+      if ( args.geo_files.empty() )
+        usage_default(name);
+
+      dd4hep::Detector& description = dd4hep_instance();
+      // Load all compact files
+      load_compact(description, args);
+      if ( args.ui ) run_plugin(description,"DD4hep_InteractiveUI",0,0);
+      // Create volume manager and populate it required
+      if ( args.volmgr ) run_plugin(description,"DD4hep_VolumeManager",0,0);
+
+      // Create an interactive ROOT application
+      if ( !args.dry_run ) {
+        long result = 0;
+        std::pair<int, char**> a(0,0);
+        if ( args.interpreter )   {
+          TRint app(name, &a.first, a.second);
+          result = args.run(description, name);
+          if ( result != EINVAL ) app.Run();
+        }
         else
-          usage_default(name);
+          result = args.run(description, name);
+        if ( result == EINVAL ) usage_default(name);
       }
-      else {  // This is the default
-        args.geo_files.push_back(argv[i]);
-        args.build_types.push_back("BUILD_DEFAULT");
+      else {
+        std::cout << "The geometry was loaded. Application now exiting." << std::endl;
       }
+      if ( args.destroy ) delete &description;
+      return 0;
     }
-    if ( args.geo_files.empty() )
-      usage_default(name);
 
-    dd4hep::Detector& description = dd4hep_instance();
-    // Load all compact files
-    load_compact(description, args);
-    if ( args.ui ) run_plugin(description,"DD4hep_InteractiveUI",0,0);
-    // Create volume manager and populate it required
-    if ( args.volmgr ) run_plugin(description,"DD4hep_VolumeManager",0,0);
+    void usage_plugin_runner() {
+      std::cout <<
+        "geoPluginRun -opt [-opt]                                                \n"
+        "        -input  <file>  [OPTIONAL]  Specify geometry input file.        \n"
+        "        -plugin <name>  <args> [args] [-end-plugin]                     \n"
+        "                        [REQUIRED]  Plugin to be executed and applied.  \n"
+        "        -plugin <name>  <args> [args] -end-plugin                       \n"
+        "                        [OPTIONAL]  Next plugin with arguments.         \n";
+      print_default_args() << std::endl;
+      ::exit(EINVAL);
+    }
 
-    // Create an interactive ROOT application
-    if ( !args.dry_run ) {
-      long result = 0;
-      std::pair<int, char**> a(0,0);
-      if ( args.interpreter )   {
-        TRint app(name, &a.first, a.second);
-        result = args.run(description,name);
-        if ( result != EINVAL ) app.Run();
+    //______________________________________________________________________________
+    int invoke_plugin_runner(const char* name, int argc,char** argv)  {
+      Args arguments;
+      arguments.interpreter = false;
+    
+      for(int i=1; i<argc;++i) {
+        if ( argv[i][0]=='-' ) {
+          if ( arguments.handle(i,argc,argv) )
+            continue;
+        }
+        else {
+          usage_plugin_runner();
+        }
       }
-      else
-        result = args.run(description,name);
-      if ( result == EINVAL ) usage_default(name);
+      if ( !arguments.ui && !arguments.interpreter && arguments.plugins.empty() )  {
+        usage_plugin_runner();
+      }
+      std::unique_ptr<TRint> interpreter;
+      dd4hep::Detector& description = dd4hep_instance();
+      // Load compact files if required by plugin
+      if ( !arguments.geo_files.empty() )   {
+        load_compact(description, arguments);
+      }
+      else  {
+        std::cout << "geoPluginRun: No geometry input supplied. "
+                  << "No geometry will be loaded." << std::endl;
+      }
+      // Attach UI instance if requested to ease interaction from the ROOT prompt
+      if ( arguments.ui )  {
+        run_plugin(description,"DD4hep_InteractiveUI",0,0);
+      }
+      // Create volume manager and populate it required
+      if ( arguments.volmgr  )   {
+        run_plugin(description,"DD4hep_VolumeManager",0,0);
+      }
+      if ( arguments.interpreter )  {
+        std::pair<int, char**> a(0,0);
+        interpreter.reset(new TRint("geoPluginRun", &a.first, a.second));
+      }
+      // Execute plugin
+      for(size_t i=0; i<arguments.plugins.size(); ++i)   {
+        std::vector<const char*>& plug = arguments.plugins[i];
+        int num_args = int(plug.size())-2;
+        long result = run_plugin(description,plug[0], num_args,(char**)&plug[1]);
+        if ( result == EINVAL )   {
+          std::cout << "geoPluginRun: FAILED to execute dd4hep plugin: '" << plug[0] 
+                    << "' with args (" << num_args << ") :[ ";
+          for(size_t j = 1; j < plug.size(); ++j)   {
+            if ( plug[j] ) std::cout << plug[j] << " ";
+          }
+          std::cout << "]" << std::endl;
+          usage_plugin_runner();
+        }
+        std::cout << "geoPluginRun: Executed dd4hep plugin: '" << plug[0]
+                  << "' with args (" << num_args << ") :[ ";
+        for(size_t j=1; j<plug.size(); ++j)   {
+          if ( plug[j] ) std::cout << plug[j] << " ";
+        }
+        std::cout << "]" << std::endl << std::flush;
+      }
+      if ( arguments.plugins.empty() )    {
+        // Create an interactive ROOT application
+        if ( !arguments.dry_run ) {
+          long result = 0;
+          std::pair<int, char**> a(0,0);
+          if ( arguments.interpreter )   {
+            TRint app(name, &a.first, a.second);
+            result = arguments.run(description, name);
+            if ( result != EINVAL ) app.Run();
+          }
+          else
+            result = arguments.run(description, name);
+          if ( result == EINVAL ) usage_default(name);
+        }
+        else {
+          std::cout << "The geometry was loaded. Application now exiting." << std::endl;
+        }
+      }
+      if ( interpreter )  {
+        interpreter->Run();
+      }
+      if ( arguments.destroy ) delete &description;
+      return 0;
     }
-    else {
-      std::cout << "The geometry was loaded. Application now exiting." << std::endl;
-    }
-    if ( args.destroy ) delete &description;
-    return 0;
-  }
 
-  //______________________________________________________________________________
-  int main_default(const char* name, int argc, char** argv)  {
-    try {
-      return main_wrapper(name,argc,argv);
+    /// Main entry point as a program
+    int main_plugins(const char* name, int argc, char** argv)   {
+      try  {
+        return invoke_plugin_runner(name, argc, argv);
+      }
+      catch(const std::exception& e)  {
+        std::cout << "geoPluginRun: Got uncaught exception: " << e.what() << std::endl;
+      }
+      catch (...)  {
+        std::cout << "geoPluginRun: Got UNKNOWN uncaught exception." << std::endl;
+      }
+      return EINVAL;    
     }
-    catch(const std::exception& e)  {
-      std::cout << "Got uncaught exception: " << e.what() << std::endl;
+
+    //______________________________________________________________________________
+    int main_default(const char* name, int argc, char** argv)  {
+      try {
+        return main_wrapper(name,argc,argv);
+      }
+      catch(const std::exception& e)  {
+        std::cout << "Got uncaught exception: " << e.what() << std::endl;
+      }
+      catch (...)  {
+        std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+      }
+      return EINVAL;    
     }
-    catch (...)  {
-      std::cout << "Got UNKNOWN uncaught exception." << std::endl;
-    }
-    return EINVAL;    
   }
 }

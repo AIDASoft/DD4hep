@@ -116,7 +116,7 @@ DECLARE_CONSTRUCTOR(Detector_constructor,create_description_instance)
  */
 static long display(Detector& description, int argc, char** argv) {
   TGeoManager& mgr = description.manager();
-  int vislevel = 4, visopt = 1;
+  int vislevel = 6, visopt = 1;
   string detector = "/world";
   const char* opt = "ogl";
   for(int i = 0; i < argc && argv[i]; ++i)  {

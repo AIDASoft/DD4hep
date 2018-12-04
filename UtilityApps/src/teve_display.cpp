@@ -155,7 +155,7 @@ DECLARE_APPLY(DD4hepTEveDisplay,teve_display)
 //=====================================================================================================================
 
 int main(int argc,char** argv)  {
-  return main_default("DD4hepTEveDisplay",argc,argv);
+  return dd4hep::execute::main_default("DD4hepTEveDisplay",argc,argv);
 }
 
 //=====================================================================================================================
