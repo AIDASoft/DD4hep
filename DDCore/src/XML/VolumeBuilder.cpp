@@ -126,7 +126,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
     auto is = shapes.find(nam);
     if ( is != shapes.end() )  {
       except("VolumeBuilder","+++ The named shape %s is already known to this builder unit. "
-             "Cannot be overridded.",nam.c_str());
+             "Cannot be overridden.",nam.c_str());
     }
   }
   /// Was it veto'ed before ?
@@ -196,7 +196,7 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
       continue;
     }
     except("VolumeBuilder","+++ Shape %s is already known to this builder unit. "
-           "Cannot be overridded.",nam.c_str());
+           "Cannot be overridden.",nam.c_str());
   }
   return shapes.size()-len;
 }

@@ -253,6 +253,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "limits" ) s_debug_limits       = (0 != val);
     else if ( nam.substr(0,6) == "segmen" ) s_debug_segmentation = (0 != val);
     else if ( nam.substr(0,6) == "consta" ) s_debug_constants    = (0 != val);
+    else if ( nam.substr(0,6) == "define" ) s_debug_constants    = (0 != val);
     else if ( nam.substr(0,6) == "includ" ) s_debug_include      = (0 != val);
   }
 }

@@ -873,6 +873,20 @@ Solid Volume::solid() const {
   return Solid((*this)->GetShape());
 }
 
+/// Access the bounding box of the volume (if available)
+Box Volume::boundingBox() const {
+  Box box = this->solid();
+  if ( box.isValid() )   {
+    return box;
+  }
+  else if ( !isValid() )   {
+    except("dd4hep","Volume: Cannot access the bounding box of an invalid volume [Invalid Handle]!");
+  }
+  except("dd4hep","Volume: Cannot access the bounding box an object of type: %s shape: %s",
+         this->ptr()->IsA()->GetName(), this->ptr()->GetShape()->IsA()->GetName());
+  return box;
+}
+
 /// Set the regional attributes to the volume
 const Volume& Volume::setRegion(const Detector& description, const string& nam) const {
   if (!nam.empty()) {
