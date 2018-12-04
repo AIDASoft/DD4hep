@@ -354,7 +354,7 @@ Polycone::Polycone(double startPhi, double deltaPhi, const vector<double>& r, co
   params.push_back(r.size());
   for (size_t i = 0; i < r.size(); ++i) {
     params.push_back(z[i] );
-    params.push_back(0.0 );
+    params.push_back(0.0  );
     params.push_back(r[i] );
   }
   _assign(new TGeoPcon(&params[0]), "", "polycone", true);
@@ -386,48 +386,45 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, 
-			 double rmin1, double rmax1,
-			 double rmin2, double rmax2,
-			 double phi1, double phi2)
+                         double rmin1,     double rmax1,
+                         double rmin2,     double rmax2,
+                         double startPhi,  double endPhi)
 {
-  _assign(new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/units::deg, phi2/units::deg), "", "cone_segment", true);
+  _assign(new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, startPhi/units::deg, endPhi/units::deg), "", "cone_segment", true);
 }
 
 /// Set the cone segment dimensions
 ConeSegment& ConeSegment::setDimensions(double dz, 
-					double rmin1, double rmax1,
-					double rmin2, double rmax2,
-					double phi1,  double phi2) {
-  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1/units::deg, phi2/units::deg };
+                                        double rmin1, double rmax1,
+                                        double rmin2, double rmax2,
+                                        double startPhi,  double endPhi) {
+  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, startPhi/units::deg, endPhi/units::deg };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  _assign(new TGeoTubeSeg(rmin,rmax,z,startPhi/units::deg,deltaPhi/units::deg),nam,"tube",true);
-  //_assign(new MyConeSeg(), nam, "tube", true);
-  //setDimensions(rmin, rmax, z, startPhi, deltaPhi);
+void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double endPhi) {
+  _assign(new TGeoTubeSeg(rmin,rmax,z,startPhi/units::deg,endPhi/units::deg),nam,"tube",true);
 }
 
 /// Set the tube dimensions
-Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  double params[] = {rmin,rmax,z,startPhi/units::deg,deltaPhi/units::deg};
-  //double params[] = { z, rmin, rmax, rmin, rmax, startPhi/units::deg,deltaPhi/units::deg };
+Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double endPhi) {
+  double params[] = {rmin,rmax,z,startPhi/units::deg,endPhi/units::deg};
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-CutTube::CutTube(double rmin, double rmax, double dz, double phi1, double phi2,
+CutTube::CutTube(double rmin, double rmax, double dz, double startPhi, double endPhi,
                  double lx, double ly, double lz, double tx, double ty, double tz)  {
-  make(rmin,rmax,dz,phi1/units::deg,phi2/units::deg,lx,ly,lz,tx,ty,tz);
+  make(rmin,rmax,dz,startPhi/units::deg,endPhi/units::deg,lx,ly,lz,tx,ty,tz);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void CutTube::make(double rmin, double rmax, double dz, double phi1, double phi2,
+void CutTube::make(double rmin, double rmax, double dz, double startPhi, double endPhi,
                    double lx, double ly, double lz, double tx, double ty, double tz)  {
-  _assign(new TGeoCtub(rmin,rmax,dz,phi1,phi2,lx,ly,lz,tx,ty,tz),"","cuttube",true);
+  _assign(new TGeoCtub(rmin,rmax,dz,startPhi,endPhi,lx,ly,lz,tx,ty,tz),"","cuttube",true);
 }
 
 /// Constructor to create a truncated tube object with attribute initialization
@@ -515,7 +512,7 @@ void Cone::make(double z, double rmin1, double rmax1, double rmin2, double rmax2
   _assign(new TGeoCone(z, rmin1, rmax1, rmin2, rmax2 ), "", "cone", true);
 }
 
-/// Set the box dimensions (startPhi=0.0, deltaPhi=2*pi)
+/// Set the box dimensions (startPhi=0.0, endPhi=2*pi)
 Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
   double params[] = { z, rmin1, rmax1, rmin2, rmax2  };
   _setDimensions(params);
@@ -581,27 +578,27 @@ Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, do
 }
 
 /// Constructor function to be used when creating a new object with attribute initialization
-void Sphere::make(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
+void Sphere::make(double rmin, double rmax, double startTheta, double endTheta, double startPhi, double endPhi) {
   _assign(new TGeoSphere(rmin, rmax,
-                         theta/units::deg, delta_theta/units::deg,
-                         phi/units::deg, delta_phi/units::deg), "", "sphere", true);
+                         startTheta/units::deg, endTheta/units::deg,
+                         startPhi/units::deg,   endPhi/units::deg), "", "sphere", true);
 }
 
 /// Set the Sphere dimensions
-Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  double params[] = { rmin, rmax, theta, delta_theta/units::deg, phi/units::deg, delta_phi/units::deg };
+Sphere& Sphere::setDimensions(double rmin, double rmax, double startTheta, double endTheta, double startPhi, double endPhi) {
+  double params[] = { rmin, rmax, startTheta, endTheta/units::deg, startPhi/units::deg, endPhi/units::deg };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void Torus::make(double r, double rmin, double rmax, double phi, double delta_phi) {
-  _assign(new TGeoTorus(r, rmin, rmax, phi/units::deg, delta_phi/units::deg), "", "torus", true);
+void Torus::make(double r, double rmin, double rmax, double startPhi, double deltaPhi) {
+  _assign(new TGeoTorus(r, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg), "", "torus", true);
 }
 
 /// Set the Torus dimensions
-Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, double delta_phi) {
-  double params[] = { r, rmin, rmax, phi/units::deg, delta_phi/units::deg };
+Torus& Torus::setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi) {
+  double params[] = { r, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg };
   _setDimensions(params);
   return *this;
 }

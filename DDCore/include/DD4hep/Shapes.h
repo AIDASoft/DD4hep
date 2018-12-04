@@ -298,14 +298,14 @@ namespace dd4hep {
     /// Constructor to create a new ConeSegment object
     ConeSegment(double dz, double rmin1, double rmax1,
                 double rmin2, double rmax2,
-                double phi1 = 0.0, double phi2 = 2.0 * M_PI);
+                double startPhi = 0.0, double endPhi = 2.0 * M_PI);
     /// Assignment operator
     ConeSegment& operator=(const ConeSegment& copy) = default;
 
     /// Set the cone segment dimensions
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
                                double rmin2, double rmax2,
-                               double phi1 = 0.0, double phi2 = 2.0 * M_PI);
+                               double startPhi = 0.0, double endPhi = 2.0 * M_PI);
   };
 #if 0
   /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
@@ -332,7 +332,7 @@ namespace dd4hep {
   class Tube: public Solid_type<TGeoTubeSeg> {
   protected:
     /// Internal helper method to support object construction
-    void make(const std::string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi);
+    void make(const std::string& nam, double rmin, double rmax, double z, double startPhi, double endPhi);
 
   public:
     /// Default constructor
@@ -345,30 +345,30 @@ namespace dd4hep {
     template <typename Q> Tube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz)
-    {   make("", rmin, rmax, dz, 0, 2*M_PI);               }
+    {   make("", rmin, rmax, dz, 0, 2*M_PI);                   }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    Tube(double rmin, double rmax, double dz, double deltaPhi)
-    {   make("", rmin, rmax, dz, 0, deltaPhi);             }
+    Tube(double rmin, double rmax, double dz, double endPhi)
+    {   make("", rmin, rmax, dz, 0, endPhi);                   }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    Tube(double rmin, double rmax, double dz, double startPhi, double deltaPhi)
-    {   make("", rmin, rmax, dz, startPhi, deltaPhi);      }
+    Tube(double rmin, double rmax, double dz, double startPhi, double endPhi)
+    {   make("", rmin, rmax, dz, startPhi, endPhi);            }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz)
-    {   make(nam, rmin, rmax, dz, 0, 2*M_PI);              }
+    {   make(nam, rmin, rmax, dz, 0, 2*M_PI);                  }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-    Tube(const std::string& nam, double rmin, double rmax, double dz, double deltaPhi)
-    {  make(nam, rmin, rmax, dz, 0, deltaPhi);             }
+    Tube(const std::string& nam, double rmin, double rmax, double dz, double endPhi)
+    {  make(nam, rmin, rmax, dz, 0, endPhi);                   }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-    Tube(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double deltaPhi)
-    {  make(nam, rmin, rmax, dz, startPhi, startPhi+deltaPhi); }
+    Tube(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double endPhi)
+    {  make(nam, rmin, rmax, dz, startPhi, endPhi);            }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    template <typename RMIN, typename RMAX, typename Z, typename DELTAPHI=double>
-    Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const DELTAPHI& deltaPhi = 2.0*M_PI)
-    {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(deltaPhi));   }
+    template <typename RMIN, typename RMAX, typename Z, typename ENDPHI=double>
+    Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const ENDPHI& endPhi = 2.0*M_PI)
+    {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi));   }
     /// Assignment operator
     Tube& operator=(const Tube& copy) = default;
     /// Set the tube dimensions
-    Tube& setDimensions(double rmin, double rmax, double dz, double startPhi=0.0, double deltaPhi=2*M_PI);
+    Tube& setDimensions(double rmin, double rmax, double dz, double startPhi=0.0, double endPhi=2*M_PI);
   };
 
   /// Class describing a tube shape of a section of a cut tube segment
@@ -383,7 +383,7 @@ namespace dd4hep {
   class CutTube: public Solid_type<TGeoCtub> {
   protected:
     /// Internal helper method to support object construction
-    void make(double rmin, double rmax, double dz, double phi1, double phi2,
+    void make(double rmin, double rmax, double dz, double startPhi, double endPhi,
               double lx, double ly, double lz, double tx, double ty, double tz);
 
   public:
@@ -396,7 +396,7 @@ namespace dd4hep {
     /// Constructor to assign an object
     template <typename Q> CutTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-    CutTube(double rmin, double rmax, double dz, double phi1, double phi2,
+    CutTube(double rmin, double rmax, double dz, double startPhi, double endPhi,
             double lx, double ly, double lz, double tx, double ty, double tz);
     /// Assignment operator
     CutTube& operator=(const CutTube& copy) = default;
@@ -660,7 +660,7 @@ namespace dd4hep {
   class Torus: public Solid_type<TGeoTorus> {
   private:
     /// Internal helper method to support object construction
-    void make(double r, double rmin, double rmax, double phi, double delta_phi);
+    void make(double r, double rmin, double rmax, double startPhi, double deltaPhi);
   public:
     /// Default constructor
     Torus() = default;
@@ -671,16 +671,16 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> Torus(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous object with attribute initialization
-    template<typename R, typename RMIN, typename RMAX, typename PHI, typename DELTA_PHI>
-    Torus(R r, RMIN rmin, RMAX rmax, PHI phi=M_PI, DELTA_PHI delta_phi = 2.*M_PI)
-    {   make(_toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(phi),_toDouble(delta_phi));  }
+    template<typename R, typename RMIN, typename RMAX, typename STARTPHI, typename DELTAPHI>
+    Torus(R r, RMIN rmin, RMAX rmax, STARTPHI startPhi=M_PI, DELTAPHI deltaPhi = 2.*M_PI)
+    {   make(_toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
     /// Constructor to create a new anonymous object with attribute initialization
-    Torus(double r, double rmin, double rmax, double phi=M_PI, double delta_phi = 2.*M_PI)
-    {   make(r,rmin,rmax,phi,delta_phi);  }
+    Torus(double r, double rmin, double rmax, double startPhi=M_PI, double deltaPhi = 2.*M_PI)
+    {   make(r, rmin, rmax, startPhi, deltaPhi);  }
     /// Assignment operator
     Torus& operator=(const Torus& copy) = default;
     /// Set the Torus dimensions
-    Torus& setDimensions(double r, double rmin, double rmax, double phi, double delta_phi);
+    Torus& setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi);
   };
 
   /// Class describing a sphere shape
@@ -696,7 +696,9 @@ namespace dd4hep {
   class Sphere: public Solid_type<TGeoSphere> {
   protected:
     /// Constructor function to be used when creating a new object with attribute initialization
-    void make(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi);
+    void make(double rmin,       double rmax,
+              double startTheta, double endTheta,
+              double startPhi,   double endPhi);
   public:
     /// Default constructor
     Sphere() = default;
@@ -707,25 +709,27 @@ namespace dd4hep {
     /// Constructor to be used when passing an already created object
     template <typename Q> Sphere(const Handle<Q>& e) : Solid_type<Object>(e) {  }
     /// Constructor to create a new anonymous object with attribute initialization
-    Sphere(double rmin,        double rmax,
-           double theta = 0.0, double delta_theta = M_PI,
-           double phi   = 0.0, double delta_phi   = 2. * M_PI)
-    {  make(rmin, rmax, theta, delta_theta, phi, delta_phi);     }
+    Sphere(double rmin,            double rmax,
+           double startTheta= 0.0, double endTheta = M_PI,
+           double startPhi  = 0.0, double endPhi   = 2. * M_PI)
+    {  make(rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
     /// Constructor to create a new anonymous object with generic attribute initialization
-    template<typename RMIN,         typename RMAX,
-             typename THETA=double, typename DELTA_THETA=double,
-             typename PHI=double,   typename DELTA_PHI=double>
-    Sphere(RMIN  rmin,         RMAX        rmax,
-           THETA theta = 0.0,  DELTA_THETA delta_theta = M_PI,
-           PHI   phi   = 0.0,  DELTA_PHI   delta_phi   = 2. * M_PI)  {
-      make(_toDOuble(rmin),  _toDouble(rmax),
-           _toDouble(theta), _toDouble(delta_theta),
-           _toDouble(phi),   _toDouble(delta_phi));
+    template<typename RMIN,              typename RMAX,
+             typename STARTTHETA=double, typename ENDTHETA=double,
+             typename STARTPHI=double,   typename ENDPHI=double>
+    Sphere(RMIN  rmin,                   RMAX     rmax,
+           STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
+           STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
+      make(_toDOuble(rmin),       _toDouble(rmax),
+           _toDouble(startTheta), _toDouble(endTheta),
+           _toDouble(startPhi),   _toDouble(endPhi));
     }
     /// Assignment operator
     Sphere& operator=(const Sphere& copy) = default;
     /// Set the Sphere dimensions
-    Sphere& setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi);
+    Sphere& setDimensions(double rmin,       double rmax,
+                          double startTheta, double endTheta,
+                          double startPhi,   double endPhi);
   };
 
   /// Class describing a Paraboloid shape
