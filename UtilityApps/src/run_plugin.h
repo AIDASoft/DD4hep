@@ -301,7 +301,11 @@ namespace dd4hep  {
           usage_plugin_runner();
         }
       }
-      if ( !arguments.ui && !arguments.interpreter && arguments.plugins.empty() )  {
+      if ( !arguments.dry_run &&
+           !arguments.ui      &&
+           !arguments.interpreter &&
+           arguments.plugins.empty() )
+      {
         usage_plugin_runner();
       }
       std::unique_ptr<TRint> interpreter;
@@ -365,7 +369,7 @@ namespace dd4hep  {
           std::cout << "The geometry was loaded. Application now exiting." << std::endl;
         }
       }
-      if ( interpreter )  {
+      if ( !arguments.dry_run && interpreter.get() )  {
         interpreter->Run();
       }
       if ( arguments.destroy ) delete &description;
