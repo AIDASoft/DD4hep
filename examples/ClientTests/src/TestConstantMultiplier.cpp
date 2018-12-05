@@ -16,7 +16,7 @@
  This plugin behaves like a main program.
  Invoke the plugin with something like this:
 
- geoPluginRun -destroy -plugin DD4hep_XML-In-Memory -input <file name>
+ geoPluginRun -destroy -plugin DD4hep_TestConstantsMultiplier -opt [-opt]
 
 */
 // Framework include files

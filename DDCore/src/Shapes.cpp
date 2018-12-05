@@ -646,40 +646,71 @@ void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, doub
   double startPhi     = 0;
   double halfZ        = z;
   double halfOpeningAngle = std::asin( x / std::abs( r ))/units::deg;
-  
+
   /// calculate the displacement of the tubs w.r.t. to the trap, determine the opening angle of the tubs
   double delta        = std::sqrt( r * r - x * x );
  
+#if 0
   if( r < 0 && std::abs(r) >= x )  {
-    intersec = true; // intersection solid
+    intersec = true;       // intersection solid
     h = y1 < y2 ? y2 : y1; // tubs half height
-    h += h/20.; // enlarge a bit - for subtraction solid
+    h += h/20.;            // enlarge a bit - for subtraction solid
     if( atMinusZ )    {
-      displacement = - halfZ - delta; 
-      startPhi     = 270.0 - halfOpeningAngle;
+      displacement = -halfZ - delta; 
+      startPhi     =  270.0 - halfOpeningAngle;
     }
     else    {
-      displacement =   halfZ + delta;
-      startPhi     = 90.0 - halfOpeningAngle;
+      displacement =  halfZ + delta;
+      startPhi     =  90.0  - halfOpeningAngle;
     }
   }
   else if( r > 0 && std::abs(r) >= x )  {
     if( atMinusZ )    {
-      displacement = - halfZ + delta;
-      startPhi     = 90.0 - halfOpeningAngle;
+      displacement = -halfZ + delta;
+      startPhi     =  90.0  - halfOpeningAngle;
       h = y1;
     }
     else
     {
-      displacement =   halfZ - delta; 
-      startPhi     = 270.0 - halfOpeningAngle;
+      displacement =  halfZ - delta; 
+      startPhi     =  270.0 - halfOpeningAngle;
       h = y2;
     }    
   }
   else  {
     except("PseudoTrap","Check parameters of the PseudoTrap!");   
   }
- 
+#endif 
+  if( r < 0 && std::abs(r) >= x )  {
+    intersec = true;       // intersection solid
+    h = y1 < y2 ? y2 : y1; // tubs half height
+    h += h/20.;            // enlarge a bit - for subtraction solid
+    if( atMinusZ )    {
+      displacement = - halfZ - delta; 
+      startPhi     =  90.0 - halfOpeningAngle;
+    }
+    else    {
+      displacement =   halfZ + delta;
+      startPhi     = -90.0 - halfOpeningAngle;
+    }
+  }
+  else if( r > 0 && std::abs(r) >= x )  {
+    if( atMinusZ )    {
+      displacement = - halfZ + delta;
+      startPhi     = 270.0 - halfOpeningAngle;
+      h = y1;
+    }
+    else
+    {
+      displacement =   halfZ - delta; 
+      startPhi     =  90.0 - halfOpeningAngle;
+      h = y2;
+    }    
+  }
+  else  {
+    except("PseudoTrap","Check parameters of the PseudoTrap!");   
+  }
+
   Solid trap(new TGeoTrd2(x1, x2, y1, y2, halfZ));
   Solid tubs(new TGeoTubeSeg(0.,std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.));
   TGeoCompositeShape* solid = 0;

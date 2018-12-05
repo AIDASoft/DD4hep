@@ -1,0 +1,32 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_TubeDivision" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis_20">
+        <shape type="Tube" rmin="4.69*m" rmax="4.95*m" dz="31.9*cm" startphi="346.25*deg" deltaphi="360*deg">
+          <position x="0"  y="0" z="50"/>
+          <rotation x="0"  y="0" z="0"/>
+        </shape>
+      </check>
+      <check vis="Shape2_vis">
+        <shape type="Tube" rmin="4.694*m" rmax="4.955*m" dz="32*cm" startphi="346.25*deg" deltaphi="3.099999*deg">
+          <position x="0"  y="30" z="50"/>
+          <rotation x="0"  y="0"  z="0"/>
+        </shape>
+      </check>
+      <check vis="Shape3_vis">
+        <shape type="Tube" rmin="4.694*m" rmax="4.955*m" dz="32*cm" startphi="10.75*deg" deltaphi="3.099999*deg">
+          <position x="0"  y="0" z="0"/>
+          <rotation x="0"  y="0" z="0"/>
+        </shape>
+      </check>
+
+<!--
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TubeDivision.txt" create="CheckShape_create"/>
+-->
+    </detector>
+  </detectors>
+</lccdd>
