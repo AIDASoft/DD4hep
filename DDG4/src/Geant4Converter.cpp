@@ -70,6 +70,7 @@
 #include "G4UnionSolid.hh"
 #include "G4Paraboloid.hh"
 #include "G4Ellipsoid.hh"
+#include "G4GenericTrap.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4EllipticalTube.hh"
 #include "G4SubtractionSolid.hh"
@@ -526,6 +527,14 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = new G4Trap(name, sh->GetDz() * CM_2_MM, sh->GetTheta(), sh->GetPhi(),
                          sh->GetH1() * CM_2_MM, sh->GetBl1() * CM_2_MM, sh->GetTl1() * CM_2_MM, sh->GetAlpha1() * DEGREE_2_RAD,
                          sh->GetH2() * CM_2_MM, sh->GetBl2() * CM_2_MM, sh->GetTl2() * CM_2_MM, sh->GetAlpha2() * DEGREE_2_RAD);
+    }
+    else if (shape->IsA() == TGeoArb8::Class())  {
+      vector<G4TwoVector> vertices;
+      TGeoTrap* sh = (TGeoTrap*) shape;
+      Double_t* vtx_xy = sh->GetVertices();
+      for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
+        vertices.push_back(G4TwoVector(vtx_xy[0] * CM_2_MM,vtx_xy[1] * CM_2_MM));
+      solid = new G4GenericTrap(name, sh->GetDz() * CM_2_MM, vertices);
     }
     else if (shape->IsA() == TGeoCompositeShape::Class()) {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
