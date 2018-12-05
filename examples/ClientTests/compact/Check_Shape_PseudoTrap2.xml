@@ -30,9 +30,13 @@
         <position x="-300*cm"  y="-180*cm" z="0*cm"/>
         <rotation x="0"       y="pi/2"    z="pi"/>
       </check>
-      <comment>
-        <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="CheckShape_create"/>
-      </comment>
+      <check vis="Shape4_vis">
+        <shape type="PseudoTrap" name="YE1_CMS" 
+                x1="0.293734*m" x2="1.86356*m" y1="0.3000*m" y2="0.3000*m" z="2.92934*m" radius="-1.1350*m" minusZ="true"/>
+        <position x="0*cm"  y="330*cm" z="0*cm"/>
+        <rotation x="pi"     y="0"    z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap2.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>
