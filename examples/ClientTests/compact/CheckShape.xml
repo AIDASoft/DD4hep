@@ -43,7 +43,7 @@
     <constant name="world_x" value="world_side"/>
     <constant name="world_y" value="world_side"/>
     <constant name="world_z" value="world_side"/>
-    <constant name="CheckShape_create" value="0"/>
+    <constant name="CheckShape_create" value="1"/>
   </define>
 
   <display>
@@ -53,5 +53,6 @@
     <vis name="Shape1_vis"    alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
     <vis name="Shape2_vis"    alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
     <vis name="Shape3_vis"    alpha="1.0" r="0" g="0" b="1" showDaughters="true" visible="true"/>
+    <vis name="Shape4_vis"    alpha="1.0" r="1" g="1" b="0" showDaughters="true" visible="true"/>
   </display>
 </lccdd>

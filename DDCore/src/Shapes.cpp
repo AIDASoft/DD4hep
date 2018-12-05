@@ -651,6 +651,8 @@ void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, doub
   double delta        = std::sqrt( r * r - x * x );
  
 #if 0
+  // Implementation from : (Crappy)
+  // https://cmssdt.cern.ch/lxr/source/SimG4Core/Geometry/src/DDG4SolidConverter.cc#0362
   if( r < 0 && std::abs(r) >= x )  {
     intersec = true;       // intersection solid
     h = y1 < y2 ? y2 : y1; // tubs half height
@@ -680,7 +682,10 @@ void PseudoTrap::make(double x1, double x2, double y1, double y2, double z, doub
   else  {
     except("PseudoTrap","Check parameters of the PseudoTrap!");   
   }
-#endif 
+#endif
+
+  // Implementation from :
+  // https://cmssdt.cern.ch/lxr/source/Fireworks/Geometry/src/TGeoMgrFromDdd.cc#0538
   if( r < 0 && std::abs(r) >= x )  {
     intersec = true;       // intersection solid
     h = y1 < y2 ? y2 : y1; // tubs half height
