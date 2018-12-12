@@ -157,6 +157,12 @@ namespace dd4hep {
 
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(Condition condition) = 0;
+
+      /// Helper class to select the value from a mapped type
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       */
       template <typename C> struct get_second {
         const typename C::mapped_type& operator()( const typename C::value_type& v) const
         { return v.second; }
