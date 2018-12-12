@@ -127,22 +127,36 @@ void ConditionsDependencyHandler::resolve()    {
     w = c.second;
     auto& section = work_pools[w->iov->keyData];
     section.push_back(w->condition);
+#if 0
     printout(prt_lvl,"DependencyHandler","++ Register %s %s %s  [%s]",
              w->context.dependency->target.toString().c_str(),
              w->context.dependency->detector.path().c_str(),
              w->condition->iov->str().c_str(),
              typeName(typeid(*w->condition)).c_str());
+#endif
   }
   // Now block register all conditions to the manager AND to the user pool
+  // In principle at thi stage the conditions manager should be locked
+  // provided all the work done so far can be undone.....in case of an error
   for( const auto& section : work_pools )   {
     IOV iov(m_iovType, section.first);
-    size_t result = m_pool.registerMany(iov, section.second);
+    size_t result = registerMany(iov, section.second);
     if ( result != section.second.size() )  {
       // 
     }
     printout(prt_lvl,"DependencyHandler","++ Inserted %ld conditions to pool-iov: %s",
              section.second.size(), iov.str().c_str());
   }
+}
+
+/// Interface to handle multi-condition inserts by callbacks: One single insert
+bool ConditionsDependencyHandler::registerOne(const IOV& iov, Condition cond)    {
+  return m_pool.registerOne(iov, cond);
+}
+
+/// Handle multi-condition inserts by callbacks: block insertions of conditions with identical IOV
+size_t ConditionsDependencyHandler::registerMany(const IOV& iov, const std::vector<Condition>& values)   {
+  return m_pool.registerMany(iov, values);
 }
 
 /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
@@ -157,7 +171,7 @@ std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey
       std::vector<Condition>  conditions;
       Condition::itemkey_type key;
       item_selector(Condition::itemkey_type k) : key(k) {}
-      virtual int operator()(Condition cond)   {
+      int operator()(Condition cond)   {
         ConditionKey::KeyMaker km(cond->hash);
         if ( km.values.item_key == key ) conditions.push_back(cond);
         return 1;

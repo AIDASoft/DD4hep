@@ -153,6 +153,10 @@ namespace dd4hep {
       virtual std::vector<Condition> get(Condition::detkey_type key) override;
       /// Interface to access conditions by hash value of the item (only valid at resolve!)
       virtual std::vector<Condition> getByItem(Condition::itemkey_type key)  override;
+      /// Interface to handle multi-condition inserts by callbacks: One single insert
+      virtual bool registerOne(const IOV& iov, Condition cond);
+      /// Handle multi-condition inserts by callbacks: block insertions of conditions with identical IOV
+      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values);
     };
 
   }        /* End namespace cond                */
