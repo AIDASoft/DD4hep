@@ -55,6 +55,8 @@ namespace dd4hep {
     virtual void  destruct() const  = 0;
     /// Virtual entry clone function
     virtual ExtensionEntry* clone(void* arg)  const = 0;
+    /// Hash value
+    virtual unsigned long long int hash64()  const = 0;
   };
 
   namespace detail  {
@@ -97,6 +99,9 @@ namespace dd4hep {
       /// Virtual entry clone function
       virtual ExtensionEntry* clone(void*)  const  override
       { invalidCall("clone"); return 0;                                           }
+      /// Hash value
+      virtual unsigned long long int hash64()  const override
+      {  return detail::typeHash64<Q>();                                       }
     };
       
     /// Implementation class for the object extension mechanism.
@@ -139,6 +144,9 @@ namespace dd4hep {
       /// Virtual entry clone function
       virtual ExtensionEntry* clone(void* arg)  const  override
       {  return new DeleteExtension((T*)this->copy(arg));                         }
+      /// Hash value
+      virtual unsigned long long int hash64()  const override
+      {  return detail::typeHash64<Q>();                                       }
     };
 
     /// Implementation class for the object extension mechanism.
@@ -181,6 +189,9 @@ namespace dd4hep {
       /// Virtual entry clone function
       virtual ExtensionEntry* clone(void* arg)  const  override
       {  return new CopyDeleteExtension((T*)this->copy(arg));                     }
+      /// Hash value
+      virtual unsigned long long int hash64()  const override
+      {  return detail::typeHash64<Q>();                                       }
     };
   }     // End namespace detail
 }       // End namespace dd4hep

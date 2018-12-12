@@ -45,6 +45,13 @@ namespace dd4hep {
       invalidHandleError(typeid(T));
       return 0; // We have thrown an exception before - does not harm!
     }
+    /// Destroy the underlying object (be careful here: things are not reference counted)!
+    template <typename T> void Handle<T>::destroy()    {
+      if ( this->m_element )  {
+        delete this->m_element;
+        this->m_element = 0;
+      }
+    }
 }   /* End namespace dd4hep      */
 
 

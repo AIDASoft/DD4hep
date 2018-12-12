@@ -274,9 +274,11 @@ string ConditionKey::toString()  const    {
   char text[64];
   ::snprintf(text,sizeof(text),"%08X-%08X",key.values.det_key, key.values.item_key);
 #if !defined(DD4HEP_MINIMAL_CONDITIONS)
-  stringstream str;
-  str << "(" << name << ") " << text;
-  return str.str();
+  if ( !name.empty() )   {
+    stringstream str;
+    str << "(" << name << ") " << text;
+    return str.str();
+  }
 #endif
   return text;
 }

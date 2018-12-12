@@ -18,6 +18,10 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionDerived.h"
 
+// C/C++ include files
+#include <memory>
+#include <unordered_map>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -34,18 +38,25 @@ namespace dd4hep {
      */
     class ConditionsLoadInfo {
     public:
-      /// Default constructor
-      ConditionsLoadInfo() = default;
-      /// Copy constructor
-      ConditionsLoadInfo(const ConditionsLoadInfo& copy) = default;
+      int refCount = 0;
+    protected:
       /// Default destructor. 
       virtual ~ConditionsLoadInfo();
+    public:
+      /// Default constructor
+      ConditionsLoadInfo();
+      /// Move constructor
+      ConditionsLoadInfo(ConditionsLoadInfo&& copy) = delete;
+      /// Copy constructor
+      ConditionsLoadInfo(const ConditionsLoadInfo& copy) = delete;
       /// Assignment operator
-      ConditionsLoadInfo& operator=(const ConditionsLoadInfo& copy) = default;
-
+      ConditionsLoadInfo& operator=(const ConditionsLoadInfo& copy) = delete;
+      ConditionsLoadInfo* addRef()  {  ++refCount;  return this; }
+      void release() {   --refCount; if ( refCount <= 0 ) delete this;  }
       virtual const std::type_info& type() const = 0;
       virtual const void*           ptr()  const = 0;
       virtual ConditionsLoadInfo*   clone()  const = 0;
+      virtual std::string           toString() const = 0;
       template<typename T> T*       data() const {  return (T*)ptr(); }
     };
 
@@ -73,19 +84,23 @@ namespace dd4hep {
         T info;
         LoadInfo(const T& i) : info(i) {}
         LoadInfo()                  = default;
-        LoadInfo(const LoadInfo& c) = default;
+        LoadInfo(const LoadInfo& c) = delete;
         virtual ~LoadInfo()         = default;
-        LoadInfo& operator=(const LoadInfo& copy) = default;
+        LoadInfo& operator=(const LoadInfo& copy) = delete;
         virtual const std::type_info& type()   const  override
         { return typeid(T);                      }
         virtual const void*           ptr()    const  override
         { return &info;                          }
         virtual ConditionsLoadInfo*   clone()  const  override
         { return new LoadInfo<T>(info);          }
+        virtual std::string           toString() const override;
       };
-     
+      
+      // Looks like tree-maps are a bit slower.
       typedef std::map<Condition::key_type,ConditionDependency* > Dependencies;
       typedef std::map<Condition::key_type,ConditionsLoadInfo* >  Conditions;
+      //typedef std::unordered_map<Condition::key_type,ConditionDependency* > Dependencies;
+      //typedef std::unordered_map<Condition::key_type,ConditionsLoadInfo* >  Conditions;
 
     protected:
       /// Container of conditions required by this content
@@ -105,36 +120,48 @@ namespace dd4hep {
       /// Default destructor. 
       virtual ~ConditionsContent();
       /// Access to the real condition entries to be loaded
+      Conditions& conditions()              { return m_conditions;   }
+      /// Access to the real condition entries to be loaded (CONST)
       const Conditions& conditions() const  { return m_conditions;   }
       /// Access to the derived condition entries to be computed
+      Dependencies& derived()               { return m_derived;      }
+      /// Access to the derived condition entries to be computed (CONST)
       const Dependencies& derived() const   { return m_derived;      }
       /// Clear the conditions content definitions
       void clear();
+      /// Merge the content of "to_add" into the this content
+      void merge(const ConditionsContent& to_add);
       /// Remove a condition from the content
       bool remove(Condition::key_type condition);
       /// Add a new conditions key representing a real (not derived) condition
-      bool insertKey(Condition::key_type hash)   {
-        return m_conditions.insert(std::make_pair(hash,(ConditionsLoadInfo*)0)).second;
-      }
+      std::pair<Condition::key_type, ConditionsLoadInfo*>
+      insertKey(Condition::key_type hash);
       /// Add a new conditions key. T must inherit from class ConditionsContent::Info
-      bool insertKey(Condition::key_type hash, std::unique_ptr<ConditionsLoadInfo>& info)   {
-        bool ret = m_conditions.insert(std::make_pair(hash,info.get())).second;
-        if ( ret ) info.release();
-        else       info.reset();
-        return ret;
-      }
+      std::pair<Condition::key_type, ConditionsLoadInfo*>
+      addLocationInfo(Condition::key_type hash, ConditionsLoadInfo* info);
       /// Add a new conditions key. T must inherit from class ConditionsContent::Info
-      template <typename T> bool insertKey(Condition::key_type hash, const T& info)   {
-        std::unique_ptr<ConditionsLoadInfo> ptr(new LoadInfo<T>(info));
-        return insertKey(hash, ptr);
+      template <typename T> std::pair<Condition::key_type, ConditionsLoadInfo*>
+      addLocation(Condition::key_type hash, const T& info)   {
+        return addLocationInfo(hash, new LoadInfo<T>(info));
+      }
+      /// Add a new shared conditions dependency.
+      template <typename T> std::pair<Condition::key_type, ConditionsLoadInfo*>
+      addLocation(DetElement de, Condition::itemkey_type item, const T& info)   {
+        return addLocationInfo(ConditionKey(de, item).hash, new LoadInfo<T>(info));
       }
       /// Add a new shared conditions dependency
-      bool insertDependency(ConditionDependency* dep)   {
-        bool ret = m_derived.insert(std::make_pair(dep->key(),dep)).second;
-        if ( ret ) dep->addRef();
-        return ret;
-      }
+      std::pair<Condition::key_type, ConditionDependency*>
+      addDependency(ConditionDependency* dep);
+      /// Add a new conditions dependency (Built internally from arguments)
+      std::pair<Condition::key_type, ConditionDependency*>
+      addDependency(DetElement de, Condition::itemkey_type item, ConditionUpdateCall* callback);
     };
+
+    template <> inline
+    std::string ConditionsContent::LoadInfo<std::string>::toString() const   {
+      return this->info;
+    }
+
   }        /* End namespace cond               */
 }          /* End namespace dd4hep                   */
 #endif     /* DD4HEP_DDCOND_CONDITIONSCONTENT_H      */

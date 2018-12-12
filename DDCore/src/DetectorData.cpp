@@ -215,7 +215,14 @@ void DetectorData::destroyData(bool destroy_mgr)   {
   destroyHandles(m_display);
   destroyHandles(m_fields);
   destroyHandles(m_define);
-
+#if 0
+  for(const auto& d : m_define)   {
+    auto c = d;
+    std::cout << "Delete " << d.first << std::endl;
+    //if ( d.first == "world_side" ) continue;
+    delete d.second.ptr();
+  }
+#endif  
   destroyHandle(m_volManager);
   m_properties.clear();
   m_trackers.clear();

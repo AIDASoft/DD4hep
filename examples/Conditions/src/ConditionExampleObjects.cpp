@@ -149,9 +149,9 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   build_3.add(target1);
   build_3.add(target2);
 
-  content.insertDependency(build_1.release());
-  content.insertDependency(build_2.release());
-  content.insertDependency(build_3.release());
+  content.addDependency(build_1.release());
+  content.addDependency(build_2.release());
+  content.addDependency(build_3.release());
   printout(printLevel,"Example","++ Added derived conditions dependencies for %s",de.path().c_str());
   return 1;
 }

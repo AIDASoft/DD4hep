@@ -24,7 +24,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsDataLoader);
 
 /// Default constructor
 ConditionsDataLoader::ConditionsDataLoader(Detector& description, ConditionsManager mgr, const string nam) 
-  : NamedObject(nam,"ConditionsDataLoader"), m_detDesc(description), m_mgr(mgr)
+  : NamedObject(nam,"ConditionsDataLoader"), m_detector(description), m_mgr(mgr)
 {
   if ( m_mgr.isValid() ) return;
   except("ConditionsDataLoader","+++ Cannot create loader without a valid conditions manager handle!");
@@ -32,6 +32,16 @@ ConditionsDataLoader::ConditionsDataLoader(Detector& description, ConditionsMana
 
 /// Default destructor
 ConditionsDataLoader::~ConditionsDataLoader()   {
+}
+
+/// Access to properties
+dd4hep::Property& ConditionsDataLoader::operator[](const std::string& property_name)  {
+  return properties().property(property_name);
+}
+
+/// Access to properties (CONST)
+const dd4hep::Property& ConditionsDataLoader::operator[](const std::string& property_name)  const   {
+  return properties().property(property_name);
 }
 
 /// Add data source definition to loader

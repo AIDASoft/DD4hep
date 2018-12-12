@@ -296,9 +296,9 @@ namespace  {
                 build_3.add(target2);
                 printout(m_context.level,m_name,"Build [%ld] cond.deps: %s [%s # %s] -> %016llX",
                          rc.size(), cat->condition.c_str(), de.path().c_str(), cond.name(), cond->hash);
-                content->insertDependency(build_1.release());
-                content->insertDependency(build_2.release());
-                content->insertDependency(build_3.release());
+                content->addDependency(build_1.release());
+                content->addDependency(build_2.release());
+                content->addDependency(build_3.release());
               }
               else  { // These conditions cannot be handled....
                 printout(INFO,m_name,"Ignore condition: %s [%s # %s] -> Hash: %016llX Key: %016llX Type: %s",

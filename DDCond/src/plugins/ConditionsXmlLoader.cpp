@@ -113,8 +113,8 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
   xml::Handle_t       handle = doc.root();
   ConditionsStack     stack;
   char* argv[] = { (char*)handle.ptr(), (char*)&stack, 0};
-  void* result = dd4hep::createPlugin(fac, m_detDesc, 2, argv, 0);
-  if ( result == &m_detDesc )  { // All OK.
+  void* result = dd4hep::createPlugin(fac, m_detector, 2, argv, 0);
+  if ( result == &m_detector )  { // All OK.
     for (ConditionsStack::iterator c=stack.begin(); c!=stack.end(); ++c)  {
       Entry* e = (*c);
       Condition condition;/// = queueUpdate(e);

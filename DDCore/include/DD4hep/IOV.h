@@ -115,7 +115,6 @@ namespace dd4hep {
     bool is_discrete() const           {  return keyData.first == keyData.second;  }
     /// Get the local key of the IOV
     Key  key() const                   {  return keyData;                          }
-
     /// Set discrete IOV value
     void set(const Key& value);
     /// Set discrete IOV value
@@ -140,6 +139,12 @@ namespace dd4hep {
      *  is fully conained by the caller.
      */
     bool contains(const IOV& iov)  const;
+    /// Conditions key representing eternity
+    static IOV forever(const IOVType* typ)
+    { return IOV(typ, Key(MIN_KEY, MAX_KEY));                             }
+    /// Conditions key representing eternity
+    static Key key_forever()
+    { return Key(MIN_KEY, MAX_KEY);                                       }
     /// Check if 2 IOV objects are of the same type
     static bool same_type(const IOV& iov, const IOV& test)           {
       unsigned int typ1 = iov.iovType ? iov.iovType->type : iov.type;

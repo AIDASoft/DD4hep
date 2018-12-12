@@ -240,6 +240,9 @@ namespace dd4hep {
       /// Copy/clone the object
       virtual ExtensionEntry* clone(void* det)  const  override
       {  return new DetElementExtension<Q,T>((T*)this->copy(det));             }
+      /// Hash value
+      virtual unsigned long long int hash64()  const override
+      {  return detail::typeHash64<Q>();                                       }
     };
 
     /// Internal call to extend the detector element with an arbitrary structure accessible by the type
@@ -306,7 +309,7 @@ namespace dd4hep {
     DetElement clone(const std::string& new_name, int new_id) const;
 
     /// Add an extension object to the detector element
-    void* addExtension(unsigned long long int key,ExtensionEntry* entry) const;
+    void* addExtension(ExtensionEntry* entry) const;
 
     /// Access an existing extension object from the detector element
     void* extension(unsigned long long int key, bool alert) const;
@@ -314,8 +317,7 @@ namespace dd4hep {
     /// Extend the detector element with an arbitrary structure accessible by the type
     template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
       CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
-      return (IFACE*) this->addExtension(detail::typeHash64<IFACE>(),
-                                         new DetElementExtension<IFACE,CONCRETE>(c));
+      return (IFACE*) this->addExtension(new DetElementExtension<IFACE,CONCRETE>(c));
     }
     /// Access extension element by the type
     template <typename IFACE> IFACE* extension() const {

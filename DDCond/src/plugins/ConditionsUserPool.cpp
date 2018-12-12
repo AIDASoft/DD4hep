@@ -82,6 +82,10 @@ namespace dd4hep {
       virtual bool remove(Condition::key_type hash_key)  override;
       /// Remove condition by key from pool.
       virtual bool remove(const ConditionKey& key)  override;
+      /// Do single insertion of condition including registration to the manager
+      virtual bool registerOne(const IOV& iov, Condition cond)  override;
+      /// Do block insertions of conditions with identical IOV including registration to the manager
+      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values);
       /// Register a new condition to this pool
       virtual bool insert(Condition cond)  override;
 
@@ -121,7 +125,8 @@ namespace dd4hep {
 
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual ConditionsManager::Result load   (const IOV&              required,
-                             ConditionsSlice&        slice);
+                                                ConditionsSlice&        slice,
+                                                ConditionUpdateUserContext* user_param);
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual ConditionsManager::Result compute(const IOV&                  required,
                                                 ConditionsSlice&            slice,
@@ -302,6 +307,43 @@ Condition ConditionsMappedUserPool<MAPPING>::get(const ConditionKey& key)  const
   return i_findCondition(key.hash);
 }
 
+/// Do block insertions of conditions with identical IOV including registration to the manager
+template<typename MAPPING> bool
+ConditionsMappedUserPool<MAPPING>::registerOne(const IOV& iov,
+                                               Condition cond)   {
+  if ( iov.iovType )   {
+    ConditionsPool* pool = m_manager.registerIOV(*iov.iovType,iov.keyData);
+    if ( pool )   {
+      return m_manager.registerUnlocked(*pool, cond);
+    }
+    except("UserPool","++ Failed to register IOV: %s",iov.str().c_str());
+  }
+  except("UserPool","++ Cannot register conditions with invalid IOV.");
+  return 0;
+}
+
+/// Do block insertions of conditions with identical IOV including registration to the manager
+template<typename MAPPING> size_t
+ConditionsMappedUserPool<MAPPING>::registerMany(const IOV& iov,
+                                                const vector<Condition>& conds)   {
+  if ( iov.iovType )   {
+    ConditionsPool* pool = m_manager.registerIOV(*iov.iovType,iov.keyData);
+    if ( pool )   {
+      size_t result = m_manager.blockRegister(*pool, conds);
+      if ( result == conds.size() )   {
+        for(auto c : conds) i_insert(c.ptr());
+        return result;
+      }
+      except("UserPool","++ Conditions registration was incomplete: "
+             "registerd only  %ld out of %ld conditions.",
+             result, conds.size());
+    }
+    except("UserPool","++ Failed to register IOV: %s",iov.str().c_str());
+  }
+  except("UserPool","++ Cannot register conditions with invalid IOV.");
+  return 0;
+}
+
 /// Register a new condition to this pool
 template<typename MAPPING>
 bool ConditionsMappedUserPool<MAPPING>::insert(Condition cond)   {
@@ -342,9 +384,13 @@ ConditionsMappedUserPool<MAPPING>::get(DetElement detector,
 template<typename MAPPING> std::vector<Condition>
 ConditionsMappedUserPool<MAPPING>::get(Condition::key_type lower, Condition::key_type upper)   const  {
   vector<Condition> result;
-  typename MAPPING::const_iterator first = m_conditions.lower_bound(lower);
-  for(; first != m_conditions.end() && (*first).first <= upper; ++first )
-    result.push_back((*first).second);
+  if ( !m_conditions.empty() )   {
+    typename MAPPING::const_iterator first = m_conditions.lower_bound(lower);
+    for(; first != m_conditions.end(); ++first )  {
+      result.push_back((*first).second);
+      if ( (*first).first > upper ) break;
+    }
+  }
   return result;
 }
 
@@ -529,6 +575,9 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
                  num_load_miss, loaded.size());
         if ( do_output_miss )  {
           copy(begin(load_missing), load_last, inserter(slice_miss_cond, slice_miss_cond.begin()));
+          for ( const auto& m : slice_miss_cond )   {
+            printout (ERROR, "TEST", "Unloaded: %s",m.second->toString().c_str());
+          }
         }
         for_each(loaded.begin(),loaded.end(),Inserter<MAPPING>(m_conditions,&m_iov));
         result.loaded  = slice_cond.size()-num_load_miss;
@@ -542,6 +591,9 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
     }
     else if ( do_output_miss )  {
       copy(begin(cond_missing), last_cond, inserter(slice_miss_cond, slice_miss_cond.begin()));
+      for ( const auto& m : slice_miss_cond )   {
+        printout (ERROR, "TEST", "Unloaded: %s",m.second->toString().c_str());
+      }
     }
   }
   //
@@ -580,8 +632,9 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
 }
 
 template<typename MAPPING> ConditionsManager::Result
-ConditionsMappedUserPool<MAPPING>::load(const IOV&              required, 
-                                        ConditionsSlice&        slice)
+ConditionsMappedUserPool<MAPPING>::load(const IOV&                  required, 
+                                        ConditionsSlice&            slice,
+                                        ConditionUpdateUserContext* /* user_param */)
 {
   typedef vector<pair<Condition::key_type,ConditionsLoadInfo*> >  CondMissing;
   const auto& slice_cond = slice.content->conditions();

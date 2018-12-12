@@ -179,7 +179,7 @@ TestEnv::TestEnv(Detector& _description, const string& detector_name)
   : description(_description), detector(), manager()
 {
   manager = ConditionsManager::from(description);
-  manager["LoaderType"]     = "multi";
+  manager["LoaderType"]     = "DD4hep_Conditions_multi_Loader";
   manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
   manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
   manager["UserPoolType"]   = "DD4hep_ConditionsLinearUserPool";
@@ -188,7 +188,7 @@ TestEnv::TestEnv(Detector& _description, const string& detector_name)
   if ( detector.isValid() )  {
     pair<bool, const IOVType*> e = manager.registerIOVType(0, "epoch");
     pair<bool, const IOVType*> r = manager.registerIOVType(1, "run");
-    loader = manager.loader();
+    loader = &manager.loader();
     if ( e.first && r.first )  {
       epoch = e.second;
       run   = r.second;

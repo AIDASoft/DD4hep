@@ -64,7 +64,7 @@ namespace dd4hep {
       std::string             m_loaderType;
 
       /// Collection of IOV types managed
-      IOVTypes                m_iovTypes;
+      std::vector<IOVType>    m_iovTypes;
 
       /** Specialized interface only used by this implementation  */
       /// Lock to protect the update/delayed conditions pool
@@ -122,7 +122,7 @@ namespace dd4hep {
       virtual std::pair<bool, const IOVType*> registerIOVType(size_t iov_index, const std::string& iov_name) final;
       
       /// Access IOV by its type
-      virtual const IOVTypes& iovTypes () const final { return  m_iovTypes;  }
+      virtual const std::vector<IOVType>& iovTypes () const final { return  m_iovTypes;  }
 
       /// Access IOV by its type
       virtual const IOVType* iovType (size_t iov_index) const final;
@@ -138,6 +138,9 @@ namespace dd4hep {
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       virtual bool registerUnlocked(ConditionsPool& pool, Condition cond)  final;
+
+      /// Register a whole block of conditions with identical IOV.
+      virtual size_t blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const final;
 
       /// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
       virtual void adoptCleanup(ConditionsCleanup* cleaner)  final;
@@ -176,7 +179,17 @@ namespace dd4hep {
        *
        *   @return   
        */
-      Result prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctxt)  final;
+      virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctxt)  final;
+
+      /// Load all updates to the clients with the defined IOV (1rst step of prepare)
+      virtual Result load(const IOV&                  required_validity,
+                          ConditionsSlice&            slice,
+                          ConditionUpdateUserContext* ctxt=0) final;
+      /// Compute all derived conditions with the defined IOV (2nd step of prepare)
+      virtual Result compute(const IOV&                  required_validity,
+                             ConditionsSlice&            slice,
+                             ConditionUpdateUserContext* ctxt=0) final;
+
 
     };
   }        /* End namespace cond               */

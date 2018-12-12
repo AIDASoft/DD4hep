@@ -1034,7 +1034,7 @@ namespace dd4hep {
           if ( !context->manager.isValid() )  {
             ConditionsManager manager = ConditionsManager::from(description);
             manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
-            manager["LoaderType"]     = "dddb";
+            manager["LoaderType"]     = "DD4hep_Conditions_dddb_Loader";
             manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
             manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
             manager.initialize();

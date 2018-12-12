@@ -17,6 +17,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/detail/Handle.inl"
+#include "DD4hep/PluginCreators.h"
 
 #include "DD4hep/ConditionsListener.h"
 #include "DDCond/ConditionsManager.h"
@@ -95,7 +96,7 @@ void ConditionsManagerObject::onRemove(Condition condition)   {
 /// Access the used/registered IOV types
 const vector<const IOVType*> ConditionsManagerObject::iovTypesUsed() const   {
   vector<const IOVType*> result;
-  const IOVTypes& types = iovTypes();
+  const auto& types = this->iovTypes();
   for ( const auto& i : types )  {
     if ( int(i.type) != IOVType::UNKNOWN_IOV ) result.push_back(&i);
   }
@@ -146,6 +147,16 @@ ConditionsPool* ConditionsManagerObject::registerIOV(const string& data)   {
   return registerIOV(*iov.iovType, iov.keyData);
 }
 
+/// Initializing constructor to create a named manager
+ConditionsManager::ConditionsManager(Detector& description, const std::string& factory)   {
+  ConditionsManagerObject* obj = createPlugin<ConditionsManagerObject>(factory,description);
+  if ( !obj )  {
+    except("ConditionsManagerInstaller","Failed to create manager object of type %s",
+           factory.c_str());
+  }
+  assign(obj, "ConditionsManager",factory);
+}
+
 /// Default constructor
 ConditionsManager::ConditionsManager(Detector& description)  {
   assign(ConditionsManager::from(description).ptr(), "ConditionsManager","");
@@ -156,14 +167,14 @@ ConditionsManager& ConditionsManager::initialize()   {
   return *this;
 }
 
-/// Access to the property manager
-PropertyManager& ConditionsManager::properties()  const   {
-  return access()->properties();
-}
-
 /// Access the detector description
 Detector& ConditionsManager::detectorDescription()  const   {
   return access()->detectorDescription();
+}
+
+/// Access to the property manager
+PropertyManager& ConditionsManager::properties()  const   {
+  return access()->properties();
 }
 
 /// Access to properties
@@ -172,8 +183,8 @@ Property& ConditionsManager::operator[](const std::string& property_name) const 
 }
 
 /// Access the conditions loader
-ConditionsManager::Loader* ConditionsManager::loader()  const    {
-  return access()->loader();
+ConditionsDataLoader& ConditionsManager::loader()  const    {
+  return *(access()->loader());
 }
 
 /// Register new IOV type if it does not (yet) exist.
@@ -196,9 +207,9 @@ ConditionsIOVPool* ConditionsManager::iovPool(const IOVType& iov_type)  const {
 const vector<const IOVType*> ConditionsManager::iovTypesUsed() const  {
   Object* obj = access();
   vector<const IOVType*> result;
-  const IOVTypes& types = obj->iovTypes();
-  for(IOVTypes::const_iterator i=types.begin(); i!=types.end(); ++i)
-    if ( int((*i).type) != IOVType::UNKNOWN_IOV ) result.push_back(&(*i));
+  const auto& types = obj->iovTypes();
+  for(const auto& i : types )
+    if ( int(i.type) != IOVType::UNKNOWN_IOV ) result.push_back(&i);
   return result;
 }
 
@@ -229,6 +240,11 @@ ConditionsPool* ConditionsManager::registerIOV(const IOVType& typ, IOV::Key key)
 /// Create IOV from string
 void ConditionsManager::fromString(const string& iov_str, IOV& iov)  const  {
   access()->fromString(iov_str, iov);
+}
+      
+/// Register a whole block of conditions with identical IOV.
+size_t ConditionsManager::blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const   {
+  return access()->blockRegister(pool, cond);
 }
 
 /// Register new condition with the conditions store. Unlocked version, not multi-threaded
@@ -269,4 +285,16 @@ std::unique_ptr<UserPool> ConditionsManager::createUserPool(const IOVType* iovT)
 ConditionsManager::Result
 ConditionsManager::prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)  const  {
   return access()->prepare(req_iov, slice, ctx);
+}
+
+/// Load all updates to the clients with the defined IOV (1rst step of prepare)
+ConditionsManager::Result
+ConditionsManager::load(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)  const  {
+  return access()->load(req_iov, slice, ctx);
+}
+
+/// Compute all derived conditions with the defined IOV (2nd step of prepare)
+ConditionsManager::Result
+ConditionsManager::compute(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)  const  {
+  return access()->compute(req_iov, slice, ctx);
 }

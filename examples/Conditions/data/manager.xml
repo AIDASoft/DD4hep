@@ -5,7 +5,7 @@
 <conditions>
   <manager>
     <property name="PoolType"       value="DD4hep_ConditionsLinearPool"/>
-    <property name="LoaderType"     value="xml"/>
+    <property name="LoaderType"     value="DD4hep_Conditions_xml_Loader"/>
     <property name="UserPoolType"   value="DD4hep_ConditionsMapUserPool"/>
     <property name="UpdatePoolType" value="DD4hep_ConditionsLinearUpdatePool"/>
   </manager>

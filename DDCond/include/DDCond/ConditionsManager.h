@@ -48,7 +48,6 @@ namespace dd4hep {
 
       /// Standard object type
       typedef ConditionsManagerObject  Object;
-      typedef ConditionsDataLoader     Loader;
       typedef std::vector<IOVType>     IOVTypes;
 
       /// Result of a prepare call to the conditions manager
@@ -85,8 +84,11 @@ namespace dd4hep {
        */
       template <typename T> static ConditionsManager from(T& host);
 
-      /// Initializing constructor
+      /// Initializing constructor - used only by examples
       ConditionsManager(Detector& description);
+
+      /// Initializing constructor to create a manager from the factory name
+      ConditionsManager(Detector& description, const std::string& factory);
 
       /// Default constructor
       ConditionsManager() = default;
@@ -119,7 +121,7 @@ namespace dd4hep {
       PropertyManager& properties()  const;
 
       /// Access the conditions loader
-      Loader* loader()  const;
+      ConditionsDataLoader& loader()  const;
 
       /// Access the used/registered IOV types
       const std::vector<const IOVType*> iovTypesUsed() const;
@@ -150,6 +152,9 @@ namespace dd4hep {
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       bool registerUnlocked(ConditionsPool& pool, Condition cond) const;
+
+      /// Register a whole block of conditions with identical IOV.
+      size_t blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const;
       
       /// Push all pending updates to the conditions store. 
       /** Note:
@@ -179,6 +184,14 @@ namespace dd4hep {
 
       /// Prepare all updates to the clients with the defined IOV
       Result prepare(const IOV&                  required_validity,
+                     ConditionsSlice&            slice,
+                     ConditionUpdateUserContext* ctxt=0)  const;
+      /// Load all updates to the clients with the defined IOV (1rst step of prepare)
+      Result load(const IOV&                  required_validity,
+                  ConditionsSlice&            slice,
+                  ConditionUpdateUserContext* ctxt=0)  const;
+      /// Compute all derived conditions with the defined IOV (2nd step of prepare)
+      Result compute(const IOV&                  required_validity,
                      ConditionsSlice&            slice,
                      ConditionUpdateUserContext* ctxt=0)  const;
     };

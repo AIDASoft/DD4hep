@@ -1,0 +1,25 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_EightPointSolid" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="EightPointSolid" dz="30*cm">
+           <vertex x="-30*cm" y="-25*cm"/>
+           <vertex x="-25*cm" y=" 25*cm"/>
+           <vertex x="  5*cm" y=" 25*cm"/>
+           <vertex x=" 25*cm" y="-25*cm"/>
+           <vertex x="-28*cm" y="-23*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x=" 13*cm" y="-27*cm"/>
+        </shape>
+        <position x="0"  y="0" z="0"/>
+        <rotation x="0"  y="0" z="0"/>
+      </check>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_EightPointSolid.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

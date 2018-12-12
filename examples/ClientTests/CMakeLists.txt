@@ -172,7 +172,7 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
 #
 #  Test basic shapes by comparing mesh vertices with reference file
 foreach (test Box Cone ConeSegment Tube ElTube
-    CutTube Hyperboloid Paraboloid
+    CutTube Hyperboloid Paraboloid EightPointSolid
     Polycone PseudoTrap PseudoTrap2 Sphere Torus
     Trap Trd1 Trd2 TruncatedTube ExtrudedPolygon)
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
