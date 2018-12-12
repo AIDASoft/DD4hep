@@ -111,6 +111,7 @@ int AlignmentsCalculator::Scanner::operator()(DetElement de, int)  const  {
     if ( c.isValid() )  {
       const Delta& d = c.get<Delta>();
       deltas.insert(std::make_pair(de,&d));
+      if ( iov ) iov->iov_intersection(c->iov->key());
     }
     return 1;
   }

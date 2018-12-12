@@ -14,6 +14,7 @@
 // Framework include files
 #include "DDCond/ConditionsDependencyHandler.h"
 #include "DDCond/ConditionsManagerObject.h"
+#include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/Printout.h"
 
 using namespace dd4hep;
@@ -30,7 +31,28 @@ namespace {
     return text;
 #endif
   }
+}
 
+void ConditionsDependencyHandler::Work::do_intersection(const IOV* iov_ptr)   {
+  if ( iov_ptr )   {
+    if ( !this->iov )   {
+      this->_iov = *iov_ptr;
+      this->iov = &this->_iov;
+    }
+    else  {
+      this->_iov.iov_intersection(*iov_ptr);
+    }
+  }
+}
+
+Condition ConditionsDependencyHandler::Work::resolve(Work*& current)   {
+  Work* previous = current;
+  current = this;
+  state = RESOLVED;
+  context.dependency->callback->resolve(condition, context);
+  previous->do_intersection(iov);
+  current = previous;
+  return condition;
 }
 
 /// Default constructor
@@ -42,22 +64,19 @@ ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
     m_userParam(user_param), num_callback(0)
 {
   const IOV& iov = m_pool.validity();
-  //IOV full_iov(iov.iovType,IOV::Key(IOV::MIN_KEY,IOV::MAX_KEY));
-  IOV full_iov(iov.iovType,IOV::Key(0,detail::makeTime(2099,12,31)));
-  m_iovPool = m_manager->registerIOV(*iov.iovType, iov.keyData);
   unsigned char* p = new unsigned char[dependencies.size()*sizeof(Work)];
   Dependencies::const_iterator idep = dependencies.begin();
   m_block = (Work*)p;
   for(size_t i=0; i<dependencies.size(); ++i, ++idep, p+=sizeof(Work))  {
-    Work* w = new(p) Work(this,(*idep).second,user_param,full_iov);
+    Work* w = new(p) Work(this,(*idep).second,user_param,iov);
     m_todo.insert(std::make_pair((*idep).first,w));
   }
+  m_iovType = iov.iovType;
 }
 
 /// Default destructor
 ConditionsDependencyHandler::~ConditionsDependencyHandler()   {
   m_todo.clear();
-  m_created.clear();
   if ( m_block ) delete [] m_block;
   m_block = 0;
 }
@@ -82,28 +101,47 @@ void ConditionsDependencyHandler::compute()   {
 
 /// 2nd pass:  Handler callback for the second turn to resolve missing dependencies
 void ConditionsDependencyHandler::resolve()    {
+  PrintLevel prt_lvl = INFO;
   size_t num_resolved = 0;
-  std::map<IOV::Key,ConditionsPool*> pools;
+  std::vector<Condition> tmp;
+  std::map<IOV::Key,std::vector<Condition> > work_pools;
+  Work* w;
+
   m_state = RESOLVED;
-  for( auto& c : m_created )   {
-    Work* w = c.second;
+  for( const auto& c : m_todo )   {
+    w = c.second;
+    // Fill an empty map of condition vectors for the block inserts
+    auto ret = work_pools.insert(make_pair(w->iov->keyData,tmp));
+    if ( ret.second )   {
+      // There is sort of the hope that most conditions go into 1 pool...
+      ret.first->second.reserve(m_todo.size());
+    }
     if ( w->state == RESOLVED ) continue;
     w->state = RESOLVED;
+    m_currentWork = w;
     w->context.dependency->callback->resolve(w->condition, w->context);
     ++num_resolved;
   }
   // Optimize pool interactions: Cache pool in map assuming there are only few pools created
-  for( auto& c : m_created ) {
-    Work* w = c.second;
-    ConditionsPool* p = 0;
-    auto res = pools.insert(make_pair(w->iov.keyData,p));
-    if ( res.second )   {
-      p = m_manager->registerIOV(*w->iov.iovType, w->iov.keyData);
-      (*res.first).second = p;
+  for( const auto& c : m_todo )   {
+    w = c.second;
+    auto& section = work_pools[w->iov->keyData];
+    section.push_back(w->condition);
+    printout(prt_lvl,"DependencyHandler","++ Register %s %s %s  [%s]",
+             w->context.dependency->target.toString().c_str(),
+             w->context.dependency->detector.path().c_str(),
+             w->condition->iov->str().c_str(),
+             typeName(typeid(*w->condition)).c_str());
+  }
+  // Now block register all conditions to the manager AND to the user pool
+  for( const auto& section : work_pools )   {
+    IOV iov(m_iovType, section.first);
+    size_t result = m_pool.registerMany(iov, section.second);
+    if ( result != section.second.size() )  {
+      // 
     }
-    p = (*res.first).second;
-    w->condition->iov = p->iov;
-    m_manager->registerUnlocked(*p, w->condition);
+    printout(prt_lvl,"DependencyHandler","++ Inserted %ld conditions to pool-iov: %s",
+             section.second.size(), iov.str().c_str());
   }
 }
 
@@ -112,12 +150,37 @@ std::vector<Condition> ConditionsDependencyHandler::get(DetElement de)   {
   return this->get(de.key());
 }
 
+/// Interface to access conditions by hash value of the item (only valid at resolve!)
+std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey_type key)   {
+  if ( m_state == RESOLVED )   {
+    struct item_selector {
+      std::vector<Condition>  conditions;
+      Condition::itemkey_type key;
+      item_selector(Condition::itemkey_type k) : key(k) {}
+      virtual int operator()(Condition cond)   {
+        ConditionKey::KeyMaker km(cond->hash);
+        if ( km.values.item_key == key ) conditions.push_back(cond);
+        return 1;
+      }
+    };
+    item_selector proc(key);
+    m_pool.scan(conditionsProcessor(proc));
+    for (auto c : proc.conditions ) m_currentWork->do_intersection(c->iov);
+    return proc.conditions;
+  }
+  except("ConditionsDependencyHandler",
+         "Conditions bulk accesses are only possible during conditions resolution!");
+  return std::vector<Condition>();
+}
+
 /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
 std::vector<Condition> ConditionsDependencyHandler::get(Condition::detkey_type det_key)   {
   if ( m_state == RESOLVED )   {
-    ConditionKey::KeyMaker lower(det_key, 0);
-    ConditionKey::KeyMaker upper(det_key, ~0x0);
-    return m_pool.get(lower.hash, upper.hash);
+    ConditionKey::KeyMaker lower(det_key, Condition::FIRST_ITEM_KEY);
+    ConditionKey::KeyMaker upper(det_key, Condition::LAST_ITEM_KEY);
+    std::vector<Condition> conditions = m_pool.get(lower.hash, upper.hash);
+    for (auto c : conditions ) m_currentWork->do_intersection(c->iov);
+    return conditions;
   }
   except("ConditionsDependencyHandler",
          "Conditions bulk accesses are only possible during conditions resolution!");
@@ -126,26 +189,27 @@ std::vector<Condition> ConditionsDependencyHandler::get(Condition::detkey_type d
 
 /// ConditionResolver implementation: Interface to access conditions
 Condition ConditionsDependencyHandler::get(Condition::key_type key, bool throw_if_not)  {
-  /// Check if the required condition is one of the newly created ones:
-  auto e = m_created.find(key);
-  if ( e != m_created.end() )  {
-    Work* w = (*e).second;
-    if ( w->state == CREATED )  {
-      w->state = RESOLVED;
-      w->context.dependency->callback->resolve(w->condition, w->context);
-      return w->condition;
-    }
-  }
   /// If we are not already resolving here, we follow the normal procedure
   Condition c = m_pool.get(key);
   if ( c.isValid() )  {
+    m_currentWork->do_intersection(c->iov);
     return c;
   }
   auto i = m_todo.find(key);
   if ( i != m_todo.end() )   {
-    c = do_callback((*i).second);
-    if ( c.isValid() )  {
-      return c;
+    Work* w = i->second;
+    if ( w->state == RESOLVED )   {
+      return w->condition;
+    }
+    else if ( w->state == CREATED )   {
+      return w->resolve(m_currentWork);
+    }
+    else if ( w->state == INVALID )  {
+      do_callback(w);
+      if ( w->condition && w->state == RESOLVED ) // cross-dependencies...
+        return w->condition;
+      else if ( w->condition )
+        return w->resolve(m_currentWork);
     }
   }
   if ( throw_if_not )  {
@@ -154,26 +218,41 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key, bool throw_i
   return Condition();
 }
 
-
 /// Internal call to trigger update callback
-Condition::Object* 
-ConditionsDependencyHandler::do_callback(Work* work)   {
-  const ConditionDependency* dep  = work->context.dependency;
+void ConditionsDependencyHandler::do_callback(Work* work)   {
+  const ConditionDependency* dep = work->context.dependency;
   try  {
+    Work* previous  = m_currentWork;
+    m_currentWork   = work;
+    if ( work->callstack > 0 )   {
+      // if we end up here it means a previous construction call never finished
+      // because the bugger tried to access another condition, which in turn
+      // during the construction tries to access this one.
+      // ---> Classic dead-lock
+      except("DependencyHandler",
+             "++ Handler caught in infinite recursion loop. DE:%s Key:%s",
+             work->context.dependency->target.toString().c_str(),
+             work->context.dependency->detector.path().c_str());
+    }
+    ++work->callstack;
     work->condition = (*dep->callback)(dep->target, work->context).ptr();
+    --work->callstack;
+    m_currentWork   = previous;
     if ( work->condition )  {
-      work->condition->iov  = &work->iov;
+      if ( !work->iov )  {
+        work->_iov = IOV(m_iovType,IOV::Key(IOV::MIN_KEY, IOV::MAX_KEY));
+        work->iov  = &work->_iov;
+      }
+      if ( previous )   {
+        previous->do_intersection(work->iov);
+      }
+      work->condition->iov  = work->iov;
       work->condition->hash = dep->target.hash;
       work->condition->setFlag(Condition::DERIVED);
       work->state = CREATED;
-      //TEST  cond->iov = m_pool.validityPtr();
-      // Must IMMEDIATELY insert to handle inter-dependencies.
       ++num_callback;
-      m_created[dep->target.hash] = work;
-      //TEST m_manager->registerUnlocked(*m_iovPool, work.condition);
-      m_pool.insert(work->condition);
     }
-    return work->condition;
+    return;
   }
   catch(const std::exception& e)   {
     printout(ERROR,"ConditionDependency",
@@ -190,5 +269,4 @@ ConditionsDependencyHandler::do_callback(Work* work)   {
   except("ConditionDependency",
          "++ Exception while creating dependent Condition %s.",
          dependency_name(dep).c_str());
-  return 0;
 }

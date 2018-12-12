@@ -119,7 +119,7 @@ namespace {
                                                       new DeAlignmentCall(m_de));
         auto* dep = align_builder.release();
         dep->target.hash = Keys::alignmentsComputedKey;
-        m_content->insertDependency(dep);
+        m_content->addDependency(dep);
 
         std::unique_ptr<DeVeloStaticConditionCall> static_update(new DeVeloStaticConditionCall());
         for(const auto& e : elts)   {
@@ -133,25 +133,23 @@ namespace {
           m_context->detectors.insert(make_pair(det_key,make_pair(de,cat)));
           {
             auto first = cont->conditions().lower_bound(lower.hash);
-            for(; first != cont->conditions().end() && (*first).first <= upper.hash; ++first)  {
-              std::unique_ptr<dd4hep::cond::ConditionsLoadInfo> ptr((*first).second->clone());
-              m_content->insertKey((*first).first, ptr);
-            }
+            for(; first != cont->conditions().end() && (*first).first <= upper.hash; ++first)
+              m_content->addLocationInfo((*first).first, (*first).second->addRef());
           }
           {
             auto first = cont->derived().lower_bound(lower.hash);
             for(; first != cont->derived().end() && (*first).first <= upper.hash; ++first)
-              m_content->insertDependency((*first).second);
+              m_content->addDependency((*first).second);
           }
 
           dd4hep::cond::DependencyBuilder static_builder(de, Keys::staticKey, static_update->addRef());
-          m_content->insertDependency(static_builder.release());
+          m_content->addDependency(static_builder.release());
 
           dd4hep::cond::ConditionUpdateCall* call = (e.first == m_de)
             ? new DeVeloConditionCall(de, cat, m_context.get())
             : new DeVeloIOVConditionCall(de, cat, m_context.get());
           dd4hep::cond::DependencyBuilder iov_builder(de, Keys::deKey, call);
-          m_content->insertDependency(iov_builder.release());
+          m_content->addDependency(iov_builder.release());
         }
         static_update.release()->release();
         m_manager.clear();

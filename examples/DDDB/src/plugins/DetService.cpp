@@ -94,7 +94,7 @@ bool DetService::_addContent(Content& content,
   if ( content )   {
     for(auto& c : m_openContents)    {
       if ( content == c.second )   {
-        if ( c.second->insertKey(key, address) )   {
+        if ( c.second->addLocation(key, address).first )   {
           return true;
         }
       }
@@ -149,7 +149,7 @@ void DetService::addContent(Content& content, Dependency* dep)
 {
   if ( content && dep )   {
     for(auto& c : m_openContents)  {
-      if ( content == c.second && c.second->insertDependency(dep) )   {
+      if ( content == c.second && c.second->addDependency(dep->addRef()).first )   {
         return;
       }
       except("DetService","Attempt to insert dependency with duplicate key.");

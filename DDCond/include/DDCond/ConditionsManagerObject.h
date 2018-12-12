@@ -53,7 +53,6 @@ namespace dd4hep {
                                     public PropertyConfigurable
     {
     public:
-      typedef std::vector<IOVType>                  IOVTypes;
       typedef Condition::key_type                   key_type;
       typedef std::pair<ConditionsListener*,void*>  Listener;
       typedef std::set<Listener>                    Listeners;
@@ -62,7 +61,7 @@ namespace dd4hep {
 
     protected:
       /// Reference to main detector description object
-      Detector&                  m_detDesc;
+      Detector&              m_detDesc;
       /// Conditions listeners on registration of new conditions
       Listeners              m_onRegister;
       /// Conditions listeners on de-registration of new conditions
@@ -123,7 +122,7 @@ namespace dd4hep {
       virtual void initialize() = 0;
 
       /// Access IOV by its type
-      virtual const IOVTypes& iovTypes () const = 0;
+      virtual const std::vector<IOVType>& iovTypes () const = 0;
 
       /// Access IOV by its type
       virtual const IOVType* iovType (size_t iov_type) const = 0;
@@ -158,11 +157,24 @@ namespace dd4hep {
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       virtual bool registerUnlocked(ConditionsPool& pool, Condition cond) = 0;
 
+      /// Register a whole block of conditions with identical IOV.
+      virtual size_t blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const = 0;
+
       /// Create empty user pool object
       virtual std::unique_ptr<UserPool> createUserPool(const IOVType* iovT) const = 0;
 
       /// Prepare all updates to the clients with the defined IOV
       virtual Result prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx=0) = 0;
+
+      /// Load all updates to the clients with the defined IOV (1rst step of prepare)
+      virtual Result load(const IOV&                  required_validity,
+                          ConditionsSlice&            slice,
+                          ConditionUpdateUserContext* ctxt=0) = 0;
+
+      /// Compute all derived conditions with the defined IOV (2nd step of prepare)
+      virtual Result compute(const IOV&                  required_validity,
+                             ConditionsSlice&            slice,
+                             ConditionUpdateUserContext* ctxt=0) = 0;
 
       /// Adopt cleanup handler. If a handler is registered, it is invoked at every "prepare" step
       /** Note:

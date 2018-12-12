@@ -83,11 +83,11 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
   manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
   manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-  manager["LoaderType"]     = "root";
+  manager["LoaderType"]     = "DD4hep_Conditions_root_Loader";
   manager.initialize();
 
   printout(ALWAYS,"Example","Load conditions data from file:%s",conditions.c_str());
-  manager.loader()->addSource(conditions);
+  manager.loader().addSource(conditions);
 
   /// Create the container with the desired conditions content and an empty conditions slice
   shared_ptr<ConditionsContent> content(new ConditionsContent());

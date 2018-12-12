@@ -79,6 +79,8 @@ namespace dd4hep {
       virtual std::vector<Condition> get(DetElement de) = 0;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
       virtual std::vector<Condition> get(Condition::detkey_type key) = 0;
+      /// Interface to access conditions by hash value of the item (only valid at resolve!)
+      virtual std::vector<Condition> getByItem(Condition::itemkey_type key) = 0;
     };
 
     /// ConditionUpdateContext class used by the derived conditions calculation mechanism
@@ -141,12 +143,19 @@ namespace dd4hep {
         return conditions(det.key());
       }
 
-      /// Access to all conditions of a detector element.
+      /// Access to all conditions of a detector element key.
       /** Careful: This limits the validity!
        *  ONLY VALID AT RESOLVE !
        *  Otherwise the resulting IOV shall be wrong !
        */
       std::vector<Condition> conditions(Condition::detkey_type det_key)  const;
+
+      /// Access conditions by the condition item key
+      /** Careful: This limits the validity!
+       *  ONLY VALID AT RESOLVE !
+       *  Otherwise the resulting IOV shall be wrong !
+       */
+      std::vector<Condition> getByItem(Condition::itemkey_type key)   const;
 
       /// Access to condition object by dependency key
       /** Careful: This limits the validity!

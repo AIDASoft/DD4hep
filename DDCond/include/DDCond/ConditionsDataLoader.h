@@ -55,7 +55,7 @@ namespace dd4hep {
 
     protected:
       /// Reference to main detector description object
-      Detector&             m_detDesc;
+      Detector&         m_detector;
       /// Reference to conditions manager used to queue update requests
       ConditionsManager m_mgr;
       /// Property: input data source definitions
@@ -72,6 +72,14 @@ namespace dd4hep {
       ConditionsDataLoader(Detector& description, ConditionsManager mgr, const std::string nam);
       /// Default destructor
       virtual ~ConditionsDataLoader();
+      /// Optional initialization for sub-classes
+      virtual void initialize()    {}
+      /// Access conditions manager
+      ConditionsManager manager() const  {  return m_mgr; }
+      /// Access to properties
+      Property& operator[](const std::string& property_name);
+      /// Access to properties (CONST)
+      const Property& operator[](const std::string& property_name)  const;
       /// Add data source definition to loader
       void addSource(const std::string& source);
       /// Add data source definition to loader for data corresponding to a given IOV

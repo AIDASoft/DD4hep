@@ -32,6 +32,17 @@ namespace dd4hep {
     
     /// Callback handler to update condition dependencies.
     /** 
+     *  Fully stack based condition resolution. Any user request
+     *  for dependent conditions are fully handled by 
+     *  - either the connected conditions pool (if present there) or
+     *  - by the currently worked on items.
+     *
+     *  The ConditionsDependencyHandler implements the 
+     *  ConditionResolver interface, which is offered to the clients as
+     *  an embedded parameter during the conversion mechanism.
+     *  Clients must direct any subsequent conditions access to the
+     *  ConditionResolver interface in order to allow for upgrades of
+     *  this implementation which might not be polymorph.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -42,18 +53,35 @@ namespace dd4hep {
       enum State  {  INVALID, CREATED, RESOLVED };
       /// Helper structure to define the current update item
       struct Work  {
-        IOV                        iov;
+      public:
+        IOV                        _iov;
+        /// Auxiliary information to resolve condition callbacks
         ConditionUpdateContext     context;
+        /// Condition IOV
+        IOV*                       iov       = 0;
+        /// The final result: the condition object
         Condition::Object*         condition = 0;
-        State                      state = INVALID;
+        /// Flag to detect non resolvable circular dependencies
+        int                        callstack = 0;
+        /// Current conversion state of the item
+        State                      state     = INVALID;
+      public:
+        /// Inhibit default constructor
         Work() = delete;
+        /// Initializing constructor
         Work(ConditionResolver* r,
              const ConditionDependency* d,
              ConditionUpdateUserContext* u,
              const IOV& i)
-          : iov(i), context(r,d,&iov,u) {}
+          : _iov(i), context(r,d,&_iov,u) {}
+        /// Copy constructor
         Work(const Work&) = default;
+        /// Assignment operator
         Work& operator=(const Work&) = default;
+        /// Helper to determine the IOV intersection taking into account dependencies
+        void do_intersection(const IOV* iov);
+        /// Helper function for the second level dependency resolution
+        Condition resolve(Work*& current);
       };
       typedef std::map<Condition::key_type, const ConditionDependency*>  Dependencies;
       typedef std::map<Condition::key_type, Work*> WorkConditions;
@@ -65,24 +93,25 @@ namespace dd4hep {
       UserPool&                   m_pool;
       /// Dependency container to be resolved.
       const Dependencies&         m_dependencies;
-      /// IOV target pool for this handler
-      ConditionsPool*             m_iovPool;
       /// User defined optional processing parameter
       ConditionUpdateUserContext* m_userParam;
+      /// Local cacheL pool's IOV type
+      const IOVType*              m_iovType = 0;
       /// The objects created during processing
-      WorkConditions              m_created, m_todo;
+      WorkConditions              m_todo;
       /// Handler's state
       State                       m_state = CREATED;
-      /// Current blocking work item
-      Work*                       m_block;
-      
+      /// Current block work item
+      Work*                       m_block = 0;
+      /// Current item of the block
+      Work*                       m_currentWork = 0;
     public:
       /// Number of callbacks to the handler for monitoring
       mutable size_t              num_callback;
 
     protected:
       /// Internal call to trigger update callback
-      Condition::Object* do_callback(Work* dep);
+      void do_callback(Work* dep);
 
     public:
       /// Initializing constructor
@@ -122,6 +151,8 @@ namespace dd4hep {
       virtual std::vector<Condition> get(DetElement de) override;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
       virtual std::vector<Condition> get(Condition::detkey_type key) override;
+      /// Interface to access conditions by hash value of the item (only valid at resolve!)
+      virtual std::vector<Condition> getByItem(Condition::itemkey_type key)  override;
     };
 
   }        /* End namespace cond                */

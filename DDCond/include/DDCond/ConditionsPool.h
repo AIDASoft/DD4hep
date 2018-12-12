@@ -157,6 +157,10 @@ namespace dd4hep {
 
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(Condition condition) = 0;
+      template <typename C> struct get_second {
+        const typename C::mapped_type& operator()( const typename C::value_type& v) const
+        { return v.second; }
+      };
 
     public:
       /// Default constructor
@@ -185,6 +189,25 @@ namespace dd4hep {
       virtual bool remove(Condition::key_type hash_key) = 0;
       /// Remove condition by key from pool.
       virtual bool remove(const ConditionKey& key) = 0;
+      /// Do single insertion of condition including registration to the manager
+      /** Note: block insertions are preferred!!!  */
+      virtual bool registerOne(const IOV& iov, Condition cond)  = 0;
+      /// Do block insertions of conditions with identical IOV
+      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values) = 0;
+      /// Insert multiple conditions. Note: the conditions must already have a hash key
+      template <typename CONT> size_t registerUnmapped(const IOV& iov, CONT& c)   {
+        std::vector<Condition> conditions;
+        conditions.reserve(c.size());
+        std::copy(std::begin(c), std::end(c), std::back_inserter(conditions));
+        return this->registerMany(iov, conditions);
+      }
+      /// Insert multiple conditions. Note: the conditions must already have a hash key
+      template <typename CONT> size_t registerMapping(const IOV& iov, CONT& c)     {
+        std::vector<Condition> conditions;
+        conditions.reserve(c.size());
+        std::transform(std::begin(c), std::end(c), std::back_inserter(conditions), get_second<CONT>());
+        return this->registerMany(iov, conditions);
+      }
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(DetElement detector, Condition::itemkey_type key, Condition condition) = 0;
 
@@ -215,6 +238,15 @@ namespace dd4hep {
                                                 ConditionsSlice&            slice,
                                                 ConditionUpdateUserContext* user_param = 0) = 0;
 
+      /// Load all updates to the clients with the defined IOV (1rst step of prepare)
+      virtual ConditionsManager::Result load(const IOV&                  required_validity,
+                                             ConditionsSlice&            slice,
+                                             ConditionUpdateUserContext* ctxt=0)  = 0;
+      /// Compute all derived conditions with the defined IOV (2nd step of prepare)
+      virtual ConditionsManager::Result compute(const IOV&                  required_validity,
+                                                ConditionsSlice&            slice,
+                                                ConditionUpdateUserContext* ctxt=0)  = 0;
+      
       /// Evaluate and register all derived conditions from the dependency list
       virtual size_t compute(const Dependencies& dependencies,
                              ConditionUpdateUserContext* user_param,

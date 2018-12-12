@@ -171,6 +171,8 @@ namespace dd4hep {
     const char* name() const;
     /// Assign a new named object. Note: object references must be managed by the user
     void assign(Object* n, const std::string& nam, const std::string& title);
+    /// Destroy the underlying object (be careful here: things are not reference counted)!
+    void destroy();
     /// Helper routine called when unrelated types are assigned.
     static void bad_assignment(const std::type_info& from, const std::type_info& to);
   };

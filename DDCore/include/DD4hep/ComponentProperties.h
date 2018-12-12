@@ -253,6 +253,8 @@ namespace dd4hep {
     virtual ~PropertyInterface() = default;
     /// Access to the properties of the object
     virtual PropertyManager& properties() = 0;
+    /// Access to the properties of the object
+    virtual const PropertyManager& properties() const = 0;
     /// Check property for existence
     virtual bool hasProperty(const std::string& name) const = 0;
     /// Access single property
@@ -278,6 +280,10 @@ namespace dd4hep {
     virtual ~PropertyConfigurable();
     /// Access to the properties of the object
     virtual PropertyManager& properties() override {
+      return m_properties;
+    }
+    /// Access to the properties of the object
+    virtual const PropertyManager& properties() const override {
       return m_properties;
     }
     /// Check property for existence

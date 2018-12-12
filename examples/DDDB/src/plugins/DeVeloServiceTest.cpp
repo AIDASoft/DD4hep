@@ -136,7 +136,7 @@ namespace {
           {
             auto first = cont->conditions().lower_bound(lower.hash);
             for(; first != cont->conditions().end() && (*first).first <= upper.hash; ++first)  {
-              std::unique_ptr<dd4hep::cond::ConditionsLoadInfo> ptr((*first).second->clone());
+              dd4hep::cond::ConditionsLoadInfo* ptr = (*first).second->addRef();
               m_service->addContent(content, (*first).first, *ptr->data<string>());
             }
           }

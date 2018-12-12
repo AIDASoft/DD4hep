@@ -200,12 +200,12 @@ void DDDBConditionsLoader::loadDocument(xml::UriContextReader& rdr,
                                         const string& obj_id)
 {
   const void* argv_conddb[] = {&rdr, sys_id.c_str(), obj_id.c_str(), 0};
-  long result = load_dddb_conditions_from_uri(m_detDesc, 3, (char**)argv_conddb);
+  long result = load_dddb_conditions_from_uri(m_detector, 3, (char**)argv_conddb);
   if ( 0 == result )  {
     except("DDDB","++ Failed to load conditions from URI:%s",sys_id.c_str());
   }
   const void* argv_dddb[] = {"conditions_only", 0};
-  result = dddb_conditions_2_dd4hep(m_detDesc, 1, (char**)argv_dddb);
+  result = dddb_conditions_2_dd4hep(m_detector, 1, (char**)argv_dddb);
   if ( 0 == result )  {
     except("DDDBLoader","++ Failed to process conditions from URI:%s",sys_id.c_str());
   }

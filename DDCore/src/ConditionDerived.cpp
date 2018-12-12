@@ -25,6 +25,22 @@ using namespace dd4hep::cond;
 ConditionUpdateUserContext::~ConditionUpdateUserContext()   {
 }
 
+/// Access to all conditions of a detector element. Careful: This limits the validity!
+std::vector<Condition> ConditionUpdateContext::conditions(Condition::detkey_type det_key)  const   {
+  std::vector<Condition> v = resolver->get(det_key);
+  /// Update result IOV according by and'ing the new iov structure
+  for(Condition c : v) iov->iov_intersection(c.iov());
+  return v;
+}
+
+/// Access conditions by the condition item key
+std::vector<Condition> ConditionUpdateContext::getByItem(Condition::itemkey_type item_key)   const    {
+  std::vector<Condition> v = resolver->getByItem(item_key);
+  /// Update result IOV according by and'ing the new iov structure
+  for(Condition c : v) iov->iov_intersection(c.iov());
+  return v;
+}
+
 /// Access to condition object by dependency key
 Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  const  {
   Condition c = resolver->get(key_value);
@@ -43,16 +59,6 @@ Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  cons
   return Condition();
 }
    
-/// Access to all conditions of a detector element. Careful: This limits the validity!
-std::vector<Condition> ConditionUpdateContext::conditions(Condition::detkey_type det_key)  const   {
-  std::vector<Condition> v = resolver->get(det_key);
-  for(Condition c : v)   {
-    /// Update result IOV according by and'ing the new iov structure
-    iov->iov_intersection(c.iov());
-  }
-  return v;
-}
-
 /// Access to condition object by dependency key
 Condition ConditionUpdateContext::condition(Condition::key_type key_value)  const   {
   Condition c = resolver->get(key_value);

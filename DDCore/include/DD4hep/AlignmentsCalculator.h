@@ -100,11 +100,14 @@ namespace dd4hep {
         cond::ConditionUpdateContext& context;
         /// Collection container
         OrderedDeltas&                deltas;
+        /// Resulting IOV
+        IOV*                          iov = 0;
       public:
         /// Default constructor
         Scanner() = delete;
         /// Initializing constructor
         Scanner(cond::ConditionUpdateContext& m, OrderedDeltas& d) : context(m), deltas(d) {}
+        Scanner(cond::ConditionUpdateContext& m, OrderedDeltas& d, IOV* i) : context(m), deltas(d), iov(i) {}
         /// Default move constructor is disabled
         Scanner(cond::ConditionUpdateContext& m, OrderedDeltas&& p) = delete;
         /// R-value copy from a temporary

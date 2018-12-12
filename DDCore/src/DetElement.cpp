@@ -64,8 +64,8 @@ DetElement::DetElement(DetElement det_parent, const string& det_name, int det_id
 }
 
 /// Add an extension object to the detector element
-void* DetElement::addExtension(unsigned long long int k,ExtensionEntry* e) const  {
-  return access()->addExtension(k,e);
+void* DetElement::addExtension(ExtensionEntry* e) const  {
+  return access()->addExtension(e->hash64(), e);
 }
 
 /// Access an existing extension object from the detector element

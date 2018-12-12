@@ -132,7 +132,7 @@ ConditionsMultiLoader::load_source(const std::string& nam,
       string typ = "DD4hep_Conditions_"+ident+"_Loader";
       string fac = ident+"_ConditionsDataLoader";
       const void* argv[] = {fac.c_str(), m_mgr.ptr(), 0};
-      loader = createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv);
+      loader = createPlugin<ConditionsDataLoader>(typ,m_detector,2,argv);
       if ( !loader )  {
         except("ConditionsMultiLoader",
                "Failed to create conditions loader of type: "+typ+" to read:"+nam);

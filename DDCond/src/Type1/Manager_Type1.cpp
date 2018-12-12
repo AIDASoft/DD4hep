@@ -144,7 +144,7 @@ Manager_Type1::Manager_Type1(Detector& description_instance)
   declareProperty("PoolType",            m_poolType   = "");
   declareProperty("UpdatePoolType",      m_updateType = "DD4hep_ConditionsLinearUpdatePool");
   declareProperty("UserPoolType",        m_userType   = "DD4hep_ConditionsMapUserPool");
-  declareProperty("LoaderType",          m_loaderType = "multi");
+  declareProperty("LoaderType",          m_loaderType = "DD4hep_Conditions_multi_Loader");
   m_iovTypes.resize(m_maxIOVTypes,IOVType());
   m_rawPool.resize(m_maxIOVTypes,0);
 }
@@ -157,7 +157,7 @@ Manager_Type1::~Manager_Type1()   {
 
 void Manager_Type1::initialize()  {
   if ( !m_updatePool.get() )  {
-    string typ = "DD4hep_Conditions_"+m_loaderType+"_Loader";
+    string typ = m_loaderType;
     const void* argv_loader[] = {"ConditionsDataLoader", this, 0};
     const void* argv_pool[] = {this, 0, 0};
     m_loader.reset(createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv_loader));
@@ -250,13 +250,36 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
     printout(INFO,"ConditionsMgr","Register condition %016lX %s [%s] IOV:%s",
              cond->hash, cond.name(), cond->address.c_str(), pool.iov->str().c_str());
 #endif
-    __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);
+    if ( !m_onRegister.empty() )   {
+      __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);
+    }
     return true;
   }
   else if ( !cond.isValid() )
     except("ConditionsMgr","+++ Invalid condition objects may not be registered. [%s]",
            Errors::invalidArg().c_str());
   return false;
+}
+
+/// Register a whole block of conditions with identical IOV.
+size_t Manager_Type1::blockRegister(ConditionsPool& pool, const vector<Condition>& cond) const {
+  size_t result = 0;
+  for(auto c : cond)   {
+    if ( c.isValid() )    {
+      c->iov = pool.iov;
+      c->setFlag(Condition::ACTIVE);
+      pool.insert(c);
+      if ( !m_onRegister.empty() )   {
+        __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, c);
+      }
+      ++result;
+      continue;
+    }
+    except("ConditionsMgr",
+           "+++ Invalid condition objects may not be registered. [%s]",
+           Errors::invalidArg().c_str());    
+  }
+  return result;
 }
 
 /// Set a single conditions value to be managed.
@@ -483,6 +506,28 @@ Manager_Type1::prepare(const IOV& req_iov, ConditionsSlice& slice, ConditionUpda
   pushUpdates();
   /// Now update/fill the user pool
   Result res = slice.pool->prepare(req_iov, slice, ctx);
+  /// Invoke auto cleanup if registered
+  if ( m_cleaner.get() )   {
+    this->clean(*m_cleaner);
+  }
+  return res;
+}
+
+/// Load all updates to the clients with the defined IOV (1rst step of prepare)
+ConditionsManager::Result
+Manager_Type1::load(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)    {
+  __get_checked_pool(req_iov, slice.pool);
+  /// First push any pending updates and register them to pending pools...
+  pushUpdates();
+  /// Now update/fill the user pool
+  Result res = slice.pool->load(req_iov, slice, ctx);
+  return res;
+}
+
+/// Compute all derived conditions with the defined IOV (2nd step of prepare)
+ConditionsManager::Result
+Manager_Type1::compute(const IOV& req_iov, ConditionsSlice& slice, ConditionUpdateUserContext* ctx)    {
+  Result res = slice.pool->compute(req_iov, slice, ctx);
   /// Invoke auto cleanup if registered
   if ( m_cleaner.get() )   {
     this->clean(*m_cleaner);
