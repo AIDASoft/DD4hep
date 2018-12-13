@@ -85,6 +85,16 @@ Condition ConditionUpdateContext::condition(Condition::key_type key_value,
   return Condition();
 }
 
+/// Interface to handle multi-condition inserts by callbacks: One single insert
+bool ConditionUpdateContext::registerOne(const IOV& iov_val, Condition cond)   {
+  return resolver->registerOne(iov_val, cond);
+}
+
+/// Handle multi-condition inserts by callbacks: block insertions of conditions with identical IOV
+size_t ConditionUpdateContext::registerMany(const IOV& iov_val, const std::vector<Condition>& values)  {
+  return resolver->registerMany(iov_val, values);
+}
+
 /// Standard destructor
 ConditionUpdateCall::ConditionUpdateCall() : m_refCount(1)  {
   InstanceCount::increment(this);

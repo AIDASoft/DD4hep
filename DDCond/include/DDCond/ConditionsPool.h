@@ -158,16 +158,6 @@ namespace dd4hep {
       /// ConditionsMap overload: Add a condition directly to the slice
       virtual bool insert(Condition condition) = 0;
 
-      /// Helper class to select the value from a mapped type
-      /** 
-       *  \author  M.Frank
-       *  \version 1.0
-       */
-      template <typename C> struct get_second {
-        const typename C::mapped_type& operator()( const typename C::value_type& v) const
-        { return v.second; }
-      };
-
     public:
       /// Default constructor
       UserPool(ConditionsManager mgr);
@@ -211,7 +201,7 @@ namespace dd4hep {
       template <typename CONT> size_t registerMapping(const IOV& iov, CONT& c)     {
         std::vector<Condition> conditions;
         conditions.reserve(c.size());
-        std::transform(std::begin(c), std::end(c), std::back_inserter(conditions), get_second<CONT>());
+        std::transform(std::begin(c), std::end(c), std::back_inserter(conditions), detail::get_2nd<CONT>());
         return this->registerMany(iov, conditions);
       }
       /// ConditionsMap overload: Add a condition directly to the slice
