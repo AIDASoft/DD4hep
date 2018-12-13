@@ -21,6 +21,7 @@
 #include <vector>
 #include <cerrno>
 #include <string>
+#include <memory>
 
 //________________________________________________________________________________
 #include "TRint.h"
