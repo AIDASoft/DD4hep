@@ -73,7 +73,7 @@ namespace dd4hep {
       };
 
       typedef std::map<DetElement,const Delta*,PathOrdering> OrderedDeltas;
-
+      typedef std::map<Condition::key_type,DetElement>       ExtractContext;
 
       /// Scanner to find all alignment deltas in the detector hierarchy
       /**
@@ -119,8 +119,9 @@ namespace dd4hep {
         /// Assignment operator
         Scanner& operator=(const Scanner& copy) = default;
         /// Callback to output alignments information
-        virtual int operator()(DetElement de, int)  const final;
+        int operator()(DetElement de, int)  const;
       };
+
     public:
 
       /// Default constructor
@@ -137,6 +138,37 @@ namespace dd4hep {
                      ConditionsMap& alignments)  const;
       /// Optimized call using already properly ordered Deltas
       Result compute(const OrderedDeltas& deltas, ConditionsMap& alignments)  const;
+
+      /// Helper: Extract all Delta-conditions from the conditions map
+      size_t extract_deltas(cond::ConditionUpdateContext& context,
+                            OrderedDeltas& deltas,
+                            IOV* effective_iov=0)   const;
+      /// Helper: Extract all Delta-conditions from the conditions map starting at a certain sub-tree
+      size_t extract_deltas(DetElement start,
+                            cond::ConditionUpdateContext& ctxt,
+                            OrderedDeltas& deltas,
+                            IOV* effective_iov=0)   const;
+      /// Helper: Extract all Delta-conditions from the conditions map
+      /** If the extraction context is empty, it shall be filled.
+       *  On every subsequent call the existing context is used and 
+       *  the Delta-conditions are extracted directly using a linear scan 
+       *  of the conditions map. Depending on the size of the conditons map
+       *  this can lead to significant speed improvements.
+       */
+      size_t extract_deltas(cond::ConditionUpdateContext& context,
+                            ExtractContext& extract_context,
+                            OrderedDeltas& deltas,
+                            IOV* effective_iov=0)   const;
+
+      /// Helper: Extract all Delta-conditions from the conditions map starting at a certain sub-tree
+      /**
+       *  Please note: An extract_context is only valid for one sub-tree.
+       */
+      size_t extract_deltas(DetElement start,
+                            cond::ConditionUpdateContext& ctxt,
+                            ExtractContext& extract_context,
+                            OrderedDeltas& deltas,
+                            IOV* effective_iov=0)   const;
     };
 
     /// Add results

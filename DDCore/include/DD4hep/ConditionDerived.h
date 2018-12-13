@@ -147,6 +147,24 @@ namespace dd4hep {
       /// Throw exception on conditions access failure
       void accessFailure(const ConditionKey& key_value)  const;
 
+      /// Access to the detector description instance
+      Detector& detectorDescription() const   {
+        return resolver->detectorDescription();
+      }
+
+      /// Access to the top level detector element
+      DetElement world()  const;
+
+      /// Required IOV value for update cycle
+      const IOV& requiredValidity()  const   {
+        return resolver->requiredValidity();
+      }
+
+      /// Accessor for the current conditons mapping
+      ConditionsMap& conditionsMap() const    {
+        return resolver->conditionsMap();
+      }
+
       /// Access to dependency keys
       const ConditionKey& key(size_t which)  const;
 

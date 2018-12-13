@@ -148,15 +148,15 @@ namespace dd4hep {
       /// Interface to access conditions by hash value
       virtual Condition get(Condition::key_type key, bool throw_if_not)  override;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
-      virtual std::vector<Condition> get(DetElement de) override;
+      virtual std::vector<Condition> get(DetElement de)    override;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
-      virtual std::vector<Condition> get(Condition::detkey_type key) override;
+      virtual std::vector<Condition> get(Condition::detkey_type key)   override;
       /// Interface to access conditions by hash value of the item (only valid at resolve!)
-      virtual std::vector<Condition> getByItem(Condition::itemkey_type key)  override;
+      virtual std::vector<Condition> getByItem(Condition::itemkey_type key)   override;
       /// Interface to handle multi-condition inserts by callbacks: One single insert
-      virtual bool registerOne(const IOV& iov, Condition cond);
+      virtual bool registerOne(const IOV& iov, Condition cond)   override;
       /// Handle multi-condition inserts by callbacks: block insertions of conditions with identical IOV
-      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values);
+      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values)   override;
     };
 
   }        /* End namespace cond                */

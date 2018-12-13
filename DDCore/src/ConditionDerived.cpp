@@ -13,6 +13,7 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/ConditionDerived.h"
 
@@ -23,6 +24,11 @@ using namespace dd4hep::cond;
 
 /// Default destructor
 ConditionUpdateUserContext::~ConditionUpdateUserContext()   {
+}
+
+/// Access to the top level detector element
+DetElement ConditionUpdateContext::world()  const   {
+  return resolver->detectorDescription().world();
 }
 
 /// Access to all conditions of a detector element. Careful: This limits the validity!
