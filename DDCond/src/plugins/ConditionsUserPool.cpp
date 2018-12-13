@@ -660,6 +660,7 @@ ConditionsMappedUserPool<MAPPING>::load(const IOV&                  required,
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(cond_missing), COMP());
   long num_cond_miss = last_cond-begin(cond_missing);
+  cond_missing.resize(num_cond_miss);
   printout((flags&PRINT_LOAD) ? INFO : DEBUG,"UserPool",
            "Found %ld missing conditions out of %ld conditions.",
            num_cond_miss, slice_cond.size());
