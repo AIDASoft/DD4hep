@@ -113,9 +113,16 @@ namespace dd4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class Processor {
+    protected:
+      /// Move constructor
+      Processor(Processor&& copy) = default;
+      /// Copy constructor
+      Processor(const Processor& copy) = default;
+      /// Assignment operator
+      Processor& operator=(const Processor& copy) = delete;
     public:
       /// Default constructor
-      Processor();
+      Processor() = default;
       /// Default destructor
       virtual ~Processor() = default;
       /// Processing callback

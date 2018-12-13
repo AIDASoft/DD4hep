@@ -85,7 +85,7 @@ namespace dd4hep {
       /// Do single insertion of condition including registration to the manager
       virtual bool registerOne(const IOV& iov, Condition cond)  override;
       /// Do block insertions of conditions with identical IOV including registration to the manager
-      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values);
+      virtual size_t registerMany(const IOV& iov, const std::vector<Condition>& values) override;
       /// Register a new condition to this pool
       virtual bool insert(Condition cond)  override;
 
@@ -126,11 +126,11 @@ namespace dd4hep {
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual ConditionsManager::Result load   (const IOV&              required,
                                                 ConditionsSlice&        slice,
-                                                ConditionUpdateUserContext* user_param);
+                                                ConditionUpdateUserContext* user_param)  override;
       /// Prepare user pool for usage (load, fill etc.) according to required IOV
       virtual ConditionsManager::Result compute(const IOV&                  required,
                                                 ConditionsSlice&            slice,
-                                                ConditionUpdateUserContext* user_param);
+                                                ConditionUpdateUserContext* user_param)  override;
     };
 
   }    /* End namespace cond               */

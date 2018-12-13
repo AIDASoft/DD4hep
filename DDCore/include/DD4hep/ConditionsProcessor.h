@@ -47,7 +47,7 @@ namespace dd4hep {
       ConditionsProcessor() = delete;
       /// Initializing constructor
       ConditionsProcessor(T& p) : processor(p) {}
-      /// Default move constructor is disabled. Disabled to void temporary references.
+      /// This move constructor is disabled to void temporary references.
       ConditionsProcessor(T&& p) = delete;
       /// R-value copy from a temporary copy (Since processor is reference)
       ConditionsProcessor(ConditionsProcessor&& copy) = default;
@@ -87,11 +87,11 @@ namespace dd4hep {
       /// Initializing constructor
       ConditionsProcessorWrapper(T* p) : processor(p) {}
       /// Copy constructor
-      ConditionsProcessorWrapper(const ConditionsProcessorWrapper& copy) = default;
+      ConditionsProcessorWrapper(const ConditionsProcessorWrapper& copy) = delete;
       /// Default destructor
       virtual ~ConditionsProcessorWrapper() = default;
       /// Assignment operator
-      ConditionsProcessorWrapper& operator=(const ConditionsProcessorWrapper& copy) = default;
+      ConditionsProcessorWrapper& operator=(const ConditionsProcessorWrapper& copy) = delete;
       /// Processing callback
       virtual int process(Condition c)  const override  {
         return (*(processor.get()))(c);

@@ -23,10 +23,6 @@
 using namespace std;
 using namespace dd4hep;
 
-/// Default constructor
-Condition::Processor::Processor() {
-}
-
 /// Initializing constructor for a pure, undecorated conditions object
 Condition::Condition(key_type hash_key) : Handle<Object>()
 {
