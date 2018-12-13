@@ -264,11 +264,14 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
 /// Register a whole block of conditions with identical IOV.
 size_t Manager_Type1::blockRegister(ConditionsPool& pool, const vector<Condition>& cond) const {
   size_t result = 0;
+  //string typ;
   for(auto c : cond)   {
     if ( c.isValid() )    {
       c->iov = pool.iov;
       c->setFlag(Condition::ACTIVE);
       pool.insert(c);
+      //typ = typeName(typeid(*(c.ptr())));
+      //if ( typ.find("Static") != string::npos ) cout << "++Insert:   " << typ << endl;
       if ( !m_onRegister.empty() )   {
         __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, c);
       }

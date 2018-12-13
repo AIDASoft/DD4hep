@@ -16,6 +16,7 @@
 #include "DDCond/ConditionsManagerObject.h"
 #include "DD4hep/ConditionsProcessor.h"
 #include "DD4hep/Printout.h"
+#include "TTimeStamp.h"
 
 using namespace dd4hep;
 using namespace dd4hep::cond;
@@ -110,17 +111,17 @@ void ConditionsDependencyHandler::resolve()    {
   m_state = RESOLVED;
   for( const auto& c : m_todo )   {
     w = c.second;
+    m_currentWork = w;
+    if ( w->state != RESOLVED )   {
+      w->resolve(m_currentWork);
+    }
+    ++num_resolved;
     // Fill an empty map of condition vectors for the block inserts
     auto ret = work_pools.insert(make_pair(w->iov->keyData,tmp));
     if ( ret.second )   {
       // There is sort of the hope that most conditions go into 1 pool...
       ret.first->second.reserve(m_todo.size());
     }
-    if ( w->state == RESOLVED ) continue;
-    w->state = RESOLVED;
-    m_currentWork = w;
-    w->context.dependency->callback->resolve(w->condition, w->context);
-    ++num_resolved;
   }
   // Optimize pool interactions: Cache pool in map assuming there are only few pools created
   for( const auto& c : m_todo )   {
@@ -139,13 +140,16 @@ void ConditionsDependencyHandler::resolve()    {
   // In principle at thi stage the conditions manager should be locked
   // provided all the work done so far can be undone.....in case of an error
   for( const auto& section : work_pools )   {
+    TTimeStamp start;
     IOV iov(m_iovType, section.first);
     size_t result = registerMany(iov, section.second);
     if ( result != section.second.size() )  {
       // 
     }
-    printout(prt_lvl,"DependencyHandler","++ Inserted %ld conditions to pool-iov: %s",
-             section.second.size(), iov.str().c_str());
+    TTimeStamp stop;
+    printout(prt_lvl,"DependencyHandler","Inserted %ld [%ld] conditions to pool-iov: %s   [%7.5f seconds]",
+             result, section.second.size(), iov.str().c_str(),
+             stop.AsDouble()-start.AsDouble());
   }
 }
 
