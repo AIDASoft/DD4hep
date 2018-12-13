@@ -12,13 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/AlignmentsCalculator.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ConditionsMap.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/ConditionDerived.h"
+#include "DD4hep/DetectorProcessor.h"
+#include "DD4hep/AlignmentsProcessor.h"
+#include "DD4hep/AlignmentsCalculator.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
 
 using namespace dd4hep;
@@ -251,6 +253,76 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, const Delta*>& d
   for( const auto& i : deltas )
     ordered_deltas.insert(i);
   return compute(ordered_deltas, alignments);
+}
+
+/// Helper: Extract all Delta-conditions from the conditions map
+size_t AlignmentsCalculator::extract_deltas(cond::ConditionUpdateContext& ctxt,
+                                            ExtractContext& extract_context,
+                                            OrderedDeltas& deltas,
+                                            IOV* effective_iov)   const
+{
+  return extract_deltas(ctxt.world(), ctxt, extract_context, deltas, effective_iov);
+}
+
+/// Helper: Extract all Delta-conditions from the conditions map starting at a certain sub-tree
+size_t AlignmentsCalculator::extract_deltas(DetElement start,
+                                            cond::ConditionUpdateContext& ctxt,
+                                            ExtractContext& extract_context,
+                                            OrderedDeltas& deltas,
+                                            IOV* effective_iov)   const
+{
+  if ( !extract_context.empty() )   {
+    struct Scanner : public Condition::Processor   {
+      OrderedDeltas& delta_conditions;
+      ExtractContext& extract_context;
+      IOV* effective_iov = 0;
+      /// Constructor
+      Scanner(OrderedDeltas& d, ExtractContext& e, IOV* eff_iov)
+        : delta_conditions(d), extract_context(e), effective_iov(eff_iov) {}
+      /// Conditions callback for object processing
+      virtual int process(Condition c)  const override  {
+        ConditionKey::KeyMaker km(c->hash);
+        if ( km.values.item_key == align::Keys::deltaKey )   {
+          auto idd = extract_context.find(km.values.det_key);
+          if ( idd != extract_context.end() )   {
+            const Delta& d  = c.get<Delta>();
+            DetElement   de = idd->second;
+            delta_conditions.insert(std::make_pair(de,&d));
+            if (effective_iov) effective_iov->iov_intersection(c->iov->key());
+            return 1;
+          }
+          // Fatal or not? Depends if the context should be re-usable or the projection
+          //except("extract_deltas","++ Inconsistency between extraction context and conditions content!!");
+        }
+        return 0;
+      }
+    };
+    Scanner scanner(deltas,extract_context,effective_iov);
+    ctxt.resolver->conditionsMap().scan(scanner);
+    return deltas.size();
+  }
+  DetectorScanner().scan(AlignmentsCalculator::Scanner(ctxt,deltas,effective_iov),start);
+  for( const auto& d : deltas ) extract_context.insert(std::make_pair(d.first.key(), d.first));
+  return deltas.size();
+}
+
+/// Helper: Extract all Delta-conditions from the conditions map
+size_t AlignmentsCalculator::extract_deltas(cond::ConditionUpdateContext& ctxt,
+                                            OrderedDeltas& deltas,
+                                            IOV* effective_iov)   const
+{
+  return extract_deltas(ctxt.world(), ctxt, deltas, effective_iov);
+}
+
+
+/// Helper: Extract all Delta-conditions from the conditions map
+size_t AlignmentsCalculator::extract_deltas(DetElement start,
+                                            cond::ConditionUpdateContext& ctxt,
+                                            OrderedDeltas& deltas,
+                                            IOV* effective_iov)   const
+{
+  DetectorScanner().scan(AlignmentsCalculator::Scanner(ctxt,deltas,effective_iov),start);
+  return deltas.size();
 }
 
 // The map is used by the Alignments calculator
