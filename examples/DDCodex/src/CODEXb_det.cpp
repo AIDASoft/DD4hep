@@ -94,7 +94,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
     double     st_height = station.height();
     string     st_nam    = _toString(type_st_num, "CODEX_sub_station_%d");
     Box        st_box(st_thick, st_height, st_width);
-    Material   st_mat(description.material(station.attr<string>(_U(material))));
     Volume     st_vol(st_name,st_box,description.air());
 
     la_vol.setVisAttributes(description, st_layers.visStr());
