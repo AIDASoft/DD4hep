@@ -128,9 +128,10 @@ ConditionsContent::addDependency(ConditionDependency* dep)
   ConditionKey::KeyMaker km(dep->target.hash);
   DetElement             de(dep->detector);
   dep->release();
+  const char* path = de.isValid() ? de.path().c_str() : "(global)";
   except("DeConditionsRequests",
          "++ Dependency already exists: %s [%08X] [%016llX]",
-         de.path().c_str(), km.values.item_key, km.hash);
+         path, km.values.item_key, km.hash);
   return pair<Condition::key_type, ConditionDependency*>(0,0);
 }
 
