@@ -730,6 +730,7 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&                  required,
                                                    begin(m_conditions), end(m_conditions),
                                                    begin(calc_missing), COMP());
   long num_calc_miss = last_calc-begin(calc_missing);
+  calc_missing.resize(num_calc_miss);
   printout((flags&PRINT_COMPUTE) ? INFO : DEBUG,"UserPool",
            "Found %ld missing derived conditions out of %ld conditions.",
            num_calc_miss, m_conditions.size());
