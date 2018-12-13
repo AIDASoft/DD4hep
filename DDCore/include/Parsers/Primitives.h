@@ -605,6 +605,17 @@ namespace dd4hep {
     void apply2nd(C object, R (T::*pmf)(A1 a1) const, A1 a1)
     {  std::for_each(object.begin(),object.end(),apply__2nd_value(object,ApplyMemFuncConst1<R,T,A1>(pmf,a1)));  }
 
+    /// Helper class to select the value from a mapped type
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     */
+    template <typename C> struct get_2nd {
+      const typename C::mapped_type& operator()( const typename C::value_type& v) const
+      { return v.second; }
+    };
+
+
     /// Data structure to manipulate a bitmask held by reference and represented by an integer
     /**
      * @author  M.Frank

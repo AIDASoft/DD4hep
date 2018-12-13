@@ -56,17 +56,6 @@ namespace dd4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionResolver   {
-    protected:
-      /// Helper class to select the value from a mapped type
-      /** 
-       *  \author  M.Frank
-       *  \version 1.0
-       */
-      template <typename C> struct get_second {
-        const typename C::mapped_type& operator()( const typename C::value_type& v) const
-        { return v.second; }
-      };
-
     public:
       /// Standard destructor
       virtual ~ConditionResolver();
@@ -110,7 +99,7 @@ namespace dd4hep {
       template <typename CONT> size_t registerMapping(const IOV& iov, CONT& c)     {
         std::vector<Condition> conditions;
         conditions.reserve(c.size());
-        std::transform(std::begin(c), std::end(c), std::back_inserter(conditions), get_second<CONT>());
+        std::transform(std::begin(c), std::end(c), std::back_inserter(conditions), detail::get_2nd<CONT>());
         return this->registerMany(iov, conditions);
       }
     };
@@ -159,7 +148,7 @@ namespace dd4hep {
       void accessFailure(const ConditionKey& key_value)  const;
 
       /// Access to dependency keys
-      const ConditionKey& key(size_t which)  const ;
+      const ConditionKey& key(size_t which)  const;
 
       /// Access user parameter
       template<typename Q> Q* param()  const  {
@@ -237,6 +226,27 @@ namespace dd4hep {
        *  Otherwise the resulting IOV shall be wrong !
        */
       template<typename T> const T& get(Condition::key_type key_value)  const;
+
+      /// Interface to handle multi-condition inserts by callbacks: One single insert
+      /** Note: block insertions are nearly ALWAYS preferred!!! 
+       */
+      bool registerOne(const IOV& iov, Condition cond);
+      /// Handle multi-condition inserts by callbacks: block insertions of conditions with identical IOV
+      size_t registerMany(const IOV& iov, const std::vector<Condition>& values);
+      /// Handle multi-condition inserts by callbacks with identical key. Handle unmapped containers
+      template <typename CONT> size_t registerUnmapped(const IOV& iov_val, CONT& values)   {
+        std::vector<Condition> conds;
+        conds.reserve(values.size());
+        std::copy(std::begin(values), std::end(values), std::back_inserter(conds));
+        return this->registerMany(iov_val, conds);
+      }
+      /// Handle multi-condition inserts by callbacks with identical key. Handle mapped containers
+      template <typename CONT> size_t registerMapping(const IOV& iov_val, CONT& values)     {
+        std::vector<Condition> conds;
+        conds.reserve(values.size());
+        std::transform(std::begin(values), std::end(values), std::back_inserter(conds), detail::get_2nd<CONT>());
+        return this->registerMany(iov_val, conds);
+      }
     };
 
     /// Callback interface
