@@ -54,5 +54,8 @@
     <vis name="Shape2_vis"    alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
     <vis name="Shape3_vis"    alpha="1.0" r="0" g="0" b="1" showDaughters="true" visible="true"/>
     <vis name="Shape4_vis"    alpha="1.0" r="1" g="1" b="0" showDaughters="true" visible="true"/>
+    <vis name="Shape5_vis"    alpha="1.0" r="1" g="0" b="1" showDaughters="true" visible="true"/>
+    <vis name="Shape6_vis"    alpha="1.0" r="0" g="1" b="1" showDaughters="true" visible="true"/>
+    <vis name="Shape_grey"    alpha="1.0" r="0.4" g="0.4" b="0.4" showDaughters="true" visible="true"/>
   </display>
 </lccdd>
