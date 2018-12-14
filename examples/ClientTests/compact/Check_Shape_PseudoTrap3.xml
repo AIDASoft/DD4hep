@@ -1,0 +1,72 @@
+<lccdd>
+  <define>
+    <constant name="CheckShape_create1" value="1"/>
+  </define>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+  <detectors>
+    <detector id="1" name="Shape_PseudoTrap" type="DD4hep_TestShape_Creator">
+
+      <comment>
+      <SolidSection label="testPseudoTrapSolids.xml">
+        <PseudoTrap name="ptrap1" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="10*cm" atMinusZ="false"/>
+        <PseudoTrap name="ptrap2" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="10*cm" atMinusZ="true"/>
+        <PseudoTrap name="ptrap3" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="false"/>
+        <PseudoTrap name="ptrap4" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="true"/>
+      </SolidSection>
+      </comment>
+      <!--   <PseudoTrap name="ptrap1" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="10*cm" atMinusZ="false"/>     -->
+      <check vis="Shape1_vis">
+        <shape type="PseudoTrap" name="ptrap1" 
+               x1="10*cm" x2="3*cm" 
+               y1="30*cm" y2="10*cm" 
+               z="30*cm"  radius="3*cm" minusZ="false"/>
+        <position x="-40*cm"  y="-10*cm" z="0*cm"/>
+        <rotation x="0"     y="0"    z="0"/>
+      </check>
+      <!--   <PseudoTrap name="ptrap2" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="10*cm" atMinusZ="true"/>     -->
+      <check vis="Shape2_vis">
+        <shape type="PseudoTrap" name="ptrap2" 
+               x1="10*cm" x2="3*cm" 
+               y1="30*cm" y2="10*cm" 
+               z="30*cm"  radius="10*cm" minusZ="true"/>
+        <position x="-10*cm"  y="-10*cm" z="0*cm"/>
+        <rotation x="0"     y="0"    z="0"/>
+      </check>
+
+      <!--   <PseudoTrap name="ptrap3" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="false"/>     -->
+      <check vis="Shape3_vis">
+        <shape type="PseudoTrap" name="ptrap3" 
+               x1="10*cm" x2="3*cm" 
+               y1="30*cm" y2="10*cm" 
+               z="30*cm"  radius="-3*cm" minusZ="false"/>
+        <position x="20*cm"  y="-10*cm" z="0*cm"/>
+        <rotation x="0"     y="0"    z="0"/>
+      </check>
+      <!--   <PseudoTrap name="ptrap4" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="true"/>     -->
+      <check vis="Shape4_vis">
+        <shape type="PseudoTrap" name="ptrap4" 
+               x1="10*cm" x2="3*cm" 
+               y1="30*cm" y2="10*cm" 
+               z="30*cm"  radius="-10*cm" minusZ="true"/>
+        <position x="50*cm"  y="-10*cm" z="0*cm"/>
+        <rotation x="0"     y="0"    z="0"/>
+      </check>
+      <check vis="Shape4_vis">
+        <shape type="PseudoTrap" name="ptrap4" 
+               x1="10*cm" x2="3*cm" 
+               y1="30*cm" y2="10*cm" 
+               z="30*cm"  radius="-30*cm" minusZ="true"/>
+        <position x="80*cm"  y="-10*cm" z="0*cm"/>
+        <rotation x="0"     y="0"    z="0"/>
+      </check>
+      <check vis="Shape1_grey">
+        <shape type="Box" name="plane" dx="80*cm" dy="50*cm" dz="0.0001*cm"/>
+        <position x="20*cm"  y="0*cm" z="-30*cm"/>
+        <rotation x="0"     y="0"    z="0"/>
+      </check>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap3.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

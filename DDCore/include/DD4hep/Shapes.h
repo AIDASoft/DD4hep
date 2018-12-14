@@ -170,7 +170,7 @@ namespace dd4hep {
   class Box: public Solid_type<TGeoBBox> {
   protected:
     /// Internal helper method to support object construction
-    void make(double x_val, double y_val, double z_val);
+    void make(const std::string& name, double x_val, double y_val, double z_val);
 
   public:
     /// Default constructor
@@ -181,13 +181,23 @@ namespace dd4hep {
     template <typename Q> Box(const Q* p) : Solid_type<TGeoBBox>(p) { }
     /// Constructor to be used with an existing object
     template <typename Q> Box(const Handle<Q>& e) : Solid_type<TGeoBBox>(e) { }
+
     /// Constructor to create an anonymous new box object (retrieves name from volume)
-    Box(double x_val, double y_val, double z_val) {  make(x_val, y_val, z_val);  }
+    Box(double x_val, double y_val, double z_val)
+    { make("", x_val, y_val, z_val);    }
+    /// Constructor to create a named new box object (retrieves name from volume)
+    Box(const std::string& name, double x_val, double y_val, double z_val)
+    { make(name.c_str(), x_val, y_val, z_val);    }
+
     /// Constructor to create an anonymous new box object (retrieves name from volume)
     template <typename X, typename Y, typename Z>
-    Box(const X& x_val, const Y& y_val, const Z& z_val)  {
-      make(_toDouble(x_val), _toDouble(y_val), _toDouble(z_val));
-    }
+    Box(const X& x_val, const Y& y_val, const Z& z_val)
+    { make("", _toDouble(x_val), _toDouble(y_val), _toDouble(z_val));    }
+    /// Constructor to create a named new box object (retrieves name from volume)
+    template <typename X, typename Y, typename Z>
+    Box(const std::string& name, const X& x_val, const Y& y_val, const Z& z_val)
+    { make(name.c_str(), _toDouble(x_val), _toDouble(y_val), _toDouble(z_val));  }
+
     /// Assignment operator
     Box& operator=(const Box& copy) = default;
     /// Set the box dimensions
@@ -213,7 +223,7 @@ namespace dd4hep {
   class HalfSpace: public Solid_type<TGeoHalfSpace> {
   protected:
     /// Internal helper method to support object construction
-    void make(const double* const point, const double* const normal);
+    void make(const std::string& name, const double* const point, const double* const normal);
 
   public:
     /// Default constructor
@@ -224,8 +234,15 @@ namespace dd4hep {
     template <typename Q> HalfSpace(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used with an existing object
     template <typename Q> HalfSpace(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create an new halfspace object from a point on a plane and the plane normal
-    HalfSpace(const double* const point, const double* const normal) { make(point,normal);  }
+    HalfSpace(const double* const point, const double* const normal)
+    { make("", point, normal);              }
+
+    /// Constructor to create an new named halfspace object from a point on a plane and the plane normal
+    HalfSpace(const std::string& nam, const double* const point, const double* const normal)
+    { make(nam.c_str(), point, normal);    }
+
     /// Assignment operator
     HalfSpace& operator=(const HalfSpace& copy) = default;
   };
@@ -258,6 +275,7 @@ namespace dd4hep {
     template <typename Q> Polycone(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when reading the already parsed polycone object
     template <typename Q> Polycone(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new polycone object
     Polycone(double startPhi, double deltaPhi);
     /// Constructor to create a new polycone object. Add at the same time all Z planes
@@ -266,9 +284,18 @@ namespace dd4hep {
     /// Constructor to create a new polycone object. Add at the same time all Z planes
     Polycone(double startPhi, double deltaPhi,
              const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
+    
+    /// Constructor to create a new named polycone object
+    Polycone(const std::string& name, double startPhi, double deltaPhi);
+    /// Constructor to create a new named polycone object. Add at the same time all Z planes
+    Polycone(const std::string& name, double startPhi, double deltaPhi,
+             const std::vector<double>& r, const std::vector<double>& z);
+    /// Constructor to create a new named polycone object. Add at the same time all Z planes
+    Polycone(const std::string& name, double startPhi, double deltaPhi,
+             const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
+
     /// Assignment operator
     Polycone& operator=(const Polycone& copy) = default;
-
     /// Add Z-planes to the Polycone
     void addZPlanes(const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
   };
@@ -295,13 +322,17 @@ namespace dd4hep {
     template <typename Q> ConeSegment(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when reading the already parsed ConeSegment object
     template <typename Q> ConeSegment(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new ConeSegment object
     ConeSegment(double dz, double rmin1, double rmax1,
-                double rmin2, double rmax2,
-                double startPhi = 0.0, double endPhi = 2.0 * M_PI);
+                double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI);
+
+    /// Constructor to create a new named ConeSegment object
+    ConeSegment(const std::string& name, double dz, double rmin1, double rmax1,
+                double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI);
+
     /// Assignment operator
     ConeSegment& operator=(const ConeSegment& copy) = default;
-
     /// Set the cone segment dimensions
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
                                double rmin2, double rmax2,
@@ -343,6 +374,7 @@ namespace dd4hep {
     template <typename Q> Tube(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to assign an object
     template <typename Q> Tube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz)
     {   make("", rmin, rmax, dz, 0, 2*M_PI);                   }
@@ -352,6 +384,7 @@ namespace dd4hep {
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz, double startPhi, double endPhi)
     {   make("", rmin, rmax, dz, startPhi, endPhi);            }
+
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz)
     {   make(nam, rmin, rmax, dz, 0, 2*M_PI);                  }
@@ -365,6 +398,7 @@ namespace dd4hep {
     template <typename RMIN, typename RMAX, typename Z, typename ENDPHI=double>
     Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const ENDPHI& endPhi = 2.0*M_PI)
     {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi));   }
+
     /// Assignment operator
     Tube& operator=(const Tube& copy) = default;
     /// Set the tube dimensions
@@ -383,7 +417,8 @@ namespace dd4hep {
   class CutTube: public Solid_type<TGeoCtub> {
   protected:
     /// Internal helper method to support object construction
-    void make(double rmin, double rmax, double dz, double startPhi, double endPhi,
+    void make(const std::string& name,
+              double rmin, double rmax, double dz, double startPhi, double endPhi,
               double lx, double ly, double lz, double tx, double ty, double tz);
 
   public:
@@ -395,9 +430,16 @@ namespace dd4hep {
     template <typename Q> CutTube(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to assign an object
     template <typename Q> CutTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
-    /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
+
+    /// Constructor to create a new cut-tube object with attribute initialization
     CutTube(double rmin, double rmax, double dz, double startPhi, double endPhi,
             double lx, double ly, double lz, double tx, double ty, double tz);
+
+    /// Constructor to create a new identifiable cut-tube object with attribute initialization
+    CutTube(const std::string& name,
+            double rmin, double rmax, double dz, double startPhi, double endPhi,
+            double lx, double ly, double lz, double tx, double ty, double tz);
+
     /// Assignment operator
     CutTube& operator=(const CutTube& copy) = default;
   };
@@ -415,8 +457,9 @@ namespace dd4hep {
   class TruncatedTube: public Solid_type<TGeoCompositeShape> {
   protected:
     /// Internal helper method to support object construction
-    void make(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
-                  double cutAtStart, double cutAtDelta, bool cutInside);
+    void make(const std::string& name,
+              double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+              double cutAtStart, double cutAtDelta, bool cutInside);
 
   public:
     /// Default constructor
@@ -427,9 +470,16 @@ namespace dd4hep {
     template <typename Q> TruncatedTube(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to assign an object
     template <typename Q> TruncatedTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a truncated tube object with attribute initialization
     TruncatedTube(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                   double cutAtStart, double cutAtDelta, bool cutInside);
+
+    /// Constructor to create a truncated tube object with attribute initialization
+    TruncatedTube(const std::string& name,
+                  double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+                  double cutAtStart, double cutAtDelta, bool cutInside);
+
     /// Assignment operator
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
   };
@@ -449,7 +499,7 @@ namespace dd4hep {
   class EllipticalTube: public Solid_type<TGeoEltu> {
   protected:
     /// Internal helper method to support object construction
-    void make(double a, double b, double dz);
+    void make(const std::string& nam, double a, double b, double dz);
 
   public:
     /// Default constructor
@@ -460,12 +510,22 @@ namespace dd4hep {
     template <typename Q> EllipticalTube(const Q* p) : Solid_type<Object>(p) {   }
     /// Constructor to assign an object
     template <typename Q> EllipticalTube(const Handle<Q>& e) : Solid_type<Object>(e) {   }
+
     /// Constructor to create a new anonymous tube object with attribute initialization
-    EllipticalTube(double a, double b, double dz) {  make(a, b, dz);  }
+    EllipticalTube(double a, double b, double dz) {  make("", a, b, dz);  }
     /// Constructor to create a new anonymous tube object with attribute initialization
     template <typename A, typename B, typename DZ>
     EllipticalTube(const A& a, const B& b, const DZ& dz)
-    {  make(_toDouble(a), _toDouble(b), _toDouble(dz));   }
+    {  make("",_toDouble(a), _toDouble(b), _toDouble(dz));     }
+
+    /// Constructor to create a new identified tube object with attribute initialization
+    EllipticalTube(const std::string& nam, double a, double b, double dz)
+    {  make(nam, a, b, dz);                                    }
+    /// Constructor to create a new identified tube object with attribute initialization
+    template <typename A, typename B, typename DZ>
+    EllipticalTube(const std::string& nam, const A& a, const B& b, const DZ& dz)
+    {  make(nam, _toDouble(a), _toDouble(b), _toDouble(dz));   }
+
     /// Assignment operator
     EllipticalTube& operator=(const EllipticalTube& copy) = default;
     /// Set the tube dimensions
@@ -484,7 +544,7 @@ namespace dd4hep {
   class Cone: public Solid_type<TGeoCone> {
   protected:
     /// Internal helper method to support object construction
-    void make(double z, double rmin1, double rmax1, double rmin2, double rmax2);
+    void make(const std::string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2);
   public:
     /// Default constructor
     Cone() = default;
@@ -494,12 +554,23 @@ namespace dd4hep {
     template <typename Q> Cone(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Cone(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
     Cone(double z, double rmin1, double rmax1, double rmin2, double rmax2)
-    {     make(z, rmin1, rmax1, rmin2, rmax2);                                 }
+    {     make("", z, rmin1, rmax1, rmin2, rmax2);                                 }
+    /// Constructor to create a new anonymous object with attribute initialization
     template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
     Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
-    {     make(_toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+    {     make("", _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+
+    /// Constructor to create a new anonymous object with attribute initialization
+    Cone(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2)
+    {     make(nam, z, rmin1, rmax1, rmin2, rmax2);                                 }
+    /// Constructor to create a new anonymous object with attribute initialization
+    template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
+    Cone(const std::string& nam, const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
+    {     make(nam, _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+
     /// Assignment operator
     Cone& operator=(const Cone& copy) = default;
     /// Set the box dimensions
@@ -518,7 +589,7 @@ namespace dd4hep {
   class Trap: public Solid_type<TGeoTrap> {
   private:
     /// Internal helper method to support object construction
-    void make(double pz, double py, double px, double pLTX);
+    void make(const std::string& name, double pz, double py, double px, double pLTX);
   public:
     /// Default constructor
     Trap() = default;
@@ -528,15 +599,31 @@ namespace dd4hep {
     template <typename Q> Trap(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Trap(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
     Trap(double z, double theta, double phi,
          double h1, double bl1, double tl1, double alpha1,
          double h2, double bl2, double tl2, double alpha2);
     /// Constructor to create a new anonymous object for right angular wedge from STEP (Se G4 manual for details)
-    Trap(double pz, double py, double px, double pLTX)  {  make(pz,py,px,pLTX);  }
+    Trap(double pz, double py, double px, double pLTX)
+    {  make("", pz,py,px,pLTX);  }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename PZ,typename PY,typename PX,typename PLTX> Trap(PZ pz, PY py, PX px, PLTX pLTX)
-    { make(_toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
+    { make("", _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
+
+    /// Constructor to create a new identified object with attribute initialization
+    Trap(const std::string& name,
+         double z, double theta, double phi,
+         double h1, double bl1, double tl1, double alpha1,
+         double h2, double bl2, double tl2, double alpha2);
+    /// Constructor to create a new identified object for right angular wedge from STEP (Se G4 manual for details)
+    Trap(const std::string& nam, double pz, double py, double px, double pLTX)
+    {  make(nam, pz,py,px,pLTX);  }
+    /// Constructor to create a new identified object with attribute initialization
+    template <typename PZ,typename PY,typename PX,typename PLTX>
+    Trap(const std::string& nam, PZ pz, PY py, PX px, PLTX pLTX)
+    { make(nam, _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
+
     /// Assignment operator
     Trap& operator=(const Trap& copy) = default;
     /// Set the trap dimensions
@@ -557,7 +644,7 @@ namespace dd4hep {
   class PseudoTrap: public Solid_type<TGeoCompositeShape> {
   private:
     /// Internal helper method to support object construction
-    void make(double x1, double x2, double y1, double y2, double z, double radius, bool minusZ);
+    void make(const std::string& nam, double x1, double x2, double y1, double y2, double z, double radius, bool minusZ);
   public:
     /// Default constructor
     PseudoTrap() = default;
@@ -567,9 +654,18 @@ namespace dd4hep {
     template <typename Q> PseudoTrap(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> PseudoTrap(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
     PseudoTrap(double x1, double x2, double y1, double y2, double z, double radius, bool minusZ)
-    {  make(x1, x2, y1, y2, z, radius, minusZ);    }
+    {  make("", x1, x2, y1, y2, z, radius, minusZ);    }
+
+    /// Constructor to create a new identified object with attribute initialization
+    PseudoTrap(const std::string& nam,
+               double x1, double x2,
+               double y1, double y2, double z,
+               double radius, bool minusZ)
+    {  make(nam, x1, x2, y1, y2, z, radius, minusZ);    }
+
     /// Assignment operator
     PseudoTrap& operator=(const PseudoTrap& copy) = default;
   };
@@ -587,7 +683,7 @@ namespace dd4hep {
   class Trd1: public Solid_type<TGeoTrd1> {
   private:
     /// Internal helper method to support object construction
-    void make(double x1, double x2, double y, double z);
+    void make(const std::string& nam, double x1, double x2, double y, double z);
 
   public:
     /// Default constructor
@@ -598,12 +694,23 @@ namespace dd4hep {
     template <typename Q> Trd1(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Trd1(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
-    Trd1(double x1, double x2, double y, double z);
+    Trd1(double x1, double x2, double y, double z)
+    { make("", x1, x2, y, z);                                          }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename X1,typename X2,typename Y,typename Z>
     Trd1(X1 x1, X2 x2, Y y, Z z)
-    { make(_toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
+    { make("", _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
+
+    /// Constructor to create a new anonymous object with attribute initialization
+    Trd1(const std::string& nam, double x1, double x2, double y, double z)
+    { make(nam, x1, x2, y, z);                                          }
+    /// Constructor to create a new anonymous object with attribute initialization
+    template <typename X1,typename X2,typename Y,typename Z>
+    Trd1(const std::string& nam, X1 x1, X2 x2, Y y, Z z)
+    { make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
+
     /// Assignment operator
     Trd1& operator=(const Trd1& copy) = default;
     /// Set the Trd1 dimensions
@@ -623,7 +730,7 @@ namespace dd4hep {
   class Trd2: public Solid_type<TGeoTrd2> {
   private:
     /// Internal helper method to support object construction
-    void make(double x1, double x2, double y1, double y2, double z);
+    void make(const std::string& nam, double x1, double x2, double y1, double y2, double z);
 
   public:
     /// Default constructor
@@ -634,12 +741,23 @@ namespace dd4hep {
     template <typename Q> Trd2(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Trd2(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
-    Trd2(double x1, double x2, double y1, double y2, double z);
+    Trd2(double x1, double x2, double y1, double y2, double z)
+    { make("", x1, x2, y1, y2, z);  }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
     Trd2(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
-    { make(_toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
+    { make("", _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
+
+    /// Constructor to create a new identified object with attribute initialization
+    Trd2(const std::string& nam, double x1, double x2, double y1, double y2, double z)
+    { make(nam, x1, x2, y1, y2, z);  }
+    /// Constructor to create a new identified object with attribute initialization
+    template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
+    Trd2(const std::string& nam, X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
+    { make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
+
     /// Assignment operator
     Trd2& operator=(const Trd2& copy) = default;
     /// Set the Trd2 dimensions
@@ -660,7 +778,7 @@ namespace dd4hep {
   class Torus: public Solid_type<TGeoTorus> {
   private:
     /// Internal helper method to support object construction
-    void make(double r, double rmin, double rmax, double startPhi, double deltaPhi);
+    void make(const std::string& nam, double r, double rmin, double rmax, double startPhi, double deltaPhi);
   public:
     /// Default constructor
     Torus() = default;
@@ -670,13 +788,23 @@ namespace dd4hep {
     template <typename Q> Torus(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Torus(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new anonymous object with attribute initialization
     template<typename R, typename RMIN, typename RMAX, typename STARTPHI, typename DELTAPHI>
     Torus(R r, RMIN rmin, RMAX rmax, STARTPHI startPhi=M_PI, DELTAPHI deltaPhi = 2.*M_PI)
-    {   make(_toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
+    {   make("", _toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
     /// Constructor to create a new anonymous object with attribute initialization
     Torus(double r, double rmin, double rmax, double startPhi=M_PI, double deltaPhi = 2.*M_PI)
-    {   make(r, rmin, rmax, startPhi, deltaPhi);  }
+    {   make("", r, rmin, rmax, startPhi, deltaPhi);  }
+
+    /// Constructor to create a new identified object with attribute initialization
+    template<typename R, typename RMIN, typename RMAX, typename STARTPHI, typename DELTAPHI>
+    Torus(const std::string& nam, R r, RMIN rmin, RMAX rmax, STARTPHI startPhi=M_PI, DELTAPHI deltaPhi = 2.*M_PI)
+    {   make(nam, _toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
+    /// Constructor to create a new identified object with attribute initialization
+    Torus(const std::string& nam, double r, double rmin, double rmax, double startPhi=M_PI, double deltaPhi = 2.*M_PI)
+    {   make(nam, r, rmin, rmax, startPhi, deltaPhi);  }
+
     /// Assignment operator
     Torus& operator=(const Torus& copy) = default;
     /// Set the Torus dimensions
@@ -696,7 +824,8 @@ namespace dd4hep {
   class Sphere: public Solid_type<TGeoSphere> {
   protected:
     /// Constructor function to be used when creating a new object with attribute initialization
-    void make(double rmin,       double rmax,
+    void make(const std::string& nam,
+              double rmin,       double rmax,
               double startTheta, double endTheta,
               double startPhi,   double endPhi);
   public:
@@ -708,11 +837,12 @@ namespace dd4hep {
     template <typename Q> Sphere(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Sphere(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new anonymous object with attribute initialization
     Sphere(double rmin,            double rmax,
            double startTheta= 0.0, double endTheta = M_PI,
            double startPhi  = 0.0, double endPhi   = 2. * M_PI)
-    {  make(rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
+    {  make("", rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
     /// Constructor to create a new anonymous object with generic attribute initialization
     template<typename RMIN,              typename RMAX,
              typename STARTTHETA=double, typename ENDTHETA=double,
@@ -720,10 +850,32 @@ namespace dd4hep {
     Sphere(RMIN  rmin,                   RMAX     rmax,
            STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
            STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
-      make(_toDOuble(rmin),       _toDouble(rmax),
+      make("",
+           _toDOuble(rmin),       _toDouble(rmax),
            _toDouble(startTheta), _toDouble(endTheta),
            _toDouble(startPhi),   _toDouble(endPhi));
     }
+
+    /// Constructor to create a new identified object with attribute initialization
+    Sphere(const std::string& nam,
+           double rmin,            double rmax,
+           double startTheta= 0.0, double endTheta = M_PI,
+           double startPhi  = 0.0, double endPhi   = 2. * M_PI)
+    {  make(nam, rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
+    /// Constructor to create a new identified object with generic attribute initialization
+    template<typename RMIN,              typename RMAX,
+             typename STARTTHETA=double, typename ENDTHETA=double,
+             typename STARTPHI=double,   typename ENDPHI=double>
+    Sphere(const std::string& nam,
+           RMIN  rmin,                   RMAX     rmax,
+           STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
+           STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
+      make(nam,
+           _toDOuble(rmin),       _toDouble(rmax),
+           _toDouble(startTheta), _toDouble(endTheta),
+           _toDouble(startPhi),   _toDouble(endPhi));
+    }
+
     /// Assignment operator
     Sphere& operator=(const Sphere& copy) = default;
     /// Set the Sphere dimensions
@@ -744,7 +896,7 @@ namespace dd4hep {
    */
   class Paraboloid: public Solid_type<TGeoParaboloid> {
     /// Constructor function to create a new anonymous object with attribute initialization
-    void make(double r_low, double r_high, double delta_z);
+    void make(const std::string& nam, double r_low, double r_high, double delta_z);
   public:
     /// Default constructor
     Paraboloid() = default;
@@ -754,13 +906,23 @@ namespace dd4hep {
     template <typename Q> Paraboloid(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
     template <typename Q> Paraboloid(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
     Paraboloid(double r_low, double r_high, double delta_z)
-    {  make(r_low, r_high, delta_z);  }
+    {  make("", r_low, r_high, delta_z);  }
     /// Constructor to create a new anonymous object with attribute initialization
     template<typename R_LOW, typename R_HIGH, typename DELTA_Z>
     Paraboloid(R_LOW r_low, R_HIGH r_high, DELTA_Z delta_z)
-    {  make(_toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
+    {  make("", _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
+
+    /// Constructor to create a new identified object with attribute initialization
+    Paraboloid(const std::string& nam, double r_low, double r_high, double delta_z)
+    {  make(nam, r_low, r_high, delta_z);  }
+    /// Constructor to create a new identified object with attribute initialization
+    template<typename R_LOW, typename R_HIGH, typename DELTA_Z>
+    Paraboloid(const std::string& nam, R_LOW r_low, R_HIGH r_high, DELTA_Z delta_z)
+    {  make(nam, _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
+
     /// Assignment operator
     Paraboloid& operator=(const Paraboloid& copy) = default;
     /// Set the Paraboloid dimensions
@@ -779,7 +941,7 @@ namespace dd4hep {
    */
   class Hyperboloid: public Solid_type<TGeoHype> {
     /// Constructor function to create a new anonymous object with attribute initialization
-    void make(double rin, double stin, double rout, double stout, double dz);
+    void make(const std::string& nam, double rin, double stin, double rout, double stout, double dz);
   public:
     /// Default constructor
     Hyperboloid() = default;
@@ -789,15 +951,23 @@ namespace dd4hep {
     template <typename Q> Hyperboloid(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when passing an already created object
     template <typename Q> Hyperboloid(const Handle<Q>& e) : Solid_type<Object>(e) {   }
+
     /// Constructor to create a new anonymous object with attribute initialization
-    Hyperboloid(double rin, double stin, double rout, double stout, double dz)   {
-      make(rin, stin, rout, stout, dz);
-    }
+    Hyperboloid(double rin, double stin, double rout, double stout, double dz)
+    { make("", rin, stin, rout, stout, dz);    }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename RIN, typename STIN, typename ROUT, typename STOUT, typename DZ>
-    Hyperboloid(RIN rin, STIN stin, ROUT rout, STOUT stout, DZ dz)  {
-      make(_toDouble(rin), _toDouble(stin), _toDouble(rout), _toDouble(stout), _toDouble(dz));
-    }
+    Hyperboloid(RIN rin, STIN stin, ROUT rout, STOUT stout, DZ dz)
+    { make("", _toDouble(rin), _toDouble(stin), _toDouble(rout), _toDouble(stout), _toDouble(dz));   }
+
+    /// Constructor to create a new identified object with attribute initialization
+    Hyperboloid(const std::string& nam, double rin, double stin, double rout, double stout, double dz)
+    { make(nam, rin, stin, rout, stout, dz);    }
+    /// Constructor to create a new identified object with attribute initialization
+    template <typename RIN, typename STIN, typename ROUT, typename STOUT, typename DZ>
+    Hyperboloid(const std::string& nam, RIN rin, STIN stin, ROUT rout, STOUT stout, DZ dz)
+    { make(nam, _toDouble(rin), _toDouble(stin), _toDouble(rout), _toDouble(stout), _toDouble(dz));  }
+
     /// Assignment operator
     Hyperboloid& operator=(const Hyperboloid& copy) = default;
     /// Set the Hyperboloid dimensions
@@ -816,7 +986,7 @@ namespace dd4hep {
   class PolyhedraRegular: public Solid_type<TGeoPgon> {
   protected:
     /// Helper function to create the polyhedron
-    void make(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta);
+    void make(const std::string& nam, int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta);
   public:
     /// Default constructor
     PolyhedraRegular() = default;
@@ -826,12 +996,26 @@ namespace dd4hep {
     template <typename Q> PolyhedraRegular(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when passing an already created object
     template <typename Q> PolyhedraRegular(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
-    PolyhedraRegular(int nsides, double rmin, double rmax, double zlen);
-    /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
-    PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2]);
+    PolyhedraRegular(int nsides, double rmin, double rmax, double zlen)
+    { make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);  }
     /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
-    PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen);
+    PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen)
+    { make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);  }
+    /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
+    PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2])
+    { make("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);  }
+
+    /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
+    PolyhedraRegular(const std::string& nam, int nsides, double rmin, double rmax, double zlen)
+    { make(nam, nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);  }
+    /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
+    PolyhedraRegular(const std::string& nam, int nsides, double phi_start, double rmin, double rmax, double zlen)
+    { make(nam, nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);  }
+    /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
+    PolyhedraRegular(const std::string& nam, int nsides, double rmin, double rmax, double zplanes[2])
+    { make(nam, nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);  }
     /// Assignment operator
     PolyhedraRegular& operator=(const PolyhedraRegular& copy) = default;
   };
@@ -848,8 +1032,10 @@ namespace dd4hep {
   class Polyhedra : public Solid_type<TGeoPgon> {
   protected:
     /// Helper function to create the polyhedron
-    void make(int nsides, double start, double delta,
-              const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax);
+    void make(const std::string& nam, int nsides, double start, double delta,
+              const std::vector<double>& z,
+              const std::vector<double>& rmin,
+              const std::vector<double>& rmax);
   public:
     /// Default constructor
     Polyhedra() = default;
@@ -859,12 +1045,28 @@ namespace dd4hep {
     template <typename Q> Polyhedra(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when passing an already created object
     template <typename Q> Polyhedra(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
     Polyhedra(int nsides, double start, double delta,
-              const std::vector<double>& z, const std::vector<double>& r);
+              const std::vector<double>& z, const std::vector<double>& r)   {
+      std::vector<double> rmin(r.size(), 0.);
+      make("", nsides, start, delta, z, rmin, r);
+    }
     /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
     Polyhedra(int nsides, double start, double delta,
-              const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax);
+              const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax)
+    {  make("", nsides, start, delta, z, rmin, rmax);   }
+
+    /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
+    Polyhedra(const std::string& nam, int nsides, double start, double delta,
+              const std::vector<double>& z, const std::vector<double>& r)   {
+      std::vector<double> rmin(r.size(), 0.);
+      make(nam, nsides, start, delta, z, rmin, r);
+    }
+    /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
+    Polyhedra(const std::string& nam, int nsides, double start, double delta,
+              const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax)
+    {  make(nam, nsides, start, delta, z, rmin, rmax);   }
     /// Assignment operator
     Polyhedra& operator=(const Polyhedra& copy) = default;
   };
@@ -881,7 +1083,8 @@ namespace dd4hep {
   class ExtrudedPolygon : public Solid_type<TGeoXtru> {
   protected:
     /// Helper function to create the polygon
-    void make(const std::vector<double> & pt_x,
+    void make(const std::string& nam,
+              const std::vector<double> & pt_x,
               const std::vector<double> & pt_y,
               const std::vector<double> & sec_z,
               const std::vector<double> & sec_x,
@@ -896,13 +1099,25 @@ namespace dd4hep {
     template <typename Q> ExtrudedPolygon(const Q* p) : Solid_type<Object>(p) {  }
     /// Constructor to be used when passing an already created object
     template <typename Q> ExtrudedPolygon(const Handle<Q>& e) : Solid_type<Object>(e) {  }
+
     /// Constructor to create a new object. 
     ExtrudedPolygon(const std::vector<double> & pt_x,
                     const std::vector<double> & pt_y,
                     const std::vector<double> & sec_z,
                     const std::vector<double> & sec_x,
                     const std::vector<double> & sec_y,
-                    const std::vector<double> & zscale);
+                    const std::vector<double> & zscale)
+    {  make("", pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
+
+    /// Constructor to create a new identified object. 
+    ExtrudedPolygon(const std::string& nam,
+                    const std::vector<double> & pt_x,
+                    const std::vector<double> & pt_y,
+                    const std::vector<double> & sec_z,
+                    const std::vector<double> & sec_x,
+                    const std::vector<double> & sec_y,
+                    const std::vector<double> & zscale)
+    {  make(nam, pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
     /// Assignment operator
     ExtrudedPolygon& operator=(const ExtrudedPolygon& copy) = default;
   };
@@ -919,7 +1134,7 @@ namespace dd4hep {
   class EightPointSolid: public Solid_type<TGeoArb8> {
   private:
     /// Internal helper method to support object construction
-    void make(double dz, const double* vtx);
+    void make(const std::string& nam, double dz, const double* vtx);
   public:
     /// Default constructor
     EightPointSolid() = default;
@@ -928,9 +1143,16 @@ namespace dd4hep {
     /// Constructor to be used with an existing object
     template <typename Q> EightPointSolid(const Q* p) : Solid_type<Object>(p) { }
     /// Constructor to be used when passing an already created object
-    template <typename Q> EightPointSolid(const Handle<Q>& e) : Solid_type<Object>(e) {}
+    template <typename Q> EightPointSolid(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
     /// Constructor to create a new anonymous object with attribute initialization
-    EightPointSolid(double dz, const double* vertices) { make(dz,vertices);  }
+    EightPointSolid(double dz, const double* vertices)
+    { make("", dz, vertices);    }
+
+    /// Constructor to create a new identified object with attribute initialization
+    EightPointSolid(const std::string& nam, double dz, const double* vertices)
+    { make(nam, dz, vertices);   }
+
     /// Assignment operator
     EightPointSolid& operator=(const EightPointSolid& copy) = default;
   };
@@ -977,6 +1199,7 @@ namespace dd4hep {
     SubtractionSolid(const SubtractionSolid& e) = default;
     /// Constructor to be used when passing an already created object
     template <typename Q> SubtractionSolid(const Handle<Q>& e) : BooleanSolid(e) {  }
+
     /// Constructor to create a new object. Position is identity, Rotation is identity-rotation!
     SubtractionSolid(const Solid& shape1, const Solid& shape2);
     /// Constructor to create a new object. Placement by position, Rotation is identity-rotation!
@@ -987,6 +1210,17 @@ namespace dd4hep {
     SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new object. Placement by a generic transformation within the mother
     SubtractionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
+
+    /// Constructor to create a new identified object. Position is identity, Rotation is identity-rotation!
+    SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2);
+    /// Constructor to create a new identified object. Placement by position, Rotation is identity-rotation!
+    SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Position& pos);
+    /// Constructor to create a new identified object. Placement by a RotationZYX within the mother
+    SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
+    /// Constructor to create a new identified object. Placement by a generic rotoation within the mother
+    SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
+    /// Constructor to create a new identified object. Placement by a generic transformation within the mother
+    SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Transform3D& pos);
     /// Assignment operator
     SubtractionSolid& operator=(const SubtractionSolid& copy) = default;
   };
@@ -1009,6 +1243,7 @@ namespace dd4hep {
     UnionSolid(const UnionSolid& e) = default;
     /// Constructor to be used when passing an already created object
     template <typename Q> UnionSolid(const Handle<Q>& e) : BooleanSolid(e) { }
+
     /// Constructor to create a new object. Position is identity, Rotation is identity-rotation!
     UnionSolid(const Solid& shape1, const Solid& shape2);
     /// Constructor to create a new object. Placement by position, Rotation is identity-rotation!
@@ -1019,6 +1254,17 @@ namespace dd4hep {
     UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new object. Placement by a generic transformation within the mother
     UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
+
+    /// Constructor to create a new identified object. Position is identity, Rotation is identity-rotation!
+    UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2);
+    /// Constructor to create a new identified object. Placement by position, Rotation is identity-rotation!
+    UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Position& pos);
+    /// Constructor to create a new identified object. Placement by a RotationZYX within the mother
+    UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
+    /// Constructor to create a new identified object. Placement by a generic rotoation within the mother
+    UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
+    /// Constructor to create a new identified object. Placement by a generic transformation within the mother
+    UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Transform3D& pos);
     /// Assignment operator
     UnionSolid& operator=(const UnionSolid& copy) = default;
   };
@@ -1041,6 +1287,7 @@ namespace dd4hep {
     IntersectionSolid(const IntersectionSolid& e) = default;
     /// Constructor to be used when passing an already created object
     template <typename Q> IntersectionSolid(const Handle<Q>& e) : BooleanSolid(e) { }
+
     /// Constructor to create a new object. Position is identity, Rotation is identity-rotation!
     IntersectionSolid(const Solid& shape1, const Solid& shape2);
     /// Constructor to create a new object. Placement by position, Rotation is identity-rotation!
@@ -1051,6 +1298,17 @@ namespace dd4hep {
     IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new object. Placement by a generic transformation within the mother
     IntersectionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
+
+    /// Constructor to create a new identified object. Position is identity, Rotation is identity-rotation!
+    IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2);
+    /// Constructor to create a new identified object. Placement by position, Rotation is identity-rotation!
+    IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Position& pos);
+    /// Constructor to create a new identified object. Placement by a RotationZYX within the mother
+    IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
+    /// Constructor to create a new identified object. Placement by a generic rotoation within the mother
+    IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
+    /// Constructor to create a new identified object. Placement by a generic transformation within the mother
+    IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Transform3D& pos);
     /// Assignment operator
     IntersectionSolid& operator=(const IntersectionSolid& copy) = default;
   };
