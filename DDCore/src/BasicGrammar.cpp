@@ -16,6 +16,7 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/Exceptions.h"
 #include "DD4hep/BasicGrammar.h"
+#include "DD4hep/detail/Grammar.h"
 
 // ROOT include files
 #include "TDataType.h"
@@ -108,3 +109,44 @@ void dd4hep::BasicGrammar::invalidConversion(const std::type_info& from, const s
                              "' to '" + to_name + "' is not implemented.");
 }
 
+/// Standard constructor
+dd4hep::SimpleGrammar::SimpleGrammar(size_t siz, const std::type_info& typ)
+  : BasicGrammar(dd4hep::typeName(typ)), object_size(siz), object_type(typ)
+{
+}
+
+/// Default destructor
+dd4hep::SimpleGrammar::~SimpleGrammar()   {
+}
+
+/// PropertyGrammar overload: Serialize a property to a string
+std::string dd4hep::SimpleGrammar::str(const void* /* ptr */) const    {
+  dd4hep::except("SimpleGrammar","+++ The string representation str() is not implemented for grammar type %s",
+                 this->type_name().c_str());
+  return "";
+}
+
+/// PropertyGrammar overload: Retrieve value from string
+bool dd4hep::SimpleGrammar::fromString(void* /* ptr */, const std::string& /* value */) const    {
+  dd4hep::except("SimpleGrammar","+++ The data parsing from string is not implemented for grammar type %s",
+                 this->type_name().c_str());
+  return false;
+}
+
+/// Opaque object destructor
+void dd4hep::SimpleGrammar::destruct(void* /* pointer */) const    {
+  dd4hep::except("SimpleGrammar","+++ Object destruction is not implemented for grammar type %s",
+                 this->type_name().c_str());
+}
+
+/// Opaque object copy construction. Memory must be allocated externally
+void dd4hep::SimpleGrammar::copy(void* /* to */, const void* /* from */)  const    {
+  dd4hep::except("SimpleGrammar","+++ Object copy is not implemented for grammar type %s",
+                 this->type_name().c_str());
+}
+
+/// Bind opaque address to object
+void dd4hep::SimpleGrammar::bind(void* /* pointer */)  const   {
+  dd4hep::except("SimpleGrammar","+++ Object destruction is not implemented for grammar type %s",
+                 this->type_name().c_str());
+}

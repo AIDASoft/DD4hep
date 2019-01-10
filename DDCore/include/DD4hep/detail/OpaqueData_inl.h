@@ -31,13 +31,13 @@ namespace dd4hep {
 
   /// Generic getter. Specify the exact type, not a polymorph type
   template <typename T> T& OpaqueData::get() {
-    if (!grammar || (grammar->type() != typeid(T))) { throw std::bad_cast(); }
+    if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
     return *(T*)pointer;
   }
 
   /// Generic getter (const version). Specify the exact type, not a polymorph type
   template <typename T> const T& OpaqueData::get() const {
-    if (!grammar || (grammar->type() != typeid(T))) { throw std::bad_cast(); }
+    if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
     return *(T*)pointer;
   }
 

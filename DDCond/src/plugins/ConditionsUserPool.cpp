@@ -387,8 +387,8 @@ ConditionsMappedUserPool<MAPPING>::get(Condition::key_type lower, Condition::key
   if ( !m_conditions.empty() )   {
     typename MAPPING::const_iterator first = m_conditions.lower_bound(lower);
     for(; first != m_conditions.end(); ++first )  {
-      result.push_back((*first).second);
       if ( (*first).first > upper ) break;
+      result.push_back((*first).second);
     }
   }
   return result;

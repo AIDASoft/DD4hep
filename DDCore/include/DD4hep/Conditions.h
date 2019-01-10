@@ -62,48 +62,48 @@ namespace dd4hep {
   public:
     /// Flags to steer the conditions conversion to string
     enum StringFlags  {
-      WITH_IOV           = 1<<0,
-      WITH_ADDRESS       = 1<<1,
-      WITH_TYPE          = 1<<2,
-      WITH_COMMENT       = 1<<4,
-      WITH_DATATYPE      = 1<<5,
-      WITH_DATA          = 1<<6,
-      NO_NAME            = 1<<20,
+      WITH_IOV            =  1<<0,
+      WITH_ADDRESS        =  1<<1,
+      WITH_TYPE           =  1<<2,
+      WITH_COMMENT        =  1<<4,
+      WITH_DATATYPE       =  1<<5,
+      WITH_DATA           =  1<<6,
+      NO_NAME             =  1<<20,
       NONE
     };
     /// Flags to indicate the conditions type ans state
     enum ConditionState {
-      INACTIVE            = 0,
-      ACTIVE              = 1<<0,
-      CHECKED             = 1<<2,
-      DERIVED             = 1<<3,
-      ONSTACK             = 1<<4,
+      INACTIVE            =  0,
+      ACTIVE              =  1<<0,
+      CHECKED             =  1<<2,
+      DERIVED             =  1<<3,
+      ONSTACK             =  1<<4,
       // Flags for specific conditions
-      TEMPERATURE         = 1<<5,
-      TEMPERATURE_DERIVED = 1<<6|DERIVED,
-      PRESSURE            = 1<<7,
-      PRESSURE_DERIVED    = 1<<8|DERIVED,
-      ALIGNMENT_DELTA     = 1<<9,
-      ALIGNMENT_DERIVED   = 1<<10|DERIVED,
+      TEMPERATURE         =  1<<5,
+      TEMPERATURE_DERIVED =  1<<6|DERIVED,
+      PRESSURE            =  1<<7,
+      PRESSURE_DERIVED    =  1<<8|DERIVED,
+      ALIGNMENT_DELTA     =  1<<9,
+      ALIGNMENT_DERIVED   =  1<<10|DERIVED,
       // Keep bit 10-15 for other generic types
       // Bit 16-31 is reserved for user classifications
-      USER_FLAGS_FIRST    = 1<<16,
-      USER_FLAGS_LAST     = 1<<31
+      USER_FLAGS_FIRST    =  1<<16,
+      USER_FLAGS_LAST     =  1<<31
     };
     /// Flags to indicate conditions item ranges (low word of the conditions key)
     enum ConditionItemRangeKeys {
-      FIRST_ITEM_KEY =  0x0U,
-      LAST_ITEM_KEY  = ~0x0U
+      FIRST_ITEM_KEY      =  0x0U,
+      LAST_ITEM_KEY       = ~0x0U
     };
     /// Flags to indicate conditions detector ranges (high word of the conditions key)
     enum ConditionDetectorRangeKeys {
-      FIRST_DET_KEY =  0x0U,
-      LAST_DET_KEY  = ~0x0U
+      FIRST_DET_KEY       =  0x0U,
+      LAST_DET_KEY        = ~0x0U
     };
     /// Flags to indicate global conditions ranges
     enum {
-      FIRST_KEY  =  0x0ULL,
-      LAST_KEY   = ~0x0ULL        
+      FIRST_KEY           =  0x0ULL,
+      LAST_KEY            = ~0x0ULL        
     };
 
     /// Abstract base for processing callbacks to conditions objects

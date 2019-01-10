@@ -34,10 +34,12 @@ namespace dd4hep {
    *   \ingroup DD4HEP
    */
   template <typename TYPE> class Grammar : public BasicGrammar {
+  private:
+    
     friend class BasicGrammar;
     /// Default destructor
     virtual ~Grammar();
-    /// Standarsd constructor
+    /// Standard constructor
     Grammar();
 
   public:
@@ -45,6 +47,8 @@ namespace dd4hep {
     /** Base class overrides   */
     /// PropertyGrammar overload: Access to the type information
     virtual const std::type_info& type() const  override;
+    /// Access to the type information
+    virtual bool equals(const std::type_info& other_type) const  override;
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const  override;
     /// PropertyGrammar overload: Serialize a property to a string

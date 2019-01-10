@@ -90,6 +90,8 @@ namespace dd4hep {
       return initialized_clazz();
     }
     /// Access to the type information
+    virtual bool equals(const std::type_info& other_type) const = 0;
+    /// Access to the type information
     virtual const std::type_info& type() const = 0;
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const = 0;
@@ -104,6 +106,56 @@ namespace dd4hep {
     /// Bind opaque address to object
     virtual void bind(void* pointer)  const = 0;
   };
+
+  /// Concrete type dependent simple grammar definition. Common functionality
+  /**
+   *   Note: All methods below only throw exceptions. This "simple" grammar 
+   *   cannot answer them. There is also no string parsing implemented for these.
+   *
+   *   \author  M.Frank
+   *   \date    13.08.2013
+   *   \ingroup DD4HEP
+   */
+  class SimpleGrammar : public BasicGrammar {
+  protected:
+    
+    friend class BasicGrammar;
+
+    size_t                object_size;
+    /// Reference to type information
+    const std::type_info& object_type;
+    
+    /// Standard constructor
+    SimpleGrammar(size_t siz, const std::type_info& typ);
+    /// Default destructor
+    virtual ~SimpleGrammar();
+
+  public:
+    template <typename TYPE> static BasicGrammar* instance()  {
+      static SimpleGrammar s_grammar(sizeof(TYPE), typeid(TYPE));
+      return &s_grammar;
+    }
+    /** Base class overrides   */
+    /// PropertyGrammar overload: Access to the type information
+    virtual const std::type_info& type() const  override   {  return object_type;   }
+    /// Access the object size (sizeof operator)
+    virtual size_t sizeOf() const  override                {  return object_size;   }
+    /// Access to the type information
+    virtual bool equals(const std::type_info& other_type) const  override
+    {  return other_type == object_type;  }
+    /** Base class overrides   */
+    /// PropertyGrammar overload: Serialize a property to a string
+    virtual std::string str(const void* ptr) const  override;
+    /// PropertyGrammar overload: Retrieve value from string
+    virtual bool fromString(void* ptr, const std::string& value) const  override;
+    /// Opaque object destructor
+    virtual void destruct(void* pointer) const  override;
+    /// Opaque object copy construction. Memory must be allocated externally
+    virtual void copy(void* to, const void* from)  const  override;
+    /// Bind opaque address to object
+    virtual void bind(void* pointer)  const override;
+  };  
+
 }      // End namespace dd4hep
 
 #endif  /* DD4HEP_DDG4_BASICGRAMMAR_H */

@@ -57,7 +57,7 @@ const string& OpaqueData::dataType() const   {
 }
 
 /// Standard initializing constructor
-OpaqueDataBlock::OpaqueDataBlock() : OpaqueData(), /*destruct(0), copy(0),*/ type(0)   {
+OpaqueDataBlock::OpaqueDataBlock() : OpaqueData(), type(0)   {
   InstanceCount::increment(this);
 }
 
@@ -73,13 +73,43 @@ OpaqueDataBlock::OpaqueDataBlock(const OpaqueDataBlock& c)
 
 /// Standard Destructor
 OpaqueDataBlock::~OpaqueDataBlock()   {
-  if ( pointer )  {
+  if ( pointer && (type&EXTERN_DATA) != EXTERN_DATA )  {
     grammar->destruct(pointer);
     if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
   }
   pointer = 0;
   grammar = 0;
   InstanceCount::decrement(this);
+}
+
+/// Copy constructor
+OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
+  if ( this != &c )  {
+    if ( grammar == c.grammar )   {
+      if ( pointer )  {
+        if ( grammar ) grammar->destruct(pointer);
+        if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
+      }
+      pointer = 0;
+      grammar = 0;
+    }
+    if ( grammar == 0 )  {
+      this->OpaqueData::operator=(c);
+      type = c.type;
+      grammar = 0;
+      if ( c.grammar )   {
+        bind(c.grammar);
+        grammar->copy(pointer,c.pointer);
+        return *this;
+      }
+      else if ( (c.type&EXTERN_DATA) == EXTERN_DATA )   {
+        pointer = c.pointer;
+        return *this;
+      }
+    }
+    except("OpaqueData","You may not bind opaque data multiple times!");
+  }
+  return *this;
 }
 
 /// Move the data content: 'from' will be reset to NULL
@@ -95,33 +125,12 @@ bool OpaqueDataBlock::move(OpaqueDataBlock& from)   {
   return true;
 }
 
-/// Copy constructor
-OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
-  if ( this != &c )  {
-    if ( this->grammar == c.grammar )   {
-      if ( pointer )  {
-        grammar->destruct(pointer);
-        if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
-      }
-      pointer = 0;
-      grammar = 0;
-    }
-    if ( this->grammar == 0 )  {
-      this->OpaqueData::operator=(c);
-      this->type = c.type;
-      this->grammar = 0;
-      this->bind(c.grammar);
-      this->grammar->copy(pointer,c.pointer);
-      return *this;
-    }
-    except("OpaqueData","You may not bind opaque data multiple times!");
-  }
-  return *this;
-}
-
 /// Bind data value
 void* OpaqueDataBlock::bind(const BasicGrammar* g)   {
-  if ( !grammar )  {
+  if ( (type&EXTERN_DATA) == EXTERN_DATA )  {
+    except("OpaqueData","Extern data may not be bound!");
+  }
+  else if ( !grammar )  {
     size_t len = g->sizeOf();
     grammar  = g;
     (len > sizeof(data))
@@ -140,7 +149,10 @@ void* OpaqueDataBlock::bind(const BasicGrammar* g)   {
 
 /// Set data value
 void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
-  if ( !grammar )  {
+  if ( (type&EXTERN_DATA) == EXTERN_DATA )  {
+    except("OpaqueData","Extern data may not be bound!");
+  }
+  else if ( !grammar )  {
     size_t len = g->sizeOf();
     grammar = g;
     if ( len <= size )
@@ -154,10 +166,22 @@ void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
   else if ( grammar == g )  {
     // We cannot ingore secondary requests for data bindings.
     // This leads to memory leaks in the caller!
-    except("OpaqueData","You may not bind opaque multiple times!");
+    except("OpaqueData","You may not bind opaque data multiple times!");
   }
   typeinfoCheck(grammar->type(),g->type(),"Opaque data blocks may not be assigned.");
   return 0;
+}
+
+/// Bind external data value to the pointer
+void OpaqueDataBlock::bindExtern(void* ptr, const BasicGrammar* gr)    {
+  if ( grammar != 0 && type != EXTERN_DATA )  {
+    // We cannot ingore secondary requests for data bindings.
+    // This leads to memory leaks in the caller!
+    except("OpaqueData","You may not bind opaque data multiple times!");
+  }
+  pointer = ptr;
+  grammar = gr;
+  type    = EXTERN_DATA;
 }
 
 /// Set data value
