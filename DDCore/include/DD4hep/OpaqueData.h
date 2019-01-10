@@ -85,20 +85,26 @@ namespace dd4hep {
   class OpaqueDataBlock : public OpaqueData   {
 
   protected:
-    enum _DataTypes  {
-      PLAIN_DATA = 1<<0,
-      ALLOC_DATA = 1<<1,
-      STACK_DATA = 1<<2,
-      BOUND_DATA = 1<<3
-    };
-
     /// Data buffer: plain data are allocated directly on this buffer
-    /** Internal data buffer is sufficient to store any vector  */
+    /** This internal data buffer is sufficient to store any 
+     *  STL vector, list, map, etc. and hence should be sufficient to
+     *  probably store normal relatively primitive basic objects.
+     */
     unsigned char data[sizeof(std::vector<void*>)];
 
   public:
-    /// Data buffer type: Must be a bitmap!
+    enum _DataTypes  {
+      PLAIN_DATA  =  1<<0,
+      ALLOC_DATA  =  1<<1,
+      STACK_DATA  =  1<<2,
+      BOUND_DATA  =  1<<3,
+      EXTERN_DATA =  1<<4
+    };
+
+    /// Data buffer type: Must be a bitmap of enum _DataTypes!
     unsigned int type;
+
+  public:
     /// Standard initializing constructor
     OpaqueDataBlock();
     /// Copy constructor
@@ -115,6 +121,10 @@ namespace dd4hep {
     void* bind(const BasicGrammar* grammar);
     /// Bind data value in place
     void* bind(void* ptr, size_t len, const BasicGrammar* grammar);
+    /// Bind external data value to the pointer
+    void bindExtern(void* ptr, const BasicGrammar* grammar);
+    /// Bind external data value to the pointer
+    template <typename T> void bindExtern(T* ptr);
     /// Bind data value
     template <typename T> T& bind();
     /// Bind data value
@@ -126,6 +136,15 @@ namespace dd4hep {
     /// Set data value
     void assign(const void* ptr,const std::type_info& typ);
   };
+}      /* End namespace dd4hep */
 
+#include "DD4hep/BasicGrammar.h"
+
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+
+  template <typename T> inline void OpaqueDataBlock::bindExtern(T* ptr)   {
+    this->OpaqueDataBlock::bindExtern((void*)ptr, SimpleGrammar::instance<T>());
+  }
 }      /* End namespace dd4hep */
 #endif /* DD4HEP_OPAQUEDATA_H  */

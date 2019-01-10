@@ -155,7 +155,7 @@ namespace dd4hep {
 
 #define DD4HEP_DEFINE_EXTERNAL_CONDITIONS_TYPE(x)                 \
   namespace dd4hep {                                              \
-      template <> x& Condition::bind<x>(const std::string& val);  \
+    template <> x& Condition::bind<x>(const std::string& val);    \
       template <> x& Condition::bind<x>();                        \
       template <> x& Condition::get<x>();                         \
       template <> const x& Condition::get<x>() const;             \

@@ -65,6 +65,11 @@ namespace dd4hep {
     return typeid(TYPE);
   }
 
+  /// Access to the type information
+  template <typename TYPE> bool Grammar<TYPE>::equals(const std::type_info& other_type) const  {
+    return other_type == typeid(TYPE);
+  }
+  
   /// Access the object size (sizeof operator)
   template <typename TYPE> size_t Grammar<TYPE>::sizeOf() const   {
     return sizeof(TYPE);

@@ -47,7 +47,7 @@
       <!--   <PseudoTrap name="ptrap4" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="true"/>     -->
       <check vis="Shape4_vis">
         <shape type="PseudoTrap" name="ptrap4" 
-               x1="10*cm" x2="3*cm" 
+               x1="10*cm" x2="10*cm" 
                y1="30*cm" y2="10*cm" 
                z="30*cm"  radius="-10*cm" minusZ="true"/>
         <position x="50*cm"  y="-10*cm" z="0*cm"/>
