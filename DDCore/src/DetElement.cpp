@@ -321,6 +321,11 @@ Volume DetElement::volume() const {
   return access()->placement.volume();
 }
 
+/// Access to the shape of the detector element's placement
+Solid DetElement::solid() const    {
+  return volume()->GetShape();
+}
+
 DetElement& DetElement::setVisAttributes(const Detector& description, const string& nam, const Volume& vol) {
   vol.setVisAttributes(description, nam);
   return *this;
