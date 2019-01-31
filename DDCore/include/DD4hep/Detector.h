@@ -34,6 +34,7 @@
 #include <vector>
 #include <string>
 #include <cstdio>
+#include <memory>
 
 // Forward declarations
 class TGeoManager;
@@ -313,6 +314,9 @@ namespace dd4hep {
     static Detector& getInstance(const std::string& name="default");
     /// Destroy the singleton instance
     static void destroyInstance(const std::string& name="default");
+    /// Unique creation without internal registration
+    static std::unique_ptr<Detector> make_unique(const std::string& name);
+
   };
 
   /*

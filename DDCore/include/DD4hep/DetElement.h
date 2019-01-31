@@ -383,6 +383,8 @@ namespace dd4hep {
 
     /// Access to the logical volume of the detector element's placement
     Volume volume() const;
+    /// Access to the shape of the detector element's placement
+    Solid solid() const;
 
     /// Access to the physical volume of this detector element
     /** This is the current placement value of the detector eleemnt.

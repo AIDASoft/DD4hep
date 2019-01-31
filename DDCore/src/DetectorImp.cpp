@@ -118,6 +118,11 @@ string dd4hep::versionString(){
   return vs;
 }
 
+unique_ptr<Detector> Detector::make_unique(const std::string& name)   {
+  Detector* description = new DetectorImp(name);
+  return unique_ptr<Detector>(description);
+}
+
 Detector& Detector::getInstance(const std::string& name)   {
   lock_guard<recursive_mutex> lock(s_instances.lock);
   Detector* description = s_instances.get(name);

@@ -21,12 +21,12 @@ int main(int argc,char** argv)  {
   bool dry = false;
   for(int i=0; i<argc; ++i)  {
     if ( i==1 && argv[i][0] != '-' ) av.push_back("-input");
-    if      ( strncmp(argv[i],"-load",4)     == 0 ) dry = true, av.push_back(argv[i]);
-    else if ( strncmp(argv[i],"-dry",4)      == 0 ) dry = true, av.push_back(argv[i]);
-    else if ( strncmp(argv[i],"-visopt",4)   == 0 ) visopt   = argv[++i];
-    else if ( strncmp(argv[i],"-level", 4)   == 0 ) level    = argv[++i];
-    else if ( strncmp(argv[i],"-option",4)   == 0 ) opt      = argv[++i];
-    else if ( strncmp(argv[i],"-detector",4) == 0 ) detector = argv[++i];
+    if      ( strncmp(argv[i],"-load-only",4) == 0 ) dry = true, av.push_back(argv[i]);
+    else if ( strncmp(argv[i],"-dry-run",4)   == 0 ) dry = true, av.push_back(argv[i]);
+    else if ( strncmp(argv[i],"-visopt",4)    == 0 ) visopt   = argv[++i];
+    else if ( strncmp(argv[i],"-level", 4)    == 0 ) level    = argv[++i];
+    else if ( strncmp(argv[i],"-option",4)    == 0 ) opt      = argv[++i];
+    else if ( strncmp(argv[i],"-detector",4)  == 0 ) detector = argv[++i];
     else av.push_back(argv[i]);
   }
   if ( !dry )   {
