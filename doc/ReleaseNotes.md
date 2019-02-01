@@ -1,3 +1,111 @@
+# v01-10
+
+* 2019-01-31 Markus Frank ([PR#480](https://github.com/aidasoft/dd4hep/pull/480))
+  - Fix bug in `geoDisplay` to allow passing the volume display depth as an argument
+  - Added a static creator to the Detector class to create non-traced instances: `std::unique_ptr<Detector> Detector::make_unique(const std::string& name);` It is the users responsibility to release the allocated resources and to avoid clashed with existing `TGeoManager` instances.
+  -  Allow direct access to the solid instance of the DetElements's placement.
+
+* 2019-01-15 Markus Frank ([PR#478](https://github.com/aidasoft/dd4hep/pull/478))
+  - Fix bug in `geoDisplay` see #477
+
+* 2019-01-10 Markus Frank ([PR#476](https://github.com/aidasoft/dd4hep/pull/476))
+  - Fix bug in ConditionsUserPool whan scanning DetElement conditions
+  - Improve conditions handling: Allow to bind sub-class entities of ConditionObject to thew opaque data block.
+
+* 2018-12-14 Markus Frank ([PR#475](https://github.com/aidasoft/dd4hep/pull/475))
+  - Add named shape constructors (see #469)
+
+* 2018-12-13 Markus Frank ([PR#474](https://github.com/aidasoft/dd4hep/pull/474))
+  - Fix possible access violation
+
+* 2018-12-13 MarkusFrankATcernch ([PR#473](https://github.com/aidasoft/dd4hep/pull/473))
+  - Improve handling of condition dependencies ( main work item)
+    - Improve logic flow in the DDCond/ConditionDependencyHandler
+    - Improve the functionality of the conditions resolver accessible from the update context. Allow for the creation (and registration) of multiple conditions in one single callback.
+  - Add a shape check for eight-point solids.
+
+* 2018-12-07 Frank Gaede ([PR#470](https://github.com/aidasoft/dd4hep/pull/470))
+  - add `#include <memory>` to `run_plugin.h` (needed for `std::unique_ptr` and gcc 4.9)
+
+* 2018-12-06 Markus Frank ([PR#468](https://github.com/aidasoft/dd4hep/pull/468))
+  - To fix issue #466  we had to go back to the original implementation which was actually correct (see https://github.com/AIDASoft/DD4hep/commit/36d4b01e0688f690ac2e506a62e00627bb6b798c#diff-7219d47bc4ab7516e0ca6c4f35f2602f).
+  - Added an example to show how to perform scans of the volume hierarchy with user defined callback functors. See for details `examples/ClientTests/src/PlacedVolumeScannerTest.cpp`.
+  
+  - Added conversion between `TGeoArb8` and `G4GenericTrap`, fixes #465
+
+* 2018-12-05 Markus Frank ([PR#467](https://github.com/aidasoft/dd4hep/pull/467))
+  - Harmonize argument names in `Shapes.h` with their actual functionality. For many shapes in `DD4hep/Shapes.h` the argument names were misleading: very often deltaPhi was mentioned, whereas the code actually used instead of (phi, deltaphi) the input arguments to the ROOT constructors (startPhi,endPhi) or (phi1, phi2).  Wherever ROOT uses (startPhi,endPhi) the argument names were changed accordingly. Please note a bug was found in the legacy constructor:
+    ```cpp
+      /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
+      Tube(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double endPhi)
+    ```
+    Here opposite to all other constructors delta_phi was used as such - in contradiction to other constructors of the same class. This was rectified.
+
+* 2018-11-30 Andre Sailer ([PR#462](https://github.com/aidasoft/dd4hep/pull/462))
+  - Introduce compile flag to minimize conditions footprint
+
+* 2018-11-27 Markus Frank ([PR#461](https://github.com/aidasoft/dd4hep/pull/461))
+  - Add shape constructor for regular trapezoids (TGeoTrd1) ( see #460). Trd2 cannot be divided the same way as Trd1 shapes. Hence the addition became necessary. Due to the imprecise name of Trapezoid the names Trd1 and Trd2 (aka old Trapezoid) are favored. The usage of Trapezoid is supported for backwards compatibility using a typedef.
+
+* 2018-11-22 Markus Frank ([PR#459](https://github.com/aidasoft/dd4hep/pull/459))
+  - Fix bug in DDCodex geometry, add debugging to VolumeBuilder
+
+* 2018-11-14 Markus Frank ([PR#458](https://github.com/aidasoft/dd4hep/pull/458))
+  - Improve ROOT persistency: flag user extensions as persistent only while saving/loading
+  - Need to rename DDEve library: nameclash with ddeve executable on Apple: cmake fails to build ddeve as exe and DDEve as library. libDDEve.so is now called libDDEvePlugins.so.
+
+* 2018-11-13 Markus Frank ([PR#457](https://github.com/aidasoft/dd4hep/pull/457))
+  ## Provide support for Volume divisions.
+  Since DD4hep requires Volumes (aka `TGeoVolume`) and PlacedVolumes (aka `TGeoNode`) to be enhanced with the user extension mechanism, therefore shape divisions **must** be done using the division mechanism of the DD4hep shape or the volume wrapper. Otherwise the enhancements are not added and you will get an exception when DD4hep is closing the geometry or whenever you do something with the volume, which is served by the user extension. The same argument holds when a division is made from a `Volume`. Unfortunately there is no reasonable way to intercept this call to the `TGeo` objects - except to the sub-class each of them, which is not really acceptable either.
+  
+  Hence: **If you use DD4hep: Never call the raw TGeo routines.**
+     
+  For any further documentation please see the following ROOT documentation on [TGeo](http://root.cern.ch/root/html/TGeoVolume.html)
+  
+  For an example see `examples/ClientTests/src/VolumeDivisionTest.cpp`
+  and `examples/ClientTests/compact/VolumeDivisionTest.xml`
+  
+  To execute: 
+  ```
+  geoDisplay -input file:<path>/examples/ClientTests/compact/VolumeDivisionTest.xml
+  ```
+
+* 2018-11-13 Hadrien Grasland ([PR#438](https://github.com/aidasoft/dd4hep/pull/438))
+  - Make FindPackage(DD4hep) work even if thisdd4hep.sh was not sourced
+
+* 2018-11-09 Frank Gaede ([PR#456](https://github.com/aidasoft/dd4hep/pull/456))
+  - add `#include <memory>` in `VolumeAssembly_geo.cpp` gcc 4.9 compatibility
+
+* 2018-11-07 Markus Frank ([PR#455](https://github.com/aidasoft/dd4hep/pull/455))
+  - Improve VolumeBuilder pattern matcher
+  - Allow XML based volume creation based on factories.
+
+* 2018-11-02 Markus Frank ([PR#454](https://github.com/aidasoft/dd4hep/pull/454))
+  - Improve generic Volume assembly and XML volume builder
+
+* 2018-11-01 Markus Frank ([PR#452](https://github.com/aidasoft/dd4hep/pull/452))
+  - Fixed the DetElement cloning mechanism it to properly replicate DetElement trees.
+    - Tested with one LHCb upgrade detector.
+  - Added numeric epsilon to the default math dictionary of the expression evaluator:
+    ```cpp
+    int:epsilon  --> std::numeric_limits<int>::epsilon()
+    long:epsilon  --> std::numeric_limits<long>::epsilon()
+    float:epsilon  --> std::numeric_limits<float>::epsilon()
+    double:epsilon  --> std::numeric_limits<double>::epsilon()
+    ```
+
+* 2018-10-30 Markus Frank ([PR#451](https://github.com/aidasoft/dd4hep/pull/451))
+  - Add copyright notices
+  - Make ddeve a program not only a ROOT script
+
+* 2018-10-30 Markus Frank ([PR#450](https://github.com/aidasoft/dd4hep/pull/450))
+  - The DDUpgrade example was removed from the main repository. Since it is only of interest for LHCb, it moved to a separate repository at CERN/gitlab.
+  - Issue #449 should be fixed now.
+  - The XML volume builder utility was improved.
+
+* 2018-10-18 Markus Frank ([PR#447](https://github.com/aidasoft/dd4hep/pull/447))
+  -  Fix plugin manager cmake file by removing explicit dependency on c++ standard.
+
 # v01-09
 
 * 2018-10-15 Markus Frank ([PR#442](https://github.com/aidasoft/DD4hep/pull/442))
