@@ -913,9 +913,8 @@ namespace dd4hep {
             return lines ;
           }	    
 
-        } else if( shape->IsA() == TGeoConeSeg::Class() ) {
+        }  else if( shape->InheritsFrom("TGeoTube") ||  shape->InheritsFrom("TGeoCone") ) {
 
-          TGeoCone* cone = ( TGeoCone* ) shape  ;
 
           // can only deal with special case of z-disk and origin in center of cone
           if( type().isZDisk() ) { // && lo.rho() < epsilon ) {
@@ -926,13 +925,27 @@ namespace dd4hep {
 	      lo.y() = 0. ;
 	    }
 
+	    double zhalf = 0 ;
+	    double rmax1 = 0 ;
+	    double rmax2 = 0 ;
+	    double rmin1 = 0 ;
+	    double rmin2 = 0 ;
+	    if( shape->InheritsFrom("TGeoTube") ) {
+	      TGeoTube* tube = ( TGeoTube* ) shape  ;
+	      zhalf = tube->GetDZ() ;
+	      rmax1 = tube->GetRmax() ;
+	      rmax2 = tube->GetRmax() ;
+	      rmin1 = tube->GetRmin() ;
+	      rmin2 = tube->GetRmin() ;
+	    } else {   // shape->InheritsFrom("TGeoCone") )
+	      TGeoCone* cone = ( TGeoCone* ) shape  ;
+	      zhalf = cone->GetDZ() ;
+	      rmax1 = cone->GetRmax1() ;
+	      rmax2 = cone->GetRmax2() ;
+	      rmin1 = cone->GetRmin1() ;
+	      rmin2 = cone->GetRmin2() ;
+	    }
 
-            double zhalf = cone->GetDZ() ;
-            double rmax1 = cone->GetRmax1() ;
-            double rmax2 = cone->GetRmax2() ;
-            double rmin1 = cone->GetRmin1() ;
-            double rmin2 = cone->GetRmin2() ;
-	    
             // two circles around origin 
             // get radii at position of plane 
             double r0 =  rmin1 +  ( rmin2 - rmin1 ) / ( 2. * zhalf )   *  ( zhalf + lo.z()  ) ;  
@@ -1146,19 +1159,17 @@ namespace dd4hep {
 
       } else if( type().isCylinder() ) {  
 
-        //	if( shape->IsA() == TGeoTube::Class() ) {
-        if( shape->IsA() == TGeoConeSeg::Class() ) {
+	if( shape->InheritsFrom("TGeoTube") || shape->InheritsFrom("TGeoCone") ) {
 
           lines.reserve( nMax ) ;
 
-          TGeoTube* tube = ( TGeoTube* ) shape  ;
-	  
+          TGeoBBox* tube = ( TGeoBBox* ) shape  ;
+
           double zHalf = tube->GetDZ() ;
 
           Vector3D zv( 0. , 0. , zHalf ) ;
 	  
           double r = lo.rho() ;
-
 
 
           unsigned n = nMax / 4 ;
