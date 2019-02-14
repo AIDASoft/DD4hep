@@ -35,11 +35,10 @@ if("${CMAKE_CXX_STANDARD}" STREQUAL "")
 else()
   if (NOT "${CMAKE_CXX_STANDARD}" EQUAL "${DD4hep_BUILD_CXX_STANDARD}")
     message( SEND_ERROR "CMAKE_CXX_STANDARD is set to C++${CMAKE_CXX_STANDARD}\
-             but C++${DD4hep_BUILD_CXX_STANDARD} is required.")
+             but C++${DD4hep_BUILD_CXX_STANDARD} is required for DD4hep.")
   endif()
 endif()
 
-set ( CMAKE_CXX_STANDARD  @CMAKE_CXX_STANDARD@ )
 set ( CMAKE_CXX_STANDARD_REQUIRED ON )
 set ( CMAKE_CXX_EXTENSIONS OFF )
 set ( Geant4_DIR         "@Geant4_DIR@" )
