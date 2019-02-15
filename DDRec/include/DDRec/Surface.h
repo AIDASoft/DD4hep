@@ -551,6 +551,9 @@ namespace dd4hep {
       /// The VolSurface attched to the volume.
       VolSurface volSurface() const { return _volSurf ; }
 
+      /// The DetElement belonging to the surface volume
+      DetElement detElement() const { return _det; }
+
 
       //==== geometry ====
       
