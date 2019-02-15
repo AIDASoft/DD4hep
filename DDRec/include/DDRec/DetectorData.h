@@ -485,6 +485,12 @@ namespace dd4hep {
 
     std::ostream& operator<<( std::ostream& io , const NeighbourSurfacesData& d ) ;
 
+    struct MapStringDoubleStruct {
+      std::map<std::string, double> doubleParameters{};
+    };
+    using DoubleParameters = StructExtension<MapStringDoubleStruct>;
+
+    std::ostream& operator<<( std::ostream& io , const DoubleParameters& d ) ;
 
   } /* namespace rec */
 } /* namespace dd4hep */

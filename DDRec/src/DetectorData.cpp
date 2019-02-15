@@ -199,6 +199,20 @@ namespace dd4hep {
       io <<  "   sameLayer.size() : " << d.sameLayer.size() << std::endl ; 
       return io ;
     }
+
+
+    std::ostream& operator<<(std::ostream& io, const DoubleParameters& d) {
+      boost::io::ios_base_all_saver ifs(io);
+      io <<  " --DoubleParameters: "  << std::scientific << std::endl ;
+      for (auto const& thePair: d.doubleParameters) {
+        io <<  "    "
+           << std::setw(40) << thePair.first << ":"
+           << std::setw(14) << thePair.second
+           << std::endl;
+      }
+      return io ;
+    }
+
  
 
   } // namespace
