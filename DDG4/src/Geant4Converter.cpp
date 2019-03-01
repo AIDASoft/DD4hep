@@ -17,6 +17,7 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/PropertyTable.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 
@@ -87,6 +88,10 @@
 #include "G4ElectroMagneticField.hh"
 #include "G4FieldManager.hh"
 #include "G4ReflectionFactory.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalSkinSurface.hh"
+#include "G4LogicalBorderSurface.hh"
+#include "G4MaterialPropertiesTable.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
@@ -340,7 +345,8 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
 
 /// Dump material in GDML format to output stream
 void* Geant4Converter::handleMaterial(const string& name, Material medium) const {
-  G4Material* mat = data().g4Materials[medium];
+  Geant4GeometryInfo& info = data();
+  G4Material* mat = info.g4Materials[medium];
   if (!mat) {
     PrintLevel lvl = debugMaterials ? ALWAYS : outputLevel;
     mat = G4Material::GetMaterial(name, false);
@@ -395,11 +401,29 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         mat = new G4Material(name, z, a, density, state, 
                              material->GetTemperature(), material->GetPressure());
       }
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+      /// Attach the material properties if any
+      G4MaterialPropertiesTable* tab = 0;
+      TListIter propIt(&material->GetProperties());
+      for(TObject* obj=*propIt; obj; obj = propIt.Next())  {
+        TNamed* n = (TNamed*)obj;
+        TGDMLMatrix *matrix = info.manager->GetGDMLMatrix(n->GetTitle());
+        if ( 0 == tab )  {
+          tab = new G4MaterialPropertiesTable();
+          mat->SetMaterialPropertiesTable(tab);
+        }
+        Geant4GeometryInfo::PropertyVector* v =
+          (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
+        G4MaterialPropertyVector* vec =
+          new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
+        tab->AddProperty(n->GetName(), vec);
+      }
+#endif
       stringstream str;
       str << (*mat);
       printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
     }
-    data().g4Materials[medium] = mat;
+    info.g4Materials[medium] = mat;
   }
   return mat;
 }
@@ -1025,6 +1049,184 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
   }
 }
 
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+/// Convert the geometry type material into the corresponding Geant4 object(s).
+void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
+  TGDMLMatrix* m = (TGDMLMatrix*)matrix;
+  Geant4GeometryInfo& info = data();
+  Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[m];
+  if (!g4) {
+    g4 = new Geant4GeometryInfo::PropertyVector();
+    size_t rows = m->GetRows();
+    g4->name    = m->GetName();
+    g4->title   = m->GetTitle();
+    g4->bins.reserve(rows);
+    g4->values.reserve(rows);
+    for(size_t i=0; i<rows; ++i)  {
+      g4->bins.push_back(m->Get(0,i)  /*   *CLHEP::eV/units::eV   */);
+      g4->values.push_back(m->Get(1,i));
+    }
+    info.g4OpticalProperties[m] = g4;
+  }
+  return g4;
+}
+
+static G4OpticalSurfaceFinish geant4_surface_finish(TGeoOpticalSurface::ESurfaceFinish f)   {
+#define TO_G4_FINISH(x)  case TGeoOpticalSurface::kF##x : return x;
+  switch(f)   {
+    TO_G4_FINISH(polished);              // smooth perfectly polished surface
+    TO_G4_FINISH(polishedfrontpainted);  // smooth top-layer (front) paint
+    TO_G4_FINISH(polishedbackpainted);   // same is 'polished' but with a back-paint
+ 
+    TO_G4_FINISH(ground);                // rough surface
+    TO_G4_FINISH(groundfrontpainted);    // rough top-layer (front) paint
+    TO_G4_FINISH(groundbackpainted);     // same as 'ground' but with a back-paint
+
+    TO_G4_FINISH(polishedlumirrorair);   // mechanically polished surface, with lumirror
+    TO_G4_FINISH(polishedlumirrorglue);  // mechanically polished surface, with lumirror & meltmount
+    TO_G4_FINISH(polishedair);           // mechanically polished surface
+    TO_G4_FINISH(polishedteflonair);     // mechanically polished surface, with teflon
+    TO_G4_FINISH(polishedtioair);        // mechanically polished surface, with tio paint
+    TO_G4_FINISH(polishedtyvekair);      // mechanically polished surface, with tyvek
+    TO_G4_FINISH(polishedvm2000air);     // mechanically polished surface, with esr film
+    TO_G4_FINISH(polishedvm2000glue);    // mechanically polished surface, with esr film & meltmount
+
+    TO_G4_FINISH(etchedlumirrorair);     // chemically etched surface, with lumirror
+    TO_G4_FINISH(etchedlumirrorglue);    // chemically etched surface, with lumirror & meltmount
+    TO_G4_FINISH(etchedair);             // chemically etched surface
+    TO_G4_FINISH(etchedteflonair);       // chemically etched surface, with teflon
+    TO_G4_FINISH(etchedtioair);          // chemically etched surface, with tio paint
+    TO_G4_FINISH(etchedtyvekair);        // chemically etched surface, with tyvek
+    TO_G4_FINISH(etchedvm2000air);       // chemically etched surface, with esr film
+    TO_G4_FINISH(etchedvm2000glue);      // chemically etched surface, with esr film & meltmount
+
+    TO_G4_FINISH(groundlumirrorair);     // rough-cut surface, with lumirror
+    TO_G4_FINISH(groundlumirrorglue);    // rough-cut surface, with lumirror & meltmount
+    TO_G4_FINISH(groundair);             // rough-cut surface
+    TO_G4_FINISH(groundteflonair);       // rough-cut surface, with teflon
+    TO_G4_FINISH(groundtioair);          // rough-cut surface, with tio paint
+    TO_G4_FINISH(groundtyvekair);        // rough-cut surface, with tyvek
+    TO_G4_FINISH(groundvm2000air);       // rough-cut surface, with esr film
+    TO_G4_FINISH(groundvm2000glue);      // rough-cut surface, with esr film & meltmount
+
+    // for DAVIS model
+    TO_G4_FINISH(Rough_LUT);             // rough surface
+    TO_G4_FINISH(RoughTeflon_LUT);       // rough surface wrapped in Teflon tape
+    TO_G4_FINISH(RoughESR_LUT);          // rough surface wrapped with ESR
+    TO_G4_FINISH(RoughESRGrease_LUT);    // rough surface wrapped with ESR and coupled with opical grease
+    TO_G4_FINISH(Polished_LUT);          // polished surface
+    TO_G4_FINISH(PolishedTeflon_LUT);    // polished surface wrapped in Teflon tape
+    TO_G4_FINISH(PolishedESR_LUT);       // polished surface wrapped with ESR
+    TO_G4_FINISH(PolishedESRGrease_LUT); // polished surface wrapped with ESR and coupled with opical grease
+    TO_G4_FINISH(Detector_LUT);          // polished surface with optical grease
+  default:
+    printout(ERROR,"Geant4Surfaces","++ Unknown finish style: %d [%s]. Assume polished!",
+             int(f), TGeoOpticalSurface::FinishToString(f));
+    return polished;
+  }
+#undef TO_G4_FINISH
+}
+
+static G4SurfaceType geant4_surface_type(TGeoOpticalSurface::ESurfaceType t)   {
+#define TO_G4_TYPE(x)  case TGeoOpticalSurface::kT##x : return x;
+  switch(t)   {
+    TO_G4_TYPE(dielectric_metal);      // dielectric-metal interface
+    TO_G4_TYPE(dielectric_dielectric); // dielectric-dielectric interface
+    TO_G4_TYPE(dielectric_LUT);        // dielectric-Look-Up-Table interface
+    TO_G4_TYPE(dielectric_LUTDAVIS);   // dielectric-Look-Up-Table DAVIS interface
+    TO_G4_TYPE(dielectric_dichroic);   // dichroic filter interface
+    TO_G4_TYPE(firsov);                // for Firsov Process
+    TO_G4_TYPE(x_ray);                  // for x-ray mirror process
+  default:
+    printout(ERROR,"Geant4Surfaces","++ Unknown finish style: %d [%s]. Assume polished!",
+             int(t), TGeoOpticalSurface::TypeToString(t));
+    return dielectric_metal;
+  }
+#undef TO_G4_TYPE
+}
+
+static G4OpticalSurfaceModel geant4_surface_model(TGeoOpticalSurface::ESurfaceModel m)   {
+#define TO_G4_MODEL(x)  case TGeoOpticalSurface::kM##x : return x;
+  switch(m)   {
+    TO_G4_MODEL(glisur);  // original GEANT3 model
+    TO_G4_MODEL(unified); // UNIFIED model
+    TO_G4_MODEL(LUT);     // Look-Up-Table model
+    TO_G4_MODEL(DAVIS);   // DAVIS model
+    TO_G4_MODEL(dichroic); // dichroic filter
+  default:
+    printout(ERROR,"Geant4Surfaces","++ Unknown finish style: %d [%s]. Assume polished!",
+             int(m), TGeoOpticalSurface::ModelToString(m));
+    return glisur;
+  }
+#undef TO_G4_MODEL
+}
+
+/// Convert the optical surface to Geant4
+void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
+  TGeoOpticalSurface* s    = (TGeoOpticalSurface*)surface;
+  Geant4GeometryInfo& info = data();
+  G4OpticalSurface*   g4   = info.g4OpticalSurfaces[s];
+  if (!g4) {
+    G4SurfaceType          type   = geant4_surface_type(s->GetType());
+    G4OpticalSurfaceModel  model  = geant4_surface_model(s->GetModel());
+    G4OpticalSurfaceFinish finish = geant4_surface_finish(s->GetFinish());
+    g4 = new G4OpticalSurface(s->GetName(), model, finish, type, s->GetValue());
+    g4->SetSigmaAlpha(s->GetSigmaAlpha());
+    // not implemented: g4->SetPolish(s->GetPolish());
+    G4MaterialPropertiesTable* tab = 0;
+    TListIter it(&s->GetProperties());
+    for(TObject* obj = *it; obj; obj = it.Next())  {
+      TNamed* n = (TNamed*)obj;
+      TGDMLMatrix *matrix = info.manager->GetGDMLMatrix(n->GetTitle());
+      if ( 0 == tab )  {
+        tab = new G4MaterialPropertiesTable();
+        g4->SetMaterialPropertiesTable(tab);
+      }
+      Geant4GeometryInfo::PropertyVector* v =
+        (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
+      if ( !v )  {  // Error!
+        except("Geant4OpticalSurface","++ Failed to convert opt.surface %s. Property table %s is not defined!",
+               s->GetName(), n->GetTitle());
+      }
+      G4MaterialPropertyVector* vec =
+        new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
+      tab->AddProperty(n->GetName(), vec);
+    }
+    info.g4OpticalSurfaces[s] = g4;
+  }
+  return g4;
+}
+
+/// Convert the skin surface to Geant4
+void* Geant4Converter::handleSkinSurface(TObject* surface) const   {
+  TGeoSkinSurface*    surf = (TGeoSkinSurface*)surface;
+  Geant4GeometryInfo& info = data();
+  G4LogicalSkinSurface* g4 = info.g4SkinSurfaces[surf];
+  if (!g4) {
+    G4OpticalSurface* s  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
+    G4LogicalVolume*  v = info.g4Volumes[surf->GetVolume()];
+    g4 = new G4LogicalSkinSurface(surf->GetName(), v, s);
+    info.g4SkinSurfaces[surf] = g4;
+  }
+  return g4;
+}
+
+/// Convert the border surface to Geant4
+void* Geant4Converter::handleBorderSurface(TObject* surface) const   {
+  TGeoBorderSurface*    surf = (TGeoBorderSurface*)surface;
+  Geant4GeometryInfo&   info = data();
+  G4LogicalBorderSurface* g4 = info.g4BorderSurfaces[surf];
+  if (!g4) {
+    G4OpticalSurface*  s  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
+    G4VPhysicalVolume* n1 = info.g4Placements[surf->GetNode1()];
+    G4VPhysicalVolume* n2 = info.g4Placements[surf->GetNode2()];
+    g4 = new G4LogicalBorderSurface(surf->GetName(), n1, n2, s);
+    info.g4BorderSurfaces[surf] = g4;
+  }
+  return g4;
+}
+#endif
+
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
   Geant4GeometryInfo&     info = data();
@@ -1104,10 +1306,17 @@ template <typename O, typename C, typename F> void handleRefs(const O* o, const 
     (o->*pmf)("", *i);
   }
 }
+
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
   for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
     (o->*pmf)((*i)->GetName(), *i);
   }
+}
+
+template <typename O, typename F> void handleArray(const O* o, const TObjArray* c, F pmf) {
+  TObjArrayIter arr(c);
+  for(TObject* i = *arr; i; i=arr.Next())
+    (o->*pmf)(i);
 }
 
 template <typename O, typename C, typename F> void handleMap(const O* o, const C& c, F pmf) {
@@ -1137,20 +1346,30 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   //outputLevel = WARNING;
   //setPrintLevel(VERBOSE);
 
-  handle(this, geo.volumes, &Geant4Converter::collectVolume);
-  handle(this, geo.solids,  &Geant4Converter::handleSolid);
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  handleArray(this, geo.manager->GetListOfGDMLMatrices(), &Geant4Converter::handleMaterialProperties);
+  handleArray(this, geo.manager->GetListOfOpticalSurfaces(), &Geant4Converter::handleOpticalSurface);
+#endif
+  
+  handle(this,     geo.volumes, &Geant4Converter::collectVolume);
+  handle(this,     geo.solids,  &Geant4Converter::handleSolid);
   printout(outputLevel, "Geant4Converter", "++ Handled %ld solids.", geo.solids.size());
-  handleRefs(this, geo.vis, &Geant4Converter::handleVis);
+  handleRefs(this, geo.vis,     &Geant4Converter::handleVis);
   printout(outputLevel, "Geant4Converter", "++ Handled %ld visualization attributes.", geo.vis.size());
-  handleMap(this, geo.limits, &Geant4Converter::handleLimitSet);
+  handleMap(this,  geo.limits,  &Geant4Converter::handleLimitSet);
   printout(outputLevel, "Geant4Converter", "++ Handled %ld limit sets.", geo.limits.size());
-  handleMap(this, geo.regions, &Geant4Converter::handleRegion);
+  handleMap(this,  geo.regions, &Geant4Converter::handleRegion);
   printout(outputLevel, "Geant4Converter", "++ Handled %ld regions.", geo.regions.size());
-  handle(this, geo.volumes, &Geant4Converter::handleVolume);
+  handle(this,     geo.volumes, &Geant4Converter::handleVolume);
   printout(outputLevel, "Geant4Converter", "++ Handled %ld volumes.", geo.volumes.size());
-  handleRMap(this, *m_data, &Geant4Converter::handleAssembly);
+  handleRMap(this, *m_data,     &Geant4Converter::handleAssembly);
   // Now place all this stuff appropriately
-  handleRMap(this, *m_data, &Geant4Converter::handlePlacement);
+  handleRMap(this, *m_data,     &Geant4Converter::handlePlacement);
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  /// Handle concrete surfaces
+  handleArray(this, geo.manager->GetListOfSkinSurfaces(),   &Geant4Converter::handleSkinSurface);
+  handleArray(this, geo.manager->GetListOfBorderSurfaces(), &Geant4Converter::handleBorderSurface);
+#endif
   //==================== Fields
   handleProperties(m_detDesc.properties());
   if ( printSensitives )  {

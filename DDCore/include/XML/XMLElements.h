@@ -816,6 +816,10 @@ namespace dd4hep {
         return m_element.hasAttr(name);
       }
       /// Access attribute with implicit return type conversion
+      template <class T> T attr(const XmlAttr* att) const {
+        return m_element.attr<T>(att);
+      }
+      /// Access attribute with implicit return type conversion
       template <class T> T attr(const XmlChar* tag_value) const {
         return m_element.attr<T>(tag_value);
       }

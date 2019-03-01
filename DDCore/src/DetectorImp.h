@@ -177,6 +177,11 @@ namespace dd4hep {
     virtual VolumeManager volumeManager() const  override {
       return m_volManager;
     }
+    /// Access the optical surface manager
+    virtual OpticalSurfaceManager surfaceManager()  const  override  {
+      return OpticalSurfaceManager(m_manager);
+    }
+
     /// Return handle to the combined electromagentic field description.
     virtual OverlayedField field() const  override {
       return m_field;

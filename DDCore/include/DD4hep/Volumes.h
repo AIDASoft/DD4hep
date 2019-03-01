@@ -167,7 +167,7 @@ namespace dd4hep {
     PlacedVolume(const PlacedVolume& e) = default;
     /// Copy assignment from other handle type
     template <typename T> PlacedVolume(const Handle<T>& e) : Handle<TGeoNode>(e) {  }
-    /// Constructor to be used when reading the already parsed DOM tree
+    /// Constructor taking implementation object pointer
     PlacedVolume(const TGeoNode* e) : Handle<TGeoNode>(e) {  }
     /// Assignment operator (must match copy constructor)
     PlacedVolume& operator=(const PlacedVolume& v)  = default;
