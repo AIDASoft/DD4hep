@@ -66,6 +66,19 @@ namespace dd4hep {
       /// Create geometry conversion
       Geant4Converter& create(DetElement top);
 
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+      /// Convert the geometry type material into the corresponding Geant4 object(s).
+      virtual void* handleMaterialProperties(TObject* matrix) const;
+
+      /// Convert the optical surface to Geant4
+      void* handleOpticalSurface(TObject* surface) const;
+
+      /// Convert the skin surface to Geant4
+      void* handleSkinSurface(TObject* surface) const;
+
+      /// Convert the border surface to Geant4
+      void* handleBorderSurface(TObject* surface) const;
+#endif
       /// Convert the geometry type material into the corresponding Geant4 object(s).
       virtual void* handleMaterial(const std::string& name, Material medium) const;
 

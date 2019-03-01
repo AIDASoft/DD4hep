@@ -26,6 +26,7 @@
 #include "DD4hep/NamedObject.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/VolumeManager.h"
+#include "DD4hep/OpticalSurfaceManager.h"
 #include "DD4hep/ExtensionEntry.h"
 #include "DD4hep/BuildType.h"
 
@@ -123,6 +124,9 @@ namespace dd4hep {
 
     /// Return handle to the VolumeManager
     virtual VolumeManager volumeManager() const = 0;
+
+    /// Access the optical surface manager
+    virtual OpticalSurfaceManager surfaceManager()  const = 0;
 
     /// Accessor to the map of header entries
     virtual Header header() const = 0;
@@ -269,7 +273,7 @@ namespace dd4hep {
     virtual Detector& addDetector(const Handle<NamedObject>& detector) = 0;
     /// Add a field component by named reference to the detector description
     virtual Detector& addField(const Handle<NamedObject>& field) = 0;
-
+    
     /// Deprecated call (use fromXML): Read compact geometry description or alignment file
     virtual void fromCompact(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) = 0;
     /// Read any geometry description or alignment file

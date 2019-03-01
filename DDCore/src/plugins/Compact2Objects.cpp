@@ -15,6 +15,9 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/PropertyTable.h"
+#include "DD4hep/OpticalSurfaces.h"
+#include "DD4hep/OpticalSurfaceManager.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/FieldTypes.h"
@@ -72,6 +75,10 @@ namespace dd4hep {
   template <> void Converter<Property>::operator()(xml_h element) const;
   template <> void Converter<CartesianField>::operator()(xml_h element) const;
   template <> void Converter<SensitiveDetector>::operator()(xml_h element) const;
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  template <> void Converter<OpticalSurface>::operator()(xml_h element) const;
+  template <> void Converter<PropertyTable>::operator()(xml_h element) const;
+#endif
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
   template <> void Converter<JsonFile>::operator()(xml_h element) const;
@@ -443,28 +450,35 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
 #endif
-    //fg: calling SetDensity for TGeoMixture results in incorrect radLen and intLen ( computed only from first element ) 
-    // // Update estimated density if not provided.
-    // if ( has_density )   {
-    //   mix->SetDensity(dens_val);
-    // }
-    // else if (!has_density && mix && 0 == mix->GetDensity()) {
-    //   double dens = 0.0;
-    //   for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
-    //     string nam = composites.attr<string>(_U(ref));
-    //     comp_mat = mgr.GetMaterial(nam.c_str());
-    //     dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
-    //   }
-    //   for (fractions.reset(); fractions; ++fractions) {
-    //     string nam = fractions.attr<string>(_U(ref));
-    //     comp_mat = mgr.GetMaterial(nam.c_str());
-    //     dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
-    //   }
-    //   printout(WARNING, "Compact", "++ Material: %s with NO density. "
-    //            "Set density to %7.3 g/cm**3", matname, dens);
-    //   mix->SetDensity(dens);
-    // }
-    
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+    /// In case there were material properties specified: convert them here
+    for(xml_coll_t properties(x_mat, _U(property)); properties; ++properties) {
+      xml_elt_t p = properties;
+      if ( p.hasAttr(_U(ref)) )   {
+        string ref = p.attr<string>(_U(ref));
+        TGDMLMatrix* m = mgr.GetGDMLMatrix(ref.c_str());
+        if ( m )  {
+          //TODO: mat->AddProperty(p.attr<string>(_U(name)).c_str(), m);
+          mat->AddProperty(p.attr<string>(_U(name)).c_str(), ref.c_str());
+          continue;
+        }
+        // ERROR
+        throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Property missing: " + ref);
+      }
+    }
+#endif
+    xml_h temp = x_mat.child(_U(T), false);
+    if ( temp.ptr() )   {
+      double temp_val    = temp.attr<double>(_U(value));
+      double temp_unit   = temp.attr<double>(_U(unit), 1.0 /* _toDouble("kelvin") */);
+      mat->SetTemperature(temp_val*temp_unit);
+    }
+    xml_h pressure = x_mat.child(_U(P), false);
+    if ( pressure.ptr() )   {
+      double pressure_val    = pressure.attr<double>(_U(value));
+      double pressure_unit   = pressure.attr<double>(_U(unit),1.0 /* _toDouble("pascal") */);
+      mat->SetPressure(pressure_val*pressure_unit);
+    }
   }
   TGeoMedium* medium = mgr.GetMedium(matname);
   if (0 == medium) {
@@ -590,6 +604,51 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
              elt->GetName(), elt->Z(), elt->N(), elt->A());
   }
 }
+
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+/** Convert compact optical surface objects (defines)
+ *
+ *
+ */
+template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
+  xml_attr_t attr;
+  xml_elt_t  e = element;
+  OpticalSurface::EModel  model  = OpticalSurface::Model::kMglisur;
+  OpticalSurface::EFinish finish = OpticalSurface::Finish::kFpolished;
+  OpticalSurface::EType   type   = OpticalSurface::Type::kTdielectric_metal;
+  Double_t value = 0;
+  if ( (attr=e.attr<xml_attr_t>(_U(type)))   ) type   = OpticalSurface::Type::StringToType(e.attr<string>(attr).c_str());
+  if ( (attr=e.attr<xml_attr_t>(_U(model)))  ) model  = OpticalSurface::Model::StringToModel(e.attr<string>(attr).c_str());
+  if ( (attr=e.attr<xml_attr_t>(_U(finish))) ) finish = OpticalSurface::Finish::StringToFinish(e.attr<string>(attr).c_str());
+  if ( (attr=e.attr<xml_attr_t>(_U(value)))  ) value  = e.attr<double>(attr);
+  OpticalSurface surf(description, e.attr<string>(_U(name)), model, finish, type, value);
+  for (xml_coll_t props(e, _U(property)); props; ++props)  {
+    surf->AddProperty(props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+  }
+}
+
+/** Convert compact property table objects (defines)
+ *
+ *  <matrix coldim="2" name="RINDEX0xf5972d0" values="1.5e-06 1.0013 1. ...."/>
+ *
+ */
+template <> void Converter<PropertyTable>::operator()(xml_h e) const {
+  string val;
+  vector<float> values;
+  size_t cols = e.attr<long>(_U(coldim));
+  stringstream str(e.attr<string>(_U(values)));
+
+  values.reserve(1024);
+  while ( !str.eof() )   {
+    str >> val;
+    values.push_back(_toDouble(val));
+  }
+  /// Create table and register table
+  PropertyTable table(description, e.attr<string>(_U(name)), "", values.size()/cols, cols);
+  for (size_t i=0, n=values.size(); i<n; ++i)
+    table->Set(i/cols, i%cols, values[i]);
+}
+#endif
 
 /** Convert compact visualization attribute to Detector visualization attribute
  *
@@ -863,7 +922,7 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
  *  ... </properties>
  */
 template <> void Converter<Property>::operator()(xml_h e) const {
-  string            name = e.attr<string>(_U(name));
+  string name = e.attr<string>(_U(name));
   Detector::Properties& prp  = description.properties();
   if ( name.empty() )
     throw_print("Failed to convert properties. No name given!");
@@ -1284,9 +1343,15 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  /// These two must be parsed early, because they are needed by the detector constructors
+  xml_coll_t(compact, _U(properties)).for_each(_U(matrix), Converter<PropertyTable>(description));
+  xml_coll_t(compact, _U(surfaces)).for_each(_U(opticalsurface), Converter<OpticalSurface>(description));
+#endif
+  
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(description));
-
+  
   if (element.hasChild(_U(world)))
     (Converter<World>(description))(xml_h(compact.child(_U(world))));
 

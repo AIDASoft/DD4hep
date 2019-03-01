@@ -18,6 +18,7 @@
 #include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
+#include "DD4hep/PropertyTable.h"
 #include "DDG4/Geant4Primitives.h"
 
 // C/C++ include files
@@ -39,8 +40,12 @@ class G4Region;
 class G4UserLimits;
 class G4VisAttributes;
 class G4VPhysicalVolume;
+class G4OpticalSurface;
+class G4LogicalSkinSurface;
+class G4LogicalBorderSurface;
 class G4AssemblyVolume;
 class G4VSensitiveDetector;
+class G4PhysicsOrderedFreeVector;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -94,6 +99,19 @@ namespace dd4hep {
       Geant4GeometryMaps::PlacementMap     g4Placements;
       Geant4GeometryMaps::AssemblyMap      g4AssemblyVolumes;
       Geant4GeometryMaps::VolumeImprintMap g4VolumeImprints;
+      struct PropertyVector  {
+        std::vector<double> bins;
+        std::vector<double> values;
+        std::string name, title;
+        PropertyVector() = default;
+        ~PropertyVector() = default;
+      };
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+      std::map<PropertyTable,  PropertyVector*>                g4OpticalProperties;
+      std::map<OpticalSurface, G4OpticalSurface*>              g4OpticalSurfaces;
+      std::map<SkinSurface,    G4LogicalSkinSurface*>          g4SkinSurfaces;
+      std::map<BorderSurface,  G4LogicalBorderSurface*>        g4BorderSurfaces;
+#endif
       std::map<Region, G4Region*>                              g4Regions;
       std::map<VisAttr, G4VisAttributes*>                      g4Vis;
       std::map<LimitSet, G4UserLimits*>                        g4Limits;
