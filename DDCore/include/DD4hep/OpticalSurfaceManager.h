@@ -22,6 +22,11 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail  {
+    class OpticalSurfaceManagerObject;
+  }
+  
   /// Class to support the handling of optical surfaces.
   /**
    *
@@ -29,9 +34,9 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class OpticalSurfaceManager: public Handle<TGeoManager> {
+  class OpticalSurfaceManager: public Handle<detail::OpticalSurfaceManagerObject> {
   public:
-    typedef TGeoManager Object;
+    typedef detail::OpticalSurfaceManagerObject Object;
 
   public:
     /// Default constructor
@@ -59,13 +64,16 @@ namespace dd4hep {
     /// Access border surface by its identifier
     BorderSurface  getBorderSurface(DetElement de, const std::string& nam)  const;
     /// Access optical surface data by its identifier
-    OpticalSurface getSurface(DetElement de, const std::string& nam)  const;
+    OpticalSurface getOpticalSurface(DetElement de, const std::string& nam)  const;
     /// Add skin surface to manager
-    void addSkinSurface(SkinSurface surf)  const;
+    void addSkinSurface(DetElement de, SkinSurface surf)  const;
     /// Add border surface to manager
-    void addBorderSurface(BorderSurface surf)  const;
+    void addBorderSurface(DetElement de, BorderSurface surf)  const;
     /// Add optical surface data to manager
-    void addSurface(OpticalSurface surf)  const;
+    void addOpticalSurface(OpticalSurface surf)  const;
+
+    /// Register the temporary surface objects with the TGeoManager
+    void registerSurfaces(DetElement subdetector);
 #endif
   };
 }         /* End namespace dd4hep                  */

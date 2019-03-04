@@ -90,7 +90,11 @@ namespace dd4hep {
     template <typename Q>
     SkinSurface(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Initializing constructor.
-    SkinSurface(DetElement de, const std::string& nam, OpticalSurface surf, Volume vol);
+    SkinSurface(Detector&          description,
+                DetElement         de,
+                const std::string& nam,
+                OpticalSurface     surf,
+                Volume             vol);
 
     /// Assignment operator
     SkinSurface& operator=(const SkinSurface& m) = default;
@@ -125,7 +129,12 @@ namespace dd4hep {
     template <typename Q>
     BorderSurface(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Initializing constructor: Creates the object and registers it to the manager
-    BorderSurface(DetElement de, const std::string& nam, OpticalSurface surf, PlacedVolume left, PlacedVolume right);
+    BorderSurface(Detector&          description,
+                  DetElement         de,
+                  const std::string& nam,
+                  OpticalSurface     surf,
+                  PlacedVolume       left,
+                  PlacedVolume       right);
 
     /// Assignment operator
     BorderSurface& operator=(const BorderSurface& m) = default;

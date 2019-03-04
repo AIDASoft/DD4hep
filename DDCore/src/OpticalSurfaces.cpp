@@ -35,31 +35,29 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoOpticalSurface);
 
 /// Initializing constructor.
 OpticalSurface::OpticalSurface(Detector& description,
-                               const string& nam,
+                               const string& full_name,
                                EModel  model,
                                EFinish finish,
                                EType   type,
                                double  value)
 {
-  unique_ptr<Object> s(new Object(nam.c_str(), model, finish, type, value));
-  description.manager().AddOpticalSurface(m_element=s.release());
+  unique_ptr<Object> s(new Object(full_name.c_str(), model, finish, type, value));
+  description.surfaceManager().addOpticalSurface(m_element=s.release());
 }
 
 /// Initializing constructor: Creates the object and registers it to the manager
-SkinSurface::SkinSurface(DetElement de, const string& nam, OpticalSurface surf, Volume vol)
+SkinSurface::SkinSurface(Detector& description, DetElement de, const string& nam, OpticalSurface surf, Volume vol)
 {
   if ( de.isValid() )  {
-    string n = de.path() + '#' + nam;
     if ( vol.isValid() )  {
-      if ( surf.isValid() )   {
-        World wrld = de.world();
-        unique_ptr<Object> s(new Object(n.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
-        wrld.detectorDescription().manager().AddSkinSurface(m_element=s.release());
+      if ( surf.isValid() )  {
+        unique_ptr<Object> s(new Object(nam.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
+        description.surfaceManager().addSkinSurface(de, m_element=s.release());
         return;
       }
-      except("SkinSurface","++ Cannot create SkinSurface %s without valid optical surface!",n.c_str());
+      except("SkinSurface","++ Cannot create SkinSurface %s without valid optical surface!",nam.c_str());
     }
-    except("SkinSurface","++ Cannot create SkinSurface %s without valid volume!",n.c_str());
+    except("SkinSurface","++ Cannot create SkinSurface %s without valid volume!",nam.c_str());
   }
   except("SkinSurface",
          "++ Cannot create SkinSurface %s which is not connected to a valid detector element!",nam.c_str());
@@ -76,20 +74,23 @@ Volume   SkinSurface::volume()   const    {
 }
 
 /// Initializing constructor: Creates the object and registers it to the manager
-BorderSurface::BorderSurface(DetElement de, const string& nam, OpticalSurface surf, PlacedVolume lft, PlacedVolume rht)
+BorderSurface::BorderSurface(Detector&      description,
+                             DetElement     de,
+                             const string&  nam,
+                             OpticalSurface surf,
+                             PlacedVolume   lft,
+                             PlacedVolume   rht)
 {
   if ( de.isValid() )  {
-    string n = de.path() + '#' + nam;
     if ( lft.isValid() && rht.isValid() )  {
       if ( surf.isValid() )   {
-        World wrld = de.world();
-        unique_ptr<Object> s(new Object(n.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
-        wrld.detectorDescription().manager().AddBorderSurface(m_element=s.release());
+        unique_ptr<Object> s(new Object(nam.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
+        description.surfaceManager().addBorderSurface(de, m_element=s.release());
         return;
       }
-      except("BorderSurface","++ Cannot create BorderSurface %s without valid optical surface!",n.c_str());
+      except("BorderSurface","++ Cannot create BorderSurface %s without valid optical surface!",nam.c_str());
     }
-    except("BorderSurface","++ Cannot create BorderSurface %s without valid placements!",n.c_str());
+    except("BorderSurface","++ Cannot create BorderSurface %s without valid placements!",nam.c_str());
   }
   except("BorderSurface",
          "++ Cannot create BorderSurface %s which is not connected to a valid detector element!",nam.c_str());
