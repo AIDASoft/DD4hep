@@ -414,6 +414,10 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         }
         Geant4GeometryInfo::PropertyVector* v =
           (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
+        if ( 0 == v )   {
+          except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
+                 material->GetName(), n->GetName());
+        }
         G4MaterialPropertyVector* vec =
           new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
         tab->AddProperty(n->GetName(), vec);

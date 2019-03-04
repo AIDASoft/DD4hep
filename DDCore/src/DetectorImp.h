@@ -28,6 +28,11 @@ class TGeoManager;
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /// Namespace for implementation details of the AIDA detector description toolkit
+  namespace detail  {
+    class OpticalSurfaceManagerObject;
+  }
+  
   /// Concrete implementation class of the Detector interface
   /** The main entry point to the DD4hep detector description
    *
@@ -48,6 +53,9 @@ namespace dd4hep {
 
     /// VolumeManager m_volManager;
     DetectorBuildType m_buildType;
+
+    /// Optical surface manager
+    detail::OpticalSurfaceManagerObject* m_surfaceManager = 0;   //! not persistent
 
   private:
     /// Disable move constructor
@@ -179,7 +187,7 @@ namespace dd4hep {
     }
     /// Access the optical surface manager
     virtual OpticalSurfaceManager surfaceManager()  const  override  {
-      return OpticalSurfaceManager(m_manager);
+      return OpticalSurfaceManager(m_surfaceManager);
     }
 
     /// Return handle to the combined electromagentic field description.

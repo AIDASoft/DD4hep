@@ -22,6 +22,7 @@
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
+#include "DD4hep/detail/OpticalSurfaceManagerInterna.h"
 #include "DetectorImp.h"
 
 // C/C++ include files
@@ -173,6 +174,8 @@ DetectorImp::DetectorImp(const string& name)
   {
     gGeoIdentity = new TGeoIdentity();
   }
+  m_surfaceManager = new detail::OpticalSurfaceManagerObject(*this);
+
   VisAttr attr("invisible");
   attr.setColor(0.5, 0.5, 0.5);
   attr.setAlpha(1);
@@ -194,6 +197,7 @@ DetectorImp::~DetectorImp() {
       s_instances.remove(m_manager->GetName());
     }
   }
+  deletePtr(m_surfaceManager);
   destroyData(true);
   m_extensions.clear();
   InstanceCount::decrement(this);

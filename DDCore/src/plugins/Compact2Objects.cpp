@@ -1144,6 +1144,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     description.addDetector(det);
+    description.surfaceManager().registerSurfaces(det);
     return;
   }
   catch (const exception& e) {
