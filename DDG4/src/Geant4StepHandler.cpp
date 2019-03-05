@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -119,6 +119,10 @@ double Geant4StepHandler::birkAttenuation() const    {
   static G4EmSaturation s_emSaturation();
   s_emSaturation.SetVerbose(1);
 #endif
+
+#if G4VERSION_NUMBER >= 1003
+  s_emSaturation.InitialiseG4Saturation();
+#else
 
   double energyDeposition = step->GetTotalEnergyDeposit();
   double length = step->GetStepLength();
