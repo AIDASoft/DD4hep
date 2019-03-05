@@ -122,7 +122,7 @@ double Geant4StepHandler::birkAttenuation() const    {
 
 #if G4VERSION_NUMBER >= 1003
   s_emSaturation.InitialiseG4Saturation();
-#else
+#endif
 
   double energyDeposition = step->GetTotalEnergyDeposit();
   double length = step->GetStepLength();
