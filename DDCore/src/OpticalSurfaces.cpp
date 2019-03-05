@@ -34,7 +34,7 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoBorderSurface);
 DD4HEP_INSTANTIATE_HANDLE(TGeoOpticalSurface);
 
 /// Initializing constructor.
-OpticalSurface::OpticalSurface(Detector& description,
+OpticalSurface::OpticalSurface(Detector& detector,
                                const string& full_name,
                                EModel  model,
                                EFinish finish,
@@ -42,17 +42,18 @@ OpticalSurface::OpticalSurface(Detector& description,
                                double  value)
 {
   unique_ptr<Object> s(new Object(full_name.c_str(), model, finish, type, value));
-  description.surfaceManager().addOpticalSurface(m_element=s.release());
+  //detector.surfaceManager().addOpticalSurface(m_element=s.release());
+  detector.manager().AddOpticalSurface(m_element=s.release());
 }
 
 /// Initializing constructor: Creates the object and registers it to the manager
-SkinSurface::SkinSurface(Detector& description, DetElement de, const string& nam, OpticalSurface surf, Volume vol)
+SkinSurface::SkinSurface(Detector& detector, DetElement de, const string& nam, OpticalSurface surf, Volume vol)
 {
   if ( de.isValid() )  {
     if ( vol.isValid() )  {
       if ( surf.isValid() )  {
         unique_ptr<Object> s(new Object(nam.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
-        description.surfaceManager().addSkinSurface(de, m_element=s.release());
+        detector.surfaceManager().addSkinSurface(de, m_element=s.release());
         return;
       }
       except("SkinSurface","++ Cannot create SkinSurface %s without valid optical surface!",nam.c_str());
@@ -74,7 +75,7 @@ Volume   SkinSurface::volume()   const    {
 }
 
 /// Initializing constructor: Creates the object and registers it to the manager
-BorderSurface::BorderSurface(Detector&      description,
+BorderSurface::BorderSurface(Detector&      detector,
                              DetElement     de,
                              const string&  nam,
                              OpticalSurface surf,
@@ -85,7 +86,7 @@ BorderSurface::BorderSurface(Detector&      description,
     if ( lft.isValid() && rht.isValid() )  {
       if ( surf.isValid() )   {
         unique_ptr<Object> s(new Object(nam.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
-        description.surfaceManager().addBorderSurface(de, m_element=s.release());
+        detector.surfaceManager().addBorderSurface(de, m_element=s.release());
         return;
       }
       except("BorderSurface","++ Cannot create BorderSurface %s without valid optical surface!",nam.c_str());
