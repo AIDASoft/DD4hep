@@ -105,6 +105,7 @@ namespace {
   bool s_debug_segmentation = false;
   bool s_debug_constants    = false;
   bool s_debug_include      = false;
+  bool s_debug_matrix       = false;
 }
 
 static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
@@ -262,6 +263,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "consta" ) s_debug_constants    = (0 != val);
     else if ( nam.substr(0,6) == "define" ) s_debug_constants    = (0 != val);
     else if ( nam.substr(0,6) == "includ" ) s_debug_include      = (0 != val);
+    else if ( nam.substr(0,6) == "matrix" ) s_debug_matrix       = (0 != val);
   }
 }
   
@@ -634,19 +636,33 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
  */
 template <> void Converter<PropertyTable>::operator()(xml_h e) const {
   string val;
-  vector<float> values;
+  vector<double> values;
   size_t cols = e.attr<long>(_U(coldim));
   stringstream str(e.attr<string>(_U(values)));
 
+  if ( s_debug_matrix )    {
+    printout(ALWAYS,"Compact","+++ Reading proeprty table %s with %d columns.",
+             e.attr<string>(_U(name)).c_str(), cols);
+  }
   values.reserve(1024);
   while ( !str.eof() )   {
     str >> val;
+    if ( !str.good() ) break;
+    if ( s_debug_matrix )    {
+      cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << val << "'";
+    }
     values.push_back(_toDouble(val));
+    if ( 0 == (values.size()%cols) ) cout << endl;
+  }
+  if ( s_debug_matrix )    {
+    cout << endl;
   }
   /// Create table and register table
   PropertyTable table(description, e.attr<string>(_U(name)), "", values.size()/cols, cols);
   for (size_t i=0, n=values.size(); i<n; ++i)
     table->Set(i/cols, i%cols, values[i]);
+  if ( s_debug_matrix )
+    table->Print();
 }
 #endif
 
@@ -1138,20 +1154,22 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
              (det.isValid() ? "++ Converted" : "FAILED    "), name.c_str(), type.c_str(),
              (sd.isValid() ? ("[" + sd.type() + "]").c_str() : ""));
 
-    if (!det.isValid()) {
+    if (!det.isValid())  {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type, &description, &element, &sens);
       throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     description.addDetector(det);
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
     description.surfaceManager().registerSurfaces(det);
+#endif
     return;
   }
-  catch (const exception& e) {
+  catch (const exception& e)  {
     printout(ERROR, "Compact", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), e.what());
     terminate();
   }
-  catch (...) {
+  catch (...)  {
     printout(ERROR, "Compact", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), "UNKNONW Exception");
     terminate();
   }

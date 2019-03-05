@@ -1319,7 +1319,7 @@ template <typename O, typename C, typename F> void handle(const O* o, const C& c
 
 template <typename O, typename F> void handleArray(const O* o, const TObjArray* c, F pmf) {
   TObjArrayIter arr(c);
-  for(TObject* i = *arr; i; i=arr.Next())
+  for(TObject* i = arr.Next(); i; i=arr.Next())
     (o->*pmf)(i);
 }
 

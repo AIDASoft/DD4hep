@@ -36,6 +36,9 @@
 #include "TSystem.h"
 #include "TClass.h"
 #include "TRint.h"
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#include "TGDMLMatrix.h"
+#endif
 
 // C/C++ include files
 #include <cerrno>
@@ -259,6 +262,35 @@ static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
   return 1;
 }
 DECLARE_APPLY(DD4hep_InteractiveUI,root_ui)
+
+/// Basic entry point to dump all known GDML tables
+/**
+ *
+ *  Factory: DD4hep_Dump_GDMLTables
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long root_gdml_tables(Detector& description, int /* argc */, char** /* argv */) {
+  size_t num_tables = 0;
+  size_t num_elements = 0;
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  const TObjArray* c = description.manager().GetListOfGDMLMatrices();
+  TObjArrayIter arr(c);
+  for(TObject* i = arr.Next(); i; i=arr.Next())   {
+    TGDMLMatrix* m = (TGDMLMatrix*)i;
+    num_elements += (m->GetRows()*m->GetCols());
+    ++num_tables;
+    m->Print();
+  }
+#endif
+  printout(INFO,"Dump_GDMLTables",
+           "+++ Successfully dumped %ld GDML tables with %ld elements.",
+           num_tables, num_elements);
+  return 1;
+}
+DECLARE_APPLY(DD4hep_Dump_GDMLTables,root_gdml_tables)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**
