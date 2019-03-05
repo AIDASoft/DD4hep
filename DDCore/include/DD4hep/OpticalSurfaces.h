@@ -27,6 +27,15 @@ namespace dd4hep {
 
   /// Class to support the handling of optical surfaces.
   /**
+   *   Optical surfaces are "global" objects ie. they are attached to the 
+   *   TGeoManager of the Detector object.
+   *
+   *   IF the optical surface is created locally in a detector constructor,
+   *   and registered to the OpticalSurfaceManager, the surfaces are ALSO
+   *   attached to the currently built detector.
+   *   Alternatively the call 
+   *   OpticalSurfaceManager::registerSurfaces(DetElement subdetector)
+   *   may be issued to attach then to the subdetector DetElement.
    *
    *   \author  M.Frank
    *   \version 1.0
@@ -55,7 +64,7 @@ namespace dd4hep {
     template <typename Q>
     OpticalSurface(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Initializing constructor.
-    OpticalSurface(Detector& description,
+    OpticalSurface(Detector& detector,
                    const std::string& name,
                    EModel  model    = Model::kMglisur,
                    EFinish finish   = Finish::kFpolished,
@@ -90,7 +99,7 @@ namespace dd4hep {
     template <typename Q>
     SkinSurface(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Initializing constructor.
-    SkinSurface(Detector&          description,
+    SkinSurface(Detector&          detector,
                 DetElement         de,
                 const std::string& nam,
                 OpticalSurface     surf,
@@ -129,7 +138,7 @@ namespace dd4hep {
     template <typename Q>
     BorderSurface(const Handle<Q>& e) : Handle<Object>(e) { }
     /// Initializing constructor: Creates the object and registers it to the manager
-    BorderSurface(Detector&          description,
+    BorderSurface(Detector&          detector,
                   DetElement         de,
                   const std::string& nam,
                   OpticalSurface     surf,

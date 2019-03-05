@@ -29,20 +29,33 @@
   </debug>
 
   <properties>
-    <matrix name= "Someother_property" coldim="6" values="  
-      PhotMomWaveConv/100.0  0.0 1 2 3 4
-      PhotMomWaveConv/190.0  0.0 1 2 3 4
-      PhotMomWaveConv/200.0  0.0 1 2 3 4
-      PhotMomWaveConv/220.0  0.0 1 2 3 4
-      PhotMomWaveConv/240.0  0.0 1 2 3 4
+    <matrix name= "REFLECTIVITY0x123aff00" coldim="2" values="  
+      PhotMomWaveConv/100.0  0.1
+      PhotMomWaveConv/190.0  0.2
+      PhotMomWaveConv/200.0  0.3
+      PhotMomWaveConv/220.0  0.4
+      PhotMomWaveConv/240.0  0.2
+      PhotMomWaveConv/260.0  0.1
     "/>
-    <matrix name= "Rich1Mirror2SurfaceEfficiencyPT" coldim="2" values="  
-      PhotMomWaveConv/100.0  0.0
-      PhotMomWaveConv/190.0  0.0
-      PhotMomWaveConv/200.0  0.0
-      PhotMomWaveConv/220.0  0.0
-      PhotMomWaveConv/240.0  0.0
-      PhotMomWaveConv/260.0  0.0
+    <matrix name= "EFFICIENCY0x8b77240" coldim="2" values="  
+      PhotMomWaveConv/100.0  0.1
+      PhotMomWaveConv/190.0  0.2
+      PhotMomWaveConv/200.0  0.3
+      PhotMomWaveConv/220.0  0.4
+      PhotMomWaveConv/240.0  0.2
+      PhotMomWaveConv/260.0  0.1
     "/>
   </properties>
+
+  <surfaces>
+    <opticalsurface finish="0" model="0" name="OpticalSurface#1" type="1" value="0">
+      <property name="REFLECTIVITY" ref="REFLECTIVITY0x123aff00"/>
+      <property name="EFFICIENCY" ref="EFFICIENCY0x8b77240"/>
+    </opticalsurface>
+    <opticalsurface finish="0" model="0" name="OpticalSurface#2" type="1" value="1">
+      <property name="REFLECTIVITY" ref="REFLECTIVITY0x123aff00"/>
+      <property name="EFFICIENCY" ref="EFFICIENCY0x8b77240"/>
+    </opticalsurface>
+  </surfaces>
+
 </lccdd>

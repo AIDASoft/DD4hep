@@ -272,25 +272,57 @@ DECLARE_APPLY(DD4hep_InteractiveUI,root_ui)
  *  \version 1.0
  *  \date    01/04/2014
  */
-static long root_gdml_tables(Detector& description, int /* argc */, char** /* argv */) {
+static long root_dump_gdml_tables(Detector& description, int /* argc */, char** /* argv */) {
   size_t num_tables = 0;
   size_t num_elements = 0;
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
   const TObjArray* c = description.manager().GetListOfGDMLMatrices();
   TObjArrayIter arr(c);
+  printout(INFO,"Dump_GDMLTables","+++ Dumping known GDML tables from TGeoManager.");
   for(TObject* i = arr.Next(); i; i=arr.Next())   {
     TGDMLMatrix* m = (TGDMLMatrix*)i;
     num_elements += (m->GetRows()*m->GetCols());
     ++num_tables;
     m->Print();
   }
+#else
+  description.world().isValid();
 #endif
   printout(INFO,"Dump_GDMLTables",
            "+++ Successfully dumped %ld GDML tables with %ld elements.",
            num_tables, num_elements);
   return 1;
 }
-DECLARE_APPLY(DD4hep_Dump_GDMLTables,root_gdml_tables)
+DECLARE_APPLY(DD4hep_Dump_GDMLTables,root_dump_gdml_tables)
+
+/// Basic entry point to dump all known optical surfaces
+/**
+ *
+ *  Factory: DD4hep_Dump_OpticalSurfaces
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long root_dump_optical_surfaces(Detector& description, int /* argc */, char** /* argv */) {
+  size_t num_surfaces = 0;
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  const TObjArray* c = description.manager().GetListOfOpticalSurfaces();
+  TObjArrayIter arr(c);
+  printout(INFO,"Dump_OpticalSurfaces","+++ Dumping known Optical Surfaces from TGeoManager.");
+  for(TObject* i = arr.Next(); i; i=arr.Next())   {
+    TGeoOpticalSurface* m = (TGeoOpticalSurface*)i;
+    ++num_surfaces;
+    m->Print();
+  }
+#else
+  description.world().isValid();
+#endif
+  printout(INFO,"Dump_OpticalSurfaces",
+           "+++ Successfully dumped %ld Optical surfaces.",num_surfaces);
+  return 1;
+}
+DECLARE_APPLY(DD4hep_Dump_OpticalSurfaces,root_dump_optical_surfaces)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**

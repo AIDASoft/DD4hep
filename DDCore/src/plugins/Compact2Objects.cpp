@@ -95,17 +95,21 @@ namespace {
     printout(ERROR, "Compact", msg.c_str());
     throw runtime_error(msg);
   }
-  bool s_debug_readout      = false;
-  bool s_debug_regions      = false;
-  bool s_debug_limits       = false;
-  bool s_debug_visattr      = false;
-  bool s_debug_isotopes     = false;
-  bool s_debug_elements     = false;
-  bool s_debug_materials    = false;
-  bool s_debug_segmentation = false;
-  bool s_debug_constants    = false;
-  bool s_debug_include      = false;
-  bool s_debug_matrix       = false;
+  class DebugOptions  {
+  public:
+    bool readout      = false;
+    bool regions      = false;
+    bool limits       = false;
+    bool visattr      = false;
+    bool isotopes     = false;
+    bool elements     = false;
+    bool materials    = false;
+    bool segmentation = false;
+    bool constants    = false;
+    bool includes     = false;
+    bool matrix       = false;
+    bool surface      = false;
+  } s_debug;
 }
 
 static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
@@ -250,20 +254,21 @@ DECLARE_XML_DOC_READER(compact,load_Compact)
  */
 template <> void Converter<Debug>::operator()(xml_h e) const {
   for (xml_coll_t coll(e, _U(type)); coll; ++coll) {
-    string nam = coll.attr<string>(_U(name));
     int    val = coll.attr<int>(_U(value));
-    if      ( nam.substr(0,6) == "isotop" ) s_debug_isotopes     = (0 != val);
-    else if ( nam.substr(0,6) == "elemen" ) s_debug_elements     = (0 != val);
-    else if ( nam.substr(0,6) == "materi" ) s_debug_materials    = (0 != val);
-    else if ( nam.substr(0,6) == "visatt" ) s_debug_visattr      = (0 != val);
-    else if ( nam.substr(0,6) == "region" ) s_debug_regions      = (0 != val);
-    else if ( nam.substr(0,6) == "readou" ) s_debug_readout      = (0 != val);
-    else if ( nam.substr(0,6) == "limits" ) s_debug_limits       = (0 != val);
-    else if ( nam.substr(0,6) == "segmen" ) s_debug_segmentation = (0 != val);
-    else if ( nam.substr(0,6) == "consta" ) s_debug_constants    = (0 != val);
-    else if ( nam.substr(0,6) == "define" ) s_debug_constants    = (0 != val);
-    else if ( nam.substr(0,6) == "includ" ) s_debug_include      = (0 != val);
-    else if ( nam.substr(0,6) == "matrix" ) s_debug_matrix       = (0 != val);
+    string nam = coll.attr<string>(_U(name));
+    if      ( nam.substr(0,6) == "isotop" ) s_debug.isotopes     = (0 != val);
+    else if ( nam.substr(0,6) == "elemen" ) s_debug.elements     = (0 != val);
+    else if ( nam.substr(0,6) == "materi" ) s_debug.materials    = (0 != val);
+    else if ( nam.substr(0,6) == "visatt" ) s_debug.visattr      = (0 != val);
+    else if ( nam.substr(0,6) == "region" ) s_debug.regions      = (0 != val);
+    else if ( nam.substr(0,6) == "readou" ) s_debug.readout      = (0 != val);
+    else if ( nam.substr(0,6) == "limits" ) s_debug.limits       = (0 != val);
+    else if ( nam.substr(0,6) == "segmen" ) s_debug.segmentation = (0 != val);
+    else if ( nam.substr(0,6) == "consta" ) s_debug.constants    = (0 != val);
+    else if ( nam.substr(0,6) == "define" ) s_debug.constants    = (0 != val);
+    else if ( nam.substr(0,6) == "includ" ) s_debug.includes      = (0 != val);
+    else if ( nam.substr(0,6) == "matrix" ) s_debug.matrix       = (0 != val);
+    else if ( nam.substr(0,6) == "surfac" ) s_debug.surface      = (0 != val);
   }
 }
   
@@ -324,14 +329,14 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
     Constant c(nam, val, typ);
     _toDictionary(nam, val, typ);
     description.addConstant(c);
-    if ( s_debug_constants )   {
+    if ( s_debug.constants )   {
       printout(ALWAYS, "Compact",
                "++ Converting constant %-16s = %-32s [%s]", nam.c_str(), val.c_str(), typ.c_str());
     }
     return;
   }
   xml::DocumentHolder doc(xml::DocumentHandler().load(e, e.attr_value(_U(ref))));
-  if ( s_debug_include )   {
+  if ( s_debug.includes )   {
     printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
   }
   xml_h root = doc.root();
@@ -401,7 +406,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       cout << " Density Value raw:" << dens_val << " normalized:" << (dens_val*dens_unit) << endl;
       dens_val *= dens_unit;
     }
-    printout(s_debug_materials ? ALWAYS : DEBUG, "Compact",
+    printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
              "++ Converting material %-16s  Density: %.3f.",matname, dens_val);
 #if 0
     cout << "Gev    " << xml::_toDouble(_Unicode(GeV)) << endl;
@@ -527,12 +532,12 @@ template <> void Converter<Isotope>::operator()(xml_h e) const {
     string unit  = atom.attr<string>(_U(unit));
     double a     = value * _multiply<double>(unit,"mol/g");
     iso = new TGeoIsotope(nam.c_str(), z, n, a);
-    printout(s_debug_isotopes ? ALWAYS : DEBUG, "Compact",
+    printout(s_debug.isotopes ? ALWAYS : DEBUG, "Compact",
              "++ Converting isotope  %-16s  Z:%3d N:%3d A:%8.4f [g/mol]",
              iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
   }
   else  {
-    printout(s_debug_isotopes ? WARNING : DEBUG, "Compact",
+    printout(s_debug.isotopes ? WARNING : DEBUG, "Compact",
              "++ Isotope %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
              iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
   }
@@ -566,7 +571,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
       string unit    = atom.attr<string>(_U(unit));
       int    z       = elem.attr<int>(_U(Z));
       double a       = value*_multiply<double>(unit,"mol/g");
-      printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+      printout(s_debug.elements ? ALWAYS : DEBUG, "Compact",
                "++ Converting element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol]",
                name.c_str(), formula.c_str(), z, a);
       tab->AddElement(name.c_str(), formula.c_str(), z, a);
@@ -586,12 +591,12 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
           except("Compact","Element %s cannot be constructed. Isotope '%s' (fraction:%f) missing!",
                  name.c_str(), ref.c_str(), frac);
         }
-        printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+        printout(s_debug.elements ? ALWAYS : DEBUG, "Compact",
                  "++ Converting element  %-16s  Add isotope: %-16s fraction:%.4f.",
                  name.c_str(), ref.c_str(), frac);
         elt->AddIsotope(iso, frac);
       }
-      printout(s_debug_elements ? ALWAYS : DEBUG, "Compact",
+      printout(s_debug.elements ? ALWAYS : DEBUG, "Compact",
                "++ Converted  element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol] with %d isotopes.",
                name.c_str(), formula.c_str(), elt->Z(), elt->A(), num_isotopes);
     }
@@ -601,7 +606,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
     }
   }
   else  {
-    printout(s_debug_elements ? WARNING : DEBUG, "Compact",
+    printout(s_debug.elements ? WARNING : DEBUG, "Compact",
              "++ Element %-16s  Z:%3d N:%3d A:%8.4f [g/mol] ALREADY defined. [Ignore definition]",
              elt->GetName(), elt->Z(), elt->N(), elt->A());
   }
@@ -619,13 +624,21 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
   OpticalSurface::EFinish finish = OpticalSurface::Finish::kFpolished;
   OpticalSurface::EType   type   = OpticalSurface::Type::kTdielectric_metal;
   Double_t value = 0;
-  if ( (attr=e.attr<xml_attr_t>(_U(type)))   ) type   = OpticalSurface::Type::StringToType(e.attr<string>(attr).c_str());
-  if ( (attr=e.attr<xml_attr_t>(_U(model)))  ) model  = OpticalSurface::Model::StringToModel(e.attr<string>(attr).c_str());
-  if ( (attr=e.attr<xml_attr_t>(_U(finish))) ) finish = OpticalSurface::Finish::StringToFinish(e.attr<string>(attr).c_str());
+  if ( (attr=e.attr<xml_attr_t>(_U(type)))   ) type   = (OpticalSurface::EType)e.attr<int>(attr);
+  if ( (attr=e.attr<xml_attr_t>(_U(model)))  ) model  = (OpticalSurface::EModel)e.attr<int>(attr);
+  if ( (attr=e.attr<xml_attr_t>(_U(finish))) ) finish = (OpticalSurface::EFinish)e.attr<int>(attr);
   if ( (attr=e.attr<xml_attr_t>(_U(value)))  ) value  = e.attr<double>(attr);
   OpticalSurface surf(description, e.attr<string>(_U(name)), model, finish, type, value);
+  if ( s_debug.surface )    {
+    printout(ALWAYS,"Compact","+++ Reading optical surface %s Typ:%d model:%d finish:%d value:%f",
+             e.attr<string>(_U(name)).c_str(), int(type), int(model), int(finish), value);
+  }
   for (xml_coll_t props(e, _U(property)); props; ++props)  {
     surf->AddProperty(props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+    if ( s_debug.surface )    {
+      printout(ALWAYS,"Compact","+++ \t\t Property:  %s  -> %s",
+               props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+    }
   }
 }
 
@@ -640,29 +653,27 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
   size_t cols = e.attr<long>(_U(coldim));
   stringstream str(e.attr<string>(_U(values)));
 
-  if ( s_debug_matrix )    {
-    printout(ALWAYS,"Compact","+++ Reading proeprty table %s with %d columns.",
+  if ( s_debug.matrix )    {
+    printout(ALWAYS,"Compact","+++ Reading property table %s with %d columns.",
              e.attr<string>(_U(name)).c_str(), cols);
   }
   values.reserve(1024);
   while ( !str.eof() )   {
     str >> val;
     if ( !str.good() ) break;
-    if ( s_debug_matrix )    {
+    if ( s_debug.matrix )    {
       cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << val << "'";
     }
     values.push_back(_toDouble(val));
     if ( 0 == (values.size()%cols) ) cout << endl;
   }
-  if ( s_debug_matrix )    {
+  if ( s_debug.matrix )    {
     cout << endl;
   }
   /// Create table and register table
   PropertyTable table(description, e.attr<string>(_U(name)), "", values.size()/cols, cols);
   for (size_t i=0, n=values.size(); i<n; ++i)
     table->Set(i/cols, i%cols, values[i]);
-  if ( s_debug_matrix )
-    table->Print();
 }
 #endif
 
@@ -680,7 +691,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   float green = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
   float blue  = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
 
-  printout(s_debug_visattr ? ALWAYS : DEBUG, "Compact",
+  printout(s_debug.visattr ? ALWAYS : DEBUG, "Compact",
            "++ Converting VisAttr  structure: %-16s. R=%.3f G=%.3f B=%.3f",
            attr.name(), red, green, blue);
   attr.setColor(red, green, blue);
@@ -727,7 +738,7 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
   xml_attr_t store_secondaries = elt.attr_nothrow(_U(store_secondaries));
   double ene = e.eunit(1.0), len = e.lunit(1.0);
 
-  printout(s_debug_regions ? ALWAYS : DEBUG, "Compact",
+  printout(s_debug.regions ? ALWAYS : DEBUG, "Compact",
            "++ Converting region   structure: %s.",region.name());
   if ( cut )  {
     region.setCut(elt.attr<double>(cut)*len);
@@ -760,7 +771,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
   Segmentation segment(type, name, bitfield);
   if ( segment.isValid() ) {
     const DDSegmentation::Parameters& pars = segment.parameters();
-    printout(s_debug_segmentation ? ALWAYS : DEBUG, "Compact",
+    printout(s_debug.segmentation ? ALWAYS : DEBUG, "Compact",
              "++ Converting segmentation structure: %s of type %s.",name.c_str(),type.c_str());
     for(const auto p : pars )  {
       xml::Strng_t pNam(p->name());
@@ -775,7 +786,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
         } else if ( pType.compare("doublevec") == 0 ) {
           vector<double> valueVector;
           string par = seg.attr<string>(pNam);
-          printout(s_debug_segmentation ? ALWAYS : DEBUG, "Compact",
+          printout(s_debug.segmentation ? ALWAYS : DEBUG, "Compact",
                    "++ Converting this string structure: %s.",par.c_str());
           vector<string> elts = DDSegmentation::splitString(par);
           for (const string& spar : elts )  {
@@ -816,7 +827,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
           xml::dump_tree(sub,tree);
           throw_print("Nested segmentations: Invalid key specification:"+tree.str());
         }
-        printout(s_debug_segmentation ? ALWAYS : DEBUG,"Compact",
+        printout(s_debug.segmentation ? ALWAYS : DEBUG,"Compact",
                  "++ Segmentation [%s/%s]: Add sub-segmentation %s [%s]",
                  name.c_str(), type.c_str(), 
                  sub_seg->segmentation->name().c_str(),
@@ -863,7 +874,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     ro.setIDDescriptor(opt.second);
   }
   
-  printout(s_debug_readout ? ALWAYS : DEBUG,
+  printout(s_debug.readout ? ALWAYS : DEBUG,
            "Compact", "++ Converting readout  structure: %-16s. %s%s",
            ro.name(), id ? "ID: " : "", id ? id.text().c_str() : "");
   
@@ -891,7 +902,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
         xml::dump_tree(e,tree);
         throw_print("Reaout: Invalid specificatrion for multiple hit collections."+tree.str());
       }
-      printout(s_debug_readout ? ALWAYS : DEBUG,"Compact",
+      printout(s_debug.readout ? ALWAYS : DEBUG,"Compact",
                "++ Readout[%s]: Add hit collection %s [%s]  %d-%d",
                ro.name(), coll_name.c_str(), coll_key.c_str(), key_min, key_max);
       HitCollection hits(coll_name, coll_key, key_min, key_max);
@@ -910,7 +921,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
 template <> void Converter<LimitSet>::operator()(xml_h e) const {
   Limit limit;
   LimitSet ls(e.attr<string>(_U(name)));
-  printout(s_debug_limits ? ALWAYS : DEBUG, "Compact",
+  printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
            "++ Converting LimitSet structure: %s.",ls.name());
   for (xml_coll_t c(e, _U(limit)); c; ++c) {
     limit.name      = c.attr<string>(_U(name));
@@ -1179,7 +1190,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 template <> void Converter<GdmlFile>::operator()(xml_h element) const   {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h root = doc.root();
-  if ( s_debug_include )   {
+  if ( s_debug.includes )   {
     printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
   }
   if ( root.tag() == "materials" || root.tag() == "elements" )   {
@@ -1279,7 +1290,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   string type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("xml");
   if ( type == "xml" )  {
     xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
-    if ( s_debug_include )   {
+    if ( s_debug.includes )   {
       printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
     }
     xml_h node = doc.root();
