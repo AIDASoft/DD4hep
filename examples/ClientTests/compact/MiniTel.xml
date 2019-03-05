@@ -30,9 +30,8 @@
 
 
   <display>
-    <vis name="DetVis"  alpha="1.0"    r="0"   g="1.0" b="0.0"  showDaughters="true"   visible="true" />
-    <vis name="ModVis"  alpha="1.0"   r="1"   g="0.0" b="0.0"  showDaughters="true"  visible="false" />
-
+    <vis name="DetVis"  alpha="1.0"   r="0"   g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+    <vis name="ModVis"  alpha="1.0"   r="1"   g="0.0" b="0.0"  showDaughters="true"  visible="false"/>
   </display>
 
 

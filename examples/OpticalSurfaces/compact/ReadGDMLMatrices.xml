@@ -1,0 +1,142 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="TelescopeSensor"
+    title="Simple emulation of the EU Telescope"
+    author="Christoph Hombach"
+    url="https://github.com/AIDASoft/DD4hep/blob/master/examples/AlignDet/compact/Telescope.xml"
+    status="development"
+    version="1.0">
+    <comment>Simple emulation of the EU Telescope to test alignment procedures</comment>
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side" value="1*m"/>
+    <constant name="world_x" value="world_side/2"/>
+    <constant name="world_y" value="world_side/2"/>
+    <constant name="world_z" value="world_side/2"/>
+    <constant name="CrossingAngle" value="0.020"/>
+    <constant name="PhotMomWaveConv" value="1243.125*eV"/>
+  </define>
+  <debug>
+    <type name="matrix"  value="1"/>
+    <type name="surface" value="1"/>
+  </debug>
+
+  <materials>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+    <vis name="DetVis" alpha="1.0" r="0" g="0.0" b="1.0" showDaughters="true" visible="false"/>
+    <vis name="ModVis" alpha="0.3" r="0.8" g="0.8" b="1.0" showDaughters="true" visible="true"/>
+
+    <vis name="SensorVis" alpha="1.0" r="1.0"    g="0.2"    b="0.2"    showDaughters="false" visible="true"/>
+    <vis name="ChipVis"   alpha="1.0" r="0.7451" g="0.7451" b="0.7451" showDaughters="false" visible="true"/>
+    <vis name="PCBVis"    alpha="1.0" r="0.0000" g="0.3910" b="0.0000" showDaughters="false" visible="true"/>
+  </display>
+
+
+  <properties>
+  <matrix name= "Someother_property"
+	  coldim  = "6" values="  
+    PhotMomWaveConv/100.0  0.0 1 2 3 4
+    PhotMomWaveConv/190.0  0.0 1 2 3 4
+    PhotMomWaveConv/200.0  0.0 1 2 3 4
+    PhotMomWaveConv/220.0  0.0 1 2 3 4
+    PhotMomWaveConv/240.0  0.0 1 2 3 4
+  "/>
+  <matrix name= "Rich1Mirror2SurfaceEfficiencyPT"
+	  coldim  = "2" values="  
+    PhotMomWaveConv/100.0  0.0
+    PhotMomWaveConv/190.0  0.0
+    PhotMomWaveConv/200.0  0.0
+    PhotMomWaveConv/220.0  0.0
+    PhotMomWaveConv/240.0  0.0
+    PhotMomWaveConv/260.0  0.0
+  "/>
+
+  </properties>
+
+  <detectors>
+    <comment>No comment so far</comment>
+
+    <detector name="Telescope" type="DD4hep_Example_Telescope"  vis="DetVis" id ="3" readout="TelescopeHits">
+      <!-- Front arm -->
+      <module z="0.0*cm" id="1" vis="ModVis">
+        <sensor thickness="3*mm" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="7*mm" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <module z="2.5*cm" id="2" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <module z="5.0*cm" id="3" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <module z="7.5*cm" id="4" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <!-- DuT -->
+      <module z="25.0*cm" id="5" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="768" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <!-- Back arm -->
+      <module z="42.5*cm" id="6" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <module z="45.0*cm" id="7" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <module z="47.5*cm" id="8" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+
+      <module z="50.0*cm" id="9" vis="ModVis">
+        <sensor thickness="300*micron" pitch="55*micron" NoOfPixY="256" NoOfPixX="256" vis="SensorVis"/>
+        <chip thickness="700*micron" vis="ChipVis"/>
+        <PCB thickness="1.4*mm" vis="PCBVis"/>
+      </module>
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="TelescopeHits">
+      <segmentation type="CartesianGridXY" grid_size_x="55*micron" grid_size_y="55*micron" />
+      <id>system:8,module:10,sensor:10,x:16,y:16</id>
+    </readout>
+  </readouts>
+
+  <fields>
+  </fields>
+
+</lccdd>

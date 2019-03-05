@@ -51,6 +51,7 @@ dd4hep_enable_tests (
   ClientTests
   Conditions
   DDG4
+  #OpticalSurfaces
   Persistency
   SimpleDetector
   DDG4_MySensDet
