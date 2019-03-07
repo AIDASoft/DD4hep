@@ -120,7 +120,7 @@ double Geant4StepHandler::birkAttenuation() const    {
   s_emSaturation.SetVerbose(1);
 #endif
 
-#if G4VERSION_NUMBER >= 1003
+#if G4VERSION_NUMBER >= 1030
   static bool s_initialised = false;
   if(not s_initialised) {
       s_emSaturation.InitialiseG4Saturation();
