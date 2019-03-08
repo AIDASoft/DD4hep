@@ -33,7 +33,9 @@
 // Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
 #include "TGDMLMatrix.h"
+#endif
 
 // C/C++ include files
 #include <climits>

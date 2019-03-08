@@ -44,6 +44,7 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector /
   PlacedVolume tankPlace   = description.pickMotherVolume(sdet).placeVolume(tank_vol);
   sdet.setPlacement(tankPlace);
 
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
   // Now attach the surface
   OpticalSurfaceManager surfMgr = description.surfaceManager();
   PlacedVolume   hallPlace(description.manager().GetTopNode());
@@ -53,6 +54,9 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector /
   BorderSurface  bubbleSurf = BorderSurface(description, sdet, "TankBubble", airSurf,   bubblePlace, tankPlace);
   bubbleSurf.isValid();
   tankSurf.isValid();
+#else
+  bubblePlace.isValid();
+#endif
   return sdet;
 }
 DECLARE_DETELEMENT(DD4hep_OpNovice,create_detector)

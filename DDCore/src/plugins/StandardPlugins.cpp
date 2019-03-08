@@ -517,6 +517,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
       ::printf("  %-6s Fraction: %7.3f Z=%3d A=%6.2f N=%3d Neff=%6.2f\n",
                elt->GetName(), frac, elt->Z(), elt->A(), elt->N(), elt->Neff());
     }
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
     virtual void printProperty(elt_h, TNamed* prop, TGDMLMatrix* matrix)   {
       if ( matrix )
         ::printf("  Property: %-20s [%ld x %ld] --> %s\n",
@@ -525,6 +526,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
         ::printf("  Property: %-20s [ERROR: NO TABLE!] --> %s\n",
                  prop->GetName(), prop->GetTitle());
     }
+#endif
     virtual void operator()(TGeoMaterial* mat)  {
       Double_t* mix = mat->IsMixture() ? ((TGeoMixture*)mat)->GetWmixt() : 0;
       elt_h  mh = print(mat);
@@ -532,10 +534,12 @@ static long root_materials(Detector& description, int argc, char** argv) {
         TGeoElement* elt = mat->GetElement(i);
         print(mh, elt, mix ? mix[i] : 1);
       }
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
       TListIter mat_iter(&mat->GetProperties());
       for(TObject* i = mat_iter.Next(); i; i=mat_iter.Next())   {
         printProperty(mh, (TNamed*)i, description.manager().GetGDMLMatrix(i->GetTitle()));
       }
+#endif
     }
   };
   struct MaterialPrintXML : public MaterialPrint  {
@@ -562,11 +566,13 @@ static long root_materials(Detector& description, int argc, char** argv) {
       elt.setAttr(_U(n),frac);
       elt.setAttr(_U(ref),element->GetName());
     }
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
     virtual void printProperty(elt_h mat, TNamed* prop, TGDMLMatrix* /* matrix */)   {
       elt_h elt = mat.addChild(_U(property));
       elt.setAttr(_U(name),prop->GetName());
       elt.setAttr(_U(ref), prop->GetTitle());
     }
+#endif
   };
 
   string type = "text", output = "", name = "";
