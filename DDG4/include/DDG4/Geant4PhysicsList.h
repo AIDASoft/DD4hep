@@ -53,7 +53,7 @@ namespace dd4hep {
       class Process {
       public:
         std::string name;
-        int ordAtRestDoIt, ordAlongSteptDoIt, ordPostStepDoIt;
+        int ordAtRestDoIt=-1, ordAlongSteptDoIt=-1, ordPostStepDoIt=-1;
         /// Default constructor
         Process();
         /// Copy constructor
@@ -101,6 +101,7 @@ namespace dd4hep {
       typedef std::vector<PhysicsConstructor> PhysicsConstructors;
 
       PhysicsProcesses     m_processes;
+      PhysicsProcesses     m_discreteProcesses;
       PhysicsConstructors  m_physics;
       ParticleConstructors m_particles;
       ParticleConstructors m_particlegroups;
@@ -126,6 +127,20 @@ namespace dd4hep {
       ParticleProcesses& processes(const std::string& part_name);
       /// Access processes for one particle type (CONST)
       const ParticleProcesses& processes(const std::string& part_name) const;
+
+      /// Access all physics discrete processes
+      PhysicsProcesses& discreteProcesses() {
+        return m_discreteProcesses;
+      }
+      /// Access all physics discrete processes
+      const PhysicsProcesses& discreteProcesses() const {
+        return m_discreteProcesses;
+      }
+      /// Access discrete processes for one particle type
+      ParticleProcesses& discreteProcesses(const std::string& part_name);
+      /// Access discrete processes for one particle type (CONST)
+      const ParticleProcesses& discreteProcesses(const std::string& part_name) const;
+
       /// Access all physics particles
       ParticleConstructors& particles() {
         return m_particles;
@@ -158,6 +173,8 @@ namespace dd4hep {
       /// Add particle process by name with arguments
       void addParticleProcess(const std::string& part_name, const std::string& proc_name,
                               int ordAtRestDoIt,int ordAlongSteptDoIt,int ordPostStepDoIt);
+      /// Add discrete particle process by name with arguments
+      void addDiscreteParticleProcess(const std::string& part_name, const std::string& proc_name);
       /// Add PhysicsConstructor by name
       /** This constructor is used for intrinsic Geant4 defined physics constructors.
        *  Such physics constructors are only created by the factory and attached

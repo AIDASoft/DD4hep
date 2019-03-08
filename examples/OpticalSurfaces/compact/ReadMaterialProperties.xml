@@ -1,0 +1,233 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="TestMaterialProperties"
+    title="Test reading of TGeo's Material Properties"
+    author="Markus Frank"
+    url="None"
+    status="development"
+    version="1.0">
+    <comment>Test reading of TGeo's Material Properties</comment>
+  </info>
+
+  <define>
+    <constant name="world_side" value="1*m"/>
+    <constant name="world_x" value="world_side/2"/>
+    <constant name="world_y" value="world_side/2"/>
+    <constant name="world_z" value="world_side/2"/>
+  </define>
+
+  <properties>
+    <matrix name="RINDEX__0x123aff00" coldim="2" values="  
+              2.034*eV 1.3435 
+              2.068*eV 1.344 
+              2.103*eV 1.3445 
+              2.139*eV 1.345  
+              2.177*eV 1.3455
+              2.216*eV 1.346
+              2.256*eV 1.3465
+              2.298*eV 1.347
+              2.341*eV 1.3475
+              2.386*eV 1.348
+              2.433*eV 1.3485 
+              2.481*eV 1.3492 
+              2.532*eV 1.35   
+              2.585*eV 1.3505
+              2.640*eV 1.351
+              2.697*eV 1.3518 
+              2.757*eV 1.3522 
+              2.820*eV 1.3530 
+              2.885*eV 1.3535 
+              2.954*eV 1.354
+              3.026*eV 1.3545 
+              3.102*eV 1.355 
+              3.181*eV 1.3555 
+              3.265*eV 1.356  
+              3.353*eV 1.3568
+              3.446*eV 1.3572 
+              3.545*eV 1.358  
+              3.649*eV 1.3585 
+              3.760*eV 1.359  
+              3.877*eV 1.3595
+              4.002*eV 1.36   
+              4.136*eV 1.3608
+    "/>
+    <matrix name="ABSLENGTH__0x123aff00" coldim="2" values="  
+              2.034*eV 3.448*m  
+              2.068*eV 4.082*m  
+              2.103*eV 6.329*m  
+              2.139*eV 9.174*m 
+              2.177*eV 12.346*m 
+              2.216*eV 13.889*m
+              2.256*eV 15.152*m 
+              2.298*eV 17.241*m 
+              2.341*eV 18.868*m 
+              2.386*eV 20.000*m 
+              2.433*eV 26.316*m 
+              2.481*eV 35.714*m
+              2.532*eV 45.455*m 
+              2.585*eV 47.619*m 
+              2.640*eV 52.632*m 
+              2.697*eV 52.632*m 
+              2.757*eV 55.556*m 
+              2.820*eV 52.632*m
+              2.885*eV 52.632*m 
+              2.954*eV 47.619*m 
+              3.026*eV 45.455*m 
+              3.102*eV 41.667*m 
+              3.181*eV 37.037*m 
+              3.265*eV 33.333*m
+              3.353*eV 30.000*m 
+              3.446*eV 28.500*m 
+              3.545*eV 27.000*m 
+              3.649*eV 24.500*m 
+              3.760*eV 22.000*m 
+              3.877*eV 19.500*m
+              4.002*eV 17.500*m 
+              4.136*eV 14.500*m
+    "/>
+    <matrix name= "FASTCOMPONENT__0x123aff00" coldim="2" values="  
+              2.034*eV 1
+              2.068*eV 1
+              2.103*eV 1
+              2.139*eV 1
+              2.177*eV 1
+              2.216*eV 1
+              2.256*eV 1
+              2.298*eV 1
+              2.341*eV 1
+              2.386*eV 1
+              2.433*eV 1
+              2.481*eV 1
+              2.532*eV 1
+              2.585*eV 1
+              2.640*eV 1
+              2.697*eV 1
+              2.757*eV 1
+              2.820*eV 1
+              2.885*eV 1
+              2.954*eV 1
+              3.026*eV 1
+              3.102*eV 1
+              3.181*eV 1
+              3.265*eV 1
+              3.353*eV 1
+              3.446*eV 1
+              3.545*eV 1
+              3.649*eV 1
+              3.760*eV 1
+              3.877*eV 1
+              4.002*eV 1
+              4.136*eV 1
+    "/>
+    <matrix name= "SLOWCOMPONENT__0x123aff00" coldim="2" values="  
+              2.034*eV 0.01
+              2.068*eV 1
+              2.103*eV 2
+              2.139*eV 3
+              2.177*eV 4
+              2.216*eV 5
+              2.256*eV 6
+              2.298*eV 7
+              2.341*eV 8
+              2.386*eV 9
+              2.433*eV 8
+              2.481*eV 7
+              2.532*eV 6
+              2.585*eV 4
+              2.640*eV 3
+              2.697*eV 2
+              2.757*eV 1
+              2.820*eV 0.01
+              2.885*eV 1
+              2.954*eV 2
+              3.026*eV 3
+              3.102*eV 4
+              3.181*eV 5
+              3.265*eV 6
+              3.353*eV 7
+              3.446*eV 8
+              3.545*eV 9
+              3.649*eV 8
+              3.760*eV 7
+              3.877*eV 6
+              4.002*eV 5
+              4.136*eV 4
+    "/>
+   <ignore>
+    <matrix name= "REFLECTIVITY__0x123aff00" coldim="2" values="  
+              2.034*eV 
+              2.068*eV 
+              2.103*eV 
+              2.139*eV 
+              2.177*eV 
+              2.216*eV 
+              2.256*eV 
+              2.298*eV 
+              2.341*eV 
+              2.386*eV 
+              2.433*eV 
+              2.481*eV 
+              2.532*eV 
+              2.585*eV 
+              2.640*eV 
+              2.697*eV 
+              2.757*eV 
+              2.820*eV 
+              2.885*eV 
+              2.954*eV 
+              3.026*eV 
+              3.102*eV 
+              3.181*eV 
+              3.265*eV 
+              3.353*eV 
+              3.446*eV 
+              3.545*eV 
+              3.649*eV 
+              3.760*eV 
+              3.877*eV 
+              4.002*eV 
+              4.136*eV 
+    "/>
+    </ignore>
+  </properties>
+
+  <materials>
+    <element Z="1" formula="H" name="H" >
+      <atom type="A" unit="g/mol" value="1.00794" />
+    </element>
+    <element Z="8" formula="O" name="O" >
+      <atom type="A" unit="g/mol" value="15.9994" />
+    </element>
+    <element Z="7" formula="N" name="N" >
+      <atom type="A" unit="g/mol" value="14.0068" />
+    </element>
+    <element Z="18" formula="Ar" name="Ar" >
+      <atom type="A" unit="g/mol" value="39.9477" />
+    </element>
+
+    <material name="Air">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    <!-- We model vakuum just as very thin air -->
+    <material name="Vacuum">  
+      <D type="density" unit="g/cm3" value="0.0000000001" />
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    <material name="Water">
+      <D type="density" value="1.0" unit="g/cm3"/>
+      <composite n="2" ref="H"/>
+      <composite n="1" ref="O"/>
+      <property name="RINDEX"        ref="RINDEX__0x123aff00"/>
+      <property name="ABSLENGTH"     ref="ABSLENGTH__0x123aff00"/>
+      <property name="FASTCOMPONENT" ref="FASTCOMPONENT__0x123aff00"/>
+      <property name="SLOWCOMPONENT" ref="SLOWCOMPONENT__0x123aff00"/>
+    </material>
+  </materials>
+</lccdd>

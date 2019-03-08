@@ -2,13 +2,13 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
-  <info name="TestGDMLMatrices"
-    title="Test reading of TGeo's GDML matrices"
+  <info name="TestOpticalSurfaces"
+    title="Test reading of TGeo's Optical Surfaces"
     author="Markus Frank"
     url="None"
     status="development"
     version="1.0">
-    <comment>Test reading of TGeo's GDML matrices</comment>
+    <comment>Test reading of TGeo's Optical Surfaces</comment>
   </info>
 
   <includes>
@@ -23,9 +23,10 @@
     <constant name="world_z" value="world_side/2"/>
     <constant name="PhotMomWaveConv" value="1243.125*eV"/>
   </define>
+
   <debug>
-    <type name="matrix"  value="1"/>
-    <type name="surface" value="1"/>
+    <type name="matrix"  value="0"/>
+    <type name="surface" value="0"/>
   </debug>
 
   <properties>
@@ -48,13 +49,15 @@
   </properties>
 
   <surfaces>
-    <opticalsurface finish="0" model="0" name="OpticalSurface#1" type="1" value="0">
+    <comment> For the values of "finish", model and type, see TGeoOpticalSurface.h !
+    </comment>
+    <opticalsurface finish="Rough_LUT" model="DAVIS" name="OpticalSurface#1" type="dielectric_LUTDAVIS" value="0">
       <property name="REFLECTIVITY" ref="REFLECTIVITY0x123aff00"/>
-      <property name="EFFICIENCY" ref="EFFICIENCY0x8b77240"/>
+      <property name="EFFICIENCY"   ref="EFFICIENCY0x8b77240"/>
     </opticalsurface>
-    <opticalsurface finish="0" model="0" name="OpticalSurface#2" type="1" value="1">
+    <opticalsurface finish="ground" model="unified" name="OpticalSurface#2" type="dielectric_dielectric" value="1">
       <property name="REFLECTIVITY" ref="REFLECTIVITY0x123aff00"/>
-      <property name="EFFICIENCY" ref="EFFICIENCY0x8b77240"/>
+      <property name="EFFICIENCY"   ref="EFFICIENCY0x8b77240"/>
     </opticalsurface>
   </surfaces>
 

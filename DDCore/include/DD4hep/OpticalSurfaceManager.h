@@ -59,12 +59,18 @@ namespace dd4hep {
     static OpticalSurfaceManager getOpticalSurfaceManager(Detector& description);
 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
-    /// Access skin surface by its identifier
-    SkinSurface    getSkinSurface(DetElement de, const std::string& nam)  const;
-    /// Access border surface by its identifier
-    BorderSurface  getBorderSurface(DetElement de, const std::string& nam)  const;
-    /// Access optical surface data by its identifier
-    OpticalSurface getOpticalSurface(DetElement de, const std::string& nam)  const;
+    /// Access skin surface by its full name
+    SkinSurface    skinSurface(const std::string& full_name)  const;
+    /// Access skin surface by its identifier tuple (DetElement, name)
+    SkinSurface    skinSurface(DetElement de, const std::string& nam)  const;
+    /// Access border surface by its full name
+    BorderSurface  borderSurface(const std::string& full_name)  const;
+    /// Access border surface by its identifier tuple (DetElement, name)
+    BorderSurface  borderSurface(DetElement de, const std::string& nam)  const;
+    /// Access optical surface data by its full name
+    OpticalSurface opticalSurface(const std::string& full_name)  const;
+    /// Access optical surface data by its identifier tuple (DetElement, name)
+    OpticalSurface opticalSurface(DetElement de, const std::string& nam)  const;
     /// Add skin surface to manager
     void addSkinSurface(DetElement de, SkinSurface surf)  const;
     /// Add border surface to manager

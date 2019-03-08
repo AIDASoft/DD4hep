@@ -73,6 +73,27 @@ namespace dd4hep {
 
     /// Assignment operator
     OpticalSurface& operator=(const OpticalSurface& m) = default;
+
+    /// Convenience function forwarding to TGeoOpticalSurface
+    static EType   stringToType(const std::string& type)   {
+      return Object::StringToType(type.c_str());
+    }
+    /// Convenience function forwarding to TGeoOpticalSurface
+    static std::string  typeToString(EType type)   {
+      return Object::TypeToString(type);
+    }
+    static EModel  stringToModel(const std::string& model)  {
+      return Object::StringToModel(model.c_str());
+    }
+    static std::string  modelToString(EModel model)  {
+      return Object::ModelToString(model);
+    }
+    static EFinish stringToFinish(const std::string& finish)  {
+      return Object::StringToFinish(finish.c_str());
+    }
+    static std::string  finishToString(EFinish finish)  {
+      return Object::FinishToString(finish);
+    }
   };
 
   /// Class to support the handling of optical surfaces.

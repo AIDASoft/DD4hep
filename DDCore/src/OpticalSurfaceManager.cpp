@@ -33,7 +33,7 @@ OpticalSurfaceManager OpticalSurfaceManager::getOpticalSurfaceManager(Detector& 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
 
 /// Access skin surface by its identifier
-SkinSurface  OpticalSurfaceManager::getSkinSurface(DetElement de, const string& nam)  const   {
+SkinSurface  OpticalSurfaceManager::skinSurface(DetElement de, const string& nam)  const   {
   if ( de.isValid() )  {
     Object* o = access();
     string  n = de.path() + '#' + nam;
@@ -48,8 +48,13 @@ SkinSurface  OpticalSurfaceManager::getSkinSurface(DetElement de, const string& 
   return SkinSurface();
 }
 
+/// Access skin surface by its full name
+SkinSurface  OpticalSurfaceManager::skinSurface(const string& full_nam)  const   {
+  return access()->detector.manager().GetSkinSurface(full_nam.c_str());
+}
+
 /// Access border surface by its identifier
-BorderSurface  OpticalSurfaceManager::getBorderSurface(DetElement de, const string& nam)  const   {
+BorderSurface  OpticalSurfaceManager::borderSurface(DetElement de, const string& nam)  const   {
   if ( de.isValid() )  {
     Object* o = access();
     string  n = de.path() + '#' + nam;
@@ -64,8 +69,13 @@ BorderSurface  OpticalSurfaceManager::getBorderSurface(DetElement de, const stri
   return BorderSurface();
 }
 
+/// Access border surface by its full name
+BorderSurface  OpticalSurfaceManager::borderSurface(const string& full_nam)  const   {
+  return access()->detector.manager().GetBorderSurface(full_nam.c_str());
+}
+
 /// Access optical surface data by its identifier
-OpticalSurface OpticalSurfaceManager::getOpticalSurface(DetElement de, const string& nam)  const   {
+OpticalSurface OpticalSurfaceManager::opticalSurface(DetElement de, const string& nam)  const   {
   if ( de.isValid() )  {
     Object* o = access();
     string  n = de.path() + '#' + nam;
@@ -78,6 +88,11 @@ OpticalSurface OpticalSurfaceManager::getOpticalSurface(DetElement de, const str
   except("OpticalSurface",
          "++ Cannot access OpticalSurface %s without valid detector element!",nam.c_str());
   return OpticalSurface();
+}
+
+/// Access optical surface data by its identifier
+OpticalSurface OpticalSurfaceManager::opticalSurface(const string& full_nam)  const   {
+  return access()->detector.manager().GetOpticalSurface(full_nam.c_str());
 }
 
 /// Add skin surface to manager

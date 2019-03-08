@@ -43,6 +43,8 @@ namespace dd4hep {
       bool debugPlacements = false;
       /// Property: Flag to debug regions during conversion mechanism
       bool debugRegions    = false;
+      /// Property: Flag to debug surfaces during conversion mechanism
+      bool debugSurfaces   = false;
 
       /// Property: Flag to dump all placements after the conversion procedure
       bool printPlacements = false;
