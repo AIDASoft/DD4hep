@@ -33,6 +33,7 @@
 // Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
+#include "TGDMLMatrix.h"
 
 // C/C++ include files
 #include <climits>
@@ -465,8 +466,12 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         string ref = p.attr<string>(_U(ref));
         TGDMLMatrix* m = mgr.GetGDMLMatrix(ref.c_str());
         if ( m )  {
+          string prop_nam = p.attr<string>(_U(name));
           //TODO: mat->AddProperty(p.attr<string>(_U(name)).c_str(), m);
-          mat->AddProperty(p.attr<string>(_U(name)).c_str(), ref.c_str());
+          mat->AddProperty(prop_nam.c_str(), ref.c_str());
+          printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+                   "++            material %-16s  add property: %s  ->  %s.",
+                   mat->GetName(), prop_nam.c_str(), ref.c_str());
           continue;
         }
         // ERROR
@@ -618,27 +623,50 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
-  xml_attr_t attr;
   xml_elt_t  e = element;
+  // Defaults from Geant4
   OpticalSurface::EModel  model  = OpticalSurface::Model::kMglisur;
   OpticalSurface::EFinish finish = OpticalSurface::Finish::kFpolished;
   OpticalSurface::EType   type   = OpticalSurface::Type::kTdielectric_metal;
-  Double_t value = 0;
-  if ( (attr=e.attr<xml_attr_t>(_U(type)))   ) type   = (OpticalSurface::EType)e.attr<int>(attr);
-  if ( (attr=e.attr<xml_attr_t>(_U(model)))  ) model  = (OpticalSurface::EModel)e.attr<int>(attr);
-  if ( (attr=e.attr<xml_attr_t>(_U(finish))) ) finish = (OpticalSurface::EFinish)e.attr<int>(attr);
-  if ( (attr=e.attr<xml_attr_t>(_U(value)))  ) value  = e.attr<double>(attr);
+  Double_t value = 1.0;
+  if ( e.hasAttr(_U(type))   ) type   = OpticalSurface::stringToType(e.attr<string>(_U(type)));
+  if ( e.hasAttr(_U(model))  ) model  = OpticalSurface::stringToModel(e.attr<string>(_U(model)));
+  if ( e.hasAttr(_U(finish)) ) finish = OpticalSurface::stringToFinish(e.attr<string>(_U(finish)));
+  if ( e.hasAttr(_U(value))  ) value  = e.attr<double>(_U(value));
   OpticalSurface surf(description, e.attr<string>(_U(name)), model, finish, type, value);
   if ( s_debug.surface )    {
     printout(ALWAYS,"Compact","+++ Reading optical surface %s Typ:%d model:%d finish:%d value:%f",
              e.attr<string>(_U(name)).c_str(), int(type), int(model), int(finish), value);
   }
   for (xml_coll_t props(e, _U(property)); props; ++props)  {
-    surf->AddProperty(props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
-    if ( s_debug.surface )    {
-      printout(ALWAYS,"Compact","+++ \t\t Property:  %s  -> %s",
-               props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+    if ( props.hasAttr(_U(ref)) )  {
+      surf->AddProperty(props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+      if ( s_debug.surface )  {
+        printout(ALWAYS,"Compact","+++ \t\t Property:  %s  -> %s",
+                 props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+      }
+      continue;
     }
+    size_t cols = props.attr<long>(_U(coldim));
+    string nam  = props.attr<string>(_U(name));
+    stringstream str(props.attr<string>(_U(values))), str_nam;
+    string val;
+    vector<double> values;
+    while ( !str.eof() )   {
+      val = "";
+      str >> val;
+      if ( val.empty() && !str.good() ) break;
+      values.push_back(_toDouble(val));
+    }
+    /// Create table and register table
+    TGDMLMatrix* table = new TGDMLMatrix("",values.size()/cols, cols);
+    str_nam << nam << "__" << (void*)table;
+    table->SetName(str_nam.str().c_str());
+    table->SetTitle(nam.c_str());
+    for (size_t i=0, n=values.size(); i<n; ++i)
+      table->Set(i/cols, i%cols, values[i]);
+    surf->AddProperty(nam.c_str(), table->GetName());
+    description.manager().AddGDMLMatrix(table);
   }
 }
 
@@ -659,13 +687,14 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
   }
   values.reserve(1024);
   while ( !str.eof() )   {
+    val = "";
     str >> val;
-    if ( !str.good() ) break;
+    if ( val.empty() && !str.good() ) break;
+    values.push_back(_toDouble(val));
     if ( s_debug.matrix )    {
       cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << val << "'";
+      if ( 0 == (values.size()%cols) ) cout << endl;
     }
-    values.push_back(_toDouble(val));
-    if ( 0 == (values.size()%cols) ) cout << endl;
   }
   if ( s_debug.matrix )    {
     cout << endl;
@@ -1370,14 +1399,14 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   if (element.hasChild(_U(info)))
     (Converter<Header>(description))(xml_h(compact.child(_U(info))));
 
-  xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(description));
-  xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
   /// These two must be parsed early, because they are needed by the detector constructors
   xml_coll_t(compact, _U(properties)).for_each(_U(matrix), Converter<PropertyTable>(description));
   xml_coll_t(compact, _U(surfaces)).for_each(_U(opticalsurface), Converter<OpticalSurface>(description));
 #endif
+  xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(description));
+  xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(description));

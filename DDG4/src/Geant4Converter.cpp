@@ -401,31 +401,33 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         mat = new G4Material(name, z, a, density, state, 
                              material->GetTemperature(), material->GetPressure());
       }
+      stringstream str;
+      str << (*mat);
+      printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
       /// Attach the material properties if any
       G4MaterialPropertiesTable* tab = 0;
       TListIter propIt(&material->GetProperties());
-      for(TObject* obj=*propIt; obj; obj = propIt.Next())  {
-        TNamed* n = (TNamed*)obj;
-        TGDMLMatrix *matrix = info.manager->GetGDMLMatrix(n->GetTitle());
-        if ( 0 == tab )  {
-          tab = new G4MaterialPropertiesTable();
-          mat->SetMaterialPropertiesTable(tab);
-        }
+      for(TObject* obj=propIt.Next(); obj; obj = propIt.Next())  {
+        TNamed*      n = (TNamed*)obj;
+        TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(n->GetTitle());
         Geant4GeometryInfo::PropertyVector* v =
           (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
         if ( 0 == v )   {
           except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
                  material->GetName(), n->GetName());
         }
+        if ( 0 == tab )  {
+          tab = new G4MaterialPropertiesTable();
+          mat->SetMaterialPropertiesTable(tab);
+        }
         G4MaterialPropertyVector* vec =
           new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
+        printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
+                 n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
         tab->AddProperty(n->GetName(), vec);
       }
 #endif
-      stringstream str;
-      str << (*mat);
-      printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
     }
     info.g4Materials[medium] = mat;
   }
@@ -1060,6 +1062,7 @@ void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
   Geant4GeometryInfo& info = data();
   Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[m];
   if (!g4) {
+    PrintLevel lvl = debugMaterials ? ALWAYS : outputLevel;
     g4 = new Geant4GeometryInfo::PropertyVector();
     size_t rows = m->GetRows();
     g4->name    = m->GetName();
@@ -1067,9 +1070,11 @@ void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
     g4->bins.reserve(rows);
     g4->values.reserve(rows);
     for(size_t i=0; i<rows; ++i)  {
-      g4->bins.push_back(m->Get(0,i)  /*   *CLHEP::eV/units::eV   */);
-      g4->values.push_back(m->Get(1,i));
+      g4->bins.push_back(m->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
+      g4->values.push_back(m->Get(i,1));
     }
+    printout(lvl, "Geant4Converter", "++ Successfully converted material property:%s : %s [%ld rows]",
+             m->GetName(), m->GetTitle(), rows);
     info.g4OpticalProperties[m] = g4;
   }
   return g4;
@@ -1177,9 +1182,15 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     g4 = new G4OpticalSurface(s->GetName(), model, finish, type, s->GetValue());
     g4->SetSigmaAlpha(s->GetSigmaAlpha());
     // not implemented: g4->SetPolish(s->GetPolish());
+    printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
+             "++ Created OpticalSurface: %-18s type:%s model:%s finish:%s",
+             s->GetName(),
+             TGeoOpticalSurface::TypeToString(s->GetType()),
+             TGeoOpticalSurface::ModelToString(s->GetModel()),
+             TGeoOpticalSurface::FinishToString(s->GetFinish()));
     G4MaterialPropertiesTable* tab = 0;
     TListIter it(&s->GetProperties());
-    for(TObject* obj = *it; obj; obj = it.Next())  {
+    for(TObject* obj = it.Next(); obj; obj = it.Next())  {
       TNamed* n = (TNamed*)obj;
       TGDMLMatrix *matrix = info.manager->GetGDMLMatrix(n->GetTitle());
       if ( 0 == tab )  {
@@ -1195,6 +1206,9 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       G4MaterialPropertyVector* vec =
         new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
       tab->AddProperty(n->GetName(), vec);
+      printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
+               "++       Property: %-20s [%ld x %ld] -->  %s",
+               n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
     }
     info.g4OpticalSurfaces[s] = g4;
   }
@@ -1210,6 +1224,9 @@ void* Geant4Converter::handleSkinSurface(TObject* surface) const   {
     G4OpticalSurface* s  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4LogicalVolume*  v = info.g4Volumes[surf->GetVolume()];
     g4 = new G4LogicalSkinSurface(surf->GetName(), v, s);
+    printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
+             "++ Created SkinSurface: %-18s  optical:%s",
+             surf->GetName(), surf->GetSurface()->GetName());
     info.g4SkinSurfaces[surf] = g4;
   }
   return g4;
@@ -1225,6 +1242,9 @@ void* Geant4Converter::handleBorderSurface(TObject* surface) const   {
     G4VPhysicalVolume* n1 = info.g4Placements[surf->GetNode1()];
     G4VPhysicalVolume* n2 = info.g4Placements[surf->GetNode2()];
     g4 = new G4LogicalBorderSurface(surf->GetName(), n1, n2, s);
+    printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
+             "++ Created BorderSurface: %-18s  optical:%s",
+             surf->GetName(), surf->GetSurface()->GetName());
     info.g4BorderSurfaces[surf] = g4;
   }
   return g4;

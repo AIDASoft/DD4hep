@@ -306,10 +306,11 @@ DECLARE_APPLY(DD4hep_Dump_GDMLTables,root_dump_gdml_tables)
  */
 static long root_dump_optical_surfaces(Detector& description, int /* argc */, char** /* argv */) {
   size_t num_surfaces = 0;
+  printout(ALWAYS,"","");
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
   const TObjArray* c = description.manager().GetListOfOpticalSurfaces();
   TObjArrayIter arr(c);
-  printout(INFO,"Dump_OpticalSurfaces","+++ Dumping known Optical Surfaces from TGeoManager.");
+  printout(ALWAYS,"Dump_OpticalSurfaces","+++ Dumping known Optical Surfaces from TGeoManager.");
   for(TObject* i = arr.Next(); i; i=arr.Next())   {
     TGeoOpticalSurface* m = (TGeoOpticalSurface*)i;
     ++num_surfaces;
@@ -318,11 +319,71 @@ static long root_dump_optical_surfaces(Detector& description, int /* argc */, ch
 #else
   description.world().isValid();
 #endif
-  printout(INFO,"Dump_OpticalSurfaces",
+  printout(ALWAYS,"Dump_OpticalSurfaces",
            "+++ Successfully dumped %ld Optical surfaces.",num_surfaces);
   return 1;
 }
 DECLARE_APPLY(DD4hep_Dump_OpticalSurfaces,root_dump_optical_surfaces)
+
+/// Basic entry point to dump all known skin surfaces
+/**
+ *
+ *  Factory: DD4hep_Dump_SkinSurfaces
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long root_dump_skin_surfaces(Detector& description, int /* argc */, char** /* argv */) {
+  size_t num_surfaces = 0;
+  printout(ALWAYS,"","");
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  const TObjArray* c = description.manager().GetListOfSkinSurfaces();
+  TObjArrayIter arr(c);
+  printout(ALWAYS,"Dump_SkinSurfaces","+++ Dumping known Skin Surfaces from TGeoManager.");
+  for(TObject* i = arr.Next(); i; i=arr.Next())   {
+    TGeoSkinSurface* m = (TGeoSkinSurface*)i;
+    ++num_surfaces;
+    m->Print();
+  }
+#else
+  description.world().isValid();
+#endif
+  printout(ALWAYS,"Dump_SkinSurfaces",
+           "+++ Successfully dumped %ld Skin surfaces.",num_surfaces);
+  return 1;
+}
+DECLARE_APPLY(DD4hep_Dump_SkinSurfaces,root_dump_skin_surfaces)
+
+/// Basic entry point to dump all known border surfaces
+/**
+ *
+ *  Factory: DD4hep_Dump_BorderSurfaces
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long root_dump_border_surfaces(Detector& description, int /* argc */, char** /* argv */) {
+  size_t num_surfaces = 0;
+  printout(ALWAYS,"","");
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+  const TObjArray* c = description.manager().GetListOfBorderSurfaces();
+  TObjArrayIter arr(c);
+  printout(ALWAYS,"Dump_BorderSurfaces","+++ Dumping known Border Surfaces from TGeoManager.");
+  for(TObject* i = arr.Next(); i; i=arr.Next())   {
+    TGeoBorderSurface* m = (TGeoBorderSurface*)i;
+    ++num_surfaces;
+    m->Print();
+  }
+#else
+  description.world().isValid();
+#endif
+  printout(ALWAYS,"Dump_BorderSurfaces",
+           "+++ Successfully dumped %ld Border surfaces.",num_surfaces);
+  return 1;
+}
+DECLARE_APPLY(DD4hep_Dump_BorderSurfaces,root_dump_border_surfaces)
 
 /// Basic entry point to dump the ROOT TGeoElementTable object
 /**
@@ -442,7 +503,8 @@ DECLARE_APPLY(DD4hep_ElementTable,root_elements)
 static long root_materials(Detector& description, int argc, char** argv) {
   struct MaterialPrint {
     typedef xml::Element elt_h;
-    MaterialPrint() = default;
+    Detector& description;
+    MaterialPrint(Detector& desc) : description(desc) {}
     virtual ~MaterialPrint() = default;
     virtual elt_h print(TGeoMaterial* mat)  {
       ::printf("%-8s %-32s  Aeff=%7.3f Zeff=%7.4f rho=%8.3f [g/mole] radlen=%8.3g [cm] intlen=%8.3g [cm] index=%3d\n",
@@ -455,6 +517,14 @@ static long root_materials(Detector& description, int argc, char** argv) {
       ::printf("  %-6s Fraction: %7.3f Z=%3d A=%6.2f N=%3d Neff=%6.2f\n",
                elt->GetName(), frac, elt->Z(), elt->A(), elt->N(), elt->Neff());
     }
+    virtual void printProperty(elt_h, TNamed* prop, TGDMLMatrix* matrix)   {
+      if ( matrix )
+        ::printf("  Property: %-20s [%ld x %ld] --> %s\n",
+                 prop->GetName(), long(matrix->GetRows()), long(matrix->GetCols()), prop->GetTitle());
+      else
+        ::printf("  Property: %-20s [ERROR: NO TABLE!] --> %s\n",
+                 prop->GetName(), prop->GetTitle());
+    }
     virtual void operator()(TGeoMaterial* mat)  {
       Double_t* mix = mat->IsMixture() ? ((TGeoMixture*)mat)->GetWmixt() : 0;
       elt_h  mh = print(mat);
@@ -462,11 +532,15 @@ static long root_materials(Detector& description, int argc, char** argv) {
         TGeoElement* elt = mat->GetElement(i);
         print(mh, elt, mix ? mix[i] : 1);
       }
+      TListIter mat_iter(&mat->GetProperties());
+      for(TObject* i = mat_iter.Next(); i; i=mat_iter.Next())   {
+        printProperty(mh, (TNamed*)i, description.manager().GetGDMLMatrix(i->GetTitle()));
+      }
     }
   };
   struct MaterialPrintXML : public MaterialPrint  {
     elt_h root;
-    MaterialPrintXML(elt_h r) : root(r) {}
+    MaterialPrintXML(elt_h elt, Detector& desc) : MaterialPrint(desc), root(elt) {}
     virtual ~MaterialPrintXML() {}
     virtual elt_h print(TGeoMaterial* mat)  {
       elt_h elt = root.addChild(_U(material));
@@ -488,13 +562,19 @@ static long root_materials(Detector& description, int argc, char** argv) {
       elt.setAttr(_U(n),frac);
       elt.setAttr(_U(ref),element->GetName());
     }
+    virtual void printProperty(elt_h mat, TNamed* prop, TGDMLMatrix* /* matrix */)   {
+      elt_h elt = mat.addChild(_U(property));
+      elt.setAttr(_U(name),prop->GetName());
+      elt.setAttr(_U(ref), prop->GetTitle());
+    }
   };
 
-  string type = "text", output = "";
+  string type = "text", output = "", name = "";
   for(int i=0; i<argc; ++i)  {
     if ( argv[i][0] == '-' )  {
       char c = ::tolower(argv[i][1]);
       if ( c == 't' && i+1<argc ) type = argv[++i];
+      else if ( c == 'n' && i+1<argc ) name   = argv[++i];
       else if ( c == 'o' && i+1<argc ) output = argv[++i];
       else  {
         ::printf("DD4hep_MaterialTable -opt [-opt]                       \n"
@@ -527,14 +607,15 @@ static long root_materials(Detector& description, int argc, char** argv) {
      element = doc.root();
   }
   dd4hep_ptr<MaterialPrint> printer(element
-                                   ? new MaterialPrintXML(element)
-                                   : new MaterialPrint());
+                                    ? new MaterialPrintXML(element, description)
+                                   : new MaterialPrint(description));
   TObject* obj = 0;
   TList* mats = description.manager().GetListOfMaterials();
   dd4hep_ptr<TIterator> iter(mats->MakeIterator());
   while( (obj=iter->Next()) != 0 )  {
     TGeoMaterial* mat = (TGeoMaterial*)obj;
-    (*printer)(mat);
+    if ( name.empty() || name == mat->GetName() )
+      (*printer)(mat);
   }
   if ( element )   {
     xml::DocumentHandler dH;

@@ -20,15 +20,15 @@ dd4hep_package ( OpticalSurfaces MAJOR 0 MINOR 0 PATCH 1
   INCLUDE_DIRS   include
   )
 set(OpticalSurfaces_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/OpticalSurfaces)
-# dd4hep_add_plugin(   OpticalSurfacesExample SOURCES src/*.cpp  )
-dd4hep_install_dir(  compact DESTINATION ${OpticalSurfaces_INSTALL} )
+dd4hep_add_plugin(   OpticalSurfacesExample SOURCES src/*.cpp  )
+dd4hep_install_dir(  compact scripts DESTINATION ${OpticalSurfaces_INSTALL} )
 dd4hep_configure_scripts( OpticalSurfaces DEFAULT_SETUP WITH_TESTS)
 #
 message (STATUS "OpticalSurfaces: ROOT version: ${ROOT_VERSION}")
 #
 #---Testing: Load ROOT GDMLMatrix objects from compact
 #            and register them to the TGeoManager
-dd4hep_add_test_reg( Surfaces_read_GDMLMatrix
+dd4hep_add_test_reg( Surfaces_read_GDMLMatrices
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy 
   -compact file:${OpticalSurfaces_INSTALL}/compact/ReadGDMLMatrices.xml
@@ -46,6 +46,16 @@ dd4hep_add_test_reg( Surfaces_read_OpticalSurfaces
   -plugin  DD4hep_Dump_GDMLTables
   -plugin  DD4hep_Dump_OpticalSurfaces
   REGEX_PASS "Successfully dumped 2 Optical surfaces."
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Load ROOT material properties and dump material
+dd4hep_add_test_reg( Surfaces_read_MaterialProperties
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -print INFO
+  -compact file:${OpticalSurfaces_INSTALL}/compact/ReadMaterialProperties.xml
+  -plugin DD4hep_MaterialTable -name Water
+  REGEX_PASS "Property: SLOWCOMPONENT        \\[32 x 2\\] --> SLOWCOMPONENT__0x123aff00"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
