@@ -33,6 +33,7 @@
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
+#include "G4Version.hh"
 
 #include "G4Cerenkov.hh"
 
@@ -78,8 +79,9 @@ namespace dd4hep {
         process->SetMaxNumPhotonsPerStep(m_maxNumPhotonsPerStep);
         process->SetMaxBetaChangePerStep(m_maxBetaChangePerStep);
         process->SetTrackSecondariesFirst(m_trackSecondariesFirst);
+#if G4VERSION_NUMBER>1030
         process->SetStackPhotons(m_stackPhotons);
-
+#endif
         auto pit = G4ParticleTable::GetParticleTable()->GetIterator();
         pit->reset();
         while( (*pit)() ){
