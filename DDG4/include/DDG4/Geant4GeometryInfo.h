@@ -106,7 +106,7 @@ namespace dd4hep {
         PropertyVector() = default;
         ~PropertyVector() = default;
       };
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       std::map<PropertyTable,  PropertyVector*>                g4OpticalProperties;
       std::map<OpticalSurface, G4OpticalSurface*>              g4OpticalSurfaces;
       std::map<SkinSurface,    G4LogicalSkinSurface*>          g4SkinSurfaces;

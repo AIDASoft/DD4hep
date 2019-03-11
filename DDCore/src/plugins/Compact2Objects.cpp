@@ -33,7 +33,7 @@
 // Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 #include "TGDMLMatrix.h"
 #endif
 
@@ -78,7 +78,7 @@ namespace dd4hep {
   template <> void Converter<Property>::operator()(xml_h element) const;
   template <> void Converter<CartesianField>::operator()(xml_h element) const;
   template <> void Converter<SensitiveDetector>::operator()(xml_h element) const;
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   template <> void Converter<OpticalSurface>::operator()(xml_h element) const;
   template <> void Converter<PropertyTable>::operator()(xml_h element) const;
 #endif
@@ -460,7 +460,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
 #endif
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// In case there were material properties specified: convert them here
     for(xml_coll_t properties(x_mat, _U(property)); properties; ++properties) {
       xml_elt_t p = properties;
@@ -619,7 +619,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
   }
 }
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /** Convert compact optical surface objects (defines)
  *
  *
@@ -1202,7 +1202,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     description.addDetector(det);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     description.surfaceManager().registerSurfaces(det);
 #endif
     return;
@@ -1402,7 +1402,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     (Converter<Header>(description))(xml_h(compact.child(_U(info))));
 
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   /// These two must be parsed early, because they are needed by the detector constructors
   xml_coll_t(compact, _U(properties)).for_each(_U(matrix), Converter<PropertyTable>(description));
   xml_coll_t(compact, _U(surfaces)).for_each(_U(opticalsurface), Converter<OpticalSurface>(description));

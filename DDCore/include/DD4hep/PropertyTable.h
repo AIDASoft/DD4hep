@@ -14,7 +14,7 @@
 #define DD4HEP_DDCORE_PROPERTYTABLE_H
 
 #include "RVersion.h"
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 
 // Framework include files
 #include "DD4hep/Handle.h"

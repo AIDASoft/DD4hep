@@ -58,7 +58,7 @@ namespace dd4hep {
     /// static accessor calling DD4hepOpticalSurfaceManagerPlugin if necessary
     static OpticalSurfaceManager getOpticalSurfaceManager(Detector& description);
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// Access skin surface by its full name
     SkinSurface    skinSurface(const std::string& full_name)  const;
     /// Access skin surface by its identifier tuple (DetElement, name)

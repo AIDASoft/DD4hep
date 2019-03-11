@@ -17,7 +17,7 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/DetElement.h"
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 
 // ROOT include files
 #include "TGeoOpticalSurface.h"

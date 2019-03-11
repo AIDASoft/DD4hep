@@ -404,7 +404,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       stringstream str;
       str << (*mat);
       printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       /// Attach the material properties if any
       G4MaterialPropertiesTable* tab = 0;
       TListIter propIt(&material->GetProperties());
@@ -1055,7 +1055,7 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
   }
 }
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /// Convert the geometry type material into the corresponding Geant4 object(s).
 void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
   TGDMLMatrix* m = (TGDMLMatrix*)matrix;
@@ -1147,7 +1147,7 @@ static G4SurfaceType geant4_surface_type(TGeoOpticalSurface::ESurfaceType t)   {
     TO_G4_TYPE(firsov);                // for Firsov Process
     TO_G4_TYPE(x_ray);                  // for x-ray mirror process
   default:
-    printout(ERROR,"Geant4Surfaces","++ Unknown finish style: %d [%s]. Assume polished!",
+    printout(ERROR,"Geant4Surfaces","++ Unknown surface type: %d [%s]. Assume dielectric_metal!",
              int(t), TGeoOpticalSurface::TypeToString(t));
     return dielectric_metal;
   }
@@ -1157,13 +1157,13 @@ static G4SurfaceType geant4_surface_type(TGeoOpticalSurface::ESurfaceType t)   {
 static G4OpticalSurfaceModel geant4_surface_model(TGeoOpticalSurface::ESurfaceModel m)   {
 #define TO_G4_MODEL(x)  case TGeoOpticalSurface::kM##x : return x;
   switch(m)   {
-    TO_G4_MODEL(glisur);  // original GEANT3 model
-    TO_G4_MODEL(unified); // UNIFIED model
-    TO_G4_MODEL(LUT);     // Look-Up-Table model
-    TO_G4_MODEL(DAVIS);   // DAVIS model
+    TO_G4_MODEL(glisur);   // original GEANT3 model
+    TO_G4_MODEL(unified);  // UNIFIED model
+    TO_G4_MODEL(LUT);      // Look-Up-Table model
+    TO_G4_MODEL(DAVIS);    // DAVIS model
     TO_G4_MODEL(dichroic); // dichroic filter
   default:
-    printout(ERROR,"Geant4Surfaces","++ Unknown finish style: %d [%s]. Assume polished!",
+    printout(ERROR,"Geant4Surfaces","++ Unknown surface model: %d [%s]. Assume glisur!",
              int(m), TGeoOpticalSurface::ModelToString(m));
     return glisur;
   }
@@ -1370,7 +1370,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   //outputLevel = WARNING;
   //setPrintLevel(VERBOSE);
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   handleArray(this, geo.manager->GetListOfGDMLMatrices(), &Geant4Converter::handleMaterialProperties);
   handleArray(this, geo.manager->GetListOfOpticalSurfaces(), &Geant4Converter::handleOpticalSurface);
 #endif
@@ -1389,7 +1389,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   handleRMap(this, *m_data,     &Geant4Converter::handleAssembly);
   // Now place all this stuff appropriately
   handleRMap(this, *m_data,     &Geant4Converter::handlePlacement);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   /// Handle concrete surfaces
   handleArray(this, geo.manager->GetListOfSkinSurfaces(),   &Geant4Converter::handleSkinSurface);
   handleArray(this, geo.manager->GetListOfBorderSurfaces(), &Geant4Converter::handleBorderSurface);

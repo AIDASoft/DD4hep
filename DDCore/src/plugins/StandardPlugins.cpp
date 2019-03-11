@@ -36,7 +36,7 @@
 #include "TSystem.h"
 #include "TClass.h"
 #include "TRint.h"
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 #include "TGDMLMatrix.h"
 #endif
 
@@ -275,7 +275,7 @@ DECLARE_APPLY(DD4hep_InteractiveUI,root_ui)
 static long root_dump_gdml_tables(Detector& description, int /* argc */, char** /* argv */) {
   size_t num_tables = 0;
   size_t num_elements = 0;
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   const TObjArray* c = description.manager().GetListOfGDMLMatrices();
   TObjArrayIter arr(c);
   printout(INFO,"Dump_GDMLTables","+++ Dumping known GDML tables from TGeoManager.");
@@ -307,7 +307,7 @@ DECLARE_APPLY(DD4hep_Dump_GDMLTables,root_dump_gdml_tables)
 static long root_dump_optical_surfaces(Detector& description, int /* argc */, char** /* argv */) {
   size_t num_surfaces = 0;
   printout(ALWAYS,"","");
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   const TObjArray* c = description.manager().GetListOfOpticalSurfaces();
   TObjArrayIter arr(c);
   printout(ALWAYS,"Dump_OpticalSurfaces","+++ Dumping known Optical Surfaces from TGeoManager.");
@@ -337,7 +337,7 @@ DECLARE_APPLY(DD4hep_Dump_OpticalSurfaces,root_dump_optical_surfaces)
 static long root_dump_skin_surfaces(Detector& description, int /* argc */, char** /* argv */) {
   size_t num_surfaces = 0;
   printout(ALWAYS,"","");
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   const TObjArray* c = description.manager().GetListOfSkinSurfaces();
   TObjArrayIter arr(c);
   printout(ALWAYS,"Dump_SkinSurfaces","+++ Dumping known Skin Surfaces from TGeoManager.");
@@ -367,7 +367,7 @@ DECLARE_APPLY(DD4hep_Dump_SkinSurfaces,root_dump_skin_surfaces)
 static long root_dump_border_surfaces(Detector& description, int /* argc */, char** /* argv */) {
   size_t num_surfaces = 0;
   printout(ALWAYS,"","");
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   const TObjArray* c = description.manager().GetListOfBorderSurfaces();
   TObjArrayIter arr(c);
   printout(ALWAYS,"Dump_BorderSurfaces","+++ Dumping known Border Surfaces from TGeoManager.");
@@ -517,7 +517,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
       ::printf("  %-6s Fraction: %7.3f Z=%3d A=%6.2f N=%3d Neff=%6.2f\n",
                elt->GetName(), frac, elt->Z(), elt->A(), elt->N(), elt->Neff());
     }
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     virtual void printProperty(elt_h, TNamed* prop, TGDMLMatrix* matrix)   {
       if ( matrix )
         ::printf("  Property: %-20s [%ld x %ld] --> %s\n",
@@ -534,7 +534,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
         TGeoElement* elt = mat->GetElement(i);
         print(mh, elt, mix ? mix[i] : 1);
       }
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       TListIter mat_iter(&mat->GetProperties());
       for(TObject* i = mat_iter.Next(); i; i=mat_iter.Next())   {
         printProperty(mh, (TNamed*)i, description.manager().GetGDMLMatrix(i->GetTitle()));
@@ -566,7 +566,7 @@ static long root_materials(Detector& description, int argc, char** argv) {
       elt.setAttr(_U(n),frac);
       elt.setAttr(_U(ref),element->GetName());
     }
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     virtual void printProperty(elt_h mat, TNamed* prop, TGDMLMatrix* /* matrix */)   {
       elt_h elt = mat.addChild(_U(property));
       elt.setAttr(_U(name),prop->GetName());

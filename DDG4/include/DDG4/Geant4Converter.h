@@ -68,7 +68,7 @@ namespace dd4hep {
       /// Create geometry conversion
       Geant4Converter& create(DetElement top);
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       /// Convert the geometry type material into the corresponding Geant4 object(s).
       virtual void* handleMaterialProperties(TObject* matrix) const;
 
