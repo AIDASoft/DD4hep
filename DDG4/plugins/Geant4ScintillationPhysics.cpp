@@ -79,7 +79,9 @@ namespace dd4hep {
         G4Scintillation* process = new G4Scintillation(name());
         process->SetVerboseLevel(m_verbosity);
         process->SetFiniteRiseTime(m_finiteRiseTime);
+#if G4VERSION_NUMBER>1030
         process->SetStackPhotons(m_stackPhotons);
+#endif
         process->SetTrackSecondariesFirst(m_trackSecondariesFirst);
         process->SetScintillationYieldFactor(m_scintillationYieldFactor);
         process->SetScintillationExcitationRatio(m_scintillationExcitationRatio);
