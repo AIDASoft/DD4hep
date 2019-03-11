@@ -27,7 +27,7 @@
 using namespace std;
 using namespace dd4hep;
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 
 DD4HEP_INSTANTIATE_HANDLE(TGeoSkinSurface);
 DD4HEP_INSTANTIATE_HANDLE(TGeoBorderSurface);

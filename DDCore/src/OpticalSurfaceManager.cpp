@@ -30,7 +30,7 @@ OpticalSurfaceManager OpticalSurfaceManager::getOpticalSurfaceManager(Detector& 
   return description.surfaceManager();
 }
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 
 /// Access skin surface by its identifier
 SkinSurface  OpticalSurfaceManager::skinSurface(DetElement de, const string& nam)  const   {

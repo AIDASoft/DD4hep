@@ -46,7 +46,7 @@ namespace dd4hep {
 
       /// Reference to the main detector description object
       Detector& detector;
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,16,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       std::map<LocalKey,    SkinSurface>    skinSurfaces;
       std::map<LocalKey,    BorderSurface>  borderSurfaces;
       std::map<std::string, OpticalSurface> opticalSurfaces;
