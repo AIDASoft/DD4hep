@@ -71,9 +71,10 @@ namespace dd4hep {
       virtual void constructProcesses(G4VUserPhysicsList* physics_list)   { 
         this->Geant4PhysicsList::constructProcesses(physics_list);
         info("+++ Constructing: maxNumPhotonsPerStep:%d maxBeta:%f "
-             "track secondaries:%s stack photons:%s",
+             "track secondaries:%s stack photons:%s track secondaries:%s",
              m_maxNumPhotonsPerStep, m_maxBetaChangePerStep,
-             yes_no(m_trackSecondariesFirst), yes_no(m_stackPhotons));
+             yes_no(m_trackSecondariesFirst), yes_no(m_stackPhotons),
+             yes_no(m_trackSecondariesFirst));
         G4Cerenkov* process = new G4Cerenkov(name());
         process->SetVerboseLevel(m_verbosity);
         process->SetMaxNumPhotonsPerStep(m_maxNumPhotonsPerStep);

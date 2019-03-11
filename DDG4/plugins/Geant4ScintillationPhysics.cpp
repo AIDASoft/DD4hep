@@ -73,9 +73,11 @@ namespace dd4hep {
       /// Callback to construct processes (uses the G4 particle table)
       virtual void constructProcesses(G4VUserPhysicsList* physics_list)   { 
         this->Geant4PhysicsList::constructProcesses(physics_list);
-        info("+++ Constructing: yield:%f excitation:%f rise-time:%s stack photons:%s",
+        info("+++ Constructing: yield:%f excitation:%f finite rise-time:%s "
+             "stack photons:%s track secondaries:%s",
              m_scintillationYieldFactor, m_scintillationExcitationRatio,
-             yes_no(m_finiteRiseTime), yes_no(m_stackPhotons));
+             yes_no(m_finiteRiseTime), yes_no(m_stackPhotons),
+             yes_no(m_trackSecondariesFirst));
         G4Scintillation* process = new G4Scintillation(name());
         process->SetVerboseLevel(m_verbosity);
         process->SetFiniteRiseTime(m_finiteRiseTime);
