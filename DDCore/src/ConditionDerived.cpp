@@ -102,7 +102,7 @@ size_t ConditionUpdateContext::registerMany(const IOV& iov_val, const std::vecto
 }
 
 /// Standard destructor
-ConditionUpdateCall::ConditionUpdateCall() : m_refCount(1)  {
+ConditionUpdateCall::ConditionUpdateCall()  {
   InstanceCount::increment(this);
 }
 
@@ -133,9 +133,8 @@ void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const
 
 /// Initializing constructor
 ConditionDependency::ConditionDependency(Condition::key_type  key,
-                                         ConditionUpdateCall* call)
-  : m_refCount(0),
-    target(key), callback(call)
+                                         std::shared_ptr<ConditionUpdateCall> call)
+  : m_refCount(0), target(key), callback(std::move(call))
 {
   InstanceCount::increment(this);
 }
@@ -143,12 +142,12 @@ ConditionDependency::ConditionDependency(Condition::key_type  key,
 /// Initializing constructor
 ConditionDependency::ConditionDependency(DetElement              de,
                                          Condition::itemkey_type item_key,
-                                         ConditionUpdateCall*    call)
-  : m_refCount(0),
+                                         std::shared_ptr<ConditionUpdateCall> call)
+  : m_refCount(0), 
 #ifdef DD4HEP_CONDITIONS_DEBUG
-    detector(de),
+  detector(de),
 #endif
-    target(de, item_key), callback(call)
+  target(de, item_key), callback(std::move(call))
 {
   InstanceCount::increment(this);
 }
@@ -156,15 +155,18 @@ ConditionDependency::ConditionDependency(DetElement              de,
 /// Initializing constructor
 ConditionDependency::ConditionDependency(DetElement de,
                                          const std::string&   item, 
-                                         ConditionUpdateCall* call)
-  : m_refCount(0), /*detector(de),*/ target(de, item), callback(call)
+                                         std::shared_ptr<ConditionUpdateCall> call)
+  : 
+#ifdef DD4HEP_CONDITIONS_DEBUG
+  detector(de),
+#endif
+  target(de, item), callback(std::move(call))
 {
   InstanceCount::increment(this);
 }
 
 /// Default constructor
 ConditionDependency::ConditionDependency()
-  : m_refCount(0), target(0), callback(0)
 {
   InstanceCount::increment(this);
 }
@@ -172,28 +174,26 @@ ConditionDependency::ConditionDependency()
 /// Default destructor
 ConditionDependency::~ConditionDependency()  {
   InstanceCount::decrement(this);
-  detail::releasePtr(callback);
 }
 
 /// Initializing constructor
 DependencyBuilder::DependencyBuilder(DetElement           de,
                                      unsigned int         item_key,
-                                     ConditionUpdateCall* call)
-  : m_dependency(new ConditionDependency(de,item_key,call))
+                                     std::shared_ptr<ConditionUpdateCall> call)
+  : m_dependency(new ConditionDependency(de,item_key,std::move(call)))
 {
 }
 
 /// Initializing constructor
 DependencyBuilder::DependencyBuilder(DetElement           de,
                                      const std::string&   item,
-                                     ConditionUpdateCall* call)
-  : m_dependency(new ConditionDependency(de,item,call))
+                                     std::shared_ptr<ConditionUpdateCall> call)
+  : m_dependency(new ConditionDependency(de,item,std::move(call)))
 {
 }
 
 /// Default destructor
 DependencyBuilder::~DependencyBuilder()   {
-  detail::releasePtr(m_dependency);
 }
 
 /// Add a new dependency
@@ -208,11 +208,9 @@ void DependencyBuilder::add(const ConditionKey& source)   {
 /// Release the created dependency and take ownership.
 ConditionDependency* DependencyBuilder::release()   {
   if ( m_dependency )   {
-    ConditionDependency* tmp = m_dependency;
-    m_dependency = 0;
-    return tmp;
+    return m_dependency.release();
   }
   except("Dependency","++ Invalid object. Cannot access built objects!");
-  return m_dependency; // Not necessary, but need to satisfy compiler
+  return m_dependency.release(); // Not necessary, but need to satisfy compiler
 }
 

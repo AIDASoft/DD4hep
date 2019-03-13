@@ -49,7 +49,7 @@ namespace dd4hep {
       }
 
       /// Default destructor
-      virtual ~Geant4AssemblyVolume() {
+      ~Geant4AssemblyVolume()   {
       }
 
       //std::vector<G4AssemblyTriplet>& triplets()  { return fTriplets; }

@@ -18,6 +18,9 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 
+// C/C++ include files
+#include <memory>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -275,8 +278,6 @@ namespace dd4hep {
      */
     class ConditionUpdateCall  {
     protected:
-      /// Reference count
-      int  m_refCount;
       /// Standard destructor
       ConditionUpdateCall();
       /// No copy constructor
@@ -287,16 +288,6 @@ namespace dd4hep {
       ConditionUpdateCall& operator=(const ConditionUpdateCall& copy) = delete;
 
     public:
-      /// Add use count to the object
-      ConditionUpdateCall* addRef()   {
-        ++m_refCount;
-        return this;
-      }
-      /// Release object. May not be used any longer
-      void release()  {
-        if ( --m_refCount <= 0 )
-          delete this;
-      }
       /// Interface to client callback in order to update/create the condition
       virtual Condition operator()(const ConditionKey& target,
                                    ConditionUpdateContext& ctxt) = 0;
@@ -308,25 +299,33 @@ namespace dd4hep {
     /**
      *  Used by clients to update a condition.
      *
+     *  Note:
+     *  We later in DDCond have to do many many set intersections of references to these
+     *  objects. For this reason we do not want to use std::shared_ptr<ConditionDependency>.
+     *  For this reason we implement here a simple ref'counting mechanism, which later
+     *  allows us to use bare pointers.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionDependency    {
+      friend std::default_delete<ConditionDependency>;
     protected:
       /// Reference count
-      int                                m_refCount;
+      int                                  m_refCount {0};
+
     public:
 #ifdef DD4HEP_CONDITIONS_DEBUG
       /// Reference to the target's detector element
-      DetElement                         detector;
+      DetElement                           detector;
 #endif
       /// Key to the condition to be updated
-      ConditionKey                       target;
+      ConditionKey                         target {0};
       /// Dependency keys this condition depends on
-      std::vector<ConditionKey>          dependencies;
+      std::vector<ConditionKey>            dependencies;
       /// Reference to the update callback. No auto pointer. callback may be shared
-      ConditionUpdateCall*               callback;
+      std::shared_ptr<ConditionUpdateCall> callback;
 
     protected:
       /// Copy constructor
@@ -338,11 +337,11 @@ namespace dd4hep {
 
     public:
       /// Initializing constructor used by builder
-      ConditionDependency(Condition::key_type key, ConditionUpdateCall* call);
+      ConditionDependency(Condition::key_type key, std::shared_ptr<ConditionUpdateCall> call);
       /// Initializing constructor used by builder
-      ConditionDependency(DetElement de, const std::string& item, ConditionUpdateCall* call);
+      ConditionDependency(DetElement de, const std::string& item, std::shared_ptr<ConditionUpdateCall> call);
       /// Initializing constructor used by builder
-      ConditionDependency(DetElement de, Condition::itemkey_type item_key, ConditionUpdateCall* call);
+      ConditionDependency(DetElement de, Condition::itemkey_type item_key, std::shared_ptr<ConditionUpdateCall> call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
@@ -366,16 +365,16 @@ namespace dd4hep {
     class DependencyBuilder  {
     protected:
       /// The created dependency
-      ConditionDependency* m_dependency;
+      std::unique_ptr<ConditionDependency> m_dependency;
     public:
       /// Initializing constructor
-      DependencyBuilder(DetElement de, Condition::itemkey_type item_key, ConditionUpdateCall* call);
+      DependencyBuilder(DetElement de, Condition::itemkey_type item_key, std::shared_ptr<ConditionUpdateCall> call);
       /// Initializing constructor
-      DependencyBuilder(DetElement de, const std::string& item, ConditionUpdateCall* call);
+      DependencyBuilder(DetElement de, const std::string& item, std::shared_ptr<ConditionUpdateCall> call);
       /// Default destructor
       virtual ~DependencyBuilder();
       /// Access underlying object directly
-      ConditionDependency* operator->()  {   return m_dependency; }
+      ConditionDependency* operator->()  {   return m_dependency.operator->(); }
       /// Add a new dependency
       void add(const ConditionKey& source_key);
       /// Release the created dependency and take ownership.

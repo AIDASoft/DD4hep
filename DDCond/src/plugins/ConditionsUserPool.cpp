@@ -491,11 +491,11 @@ namespace {
     typedef pair<const Condition::key_type,ConditionsLoadInfo* >     Info;
     typedef pair<const Condition::key_type,Condition>                Cond2;
     
-    bool operator()(const Dep& a,const Cond& b) const { return a.first < b.first; }
-    bool operator()(const Cond& a,const Dep& b) const { return a.first < b.first; }
+    bool operator()(const Dep& a,const Cond& b) const   { return a.first < b.first; }
+    bool operator()(const Cond& a,const Dep& b) const   { return a.first < b.first; }
 
-    bool operator()(const Info& a,const Cond& b) const { return a.first < b.first; }
-    bool operator()(const Cond& a,const Info& b) const { return a.first < b.first; }
+    bool operator()(const Info& a,const Cond& b) const  { return a.first < b.first; }
+    bool operator()(const Cond& a,const Info& b) const  { return a.first < b.first; }
 
     bool operator()(const Info& a,const Cond2& b) const { return a.first < b.first; }
     bool operator()(const Cond2& a,const Info& b) const { return a.first < b.first; }

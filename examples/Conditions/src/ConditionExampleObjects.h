@@ -148,7 +148,7 @@ namespace dd4hep {
       /// Content object to be filled
       ConditionsContent&   content;
       /// Three different update call types
-      ConditionUpdateCall *call1, *call2, *call3;
+      std::shared_ptr<ConditionUpdateCall> call1, call2, call3;
       /// Constructor
       ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p);
       /// Destructor

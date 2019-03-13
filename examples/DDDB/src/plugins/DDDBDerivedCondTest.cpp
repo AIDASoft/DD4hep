@@ -283,9 +283,9 @@ namespace  {
                 ConditionKey target1(de,cond->name+"/derived_1");
                 ConditionKey target2(de,cond->name+"/derived_2");
                 ConditionKey target3(de,cond->name+"/derived_3");
-                DependencyBuilder build_1(de, cond->name+"/derived_1", new ConditionUpdate1(m_context));
-                DependencyBuilder build_2(de, cond->name+"/derived_2", new ConditionUpdate2(m_context));
-                DependencyBuilder build_3(de, cond->name+"/derived_3", new ConditionUpdate3(m_context));
+                DependencyBuilder build_1(de, cond->name+"/derived_1", make_shared<ConditionUpdate1>(m_context));
+                DependencyBuilder build_2(de, cond->name+"/derived_2", make_shared<ConditionUpdate2>(m_context));
+                DependencyBuilder build_3(de, cond->name+"/derived_3", make_shared<ConditionUpdate3>(m_context));
                 build_1.add(key);
 
                 build_2.add(key);

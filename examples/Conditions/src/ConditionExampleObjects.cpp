@@ -114,16 +114,13 @@ void ConditionUpdate3::resolve(Condition target, ConditionUpdateContext& context
 ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p)
   : OutputLevel(p), content(c)
 {
-  call1 = new ConditionUpdate1(printLevel);
-  call2 = new ConditionUpdate2(printLevel);
-  call3 = new ConditionUpdate3(printLevel);
+  call1 = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate1(printLevel));
+  call2 = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate2(printLevel));
+  call3 = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate3(printLevel));
 }
 
 /// Destructor
 ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
-  detail::releasePtr(call1);
-  detail::releasePtr(call2);
-  detail::releasePtr(call3);
 }
 
 /// Callback to process a single detector element
@@ -132,12 +129,12 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   ConditionKey      target1(de,"derived_data/derived_1");
   ConditionKey      target2(de,"derived_data/derived_2");
   ConditionKey      target3(de,"derived_data/derived_3");
-  DependencyBuilder build_1(de, target1.item_key(), call1->addRef());
-  DependencyBuilder build_2(de, target2.item_key(), call2->addRef());
-  DependencyBuilder build_3(de, target3.item_key(), call3->addRef());
-  //DependencyBuilder build_1(de, "derived_data/derived_1", call1->addRef());
-  //DependencyBuilder build_2(de, "derived_data/derived_2", call2->addRef());
-  //DependencyBuilder build_3(de, "derived_data/derived_3", call3->addRef());
+  DependencyBuilder build_1(de, target1.item_key(), call1);
+  DependencyBuilder build_2(de, target2.item_key(), call2);
+  DependencyBuilder build_3(de, target3.item_key(), call3);
+  //DependencyBuilder build_1(de, "derived_data/derived_1", call1);
+  //DependencyBuilder build_2(de, "derived_data/derived_2", call2);
+  //DependencyBuilder build_3(de, "derived_data/derived_3", call3);
 
   // Compute the derived stuff
   build_1.add(key);
