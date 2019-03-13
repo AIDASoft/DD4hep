@@ -197,7 +197,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
 
       // Register the physical volume created by us so we can delete it later
       //
-      fPVStore.push_back( pvPlaced.first );
+      //fPVStore.push_back( pvPlaced.first );
       info.g4VolumeImprints[vol].push_back(make_pair(new_chain,pvPlaced.first));
 #if 0
       cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()

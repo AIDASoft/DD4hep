@@ -154,7 +154,7 @@ namespace dd4hep {
       addDependency(ConditionDependency* dep);
       /// Add a new conditions dependency (Built internally from arguments)
       std::pair<Condition::key_type, ConditionDependency*>
-      addDependency(DetElement de, Condition::itemkey_type item, ConditionUpdateCall* callback);
+      addDependency(DetElement de, Condition::itemkey_type item, std::shared_ptr<ConditionUpdateCall> callback);
     };
 
     template <> inline

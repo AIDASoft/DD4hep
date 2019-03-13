@@ -116,12 +116,12 @@ namespace {
         dd4hep::DetectorScanner(dd4hep::detElementsCollector(elts), m_de);    
         dd4hep::cond::DependencyBuilder align_builder(m_detDesc.world(),
                                                       Keys::alignmentsComputedKey,
-                                                      new DeAlignmentCall(m_de));
+                                                      make_shared<DeAlignmentCall>(m_de));
         auto* dep = align_builder.release();
         dep->target.hash = Keys::alignmentsComputedKey;
         m_content->addDependency(dep);
 
-        std::unique_ptr<DeVeloStaticConditionCall> static_update(new DeVeloStaticConditionCall());
+        auto static_update = make_shared<DeVeloStaticConditionCall>();
         for(const auto& e : elts)   {
           dd4hep::DetElement de = e.first;
           dd4hep::DDDB::DDDBCatalog* cat = de.extension<dd4hep::DDDB::DDDBCatalog>();
@@ -142,16 +142,15 @@ namespace {
               m_content->addDependency((*first).second);
           }
 
-          dd4hep::cond::DependencyBuilder static_builder(de, Keys::staticKey, static_update->addRef());
+          dd4hep::cond::DependencyBuilder static_builder(de, Keys::staticKey, static_update);
           m_content->addDependency(static_builder.release());
 
-          dd4hep::cond::ConditionUpdateCall* call = (e.first == m_de)
-            ? new DeVeloConditionCall(de, cat, m_context.get())
-            : new DeVeloIOVConditionCall(de, cat, m_context.get());
+          shared_ptr<dd4hep::cond::ConditionUpdateCall> call = (e.first == m_de)
+            ? make_shared<DeVeloConditionCall>(de, cat, m_context.get())
+            : make_shared<DeVeloIOVConditionCall>(de, cat, m_context.get());
           dd4hep::cond::DependencyBuilder iov_builder(de, Keys::deKey, call);
           m_content->addDependency(iov_builder.release());
         }
-        static_update.release()->release();
         m_manager.clear();
       }
 
