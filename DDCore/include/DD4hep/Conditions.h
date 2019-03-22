@@ -137,6 +137,8 @@ namespace dd4hep {
 
     /// Default constructor
     Condition() = default;
+    /// Move constructor
+    Condition(Condition&& c) = default;
     /// Copy constructor
     Condition(const Condition& c) = default;
     /// Initializing constructor
@@ -149,7 +151,9 @@ namespace dd4hep {
     Condition(const std::string& name, const std::string& type);
     /// Initializing constructor for a pure, undecorated conditions object with payload buffer
     Condition(const std::string& name, const std::string& type, size_t memory);
-    /// Assignment operator
+    /// Assignment move operator
+    Condition& operator=(Condition&& c) = default;
+    /// Assignment copy operator
     Condition& operator=(const Condition& c) = default;
 
     /// Output method

@@ -44,15 +44,21 @@ namespace dd4hep {
     Segmentation(const std::string& type, const std::string& name, const BitFieldCoder* decoder);
     /// Default constructor
     Segmentation() = default;
-    /// Copy Constructor from object
+    /// Move Constructor
+    Segmentation(Segmentation&& e) = default;
+    /// Copy Constructor
     Segmentation(const Segmentation& e) = default;
 #ifndef __CINT__
+    /// Move Constructor from handle
+    Segmentation(Handle<Object>&& e) : Handle<Object>(e) { }
     /// Copy Constructor from handle
     Segmentation(const Handle<Object>& e) : Handle<Object>(e) { }
 #endif
     /// Constructor to be used when reading the already parsed object
     template <typename Q> Segmentation(const Handle<Q>& e) : Handle<Object>(e) { }
-    /// Assignment operator
+    /// Move Assignment operator
+    Segmentation& operator=(Segmentation&& seg) = default;
+    /// Copy Assignment operator
     Segmentation& operator=(const Segmentation& seg) = default;
     /// Access flag for hit positioning
     bool useForHitPosition() const;

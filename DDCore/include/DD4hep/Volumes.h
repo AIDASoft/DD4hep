@@ -111,13 +111,21 @@ namespace dd4hep {
     VolIDs volIDs;
     /// Default constructor
     PlacedVolumeExtension();
+    /// Default move
+    PlacedVolumeExtension(PlacedVolumeExtension&& copy);
     /// Copy constructor
     PlacedVolumeExtension(const PlacedVolumeExtension& c);
     /// Default destructor
     virtual ~PlacedVolumeExtension();
+    /// No move assignment
+    PlacedVolumeExtension& operator=(PlacedVolumeExtension&& copy)  {
+      magic  = std::move(copy.magic);
+      volIDs = std::move(copy.volIDs);
+      return *this;
+    }
     /// Assignment operator
     PlacedVolumeExtension& operator=(const PlacedVolumeExtension& c) {
-      magic = c.magic;
+      magic  = c.magic;
       volIDs = c.volIDs;
       return *this;
     }
@@ -163,6 +171,8 @@ namespace dd4hep {
 
     /// Default constructor
     PlacedVolume() = default;
+    /// Move constructor
+    PlacedVolume(PlacedVolume&& e) = default;
     /// Copy assignment
     PlacedVolume(const PlacedVolume& e) = default;
     /// Copy assignment from other handle type
@@ -170,11 +180,14 @@ namespace dd4hep {
     /// Constructor taking implementation object pointer
     PlacedVolume(const TGeoNode* e) : Handle<TGeoNode>(e) {  }
     /// Assignment operator (must match copy constructor)
+    PlacedVolume& operator=(PlacedVolume&& v)  = default;
+    /// Assignment operator (must match copy constructor)
     PlacedVolume& operator=(const PlacedVolume& v)  = default;
+
     /// Check if placement is properly instrumented
     Object* data() const;
-    /// Add identifier
-    PlacedVolume& addPhysVolID(const std::string& name, int value);
+    /// Access the copy number of this placement within its mother
+    int copyNumber() const;
     /// Volume material
     Material material() const;
     /// Logical volume of this placement
@@ -187,6 +200,8 @@ namespace dd4hep {
     Position position()  const;
     /// Access to the volume IDs
     const PlacedVolumeExtension::VolIDs& volIDs() const;
+    /// Add identifier
+    PlacedVolume& addPhysVolID(const std::string& name, int value);
     /// String dump
     std::string toString() const;
   };
@@ -221,10 +236,18 @@ namespace dd4hep {
     /// Reference to the sensitive detector
     Handle<NamedObject> sens_det;
     
-    /// Default constructor
-    VolumeExtension();
     /// Default destructor
     virtual ~VolumeExtension();
+    /// Default constructor
+    VolumeExtension();
+    /// No move
+    VolumeExtension(VolumeExtension&& copy) = delete;
+    /// No copy
+    VolumeExtension(const VolumeExtension& copy) = delete;
+    /// No move assignment
+    VolumeExtension& operator=(VolumeExtension&& copy) = delete;
+    /// No copy assignment
+    VolumeExtension& operator=(const VolumeExtension& copy) = delete;
     /// Copy the object
     void copy(const VolumeExtension& c) {
       magic      = c.magic;
@@ -277,6 +300,8 @@ namespace dd4hep {
   public:
     /// Default constructor
     Volume() = default;
+    /// Move from handle
+    Volume(Volume&& v) = default;
     /// Copy from handle
     Volume(const Volume& v) = default;
     /// Copy from handle
@@ -286,10 +311,17 @@ namespace dd4hep {
 
     /// Constructor to be used when creating a new geometry tree.
     Volume(const std::string& name);
+    /// Constructor to be used when creating a new geometry tree. Sets also title
+    Volume(const std::string& name, const std::string& title);
 
     /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
     Volume(const std::string& name, const Solid& s, const Material& m);
 
+    /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
+    Volume(const std::string& name, const std::string& title, const Solid& s, const Material& m);
+
+    /// Assignment operator (must match move constructor)
+    Volume& operator=(Volume&& a)  = default;
     /// Assignment operator (must match copy constructor)
     Volume& operator=(const Volume& a)  = default;
 
@@ -359,6 +391,11 @@ namespace dd4hep {
     /// Test the user flag bit
     bool testFlagBit(unsigned int bit)   const;
     
+    /// Set the volume's option value
+    void setOption(const std::string& opt) const;
+    /// Access the volume's option value
+    std::string option() const;
+
     /// Attach attributes to the volume
     const Volume& setAttributes(const Detector& description, const std::string& region, const std::string& limits,
                                 const std::string& vis) const;
