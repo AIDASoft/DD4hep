@@ -12,6 +12,18 @@
 //==========================================================================
 
 // Framework include files
+#ifdef DD4HEP_USE_TINYXML
+#include "XML/tinyxml.h"
+#else
+#include <xercesc/util/Xerces_autoconf_config.hpp>
+#include "xercesc/util/XMLString.hpp"
+#include "xercesc/dom/DOMElement.hpp"
+#include "xercesc/dom/DOMDocument.hpp"
+#include "xercesc/dom/DOMNodeList.hpp"
+#include "xercesc/dom/DOM.hpp"
+#include "XML/config.h"
+#endif
+
 #include "XML/Evaluator.h"
 #include "XML/XMLElements.h"
 #include "XML/Printout.h"
@@ -53,7 +65,6 @@ namespace {
 #define _XE(x)  Xml(x).xe
 
 #ifdef DD4HEP_USE_TINYXML
-#include "XML/tinyxml.h"
 #define ELEMENT_NODE_TYPE TiXmlNode::ELEMENT
 #define getTagName          Value
 #define getTextContent      GetText
@@ -108,11 +119,6 @@ size_t dd4hep::xml::XmlString::length(const char* p)  {
 }
 
 #else
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/dom/DOMElement.hpp"
-#include "xercesc/dom/DOMDocument.hpp"
-#include "xercesc/dom/DOMNodeList.hpp"
-#include "xercesc/dom/DOM.hpp"
 #define ELEMENT_NODE_TYPE xercesc::DOMNode::ELEMENT_NODE
 
 /// Union to ease castless object access when using XercesC
