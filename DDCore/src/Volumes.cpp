@@ -354,6 +354,12 @@ PlacedVolumeExtension::PlacedVolumeExtension()
   INCREMENT_COUNTER;
 }
 
+/// Default move
+PlacedVolumeExtension::PlacedVolumeExtension(PlacedVolumeExtension&& c)
+  : TGeoExtension(c), magic(move(c.magic)), refCount(0), volIDs(move(c.volIDs)) {
+  INCREMENT_COUNTER;
+}
+
 /// Copy constructor
 PlacedVolumeExtension::PlacedVolumeExtension(const PlacedVolumeExtension& c)
   : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs) {
@@ -428,11 +434,9 @@ PlacedVolume::Object* PlacedVolume::data() const   {
   return o;
 }
 
-/// Add identifier
-PlacedVolume& PlacedVolume::addPhysVolID(const string& nam, int value) {
-  Object* obj = _data(*this);
-  obj->volIDs.push_back(make_pair(nam, value));
-  return *this;
+/// Access the copy number of this placement within its mother
+int PlacedVolume::copyNumber() const   {
+  return m_element ? m_element->GetNumber() : -1;
 }
 
 /// Volume material
@@ -453,6 +457,13 @@ Volume PlacedVolume::motherVol() const {
 /// Access to the volume IDs
 const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
   return _data(*this)->volIDs;
+}
+
+/// Add identifier
+PlacedVolume& PlacedVolume::addPhysVolID(const string& nam, int value) {
+  Object* obj = _data(*this);
+  obj->volIDs.push_back(make_pair(nam, value));
+  return *this;
 }
 
 /// Translation vector within parent volume
@@ -546,9 +557,21 @@ Volume::Volume(const string& nam) {
   m_element = _createTGeoVolume(nam,0,0);
 }
 
+/// Constructor to be used when creating a new geometry tree.
+Volume::Volume(const string& nam, const string& title) {
+  m_element = _createTGeoVolume(nam,0,0);
+  m_element->SetTitle(title.c_str());
+}
+
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
 Volume::Volume(const string& nam, const Solid& s, const Material& m) {
   m_element = _createTGeoVolume(nam,s.ptr(),m.ptr());
+}
+
+/// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
+Volume::Volume(const string& nam, const string& title, const Solid& s, const Material& m) {
+  m_element = _createTGeoVolume(nam,s.ptr(),m.ptr());
+  m_element->SetTitle(title.c_str());
 }
 
 /// Check if placement is properly instrumented
@@ -718,6 +741,16 @@ void Volume::paramVolume1D(const Transform3D& start,
     _addNode(m_element, entity, detail::matrix::_transform(transformation));
     transformation *= trafo;
   }
+}
+
+/// Set the volume's option value
+void Volume::setOption(const string& opt) const {
+  m_element->SetOption(opt.c_str());
+}
+
+/// Access the volume's option value
+string Volume::option() const {
+  return m_element->GetOption();
 }
 
 /// Set the volume's material

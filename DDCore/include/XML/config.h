@@ -25,13 +25,14 @@
 
 // C/C++ include files
 #include <cstdlib>
+#include <cstdint>
 
 #ifndef  __TIXML__
 // This is the absolute minimal include necessary to comply with XercesC
 // Not includuing this file leads to clashes in XmlChar aka XMLCh in XercesC.
 //
 // We do not load here many dependencies. This simply sets up primitive types.
-#include <xercesc/util/Xerces_autoconf_config.hpp>
+//#include <xercesc/util/Xerces_autoconf_config.hpp>
 #endif
 
 /// Namespace for the AIDA detector description toolkit
@@ -48,7 +49,7 @@ namespace dd4hep {
 #ifdef  __TIXML__
     typedef char XmlChar;
 #else
-    typedef XERCES_XMLCH_T XmlChar;
+    typedef uint16_t /* XERCES_XMLCH_T */ XmlChar;
 #endif
   }
 }

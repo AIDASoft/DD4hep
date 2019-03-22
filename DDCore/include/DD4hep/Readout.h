@@ -41,9 +41,14 @@ namespace dd4hep {
     Readout() = default;
 
     /// Copy Constructor from object
+    Readout(Readout&& e) = default;
+
+    /// Copy Constructor from object
     Readout(const Readout& e) = default;
 
 #ifndef __CINT__
+    /// Move constructor from handle
+    Readout(Handle<ReadoutObject>&& e) : Handle<Object>(e) { }
     /// Copy Constructor from handle
     Readout(const Handle<ReadoutObject>& e) : Handle<Object>(e) { }
 #endif
@@ -53,6 +58,9 @@ namespace dd4hep {
 
     /// Initializing constructor
     Readout(const std::string& name);
+
+    /// Assignment move operator
+    Readout& operator=(Readout&& ro) = default;
 
     /// Assignment operator
     Readout& operator=(const Readout& ro) = default;

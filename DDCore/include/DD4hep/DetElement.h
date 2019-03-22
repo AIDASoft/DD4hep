@@ -51,9 +51,16 @@ namespace dd4hep {
     SensitiveDetector(Object* obj_pointer)
       : Handle<SensitiveDetectorObject>(obj_pointer) {      }
 
+    /// Move from named handle
+    SensitiveDetector(Handle<SensitiveDetectorObject>&& sd)
+      : Handle<SensitiveDetectorObject>(sd) {      }
+
     /// Copy from named handle
     SensitiveDetector(const Handle<SensitiveDetectorObject>& sd)
       : Handle<SensitiveDetectorObject>(sd) {      }
+
+    /// Move from handle
+    SensitiveDetector(SensitiveDetector&& sd) = default;
 
     /// Copy from handle
     SensitiveDetector(const SensitiveDetector& sd) = default;
@@ -65,7 +72,10 @@ namespace dd4hep {
     /// Constructor for a new sensitive detector element
     SensitiveDetector(const std::string& name, const std::string& type = "sensitive");
 
-    /// Assignment operator
+    /// Assignment move operator
+    SensitiveDetector& operator=(SensitiveDetector&& sd)  = default;
+
+    /// Assignment copy operator
     SensitiveDetector& operator=(const SensitiveDetector& sd)  = default;
 
     /// Access the type of the sensitive detector
@@ -253,6 +263,9 @@ namespace dd4hep {
     /// Default constructor
     DetElement() = default;
 
+    /// Constructor to move handle
+    DetElement(DetElement&& e) = default;
+
     /// Constructor to copy handle
     DetElement(const DetElement& e) = default;
 
@@ -281,6 +294,11 @@ namespace dd4hep {
     /// Constructor for a new subdetector element
     DetElement(DetElement parent, const std::string& name, int id);
 
+    /// Assignment move operator
+    DetElement& operator=(DetElement&& sd)  = default;
+    /// Assignment copy operator
+    DetElement& operator=(const DetElement& e) = default;
+
     /// Additional data accessor
     Object& _data() const {
       return object<Object>();
@@ -295,9 +313,6 @@ namespace dd4hep {
     bool operator ==(const DetElement e) const {
       return ptr() == e.ptr();
     }
-
-    /// Assignment operator
-    DetElement& operator=(const DetElement& e) = default;
 
     /// Clone (Deep copy) the DetElement structure
     DetElement clone(int flag) const;

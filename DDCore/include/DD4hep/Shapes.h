@@ -93,15 +93,21 @@ namespace dd4hep {
 
     /// Default constructor for uninitialized object
     Solid_type() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move constructor
+    Solid_type(Solid_type&& e) = default;
+    /// Copy constructor
     Solid_type(const Solid_type& e) = default;
     /// Direct assignment using the implementation pointer
     Solid_type(T* p) : Handle<T>(p) {  }
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor from handle
+    Solid_type(Handle<T>&& e) : Handle<T>(e) {  }
+    /// Copy Constructor from handle
     Solid_type(const Handle<T>& e) : Handle<T>(e) {  }
     /// Constructor to be used when passing an already created object: need to check pointers
     template <typename Q> Solid_type(const Handle<Q>& e) : Handle<T>(e) {  }
-    /// Assignment operator
+    /// Assignment move operator
+    Solid_type& operator=(Solid_type&& copy) = default;
+    /// Assignment copy operator
     Solid_type& operator=(const Solid_type& copy) = default;
 
     /// Access to shape name
@@ -121,6 +127,8 @@ namespace dd4hep {
     T* operator->() const {
       return this->m_element;
     }
+    /// Access the dimensions of the shape: inverse of the setDimensions member function
+    std::vector<double> dimensions();
     /// Conversion to string for pretty print
     std::string toString(int precision=2) const   {
       return toStringSolid(this->m_element,precision);
@@ -145,7 +153,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     ShapelessSolid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move constructor from handle
+    ShapelessSolid(ShapelessSolid&& e) = default;
+    /// Copy constructor from handle
     ShapelessSolid(const ShapelessSolid& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> ShapelessSolid(const Q* p) : Solid_type<TGeoShapeAssembly>(p) { }
@@ -153,7 +163,9 @@ namespace dd4hep {
     template <typename Q> ShapelessSolid(const Handle<Q>& e) : Solid_type<TGeoShapeAssembly>(e) { }
     /// Constructor to create an anonymous new shapeless solid
     ShapelessSolid(const std::string& name);
-    /// Assignment operator
+    /// Move Assignment operator
+    ShapelessSolid& operator=(ShapelessSolid&& copy) = default;
+    /// Copy Assignment operator
     ShapelessSolid& operator=(const ShapelessSolid& copy) = default;
   };
 
@@ -175,11 +187,13 @@ namespace dd4hep {
   public:
     /// Default constructor
     Box() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move constructor
+    Box(Box&& e) = default;
+    /// Copy constructor
     Box(const Box& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Box(const Q* p) : Solid_type<TGeoBBox>(p) { }
-    /// Constructor to be used with an existing object
+    /// Copy Constructor to be used with an existing object handle
     template <typename Q> Box(const Handle<Q>& e) : Solid_type<TGeoBBox>(e) { }
 
     /// Constructor to create an anonymous new box object (retrieves name from volume)
@@ -198,7 +212,9 @@ namespace dd4hep {
     Box(const std::string& name, const X& x_val, const Y& y_val, const Z& z_val)
     { make(name.c_str(), _toDouble(x_val), _toDouble(y_val), _toDouble(z_val));  }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Box& operator=(Box&& copy) = default;
+    /// Copy Assignment operator
     Box& operator=(const Box& copy) = default;
     /// Set the box dimensions
     Box& setDimensions(double x_val, double y_val, double z_val);
@@ -228,7 +244,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     HalfSpace() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    HalfSpace(HalfSpace&& e) = default;
+    /// Copy Constructor
     HalfSpace(const HalfSpace& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> HalfSpace(const Q* p) : Solid_type<Object>(p) { }
@@ -243,7 +261,9 @@ namespace dd4hep {
     HalfSpace(const std::string& nam, const double* const point, const double* const normal)
     { make(nam.c_str(), point, normal);    }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    HalfSpace& operator=(HalfSpace&& copy) = default;
+    /// Copy Assignment operator
     HalfSpace& operator=(const HalfSpace& copy) = default;
   };
 
@@ -269,7 +289,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Polycone() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move constructor
+    Polycone(Polycone&& e) = default;
+    /// Copy constructor
     Polycone(const Polycone& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Polycone(const Q* p) : Solid_type<Object>(p) {  }
@@ -294,8 +316,11 @@ namespace dd4hep {
     Polycone(const std::string& name, double startPhi, double deltaPhi,
              const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Polycone& operator=(Polycone&& copy) = default;
+    /// Copy Assignment operator
     Polycone& operator=(const Polycone& copy) = default;
+
     /// Add Z-planes to the Polycone
     void addZPlanes(const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
   };
@@ -316,7 +341,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     ConeSegment() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    ConeSegment(ConeSegment&& e) = default;
+    /// Copy Constructor
     ConeSegment(const ConeSegment& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> ConeSegment(const Q* p) : Solid_type<Object>(p) {  }
@@ -331,7 +358,9 @@ namespace dd4hep {
     ConeSegment(const std::string& name, double dz, double rmin1, double rmax1,
                 double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI);
 
-    /// Assignment operator
+    /// Move Assignment operator
+    ConeSegment& operator=(ConeSegment&& copy) = default;
+    /// Copy Assignment operator
     ConeSegment& operator=(const ConeSegment& copy) = default;
     /// Set the cone segment dimensions
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
@@ -368,7 +397,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Tube() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Tube(Tube&& e) = default;
+    /// Copy Constructor
     Tube(const Tube& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Tube(const Q* p) : Solid_type<Object>(p) {  }
@@ -399,7 +430,9 @@ namespace dd4hep {
     Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const ENDPHI& endPhi = 2.0*M_PI)
     {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi));   }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Tube& operator=(Tube&& copy) = default;
+    /// Copy Assignment operator
     Tube& operator=(const Tube& copy) = default;
     /// Set the tube dimensions
     Tube& setDimensions(double rmin, double rmax, double dz, double startPhi=0.0, double endPhi=2*M_PI);
@@ -424,7 +457,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     CutTube() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    CutTube(CutTube&& e) = default;
+    /// Copy Constructor
     CutTube(const CutTube& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> CutTube(const Q* p) : Solid_type<Object>(p) {  }
@@ -440,7 +475,9 @@ namespace dd4hep {
             double rmin, double rmax, double dz, double startPhi, double endPhi,
             double lx, double ly, double lz, double tx, double ty, double tz);
 
-    /// Assignment operator
+    /// Move Assignment operator
+    CutTube& operator=(CutTube&& copy) = default;
+    /// Copy Assignment operator
     CutTube& operator=(const CutTube& copy) = default;
   };
 
@@ -464,7 +501,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     TruncatedTube() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    TruncatedTube(TruncatedTube&& e) = default;
+    /// Copy Constructor
     TruncatedTube(const TruncatedTube& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> TruncatedTube(const Q* p) : Solid_type<Object>(p) {  }
@@ -480,7 +519,9 @@ namespace dd4hep {
                   double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                   double cutAtStart, double cutAtDelta, bool cutInside);
 
-    /// Assignment operator
+    /// Move Assignment operator
+    TruncatedTube& operator=(TruncatedTube&& copy) = default;
+    /// Copy Assignment operator
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
   };
   
@@ -504,7 +545,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     EllipticalTube() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    EllipticalTube(EllipticalTube&& e) = default;
+    /// Copy Constructor
     EllipticalTube(const EllipticalTube& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> EllipticalTube(const Q* p) : Solid_type<Object>(p) {   }
@@ -526,7 +569,9 @@ namespace dd4hep {
     EllipticalTube(const std::string& nam, const A& a, const B& b, const DZ& dz)
     {  make(nam, _toDouble(a), _toDouble(b), _toDouble(dz));   }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    EllipticalTube& operator=(EllipticalTube&& copy) = default;
+    /// Copy Assignment operator
     EllipticalTube& operator=(const EllipticalTube& copy) = default;
     /// Set the tube dimensions
     EllipticalTube& setDimensions(double a, double b, double dz);
@@ -548,7 +593,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Cone() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Cone(Cone&& e) = default;
+    /// Copy Constructor
     Cone(const Cone& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Cone(const Q* p) : Solid_type<Object>(p) { }
@@ -571,7 +618,9 @@ namespace dd4hep {
     Cone(const std::string& nam, const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
     {     make(nam, _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Cone& operator=(Cone&& copy) = default;
+    /// Copy Assignment operator
     Cone& operator=(const Cone& copy) = default;
     /// Set the box dimensions
     Cone& setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2);
@@ -593,7 +642,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Trap() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Trap(Trap&& e) = default;
+    /// Copy Constructor
     Trap(const Trap& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Trap(const Q* p) : Solid_type<Object>(p) { }
@@ -624,7 +675,9 @@ namespace dd4hep {
     Trap(const std::string& nam, PZ pz, PY py, PX px, PLTX pLTX)
     { make(nam, _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Trap& operator=(Trap&& copy) = default;
+    /// Copy Assignment operator
     Trap& operator=(const Trap& copy) = default;
     /// Set the trap dimensions
     Trap& setDimensions(double z, double theta, double phi,
@@ -648,7 +701,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     PseudoTrap() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    PseudoTrap(PseudoTrap&& e) = default;
+    /// Copy Constructor
     PseudoTrap(const PseudoTrap& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> PseudoTrap(const Q* p) : Solid_type<Object>(p) { }
@@ -666,7 +721,9 @@ namespace dd4hep {
                double radius, bool minusZ)
     {  make(nam, x1, x2, y1, y2, z, radius, minusZ);    }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    PseudoTrap& operator=(PseudoTrap&& copy) = default;
+    /// Copy Assignment operator
     PseudoTrap& operator=(const PseudoTrap& copy) = default;
   };
 
@@ -688,7 +745,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Trd1() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Trd1(Trd1&& e) = default;
+    /// Copy Constructor
     Trd1(const Trd1& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Trd1(const Q* p) : Solid_type<Object>(p) { }
@@ -711,7 +770,9 @@ namespace dd4hep {
     Trd1(const std::string& nam, X1 x1, X2 x2, Y y, Z z)
     { make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Trd1& operator=(Trd1&& copy) = default;
+    /// Copy Assignment operator
     Trd1& operator=(const Trd1& copy) = default;
     /// Set the Trd1 dimensions
     Trd1& setDimensions(double x1, double x2, double y, double z);
@@ -735,7 +796,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Trd2() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Trd2(Trd2&& e) = default;
+    /// Copy Constructor
     Trd2(const Trd2& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Trd2(const Q* p) : Solid_type<Object>(p) { }
@@ -758,7 +821,9 @@ namespace dd4hep {
     Trd2(const std::string& nam, X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
     { make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
 
-    /// Assignment operator
+    /// Copy Assignment operator
+    Trd2& operator=(Trd2&& copy) = default;
+    /// Move Assignment operator
     Trd2& operator=(const Trd2& copy) = default;
     /// Set the Trd2 dimensions
     Trd2& setDimensions(double x1, double x2, double y1, double y2, double z);
@@ -782,7 +847,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Torus() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Torus(Torus&& e) = default;
+    /// Copy Constructor
     Torus(const Torus& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Torus(const Q* p) : Solid_type<Object>(p) { }
@@ -805,7 +872,9 @@ namespace dd4hep {
     Torus(const std::string& nam, double r, double rmin, double rmax, double startPhi=M_PI, double deltaPhi = 2.*M_PI)
     {   make(nam, r, rmin, rmax, startPhi, deltaPhi);  }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Torus& operator=(Torus&& copy) = default;
+    /// Copy Assignment operator
     Torus& operator=(const Torus& copy) = default;
     /// Set the Torus dimensions
     Torus& setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi);
@@ -831,7 +900,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Sphere() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Sphere(Sphere&& e) = default;
+    /// Copy Constructor
     Sphere(const Sphere& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Sphere(const Q* p) : Solid_type<Object>(p) { }
@@ -876,7 +947,9 @@ namespace dd4hep {
            _toDouble(startPhi),   _toDouble(endPhi));
     }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Sphere& operator=(Sphere&& copy) = default;
+    /// Copy Assignment operator
     Sphere& operator=(const Sphere& copy) = default;
     /// Set the Sphere dimensions
     Sphere& setDimensions(double rmin,       double rmax,
@@ -900,7 +973,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Paraboloid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Paraboloid(Paraboloid&& e) = default;
+    /// Copy Constructor
     Paraboloid(const Paraboloid& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Paraboloid(const Q* p) : Solid_type<Object>(p) { }
@@ -923,7 +998,9 @@ namespace dd4hep {
     Paraboloid(const std::string& nam, R_LOW r_low, R_HIGH r_high, DELTA_Z delta_z)
     {  make(nam, _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Paraboloid& operator=(Paraboloid&& copy) = default;
+    /// Copy Assignment operator
     Paraboloid& operator=(const Paraboloid& copy) = default;
     /// Set the Paraboloid dimensions
     Paraboloid& setDimensions(double r_low, double r_high, double delta_z);
@@ -945,7 +1022,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Hyperboloid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Hyperboloid(Hyperboloid&& e) = default;
+    /// Copy Constructor
     Hyperboloid(const Hyperboloid& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Hyperboloid(const Q* p) : Solid_type<Object>(p) {  }
@@ -968,7 +1047,9 @@ namespace dd4hep {
     Hyperboloid(const std::string& nam, RIN rin, STIN stin, ROUT rout, STOUT stout, DZ dz)
     { make(nam, _toDouble(rin), _toDouble(stin), _toDouble(rout), _toDouble(stout), _toDouble(dz));  }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    Hyperboloid& operator=(Hyperboloid&& copy) = default;
+    /// Copy Assignment operator
     Hyperboloid& operator=(const Hyperboloid& copy) = default;
     /// Set the Hyperboloid dimensions
     Hyperboloid& setDimensions(double rin, double stin, double rout, double stout, double dz);
@@ -990,7 +1071,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     PolyhedraRegular() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    PolyhedraRegular(PolyhedraRegular&& e) = default;
+    /// Copy Constructor
     PolyhedraRegular(const PolyhedraRegular& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> PolyhedraRegular(const Q* p) : Solid_type<Object>(p) {  }
@@ -1016,7 +1099,9 @@ namespace dd4hep {
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
     PolyhedraRegular(const std::string& nam, int nsides, double rmin, double rmax, double zplanes[2])
     { make(nam, nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);  }
-    /// Assignment operator
+    /// Move Assignment operator
+    PolyhedraRegular& operator=(PolyhedraRegular&& copy) = default;
+    /// Copy Assignment operator
     PolyhedraRegular& operator=(const PolyhedraRegular& copy) = default;
   };
 
@@ -1039,7 +1124,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     Polyhedra() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    Polyhedra(Polyhedra&& e) = default;
+    /// Copy Constructor
     Polyhedra(const Polyhedra& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> Polyhedra(const Q* p) : Solid_type<Object>(p) {  }
@@ -1067,7 +1154,9 @@ namespace dd4hep {
     Polyhedra(const std::string& nam, int nsides, double start, double delta,
               const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax)
     {  make(nam, nsides, start, delta, z, rmin, rmax);   }
-    /// Assignment operator
+    /// Move Assignment operator
+    Polyhedra& operator=(Polyhedra&& copy) = default;
+    /// Copy Assignment operator
     Polyhedra& operator=(const Polyhedra& copy) = default;
   };
 
@@ -1093,7 +1182,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     ExtrudedPolygon() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    ExtrudedPolygon(ExtrudedPolygon&& e) = default;
+    /// Copy Constructor
     ExtrudedPolygon(const ExtrudedPolygon& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> ExtrudedPolygon(const Q* p) : Solid_type<Object>(p) {  }
@@ -1118,7 +1209,9 @@ namespace dd4hep {
                     const std::vector<double> & sec_y,
                     const std::vector<double> & zscale)
     {  make(nam, pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
-    /// Assignment operator
+    /// Move Assignment operator
+    ExtrudedPolygon& operator=(ExtrudedPolygon&& copy) = default;
+    /// Copy Assignment operator
     ExtrudedPolygon& operator=(const ExtrudedPolygon& copy) = default;
   };
 
@@ -1138,7 +1231,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     EightPointSolid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    EightPointSolid(EightPointSolid&& e) = default;
+    /// Copy Constructor
     EightPointSolid(const EightPointSolid& e) = default;
     /// Constructor to be used with an existing object
     template <typename Q> EightPointSolid(const Q* p) : Solid_type<Object>(p) { }
@@ -1153,7 +1248,9 @@ namespace dd4hep {
     EightPointSolid(const std::string& nam, double dz, const double* vertices)
     { make(nam, dz, vertices);   }
 
-    /// Assignment operator
+    /// Move Assignment operator
+    EightPointSolid& operator=(EightPointSolid&& copy) = default;
+    /// Copy Assignment operator
     EightPointSolid& operator=(const EightPointSolid& copy) = default;
   };
 
@@ -1170,14 +1267,18 @@ namespace dd4hep {
   protected:
     /// Default constructor
     BooleanSolid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    BooleanSolid(BooleanSolid&& b) = default;
+    /// Copy Constructor
     BooleanSolid(const BooleanSolid& b) = default;
       
   public:
     /// Constructor to be used when passing an already created object
     template <typename Q>
     BooleanSolid(const Handle<Q>& e) : Solid_type<Object>(e) { }
-    /// Assignment operator
+    /// Move Assignment operator
+    BooleanSolid& operator=(BooleanSolid&& copy) = default;
+    /// Copy Assignment operator
     BooleanSolid& operator=(const BooleanSolid& copy) = default;
   };
 
@@ -1195,7 +1296,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     SubtractionSolid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    SubtractionSolid(SubtractionSolid&& e) = default;
+    /// Copy Constructor
     SubtractionSolid(const SubtractionSolid& e) = default;
     /// Constructor to be used when passing an already created object
     template <typename Q> SubtractionSolid(const Handle<Q>& e) : BooleanSolid(e) {  }
@@ -1221,7 +1324,9 @@ namespace dd4hep {
     SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new identified object. Placement by a generic transformation within the mother
     SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Transform3D& pos);
-    /// Assignment operator
+    /// Move Assignment operator
+    SubtractionSolid& operator=(SubtractionSolid&& copy) = default;
+    /// Copy Assignment operator
     SubtractionSolid& operator=(const SubtractionSolid& copy) = default;
   };
 
@@ -1239,7 +1344,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     UnionSolid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    UnionSolid(UnionSolid&& e) = default;
+    /// Copy Constructor
     UnionSolid(const UnionSolid& e) = default;
     /// Constructor to be used when passing an already created object
     template <typename Q> UnionSolid(const Handle<Q>& e) : BooleanSolid(e) { }
@@ -1265,7 +1372,9 @@ namespace dd4hep {
     UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new identified object. Placement by a generic transformation within the mother
     UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Transform3D& pos);
-    /// Assignment operator
+    /// Move Assignment operator
+    UnionSolid& operator=(UnionSolid&& copy) = default;
+    /// Copy Assignment operator
     UnionSolid& operator=(const UnionSolid& copy) = default;
   };
 
@@ -1283,7 +1392,9 @@ namespace dd4hep {
   public:
     /// Default constructor
     IntersectionSolid() = default;
-    /// Constructor to be used when passing an already created object
+    /// Move Constructor
+    IntersectionSolid(IntersectionSolid&& e) = default;
+    /// Copy Constructor
     IntersectionSolid(const IntersectionSolid& e) = default;
     /// Constructor to be used when passing an already created object
     template <typename Q> IntersectionSolid(const Handle<Q>& e) : BooleanSolid(e) { }
@@ -1309,7 +1420,9 @@ namespace dd4hep {
     IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new identified object. Placement by a generic transformation within the mother
     IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Transform3D& pos);
-    /// Assignment operator
+    /// Move Assignment operator
+    IntersectionSolid& operator=(IntersectionSolid&& copy) = default;
+    /// Copy Assignment operator
     IntersectionSolid& operator=(const IntersectionSolid& copy) = default;
   };
 

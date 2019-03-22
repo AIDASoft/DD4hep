@@ -97,6 +97,8 @@ namespace dd4hep {
     /// Default constructor
     Handle() = default;
     /// Copy constructor
+    Handle(Handle<T>&& element) = default;
+    /// Copy constructor
     Handle(const Handle<T>& element) = default;
     /// Initializing constructor from pointer
     Handle(T* element) : m_element(element)   {            }
@@ -108,7 +110,9 @@ namespace dd4hep {
     template <typename Q> Handle(const Handle<Q>& element)
       : m_element(element.m_element ? detail::safe_cast<T>::cast(element.m_element) : 0)
     {             }
-    /// Assignment operator
+    /// Assignment move operator
+    Handle<T>& operator=(Handle<T>&& element) = default;
+    /// Assignment copy operator
     Handle<T>& operator=(const Handle<T>& element) = default;
     /// Boolean operator == used for RB tree insertions
     bool operator==(const Handle<T>& element)  const {

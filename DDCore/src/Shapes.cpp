@@ -34,6 +34,142 @@ using namespace dd4hep;
 namespace units = dd4hep;
 
 namespace {
+  std::vector<double> get_shape_dimensions(TGeoShape* shape)   {
+    if (shape) {
+      if (shape->IsA() == TGeoShapeAssembly::Class()) {
+        const TGeoShapeAssembly* sh = (const TGeoShapeAssembly*) shape;
+        return { sh->GetDX(), sh->GetDY(), sh->GetDZ() };
+      }
+      else if (shape->IsA() == TGeoBBox::Class()) {
+        const TGeoBBox* sh = (const TGeoBBox*) shape;
+        return { sh->GetDX(), sh->GetDY(), sh->GetDZ() };
+      }
+      else if (shape->IsA() == TGeoTube::Class()) {
+        const TGeoTube* sh = (const TGeoTube*) shape;
+        return { sh->GetRmin(), sh->GetRmax(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoTubeSeg::Class()) {
+        const TGeoTubeSeg* sh = (const TGeoTubeSeg*) shape;
+        return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(), sh->GetPhi1(), sh->GetPhi2() };
+      }
+      else if (shape->IsA() == TGeoEltu::Class()) {
+        const TGeoEltu* sh = (const TGeoEltu*) shape;
+        return { sh->GetA(), sh->GetB(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoTrd1::Class()) {
+        const TGeoTrd1* sh = (const TGeoTrd1*) shape;
+        return { sh->GetDx1(), sh->GetDx2(), sh->GetDy(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoTrd2::Class()) {
+        const TGeoTrd2* sh = (const TGeoTrd2*) shape;
+        return { sh->GetDx1(), sh->GetDx2(), sh->GetDy1(), sh->GetDy2(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoHype::Class()) {
+        const TGeoHype* sh = (const TGeoHype*) shape;
+        return { sh->GetDz(), sh->GetRmin(), sh->GetStIn(), sh->GetRmax(), sh->GetStOut(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoXtru::Class()) {
+        const TGeoXtru* sh = (const TGeoXtru*) shape;
+        Int_t nz = sh->GetNz();
+        vector<double> pars { double(nz) };
+        for(Int_t i=0; i<nz; ++i)   {
+          pars.emplace_back(sh->GetZ(i));
+          pars.emplace_back(sh->GetXOffset(i));
+          pars.emplace_back(sh->GetYOffset(i));
+          pars.emplace_back(sh->GetScale(i));
+        }
+        return move(pars);
+      }
+      else if (shape->IsA() == TGeoPgon::Class()) {
+        const TGeoPgon* sh = (const TGeoPgon*) shape;
+        vector<double> pars { sh->GetPhi1(), sh->GetDphi(), double(sh->GetNedges()), double(sh->GetNz()) };
+        for (Int_t i = 0; i < sh->GetNz(); ++i) {
+          pars.emplace_back(sh->GetZ(i));
+          pars.emplace_back(sh->GetRmin(i));
+          pars.emplace_back(sh->GetRmax(i));
+        }
+        return move(pars);
+      }
+      else if (shape->IsA() == TGeoPcon::Class()) {
+        const TGeoPcon* sh = (const TGeoPcon*) shape;
+        vector<double> pars { sh->GetPhi1(), sh->GetDphi(), double(sh->GetNz()) };
+        for (Int_t i = 0; i < sh->GetNz(); ++i) {
+          pars.emplace_back(sh->GetZ(i));
+          pars.emplace_back(sh->GetRmin(i));
+          pars.emplace_back(sh->GetRmax(i));
+        }
+        return move(pars);
+      }
+      else if (shape->IsA() == TGeoCone::Class()) {
+        const TGeoCone* sh = (const TGeoCone*) shape;
+        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoConeSeg::Class()) {
+        const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
+        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetPhi1(), sh->GetPhi2() };
+      }
+      else if (shape->IsA() == TGeoParaboloid::Class()) {
+        const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
+        return { sh->GetRlo(), sh->GetRhi(), sh->GetDz() };
+      }
+      else if (shape->IsA() == TGeoSphere::Class()) {
+        const TGeoSphere* sh = (const TGeoSphere*) shape;
+        return { sh->GetRmin(), sh->GetRmax(), sh->GetTheta1(), sh->GetTheta2(), sh->GetPhi1(), sh->GetPhi2() };
+      }
+      else if (shape->IsA() == TGeoTorus::Class()) {
+        const TGeoTorus* sh = (const TGeoTorus*) shape;
+        return { sh->GetR(), sh->GetRmin(), sh->GetRmax(), sh->GetPhi1(), sh->GetDphi() };
+      }
+      else if (shape->IsA() == TGeoTrap::Class()) {
+        const TGeoTrap* sh = (const TGeoTrap*) shape;
+        return { sh->GetDz(), sh->GetTheta(), sh->GetPhi(), sh->GetH1(), sh->GetH2(),
+            sh->GetBl1(), sh->GetBl2(), sh->GetTl1(), sh->GetTl2(), sh->GetAlpha1(), sh->GetAlpha2() };
+      }
+      else if (shape->IsA() == TGeoArb8::Class())  {
+        TGeoTrap* sh = (TGeoTrap*) shape;
+        const Double_t* vertices = sh->GetVertices();
+        vector<double> pars;
+        for ( size_t i=0; i<8; ++i )  {
+          pars.emplace_back(vertices[i*2]);
+          pars.emplace_back(vertices[i*2]+1);
+        }
+        return move(pars);
+      }
+      else if (shape->IsA() == TGeoCompositeShape::Class()) {
+        const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
+        const TGeoBoolNode* boolean = sh->GetBoolNode();
+        TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
+        TGeoMatrix* left_matrix   = boolean->GetRightMatrix();
+        TGeoMatrix* right_matrix  = boolean->GetRightMatrix();
+        TGeoShape*  left_solid    = boolean->GetLeftShape();
+        TGeoShape*  right_solid   = boolean->GetLeftShape();
+        const Double_t* left_tr   = left_matrix->GetTranslation();
+        const Double_t* left_rot  = left_matrix->GetRotationMatrix();
+        const Double_t* right_tr  = right_matrix->GetTranslation();
+        const Double_t* right_rot = right_matrix->GetRotationMatrix();
+
+        vector<double> pars { double(oper) };
+        vector<double> left_par  = Solid(left_solid).dimensions();
+        vector<double> right_par = Solid(right_solid).dimensions();
+
+        pars.insert(pars.end(), left_par.begin(), left_par.end());
+        pars.insert(pars.end(), left_rot, left_rot+9);
+        pars.insert(pars.end(), left_tr, left_tr+3);
+
+        pars.insert(pars.end(), right_par.begin(), right_par.end());
+        pars.insert(pars.end(), right_rot, right_rot+9);
+        pars.insert(pars.end(), right_tr, right_tr+3);
+        return move(pars);
+      }
+      else  {
+        printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
+                 shape->IsA()->GetName());
+      }
+      return {};
+    }
+    except("Solid","Failed to access dimensions [Invalid handle].");
+   return {};
+  }
 }
 
 /// Pretty print of solid attributes
@@ -263,6 +399,11 @@ template <typename T> const char* Solid_type<T>::type() const  {
     return this->ptr()->IsA()->GetName();
   }
   return "";
+}
+
+/// Access the dimensions of the shape: inverse of the setDimensions member function
+template <typename T> vector<double> Solid_type<T>::dimensions()  {
+  return move( get_shape_dimensions(this->access()) );
 }
 
 /// Divide volume into subsections (See the ROOT manuloa for details)
