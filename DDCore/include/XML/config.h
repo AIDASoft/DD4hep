@@ -49,12 +49,11 @@ namespace dd4hep {
     typedef std::size_t XmlSize_t;
 #ifdef  __TIXML__
     typedef char XmlChar;
-#elif defined(XERCES_XMLCH_T)
+#else
     /// Use the definition from the autoconf header of Xerces:
     typedef XERCES_XMLCH_T XmlChar;
-#else
     // These only work for very specific XercesC implementations:
-    typedef char16_t       XmlChar;
+    //typedef char16_t       XmlChar;
     //typedef unsigned short XmlChar;
 #endif
   }
