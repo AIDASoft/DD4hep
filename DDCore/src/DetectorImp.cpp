@@ -701,10 +701,11 @@ void DetectorImp::dump() const {
 long DetectorImp::apply(const char* factory_type, int argc, char** argv)   const   {
   string fac = factory_type;
   try {
-    long result = PluginService::Create<long>(fac, (Detector*) this, argc, argv);
+    Detector* thisPtr = const_cast<DetectorImp*>(this);
+    long result = PluginService::Create<long>(fac, thisPtr, argc, argv);
     if (0 == result) {
       PluginDebug dbg;
-      result = PluginService::Create<long>(fac, (Detector*) this, argc, argv);
+      result = PluginService::Create<long>(fac, thisPtr, argc, argv);
       if ( 0 == result )  {
         throw runtime_error("dd4hep: apply-plugin: Failed to locate plugin " +
                             fac + ". " + dbg.missingFactory(fac));
