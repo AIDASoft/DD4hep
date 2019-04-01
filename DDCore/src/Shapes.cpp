@@ -78,7 +78,7 @@ namespace {
           pars.emplace_back(sh->GetYOffset(i));
           pars.emplace_back(sh->GetScale(i));
         }
-        return move(pars);
+        return pars;
       }
       else if (shape->IsA() == TGeoPgon::Class()) {
         const TGeoPgon* sh = (const TGeoPgon*) shape;
@@ -88,7 +88,7 @@ namespace {
           pars.emplace_back(sh->GetRmin(i));
           pars.emplace_back(sh->GetRmax(i));
         }
-        return move(pars);
+        return pars;
       }
       else if (shape->IsA() == TGeoPcon::Class()) {
         const TGeoPcon* sh = (const TGeoPcon*) shape;
@@ -98,7 +98,7 @@ namespace {
           pars.emplace_back(sh->GetRmin(i));
           pars.emplace_back(sh->GetRmax(i));
         }
-        return move(pars);
+        return pars;
       }
       else if (shape->IsA() == TGeoCone::Class()) {
         const TGeoCone* sh = (const TGeoCone*) shape;
@@ -133,7 +133,7 @@ namespace {
           pars.emplace_back(vertices[i*2]);
           pars.emplace_back(vertices[i*2]+1);
         }
-        return move(pars);
+        return pars;
       }
       else if (shape->IsA() == TGeoCompositeShape::Class()) {
         const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
@@ -159,7 +159,7 @@ namespace {
         pars.insert(pars.end(), right_par.begin(), right_par.end());
         pars.insert(pars.end(), right_rot, right_rot+9);
         pars.insert(pars.end(), right_tr, right_tr+3);
-        return move(pars);
+        return pars;
       }
       else  {
         printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
