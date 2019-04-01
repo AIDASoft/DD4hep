@@ -698,7 +698,7 @@ void DetectorImp::dump() const {
 }
 
 /// Manipulate geometry using facroy converter
-long DetectorImp::apply(const char* factory_type, int argc, char** argv) {
+long DetectorImp::apply(const char* factory_type, int argc, char** argv)   const   {
   string fac = factory_type;
   try {
     long result = PluginService::Create<long>(fac, (Detector*) this, argc, argv);

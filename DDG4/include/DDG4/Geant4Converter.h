@@ -57,10 +57,10 @@ namespace dd4hep {
       PrintLevel outputLevel;
 
       /// Initializing Constructor
-      Geant4Converter(Detector& description);
+      Geant4Converter(const Detector& description);
 
       /// Initializing Constructor
-      Geant4Converter(Detector& description, PrintLevel level);
+      Geant4Converter(const Detector& description, PrintLevel level);
 
       /// Standard destructor
       virtual ~Geant4Converter();

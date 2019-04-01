@@ -146,7 +146,7 @@ namespace dd4hep {
      *  Please see enum PopulateFlags for further info.
      *  No action whatsoever is performed here, if the detector element is not valid.
      */
-    VolumeManager(Detector& description,
+    VolumeManager(const Detector& description,
                   const std::string& name,
                   DetElement         world = DetElement(),
                   Readout            ro    = Readout(),
@@ -155,7 +155,7 @@ namespace dd4hep {
     VolumeManager(DetElement subdetector, Readout ro);
 
     /// static accessor calling DD4hepVolumeManagerPlugin if necessary
-    static VolumeManager getVolumeManager(Detector& description);
+    static VolumeManager getVolumeManager(const Detector& description);
 
     /// Assignment operator
     VolumeManager& operator=(const VolumeManager& m) = default;

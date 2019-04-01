@@ -63,19 +63,19 @@ namespace dd4hep {
       typedef PlacedVolume::VolIDs     VolIDs;
       typedef pair<VolumeID, VolumeID> Encoding;
       /// Reference to the Detector instance
-      Detector&     m_detDesc;
+      const Detector& m_detDesc;
       /// Reference to the volume manager to be populated
-      VolumeManager m_volManager;
+      VolumeManager   m_volManager;
       /// Set of already added entries
-      set<VolumeID> m_entries;
+      set<VolumeID>   m_entries;
       /// Debug flag
-      bool          m_debug    = false;
+      bool            m_debug    = false;
       /// Node counter
-      size_t        m_numNodes = 0;
+      size_t          m_numNodes = 0;
 
     public:
       /// Default constructor
-      VolumeManager_Populator(Detector& description, VolumeManager vm)
+      VolumeManager_Populator(const Detector& description, VolumeManager vm)
         : m_detDesc(description), m_volManager(vm)
       {
         m_debug = (0 != ::getenv("DD4HEP_VOLMGR_DEBUG"));
@@ -343,7 +343,7 @@ const TGeoHMatrix& VolumeManagerContext::toElement()  const   {
 }
 
 /// Initializing constructor to create a new object
-VolumeManager::VolumeManager(Detector& description, const string& nam, DetElement elt, Readout ro, int flags) {
+VolumeManager::VolumeManager(const Detector& description, const string& nam, DetElement elt, Readout ro, int flags) {
   printout(INFO, "VolumeManager", " - populating volume ids - be patient ..."  );
   size_t node_count = 0;
   Object* obj_ptr = new Object();
@@ -368,7 +368,7 @@ VolumeManager::VolumeManager(DetElement sub_detector, Readout ro)  {
   assign(obj_ptr, sub_detector.name(), "VolumeManager");
 }
 
-VolumeManager VolumeManager::getVolumeManager(Detector& description) {
+VolumeManager VolumeManager::getVolumeManager(const Detector& description) {
   if( not description.volumeManager().isValid() ) {
     description.apply("DD4hepVolumeManager", 0, 0);
   }

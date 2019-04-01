@@ -53,7 +53,7 @@ namespace dd4hep {
       static const VolumeID NonExisting = 0ULL;
 
       /// Initializing constructor. The tree will automatically be built if possible
-      Geant4VolumeManager(Detector& description, Geant4GeometryInfo* info);
+      Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info);
       /// Default constructor
       Geant4VolumeManager() = default;
       /// Constructor to be used when reading the already parsed object
