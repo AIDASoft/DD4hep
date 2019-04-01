@@ -1042,7 +1042,8 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
     const Detector::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;
     string tag = type + "_Geant4_action";
-    long result = PluginService::Create<long>(tag, &m_detDesc, hdlr, &vals);
+    Detector* detPtr = const_cast<Detector*>(&m_detDesc);
+    long result = PluginService::Create<long>(tag, detPtr, hdlr, &vals);
     if (0 == result) {
       throw runtime_error("Failed to locate plugin to interprete files of type"
                           " \"" + tag + "\" - no factory:" + type);
