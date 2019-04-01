@@ -112,7 +112,7 @@ namespace dd4hep {
     virtual void dump() const  override;
 
     /// Manipulate geometry using facroy converter
-    virtual long apply(const char* factory, int argc, char** argv)  override;
+    virtual long apply(const char* factory, int argc, char** argv)  const  override;
 
     /// Open the geometry at startup.
     virtual void init()  override;

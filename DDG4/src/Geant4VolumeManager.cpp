@@ -44,14 +44,14 @@ namespace {
     typedef vector<const TGeoNode*> Chain;
     typedef map<VolumeID,Geant4GeometryInfo::Geant4PlacementPath> Registries;
     /// Reference to the Detector instance
-    Detector& m_detDesc;
+    const Detector& m_detDesc;
     /// Set of already added entries
     Registries m_entries;
     /// Reference to Geant4 translation information
     Geant4GeometryInfo& m_geo;
 
     /// Default constructor
-    Populator(Detector& description, Geant4GeometryInfo& g)
+    Populator(const Detector& description, Geant4GeometryInfo& g)
       : m_detDesc(description), m_geo(g) {
     }
 
@@ -185,7 +185,7 @@ namespace {
 }
 
 /// Initializing constructor. The tree will automatically be built if possible
-Geant4VolumeManager::Geant4VolumeManager(Detector& description, Geant4GeometryInfo* info)
+Geant4VolumeManager::Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info)
   : Handle<Geant4GeometryInfo>(info), m_isValid(false) {
   if (info && info->valid && info->g4Paths.empty()) {
     Populator p(description, *info);

@@ -286,7 +286,7 @@ namespace dd4hep {
     /// Stupid legacy method
     virtual void dump() const = 0;
     /// Manipulate geometry using factory converter
-    virtual long apply(const char* factory, int argc, char** argv) = 0;
+    virtual long apply(const char* factory, int argc, char** argv)  const = 0;
 
     /// Add an extension object to the detector element (low level member function)
     virtual void* addUserExtension(unsigned long long int key, ExtensionEntry* entry) = 0;

@@ -269,7 +269,7 @@ namespace {
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter(Detector& description_ref)
+Geant4Converter::Geant4Converter(const Detector& description_ref)
   : Geant4Mapping(description_ref), checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
@@ -277,7 +277,7 @@ Geant4Converter::Geant4Converter(Detector& description_ref)
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter(Detector& description_ref, PrintLevel level)
+Geant4Converter::Geant4Converter(const Detector& description_ref, PrintLevel level)
   : Geant4Mapping(description_ref), checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;

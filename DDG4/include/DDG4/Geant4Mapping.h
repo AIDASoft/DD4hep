@@ -34,14 +34,14 @@ namespace dd4hep {
      */
     class Geant4Mapping: public detail::GeoHandlerTypes {
     protected:
-      Detector& m_detDesc;
+      const Detector& m_detDesc;
       Geant4GeometryInfo* m_dataPtr;
 
       /// When resolving pointers, we must check for the validity of the data block
       void checkValidity() const;
     public:
       /// Initializing Constructor
-      Geant4Mapping(Detector& description);
+      Geant4Mapping(const Detector& description);
 
       /// Standard destructor
       virtual ~Geant4Mapping();
@@ -50,7 +50,7 @@ namespace dd4hep {
       static Geant4Mapping& instance();
 
       /// Accesor to the Detector instance
-      Detector& detectorDescription() const {
+      const Detector& detectorDescription() const {
         return m_detDesc;
       }
 

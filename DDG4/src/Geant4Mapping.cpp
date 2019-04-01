@@ -24,7 +24,7 @@ using namespace dd4hep;
 using namespace std;
 
 /// Initializing Constructor
-Geant4Mapping::Geant4Mapping(Detector& description_ref)
+Geant4Mapping::Geant4Mapping(const Detector& description_ref)
   : m_detDesc(description_ref), m_dataPtr(0) {
 }
 
@@ -73,7 +73,7 @@ void Geant4Mapping::attach(Geant4GeometryInfo* data_ptr) {
 Geant4VolumeManager Geant4Mapping::volumeManager() const {
   if ( m_dataPtr ) {
     if ( m_dataPtr->g4Paths.empty() ) {
-      VolumeManager::getVolumeManager(m_detDesc);
+      //VolumeManager::getVolumeManager(m_detDesc);
       return Geant4VolumeManager(m_detDesc, m_dataPtr);
     }
     return Geant4VolumeManager(Handle < Geant4GeometryInfo > (m_dataPtr));
