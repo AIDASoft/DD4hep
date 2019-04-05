@@ -25,7 +25,7 @@
 #include <cstring>
 #include <map>
 
-#if defined(__linux) || defined(__APPLE__)
+#if defined(__linux) || defined(__APPLE__) || defined(__powerpc64__)
 #include <cxxabi.h>
 #ifndef __APPLE__
 typedef abi::__class_type_info class_t;
