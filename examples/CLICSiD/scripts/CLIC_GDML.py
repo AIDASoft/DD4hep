@@ -29,8 +29,7 @@ def run():
   ui.Commands = [
     '/ddg4/Writer/Output CLICSiD.gdml',
     '/ddg4/Writer/OverWrite 1',
-    '/ddg4/Writer/write',
-    'exit'
+    '/ddg4/Writer/write'
     ]
   kernel.configure()
   kernel.initialize()
