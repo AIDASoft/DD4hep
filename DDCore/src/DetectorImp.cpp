@@ -57,6 +57,7 @@ using namespace std;
 ClassImp(DetectorImp)
 
 namespace {
+  recursive_mutex  s_detector_apply_lock;
   struct TypePreserve {
     DetectorBuildType& m_t;
     TypePreserve(DetectorBuildType& t)
@@ -594,6 +595,7 @@ namespace {
 /// Finalize/close the geometry
 void DetectorImp::endDocument(bool close_geometry)    {
   TGeoManager* mgr = m_manager;
+  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
   if ( close_geometry && !mgr->IsClosed() )  {
 #if 0
     Region trackingRegion("TrackingRegion");
@@ -621,6 +623,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
 void DetectorImp::init() {
   if (!m_world.isValid()) {
     TGeoManager* mgr = m_manager;
+    lock_guard<recursive_mutex> lock(s_detector_apply_lock);
     Constant     air_const = getRefChild(m_define, "Air", false);
     Constant     vac_const = getRefChild(m_define, "Vacuum", false);
     Box          worldSolid;
@@ -681,12 +684,14 @@ void DetectorImp::init() {
 /// Read any geometry description or alignment file
 void DetectorImp::fromXML(const string& xmlfile, DetectorBuildType build_type) {
   TypePreserve build_type_preserve(m_buildType = build_type);
+  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
   processXML(xmlfile,0);
 }
 
 /// Read any geometry description or alignment file with external XML entity resolution
 void DetectorImp::fromXML(const string& fname, xml::UriReader* entity_resolver, DetectorBuildType build_type)  {
   TypePreserve build_type_preserve(m_buildType = build_type);
+  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
   processXML(fname,entity_resolver);
 }
 
@@ -699,6 +704,7 @@ void DetectorImp::dump() const {
 
 /// Manipulate geometry using facroy converter
 long DetectorImp::apply(const char* factory_type, int argc, char** argv)   const   {
+  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
   string fac = factory_type;
   try {
     Detector* thisPtr = const_cast<DetectorImp*>(this);

@@ -23,6 +23,7 @@ class G4Run;
 class G4Track;
 class G4Event;
 class G4VTrajectory;
+class G4VPhysicalVolume;
 class G4TrackingManager;
 
 /// Namespace for the AIDA detector description toolkit
@@ -204,14 +205,15 @@ namespace dd4hep {
 
     protected:
       /// Reference to the kernel object
-      Geant4Kernel* m_kernel;
+      Geant4Kernel*      m_kernel = 0;
       /// Transient context variable - depending on the thread context: run reference
-      Geant4Run*    m_run;
+      Geant4Run*         m_run    = 0;
       /// Transient context variable - depending on the thread context: event reference
-      Geant4Event*  m_event;
+      Geant4Event*       m_event  = 0;
 
       /// Default constructor
       Geant4Context(Geant4Kernel* kernel);
+
     public:
       /// Default destructor
       virtual ~Geant4Context();
@@ -226,9 +228,12 @@ namespace dd4hep {
       /// Access the geant4 event -- valid only between BeginEvent() and EndEvent()!
       Geant4Event& event()  const;
       /// Access the geant4 event by ptr. Must be checked by clients!
-      Geant4Event* eventPtr()  const  { return m_event; }
+      Geant4Event* eventPtr()  const     { return m_event; }
       /// Access to the kernel object
-      Geant4Kernel& kernel()  const   { return *m_kernel;   }
+      Geant4Kernel& kernel()  const      { return *m_kernel;   }
+      /// Access to geometry world
+      G4VPhysicalVolume* world()  const;
+
       /// Access to the user framework. Specialized function to be implemented by the client
       template <typename T> T& framework()  const;
       /// Generic framework access

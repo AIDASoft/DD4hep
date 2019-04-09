@@ -30,6 +30,7 @@ public:
 // Forward declarations
 class G4RunManager;
 class G4UIdirectory;
+class G4VPhysicalVolume;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -91,7 +92,7 @@ namespace dd4hep {
       /// Property: Names with specialized factories to create G4VSensitiveDetector instances
       std::map<std::string, std::string> m_sensitiveDetectorTypes;
       /// Property: Number of events to be executed in batch mode
-      long        m_numEvent;
+      long        m_numEvent = 10;
       /// Property: Output level
       int         m_outputLevel;
 
@@ -101,6 +102,9 @@ namespace dd4hep {
       int         m_numThreads;
       /// Flag: Master instance (id<0) or worker (id >= 0)
       unsigned long      m_id, m_ident;
+      /// Access to geometry world
+      G4VPhysicalVolume* m_world  = 0;
+
       /// Parent reference
       Geant4Kernel*      m_master;
       Geant4Kernel*      m_shared;
@@ -190,6 +194,10 @@ namespace dd4hep {
       const std::map<std::string, std::string>& sensitiveDetectorTypes()  const   {
         return m_sensitiveDetectorTypes;
       }
+      /// Access to geometry world
+      G4VPhysicalVolume* world()  const;
+      /// Set the geometry world
+      void setWorld(G4VPhysicalVolume* volume);
       
       /** Property access                            */
       /// Access to the properties of the object
