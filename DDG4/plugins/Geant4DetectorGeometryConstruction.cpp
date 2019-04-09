@@ -135,6 +135,8 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   ctxt->geometry->printLevel = outputLevel();
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
+  // Save away the reference to the world volume
+  context()->kernel().setWorld(w);
   // Create Geant4 volume manager only if not yet available
   g4map.volumeManager();
   if ( m_dumpHierarchy )   {

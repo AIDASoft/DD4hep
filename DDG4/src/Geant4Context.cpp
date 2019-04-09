@@ -60,6 +60,11 @@ Geant4Context::~Geant4Context() {
   InstanceCount::decrement(this);
 }
 
+/// Access to geometry world
+G4VPhysicalVolume* Geant4Context::world()  const  {
+  return m_kernel->world();
+}
+
 /// Set the geant4 run reference
 void Geant4Context::setRun(Geant4Run* new_run)    {
   m_run = new_run;

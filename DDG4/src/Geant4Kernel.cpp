@@ -102,6 +102,7 @@ Geant4Kernel::Geant4Kernel(Geant4Kernel* m, unsigned long ident)
 {
   char text[64];
   m_detDesc        = m_master->m_detDesc;
+  m_world          = m_master->m_world;
   m_ident          = m_master->m_workers.size();
   m_numEvent       = m_master->m_numEvent;
   m_runManagerType = m_master->m_runManagerType;
@@ -197,6 +198,18 @@ Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    
 /// Access number of workers
 int Geant4Kernel::numWorkers() const   {
   return m_workers.size();
+}
+
+/// Access to geometry world
+G4VPhysicalVolume* Geant4Kernel::world()  const   {
+  if ( this != m_master ) return m_master->world();
+  return m_world;
+}
+
+/// Set the geometry world
+void Geant4Kernel::setWorld(G4VPhysicalVolume* volume)  {
+  if ( this == m_master ) m_world = volume;
+  else m_master->setWorld(volume);
 }
 
 void Geant4Kernel::printProperties()  const  {

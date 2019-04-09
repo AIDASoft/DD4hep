@@ -422,6 +422,7 @@ namespace dd4hep {
       if ( 0 == m_ctxt.world )    {
         m_sequence->except("+++ Executing G4 detector construction did not result in a valid world volume!");
       }
+      m_sequence->context()->kernel().setWorld(m_ctxt.world);
       return m_ctxt.world;
     }
 
