@@ -74,6 +74,12 @@ namespace dd4hep {
 // Geant 4 includes
 #include "G4GDMLParser.hh"
 
+// C/C++ include files
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <memory>
+
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::sim;
@@ -98,9 +104,6 @@ void Geant4GDMLWriteAction::installCommandMessenger()   {
   Callback cb = Callback(this).make(&Geant4GDMLWriteAction::writeGDML);
   m_control->addCall("write", "Write geometry to GDML file",cb);
 }
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 /// Write geometry to GDML
 void Geant4GDMLWriteAction::writeGDML()   {
@@ -117,9 +120,9 @@ void Geant4GDMLWriteAction::writeGDML()   {
     warning("+++ GDML file %s already exists. Overwriting existing file.", m_output.c_str());
     ::unlink(m_output.c_str());
   }
-  G4GDMLParser parser;
+  unique_ptr<G4GDMLParser> parser(new G4GDMLParser());
   info("+++ Writing GDML file: %s", m_output.c_str());
-  parser.Write(m_output, context()->world());
+  parser->Write(m_output, context()->world());
 }
 
 #include "DDG4/Factories.h"
