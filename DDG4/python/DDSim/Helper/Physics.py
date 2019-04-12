@@ -13,7 +13,7 @@ class Physics( ConfigHelper ):
     self.list ="FTFP_BERT"
     self.decays = True
     self._pdgfile = None
-    self._rejectPDGs = {1,2,3,4,5,6,21,23,24}
+    self._rejectPDGs = {1,2,3,4,5,6,21,23,24,25}
 
   @property
   def rejectPDGs( self ):
