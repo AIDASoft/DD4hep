@@ -24,7 +24,8 @@ Geant4PrimaryHandler::Geant4PrimaryHandler(Geant4Context* ctxt, const std::strin
   : Geant4GeneratorAction(ctxt,nam)
 {
   InstanceCount::increment(this);
-  declareProperty("RejectPDGs", m_rejectPDGs);
+  declareProperty("RejectPDGs", m_primaryConfig.m_rejectPDGs);
+  declareProperty("ZeroTimePDGs", m_primaryConfig.m_zeroTimePDGs);
 }
 
 /// Default destructor

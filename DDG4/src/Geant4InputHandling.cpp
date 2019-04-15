@@ -359,7 +359,7 @@ static vector< pair<Geant4Particle*,G4PrimaryParticle*> >
 getRelevant(set<int>& visited,
             map<int,G4PrimaryParticle*>& prim,
             Geant4PrimaryInteraction::ParticleMap& pm,
-            const set<int>& rejectPDGs,
+            const Geant4PrimaryConfig& primaryConfig,
             const Geant4ParticleHandle p)
 {
   typedef vector< pair<Geant4Particle*,G4PrimaryParticle*> > Primaries;
@@ -384,12 +384,11 @@ getRelevant(set<int>& visited,
     double proper_time_Precision = pow(10.,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));
     bool isProperTimeZero = (proper_time <= proper_time_Precision);
 
-    const std::set<int> leptonPDGs{11,13,15,17};
     // -- remove original if ---
     bool rejectParticle = not p.definition()                    // completely unknown to geant4
-      or (rejectPDGs.count(abs(p->pdgID)) != 0)                 // quarks, gluon, "strings", W, Z etc.
+      or (primaryConfig.m_rejectPDGs.count(abs(p->pdgID)) != 0) // quarks, gluon, "strings", W, Z etc.
       or (isProperTimeZero and p.definition()->GetPDGStable() ) // initial state electrons, etc.
-      or (isProperTimeZero and leptonPDGs.count(abs(p->pdgID)) != 0 ) ; // charged 'documentation' leptons, e.g. in lepton pairs w/ FSR
+      or (isProperTimeZero and primaryConfig.m_zeroTimePDGs.count(abs(p->pdgID)) != 0 ) ; // charged 'documentation' leptons, e.g. in lepton pairs w/ FSR
     if (not rejectParticle) {
       map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
@@ -400,7 +399,7 @@ getRelevant(set<int>& visited,
         Primaries daughters;
         for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
           if ( visited.find(*i) == visited.end() )  {
-            Primaries tmp = getRelevant(visited,prim,pm,rejectPDGs,pm[*i]);
+            Primaries tmp = getRelevant(visited,prim,pm,primaryConfig,pm[*i]);
             daughters.insert(daughters.end(), tmp.begin(),tmp.end());
           }
         }
@@ -412,7 +411,7 @@ getRelevant(set<int>& visited,
     else  {
       for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
         if ( visited.find(*i) == visited.end() )  {
-          Primaries tmp = getRelevant(visited,prim,pm,rejectPDGs,pm[*i]);
+          Primaries tmp = getRelevant(visited,prim,pm,primaryConfig,pm[*i]);
           res.insert(res.end(), tmp.begin(),tmp.end());
         }
       }
@@ -436,13 +435,9 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
   set<int> visited;
 
   auto const* primHandler = dynamic_cast<const Geant4PrimaryHandler*>(caller);
-  auto const& rejectPDGs = primHandler ? primHandler->m_rejectPDGs : std::set<int>();
+  auto const& primaryConfig = primHandler ? primHandler->m_primaryConfig : Geant4PrimaryConfig();
 
-  caller->debug("Rejecting PDGs: %s", [&rejectPDGs]{
-      std::stringstream str;
-      for (int i: rejectPDGs) { str << i << ", "; }
-      return str.str();
-    }().c_str());
+  caller->debug("PrimaryConfiguration:%s", primaryConfig.toString().c_str());
 
   if ( interaction->locked )  {
     caller->abortRun("Locked interactions may not be used to generate primaries!",
@@ -466,7 +461,7 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
             mask.set(G4PARTICLE_HAS_SECONDARIES);
           }
           if ( p->parents.size() == 0 )  {
-            Primaries relevant = getRelevant(visited,prim,pm,rejectPDGs,p);
+            Primaries relevant = getRelevant(visited,prim,pm,primaryConfig,p);
             for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {
               Geant4ParticleHandle r = (*j).first;
               G4PrimaryParticle* p4 = (*j).second;

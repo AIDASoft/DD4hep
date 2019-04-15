@@ -14,6 +14,7 @@ class Physics( ConfigHelper ):
     self.decays = True
     self._pdgfile = None
     self._rejectPDGs = {1,2,3,4,5,6,21,23,24,25}
+    self._zeroTimePDGs = {11, 13, 15, 17}
 
   @property
   def rejectPDGs( self ):
@@ -24,7 +25,18 @@ class Physics( ConfigHelper ):
     return self._rejectPDGs
   @rejectPDGs.setter
   def rejectPDGs( self, val ):
-    self._rejectPDGs = val
+    self._rejectPDGs = self.makeSet(val)
+
+  @property
+  def zeroTimePDGs(self):
+    """Set of PDG IDs for particles that should not be passed to Geant4 if their properTime is 0.
+
+    The properTime of 0 indicates a documentation to add FSR to a lepton for example.
+    """
+    return self._zeroTimePDGs
+  @zeroTimePDGs.setter
+  def zeroTimePDGs(self, val):
+    self._zeroTimePDGs = self.makeSet(val)
 
   @property
   def rangecut( self ):
