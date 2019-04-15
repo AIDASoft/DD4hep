@@ -21,6 +21,23 @@ namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
+    /// Geant4PrimaryConfig to hold configuration for PrimaryHandlers
+    class Geant4PrimaryConfig {
+    public:
+      /// particles with these PDG IDs are not passed to geant for simulation
+      std::set<int> m_rejectPDGs = {1, 2, 3, 4, 5, 6, 21, 23, 24, 25};
+      /// particles with these PDG IDs are not passed to geant for simulation if their properTime is zero
+      std::set<int> m_zeroTimePDGs = {11, 13, 15, 17};
+
+      std::string toString() const {
+        std::stringstream str;
+        str << "\nRejectPDGs: ";
+        for (int i: m_rejectPDGs) { str << i << ", "; }
+        str << "\nzeroTimePDGs: ";
+        for (int i: m_zeroTimePDGs) { str << i << ", "; }
+        return str.str();
+      }
+    };
 
     /// Geant4Action to convert the particle information to Geant4
     /** Convert the primary interaction (object \tt{Geant4PrimaryInteraction} object
@@ -41,8 +58,7 @@ namespace dd4hep {
       virtual void operator()(G4Event* event);
 
     public:
-      /// particles with these PDG IDs are not passed to geant for simulation
-      std::set<int> m_rejectPDGs={1,2,3,4,5,6,21,23,24};
+      Geant4PrimaryConfig m_primaryConfig;
 
     };
   }    // End namespace sim
