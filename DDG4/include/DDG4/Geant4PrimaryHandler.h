@@ -58,7 +58,7 @@ namespace dd4hep {
       virtual void operator()(G4Event* event);
 
     public:
-      Geant4PrimaryConfig m_primaryConfig;
+      Geant4PrimaryConfig m_primaryConfig{};
 
     };
   }    // End namespace sim
