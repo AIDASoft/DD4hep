@@ -54,7 +54,7 @@ int main_wrapper(int argc, char** argv)   {
 
   setPrintLevel(WARNING);
   Detector& description = Detector::getInstance();
-  description.fromCompact(inFile,BUILD_ENVELOPE);
+  description.fromXML(inFile);
   direction = (p1-p0).unit();
 
   MaterialManager matMgr( description.world().volume()  ) ;
