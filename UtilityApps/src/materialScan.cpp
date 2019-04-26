@@ -54,7 +54,7 @@ int main_wrapper(int argc, char** argv)   {
 
   setPrintLevel(WARNING);
   Detector& description = Detector::getInstance();
-  description.fromCompact(inFile);
+  description.fromCompact(inFile,BUILD_ENVELOPE);
   direction = (p1-p0).unit();
 
   MaterialManager matMgr( description.world().volume()  ) ;
@@ -83,7 +83,7 @@ int main_wrapper(int argc, char** argv)   {
     double nLambda = length / mat->GetIntLen();
     sum_lambda += nLambda;
     path_length += length;
-    end = path_length * direction;
+    end = p0 + path_length * direction;
     const char* fmt = mat->GetRadLen() >= 1e5 ? fmt2 : fmt1;
     ::printf(fmt, i+1, mat->GetName(), mat->GetZ(), mat->GetA(),
              mat->GetDensity(), mat->GetRadLen(), mat->GetIntLen(), 
@@ -93,7 +93,7 @@ int main_wrapper(int argc, char** argv)   {
   printf("%s",line);
   const MaterialData& avg = matMgr.createAveragedMaterial(materials);
   const char* fmt = avg.radiationLength() >= 1e5 ? fmt2 : fmt1;
-  end = path_length * direction;
+  end = p0 + path_length * direction;
   ::printf(fmt,0,"Average Material",avg.Z(),avg.A(),avg.density(), 
            avg.radiationLength(), avg.interactionLength(),
            path_length, path_length, 
