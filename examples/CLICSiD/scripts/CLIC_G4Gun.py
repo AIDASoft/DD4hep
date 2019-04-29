@@ -40,7 +40,6 @@ def run():
   merger.enableUI()
   kernel.generatorAction().adopt(merger)
 
-
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
@@ -52,11 +51,6 @@ def run():
   user.enableUI()
   part.adopt(user)
   #
-  # Setup the GDML writer action
-  writer = DDG4.Action(kernel,'Geant4GDMLWriteAction/Writer')
-  writer.enableUI()
-  kernel.registerGlobalAction(writer)
-
   sid.setupDetectors()
   sid.setupPhysics('QGSP_BERT')
   sid.test_config()
