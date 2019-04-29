@@ -60,6 +60,8 @@ namespace dd4hep {
       std::string m_visSetup;
       /// Property: Array of macro files to be chained
       std::vector<std::string> m_commands;
+      /// Property: Array of macro files to be chained and executed AFTER running
+      std::vector<std::string> m_postRunCommands;
       /// Property: Array of commands to be chained
       std::vector<std::string> m_macros;
       /// Property: New prompt if the user wants to change it. (Default is do nothing)

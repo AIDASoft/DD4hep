@@ -38,14 +38,15 @@ namespace   {
 Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt,nam), m_vis(0), m_ui(0)
 {
-  declareProperty("SetupUI",     m_uiSetup="");
-  declareProperty("SetupVIS",    m_visSetup="");
-  declareProperty("SessionType", m_sessionType="tcsh");
-  declareProperty("Macros",      m_macros);
-  declareProperty("Commands",    m_commands);
-  declareProperty("HaveVIS",     m_haveVis=false);
-  declareProperty("HaveUI",      m_haveUI=true);
-  declareProperty("Prompt",      m_prompt);
+  declareProperty("SetupUI",        m_uiSetup="");
+  declareProperty("SetupVIS",       m_visSetup="");
+  declareProperty("SessionType",    m_sessionType="tcsh");
+  declareProperty("Macros",         m_macros);
+  declareProperty("Commands",       m_commands);
+  declareProperty("PostRunCommands",m_postRunCommands);
+  declareProperty("HaveVIS",        m_haveVis=false);
+  declareProperty("HaveUI",         m_haveUI=true);
+  declareProperty("Prompt",         m_prompt);
 }
 
 /// Default destructor
@@ -87,7 +88,6 @@ void Geant4UIManager::operator()(void* )   {
 
 /// Start manager & session
 void Geant4UIManager::start() {
-  typedef std::vector<std::string> _V;
   // Get the pointer to the User Interface manager
   G4UImanager* mgr = G4UImanager::GetUIpointer();
   bool executed_statements = false;
@@ -114,20 +114,26 @@ void Geant4UIManager::start() {
     executed_statements = true;
   }
   // Execute the chained macro files
-  for(_V::const_iterator i=m_macros.begin(); i!=m_macros.end(); ++i)   {
-    printout(INFO,"Geant4UIManager","++ Executing Macro file:%s",(*i).c_str());
-    mgr->ApplyCommand(make_cmd(*i).c_str());
+  for(const auto& m : m_macros)  {
+    printout(INFO,"Geant4UIManager","++ Executing Macro file:%s",m.c_str());
+    mgr->ApplyCommand(make_cmd(m.c_str()));
     executed_statements = true;
   }
   // Execute the chained command statements
-  for(_V::const_iterator i=m_commands.begin(); i!=m_commands.end(); ++i)   {
-    printout(INFO,"Geant4UIManager","++ Executing Command statement:%s",(*i).c_str());
-    mgr->ApplyCommand((*i).c_str());
+  for(const auto& c : m_commands)  {
+    printout(INFO,"Geant4UIManager","++ Executing Command statement:%s",c.c_str());
+    mgr->ApplyCommand(c.c_str());
     executed_statements = true;
   }
   // Start UI session if present
   if ( m_haveUI && m_ui )   {
     m_ui->SessionStart();
+    // Execute the chained command statements
+    for(const auto& c : m_postRunCommands)  {
+      printout(INFO,"Geant4UIManager","++ Executing Command statement:%s",c.c_str());
+      mgr->ApplyCommand(c.c_str());
+      executed_statements = true;
+    }
     return;
   }
   else if ( m_haveUI )   {
@@ -146,8 +152,14 @@ void Geant4UIManager::start() {
     context()->kernel().runManager().BeamOn(numEvent);
   } catch (DD4hep_End_Of_File& e) {
     printout(INFO,"Geant4UIManager","++ End of file reached, ending run...");
-    context()->kernel().runManager().RunTermination();
   }
+  // Execute the chained command statements
+  for(const auto& c : m_postRunCommands)  {
+    printout(INFO,"Geant4UIManager","++ Executing Command statement:%s",c.c_str());
+    mgr->ApplyCommand(c.c_str());
+    executed_statements = true;
+  }
+  context()->kernel().runManager().RunTermination();
 }
 
 /// Stop and release resources

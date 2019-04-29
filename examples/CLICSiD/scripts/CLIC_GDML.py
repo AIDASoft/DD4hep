@@ -7,6 +7,7 @@
 
 """
 def run():
+  from g4units import *
   import logging, CLICSid, DDG4
   from DDG4 import OutputLevel as Output
   
@@ -22,15 +23,29 @@ def run():
   writer = DDG4.Action(kernel,'Geant4GDMLWriteAction/Writer')
   writer.enableUI()
   kernel.registerGlobalAction(writer)
+  sid.setupPhysics('QGSP_BERT')
   #
+  gen = sid.geant4.setupGun('Gun','pi-',10*GeV,Standalone=True)
   # Now initialize. At the Geant4 command prompt we can write the geometry:
   # Idle> /ddg4/Writer/write
-  # or by configuring the UI: 
+  # or by configuring the UI using ui.Commands
+  #
+  # Please note: The Geant4 physics list must be initialized BEFORE
+  # invoking the writer with options. Otherwise the particle definitions
+  # are missing!
+  # If you ONLY want to dump the geometry to GDML you must call
+  # /run/beamOn 0
+  # before writing the GDML file!
+  # You also need to setup a minimal generation action like:
+  # sid.geant4.setupGun('Gun','pi-',10*GeV,Standalone=True)
+  #
   ui.Commands = [
+    '/run/beamOn 0',
     '/ddg4/Writer/Output CLICSiD.gdml',
     '/ddg4/Writer/OverWrite 1',
     '/ddg4/Writer/write'
     ]
+  kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()
   kernel.run()

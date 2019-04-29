@@ -51,6 +51,11 @@ def run():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
+  #
+  # Setup the GDML writer action
+  writer = DDG4.Action(kernel,'Geant4GDMLWriteAction/Writer')
+  writer.enableUI()
+  kernel.registerGlobalAction(writer)
 
   sid.setupDetectors()
   sid.setupPhysics('QGSP_BERT')
