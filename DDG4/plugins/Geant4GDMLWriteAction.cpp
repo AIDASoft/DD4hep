@@ -90,6 +90,7 @@ namespace dd4hep {
 
 // Geant 4 includes
 #include "G4GDMLParser.hh"
+#include "G4Version.hh"
 
 // C/C++ include files
 #include <sys/types.h>
@@ -143,7 +144,9 @@ void Geant4GDMLWriteAction::writeGDML()   {
   unique_ptr<G4GDMLParser> parser(new G4GDMLParser());
   parser->SetRegionExport(m_exportRegions != 0);
   parser->SetEnergyCutsExport(m_exportEnergyCuts != 0);
+#if G4VERSION_NUMBER>=1020
   parser->SetSDExport(m_exportSensitiveDetectors != 0);
+#endif
   info("+++ Writing GDML file: %s", m_output.c_str());
   parser->Write(m_output, context()->world());
 }
