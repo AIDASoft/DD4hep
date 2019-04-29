@@ -152,8 +152,14 @@ void Geant4UIManager::start() {
     context()->kernel().runManager().BeamOn(numEvent);
   } catch (DD4hep_End_Of_File& e) {
     printout(INFO,"Geant4UIManager","++ End of file reached, ending run...");
-    context()->kernel().runManager().RunTermination();
   }
+  // Execute the chained command statements
+  for(const auto& c : m_postRunCommands)  {
+    printout(INFO,"Geant4UIManager","++ Executing Command statement:%s",c.c_str());
+    mgr->ApplyCommand(c.c_str());
+    executed_statements = true;
+  }
+  context()->kernel().runManager().RunTermination();
 }
 
 /// Stop and release resources

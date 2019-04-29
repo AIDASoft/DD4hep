@@ -119,12 +119,12 @@ if (DD4HEP_USE_GEANT4)
   endforeach(script)
   #
   # Write GDML from Geant4 using UI
-  #dd4hep_add_test_reg( CLICSiD_DDG4_GDML_LONGTEST
-  #    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  #    EXEC_ARGS  python ${CLICSiDEx_INSTALL}/scripts/CLIC_GDML.py
-  #    REQUIRES   DDG4 Geant4
-  #    REGEX_PASS "G4GDML. Writing 'CLICSiD.gdml' done !"
-  #    REGEX_FAIL "Exception;EXCEPTION;ERROR" )
+  dd4hep_add_test_reg( CLICSiD_DDG4_GDML_LONGTEST
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+      EXEC_ARGS  python ${CLICSiDEx_INSTALL}/scripts/CLIC_GDML.py
+      REQUIRES   DDG4 Geant4
+      REGEX_PASS "G4GDML. Writing 'CLICSiD.gdml' done !"
+      REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   #
   # Material scan
   dd4hep_add_test_reg( CLICSiD_DDG4_g4material_scan_LONGTEST
