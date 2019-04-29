@@ -25,6 +25,8 @@ dd4hep_add_executable( print_materials src/print_materials.cpp USES DDRec )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( materialScan    src/materialScan.cpp USES DDRec )
 #-----------------------------------------------------------------------------------
+dd4hep_add_executable( materialBudget  src/materialBudget.cpp USES DDRec ROOT )
+#-----------------------------------------------------------------------------------
 dd4hep_add_executable( graphicalScan src/graphicalScan.cpp USES DDRec ROOT )
 #-----------------------------------------------------------------------------------
 #dd4hep_add_executable( pydd4hep     
