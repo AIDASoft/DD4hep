@@ -144,7 +144,7 @@ void Geant4GDMLWriteAction::writeGDML()   {
   unique_ptr<G4GDMLParser> parser(new G4GDMLParser());
   parser->SetRegionExport(m_exportRegions != 0);
   parser->SetEnergyCutsExport(m_exportEnergyCuts != 0);
-#if G4VERSION_NUMBER>=1020
+#if G4VERSION_NUMBER>=1030
   parser->SetSDExport(m_exportSensitiveDetectors != 0);
 #endif
   info("+++ Writing GDML file: %s", m_output.c_str());
