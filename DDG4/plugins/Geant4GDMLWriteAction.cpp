@@ -25,6 +25,16 @@ namespace dd4hep {
     /// Class to measure the energy of escaping tracks
     /** Class to dump Geant4 geometry to GDML
      *
+     *  Please note: 
+     *  The Geant4 physics list must be initialized BEFORE
+     *  invoking the writer with options. Otherwise the particle definitions
+     *  are missing!
+     *  If you ONLY want to dump the geometry to GDML you must call
+     *  /run/beamOn 0
+     *  before writing the GDML file!
+     *  You also need to setup a minimal generation action like:
+     *  sid.geant4.setupGun('Gun','pi-',10*GeV,Standalone=True)
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -35,6 +45,13 @@ namespace dd4hep {
       std::string m_output;
       /// Poprerty: Flag to overwrite existing files
       int         m_overWrite;
+      /// Property: Export region information to the GDML
+      int         m_exportRegions;
+      /// Property: Export energy cut information to the GDML
+      int         m_exportEnergyCuts;
+      /// Property: Export sensitive detector information to the GDML
+      int         m_exportSensitiveDetectors;
+
     public:
       /// Standard constructor
       Geant4GDMLWriteAction(Geant4Context* context, const std::string& nam);
@@ -89,8 +106,11 @@ Geant4GDMLWriteAction::Geant4GDMLWriteAction(Geant4Context* ctxt, const string& 
   : Geant4Action(ctxt, nam)
 {
   m_needsControl = true;
-  declareProperty("Output",    m_output = "");
-  declareProperty("OverWrite", m_overWrite = 1);
+  declareProperty("Output",                   m_output = "");
+  declareProperty("OverWrite",                m_overWrite = 1);
+  declareProperty("exportRegions",            m_exportRegions = 1);
+  declareProperty("exportEnergyCuts",         m_exportEnergyCuts = 1);
+  declareProperty("exportSensitiveDetectors", m_exportSensitiveDetectors = 1);
   InstanceCount::increment(this);
 }
 
@@ -121,6 +141,9 @@ void Geant4GDMLWriteAction::writeGDML()   {
     ::unlink(m_output.c_str());
   }
   unique_ptr<G4GDMLParser> parser(new G4GDMLParser());
+  parser->SetRegionExport(m_exportRegions != 0);
+  parser->SetEnergyCutsExport(m_exportEnergyCuts != 0);
+  parser->SetSDExport(m_exportSensitiveDetectors != 0);
   info("+++ Writing GDML file: %s", m_output.c_str());
   parser->Write(m_output, context()->world());
 }
