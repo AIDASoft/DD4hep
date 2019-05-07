@@ -256,13 +256,25 @@ double Material::fraction(Atom atom) const    {
   return tot>1e-20 ? frac/tot : 0.0;
 }
 
+/// Access to tabular properties of the optical surface
+Material::Property Material::property(const char* nam)  const    {
+  return access()->GetMaterial()->GetProperty(nam);
+}
+
+/// Access to tabular properties of the optical surface
+Material::Property Material::property(const std::string& nam)  const   {
+  return access()->GetMaterial()->GetProperty(nam.c_str());
+}
+
 /// String representation of this object
 string Material::toString() const {
   if ( isValid() ) {
-    TGeoMedium* val = ptr();
-    stringstream os;
-    os << val->GetName() << " " << val->GetTitle() << " id:" << hex << val->GetId() << " Pointer:" << val->GetPointerName();
-    return os.str();
+    TGeoMedium*  val = ptr();
+    stringstream out;
+    out << val->GetName() << " " << val->GetTitle()
+        << " id:" << hex << val->GetId()
+        << " Pointer:" << val->GetPointerName();
+    return out.str();
   }
   throw runtime_error("Attempt to convert invalid material handle to string!");
 }

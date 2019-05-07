@@ -46,13 +46,14 @@ def run():
   act.DebugSurfaces  = True
 
   # Configure I/O
-  evt_root = geant4.setupROOTOutput('RootOutput','OpNovice_'+time.strftime('%Y-%m-%d_%H-%M'))
+  ###evt_root = geant4.setupROOTOutput('RootOutput','OpNovice_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun",particle='e-',energy=2*GeV,multiplicity=1)
+  gun = geant4.setupGun("Gun",particle='gamma',energy=5*keV,multiplicity=1)
   gun.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
+  """
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
   part.SaveProcesses = ['Decay']
@@ -64,7 +65,7 @@ def run():
   user.TrackingVolume_Rmax = 3.0*m
   user.enableUI()
   part.adopt(user)
-
+  """
   geant4.setupTracker('BubbleDevice')
 
   # Now build the physics list:

@@ -34,6 +34,7 @@ class TGeoIdentity;
 #endif
 // ROOT include files
 #include "TGeoPhysicalNode.h"
+#include "TGDMLMatrix.h"
 #include "Math/Vector3D.h"
 #include "Math/Transform3D.h"
 #include "Math/Translation3D.h"
@@ -261,6 +262,8 @@ namespace dd4hep {
    */
   class Material: public Handle<TGeoMedium> {
   public:
+    typedef const TGDMLMatrix* Property;
+  public:
     /// Default constructor
     Material() = default;
     /// Copy constructor
@@ -289,6 +292,10 @@ namespace dd4hep {
     double intLength() const;
     /// Access the fraction of an element within the material
     double fraction(Atom atom) const;
+    /// Access to tabular properties of the material
+    Property property(const char* name)  const;
+    /// Access to tabular properties of the material
+    Property property(const std::string& name)  const;
   };
 
   /// Handle class describing visualization attributes
