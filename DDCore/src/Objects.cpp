@@ -256,6 +256,7 @@ double Material::fraction(Atom atom) const    {
   return tot>1e-20 ? frac/tot : 0.0;
 }
 
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /// Access to tabular properties of the optical surface
 Material::Property Material::property(const char* nam)  const    {
   return access()->GetMaterial()->GetProperty(nam);
@@ -265,6 +266,7 @@ Material::Property Material::property(const char* nam)  const    {
 Material::Property Material::property(const std::string& nam)  const   {
   return access()->GetMaterial()->GetProperty(nam.c_str());
 }
+#endif
 
 /// String representation of this object
 string Material::toString() const {

@@ -33,8 +33,6 @@ class TGeoIdentity;
 #pragma GCC diagnostic ignored "-Wdeprecated" // Code that causes warning goes here
 #endif
 // ROOT include files
-#include "TGeoPhysicalNode.h"
-#include "TGDMLMatrix.h"
 #include "Math/Vector3D.h"
 #include "Math/Transform3D.h"
 #include "Math/Translation3D.h"
@@ -45,6 +43,10 @@ class TGeoIdentity;
 #include "Math/RotationZYX.h"
 #include "Math/EulerAngles.h"
 #include "Math/VectorUtil.h"
+#include "TGeoPhysicalNode.h"
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+#include "TGDMLMatrix.h"
+#endif
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -262,7 +264,9 @@ namespace dd4hep {
    */
   class Material: public Handle<TGeoMedium> {
   public:
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     typedef const TGDMLMatrix* Property;
+#endif
   public:
     /// Default constructor
     Material() = default;
@@ -292,10 +296,12 @@ namespace dd4hep {
     double intLength() const;
     /// Access the fraction of an element within the material
     double fraction(Atom atom) const;
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// Access to tabular properties of the material
     Property property(const char* name)  const;
     /// Access to tabular properties of the material
     Property property(const std::string& name)  const;
+#endif
   };
 
   /// Handle class describing visualization attributes
