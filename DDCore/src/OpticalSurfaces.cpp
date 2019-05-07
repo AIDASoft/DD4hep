@@ -46,6 +46,16 @@ OpticalSurface::OpticalSurface(Detector& detector,
   detector.manager().AddOpticalSurface(m_element=s.release());
 }
 
+/// Access to tabular properties of the surface
+OpticalSurface::Property OpticalSurface::property(const char* nam)  const   {
+  return access()->GetProperty(nam);
+}
+
+/// Access to tabular properties of the surface
+OpticalSurface::Property OpticalSurface::property(const std::string& nam)  const   {
+  return access()->GetProperty(nam.c_str());
+}
+
 /// Initializing constructor: Creates the object and registers it to the manager
 SkinSurface::SkinSurface(Detector& detector, DetElement de, const string& nam, OpticalSurface surf, Volume vol)
 {
@@ -67,6 +77,18 @@ SkinSurface::SkinSurface(Detector& detector, DetElement de, const string& nam, O
 /// Access surface data
 OpticalSurface SkinSurface::surface()  const    {
   return (TGeoOpticalSurface*)(access()->GetSurface());
+}
+
+/// Access to tabular properties of the optical surface
+BorderSurface::Property SkinSurface::property(const char* nam)  const    {
+  OpticalSurface surf(surface());
+  return surf.property(nam);
+}
+
+/// Access to tabular properties of the optical surface
+BorderSurface::Property SkinSurface::property(const std::string& nam)  const   {
+  OpticalSurface surf(surface());
+  return surf.property(nam.c_str());
 }
 
 /// Access the node of the skin surface
@@ -100,6 +122,18 @@ BorderSurface::BorderSurface(Detector&      detector,
 /// Access surface data
 OpticalSurface BorderSurface::surface()  const    {
   return (TGeoOpticalSurface*)(access()->GetSurface());
+}
+
+/// Access to tabular properties of the optical surface
+BorderSurface::Property BorderSurface::property(const char* nam)  const    {
+  OpticalSurface surf(surface());
+  return surf.property(nam);
+}
+
+/// Access to tabular properties of the optical surface
+BorderSurface::Property BorderSurface::property(const std::string& nam)  const   {
+  OpticalSurface surf(surface());
+  return surf.property(nam.c_str());
 }
 
 /// Access the left node of the border surface

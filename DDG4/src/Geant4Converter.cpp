@@ -427,6 +427,25 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
                  n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
         tab->AddProperty(n->GetName(), vec);
       }
+      /// Attach the material properties if any
+      TListIter cpropIt(&material->GetConstProperties());
+      for(TObject* obj=cpropIt.Next(); obj; obj = cpropIt.Next())  {
+        Bool_t     err = kFALSE;
+        TNamed*      n = (TNamed*)obj;
+        double       v = info.manager->GetProperty(n->GetTitle(),&err);
+        if ( err != kFALSE )   {
+          except("Geant4Converter",
+                 "++ FAILED to create G4 material %s "
+                 "[Cannot convert const property: %s]",
+                 material->GetName(), n->GetName());
+        }
+        if ( 0 == tab )  {
+          tab = new G4MaterialPropertiesTable();
+          mat->SetMaterialPropertiesTable(tab);
+        }
+        printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", n->GetName(), v);
+        tab->AddConstProperty(n->GetName(), v);
+      }
 #endif
     }
     info.g4Materials[medium] = mat;

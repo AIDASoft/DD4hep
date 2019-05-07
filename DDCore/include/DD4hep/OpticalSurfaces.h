@@ -50,6 +50,7 @@ namespace dd4hep {
     typedef Object::ESurfaceModel  EModel;
     typedef Object::ESurfaceFinish EFinish;
     typedef Object::ESurfaceType   EType;
+    typedef const TGDMLMatrix*     Property;
     
   public:
     /// Default constructor
@@ -73,6 +74,12 @@ namespace dd4hep {
 
     /// Assignment operator
     OpticalSurface& operator=(const OpticalSurface& m) = default;
+
+    /// Access to tabular properties of the surface
+    Property property(const char* name)  const;
+    
+    /// Access to tabular properties of the surface
+    Property property(const std::string& name)  const;
 
     /// Convenience function forwarding to TGeoOpticalSurface
     static EType   stringToType(const std::string& type)   {
@@ -105,7 +112,8 @@ namespace dd4hep {
    */
   class SkinSurface : public Handle<TGeoSkinSurface> {
   public:
-    typedef TGeoSkinSurface Object;
+    typedef TGeoSkinSurface        Object;
+    typedef const TGDMLMatrix*     Property;    
 
   public:
     /// Default constructor
@@ -133,6 +141,10 @@ namespace dd4hep {
     OpticalSurface surface()  const;
     /// Access the node of the skin surface
     Volume  volume()   const;
+    /// Access to tabular properties of the optical surface
+    Property property(const char* name)  const;    
+    /// Access to tabular properties of the optical surface
+    Property property(const std::string& name)  const;    
   };
 
   /// Class to support the handling of optical surfaces.
@@ -144,7 +156,8 @@ namespace dd4hep {
    */
   class BorderSurface : public Handle<TGeoBorderSurface> {
   public:
-    typedef TGeoBorderSurface Object;
+    typedef TGeoBorderSurface      Object;
+    typedef const TGDMLMatrix*     Property;    
 
   public:
     /// Default constructor
@@ -170,6 +183,10 @@ namespace dd4hep {
     BorderSurface& operator=(const BorderSurface& m) = default;
     /// Access surface data
     OpticalSurface surface()  const;
+    /// Access to tabular properties of the optical surface
+    Property property(const char* name)  const;    
+    /// Access to tabular properties of the optical surface
+    Property property(const std::string& name)  const;
     /// Access the left node of the border surface
     PlacedVolume   left()   const;
     /// Access the right node of the border surface

@@ -59,6 +59,7 @@ namespace dd4hep {
   class Property;
   class XMLFile;
   class JsonFile;
+  class PropertyConstant;
   class Parallelworld_Volume;
   class DetElementInclude;
 
@@ -81,6 +82,7 @@ namespace dd4hep {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   template <> void Converter<OpticalSurface>::operator()(xml_h element) const;
   template <> void Converter<PropertyTable>::operator()(xml_h element) const;
+  template <> void Converter<PropertyConstant>::operator()(xml_h element) const;
 #endif
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
@@ -460,7 +462,38 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
 #endif
+
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+    /// In case there were material properties specified: convert them here
+    for(xml_coll_t properties(x_mat, _U(constant)); properties; ++properties) {
+      xml_elt_t p = properties;
+      if ( p.hasAttr(_U(ref)) )   {
+        bool err = kFALSE;
+        string ref = p.attr<string>(_U(ref));
+        mgr.GetProperty(ref.c_str(), &err); /// Check existence
+        if ( err == kFALSE )  {
+          string prop_nam = p.attr<string>(_U(name));
+          mat->AddConstProperty(prop_nam.c_str(), ref.c_str());
+          printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+                   "++            material %-16s  add constant property: %s  ->  %s.",
+                   mat->GetName(), prop_nam.c_str(), ref.c_str());
+          continue;
+        }
+        // ERROR
+        throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " ConstProperty missing in TGeoManager: " + ref);
+      }
+      else if ( p.hasAttr(_U(value)) )   {
+        stringstream str;
+        string ref, prop_nam = p.attr<string>(_U(name));
+        str << prop_nam << "_" << (void*)mat;
+        ref = str.str();
+        mgr.AddProperty(ref.c_str(), p.attr<double>(_U(value))); /// Check existence
+        mat->AddConstProperty(prop_nam.c_str(), ref.c_str());
+        printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+                 "++            material %-16s  add constant property: %s  ->  %s.",
+                 mat->GetName(), prop_nam.c_str(), ref.c_str());
+      }
+    }
     /// In case there were material properties specified: convert them here
     for(xml_coll_t properties(x_mat, _U(property)); properties; ++properties) {
       xml_elt_t p = properties;
@@ -469,7 +502,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         TGDMLMatrix* m = mgr.GetGDMLMatrix(ref.c_str());
         if ( m )  {
           string prop_nam = p.attr<string>(_U(name));
-          //TODO: mat->AddProperty(p.attr<string>(_U(name)).c_str(), m);
           mat->AddProperty(prop_nam.c_str(), ref.c_str());
           printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
                    "++            material %-16s  add property: %s  ->  %s.",
@@ -669,6 +701,20 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
       table->Set(i/cols, i%cols, values[i]);
     surf->AddProperty(nam.c_str(), table->GetName());
     description.manager().AddGDMLMatrix(table);
+  }
+}
+
+/** Convert compact constant property (Material properties stored in TGeoManager)
+ *
+ *  <constant name="RINDEX" value="8.123"/>
+ *
+ */
+template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
+  double value = e.attr<double>(_U(value));
+  string name  = e.attr<string>(_U(name));
+  description.manager().AddProperty(name.c_str(), value);
+  if ( s_debug.matrix )    {
+    printout(ALWAYS,"Compact","+++ Reading property %s : %f",name.c_str(), value);
   }
 }
 
@@ -1404,6 +1450,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   /// These two must be parsed early, because they are needed by the detector constructors
+  xml_coll_t(compact, _U(properties)).for_each(_U(constant), Converter<PropertyConstant>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(matrix), Converter<PropertyTable>(description));
   xml_coll_t(compact, _U(surfaces)).for_each(_U(opticalsurface), Converter<OpticalSurface>(description));
 #endif

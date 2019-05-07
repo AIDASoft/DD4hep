@@ -13,9 +13,13 @@
 
   <define>
     <constant name="world_side" value="1*m"/>
-    <constant name="world_x" value="world_side/2"/>
-    <constant name="world_y" value="world_side/2"/>
-    <constant name="world_z" value="world_side/2"/>
+    <constant name="world_x"    value="world_side/2"/>
+    <constant name="world_y"    value="world_side/2"/>
+    <constant name="world_z"    value="world_side/2"/>
+    <constant name="g4::m"      value="1000"/>
+    <constant name="g4::ns"     value="1.0"/>
+    <constant name="g4::eV"     value="1e-6"/>
+    <constant name="g4::MeV"    value="1.0"/>
   </define>
   <debug>
     <type name="surface" value="1"/>
@@ -23,271 +27,271 @@
 
   <properties>
     <matrix name="RINDEX__Air" coldim="2" values="  
-              2.034*eV 1. 
-              2.068*eV 1.
-              2.103*eV 1.
-              2.139*eV 1.
-              2.177*eV 1.
-              2.216*eV 1.
-              2.256*eV 1.
-              2.298*eV 1.
-              2.341*eV 1.
-              2.386*eV 1.
-              2.433*eV 1.
-              2.481*eV 1.
-              2.532*eV 1.
-              2.585*eV 1.
-              2.640*eV 1.
-              2.697*eV 1.
-              2.757*eV 1.
-              2.820*eV 1.
-              2.885*eV 1.
-              2.954*eV 1.
-              3.026*eV 1.
-              3.102*eV 1.
-              3.181*eV 1.
-              3.265*eV 1.
-              3.353*eV 1.
-              3.446*eV 1.
-              3.545*eV 1.
-              3.649*eV 1.
-              3.760*eV 1.
-              3.877*eV 1.
-              4.002*eV 1.
-              4.136*eV 1.
+              2.034*g4::eV 1. 
+              2.068*g4::eV 1.
+              2.103*g4::eV 1.
+              2.139*g4::eV 1.
+              2.177*g4::eV 1.
+              2.216*g4::eV 1.
+              2.256*g4::eV 1.
+              2.298*g4::eV 1.
+              2.341*g4::eV 1.
+              2.386*g4::eV 1.
+              2.433*g4::eV 1.
+              2.481*g4::eV 1.
+              2.532*g4::eV 1.
+              2.585*g4::eV 1.
+              2.640*g4::eV 1.
+              2.697*g4::eV 1.
+              2.757*g4::eV 1.
+              2.820*g4::eV 1.
+              2.885*g4::eV 1.
+              2.954*g4::eV 1.
+              3.026*g4::eV 1.
+              3.102*g4::eV 1.
+              3.181*g4::eV 1.
+              3.265*g4::eV 1.
+              3.353*g4::eV 1.
+              3.446*g4::eV 1.
+              3.545*g4::eV 1.
+              3.649*g4::eV 1.
+              3.760*g4::eV 1.
+              3.877*g4::eV 1.
+              4.002*g4::eV 1.
+              4.136*g4::eV 1.
     "/>
     <matrix name="RINDEX__Water" coldim="2" values="  
-              2.034*eV 1.3435 
-              2.068*eV 1.344 
-              2.103*eV 1.3445 
-              2.139*eV 1.345  
-              2.177*eV 1.3455
-              2.216*eV 1.346
-              2.256*eV 1.3465
-              2.298*eV 1.347
-              2.341*eV 1.3475
-              2.386*eV 1.348
-              2.433*eV 1.3485 
-              2.481*eV 1.3492 
-              2.532*eV 1.35   
-              2.585*eV 1.3505
-              2.640*eV 1.351
-              2.697*eV 1.3518 
-              2.757*eV 1.3522 
-              2.820*eV 1.3530 
-              2.885*eV 1.3535 
-              2.954*eV 1.354
-              3.026*eV 1.3545 
-              3.102*eV 1.355 
-              3.181*eV 1.3555 
-              3.265*eV 1.356  
-              3.353*eV 1.3568
-              3.446*eV 1.3572 
-              3.545*eV 1.358  
-              3.649*eV 1.3585 
-              3.760*eV 1.359  
-              3.877*eV 1.3595
-              4.002*eV 1.36   
-              4.136*eV 1.3608
+              2.034*g4::eV 1.3435 
+              2.068*g4::eV 1.344 
+              2.103*g4::eV 1.3445 
+              2.139*g4::eV 1.345  
+              2.177*g4::eV 1.3455
+              2.216*g4::eV 1.346
+              2.256*g4::eV 1.3465
+              2.298*g4::eV 1.347
+              2.341*g4::eV 1.3475
+              2.386*g4::eV 1.348
+              2.433*g4::eV 1.3485 
+              2.481*g4::eV 1.3492 
+              2.532*g4::eV 1.35   
+              2.585*g4::eV 1.3505
+              2.640*g4::eV 1.351
+              2.697*g4::eV 1.3518 
+              2.757*g4::eV 1.3522 
+              2.820*g4::eV 1.3530 
+              2.885*g4::eV 1.3535 
+              2.954*g4::eV 1.354
+              3.026*g4::eV 1.3545 
+              3.102*g4::eV 1.355 
+              3.181*g4::eV 1.3555 
+              3.265*g4::eV 1.356  
+              3.353*g4::eV 1.3568
+              3.446*g4::eV 1.3572 
+              3.545*g4::eV 1.358  
+              3.649*g4::eV 1.3585 
+              3.760*g4::eV 1.359  
+              3.877*g4::eV 1.3595
+              4.002*g4::eV 1.36   
+              4.136*g4::eV 1.3608
     "/>
     <matrix name="ABSLENGTH__Water" coldim="2" values="  
-              2.034*eV 3.448*m  
-              2.068*eV 4.082*m  
-              2.103*eV 6.329*m  
-              2.139*eV 9.174*m 
-              2.177*eV 12.346*m 
-              2.216*eV 13.889*m
-              2.256*eV 15.152*m 
-              2.298*eV 17.241*m 
-              2.341*eV 18.868*m 
-              2.386*eV 20.000*m 
-              2.433*eV 26.316*m 
-              2.481*eV 35.714*m
-              2.532*eV 45.455*m 
-              2.585*eV 47.619*m 
-              2.640*eV 52.632*m 
-              2.697*eV 52.632*m 
-              2.757*eV 55.556*m 
-              2.820*eV 52.632*m
-              2.885*eV 52.632*m 
-              2.954*eV 47.619*m 
-              3.026*eV 45.455*m 
-              3.102*eV 41.667*m 
-              3.181*eV 37.037*m 
-              3.265*eV 33.333*m
-              3.353*eV 30.000*m 
-              3.446*eV 28.500*m 
-              3.545*eV 27.000*m 
-              3.649*eV 24.500*m 
-              3.760*eV 22.000*m 
-              3.877*eV 19.500*m
-              4.002*eV 17.500*m 
-              4.136*eV 14.500*m
+              2.034*g4::eV 3.448*m  
+              2.068*g4::eV 4.082*m  
+              2.103*g4::eV 6.329*m  
+              2.139*g4::eV 9.174*m 
+              2.177*g4::eV 12.346*m 
+              2.216*g4::eV 13.889*m
+              2.256*g4::eV 15.152*m 
+              2.298*g4::eV 17.241*m 
+              2.341*g4::eV 18.868*m 
+              2.386*g4::eV 20.000*m 
+              2.433*g4::eV 26.316*m 
+              2.481*g4::eV 35.714*m
+              2.532*g4::eV 45.455*m 
+              2.585*g4::eV 47.619*m 
+              2.640*g4::eV 52.632*m 
+              2.697*g4::eV 52.632*m 
+              2.757*g4::eV 55.556*m 
+              2.820*g4::eV 52.632*m
+              2.885*g4::eV 52.632*m 
+              2.954*g4::eV 47.619*m 
+              3.026*g4::eV 45.455*m 
+              3.102*g4::eV 41.667*m 
+              3.181*g4::eV 37.037*m 
+              3.265*g4::eV 33.333*m
+              3.353*g4::eV 30.000*m 
+              3.446*g4::eV 28.500*m 
+              3.545*g4::eV 27.000*m 
+              3.649*g4::eV 24.500*m 
+              3.760*g4::eV 22.000*m 
+              3.877*g4::eV 19.500*m
+              4.002*g4::eV 17.500*m 
+              4.136*g4::eV 14.500*m
     "/>
     <matrix name= "FASTCOMPONENT__Water" coldim="2" values="  
-              2.034*eV 1
-              2.068*eV 1
-              2.103*eV 1
-              2.139*eV 1
-              2.177*eV 1
-              2.216*eV 1
-              2.256*eV 1
-              2.298*eV 1
-              2.341*eV 1
-              2.386*eV 1
-              2.433*eV 1
-              2.481*eV 1
-              2.532*eV 1
-              2.585*eV 1
-              2.640*eV 1
-              2.697*eV 1
-              2.757*eV 1
-              2.820*eV 1
-              2.885*eV 1
-              2.954*eV 1
-              3.026*eV 1
-              3.102*eV 1
-              3.181*eV 1
-              3.265*eV 1
-              3.353*eV 1
-              3.446*eV 1
-              3.545*eV 1
-              3.649*eV 1
-              3.760*eV 1
-              3.877*eV 1
-              4.002*eV 1
-              4.136*eV 1
+              2.034*g4::eV 1
+              2.068*g4::eV 1
+              2.103*g4::eV 1
+              2.139*g4::eV 1
+              2.177*g4::eV 1
+              2.216*g4::eV 1
+              2.256*g4::eV 1
+              2.298*g4::eV 1
+              2.341*g4::eV 1
+              2.386*g4::eV 1
+              2.433*g4::eV 1
+              2.481*g4::eV 1
+              2.532*g4::eV 1
+              2.585*g4::eV 1
+              2.640*g4::eV 1
+              2.697*g4::eV 1
+              2.757*g4::eV 1
+              2.820*g4::eV 1
+              2.885*g4::eV 1
+              2.954*g4::eV 1
+              3.026*g4::eV 1
+              3.102*g4::eV 1
+              3.181*g4::eV 1
+              3.265*g4::eV 1
+              3.353*g4::eV 1
+              3.446*g4::eV 1
+              3.545*g4::eV 1
+              3.649*g4::eV 1
+              3.760*g4::eV 1
+              3.877*g4::eV 1
+              4.002*g4::eV 1
+              4.136*g4::eV 1
     "/>
     <matrix name= "SLOWCOMPONENT__Water" coldim="2" values="  
-              2.034*eV 0.01
-              2.068*eV 1
-              2.103*eV 2
-              2.139*eV 3
-              2.177*eV 4
-              2.216*eV 5
-              2.256*eV 6
-              2.298*eV 7
-              2.341*eV 8
-              2.386*eV 9
-              2.433*eV 8
-              2.481*eV 7
-              2.532*eV 6
-              2.585*eV 4
-              2.640*eV 3
-              2.697*eV 2
-              2.757*eV 1
-              2.820*eV 0.01
-              2.885*eV 1
-              2.954*eV 2
-              3.026*eV 3
-              3.102*eV 4
-              3.181*eV 5
-              3.265*eV 6
-              3.353*eV 7
-              3.446*eV 8
-              3.545*eV 9
-              3.649*eV 8
-              3.760*eV 7
-              3.877*eV 6
-              4.002*eV 5
-              4.136*eV 4
+              2.034*g4::eV 0.01
+              2.068*g4::eV 1
+              2.103*g4::eV 2
+              2.139*g4::eV 3
+              2.177*g4::eV 4
+              2.216*g4::eV 5
+              2.256*g4::eV 6
+              2.298*g4::eV 7
+              2.341*g4::eV 8
+              2.386*g4::eV 9
+              2.433*g4::eV 8
+              2.481*g4::eV 7
+              2.532*g4::eV 6
+              2.585*g4::eV 4
+              2.640*g4::eV 3
+              2.697*g4::eV 2
+              2.757*g4::eV 1
+              2.820*g4::eV 0.01
+              2.885*g4::eV 1
+              2.954*g4::eV 2
+              3.026*g4::eV 3
+              3.102*g4::eV 4
+              3.181*g4::eV 5
+              3.265*g4::eV 6
+              3.353*g4::eV 7
+              3.446*g4::eV 8
+              3.545*g4::eV 9
+              3.649*g4::eV 8
+              3.760*g4::eV 7
+              3.877*g4::eV 6
+              4.002*g4::eV 5
+              4.136*g4::eV 4
     "/>
    <matrix name= "MIEHG__Water" coldim="2" values="  
-              1.56962*eV   167024.4*m   
-              1.58974*eV   158726.7*m   
-              1.61039*eV   150742.0*m     
-              1.63157*eV   143062.5*m   
-              1.65333*eV   135680.2*m   
-              1.67567*eV   128587.4*m     
-              1.69863*eV   121776.3*m   
-              1.72222*eV   115239.5*m   
-              1.74647*eV   108969.5*m     
-              1.77142*eV   102958.8*m   
-              1.79710*eV   97200.35*m   
-              1.82352*eV   91686.86*m     
-              1.85074*eV   86411.33*m   
-              1.87878*eV   81366.79*m   
-              1.90769*eV   76546.42*m     
-              1.93749*eV   71943.46*m   
-              1.96825*eV   67551.29*m   
-              1.99999*eV   63363.36*m     
-              2.03278*eV   59373.25*m   
-              2.06666*eV   55574.61*m   
-              2.10169*eV   51961.24*m     
-              2.13793*eV   48527.00*m   
-              2.17543*eV   45265.87*m   
-              2.21428*eV   42171.94*m     
-              2.25454*eV   39239.39*m   
-              2.29629*eV   36462.50*m   
-              2.33962*eV   33835.68*m     
-              2.38461*eV   31353.41*m   
-              2.43137*eV   29010.30*m   
-              2.47999*eV   26801.03*m     
-              2.53061*eV   24720.42*m   
-              2.58333*eV   22763.36*m   
-              2.63829*eV   20924.88*m     
-              2.69565*eV   19200.07*m   
-              2.75555*eV   17584.16*m   
-              2.81817*eV   16072.45*m     
-              2.88371*eV   14660.38*m   
-              2.95237*eV   13343.46*m   
-              3.02438*eV   12117.33*m     
-              3.09999*eV   10977.70*m   
-              3.17948*eV   9920.416*m   
-              3.26315*eV   8941.407*m     
-              3.35134*eV   8036.711*m   
-              3.44444*eV   7202.470*m   
-              3.54285*eV   6434.927*m     
-              3.64705*eV   5730.429*m   
-              3.75757*eV   5085.425*m   
-              3.87499*eV   4496.467*m     
-              3.99999*eV   3960.210*m   
-              4.13332*eV   3473.413*m   
-              4.27585*eV   3032.937*m     
-              4.42856*eV   2635.746*m   
-              4.59258*eV   2278.907*m   
-              4.76922*eV   1959.588*m     
-              4.95999*eV   1675.064*m   
-              5.16665*eV   1422.710*m   
-              5.39129*eV   1200.004*m     
-              5.63635*eV   1004.528*m   
-              5.90475*eV   833.9666*m   
-              6.19998*eV   686.1063*m     
+              1.56962*g4::eV   167024.4*g4::m   
+              1.58974*g4::eV   158726.7*g4::m   
+              1.61039*g4::eV   150742.0*g4::m     
+              1.63157*g4::eV   143062.5*g4::m   
+              1.65333*g4::eV   135680.2*g4::m   
+              1.67567*g4::eV   128587.4*g4::m     
+              1.69863*g4::eV   121776.3*g4::m   
+              1.72222*g4::eV   115239.5*g4::m   
+              1.74647*g4::eV   108969.5*g4::m     
+              1.77142*g4::eV   102958.8*g4::m   
+              1.79710*g4::eV   97200.35*g4::m   
+              1.82352*g4::eV   91686.86*g4::m     
+              1.85074*g4::eV   86411.33*g4::m   
+              1.87878*g4::eV   81366.79*g4::m   
+              1.90769*g4::eV   76546.42*g4::m     
+              1.93749*g4::eV   71943.46*g4::m   
+              1.96825*g4::eV   67551.29*g4::m   
+              1.99999*g4::eV   63363.36*g4::m     
+              2.03278*g4::eV   59373.25*g4::m   
+              2.06666*g4::eV   55574.61*g4::m   
+              2.10169*g4::eV   51961.24*g4::m     
+              2.13793*g4::eV   48527.00*g4::m   
+              2.17543*g4::eV   45265.87*g4::m   
+              2.21428*g4::eV   42171.94*g4::m     
+              2.25454*g4::eV   39239.39*g4::m   
+              2.29629*g4::eV   36462.50*g4::m   
+              2.33962*g4::eV   33835.68*g4::m     
+              2.38461*g4::eV   31353.41*g4::m   
+              2.43137*g4::eV   29010.30*g4::m   
+              2.47999*g4::eV   26801.03*g4::m     
+              2.53061*g4::eV   24720.42*g4::m   
+              2.58333*g4::eV   22763.36*g4::m   
+              2.63829*g4::eV   20924.88*g4::m     
+              2.69565*g4::eV   19200.07*g4::m   
+              2.75555*g4::eV   17584.16*g4::m   
+              2.81817*g4::eV   16072.45*g4::m     
+              2.88371*g4::eV   14660.38*g4::m   
+              2.95237*g4::eV   13343.46*g4::m   
+              3.02438*g4::eV   12117.33*g4::m     
+              3.09999*g4::eV   10977.70*g4::m   
+              3.17948*g4::eV   9920.416*g4::m   
+              3.26315*g4::eV   8941.407*g4::m     
+              3.35134*g4::eV   8036.711*g4::m   
+              3.44444*g4::eV   7202.470*g4::m   
+              3.54285*g4::eV   6434.927*g4::m     
+              3.64705*g4::eV   5730.429*g4::m   
+              3.75757*g4::eV   5085.425*g4::m   
+              3.87499*g4::eV   4496.467*g4::m     
+              3.99999*g4::eV   3960.210*g4::m   
+              4.13332*g4::eV   3473.413*g4::m   
+              4.27585*g4::eV   3032.937*g4::m     
+              4.42856*g4::eV   2635.746*g4::m   
+              4.59258*g4::eV   2278.907*g4::m   
+              4.76922*g4::eV   1959.588*g4::m     
+              4.95999*g4::eV   1675.064*g4::m   
+              5.16665*g4::eV   1422.710*g4::m   
+              5.39129*g4::eV   1200.004*g4::m     
+              5.63635*g4::eV   1004.528*g4::m   
+              5.90475*g4::eV   833.9666*g4::m   
+              6.19998*g4::eV   686.1063*g4::m     
     "/>
    <ignore>
     <matrix name= "REFLECTIVITY__Water" coldim="2" values="  
-              2.034*eV 
-              2.068*eV 
-              2.103*eV 
-              2.139*eV 
-              2.177*eV 
-              2.216*eV 
-              2.256*eV 
-              2.298*eV 
-              2.341*eV 
-              2.386*eV 
-              2.433*eV 
-              2.481*eV 
-              2.532*eV 
-              2.585*eV 
-              2.640*eV 
-              2.697*eV 
-              2.757*eV 
-              2.820*eV 
-              2.885*eV 
-              2.954*eV 
-              3.026*eV 
-              3.102*eV 
-              3.181*eV 
-              3.265*eV 
-              3.353*eV 
-              3.446*eV 
-              3.545*eV 
-              3.649*eV 
-              3.760*eV 
-              3.877*eV 
-              4.002*eV 
-              4.136*eV 
+              2.034*g4::eV 
+              2.068*g4::eV 
+              2.103*g4::eV 
+              2.139*g4::eV 
+              2.177*g4::eV 
+              2.216*g4::eV 
+              2.256*g4::eV 
+              2.298*g4::eV 
+              2.341*g4::eV 
+              2.386*g4::eV 
+              2.433*g4::eV 
+              2.481*g4::eV 
+              2.532*g4::eV 
+              2.585*g4::eV 
+              2.640*g4::eV 
+              2.697*g4::eV 
+              2.757*g4::eV 
+              2.820*g4::eV 
+              2.885*g4::eV 
+              2.954*g4::eV 
+              3.026*g4::eV 
+              3.102*g4::eV 
+              3.181*g4::eV 
+              3.265*g4::eV 
+              3.353*g4::eV 
+              3.446*g4::eV 
+              3.545*g4::eV 
+              3.649*g4::eV 
+              3.760*g4::eV 
+              3.877*g4::eV 
+              4.002*g4::eV 
+              4.136*g4::eV 
     "/>
     </ignore>
   </properties>
@@ -329,14 +333,14 @@
       <property name="FASTCOMPONENT" ref="FASTCOMPONENT__Water"/>
       <property name="SLOWCOMPONENT" ref="SLOWCOMPONENT__Water"/>
       <property name="MIEHG"         ref="MIEHG__Water"/>
-      <const_property name="SCINTILLATIONYIELD"  value="50.0/MeV"/>
-      <const_property name="RESOLUTIONSCALE"     value="1.0"/>
-      <const_property name="FASTTIMECONSTANT"    value="1.0*ns"/>
-      <const_property name="SLOWTIMECONSTANT"    value="10.0*ns"/>
-      <const_property name="YIELDRATIO"          value="0.8"/>
-      <const_property name="MIEHG_FORWARD"       value="0.99"/>
-      <const_property name="MIEHG_BACKWARD"      value="0.99"/>
-      <const_property name="MIEHG_FORWARD_RATIO" value="0.8"/>
+      <constant name="SCINTILLATIONYIELD"  value="50.0/g4::MeV"/>
+      <constant name="RESOLUTIONSCALE"     value="1.0"/>
+      <constant name="FASTTIMECONSTANT"    value="1.0*g4::ns"/>
+      <constant name="SLOWTIMECONSTANT"    value="10.0*g4::ns"/>
+      <constant name="YIELDRATIO"          value="0.8"/>
+      <constant name="MIEHG_FORWARD"       value="0.99"/>
+      <constant name="MIEHG_BACKWARD"      value="0.99"/>
+      <constant name="MIEHG_FORWARD_RATIO" value="0.8"/>
     </material>
   </materials>
 
@@ -347,15 +351,15 @@
 
   <surfaces>
     <alt___opticalsurface name="/world/BubbleDevice#WaterSurface" finish="ground" model="unified" type="dielectric_dielectric">
-      <property name="RINDEX"                  coldim="2" values="2.034*eV  1.35  4.136*eV  1.40"/>
-      <property name="SPECULARLOBECONSTANT"    coldim="2" values="2.034*eV  0.3   4.136*eV  0.3 "/>
-      <property name="SPECULARSPIKECONSTANT"   coldim="2" values="2.034*eV  0.2   4.136*eV  0.2 "/>
-      <property name="BACKSCATTERCONSTANT"     coldim="2" values="2.034*eV  0.2   4.136*eV  0.2 "/>
+      <property name="RINDEX"                  coldim="2" values="2.034*g4::eV  1.35  4.136*g4::eV  1.40"/>
+      <property name="SPECULARLOBECONSTANT"    coldim="2" values="2.034*g4::eV  0.3   4.136*g4::eV  0.3 "/>
+      <property name="SPECULARSPIKECONSTANT"   coldim="2" values="2.034*g4::eV  0.2   4.136*g4::eV  0.2 "/>
+      <property name="BACKSCATTERCONSTANT"     coldim="2" values="2.034*g4::eV  0.2   4.136*g4::eV  0.2 "/>
     </alt___opticalsurface>
     <opticalsurface name="/world/BubbleDevice#WaterSurface" finish="Rough_LUT" model="DAVIS" type="dielectric_LUTDAVIS"/>
     <opticalsurface name="/world/BubbleDevice#AirSurface" finish="polished" model="glisur" type="dielectric_dielectric">
-      <property name="REFLECTIVITY"            coldim="2" values="2.034*eV  0.3   4.136*eV  0.5"/>
-      <property name="EFFICIENCY"              coldim="2" values="2.034*eV  0.8   4.136*eV  1.0"/>
+      <property name="REFLECTIVITY"            coldim="2" values="2.034*g4::eV  0.3   4.136*g4::eV  0.5"/>
+      <property name="EFFICIENCY"              coldim="2" values="2.034*g4::eV  0.8   4.136*g4::eV  1.0"/>
     </opticalsurface>
   </surfaces>
 
