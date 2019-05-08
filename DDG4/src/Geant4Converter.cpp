@@ -401,9 +401,6 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         mat = new G4Material(name, z, a, density, state, 
                              material->GetTemperature(), material->GetPressure());
       }
-      stringstream str;
-      str << (*mat);
-      printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       /// Attach the material properties if any
       G4MaterialPropertiesTable* tab = 0;
@@ -447,6 +444,14 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         tab->AddConstProperty(n->GetName(), v);
       }
 #endif
+      auto* ionization = mat->GetIonisation();
+      stringstream str;
+      str << (*mat) << endl;
+      if ( ionization )
+        str << "              log(MEE): " << ionization->GetLogMeanExcEnergy();
+      else
+        str << "              log(MEE): UNKNOWN";
+      printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
     }
     info.g4Materials[medium] = mat;
   }
