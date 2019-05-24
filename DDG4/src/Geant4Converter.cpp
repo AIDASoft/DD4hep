@@ -92,6 +92,7 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4MaterialPropertiesTable.hh"
+#include "G4MaterialPropertiesIndex.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
