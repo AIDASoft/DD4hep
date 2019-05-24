@@ -92,7 +92,9 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4MaterialPropertiesTable.hh"
+#if G4VERSION_NUMBER>1030
 #include "G4MaterialPropertiesIndex.hh"
+#endif
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
@@ -270,6 +272,7 @@ namespace {
 
 
   pair<double,double> g4PropertyConversion(int index)   {
+#if G4VERSION_NUMBER>1030
     switch(index)  {
     case kRINDEX:                         return make_pair(CLHEP::keV/units::keV, 1.0);
     case kREFLECTIVITY:                   return make_pair(CLHEP::keV/units::keV, 1.0);
@@ -298,10 +301,14 @@ namespace {
       break;
     }
     printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d", index);
+#else
+    printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d [Need Geant4 > 10.03]", index);
+#endif
     return make_pair(0e0,0e0);
   }
 
   double g4ConstPropertyConversion(int index)   {
+#if G4VERSION_NUMBER>1030
     switch(index)   {
     case kSURFACEROUGHNESS:            return 1.0;  // ??
     case kISOTHERMAL_COMPRESSIBILITY:  return 1.0;  // ??
@@ -340,6 +347,9 @@ namespace {
       break;
     }
     printout(FATAL,"Geant4Converter", "+++ Cannot convert CONST material property with index: %d", index);
+#else
+    printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d [Need Geant4 > 10.03]", index);
+#endif
     return 0.0;
   }
 }
