@@ -92,7 +92,7 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4MaterialPropertiesTable.hh"
-#if G4VERSION_NUMBER>1030
+#if G4VERSION_NUMBER >= 1040
 #include "G4MaterialPropertiesIndex.hh"
 #endif
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -272,7 +272,7 @@ namespace {
 
 
   pair<double,double> g4PropertyConversion(int index)   {
-#if G4VERSION_NUMBER>1030
+#if G4VERSION_NUMBER >= 1040
     switch(index)  {
     case kRINDEX:                         return make_pair(CLHEP::keV/units::keV, 1.0);
     case kREFLECTIVITY:                   return make_pair(CLHEP::keV/units::keV, 1.0);
@@ -308,7 +308,7 @@ namespace {
   }
 
   double g4ConstPropertyConversion(int index)   {
-#if G4VERSION_NUMBER>1030
+#if G4VERSION_NUMBER >= 1040
     switch(index)   {
     case kSURFACEROUGHNESS:            return 1.0;  // ??
     case kISOTHERMAL_COMPRESSIBILITY:  return 1.0;  // ??
