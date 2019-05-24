@@ -51,12 +51,16 @@ dd4hep_enable_tests (
   ClientTests
   Conditions
   DDG4
-  #OpticalSurfaces
   Persistency
   SimpleDetector
   DDG4_MySensDet
   DDCodex
   )
+if ( "${ROOT_VERSION}" VERSION_GREATER "6.17.00" )
+  dd4hep_enable_tests (
+    OpticalSurfaces
+    )
+endif()
 #
 # XercesC dependent stuff
 if ( DD4HEP_USE_XERCESC )
