@@ -10,7 +10,7 @@ class Physics( ConfigHelper ):
   def __init__( self ):
     super(Physics, self).__init__()
     self._rangecut = 0.7*mm
-    self.list ="FTFP_BERT"
+    self._list = "FTFP_BERT"
     self._decays = False
     self._pdgfile = None
     self._rejectPDGs = {1,2,3,4,5,6,21,23,24,25}
@@ -87,6 +87,14 @@ class Physics( ConfigHelper ):
   @decays.setter
   def decays(self, val):
     self._decays = val
+
+  @property
+  def list(self):
+    """The name of the Geant4 Physics list."""
+    return self._list
+  @list.setter
+  def list(self, val):
+    self._list = val
 
   def setupPhysics( self, kernel, name=None):
     seq = kernel.physicsList()
