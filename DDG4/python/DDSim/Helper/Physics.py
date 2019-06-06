@@ -11,7 +11,7 @@ class Physics( ConfigHelper ):
     super(Physics, self).__init__()
     self._rangecut = 0.7*mm
     self.list ="FTFP_BERT"
-    self.decays = True
+    self._decays = False
     self._pdgfile = None
     self._rejectPDGs = {1,2,3,4,5,6,21,23,24,25}
     self._zeroTimePDGs = {11, 13, 15, 17}
@@ -77,6 +77,16 @@ class Physics( ConfigHelper ):
       raise RuntimeError( "PDGFile: %s not found" % os.path.abspath( val ) )
     self._pdgfile = os.path.abspath( val )
 
+  @property
+  def decays(self):
+    """If true, add decay processes for all particles.
+
+    Only enable when creating a physics list not based on an existing Geant4 list!
+    """
+    return self._decays
+  @decays.setter
+  def decays(self, val):
+    self._decays = val
 
   def setupPhysics( self, kernel, name=None):
     seq = kernel.physicsList()
