@@ -154,10 +154,8 @@ void Geant4ExtraParticles::constructProcess(Constructor& ctor) {
       if (pdef->GetPDGCharge() != 0) {
         pmgr->AddProcess(new G4hMultipleScattering(), -1,  1, 1); //multiple scattering
         pmgr->AddProcess(new G4hIonisation(),  -1,  2, 2); // ionisation
-        pmgr->AddProcess(new G4Decay(),   -1, -1, 2); // decay 
       } else {
-        //	pmgr->AddProcess(new G4hMultipleScattering(), -1,  1, 1); // multiple scattering
-        pmgr->AddProcess(new G4Decay(),   -1, -1, 2); // decay 
+        //nothing to do
       }
     }
   }
