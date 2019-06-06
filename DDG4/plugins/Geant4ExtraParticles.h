@@ -40,9 +40,6 @@ namespace dd4hep {
 
     private:
       std::string m_pdgfile;    
-      G4Decay* m_decay; 	 
-      G4hIonisation* m_ionise; 	 
-      G4hMultipleScattering* m_scatter;
     };
   }
 }

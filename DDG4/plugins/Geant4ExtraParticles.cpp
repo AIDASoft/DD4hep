@@ -28,32 +28,20 @@
 #include "G4PhysicalConstants.hh"
 #include "G4Version.hh"
 
-#include "DDG4/Factories.h"
 #include <fstream>
 #include <sstream>
 #include <string>
 
-
-#include "G4RunManager.hh"
-
 using namespace dd4hep::sim;
 
 Geant4ExtraParticles::Geant4ExtraParticles(Geant4Context* ctxt, const std::string& nam)
-  : Geant4PhysicsConstructor(ctxt, nam), m_decay(0), m_ionise(0), m_scatter(0)
+  : Geant4PhysicsConstructor(ctxt, nam)
 {
   declareProperty("pdgfile", m_pdgfile);
 }
 
-Geant4ExtraParticles::~Geant4ExtraParticles()   {
-  detail::deletePtr(m_decay);
-  detail::deletePtr(m_ionise);
-  detail::deletePtr(m_scatter);
-}
+Geant4ExtraParticles::~Geant4ExtraParticles() {}
 
-// bool Geant4ExtraParticles::FileExists() {
-//   std::ifstream pdgFile( m_pdgfile.c_str(), std::ifstream::in );
-//   return pdgFile.is_open();
-// }
 
 void Geant4ExtraParticles::constructParticle(Constructor& ) {
   if (m_pdgfile.empty()) return;
@@ -159,36 +147,17 @@ void Geant4ExtraParticles::constructParticle(Constructor& ) {
 
 void Geant4ExtraParticles::constructProcess(Constructor& ctor) {
   G4ParticleTable::G4PTblDicIterator* ParticleIterator = ctor.particleIterator();
-#if G4VERSION_NUMBER < 940
-  if ( 0 == _scatter ) _scatter=new G4hMultipleScattering();
-  if ( 0 == _ionise ) _ionise=new G4hIonisation()
-  if ( 0 == _decay ) _decay=new G4Decay()
-#endif
   while((*ParticleIterator)()) {
     G4ParticleDefinition* pdef = ParticleIterator->value();
     G4ProcessManager* pmgr = pdef->GetProcessManager();
     if (pdef->GetParticleType() == "extra") {
       if (pdef->GetPDGCharge() != 0) {
-#if G4VERSION_NUMBER < 940
-        pmgr->AddProcess(_scatter, -1,  1, 1); // multiple scattering
-        pmgr->AddProcess(_ionise,  -1,  2, 2); // ionisation
-        pmgr->AddProcess(_decay,   -1, -1, 2); // decay
-#else
         pmgr->AddProcess(new G4hMultipleScattering(), -1,  1, 1); //multiple scattering
         pmgr->AddProcess(new G4hIonisation(),  -1,  2, 2); // ionisation
         pmgr->AddProcess(new G4Decay(),   -1, -1, 2); // decay 
-#endif
-
       } else {
-
-#if G4VERSION_NUMBER < 940
-        pmgr->AddProcess(_scatter=new G4hMultipleScattering(), -1,  1, 1); // multiple scattering
-        pmgr->AddProcess(_decay=new G4Decay(),   -1, -1, 2); // decay
-#else
         //	pmgr->AddProcess(new G4hMultipleScattering(), -1,  1, 1); // multiple scattering
         pmgr->AddProcess(new G4Decay(),   -1, -1, 2); // decay 
-#endif
-
       }
     }
   }
