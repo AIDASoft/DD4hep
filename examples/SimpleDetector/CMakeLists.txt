@@ -27,10 +27,10 @@ dd4hep_configure_scripts(SimpleDetector DEFAULT_SETUP WITH_TESTS)
 
 #***  Testing  *********************************************************************
 foreach (test Simple_ILD)
-  dd4hep_add_test_reg( SimpleDetector_converter_gdml
-    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
-    EXEC_ARGS  geoConverter -compact2gdml -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml -output file:${test}.gdml
-    REGEX_PASS " Successfully extracted GDML to")
+##  dd4hep_add_test_reg( SimpleDetector_converter_gdml
+##    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
+##    EXEC_ARGS  geoConverter -compact2gdml -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml -output file:${test}.gdml
+##    REGEX_PASS " Successfully extracted GDML to")
   foreach( type description vis )
     dd4hep_add_test_reg( SimpleDetector_converter_${type}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
