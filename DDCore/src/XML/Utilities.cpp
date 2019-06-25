@@ -222,7 +222,7 @@ void  dd4hep::xml::setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElem
     printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector :%s set to 0x%x", det_name.c_str(), typeFlag ) ; 
     sdet.setTypeFlag( typeFlag ) ;
   }
-  catch(std::runtime_error)   {
+  catch(const std::runtime_error& )   {
     printout(INFO,"Utilities",
              "+++ setDetectorTypeFlags for detector :%s no xml element <type_flags/> found - nothing to set ",
              det_name.c_str() ) ; 

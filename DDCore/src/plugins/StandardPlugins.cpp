@@ -947,6 +947,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
     bool             m_printShapes         = false;
     bool             m_printPointers       = false;
     bool             m_printPositions      = false;
+    bool             m_printVis            = false;
     bool             m_printMaterials      = false;
     bool             m_printSensitivesOnly = false;
     long             m_printMaxLevel       = 999999;
@@ -976,6 +977,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         else if ( ::strncmp(p,"shapes",3)     == 0  ) m_printShapes         = true;
         else if ( ::strncmp(p,"sensitive",3)  == 0  ) m_printSensitivesOnly = true;
         else if ( ::strncmp(p,"topstats",3)   == 0  ) m_topStat             = true;
+        else if ( ::strncmp(p,"vis",3)        == 0  ) m_printVis            = true;
         else if ( ::strncmp(p,"detector",3)   == 0  ) m_detector            = av[++i];
         else if ( ::strncmp(p,"help",3)       == 0  )   {
           cout <<
@@ -988,6 +990,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
             "     -materials         Print volume materials                                      \n"       
             "     -pointers          Debug: Print pointer values                                 \n"       
             "     -shapes            Print shape information                                     \n"
+            "     -vis               Print visualisation attribute name(s) if present            \n"
             "     -sensitive         Only print information for sensitive volumes                \n"
             "     -topstats          Print statistics about top level node                       \n"       
             "\tArguments given: " << arguments(ac,av) << endl << flush;
@@ -1001,6 +1004,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       printout(ALWAYS,"VolumeDump","+++ Printing shapes:       %s",yes_no(m_printShapes));
       printout(ALWAYS,"VolumeDump","+++ Printing materials:    %s",yes_no(m_printMaterials));
       printout(ALWAYS,"VolumeDump","+++ Printing volume ids:   %s",yes_no(m_printVolIDs));
+      printout(ALWAYS,"VolumeDump","+++ Printing visattrs:     %s",yes_no(m_printVis));
       printout(ALWAYS,"VolumeDump","+++ Print only sensitives: %s",yes_no(m_printSensitivesOnly));
     }
     ~Actor()  {
@@ -1137,6 +1141,9 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
           ::snprintf(fmt, sizeof(fmt), " <ERROR: INVALID Translation matrix> ");
         }
         log << fmt << " \t";
+      }
+      if ( m_printVis && pv.volume().visAttributes().isValid() )   {
+        log << " Vis:" << pv.volume().visAttributes().name();
       }
       if ( !log.str().empty() )  {
         ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%s",level+1,2*level+1);
