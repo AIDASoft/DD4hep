@@ -229,4 +229,21 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hep_ROOTGDMLExtract,gdml_extract)
 
+/// Factory for backwards compatibility
+static long create_gdml_from_dd4hep(Detector& description, int argc, char** argv) {
+  if ( argc > 0 )    {
+    string output = argv[0];
+    if ( output.substr(0,5) == "file:" ) output = output.substr(6);
+    const char* av[] = {"DD4hepGeometry2GDML", "-output", output.c_str(), "-path", "/world", 0};
+    if ( 1 == gdml_extract(description, 5, (char**)av) )   {
+      printout(INFO,"Geometry2GDML","+++ Successfully extracted GDML to %s",output.c_str());
+      return 1;
+    }
+    except("Geometry2GDML","+++ FAILED to extract GDML file %s.",output.c_str());
+  }
+  except("Geometry2GDML","+++ No output file name given.");
+  return 0;
+}
+DECLARE_APPLY(DD4hepGeometry2GDML, create_gdml_from_dd4hep)
+
 #endif
