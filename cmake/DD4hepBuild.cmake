@@ -902,7 +902,7 @@ function( dd4hep_package packageName )
       #
       list(APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/include )
       foreach( inc ${ARG_INCLUDE_DIRS} )
-        list( APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
+        list(INSERT used_incs 0 ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
       endforeach()
       #
       #  Build the list of link libraries required to build the package library and plugins etc.
