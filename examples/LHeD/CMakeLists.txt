@@ -38,7 +38,13 @@ dd4hep_configure_scripts(LHeD DEFAULT_SETUP WITH_TESTS)
 #---Testing-------------------------------------------------------------------------
 #
 #----- Tests for LHeD: here we simply require that at least 100 volumes have been converted
-foreach ( typ description gdml vis )
+dd4hep_add_test_reg ( "LHeD_converter_gdml_LONGTEST" 
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
+  EXEC_ARGS  geoConverter -compact2gdml 
+                          -input file:${LHeDEx_INSTALL}/compact/compact.xml
+                          -output file:LHeD.gdml
+  REGEX_PASS " Successfully extracted GDML to" )
+foreach ( typ description vis )
   dd4hep_add_test_reg ( "LHeD_converter_${typ}_LONGTEST" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 
