@@ -10,8 +10,8 @@
 #
 #=================================================================================
 dd4hep_package(    DDCore
-  USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
-                   DDParsers
+  USES             DDParsers
+                   [ROOT REQUIRED COMPONENTS Geom GenVector]
   OPTIONAL         XERCESC
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDSegmentation

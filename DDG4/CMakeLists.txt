@@ -9,9 +9,10 @@
 #
 #==========================================================================
 dd4hep_package(    DDG4
-  USES            [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
-                  [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-                   BOOST DDCore
+  USES             DDCore
+                   [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
+                   [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
+                   BOOST
   OPTIONAL         ${CLHEP} [XercesC QUIET]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDG4 )
