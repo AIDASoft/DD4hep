@@ -33,12 +33,12 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector /
   xml_det_t x_bubble = x_det.child(_Unicode(bubble));
 
   Box    tank_box(x_tank.x(), x_tank.y(), x_tank.z());
-  Volume tank_vol("Tank",tank_box,description.material(x_tank.attr<string>(_U(material))));
+  Volume tank_vol("Tank",tank_box,description.material(x_tank.materialStr()));
   Box    bubble_box(x_bubble.x(), x_bubble.y(), x_bubble.z());
-  Volume bubble_vol("Bubble",bubble_box,description.material(x_bubble.attr<string>(_U(material))));
+  Volume bubble_vol("Bubble",bubble_box,description.material(x_bubble.materialStr()));
 
-  tank_vol.setVisAttributes(description, x_tank.attr<string>(_U(vis)));
-  bubble_vol.setVisAttributes(description, x_bubble.attr<string>(_U(vis)));
+  tank_vol.setVisAttributes(description, x_tank.visStr());
+  bubble_vol.setVisAttributes(description, x_bubble.visStr());
   
   PlacedVolume bubblePlace = tank_vol.placeVolume(bubble_vol);
   PlacedVolume tankPlace   = description.pickMotherVolume(sdet).placeVolume(tank_vol);

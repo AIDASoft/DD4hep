@@ -270,12 +270,12 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
                                             IOV* effective_iov)   const
 {
   if ( !extract_context.empty() )   {
-    struct Scanner : public Condition::Processor   {
+    struct DeltaScanner : public Condition::Processor   {
       OrderedDeltas& delta_conditions;
       ExtractContext& extract_context;
       IOV* effective_iov = 0;
       /// Constructor
-      Scanner(OrderedDeltas& d, ExtractContext& e, IOV* eff_iov)
+      DeltaScanner(OrderedDeltas& d, ExtractContext& e, IOV* eff_iov)
         : delta_conditions(d), extract_context(e), effective_iov(eff_iov) {}
       /// Conditions callback for object processing
       virtual int process(Condition c)  const override  {
@@ -295,7 +295,7 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
         return 0;
       }
     };
-    Scanner scanner(deltas,extract_context,effective_iov);
+    DeltaScanner scanner(deltas,extract_context,effective_iov);
     ctxt.resolver->conditionsMap().scan(scanner);
     return deltas.size();
   }

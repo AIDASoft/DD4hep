@@ -623,7 +623,7 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
   return 0;
 }
 
-static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
+PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   if ( !parent )   {
     except("dd4hep","Volume: Attempt to assign daughters to an invalid physical parent volume.");
@@ -659,7 +659,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeo
   return PlacedVolume(n);
 }
 
-static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
+PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
   TObjArray* a = par ? par->GetNodes() : 0;
   Int_t id = (a ? a->GetEntries() : 0);
   return _addNode(par, daughter, id, transform);

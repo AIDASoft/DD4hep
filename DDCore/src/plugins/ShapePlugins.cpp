@@ -524,6 +524,66 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     solid->SetName(shape.typeStr().c_str());
     printout(INFO,"TestShape","Created successfull shape of type: %s",
              shape.typeStr().c_str());
+    bool instance_test = false;
+    if ( 0 == strcasecmp(solid->GetTitle(),"box") )
+      instance_test = instanceOf<Box>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Tube") )
+      instance_test = instanceOf<Tube>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"CutTube") )
+      instance_test = instanceOf<CutTube>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Cone") )
+      instance_test = instanceOf<Cone>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Trap") )
+      instance_test = instanceOf<Trap>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Trd1") )
+      instance_test = instanceOf<Trd1>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Trd2") )
+      instance_test = instanceOf<Trd2>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Torus") )
+      instance_test = instanceOf<Torus>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Sphere") )
+      instance_test = instanceOf<Sphere>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"HalfSpace") )
+      instance_test = instanceOf<HalfSpace>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"ConeSegment") )
+      instance_test = instanceOf<ConeSegment>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Paraboloid") )
+      instance_test = instanceOf<Paraboloid>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Hyperboloid") )
+      instance_test = instanceOf<Hyperboloid>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"PolyhedraRegular") )
+      instance_test = instanceOf<PolyhedraRegular>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Polyhedra") )
+      instance_test = instanceOf<Polyhedra>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"EllipticalTube") )
+      instance_test = instanceOf<EllipticalTube>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"ExtrudedPolygon") )
+      instance_test = instanceOf<ExtrudedPolygon>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Polycone") )
+      instance_test = instanceOf<Polycone>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"EightPointSolid") )
+      instance_test = instanceOf<EightPointSolid>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"SubtractionSolid") )
+      instance_test = instanceOf<SubtractionSolid>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"UnionSolid") )
+      instance_test = instanceOf<UnionSolid>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"IntersectionSolid") )
+      instance_test = instanceOf<IntersectionSolid>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"TruncatedTube") )
+      instance_test = instanceOf<TruncatedTube>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"PseudoTrap") )
+      instance_test = instanceOf<PseudoTrap>(solid);
+
+    if ( !instance_test || ::strcasecmp(shape.typeStr().c_str(),solid->GetTitle()) )   {
+      printout(ERROR,"TestShape","BAD shape type: %s <-> %s Instance test: %s",
+               shape.typeStr().c_str(), solid->GetTitle(),
+               instance_test ? "OK" : "FAILED");
+    }
+    else   {
+      printout(INFO,"TestShape","Correct shape type: %s <-> %s Instance test: %s",
+               shape.typeStr().c_str(), solid->GetTitle(),
+               instance_test ? "OK" : "FAILED");
+    }
   }
   pv = description.worldVolume().placeVolume(assembly);
   det.setPlacement(pv);
