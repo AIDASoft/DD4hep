@@ -526,7 +526,7 @@ Document DocumentHandler::load(Handle_t base, const XmlChar* fname, UriReader* r
 }
 
 /// Parse a standalong XML string into a document.
-Document DocumentHandler::parse(const char* bytes, size_t /* length */, const char* /* sys_id */, UriReader* reader) const {
+Document DocumentHandler::parse(const char* bytes, size_t length, const char* /* sys_id */, UriReader* reader) const {
   if ( reader )   {
     printout(WARNING,"DocumentHandler","+++ Parsing memory document %s",
              "[URI Resolution is not supported by TiXML]");
@@ -534,22 +534,23 @@ Document DocumentHandler::parse(const char* bytes, size_t /* length */, const ch
   TiXmlDocument* doc = new TiXmlDocument();
   try  {
     if ( bytes )   {
-      size_t len = ::strlen(bytes);
+      size_t str_len = ::strlen(bytes);
+      size_t len = length;
       // TiXml does not support white spaces at the end. Check and remove.
-      if ( bytes[len-1] != 0 || ::isspace(bytes[len-2]) )   {
-        char* buff = new char[len+1];
+      if ( str_len+1 != len || bytes[str_len] != 0 || ::isspace(bytes[str_len-1]) )   {
+        unique_ptr<char[]> data(new char[len+1]);
+        char* buff = data.get();
         try  {
           ::memcpy(buff, bytes, len+1);
           buff[len] = 0;
-          for(size_t i=len-1; ::isspace(buff[i]); --i) buff[i] = 0;
+          for(size_t i=len-1; i>0 && (buff[i]==0 || ::isspace(buff[i])); --i)
+            buff[i] = 0;
           if ( 0 == doc->Parse(buff) ) {
-            delete [] buff;
             return (XmlDocument*)doc;
           }
         }
         catch(...)   {
         }
-        delete [] buff;
       }
       if ( 0 == doc->Parse(bytes) ) {
         return (XmlDocument*)doc;

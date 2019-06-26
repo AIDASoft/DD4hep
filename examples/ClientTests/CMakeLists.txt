@@ -178,7 +178,8 @@ foreach (test Box Cone ConeSegment Tube ElTube
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoDisplay file:${ClientTestsEx_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
-      REGEX_PASS "Shape verification SUCCESSFUL." )
+      REGEX_PASS "Shape verification SUCCESSFUL."
+      REGEX_FAIL "ERROR" )
 endforeach()
 #
 #  Test Volume division procedure.
@@ -204,7 +205,13 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
       REGEX_PASS "\\+\\+\\+ Checked [1-9][0-9]* materials in volume placements.   0 are BAD." )
             
   # Test format conversions
-  foreach( type description gdml vis )
+  ##dd4hep_add_test_reg( ClientTests_converter_gdml_${test}
+  ##  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  ##  EXEC_ARGS  geoConverter -compact2gdml
+  ##                          -input file:${ClientTestsEx_INSTALL}/compact/${test}.xml
+  ##                          -output file:${test}.gdml
+  ##  REGEX_PASS " Successfully extracted GDML to" )
+  foreach( type description vis )
     dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}

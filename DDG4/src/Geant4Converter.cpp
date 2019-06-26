@@ -92,6 +92,9 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4MaterialPropertiesTable.hh"
+#if G4VERSION_NUMBER >= 1040
+#include "G4MaterialPropertiesIndex.hh"
+#endif
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
@@ -266,6 +269,89 @@ namespace {
         printout(DEBUG, "Region", "Name:%s", region.name());
     }
   };
+
+
+  pair<double,double> g4PropertyConversion(int index)   {
+#if G4VERSION_NUMBER >= 1040
+    switch(index)  {
+    case kRINDEX:                         return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kREFLECTIVITY:                   return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kREALRINDEX:                     return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kIMAGINARYRINDEX:                return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kEFFICIENCY:                     return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kTRANSMITTANCE:                  return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kSPECULARLOBECONSTANT:           return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kSPECULARSPIKECONSTANT:          return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kBACKSCATTERCONSTANT:            return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kGROUPVEL:                       return make_pair(CLHEP::keV/units::keV, 1.0);  // ???  meter/second ?
+    case kMIEHG:                          return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kRAYLEIGH:                       return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);  // ??? says its a length
+    case kWLSCOMPONENT:                   return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kWLSABSLENGTH:                   return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kABSLENGTH:                      return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kFASTCOMPONENT:                  return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kSLOWCOMPONENT:                  return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kPROTONSCINTILLATIONYIELD:       return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV); // Yields: 1/energy
+    case kDEUTERONSCINTILLATIONYIELD:     return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kTRITONSCINTILLATIONYIELD:       return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kALPHASCINTILLATIONYIELD:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kIONSCINTILLATIONYIELD:          return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kELECTRONSCINTILLATIONYIELD:     return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    default:
+      break;
+    }
+    printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d", index);
+#else
+    printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d [Need Geant4 > 10.03]", index);
+#endif
+    return make_pair(0e0,0e0);
+  }
+
+  double g4ConstPropertyConversion(int index)   {
+#if G4VERSION_NUMBER >= 1040
+    switch(index)   {
+    case kSURFACEROUGHNESS:            return 1.0;  // ??
+    case kISOTHERMAL_COMPRESSIBILITY:  return 1.0;  // ??
+    case kRS_SCALE_FACTOR:             return 1.0;  // ??
+    case kWLSMEANNUMBERPHOTONS:        return 1.0;  // ??
+    case kWLSTIMECONSTANT:             return CLHEP::second/units::second;
+    case kMIEHG_FORWARD:               return 1.0;
+    case kMIEHG_BACKWARD:              return 1.0;
+    case kMIEHG_FORWARD_RATIO:         return 1.0;
+    case kSCINTILLATIONYIELD:          return units::keV/CLHEP::keV;
+    case kRESOLUTIONSCALE:             return 1.0;
+    case kFASTTIMECONSTANT:            return CLHEP::second/units::second;
+    case kFASTSCINTILLATIONRISETIME:   return CLHEP::second/units::second;
+    case kSLOWTIMECONSTANT:            return CLHEP::second/units::second;
+    case kSLOWSCINTILLATIONRISETIME:   return CLHEP::second/units::second;
+    case kYIELDRATIO:                  return 1.0;
+    case kFERMIPOT:                    return CLHEP::keV/units::keV;
+    case kDIFFUSION:                   return 1.0;
+    case kSPINFLIP:                    return 1.0;
+    case kLOSS:                        return 1.0;  // ??
+    case kLOSSCS:                      return CLHEP::barn/units::barn;  // ??
+    case kABSCS:                       return CLHEP::barn/units::barn;  // ??
+    case kSCATCS:                      return CLHEP::barn/units::barn;  // ??
+    case kMR_NBTHETA:                  return 1.0;
+    case kMR_NBE:                      return 1.0;
+    case kMR_RRMS:                     return 1.0;  // ??
+    case kMR_CORRLEN:                  return CLHEP::m/units::m;
+    case kMR_THETAMIN:                 return 1.0;
+    case kMR_THETAMAX:                 return 1.0;
+    case kMR_EMIN:                     return CLHEP::keV/units::keV;
+    case kMR_EMAX:                     return CLHEP::keV/units::keV;
+    case kMR_ANGNOTHETA:               return 1.0;
+    case kMR_ANGNOPHI:                 return 1.0;
+    case kMR_ANGCUT:                   return 1.0;
+    default:
+      break;
+    }
+    printout(FATAL,"Geant4Converter", "+++ Cannot convert CONST material property with index: %d", index);
+#else
+    printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d [Need Geant4 > 10.03]", index);
+#endif
+    return 0.0;
+  }
 }
 
 /// Initializing Constructor
@@ -418,8 +504,23 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
           tab = new G4MaterialPropertiesTable();
           mat->SetMaterialPropertiesTable(tab);
         }
+        int idx = tab->GetPropertyIndex(n->GetName(), false);
+        if ( idx < 0 )   {
+          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", n->GetName());
+          continue;
+        }
+        // We need to convert the property from TGeo units to Geant4 units
+        auto conv = g4PropertyConversion(idx);
+        double* bins = new double[v->bins.size()];
+        double* vals = new double[v->bins.size()];
+        for(size_t i=0, count=v->bins.size(); i<count; ++i)   {
+          bins[i] = v->bins[i] * conv.first;
+          vals[i] = v->values[i] * conv.second;
+        }
         G4MaterialPropertyVector* vec =
-          new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
+          new G4MaterialPropertyVector(bins, vals, v->bins.size());
+        delete [] bins;
+        delete [] vals;
         printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
                  n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
         tab->AddProperty(n->GetName(), vec);
@@ -440,8 +541,15 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
           tab = new G4MaterialPropertiesTable();
           mat->SetMaterialPropertiesTable(tab);
         }
+        int idx = tab->GetConstPropertyIndex(n->GetName(), false);
+        if ( idx < 0 )   {
+          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", n->GetName());
+          continue;
+        }
+        // We need to convert the property from TGeo units to Geant4 units
+        double conv = g4ConstPropertyConversion(idx);
         printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", n->GetName(), v);
-        tab->AddConstProperty(n->GetName(), v);
+        tab->AddConstProperty(n->GetName(), v * conv);
       }
 #endif
       auto* ionization = mat->GetIonisation();

@@ -14,6 +14,7 @@
 // Framework include files
 #include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
+#include "TTimeStamp.h"
 
 // C/C++ include files
 #include <iostream>
@@ -194,8 +195,11 @@ namespace {
         std::vector<const char*>& plug = plugins[i];
         // Remove plugin name and trailing 0x0 from args.
         size_t num_args = plug.size()>2 ? plug.size()-2 : 0;
-
+        TTimeStamp start;
+        char text[32];
         result = run_plugin(description,plug[0],plug.size()-1,(char**)(num_args>0 ? &plug[1] : 0));
+        TTimeStamp stop;
+        ::snprintf(text,sizeof(text),"[%8.3f sec]",stop.AsDouble()-start.AsDouble());
         if ( result == EINVAL )   {
           std::cout << "FAILED to execute dd4hep plugin: '" << plug[0] 
                     << "' with args (" << num_args << ") :[ ";
@@ -205,7 +209,7 @@ namespace {
           std::cout << "]" << std::endl;
           usage_default(name);
         }
-        std::cout << "Executed dd4hep plugin: '" << plug[0]
+        std::cout << "run_plugin: " << text << " Executed dd4hep plugin: '" << plug[0]
                   << "' with args (" << num_args << ") :[ ";
         for(size_t j=1; j<plug.size(); ++j)   {
           if ( plug[j] ) std::cout << plug[j] << " ";
@@ -335,7 +339,11 @@ namespace dd4hep  {
       for(size_t i=0; i<arguments.plugins.size(); ++i)   {
         std::vector<const char*>& plug = arguments.plugins[i];
         int num_args = int(plug.size())-2;
+        TTimeStamp start;
+        char text[32];
         long result = run_plugin(description,plug[0], num_args,(char**)&plug[1]);
+        TTimeStamp stop;
+        ::snprintf(text,sizeof(text),"[%8.3f sec]",stop.AsDouble()-start.AsDouble());
         if ( result == EINVAL )   {
           std::cout << "geoPluginRun: FAILED to execute dd4hep plugin: '" << plug[0] 
                     << "' with args (" << num_args << ") :[ ";
@@ -345,7 +353,7 @@ namespace dd4hep  {
           std::cout << "]" << std::endl;
           usage_plugin_runner();
         }
-        std::cout << "geoPluginRun: Executed dd4hep plugin: '" << plug[0]
+        std::cout << "geoPluginRun: " << text <<" Executed dd4hep plugin: '" << plug[0]
                   << "' with args (" << num_args << ") :[ ";
         for(size_t j=1; j<plug.size(); ++j)   {
           if ( plug[j] ) std::cout << plug[j] << " ";

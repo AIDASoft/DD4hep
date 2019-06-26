@@ -139,6 +139,9 @@ namespace dd4hep {
   };
   typedef Solid_type<TGeoShape> Solid;
 
+  /// Type check of various shapes.
+  template <typename SOLID> bool instanceOf(const Handle<TGeoShape>& solid);
+  
   /// Class describing a shape-less solid shape
   /**
    *   For any further documentation please see the following ROOT documentation:
@@ -179,7 +182,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Box: public Solid_type<TGeoBBox> {
+  class Box : public Solid_type<TGeoBBox> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& name, double x_val, double y_val, double z_val);
@@ -236,7 +239,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class HalfSpace: public Solid_type<TGeoHalfSpace> {
+  class HalfSpace : public Solid_type<TGeoHalfSpace> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& name, const double* const point, const double* const normal);
@@ -285,7 +288,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Polycone: public Solid_type<TGeoPcon> {
+  class Polycone : public Solid_type<TGeoPcon> {
   public:
     /// Default constructor
     Polycone() = default;
@@ -337,7 +340,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class ConeSegment: public Solid_type<TGeoConeSeg> {
+  class ConeSegment : public Solid_type<TGeoConeSeg> {
   public:
     /// Default constructor
     ConeSegment() = default;
@@ -389,7 +392,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Tube: public Solid_type<TGeoTubeSeg> {
+  class Tube : public Solid_type<TGeoTubeSeg> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double rmin, double rmax, double z, double startPhi, double endPhi);
@@ -447,7 +450,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class CutTube: public Solid_type<TGeoCtub> {
+  class CutTube : public Solid_type<TGeoCtub> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& name,
@@ -491,7 +494,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class TruncatedTube: public Solid_type<TGeoCompositeShape> {
+  class TruncatedTube : public Solid_type<TGeoCompositeShape> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& name,
@@ -537,7 +540,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class EllipticalTube: public Solid_type<TGeoEltu> {
+  class EllipticalTube : public Solid_type<TGeoEltu> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double a, double b, double dz);
@@ -586,7 +589,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Cone: public Solid_type<TGeoCone> {
+  class Cone : public Solid_type<TGeoCone> {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2);
@@ -635,7 +638,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Trap: public Solid_type<TGeoTrap> {
+  class Trap : public Solid_type<TGeoTrap> {
   private:
     /// Internal helper method to support object construction
     void make(const std::string& name, double pz, double py, double px, double pLTX);
@@ -694,7 +697,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class PseudoTrap: public Solid_type<TGeoCompositeShape> {
+  class PseudoTrap : public Solid_type<TGeoCompositeShape> {
   private:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double x1, double x2, double y1, double y2, double z, double radius, bool minusZ);
@@ -737,7 +740,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Trd1: public Solid_type<TGeoTrd1> {
+  class Trd1 : public Solid_type<TGeoTrd1> {
   private:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double x1, double x2, double y, double z);
@@ -788,7 +791,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Trd2: public Solid_type<TGeoTrd2> {
+  class Trd2 : public Solid_type<TGeoTrd2> {
   private:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double x1, double x2, double y1, double y2, double z);
@@ -840,7 +843,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Torus: public Solid_type<TGeoTorus> {
+  class Torus : public Solid_type<TGeoTorus> {
   private:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double r, double rmin, double rmax, double startPhi, double deltaPhi);
@@ -890,7 +893,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Sphere: public Solid_type<TGeoSphere> {
+  class Sphere : public Solid_type<TGeoSphere> {
   protected:
     /// Constructor function to be used when creating a new object with attribute initialization
     void make(const std::string& nam,
@@ -967,7 +970,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Paraboloid: public Solid_type<TGeoParaboloid> {
+  class Paraboloid : public Solid_type<TGeoParaboloid> {
     /// Constructor function to create a new anonymous object with attribute initialization
     void make(const std::string& nam, double r_low, double r_high, double delta_z);
   public:
@@ -1016,7 +1019,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class Hyperboloid: public Solid_type<TGeoHype> {
+  class Hyperboloid : public Solid_type<TGeoHype> {
     /// Constructor function to create a new anonymous object with attribute initialization
     void make(const std::string& nam, double rin, double stin, double rout, double stout, double dz);
   public:
@@ -1064,7 +1067,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class PolyhedraRegular: public Solid_type<TGeoPgon> {
+  class PolyhedraRegular : public Solid_type<TGeoPgon> {
   protected:
     /// Helper function to create the polyhedron
     void make(const std::string& nam, int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta);
@@ -1224,7 +1227,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class EightPointSolid: public Solid_type<TGeoArb8> {
+  class EightPointSolid : public Solid_type<TGeoArb8> {
   private:
     /// Internal helper method to support object construction
     void make(const std::string& nam, double dz, const double* vtx);
@@ -1263,7 +1266,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class BooleanSolid: public Solid_type<TGeoCompositeShape> {
+  class BooleanSolid : public Solid_type<TGeoCompositeShape> {
   protected:
     /// Default constructor
     BooleanSolid() = default;
@@ -1292,7 +1295,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class SubtractionSolid: public BooleanSolid {
+  class SubtractionSolid : public BooleanSolid {
   public:
     /// Default constructor
     SubtractionSolid() = default;
@@ -1340,7 +1343,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class UnionSolid: public BooleanSolid {
+  class UnionSolid : public BooleanSolid {
   public:
     /// Default constructor
     UnionSolid() = default;
@@ -1388,7 +1391,7 @@ namespace dd4hep {
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
    */
-  class IntersectionSolid: public BooleanSolid {
+  class IntersectionSolid : public BooleanSolid {
   public:
     /// Default constructor
     IntersectionSolid() = default;

@@ -34,7 +34,13 @@ dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
 #---Testing-------------------------------------------------------------------------
 #
 #----- Tests for CLICSid: here we simply require that at least 100 volumes have been converted
-foreach ( typ description gdml vis )
+##dd4hep_add_test_reg ( "CLICSiD_converter_gdml_LONGTEST" 
+##  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+##  EXEC_ARGS  geoConverter -compact2gdml 
+##                          -input file:${CLICSiDEx_INSTALL}/compact/compact.xml
+##                          -output file:CLICSiD.gdml
+##  REGEX_PASS " Successfully extracted GDML to" )
+foreach ( typ description vis )
   dd4hep_add_test_reg ( "CLICSiD_converter_${typ}_LONGTEST" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 

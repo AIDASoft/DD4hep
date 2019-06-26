@@ -125,7 +125,8 @@ void IOV::iov_union(const IOV::Key& validity)   {
 
 /// Move the data content: 'from' will be reset to NULL
 void IOV::move(IOV& from)   {
-  ::memcpy(this,&from,sizeof(IOV));
+  //::memcpy(this,&from,sizeof(IOV));
+  *this = from;
   from.keyData.first = from.keyData.second = from.optData = 0;
   from.type = int(IOVType::UNKNOWN_IOV);
   from.iovType = 0;

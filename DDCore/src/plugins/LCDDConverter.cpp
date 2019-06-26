@@ -1273,7 +1273,7 @@ static long dump_output(xml_doc_t doc, int argc, char** argv) {
   return docH.output(doc, argc > 0 ? argv[0] : "");
 }
 
-static long create_gdml(Detector& description, int argc, char** argv) {
+long create_gdml_from_dd4hep(Detector& description, int argc, char** argv) {
   LCDDConverter wr(description);
   return dump_output(wr.createGDML(description.world()), argc, argv);
 }
@@ -1317,5 +1317,5 @@ static long create_visASCII(Detector& description, int /* argc */, char** argv) 
 
 DECLARE_APPLY(DD4hepGeometry2VIS, create_vis)
 DECLARE_APPLY(DD4hepGeometry2VISASCII, create_visASCII)
-DECLARE_APPLY(DD4hepGeometry2GDML, create_gdml)
+//DECLARE_APPLY(DD4hepGeometry2GDML, create_gdml_from_dd4hep)
 DECLARE_APPLY(DD4hepGeometry2Detector, create_description)

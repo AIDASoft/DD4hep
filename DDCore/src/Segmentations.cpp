@@ -45,46 +45,46 @@ Segmentation::Segmentation(const string& typ, const string& nam, const BitFieldC
 
 /// Accessor: Segmentation type
 const char* Segmentation::name() const {
-  return data<Object>()->name().c_str();
+  return access()->name().c_str();
 }
 
 /// Accessor: Segmentation type
 std::string Segmentation::type() const {
-  return data<Object>()->type();
+  return access()->type();
 }
 
 bool Segmentation::useForHitPosition() const {
-  return data<Object>()->useForHitPosition != 0;
+  return access()->useForHitPosition != 0;
 }
 
 /// Access to the parameters
 DDSegmentation::Parameters Segmentation::parameters() const {
-  return data<Object>()->parameters();
+  return access()->parameters();
 }
 
 /// Access to parameter by name
 DDSegmentation::Parameter  Segmentation::parameter(const std::string& parameterName) const   {
-  return data<Object>()->parameter(parameterName);
+  return access()->parameter(parameterName);
 }
 
 /// determine the local position based on the cell ID
 Position Segmentation::position(const long64& cell) const {
-  return Position(data<Object>()->segmentation->position(cell));
+  return Position(access()->segmentation->position(cell));
 }
 
 /// determine the cell ID based on the local position
 long64 Segmentation::cellID(const Position& localPosition, const Position& globalPosition, const long64& volID) const {
-  return data<Object>()->segmentation->cellID(localPosition, globalPosition, volID);
+  return access()->segmentation->cellID(localPosition, globalPosition, volID);
 }
 
 /// Determine the volume ID from the full cell ID by removing all local fields
 VolumeID Segmentation::volumeID(const CellID& cell) const   {
-  return data<Object>()->segmentation->volumeID(cell);
+  return access()->segmentation->volumeID(cell);
 }
 
 /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
 void Segmentation::neighbours(const CellID& cell, std::set<CellID>& nb) const  {
-  data<Object>()->segmentation->neighbours(cell, nb);
+  access()->segmentation->neighbours(cell, nb);
 }
 
 /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
@@ -94,32 +94,32 @@ void Segmentation::neighbours(const CellID& cell, std::set<CellID>& nb) const  {
  *   \return vector<double> in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
  */
 std::vector<double> Segmentation::cellDimensions(const CellID& cell) const  {
-  return data<Object>()->segmentation->cellDimensions(cell);
+  return access()->segmentation->cellDimensions(cell);
 }
 
 /// Access to the base DDSegmentation object. WARNING: Deprecated call!
 DDSegmentation::Segmentation* Segmentation::segmentation() const  {
-  return data<Object>()->segmentation;
+  return access()->segmentation;
 }
 
 /// Access the underlying decoder
 const BitFieldCoder* Segmentation::decoder()  const {
-  return data<Object>()->segmentation->decoder();
+  return access()->segmentation->decoder();
 }
 
 /// Set the underlying decoder
 void Segmentation::setDecoder(const BitFieldCoder* decode) const  {
-  data<Object>()->segmentation->setDecoder(decode);
+  access()->segmentation->setDecoder(decode);
 }
 
 /// Access the main detector element using this segmetnation object
 Handle<DetElementObject> Segmentation::detector() const  {
-  return data<Object>()->detector;
+  return access()->detector;
 }
 
 /// Access the sensitive detector using this segmetnation object
 Handle<SensitiveDetectorObject> Segmentation::sensitive() const  {
-  return data<Object>()->sensitive;
+  return access()->sensitive;
 }
 
 #include "DDSegmentation/NoSegmentation.h"
