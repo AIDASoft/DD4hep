@@ -11,10 +11,6 @@
 #=================================================================================
 SET(PACKAGE DDCore)
 
-# Find again to fill ROOT_LIBRARIES with components
-find_package (ROOT 6.08 REQUIRED COMPONENTS Geom GenVector)
-MESSAGE(STATUS "ROOT COMPONENTS ${ROOT_LIBRARIES}")
-
 #---Generate ROOT dictionary------------------------------------------------------
 new_dd4hep_add_dictionary( G__DD4hep
   SOURCES include/ROOT/Warnings.h
@@ -73,14 +69,12 @@ target_include_directories(DDCore
   $<INSTALL_INTERFACE:include>
   )
 
-MESSAGE(STATUS "ROOT COMPONENTS ${ROOT_LIBRARIES}")
-
 target_link_libraries(DDCore
   PUBLIC
   DD4hepGaudiPluginMgr
   DDParsers
-  ROOT::Base
-  ${ROOT_LIBRARIES} # to include the ROOT components
+  ROOT::Interface
+  ROOT::Geom ROOT::Geom GenVector
   ${XML_LIBRARIES} # XercesC or not
   )
 
@@ -110,7 +104,7 @@ new_dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp
 IF(${ROOT_gdml_FOUND})
   new_dd4hep_add_plugin(DDGDMLPlugins
   SOURCES src/gdml/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Base
+  LINK_LIBRARIES DDCore ROOT::Interface
   )
 ELSE()
   MESSAGE(WARN "ROOT does not include GDML, not building DDCore GDML Plugins")
@@ -118,11 +112,9 @@ ENDIF()
     
 #---------------------------  Specialized PYTHON plugin ----------------------------
 IF(ROOT_python_FOUND)
-  find_package (ROOT 6.08 REQUIRED COMPONENTS PyROOT)
-  MESSAGE(STATUS "DDpython: ROOT COMPONENTS ${ROOT_LIBRARIES}")
   new_dd4hep_add_plugin(DDPythonPlugins
   SOURCES src/python/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Base ${ROOT_LIBRARIES}
+  LINK_LIBRARIES DDCore ROOT::Interface ROOT::PyROOT
   )
 ELSE()
   MESSAGE(WARN "ROOT does not include PyRoot, not building DDCore DDPython Plugins")
@@ -134,6 +126,3 @@ ENDIF()
 dd4hep_install_files(FILES python/*.py DESTINATION python)
 
 INSTALL(TARGETS DDCore EXPORT DD4hep DESTINATION lib)
-
-#Reset ROOT_LIBRARIES
-find_package (ROOT 6.08 REQUIRED)

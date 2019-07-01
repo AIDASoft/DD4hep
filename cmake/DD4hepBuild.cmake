@@ -1562,10 +1562,8 @@ function( new_dd4hep_add_dictionary dictionary )
     LIST(APPEND comp_defs ${def})
   endforeach()
 
-  MESSAGE(STATUS "DEPENDENCIES ${ARG_DEPENDS}")
   foreach(DEP ${ARG_DEPENDS})
     # Get INCLUDE DIRECTORIES from Dependencies
-    MESSAGE(STATUS "Appending $<TARGET_PROPERTY:${DEP},INTERFACE_INCLUDE_DIRECTORIES>")
     LIST(APPEND inc_dirs $<TARGET_PROPERTY:${DEP},INTERFACE_INCLUDE_DIRECTORIES>)
     # Get COMPILE DEFINITIONS from Dependencies
     LIST(APPEND comp_defs $<TARGET_PROPERTY:${DEP},INTERFACE_COMPILE_DEFINITIONS>)
@@ -1574,12 +1572,12 @@ function( new_dd4hep_add_dictionary dictionary )
   #
   file ( GLOB linkdefs ${ARG_LINKDEF} )
   #
-  dd4hep_print("|++        Linkdef:    '${linkdefs}'" ) 
-  dd4hep_print("|++        Definition: '${comp_defs}'" ) 
-  dd4hep_print("|++        Include:    '${inc_dirs}'" ) 
-  dd4hep_print("|++        Files:      '${headers}'" ) 
-  dd4hep_print("|++        Unparsed:   '${ARG_UNPARSED_ARGUMENTS}'" ) 
-  dd4hep_print("|++        Sources:    '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
+  dd4hep_debug("|++        Linkdef:    '${linkdefs}'" ) 
+  dd4hep_debug("|++        Definition: '${comp_defs}'" ) 
+  dd4hep_debug("|++        Include:    '${inc_dirs}'" ) 
+  dd4hep_debug("|++        Files:      '${headers}'" ) 
+  dd4hep_debug("|++        Unparsed:   '${ARG_UNPARSED_ARGUMENTS}'" ) 
+  dd4hep_debug("|++        Sources:    '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
   #
   set ( output_dir ${CMAKE_CURRENT_BINARY_DIR}/../lib )
   if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
