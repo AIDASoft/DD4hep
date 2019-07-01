@@ -88,25 +88,38 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 ########################
 
 # Configure ROOT
-find_package ( ROOT 6.08 REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG)
-include(${ROOT_USE_FILE})
-message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
+find_package(ROOT 6.08 REQUIRED) # COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG
+#include(${ROOT_USE_FILE})
+
+
+ADD_LIBRARY(ROOT::Base SHARED IMPORTED GLOBAL)
+
+#ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
+string(REPLACE " " ";" ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
+
+
+SET_TARGET_PROPERTIES(ROOT::Base
+  PROPERTIES
+  INTERFACE_LINK_LIBRARIES "${ROOT_LIBRARIES}"
+  INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
+  INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
+  IMPORTED_LOCATION ${ROOT_LIBRARIES}
+  )
+
+MESSAGE(STATUS "ROOT Libraries ${ROOT_LIBRARIES}")
+MESSAGE(STATUS "ROOT CXX_FLAGS ${ROOT_CXX_FLAGS}")
+MESSAGE(STATUS "ROOT INCL DIRS ${ROOT_INCLUDE_DIRS}")
+MESSAGE(STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
 
 # Configure BOOST
-find_package( Boost 1.49 REQUIRED )
-add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
-set ( ENV{Boost_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} )
+find_package(Boost 1.49 REQUIRED filesystem system)
 
-# Configure Geant4
-if(DD4HEP_USE_GEANT4)
-  find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all )
-  include( ${Geant4_USE_FILE} )
+SET_TARGET_PROPERTIES(Boost::boost
+  PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
+  )
+#add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
 
-  IF((NOT ${Geant4_TLS_MODEL} STREQUAL "global-dynamic") AND NOT ${DD4HEP_IGNORE_GEANT4_TLS})
-    MESSAGE(FATAL_ERROR "Geant4 was built with ${Geant4_TLS_MODEL}, DD4hep requires 'global-dynamic'! Ignore this ERROR with DD4HEP_IGNORE_GEANT4_TLS=True ")
-  ENDIF()
-
-endif()
 
 ######################
 # Set compiler flags #
@@ -135,19 +148,13 @@ add_subdirectory(DDDetectors)
 add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
 add_subdirectory(DDDigi)
-if ( DD4HEP_USE_GEANT4 )
-  if(Geant4_builtin_clhep_FOUND)
-    set(CLHEP "")
-  else()
-    set(CLHEP CLHEP)
-  endif()
-  add_subdirectory(DDG4)
-endif()
-# Note the order: DDEve partially depends on variables from DDG4!
-add_subdirectory(DDEve)
+add_subdirectory(DDG4)
 
-dd4hep_enable_tests( DDTest )
-add_subdirectory(UtilityApps)
+# Note the order: DDEve partially depends on variables from DDG4!
+#add_subdirectory(DDEve)
+
+# dd4hep_enable_tests( DDTest )
+# add_subdirectory(UtilityApps)
 
 #######################
 # Treatment for Apple #
@@ -187,7 +194,7 @@ display_std_variables()
 # generate and install following configuration files #
 ######################################################
 
-dd4hep_generate_package_configuration_files( DD4hepConfig.cmake )
+#dd4hep_generate_package_configuration_files( DD4hepConfig.cmake )
 if(APPLE)
   SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
 else()
@@ -203,3 +210,9 @@ if(APPLE)
   fill_dd4hep_library_path()
   message(STATUS "DD4HEP_LIBRARY_PATH= $ENV{DD4HEP_LIBRARY_PATH}")
 endif()
+
+
+INSTALL(EXPORT DD4hep 
+  NAMESPACE DD4hep::
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+  FILE DD4hepConfig.cmake)

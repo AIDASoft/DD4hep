@@ -8,13 +8,25 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-dd4hep_package(    DDAlign
-  USES             DDCore
-  INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDAlign)
 
-#---DDCond library --------------------------------------------------------------
-dd4hep_add_package_library(DDAlign SOURCES src/*.cpp )
+file(GLOB DDAlign_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-#---DDAlign plugins -------------------------------------------------------------
-dd4hep_add_plugin(DDAlignPlugins SOURCES src/plugins/*.cpp )
+add_library(DDAlign SHARED ${DDAlign_SOURCES} )
+
+target_include_directories(DDAlign
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+  $<INSTALL_INTERFACE:include>
+  )
+
+target_link_libraries(DDAlign
+  PUBLIC
+  DDCore
+  )
+
+new_dd4hep_add_plugin(DDAlignPlugins
+  SOURCES src/plugins/*.cpp
+  LINK_LIBRARIES DDAlign
+  )
+
+INSTALL(TARGETS DDAlign EXPORT DD4hep DESTINATION lib)

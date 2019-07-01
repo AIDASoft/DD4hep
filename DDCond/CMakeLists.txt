@@ -8,23 +8,36 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-dd4hep_package(    DDCond
-  USES             DDCore BOOST
-  INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDCond)
-
 #---Generate ROOT dictionary-----------------------------------------------------
-dd4hep_add_dictionary( G__DDCond
-  SOURCES include/ROOT/Warnings.h
-  src/ConditionsDictionary.h
-  LINKDEF include/ROOT/LinkDef.h
+
+#find_package (ROOT 6.08 REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG) # COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG
+new_dd4hep_add_dictionary( G__DDCond
+  SOURCES src/ConditionsDictionary.h
+  DEPENDS DDCore DDParsers
   )
 
+file(GLOB DDCond_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+MESSAGE(STATUS "DDCond_SOURCES ${DDCond_SOURCES}")
 #---DDCond library --------------------------------------------------------------
-dd4hep_add_package_library(DDCond
-  SOURCES        src/*.cpp
-  GENERATED      G__DDCond.cxx 
+add_library(DDCond SHARED ${DDCond_SOURCES}
+  G__DDCond.cxx 
   )
+
+target_link_libraries(DDCond
+  PUBLIC
+  DDCore
+  )
+
+target_include_directories(DDCond
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+  $<INSTALL_INTERFACE:include>
+  )
+
 
 #---DDCond components -----------------------------------------------------------
-dd4hep_add_plugin(DDCondPlugins  SOURCES  src/plugins/*.cpp src/Type1/*.cpp )
+new_dd4hep_add_plugin(DDCondPlugins
+  SOURCES  src/plugins/*.cpp src/Type1/*.cpp
+  LINK_LIBRARIES DDCond)
+
+INSTALL(TARGETS DDCond EXPORT DD4hep DESTINATION lib)
