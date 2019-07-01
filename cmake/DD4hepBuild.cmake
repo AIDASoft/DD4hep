@@ -940,8 +940,50 @@ function( dd4hep_package packageName )
     else()
       dd4hep_fatal ( "Missing package dependencies: ${PACKAGE_MISSING}" )
     endif()
+    set (used_incs  ${PACKAGE_INCLUDE_DIRS} )
+    set (used_libs  ${PACKAGE_LINK_LIBRARIES} )
+    #
+    #  Define the include directories including dependent packages
+    #
+    list(APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/include )
+    foreach( inc ${ARG_INCLUDE_DIRS} )
+      list( APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
+    endforeach()
+    #
+    #  Build the list of link libraries required to build the package library and plugins etc.
+    #
+    dd4hep_make_unique_list ( used_libs VALUES ${used_libs} ${ARG_LINK_LIBRARIES} )
+    dd4hep_make_unique_list ( used_incs VALUES ${used_incs} )
+    #
+    #  Save the variables in the context of the current source directory (ie. THIS package)
+    #
+    set ( use "ON" )
+    set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS   ${used_incs} )
+    set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_LINK_LIBRARIES ${used_libs} )
+
+    set_property ( GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES    ${used_libs} )
+    set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME}   ${use} )
+    set_property ( GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS ${used_incs} )
+    set_property ( GLOBAL PROPERTY ${PKG_NAME}_USES         ${PACKAGE_USES} )
+    #
+    #  Add package to 'internal' package list
+    #
+    get_property ( all_packages GLOBAL PROPERTY DD4HEP_ALL_PACKAGES )
+    set ( all_packages ${PKG_NAME} ${all_packages} )
+    set_property ( GLOBAL PROPERTY DD4HEP_ALL_PACKAGES ${all_packages} )
+    get_property ( use GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} )
+    #
+    #  Some debugging:
+    #
+    dd4hep_debug ( "Property:  DD4HEP_USE_${PKG_NAME}=${use}" )
+    dd4hep_debug ( "Used Libs: ${used_libs}" )
+    dd4hep_debug ( "Used Incs: ${used_incs}" )
+    #
+    #  Define the installation pathes of the headers.
+    #
+    dd4hep_install_dir ( ${ARG_INSTALL_INCLUDES} DESTINATION include )
+    #
   endif()
-  #
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -1485,3 +1527,124 @@ function ( fill_dd4hep_library_path )
 
   SET( ENV{DD4HEP_LIBRARY_PATH} ${CMAKE_BINARY_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
 endfunction()
+
+
+#---------------------------------------------------------------------------------------------------
+#  new_dd4hep_add_dictionary
+#
+#
+#  \author  A.Sailer
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
+function( new_dd4hep_add_dictionary dictionary )
+  cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;DEPENDS;DEFINITIONS;INCLUDES;OUTPUT" ${ARGN} )
+  dd4hep_print ( "|++> Building dictionary ... ${dictionary}" ) 
+  # if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
+  #   dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
+  # endif()
+
+  file(GLOB headers ${ARG_SOURCES})
+  file(GLOB excl_headers ${ARG_EXCLUDE})
+
+  foreach( f ${excl_headers} )
+    list( REMOVE_ITEM headers ${f} )
+    dd4hep_print ( "|++        exclude: ${f}" )
+  endforeach()
+  
+  set(inc_dirs ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  foreach(inc ${ARG_INCLUDES})
+    LIST(APPEND inc_dirs ${inc})
+  endforeach()
+
+  set(comp_defs)
+  foreach(def ${ARG_DEFINITIONS})
+    LIST(APPEND comp_defs ${def})
+  endforeach()
+
+  MESSAGE(STATUS "DEPENDENCIES ${ARG_DEPENDS}")
+  foreach(DEP ${ARG_DEPENDS})
+    # Get INCLUDE DIRECTORIES from Dependencies
+    MESSAGE(STATUS "Appending $<TARGET_PROPERTY:${DEP},INTERFACE_INCLUDE_DIRECTORIES>")
+    LIST(APPEND inc_dirs $<TARGET_PROPERTY:${DEP},INTERFACE_INCLUDE_DIRECTORIES>)
+    # Get COMPILE DEFINITIONS from Dependencies
+    LIST(APPEND comp_defs $<TARGET_PROPERTY:${DEP},INTERFACE_COMPILE_DEFINITIONS>)
+  endforeach()
+
+  #
+  file ( GLOB linkdefs ${ARG_LINKDEF} )
+  #
+  dd4hep_print("|++        Linkdef:    '${linkdefs}'" ) 
+  dd4hep_print("|++        Definition: '${comp_defs}'" ) 
+  dd4hep_print("|++        Include:    '${inc_dirs}'" ) 
+  dd4hep_print("|++        Files:      '${headers}'" ) 
+  dd4hep_print("|++        Unparsed:   '${ARG_UNPARSED_ARGUMENTS}'" ) 
+  dd4hep_print("|++        Sources:    '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
+  #
+  set ( output_dir ${CMAKE_CURRENT_BINARY_DIR}/../lib )
+  if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
+    set ( output_dir ${ARG_OUTPUT} )
+  endif()
+
+  SET(COMP_DEFS )
+  SET(SPACE_I " -I")
+  file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}_arguments
+    CONTENT "${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} -std=c++${CMAKE_CXX_STANDARD}  \
+   $<$<BOOL:${comp_defs}>:-D$<JOIN:${comp_defs}, -D>> \
+   $<$<BOOL:${inc_dirs}>:-I$<JOIN:${inc_dirs}, -I>> \
+   $<JOIN:${headers}, >  $<JOIN:${linkdefs}, >"
+    )
+  add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
+    COMMAND bash ${dictionary}_arguments
+    DEPENDS ${headers} ${linkdefs}
+    )
+  add_custom_target(${dictionary}
+    DEPENDS ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
+    )
+
+  set_source_files_properties(${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
+    PROPERTIES
+    GENERATED TRUE)
+
+  #  Install the binary to the destination directory
+  install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
+
+endfunction()
+
+
+#---------------------------------------------------------------------------------------------------
+#
+#  new_dd4hep_add_plugin 
+#
+#  Arguments
+#  ---------
+#  binary         -> plugin name
+#  SOURCES        -> list of source files. Will be expanded to absolute names
+#
+#  The following variables EXTEND the package defaults
+#  INCLUDE_DIRS   -> Additional include directories need to compile the binary
+#  LINK_LIBRARIES -> Additional libraries needed to link the binary
+#  USES           -> Required package dependencies
+#  DEFINITIONS    -> Optional compiler definitions to compile the sources
+#
+#  \author  A.Sailer
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
+function(new_dd4hep_add_plugin binary)
+  cmake_parse_arguments(ARG "NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;DEFINITIONS" ${ARGN})
+  if ( ${ARG_NOINSTALL} )
+    set(NOINSTALL NOINSTALL)
+  endif()
+  file(GLOB SOURCES ${ARG_SOURCES})
+
+  ADD_LIBRARY(${binary} SHARED ${SOURCES})
+  TARGET_LINK_LIBRARIES(${binary} PUBLIC ${ARG_LINK_LIBRARIES})
+  TARGET_INCLUDE_DIRECTORIES(${binary} PUBLIC ${ARG_INCLUDE_DIRS})
+  TARGET_COMPILE_DEFINITIONS(${binary} PUBLIC ${ARG_DEFINITIONS})
+  # what do these options mean?
+  #GENERATED      ${ARG_GENERATED}
+  #NOINSTALL
+  # Generate ROOTMAP if the plugin will be built:
+  dd4hep_generate_rootmap( ${binary} )
+endfunction(new_dd4hep_add_plugin)

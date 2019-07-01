@@ -10,41 +10,76 @@
 # Author: F.Gaede (Desy)
 #
 #==========================================================================
-dd4hep_package(DDRec
-  USES             DDCore boost
-                  [ROOT REQUIRED COMPONENTS Geom]
-  INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDRec)
 
 #---Add Library-------------------------------------------------------------
-if(DD4HEP_USE_GEAR)
-  add_definitions("-D DD4HEP_USE_GEAR")
-endif()
 
-dd4hep_add_dictionary( G__DDRec
-  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h src/RecDictionary.h
+new_dd4hep_add_dictionary( G__DDRec
+  SOURCES ../DDCore/include/ROOT/Warnings.h src/RecDictionary.h
   LINKDEF include/ROOT/LinkDef.h
+  DEPENDS DDCore DDParsers
 )
 
-dd4hep_add_package_library(DDRec 
-  SOURCES include/ROOT/Warnings.h
-  SOURCES        src/*.cpp
-  GENERATED      G__DDRec.cxx
-  OPTIONAL       [GEAR COMPONENTS geartgeo SOURCES src/gear/DDGear.cpp DEFINITIONS DD4HEP_USE_GEAR ]
-)
-dd4hep_add_plugin(DDRecPlugins 
-  SOURCES  src/plugins/*.cpp 
-  OPTIONAL [GEAR SOURCES src/gear/createGearForILD.cpp src/gear/createGearForCLIC.cpp src/gear/createGearForSiD.cpp DEFINITIONS DD4HEP_USE_GEAR]
+
+file(GLOB DDRec_SOURCES src/*.cpp )
+
+#SOURCES include/ROOT/Warnings.h
+
+if(DD4HEP_USE_GEAR)
+  FIND_PACAKGE(Gear REQUIRED COMPONENTS geartgeo)
+  SET(GEAR_SOURCE_FILE src/gear/DDGear.cpp)
+  SET_SOURCE_FILE_PROPERTIES(${GEAR_SOURCE_FILE}
+    COMPILE_DEFINITIONS DD4HEP_USE_GEAR
+    )
+endif()
+
+ADD_LIBRARY(DDRec SHARED
+  ${DDRec_SOURCES}
+  ${GEAR_SOURCE_FILE}
+  G__DDRec.cxx
+  )
+
+TARGET_INCLUDE_DIRECTORIES(DDRec
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  )
+
+TARGET_LINK_LIBRARIES(DDRec PUBLIC
+  DDCore
+  ${GEAR_LIBRARIES}
+  ${GEAR_COMPONENT_LIBRARIES}
+  )
+
+
+if(GEAR_FOUND)
+  SET(DDREC_PLUGIN_GEAR
+    src/gear/createGearForILD.cpp
+    src/gear/createGearForCLIC.cpp
+    src/gear/createGearForSiD.cpp)
+  SET(DDREC_PLUGIN_DEFINITIONS DD4HEP_USE_GEAR)
+endif()
+  
+
+new_dd4hep_add_plugin(DDRecPlugins 
+  SOURCES src/plugins/*.cpp ${DDREC_PLUGIN_GEAR}
+  LINK_LIBRARIES DDRec
+  DEFINITIONS ${DDREC_PLUGIN_DEFINITIONS}
 )
 
 if(DD4HEP_USE_GEAR)
-  dd4hep_add_executable( convertToGear
-    SOURCES src/convertToGear.cc 
-    USES    [GEAR REQUIRED COMPONENTS geartgeo] )
+  FIND_PACKAGE(Gear REQUIRED COMPONENTS geartgeo)
+  add_executable(convertToGear src/convertToGear.cc)
+  target_link_libraries(convertToGear ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES} DDRec)
+  target_compile_definitions(convertToGear PUBLIC DD4HEP_USE_GEAR)
 else()
-  dd4hep_add_executable( convertToGear
-    OPTIONAL [GEAR COMPONENTS geartgeo SOURCES src/convertToGear.cc DEFINITIONS DD4HEP_USE_GEAR] )
+  FIND_PACKAGE(Gear COMPONENTS geartgeo QUIET)
+  IF(GEAR_FOUND)
+    add_executable(convertToGear src/convertToGear.cc)
+    target_link_libraries(convertToGear ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES} DDRec)
+    target_compile_definitions(convertToGear PUBLIC DD4HEP_USE_GEAR)
+  endif()
 endif()
 
-dd4hep_install_files(FILES python/*.py DESTINATION python)
+# dd4hep_install_files(FILES python/*.py DESTINATION python)
 
+INSTALL(TARGETS DDRec EXPORT DD4hep DESTINATION lib)
