@@ -14,9 +14,7 @@ IF(NOT DD4HEP_USE_GEANT4)
   RETURN()
 ENDIF()
 
-
-
-find_package(Geant4 10.2.2 REQUIRED  gdml ui_all vis_all)
+find_package(Geant4 10.2.2 REQUIRED COMPONENTS gdml ui_all vis_all)
 #include( ${Geant4_USE_FILE} ) # do not use the use file, this is not very considerate...
 
 IF((NOT ${Geant4_TLS_MODEL} STREQUAL "global-dynamic") AND NOT ${DD4HEP_IGNORE_GEANT4_TLS})
@@ -28,6 +26,63 @@ if(Geant4_builtin_clhep_FOUND)
 else()
   set(CLHEP CLHEP)
 endif()
+
+MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES}")
+MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
+MESSAGE(STATUS "Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
+MESSAGE(STATUS "Geant4_VERSION: ${Geant4_VERSION}" )
+
+# Geant4::10.2.2 at least, not in 10.5 (check where it switches)
+#Geant4 CXX Flags are a string with quotes, not a list, so we need to convert to a list...
+string(REPLACE " " ";" Geant4_Flags ${Geant4_CXX_FLAGS} ${Geant4_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
+SET(Geant4_CXX_FLAGS ${Geant4_Flags})
+
+#Geant4_DEFINITIONS already include -D, we jave to get rid of that so we can join things when creating dictionaries
+SET(G4_DEF_TEMP "")
+foreach(def ${Geant4_DEFINITIONS})
+  string(REPLACE "-D" "" def ${def})
+  LIST(APPEND G4_DEF_TEMP ${def})
+endforeach()
+SET(Geant4_DEFINITIONS ${G4_DEF_TEMP})
+UNSET(G4_DEF_TEMP)
+
+#get_filename_component(Geant4_LOCATION ${Geant4_INCLUDE_DIRS} DIRECTORY)
+SET(Geant4_LOCATION "/cvmfs/ilc.desy.de/sw/x86_64_gcc49_sl6/geant4/10.03.p02/lib64")
+
+ADD_LIBRARY(Geant4::Interface INTERFACE IMPORTED GLOBAL)
+
+SET_TARGET_PROPERTIES(Geant4::Interface
+  PROPERTIES
+  INTERFACE_COMPILE_OPTIONS "${Geant4_CXX_FLAGS}"
+  INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
+  INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
+  )
+
+IF(CLHEP)
+  MESSAGE(STATUS "Adding CLHEP to Geant4::Interface Dependencies")
+  TARGET_LINK_LIBRARIES(Geant4::Interface INTERFACE ${CLHEP})
+ENDIF()
+
+foreach(LIB ${Geant4_LIBRARIES})
+  find_library(G4_LIB_TEMP_${LIB} ${LIB} PATHS ${Geant4_LOCATION})
+  ADD_LIBRARY(Geant4::${LIB} SHARED IMPORTED GLOBAL)
+  MESSAGE(STATUS "Geant4 lib location ${LIB} ${G4_LIB_TEMP_${LIB}}")
+  SET_TARGET_PROPERTIES(Geant4::${LIB}
+    PROPERTIES
+    INTERFACE_COMPILE_OPTIONS "${Geant4_CXX_FLAGS}"
+    INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
+    INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
+    IMPORTED_LOCATION ${G4_LIB_TEMP_${LIB}}
+    )
+  TARGET_LINK_LIBRARIES(Geant4::Interface INTERFACE Geant4::${LIB})
+endforeach()
+
+MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES};${Geant4_COMPONENT_LIBRARIES}")
+MESSAGE(STATUS "Geant4 Location ${Geant4_LOCATION}")
+MESSAGE(STATUS "Geant4 Defintitions ${Geant4_DEFINITIONS}")
+MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
+MESSAGE(STATUS "Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
+MESSAGE(STATUS "Geant4_VERSION: ${Geant4_VERSION}" )
 
 # dd4hep_package(    DDG4
 #   USES            [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
@@ -44,44 +99,20 @@ file(GLOB DDG4_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(DDG4 SHARED ${DDG4_SOURCES})
 target_link_libraries(DDG4
   PUBLIC
-  ${Geant4_LIBRARIES}
-  ${Geant4_COMPONENT_LIBRARIES}
   DDCore
-  ROOT::Base
+  #${Geant4_LIBRARIES}
+  #${Geant4_COMPONENT_LIBRARIES}
+  ROOT::Interface
+  Geant4::Interface
   )
+
 
 #Ensure our own includes come before those of the system
 target_include_directories(DDG4 BEFORE
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
   $<INSTALL_INTERFACE:include>
-  $<TARGET_PROPERTY:DDCore,INTERFACE_INCLUDE_DIRECTORIES>
-)
-
-target_include_directories(DDG4 SYSTEM
-  PUBLIC
-  ${Geant4_INCLUDE_DIRS}
-)
-
-#Geant4 CXX Flags are a string with quotes, not a list, so we need to convert to a list...
-string(REPLACE " " ";" Geant4_Flags ${Geant4_CXX_FLAGS} ${Geant4_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
-
-# 10.2.2 at least not in 10.5 (check where it switches)
-#Geant4_DEFINITIONS already include -D, we jave to get rid of that
-SET(G4_DEF_TEMP "")
-foreach(def ${Geant4_DEFINITIONS})
-  string(REPLACE "-D" "" def ${def})
-  LIST(APPEND G4_DEF_TEMP ${def})
-endforeach()
-SET(Geant4_DEFINITIONS ${G4_DEF_TEMP})
-target_compile_options(DDG4
-  PUBLIC
-  ${Geant4_Flags}
-)
-
-target_compile_definitions(DDG4
-  PUBLIC
-  ${Geant4_DEFINITIONS}
+  $<TARGET_PROPERTY:DDCore,INTERFACE_INCLUDE_DIRECTORIES>  # FIXME: Check if this works when using imported target
 )
 
 #---------------------------  Legacy libraries (for Frank) -------------------------
@@ -107,7 +138,7 @@ if(PYTHONLIBS_FOUND)
   MESSAGE(STATUS "Python found, creating DDG4Python Dictionary")
   new_dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
-    DEPENDS DDCore DDParsers DDG4 ROOT::Base
+    DEPENDS DDCore DDParsers DDG4 ROOT::Interface
     INCLUDES ${Geant4_INCLUDE_DIRS}  ${PYTHON_INCLUDE_DIRS}
     DEFINITIONS ${Geant4_DEFINITIONS}
     )
@@ -116,11 +147,10 @@ if(PYTHONLIBS_FOUND)
     INCLUDES ${PYTHON_INCLUDE_DIRS}
     )
   if(ROOT_python_FOUND)
-    FIND_PACKAGE(ROOT REQUIRED COMPONENTS PyROOT)
     #---------------------------  Specialized python plugins  --------------------------
     MESSAGE(STATUS "ROOT Has Python, creating DDPython library and plugins")
     add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
-    target_link_libraries(DDPython DDG4 ROOT::Base ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
+    target_link_libraries(DDPython DDG4 ROOT::Interface ${PYTHON_LIBRARIES} ROOT::PyROOT)
     target_include_directories(DDPython PUBLIC ${PYTHON_INCLUDE_DIRS})
     new_dd4hep_add_plugin(DDG4Python 
       SOURCES src/python/*.cpp G__DDG4Python.cxx
@@ -128,7 +158,7 @@ if(PYTHONLIBS_FOUND)
       )
     #---Helper to overcome deficiency of the python executable concerning multi-threading
     add_executable(pyddg4 pyddg4.cpp)
-    target_link_libraries(pyddg4 PUBLIC DDPython ROOT::Base ${ROOT_LIBRARIES})
+    target_link_libraries(pyddg4 PUBLIC DDPython ROOT::Interface ROOT::PyROOT)
     INSTALL(TARGETS DDPython EXPORT DD4hep DESTINATION lib)
   endif()
 else()
@@ -166,6 +196,3 @@ install(PROGRAMS python/DDSim/bin/ddsim DESTINATION bin)
 dd4hep_install_dir(python/DDSim DESTINATION python)
 
 INSTALL(TARGETS DDG4 EXPORT DD4hep DESTINATION lib)
-
-#Reset ROOT_LIBRARIES
-find_package (ROOT 6.08 REQUIRED)

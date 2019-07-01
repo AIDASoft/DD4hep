@@ -17,7 +17,6 @@ new_dd4hep_add_dictionary( G__DDCond
   )
 
 file(GLOB DDCond_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-MESSAGE(STATUS "DDCond_SOURCES ${DDCond_SOURCES}")
 #---DDCond library --------------------------------------------------------------
 add_library(DDCond SHARED ${DDCond_SOURCES}
   G__DDCond.cxx 
