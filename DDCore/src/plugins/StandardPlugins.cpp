@@ -285,8 +285,6 @@ static long root_dump_gdml_tables(Detector& description, int /* argc */, char** 
     ++num_tables;
     m->Print();
   }
-#else
-  description.world().isValid();
 #endif
   printout(INFO,"Dump_GDMLTables",
            "+++ Successfully dumped %ld GDML tables with %ld elements.",
