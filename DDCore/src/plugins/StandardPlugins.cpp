@@ -346,8 +346,6 @@ static long root_dump_skin_surfaces(Detector& description, int /* argc */, char*
     ++num_surfaces;
     m->Print();
   }
-#else
-  description.world().isValid();
 #endif
   printout(ALWAYS,"Dump_SkinSurfaces",
            "+++ Successfully dumped %ld Skin surfaces.",num_surfaces);
@@ -376,8 +374,6 @@ static long root_dump_border_surfaces(Detector& description, int /* argc */, cha
     ++num_surfaces;
     m->Print();
   }
-#else
-  description.world().isValid();
 #endif
   printout(ALWAYS,"Dump_BorderSurfaces",
            "+++ Successfully dumped %ld Border surfaces.",num_surfaces);
