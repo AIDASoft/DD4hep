@@ -581,8 +581,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     }
     else   {
       printout(INFO,"TestShape","Correct shape type: %s <-> %s Instance test: %s",
-               shape.typeStr().c_str(), solid->GetTitle(),
-               instance_test ? "OK" : "FAILED");
+               shape.typeStr().c_str(), solid->GetTitle(), "OK");
     }
   }
   pv = description.worldVolume().placeVolume(assembly);
