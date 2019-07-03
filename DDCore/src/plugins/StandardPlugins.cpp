@@ -314,8 +314,6 @@ static long root_dump_optical_surfaces(Detector& description, int /* argc */, ch
     ++num_surfaces;
     m->Print();
   }
-#else
-  description.world().isValid();
 #endif
   printout(ALWAYS,"Dump_OpticalSurfaces",
            "+++ Successfully dumped %ld Optical surfaces.",num_surfaces);
