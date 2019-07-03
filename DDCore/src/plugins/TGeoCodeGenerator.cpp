@@ -263,7 +263,7 @@ namespace {
       if ( mat->IsRotation() )   {
         log << "\t Double_t rot[] = {";
         for(size_t i=0; rot && i<9; ++i)  {
-          log << (rot ? rot[i] : 0e0);
+          log << (rot[i]);
           log << ((i<8) ? ", " : "};");
         }
         log << newline << "\t matrix_" << pvoid_t(mat) << "->SetRotation(rot);" << newline;
@@ -271,7 +271,7 @@ namespace {
       if ( mat->IsScale() )   {
         log << "\t Double_t scale[] = {";
         for(size_t i=0; sca && i<3; ++i)  {
-          log << (sca ? sca[i] : 0e0);
+          log << (sca[i]);
           log << ((i<2) ? ", " : "};");
         }
         log << newline << "\t matrix_" << pvoid_t(mat) << "->SetScale(scale);" << newline;

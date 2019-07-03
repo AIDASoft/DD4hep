@@ -416,7 +416,7 @@ namespace {
       if ( mat->IsTranslation() )   {
         log << "\t Double_t trans[] = {";
         for(size_t i=0; tra && i<3; ++i)  {
-          log << (tra ? tra[i] : 0e0);
+          log << (tra[i]);
           log << ((i<2) ? sep : "};");
         }
         log << newline << "\t mat->SetTranslation(trans);" << newline;
