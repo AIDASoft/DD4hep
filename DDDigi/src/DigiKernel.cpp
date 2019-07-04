@@ -23,7 +23,9 @@
 #include "DDDigi/DigiContext.h"
 #include "DDDigi/DigiActionSequence.h"
 
+#ifdef DD4HEP_USE_TBB
 #include "tbb/tbb.h"
+#endif
 
 // C/C++ include files
 #include <stdexcept>
