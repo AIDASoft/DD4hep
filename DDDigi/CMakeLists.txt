@@ -11,16 +11,18 @@
 dd4hep_package(    DDDigi
   USES             DDCore
                    [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-		   TBB
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDDigi )
 
 #---Add Library---------------------------------------------------------------------
-dd4hep_add_package_library(DDDigi SOURCES src/*.cpp)
+dd4hep_add_package_library(DDDigi SOURCES src/*.cpp
+  [OPTIONAL TBB REQUIRED]
+  )
 if( TBB_INCLUDE_DIR )
-  message( STATUS "TBB_INCLUDE_DIR : ${TBB_INCLUDE_DIR}")
-  message( STATUS "TBB_LIBRARY : ${TBB_LIBRARY}")
+  message( STATUS "TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
+  message( STATUS "TBB_LIBRARY     -->  ${TBB_LIBRARY}")
   target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
+  target_link_libraries(DDDigi ${TBB_LIBRARY})
 endif()
 
 #---------------------------  Legacy libraries -------------------------------------
