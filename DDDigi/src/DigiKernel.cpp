@@ -270,6 +270,7 @@ void DigiKernel::submit(const DigiAction::Actors<DigiAction>& actions, DigiConte
   }
 #endif
   actions(&DigiAction::execute,context);
+  goto print_stamp;
 
  print_stamp:
   chrono::duration<double> secs = chrono::system_clock::now() - start;
@@ -345,15 +346,14 @@ int DigiKernel::run()   {
   }
 #endif
   if ( internals->eventsToDo > 0 )   {
-    for(int i=0; i<internals->numEvents; ++i)   {
-      unique_ptr<DigiContext> context(new DigiContext(this));
-      ++internals->eventsToDo;
-      executeEvent(context.release());
+    for(int i=0; i<internals->numEvents && !internals->stop; ++i)   {
+      Processor proc(*this);
+      proc();
     }
   }
   chrono::duration<double> duration = chrono::system_clock::now() - start;
   double sec = chrono::duration_cast<chrono::seconds>(duration).count();
-  printout(DEBUG,"DigiKernel","+++ Event processing finished. Total: %7.3f seconds %7.3f seconds/event",
+  printout(DEBUG,"DigiKernel","+++ Event processing finished. Total: %7.1f seconds %7.3f seconds/event",
            sec, sec/double(std::max(1,internals->numEvents)));
   return 1;
 }
