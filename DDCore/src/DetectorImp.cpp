@@ -32,7 +32,7 @@
 #include <mutex>
 
 // ROOT inlcude files
-#include "TGeant4SystemOfUnits.h"
+#include "TGeoSystemOfUnits.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoBoolNode.h"
 #include "TGeoManager.h"
@@ -155,7 +155,7 @@ DetectorImp::DetectorImp()
 DetectorImp::DetectorImp(const string& name)
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
-  //TGeant4Unit::setUnitType(TGeant4Unit::kTGeant4Units);
+  //TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
   SetTitle("DD4hep detector description object");
   set_unexpected( description_unexpected );
   set_terminate( description_unexpected );
