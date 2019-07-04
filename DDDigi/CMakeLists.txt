@@ -19,12 +19,13 @@ dd4hep_add_package_library(DDDigi SOURCES src/*.cpp
   [OPTIONAL TBB REQUIRED]
   )
 if( TBB_INCLUDE_DIR )
-  dd4hep_print( "++> TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
-  dd4hep_print( "++> TBB_LIBRARY     -->  ${TBB_LIBRARY}")
+  dd4hep_print( "|++> TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
+  dd4hep_print( "|++> TBB_LIBRARY     -->  ${TBB_LIBRARY}")
+  dd4hep_print( "|++> TBB found. DDDigi will run multi threaded.")
   target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
   target_link_libraries(DDDigi ${TBB_LIBRARY})
 else()
-  dd4hep_print( "++> TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
+  dd4hep_print( "|++> TBB not found. DDDigi will only work single threaded.")
 endif()
 
 #---------------------------  Legacy libraries -------------------------------------
