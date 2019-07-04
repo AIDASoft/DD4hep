@@ -17,9 +17,11 @@ dd4hep_package(    DDDigi
 
 #---Add Library---------------------------------------------------------------------
 dd4hep_add_package_library(DDDigi SOURCES src/*.cpp)
-target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
-message( STATUS "TBB_INCLUDE_DIR : ${TBB_INCLUDE_DIR}")
-message( STATUS "TBB_LIBRARY : ${TBB_LIBRARY}")
+if( TBB_INCLUDE_DIR )
+  message( STATUS "TBB_INCLUDE_DIR : ${TBB_INCLUDE_DIR}")
+  message( STATUS "TBB_LIBRARY : ${TBB_LIBRARY}")
+  target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
+endif()
 
 #---------------------------  Legacy libraries -------------------------------------
 dd4hep_add_dictionary( G__DDDigi
