@@ -30,6 +30,12 @@
 // C/C++ include files
 #include <stdexcept>
 
+#ifdef HAVE_GEANT4_UNITS
+#define MM_2_CM 1.0
+#else
+#define MM_2_CM 0.1
+#endif
+
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::sim;

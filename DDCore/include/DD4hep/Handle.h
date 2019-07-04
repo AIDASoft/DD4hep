@@ -28,12 +28,6 @@
 #ifndef DEGREE_2_RAD
 #define DEGREE_2_RAD 0.0174532925199432957692369076848
 #endif
-#ifndef CM_2_MM
-#define CM_2_MM 10.0
-#endif
-#ifndef MM_2_CM
-#define MM_2_CM 0.1
-#endif
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

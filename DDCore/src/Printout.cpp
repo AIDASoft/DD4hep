@@ -15,6 +15,7 @@
 #include "DD4hep/Printout.h"
 
 // C/C++ include files
+#include <mutex>
 #include <cstring>
 #include <cstdarg>
 #include <sstream>
@@ -27,6 +28,8 @@
 using namespace std;
 
 namespace {
+  std::mutex s_output_synchronization;
+
   size_t _the_printer_1(void*, dd4hep::PrintLevel lvl, const char* src, const char* text);
   size_t _the_printer_2(void* par, dd4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args);
 
@@ -54,6 +57,7 @@ namespace {
   }
 
   size_t _the_printer_1(void*, dd4hep::PrintLevel lvl, const char* src, const char* text) {
+    std::lock_guard<std::mutex> lock(s_output_synchronization);
     ::fflush(stdout);
     ::fflush(stderr);
     cout << flush;
@@ -66,6 +70,7 @@ namespace {
   size_t _the_printer_2(void* par, dd4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args) {
     if ( !print_func_1 )  {
       char text[4096];
+      std::lock_guard<std::mutex> lock(s_output_synchronization);
       ::fflush(stdout);
       ::fflush(stderr);
       cout << flush;

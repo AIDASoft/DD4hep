@@ -13,11 +13,19 @@
 
 // Framework include files
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/DD4hepUnits.h"
+
+#ifdef HAVE_GEANT4_UNITS
+#define MM_2_CM 1.0
+#else
+#define MM_2_CM 0.1
+#endif
 
 // ROOT includes
 #include "TGeoMatrix.h"
 
 using namespace dd4hep;
+
 
 TGeoIdentity* dd4hep::detail::matrix::_identity() {
   return gGeoIdentity;

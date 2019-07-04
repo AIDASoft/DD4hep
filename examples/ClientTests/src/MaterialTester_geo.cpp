@@ -11,13 +11,19 @@
 //
 //==========================================================================
 
+
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Printout.h"
 
 // ROOT include file
 #include "TGeoElement.h"
+#include "TGeoPhysicalConstants.h"
+#include "TGeant4PhysicalConstants.h"
+#include "TMath.h"
 
+namespace units = dd4hep;
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
@@ -33,10 +39,12 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
     Material mat = description.material(c.nameStr());
     TGeoMaterial* material = mat->GetMaterial();
     printout(INFO,det_name,"+++ Material:%s [%p, %p] Z=%6.2f A=%6.2f D=%9.4f [g/cm3]",
-             material->GetName(), mat.ptr(), m, material->GetZ(),
+             material->GetName(), mat.ptr(), material, material->GetZ(),
              material->GetA(), material->GetDensity());
-    printout(INFO,det_name,"+++          Radiation Length:%9.4f Interaction length:%9.4f Mixture:%s",
-             material->GetRadLen(), material->GetIntLen(),
+    
+    printout(INFO,det_name,"+++          Radiation Length:%9.4f [cm] Interaction length:%9.4f [cm] Mixture:%s",
+             material->GetRadLen()/TGeant4Unit::mm*units::cm, material->GetIntLen()/TGeant4Unit::mm*units::cm,
+             //material->GetRadLen(), material->GetIntLen(),
              yes_no(material->IsMixture()));
     printout(INFO,det_name,"+++          Elements:%d Index:%d",
              material->GetNelements(), material->GetIndex());
@@ -57,7 +65,30 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
     }
   }
 
-
+  printout(INFO,det_name,"+++ Basic units:");
+  printout(INFO,det_name,"+++ Length: mm:         %12.3f  Geant4: %8.3f mm    dd4hep: %8.3f mm    TGeo: %8.3g",
+           units::mm, units::mm/TGeant4Unit::mm, units::mm/units::mm, units::mm/TGeoUnit::mm);
+  printout(INFO,det_name,"+++ Time:   s:          %12.0g  Geant4: %8.3f s     dd4hep: %8.3f s     TGeo: %8.3g",
+           units::s , units::s /TGeant4Unit::s , units::s /units::s,  units::s /TGeoUnit::s );
+  printout(INFO,det_name,"+++ Energy: eV:         %12.3g  Geant4: %8.3f eV    dd4hep: %8.3f eV    TGeo: %8.3g",
+           units::eV, units::eV/TGeant4Unit::eV, units::eV/units::eV, units::eV/TGeoUnit::eV);
+  printout(INFO,det_name,"+++ Energy: MeV:        %12.3f  Geant4: %8.3f MeV   dd4hep: %8.3f MeV   TGeo: %8.3g",
+           units::MeV, units::MeV/TGeant4Unit::MeV, units::MeV /units::MeV, units::MeV /TGeoUnit::MeV);
+  printout(INFO,det_name,"+++ 1./Fine structure:  %12.3f  Geant4: %8.3f       dd4hep: %8.3f       TGeo: %8.3f",
+           1./units::fine_structure_const, 1./TGeant4Unit::fine_structure_const,
+           1./units::fine_structure_const, 1./TGeoUnit::fine_structure_const);
+  printout(INFO,det_name,"+++ Universe density:   %12.3g  Geant4: %8.3g g/cm3 dd4hep: %8.3g g/cm3 TGeo: %8.3g",
+           units::universe_mean_density,
+           units::universe_mean_density/TGeant4Unit::g*TGeant4Unit::cm3,
+           units::universe_mean_density/units::g*units::cm3,
+           units::universe_mean_density/TGeoUnit::g*TGeoUnit::cm3);
+  printout(INFO,det_name,"+++ STP_temperature:    %12.3f  Geant4: %8.3f K     dd4hep: %8.3f K     TGeo: %8.3f K",
+           STP_temperature, STP_temperature/TGeant4Unit::kelvin,
+           STP_temperature/units::kelvin, STP_temperature/TGeoUnit::kelvin);
+  printout(INFO,det_name,"+++ STP_pressure:       %12.0f  Geant4: %8.3f hPa   dd4hep: %8.3f hPa   TGeo: %8.3f hPa",
+           STP_pressure, STP_pressure/TGeant4Unit::pascal/1e2,
+           STP_pressure/units::pascal/1e2,STP_pressure/TGeoUnit::pascal/1e2);
+  
   PlacedVolume pv = description.pickMotherVolume(det).placeVolume(assembly);
   pv.addPhysVolID("system",x_det.id());
   det.setPlacement(pv);
