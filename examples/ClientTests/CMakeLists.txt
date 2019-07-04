@@ -191,7 +191,9 @@ dd4hep_add_test_reg( ClientTests_Check_VolumeDivisionTest
   REGEX_PASS "Checked 8 physical volume placements")
 #
 #
-foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 
+# only if root version > 6.19: MaterialTester
+#
+foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields  
     MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
     MultiCollections MultiSegmentations )
 
