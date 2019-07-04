@@ -27,121 +27,121 @@ namespace dd4hep {
       
       if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {
 	
-	//---------------------------------------	
-	_mV.clear() ;
+        //---------------------------------------	
+        _mV.clear() ;
 	
-	//
-	// algorithm copied from TGeoGearDistanceProperties.cc (A.Munnich):
-	// 
+        //
+        // algorithm copied from TGeoGearDistanceProperties.cc (A.Munnich):
+        // 
 	
-	double startpoint[3], endpoint[3], direction[3];
-	double L=0;
-	for(unsigned int i=0; i<3; i++) {
-	  startpoint[i] = p0[i];
-	  endpoint[i]   = p1[i];
-	  direction[i] = endpoint[i] - startpoint[i];
-	  L+=direction[i]*direction[i];
-	}
-	double totDist = sqrt( L ) ;
+        double startpoint[3], endpoint[3], direction[3];
+        double L=0;
+        for(unsigned int i=0; i<3; i++) {
+          startpoint[i] = p0[i];
+          endpoint[i]   = p1[i];
+          direction[i] = endpoint[i] - startpoint[i];
+          L+=direction[i]*direction[i];
+        }
+        double totDist = sqrt( L ) ;
 	
-	//normalize direction
-	for(unsigned int i=0; i<3; i++)
-	  direction[i]=direction[i]/totDist;
+        //normalize direction
+        for(unsigned int i=0; i<3; i++)
+          direction[i]=direction[i]/totDist;
 	
-	_tgeoMgr->AddTrack(0, 12 ) ; // electron neutrino
+        _tgeoMgr->AddTrack(0, 12 ) ; // electron neutrino
 
-	TGeoNode *node1 = _tgeoMgr->InitTrack(startpoint, direction);
+        TGeoNode *node1 = _tgeoMgr->InitTrack(startpoint, direction);
 
-	//check if there is a node at startpoint
-	if(!node1)
-	  throw std::runtime_error("No geometry node found at given location. Either there is no node placed here or position is outside of top volume.");
+        //check if there is a node at startpoint
+        if(!node1)
+          throw std::runtime_error("No geometry node found at given location. Either there is no node placed here or position is outside of top volume.");
 	
-	while ( !_tgeoMgr->IsOutside() )  {
+        while ( !_tgeoMgr->IsOutside() )  {
 	  
-	  // TGeoNode *node2;
-	  // TVirtualGeoTrack *track; 
+          // TGeoNode *node2;
+          // TVirtualGeoTrack *track; 
 	  
-	  // step to (and over) the next Boundary
-	  TGeoNode * node2 = _tgeoMgr->FindNextBoundaryAndStep( 500, 1) ;
+          // step to (and over) the next Boundary
+          TGeoNode * node2 = _tgeoMgr->FindNextBoundaryAndStep( 500, 1) ;
 	  
-	  if( !node2 || _tgeoMgr->IsOutside() )
-	    break;
+          if( !node2 || _tgeoMgr->IsOutside() )
+            break;
 	  
-	  const double *position    =  _tgeoMgr->GetCurrentPoint();
-	  const double *previouspos =  _tgeoMgr->GetLastPoint();
+          const double *position    =  _tgeoMgr->GetCurrentPoint();
+          const double *previouspos =  _tgeoMgr->GetLastPoint();
 	  
-	  double length = _tgeoMgr->GetStep();
+          double length = _tgeoMgr->GetStep();
 
-	  TVirtualGeoTrack *track = _tgeoMgr->GetLastTrack();
+          TVirtualGeoTrack *track = _tgeoMgr->GetLastTrack();
 
-	  //protection against infinitive loop in root which should not happen, but well it does...
-	  //work around until solution within root can be found when the step gets very small e.g. 1e-10
-	  //and the next boundary is never reached
+          //protection against infinitive loop in root which should not happen, but well it does...
+          //work around until solution within root can be found when the step gets very small e.g. 1e-10
+          //and the next boundary is never reached
  	  
 #if 1   //fg: is this still needed ?
-	  if( length < MINSTEP ) {
+          if( length < MINSTEP ) {
 	    
-	    _tgeoMgr->SetCurrentPoint( position[0] + MINSTEP * direction[0], 
-				       position[1] + MINSTEP * direction[1], 
-				       position[2] + MINSTEP * direction[2] );
+            _tgeoMgr->SetCurrentPoint( position[0] + MINSTEP * direction[0], 
+                                       position[1] + MINSTEP * direction[1], 
+                                       position[2] + MINSTEP * direction[2] );
 	    
-	    length = _tgeoMgr->GetStep();
-	    node2  = _tgeoMgr->FindNextBoundaryAndStep(500, 1) ;
+            length = _tgeoMgr->GetStep();
+            node2  = _tgeoMgr->FindNextBoundaryAndStep(500, 1) ;
 	    
-	    position    = _tgeoMgr->GetCurrentPoint();
-	    previouspos = _tgeoMgr->GetLastPoint();
-	  }
+            position    = _tgeoMgr->GetCurrentPoint();
+            previouspos = _tgeoMgr->GetLastPoint();
+          }
 #endif 	  
-	  //	printf( " --  step length :  %1.8e %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   - %s \n" , length ,
-	  //		position[0], position[1], position[2], previouspos[0], previouspos[1], previouspos[2] , node1->GetMedium()->GetMaterial()->GetName() ) ;
+          //	printf( " --  step length :  %1.8e %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   - %s \n" , length ,
+          //		position[0], position[1], position[2], previouspos[0], previouspos[1], previouspos[2] , node1->GetMedium()->GetMaterial()->GetName() ) ;
 	  
-	  Vector3D posV( position ) ;
+          Vector3D posV( position ) ;
 	  
-	  double currDistance = ( posV - p0 ).r() ;
+          double currDistance = ( posV - p0 ).r() ;
 	  
-	  // //if the next boundary is further than end point
-	  //  if(fabs(position[0])>fabs(endpoint[0]) || fabs(position[1])>fabs(endpoint[1]) 
-	  //  || fabs(position[2])>fabs(endpoint[2]))
+          // //if the next boundary is further than end point
+          //  if(fabs(position[0])>fabs(endpoint[0]) || fabs(position[1])>fabs(endpoint[1]) 
+          //  || fabs(position[2])>fabs(endpoint[2]))
 	  
-	  //if we travelled too far:
-	  if( currDistance > totDist  ) {
+          //if we travelled too far:
+          if( currDistance > totDist  ) {
 	    
-	    length = sqrt( pow(endpoint[0]-previouspos[0],2) + 
-			   pow(endpoint[1]-previouspos[1],2) +
-			   pow(endpoint[2]-previouspos[2],2)   );
+            length = sqrt( pow(endpoint[0]-previouspos[0],2) + 
+                           pow(endpoint[1]-previouspos[1],2) +
+                           pow(endpoint[2]-previouspos[2],2)   );
 	    
-	    track->AddPoint( endpoint[0], endpoint[1], endpoint[2], 0. );
+            track->AddPoint( endpoint[0], endpoint[1], endpoint[2], 0. );
 	    
 	    
-	    if( length > epsilon ) 
-	      _mV.push_back( std::make_pair( Material( node1->GetMedium() ) , length )  ) ; 
+            if( length > epsilon ) 
+              _mV.push_back( std::make_pair( Material( node1->GetMedium() ) , length )  ) ; 
 	    
-	    break;
-	  }
+            break;
+          }
 	  
-	  track->AddPoint( position[0], position[1], position[2], 0.);
+          track->AddPoint( position[0], position[1], position[2], 0.);
 	  
-	  if( length > epsilon ) 
-	    _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
+          if( length > epsilon ) 
+            _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
 	  
-	  node1 = node2 ;
-	}
+          node1 = node2 ;
+        }
 	
 
-	//fg: protect against empty list:
-	if( _mV.empty() ){
-	  _mV.push_back( std::make_pair( Material( node1->GetMedium() ), totDist  )  ) ; 
-	}
+        //fg: protect against empty list:
+        if( _mV.empty() ){
+          _mV.push_back( std::make_pair( Material( node1->GetMedium() ), totDist  )  ) ; 
+        }
 
 
-	_tgeoMgr->ClearTracks();
+        _tgeoMgr->ClearTracks();
 
-	_tgeoMgr->CleanGarbage();
+        _tgeoMgr->CleanGarbage();
 	
-	//---------------------------------------	
+        //---------------------------------------	
 	
-	_p0 = p0 ;
-	_p1 = p1 ;
+        _p0 = p0 ;
+        _p1 = p1 ;
       }
 
       return _mV ; ;
@@ -152,19 +152,19 @@ namespace dd4hep {
 
       if( pos != _pos ) {
 	
-	TGeoNode *node=_tgeoMgr->FindNode( pos[0], pos[1], pos[2] ) ;
+        TGeoNode *node=_tgeoMgr->FindNode( pos[0], pos[1], pos[2] ) ;
 	
-	if( ! node ) {
-	  std::stringstream err ;
-	  err << " MaterialManager::material: No geometry node found at location: " << pos ;
-	  throw std::runtime_error( err.str() );
-	}
+        if( ! node ) {
+          std::stringstream err ;
+          err << " MaterialManager::material: No geometry node found at location: " << pos ;
+          throw std::runtime_error( err.str() );
+        }
 
-	//	std::cout << " @@@ MaterialManager::material @ " << pos << " found volume : " << node->GetName() << std::endl ;
+        //	std::cout << " @@@ MaterialManager::material @ " << pos << " found volume : " << node->GetName() << std::endl ;
 
-	_m = Material( node->GetMedium() ) ;
+        _m = Material( node->GetMedium() ) ;
 	
-	_pos = pos ;
+        _pos = pos ;
       }
 
       return _m ; ;
@@ -183,45 +183,45 @@ namespace dd4hep {
       //double sum_rho_l_over_lambda = 0 ;
       double sum_l_over_lambda = 0 ;
 
-     for(unsigned i=0,n=materials.size(); i<n ; ++i){
+      for(unsigned i=0,n=materials.size(); i<n ; ++i){
 
-	Material mat = materials[i].first ;
-	double   l   = materials[i].second ;
+        Material mat = materials[i].first ;
+        double   l   = materials[i].second ;
 
-	if( i != 0 ) sstr << "_" ; 
-	sstr << mat.name() << "_" << l ;
+        if( i != 0 ) sstr << "_" ; 
+        sstr << mat.name() << "_" << l ;
 
-	double rho      = mat.density() ;
-	double  A       = mat.A() ;
-	double  Z       = mat.Z() ;
-	double  x       = mat.radLength() ;
-	double  lambda  = mat.intLength() ;
+        double rho      = mat.density() ;
+        double  A       = mat.A() ;
+        double  Z       = mat.Z() ;
+        double  x       = mat.radLength() ;
+        double  lambda  = mat.intLength() ;
 	
-	sum_l                 +=   l ;
-	sum_rho_l             +=   rho * l  ;
-	sum_rho_l_over_A      +=   rho * l / A ;
-	sum_rho_l_Z_over_A    +=   rho * l * Z / A ;
-	sum_l_over_x          +=   l / x ;
-	sum_l_over_lambda     +=   l / lambda ;
-	// sum_rho_l_over_x      +=   rho * l / x ;
-	// sum_rho_l_over_lambda +=   rho * l / lambda ;
-     }
+        sum_l                 +=   l ;
+        sum_rho_l             +=   rho * l  ;
+        sum_rho_l_over_A      +=   rho * l / A ;
+        sum_rho_l_Z_over_A    +=   rho * l * Z / A ;
+        sum_l_over_x          +=   l / x ;
+        sum_l_over_lambda     +=   l / lambda ;
+        // sum_rho_l_over_x      +=   rho * l / x ;
+        // sum_rho_l_over_lambda +=   rho * l / lambda ;
+      }
 
-     double rho      =  sum_rho_l / sum_l ;
+      double rho      =  sum_rho_l / sum_l ;
 
-     double  A       =  sum_rho_l / sum_rho_l_over_A ;
-     double  Z       =  sum_rho_l_Z_over_A / sum_rho_l_over_A ;
+      double  A       =  sum_rho_l / sum_rho_l_over_A ;
+      double  Z       =  sum_rho_l_Z_over_A / sum_rho_l_over_A ;
 
-     // radiation and interaction lengths already given in cm - average by length
+      // radiation and interaction lengths already given in cm - average by length
      
-     // double  x       =  sum_rho_l / sum_rho_l_over_x ;
-     double  x       =  sum_l / sum_l_over_x ;
+      // double  x       =  sum_rho_l / sum_rho_l_over_x ;
+      double  x       =  sum_l / sum_l_over_x ;
 
-     //     double  lambda  =  sum_rho_l / sum_rho_l_over_lambda ;
-     double  lambda  =  sum_l / sum_l_over_lambda ;
+      //     double  lambda  =  sum_rho_l / sum_rho_l_over_lambda ;
+      double  lambda  =  sum_l / sum_l_over_lambda ;
 
      
-     return MaterialData( sstr.str() , Z, A, rho, x, lambda ) ;
+      return MaterialData( sstr.str() , Z, A, rho, x, lambda ) ;
 
     }
     
