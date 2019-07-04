@@ -115,8 +115,8 @@ public:
     while( !kernel.internals->stop &&
            (todo = --kernel.internals->eventsToDo) >= 0 )    {
       int ev_num = kernel.internals->numEvents - todo;
-      unique_ptr<DigiContext> c = make_unique<DigiContext>(&kernel);
-      unique_ptr<DigiEvent>   e = make_unique<DigiEvent>(ev_num);
+      unique_ptr<DigiContext> c(new DigiContext(&kernel));
+      unique_ptr<DigiEvent>   e(new DigiEvent(ev_num));
       c->setEvent(e.release());
       kernel.executeEvent(c.release());
     }
@@ -346,7 +346,7 @@ int DigiKernel::run()   {
 #endif
   if ( internals->eventsToDo > 0 )   {
     for(int i=0; i<internals->numEvents; ++i)   {
-      unique_ptr<DigiContext> context = make_unique<DigiContext>(this);
+      unique_ptr<DigiContext> context(new DigiContext(this));
       ++internals->eventsToDo;
       executeEvent(context.release());
     }

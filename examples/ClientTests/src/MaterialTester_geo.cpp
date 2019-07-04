@@ -11,6 +11,9 @@
 //
 //==========================================================================
 
+#include "RVersion.h"
+
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
@@ -96,3 +99,4 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
 }
 
 DECLARE_DETELEMENT(MaterialTester,create_element)
+#endif
