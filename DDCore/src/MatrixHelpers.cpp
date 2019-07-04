@@ -13,11 +13,16 @@
 
 // Framework include files
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/DD4hepUnits.h"
+
+#ifdef HAVE_GEANT4_UNITS
+#define MM_2_CM 1.0
+#else
+#define MM_2_CM 0.1
+#endif
 
 // ROOT includes
 #include "TGeoMatrix.h"
-
-using namespace dd4hep;
 
 TGeoIdentity* dd4hep::detail::matrix::_identity() {
   return gGeoIdentity;
@@ -100,7 +105,7 @@ TGeoHMatrix* dd4hep::detail::matrix::_transform(const Position& pos, const Rotat
 }
 
 /// Convert a TGeoMatrix object to a generic Transform3D  \ingroup DD4HEP \ingroup DD4HEP_CORE
-Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)    {
+dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)    {
   const Double_t* t = matrix->GetTranslation();
   if ( matrix->IsRotation() )  {
     const Double_t* r = matrix->GetRotationMatrix();
@@ -112,8 +117,9 @@ Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)    {
                      0e0,0e0,0e0,t[1]*MM_2_CM,
                      0e0,0e0,0e0,t[2]*MM_2_CM);
 }
+
 // add another implementation that takes const reference
-Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix)    {
+dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix)    {
   const Double_t* t = matrix.GetTranslation();
   if ( matrix.IsRotation() )  {
     const Double_t* r = matrix.GetRotationMatrix();
@@ -126,8 +132,8 @@ Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix)    {
                      0e0,0e0,0e0,t[2]*MM_2_CM);
 }
 
-dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const TGeoMatrix* m) {
-  return m->IsRotation() ? _xyzAngles(m->GetRotationMatrix()) : XYZAngles(0,0,0);
+dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const TGeoMatrix* matrix) {
+  return matrix->IsRotation() ? _xyzAngles(matrix->GetRotationMatrix()) : XYZAngles(0,0,0);
 }
 
 dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const double* r) {

@@ -363,7 +363,8 @@ template <> void Converter<Header>::operator()(xml_h e) const {
   h.setComment(e.child(_U(comment)).text());
   description.setHeader(h);
 }
-
+#include "TGeoPhysicalConstants.h"
+#include "TMath.h"
 /** Convert compact material/element description objects
  *
  *  Materials:
@@ -413,16 +414,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     }
     printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
              "++ Converting material %-16s  Density: %.3f.",matname, dens_val);
-#if 0
-    cout << "Gev    " << xml::_toDouble(_Unicode(GeV)) << endl;
-    cout << "sec    " << xml::_toDouble(_Unicode(second)) << endl;
-    cout << "nsec   " << xml::_toDouble(_Unicode(nanosecond)) << endl;
-    cout << "kilo   " << xml::_toDouble(_Unicode(kilogram)) << endl;
-    cout << "kilo   " << xml::_toDouble(_Unicode(joule*s*s/(m*m))) << endl;
-    cout << "meter  " << xml::_toDouble(_Unicode(meter)) << endl;
-    cout << "ampere " << xml::_toDouble(_Unicode(ampere)) << endl;
-    cout << "degree " << xml::_toDouble(_Unicode(degree)) << endl;
-#endif
     //throw 1;
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
     size_t ifrac = 0;
@@ -462,7 +453,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
 #endif
-
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// In case there were material properties specified: convert them here
     for(xml_coll_t properties(x_mat, _U(constant)); properties; ++properties) {
@@ -1438,6 +1428,21 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
                  "Must now be filled from XML!");
       }
     }
+  }
+
+  if ( s_debug.materials || s_debug.elements )   {
+    printout(INFO,"Compact","+++ UNIT System:");
+    printout(INFO,"Compact","+++ Density:    %8.3g  Units:%8.3g",
+             xml::_toDouble(_Unicode(gram/cm3)), dd4hep::gram/dd4hep::cm3);
+    printout(INFO,"Compact","+++ GeV:        %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(GeV)),dd4hep::GeV);
+    printout(INFO,"Compact","+++ sec:        %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(second)),dd4hep::second);
+    printout(INFO,"Compact","+++ nanosecond: %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(nanosecond)),dd4hep::nanosecond);
+    printout(INFO,"Compact","+++ kilo:       %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(kilogram)),dd4hep::kilogram);
+    printout(INFO,"Compact","+++ kilo:       %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(joule*s*s/(m*m))),
+             dd4hep::joule*dd4hep::s*dd4hep::s/(dd4hep::meter*dd4hep::meter));
+    printout(INFO,"Compact","+++ meter:      %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(meter)),dd4hep::meter);
+    printout(INFO,"Compact","+++ ampere:     %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(ampere)),dd4hep::ampere);
+    printout(INFO,"Compact","+++ degree:     %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(degree)),dd4hep::degree);
   }
   
   xml_coll_t(compact, _U(define)).for_each(_U(include), Converter<DetElementInclude>(description));

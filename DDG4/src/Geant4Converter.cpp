@@ -116,6 +116,8 @@ using namespace std;
 #include "G4VPhysicalVolume.hh"
 #include "G4ReflectionFactory.hh"
 
+static const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
+
 void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
                                    const TGeoNode*   parent,
                                    Chain chain,

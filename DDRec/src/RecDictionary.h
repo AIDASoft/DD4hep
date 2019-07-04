@@ -19,6 +19,7 @@
 #include "DDRec/DetectorData.h"
 #include "DDRec/DetectorSurfaces.h"
 #include "DDRec/MaterialManager.h"
+#include "DDRec/MaterialScan.h"
 #include "DDRec/CellIDPositionConverter.h"
 #include "DDRec/Surface.h"
 #include "DDRec/SurfaceManager.h"
@@ -84,6 +85,7 @@ using namespace dd4hep::rec;
 // DDRec/Material.h
 #pragma link C++ class MaterialData+;
 #pragma link C++ class MaterialManager+;
+#pragma link C++ class MaterialScan+;
 #pragma link C++ class VolSurfaceBase+;
 #pragma link C++ class VolSurface+;
 #pragma link C++ class VolSurfaceList+;

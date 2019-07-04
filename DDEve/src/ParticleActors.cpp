@@ -14,6 +14,7 @@
 // Framework include files
 #include "DDEve/ParticleActors.h"
 #include "DD4hep/Objects.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include "TEveCompound.h"
 #include "TEveTrack.h"
@@ -26,9 +27,19 @@
 using namespace std;
 using namespace dd4hep;
 
-static Color_t Colors[] = {
-  kRed, kBlue, kYellow, kGreen, kPink, kAzure, kOrange, kTeal, kViolet, kSpring, kMagenta, kCyan
-};
+#ifdef HAVE_GEANT4_UNITS
+#define CM_2_MM 1.0
+#define MM_2_CM 1.0
+#else
+#define CM_2_MM 10.0
+#define MM_2_CM 0.1
+#endif
+
+namespace {
+  Color_t Colors[] = {
+    kRed, kBlue, kYellow, kGreen, kPink, kAzure, kOrange, kTeal, kViolet, kSpring, kMagenta, kCyan
+  };
+}
 
 /// Standard initializing constructor
 MCParticleCreator::MCParticleCreator(TEveTrackPropagator* p, TEveCompound* ps, const DisplayConfiguration::Config* cfg) 

@@ -16,6 +16,7 @@
 #include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4Hits.h"
 #include "DD4hep/Segmentations.h"
+
 #include "DD4hep/Printout.h"
 #include "DD4hep/Detector.h"
 
@@ -25,6 +26,11 @@
 
 // ROOT include files
 #include "TGeoNode.h"
+
+#include "DD4hep/DD4hepUnits.h"
+#include "CLHEP/Units/SystemOfUnits.h"
+
+static const double MM_2_CM = (CLHEP::millimeter/dd4hep::millimeter);
 
 #define DEBUG 0
 

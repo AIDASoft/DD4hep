@@ -32,6 +32,7 @@
 #include <mutex>
 
 // ROOT inlcude files
+#include "TGeoSystemOfUnits.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoBoolNode.h"
 #include "TGeoManager.h"
@@ -154,9 +155,10 @@ DetectorImp::DetectorImp()
 DetectorImp::DetectorImp(const string& name)
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
+  //TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
   SetTitle("DD4hep detector description object");
-  set_unexpected( description_unexpected ) ;
-  set_terminate( description_unexpected ) ;
+  set_unexpected( description_unexpected );
+  set_terminate( description_unexpected );
   InstanceCount::increment(this);
   //if ( gGeoManager ) delete gGeoManager;
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
@@ -167,7 +169,7 @@ DetectorImp::DetectorImp(const string& name)
     table->TGeoElementTable::~TGeoElementTable();
     new(table) TGeoElementTable();
     // This will initialize the table without filling:
-    table->AddElement("VACUUM","VACUUM"   ,0,   0, 0.0);
+    table->AddElement("VACUUM","VACUUM", 0, 0, 0.0);
     table->Print();
 #endif
   }

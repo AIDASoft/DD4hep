@@ -29,6 +29,7 @@ namespace dd4hep  {
       const double micro_ = 1.e-06; // micro (Latin) or mikros (Greek) "small"
       const double nano_  = 1.e-09; // nanus (Latin) or nanos  (Greek) "dwarf"
       const double pico_  = 1.e-12; // pico (Spanish) "bit"
+      const double femto_ = 1.e-15; // femto
 
       // ======================================================================
       //
@@ -260,13 +261,17 @@ namespace dd4hep  {
 
       setVariable("micrometer", micro_ * m);
       setVariable("micron",     micro_ * m);
+      setVariable("mum",        micro_ * m);
       setVariable("nanometer",  nano_  * m);
+      setVariable("nm",         nano_  * m);
 
       // ---  honors Anders Jonas Angstrom (1814-1874) of Sweden
       setVariable("angstrom",   1.e-10 * m);
 
       // ---  honors Enrico Fermi (1901-1954) of Italy
       setVariable("fermi",      1.e-15 * m);
+      setVariable("femtometer", femto_ * m);
+      setVariable("fm",         femto_ * m);
 
       // Length^2
 

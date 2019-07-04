@@ -15,6 +15,8 @@
 #include "DDG4/Geant4StepHandler.h"
 #include "DDSegmentation/Segmentation.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "CLHEP/Units/SystemOfUnits.h"
+
 namespace units = dd4hep;
 using namespace dd4hep;
 using namespace dd4hep::sim;
