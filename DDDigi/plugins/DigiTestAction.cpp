@@ -81,6 +81,11 @@ namespace dd4hep {
 
 // C/C++ include files
 
+#ifdef __APPLE__
+static void noop(int) {}
+#define usleep(x)  noop(x)
+#endif
+
 using namespace std;
 using namespace dd4hep::digi;
 
