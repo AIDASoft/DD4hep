@@ -16,6 +16,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/FieldTypes.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
@@ -882,7 +883,7 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
       }
       // translate from TGeo units to Geant4 units if necessary
       if (v->unitType() == DDSegmentation::SegmentationParameter::LengthUnit) {
-        double value = _toDouble(v->value()) * CM_2_MM;
+        double value = _toDouble(v->value()) / dd4hep::mm;
         xml.setAttr(Unicode(v->name()), value);
       } else if (v->unitType() == DDSegmentation::SegmentationParameter::AngleUnit) {
         double value = _toDouble(v->value()) * DEGREE_2_RAD;

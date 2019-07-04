@@ -15,6 +15,10 @@
 #include "DDG4/Geant4StepHandler.h"
 #include "DDSegmentation/Segmentation.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "CLHEP/Units/SystemOfUnits.h"
+
+static constexpr double MM_2_CM = (CLHEP::millimeter/dd4hep::millimeter);
+
 namespace units = dd4hep;
 using namespace dd4hep;
 using namespace dd4hep::sim;
