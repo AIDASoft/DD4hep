@@ -30,6 +30,7 @@ dd4hep_add_dictionary( G__DD4hep
   src/DetectorImp.h
   src/RootDictionary.h
   EXCLUDE include/DD4hep/DetFactoryHelper.h
+  include/DD4hep/Any.h
   include/DD4hep/Factories.h
   include/DD4hep/Plugins.h
   include/DD4hep/IoStreams.h
