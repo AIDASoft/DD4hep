@@ -10,6 +10,12 @@
 // Author     : M.Frank
 //
 //==========================================================================
+//
+// Main conversion operations for the compact notation.
+// - Create elements, materials, etc.
+// - Calls detector construction factories.
+//
+//==========================================================================
 
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
