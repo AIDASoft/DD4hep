@@ -11,13 +11,13 @@
 dd4hep_package(    DDDigi
   USES             DDCore
                    [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
+                   BOOST
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDDigi )
 
 #---Add Library---------------------------------------------------------------------
 dd4hep_add_package_library(DDDigi SOURCES src/*.cpp
   [OPTIONAL TBB REQUIRED]
-  [OPTIONAL BOOST REQUIRED]
   )
 if( TBB_INCLUDE_DIR )
   dd4hep_print( "|++> TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
