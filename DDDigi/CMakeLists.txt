@@ -41,5 +41,4 @@ dd4hep_add_plugin(DDDigiPlugins
   )
 target_compile_definitions(DDDigiPlugins PUBLIC DD4HEP_USE_TBB)
 #---Package installation procedure(s) ----------------------------------------------
-#d4hep_install_dir(examples DESTINATION examples/DDDigi)
 dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)

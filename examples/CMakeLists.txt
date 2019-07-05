@@ -51,6 +51,7 @@ dd4hep_enable_tests (
   ClientTests
   Conditions
   DDG4
+  DDDigi
   Persistency
   SimpleDetector
   DDG4_MySensDet
