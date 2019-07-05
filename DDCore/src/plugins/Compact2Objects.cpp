@@ -16,7 +16,7 @@
 // - Calls detector construction factories.
 //
 //==========================================================================
-
+//
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/DetectorTools.h"
