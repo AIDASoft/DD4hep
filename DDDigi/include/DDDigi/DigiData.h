@@ -15,6 +15,7 @@
 
 /// Framework include files
 #include "DD4hep/Any.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/ObjectExtensions.h"
 
@@ -165,19 +166,22 @@ namespace dd4hep {
       template<typename T> bool put(const Key& key, dd4hep::any&& object)     {
         bool ret = data.emplace(key.toLong(),object).second;
         if ( ret ) return ret;
-        throw std::runtime_error("Invalid requested to store data in event container. Key:%ld",key.toLong());
+        except("DigiEvent","Invalid requested to store data in event container. Key:%ld",key.toLong());
+        throw std::runtime_error("DigiEvent"); // Will never get here!
       }
       /// Retrieve item by key from the event data container
       template<typename T> T& get(const Key& key)     {
         auto iter = data.find(key.toLong());
         if ( iter != data.end() ) return dd4hep::any_cast<T&>((*iter).second);
-        throw std::runtime_error("Invalid data requested from event container. Key:%ld",key.toLong());
+        except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
+        throw std::runtime_error("DigiEvent"); // Will never get here!
       }
       /// Retrieve item by key from the event data container
       template<typename T> const T& get(const Key& key)  const    {
         auto iter = data.find(key.toLong());
         if ( iter != data.end() ) return dd4hep::any_cast<const T&>((*iter).second);
-        throw std::runtime_error("Invalid data requested from event container. Key:%ld",key.toLong());
+        except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
+        throw std::runtime_error("DigiEvent"); // Will never get here!
       }
       /// Add an extension object to the detector element
       void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
