@@ -23,7 +23,7 @@ dd4hep_set_compiler_flags()
 dd4hep_add_plugin( DDDigiExampleLib
   SOURCES   src/*.cpp
   USES      [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-            [DD4hep REQUIRED COMPONENTS DDCore DDDigi]
+            BOOST
   )
 #
 dd4hep_install_dir(scripts DESTINATION ${DDDigiexamples_INSTALL})
