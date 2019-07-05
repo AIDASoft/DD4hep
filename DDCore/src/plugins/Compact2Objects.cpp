@@ -33,9 +33,13 @@
 // Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
+#include "TGeoPhysicalConstants.h"
+#endif
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 #include "TGDMLMatrix.h"
 #endif
+#include "TMath.h"
 
 // C/C++ include files
 #include <climits>
@@ -363,8 +367,7 @@ template <> void Converter<Header>::operator()(xml_h e) const {
   h.setComment(e.child(_U(comment)).text());
   description.setHeader(h);
 }
-#include "TGeoPhysicalConstants.h"
-#include "TMath.h"
+
 /** Convert compact material/element description objects
  *
  *  Materials:
