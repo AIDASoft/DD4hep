@@ -14,11 +14,15 @@
 #define DD4HEP_DDDIGI_DIGIDATA_H
 
 /// Framework include files
+#include "DD4hep/Any.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/ObjectExtensions.h"
 
 /// C/C++ include files
 #include <memory>
+#include <stdexcept>
+#include <cstdint>
+#include <map>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -101,6 +105,32 @@ namespace dd4hep {
     typedef DigiContainer<DigiDeposit> DigiEnergyDeposits;
     typedef DigiContainer<DigiCount>   DigiCounts;
 
+    ///  Key defintion to access the event data
+    /**
+     *  Helper to convert item and mask to a 64 bit integer
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    union Key   {
+      typedef std::uint64_t key_type;
+      typedef std::uint32_t itemkey_type;
+      typedef std::uint8_t  mask_type;
+      key_type key;
+      struct {
+        itemkey_type item;
+        mask_type    mask;
+        mask_type    spare[3];
+      } values;
+      Key();
+      Key(const Key&);
+      Key(mask_type mask, itemkey_type item);
+      Key(mask_type mask, const std::string& item);
+      Key& operator=(const Key&);
+      key_type toLong()  const  {  return key; }
+    };
+    
     ///  User event data for DDDigi
     /**
      *
@@ -110,9 +140,14 @@ namespace dd4hep {
      */
     class  DigiEvent : public ObjectExtensions  {
     public:
+      /// Forward definition of the key type
+      typedef Key::key_type key_type;
       std::map<unsigned long, std::shared_ptr<DigiEnergyDeposits> >  energyDeposits;
       std::map<unsigned long, std::shared_ptr<DigiCounts> >          digitizations;
+
       int eventNumber = 0;
+      std::map<key_type, dd4hep::any>  data;
+
     public:
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Inhibit default constructor
@@ -126,7 +161,24 @@ namespace dd4hep {
       DigiEvent(int num);
       /// Default destructor
       virtual ~DigiEvent();
-      
+      /// Add item by key to the data 
+      template<typename T> bool put(const Key& key, dd4hep::any&& object)     {
+        bool ret = data.emplace(key.toLong(),object).second;
+        if ( ret ) return ret;
+        throw std::runtime_error("Invalid requested to store data in event container. Key:%ld",key.toLong());
+      }
+      /// Retrieve item by key from the event data container
+      template<typename T> T& get(const Key& key)     {
+        auto iter = data.find(key.toLong());
+        if ( iter != data.end() ) return dd4hep::any_cast<T&>((*iter).second);
+        throw std::runtime_error("Invalid data requested from event container. Key:%ld",key.toLong());
+      }
+      /// Retrieve item by key from the event data container
+      template<typename T> const T& get(const Key& key)  const    {
+        auto iter = data.find(key.toLong());
+        if ( iter != data.end() ) return dd4hep::any_cast<const T&>((*iter).second);
+        throw std::runtime_error("Invalid data requested from event container. Key:%ld",key.toLong());
+      }
       /// Add an extension object to the detector element
       void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
         return ObjectExtensions::addExtension(k, e);

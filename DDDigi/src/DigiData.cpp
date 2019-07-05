@@ -13,6 +13,7 @@
 
 // Framework include files
 #include "DD4hep/Printout.h"
+#include "DD4hep/Primitives.h"
 #include "DD4hep/InstanceCount.h"
 #define  G__ROOT
 #include "DDDigi/DigiData.h"
@@ -22,6 +23,31 @@
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::digi;
+
+Key::Key()    {
+  key = 0;
+}
+
+Key::Key(const Key& copy)   {
+  key = copy.key;
+}
+
+Key::Key(mask_type mask, itemkey_type item)   {
+  key = 0;
+  values.mask = mask;
+  values.item = item;
+}
+
+Key::Key(mask_type mask, const std::string& item)  {
+  key = 0;
+  values.mask = mask;
+  values.item = detail::hash32(item);
+}
+
+Key& Key::operator=(const Key& copy)   {
+  key = copy.key;
+  return *this;
+}
 
 /// Intializing constructor
 DigiEvent::DigiEvent()
