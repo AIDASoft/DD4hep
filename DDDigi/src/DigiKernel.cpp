@@ -36,6 +36,9 @@
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::digi;
+namespace  {
+  static std::mutex kernel_mutex;
+}
 
 /// DigiKernel herlp class: Container of instance variabled
 /*
@@ -111,14 +114,21 @@ public:
   Processor(Processor&& l) = default;
   Processor(const Processor& l) = default;
   void operator()()  const {
-    int todo;
-    while( !kernel.internals->stop &&
-           (todo = --kernel.internals->eventsToDo) >= 0 )    {
-      int ev_num = kernel.internals->numEvents - todo;
-      unique_ptr<DigiContext> c(new DigiContext(&kernel));
-      unique_ptr<DigiEvent>   e(new DigiEvent(ev_num));
-      c->setEvent(e.release());
-      kernel.executeEvent(c.release());
+    int todo = 1;
+    while( todo >= 0 )   {
+      todo = -1;
+      {
+        std::lock_guard<std::mutex> lock(kernel_mutex);
+        if( !kernel.internals->stop && kernel.internals->eventsToDo > 0)
+          todo = --kernel.internals->eventsToDo;
+      }
+      if ( todo >= 0 )   {
+        int ev_num = kernel.internals->numEvents - todo;
+        unique_ptr<DigiContext> c(new DigiContext(&kernel));
+        unique_ptr<DigiEvent>   e(new DigiEvent(ev_num));
+        c->setEvent(e.release());
+        kernel.executeEvent(c.release());
+      }
     }
   }
 };
@@ -166,7 +176,6 @@ DigiKernel::~DigiKernel() {
 DigiKernel& DigiKernel::instance(Detector& description) {
   static dd4hep::dd4hep_ptr<DigiKernel> s_main_instance(0);
   if ( 0 == s_main_instance.get() )   {
-    static std::mutex kernel_mutex;
     std::lock_guard<std::mutex> lock(kernel_mutex);
     if ( 0 == s_main_instance.get() )   { // Need to check again!
       s_main_instance.adopt(new DigiKernel(description));
@@ -345,15 +354,15 @@ int DigiKernel::run()   {
     }
   }
 #endif
-  if ( internals->eventsToDo > 0 )   {
-    for(int i=0; i<internals->numEvents && !internals->stop; ++i)   {
-      Processor proc(*this);
-      proc();
-    }
+  while ( internals->eventsToDo > 0 && !internals->stop )   {
+    Processor proc(*this);
+    proc();
   }
   chrono::duration<double> duration = chrono::system_clock::now() - start;
   double sec = chrono::duration_cast<chrono::seconds>(duration).count();
-  printout(DEBUG,"DigiKernel","+++ Event processing finished. Total: %7.1f seconds %7.3f seconds/event",
+  printout(DEBUG,"DigiKernel","+++ %d Events out of %d processed. "
+           "Total: %7.1f seconds %7.3f seconds/event",
+           internals->numEvents, internals->numEvents-int(internals->eventsToDo),
            sec, sec/double(std::max(1,internals->numEvents)));
   return 1;
 }
