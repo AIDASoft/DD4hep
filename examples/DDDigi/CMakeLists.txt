@@ -35,7 +35,7 @@ dd4hep_add_test_reg( DDDigi_framework
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
   EXEC_ARGS  python ${DDDigiexamples_INSTALL}/scripts/TestFramework.py
   REQUIRES   DDDigi
-  REGEX_PASS "+++ 10 Events out of 10 processed."
+  REGEX_PASS "\\+\\+\\+ 10 Events out of 10 processed."
   REGEX_FAIL "Error;ERROR;Exception"
   )
 #
