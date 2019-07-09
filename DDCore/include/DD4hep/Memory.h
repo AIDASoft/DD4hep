@@ -45,21 +45,9 @@ namespace dd4hep  {
    *   \ingroup DD4HEP_CORE
    */
   template <typename T> class dd4hep_ptr
-  //#if defined(DD4HEP_NEVER) && __cplusplus >= 201103L && ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
-#if !defined(DD4HEP_DD4HEP_PTR_AUTO) && __cplusplus >= 201103L && ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
     : public std::unique_ptr<T>  {
-  public:
-    typedef std::unique_ptr<T> base_t;
-#else
-      : public std::auto_ptr<T>  {
     public:
-        typedef std::auto_ptr<T> base_t;
-        void swap(base_t& c) {
-          this->base_t::operator=(base_t(c.release()));
-        }
-        /// Constructor from copy
-        dd4hep_ptr(dd4hep_ptr<T>& c) : base_t(c) {}
-#endif
+        typedef std::unique_ptr<T> base_t;
     public:
         /// Default Constructor.
         dd4hep_ptr() : base_t() {}
