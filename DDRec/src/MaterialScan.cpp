@@ -141,11 +141,11 @@ void MaterialScan::setMaterial(Material material)   {
   struct PvCollector  {
     Material material;
     std::set<const TGeoNode*>& cont;
-    PvCollector(Material m, std::set<const TGeoNode*>& c) : material(m), cont(c) {}
+    PvCollector(Material mat, std::set<const TGeoNode*>& c) : material(mat), cont(c) {}
     void operator()(TGeoNode* pv)    {
-      Volume   v = pv->GetVolume();
-      Material m = v.material();
-      if ( m.ptr() == material.ptr() )  {
+      Volume   vol = pv->GetVolume();
+      Material mat = vol.material();
+      if ( mat.ptr() == material.ptr() )  {
         cont.insert(pv);
       }
       for (Int_t idau = 0, ndau = pv->GetNdaughters(); idau < ndau; ++idau)
