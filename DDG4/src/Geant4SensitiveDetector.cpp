@@ -218,8 +218,8 @@ long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep) {
 }
 
 
-long long Geant4SensitiveDetector::getCellID(G4Step* s) {
-  StepHandler h(s);
+long long Geant4SensitiveDetector::getCellID(G4Step* step) {
+  StepHandler h(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID            volID  = volMgr.volumeID(h.preTouchable());
   Segmentation        seg    = m_readout.segmentation();
