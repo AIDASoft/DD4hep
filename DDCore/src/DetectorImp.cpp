@@ -109,7 +109,6 @@ namespace {
            << "**************************************************** \n"
            << endl ;
 
-      set_unexpected(std::unexpected);
       set_terminate(std::terminate);
       // this provokes ROOT seg fault and stack trace (comment out to avoid it)
       exit(1) ;
@@ -161,7 +160,6 @@ DetectorImp::DetectorImp(const string& name)
   TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
 #endif
   SetTitle("DD4hep detector description object");
-  set_unexpected( description_unexpected );
   set_terminate( description_unexpected );
   InstanceCount::increment(this);
   //if ( gGeoManager ) delete gGeoManager;
