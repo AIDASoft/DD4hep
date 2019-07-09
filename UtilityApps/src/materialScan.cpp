@@ -37,35 +37,54 @@ int main_wrapper(int argc, char** argv)   {
     }
     static void usage()  {
       std::cout << " usage: materialScan compact.xml x0 y0 z0 x1 y1 z1 [-interactive]" << std::endl 
-                << "        -> prints the materials on a straight line between the two given points ( unit is cm) " << std::endl
+                << " or:    materialScan compact.xml -interactive" << std::endl 
+                << "        -> prints the materials on a straight line between the two given points (unit is cm) " << std::endl
                 << "        -interactive   Load geometry once, then allow for shots from the ROOT prompt"
                 << std::endl;
-      exit(1);
+      exit(EINVAL);
     }
   } _handler;
 
-  if( argc < 8 ) Handler::usage();
-  bool interactive = argc == 9 && ::strncmp(argv[8],"-interactive",5) == 0;
+  bool do_scan = true, interactive = false;
   double x0, y0, z0, x1, y1, z1;
-  std::string inFile =  argv[1];
-  std::stringstream sstr;
-  sstr << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << " " << argv[7] << " " << "NONE";
-  sstr >> x0 >> y0 >> z0 >> x1 >> y1 >> z1;
-  if ( !sstr.good() ) Handler::usage();
 
+  if( argc == 3 && ::strncmp(argv[2],"-interactive",5) == 0 )   {
+    interactive = true;
+    do_scan = false;
+  }
+  else if ( argc == 9 && ::strncmp(argv[8],"-interactive",5) == 0 )   {
+    interactive = true;
+    do_scan = true;
+  }
+  else if ( argc < 8 )   {
+    Handler::usage();
+  }
+
+  std::string inFile =  argv[1];
+  if ( do_scan )   {
+    std::stringstream sstr;
+    sstr << argv[2] << " " << argv[3] << " " << argv[4] << " "
+         << argv[5] << " " << argv[6] << " " << argv[7] << " " << "NONE";
+    sstr >> x0 >> y0 >> z0 >> x1 >> y1 >> z1;
+    if ( !sstr.good() ) Handler::usage();
+  }
   setPrintLevel(WARNING);
   Detector& description = Detector::getInstance();
   description.fromXML(inFile);
   MaterialScan scan(description);
-  scan.print(x0, y0, z0, x1, y1, z1);
+  if ( do_scan )   {
+    scan.print(x0, y0, z0, x1, y1, z1);
+  }
   if ( interactive )   {
     char cmd[256];
     description.apply("DD4hep_InteractiveUI",0,0);
     ::snprintf(cmd,sizeof(cmd),
-               "dd4hep::rec::MaterialScan& gMaterialScan = "
-               "*(dd4hep::rec::MaterialScan*)%p",(void*)&scan);
+               "dd4hep::rec::MaterialScan* gMaterialScan = "
+               "(dd4hep::rec::MaterialScan*)%p",(void*)&scan);
     gInterpreter->ProcessLine(cmd);
-    printout(ALWAYS,"materialScan","Use the ROOT interpreter variable gMaterialScan to interact with the material scanner");
+    printout(ALWAYS,"materialScan","Use the ROOT interpreter variable "
+             "\"dd4hep::rec::MaterialScan* gMaterialScan\" to interact "
+             "with the material scanner");
     gInterpreter->ProcessLine(".class dd4hep::rec::MaterialScan");
     description.apply("DD4hep_Rint",0,0);
   }

@@ -1,3 +1,15 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : F.Gaede
+//
+//==========================================================================
 #ifndef rec_MaterialManager_H_
 #define rec_MaterialManager_H_
 
@@ -15,7 +27,8 @@ class TGeoManager ;
 namespace dd4hep {
   namespace rec {
 
-    typedef std::vector< std::pair< Material, double > > MaterialVec ;
+    typedef std::vector< std::pair< Material, double > >     MaterialVec;
+    typedef std::vector< std::pair< PlacedVolume, double > > PlacementVec;
     
     /** Material manager provides access to the material properties of the detector.
      *  Material can be accessed either for a given point or as a list of materials along a straight
@@ -45,12 +58,19 @@ namespace dd4hep {
        *  are ignored. Avoid calling this method in inner loops as the computation is not cheap. Ideally the result should be cached,
        *  for example as an averaged material @see createAveragedMaterial().
        */
-      const MaterialVec& materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 ) ;
+      const MaterialVec& materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 );
 
+      /** Get a vector with all the placements between the two points p0 and p1
+       */
+      const PlacementVec& placementsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 );
+      
       /** Get the material at the given position.
        */
       const Material& materialAt(const Vector3D& pos );
 
+      /** Get the placed volume at the given position.
+       */
+      PlacedVolume placementAt(const Vector3D& pos );
 
       /** Create a material with averaged properties from all materials in the list. 
        *  A and Z are averaged by relative number of atoms(molecules), rho is averaged by relative volume
@@ -59,32 +79,30 @@ namespace dd4hep {
       MaterialData createAveragedMaterial( const MaterialVec& materials ) ;
 
     protected :
-
-      //cached materials
+      /// Cached materials
       MaterialVec  _mV ;
-      Material _m ;
-
-      // cached last points
-      Vector3D _p0 , _p1, _pos ;
-
+      Material     _m ;
+      /// Cached nodes
+      PlacedVolume _pv;
+      PlacementVec _placeV;
+      /// cached last points
+      Vector3D     _p0 , _p1, _pos ;
+      /// Reference to the TGeoManager
       TGeoManager* _tgeoMgr ;
     };
 
-   
     /// dump Material operator 
     inline std::ostream& operator<<( std::ostream& os , const Material& m ) {
       os << "  " << m.name() << " Z: " << m.Z() << " A: " << m.A() << " density: " << m.density() 
-	 << " radiationLength: "  <<  m.radLength() 
-	 << " interactionLength: " << m.intLength() ;
+         << " radiationLength: "  <<  m.radLength() 
+         << " interactionLength: " << m.intLength() ;
       return os ;
     }
     
-
     /// dump MaterialVec operator 
     inline std::ostream& operator<<( std::ostream& os , const MaterialVec& m ) {
-
       for( unsigned i=0,n=m.size() ; i<n ; ++i ) {
-	os << "  material: " << m[i].first << " thickness: " << m[i].second << std::endl ; 
+        os << "  material: " << m[i].first << " thickness: " << m[i].second << std::endl ; 
       }
       return os ;
     }
