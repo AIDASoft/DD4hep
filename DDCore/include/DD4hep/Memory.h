@@ -29,8 +29,6 @@
 // C/C++ include files
 #include <memory>
 
-// Use std::auto_ptr<T> instead of std::unique_ptr<T>
-#define DD4HEP_DD4HEP_PTR_AUTO
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {

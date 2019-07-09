@@ -70,11 +70,6 @@ using namespace std;
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::DataExtension>;
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::ParticleExtension>;
 
-#ifdef DD4HEP_DD4HEP_PTR_AUTO
-#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::DataExtension>::base_t;
-#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::ParticleExtension>::base_t;
-#endif
-
 #pragma link C++ class dd4hep::sim::Geant4Particle+;
 #pragma link C++ class vector<dd4hep::sim::Geant4Particle*>+;
 #pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>+;

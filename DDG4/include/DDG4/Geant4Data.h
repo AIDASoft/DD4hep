@@ -124,11 +124,7 @@ namespace dd4hep {
       /// Original Geant 4 track identifier of the creating track (debugging)
       long g4ID = -1;
       /// User data extension if required
-#ifdef DD4HEP_DD4HEP_PTR_AUTO
-      dd4hep_ptr<DataExtension> extension;
-#else
       dd4hep_ptr<DataExtension> extension;   //! not persisten. ROOT cannot handle
-#endif
 
       /// Utility class describing the monte carlo contribution of a given particle to a hit.
       /**
