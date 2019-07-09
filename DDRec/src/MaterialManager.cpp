@@ -1,3 +1,15 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : F.Gaede
+//
+//==========================================================================
 #include "DDRec/MaterialManager.h"
 #include "DD4hep/Exceptions.h"
 #include "DD4hep/Detector.h"
@@ -23,13 +35,16 @@ namespace dd4hep {
       
     }
     
-    const MaterialVec&MaterialManager:: materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
-      
-      if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {
-	
+    const PlacementVec& MaterialManager::placementsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
+      materialsBetween(p0,p1,epsilon);
+      return _placeV;
+    }
+
+    const MaterialVec& MaterialManager::materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
+      if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {	
         //---------------------------------------	
         _mV.clear() ;
-	
+        _placeV.clear();
         //
         // algorithm copied from TGeoGearDistanceProperties.cc (A.Munnich):
         // 
@@ -55,7 +70,7 @@ namespace dd4hep {
         //check if there is a node at startpoint
         if(!node1)
           throw std::runtime_error("No geometry node found at given location. Either there is no node placed here or position is outside of top volume.");
-	
+
         while ( !_tgeoMgr->IsOutside() )  {
 	  
           // TGeoNode *node2;
@@ -113,18 +128,20 @@ namespace dd4hep {
             track->AddPoint( endpoint[0], endpoint[1], endpoint[2], 0. );
 	    
 	    
-            if( length > epsilon ) 
+            if( length > epsilon )   {
               _mV.push_back( std::make_pair( Material( node1->GetMedium() ) , length )  ) ; 
-	    
+              _placeV.push_back(std::make_pair(node1,length));
+            }
             break;
           }
 	  
           track->AddPoint( position[0], position[1], position[2], 0.);
 	  
-          if( length > epsilon ) 
+          if( length > epsilon )   {
             _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
-	  
-          node1 = node2 ;
+            _placeV.push_back(std::make_pair(node1,length));
+          }
+          node1 = node2;
         }
 	
 
@@ -144,30 +161,38 @@ namespace dd4hep {
         _p1 = p1 ;
       }
 
-      return _mV ; ;
+      return _mV ;
     }
 
     
-    const Material& MaterialManager::materialAt(const Vector3D& pos ){
-
+    const Material& MaterialManager::materialAt(const Vector3D& pos )   {
       if( pos != _pos ) {
-	
-        TGeoNode *node=_tgeoMgr->FindNode( pos[0], pos[1], pos[2] ) ;
-	
+        TGeoNode *node = _tgeoMgr->FindNode( pos[0], pos[1], pos[2] ) ;	
         if( ! node ) {
           std::stringstream err ;
           err << " MaterialManager::material: No geometry node found at location: " << pos ;
           throw std::runtime_error( err.str() );
         }
-
-        //	std::cout << " @@@ MaterialManager::material @ " << pos << " found volume : " << node->GetName() << std::endl ;
-
-        _m = Material( node->GetMedium() ) ;
-	
+        _m = Material( node->GetMedium() );
+        _pv = node;
         _pos = pos ;
       }
-
-      return _m ; ;
+      return _m ;
+    }
+    
+    PlacedVolume MaterialManager::placementAt(const Vector3D& pos )   {
+      if( pos != _pos ) {	
+        TGeoNode *node = _tgeoMgr->FindNode( pos[0], pos[1], pos[2] ) ;	
+        if( ! node ) {
+          std::stringstream err ;
+          err << " MaterialManager::material: No geometry node found at location: " << pos ;
+          throw std::runtime_error( err.str() );
+        }
+        _m = Material( node->GetMedium() );
+        _pv = node;
+        _pos = pos;
+      }
+      return _pv;
     }
     
     MaterialData MaterialManager::createAveragedMaterial( const MaterialVec& materials ) {
