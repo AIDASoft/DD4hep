@@ -56,11 +56,7 @@ namespace dd4hep {
       /// The list of incoming particles
       Particles in;
       /// User data extension if required
-#ifdef DD4HEP_DD4HEP_PTR_AUTO
-      dd4hep_ptr<VertexExtension> extension;
-#else
       dd4hep_ptr<VertexExtension> extension;   //! not persistent: ROOT cannot handle yet
-#endif
       /// Default constructor
       Geant4Vertex();
       /// Copy constructor

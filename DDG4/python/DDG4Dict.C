@@ -241,9 +241,6 @@ typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::VertexExtension>+;
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::PrimaryExtension>+;
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::Geant4InputAction::Particles>;
-#ifdef DD4HEP_DD4HEP_PTR_AUTO
-#pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::Geant4InputAction::Particles>::base_t;
-#endif
 
 // Basic stuff
 #pragma link C++ class dd4hep::sim::Geant4ActionCreation;
