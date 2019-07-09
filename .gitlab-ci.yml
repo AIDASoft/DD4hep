@@ -124,16 +124,15 @@ slc6-llvm5-Geant10.3-XERCESC:
     - ninja install
     - ctest --output-on-failure
 
-mac1013-llvm90-Geant10.3:
+mac1014-clang100-Geant10.5:
   stage: build
   tags:
     - mac
   script:
-    - export GEANT4_VERSION="10.03.p03"
-    - source .dd4hep-ci.d/init_x86_64.sh
+    - source .dd4hep-ci.d/init_mac.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.3.3 -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.5.1 -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -146,16 +145,15 @@ mac1013-llvm90-Geant10.3:
     - ninja install
     - ctest --output-on-failure
 
-mac1013-llvm90-Geant10.4-XERCESC:
+mac1014-clang100-Geant10.5-XERCESC:
   stage: build
   tags:
     - mac
   script:
-    - export GEANT4_VERSION="10.04"
-    - source .dd4hep-ci.d/init_x86_64.sh
+    - source .dd4hep-ci.d/init_mac.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.4.0 -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.5.1 -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
