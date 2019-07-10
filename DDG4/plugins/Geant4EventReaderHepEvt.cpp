@@ -183,7 +183,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   
   //fg: for now we create exactly one event vertex here ( as before )
   Geant4Vertex* vtx = new Geant4Vertex ;
-  vertices.push_back( vtx );
+  vertices.emplace_back( vtx );
   vtx->x = 0;
   vtx->y = 0;
   vtx->z = 0;
@@ -280,11 +280,11 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
 
     //
     // Keep daughters information for later
-    daughter1.push_back(JDAHEP1);
-    daughter2.push_back(JDAHEP2);
+    daughter1.emplace_back(JDAHEP1);
+    daughter2.emplace_back(JDAHEP2);
     //
     //  Add the particle to the collection vector
-    particles.push_back(p);
+    particles.emplace_back(p);
     //
   }// End loop over particles
 

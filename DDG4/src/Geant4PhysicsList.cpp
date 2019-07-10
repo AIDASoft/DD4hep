@@ -178,7 +178,7 @@ Geant4PhysicsList::ParticleProcesses& Geant4PhysicsList::processes(const string&
   if (i != m_processes.end())  {
     return (*i).second;
   }
-  pair<PhysicsProcesses::iterator, bool> ret = m_processes.insert(make_pair(nam, ParticleProcesses()));
+  auto ret = m_processes.emplace(nam, ParticleProcesses());
   return (*(ret.first)).second;
 }
 
@@ -198,7 +198,7 @@ Geant4PhysicsList::ParticleProcesses& Geant4PhysicsList::discreteProcesses(const
   if (i != m_discreteProcesses.end())  {
     return (*i).second;
   }
-  pair<PhysicsProcesses::iterator, bool> ret = m_discreteProcesses.insert(make_pair(nam, ParticleProcesses()));
+  pair<PhysicsProcesses::iterator, bool> ret = m_discreteProcesses.emplace(nam, ParticleProcesses());
   return (*(ret.first)).second;
 }
 

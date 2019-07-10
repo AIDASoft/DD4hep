@@ -97,7 +97,7 @@ OpticalSurface OpticalSurfaceManager::opticalSurface(const string& full_nam)  co
 
 /// Add skin surface to manager
 void OpticalSurfaceManager::addSkinSurface(DetElement de, SkinSurface surf)  const   {
-  if ( access()->skinSurfaces.insert(make_pair(make_pair(de,surf->GetName()), surf)).second )
+  if ( access()->skinSurfaces.emplace(make_pair(de,surf->GetName()), surf).second )
     return;
   except("OpticalSurfaceManager","++ Skin surface %s already present for DE:%s.",
          surf->GetName(), de.name());
@@ -105,7 +105,7 @@ void OpticalSurfaceManager::addSkinSurface(DetElement de, SkinSurface surf)  con
 
 /// Add border surface to manager
 void OpticalSurfaceManager::addBorderSurface(DetElement de, BorderSurface surf)  const   {
-  if ( access()->borderSurfaces.insert(make_pair(make_pair(de,surf->GetName()), surf)).second )
+  if ( access()->borderSurfaces.emplace(make_pair(de,surf->GetName()), surf).second )
     return;
   except("OpticalSurfaceManager","++ Border surface %s already present for DE:%s.",
          surf->GetName(), de.name());
@@ -113,7 +113,7 @@ void OpticalSurfaceManager::addBorderSurface(DetElement de, BorderSurface surf) 
 
 /// Add optical surface data to manager
 void OpticalSurfaceManager::addOpticalSurface(OpticalSurface surf)  const   {
-  if ( access()->opticalSurfaces.insert(make_pair(surf->GetName(), surf)).second )
+  if ( access()->opticalSurfaces.emplace(surf->GetName(), surf).second )
     return;
   except("OpticalSurfaceManager","++ Optical surface %s already present.",
          surf->GetName());

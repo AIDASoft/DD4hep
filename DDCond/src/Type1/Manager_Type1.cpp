@@ -230,7 +230,7 @@ ConditionsPool* Manager_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
   iov->keyData   = key;
   const void* argv_pool[] = {this, iov, 0};
   shared_ptr<ConditionsPool> cond_pool(createPlugin<ConditionsPool>(m_poolType,m_detDesc,2,argv_pool));
-  pool->elements.insert(make_pair(key,cond_pool));
+  pool->elements.emplace(key,cond_pool);
   printout(INFO,"ConditionsMgr","Created IOV Pool for:%s",iov->str().c_str());
   return cond_pool.get();
 }

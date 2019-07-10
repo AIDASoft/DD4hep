@@ -203,7 +203,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
       // Register the physical volume created by us so we can delete it later
       //
       //fPVStore.emplace_back( pvPlaced.first );
-      info.g4VolumeImprints[vol].emplace_back(make_pair(new_chain,pvPlaced.first));
+      info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
 #if 0
       cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
            << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
@@ -1167,7 +1167,7 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
         ::snprintf(txt, sizeof(txt), "%d", ++s_idd);
         id = txt;
       }
-      processors.insert(make_pair(id, nam));
+      processors.emplace(id, nam);
     }
   }
   for (map<string, string>::const_iterator i = processors.begin(); i != processors.end(); ++i) {

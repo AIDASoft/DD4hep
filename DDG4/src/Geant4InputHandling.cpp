@@ -94,7 +94,7 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
   PropertyMask status(p->status);
   int mask = interaction->mask;
   
-  interaction->particles.insert(make_pair(p->id,p));
+  interaction->particles.emplace(p->id,p);
   status.set(G4PARTICLE_PRIMARY);
   p->mask = mask;
   particle_origine->out.insert(p->id);
@@ -176,7 +176,7 @@ static void appendInteraction(const Geant4Action* caller,
   Geant4PrimaryInteraction::ParticleMap::iterator ip, ipend;
   for( ip=input->particles.begin(), ipend=input->particles.end(); ip != ipend; ++ip )  {
     Geant4Particle* p = (*ip).second;
-    output->particles.insert(make_pair(p->id,p->addRef()));
+    output->particles.emplace(p->id,p->addRef());
   }
   Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
   for( iv=input->vertices.begin(), ivend=input->vertices.end(); iv != ivend; ++iv )   {

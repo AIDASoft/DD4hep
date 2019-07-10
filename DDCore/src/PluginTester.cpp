@@ -67,7 +67,7 @@ void* PluginTester::addExtension(void* ptr, const std::string& name, const std::
       Entry entry;
       entry.destruct = dtor;
       entry.id = ++s_extensionID;
-      extensionMap->insert(make_pair(&info, entry));
+      extensionMap->emplace(&info, entry);
     }
     return extensions[key] = ptr;
   }

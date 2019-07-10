@@ -502,7 +502,7 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
       return 0;
     }
   }
-  info.vertices().insert(make_pair(id,v));
+  info.vertices().emplace(id,v);
   for(char value = is.peek(); value=='P'; value=is.peek())  {
     value = get_input(is,input);
     if( !input || value < 0 )
@@ -514,7 +514,7 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
       delete p;
       return 0;
     }
-    info.particles().insert(make_pair(p->id,p));
+    info.particles().emplace(p->id,p);
     p->pex = p->psx;
     p->pey = p->psy;
     p->pez = p->psz;

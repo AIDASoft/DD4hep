@@ -56,17 +56,17 @@ namespace  {
       vector<pair<string, string> > commands;
       for(int i = 0; i < argc && argv[i]; ++i)  {
         if ( 0 == ::strncmp("-import",argv[i],2) )
-          commands.emplace_back(make_pair("import",argv[++i]));
+          commands.emplace_back("import",argv[++i]);
         else if ( 0 == ::strncmp("-dd4hep", argv[i],2) )
-          commands.emplace_back(make_pair("exec","import dd4hep"));
+          commands.emplace_back("exec","import dd4hep");
         else if ( 0 == ::strncmp("-macro", argv[i],2) )
-          commands.emplace_back(make_pair("macro",argv[++i]));
+          commands.emplace_back("macro",argv[++i]);
         else if ( 0 == ::strncmp("-exec", argv[i],2) )
-          commands.emplace_back(make_pair("exec",argv[++i]));
+          commands.emplace_back("exec",argv[++i]);
         else if ( 0 == ::strncmp("-eval", argv[i],2) )
-          commands.emplace_back(make_pair("calc",argv[++i]));
+          commands.emplace_back("calc",argv[++i]);
         else if ( 0 == ::strncmp("-prompt", argv[i],2) )
-          commands.emplace_back(make_pair("prompt",""));
+          commands.emplace_back("prompt","");
         else
           usage(argc, argv);
       }

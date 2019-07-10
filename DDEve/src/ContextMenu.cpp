@@ -68,7 +68,7 @@ ContextMenu& ContextMenu::instance(TClass* cl)  {
   Contexts::const_iterator i = mapped_entries().find(cl->GetName());
   if ( i != mapped_entries().end() ) return *((*i).second);
   ContextMenu* m = new ContextMenu(cl);
-  mapped_entries().insert(make_pair(cl->GetName(),m));
+  mapped_entries().emplace(cl->GetName(),m);
   return *m;
 }
 

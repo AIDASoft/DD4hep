@@ -407,7 +407,7 @@ PlacedVolumeExtension::VolIDs::insert(const string& name, int value) {
   if (i != this->Base::end()) {
     return make_pair(i, false);
   }
-  i = this->Base::insert(this->Base::end(), make_pair(name, value));
+  i = this->Base::emplace(this->Base::end(), name, value);
   return make_pair(i, true);
 }
 

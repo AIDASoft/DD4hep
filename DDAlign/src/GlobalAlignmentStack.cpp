@@ -146,7 +146,7 @@ bool GlobalAlignmentStack::add(dd4hep_ptr<StackEntry>& entry)  {
         throw runtime_error("GlobalAlignmentStack> Invalid alignment entry [No such detector]");
       }
       printout(INFO,"GlobalAlignmentStack","Add node:%s",e->path.c_str());
-      m_stack.insert(make_pair(e->path,entry.release()));
+      m_stack.emplace(e->path,entry.release());
       return true;
     }
     throw runtime_error("GlobalAlignmentStack> The entry with path "+entry->path+

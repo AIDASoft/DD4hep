@@ -186,10 +186,10 @@ namespace {
     T& m;
     MapSelector(T& o) : m(o) {}
     bool operator()(Condition::Object* o)  const
-    { return m.insert(make_pair(o->hash,o)).second;    }
+    { return m.emplace(o->hash,o).second;    }
   };
   template <typename T> MapSelector<T> mapSelector(T& container)
-  {  return MapSelector<T>(container);   }
+  {  return MapSelector<T>(container);       }
 
   template <typename T> struct Inserter {
     T& m;
@@ -197,7 +197,7 @@ namespace {
     Inserter(T& o, IOV* i=0) : m(o), iov(i) {}
     void operator()(const Condition& c)  {
       Condition::Object* o = c.ptr();
-      m.insert(make_pair(o->hash,o));
+      m.emplace(o->hash,o);
       if ( iov ) iov->iov_intersection(o->iov->key());
     }
     void operator()(const pair<Condition::key_type,Condition>& e) { (*this)(e.second);  }
@@ -242,7 +242,7 @@ ConditionsMappedUserPool<MAPPING>::i_findCondition(Condition::key_type key)  con
 
 template<typename MAPPING> inline bool
 ConditionsMappedUserPool<MAPPING>::i_insert(Condition::Object* o)   {
-  int ret = m_conditions.insert(make_pair(o->hash,o)).second;
+  int ret = m_conditions.emplace(o->hash,o).second;
   if ( flags&PRINT_INSERT )  {
     printout(INFO,"UserPool","++ %s condition [%016llX]: %s.",
              ret ? "Successfully inserted" : "FAILED to insert", o->hash,
@@ -461,7 +461,7 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
             /// This condition is no longer valid. remove it!
             /// It will be added again by the handler.
             m_conditions.erase(j);
-            missing.insert(i);
+            missing.emplace(i);
           }
           continue;
         }
@@ -469,7 +469,7 @@ size_t ConditionsMappedUserPool<MAPPING>::compute(const Dependencies& deps,
           m_conditions.erase(j);
         }
       }
-      missing.insert(i);
+      missing.emplace(i);
     }
     if ( !missing.empty() )  {
       ConditionsManagerObject*    m(m_manager.access());
@@ -615,7 +615,7 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
         for( auto i = calc_missing.begin(); i != last_calc; ++i )   {
           typename MAPPING::iterator j = m_conditions.find((*i).first);
           if ( j == m_conditions.end() )
-            slice_miss_calc.insert(*i);
+            slice_miss_calc.emplace(*i);
         }
       }
     }
@@ -758,7 +758,7 @@ ConditionsMappedUserPool<MAPPING>::compute(const IOV&                  required,
         for(auto i=calc_missing.begin(); i != last_calc; ++i)   {
           typename MAPPING::iterator j = m_conditions.find((*i).first);
           if ( j == m_conditions.end() )
-            slice_miss_calc.insert(*i);
+            slice_miss_calc.emplace(*i);
         }
       }
     }

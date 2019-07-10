@@ -136,11 +136,11 @@ namespace dd4hep {
     }
   
     template<typename BINDER, typename OBJECT, typename KEY, typename VAL>
-    static void insert_map_item(const BINDER&,
-                                OBJECT& object,
-                                const KEY& k,
-                                const string& val,
-                                const VAL*)
+    static void emplace_map_item(const BINDER&,
+                                 OBJECT& object,
+                                 const KEY& k,
+                                 const string& val,
+                                 const VAL*)
     {
       typedef map<KEY,VAL> map_t;
       map_t& m = object.template get<map_t>();
@@ -148,49 +148,49 @@ namespace dd4hep {
       if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
         except("OpaqueDataBinder","++ Failed to convert conditions map entry.");
       }
-      m.insert(make_pair(k,v));
+      m.emplace(k,v);
     }
 
     template<typename BINDER, typename OBJECT, typename KEY> 
-    static void insert_map_key(const BINDER& b,
-                               OBJECT& object,
-                               const string& key_val,
-                               const string& val_type,
-                               const string& val,
-                               const KEY*)
+    static void emplace_map_key(const BINDER& b,
+                                OBJECT& object,
+                                const string& key_val,
+                                const string& val_type,
+                                const string& val,
+                                const KEY*)
     {
       KEY key;
       BasicGrammar::instance<KEY>().fromString(&key, key_val);
       // Short and char is not part of the standard dictionaries. Fall back to 'int'.
       if ( val_type.substr(0,4) == "char" )
-        insert_map_item(b, object, key, val, (int*)0);
+        emplace_map_item(b, object, key, val, (int*)0);
       else if ( val_type.substr(0,5) == "short" )
-        insert_map_item(b, object, key, val, (int*)0);
+        emplace_map_item(b, object, key, val, (int*)0);
       else if ( val_type.substr(0,3) == "int" )
-        insert_map_item(b, object, key, val, (int*)0);
+        emplace_map_item(b, object, key, val, (int*)0);
       else if ( val_type.substr(0,4) == "long" )
-        insert_map_item(b, object, key, val, (long*)0);
+        emplace_map_item(b, object, key, val, (long*)0);
       else if ( val_type.substr(0,5) == "float" )
-        insert_map_item(b, object, key, val, (float*)0);
+        emplace_map_item(b, object, key, val, (float*)0);
       else if ( val_type.substr(0,6) == "double" )
-        insert_map_item(b, object, key, val, (double*)0);
+        emplace_map_item(b, object, key, val, (double*)0);
       else if ( val_type.substr(0,6) == "string" )
-        insert_map_item(b, object, key, val, (string*)0);
+        emplace_map_item(b, object, key, val, (string*)0);
       else if ( val_type == "std::string" )
-        insert_map_item(b, object, key, val, (string*)0);
+        emplace_map_item(b, object, key, val, (string*)0);
       else {
         printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",
                  val_type.c_str(),val.c_str());
-        insert_map_item(b, object, key, val, (string*)0);
+        emplace_map_item(b, object, key, val, (string*)0);
       }
     }
 
     template<typename BINDER, typename OBJECT, typename KEY, typename VAL>
-    static void insert_map_pair(const BINDER&,
-                                OBJECT& object,
-                                const string& data,
-                                const KEY*,
-                                const VAL*)
+    static void emplace_map_pair(const BINDER&,
+                                 OBJECT& object,
+                                 const string& data,
+                                 const KEY*,
+                                 const VAL*)
     {
       typedef map<KEY,VAL> map_t;
       pair<KEY,VAL> entry;
@@ -198,37 +198,37 @@ namespace dd4hep {
       if ( !BasicGrammar::instance<pair<KEY,VAL> >().fromString(&entry,data) )  {
         except("OpaqueDataBinder","++ Failed to convert conditions map entry.");
       }
-      m.insert(entry);
+      m.emplace(entry);
     }
 
     template<typename BINDER, typename OBJECT, typename KEY> 
-    static void insert_map_data(const BINDER& b,
-                                OBJECT& object,
-                                const string& val_type,
-                                const string& pair_data,
-                                const KEY*)
+    static void emplace_map_data(const BINDER& b,
+                                 OBJECT& object,
+                                 const string& val_type,
+                                 const string& pair_data,
+                                 const KEY*)
     {
       // Short and char is not part of the standard dictionaries. Fall back to 'int'.
       if ( val_type.substr(0,4) == "char" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (int*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (int*)0);
       else if ( val_type.substr(0,5) == "short" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (int*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (int*)0);
       else if ( val_type.substr(0,3) == "int" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (int*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (int*)0);
       else if ( val_type.substr(0,4) == "long" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (long*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (long*)0);
       else if ( val_type.substr(0,5) == "float" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (float*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (float*)0);
       else if ( val_type.substr(0,6) == "double" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (double*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (double*)0);
       else if ( val_type.substr(0,6) == "string" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (string*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (string*)0);
       else if ( val_type == "std::string" )
-        insert_map_pair(b, object, pair_data, (KEY*)0, (string*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (string*)0);
       else {
         printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",
                  val_type.c_str(),pair_data.c_str());
-        insert_map_pair(b, object, pair_data, (KEY*)0, (string*)0);
+        emplace_map_pair(b, object, pair_data, (KEY*)0, (string*)0);
       }
     }
 
@@ -308,27 +308,27 @@ namespace dd4hep {
                                       const string& val_type, const string& val)
     {
       if ( key_type.substr(0,3) == "int" )
-        insert_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
       // Short and char is not part of the standard dictionaries. Fall back to 'int'.
       else if ( key_type.substr(0,4) == "char" )
-        insert_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
       else if ( key_type.substr(0,5) == "short" )
-        insert_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<int>::null_pointer());
       else if ( key_type.substr(0,4) == "long" )
-        insert_map_key(b, object, key, val_type, val, Primitive<long>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<long>::null_pointer());
       else if ( key_type.substr(0,5) == "float" )
-        insert_map_key(b, object, key, val_type, val, Primitive<float>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<float>::null_pointer());
       else if ( key_type.substr(0,6) == "double" )
-        insert_map_key(b, object, key, val_type, val, Primitive<double>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<double>::null_pointer());
 #endif
       else if ( key_type.substr(0,6) == "string" )
-        insert_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
       else if ( key_type == "std::string" )
-        insert_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
       else {
         printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-        insert_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
+        emplace_map_key(b, object, key, val_type, val, Primitive<string>::null_pointer());
       }
       return true;
     }
@@ -340,27 +340,27 @@ namespace dd4hep {
                                       const std::string& pair_data)
     {
       if ( key_type.substr(0,3) == "int" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
       // Short and char is not part of the standard dictionaries. Fall back to 'int'.
       else if ( key_type.substr(0,4) == "char" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
       else if ( key_type.substr(0,5) == "short" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<int>::null_pointer());
       else if ( key_type.substr(0,4) == "long" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<long>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<long>::null_pointer());
       else if ( key_type.substr(0,5) == "float" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<float>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<float>::null_pointer());
       else if ( key_type.substr(0,6) == "double" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<double>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<double>::null_pointer());
 #endif
       else if ( key_type.substr(0,6) == "string" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
       else if ( key_type == "std::string" )
-        insert_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
       else {
         printout(INFO,"OpaqueDataBinder","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-        insert_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
+        emplace_map_data(b, object, val_type, pair_data, Primitive<string>::null_pointer());
       }
       return true;
     }

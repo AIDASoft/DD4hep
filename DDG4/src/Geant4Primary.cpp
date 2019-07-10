@@ -38,7 +38,7 @@ Geant4PrimaryMap::~Geant4PrimaryMap()   {
 
 /// Add a new object pair (G4 primary particle, DDG4 particle) into the maps
 void Geant4PrimaryMap::insert(G4PrimaryParticle* g4,Geant4Particle* p)   {
-  m_primaryMap.insert(std::make_pair(g4,p->addRef()));
+  m_primaryMap.emplace(g4,p->addRef());
 }
 
 /// Access DDG4 particle by G4 primary particle

@@ -121,8 +121,8 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
     DetElement c = d.clone(d.id, DetElement::COPY_PLACEMENT);
     c->SetName(d.GetName());
     c->SetTitle(d.GetTitle());
-    pair<DetElement::Children::iterator, bool> r = obj->children.insert(make_pair(c.name(), c));
-    if (r.second) {
+    bool r = obj->children.emplace(c.name(), c).second;
+    if ( r ) {
       c._data().parent = obj;
     }
     else {

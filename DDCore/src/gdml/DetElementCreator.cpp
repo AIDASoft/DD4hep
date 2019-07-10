@@ -271,7 +271,7 @@ DetElement DetElementCreator::addSubdetector(const std::string& nam, PlacedVolum
     if ( volid )  {
       det.placement().addPhysVolID("system",det.id());
     }
-    idet = subdetectors.insert(make_pair(nam,det)).first;
+    idet = subdetectors.emplace(nam,det).first;
     description.add(det);
     printout(printLevel,"DetElementCreator","++ Added sub-detector element: %s",det.path().c_str());
   }

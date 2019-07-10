@@ -96,7 +96,7 @@ std::vector<Condition> ConditionsMap::get(DetElement detector,
 /// Insert a new entry to the map
 template <typename T>
 bool ConditionsMapping<T>::insert(DetElement detector, Condition::itemkey_type key, Condition condition)   {
-  auto res = data.insert(std::make_pair(ConditionKey(detector,key).hash,condition));
+  auto res = data.emplace(ConditionKey(detector,key).hash,condition);
   return res.second;
 }
 
@@ -140,7 +140,7 @@ namespace dd4hep {
   template <>
   bool ConditionsMapping<std::multimap<Condition::key_type,Condition> >
   ::insert(DetElement detector, Condition::itemkey_type key, Condition condition)   {
-    data.insert(std::make_pair(ConditionKey(detector,key).hash,condition));
+    data.emplace(ConditionKey(detector,key).hash,condition);
     return true;
   }
 

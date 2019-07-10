@@ -82,7 +82,7 @@ namespace {
     void insert(const string& name, Detector* detector)   {
       auto i = detectors.find(name);
       if ( i==detectors.end() )   {
-        detectors.insert(make_pair(name,detector));
+        detectors.emplace(name,detector);
         return;
       }
       except("DD4hep","Cannot insert detector instance %s [Already present]",name.c_str());
@@ -261,7 +261,7 @@ void DetectorImp::declareParent(const string& detector_name, const DetElement& p
       if (i == m_detectorParents.end())   {
         Volume parent_volume = parent.placement().volume();
         if ( parent_volume.isValid() )   {
-          m_detectorParents.insert(make_pair(detector_name,parent));
+          m_detectorParents.emplace(detector_name,parent);
           return;
         }
         except("DD4hep","+++ Failed to access valid parent volume of %s from %s",

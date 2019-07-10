@@ -232,7 +232,7 @@ Display::CalodataContext& Display::GetCaloHistogram(const string& nam)   {
         ctx.config.hits = hits;
         ctx.config.name = nam;
       }
-      i = m_calodata.insert(make_pair(nam,ctx)).first;
+      i = m_calodata.emplace(nam,ctx).first;
       return (*i).second;      
     }
     throw runtime_error("Cannot access calodata configuration "+nam);

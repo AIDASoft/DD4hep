@@ -93,11 +93,11 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
         Volume   vol(v);
         // Note : assemblies and the world do not have a real volume nor a material
         if (info.volumeSet.find(vol) == info.volumeSet.end()) {
-          info.volumeSet.insert(vol);
+          info.volumeSet.emplace(vol);
           info.volumes.emplace_back(vol);
         }
         if (m.isValid())
-          info.materials.insert(m);
+          info.materials.emplace(m);
         if (dynamic_cast<Volume::Object*>(v)) {
           VisAttr vis = vol.visAttributes();
           //Region      reg = vol.region();
@@ -105,10 +105,10 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
           //SensitiveDetector det = vol.sensitiveDetector();
 
           if (vis.isValid())
-            info.vis.insert(vis);
-          //if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
-          //if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
-          //if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);
+            info.vis.emplace(vis);
+          //if ( lim.isValid() ) info.limits[lim.ptr()].emplace(v);
+          //if ( reg.isValid() ) info.regions[reg.ptr()].emplace(v);
+          //if ( det.isValid() ) info.sensitives[det.ptr()].emplace(v);
         }
         collectSolid(info, v->GetName(), n->GetName(), v->GetShape(), n->GetMatrix());
       }
@@ -135,7 +135,7 @@ GeoHandler& GeoHandler::i_collect(const TGeoNode* current, int level, Region rg,
       vol.setLimitSet(limits);
     }
   }
-  (*m_data)[level].insert(current);
+  (*m_data)[level].emplace(current);
   //printf("GeoHandler: collect level:%d %s\n",level,current->GetName());
   if (num_children > 0) {
     for (int i = 0; i < num_children; ++i) {

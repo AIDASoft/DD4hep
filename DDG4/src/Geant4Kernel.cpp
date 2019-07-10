@@ -444,7 +444,7 @@ Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_inf
   Phases::const_iterator i = m_phases.find(nam);
   if (i == m_phases.end()) {
     Geant4ActionPhase* p = new Geant4ActionPhase(workerContext(), nam, arg0, arg1, arg2);
-    m_phases.insert(make_pair(nam, p));
+    m_phases.emplace(nam, p);
     return p;
   }
   else if (throw_on_exist) {
