@@ -299,7 +299,7 @@ void Geant4SensDetActionSequence::adopt(Geant4Filter* filter) {
 
 /// Initialize the usage of a hit collection. Returns the collection identifier
 size_t Geant4SensDetActionSequence::defineCollection(Geant4Sensitive* owner, const std::string& collection_name, create_t func) {
-  m_collections.push_back(make_pair(collection_name, make_pair(owner,func)));
+  m_collections.emplace_back(collection_name, make_pair(owner,func));
   return m_collections.size() - 1;
 }
 

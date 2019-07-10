@@ -38,9 +38,9 @@ namespace dd4hep {
         for(int j=++i; j<argc && argv[j] &&
               0 != ::strncmp(argv[j],"-processor",4) &&
               0 != ::strncmp(argv[j],"-end-processor",8); ++j)
-          args.push_back(argv[j]);
+          args.emplace_back(argv[j]);
         int num_arg = int(args.size());
-        args.push_back(0);
+        args.emplace_back(nullptr);
         processor = PluginService::Create<void*>(fac,&description,num_arg,&args[0]);
         if ( !processor ) {
           PluginDebug dbg;

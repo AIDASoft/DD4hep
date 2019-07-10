@@ -41,8 +41,8 @@ namespace {
       collectSolid(geo, name + "_left", name + "_left", boolean->GetLeftShape(), boolean->GetLeftMatrix());
       collectSolid(geo, name + "_right", name + "_right", boolean->GetRightShape(), boolean->GetRightMatrix());
     }
-    geo.solids.insert(shape);
-    geo.trafos.push_back(make_pair(node, matrix));
+    geo.solids.emplace(shape);
+    geo.trafos.emplace_back(node, matrix);
   }
 }
 
@@ -94,7 +94,7 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
         // Note : assemblies and the world do not have a real volume nor a material
         if (info.volumeSet.find(vol) == info.volumeSet.end()) {
           info.volumeSet.insert(vol);
-          info.volumes.push_back(vol);
+          info.volumes.emplace_back(vol);
         }
         if (m.isValid())
           info.materials.insert(m);

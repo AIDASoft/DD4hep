@@ -148,8 +148,7 @@ namespace DDSegmentation {
   void BitFieldCoder::addField( const std::string& name,  unsigned offset, int width ){
 
       
-    _fields.push_back( BitFieldElement( name, offset, width ) ) ;
-    
+    _fields.emplace_back(name, offset, width);
     BitFieldElement& bfv = _fields.back() ;
 
     _map[ name ] = _fields.size()-1 ;

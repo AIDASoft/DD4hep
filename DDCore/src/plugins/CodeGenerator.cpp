@@ -211,7 +211,7 @@ namespace {
       if ( !r->user_limits.empty() )   {
         log << " vector<string> user_limits = {";
         for(size_t i=0, n=r->user_limits.size(); i<n; ++i)
-          log << "r->user_limits.push_back(\"" << r->user_limits[i] << "\");" << newline;
+          log << "r->user_limits.emplace_back(\"" << r->user_limits[i] << "\");" << newline;
       }
     }
 
@@ -231,7 +231,7 @@ namespace {
       Segmentation s = r->segmentation;
       if ( s.isValid() )   {
         log << "{ Segmentation s(\"" << s.name() << "\");"
-            << " segs.push_back(s); }" << newline;
+            << " segs.emplace_back(s); }" << newline;
       }
     }
 
@@ -249,7 +249,7 @@ namespace {
         log << newline;
         log << "{ HitCollection c(\"" << c.name << "\",\"" << c.key << "\", "
             << c.key_min << sep << c.key_max << "); "
-            << "  r->hits.push_back(c); } ";
+            << "  r->hits.emplace_back(c); } ";
       }
       if ( !r->hits.empty() ) log << newline;
       log << " detector.add(r); }" << newline;

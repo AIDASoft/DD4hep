@@ -171,8 +171,7 @@ dd4hep_ptr<GlobalAlignmentStack::StackEntry> GlobalAlignmentStack::pop()   {
 vector<const GlobalAlignmentStack::StackEntry*> GlobalAlignmentStack::entries() const    {
   vector<const StackEntry*> result;
   result.reserve(m_stack.size());
-  for(Stack::const_iterator i=m_stack.begin(); i != m_stack.end(); ++i)
-    result.push_back((*i).second);
+  transform(begin(m_stack),end(m_stack),back_inserter(result),detail::select2nd(m_stack));
   return result;
 }
 

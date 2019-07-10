@@ -32,8 +32,8 @@ namespace {
     o->description = dsc;
     for (size_t i = 0; i < bf.size(); ++i) {
       const BitFieldElement* f = &bf[i];
-      o->fieldIDs.push_back(make_pair(i, f->name()));
-      o->fieldMap.push_back(make_pair(f->name(), f));
+      o->fieldIDs.emplace_back(i, f->name());
+      o->fieldMap.emplace_back(f->name(), f);
     }
   }
 }
@@ -138,7 +138,7 @@ void IDDescriptor::decodeFields(VolumeID vid,
   const vector<BitFieldElement>& v = access()->decoder.fields();
   flds.clear();
   for (auto& f : v )
-    flds.push_back(make_pair(&f, f.value(vid)));
+    flds.emplace_back(&f, f.value(vid));
 }
 
 /// Decode volume IDs and return string reprensentation for debugging purposes

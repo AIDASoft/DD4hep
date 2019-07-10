@@ -150,8 +150,9 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
       Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
       const ParticleMap& pm = parts->particles();
       vector<void*> particles;
-      for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end(); ++i)    {
-        particles.push_back((ParticleMap::mapped_type*)(*i).second);
+      particles.reserve(pm.size());
+      for ( const auto& i : pm )   {
+        particles.emplace_back((ParticleMap::mapped_type*)i.second);
       }
       fill("MCParticles",manipulator->vec_type,&particles);
     }
@@ -172,6 +173,7 @@ void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
     coll->getHitsUnchecked(hits);
     size_t nhits = coll->GetSize();
     if ( m_handleMCTruth && m_truth && nhits > 0 )   {
+      hits.reserve(nhits);
       try  {
         for(size_t i=0; i<nhits; ++i)   {
           Geant4HitData* h = coll->hit(i);

@@ -461,8 +461,7 @@ const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
 
 /// Add identifier
 PlacedVolume& PlacedVolume::addPhysVolID(const string& nam, int value) {
-  Object* obj = _data(*this);
-  obj->volIDs.push_back(make_pair(nam, value));
+  _data(*this)->volIDs.emplace_back(nam, value);
   return *this;
 }
 

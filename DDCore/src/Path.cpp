@@ -120,7 +120,7 @@ Path Path::normalize()  const {
   char *token, *save=0;
   token = ::strtok_r(tmp,separators,&save);
   while(token)  {
-    pathes.push_back(token);
+    pathes.emplace_back(token);
     token = ::strtok_r(0,separators,&save);
   }
   Path temp;

@@ -333,7 +333,7 @@ namespace dd4hep {
       template <typename TYPE> void add(TYPE* hit_pointer) {
         Geant4HitWrapper w(m_manipulator->castHit(hit_pointer));
         m_lastHit = m_hits.size();
-        m_hits.push_back(w);
+        m_hits.emplace_back(w);
       }
       /// Add a new hit with a check, that the hit is of the same type
       template <typename TYPE> void add(VolumeID key, TYPE* hit_pointer) {
@@ -341,7 +341,7 @@ namespace dd4hep {
         std::pair<Keys::iterator,bool> ret = m_keys.insert(std::make_pair(key,m_lastHit));
         if ( ret.second )  {
           Geant4HitWrapper w(m_manipulator->castHit(hit_pointer));
-          m_hits.push_back(w);
+          m_hits.emplace_back(w);
           return;
         }
         throw std::runtime_error("Attempt to insert hit with same key to G4 hit-collection "+GetName());

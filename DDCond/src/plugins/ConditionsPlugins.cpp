@@ -196,8 +196,8 @@ static int ddcond_conditions_pool_print(Detector& description, bool print_condit
       if ( argv[i] && 0 == ::strncmp(argv[i],"-processor",3) )  {
         vector<char*> args;
         for(int j=i; j<argc && argv[j] && 0 != ::strncmp(argv[i],"-end-processor",8); ++j)
-          args.push_back(argv[j]);
-        args.push_back(0);
+          args.emplace_back(argv[j]);
+        args.emplace_back(nullptr);
         return ddcond_conditions_pool_processor(description,true,print_conditions,int(args.size()-1),&args[0]);
       }
     }

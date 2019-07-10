@@ -74,7 +74,7 @@ namespace dd4hep {
       return _thickness + _preOffset;
     }
     void add(const LayerSlice& slice) {
-      _slices.push_back(slice);
+      _slices.emplace_back(slice);
     }
   };
 

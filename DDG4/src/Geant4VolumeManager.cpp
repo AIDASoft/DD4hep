@@ -58,15 +58,15 @@ namespace {
     /// Populate the Volume manager
     void populate(DetElement e) {
       const DetElement::Children& c = e.children();
-      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-        DetElement de = (*i).second;
+      for (const auto& i : c)  {
+        DetElement de = i.second;
         PlacedVolume pv = de.placement();
         if (pv.isValid()) {
           Chain chain;
           SensitiveDetector sd;
           PlacedVolume::VolIDs ids;
           m_entries.clear();
-          chain.push_back(m_detDesc.world().placement().ptr());
+          chain.emplace_back(m_detDesc.world().placement().ptr());
           scanPhysicalVolume(pv.ptr(), ids, sd, chain);
           continue;
         }
@@ -80,7 +80,7 @@ namespace {
       Volume vol = pv.volume();
       PlacedVolume::VolIDs pv_ids = pv.volIDs();
 
-      chain.push_back(node);
+      chain.emplace_back(node);
       ids.PlacedVolume::VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
       if (vol.isSensitive()) {
         sd = vol.sensitiveDetector();
@@ -125,7 +125,7 @@ namespace {
           node = *(k);
           PlacementMap::const_iterator g4pit = m_geo.g4Placements.find(node);
           if (g4pit != m_geo.g4Placements.end()) {
-            path.push_back((*g4pit).second);
+            path.emplace_back((*g4pit).second);
             printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s [%s]",
                      node->GetName(), (*g4pit).second->GetName().c_str());
             continue;
@@ -136,13 +136,13 @@ namespace {
           if ( iVolImp != m_geo.g4VolumeImprints.end() )   {
             const Imprints& imprints = (*iVolImp).second;
             //size_t len = kend-k;
-            for(Imprints::const_iterator iImp=imprints.begin(); iImp != imprints.end(); ++iImp)  {
-              const VolumeChain& c = (*iImp).first;
+            for(const auto& imp : imprints )   {
+              const VolumeChain& c = imp.first;
               if ( c.size() <= control.size() && control == c )   {
-                path.push_back((*iImp).second);
+                path.emplace_back(imp.second);
                 printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s %s -> %s",
                          node->GetName(), detail::tools::placementPath(c,false).c_str(),
-                         (*iImp).second->GetName().c_str());
+                         imp.second->GetName().c_str());
                 control.clear();
                 break;
               }

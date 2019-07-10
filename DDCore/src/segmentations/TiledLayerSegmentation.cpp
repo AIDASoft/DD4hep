@@ -86,9 +86,9 @@ void TiledLayerSegmentation::setLayerDimensions(int layerIndex, double x, double
 	}
 	vector<int>::iterator it = find(_layerIndices.begin(), _layerIndices.end(), layerIndex);
 	if (it == _layerIndices.end()) {
-		_layerIndices.push_back(layerIndex);
-		_layerDimensionsX.push_back(x);
-		_layerDimensionsY.push_back(y);
+		_layerIndices.emplace_back(layerIndex);
+		_layerDimensionsX.emplace_back(x);
+		_layerDimensionsY.emplace_back(y);
 	} else {
 		size_t index = it - _layerIndices.begin();
 		_layerDimensionsX[index] = x;

@@ -109,13 +109,13 @@ void OverlayedField::add(CartesianField field) {
       bool isMag = field.MAGNETIC == (typ & field.MAGNETIC);
       if (isEle) {
         vector < CartesianField > &v = o->electric_components;
-        v.push_back(field);
+        v.emplace_back(field);
         o->type |= field.ELECTRIC;
         o->electric = v.size() == 1 ? field : CartesianField();
       }
       if (isMag) {
         vector < CartesianField > &v = o->magnetic_components;
-        v.push_back(field);
+        v.emplace_back(field);
         o->type |= field.MAGNETIC;
         o->magnetic = v.size() == 1 ? field : CartesianField();
       }

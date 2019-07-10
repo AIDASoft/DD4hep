@@ -196,7 +196,7 @@ size_t ConditionsIOVPool::select(const IOV& req_validity, std::vector<Element>& 
       if ( !IOV::key_contains_range(i.first, req_key) )  {
         continue;
       }
-      valid.push_back(i.second);
+      valid.emplace_back(i.second);
       ++num_selected;
     }
   }

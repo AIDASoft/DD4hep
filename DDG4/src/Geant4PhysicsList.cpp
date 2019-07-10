@@ -135,12 +135,12 @@ void Geant4PhysicsList::dump()    {
 
 /// Add physics particle constructor by name
 void Geant4PhysicsList::addParticleConstructor(const std::string& part_name)   {
-  particles().push_back(part_name);
+  particles().emplace_back(part_name);
 }
 
 /// Add physics particle constructor by name
 void Geant4PhysicsList::addParticleGroup(const std::string& part_name)   {
-  particlegroups().push_back(part_name);
+  particlegroups().emplace_back(part_name);
 }
 
 /// Add particle process by name with arguments
@@ -155,7 +155,7 @@ void Geant4PhysicsList::addParticleProcess(const std::string& part_name,
   p.ordAtRestDoIt     = ordAtRestDoIt;
   p.ordAlongSteptDoIt = ordAlongSteptDoIt;
   p.ordPostStepDoIt   = ordPostStepDoIt;
-  processes(part_name).push_back(p);
+  processes(part_name).emplace_back(p);
 }
 
 /// Add discrete particle process by name with arguments
@@ -164,12 +164,12 @@ void Geant4PhysicsList::addDiscreteParticleProcess(const std::string& part_name,
 {
   Process p;
   p.name = proc_name;
-  discreteProcesses(part_name).push_back(p);
+  discreteProcesses(part_name).emplace_back(p);
 }
 
 /// Add PhysicsConstructor by name
 void Geant4PhysicsList::addPhysicsConstructor(const std::string& phys_name)  {
-  physics().push_back(phys_name);
+  physics().emplace_back(phys_name);
 }
 
 /// Access processes for one particle type
@@ -220,7 +220,7 @@ void Geant4PhysicsList::adoptPhysicsConstructor(Geant4Action* action)  {
       PhysicsConstructor ctor(action->name());
       ctor.pointer = p;
       action->addRef();
-      m_physics.push_back(ctor);
+      m_physics.emplace_back(ctor);
       return;
     }
     except("Failed to adopt action object %s as physics constructor. [Invalid-Base]",action->c_name());

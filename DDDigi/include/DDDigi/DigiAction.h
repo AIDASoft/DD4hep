@@ -113,7 +113,7 @@ namespace dd4hep {
         ~Actors()  = default;
         size_t size()    const        { return m_v.size();              }
         void clear()                  { m_v.clear();                    }
-        void add(T* obj)              { m_v.push_back(obj);             }
+        void add(T* obj)              { m_v.emplace_back(obj);          }
         void add_front(T* obj)        { m_v.insert(m_v.begin(), obj);   }
         const typename _V::value_type& operator[](size_t i)  const
         {  return m_v[i];}

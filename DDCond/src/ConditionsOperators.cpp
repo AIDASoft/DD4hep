@@ -44,7 +44,7 @@ size_t Operators::collectAllConditions(ConditionsManager manager, RangeCondition
           RangeConditions rc;
           cp.second->select_all(rc);
           for( auto c : rc )
-            conditions.push_back(c);
+            conditions.emplace_back(c);
           num_conditions += rc.size();
         }
       }
@@ -71,7 +71,7 @@ size_t Operators::collectAllConditions(ConditionsManager manager, std::map<int,C
           RangeConditions rc;
           cp.second->select_all(rc);
           for( auto c : rc )
-            conditions.insert(make_pair(c->hash,c));
+            conditions.emplace(c->hash,c);
           num_conditions += rc.size();
         }
       }

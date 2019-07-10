@@ -169,7 +169,7 @@ namespace dd4hep {
           except("+++ Invalid CELL ID for hit!");
         }
       }
-      hit->truth.push_back(contrib);
+      hit->truth.emplace_back(contrib);
       hit->energyDeposit += contrib.deposit;
       mark(step);
       return true;
@@ -228,7 +228,7 @@ namespace dd4hep {
           }
         }
         hit->energyDeposit += contrib.deposit;
-        hit->truth.push_back(contrib);
+        hit->truth.emplace_back(contrib);
         track->SetTrackStatus(fStopAndKill); // don't step photon any further
         mark(h.track);
         return true;
@@ -303,7 +303,7 @@ namespace dd4hep {
           except("+++ Invalid CELL ID for hit!");
         }
       }
-      hit->truth.push_back(contrib);
+      hit->truth.emplace_back(contrib);
       hit->energyDeposit += contrib.deposit;
       mark(step);
       return true;

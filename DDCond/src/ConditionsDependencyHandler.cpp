@@ -66,11 +66,11 @@ ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
 {
   const IOV& iov = m_pool.validity();
   unsigned char* p = new unsigned char[dependencies.size()*sizeof(Work)];
-  Dependencies::const_iterator idep = dependencies.begin();
   m_block = (Work*)p;
-  for(size_t i=0; i<dependencies.size(); ++i, ++idep, p+=sizeof(Work))  {
-    Work* w = new(p) Work(this,(*idep).second,user_param,iov);
-    m_todo.insert(std::make_pair((*idep).first,w));
+  for(const auto& d : dependencies)  {
+    Work* w = new(p) Work(this,d.second,user_param,iov);
+    m_todo.emplace(d.first,w);
+    p += sizeof(Work);
   }
   m_iovType = iov.iovType;
 }
@@ -117,7 +117,7 @@ void ConditionsDependencyHandler::resolve()    {
     }
     ++num_resolved;
     // Fill an empty map of condition vectors for the block inserts
-    auto ret = work_pools.insert(make_pair(w->iov->keyData,tmp));
+    auto ret = work_pools.emplace(w->iov->keyData,tmp);
     if ( ret.second )   {
       // There is sort of the hope that most conditions go into 1 pool...
       ret.first->second.reserve(m_todo.size());
@@ -127,7 +127,7 @@ void ConditionsDependencyHandler::resolve()    {
   for( const auto& c : m_todo )   {
     w = c.second;
     auto& section = work_pools[w->iov->keyData];
-    section.push_back(w->condition);
+    section.emplace_back(w->condition);
 #if 0
     printout(prt_lvl,"DependencyHandler","++ Register %s %s %s  [%s]",
              w->context.dependency->target.toString().c_str(),
@@ -177,7 +177,7 @@ std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey
       item_selector(Condition::itemkey_type k) : key(k) {}
       int operator()(Condition cond)   {
         ConditionKey::KeyMaker km(cond->hash);
-        if ( km.values.item_key == key ) conditions.push_back(cond);
+        if ( km.values.item_key == key ) conditions.emplace_back(cond);
         return 1;
       }
     };

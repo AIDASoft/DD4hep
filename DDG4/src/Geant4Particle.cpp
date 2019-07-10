@@ -174,7 +174,7 @@ std::vector<G4ParticleDefinition*> Geant4ParticleHandle::g4DefinitionsRegEx(cons
     G4ParticleDefinition* p = iter->value();
     ret = ::regexec(&reg, p->GetParticleName().c_str(), 0, NULL, 0);
     if (!ret)
-      results.push_back(p);
+      results.emplace_back(p);
     else if (ret == REG_NOMATCH)
       continue;
     else {

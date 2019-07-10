@@ -74,7 +74,7 @@ namespace dd4hep {
       /// Register a new condition to this pool
       virtual bool insert(Condition condition)  final    {
         Condition::Object* c = condition.access();
-        bool result = m_entries.insert(std::make_pair(c->hash,c)).second;
+        bool result = m_entries.emplace(c->hash,c).second;
         if ( result ) return true;
         auto i = m_entries.find(c->hash);
         Condition present = (*i).second;
@@ -89,7 +89,7 @@ namespace dd4hep {
         Condition::Object* o;
         for( Condition c : new_entries )  {
           o = c.access();
-          m_entries.insert(std::make_pair(o->hash,o));
+          m_entries.emplace(o->hash,o);
         }
       }
 
@@ -146,7 +146,7 @@ namespace dd4hep {
       virtual size_t popEntries(UpdatePool::UpdateEntries& entries)  final   {
         detail::ClearOnReturn<MAPPING> clr(this->Self::m_entries);
         return this->Self::loop(entries, [&entries](const std::pair<Condition::key_type,Condition::Object*>& o) {
-            entries[o.second->iov].push_back(Condition(o.second));});
+            entries[o.second->iov].emplace_back(o.second);});
       }
 
       /// Select the conditions matching the DetElement and the conditions name
@@ -154,27 +154,26 @@ namespace dd4hep {
                                 const IOV& req, 
                                 RangeConditions& result)  final
       {
-        //return this->Self::loop(entries, [&entries](const std::pair<key_type,Condition::Object*>& o) {
-        //    entries[o.second->iov].push_back(Condition(o.second));});
         MAPPING& m = this->ConditionsMappedPool<MAPPING,BASE>::m_entries;
         if ( !m.empty() )   {
           unsigned int req_typ = req.iovType ? req.iovType->type : req.type;
           const IOV::Key& req_key = req.key();
-          for(typename MAPPING::const_iterator i=m.begin(); i != m.end(); ++i)  {
-            Condition::Object* o = (*i).second;
+          result.reserve(m.size());
+          for(const auto& e : m)  {
+            Condition::Object* o = e.second;
             if ( key == o->hash )  {
               const IOV* _iov = o->iov;
               unsigned int typ = _iov->iovType ? _iov->iovType->type : _iov->type;
               if ( req_typ == typ )   {
                 if ( IOV::key_is_contained(_iov->key(),req_key) )
                   // IOV test contained in key. Take it!
-                  result.push_back(o);
+                  result.emplace_back(o);
                 else if ( IOV::key_overlaps_lower_end(_iov->key(),req_key) )
                   // IOV overlap on test on the lower end of key
-                  result.push_back(o);
+                  result.emplace_back(o);
                 else if ( IOV::key_overlaps_higher_end(_iov->key(),req_key) )
                   // IOV overlap of test on the higher end of key
-                  result.push_back(o);
+                  result.emplace_back(o);
               }
             }
           }

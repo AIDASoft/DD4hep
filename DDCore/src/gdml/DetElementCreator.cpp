@@ -162,7 +162,7 @@ DetElementCreator::~DetElementCreator()   {
     printout(INFO,pref,"DetElementCreator: ++ Summary: SD: %-24s system:%04X Lvl:%3d Sensitives: %6d [Max: %6d].",
              (de.name()+string(":")).c_str(), de.id(),
              l.first.second, l.second.second, l.second.first);
-    fields[de].push_back(make_pair(l.first.second,l.second.first));
+    fields[de].emplace_back(l.first.second,l.second.first);
     total_depth += l.second.second;
     ++total_cnt;
   }
@@ -308,7 +308,7 @@ int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
          (detector_volume_veto.empty() ||
           pv_nam.find(detector_volume_veto)  == string::npos)  )  )
   {
-    stack.push_back(Data(pv));
+    stack.emplace_back(Data(pv));
     if ( 0 == detector_volume_level )   {
       detector_volume_level = stack.size();
       createTopLevelDetectors(pv);

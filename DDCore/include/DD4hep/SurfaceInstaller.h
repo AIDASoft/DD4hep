@@ -191,7 +191,7 @@ namespace {
     Surfaces::const_iterator is = m_surfaces.find(vol.ptr());
     if ( is != m_surfaces.end() )  {
       VolSurface surf((*is).second);
-      dd4hep::rec::volSurfaceList(comp)->push_back(surf);
+      dd4hep::rec::volSurfaceList(comp)->emplace_back(surf);
       return true;
     }
     return false;
@@ -201,7 +201,7 @@ namespace {
   template <typename UserData>
   void Installer<UserData>::addSurface(dd4hep::DetElement component, const dd4hep::rec::VolSurface& surf)   {
     m_surfaces.insert(std::make_pair(surf.volume().ptr(),surf.ptr()));
-    dd4hep::rec::volSurfaceList(component)->push_back(surf);
+    dd4hep::rec::volSurfaceList(component)->emplace_back(surf);
   }
 
   /// Default (empty argument handler

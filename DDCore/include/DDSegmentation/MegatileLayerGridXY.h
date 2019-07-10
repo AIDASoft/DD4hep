@@ -76,12 +76,12 @@ namespace dd4hep {
       }
 
       void setMegaTileCellsXY( unsigned int layer, int ix, int iy ) {
-	while ( _nCellsX.size()<=layer ) {
-	  _nCellsX.push_back(0);
-	  _nCellsY.push_back(0);
-	}
-	_nCellsX[layer] = ix;
-	_nCellsY[layer] = iy;
+        while ( _nCellsX.size()<=layer ) {
+          _nCellsX.emplace_back(0);
+          _nCellsY.emplace_back(0);
+        }
+        _nCellsX[layer] = ix;
+        _nCellsY[layer] = iy;
 
       }
 

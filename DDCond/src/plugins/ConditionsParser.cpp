@@ -157,7 +157,7 @@ namespace dd4hep {
       if ( !arg->stack )
         except("ConditionsParser","Non-existing Conditions stack:%s %d",__FILE__, __LINE__);
       else
-        arg->stack->push_back(val.release());
+        arg->stack->emplace_back(val.release());
     }
     else  {
       dd4hep_ptr<Entry> val(_createStackEntry(param,e));
@@ -165,7 +165,7 @@ namespace dd4hep {
       if ( !arg->stack )
         except("ConditionsParser","Non-existing Conditions stack:%s %d",__FILE__, __LINE__);
       else
-        arg->stack->push_back(val.release());
+        arg->stack->emplace_back(val.release());
     }
   }
 

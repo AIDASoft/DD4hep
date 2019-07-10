@@ -383,7 +383,7 @@ namespace dd4hep {
       p.ordAtRestDoIt     = proc.attr<int>(_Unicode(ordAtRestDoIt));
       p.ordAlongSteptDoIt = proc.attr<int>(_Unicode(ordAlongSteptDoIt));
       p.ordPostStepDoIt   = proc.attr<int>(_Unicode(ordPostStepDoIt));
-      procs.push_back(p);
+      procs.emplace_back(p);
       printout(INFO,"Geant4Setup","+++ Converter<ParticleProcesses: Particle:%s add process %s %d %d %d",
                part_name.c_str(),p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
     }
@@ -405,7 +405,7 @@ namespace dd4hep {
     Geant4PhysicsList::ParticleConstructors& parts = _object<Geant4PhysicsList>().particles();
     xml_comp_t part(e);
     string n = part.nameStr();
-    parts.push_back(n);
+    parts.emplace_back(n);
     printout(INFO,"Geant4Setup","+++ ParticleConstructor: Add Geant4 particle constructor '%s'",n.c_str());
   }
 
@@ -422,7 +422,7 @@ namespace dd4hep {
     Geant4PhysicsList::PhysicsConstructors& parts = _object<Geant4PhysicsList>().physics();
     xml_comp_t part(e);
     string n = part.nameStr();
-    parts.push_back(n);
+    parts.emplace_back(n);
     printout(INFO,"Geant4Setup","+++ PhysicsConstructor: Add Geant4 physics constructor '%s'",n.c_str());
   }
 

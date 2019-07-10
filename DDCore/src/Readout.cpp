@@ -68,21 +68,21 @@ vector<string> Readout::collectionNames()  const   {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
       for(const auto& hit : ro.hits )
-        colls.push_back(hit.name);
+        colls.emplace_back(hit.name);
     }
     return colls;
   }
   throw runtime_error("dd4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
 }
 
-/// Access hit collections
+/// Access hit collectionsy
 vector<const HitCollection*> Readout::collections()  const   {
   vector<const HitCollection*> colls;
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
       for(const auto& hit : ro.hits )
-        colls.push_back(&hit);
+        colls.emplace_back(&hit);
     }
     return colls;
   }

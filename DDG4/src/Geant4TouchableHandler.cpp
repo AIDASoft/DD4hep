@@ -47,7 +47,7 @@ Geant4TouchableHandler::Geant4PlacementPath Geant4TouchableHandler::placementPat
     path_val.reserve(n);
     for (i=0; i < n; ++i) {
       G4VPhysicalVolume* pv = touchable->GetVolume(i);
-      path_val.push_back(pv);
+      path_val.emplace_back(pv);
     }
     return path_val;
   }

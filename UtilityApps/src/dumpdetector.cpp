@@ -172,14 +172,14 @@ static int invoke_dump_detector(int argc, char** argv ){
   std::list< DetElement > dets ;
   std::list< DetElement > daugs ; 
   std::list< DetElement > gdaugs ; 
-  daugs.push_back( world ) ;
+  daugs.emplace_back( world ) ;
   while( ! daugs.empty() ) {
     for( std::list< DetElement >::iterator li=daugs.begin() ; li != daugs.end() ; ++li ){
       DetElement dau = *li ;
       DetElement::Children chMap = dau.children() ;
       for ( DetElement::Children::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
         DetElement de = (*it).second ;
-        gdaugs.push_back( de ) ;
+        gdaugs.emplace_back( de ) ;
       }  
     }
     dets.splice( dets.end() , daugs ) ;

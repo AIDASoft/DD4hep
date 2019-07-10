@@ -292,7 +292,7 @@ namespace DDSegmentation {
       if( c != _del  ) {
 	
 	if( _last == _del  ) {
-	  _tokens.push_back("") ; 
+	  _tokens.emplace_back("") ; 
 	}
 	_tokens.back() += c ;
       }

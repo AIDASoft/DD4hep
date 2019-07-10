@@ -158,7 +158,7 @@ namespace dd4hep {
     for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !grammar.fromString(&val,*i) )
         return 0;
-      p->push_back(val);
+      p->emplace_back(val);
     }
     return 1;
   }
@@ -170,7 +170,7 @@ namespace dd4hep {
     for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !grammar.fromString(&val,*i) )
         return 0;
-      p->push_back(val);
+      p->emplace_back(val);
     }
     return 1;
   }
@@ -182,7 +182,7 @@ namespace dd4hep {
     for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !grammar.fromString(&val,*i) )
         return 0;
-      p->insert(val);
+      p->emplace(val);
     }
     return 1;
   }
@@ -194,7 +194,7 @@ namespace dd4hep {
     for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !grammar.fromString(&val,*i) )
         return 0;
-      p->push_back(val);
+      p->emplace_back(val);
     }
     return 1;
   }
@@ -206,7 +206,7 @@ namespace dd4hep {
     for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
       if ( !grammar.fromString(&val,*i) )
         return 0;
-      p->insert(val);
+      p->emplace(val);
     }
     return 1;
   }

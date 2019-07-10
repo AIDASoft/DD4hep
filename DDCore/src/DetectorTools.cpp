@@ -70,14 +70,14 @@ bool detail::tools::findChild(PlacedVolume parent, PlacedVolume child, Placement
   if ( parent.isValid() && child.isValid() ) {
     // Check self
     if ( parent.ptr() == child.ptr() ) {
-      path.push_back(child);
+      path.emplace_back(child);
       return true;
     }
     TIter next(parent->GetVolume()->GetNodes());
     // Now check next layer children
     for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
       if ( daughter == child.ptr() ) {
-        path.push_back(daughter);
+        path.emplace_back(daughter);
         return true;
       }
     }
@@ -88,7 +88,7 @@ bool detail::tools::findChild(PlacedVolume parent, PlacedVolume child, Placement
       bool res = findChild(daughter, child, sub_path);
       if (res) {
         path.insert(path.end(), sub_path.begin(), sub_path.end());
-        path.push_back(daughter);
+        path.emplace_back(daughter);
         return res;
       }
     }
@@ -101,14 +101,14 @@ static bool findChildByName(PlacedVolume parent, PlacedVolume child, detail::too
   if ( parent.isValid() && child.isValid() ) {
     // Check self
     if ( 0 == ::strcmp(parent.ptr()->GetName(),child.ptr()->GetName()) ) {
-      path.push_back(child);
+      path.emplace_back(child);
       return true;
     }
     TIter next(parent->GetVolume()->GetNodes());
     // Now check next layer children
     for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
       if ( 0 == ::strcmp(daughter->GetName(),child.ptr()->GetName()) ) {
-        path.push_back(daughter);
+        path.emplace_back(daughter);
         return true;
       }
     }
@@ -119,7 +119,7 @@ static bool findChildByName(PlacedVolume parent, PlacedVolume child, detail::too
       bool res = findChildByName(daughter, child, sub_path);
       if (res) {
         path.insert(path.end(), sub_path.begin(), sub_path.end());
-        path.push_back(daughter);
+        path.emplace_back(daughter);
         return res;
       }
     }
@@ -130,7 +130,7 @@ static bool findChildByName(PlacedVolume parent, PlacedVolume child, detail::too
 /// Collect detector elements to the top detector element (world)
 void detail::tools::elementPath(DetElement element, ElementPath& detectors) {
   for(DetElement par = element; par.isValid(); par = par.parent())
-    detectors.push_back(par);
+    detectors.emplace_back(par);
 }
 
 /// Collect detector elements to any parent detector element
@@ -138,12 +138,12 @@ void detail::tools::elementPath(DetElement parent, DetElement child, ElementPath
   detectors.clear();
   if ( parent.isValid() && child.isValid() )  {
     if ( parent.ptr() == child.ptr() )  {
-      detectors.push_back(child);
+      detectors.emplace_back(child);
       return;
     }
     ElementPath elements;
     for(DetElement par = child; par.isValid(); par = par.parent())  {
-      elements.push_back(par);
+      elements.emplace_back(par);
       if ( par.ptr() == parent.ptr() )  {
         detectors = elements;
         return;
@@ -159,7 +159,7 @@ void detail::tools::elementPath(DetElement parent, DetElement element, Placement
   for(DetElement par = element; par.isValid(); par = par.parent())  {
     PlacedVolume pv = par.placement();
     if ( pv.isValid() )  {
-      det_nodes.push_back(pv);
+      det_nodes.emplace_back(pv);
     }
     if ( par.ptr() == parent.ptr() ) return;
   }
@@ -171,7 +171,7 @@ void detail::tools::elementPath(DetElement element, PlacementPath& det_nodes) {
   for(DetElement par = element; par.isValid(); par = par.parent())  {
     PlacedVolume pv = par.placement();
     if ( pv.isValid() )  {
-      det_nodes.push_back(pv);
+      det_nodes.emplace_back(pv);
     }
   }
 }
@@ -255,7 +255,7 @@ static void detail::tools::makePlacementPath(PlacementPath det_nodes, PlacementP
     }
   }
   if ( det_nodes.size() > 0 )   {
-    all_nodes.push_back(det_nodes.back());
+    all_nodes.emplace_back(det_nodes.back());
   }
 }
 
@@ -402,11 +402,11 @@ vector<string> detail::tools::pathElements(const string& path)   {
     string tmp = path[0]=='/' ? path.substr(1) : path;
     for(size_t idx=tmp.find('/'); idx != string::npos; idx=tmp.find('/'))  {
       string val = tmp.substr(0,idx);
-      result.push_back(val);
+      result.emplace_back(val);
       tmp = tmp.length()>idx ? tmp.substr(idx+1) : string();
     }
     if ( !tmp.empty() )  {
-      result.push_back(tmp);
+      result.emplace_back(tmp);
     }
   }
   return result;

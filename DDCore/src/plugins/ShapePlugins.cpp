@@ -61,9 +61,9 @@ static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
   double start = e.startphi(0e0), deltaphi = e.deltaphi(2*M_PI);
   for(xml_coll_t c(e,_U(zplane)); c; ++c, ++num)  {
     xml_comp_t plane(c);
-    rmin.push_back(plane.rmin());
-    rmax.push_back(plane.rmax());
-    z.push_back(plane.z());
+    rmin.emplace_back(plane.rmin());
+    rmax.emplace_back(plane.rmax());
+    z.emplace_back(plane.z());
   }
   if ( num < 2 )  {
     throw runtime_error("PolyCone Shape> Not enough Z planes. minimum is 2!");
@@ -237,9 +237,9 @@ static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
   std::vector<double> z, rmin, rmax;
   for ( xml_coll_t c(e,_U(plane)); c; ++c )  {
     xml_comp_t plane(c);
-    rmin.push_back(plane.rmin());
-    rmax.push_back(plane.rmax());
-    z.push_back(plane.z());
+    rmin.emplace_back(plane.rmin());
+    rmax.emplace_back(plane.rmax());
+    z.emplace_back(plane.z());
   }
   Solid solid = Polyhedra(e.numsides(),e.startphi(),e.deltaphi(),z,rmin,rmax);
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
@@ -252,15 +252,15 @@ static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
   std::vector<double> pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale;
   for ( xml_coll_t sec(element, _U(section)); sec; ++sec )   {
     xml_dim_t section(sec);
-    sec_z.push_back(section.attr<double>(_U(z)));
-    sec_x.push_back(section.attr<double>(_U(x)));
-    sec_y.push_back(section.attr<double>(_U(y)));
-    sec_scale.push_back(section.attr<double>(_U(scale),1.0));
+    sec_z.emplace_back(section.attr<double>(_U(z)));
+    sec_x.emplace_back(section.attr<double>(_U(x)));
+    sec_y.emplace_back(section.attr<double>(_U(y)));
+    sec_scale.emplace_back(section.attr<double>(_U(scale),1.0));
   }
   for ( xml_coll_t pt(element, _U(point)); pt; ++pt )   {
     xml_dim_t point(pt);
-    pt_x.push_back(point.attr<double>(_U(x)));
-    pt_y.push_back(point.attr<double>(_U(y)));
+    pt_x.emplace_back(point.attr<double>(_U(x)));
+    pt_y.emplace_back(point.attr<double>(_U(y)));
   }
   Solid solid = ExtrudedPolygon(pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale);
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());

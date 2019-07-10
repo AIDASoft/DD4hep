@@ -157,7 +157,7 @@ vector<GlobalAlignment> GlobalAlignmentCache::matches(const string& match, bool 
       const char* n = v.second->GetName();
       if ( 0 == ::strncmp(n,match.c_str(),len) )   {
         if ( exclude_exact && len == ::strlen(n) ) continue;
-        result.push_back(GlobalAlignment(v.second));
+        result.emplace_back(GlobalAlignment(v.second));
       }
     }
   }
@@ -194,7 +194,7 @@ void GlobalAlignmentCache::apply(GlobalAlignmentStack& stack)    {
   while(stack.size() > 0)    {
     Entry* e = stack.pop().release();
     DetElement det = _detector(e->detector);
-    all[det].push_back(e);
+    all[det].emplace_back(e);
     if ( stack.hasMatrix(*e) || stack.needsReset(*e) || stack.resetChildren(*e) )  {
       detelt_updates.insert(make_pair(e->detector.path(),e->detector));
     }

@@ -436,13 +436,13 @@ void DetectorImp::mapDetectorTypes()  {
       HandleMap::const_iterator j=m_sensitive.find(det.name());
       if ( j != m_sensitive.end() )  {
         SensitiveDetector sd((*j).second);
-        m_detectorTypes[sd.type()].push_back(det);
+        m_detectorTypes[sd.type()].emplace_back(det);
       }
       else if ( det.type() == "compound" )  {
-        m_detectorTypes[det.type()].push_back(det);      
+        m_detectorTypes[det.type()].emplace_back(det);      
       }
       else  {
-        m_detectorTypes["passive"].push_back(det);      
+        m_detectorTypes["passive"].emplace_back(det);      
       }
     }
   }
@@ -452,8 +452,9 @@ void DetectorImp::mapDetectorTypes()  {
 vector<string> DetectorImp::detectorTypes() const  {
   if ( m_manager->IsClosed() ) {
     vector<string> v;
-    for(DetectorTypeMap::const_iterator i=m_detectorTypes.begin(); i!=m_detectorTypes.end(); ++i)  
-      v.push_back((*i).first);
+    v.reserve(m_detectorTypes.size());
+    for(const auto& t : m_detectorTypes )
+      v.emplace_back(t.first);
     return v;
   }
   throw runtime_error("detectorTypes: Call only available once the geometry is closed!");
@@ -488,8 +489,8 @@ vector<DetElement> DetectorImp::detectors(unsigned int includeFlag, unsigned int
       // ...
 
       if( ( det.typeFlag() &  includeFlag ) == includeFlag &&
-	  ( det.typeFlag() &  excludeFlag ) ==  0 )
-	dets.push_back( det ) ;
+          ( det.typeFlag() &  excludeFlag ) ==  0 )
+        dets.emplace_back( det ) ;
     }
   }
   return dets ;

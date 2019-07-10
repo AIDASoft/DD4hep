@@ -44,7 +44,7 @@ vector<std::string> SegmentationFactory::registeredSegmentations() const {
 	vector<std::string> segmentationNames;
 	map<std::string, SegmentationCreatorBase*>::const_iterator it;
 	for (it = _segmentations.begin(); it != _segmentations.end(); ++ it) {
-		segmentationNames.push_back(it->first);
+		segmentationNames.emplace_back(it->first);
 	}
 	return segmentationNames;
 }

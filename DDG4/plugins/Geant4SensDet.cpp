@@ -136,7 +136,7 @@ namespace dd4hep {
         if ( coll.empty() ) {
           except("Geant4Sensitive: No collection defined for %s [Invalid name]",c_name());
         }
-        collectionName.push_back(coll);
+        collectionName.emplace_back(coll);
         return collectionName.size()-1;
       }
 

@@ -50,7 +50,7 @@ namespace dd4hep {
         T& mapping;
         SequenceSelect(T& o) : mapping(o) {                                            }
         bool operator()(Condition::Object* o)  const
-        { mapping.insert(mapping.end(), o); return true;                               }
+        { mapping.emplace(mapping.end(), o); return true;                              }
       };
 
       /// Mapped container selection operator for conditions mappings
@@ -59,11 +59,11 @@ namespace dd4hep {
        *  \version 1.0
        *  \ingroup DD4HEP_CONDITIONS
        */
-     template <typename T> struct MapSelect : public Cond__Oper  {
+     template <typename T> struct MapSelect : public Cond__Oper   {
         T& mapping;
-        MapSelect(T& o) : mapping(o) {                                                 }
+        MapSelect(T& o) : mapping(o) {                                               }
         bool operator()(Condition::Object* o)  const
-        { return mapping.insert(std::make_pair(o->hash,o)).second;                     }
+        { return mapping.emplace(o->hash,o).second;                                  }
       };
 
       /// Helper to collect conditions using a ConditionsSelect base class
@@ -76,8 +76,8 @@ namespace dd4hep {
         T& mapping;
         MapConditionsSelect(T& o) : mapping(o) {                                     }
         virtual bool operator()(Condition::Object* o)  const
-        { return mapping.insert(std::make_pair(o->hash,o)).second;                     }
-        virtual size_t size() const  { return mapping.size();                          }
+        { return mapping.emplace(o->hash,o).second;                                  }
+        virtual size_t size() const  { return mapping.size();                        }
       };
       
       /// Helper to insert objects into a conditions pool
@@ -116,7 +116,7 @@ namespace dd4hep {
         ActiveSelect(T& p) : collection(p) {}
         bool operator()(object_t* o)  const   {
           if ( (o->flags & Condition::ACTIVE) )  {
-            collection.insert(collection.end(),o);
+            collection.emplace(collection.end(),o);
             return true;
           }
           return false;
@@ -136,7 +136,7 @@ namespace dd4hep {
         KeyedSelect(cond_t::key_type k, collection_type& p) : key(k), collection(p) {  }
         bool operator()(object_t* o) const {
           if ( o->hash == key )  {
-            collection.insert(collection.end(),o);
+            collection.emplace(collection.end(),o);
             return true;
           }
           return false;

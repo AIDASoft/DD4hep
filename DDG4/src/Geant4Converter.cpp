@@ -155,7 +155,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
   for( unsigned int i = 0; i < triplets.size(); i++ )  {
     const TGeoNode* node = pAssembly->m_entries[i];
     Chain new_chain = chain;
-    new_chain.push_back(node);
+    new_chain.emplace_back(node);
     //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
 
     G4Transform3D Ta( *(triplets[i].GetRotation()),
@@ -202,8 +202,8 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
 
       // Register the physical volume created by us so we can delete it later
       //
-      //fPVStore.push_back( pvPlaced.first );
-      info.g4VolumeImprints[vol].push_back(make_pair(new_chain,pvPlaced.first));
+      //fPVStore.emplace_back( pvPlaced.first );
+      info.g4VolumeImprints[vol].emplace_back(make_pair(new_chain,pvPlaced.first));
 #if 0
       cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
            << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
@@ -214,7 +214,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
       if ( pvPlaced.second )  {
         G4Exception("G4AssemblyVolume::MakeImprint(..)", "GeomVol0003", FatalException,
                     "Fancy construct popping new mother from the stack!");
-        //fPVStore.push_back( pvPlaced.second );
+        //fPVStore.emplace_back( pvPlaced.second );
       }
     }
     else if ( triplets[i].GetAssembly() )  {
@@ -623,10 +623,10 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       z.reserve(nz);
       polygon.reserve(nz);
       for(size_t i=0; i<nz; ++i)   {
-        z.push_back(G4ExtrudedSolid::ZSection(sh->GetZ(i) * CM_2_MM,
+        z.emplace_back(G4ExtrudedSolid::ZSection(sh->GetZ(i) * CM_2_MM,
                                               {sh->GetXOffset(i), sh->GetYOffset(i)},
                                               sh->GetScale(i)));
-        polygon.push_back(G4TwoVector(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM));
+        polygon.emplace_back(G4TwoVector(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM));
       }
       solid = new G4ExtrudedSolid(name, polygon, z);
     }
@@ -636,9 +636,9 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       double phi_total = (sh->GetDphi() + sh->GetPhi1()) * DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
       for (Int_t i = 0; i < sh->GetNz(); ++i) {
-        rmin.push_back(sh->GetRmin(i) * CM_2_MM);
-        rmax.push_back(sh->GetRmax(i) * CM_2_MM);
-        z.push_back(sh->GetZ(i) * CM_2_MM);
+        rmin.emplace_back(sh->GetRmin(i) * CM_2_MM);
+        rmax.emplace_back(sh->GetRmax(i) * CM_2_MM);
+        z.emplace_back(sh->GetZ(i) * CM_2_MM);
       }
       solid = new G4Polyhedra(name, phi_start, phi_total, sh->GetNedges(), sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
@@ -648,9 +648,9 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       double phi_total = (sh->GetDphi() + sh->GetPhi1()) * DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
       for (Int_t i = 0; i < sh->GetNz(); ++i) {
-        rmin.push_back(sh->GetRmin(i) * CM_2_MM);
-        rmax.push_back(sh->GetRmax(i) * CM_2_MM);
-        z.push_back(sh->GetZ(i) * CM_2_MM);
+        rmin.emplace_back(sh->GetRmin(i) * CM_2_MM);
+        rmax.emplace_back(sh->GetRmax(i) * CM_2_MM);
+        z.emplace_back(sh->GetZ(i) * CM_2_MM);
       }
       solid = new G4Polycone(name, phi_start, phi_total, sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
@@ -697,7 +697,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       TGeoTrap* sh = (TGeoTrap*) shape;
       Double_t* vtx_xy = sh->GetVertices();
       for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
-        vertices.push_back(G4TwoVector(vtx_xy[0] * CM_2_MM,vtx_xy[1] * CM_2_MM));
+        vertices.emplace_back(G4TwoVector(vtx_xy[0] * CM_2_MM,vtx_xy[1] * CM_2_MM));
       solid = new G4GenericTrap(name, sh->GetDz() * CM_2_MM, vertices);
     }
     else if (shape->IsA() == TGeoCompositeShape::Class()) {
@@ -983,7 +983,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
                  transform.dx(), transform.dy(), transform.dz());
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;
-        chain.push_back(node);
+        chain.emplace_back(node);
         ass->imprint(info,node,chain,ass,(*volIt).second, transform, copy, checkOverlaps);
         return 0;
       }
@@ -1205,8 +1205,8 @@ void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
     g4->bins.reserve(rows);
     g4->values.reserve(rows);
     for(size_t i=0; i<rows; ++i)  {
-      g4->bins.push_back(m->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
-      g4->values.push_back(m->Get(i,1));
+      g4->bins.emplace_back(m->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
+      g4->values.emplace_back(m->Get(i,1));
     }
     printout(lvl, "Geant4Converter", "++ Successfully converted material property:%s : %s [%ld rows]",
              m->GetName(), m->GetTitle(), rows);

@@ -60,7 +60,7 @@ template <> void Converter<arg>::operator()(xml_h e)  const  {
   xml_comp_t c(e);
   string val = c.valueStr();
   vector<string>* args = (vector<string>*)param;
-  args->push_back(val);
+  args->emplace_back(val);
 }
 
 /** Convert plugin objects
@@ -74,11 +74,11 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
   string nam = c.nameStr();
   vector<string> args;
   vector<const char*> cargs;
-  //args.push_back("plugin:"+nam);
+  //args.emplace_back("plugin:"+nam);
 
   xml_coll_t(e,"arg").for_each(Converter<arg>(description,&args));
   for(vector<string>::const_iterator i=args.begin(); i!=args.end();++i)
-    cargs.push_back((*i).c_str());
+    cargs.emplace_back((*i).c_str());
   printout(INFO,"ConverterPlugin","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
   description.apply(nam.c_str(),int(cargs.size()),(char**)&cargs[0]);
 }

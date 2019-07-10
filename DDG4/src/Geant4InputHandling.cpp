@@ -110,7 +110,7 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
     dv->mask = mask;
     dv->in.insert(p->id);
 
-    interaction->vertices[vid].push_back(dv) ;
+    interaction->vertices[vid].emplace_back(dv) ;
 
     for(; dau; dau = dau->GetNext())
       collectPrimaries(pm, interaction, dv, dau);
@@ -129,7 +129,7 @@ dd4hep::sim::createPrimary(int mask,
   interaction->locked = true;
   interaction->mask = mask;
   v->mask = mask;
-  interaction->vertices[vid].push_back(v);
+  interaction->vertices[vid].emplace_back(v);
 
   for (G4PrimaryParticle *gp = gv->GetPrimary(); gp; gp = gp->GetNext() )
     collectPrimaries(pm, interaction, v, gp);
@@ -186,7 +186,7 @@ static void appendInteraction(const Geant4Action* caller,
                        "Cannot handle 2 interactions with identical identifiers!");
     }
     for(Geant4Vertex* vtx :  (*iv).second )
-      output->vertices[(*iv).first].push_back( vtx->addRef() );
+      output->vertices[(*iv).first].emplace_back( vtx->addRef() );
   }
 }
 
@@ -370,7 +370,7 @@ getRelevant(set<int>& visited,
     if ( prim.find(p->id) == prim.end() )  {
       G4PrimaryParticle* p4 = createG4Primary(p);
       prim[p->id] = p4;
-      res.push_back(make_pair(p,p4));
+      res.emplace_back(p,p4);
     }
   }
   else if ( p->daughters.size() > 0 )  {
@@ -406,7 +406,7 @@ getRelevant(set<int>& visited,
         for(Primaries::iterator i=daughters.begin(); i!=daughters.end(); ++i)
           p4->SetDaughter((*i).second);
       }
-      res.push_back(make_pair(p,p4));
+      res.emplace_back(p,p4);
     }
     else  {
       for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
