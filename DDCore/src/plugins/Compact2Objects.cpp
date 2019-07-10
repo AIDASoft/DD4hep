@@ -498,8 +498,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       xml_elt_t p = properties;
       if ( p.hasAttr(_U(ref)) )   {
         string ref = p.attr<string>(_U(ref));
-        TGDMLMatrix* m = mgr.GetGDMLMatrix(ref.c_str());
-        if ( m )  {
+        TGDMLMatrix* gdmlMat = mgr.GetGDMLMatrix(ref.c_str());
+        if ( gdmlMat )  {
           string prop_nam = p.attr<string>(_U(name));
           mat->AddProperty(prop_nam.c_str(), ref.c_str());
           printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",

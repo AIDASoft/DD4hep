@@ -280,10 +280,10 @@ static long root_dump_gdml_tables(Detector& description, int /* argc */, char** 
   TObjArrayIter arr(c);
   printout(INFO,"Dump_GDMLTables","+++ Dumping known GDML tables from TGeoManager.");
   for(TObject* i = arr.Next(); i; i=arr.Next())   {
-    TGDMLMatrix* m = (TGDMLMatrix*)i;
-    num_elements += (m->GetRows()*m->GetCols());
+    TGDMLMatrix* gdmlMat = (TGDMLMatrix*)i;
+    num_elements += (gdmlMat->GetRows()*gdmlMat->GetCols());
     ++num_tables;
-    m->Print();
+    gdmlMat->Print();
   }
 #endif
   printout(INFO,"Dump_GDMLTables",
@@ -310,9 +310,9 @@ static long root_dump_optical_surfaces(Detector& description, int /* argc */, ch
   TObjArrayIter arr(c);
   printout(ALWAYS,"Dump_OpticalSurfaces","+++ Dumping known Optical Surfaces from TGeoManager.");
   for(TObject* i = arr.Next(); i; i=arr.Next())   {
-    TGeoOpticalSurface* m = (TGeoOpticalSurface*)i;
+    TGeoOpticalSurface* optSurt = (TGeoOpticalSurface*)i;
     ++num_surfaces;
-    m->Print();
+    optSurt->Print();
   }
 #endif
   printout(ALWAYS,"Dump_OpticalSurfaces",
@@ -338,9 +338,9 @@ static long root_dump_skin_surfaces(Detector& description, int /* argc */, char*
   TObjArrayIter arr(c);
   printout(ALWAYS,"Dump_SkinSurfaces","+++ Dumping known Skin Surfaces from TGeoManager.");
   for(TObject* i = arr.Next(); i; i=arr.Next())   {
-    TGeoSkinSurface* m = (TGeoSkinSurface*)i;
+    TGeoSkinSurface* skinSurf = (TGeoSkinSurface*)i;
     ++num_surfaces;
-    m->Print();
+    skinSurf->Print();
   }
 #endif
   printout(ALWAYS,"Dump_SkinSurfaces",
@@ -366,9 +366,9 @@ static long root_dump_border_surfaces(Detector& description, int /* argc */, cha
   TObjArrayIter arr(c);
   printout(ALWAYS,"Dump_BorderSurfaces","+++ Dumping known Border Surfaces from TGeoManager.");
   for(TObject* i = arr.Next(); i; i=arr.Next())   {
-    TGeoBorderSurface* m = (TGeoBorderSurface*)i;
+    TGeoBorderSurface* bordSurt = (TGeoBorderSurface*)i;
     ++num_surfaces;
-    m->Print();
+    bordSurt->Print();
   }
 #endif
   printout(ALWAYS,"Dump_BorderSurfaces",
