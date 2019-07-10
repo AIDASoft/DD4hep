@@ -388,7 +388,7 @@ ConditionsMappedUserPool<MAPPING>::get(Condition::key_type lower, Condition::key
     typename MAPPING::const_iterator first = m_conditions.lower_bound(lower);
     for(; first != m_conditions.end(); ++first )  {
       if ( (*first).first > upper ) break;
-      result.push_back((*first).second);
+      result.emplace_back((*first).second);
     }
   }
   return result;
@@ -802,7 +802,7 @@ namespace dd4hep {
       vector<Condition> result;
       for( const auto& e : m_conditions )  {
         if ( e.second->hash >= lower && e.second->hash <= upper )
-          result.push_back(e.second);
+          result.emplace_back(e.second);
       }
       return result;
     }

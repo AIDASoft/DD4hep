@@ -150,7 +150,7 @@ namespace dd4hep {
         Actors() = default;
         ~Actors()  = default;
         void clear()                  { m_v.clear();                    }
-        void add(T* obj)              { m_v.push_back(obj);             }
+        void add(T* obj)              { m_v.emplace_back(obj);          }
         void add_front(T* obj)        { m_v.insert(m_v.begin(), obj);   }
         operator const _V&() const    { return m_v;                     }
         operator _V&()                { return m_v;                     }

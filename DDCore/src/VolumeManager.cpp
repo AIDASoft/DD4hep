@@ -134,7 +134,7 @@ namespace dd4hep {
             else if ( (e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )
               sd = m_detDesc.sensitiveDetector(e.name());
           }
-          chain.push_back(node);
+          chain.emplace_back(node);
           if ( sd.isValid() && !pv_ids.empty() )   {
             Readout ro = sd.readout();
             if ( ro.isValid() )   {

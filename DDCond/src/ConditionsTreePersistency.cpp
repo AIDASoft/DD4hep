@@ -44,7 +44,7 @@ namespace  {
     Scanner(ConditionsTreePersistency::pool_type& p) : pool(p) {}
     /// Conditions callback for object processing
     virtual int process(Condition c)  const override  {
-      pool.push_back(c.ptr());
+      pool.emplace_back(c.ptr());
       return 1;
     }
   };
@@ -80,21 +80,21 @@ size_t ConditionsTreePersistency::add(const std::string& identifier,
                                       const IOV& iov,
                                       std::vector<Condition>& conditions)   {
   DurationStamp stamp(this);
-  conditionPools.push_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   key.first         = identifier;
   key.second.first  = make_pair(iov.iovType->name,iov.type);
   key.second.second = iov.key();
   ent               = conditions;
-  for(auto c : ent) c.ptr()->addRef();
+  for(auto c : ent) c->addRef();
   return ent.size();
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
 size_t ConditionsTreePersistency::add(const string& identifier, ConditionsPool& pool)    {
   DurationStamp stamp(this);
-  conditionPools.push_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   const IOV*    iov = pool.iov;
@@ -111,7 +111,7 @@ size_t ConditionsTreePersistency::add(const string& identifier, const Conditions
   size_t count = 0;
   DurationStamp stamp(this);
   for( const auto& p : pool.elements )  {
-    iovPools.push_back(pair<iov_key_type, pool_type>());
+    iovPools.emplace_back(pair<iov_key_type, pool_type>());
     pool_type&    ent = iovPools.back().second;
     iov_key_type& key = iovPools.back().first;
     const IOV*    iov = p.second->iov;

@@ -80,21 +80,20 @@ void Geant4ParticleGenerator::printInteraction(int mask)  const  {
 
 /// Print single particle interaction identified by it's reference
 void Geant4ParticleGenerator::printInteraction(Geant4PrimaryInteraction* inter)  const  {
-  typedef Geant4PrimaryInteraction::VertexMap _V;
   int count = 0;
   if ( !inter )   {
     warning("printInteraction: Invalid interaction pointer [NULL-Pointer].");
     return;
   }
-  for(_V::const_iterator iv=inter->vertices.begin(); iv!=inter->vertices.end(); ++iv)  {
-    for( Geant4Vertex* v : (*iv).second ){
+  for(const auto& iv : inter->vertices )   {
+    for( Geant4Vertex* v : iv.second ){
       print("+-> Interaction [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm]",
-	    count, m_energy/CLHEP::GeV, m_particleName.c_str(),
-	    v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
+            count, m_energy/CLHEP::GeV, m_particleName.c_str(),
+            v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
       ++count;
-      for(set<int>::const_iterator i=v->out.begin(); i!=v->out.end(); ++i)  {
-	Geant4ParticleHandle p = inter->particles[*i];
-	p.dumpWithVertex(outputLevel(),name(),"  +->");
+      for ( int i : v->out )  {
+        Geant4ParticleHandle p = inter->particles[i];
+        p.dumpWithVertex(outputLevel(),name(),"  +->");
       }
     }
   }
@@ -125,7 +124,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
   vtx->x = position.X();
   vtx->y = position.Y();
   vtx->z = position.Z();
-  inter->vertices[m_mask].push_back( vtx );
+  inter->vertices[m_mask].emplace_back( vtx );
   for(int i=0; i<m_multiplicity; ++i)   {
     double momentum = m_energy;
     Particle* p = new Particle();
@@ -154,7 +153,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     // p->vex        = vtx->x;
     // p->vey        = vtx->y;
     // p->vez        = vtx->z;
-    inter->particles.insert(make_pair(p->id,p));
+    inter->particles.emplace(p->id,p);
     vtx->out.insert(p->id);
     printout(INFO,name(),"Particle [%d] %s %.3f GeV direction:(%6.3f %6.3f %6.3f)",
              p->id, m_particleName.c_str(), momentum/CLHEP::GeV, 

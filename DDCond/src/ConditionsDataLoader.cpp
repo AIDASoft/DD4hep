@@ -46,12 +46,12 @@ const dd4hep::Property& ConditionsDataLoader::operator[](const std::string& prop
 
 /// Add data source definition to loader
 void ConditionsDataLoader::addSource(const string& source, const IOV& iov)   {
-  m_sources.push_back(make_pair(source,iov));
+  m_sources.emplace_back(source,iov);
 }
 
 /// Add data source definition to loader
 void ConditionsDataLoader::addSource(const string& source)   {
-  m_sources.push_back(make_pair(source,IOV(0,0)));
+  m_sources.emplace_back(source,IOV(0,0));
 }
 
 /// Queue update to manager.

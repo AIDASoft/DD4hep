@@ -194,17 +194,17 @@ static void* create_object(Detector& description, int argc, char** argv)   {
       }
       else if ( ::strncmp(argv[i],"-elt-active",6) == 0 )   {
         Atom atom = helper.element(argv[++i]);
-        if ( atom.isValid() ) proc->activeElements.push_back(atom);
+        if ( atom.isValid() ) proc->activeElements.emplace_back(atom);
         continue;
       }
       else if ( ::strncmp(argv[i],"-mat-active",6) == 0 )   {
         Material mat = helper.material(argv[++i]);
-        if ( mat.isValid() ) proc->activeMaterials.push_back(mat);
+        if ( mat.isValid() ) proc->activeMaterials.emplace_back(mat);
         continue;
       }
       else if ( ::strncmp(argv[i],"-mat-inactive",6) == 0 )   {
         Material mat = helper.material(argv[++i]);
-        if ( mat.isValid() ) proc->inactiveMaterials.push_back(mat);
+        if ( mat.isValid() ) proc->inactiveMaterials.emplace_back(mat);
         continue;
       }
       else if ( ::strncmp(argv[i],"-all-inactive",6) == 0 )   {

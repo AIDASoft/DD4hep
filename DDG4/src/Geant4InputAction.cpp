@@ -250,12 +250,12 @@ void Geant4InputAction::operator()(G4Event* event)   {
   
 
   for(size_t i=0; i<vertices.size(); ++i )   {
-    inter->vertices[m_mask].push_back( vertices[i] ); 
+    inter->vertices[m_mask].emplace_back( vertices[i] ); 
   }
 
   // build collection of MCParticles
-  for(size_t i=0; i<primaries.size(); ++i )   {
-    Geant4ParticleHandle p(primaries[i]);
+  for(auto* primPart : primaries)   {
+    Geant4ParticleHandle p(primPart);
     const double mom_scale = m_momScale;
     PropertyMask status(p->status);
     p->psx  = mom_scale*p->psx;
@@ -270,11 +270,7 @@ void Geant4InputAction::operator()(G4Event* event)   {
     // //     vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     // // }
 
-
     inter->particles.insert(make_pair(p->id,p));
     p.dumpWithMomentumAndVertex(outputLevel()-1,name(),"->");
   }
-
-
-
 }

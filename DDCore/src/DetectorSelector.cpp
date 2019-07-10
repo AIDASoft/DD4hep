@@ -62,7 +62,7 @@ DetectorSelector::detectors(unsigned int includeFlag, unsigned int excludeFlag )
       // ...
       if( ( det.typeFlag() &  includeFlag ) == includeFlag &&
           ( det.typeFlag() &  excludeFlag ) ==  0 )
-        result.push_back( det ) ;
+        result.emplace_back( det ) ;
     }
   }
   return result;

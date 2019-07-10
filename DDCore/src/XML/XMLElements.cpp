@@ -714,12 +714,12 @@ vector<Attribute> Handle_t::attributes() const {
   if (m_node) {
 #ifdef DD4HEP_USE_TINYXML
     for(TiXmlAttribute* a=_E(m_node)->FirstAttribute(); a; a=a->Next())
-      attrs.push_back(Attribute(a));
+      attrs.emplace_back(Attribute(a));
 #else
     xercesc::DOMNamedNodeMap* l = _E(m_node)->getAttributes();
     for (XmlSize_t i = 0, n = l->getLength(); i < n; ++i) {
       xercesc::DOMNode* attr_node = l->item(i);
-      attrs.push_back(Attribute(attr_node));
+      attrs.emplace_back(Attribute(attr_node));
     }
 #endif
   }

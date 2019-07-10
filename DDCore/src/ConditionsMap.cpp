@@ -74,7 +74,7 @@ std::vector<Condition> ConditionsMap::get(DetElement detector,
     virtual int process(Condition c)  const override  {
       Condition::key_type h = c->hash;
       if ( h >= lower && h <= upper )   {
-        result.push_back(c);
+        result.emplace_back(c);
         return 1;
       }
       return 0;

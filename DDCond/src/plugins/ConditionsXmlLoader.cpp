@@ -123,11 +123,11 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
       if ( condition.isValid() )   {
         if ( key == condition->hash )  {
           if ( req_validity.contains(condition.iov()) )   {
-            conditions.push_back(condition);
+            conditions.emplace_back(condition);
             continue;
           }
         }
-        m_buffer.push_back(condition);
+        m_buffer.emplace_back(condition);
       }
     }
   }
@@ -149,7 +149,7 @@ size_t ConditionsXmlLoader::load_single(key_type key,
     const IOV* iov = condition->iov;
     if ( IOV::partial_match(req_validity,*iov) )  {
       if ( key == condition->hash )  {
-        conditions.push_back(condition);
+        conditions.emplace_back(condition);
         m_buffer.erase(j);
         return conditions.size()-len;
       }
@@ -172,10 +172,10 @@ size_t ConditionsXmlLoader::load_range(key_type key,
     const IOV* iov = condition->iov;
     if ( IOV::partial_match(req_validity,*iov) )  {
       if ( key == condition->hash )  {
-        conditions.push_back(condition);
+        conditions.emplace_back(condition);
       }
     }
-    keep.push_back(condition);
+    keep.emplace_back(condition);
   }
   m_buffer = keep;
   return conditions.size()-len;

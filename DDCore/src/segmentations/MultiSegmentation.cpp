@@ -50,7 +50,7 @@ namespace dd4hep {
       e.key_min = key_min;
       e.key_max = key_max;
       e.segmentation = entry;
-      m_segmentations.push_back(e);
+      m_segmentations.emplace_back(e);
     }
 
     /// Set the underlying decoder

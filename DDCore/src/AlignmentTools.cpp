@@ -69,7 +69,7 @@ void dd4hep::detail::tools::computeIdeal(Alignment alignment)   {
     for (size_t i = 0, n=path.size(); n>0 && i < n-1; ++i)  {
       const PlacedVolume& p = path[i];
       a.detectorTrafo.MultiplyLeft(p->GetMatrix());
-      a.nodes.push_back(p);
+      a.nodes.emplace_back(p);
     }
     //a.worldTrafo = parent.nominal()->worldTrafo;
     //a.worldTrafo.MultiplyLeft(&a.detectorTrafo);

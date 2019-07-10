@@ -132,13 +132,14 @@ Geant4HitWrapper* Geant4HitCollection::findHitByKey(VolumeID key)   {
 
 /// Release all hits from the Geant4 container and pass ownership to the caller
 void Geant4HitCollection::releaseData(const ComponentCast& cast, std::vector<void*>* result) {
+  result->reserve(m_hits.size());
   for (size_t j = 0, n = m_hits.size(); j < n; ++j) {
     Geant4HitWrapper& w = m_hits.at(j);
     Manip* m = w.manip();
     if (&cast == &m->cast)
-      result->push_back(w.release());
+      result->emplace_back(w.release());
     else
-      result->push_back(m->cast.apply_downCast(cast, w.release()));
+      result->emplace_back(m->cast.apply_downCast(cast, w.release()));
   }
   m_lastHit = ULONG_MAX;
   m_keys.clear();
@@ -146,21 +147,23 @@ void Geant4HitCollection::releaseData(const ComponentCast& cast, std::vector<voi
 
 /// Release all hits from the Geant4 container. Ownership stays with the container
 void Geant4HitCollection::getData(const ComponentCast& cast, std::vector<void*>* result) {
+  result->reserve(m_hits.size());
   for (size_t j = 0, n = m_hits.size(); j < n; ++j) {
     Geant4HitWrapper& w = m_hits.at(j);
     Manip* m = w.manip();
     if (&cast == &m->cast)
-      result->push_back(w.data());
+      result->emplace_back(w.data());
     else
-      result->push_back(m->cast.apply_downCast(cast, w.data()));
+      result->emplace_back(m->cast.apply_downCast(cast, w.data()));
   }
 }
 
 /// Release all hits from the Geant4 container and pass ownership to the caller
 void Geant4HitCollection::releaseHitsUnchecked(std::vector<void*>& result) {
+  result.reserve(m_hits.size());
   for (size_t j = 0, n = m_hits.size(); j < n; ++j) {
     Geant4HitWrapper& w = m_hits.at(j);
-    result.push_back(w.release());
+    result.emplace_back(w.release());
   }
   m_lastHit = ULONG_MAX;
   m_keys.clear();
@@ -168,8 +171,9 @@ void Geant4HitCollection::releaseHitsUnchecked(std::vector<void*>& result) {
 
 /// Release all hits from the Geant4 container. Ownership stays with the container
 void Geant4HitCollection::getHitsUnchecked(std::vector<void*>& result) {
+  result.reserve(m_hits.size());
   for (size_t j = 0, n = m_hits.size(); j < n; ++j) {
     Geant4HitWrapper& w = m_hits.at(j);
-    result.push_back(w.data());
+    result.emplace_back(w.data());
   }
 }

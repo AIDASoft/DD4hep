@@ -136,7 +136,7 @@ int main_wrapper(int argc, char** argv)   {
     else if( token == "subdet" ){
       SDetHelper det ;
       iss >>  det.name >> det.r0 >> det.z0 >> det.r1 >> det.z1 ;
-      subdets.push_back( det );
+      subdets.emplace_back( det );
     }
 
     if ( !iss.eof() || iss.fail() ){

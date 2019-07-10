@@ -95,7 +95,7 @@ VolIDTest::VolIDTest(Detector& description, DetElement sdet, size_t depth) : m_m
   PlacedVolume pv  = sdet.placement();
   VolIDs       ids = pv.volIDs();
   Chain        chain;
-  chain.push_back(pv);
+  chain.emplace_back(pv);
   checkVolume(sdet, pv, ids, chain);
   walkVolume(sdet, pv, ids, chain, 1, depth);
 }
@@ -286,7 +286,7 @@ void VolIDTest::walkVolume(DetElement detector, PlacedVolume pv, VolIDs ids, con
       Chain  child_chain(chain);
 
       place.access(); // Test validity
-      child_chain.push_back(place);
+      child_chain.emplace_back(place);
       child_ids.insert(child_ids.end(), place.volIDs().begin(), place.volIDs().end());
       //bool is_sensitive = place.volume().isSensitive();
       //if ( is_sensitive || !child_ids.empty() )  {

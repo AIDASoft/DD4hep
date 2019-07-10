@@ -65,18 +65,18 @@ namespace  {
         if ( use )   {
           ++argc; ++count; end = i;
           if ( 0 == ::strncmp(av[i],"-end-processor",6) )  {
-            argv.push_back(av[i]);
+            argv.emplace_back(av[i]);
             return;
           }
           else if ( 0 == ::strncmp(av[i],"-end-plugin",4) )  { // End of current plugin
-            argv.push_back((char*)"-end-processor");
+            argv.emplace_back((char*)"-end-processor");
             return;
           }
           else if ( 0 == ::strncmp(av[i],"-plugin",4) )  {     // Start of next plugin
-            argv.push_back((char*)"-end-processor");
+            argv.emplace_back((char*)"-end-processor");
             return;
           }
-          argv.push_back(av[i]);
+          argv.emplace_back(av[i]);
         }
       }
     }
@@ -180,7 +180,7 @@ static long run_function(Detector&, int argc, char** argv) {
     else if ( 0 == ::strncmp("-function",argv[i],4) )
       func = argv[++i];
     else
-      args.push_back(argv[i]);
+      args.emplace_back(argv[i]);
   }
   if ( lib.empty() || func.empty() )  {
     cout <<

@@ -104,11 +104,11 @@ namespace dd4hep {
       }
       /// set the coordinate layerOffset in X
       void setLayerOffsetX(double offset) {
-        _layerOffsetX.push_back(offset);
+        _layerOffsetX.emplace_back(offset);
       }
       /// set the coordinate layerOffset in Y
       void setLayerOffsetY(double offset) {
-        _layerOffsetY.push_back(offset);
+        _layerOffsetY.emplace_back(offset);
       }
       /// set the field name used for X
       void setFieldNameX(const std::string& fieldName) {
@@ -125,12 +125,12 @@ namespace dd4hep {
       /// set the layer boundary dimension for X
       void setBoundaryLayerX(double halfX)
       {
-        _layerDimX.push_back(halfX);
+        _layerDimX.emplace_back(halfX);
       };
       /// set the layer fraction cell size for X
       void setFractCellSizeXPerLayer(double newFractCellSizeX)
       {
-        _fractCellSizeXPerLayer.push_back(newFractCellSizeX);
+        _fractCellSizeXPerLayer.emplace_back(newFractCellSizeX);
       }
       /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
           in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi

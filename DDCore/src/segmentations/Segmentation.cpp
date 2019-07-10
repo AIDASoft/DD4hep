@@ -111,7 +111,7 @@ namespace dd4hep {
     Parameters Segmentation::parameters() const {
       Parameters pars;
       for ( const auto& it : _parameters )
-        pars.push_back(it.second);
+        pars.emplace_back(it.second);
       return pars;
     }
 

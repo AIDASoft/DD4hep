@@ -36,7 +36,7 @@ namespace dd4hep {
       std::stringstream ss(s);
       std::string item;
       while (std::getline(ss, item, delimiter)) {
-        elements.push_back(item);
+        elements.emplace_back(item);
       }
       return elements;
     }
@@ -287,7 +287,7 @@ namespace dd4hep {
             std::stringstream s;
             s << *it;
             s >> entry;
-            _value->push_back(entry);
+            _value->emplace_back(entry);
           }
         }
       }

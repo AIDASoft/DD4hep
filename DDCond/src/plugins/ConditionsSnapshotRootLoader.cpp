@@ -101,7 +101,7 @@ void ConditionsSnapshotRootLoader::load_source(const std::string& nam)  {
   TFile* f = TFile::Open(nam.c_str());
   std::unique_ptr<ConditionsRootPersistency> p =
     ConditionsRootPersistency::load(f,"Conditions");
-  buffers.push_back(p.release());
+  buffers.emplace_back(p.release());
 }
 
 size_t ConditionsSnapshotRootLoader::load_single(key_type   /* key */,

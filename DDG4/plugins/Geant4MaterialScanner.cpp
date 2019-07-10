@@ -146,7 +146,7 @@ void Geant4MaterialScanner::operator()(const G4Step* step, G4SteppingManager*) {
   string postPath = post_handler.path();
 #endif
   G4LogicalVolume* logVol = h.logvol(h.pre);
-  m_steps.push_back(new StepInfo(h.prePos(), h.postPos(), logVol));
+  m_steps.emplace_back(new StepInfo(h.prePos(), h.postPos(), logVol));
 }
 
 /// Registered callback on Begin-event

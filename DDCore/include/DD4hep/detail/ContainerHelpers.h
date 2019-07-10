@@ -35,20 +35,20 @@ namespace dd4hep {
 
   template <typename Q, typename T>
   void insert_item(std::vector<T>& c, Q, const T& d)  {
-    c.push_back(d);
+    c.emplace_back(d);
   }
   template <typename Q, typename T>
   void insert_item(std::vector<Q>& c, Q de, const T&)  {
-    c.push_back(de);
+    c.emplace_back(de);
   }
 
   template <typename Q, typename T>
   void insert_item(std::list<T>&   c, Q, const T& d)  {
-    c.push_back(d);
+    c.emplace_back(d);
   }
   template <typename Q, typename T>
   void insert_item(std::list<Q>&   c, Q de, const T&)  {
-    c.push_back(de);
+    c.emplace_back(de);
   }
   
   template <typename Q, typename T>
@@ -71,20 +71,20 @@ namespace dd4hep {
     
   template <typename Q, typename T>
   void insert_item(std::vector<std::pair<Q,T> >& c, Q de, const T& d)  {
-    c.push_back(std::make_pair(de,d));
+    c.emplace_back(std::make_pair(de,d));
   }
   template <typename Q, typename T>
   void insert_item(std::vector<std::pair<std::string,T> >& c, Q de, const T& d)  {
-    c.push_back(std::make_pair(de.path(),d));
+    c.emplace_back(std::make_pair(de.path(),d));
   }
 
   template <typename Q, typename T>
   void insert_item(std::list<std::pair<Q,T> >& c, Q de, const T& d)  {
-    c.push_back(std::make_pair(de,d));
+    c.emplace_back(std::make_pair(de,d));
   }
   template <typename Q, typename T>
   void insert_item(std::list<std::pair<std::string,T> >& c, Q de, const T& d)  {
-    c.push_back(std::make_pair(de.path(),d));
+    c.emplace_back(std::make_pair(de.path(),d));
   }
 
   template <typename Q, typename T>

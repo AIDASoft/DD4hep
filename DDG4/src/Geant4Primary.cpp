@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Primary.h"
@@ -54,10 +55,8 @@ const Geant4Particle* Geant4PrimaryMap::get(const G4PrimaryParticle* particle) c
 
 /// Default destructor
 Geant4PrimaryInteraction::~Geant4PrimaryInteraction()   {
-
-  Geant4PrimaryInteraction::VertexMap::iterator iv, ivend;
-  for( iv=vertices.begin(), ivend=vertices.end(); iv != ivend; ++iv ){
-    for( Geant4Vertex* vtx : (*iv).second ) 
+  for(const auto& iv : vertices)  {
+    for( Geant4Vertex* vtx : iv.second ) 
       detail::ReleaseObject<Geant4Vertex*>()( vtx ); 
   } 
   detail::releaseObjects(particles);
@@ -75,19 +74,14 @@ void Geant4PrimaryInteraction::setNextPID(int new_value)   {
 
 /// Apply mask to all contained vertices and particles
 bool Geant4PrimaryInteraction::applyMask()   {
-
-  Geant4PrimaryInteraction::ParticleMap::iterator ip, ipend;
-  for( ip=particles.begin(), ipend=particles.end(); ip != ipend; ++ip )
-    (*ip).second->mask = mask;
+  for(auto& ip : particles)
+    ip.second->mask = mask;
   
-  Geant4PrimaryInteraction::VertexMap::iterator iv, ivend;
-  for( iv=vertices.begin(), ivend=vertices.end(); iv != ivend; ++iv ){
-    for( auto vtx : (*iv).second )
+  for(auto& iv : vertices )  {
+    for(auto* vtx : iv.second )
       vtx->mask = mask;
   }
-
   return true;
-  
 }
 
 /// Default destructor
@@ -101,31 +95,27 @@ void Geant4PrimaryEvent::add(int id, Geant4PrimaryInteraction* interaction)   {
     Interactions::iterator i = m_interactions.find(id);
     if ( i == m_interactions.end() )  {
       interaction->mask = id;
-      m_interactions.insert(std::make_pair(id,interaction));
+      m_interactions.emplace(id,interaction);
       return;
     }
-    char text[132];
-    ::snprintf(text,sizeof(text),"Geant4PrimaryEvent: Interaction with ID '%d' "
-               "exists and cannot be added twice!",id);
-    throw std::runtime_error(text);
+    except("Geant4PrimaryEvent","+++ Interaction with ID '%d' "
+           "exists and cannot be added twice!",id);
   }
-  throw std::runtime_error("Geant4PrimaryEvent: CANNOT add invalid Interaction!");
+  except("Geant4PrimaryEvent","+++ CANNOT add invalid Interaction!");
 }
 
 /// Retrieve an interaction by it's ID
 Geant4PrimaryEvent::Interaction* Geant4PrimaryEvent::get(int mask) const   {
   Interactions::const_iterator i = m_interactions.find(mask);
-  if ( i != m_interactions.end() )  {
-    return (*i).second;
-  }
-  return 0;
+  return (i != m_interactions.end()) ? (*i).second : 0;
 }
 
 /// Retrieve all intractions
 std::vector<Geant4PrimaryEvent::Interaction*> Geant4PrimaryEvent::interactions() const   {
   std::vector<Interaction*> v;
-  for(Interactions::const_iterator i=m_interactions.begin(); i!=m_interactions.end(); ++i)
-    v.push_back((*i).second);
+  v.reserve(m_interactions.size());
+  for(const auto& i : m_interactions)
+    v.emplace_back(i.second);
   return v;
 }
 

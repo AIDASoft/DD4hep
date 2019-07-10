@@ -130,11 +130,11 @@ namespace {
       //           << " " << string((*j)->GetName()) << " ";
       if ( ::strcmp((*j).ptr()->GetName(),(*k).placement().ptr()->GetName()) )  {
         //cout << "[DE]";
-        elements.push_back(make_pair(level,*k));
+        elements.emplace_back(make_pair(level,*k));
         ++k;
       }
       else  {
-        //elements.push_back(make_pair(level,DetElement()));
+        //elements.emplace_back(make_pair(level,DetElement()));
       }
       //cout << " ";
     }
@@ -236,10 +236,10 @@ GlobalAlignment GlobalDetectorAlignment::align(const string& elt_path, TGeoHMatr
     return _align(_alignment(*this),matrix,chk,overlap);
   else if ( elt_path[0] == '/' )   {
     GlobalAlignment a(elt_path);
-    volumeAlignments().push_back(a);
+    volumeAlignments().emplace_back(a);
     return _align(a,matrix,chk,overlap);
   }
   GlobalAlignment a(placementPath()+'/'+elt_path);
-  volumeAlignments().push_back(a);
+  volumeAlignments().emplace_back(a);
   return _align(a,matrix,chk,overlap);
 }

@@ -212,7 +212,7 @@ static Ref_t create_DipoleField(Detector& /* description */, xml_h e) {
       val = coeff.coefficient() * mult;
     else
       val = _multiply<double>(coll.text(), mult);
-    ptr->coefficents.push_back(val);
+    ptr->coefficents.emplace_back(val);
   }
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
@@ -248,9 +248,9 @@ static Ref_t create_MultipoleField(Detector& description, xml_h e) {
       val = coll.attr<double>(_U(value)) * mult;
     else
       val = coeff.coefficient(0.0) * mult;
-    ptr->coefficents.push_back(val);
+    ptr->coefficents.emplace_back(val);
     val = coeff.skew(0.0) * mult;
-    ptr->skews.push_back(val);
+    ptr->skews.emplace_back(val);
   }
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
@@ -304,14 +304,14 @@ template <> void Converter<Plugin>::operator()(xml_h e) const {
   if ( type == "default" )  {
     for (xml_coll_t coll(e, _U(arg)); coll; ++coll) {
       string val = coll.attr<string>(_U(value));
-      arguments.push_back(val);
+      arguments.emplace_back(val);
     }
     for (xml_coll_t coll(e, _U(argument)); coll; ++coll) {
       string val = coll.attr<string>(_U(value));
-      arguments.push_back(val);
+      arguments.emplace_back(val);
     }
     for(vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
-      argv.push_back(&((*i)[0]));
+      argv.emplace_back(&((*i)[0]));
     description.apply(name.c_str(),int(argv.size()), &argv[0]);
     return;
   }
@@ -438,7 +438,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else
         except("Compact2Objects","Converting material: %s Element missing: %s",mname.c_str(),nam.c_str());
       composite_fractions_total += fraction;
-      composite_fractions.push_back(fraction);
+      composite_fractions.emplace_back(fraction);
     }
     for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
       string nam = composites.attr<string>(_U(ref));
@@ -689,7 +689,7 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
       val = "";
       str >> val;
       if ( val.empty() && !str.good() ) break;
-      values.push_back(_toDouble(val));
+      values.emplace_back(_toDouble(val));
     }
     /// Create table and register table
     TGDMLMatrix* table = new TGDMLMatrix("",values.size()/cols, cols);
@@ -737,7 +737,7 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
     val = "";
     str >> val;
     if ( val.empty() && !str.good() ) break;
-    values.push_back(_toDouble(val));
+    values.emplace_back(_toDouble(val));
     if ( s_debug.matrix )    {
       cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << val << "'";
       if ( 0 == (values.size()%cols) ) cout << endl;
@@ -826,7 +826,7 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
     region.setStoreSecondaries(elt.attr<bool>(store_secondaries));
   }
   for (xml_coll_t user_limits(e, _U(limitsetref)); user_limits; ++user_limits)
-    limits.push_back(user_limits.attr<string>(_U(name)));
+    limits.emplace_back(user_limits.attr<string>(_U(name)));
   description.addRegion(region);
 }
 
@@ -867,7 +867,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
           vector<string> elts = DDSegmentation::splitString(par);
           for (const string& spar : elts )  {
             if ( spar.empty() ) continue;
-            valueVector.push_back(_toDouble(spar));
+            valueVector.emplace_back(_toDouble(spar));
           }
           typedef DDSegmentation::TypedSegmentationParameter< vector<double> > ParDouVec;
           static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
@@ -982,7 +982,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
                "++ Readout[%s]: Add hit collection %s [%s]  %d-%d",
                ro.name(), coll_name.c_str(), coll_key.c_str(), key_min, key_max);
       HitCollection hits(coll_name, coll_key, key_min, key_max);
-      ro->hits.push_back(hits);
+      ro->hits.emplace_back(hits);
     }
   }
   description.addReadout(ro);

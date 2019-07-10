@@ -64,7 +64,7 @@ namespace {
         else if ( strncmp(argv[i],"-compact2vis",12)==0 )
           compact2vis = true;
         else if ( strncmp(argv[i],"-input",2)==0 )
-          geo_files.push_back(argv[++i]);
+          geo_files.emplace_back(argv[++i]);
         else if ( strncmp(argv[i],"-output",2)==0 )
           output = ++i;
         else if ( strncmp(argv[i],"-ascii",5)==0 )

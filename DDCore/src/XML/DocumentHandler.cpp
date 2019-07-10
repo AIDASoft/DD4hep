@@ -198,6 +198,11 @@ namespace dd4hep {
         parser->setCreateEntityReferenceNodes(false);
         parser->setDoNamespaces(false);
         parser->setDoSchema(true);
+
+        ////parser->setDoNamespaces( true );
+        //domParser->setDoSchema( true );
+        ////parser->setHandleMultipleImports ( true );
+        //domParser->setValidationSchemaFullChecking( true );
         return parser;
       }
     }

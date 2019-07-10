@@ -233,7 +233,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
   //fg: for now we create exactly one event vertex here ( as before )
   //    this needs revisiting as HepMC allows to have more than one vertex ...
   Geant4Vertex* primary_vertex = new Geant4Vertex ;
-  vertices.push_back( primary_vertex );
+  vertices.emplace_back( primary_vertex );
   primary_vertex->x = 0;
   primary_vertex->y = 0;
   primary_vertex->z = 0;
@@ -269,7 +269,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
                p->psx/MeV,p->psy/MeV,p->psz/MeV,p->time/ns,
                p->daughters.size(),
                p->parents.size());
-      //output.push_back(p);
+      //output.emplace_back(p);
 
       //add particles to the 'primary vertex'
       if ( p->parents.size() == 0 )  {
@@ -317,33 +317,32 @@ void HepMC::fix_particles(EventStream& info)  {
       }
     }
   }
-  EventStream::Vertices::iterator j;
-  for(j=verts.begin(); j != verts.end(); ++j)  {
-    Geant4Vertex* v = (*j).second;
-    for (ip=v->out.begin(); ip!=v->out.end();++ip)   {
-      EventStream::Particles::iterator ipp = parts.find(*ip);
+  for(const auto& iv : verts)   {
+    Geant4Vertex* v = iv.second;
+    for (int pout : v->out)   {
+      EventStream::Particles::iterator ipp = parts.find(pout);
       Geant4Particle* p = (*ipp).second;
-      for (id=v->in.begin(); id!=v->in.end();++id)  {
-        p->parents.insert(*id);
+      for (int d : v->in)   {
+        p->parents.insert(d);
       }
     }
   }
   /// Particles originating from the beam (=no parents) must be
   /// be stripped off their parents and the status set to G4PARTICLE_GEN_DECAYED!
   vector<Geant4Particle*> beam;
-  for(i=parts.begin(); i != parts.end(); ++i)  {
-    Geant4ParticleHandle p((*i).second);
+  for(const auto& ipart : parts)   {
+    Geant4ParticleHandle p(ipart.second);
     if ( p->parents.size() == 0 )  {
-      for(id=p->daughters.begin(); id!=p->daughters.end();++id)  {
-        Geant4Particle *pp = parts[*id];
-        beam.push_back(pp);
+      for(int d : p->daughters)   {
+        Geant4Particle *pp = parts[d];
+        beam.emplace_back(pp);
       }
     }
   }
-  for(vector<Geant4Particle*>::iterator ipp=beam.begin(); ipp!=beam.end();++ipp)  {
+  for(auto* ipp : beam)   {
     //cout << "Clear parents of " << (*ipp)->id << endl;
-    (*ipp)->parents.clear();
-    (*ipp)->status = G4PARTICLE_GEN_DECAYED;
+    ipp->parents.clear();
+    ipp->status = G4PARTICLE_GEN_DECAYED;
   }
 }
 

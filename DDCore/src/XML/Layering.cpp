@@ -81,7 +81,7 @@ void LayeringCnv::fromCompact(Layering& layering) const {
     lay.compute();
     // Add layer to stack once for each repetition
     for (int k = 0; k < repeat; ++k)
-      layers.push_back(new Layer(lay));
+      layers.emplace_back(new Layer(lay));
   }
   if (0 == count) {
     throw runtime_error("LayeringCnv::fromCompact: No layer children to be build!");
@@ -115,10 +115,9 @@ void Layering::sensitivePositionsInLayer(xml::Element e, std::vector<double>& se
   for (Collection_t s(lay, _U(slice)); s; ++s) {
     Component slice = s;
     pos += slice.thickness();
-
     if (slice.isSensitive()){
         //store the position at the center of the slice
-        sens_pos.push_back(pos - slice.thickness()/2.);
+        sens_pos.emplace_back(pos - slice.thickness()/2.);
     }
   }
 }

@@ -400,14 +400,14 @@ namespace {
     else if (cl == TGeoPgon::Class()) {
       const TGeoPgon* sh = (const TGeoPgon*) shape;
       vector<double> params;
-      params.push_back(sh->GetPhi1());
-      params.push_back(sh->GetDphi());
-      params.push_back(double(sh->GetNedges()));
-      params.push_back(double(sh->GetNz()));
+      params.emplace_back(sh->GetPhi1());
+      params.emplace_back(sh->GetDphi());
+      params.emplace_back(double(sh->GetNedges()));
+      params.emplace_back(double(sh->GetNz()));
       for(int i=0, n=sh->GetNz(); i<n; ++i)  {
-        params.push_back(sh->GetZ(i));
-        params.push_back(sh->GetRmin(i));
-        params.push_back(sh->GetRmax(i));
+        params.emplace_back(sh->GetZ(i));
+        params.emplace_back(sh->GetRmin(i));
+        params.emplace_back(sh->GetRmax(i));
       }
       log << cl->GetName() << "* shape_" << pvoid << " = "
           << "new " << cl->GetName() << "(" << &params[0] << ");" << newline;
@@ -416,13 +416,13 @@ namespace {
     else if (cl == TGeoPcon::Class()) {
       const TGeoPcon* sh = (const TGeoPcon*) shape;
       vector<double> params;
-      params.push_back(sh->GetPhi1());
-      params.push_back(sh->GetDphi());
-      params.push_back(double(sh->GetNz()));
+      params.emplace_back(sh->GetPhi1());
+      params.emplace_back(sh->GetDphi());
+      params.emplace_back(double(sh->GetNz()));
       for(int i=0, n=sh->GetNz(); i<n; ++i)  {
-        params.push_back(sh->GetZ(i));
-        params.push_back(sh->GetRmin(i));
-        params.push_back(sh->GetRmax(i));
+        params.emplace_back(sh->GetZ(i));
+        params.emplace_back(sh->GetRmin(i));
+        params.emplace_back(sh->GetRmax(i));
       }
       log << cl->GetName() << "* shape_" << pvoid << " = "
           << "new " << cl->GetName() << "(" << &params[0] << ");" << newline;
@@ -477,8 +477,8 @@ namespace {
           << "{" << newline
           << "\tstd::vector<double> vertices_" << pvoid << ";" << newline;
       for(int i=0; i<8; ++i) {
-        log << "\tvertices_" << pvoid << ".push_back(" << *v << ");" << newline; ++v;
-        log << "\tvertices_" << pvoid << ".push_back(" << *v << ");" << newline; ++v;
+        log << "\tvertices_" << pvoid << ".emplace_back(" << *v << ");" << newline; ++v;
+        log << "\tvertices_" << pvoid << ".emplace_back(" << *v << ");" << newline; ++v;
       }
       log << "\tshape_" << pvoid << " = new " << cl->GetName()
           << "(\"" << sh->GetName() << '"'
@@ -493,7 +493,7 @@ namespace {
           << "{" << newline
           << "\tstd::vector<double> param_" << pvoid << ";" << newline;
       for( auto p : pars)
-        log << "\tparam_" << pvoid << ".push_back(" << p << ");" << newline;
+        log << "\tparam_" << pvoid << ".emplace_back(" << p << ");" << newline;
       log << "\tshape_" << pvoid << " = new " << cl->GetName()
           << "( &param_" << pvoid << "[0]);" << newline;
       log << "shape_" << pvoid << "->SetName(\"" << sh->GetName() << "\");" << newline;

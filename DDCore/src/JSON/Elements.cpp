@@ -358,7 +358,7 @@ vector<Attribute> Handle_t::attributes() const {
   if (m_node) {
     for(ptree::iterator i=m_node->second.begin(); i!=m_node->second.end(); ++i)  {
       Attribute a = &(*i);
-      attrs.push_back(a);
+      attrs.emplace_back(a);
     }
   }
   return attrs;

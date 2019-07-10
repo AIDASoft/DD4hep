@@ -44,7 +44,7 @@ namespace dd4hep {
     template<typename MAPPING, typename BASE> 
     class ConditionsLinearPool : public BASE   {
     protected:
-      MAPPING           m_entries;
+      MAPPING m_entries;
 
       /// Helper function to loop over the conditions container and apply a functor
       template <typename R,typename T> size_t loop(R& result, T functor) {
@@ -78,7 +78,7 @@ namespace dd4hep {
 
       /// Register a new condition to this pool
       virtual bool insert(Condition condition)  final 
-      {  m_entries.insert(m_entries.end(),condition.access()); return true;     }
+      {  m_entries.emplace(m_entries.end(),condition.access()); return true;     }
 
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& rc)  final 
@@ -128,10 +128,8 @@ namespace dd4hep {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_entries;
         size_t len = entries.size();
         if ( !m.empty() )  {
-          for(typename MAPPING::iterator i=m.begin(); i!=m.end(); ++i)   {
-            Condition::Object* o = *i;
-            entries[o->iov].push_back(Condition(o));
-          }
+          for(auto* o : m)
+            entries[o->iov].emplace_back(o);
           m.clear();        
         }
         return entries.size()-len;
@@ -146,20 +144,20 @@ namespace dd4hep {
         if ( !m.empty() )   {
           unsigned int req_typ = req.iovType ? req.iovType->type : req.type;
           const IOV::Key& req_key = req.key();
-          for(typename MAPPING::const_iterator i=m.begin(); i != m.end(); ++i)  {
-            if ( key == (*i)->hash )  {
-              const IOV* _iov = (*i)->iov;
+          for(auto* e : m )  {
+            if ( key == e->hash )  {
+              const IOV* _iov = e->iov;
               unsigned int typ = _iov->iovType ? _iov->iovType->type : _iov->type;
               if ( req_typ == typ )   {
                 if ( IOV::key_is_contained(_iov->key(),req_key) )
                   // IOV test contained in key. Take it!
-                  result.push_back(*i);
+                  result.emplace_back(e);
                 else if ( IOV::key_overlaps_lower_end(_iov->key(),req_key) )
                   // IOV overlap on test on the lower end of key
-                  result.push_back(*i);
+                  result.emplace_back(e);
                 else if ( IOV::key_overlaps_higher_end(_iov->key(),req_key) )
                   // IOV overlap of test on the higher end of key
-                  result.push_back(*i);
+                  result.emplace_back(e);
               }
             }
           }

@@ -75,7 +75,7 @@ void* DetElement::extension(unsigned long long int k, bool alert) const {
 
 /// Internal call to extend the detector element with an arbitrary structure accessible by the type
 void DetElement::i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const  {
-  access()->updateCalls.push_back(make_pair(callback,callback_type));
+  access()->updateCalls.emplace_back(callback,callback_type);
 }
 
 /// Remove callback from object
@@ -241,7 +241,7 @@ void DetElement::check(bool cond, const string& msg) const {
 /// Add a new child subdetector element
 DetElement& DetElement::add(DetElement sdet) {
   if (isValid()) {
-    pair<Children::iterator, bool> r = object<Object>().children.insert(make_pair(sdet.name(), sdet));
+    pair<Children::iterator, bool> r = object<Object>().children.emplace(sdet.name(), sdet);
     if (r.second) {
       sdet.access()->parent = *this;
       return *this;

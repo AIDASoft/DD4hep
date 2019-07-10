@@ -136,13 +136,13 @@ namespace {
     //____________________________________________________________________________
     int handle(int& i, int argc, char** argv)    {
       if ( ::strncmp(argv[i],"-compact",5)==0 || ::strncmp(argv[i],"-input",4)==0 )  {
-        geo_files.push_back(argv[++i]);
+        geo_files.emplace_back(argv[++i]);
         if ( argc>i+2 && ::strncmp(argv[i+1],"-build_type",6)==0 )  {
-          build_types.push_back(argv[i+2]);
+          build_types.emplace_back(argv[i+2]);
           i += 2;
         }
         else  {
-          build_types.push_back("BUILD_DEFAULT");
+          build_types.emplace_back("BUILD_DEFAULT");
         }
       }
       else if ( ::strncmp(argv[i],"-load_only",5)==0 )
@@ -173,14 +173,14 @@ namespace {
         ui = false;
       else if ( ::strncmp(argv[i],"-plugin",5)==0 )   {
         // Need to interprete plugin args here locally.....
-        plugins.push_back(std::vector<const char*>());
-        plugins.back().push_back(argv[++i]);
+        plugins.emplace_back(std::vector<const char*>());
+        plugins.back().emplace_back(argv[++i]);
         for( ++i; i < argc; ++i )   {
           if ( ::strncmp(argv[i],"-plugin",5)==0 ) { --i; break; }
           if ( ::strncmp(argv[i],"-end-plugin",4)==0 )  { break; }
-          plugins.back().push_back(argv[i]);
+          plugins.back().emplace_back(argv[i]);
         }
-        plugins.back().push_back(0);
+        plugins.back().emplace_back(nullptr);
       }
       else 
         return 0;
@@ -246,8 +246,8 @@ namespace dd4hep  {
             usage_default(name);
         }
         else {  // This is the default
-          args.geo_files.push_back(argv[i]);
-          args.build_types.push_back("BUILD_DEFAULT");
+          args.geo_files.emplace_back(argv[i]);
+          args.build_types.emplace_back("BUILD_DEFAULT");
         }
       }
       if ( args.geo_files.empty() )

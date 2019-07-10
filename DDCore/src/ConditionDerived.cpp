@@ -199,7 +199,7 @@ DependencyBuilder::~DependencyBuilder()   {
 /// Add a new dependency
 void DependencyBuilder::add(const ConditionKey& source)   {
   if ( m_dependency )   {
-    m_dependency->dependencies.push_back(source);
+    m_dependency->dependencies.emplace_back(source);
     return;
   }
   except("Dependency","++ Invalid object. No further source may be added!");

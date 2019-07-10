@@ -45,7 +45,7 @@ namespace  {
     Scanner(ConditionsRootPersistency::pool_type& p) : pool(p) {}
     /// Conditions callback for object processing
     virtual int process(Condition c)  const override  {
-      pool.push_back(c.ptr());
+      pool.emplace_back(c.ptr());
       return 1;
     }
   };
@@ -81,7 +81,7 @@ size_t ConditionsRootPersistency::add(const std::string& identifier,
                                       const IOV& iov,
                                       std::vector<Condition>& conditions)   {
   DurationStamp stamp(this);
-  conditionPools.push_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   key.first         = identifier;
@@ -95,7 +95,7 @@ size_t ConditionsRootPersistency::add(const std::string& identifier,
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
 size_t ConditionsRootPersistency::add(const string& identifier, ConditionsPool& pool)    {
   DurationStamp stamp(this);
-  conditionPools.push_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   const IOV*    iov = pool.iov;
@@ -112,7 +112,7 @@ size_t ConditionsRootPersistency::add(const string& identifier, const Conditions
   size_t count = 0;
   DurationStamp stamp(this);
   for( const auto& p : pool.elements )  {
-    iovPools.push_back(pair<iov_key_type, pool_type>());
+    iovPools.emplace_back(pair<iov_key_type, pool_type>());
     pool_type&    ent = iovPools.back().second;
     iov_key_type& key = iovPools.back().first;
     const IOV*    iov = p.second->iov;
@@ -129,7 +129,7 @@ size_t ConditionsRootPersistency::add(const string& identifier, const Conditions
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
 size_t ConditionsRootPersistency::add(const string& identifier, const UserPool& pool)    {
   DurationStamp stamp(this);
-  userPools.push_back(pair<iov_key_type, pool_type>());
+  userPools.emplace_back(pair<iov_key_type, pool_type>());
   pool_type&    ent = userPools.back().second;
   iov_key_type& key = userPools.back().first;
   const IOV&    iov = pool.validity();

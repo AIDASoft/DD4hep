@@ -57,7 +57,7 @@ Geant4ActionPhase::~Geant4ActionPhase() {
 /// Add a new member to the phase
 bool Geant4ActionPhase::add(Geant4Action* action, Callback callback) {
   action->addRef();
-  m_members.push_back(make_pair(action,callback));
+  m_members.emplace_back(action,callback);
   return true;
 }
 

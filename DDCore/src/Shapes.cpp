@@ -545,13 +545,13 @@ Polycone::Polycone(double startPhi, double deltaPhi,
   if((z.size()!=rmin.size()) || (z.size()!=rmax.size()) )    {
     throw runtime_error("dd4hep: Polycone: vectors z,rmin,rmax not of same length");
   }
-  params.push_back(startPhi/units::deg);
-  params.push_back(deltaPhi/units::deg);
-  params.push_back(rmin.size());
+  params.emplace_back(startPhi/units::deg);
+  params.emplace_back(deltaPhi/units::deg);
+  params.emplace_back(rmin.size());
   for (size_t i = 0; i < rmin.size(); ++i) {
-    params.push_back(z[i] );
-    params.push_back(rmin[i] );
-    params.push_back(rmax[i] );
+    params.emplace_back(z[i] );
+    params.emplace_back(rmin[i] );
+    params.emplace_back(rmax[i] );
   }
   _assign(new TGeoPcon(&params[0]), "", "Polycone", true);
 }
@@ -565,13 +565,13 @@ Polycone::Polycone(double startPhi, double deltaPhi, const vector<double>& r, co
   if((z.size()!=r.size()) )    {
     throw runtime_error("dd4hep: Polycone: vectors z,r not of same length");
   } 
-  params.push_back(startPhi/units::deg);
-  params.push_back(deltaPhi/units::deg);
-  params.push_back(r.size());
+  params.emplace_back(startPhi/units::deg);
+  params.emplace_back(deltaPhi/units::deg);
+  params.emplace_back(r.size());
   for (size_t i = 0; i < r.size(); ++i) {
-    params.push_back(z[i] );
-    params.push_back(0.0  );
-    params.push_back(r[i] );
+    params.emplace_back(z[i] );
+    params.emplace_back(0.0  );
+    params.emplace_back(r[i] );
   }
   _assign(new TGeoPcon(&params[0]), "", "Polycone", true);
 }
@@ -591,13 +591,13 @@ Polycone::Polycone(const std::string& nam, double startPhi, double deltaPhi,
   if((z.size()!=rmin.size()) || (z.size()!=rmax.size()) )    {
     throw runtime_error("dd4hep: Polycone: vectors z,rmin,rmax not of same length");
   }
-  params.push_back(startPhi/units::deg);
-  params.push_back(deltaPhi/units::deg);
-  params.push_back(rmin.size());
+  params.emplace_back(startPhi/units::deg);
+  params.emplace_back(deltaPhi/units::deg);
+  params.emplace_back(rmin.size());
   for (size_t i = 0; i < rmin.size(); ++i) {
-    params.push_back(z[i] );
-    params.push_back(rmin[i] );
-    params.push_back(rmax[i] );
+    params.emplace_back(z[i] );
+    params.emplace_back(rmin[i] );
+    params.emplace_back(rmax[i] );
   }
   _assign(new TGeoPcon(&params[0]), nam, "Polycone", true);
 }
@@ -611,13 +611,13 @@ Polycone::Polycone(const std::string& nam, double startPhi, double deltaPhi, con
   if((z.size()!=r.size()) )    {
     throw runtime_error("dd4hep: Polycone: vectors z,r not of same length");
   } 
-  params.push_back(startPhi/units::deg);
-  params.push_back(deltaPhi/units::deg);
-  params.push_back(r.size());
+  params.emplace_back(startPhi/units::deg);
+  params.emplace_back(deltaPhi/units::deg);
+  params.emplace_back(r.size());
   for (size_t i = 0; i < r.size(); ++i) {
-    params.push_back(z[i] );
-    params.push_back(0.0  );
-    params.push_back(r[i] );
+    params.emplace_back(z[i] );
+    params.emplace_back(0.0  );
+    params.emplace_back(r[i] );
   }
   _assign(new TGeoPcon(&params[0]), nam, "Polycone", true);
 }
@@ -630,18 +630,18 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
   if (rmin.size() < 2) {
     throw runtime_error("dd4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
-  params.push_back(sh->GetPhi1());
-  params.push_back(sh->GetDphi());
-  params.push_back(num + rmin.size());
+  params.emplace_back(sh->GetPhi1());
+  params.emplace_back(sh->GetDphi());
+  params.emplace_back(num + rmin.size());
   for (size_t i = 0; i < num; ++i) {
-    params.push_back(sh->GetZ(i));
-    params.push_back(sh->GetRmin(i));
-    params.push_back(sh->GetRmax(i));
+    params.emplace_back(sh->GetZ(i));
+    params.emplace_back(sh->GetRmin(i));
+    params.emplace_back(sh->GetRmax(i));
   }
   for (size_t i = 0; i < rmin.size(); ++i) {
-    params.push_back(z[i] );
-    params.push_back(rmin[i] );
-    params.push_back(rmax[i] );
+    params.emplace_back(z[i] );
+    params.emplace_back(rmin[i] );
+    params.emplace_back(rmax[i] );
   }
   _setDimensions(&params[0]);
 }
@@ -1040,14 +1040,14 @@ void Polyhedra::make(const std::string& nam, int nsides, double start, double de
   }
   // No need to transform coordinates to cm. We are in the dd4hep world: all is already in cm.
   temp.reserve(4+z.size()*2);
-  temp.push_back(start);
-  temp.push_back(delta);
-  temp.push_back(double(nsides));
-  temp.push_back(double(z.size()));
+  temp.emplace_back(start);
+  temp.emplace_back(delta);
+  temp.emplace_back(double(nsides));
+  temp.emplace_back(double(z.size()));
   for(size_t i=0; i<z.size(); ++i)   {
-    temp.push_back(z[i]);
-    temp.push_back(rmin[i]);
-    temp.push_back(rmax[i]);
+    temp.emplace_back(z[i]);
+    temp.emplace_back(rmin[i]);
+    temp.emplace_back(rmax[i]);
   }
   _assign(new TGeoPgon(&temp[0]), nam, "Polyhedra", false);
 }

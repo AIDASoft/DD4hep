@@ -92,7 +92,7 @@ namespace {
         e.name = element.attr<string>(_U(name));
         e.address = element.attr<string>(_U(ref));
         if ( data.size() == cap ) data.reserve(cap+500);
-        data.push_back(e);
+        data.emplace_back(e);
       }
     };
     xml::DocumentHolder doc(xml::DocumentHandler().load(input));
@@ -188,7 +188,7 @@ namespace {
         size_t cap = data.capacity();
         ::sscanf(text,"%16llX",&e.key);
         if ( data.size() == cap ) data.reserve(cap+500);
-        data.push_back(e);
+        data.emplace_back(e);
       }
     } while(in.good() && !in.eof() );
     in.close();
