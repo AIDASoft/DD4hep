@@ -1193,24 +1193,24 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /// Convert the geometry type material into the corresponding Geant4 object(s).
 void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
-  TGDMLMatrix* m = (TGDMLMatrix*)matrix;
+  TGDMLMatrix* gdmlMat = (TGDMLMatrix*)matrix;
   Geant4GeometryInfo& info = data();
-  Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[m];
+  Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[gdmlMat];
   if (!g4) {
     PrintLevel lvl = debugMaterials ? ALWAYS : outputLevel;
     g4 = new Geant4GeometryInfo::PropertyVector();
-    size_t rows = m->GetRows();
-    g4->name    = m->GetName();
-    g4->title   = m->GetTitle();
+    size_t rows = gdmlMat->GetRows();
+    g4->name    = gdmlMat->GetName();
+    g4->title   = gdmlMat->GetTitle();
     g4->bins.reserve(rows);
     g4->values.reserve(rows);
     for(size_t i=0; i<rows; ++i)  {
-      g4->bins.emplace_back(m->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
-      g4->values.emplace_back(m->Get(i,1));
+      g4->bins.emplace_back(gdmlMat->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
+      g4->values.emplace_back(gdmlMat->Get(i,1));
     }
     printout(lvl, "Geant4Converter", "++ Successfully converted material property:%s : %s [%ld rows]",
-             m->GetName(), m->GetTitle(), rows);
-    info.g4OpticalProperties[m] = g4;
+             gdmlMat->GetName(), gdmlMat->GetTitle(), rows);
+    info.g4OpticalProperties[gdmlMat] = g4;
   }
   return g4;
 }
@@ -1289,9 +1289,9 @@ static G4SurfaceType geant4_surface_type(TGeoOpticalSurface::ESurfaceType t)   {
 #undef TO_G4_TYPE
 }
 
-static G4OpticalSurfaceModel geant4_surface_model(TGeoOpticalSurface::ESurfaceModel m)   {
+static G4OpticalSurfaceModel geant4_surface_model(TGeoOpticalSurface::ESurfaceModel surfMod)   {
 #define TO_G4_MODEL(x)  case TGeoOpticalSurface::kM##x : return x;
-  switch(m)   {
+  switch(surfMod)   {
     TO_G4_MODEL(glisur);   // original GEANT3 model
     TO_G4_MODEL(unified);  // UNIFIED model
     TO_G4_MODEL(LUT);      // Look-Up-Table model
@@ -1299,7 +1299,7 @@ static G4OpticalSurfaceModel geant4_surface_model(TGeoOpticalSurface::ESurfaceMo
     TO_G4_MODEL(dichroic); // dichroic filter
   default:
     printout(ERROR,"Geant4Surfaces","++ Unknown surface model: %d [%s]. Assume glisur!",
-             int(m), TGeoOpticalSurface::ModelToString(m));
+             int(surfMod), TGeoOpticalSurface::ModelToString(surfMod));
     return glisur;
   }
 #undef TO_G4_MODEL
@@ -1307,24 +1307,24 @@ static G4OpticalSurfaceModel geant4_surface_model(TGeoOpticalSurface::ESurfaceMo
 
 /// Convert the optical surface to Geant4
 void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
-  TGeoOpticalSurface* s    = (TGeoOpticalSurface*)surface;
+  TGeoOpticalSurface* optSurf    = (TGeoOpticalSurface*)surface;
   Geant4GeometryInfo& info = data();
-  G4OpticalSurface*   g4   = info.g4OpticalSurfaces[s];
+  G4OpticalSurface*   g4   = info.g4OpticalSurfaces[optSurf];
   if (!g4) {
-    G4SurfaceType          type   = geant4_surface_type(s->GetType());
-    G4OpticalSurfaceModel  model  = geant4_surface_model(s->GetModel());
-    G4OpticalSurfaceFinish finish = geant4_surface_finish(s->GetFinish());
-    g4 = new G4OpticalSurface(s->GetName(), model, finish, type, s->GetValue());
-    g4->SetSigmaAlpha(s->GetSigmaAlpha());
+    G4SurfaceType          type   = geant4_surface_type(optSurf->GetType());
+    G4OpticalSurfaceModel  model  = geant4_surface_model(optSurf->GetModel());
+    G4OpticalSurfaceFinish finish = geant4_surface_finish(optSurf->GetFinish());
+    g4 = new G4OpticalSurface(optSurf->GetName(), model, finish, type, optSurf->GetValue());
+    g4->SetSigmaAlpha(optSurf->GetSigmaAlpha());
     // not implemented: g4->SetPolish(s->GetPolish());
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created OpticalSurface: %-18s type:%s model:%s finish:%s",
-             s->GetName(),
-             TGeoOpticalSurface::TypeToString(s->GetType()),
-             TGeoOpticalSurface::ModelToString(s->GetModel()),
-             TGeoOpticalSurface::FinishToString(s->GetFinish()));
+             optSurf->GetName(),
+             TGeoOpticalSurface::TypeToString(optSurf->GetType()),
+             TGeoOpticalSurface::ModelToString(optSurf->GetModel()),
+             TGeoOpticalSurface::FinishToString(optSurf->GetFinish()));
     G4MaterialPropertiesTable* tab = 0;
-    TListIter it(&s->GetProperties());
+    TListIter it(&optSurf->GetProperties());
     for(TObject* obj = it.Next(); obj; obj = it.Next())  {
       TNamed* n = (TNamed*)obj;
       TGDMLMatrix *matrix = info.manager->GetGDMLMatrix(n->GetTitle());
@@ -1336,7 +1336,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
       if ( !v )  {  // Error!
         except("Geant4OpticalSurface","++ Failed to convert opt.surface %s. Property table %s is not defined!",
-               s->GetName(), n->GetTitle());
+               optSurf->GetName(), n->GetTitle());
       }
       G4MaterialPropertyVector* vec =
         new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
@@ -1345,7 +1345,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
                "++       Property: %-20s [%ld x %ld] -->  %s",
                n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
     }
-    info.g4OpticalSurfaces[s] = g4;
+    info.g4OpticalSurfaces[optSurf] = g4;
   }
   return g4;
 }
@@ -1356,9 +1356,9 @@ void* Geant4Converter::handleSkinSurface(TObject* surface) const   {
   Geant4GeometryInfo& info = data();
   G4LogicalSkinSurface* g4 = info.g4SkinSurfaces[surf];
   if (!g4) {
-    G4OpticalSurface* s  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
+    G4OpticalSurface* optSurf  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4LogicalVolume*  v = info.g4Volumes[surf->GetVolume()];
-    g4 = new G4LogicalSkinSurface(surf->GetName(), v, s);
+    g4 = new G4LogicalSkinSurface(surf->GetName(), v, optSurf);
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created SkinSurface: %-18s  optical:%s",
              surf->GetName(), surf->GetSurface()->GetName());
@@ -1373,10 +1373,10 @@ void* Geant4Converter::handleBorderSurface(TObject* surface) const   {
   Geant4GeometryInfo&   info = data();
   G4LogicalBorderSurface* g4 = info.g4BorderSurfaces[surf];
   if (!g4) {
-    G4OpticalSurface*  s  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
+    G4OpticalSurface*  optSurf = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4VPhysicalVolume* n1 = info.g4Placements[surf->GetNode1()];
     G4VPhysicalVolume* n2 = info.g4Placements[surf->GetNode2()];
-    g4 = new G4LogicalBorderSurface(surf->GetName(), n1, n2, s);
+    g4 = new G4LogicalBorderSurface(surf->GetName(), n1, n2, optSurf);
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created BorderSurface: %-18s  optical:%s",
              surf->GetName(), surf->GetSurface()->GetName());
