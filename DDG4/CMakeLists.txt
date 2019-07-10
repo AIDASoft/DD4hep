@@ -63,8 +63,6 @@ dd4hep_add_plugin(DDG4LCIO
 dd4hep_add_executable(g4gdmlDisplay SOURCES g4gdmlDisplay.cpp)
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(g4FromXML     SOURCES g4FromXML.cpp)
-#-----------------------------------------------------------------------------------
-dd4hep_add_executable(dd_sim        SOURCES ddsim.cpp)
 #---Helper to overcome deficiency of the python executable concerning multi-threading
 dd4hep_add_executable(pyddg4
   LINK_LIBRARIES DDPython
