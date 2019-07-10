@@ -140,7 +140,7 @@ mac1014-clang100-Geant10.5:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja ..
+    - cmake -DBoost_NO_BOOST_CMAKE=ON -GNinja ..
     - ninja
     - ninja install
     - ctest --output-on-failure
@@ -161,7 +161,7 @@ mac1014-clang100-Geant10.5-XERCESC:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja -DXERCESC_ROOT_DIR=${XercesC_HOME} ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} ..
     - ninja
     - ninja install
     - ctest --output-on-failure
