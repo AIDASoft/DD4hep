@@ -130,11 +130,11 @@ namespace {
       //           << " " << string((*j)->GetName()) << " ";
       if ( ::strcmp((*j).ptr()->GetName(),(*k).placement().ptr()->GetName()) )  {
         //cout << "[DE]";
-        elements.emplace_back(make_pair(level,*k));
+        elements.emplace_back(level,*k);
         ++k;
       }
       else  {
-        //elements.emplace_back(make_pair(level,DetElement()));
+        //elements.emplace_back(level,DetElement());
       }
       //cout << " ";
     }

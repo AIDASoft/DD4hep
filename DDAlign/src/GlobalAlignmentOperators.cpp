@@ -33,7 +33,7 @@ void GlobalAlignmentOperator::insert(GlobalAlignment alignment)  const   {
 
 void GlobalAlignmentSelector::operator()(Entries::value_type e)  const {
   TGeoPhysicalNode* pn = 0;
-  nodes.insert(make_pair(e->path,make_pair(pn,e)));
+  nodes.emplace(e->path,make_pair(pn,e));
 }
 
 void GlobalAlignmentSelector::operator()(const Cache::value_type& entry)  const {
@@ -44,11 +44,11 @@ void GlobalAlignmentSelector::operator()(const Cache::value_type& entry)  const 
       const char* p = pn->GetName();
       bool reset_children = GlobalAlignmentStack::resetChildren(*e);
       if ( reset_children && ::strstr(p,e->path.c_str()) == p )   {
-        nodes.insert(make_pair(p,make_pair(pn,e)));
+        nodes.emplace(p,make_pair(pn,e));
         break;
       }
       else if ( e->path == p )  {
-        nodes.insert(make_pair(p,make_pair(pn,e)));
+        nodes.emplace(p,make_pair(pn,e));
         break;
       }
     }

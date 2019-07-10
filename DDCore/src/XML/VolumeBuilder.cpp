@@ -143,7 +143,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
     if ( !buildMatch(build,buildType) )  {
       printout(INFO,"VolumeBuilder",
                "+++ Shape %s does NOT match build requirements. [Ignored]",nam.c_str());
-      if ( !nam.empty() ) shape_veto.insert(nam);
+      if ( !nam.empty() ) shape_veto.emplace(nam);
       return Solid();
     }
   }
@@ -157,7 +157,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
   /// And register it if it is not anonymous
   if ( !nam.empty() )   {
     solid.setName(nam);
-    shapes.insert(make_pair(nam,make_pair(handle,solid)));
+    shapes.emplace(nam,make_pair(handle,solid));
   }
   printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
            "+++ Created shape of type: %s name: %s",type.c_str(), nam.c_str());
@@ -179,7 +179,7 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
         if ( !buildMatch(build,buildType) )  {
           printout(INFO,"VolumeBuilder",
                    "+++ Shape %s does NOT match build requirements. [Ignored]",nam.c_str());
-          shape_veto.insert(nam);
+          shape_veto.emplace(nam);
           continue;
         }
       }
@@ -192,7 +192,7 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
       printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
                "+++ Building shape  from XML: %s of type: %s",
                nam.c_str(), solid->IsA()->GetName());
-      shapes.insert(make_pair(nam,make_pair(c,solid)));
+      shapes.emplace(nam,make_pair(c,solid));
       continue;
     }
     except("VolumeBuilder","+++ Shape %s is already known to this builder unit. "
@@ -225,7 +225,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       string typ = c.attr<string>(attr);
       Volume vol = xml::createVolume(description, typ, c);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.insert(make_pair(nam,make_pair(c,vol)));
+      volumes.emplace(nam,make_pair(c,vol));
       /// Check if the volume is sensitive
       if ( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
@@ -255,7 +255,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       Volume    vol(nam, solid, mat);
       placeDaughters(detector, vol, x);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.insert(make_pair(nam,make_pair(c,vol)));
+      volumes.emplace(nam,make_pair(c,vol));
       /// Check if the volume is sensitive
       if ( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
@@ -274,7 +274,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       Assembly vol(nam);
       placeDaughters(detector, vol, x);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.insert(make_pair(nam,make_pair(c,vol)));
+      volumes.emplace(nam,make_pair(c,vol));
       printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
                "+++ Building assembly from XML: %-20s shape:%-24s vis:%s",
                nam.c_str(), vol->GetShape()->IsA()->GetName(), x.visStr().c_str());
@@ -465,7 +465,7 @@ size_t VolumeBuilder::buildTransformations(Handle_t handle)   {
   size_t len = transformations.size();
   for( xml_coll_t c(handle,_U(transformation)); c; ++c )   {
     string nam = xml_comp_t(c).nameStr();
-    transformations.insert(make_pair(nam,make_pair(c,xml::createTransformation(c))));
+    transformations.emplace(nam,make_pair(c,xml::createTransformation(c)));
   }
   return transformations.size() - len;
 }

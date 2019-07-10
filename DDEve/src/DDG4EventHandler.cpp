@@ -175,7 +175,7 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
       for(Branches::const_iterator i=m_branches.begin(); i != m_branches.end(); ++i)  {
         TBranch* b = (*i).second.first;
         std::vector<void*>* ptr_data = *(std::vector<void*>**)b->GetAddress();
-        m_data[b->GetClassName()].push_back(make_pair(b->GetName(),ptr_data->size()));
+        m_data[b->GetClassName()].emplace_back(b->GetName(),ptr_data->size());
       }
       m_hasEvent = true;
       return nbytes;

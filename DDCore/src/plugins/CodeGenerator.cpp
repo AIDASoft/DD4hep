@@ -280,7 +280,7 @@ namespace {
   ostream& Actor::handleStructure(ostream& log, DetElement parent, DetElement de)   {
     if ( de.isValid() && detelements.find(de) == detelements.end() )  {
       string name = obj_name("de", de.ptr());
-      detelements.insert(make_pair(de,name));
+      detelements.emplace(de,name);
       if ( !parent.isValid() )   {
         cout << "No parent: " << de.path() << " " << pointer(de) << " " << pointer(detector.world()) << endl;
         log << endl
@@ -320,12 +320,12 @@ namespace {
       TGeoMatrix* mat = node->GetMatrix();
 
       string name = obj_name("vol", vol);
-      placements.insert(make_pair(node,name));
+      placements.emplace(node,name);
 
       handleMatrix(log, mat);
 
       if ( vol && volumes.find(vol) == volumes.end() )  {
-        volumes.insert(make_pair(vol,name));
+        volumes.emplace(vol,name);
         if ( vol->IsA() == TGeoVolumeAssembly::Class() )    {
           log << "{" << newline;
           log << "\t Assembly vol(\"" << vol->GetName() << "\");" << newline;
@@ -384,7 +384,7 @@ namespace {
   ostream& Actor::handleMaterial(ostream& log, TGeoMedium* medium)   {
     if ( medium && materials.find(medium) == materials.end() )  {
       string name = obj_name("material",medium);
-      materials.insert(make_pair(medium,name));
+      materials.emplace(medium,name);
       TGeoMaterial* material = medium->GetMaterial();
       log << "{" << newline
           << "\t TGeoManager& mgr = detector.manager();" << newline
@@ -456,7 +456,7 @@ namespace {
       return log;
     }
 
-    shapes.insert(make_pair(shape,name));
+    shapes.emplace(shape,name);
 
     TClass* cl = shape->IsA();
     log << "{" << newline;

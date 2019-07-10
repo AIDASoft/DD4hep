@@ -59,7 +59,7 @@ TTree* Geant4Output2ROOT::section(const string& nam) {
   if (i == m_sections.end()) {
     TDirectory::TContext ctxt(m_file);
     TTree* t = new TTree(nam.c_str(), ("Geant4 " + nam + " information").c_str());
-    m_sections.insert(make_pair(nam, t));
+    m_sections.emplace(nam, t);
     return t;
   }
   return (*i).second;
@@ -89,7 +89,7 @@ int Geant4Output2ROOT::fill(const string& nam, const ComponentCast& type, void* 
       if (cl) {
         b = m_tree->Branch(nam.c_str(), cl->GetName(), (void*) 0);
         b->SetAutoDelete(false);
-        m_branches.insert(make_pair(nam, b));
+        m_branches.emplace(nam, b);
       }
       else {
         throw runtime_error("No ROOT TClass object availible for object type:" + typeName(type.type));

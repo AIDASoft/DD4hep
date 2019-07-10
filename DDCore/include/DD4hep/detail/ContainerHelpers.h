@@ -62,51 +62,51 @@ namespace dd4hep {
 
   template <typename Q, typename T>
   void insert_item(std::map<Q,T>&  c, Q de, const T& d)  {
-    c.insert(std::make_pair(de,d));
+    c.emplace(de,d);
   }
   template <typename Q, typename T>
   void insert_item(std::map<T,Q>&  c, Q de, const T& d)  {
-    c.insert(std::make_pair(d,de));
+    c.emplace(d,de);
   }
     
   template <typename Q, typename T>
   void insert_item(std::vector<std::pair<Q,T> >& c, Q de, const T& d)  {
-    c.emplace_back(std::make_pair(de,d));
+    c.emplace_back(de,d);
   }
   template <typename Q, typename T>
   void insert_item(std::vector<std::pair<std::string,T> >& c, Q de, const T& d)  {
-    c.emplace_back(std::make_pair(de.path(),d));
+    c.emplace_back(de.path(),d);
   }
 
   template <typename Q, typename T>
   void insert_item(std::list<std::pair<Q,T> >& c, Q de, const T& d)  {
-    c.emplace_back(std::make_pair(de,d));
+    c.emplace_back(de,d);
   }
   template <typename Q, typename T>
   void insert_item(std::list<std::pair<std::string,T> >& c, Q de, const T& d)  {
-    c.emplace_back(std::make_pair(de.path(),d));
+    c.emplace_back(de.path(),d);
   }
 
   template <typename Q, typename T>
   void insert_item(std::set<std::pair<Q,T> >& c, Q de, const T& d)  {
-    c.insert(std::make_pair(de,d));
+    c.emplace(de,d);
   }
   template <typename Q, typename T>
   void insert_item(std::set<std::pair<std::string,T> >& c, Q de, const T& d)  {
-    c.insert(std::make_pair(de.path(),d));
+    c.emplace(de.path(),d);
   }
 
   template <typename Q, typename T>
   void insert_item(std::multimap<Q,T>& c, Q de, const T& d)  {
-    c.insert(std::make_pair(de,d));
+    c.emplace(de,d);
   }
   template <typename Q, typename T>
   void insert_item(std::map<std::string,T>& c, Q de, const T& d)  {
-    c.insert(std::make_pair(de.path(),d));
+    c.emplace(de.path(),d);
   }
   template <typename Q, typename T>
   void insert_item(std::multimap<std::string,T>& c, Q de, const T& d)  {
-    c.insert(std::make_pair(de.path(),d));
+    c.emplace(de.path(),d);
   }
 }      // End namespace dd4hep
 #endif // DD4HEP_DD4HEP_CONTAINERHELPERS_H

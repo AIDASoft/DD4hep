@@ -140,7 +140,7 @@ LCIOEventReader::readParticles(int event_number,
     if ( p->parents.size() == 0 )  {
 
       Geant4Vertex* vtx = new Geant4Vertex ;
-      vertices.push_back( vtx );
+      vertices.emplace_back( vtx );
       vtx->x = p->vsx;
       vtx->y = p->vsy;
       vtx->z = p->vsz;
@@ -157,7 +157,7 @@ LCIOEventReader::readParticles(int event_number,
     if ( mcp->hasLeftDetector() )             status.set(G4PARTICLE_SIM_LEFT_DETECTOR);
     if ( mcp->isStopped() )                   status.set(G4PARTICLE_SIM_STOPPED);
     if ( mcp->isOverlay() )                   status.set(G4PARTICLE_SIM_OVERLAY);
-    particles.push_back(p);
+    particles.emplace_back(p);
   }
   return EVENT_READER_OK;
 }

@@ -157,7 +157,7 @@ namespace {
                    (void*)code, Geant4GeometryInfo::placementPath(path).c_str());
           if (m_geo.g4Paths.find(path) == m_geo.g4Paths.end()) {
             m_geo.g4Paths[path] = code;
-            m_entries.insert(make_pair(code,path));
+            m_entries.emplace(code,path);
             return;
           }
           printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s %s",

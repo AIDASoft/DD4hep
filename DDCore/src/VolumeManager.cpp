@@ -402,7 +402,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
                             "valid placement VolIDs are allowed. [Invalid DetElement:" + det_name + "]");
       }
 
-      i = o.subdetectors.insert(make_pair(det, VolumeManager(det,ro))).first;
+      i = o.subdetectors.emplace(det, VolumeManager(det,ro)).first;
       const auto& id = (*vit);
       VolumeManager m = (*i).second;
       const BitFieldElement* field = ro.idSpec().field(id.first);

@@ -89,9 +89,9 @@ namespace dd4hep {
         void insert(DetElement det, const Delta* delta)   {
           if ( det.isValid() )  {
             Entry entry(det,delta);
-            detectors.insert(std::make_pair(det, entries.size()));
-            keys.insert(std::make_pair(entry.key, entries.size()));
-            entries.insert(entries.end(), entry);
+            detectors.emplace(det, entries.size());
+            keys.emplace(entry.key, entries.size());
+            entries.emplace_back(entry);
             return;
           }
           except("AlignContext","Failed to add entry: invalid detector handle!");
@@ -112,7 +112,7 @@ int AlignmentsCalculator::Scanner::operator()(DetElement de, int)  const  {
     Condition c = context.condition(key, false);
     if ( c.isValid() )  {
       const Delta& d = c.get<Delta>();
-      deltas.insert(std::make_pair(de,&d));
+      deltas.emplace(de,&d);
       if ( iov ) iov->iov_intersection(c->iov->key());
     }
     return 1;
@@ -229,7 +229,7 @@ Result AlignmentsCalculator::compute(const std::map<DetElement, Delta>& deltas,
   //
   OrderedDeltas ordered_deltas;
   for( const auto& i : deltas )
-    ordered_deltas.insert(std::make_pair(i.first, &i.second));
+    ordered_deltas.emplace(i.first, &i.second);
   return compute(ordered_deltas, alignments);
 }
 
@@ -285,7 +285,7 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
           if ( idd != extract_context.end() )   {
             const Delta& d  = c.get<Delta>();
             DetElement   de = idd->second;
-            delta_conditions.insert(std::make_pair(de,&d));
+            delta_conditions.emplace(de,&d);
             if (effective_iov) effective_iov->iov_intersection(c->iov->key());
             return 1;
           }
@@ -300,7 +300,7 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
     return deltas.size();
   }
   DetectorScanner().scan(AlignmentsCalculator::Scanner(ctxt,deltas,effective_iov),start);
-  for( const auto& d : deltas ) extract_context.insert(std::make_pair(d.first.key(), d.first));
+  for( const auto& d : deltas ) extract_context.emplace(d.first.key(), d.first);
   return deltas.size();
 }
 

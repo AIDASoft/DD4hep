@@ -42,7 +42,7 @@ namespace {
 dd4hep::BasicGrammar::BasicGrammar(const std::string& typ)
   : name(typ), hash_value(dd4hep::detail::hash64(typ))
 {
-  if ( !registry().insert(std::make_pair(hash_value,this)).second )  {
+  if ( !registry().emplace(hash_value,this).second )  {
     // Error: Already existing grammar.
     dd4hep::except("BasicGrammar","FAILED to add existent registry: %s [%016llX]",name.c_str(), hash_value);    
   }

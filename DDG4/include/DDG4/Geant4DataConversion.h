@@ -129,7 +129,7 @@ namespace dd4hep {
       typedef Geant4Conversion<output_t,arg_t> self_t;
       Geant4DataConversion(void*) : Geant4Conversion<OUTPUT,ARGS>()
       {
-        this->self_t::conversions().insert(make_pair(&typeid(TAG),this));
+        this->self_t::conversions().emplace(&typeid(TAG),this);
         //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
       }
       virtual OUTPUT* operator()(const ARGS& args) const;

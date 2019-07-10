@@ -1032,7 +1032,7 @@ unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
       map<string,string> m;
       TiXmlElement* e = n->ToElement();
       TiXmlAttribute* p=e->FirstAttribute();
-      for(; p; p=p->Next()) m.insert(make_pair(p->Name(),p->Value()));
+      for(; p; p=p->Next()) m.emplace(p->Name(),p->Value());
       param = (*fcn)(param,e->Value(),::strlen(e->Value()));
       for(StringMap::const_iterator i=m.begin();i!=m.end();++i) {
         param = (*fcn)(param,(*i).first.c_str(),(*i).first.length());

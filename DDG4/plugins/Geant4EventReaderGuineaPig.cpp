@@ -258,10 +258,10 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
 
 
     //  Add the particle to the collection vector
-    particles.push_back(p);
+    particles.emplace_back(p);
 
     // create a new vertex for this particle
-    vertices.push_back( vtx) ;
+    vertices.emplace_back(vtx);
 
 
   } // End loop over particles

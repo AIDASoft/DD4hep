@@ -24,12 +24,9 @@
 namespace dd4hep {
   namespace rec {
 
-
     MaterialManager::MaterialManager(Volume world) : _mV(0), _m( Material() ), _p0(),_p1(),_pos() {
       _tgeoMgr = world->GetGeoManager();
     }
-
-
     
     MaterialManager::~MaterialManager(){
       
@@ -129,8 +126,8 @@ namespace dd4hep {
 	    
 	    
             if( length > epsilon )   {
-              _mV.push_back( std::make_pair( Material( node1->GetMedium() ) , length )  ) ; 
-              _placeV.push_back(std::make_pair(node1,length));
+              _mV.emplace_back(node1->GetMedium(), length ); 
+              _placeV.emplace_back(node1,length);
             }
             break;
           }
@@ -138,8 +135,8 @@ namespace dd4hep {
           track->AddPoint( position[0], position[1], position[2], 0.);
 	  
           if( length > epsilon )   {
-            _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
-            _placeV.push_back(std::make_pair(node1,length));
+            _mV.emplace_back(node1->GetMedium(), length); 
+            _placeV.emplace_back(node1,length);
           }
           node1 = node2;
         }
@@ -147,7 +144,8 @@ namespace dd4hep {
 
         //fg: protect against empty list:
         if( _mV.empty() ){
-          _mV.push_back( std::make_pair( Material( node1->GetMedium() ), totDist  )  ) ; 
+          _mV.emplace_back(node1->GetMedium(), totDist); 
+          _placeV.emplace_back(node1,totDist);
         }
 
 

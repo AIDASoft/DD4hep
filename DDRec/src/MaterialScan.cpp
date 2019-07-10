@@ -213,7 +213,7 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
     sum_x0        += nx0;
     sum_lambda    += nLambda;
     path_length   += length;
-    materials.push_back(std::make_pair(placements[i].first->GetMedium(),length));
+    materials.emplace_back(placements[i].first->GetMedium(),length);
     const char* fmt = mat->GetRadLen() >= 1e5 ? fmt2 : fmt1;
     ::printf(fmt, i+1, mat->GetName(), mat->GetZ(), mat->GetA(),
              mat->GetDensity(), mat->GetRadLen(), mat->GetIntLen(), 

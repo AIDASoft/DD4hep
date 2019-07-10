@@ -1032,10 +1032,10 @@ template <> void Converter<Property>::operator()(xml_h e) const {
 
   vector<xml_attr_t> a = e.attributes();
   if ( prp.find(name) == prp.end() )
-    prp.insert(make_pair(name, Detector::PropertyValues()));
+    prp.emplace(name, Detector::PropertyValues());
 
   for (xml_attr_t i : a )
-    prp[name].insert(make_pair(xml_tag_t(e.attr_name(i)).str(),e.attr<string>(i)));
+    prp[name].emplace(xml_tag_t(e.attr_name(i)).str(),e.attr<string>(i));
 }
 
 /** Specialized converter for electric and magnetic fields
@@ -1069,10 +1069,10 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
     string props_name = c.attr<string>(_U(name));
     vector<xml_attr_t>a = c.attributes();
     if ( prp.find(props_name) == prp.end() ) {
-      prp.insert(make_pair(props_name, Detector::PropertyValues()));
+      prp.emplace(props_name, Detector::PropertyValues());
     }
     for ( xml_attr_t i : a )
-      prp[props_name].insert(make_pair(xml_tag_t(c.attr_name(i)).str(), c.attr<string>(i)));
+      prp[props_name].emplace(xml_tag_t(c.attr_name(i)).str(), c.attr<string>(i));
 
     if (c.hasAttr(_U(global)) && c.attr<bool>(_U(global))) {
       description.field().properties() = prp;

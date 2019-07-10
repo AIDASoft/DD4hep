@@ -177,7 +177,7 @@ GlobalAlignmentCache* GlobalAlignmentCache::subdetectorAlignments(const string& 
   SubdetectorAlignments::const_iterator i = m_detectors.find(nam);
   if ( i == m_detectors.end() )   {
     GlobalAlignmentCache* ptr = new GlobalAlignmentCache(m_detDesc,nam,false);
-    m_detectors.insert(make_pair(nam,ptr));
+    m_detectors.emplace(nam,ptr);
     return ptr;
   }
   return (*i).second;
@@ -196,7 +196,7 @@ void GlobalAlignmentCache::apply(GlobalAlignmentStack& stack)    {
     DetElement det = _detector(e->detector);
     all[det].emplace_back(e);
     if ( stack.hasMatrix(*e) || stack.needsReset(*e) || stack.resetChildren(*e) )  {
-      detelt_updates.insert(make_pair(e->detector.path(),e->detector));
+      detelt_updates.emplace(e->detector.path(),e->detector);
     }
   }
   for(sd_entries_t::iterator i=all.begin(); i!=all.end(); ++i)  {

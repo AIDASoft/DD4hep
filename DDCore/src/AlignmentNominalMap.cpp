@@ -29,7 +29,7 @@ AlignmentsNominalMap::AlignmentsNominalMap(DetElement wrld) : world(wrld) {
 bool AlignmentsNominalMap::insert(DetElement              detector,
                                   Condition::itemkey_type key,
                                   Condition               condition)   {
-  auto res = data.insert(std::make_pair(ConditionKey(detector,key).hash,condition));
+  auto res = data.emplace(ConditionKey(detector,key).hash,condition);
   return res.second;
 }
 

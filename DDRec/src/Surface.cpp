@@ -497,10 +497,10 @@ namespace dd4hep {
 	Vector3D pl2 = -zv + r0v1  ;
 	Vector3D pl3 = -zv + r0v0 ;
 	
-	lines.push_back( std::make_pair( pl0, pl1 ) ) ;
-	lines.push_back( std::make_pair( pl1, pl2 ) ) ;
-	lines.push_back( std::make_pair( pl2, pl3 ) ) ;
-	lines.push_back( std::make_pair( pl3, pl0 ) ) ;
+	lines.emplace_back( pl0, pl1 );
+	lines.emplace_back( pl1, pl2 );
+	lines.emplace_back( pl2, pl3 );
+	lines.emplace_back( pl3, pl0 );
       } 
       return lines; 
     }
@@ -542,7 +542,7 @@ namespace dd4hep {
     bool findVolume( PlacedVolume pv,  Volume theVol, std::list< PlacedVolume >& volList ) {
       
 
-      volList.push_back( pv ) ;
+      volList.emplace_back( pv ) ;
       
       //   unsigned count = volList.size() ;
       //   for(unsigned i=0 ; i < count ; ++i) {
@@ -854,7 +854,7 @@ namespace dd4hep {
 	  _wtM->LocalToMaster( local_lines[i].first ,  av.array() ) ;
 	  _wtM->LocalToMaster( local_lines[i].second , bv.array() ) ;
 	  
-	  lines.push_back( std::make_pair( av, bv ) );
+	  lines.emplace_back( av, bv );
 	}
 	
 	return lines ;
@@ -917,10 +917,10 @@ namespace dd4hep {
 	    
             lines.reserve(4) ;
 	    
-            lines.push_back( std::make_pair( _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ) ) ;
-            lines.push_back( std::make_pair( _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ) ) ;
-            lines.push_back( std::make_pair( _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ) ) ;
-            lines.push_back( std::make_pair( _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ) ) ;
+            lines.emplace_back(_o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb );
+            lines.emplace_back(_o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb );
+            lines.emplace_back(_o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb );
+            lines.emplace_back(_o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb );
 	    
             return lines ;
           }	    
@@ -990,8 +990,8 @@ namespace dd4hep {
               _wtM->LocalToMaster( pl2, pg2.array() ) ;
               _wtM->LocalToMaster( pl3, pg3.array() ) ;
 	      
-              lines.push_back( std::make_pair( pg0, pg1 ) ) ;
-              lines.push_back( std::make_pair( pg2, pg3 ) ) ;
+              lines.emplace_back( pg0, pg1 );
+              lines.emplace_back( pg2, pg3 );
             }
 
             //add some vertical and horizontal lines so that the disc is seen in the rho-z projection
@@ -1011,7 +1011,7 @@ namespace dd4hep {
               _wtM->LocalToMaster( pl0, pg0.array() ) ;
               _wtM->LocalToMaster( pl1, pg1.array() ) ;
 	      
-              lines.push_back( std::make_pair( pg0, pg1 ) ) ;
+              lines.emplace_back(pg0, pg1);
             }
 
           }
@@ -1040,10 +1040,10 @@ namespace dd4hep {
           //the trapezoid is drawn as a set of four lines connecting its four corners
           lines.reserve(4) ;
           //_o is vector to the origin
-          lines.push_back( std::make_pair( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb ) ) ;
-          lines.push_back( std::make_pair( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb ) ) ;
-          lines.push_back( std::make_pair( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb) ) ;
-          lines.push_back( std::make_pair( _o - dx1 * ub  - dz * vb , _o + dx1 * ub  - dz * vb) ) ;
+          lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
+          lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
+          lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
+          lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);
 
           return lines;
         }
@@ -1071,10 +1071,10 @@ namespace dd4hep {
           //the trapezoid is drawn as a set of four lines connecting its four corners
           lines.reserve(4) ;
           //_o is vector to the origin
-          lines.push_back( std::make_pair( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb ) ) ;
-          lines.push_back( std::make_pair( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb ) ) ;
-          lines.push_back( std::make_pair( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb) ) ;
-          lines.push_back( std::make_pair( _o - dx1 * ub  - dz * vb , _o + dx1 * ub  - dz * vb) ) ;
+          lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
+          lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
+          lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
+          lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);
 
           return lines;
         }
@@ -1103,10 +1103,10 @@ namespace dd4hep {
           //the trapezoid is drawn as a set of four lines connecting its four corners
           lines.reserve(4) ;
           //_o is vector to the origin
-          lines.push_back( std::make_pair( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb ) ) ;
-          lines.push_back( std::make_pair( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb ) ) ;
-          lines.push_back( std::make_pair( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb) ) ;
-          lines.push_back( std::make_pair( _o - dx1 * ub  - dz * vb , _o + dx1 * ub  - dz * vb) ) ;
+          lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
+          lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
+          lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
+          lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);
 
           return lines;
         }
@@ -1160,13 +1160,13 @@ namespace dd4hep {
 	  
 
           if( i >  0 ) 
-            lines.push_back( std::make_pair( previous, gp )  ) ;
+            lines.emplace_back(previous, gp);
           else
             first = gp ;
 
           previous = gp ;
         }
-        lines.push_back( std::make_pair( previous, first )  ) ;
+        lines.emplace_back(previous, first);
 
 
       } else if( type().isCylinder() ) {  
@@ -1206,10 +1206,10 @@ namespace dd4hep {
             _wtM->LocalToMaster( pl2, pg2.array() ) ;
             _wtM->LocalToMaster( pl3, pg3.array() ) ;
 
-            lines.push_back( std::make_pair( pg0, pg1 ) ) ;
-            lines.push_back( std::make_pair( pg1, pg2 ) ) ;
-            lines.push_back( std::make_pair( pg2, pg3 ) ) ;
-            lines.push_back( std::make_pair( pg3, pg0 ) ) ;
+            lines.emplace_back( pg0, pg1 );
+            lines.emplace_back( pg1, pg2 );
+            lines.emplace_back( pg2, pg3 );
+            lines.emplace_back( pg3, pg0 );
           }
         }
       }

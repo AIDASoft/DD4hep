@@ -54,7 +54,7 @@ void ConditionsContent::merge(const ConditionsContent& to_add)    {
   auto& cond  = to_add.conditions();
   auto& deriv = to_add.derived();
   for( const auto& c : cond )   {
-    auto ret = m_conditions.insert(c);
+    auto ret = m_conditions.emplace(c);
     if ( ret.second )  {
       c.second->addRef();
       continue;
@@ -66,7 +66,7 @@ void ConditionsContent::merge(const ConditionsContent& to_add)    {
              
   }
   for( const auto& d : deriv )   {
-    auto ret = m_derived.insert(d);
+    auto ret = m_derived.emplace(d);
     if ( ret.second )  {
       d.second->addRef();
       continue;
@@ -97,7 +97,7 @@ bool ConditionsContent::remove(Condition::key_type hash)   {
 
 pair<Condition::key_type, ConditionsLoadInfo*>
 ConditionsContent::insertKey(Condition::key_type hash)   {
-  auto ret = m_conditions.insert(make_pair(hash,(ConditionsLoadInfo*)0));
+  auto ret = m_conditions.emplace(hash,(ConditionsLoadInfo*)0);
   if ( ret.second )  return pair<Condition::key_type, ConditionsLoadInfo*>(hash,0);
   return pair<Condition::key_type, ConditionsLoadInfo*>(0,0);
 }
@@ -106,7 +106,7 @@ ConditionsContent::insertKey(Condition::key_type hash)   {
 pair<Condition::key_type, ConditionsLoadInfo*>
 ConditionsContent::addLocationInfo(Condition::key_type hash, ConditionsLoadInfo* info)   {
   if ( info )   {
-    auto ret = m_conditions.insert(make_pair(hash,info));
+    auto ret = m_conditions.emplace(hash,info);
     if ( ret.second )  {
       info->addRef();
       return *(ret.first);
@@ -120,7 +120,7 @@ ConditionsContent::addLocationInfo(Condition::key_type hash, ConditionsLoadInfo*
 pair<Condition::key_type, ConditionDependency*>
 ConditionsContent::addDependency(ConditionDependency* dep)
 {
-  auto ret = m_derived.insert(make_pair(dep->key(),dep));
+  auto ret = m_derived.emplace(dep->key(),dep);
   if ( ret.second )  {
     dep->addRef();
     return *(ret.first);

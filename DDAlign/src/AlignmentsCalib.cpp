@@ -98,7 +98,7 @@ AlignmentsCalib::_set(DetElement detector, const Delta& delta)   {
   entry->source   = src_cond;
   entry->target   = tar_key.hash;
   entry->dirty    = 1;
-  return *(used.insert(make_pair(tar_key,entry.release())).first);
+  return *(used.emplace(tar_key,entry.release()).first);
 }
 
 /// (1) Add a new entry to an existing DetElement structure.

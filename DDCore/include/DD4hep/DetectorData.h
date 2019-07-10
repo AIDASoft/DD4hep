@@ -64,7 +64,7 @@ namespace dd4hep {
       void append(const Handle<NamedObject>& e, bool throw_on_doubles = true) {
         if (e.isValid()) {
           std::string n = e.name();
-          std::pair<iterator, bool> r = this->insert(std::make_pair(n, e.ptr()));
+          std::pair<iterator, bool> r = this->emplace(n, e.ptr());
           if (!throw_on_doubles || r.second) {
             if (not r.second) {
               printout(WARNING,"Detector","+++ Object '%s' is already defined and new one will be ignored", n.c_str());
