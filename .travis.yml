@@ -9,7 +9,7 @@ language: cpp
 env:
   matrix:
     - COMPILER=gcc
-    - COMPILER=llvm
+    - COMPILER=clang
 
 before_install:
   - wget --no-check-certificate https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
@@ -22,8 +22,14 @@ before_install:
   - sudo mv default.local /etc/cvmfs/default.local
   - sudo /etc/init.d/autofs stop
   - sudo cvmfs_config setup
+  - sudo mkdir -p /cvmfs/sft.cern.ch
+  - sudo mkdir -p /cvmfs/geant4.cern.ch
   - sudo mkdir -p /cvmfs/clicdp.cern.ch
+  - sudo mount -t cvmfs sft.cern.ch /cvmfs/sft.cern.ch
+  - sudo mount -t cvmfs geant4.cern.ch /cvmfs/geant4.cern.ch
   - sudo mount -t cvmfs clicdp.cern.ch /cvmfs/clicdp.cern.ch
+  - ls /cvmfs/sft.cern.ch
+  - ls /cvmfs/geant4.cern.ch
   - ls /cvmfs/clicdp.cern.ch
 
 # command to install dependencies
@@ -36,7 +42,7 @@ install:
 
 # command to run tests
 script:
-  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER_TYPE=$COMPILER -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/slc6-build /bin/bash
+  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER_TYPE=$COMPILER -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/cc7-lcg /bin/bash
   - docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/compile_and_test.sh"
   - if [[ "${TRAVIS_EVENT_TYPE}" != "cron" && "${TRAVIS_EVENT_TYPE}" != "pull_request" && "${COMPILER}" == "gcc" && "${TRAVIS_REPO_SLUG%/*}" == "AIDASoft" ]];
     then curl -X POST -F token=$GITLAB_TOKEN -F ref=master https://gitlab.cern.ch/api/v4/projects/7828/trigger/pipeline;

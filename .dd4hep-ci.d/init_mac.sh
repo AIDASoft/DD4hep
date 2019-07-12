@@ -55,6 +55,7 @@ export DYLD_LIBRARY_PATH="${PYTHONDIR}/lib:$DYLD_LIBRARY_PATH"
 #--------------------------------------------------------------------------------
 
 export ROOTSYS=${CLICREPO}/software/ROOT/6.18.00/${BUILD_FLAVOUR}
+export ROOT_ROOT=$ROOTSYS
 export PYTHONPATH="$ROOTSYS/lib:$PYTHONPATH"
 export PATH="$ROOTSYS/bin:$PATH"
 export DYLD_LIBRARY_PATH="$ROOTSYS/lib:$DYLD_LIBRARY_PATH"
@@ -63,18 +64,18 @@ export DYLD_LIBRARY_PATH="$ROOTSYS/lib:$DYLD_LIBRARY_PATH"
 #     XercesC
 #--------------------------------------------------------------------------------
 
-export XercesC_HOME=${CLICREPO}/software/Xerces-C/3.1.3/${BUILD_FLAVOUR}
-export PATH="$XercesC_HOME/bin:$PATH"
-export DYLD_LIBRARY_PATH="$XercesC_HOME/lib:$DYLD_LIBRARY_PATH"
+export XercesC_ROOT=${CLICREPO}/software/Xerces-C/3.1.3/${BUILD_FLAVOUR}
+export PATH="$XercesC_ROOT/bin:$PATH"
+export DYLD_LIBRARY_PATH="$XercesC_ROOT/lib:$DYLD_LIBRARY_PATH"
 
 
 #--------------------------------------------------------------------------------
 #     Geant4
 #--------------------------------------------------------------------------------
 
-export G4INSTALL=${CLICREPO}/software/Geant4/10.05.p01/${BUILD_FLAVOUR}
-export G4LIB=$G4INSTALL/lib/Geant4-10.5.1/
-export G4ENV_INIT="${G4INSTALL}/bin/geant4.sh"
+export Geant4_ROOT=${CLICREPO}/software/Geant4/10.05.p01/${BUILD_FLAVOUR}
+export G4LIB=$Geant4_ROOT/lib/Geant4-10.5.1/
+export G4ENV_INIT="${Geant4_ROOT}/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
 
 

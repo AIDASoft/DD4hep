@@ -1,15 +1,7 @@
 #!/bin/bash
 
 #Determine which OS you are using
-if [ "$(uname)" == "Darwin" ]; then
-    if [ $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}') == "10.13" ]; then
-        OS=mac1013
-        COMPILER_TYPE=llvm
-        COMPILER_VERSION=llvm90
-    else
-        echo "Bootstrap only works on macOS High Sierra (10.13)"
-    fi
-elif [ "$(uname)" == "Linux" ]; then
+if [ "$(uname)" == "Linux" ]; then
     if [ "$( cat /etc/*-release | grep Scientific )" ]; then
         OS=slc6
     elif [ "$( cat /etc/*-release | grep CentOS )" ]; then
@@ -26,8 +18,8 @@ if [ ! -d "/cvmfs" ]; then
     exit 1
 fi
 
-if [ ! -d "/cvmfs/clicdp.cern.ch" ]; then
-    echo "No clicdp CVMFS repository detected, please add it."
+if [ ! -d "/cvmfs/sft.cern.ch" ]; then
+    echo "No sft CVMFS repository detected, please add it."
     exit 1
 fi
 
@@ -37,10 +29,10 @@ if [ -z ${COMPILER_TYPE} ]; then
     COMPILER_TYPE="gcc"
 fi
 if [ ${COMPILER_TYPE} == "gcc" ]; then
-    COMPILER_VERSION="gcc7"
+    COMPILER_VERSION="gcc8"
 fi
-if [[ ${COMPILER_TYPE} == "llvm" && ${OS} != "mac1013" ]]; then
-    COMPILER_VERSION="llvm5"
+if [[ ${COMPILER_TYPE} == "clang" ]]; then
+    COMPILER_VERSION="clang8"
 fi
 
 
@@ -51,32 +43,34 @@ fi
 
 
 # General variables
-CLICREPO=/cvmfs/clicdp.cern.ch
+LCGREPO=/cvmfs/sft.cern.ch/lcg/releases/LCG_96
 BUILD_FLAVOUR=x86_64-${OS}-${COMPILER_VERSION}-${BUILD_TYPE}
+
+export LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/views/LCG_96/${BUILD_FLAVOUR}/lib64:/cvmfs/sft.cern.ch/lcg/views/LCG_96/${BUILD_FLAVOUR}/lib:$LD_LIBRARY_PATH
 
 #--------------------------------------------------------------------------------
 #     Compiler
 #--------------------------------------------------------------------------------
 
-if [[ ${COMPILER_TYPE} == "gcc" && ${OS} != "mac1013" ]]; then
-    source ${CLICREPO}/compilers/gcc/7.3.0/x86_64-${OS}/setup.sh
+if [[ ${COMPILER_TYPE} == "gcc" ]]; then
+    source /cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-${OS}/setup.sh
 fi
-if [[ ${COMPILER_TYPE} == "llvm" && ${OS} != "mac1013" ]]; then
-    source ${CLICREPO}/compilers/llvm/5.0.1/x86_64-${OS}/setup.sh
+if [[ ${COMPILER_TYPE} == "clang" ]]; then
+    source /cvmfs/sft.cern.ch/lcg/releases/clang/8.0.0-ed577/x86_64-${OS}/setup.sh
 fi
 
 #--------------------------------------------------------------------------------
 #     CMake
 #--------------------------------------------------------------------------------
 
-export CMAKE_HOME=${CLICREPO}/software/CMake/3.9.5/${BUILD_FLAVOUR}
+export CMAKE_HOME=${LCGREPO}/CMake/3.14.3/${BUILD_FLAVOUR}
 export PATH=${CMAKE_HOME}/bin:$PATH
 
 #--------------------------------------------------------------------------------
 #     Python
 #--------------------------------------------------------------------------------
 
-export PYTHONDIR=${CLICREPO}/software/Python/2.7.14/${BUILD_FLAVOUR}
+export PYTHONDIR=${LCGREPO}/Python/2.7.16/${BUILD_FLAVOUR}
 export PATH=${PYTHONDIR}/bin:$PATH
 export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 
@@ -84,7 +78,8 @@ export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 #     ROOT
 #--------------------------------------------------------------------------------
 
-export ROOTSYS=${CLICREPO}/software/ROOT/6.12.06/${BUILD_FLAVOUR}
+export ROOTSYS=${LCGREPO}/ROOT/6.18.00/${BUILD_FLAVOUR}
+export ROOT_ROOT=$ROOTSYS
 export PYTHONPATH="$ROOTSYS/lib:$PYTHONPATH"
 export PATH="$ROOTSYS/bin:$PATH"
 export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
@@ -93,28 +88,24 @@ export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
 #     XercesC
 #--------------------------------------------------------------------------------
 
-export XercesC_HOME=${CLICREPO}/software/Xerces-C/3.2.0/${BUILD_FLAVOUR}
-export PATH="$XercesC_HOME/bin:$PATH"
-export LD_LIBRARY_PATH="$XercesC_HOME/lib:$LD_LIBRARY_PATH"
-
+export XercesC_ROOT=${LCGREPO}/XercesC/3.1.3/${BUILD_FLAVOUR}
+export PATH="$XercesC_ROOT/bin:$PATH"
+export LD_LIBRARY_PATH="$XercesC_ROOT/lib:$LD_LIBRARY_PATH"
 
 #--------------------------------------------------------------------------------
 #     Geant4
 #--------------------------------------------------------------------------------
-#Determine which Geant4 version to use
-if [ -z ${GEANT4_VERSION} ]; then
-GEANT4_VERSION="10.04"
-fi
 
-export G4INSTALL=${CLICREPO}/software/Geant4/${GEANT4_VERSION}/${BUILD_FLAVOUR}
-export G4ENV_INIT="${G4INSTALL}/bin/geant4.sh"
+export Geant4_ROOT=${LCGREPO}/Geant4/10.05.p01/${BUILD_FLAVOUR}
+export G4LIB=$Geant4_ROOT/lib/Geant4-10.5.1/
+export G4ENV_INIT="${Geant4_ROOT}/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
 
 
 #--------------------------------------------------------------------------------
 #     LCIO
 #--------------------------------------------------------------------------------
-export LCIO=${CLICREPO}/software/LCIO/2.11.0/${BUILD_FLAVOUR}
+export LCIO=/cvmfs/clicdp.cern.ch/software/LCIO/2.12.1/x86_64-${OS}-${COMPILER_VERSION}-LCG_96
 export PYTHONPATH=${LCIO}/python
 export PATH=${LCIO}/bin:$PATH
 export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
@@ -124,19 +115,19 @@ export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
 #     Boost
 #--------------------------------------------------------------------------------
 
-export BOOST_ROOT=${CLICREPO}/software/Boost/1.65.1/${BUILD_FLAVOUR}
+export BOOST_ROOT=${LCGREPO}/Boost/1.70.0/${BUILD_FLAVOUR}
 export LD_LIBRARY_PATH="${BOOST_ROOT}/lib:$LD_LIBRARY_PATH"
 
 #--------------------------------------------------------------------------------
 #     Ninja
 #--------------------------------------------------------------------------------
 
-export Ninja_HOME=${CLICREPO}/software/Ninja/1.8.2/${BUILD_FLAVOUR}
-export PATH="$Ninja_HOME:$PATH"
+export Ninja_HOME=${LCGREPO}/ninja/1.9.0/${BUILD_FLAVOUR}
+export PATH="$Ninja_HOME/bin:$PATH"
 
 #--------------------------------------------------------------------------------
 #     Doxygen
 #--------------------------------------------------------------------------------
 
-export Doxygen_HOME=${CLICREPO}/software/Doxygen/1.8.13/${BUILD_FLAVOUR}
+export Doxygen_HOME=${LCGREPO}/doxygen/1.8.15/${BUILD_FLAVOUR}
 export PATH="$Doxygen_HOME/bin:$PATH"

@@ -16,12 +16,14 @@ dd4hep_configure_output ()
 dd4hep_package ( DDCodex MAJOR 0 MINOR 0 PATCH 1
   USES  [ROOT   REQUIRED COMPONENTS Geom] 
         [DD4hep REQUIRED COMPONENTS DDCore]
+  OPTIONAL       XERCESC
  )
 #
 #---DDCodex plugin library -------------------------------------------------------
 dd4hep_add_plugin(DDCodexPlugins
   SOURCES src/*.cpp
   USES    [ROOT    REQUIRED COMPONENTS Geom GenVector]
+  OPTIONAL       XERCESC
 )
 #
 #
