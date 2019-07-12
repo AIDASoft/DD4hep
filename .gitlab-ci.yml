@@ -3,18 +3,16 @@ stages:
     - documentation
     - deployment
 
-slc6-gcc7-Geant10.2:
+slc6-gcc8-Geant10.5:
   stage: build
   tags:
     - docker
-  image: clicdp/slc6-base
+  image: clicdp/slc6-lcg
   script:
-    - export COMPILER_TYPE="gcc"
-    - export GEANT4_VERSION="10.02.p03"
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib64/Geant4-10.2.3 -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -22,23 +20,21 @@ slc6-gcc7-Geant10.2:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - ctest --output-on-failure
 
-slc6-ggc7-Geant10.3:
+centos7-gcc8-Geant10.5:
   stage: build
   tags:
     - docker
-  image: clicdp/slc6-base
+  image: clicdp/cc7-lcg
   script:
-    - export COMPILER_TYPE="gcc"
-    - export GEANT4_VERSION="10.03.p03"
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib64/Geant4-10.3.3 -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -46,23 +42,21 @@ slc6-ggc7-Geant10.3:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17  ..
     - ninja
     - ninja install
     - ctest --output-on-failure
 
-slc6-gcc7-Geant10.4-XERCESC:
+centos7-gcc8-Geant10.5-XERCESC:
   stage: build
   tags:
     - docker
-  image: clicdp/slc6-base
+  image: clicdp/cc7-lcg
   script:
-    - export COMPILER_TYPE="gcc"
-    - export GEANT4_VERSION="10.04"
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib64/Geant4-10.4.0 -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -70,24 +64,23 @@ slc6-gcc7-Geant10.4-XERCESC:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja -DXERCESC_ROOT_DIR=${XercesC_HOME} ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - ctest --output-on-failure
 
 
-slc6-llvm5-Geant10.4:
+centos7-clang8-Geant10.5-XERCESC:
   stage: build
   tags:
     - docker
-  image: clicdp/slc6-base
+  image: clicdp/cc7-lcg
   script:
-    - export COMPILER_TYPE="llvm"
-    - export GEANT4_VERSION="10.04"
+    - export COMPILER_TYPE="clang"
     - source .dd4hep-ci.d/init_x86_64.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib64/Geant4-10.4.0 -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -95,31 +88,7 @@ slc6-llvm5-Geant10.4:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja ..
-    - ninja
-    - ninja install
-    - ctest --output-on-failure
-
-slc6-llvm5-Geant10.3-XERCESC:
-  stage: build
-  tags:
-    - docker
-  image: clicdp/slc6-base
-  script:
-    - export COMPILER_TYPE="llvm"
-    - export GEANT4_VERSION="10.03.p03"
-    - source .dd4hep-ci.d/init_x86_64.sh
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib64/Geant4-10.3.3 -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS ..
-    - ninja
-    - ninja install
-    - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
-    - cd ../examples/
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DXERCESC_ROOT_DIR=${XercesC_HOME} ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - ctest --output-on-failure
@@ -132,7 +101,7 @@ mac1014-clang100-Geant10.5:
     - source .dd4hep-ci.d/init_mac.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.5.1 -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Release -DROOT_DIR=$ROOTSYS -DCMAKE_CXX_STANDARD=17 ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.5.1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -140,7 +109,7 @@ mac1014-clang100-Geant10.5:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -DBoost_NO_BOOST_CMAKE=ON -GNinja ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - ctest --output-on-failure
@@ -153,7 +122,7 @@ mac1014-clang100-Geant10.5-XERCESC:
     - source .dd4hep-ci.d/init_mac.sh
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.5.1 -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} -DROOT_DIR=$ROOTSYS -DCMAKE_CXX_STANDARD=17 ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -161,7 +130,7 @@ mac1014-clang100-Geant10.5-XERCESC:
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DXERCESC_ROOT_DIR=${XercesC_HOME} ..
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - ctest --output-on-failure
@@ -178,7 +147,7 @@ doxygen:
     stage: documentation
     tags:
         - docker
-    image: clicdp/slc6-build
+    image: clicdp/cc7-lcg
     script:
         - source .dd4hep-ci.d/init_x86_64.sh
         - mkdir -p public

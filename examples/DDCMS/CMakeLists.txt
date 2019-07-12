@@ -28,7 +28,7 @@ endif()
 dd4hep_package(    DDCMS
   USES             [DD4hep REQUIRED COMPONENTS DDCore]
                    [ROOT REQUIRED COMPONENTS Geom GenVector]
-  OPTIONAL         ${CLHEP}
+  OPTIONAL         ${CLHEP} XERCESC
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDCMS)
 #
@@ -41,7 +41,8 @@ dd4hep_package(    DDCMS
 #---DDCMS plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDCMS SOURCES src/*.cpp src/plugins/*.cpp
   USES  [DD4hep REQUIRED COMPONENTS DDCore DDAlign DDCond]
-        [ROOT REQUIRED COMPONENTS Geom GenVector])
+        [ROOT REQUIRED COMPONENTS Geom GenVector]
+OPTIONAL       XERCESC)
 
 #---Package installation procedure(s) -----------------------------------------
 dd4hep_install_dir( data    DESTINATION ${DD4hep_DIR}/examples/DDCMS )
