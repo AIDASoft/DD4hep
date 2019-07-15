@@ -688,7 +688,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
     }
     else if (shape->IsA() == TGeoTrap::Class()) {
       const TGeoTrap* sh = (const TGeoTrap*) shape;
-      solid = new G4Trap(name, sh->GetDz() * CM_2_MM, sh->GetTheta(), sh->GetPhi(),
+      solid = new G4Trap(name, sh->GetDz() * CM_2_MM, sh->GetTheta() * DEGREE_2_RAD, sh->GetPhi() * DEGREE_2_RAD,
                          sh->GetH1() * CM_2_MM, sh->GetBl1() * CM_2_MM, sh->GetTl1() * CM_2_MM, sh->GetAlpha1() * DEGREE_2_RAD,
                          sh->GetH2() * CM_2_MM, sh->GetBl2() * CM_2_MM, sh->GetTl2() * CM_2_MM, sh->GetAlpha2() * DEGREE_2_RAD);
     }

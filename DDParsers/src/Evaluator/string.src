@@ -97,7 +97,7 @@ inline string operator+(const char * a, const string & b) {
   int lenb = strlen(b.c_str());
   string s; 
   s.p->s = new char[lena+lenb+1];
-  strncpy(s.p->s, a, lena); 
+  strncpy(s.p->s, a, lena+1); 
   strncpy(s.p->s+lena, b.c_str(), lenb+1);
   return s;
 }
@@ -105,7 +105,7 @@ inline string operator+(const char * a, const string & b) {
 inline string operator+(const string & a, const char * b) {
   int lena = strlen(a.c_str()), lenb = strlen(b);
   string s; s.p->s = new char[lena+lenb+1];
-  strncpy(s.p->s, a.c_str(),lena); 
+  strncpy(s.p->s, a.c_str(),lena+1);
   strncpy(s.p->s+lena, b,lenb+1);
   return s;
 }
@@ -114,7 +114,7 @@ inline string operator+(const string & a, const string & b) {
   int lena = strlen(a.c_str());
   int lenb = strlen(b.c_str());
   string s; s.p->s = new char[lena+lenb+1];
-  strncpy(s.p->s, a.c_str(), lena); 
+  strncpy(s.p->s, a.c_str(), lena+1);
   strncpy(s.p->s+lena, b.c_str(), lenb+1);
   return s;
 }
