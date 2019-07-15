@@ -43,10 +43,14 @@ fi
 
 
 # General variables
-LCGREPO=/cvmfs/sft.cern.ch/lcg/releases/LCG_96
+if [ -z ${LCG_RELEASE} ]; then
+    LCG_RELEASE="LCG_96"
+fi
+
+LCGREPO=/cvmfs/sft.cern.ch/lcg/releases/${LCG_RELEASE}
 BUILD_FLAVOUR=x86_64-${OS}-${COMPILER_VERSION}-${BUILD_TYPE}
 
-export LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/views/LCG_96/${BUILD_FLAVOUR}/lib64:/cvmfs/sft.cern.ch/lcg/views/LCG_96/${BUILD_FLAVOUR}/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}/${BUILD_FLAVOUR}/lib64:/cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}/${BUILD_FLAVOUR}/lib:$LD_LIBRARY_PATH
 
 #--------------------------------------------------------------------------------
 #     Compiler
@@ -69,8 +73,11 @@ export PATH=${CMAKE_HOME}/bin:$PATH
 #--------------------------------------------------------------------------------
 #     Python
 #--------------------------------------------------------------------------------
-
-export PYTHONDIR=${LCGREPO}/Python/2.7.16/${BUILD_FLAVOUR}
+if [[ $LCG_RELEASE =~ "python3" ]]; then
+    export PYTHONDIR=${LCGREPO}/Python/3.6.5/${BUILD_FLAVOUR}
+else
+    export PYTHONDIR=${LCGREPO}/Python/2.7.16/${BUILD_FLAVOUR}
+fi
 export PATH=${PYTHONDIR}/bin:$PATH
 export LD_LIBRARY_PATH=${PYTHONDIR}/lib:${LD_LIBRARY_PATH}
 
