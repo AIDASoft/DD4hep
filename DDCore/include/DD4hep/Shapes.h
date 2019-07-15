@@ -203,8 +203,8 @@ namespace dd4hep {
     Box(double x_val, double y_val, double z_val)
     { make("", x_val, y_val, z_val);    }
     /// Constructor to create a named new box object (retrieves name from volume)
-    Box(const std::string& name, double x_val, double y_val, double z_val)
-    { make(name.c_str(), x_val, y_val, z_val);    }
+    Box(const std::string& nam, double x_val, double y_val, double z_val)
+    { make(nam.c_str(), x_val, y_val, z_val);    }
 
     /// Constructor to create an anonymous new box object (retrieves name from volume)
     template <typename X, typename Y, typename Z>
@@ -212,8 +212,8 @@ namespace dd4hep {
     { make("", _toDouble(x_val), _toDouble(y_val), _toDouble(z_val));    }
     /// Constructor to create a named new box object (retrieves name from volume)
     template <typename X, typename Y, typename Z>
-    Box(const std::string& name, const X& x_val, const Y& y_val, const Z& z_val)
-    { make(name.c_str(), _toDouble(x_val), _toDouble(y_val), _toDouble(z_val));  }
+    Box(const std::string& nam, const X& x_val, const Y& y_val, const Z& z_val)
+    { make(nam.c_str(), _toDouble(x_val), _toDouble(y_val), _toDouble(z_val));  }
 
     /// Move Assignment operator
     Box& operator=(Box&& copy) = default;
