@@ -58,7 +58,7 @@ namespace dd4hep {
       /// No move constructor
       OpticalSurfaceManagerObject(OpticalSurfaceManagerObject&& copy) = delete;
       /// No copy constructor
-      OpticalSurfaceManagerObject(const OpticalSurfaceManagerObject& copy) = default;
+      OpticalSurfaceManagerObject(const OpticalSurfaceManagerObject& copy) = delete;
       /// Initializing constructor
       OpticalSurfaceManagerObject(Detector& det) : detector(det) {}
       /// Default destructor

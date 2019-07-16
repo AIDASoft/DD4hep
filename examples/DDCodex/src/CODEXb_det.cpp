@@ -119,7 +119,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   Stations super_stations;
   int num_super = 0;
   vector<PlacedVolume> super_places;
-  Box first_box;
   for(xml_coll_t i(x_det, _U(station)); i; ++i, ++num_super) {
     xml_comp_t station      = i;
     Volume     st_vol       = station_vols[num_super];
