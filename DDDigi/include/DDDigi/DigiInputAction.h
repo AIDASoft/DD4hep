@@ -35,15 +35,11 @@ namespace dd4hep {
      */
     class DigiInputAction : public DigiAction {
     protected:
+      /// Input data specification
       std::vector<std::string> m_input;
-      
     protected:
-      /// Inhibit copy constructor
-      DigiInputAction() = delete;
-      /// Inhibit copy constructor
-      DigiInputAction(const DigiInputAction& copy) = delete;
-      /// Inhibit assignment operator
-      DigiInputAction& operator=(const DigiInputAction& copy) = delete;
+      /// Define standard assignments and constructors
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiInputAction);
 
     public:
       /// Standard constructor
