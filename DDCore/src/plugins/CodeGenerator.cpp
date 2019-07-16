@@ -416,7 +416,7 @@ namespace {
       if ( mat->IsTranslation() )   {
         log << "\t Double_t trans[] = {";
         for(size_t i=0; tra && i<3; ++i)  {
-          log << (tra[i]);
+          log << tra[i];
           log << ((i<2) ? sep : "};");
         }
         log << newline << "\t mat->SetTranslation(trans);" << newline;
@@ -425,7 +425,7 @@ namespace {
         if ( rot[0] != 1e0 || rot[4] != 1e0 || rot[8] != 1e0)  {
           log << "\t Double_t rot[] = {";
           for(size_t i=0; rot && i<9; ++i)  {
-            log << (rot ? rot[i] : 0e0);
+            log << rot[i];
             log << ((i<8) ? sep : "};");
           }
           log << newline << "\t mat->SetRotation(rot);" << newline;
@@ -434,7 +434,7 @@ namespace {
       if ( mat->IsScale() )   {
         log << "\t Double_t scale[] = {";
         for(size_t i=0; sca && i<3; ++i)  {
-          log << (sca ? sca[i] : 0e0);
+          log << sca[i];
           log << ((i<2) ? sep : "};");
         }
         log << newline << "\t mat->SetScale(scale);" << newline;

@@ -55,10 +55,10 @@ namespace dd4hep {
       typedef std::pair<std::string,std::pair<std::pair<std::string,int>,IOV::Key> > iov_key_type;
       typedef std::list<std::pair<iov_key_type, pool_type> >          persistent_type;
 
-      persistent_type conditionPools;
-      persistent_type userPools;
-      persistent_type iovPools;
-      float           duration;
+      persistent_type conditionPools {};
+      persistent_type userPools {};
+      persistent_type iovPools  {};
+      float           duration = 0;
       enum ImportStrategy  {
         IMPORT_ALL             = 1<<0,
         IMPORT_EXACT           = 1<<1,

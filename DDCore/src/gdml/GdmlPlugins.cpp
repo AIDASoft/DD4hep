@@ -140,7 +140,7 @@ DECLARE_APPLY(DD4hep_ROOTGDMLParse,gdml_parse)
  */
 static long gdml_extract(Detector& description, int argc, char** argv) {
   if ( argc > 0 )   {
-    bool detector = true, volpath = false, volname = false;
+    bool detector = true, volpath = false;
     string output, path;
     for(int i = 0; i < argc && argv[i]; ++i)  {
       if ( 0 == ::strncmp("-output",argv[i],2) )
@@ -148,11 +148,11 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
       else if ( 0 == ::strncmp("-path", argv[i],2) )
         path  = argv[++i];
       else if ( 0 == ::strncmp("-volpath", argv[i],7) )
-        volpath  = true, volname = false, detector = false;
+        volpath  = true,  detector = false;
       else if ( 0 == ::strncmp("-volname", argv[i],7) )
-        volpath  = false, volname = true, detector = false;
+        volpath  = false, detector = false;
       else if ( 0 == ::strncmp("-detector", argv[i],8) )
-        volpath  = false, volname = false, detector = true;
+        volpath  = false, detector = true;
     }
     if ( output.empty() || path.empty() )   {
       cout <<
@@ -210,7 +210,7 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
       };
       Volume top = description.worldVolume();
       TObjArray* ents = top->GetNodes();
-      Actor a(path, volpath ? true : volname ? false : true);
+      Actor a(path, volpath ? true : false);
       for (Int_t i = 0, n = ents->GetEntries(); i < n && a._volume == 0; ++i)  {
         TGeoNode* node = (TGeoNode*)ents->At(i);
         a.scan(node, node->GetName());

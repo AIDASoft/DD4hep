@@ -160,22 +160,24 @@ static long plain_root_dump(Detector& description, int argc, char** argv) {
     if ( f && !f->IsZombie() )   {
       DetectorData* det = dynamic_cast<DetectorData*>(&description);
       TGeoManager* mgr = (TGeoManager*)f->Get(in_obj.c_str());
-      TGeoManip manip(det, level, do_import, prt);
-      DetectorData::patchRootStreamer(TGeoVolume::Class());
-      DetectorData::patchRootStreamer(TGeoNode::Class());
-      det->m_manager = mgr;
-      manip(0, mgr->GetTopNode());
-      det->m_worldVol = mgr->GetTopNode()->GetVolume();
-      if ( !air.empty() )  {
-        description.addConstant(Constant("Air",air));
+      if ( det && mgr )   {
+        TGeoManip manip(det, level, do_import, prt);
+        DetectorData::patchRootStreamer(TGeoVolume::Class());
+        DetectorData::patchRootStreamer(TGeoNode::Class());
+        det->m_manager = mgr;
+        manip(0, mgr->GetTopNode());
+        det->m_worldVol = mgr->GetTopNode()->GetVolume();
+        if ( !air.empty() )  {
+          description.addConstant(Constant("Air",air));
+        }
+        if ( !vacuum.empty() )  {
+          description.addConstant(Constant("Vacuum",vacuum));
+        }
+        description.init();
+        description.endDocument();
+        detail::deleteObject(f);
+        return 1;
       }
-      if ( !vacuum.empty() )  {
-        description.addConstant(Constant("Vacuum",vacuum));
-      }
-      description.init();
-      description.endDocument();
-      detail::deleteObject(f);
-      return 1;
     }
     detail::deleteObject(f);
   }

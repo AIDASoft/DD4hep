@@ -32,7 +32,7 @@ namespace dd4hep {
     using namespace detail ;
 
 
-      //======================================================================================================
+    //======================================================================================================
   
     void VolSurfaceBase::setU(const Vector3D& u_val) {  _u = u_val  ; }
     void VolSurfaceBase::setV(const Vector3D& v_val) {  _v = v_val ; }
@@ -92,46 +92,46 @@ namespace dd4hep {
 
       if( volume()->GetShape()->Contains( o.const_array() ) ){
 
-	dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-							      const_cast<double*> ( u_val.const_array() ) ) ;
-	dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-							      const_cast<double*> ( um.array()      ) ) ;
+        dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+                                                       const_cast<double*> ( u_val.const_array() ) ) ;
+        dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+                                                       const_cast<double*> ( um.array()      ) ) ;
 	
 
-	// std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
-	// 	  << " dist_p " <<    dist_p
-	// 	  << " dist_m " <<    dist_m
-	// 	  << std::endl ;
+        // std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+        // 	  << " dist_p " <<    dist_p
+        // 	  << " dist_m " <<    dist_m
+        // 	  << std::endl ;
 	
 
       } else{
 
-	dist_p = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
-							       const_cast<double*> ( u_val.const_array() ) ) ;
-	dist_m = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
-							       const_cast<double*> ( um.array()      ) ) ;
+        dist_p = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+                                                        const_cast<double*> ( u_val.const_array() ) ) ;
+        dist_m = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+                                                        const_cast<double*> ( um.array()      ) ) ;
 
-	dist_p *= 1.0001 ;
-	dist_m *= 1.0001 ;
+        dist_p *= 1.0001 ;
+        dist_m *= 1.0001 ;
 
-	// std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
-	// 	  << " dist_p " <<    dist_p
-	// 	  << " dist_m " <<    dist_m
-	// 	  << std::endl ;
+        // std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+        // 	  << " dist_p " <<    dist_p
+        // 	  << " dist_m " <<    dist_m
+        // 	  << std::endl ;
 
-	Vector3D o_1 = this->origin() + dist_p * u_val ;
-	Vector3D o_2 = this->origin() + dist_m * um ;
+        Vector3D o_1 = this->origin() + dist_p * u_val ;
+        Vector3D o_2 = this->origin() + dist_m * um ;
 
-	dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
-							const_cast<double*> ( u_val.const_array() ) ) ;
+        dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
+                                                        const_cast<double*> ( u_val.const_array() ) ) ;
 
-	dist_m += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_2.const_array() ) , 
-							const_cast<double*> ( um.array()      ) ) ;
+        dist_m += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_2.const_array() ) , 
+                                                        const_cast<double*> ( um.array()      ) ) ;
 
-	// std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
-	// 	  << " dist_p " <<    dist_p
-	// 	  << " dist_m " <<    dist_m
-	// 	  << std::endl ;
+        // std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+        // 	  << " dist_p " <<    dist_p
+        // 	  << " dist_m " <<    dist_m
+        // 	  << std::endl ;
       }
 	
       return dist_p + dist_m ;
@@ -155,46 +155,46 @@ namespace dd4hep {
 
       if( volume()->GetShape()->Contains( o.const_array() ) ){
 
-	dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-							      const_cast<double*> ( v_val.const_array() ) ) ;
-	dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-							      const_cast<double*> ( vm.array()      ) ) ;
+        dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+                                                       const_cast<double*> ( v_val.const_array() ) ) ;
+        dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+                                                       const_cast<double*> ( vm.array()      ) ) ;
 	
 
-	// std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
-	// 	  << " dist_p " <<    dist_p
-	// 	  << " dist_m " <<    dist_m
-	// 	  << std::endl ;
+        // std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+        // 	  << " dist_p " <<    dist_p
+        // 	  << " dist_m " <<    dist_m
+        // 	  << std::endl ;
 	
 
       } else{
 
-	dist_p = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
-							       const_cast<double*> ( v_val.const_array() ) ) ;
-	dist_m = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
-							       const_cast<double*> ( vm.array()      ) ) ;
+        dist_p = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+                                                        const_cast<double*> ( v_val.const_array() ) ) ;
+        dist_m = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+                                                        const_cast<double*> ( vm.array()      ) ) ;
 
-	dist_p *= 1.0001 ;
-	dist_m *= 1.0001 ;
+        dist_p *= 1.0001 ;
+        dist_m *= 1.0001 ;
 
-	// std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
-	// 	  << " dist_p " <<    dist_p
-	// 	  << " dist_m " <<    dist_m
-	// 	  << std::endl ;
+        // std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+        // 	  << " dist_p " <<    dist_p
+        // 	  << " dist_m " <<    dist_m
+        // 	  << std::endl ;
 
-	Vector3D o_1 = this->origin() + dist_p * v_val ;
-	Vector3D o_2 = this->origin() + dist_m * vm ;
+        Vector3D o_1 = this->origin() + dist_p * v_val ;
+        Vector3D o_2 = this->origin() + dist_m * vm ;
 
-	dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
-							const_cast<double*> ( v_val.const_array() ) ) ;
+        dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
+                                                        const_cast<double*> ( v_val.const_array() ) ) ;
 
-	dist_m += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_2.const_array() ) , 
-							const_cast<double*> ( vm.array()      ) ) ;
+        dist_m += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_2.const_array() ) , 
+                                                        const_cast<double*> ( vm.array()      ) ) ;
 
-	// std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
-	// 	  << " dist_p " <<    dist_p
-	// 	  << " dist_m " <<    dist_m
-	// 	  << std::endl ;
+        // std::cout << " VolSurfaceBase::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+        // 	  << " dist_p " <<    dist_p
+        // 	  << " dist_m " <<    dist_m
+        // 	  << std::endl ;
       }
 	
       return dist_p + dist_m ;
@@ -223,11 +223,11 @@ namespace dd4hep {
 
       if(  type().isUnbounded() ){
 
-	return std::abs ( distance( point ) ) < epsilon ;
+        return std::abs ( distance( point ) ) < epsilon ;
 
       } else {
 
-	return (  std::abs ( distance( point ) ) < epsilon &&  volume()->GetShape()->Contains( point.const_array() ) ) ;
+        return (  std::abs ( distance( point ) ) < epsilon &&  volume()->GetShape()->Contains( point.const_array() ) ) ;
       }
 
 #endif
@@ -272,10 +272,10 @@ namespace dd4hep {
     double VolPlaneImpl::distance(const Vector3D& point ) const {
       return ( point - origin() ) *  normal()  ;
     }
-   //======================================================================================================
+    //======================================================================================================
 
     VolCylinderImpl::VolCylinderImpl( Volume vol, SurfaceType typ, 
-				      double thickness_inner ,double thickness_outer,  Vector3D o ) :
+                                      double thickness_inner ,double thickness_outer,  Vector3D o ) :
 
       VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , Vector3D() , Vector3D() , o , vol, 0) {
       Vector3D v_val( 0., 0., 1. ) ;
@@ -371,10 +371,10 @@ namespace dd4hep {
       _ztip     = o_val.z()  - tipoffset ;
 
       double dist_p = vol->GetShape()->DistFromInside( const_cast<double*> ( o_val.const_array() ) , 
-						       const_cast<double*> ( v_val.const_array() ) ) ;
+                                                       const_cast<double*> ( v_val.const_array() ) ) ;
       Vector3D vm = -1. * v_val ;
       double dist_m = vol->GetShape()->DistFromInside( const_cast<double*> ( o_val.const_array() ) , 
-							    const_cast<double*> ( vm.array()      ) ) ;
+                                                       const_cast<double*> ( vm.array()      ) ) ;
 
       double costh = std::cos( theta) ;
       _zt0 = tipoffset - dist_m *  costh ;           
@@ -457,9 +457,9 @@ namespace dd4hep {
 
       //return dz * normal( point )   ;
 
-       double zp = point.z() - _ztip ;
-       double r = point.rho() - zp * _tanTheta ;
-       return r * std::cos( _v.theta() ) ;
+      double zp = point.z() - _ztip ;
+      double r = point.rho() - zp * _tanTheta ;
+      return r * std::cos( _v.theta() ) ;
 
     }
     
@@ -486,21 +486,21 @@ namespace dd4hep {
       
       for( unsigned i = 0 ; i < n ; ++i ) {
 	
- 	Vector3D r0v0(  r0*sin(  i   *dPhi ) , r0*cos(  i   *dPhi )  , 0. ) ;
-	Vector3D r0v1(  r0*sin( (i+1)*dPhi ) , r0*cos( (i+1)*dPhi )  , 0. ) ;
+        Vector3D r0v0(  r0*sin(  i   *dPhi ) , r0*cos(  i   *dPhi )  , 0. ) ;
+        Vector3D r0v1(  r0*sin( (i+1)*dPhi ) , r0*cos( (i+1)*dPhi )  , 0. ) ;
 
- 	Vector3D r1v0(  r1*sin(  i   *dPhi ) , r1*cos(  i   *dPhi )  , 0. ) ;
-	Vector3D r1v1(  r1*sin( (i+1)*dPhi ) , r1*cos( (i+1)*dPhi )  , 0. ) ;
+        Vector3D r1v0(  r1*sin(  i   *dPhi ) , r1*cos(  i   *dPhi )  , 0. ) ;
+        Vector3D r1v1(  r1*sin( (i+1)*dPhi ) , r1*cos( (i+1)*dPhi )  , 0. ) ;
 	
-	Vector3D pl0 =  zv + r1v0 ;
-	Vector3D pl1 =  zv + r1v1 ;
-	Vector3D pl2 = -zv + r0v1  ;
-	Vector3D pl3 = -zv + r0v0 ;
+        Vector3D pl0 =  zv + r1v0 ;
+        Vector3D pl1 =  zv + r1v1 ;
+        Vector3D pl2 = -zv + r0v1  ;
+        Vector3D pl3 = -zv + r0v0 ;
 	
-	lines.emplace_back( pl0, pl1 );
-	lines.emplace_back( pl1, pl2 );
-	lines.emplace_back( pl2, pl3 );
-	lines.emplace_back( pl3, pl0 );
+        lines.emplace_back( pl0, pl1 );
+        lines.emplace_back( pl1, pl2 );
+        lines.emplace_back( pl2, pl3 );
+        lines.emplace_back( pl3, pl0 );
       } 
       return lines; 
     }
@@ -517,12 +517,9 @@ namespace dd4hep {
     //=======================================================
 
     SurfaceList::~SurfaceList(){
-      
       if( _isOwner ) {
         // delete all surfaces attached to this volume
-        for( SurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
-          delete (*i) ;
-        }
+        std::for_each(begin(), end(), detail::deleteObject<ISurface>);
       }
     }
 
@@ -583,7 +580,7 @@ namespace dd4hep {
                                      +" [Internal error -- bad detector constructor]");
           }
 	  
-	  PlacedVolume pv_dau( daughter );
+          PlacedVolume pv_dau( daughter );
 
           if( findVolume(  pv_dau , theVol , volList ) ) {
 	    
@@ -606,7 +603,7 @@ namespace dd4hep {
     //======================================================================================================================
 
     Surface::Surface( DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), 
-                                                                       _wtM() , _id( 0) , _type( _volSurf.type() )  {
+                                                             _wtM() , _id( 0) , _type( _volSurf.type() )  {
 
       initialize() ;
     }      
@@ -634,13 +631,13 @@ namespace dd4hep {
 	
         MaterialManager matMgr( _det.placement().volume() )  ;
         
-	Vector3D p = _o - innerThickness() * _n  ;
+        Vector3D p = _o - innerThickness() * _n  ;
 
         const MaterialVec& materials = matMgr.materialsBetween( _o , p  ) ;
 
-	_volSurf.setInnerMaterial(  materials.size() > 1  ? 
-				    matMgr.createAveragedMaterial( materials ) :
-				    materials[0].first  )  ;
+        _volSurf.setInnerMaterial(  materials.size() > 1  ? 
+                                    matMgr.createAveragedMaterial( materials ) :
+                                    materials[0].first  )  ;
       }
       return  mat ;
     }
@@ -653,13 +650,13 @@ namespace dd4hep {
 	
         MaterialManager matMgr( _det.placement().volume() ) ;
         
-	Vector3D p = _o + outerThickness() * _n  ;
+        Vector3D p = _o + outerThickness() * _n  ;
 
         const MaterialVec& materials = matMgr.materialsBetween( _o , p  ) ;
 
-	_volSurf.setOuterMaterial(  materials.size() > 1  ? 
-				    matMgr.createAveragedMaterial( materials ) :
-				    materials[0].first  )  ;
+        _volSurf.setOuterMaterial(  materials.size() > 1  ? 
+                                    matMgr.createAveragedMaterial( materials ) :
+                                    materials[0].first  )  ;
       }
       return  mat ;
     }
@@ -802,12 +799,12 @@ namespace dd4hep {
       //  =========== check parallel and orthogonal to Z ===================
       
       if( ! _type.isCone() ) { 
-	//fixme: workaround for conical surfaces that should always be parallel to z
-	//       however the check with the normal does not work here ...
+        //fixme: workaround for conical surfaces that should always be parallel to z
+        //       however the check with the normal does not work here ...
 
-	_type.checkParallelToZ( *this ) ;
+        _type.checkParallelToZ( *this ) ;
 	
-	_type.checkOrthogonalToZ( *this ) ;
+        _type.checkOrthogonalToZ( *this ) ;
       }
       
       //======== set the unique surface ID from the DetElement ( and placements below ? )
@@ -845,19 +842,19 @@ namespace dd4hep {
       const std::vector< std::pair<Vector3D, Vector3D> >& local_lines = _volSurf.getLines() ;
       
       if( local_lines.size() > 0 ) {
-	unsigned n=local_lines.size() ;
-	lines.reserve( n ) ;
+        unsigned n=local_lines.size() ;
+        lines.reserve( n ) ;
 	
-	for( unsigned i=0;i<n;++i){
+        for( unsigned i=0;i<n;++i){
 	  
-	  Vector3D av,bv;
-	  _wtM->LocalToMaster( local_lines[i].first ,  av.array() ) ;
-	  _wtM->LocalToMaster( local_lines[i].second , bv.array() ) ;
+          Vector3D av,bv;
+          _wtM->LocalToMaster( local_lines[i].first ,  av.array() ) ;
+          _wtM->LocalToMaster( local_lines[i].second , bv.array() ) ;
 	  
-	  lines.emplace_back( av, bv );
-	}
+          lines.emplace_back( av, bv );
+        }
 	
-	return lines ;
+        return lines ;
       }
       //--------------------------------------------
 
@@ -931,32 +928,32 @@ namespace dd4hep {
           // can only deal with special case of z-disk and origin in center of cone
           if( type().isZDisk() ) { // && lo.rho() < epsilon ) {
 	    
-	    if( lo.rho() > epsilon ) {
-	      // move origin to z-axis 
-	      lo.x() = 0. ; 
-	      lo.y() = 0. ;
-	    }
+            if( lo.rho() > epsilon ) {
+              // move origin to z-axis 
+              lo.x() = 0. ; 
+              lo.y() = 0. ;
+            }
 
-	    double zhalf = 0 ;
-	    double rmax1 = 0 ;
-	    double rmax2 = 0 ;
-	    double rmin1 = 0 ;
-	    double rmin2 = 0 ;
-	    if( shape->InheritsFrom("TGeoTube") ) {
-	      TGeoTube* tube = ( TGeoTube* ) shape  ;
-	      zhalf = tube->GetDZ() ;
-	      rmax1 = tube->GetRmax() ;
-	      rmax2 = tube->GetRmax() ;
-	      rmin1 = tube->GetRmin() ;
-	      rmin2 = tube->GetRmin() ;
-	    } else {   // shape->InheritsFrom("TGeoCone") )
-	      TGeoCone* cone = ( TGeoCone* ) shape  ;
-	      zhalf = cone->GetDZ() ;
-	      rmax1 = cone->GetRmax1() ;
-	      rmax2 = cone->GetRmax2() ;
-	      rmin1 = cone->GetRmin1() ;
-	      rmin2 = cone->GetRmin2() ;
-	    }
+            double zhalf = 0 ;
+            double rmax1 = 0 ;
+            double rmax2 = 0 ;
+            double rmin1 = 0 ;
+            double rmin2 = 0 ;
+            if( shape->InheritsFrom("TGeoTube") ) {
+              TGeoTube* tube = ( TGeoTube* ) shape  ;
+              zhalf = tube->GetDZ() ;
+              rmax1 = tube->GetRmax() ;
+              rmax2 = tube->GetRmax() ;
+              rmin1 = tube->GetRmin() ;
+              rmin2 = tube->GetRmin() ;
+            } else {   // shape->InheritsFrom("TGeoCone") )
+              TGeoCone* cone = ( TGeoCone* ) shape  ;
+              zhalf = cone->GetDZ() ;
+              rmax1 = cone->GetRmax1() ;
+              rmax2 = cone->GetRmax2() ;
+              rmin1 = cone->GetRmin1() ;
+              rmin2 = cone->GetRmin2() ;
+            }
 
             // two circles around origin 
             // get radii at position of plane 
@@ -1171,7 +1168,7 @@ namespace dd4hep {
 
       } else if( type().isCylinder() ) {  
 
-	if( shape->InheritsFrom("TGeoTube") || shape->InheritsFrom("TGeoCone") ) {
+        if( shape->InheritsFrom("TGeoTube") || shape->InheritsFrom("TGeoCone") ) {
 
           lines.reserve( nMax ) ;
 
