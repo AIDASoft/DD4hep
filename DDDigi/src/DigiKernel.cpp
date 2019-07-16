@@ -91,10 +91,10 @@ public:
   DigiAction*  action = 0;
   Wrapper(DigiContext& c, DigiAction* a)
     : context(c), action(a) {}
-  Wrapper(Wrapper&& copy) = default;
+  Wrapper(Wrapper&& copy) = delete;
   Wrapper(const Wrapper& copy) = default;
-  Wrapper& operator=(Wrapper&& copy) = default;
-  Wrapper& operator=(const Wrapper& copy) = default;
+  Wrapper& operator=(Wrapper&& copy) = delete;
+  Wrapper& operator=(const Wrapper& copy) = delete;
   void operator()() const {
     action->execute(context);
   }
@@ -111,7 +111,7 @@ class DigiKernel::Processor {
   DigiKernel& kernel;
 public: 
   Processor(DigiKernel& k) : kernel(k) {}
-  Processor(Processor&& l) = default;
+  Processor(Processor&& l) = delete;
   Processor(const Processor& l) = default;
   void operator()()  const {
     int todo = 1;

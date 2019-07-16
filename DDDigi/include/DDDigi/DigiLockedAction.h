@@ -44,7 +44,7 @@ namespace dd4hep {
       DigiAction* m_action = 0;
     protected:
       /// Inhibit copy constructor
-      DigiLockedAction() = default;
+      DigiLockedAction() = delete;
       /// Inhibit copy constructor
       DigiLockedAction(const DigiLockedAction& copy) = delete;
       /// Inhibit assignment operator

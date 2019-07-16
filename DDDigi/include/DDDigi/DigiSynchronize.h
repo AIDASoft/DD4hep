@@ -36,6 +36,17 @@ namespace dd4hep {
       /// The list of action objects to be called
       Actors<DigiAction> m_actors;
 
+      /// Inhibit public use of default constructor
+      DigiSynchronize() = default;
+      /// Inhibit move constructor
+      DigiSynchronize(DigiSynchronize&& copy) = delete;
+      /// Inhibit copy constructor
+      DigiSynchronize(const DigiSynchronize& copy) = delete;
+      /// Inhibit move operator
+      DigiSynchronize& operator=(DigiSynchronize&& copy) = delete;
+      /// Inhibit assignment operator
+      DigiSynchronize& operator=(const DigiSynchronize& copy) = delete;
+
     public:
       /// Standard constructor
       DigiSynchronize(const DigiKernel& kernel, const std::string& nam);

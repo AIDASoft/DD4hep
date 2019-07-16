@@ -91,6 +91,7 @@ namespace dd4hep {
       
       /// Property: Support parallel execution
       bool               m_parallel    = false;
+
     protected:
 
       /// Functor to access elements by name

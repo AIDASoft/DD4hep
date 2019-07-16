@@ -39,7 +39,7 @@ namespace dd4hep {
       
     protected:
       /// Inhibit copy constructor
-      DigiInputAction() = default;
+      DigiInputAction() = delete;
       /// Inhibit copy constructor
       DigiInputAction(const DigiInputAction& copy) = delete;
       /// Inhibit assignment operator

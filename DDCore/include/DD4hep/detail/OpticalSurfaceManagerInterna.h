@@ -64,7 +64,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~OpticalSurfaceManagerObject();
       /// No move assignment
-      OpticalSurfaceManagerObject& operator=(OpticalSurfaceManagerObject&& copy) = default;
+      OpticalSurfaceManagerObject& operator=(OpticalSurfaceManagerObject&& copy) = delete;
       /// No copy assignment
       OpticalSurfaceManagerObject& operator=(const OpticalSurfaceManagerObject& copy) = delete;
     };
