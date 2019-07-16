@@ -56,6 +56,8 @@ namespace dd4hep {
      */
     class Geant4ActionSD: virtual public Geant4Action {
     protected:
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4ActionSD);
       /// Standard action constructor
       Geant4ActionSD(const std::string& name);
       /// Default destructor
@@ -87,12 +89,8 @@ namespace dd4hep {
      */
     class Geant4Filter: public Geant4Action {
     protected:
-      /// Inhibit copy constructor
-      Geant4Filter() = default;
-      /// Inhibit copy constructor
-      Geant4Filter(const Geant4Filter& copy) = delete;
-      /// Inhibit assignment operator
-      Geant4Filter& operator=(const Geant4Filter& copy) = delete;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4Filter);
 
     public:
       /// Standard constructor
@@ -139,16 +137,13 @@ namespace dd4hep {
       /// The list of sensitive detector filter objects
       Actors<Geant4Filter> m_filters;
 
-      /// Protect the default constructor
-      Geant4Sensitive() = default;
-      /// Inhibit copy constructor
-      Geant4Sensitive(const Geant4Sensitive& copy) = delete;
-      /// Inhibit assignment operator
-      Geant4Sensitive& operator=(const Geant4Sensitive& copy) = delete;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4Sensitive);
 
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
       Geant4Sensitive(Geant4Context* context, const std::string& name, DetElement det, Detector& description);
+
       /// Standard destructor
       virtual ~Geant4Sensitive();
 
@@ -314,21 +309,15 @@ namespace dd4hep {
       }
 
     protected:
-      /// Protect the default constructor
-      Geant4SensDetActionSequence() = default;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4SensDetActionSequence);
 
     public:
-      /// Inhibit copy constructor
-      Geant4SensDetActionSequence(const Geant4SensDetActionSequence& copy) = delete;
-
       /// Standard constructor
       Geant4SensDetActionSequence(Geant4Context* context, const std::string& name);
 
       /// Default destructor
       virtual ~Geant4SensDetActionSequence();
-
-      /// Inhibit assignment operator
-      Geant4SensDetActionSequence& operator=(const Geant4SensDetActionSequence& copy) = delete;
 
       /// Access to the sensitive type of the detector
       virtual const std::string& sensitiveType() const   {
@@ -488,8 +477,8 @@ namespace dd4hep {
       UserData    m_userData;
 
     protected:
-      /// Protect the default constructor
-      Geant4SensitiveAction() = default;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4SensitiveAction);
 
     public:
       /// Standard , initializing constructor

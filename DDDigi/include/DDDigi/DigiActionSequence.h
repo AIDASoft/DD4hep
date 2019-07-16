@@ -48,10 +48,14 @@ namespace dd4hep {
       CallbackSequence   m_end;
 
     protected:
-      /// Inhibit copy constructor
-      DigiActionSequence() = default;
+      /// Inhibit public use of default constructor
+      DigiActionSequence() = delete;
+      /// Inhibit move constructor
+      DigiActionSequence(DigiActionSequence&& copy) = delete;
       /// Inhibit copy constructor
       DigiActionSequence(const DigiActionSequence& copy) = delete;
+      /// Inhibit move operator
+      DigiActionSequence& operator=(DigiActionSequence&& copy) = delete;
       /// Inhibit assignment operator
       DigiActionSequence& operator=(const DigiActionSequence& copy) = delete;
 

@@ -42,7 +42,7 @@ namespace dd4hep {
       
     protected:
       /// Inhibit copy constructor
-      DigiRandomNoise() = default;
+      DigiRandomNoise() = delete;
       /// Inhibit copy constructor
       DigiRandomNoise(const DigiRandomNoise& copy) = delete;
       /// Inhibit assignment operator

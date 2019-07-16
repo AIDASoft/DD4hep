@@ -47,12 +47,8 @@ namespace dd4hep {
       typedef Geant4SharedRunAction shared_type;
 
     protected:
-      /// Inhibit default constructor
-      Geant4RunAction() = default;
-      /// Inhibit copy constructor
-      Geant4RunAction(const Geant4RunAction& copy) = delete;
-      /// Inhibit assignment operator
-      Geant4RunAction& operator=(const Geant4RunAction& copy) = delete;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4RunAction);
 
     public:
       /// Standard constructor
@@ -84,12 +80,8 @@ namespace dd4hep {
       Geant4RunAction* m_action = 0;
 
     protected:
-      /// Inhibit default constructor
-      Geant4SharedRunAction() = default;
-      /// Inhibit copy constructor
-      Geant4SharedRunAction(const Geant4SharedRunAction& copy) = delete;
-      /// Inhibit assignment operator
-      Geant4SharedRunAction& operator=(const Geant4SharedRunAction& copy) = delete;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4SharedRunAction);
 
     public:
       /// Inhibit default constructor
@@ -133,12 +125,8 @@ namespace dd4hep {
       Actors<Geant4RunAction> m_actors;
 
     protected:
-      /// Inhibit default constructor
-      Geant4RunActionSequence() = default;
-      /// Inhibit copy constructor
-      Geant4RunActionSequence(const Geant4RunActionSequence& copy) = delete;
-      /// Inhibit assignment operator
-      Geant4RunActionSequence& operator=(const Geant4RunActionSequence& copy) = delete;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4RunActionSequence);
 
     public:
       /// Standard constructor

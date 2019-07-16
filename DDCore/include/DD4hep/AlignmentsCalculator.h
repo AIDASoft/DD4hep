@@ -107,17 +107,20 @@ namespace dd4hep {
         Scanner() = delete;
         /// Initializing constructor
         Scanner(cond::ConditionUpdateContext& m, OrderedDeltas& d) : context(m), deltas(d) {}
+        /// Initializing constructor with IOV specification
         Scanner(cond::ConditionUpdateContext& m, OrderedDeltas& d, IOV* i) : context(m), deltas(d), iov(i) {}
         /// Default move constructor is disabled
         Scanner(cond::ConditionUpdateContext& m, OrderedDeltas&& p) = delete;
         /// R-value copy from a temporary
-        Scanner(Scanner&& copy) = default;
+        Scanner(Scanner&& copy) = delete;
         /// Copy constructor
-        Scanner(const Scanner& copy) = default;
+        Scanner(const Scanner& copy) = delete;
         /// Default destructor
         ~Scanner() = default;
         /// Assignment operator
-        Scanner& operator=(const Scanner& copy) = default;
+        Scanner& operator=(Scanner&& copy) = delete;
+        /// Assignment operator
+        Scanner& operator=(const Scanner& copy) = delete;
         /// Callback to output alignments information
         int operator()(DetElement de, int)  const;
       };

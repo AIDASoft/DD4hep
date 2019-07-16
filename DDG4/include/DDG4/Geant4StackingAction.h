@@ -37,6 +37,9 @@ namespace dd4hep {
     public:
       typedef Geant4SharedStackingAction shared_type;
     public:
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4StackingAction);
+    public:
       /// Standard constructor
       Geant4StackingAction(Geant4Context* ctxt, const std::string& name);
       /// Default destructor
@@ -66,6 +69,8 @@ namespace dd4hep {
     protected:
       /// Reference to the shared action
       Geant4StackingAction* m_action;
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4SharedStackingAction);
     public:
       /// Standard constructor
       Geant4SharedStackingAction(Geant4Context* context, const std::string& nam);
@@ -104,6 +109,9 @@ namespace dd4hep {
       CallbackSequence m_prepare;
       /// The list of action objects to be called
       Actors<Geant4StackingAction> m_actors;
+
+      /// Define standard assignments and constructors
+      DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4StackingActionSequence);
     public:
       /// Standard constructor
       Geant4StackingActionSequence(Geant4Context* ctxt, const std::string& name);
