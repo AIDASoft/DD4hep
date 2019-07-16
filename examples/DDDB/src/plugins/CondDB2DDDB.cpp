@@ -327,7 +327,7 @@ namespace dd4hep {
         for(xml_coll_t coll(root,tag); coll; ++coll )  {
           string entry = coll.attr<string>(_U(name));
           if ( entry == name )  {
-            return coll;
+            return std::move(coll);
           }
         }
       }

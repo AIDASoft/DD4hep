@@ -965,7 +965,6 @@ template <> void Converter<algorithm>::operator()(xml_h element) const  {
   try {
     size_t            idx;
     SensitiveDetector sd;
-    Segmentation      seg;
     string            type = "DDCMS_"+_ns.real_name(name);
     while ( (idx=type.find(NAMESPACE_SEP)) != string::npos ) type[idx]='_';
 
