@@ -26,6 +26,7 @@
 
 #elif defined(__llvm__) || defined(__APPLE__)
 
+#pragma clang diagnostic ignored "-Wdefaulted-function-deleted"
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wunused"

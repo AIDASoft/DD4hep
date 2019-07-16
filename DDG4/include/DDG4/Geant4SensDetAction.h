@@ -124,16 +124,21 @@ namespace dd4hep {
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
       int  m_hitCreationMode = 0;
+#if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
-      Detector& m_detDesc;
+      Detector*            m_detDesc;
+#else
+      /// Reference to the detector description object
+      Detector&            m_detDesc;
+#endif
       /// Reference to the detector element describing this sensitive element
-      DetElement m_detector;
+      DetElement           m_detector;
       /// Reference to the sensitive detector element
-      SensitiveDetector m_sensitive;
+      SensitiveDetector    m_sensitive;
       /// Reference to the readout structure
-      Readout m_readout;
+      Readout              m_readout;
       /// Reference to segmentation
-      Segmentation m_segmentation;
+      Segmentation         m_segmentation;
       /// The list of sensitive detector filter objects
       Actors<Geant4Filter> m_filters;
 

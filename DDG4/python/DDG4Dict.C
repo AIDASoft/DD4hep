@@ -17,10 +17,10 @@
 //====================================================================
 
 // Framework include files
+#include "DDG4/DDG4Dict.h"
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Random.h"
-#include "DDG4/DDG4Dict.h"
 #include "DDG4/Geant4DataDump.h"
 #include "DDG4/Geant4InputAction.h"
 #include "DDG4/Geant4GeneratorWrapper.h"
