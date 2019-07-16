@@ -42,14 +42,11 @@ namespace dd4hep {
       std::mutex  m_lock;
       /// Reference to underlying action
       DigiAction* m_action = 0;
-    protected:
-      /// Inhibit copy constructor
-      DigiLockedAction() = delete;
-      /// Inhibit copy constructor
-      DigiLockedAction(const DigiLockedAction& copy) = delete;
-      /// Inhibit assignment operator
-      DigiLockedAction& operator=(const DigiLockedAction& copy) = delete;
 
+    protected:
+      /// Define standard assignments and constructors
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiLockedAction);
+      
     public:
       /// Standard constructor
       DigiLockedAction(const DigiKernel& kernel, const std::string& nam);

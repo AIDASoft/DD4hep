@@ -65,6 +65,10 @@ namespace dd4hep {
       /// Notify kernel that the execution of one single event finished
       void notify(DigiContext* context, const std::exception& e);
       
+    protected:
+      /// Define standard assignments and constructors
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiKernel);
+
     public:
       /// Standard constructor for the master instance
       DigiKernel(Detector& description);

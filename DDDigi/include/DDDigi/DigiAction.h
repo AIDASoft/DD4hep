@@ -23,6 +23,25 @@
 #include <string>
 #include <cstdarg>
 
+#if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
+#define DDDIGI_DEFINE_ACTION_DEFAULT_CTOR(action)  public: action() = default;
+#else
+#define DDDIGI_DEFINE_ACTION_DEFAULT_CTOR(action)  protected: action() = delete;
+#endif
+
+/// 1) Allow default constructor (necessary for ROOT)
+/// 2) Inhibit move constructor
+/// 3) Inhibit copy constructor
+/// 4) Inhibit move operator
+/// 5) Inhibit assignment operator
+#define DDDIGI_DEFINE_ACTION_CONSTRUCTORS(action)  \
+  DDDIGI_DEFINE_ACTION_DEFAULT_CTOR(action)        \
+  protected:                                       \
+  action(action&& copy) = delete;                  \
+  action(const action& copy) = delete;             \
+  action& operator=(action&& copy) = delete;       \
+  action& operator=(const action& copy) = delete
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -207,16 +226,9 @@ namespace dd4hep {
       };
 
     protected:
-      /// Inhibit default constructor
-      DigiAction() = delete;
-      /// Inhibit copy constructor
-      DigiAction(const DigiAction& copy) = delete;
-      /// Inhibit move constructor
-      DigiAction(DigiAction&& copy) = delete;
-      /// Inhibit assignment operator
-      DigiAction& operator=(const DigiAction& copy) = delete;
-      /// Inhibit assignment operator
-      DigiAction& operator=(DigiAction&& copy) = delete;
+
+      /// Define standard assignments and constructors
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiAction);
 
       /// Default destructor
       virtual ~DigiAction();
