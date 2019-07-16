@@ -97,7 +97,11 @@ namespace dd4hep {
 
     protected:
       /// Reference to the Digi context
+#if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
+      const DigiKernel*  m_kernel;
+#else
       const DigiKernel&  m_kernel;
+#endif
       /// Action name
       std::string        m_name;
       /// Property pool
