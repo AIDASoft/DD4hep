@@ -309,23 +309,19 @@ long dd4hep::xml::_toLong(const XmlChar* value) {
   return -1;
 }
 
-int dd4hep::xml::_toInt(const XmlChar* value) {
-  if (value) {
-    string s = _toString(value);
-    size_t idx = s.find("(int)");
-    if (idx != string::npos)
-      s.erase(idx, 5);
-    while (s[0] == ' ')
-      s.erase(0, 1);
-    double result = eval.evaluate(s.c_str());
-    if (eval.status() != tools::Evaluator::OK) {
-      cerr << s << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
-    }
-    return (int) result;
-  }
-  return -1;
+unsigned long dd4hep::xml::_toULong(const XmlChar* value) {
+  long val = _toLong(value);
+  if ( val > 0 ) return (unsigned long) val;
+  string s = _toString(value);
+  throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
+}
+
+int dd4hep::xml::_toInt(const XmlChar* value)   {
+  return (int)_toLong(value);
+}
+
+unsigned int dd4hep::xml::_toUInt(const XmlChar* value) {
+  return (unsigned int)_toULong(value);
 }
 
 bool dd4hep::xml::_toBool(const XmlChar* value) {

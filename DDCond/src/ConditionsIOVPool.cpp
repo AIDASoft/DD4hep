@@ -30,7 +30,12 @@ ConditionsIOVPool::ConditionsIOVPool(const IOVType* typ) : type(typ)  {
 
 /// Default destructor
 ConditionsIOVPool::~ConditionsIOVPool()  {
-  clean(-1);
+  try {
+    clean(-1);
+  }
+  catch(const std::exception& e)   {
+    printout(ERROR,"ConditionsIOVPool","+++ Unexpected exception in destructor(ConditionsIOVPool): %s",e.what());
+  }
   InstanceCount::decrement(this);
 }
 

@@ -255,7 +255,7 @@ namespace {
       if ( mat->IsTranslation() )   {
         log << "\t Double_t trans[] = {";
         for(size_t i=0; tra && i<3; ++i)  {
-          log << (tra ? tra[i] : 0e0);
+          log << tra[i];
           log << ((i<2) ? ", " : "};");
         }
         log << newline << "\t matrix_" << pvoid_t(mat) << "->SetTranslation(trans);" << newline;
@@ -263,7 +263,7 @@ namespace {
       if ( mat->IsRotation() )   {
         log << "\t Double_t rot[] = {";
         for(size_t i=0; rot && i<9; ++i)  {
-          log << (rot[i]);
+          log << rot[i];
           log << ((i<8) ? ", " : "};");
         }
         log << newline << "\t matrix_" << pvoid_t(mat) << "->SetRotation(rot);" << newline;
@@ -271,7 +271,7 @@ namespace {
       if ( mat->IsScale() )   {
         log << "\t Double_t scale[] = {";
         for(size_t i=0; sca && i<3; ++i)  {
-          log << (sca[i]);
+          log << sca[i];
           log << ((i<2) ? ", " : "};");
         }
         log << newline << "\t matrix_" << pvoid_t(mat) << "->SetScale(scale);" << newline;

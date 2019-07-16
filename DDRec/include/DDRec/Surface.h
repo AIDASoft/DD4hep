@@ -45,18 +45,18 @@ namespace dd4hep {
       friend class VolSurface ;
 
     protected:
-      SurfaceType _type ;
-      Vector3D _u ;
-      Vector3D _v ;
-      Vector3D _n ;
-      Vector3D _o ;
-      double _th_i ;
-      double _th_o ;
-      MaterialData _innerMat ;
-      MaterialData _outerMat ;    
-      Volume _vol ;
-      long64 _id ;
-      unsigned _refCount ;
+      SurfaceType _type {};
+      Vector3D _u {};
+      Vector3D _v {};
+      Vector3D _n {};
+      Vector3D _o {};
+      double _th_i {0};
+      double _th_o {0};
+      MaterialData _innerMat {};
+      MaterialData _outerMat {};    
+      Volume _vol {};
+      long64 _id {0};
+      unsigned _refCount {0};
 
       /// setter for daughter classes
       virtual void setU(const Vector3D& u) ;
@@ -69,59 +69,35 @@ namespace dd4hep {
 
     public:
     
-      virtual ~VolSurfaceBase() {} 
+      virtual ~VolSurfaceBase() = default;
 
       ///default c'tor
 
-      VolSurfaceBase() : 
-	_type( SurfaceType() ) ,
-	_u( Vector3D() ) ,
-	_v( Vector3D()  ) ,
-	_n( Vector3D() ) ,
-	_o( Vector3D() ) ,
-	_th_i( 0. ),
-	_th_o( 0. ),
-	_innerMat( MaterialData() ),
-	_outerMat( MaterialData() ),
-	_vol(),
-	_id(0),_refCount(0)  { 
-      }
-      
+      VolSurfaceBase() = default;
       
       VolSurfaceBase( SurfaceType typ, 
-		      double thickness_inner ,double thickness_outer, 
-		      Vector3D u_val ,Vector3D v_val ,
-		      Vector3D n ,Vector3D o, Volume vol,int identifier ) : 
-	_type(typ ) ,
-	_u( u_val ) ,
-	_v( v_val ) ,
-	_n( n ) ,
-	_o( o ),
-	_th_i( thickness_inner ),
-	_th_o( thickness_outer ),  
-	_innerMat( MaterialData() ),
-	_outerMat( MaterialData() ),
-	_vol(vol) ,
-	_id( identifier ), _refCount(0) {
+                      double thickness_inner ,double thickness_outer, 
+                      Vector3D u_val ,Vector3D v_val ,
+                      Vector3D n ,Vector3D o, Volume vol,int identifier ) : 
+        _type(typ ) ,
+        _u( u_val ) ,
+        _v( v_val ) ,
+        _n( n ) ,
+        _o( o ),
+        _th_i( thickness_inner ),
+        _th_o( thickness_outer ),  
+        _vol(vol) ,
+        _id( identifier ) {
       }
       
       
       /// Copy the from object
-      VolSurfaceBase(const VolSurfaceBase& c) {
-        _type = c._type ;
-        _u = c._u ;
-        _v = c._v ;
-        _n = c._n ;
-        _o = c._o;
-        _th_i = c._th_i ;
-        _th_o = c._th_o ;
-        _innerMat = c._innerMat ;
-        _outerMat = c._innerMat ;
-        _vol = c._vol;
-	_id = c._id ;
-	_refCount = 0 ; // new instance
+      VolSurfaceBase(const VolSurfaceBase& c) 
+        : _type(c._type), _u(c._u), _v(c._v), _n(c._n), _o(c._o),
+          _th_i(c._th_i), _th_o(c._th_o), _innerMat(c._innerMat),
+          _outerMat(c._innerMat), _vol(c._vol), _id(c._id)
+      {
       }
-
 
       /// the volume to which this surface is attached.
       Volume volume() const { return _vol ; }
@@ -211,10 +187,10 @@ namespace dd4hep {
     public:
     
       virtual ~VolSurface(){
-	if( _surf ) {
-	  -- _surf->_refCount ;
-	  if(  _surf->_refCount == 0 ) delete _surf ;
-	}
+        if( _surf ) {
+          -- _surf->_refCount ;
+          if(  _surf->_refCount == 0 ) delete _surf ;
+        }
       } 
       ///default c'tor
       VolSurface() : _surf(0) { }
@@ -224,13 +200,13 @@ namespace dd4hep {
 
       /// Constructor to be used with an existing object
       VolSurface(const VolSurface& vsurf) : _surf( vsurf._surf ) {
-	++ _surf->_refCount ;
+        ++ _surf->_refCount ;
       }
       
       VolSurface& operator=(const VolSurface& vsurf) {
-	_surf = vsurf._surf ;
-	++ _surf->_refCount ;
-	return *this ;
+        _surf = vsurf._surf ;
+        ++ _surf->_refCount ;
+        return *this ;
       }
       
 
@@ -361,9 +337,9 @@ namespace dd4hep {
 
       /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
       VolPlaneImpl( SurfaceType typ, double thickness_inner ,double thickness_outer, 
-		    Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val, Volume vol, int id_val  ) :
+                    Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val, Volume vol, int id_val  ) :
 	
-      VolSurfaceBase( typ, thickness_inner, thickness_outer, u_val,v_val, n_val, o_val, vol, id_val ) {
+        VolSurfaceBase( typ, thickness_inner, thickness_outer, u_val,v_val, n_val, o_val, vol, id_val ) {
 	
         _type.setProperty( SurfaceType::Plane    , true ) ;
         _type.setProperty( SurfaceType::Cylinder , false ) ;
@@ -442,7 +418,7 @@ namespace dd4hep {
        *  the normal is chosen to be orthogonal to v. NB: the cone is always parallel to the local z axis.
        */
       VolConeImpl( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,
-		   Vector3D v, Vector3D origin ) ;
+                   Vector3D v, Vector3D origin ) ;
       
       /** First direction of measurement U - rotated to point projected onto the cone.
        *  No check is done whether the point actually is on the cone surface
@@ -469,7 +445,7 @@ namespace dd4hep {
       virtual Vector3D localToGlobal( const Vector2D& point) const ;
 
       virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
-  } ;
+    } ;
 
 
 
@@ -486,9 +462,9 @@ namespace dd4hep {
       
     public:
       VolSurfaceHandle( Volume vol, SurfaceType typ, double thickness_inner ,double thickness_outer, 
-			Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val = Vector3D(0.,0.,0.) ) :
+                        Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val = Vector3D(0.,0.,0.) ) :
 	
-	VolSurface(  new T( typ, thickness_inner, thickness_outer, u_val, v_val, n_val, o_val, vol , 0 )  ){
+        VolSurface(  new T( typ, thickness_inner, thickness_outer, u_val, v_val, n_val, o_val, vol , 0 )  ){
       }
       
       T* operator->() { return static_cast<T*>( _surf ) ; }
@@ -527,13 +503,13 @@ namespace dd4hep {
       mutable VolSurface _volSurf ;
       std::unique_ptr<TGeoMatrix> _wtM ; // matrix for world transformation of surface
       
-      long64 _id ;
+      long64 _id {0};
       
-      SurfaceType _type ;
-      Vector3D _u ;
-      Vector3D _v ;
-      Vector3D _n ;
-      Vector3D _o ;
+      SurfaceType _type {};
+      Vector3D _u {};
+      Vector3D _v {};
+      Vector3D _n {};
+      Vector3D _o {};
 
       /// default c'tor etc. removed
       Surface() = delete;
@@ -642,7 +618,7 @@ namespace dd4hep {
       ///Standard c'tor.
       CylinderSurface( DetElement det, VolSurface volSurf ) : Surface( det, volSurf ) { }      
       
-    /** First direction of measurement U - rotated to point projected onto the cylinder.
+      /** First direction of measurement U - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
       virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
@@ -705,28 +681,22 @@ namespace dd4hep {
     class SurfaceList : public std::list< ISurface* > {
     
     protected:
-      bool _isOwner ;
+      bool _isOwner {false};
 
     public:
       /// defaul c'tor - allow to set ownership for surfaces
-      SurfaceList(bool isOwner=false ) : _isOwner( isOwner )  {}
-
+      SurfaceList() = default;
+      /// defaul c'tor - allow to set ownership for surfaces
+      SurfaceList(bool isOwner ) : _isOwner( isOwner )  {}
       /// copy c'tor
-      SurfaceList(const SurfaceList& other ) : std::list< ISurface* >( other ), _isOwner( false ){}
-
+      SurfaceList(const SurfaceList& other ) = default;
       /// required c'tor for extension mechanism
-      SurfaceList(const DetElement& ) : _isOwner( false ) {
-        // anything to do here  ?
-      }
+      SurfaceList(const DetElement& ) {}
       /// required c'tor for extension mechanism
-      SurfaceList(const SurfaceList& ,const DetElement& ) : _isOwner( false ) {
-        // anything to do here  ?
-      }
-    
+      SurfaceList(const SurfaceList& ,const DetElement& ) {}    
       /// d'tor deletes all owned surfaces
-      virtual ~SurfaceList() ;
-
-    } ;
+      virtual ~SurfaceList();
+    };
   
     //    SurfaceList* surfaceList( DetElement& det ) ;
 

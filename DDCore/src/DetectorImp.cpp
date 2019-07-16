@@ -90,8 +90,9 @@ namespace {
     Detector* remove(const string& name)   {
       auto i = detectors.find(name);
       if ( i==detectors.end() )  {
+        Detector* det = (*i).second;
         detectors.erase(i);
-        return (*i).second;
+        return det;
       }
       return 0;
     }

@@ -725,7 +725,7 @@ template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
 template <> void Converter<PropertyTable>::operator()(xml_h e) const {
   string val;
   vector<double> values;
-  size_t cols = e.attr<long>(_U(coldim));
+  size_t cols = e.attr<unsigned long>(_U(coldim));
   stringstream str(e.attr<string>(_U(values)));
 
   if ( s_debug.matrix )    {

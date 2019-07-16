@@ -137,8 +137,12 @@ namespace dd4hep {
     bool _toBool(const XmlChar* value);
     /// Conversion function from raw unicode string to int  \ingroup DD4HEP_XML
     int _toInt(const XmlChar* value);
+    /// Conversion function from raw unicode string to unsigned int  \ingroup DD4HEP_XML
+    unsigned int _toUInt(const XmlChar* value);
     /// Conversion function from raw unicode string to long  \ingroup DD4HEP_XML
     long _toLong(const XmlChar* value);
+    /// Conversion function from raw unicode string to unsigned long  \ingroup DD4HEP_XML
+    unsigned long _toULong(const XmlChar* value);
     /// Conversion function from raw unicode string to float  \ingroup DD4HEP_XML
     float _toFloat(const XmlChar* value);
     /// Conversion function from raw unicode string to double  \ingroup DD4HEP_XML
@@ -532,8 +536,16 @@ namespace dd4hep {
       return _toInt(attr_value(tag_value));
     }
     
+    template <> INLINE unsigned int Handle_t::attr<unsigned int>(const XmlChar* tag_value) const {
+      return _toUInt(attr_value(tag_value));
+    }
+    
     template <> INLINE long Handle_t::attr<long>(const XmlChar* tag_value) const {
       return _toLong(attr_value(tag_value));
+    }
+
+    template <> INLINE unsigned long Handle_t::attr<unsigned long>(const XmlChar* tag_value) const {
+      return _toULong(attr_value(tag_value));
     }
 
     template <> INLINE float Handle_t::attr<float>(const XmlChar* tag_value) const {
@@ -558,9 +570,19 @@ namespace dd4hep {
       return a ? _toInt(attr_value(a)) : default_value;
     }
     
+    template <> INLINE unsigned int Handle_t::attr<unsigned int>(const XmlChar* tag_value, unsigned int default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toUInt(attr_value(a)) : default_value;
+    }
+    
     template <> INLINE long Handle_t::attr<long>(const XmlChar* tag_value, long default_value) const {
       Attribute a = attr_nothrow(tag_value);
       return a ? _toLong(attr_value(a)) : default_value;
+    }
+
+    template <> INLINE unsigned long Handle_t::attr<unsigned long>(const XmlChar* tag_value, unsigned long default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? _toULong(attr_value(a)) : default_value;
     }
 
     template <> INLINE float Handle_t::attr<float>(const XmlChar* tag_value, float default_value) const {

@@ -51,11 +51,11 @@ SurfaceInstaller::SurfaceInstaller(Detector& description, int argc, char** argv)
 /// Indicate error message and throw exception
 void SurfaceInstaller::invalidInstaller(const std::string& msg)   const  {
   const char* det = m_det.isValid() ? m_det.name() : "<UNKNOWN>";
-  const char* typ = m_det.isValid() ? m_det.type().c_str() : "<UNKNOWN>";
+  string typ = m_det.isValid() ? m_det.type() : string("<UNKNOWN>");
   printout(FATAL,"SurfaceInstaller","+++ Surfaces for: %s",det);
   printout(FATAL,"SurfaceInstaller","+++ %s.",msg.c_str());
   printout(FATAL,"SurfaceInstaller","+++ You sure you apply the correct plugin to generate");
-  printout(FATAL,"SurfaceInstaller","+++ surfaces for a detector of type %s",typ);
+  printout(FATAL,"SurfaceInstaller","+++ surfaces for a detector of type %s",typ.c_str());
   throw std::runtime_error("+++ Failed to install Surfaces to detector "+string(det));
 }
 

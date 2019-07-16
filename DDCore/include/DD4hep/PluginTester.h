@@ -46,7 +46,7 @@ namespace dd4hep {
     /// The extensions object
     Extensions    extensions; //!
     /// Pointer to the extension map
-    ExtensionMap* extensionMap; //!
+    ExtensionMap* extensionMap = 0; //!
 
     /// Function to be passed as dtor if object should NOT be deleted!
     static void _noDelete(void*) {}

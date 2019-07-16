@@ -202,17 +202,24 @@ DetElementCreator::~DetElementCreator()   {
         << idspec
         << "</id>  <!-- Number of bits: " << num_bits << " -->" << endl
         << "</readout>" << endl;
+
     /// Create ID Descriptors and readout configurations
-    IDDescriptor dsc(ro_name,idspec);
-    description.addIDSpecification(dsc);
-    Readout ro(ro_name);
-    ro.setIDDescriptor(dsc);
-    description.addReadout(ro);
-    SensitiveDetector sd = description.sensitiveDetector(f.first.name());
-    sd.setHitsCollection(ro.name());
-    sd.setReadout(ro);
-    printout(INFO,pref,"DetElementCreator: ++ Setting up readout for subdetector:%-24s id:%04X",
-             f.first.name(), f.first.id());
+    try   {
+      IDDescriptor dsc(ro_name,idspec);
+      description.addIDSpecification(dsc);
+      Readout ro(ro_name);
+      ro.setIDDescriptor(dsc);
+      description.addReadout(ro);
+      SensitiveDetector sd = description.sensitiveDetector(f.first.name());
+      sd.setHitsCollection(ro.name());
+      sd.setReadout(ro);
+      printout(INFO,pref,"DetElementCreator: ++ Setting up readout for subdetector:%-24s id:%04X",
+               f.first.name(), f.first.id());
+    }
+    catch(std::exception& e)    {
+      printout(ERROR,pref,"DetElementCreator: ++ FAILED to setup readout for subdetector:%-24s id:%04X [%s]",
+               f.first.name(), f.first.id(), e.what());
+    }
   }
   printout(INFO,pref,"DetElementCreator: "
            "+++++++++++++++ ID Descriptor generation  ++++++++++++++++++++++++++++");
