@@ -9,6 +9,9 @@
 #
 #=================================================================================
 
+add_library(DDTest INTERFACE)
+target_include_directories(DDTest INTERFACE include)
+
 foreach(TEST_NAME
     test_example
     test_bitfield64
@@ -20,8 +23,7 @@ foreach(TEST_NAME
     test_segmentationHandles
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
-  target_link_libraries(${TEST_NAME} DDCore DDRec)
-  target_include_directories(${TEST_NAME} PRIVATE ./include)
+  target_link_libraries(${TEST_NAME} DDCore DDRec DDTest)
   install(TARGETS ${TEST_NAME} DESTINATION bin)
 
   set(cmd ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME})
@@ -34,8 +36,7 @@ foreach(TEST_NAME
     test_surface
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
-  target_link_libraries(${TEST_NAME} DDCore DDRec)
-  target_include_directories(${TEST_NAME} PRIVATE ./include)
+  target_link_libraries(${TEST_NAME} DDCore DDRec DDTest)
   install(TARGETS ${TEST_NAME} DESTINATION bin)
   add_test(NAME t_${TEST_NAME}
     COMMAND ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME} file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml)

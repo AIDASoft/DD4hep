@@ -31,14 +31,15 @@ new_dd4hep_add_dictionary(G__DDEve
   DEPENDS DDCore
   )
 
-if(LCIO_FOUND)
+if(TARGET LCIO::LCIO)
   SET(DDEVE_LCIO_SOURCES lcio/LCIOEventHandler.cpp)
+  SET(DDEVE_LCIO_LINK LCIO::LCIO)
 endif()
 
-new_dd4hep_add_plugin (DDEvePlugins SOURCES src/*.cpp 
-  GENERATED ${DDEVE_LCIO_SOURCES} G__DDEve.cxx
+new_dd4hep_add_plugin (DDEvePlugins SOURCES src/*.cpp ${DDEVE_LCIO_SOURCES}
+  GENERATED  G__DDEve.cxx
+  LINK_LIBRARIES DDCore DDEve_Interface ROOT::Eve ${DDEVE_LCIO_LINK}
   )
-target_link_libraries(DDEvePlugins DDCore DDEve_Interface ROOT::Eve)
 
 if(DD4HEP_USE_GEANT4)
   new_dd4hep_add_dictionary(G__DDG4IO
