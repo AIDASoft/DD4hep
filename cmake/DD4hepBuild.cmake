@@ -1591,7 +1591,9 @@ function( new_dd4hep_add_dictionary dictionary )
 
   set_source_files_properties(${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
     PROPERTIES
-    GENERATED TRUE)
+    GENERATED TRUE
+    COMPILE_FLAGS "-Wno-unused-function -Wno-overlength-strings"
+    )
 
   #  Install the binary to the destination directory
   install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
@@ -1622,11 +1624,6 @@ function(new_dd4hep_add_plugin binary)
     set(NOINSTALL NOINSTALL)
   endif()
   file(GLOB SOURCES ${ARG_SOURCES})
-  foreach( f in  ${ARG_GENERATED})
-    set_source_files_properties(${f} PROPERTIES
-      COMPILE_FLAGS "-Wno-unused-function -Wno-overlength-strings"
-      GENERATED TRUE)
-  endforeach()
 
   ADD_LIBRARY(${binary} SHARED ${SOURCES} ${ARG_GENERATED})
   TARGET_LINK_LIBRARIES(${binary} PUBLIC ${ARG_LINK_LIBRARIES})
