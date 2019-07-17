@@ -100,16 +100,19 @@ endif()
 IF(DD4HEP_USE_LCIO)
   new_dd4hep_add_plugin(DDG4LCIO
     SOURCES lcio/*.cpp
-    LINK_LIBRARIES LCIO::LCIO
+    LINK_LIBRARIES DDG4 LCIO::LCIO
     )
+  install(TARGETS DDG4LCIO LIBRARY DESTINATION lib)
 ENDIF()
 # #---------------------------  DDRec dependent Plugins  -----------------------------
-IF(DDRec)
-  new_dd4hep_add_plugin(DDG4Reco
-    SOURCES reco/*.cpp
-    LINK_LIBRARIES DDRec
-    )
-ENDIF()
+#This does not compile at the moment
+# IF(TARGET DDRec)
+#   new_dd4hep_add_plugin(DDG4Reco
+#     SOURCES reco/*.cpp
+#     LINK_LIBRARIES DDCore DDG4 DDRec
+#     )
+#   install(TARGETS DDG4Reco LIBRARY DESTINATION lib)
+# ENDIF()
 #-----------------------------------------------------------------------------------
 add_executable(g4gdmlDisplay g4gdmlDisplay.cpp)
 #-----------------------------------------------------------------------------------
@@ -126,6 +129,10 @@ dd4hep_install_dir(python/DDSim DESTINATION python)
 
 INSTALL(TARGETS DDG4 EXPORT DD4hep DESTINATION lib)
 INSTALL(TARGETS DDG4 DDG4Plugins
-  LIBRARY DESTINATION lib)
+  g4gdmlDisplay
+  g4FromXML
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  )
 
 INSTALL(DIRECTORY include/DDG4 DESTINATION include)
