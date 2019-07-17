@@ -57,7 +57,7 @@ new_dd4hep_add_dictionary( G__DDG4
 new_dd4hep_add_plugin(DDG4Plugins
   SOURCES plugins/*.cpp
   GENERATED G__DDG4.cxx
-  LINK_LIBRARIES ROOT::Core CLHEP::CLHEP DDG4 ${XML_LIBRARIES} DDParsers 
+  LINK_LIBRARIES ROOT::Core ${CLHEP} DDG4 ${XML_LIBRARIES} DDParsers
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 
@@ -85,7 +85,9 @@ if(PYTHONLIBS_FOUND)
     #---Helper to overcome deficiency of the python executable concerning multi-threading
     add_executable(pyddg4 pyddg4.cpp)
     target_link_libraries(pyddg4 PUBLIC DDPython ROOT::Core ROOT::PyROOT)
-    INSTALL(TARGETS DDPython EXPORT DD4hep DESTINATION lib)
+    INSTALL(TARGETS DDPython pyddg4 EXPORT DD4hep
+      LIBRARY DESTINATION lib
+      RUNTIME DESTINATION bin)
   endif()
 else()
   MESSAGE(STATUS "Python not found, not creating DDG4 4Python Dictionaries")
@@ -93,7 +95,7 @@ endif()
 
 #---------------------------  Plugin library for the simulation framework  ---------
 #---------------------------  LCIO Plugins for new simulation framework  -----------
-IF(DD4HEP_USE_LCIO)
+IF(TARGET LCIO::LCIO)
   new_dd4hep_add_plugin(DDG4LCIO
     SOURCES lcio/*.cpp
     LINK_LIBRARIES DDG4 LCIO::LCIO
