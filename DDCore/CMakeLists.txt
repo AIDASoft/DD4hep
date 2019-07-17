@@ -88,17 +88,17 @@ new_dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp
   LINK_LIBRARIES DDCore)
 
 # This plugins depends on the ROOT GDML readers. Hence, extra library
-IF(${ROOT_gdml_FOUND})
+IF(TARGET ROOT::Gdml)
   new_dd4hep_add_plugin(DDGDMLPlugins
   SOURCES src/gdml/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Core
+  LINK_LIBRARIES DDCore ROOT::Core ROOT::Gdml
   )
 ELSE()
   MESSAGE(WARN "ROOT does not include GDML, not building DDCore GDML Plugins")
 ENDIF()
     
 #---------------------------  Specialized PYTHON plugin ----------------------------
-IF(ROOT_python_FOUND)
+IF(TARGET ROOT::PyROOT)
   new_dd4hep_add_plugin(DDPythonPlugins
   SOURCES src/python/*.cpp
   LINK_LIBRARIES DDCore ROOT::Core ROOT::PyROOT
