@@ -64,31 +64,25 @@ SET_TARGET_PROPERTIES(Boost::boost
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
 
+find_package(Geant4 10.2.2 REQUIRED gdml ui_all vis_all)
+DD4HEP_SETUP_GEANT4_TARGETS()
+
 FIND_PACKAGE(ROOT REQUIRED)
 DD4HEP_SETUP_ROOT_TARGETS()
 
-find_package(Geant4 10.2.2 REQUIRED COMPONENTS gdml ui_all vis_all)
-DD4HEP_SETUP_GEANT4_TARGETS()
+if(DD4HEP_USE_LCIO)
+  find_package(LCIO REQUIRED)
+  DD4HEP_SETUP_LCIO_TARGETS()
+endif()
 
 if(NOT CMAKE_PROJECT_NAME STREQUAL DD4hep)
-  include("${DD4hep_ROOT}/lib/DD4hepConfig-targets.cmake")
+  include("${DD4hep_ROOT}/cmake/DD4hepConfig-targets.cmake")
 endif()
 
 # ---------- include dirs -----------------------------------------------------
 # do not store find results in cache
 GET_TARGET_PROPERTY(DD4hep_INCLUDE_DIRS DD4hep::DDCore INTERFACE_INCLUDE_DIRECTORIES)
 MESSAGE(STATUS "include dirs ${DD4hep_INCLUDE_DIRS}")
-
-
-#----------------------------------------------------------------------------
-# Setup components and options
-set(_dd4hep_options  )
-
-foreach(_opt ${_root_options})
-  set(DD4hep_${_opt}_FOUND TRUE)
-endforeach()
-
-
 
 # ---------- libraries --------------------------------------------------------
 # do not store find results in cache
@@ -98,22 +92,17 @@ endforeach()
 
 set(DD4hep_LIBRARIES DD4hep::DDParsers DD4hep::DDCore DD4hep::DDRec)
 
-include( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
+#include( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
 
-# only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
-# additional components are set by cmake in variable PKG_FIND_COMPONENTS
-# first argument should be the package name
-
-CHECK_PACKAGE_LIBS(DD4hep DDCore)
-
+SET(DD4hep_COMPONENT_LIBRARIES)
 IF(DD4hep_FIND_COMPONENTS)
   dd4hep_print( "|++> DD4hep: Looking for Components: ${DD4hep_FIND_COMPONENTS}" )
   FOREACH(comp ${DD4hep_FIND_COMPONENTS})
     #CHECK_PACKAGE_LIBS is looking for components too, just need to check if they were found, if requested
-    STRING( TOUPPER ${comp} _ulibname )
-    if(NOT DD4hep_${_ulibname}_FOUND)
+    IF(NOT TARGET DD4hep::${comp})
       MESSAGE(FATAL_ERROR "|++> Did not find required component: ${comp}")
     ENDIF()
+    LIST(APPEND DD4hep_COMPONENT_LIBRARIES DD4hep::${comp})
   ENDFOREACH()
 ENDIF()
 

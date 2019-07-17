@@ -11,20 +11,28 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+message(STATUS "OpticalSurfaces: ROOT version: ${ROOT_VERSION}")
+
+if(NOT ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.18.00)
+  MESSAGE(STATUS "Not building optical surface test")
+  return()
+endif()
+MESSAGE(STATUS "building optical surface test")
+
 #--------------------------------------------------------------------------
 dd4hep_configure_output()
-dd4hep_package ( OpticalSurfaces MAJOR 0 MINOR 0 PATCH 1
-  USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
-                 [DD4hep REQUIRED COMPONENTS DDCore DDCond]
-  OPTIONAL       XERCESC
-  INCLUDE_DIRS   include
+
+link_libraries(
+  DD4hep::DDCore DD4hep::DDCond
+  ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
   )
+
 set(OpticalSurfaces_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/OpticalSurfaces)
-dd4hep_add_plugin(   OpticalSurfacesExample SOURCES src/*.cpp  )
-dd4hep_install_dir(  compact scripts DESTINATION ${OpticalSurfaces_INSTALL} )
+new_dd4hep_add_plugin(OpticalSurfacesExample SOURCES src/*.cpp  )
+install(TARGETS OpticalSurfacesExample LIBRARY DESTINATION lib)
+install(DIRECTORY compact scripts DESTINATION ${OpticalSurfaces_INSTALL} )
 dd4hep_configure_scripts( OpticalSurfaces DEFAULT_SETUP WITH_TESTS)
-#
-message (STATUS "OpticalSurfaces: ROOT version: ${ROOT_VERSION}")
+
 #
 #---Testing: Load ROOT GDMLMatrix objects from compact
 #            and register them to the TGeoManager

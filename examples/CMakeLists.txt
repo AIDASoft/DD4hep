@@ -54,7 +54,6 @@ add_subdirectory(ClientTests)
 add_subdirectory(Conditions)
 add_subdirectory(DDG4)
 add_subdirectory(DDDigi)
-#add_subdirectory(OpticalSurfaces) ## needs root version >= 6.18
 add_subdirectory(Persistency)
 add_subdirectory(SimpleDetector)
 add_subdirectory(DDG4_MySensDet)
@@ -63,3 +62,4 @@ add_subdirectory(DDCodex)
 add_subdirectory(DDDB)
 add_subdirectory(DDCMS)
 
+add_subdirectory(OpticalSurfaces)
