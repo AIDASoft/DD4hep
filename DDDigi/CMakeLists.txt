@@ -55,4 +55,6 @@ new_dd4hep_add_plugin(DDDigiPlugins
 #---Package installation procedure(s) ----------------------------------------------
 file(GLOB DDigi_python python/*.py python/*.C)
 install(FILES ${DDigi_python} DESTINATION python)
-install(TARGETS DDDigi EXPORT DD4hep DESTINATION lib)
+install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+install(DIRECTORY include/DDDigi DESTINATION include)
+

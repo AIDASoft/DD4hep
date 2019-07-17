@@ -11,27 +11,16 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#-----------------------------------------------------------------------------------
-dd4hep_configure_output ()
-dd4hep_package ( DDCodex MAJOR 0 MINOR 0 PATCH 1
-  USES  [ROOT   REQUIRED COMPONENTS Geom] 
-        [DD4hep REQUIRED COMPONENTS DDCore]
-  OPTIONAL       XERCESC
- )
-#
 #---DDCodex plugin library -------------------------------------------------------
-dd4hep_add_plugin(DDCodexPlugins
+new_dd4hep_add_plugin(DDCodexPlugins
   SOURCES src/*.cpp
-  USES    [ROOT    REQUIRED COMPONENTS Geom GenVector]
-  OPTIONAL       XERCESC
-)
+  LINK_LIBRARIES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector
+  )
+install(TARGETS DDCodexPlugins DESTINATION lib)
 #
 #
-dd4hep_install_dir( compact python eve DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
-dd4hep_install_files(FILES Upgrade.root DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
+install(DIRECTORY compact python eve DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
+install(FILES Upgrade.root DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )
 #--------------------------------------------------------------------------
 #
 dd4hep_configure_scripts ( DDCodex DEFAULT_SETUP WITH_TESTS )
-#
-#---Testing-------------------------------------------------------------------------
-#

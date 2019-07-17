@@ -11,15 +11,14 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#--------------------------------------------------------------------------
-dd4hep_configure_output ()
-dd4hep_package ( Persistency MAJOR 0 MINOR 0 PATCH 1
-  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector]
-               [DD4hep REQUIRED COMPONENTS DDCore]
-  OPTIONAL     XERCESC
-)
+if(TARGET XercesC::XercesC)
+  link_libraries(XercesC::XercesC)
+endif()
+link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDCore)
+
 #-----------------------------------------------------------------------------------
-dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp)
+new_dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp)
+install(TARGETS PersistencyExample LIBRARY DESTINATION lib)
 dd4hep_configure_scripts (Persistency DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------
 #

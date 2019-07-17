@@ -1617,20 +1617,18 @@ endfunction()
 #  Arguments
 #  ---------
 #  binary         -> plugin name
-#  SOURCES        -> list of source files. Will be expanded to absolute names
+#  SOURCES        -> Globbing expression to find source files
+#  GENERATED      -> List of source files
 #
-#  The following variables EXTEND the package defaults
 #  INCLUDE_DIRS   -> Additional include directories need to compile the binary
 #  LINK_LIBRARIES -> Additional libraries needed to link the binary
-#  USES           -> Required package dependencies
 #  DEFINITIONS    -> Optional compiler definitions to compile the sources
-#
 #  \author  A.Sailer
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
 function(new_dd4hep_add_plugin binary)
-  cmake_parse_arguments(ARG "NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;DEFINITIONS" ${ARGN})
+  cmake_parse_arguments(ARG "NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;DEFINITIONS" ${ARGN})
   if ( ${ARG_NOINSTALL} )
     set(NOINSTALL NOINSTALL)
   endif()
@@ -1646,7 +1644,6 @@ function(new_dd4hep_add_plugin binary)
   TARGET_INCLUDE_DIRECTORIES(${binary} PUBLIC ${ARG_INCLUDE_DIRS})
   TARGET_COMPILE_DEFINITIONS(${binary} PUBLIC ${ARG_DEFINITIONS})
   # what do these options mean?
-  #GENERATED      ${ARG_GENERATED}
   #NOINSTALL
   # Generate ROOTMAP if the plugin will be built:
   dd4hep_generate_rootmap( ${binary} )

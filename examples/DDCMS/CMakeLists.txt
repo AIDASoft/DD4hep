@@ -16,38 +16,53 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #------------------------------------------------------------------------------
+
+# dd4hep_package(    DDCMS
+#   USES             [DD4hep REQUIRED COMPONENTS DDCore]
+#                    [ROOT REQUIRED COMPONENTS Geom GenVector]
+#   OPTIONAL         ${CLHEP} XERCESC
+#   INCLUDE_DIRS     include
+#   INSTALL_INCLUDES include/DDCMS)
+
+# CLHEP dependent stuff
+if(NOT TARGET CLHEP::CLHEP)
+  # ensure we only look for CLHEP once
+  find_package(CLHEP QUIET)
+endif()
+if (TARGET CLHEP::CLHEP)
+  dd4hep_print("|++> CLHEP PRESENT. Building DDCMS examples.")
+else()
+  dd4hep_print("|++> CLHEP is not present. NOT building DDCMS examples.")
+  return()
+endif()
+
 dd4hep_configure_output ()
 #
 #---Trick to allow building with Geant4 internal CLHEP
 if ( DD4HEP_USE_GEANT4 AND Geant4_builtin_clhep_FOUND)
   set(CLHEP "")
 else()
-  set(CLHEP CLHEP)
+  set(CLHEP CLHEP::CLHEP)
 endif()
 #
-dd4hep_package(    DDCMS
-  USES             [DD4hep REQUIRED COMPONENTS DDCore]
-                   [ROOT REQUIRED COMPONENTS Geom GenVector]
-  OPTIONAL         ${CLHEP} XERCESC
-  INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDCMS)
+
 #
-# We only create only library for DDCMS. The whole package is a single component
+# we only create only library for DDCMS. The whole package is a single component
 # library. A priory there is no need to seperate the implementation from the
 # plugins....
 #
 # If need arises, this can be changed easily.
 #
 #---DDCMS plugin library -------------------------------------------------------
-dd4hep_add_plugin ( DDCMS SOURCES src/*.cpp src/plugins/*.cpp
-  USES  [DD4hep REQUIRED COMPONENTS DDCore DDAlign DDCond]
-        [ROOT REQUIRED COMPONENTS Geom GenVector]
-OPTIONAL       XERCESC)
-
+new_dd4hep_add_plugin ( DDCMS SOURCES src/*.cpp src/plugins/*.cpp
+  LINK_LIBRARIES DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond
+  ROOT::Core ROOT::Geom ROOT::GenVector
+  )
+install(TARGETS DDCMS LIBRARY DESTINATION lib)
+target_include_directories(DDCMS PUBLIC include)
+install(DIRECTORY include/DDCMS DESTINATION include)
 #---Package installation procedure(s) -----------------------------------------
-dd4hep_install_dir( data    DESTINATION ${DD4hep_DIR}/examples/DDCMS )
-dd4hep_install_dir( eve     DESTINATION ${DD4hep_DIR}/examples/DDCMS )
-dd4hep_install_dir( scripts DESTINATION ${DD4hep_DIR}/examples/DDCMS )
+install(DIRECTORY data eve scripts DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCMS )
 #
 #---Testing--------------------------------------------------------------------
 dd4hep_configure_scripts ( DDCMS DEFAULT_SETUP WITH_TESTS )
