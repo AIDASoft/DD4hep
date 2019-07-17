@@ -1666,15 +1666,11 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     #   )
     #endforeach()
     # Non-standard ROOT components we need later on, we "import" them by hand for now
-    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore EG EGL Rint Tree Hist Physics)
-      ADD_LIBRARY(ROOT::${LIB} INTERFACE IMPORTED GLOBAL)
-      TARGET_LINK_LIBRARIES(ROOT::${LIB} INTERFACE ${LIB})
-      # SET_TARGET_PROPERTIES(ROOT::${LIB}
-      #   PROPERTIES
-      #   INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
-      #   INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
-      #   IMPORTED_LOCATION ${ROOT_${LIB}_LIBRARY}
-      #   )
+    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore EG EGL Rint Tree Hist Physics Gdml)
+      IF(TARGET ${LIB})
+        ADD_LIBRARY(ROOT::${LIB} INTERFACE IMPORTED GLOBAL)
+        TARGET_LINK_LIBRARIES(ROOT::${LIB} INTERFACE ${LIB} ROOT::Core)
+      ENDIF()
     endforeach()
   ENDIF(NOT TARGET ROOT::Core)
 
