@@ -13,28 +13,23 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
-dd4hep_package ( DDDigi MAJOR 0 MINOR 0 PATCH 1
-  USES  [DD4hep REQUIRED COMPONENTS DDCore DDDigi]
-  )
+
+link_libraries(DD4hep::DDDigi)
 set(DDDigiexamples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDDigi)
 #
 dd4hep_set_compiler_flags()
 #
-dd4hep_add_plugin( DDDigiExampleLib
-  SOURCES   src/*.cpp
-  USES      [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-            BOOST
-  )
-#
-dd4hep_install_dir(scripts DESTINATION ${DDDigiexamples_INSTALL})
+new_dd4hep_add_plugin(DDDigiExampleLib SOURCES src/*.cpp )
+target_link_libraries(DDDigiExampleLib Boost::boost ROOT::Geom ROOT::GenVector ROOT::RIO)
+install(TARGETS DDDigiExampleLib LIBRARY DESTINATION lib)
+install(DIRECTORY scripts DESTINATION ${DDDigiexamples_INSTALL})
 #
 dd4hep_configure_scripts (DDDigi DEFAULT_SETUP WITH_TESTS)
 #
 # Test HepMC input reader
-dd4hep_add_test_reg( DDDigi_framework
+dd4hep_add_test_reg(DDDigi_framework
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
   EXEC_ARGS  python ${DDDigiexamples_INSTALL}/scripts/TestFramework.py
-  REQUIRES   DDDigi
   REGEX_PASS "\\+\\+\\+ 10 Events out of 10 processed."
   REGEX_FAIL "Error;ERROR;Exception"
   )

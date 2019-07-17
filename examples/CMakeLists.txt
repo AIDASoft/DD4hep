@@ -52,30 +52,14 @@ add_subdirectory(LHeD)
 add_subdirectory(AlignDet)
 add_subdirectory(ClientTests)
 add_subdirectory(Conditions)
-# add_subdirectory(DDG4)
-# add_subdirectory(DDDigi)
-# #add_subdirectory(OpticalSurfaces) ## needs root version >= 6.18
-# add_subdirectory(Persistency)
-# add_subdirectory(SimpleDetector)
-# add_subdirectory(DDG4_MySensDet)
-# add_subdirectory(DDCodex)
+add_subdirectory(DDG4)
+add_subdirectory(DDDigi)
+#add_subdirectory(OpticalSurfaces) ## needs root version >= 6.18
+add_subdirectory(Persistency)
+add_subdirectory(SimpleDetector)
+add_subdirectory(DDG4_MySensDet)
+add_subdirectory(DDCodex)
 
+add_subdirectory(DDDB)
+add_subdirectory(DDCMS)
 
-# # XercesC dependent stuff
-# if(DD4HEP_USE_XERCESC)
-#   dd4hep_print("|++> XercesC PRESENT. Building DDDB examples.")
-#   add_subdirectory(DDDB)
-# else()
-#   dd4hep_print("|++> XercesC is not present. NOT building DDDB examples.")
-# endif()
-
-# # CLHEP dependent stuff:
-# find_package (CLHEP QUIET)
-# string(FIND "${CLHEP_DIR}" "NOTFOUND" HaveDDCMS)
-# if (TARGET CLHEP::CLHEP)
-#   dd4hep_print("|++> CLHEP PRESENT. Building DDCMS examples.")
-#   add_subdirectory(DDCMS)
-# else()
-#   dd4hep_print("|++> CLHEP is not present. NOT building DDCMS examples.")
-# endif()
->>>>>>> Modifications in examples

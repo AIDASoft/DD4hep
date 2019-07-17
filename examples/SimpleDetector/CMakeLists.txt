@@ -12,16 +12,15 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
-dd4hep_configure_output()
-dd4hep_package (SimpleDetector MAJOR 0 MINOR 0 PATCH 1
-  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector] 
-               [DD4hep REQUIRED COMPONENTS DDCore DDRec]
-  OPTIONAL     XERCESC
-  INCLUDE_DIRS include )
+if(TARGET XercesC::XercesC)
+  link_libraries(XercesC::XercesC)
+endif()
 
-#-----------------------------------------------------------------------------------
-dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
-dd4hep_install_dir(compact DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
+link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDCore DD4hep::DDRec)
+
+new_dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
+install(TARGETS SimpleDetector LIBRARY DESTINATION lib)
+install(DIRECTORY compact DESTINATION examples/ClientTests)
 #-----------------------------------------------------------------------------------
 dd4hep_configure_scripts(SimpleDetector DEFAULT_SETUP WITH_TESTS)
 

@@ -11,15 +11,17 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+if(NOT TARGET Geant4::Interface)
+  MESSAGE(STATUS "Not creating DDG4_MySensDet tests")
+  return()
+endif()
+
+link_libraries(Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
+  DD4hep::DDCore DD4hep::DDG4)
+
 #-----------------------------------------------------------------------------------
-dd4hep_configure_output ()
-dd4hep_package ( DDG4_MySensDet MAJOR 0 MINOR 0 PATCH 1
-  USES  [GEANT4 REQUIRED]
-  [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-  [DD4hep REQUIRED COMPONENTS DDCore DDG4]
-)
 set(DDG4_MySensDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/DDG4_MySensDet)
-dd4hep_install_dir(scripts  DESTINATION ${DDG4_MySensDet_INSTALL} )
+install(DIRECTORY scripts DESTINATION ${DDG4_MySensDet_INSTALL})
 dd4hep_configure_scripts(DDG4_MySensDet DEFAULT_SETUP WITH_TESTS)
 #
 #---Geant4 Testsing-----------------------------------------------------------------
@@ -28,20 +30,20 @@ if (DD4HEP_USE_GEANT4)
   #
   dd4hep_set_compiler_flags()
   #---------------------------  Plugin library for the simulation framework  ---------
-  dd4hep_add_dictionary(G__DDG4_MySensDet
+  new_dd4hep_add_dictionary(G__DDG4_MySensDet
     SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/MyTrackerHit.h
     LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
     )
 
   #----  Example of a client library with user defined plugins  --------------------
-  dd4hep_add_plugin( DDG4_MySensDet
+  new_dd4hep_add_plugin( DDG4_MySensDet
     GENERATED G__DDG4_MySensDet.cxx
     SOURCES   src/*.cpp
-    USES      [GEANT4 REQUIRED]
-              [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-              [DD4hep REQUIRED COMPONENTS DDCore DDG4]
+    LINK_LIBRARIES  Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
+    DD4hep::DDCore DD4hep::DDG4
     )
-
+  install(TARGETS DDG4_MySensDet DESTINATION lib)
+  
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   dd4hep_add_test_reg( DDG4_MySensDet_g4material_scan_SiliconBlock_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4_MySensDet.sh"
