@@ -85,13 +85,14 @@ if(PYTHONLIBS_FOUND)
       target_compile_options(DDPython PUBLIC -Wno-register)
     ENDIF()
     new_dd4hep_add_plugin(DDG4Python 
-      SOURCES src/python/*.cpp G__DDG4Python.cxx
+      SOURCES src/python/*.cpp
+      GENERATED G__DDG4Python.cxx
       LINK_LIBRARIES DDG4 DDPython
       )
     #---Helper to overcome deficiency of the python executable concerning multi-threading
     add_executable(pyddg4 pyddg4.cpp)
     target_link_libraries(pyddg4 PUBLIC DDPython ROOT::Core ROOT::PyROOT)
-    INSTALL(TARGETS DDPython pyddg4 EXPORT DD4hep
+    INSTALL(TARGETS DDPython pyddg4 DDG4Python EXPORT DD4hep
       LIBRARY DESTINATION lib
       RUNTIME DESTINATION bin)
   endif()
