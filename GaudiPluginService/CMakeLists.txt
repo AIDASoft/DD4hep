@@ -9,7 +9,7 @@ target_include_directories(DD4hepGaudiPluginMgr PUBLIC
   )
 
 if( APPLE ) 
-  target_compile_definitions(DD4hepGaudiPluginMgr APPLE)
+  target_compile_definitions(DD4hepGaudiPluginMgr PUBLIC APPLE)
 endif()
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-shadow)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-unused)
