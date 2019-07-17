@@ -77,11 +77,11 @@ namespace {
     ~Instances() = default;
     Detector* get(const string& name)   {
       auto i = detectors.find(name);
-      return i==detectors.end() ? 0 : (*i).second;
+      return i == detectors.end() ? 0 : (*i).second;
     }
     void insert(const string& name, Detector* detector)   {
       auto i = detectors.find(name);
-      if ( i==detectors.end() )   {
+      if ( i == detectors.end() )   {
         detectors.emplace(name,detector);
         return;
       }
@@ -89,7 +89,7 @@ namespace {
     }
     Detector* remove(const string& name)   {
       auto i = detectors.find(name);
-      if ( i==detectors.end() )  {
+      if ( i != detectors.end() )  {
         Detector* det = (*i).second;
         detectors.erase(i);
         return det;
