@@ -114,6 +114,12 @@ IF(DD4HEP_USE_LCIO)
   DD4HEP_SETUP_LCIO_TARGETS()
 ENDIF()
 
+
+IF(DD4HEP_USE_GEANT4)
+  find_package(Geant4 10.2.2 REQUIRED COMPONENTS gdml ui_all vis_all)
+  DD4HEP_SETUP_GEANT4_TARGETS()
+endif()
+
 ######################
 # Set compiler flags #
 ######################
