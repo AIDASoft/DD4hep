@@ -20,7 +20,7 @@ target_include_directories(DDEve_Interface
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
+target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
 
 new_dd4hep_add_dictionary(G__DDEve
   SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h include/DDEve/*.h

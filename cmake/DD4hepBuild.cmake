@@ -1655,7 +1655,7 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
       INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
       )
     # there is also no dependency between the targets
-    TARGET_LINK_LIBRARIES(ROOT::Core INTERFACE Core Rint Tree MathCore Hist Physics)
+    TARGET_LINK_LIBRARIES(ROOT::Core INTERFACE Core)
     #foreach(LIB Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread MultiProc)
     # MESSAGE(STATUS "ROOT lib location ${LIB} ${ROOT_${LIB}_LIBRARY}")
     # SET_TARGET_PROPERTIES(ROOT::${LIB}
@@ -1666,7 +1666,7 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     #   )
     #endforeach()
     # Non-standard ROOT components we need later on, we "import" them by hand for now
-    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore EG EGL)
+    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore EG EGL Rint Tree Hist Physics)
       ADD_LIBRARY(ROOT::${LIB} INTERFACE IMPORTED GLOBAL)
       TARGET_LINK_LIBRARIES(ROOT::${LIB} INTERFACE ${LIB})
       # SET_TARGET_PROPERTIES(ROOT::${LIB}
