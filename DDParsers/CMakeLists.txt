@@ -29,7 +29,10 @@ if(Boost_FOUND)
 endif()
 
 add_library(DDParsers SHARED ${DDParsers_SOURCES} ${DDParsers_SPIRIT_SOURCES})
-target_compile_definitions(DDParsers PUBLIC BOOST_SPIRIT_USE_PHOENIX_V3)
+
+target_compile_definitions(DDParsers INTERFACE
+  $<$<BOOL:Boost_FOUND>:BOOST_SPIRIT_USE_PHOENIX_V3>
+  )
 
 target_include_directories(DDParsers
   PUBLIC
@@ -40,8 +43,8 @@ target_include_directories(DDParsers
 target_include_directories(DDParsers
   SYSTEM
   PUBLIC
-  $<BUILD_INTERFACE:${ROOT_INCLUDE_DIRS}>
-  $<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:ROOT::Core,INTERFACE_INCLUDE_DIRECTORIES>
+  $<$<BOOL:Boost_FOUND>:$<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>>
   )
 
 target_link_libraries(DDParsers PUBLIC
@@ -49,3 +52,9 @@ target_link_libraries(DDParsers PUBLIC
   )
 
 INSTALL(TARGETS DDParsers EXPORT DD4hep DESTINATION lib)
+
+INSTALL(DIRECTORY
+  include/Parsers
+  include/Evaluator
+  DESTINATION include
+  )

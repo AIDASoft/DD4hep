@@ -8,36 +8,52 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #=================================================================================
+
+foreach(TEST_NAME
+    test_example
+    test_bitfield64
+    test_bitfieldcoder
+    test_DetType
+    test_PolarGridRPhi2
+    test_cellDimensions
+    test_cellDimensionsRPhi2
+    test_segmentationHandles
+    )
+  add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
+  target_link_libraries(${TEST_NAME} DDCore DDRec)
+  target_include_directories(${TEST_NAME} PRIVATE ./include)
+  install(TARGETS ${TEST_NAME} DESTINATION bin)
+
+  set(cmd ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME})
+  add_test(NAME t_${TEST_NAME} COMMAND ${cmd} ${TEST_NAME})
+  set_tests_properties(t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED")
+endforeach()
+
+foreach(TEST_NAME
+    test_units
+    test_surface
+    )
+  add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
+  target_link_libraries(${TEST_NAME} DDCore DDRec)
+  target_include_directories(${TEST_NAME} PRIVATE ./include)
+  install(TARGETS ${TEST_NAME} DESTINATION bin)
+  add_test(NAME t_${TEST_NAME}
+    COMMAND ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME} file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml)
+  set_tests_properties(t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED")
+endforeach()
+
 if (DD4HEP_USE_GEANT4)
-  dd4hep_package(    DDTest
-    USES             DDCore DDRec
-    OPTIONAL         DDG4
-    INCLUDE_DIRS     include
-    INSTALL_INCLUDES include/DD4hep )
-else()
-  dd4hep_package(    DDTest
-    USES             DDCore DDRec
-    INCLUDE_DIRS     include
-    INSTALL_INCLUDES include/DD4hep )
-endif()
+  foreach(TEST_NAME
+      test_EventReaders
+      )
+    add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
+    target_link_libraries(${TEST_NAME} DDCore DDRec DDG4)
+    target_include_directories(${TEST_NAME} PRIVATE ./include)
+    install(TARGETS ${TEST_NAME} DESTINATION bin)
 
-dd4hep_add_test_reg ( test_example             BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_units               BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
-  EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
-dd4hep_add_test_reg ( test_surface             BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
-  EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
-
-dd4hep_add_test_reg ( test_bitfield64          BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_bitfieldcoder       BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_DetType             BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_PolarGridRPhi2      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_cellDimensions      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_cellDimensionsRPhi2 BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-dd4hep_add_test_reg ( test_segmentationHandles BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
-
-if (DD4HEP_USE_GEANT4)
-  dd4hep_add_test_reg ( test_EventReaders      BUILD_EXEC REGEX_FAIL "TEST_FAILED"
-    EXEC_ARGS ${CMAKE_CURRENT_SOURCE_DIR} )
+    add_test(NAME t_${TEST_NAME} COMMAND ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
+    set_tests_properties(t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED")
+  endforeach(TEST_NAME)
 
   ADD_TEST( test_ddsim "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -G -N=2 --outputFile=testSid.root

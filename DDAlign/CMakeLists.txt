@@ -29,4 +29,6 @@ new_dd4hep_add_plugin(DDAlignPlugins
   LINK_LIBRARIES DDAlign
   )
 
+INSTALL(DIRECTORY include/DDAlign DESTINATION include)
 INSTALL(TARGETS DDAlign EXPORT DD4hep DESTINATION lib)
+INSTALL(TARGETS DDAlignPlugins DESTINATION lib)

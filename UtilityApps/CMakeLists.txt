@@ -8,66 +8,83 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-dd4hep_package(UtilityApps
-  USES DDCore
-      [ROOT REQUIRED COMPONENTS Geom]
-  )
+# dd4hep_package(UtilityApps
+#   USES DDCore
+#       [ROOT REQUIRED COMPONENTS Geom]
+#   )
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( geoDisplay      src/display.cpp )
+add_executable(geoDisplay src/display.cpp)
+target_link_libraries(geoDisplay DDCore)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( geoConverter    src/converter.cpp )
+add_executable(geoConverter src/converter.cpp)
+target_link_libraries(geoConverter DDCore)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( geoPluginRun    src/plugin_runner.cpp )
+add_executable(geoPluginRun src/plugin_runner.cpp)
+target_link_libraries(geoPluginRun DDCore)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( dumpBfield      src/dumpBfield.cpp )
+add_executable(dumpBfield src/dumpBfield.cpp)
+target_link_libraries(dumpBfield DDCore)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( print_materials src/print_materials.cpp USES DDRec )
+add_executable(print_materials src/print_materials.cpp)
+target_link_libraries(print_materials DDCore DDRec)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( materialScan    src/materialScan.cpp USES DDRec )
+add_executable(materialScan src/materialScan.cpp)
+target_link_libraries(materialScan ROOT::Core ROOT::Geom DDRec)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( materialBudget  src/materialBudget.cpp USES DDRec ROOT )
+add_executable(materialBudget  src/materialBudget.cpp)
+target_link_libraries(materialBudget ROOT::Core ROOT::Geom DDRec)
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( graphicalScan src/graphicalScan.cpp USES DDRec ROOT )
+add_executable(graphicalScan src/graphicalScan.cpp)
+target_link_libraries(graphicalScan ROOT::Core ROOT::Geom DDRec)
 #-----------------------------------------------------------------------------------
-#dd4hep_add_executable( pydd4hep     
-#  USES        [ROOT   REQUIRED COMPONENTS PyROOT]
-#  OPTIONAL    [PYTHON REQUIRED SOURCES src/DD4hep_python.cpp])
-#-----------------------------------------------------------------------------------
-dd4hep_add_executable( dumpdetector     
-  USES DDRec
-  OPTIONAL       [GEANT4 REQUIRED SOURCES src/dumpdetector.cpp])
-#-----------------------------------------------------------------------------------
+
+
+if(TARGET Geant4::Interface)
+  add_executable(dumpdetector src/dumpdetector.cpp)
+  target_link_libraries(dumpdetector Geant4::Interface DDCore DDRec)
+endif()
+
+# #-----------------------------------------------------------------------------------
 if(BUILD_TESTING)
-  dd4hep_add_executable(test_surfaces
-    USES     DDRec DDTest
-    OPTIONAL [LCIO REQUIRED SOURCES src/test_surfaces.cpp])
-  #-----------------------------------------------------------------------------------
-  dd4hep_add_executable(test_cellid_position_converter
-    USES     DDRec DDTest
-    OPTIONAL [LCIO REQUIRED SOURCES src/test_cellid_position_converter.cpp])
+  if(DD4HEP_USE_LCIO)
+    add_executable(test_surfaces src/test_surfaces.cpp)
+    target_link_libraries(test_surfaces DDRec DDTest LCIO::LCIO)
+
+    add_executable(test_cellid_position_converter src/test_cellid_position_converter.cpp)
+    target_link_libraries(test_cellid_position_converter DDRec DDTest LCIO::LCIO)
+  endif()
   #-----------------------------------------------------------------------------------
 endif()
-dd4hep_add_dictionary( G__eve
+new_dd4hep_add_dictionary( G__eve
   SOURCES src/EvNavHandler.h
-  LINKDEF src/LinkDef.h )
+  LINKDEF src/LinkDef.h
+  DEPENDS DDCore ROOT::Geom
+  )
 
-#-----------------------------------------------------------------------------------
-if ( ${DD4HEP_USE_LCIO} )
-  dd4hep_add_dictionary( G__eve1
+# #-----------------------------------------------------------------------------------
+if (DD4HEP_USE_LCIO)
+  new_dd4hep_add_dictionary( G__eve1
     SOURCES src/EvNavHandler.h
-    LINKDEF src/LinkDef.h )
-  dd4hep_add_executable( teveLCIO
-    USES           [ROOT REQUIRED COMPONENTS Eve Gui Graf3d RGL]
-                   [LCIO REQUIRED]
-                   DDRec
-    GENERATED      G__eve1.cxx
-    SOURCES        src/teve_display.cpp src/next_event_lcio.cpp
- )
+    LINKDEF src/LinkDef.h
+    DEPENDS DDCore  ROOT::Geom
+    )
+  add_executable(teveLCIO G__eve1.cxx src/teve_display.cpp src/next_event_lcio.cpp)
+  target_link_libraries(teveLCIO DDRec LCIO::LCIO ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL)
 endif()
 
-#-----------------------------------------------------------------------------------
-dd4hep_add_executable( teveDisplay
-  USES           [ROOT REQUIRED COMPONENTS Eve Gui Graf3d RGL] DDRec
-  GENERATED      G__eve.cxx
-  SOURCES        src/teve_display.cpp src/next_event_dummy.cpp
-)
+# #-----------------------------------------------------------------------------------
+add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
+target_link_libraries(teveDisplay DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
+
+INSTALL(TARGETS geoDisplay
+  geoConverter
+  geoPluginRun
+  dumpBfield
+  print_materials
+  materialScan
+  materialBudget
+  graphicalScan
+  dumpdetector
+  teveDisplay
+  RUNTIME DESTINATION bin
+  )
