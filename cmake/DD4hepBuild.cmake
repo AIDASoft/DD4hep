@@ -1435,20 +1435,9 @@ endmacro( dd4hep_configure_scripts )
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_add_test_reg test_name )
-  cmake_parse_arguments(ARG "BUILD_EXEC" "OUTPUT" "COMMAND;DEPENDS;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED;REQUIRES" ${ARGN} )
+  cmake_parse_arguments(ARG "BUILD_EXEC" "OUTPUT" "COMMAND;DEPENDS;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED" ${ARGN} )
   set ( missing )
   set ( use_test 1 )
-
-  #foreach(opt ${ARG_REQUIRES} )
-  #  dd4hep_unpack_package_opts ( USE ${opt} )
-  #  dd4hep_find_package( ${USE_NAME} pkg_found 
-  #    ARGS ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} 
-  #    TYPE ${USE_TYPE} )
-  #  if ( NOT "${pkg_found}" )
-  #    set( missing ${missing} ${USE_NAME} )
-  #    unset ( use_test )
-  #  endif()
-  #endforeach()
 
   if ( "${use_test}" STREQUAL "" )
     dd4hep_print ( "*** Will not build/execute test ${test_name}. Missing dependencies: ${missing} ")
