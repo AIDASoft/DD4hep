@@ -80,6 +80,10 @@ if(PYTHONLIBS_FOUND)
     add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
     target_link_libraries(DDPython DDG4 ROOT::Core ${PYTHON_LIBRARIES} ROOT::PyROOT)
     target_include_directories(DDPython PUBLIC ${PYTHON_INCLUDE_DIRS})
+    IF(${CMAKE_CXX_STANDARD} GREATER 16)
+      # python header not cxx17 compatible, gives error in clang
+      target_compile_options(DDPython PUBLIC -Wno-register)
+    ENDIF()
     new_dd4hep_add_plugin(DDG4Python 
       SOURCES src/python/*.cpp G__DDG4Python.cxx
       LINK_LIBRARIES DDG4 DDPython
