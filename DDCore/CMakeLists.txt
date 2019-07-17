@@ -73,7 +73,7 @@ target_link_libraries(DDCore
   PUBLIC
   DD4hepGaudiPluginMgr
   DDParsers
-  ROOT::Core
+  ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics
   ROOT::Geom ROOT::GenVector
   ${XML_LIBRARIES} # XercesC or not
   )

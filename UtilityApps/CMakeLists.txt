@@ -32,10 +32,10 @@ add_executable(materialScan src/materialScan.cpp)
 target_link_libraries(materialScan ROOT::Core ROOT::Geom DDRec)
 #-----------------------------------------------------------------------------------
 add_executable(materialBudget  src/materialBudget.cpp)
-target_link_libraries(materialBudget ROOT::Core ROOT::Geom DDRec)
+target_link_libraries(materialBudget ROOT::Core ROOT::Geom DDRec ROOT::Hist)
 #-----------------------------------------------------------------------------------
 add_executable(graphicalScan src/graphicalScan.cpp)
-target_link_libraries(graphicalScan ROOT::Core ROOT::Geom DDRec)
+target_link_libraries(graphicalScan ROOT::Core ROOT::Geom DDRec ROOT::Hist)
 #-----------------------------------------------------------------------------------
 
 
