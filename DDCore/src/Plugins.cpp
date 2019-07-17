@@ -118,12 +118,11 @@ namespace   {
     if ( 0 == plugin_name )   {
       plugin_name = "libDD4hepGaudiPluginMgr";
     }
-#if !defined(DD4HEP_PARSERS_NO_ROOT)
-    if ( 0 != gSystem->Load(plugin_name) )   {
-      printout(DEBUG,"Plugins","Failed to load plugin manager library: %s",plugin_name);
+    else
+#if defined(DD4HEP_PARSERS_NO_ROOT)
+    {
+      handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
     }
-#else
-    handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
 #endif
     getDebug = get_func< int (*) ()>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
     setDebug = get_func< int (*) (int)>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
