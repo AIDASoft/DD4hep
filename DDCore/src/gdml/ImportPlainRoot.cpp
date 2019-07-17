@@ -126,20 +126,20 @@ static long plain_root_dump(Detector& description, int argc, char** argv) {
     bool   do_import = false;
     string input, in_obj = "Geometry", air, vacuum;
     for(int i = 0; i < argc && argv[i]; ++i)  {
-      if ( 0 == ::strncmp("-input",argv[i],5) )
+      if ( 0 == ::strncmp("-input",argv[i],5)       && (i+1)<argc )
         input = argv[++i];
-      else if ( 0 == ::strncmp("-object",argv[i],5) )
+      else if ( 0 == ::strncmp("-object",argv[i],5) && (i+1)<argc )
         in_obj = argv[++i];
-      else if ( 0 == ::strncmp("-air",argv[i],5) )
+      else if ( 0 == ::strncmp("-air",argv[i],5)    && (i+1)<argc )
         air = argv[++i];
-      else if ( 0 == ::strncmp("-vacuum",argv[i],5) )
+      else if ( 0 == ::strncmp("-vacuum",argv[i],5) && (i+1)<argc )
         vacuum = argv[++i];
-      else if ( 0 == ::strncmp("-level",argv[i],5) )
+      else if ( 0 == ::strncmp("-level",argv[i],5)  && (i+1)<argc )
         level = ::atol(argv[++i]);
+      else if ( 0 == ::strncmp("-print",argv[i],5)  && (i+1)<argc )
+        prt = decodePrintLevel(argv[++i]);
       else if ( 0 == ::strncmp("-import",argv[i],5) )
         do_import = true;
-      else if ( 0 == ::strncmp("-print",argv[i],5) )
-        prt = decodePrintLevel(argv[++i]);
       else
         goto Error;
     }

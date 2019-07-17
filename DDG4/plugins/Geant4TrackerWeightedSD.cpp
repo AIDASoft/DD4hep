@@ -406,24 +406,25 @@ namespace dd4hep {
 
       ///dumpStep
       void dumpStep(const Geant4StepHandler& h, const G4Step* s)  {
-        std::cout << " ----- step in detector " << h.sdName( s->GetPreStepPoint() )
-                  << " prePos  " << h.prePos()
-                  << " postPos " << h.postPos()
-                  << " preStatus  " << h.preStepStatus()
-                  << " postStatus  " << h.postStepStatus()
-                  << " preVolume " << h.volName( s->GetPreStepPoint() )
-                  << " postVolume " << h.volName( s->GetPostStepPoint() )
-                  << std::endl
-                  << "     momentum : "  << std::scientific
-                  <<  s->GetPreStepPoint()->GetMomentum()[0] << ", "
-                  <<  s->GetPreStepPoint()->GetMomentum()[1]<< ", "
-                  <<  s->GetPreStepPoint()->GetMomentum()[2]
-                  << " / "
-                  << s->GetPostStepPoint()->GetMomentum()[0] << ", "
-                  <<  s->GetPostStepPoint()->GetMomentum()[1] << ", "
-                  <<  s->GetPostStepPoint()->GetMomentum()[2]
-                  << ", PDG: " << s->GetTrack()->GetDefinition()->GetPDGEncoding()
-                  << std::endl ;
+        std::stringstream str;
+        str << " ----- step in detector " << h.sdName( s->GetPreStepPoint() )
+            << " prePos  " << h.prePos()
+            << " postPos " << h.postPos()
+            << " preStatus  " << h.preStepStatus()
+            << " postStatus  " << h.postStepStatus()
+            << " preVolume " << h.volName( s->GetPreStepPoint() )
+            << " postVolume " << h.volName( s->GetPostStepPoint() )
+            << std::endl
+            << "     momentum : "  << std::scientific
+            <<  s->GetPreStepPoint()->GetMomentum()[0] << ", "
+            <<  s->GetPreStepPoint()->GetMomentum()[1]<< ", "
+            <<  s->GetPreStepPoint()->GetMomentum()[2]
+            << " / "
+            << s->GetPostStepPoint()->GetMomentum()[0] << ", "
+            <<  s->GetPostStepPoint()->GetMomentum()[1] << ", "
+            <<  s->GetPostStepPoint()->GetMomentum()[2]
+            << ", PDG: " << s->GetTrack()->GetDefinition()->GetPDGEncoding();
+        std::cout << str.str() << std::endl;
       }
     };
 

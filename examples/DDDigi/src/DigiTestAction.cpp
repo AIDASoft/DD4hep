@@ -40,13 +40,9 @@ namespace dd4hep {
       /// Sleep period to fake execution [milliseconds]
       int m_sleep = 0;
     protected:
-      /// Inhibit copy constructor
-      DigiTestAction() = default;
-      /// Inhibit copy constructor
-      DigiTestAction(const DigiTestAction& copy) = delete;
-      /// Inhibit assignment operator
-      DigiTestAction& operator=(const DigiTestAction& copy) = delete;
-
+      /// Define standard assignments and constructors
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiTestAction);
+      
     public:
       /// Standard constructor
       DigiTestAction(const DigiKernel& kernel, const std::string& nam);

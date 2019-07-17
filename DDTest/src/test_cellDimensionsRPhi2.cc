@@ -1,6 +1,7 @@
 #include "DDSegmentation/Segmentation.h"
 #include "DDSegmentation/PolarGridRPhi2.h"
 #include "DDSegmentation/PolarGridRPhi.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/DDTest.h"
 
 #include <iostream>
@@ -31,10 +32,17 @@ void testRPhi2();
 void testRPhi();
 
 int main() {
-
-  testRPhi2();
-  testRPhi();
-
+  using namespace dd4hep;
+  try   {
+    testRPhi2();
+    testRPhi();
+  }
+  catch(const std::exception& e)    {
+    printout(ERROR,"CellDimensions","+++ Caught unhandled exception: %s",e.what());
+  }
+  catch(...)    {
+    printout(ERROR,"CellDimensions","+++ Caught UNKNOWN unhandled exception.");
+  }
   return 0;
 }
 
