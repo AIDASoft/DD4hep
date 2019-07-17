@@ -1415,7 +1415,7 @@ macro ( dd4hep_configure_scripts _pkg )
       dd4hep_install_dir ( compact DESTINATION examples/${_pkg} )
     endif()
   endif()
-  dd4hep_enable_tests ( ${MACRO_ARG_UPARSED_ARGUMENTS} )
+  #dd4hep_enable_tests ( ${MACRO_ARG_UPARSED_ARGUMENTS} )
   unset( PackageName )
 endmacro( dd4hep_configure_scripts )
 
@@ -1635,8 +1635,13 @@ function(new_dd4hep_add_plugin binary)
     set(NOINSTALL NOINSTALL)
   endif()
   file(GLOB SOURCES ${ARG_SOURCES})
+  foreach( f in  ${ARG_GENERATED})
+    set_source_files_properties(${f} PROPERTIES
+      COMPILE_FLAGS "-Wno-unused-function -Wno-overlength-strings"
+      GENERATED TRUE)
+  endforeach()
 
-  ADD_LIBRARY(${binary} SHARED ${SOURCES})
+  ADD_LIBRARY(${binary} SHARED ${SOURCES} ${ARG_GENERATED})
   TARGET_LINK_LIBRARIES(${binary} PUBLIC ${ARG_LINK_LIBRARIES})
   TARGET_INCLUDE_DIRECTORIES(${binary} PUBLIC ${ARG_INCLUDE_DIRS})
   TARGET_COMPILE_DEFINITIONS(${binary} PUBLIC ${ARG_DEFINITIONS})
@@ -1646,3 +1651,129 @@ function(new_dd4hep_add_plugin binary)
   # Generate ROOTMAP if the plugin will be built:
   dd4hep_generate_rootmap( ${binary} )
 endfunction(new_dd4hep_add_plugin)
+
+
+
+
+macro(DD4HEP_SETUP_ROOT_TARGETS)
+
+  #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
+  string(REPLACE " " ";" ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
+
+  IF(NOT TARGET ROOT::Core)
+    #in ROOT before 6.10 there is no ROOT namespace, so we create ROOT::Core ourselves
+    ADD_LIBRARY(ROOT::Core INTERFACE IMPORTED GLOBAL)
+    SET_TARGET_PROPERTIES(ROOT::Core
+      PROPERTIES
+      INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
+      INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
+      )
+    # there is also no dependency between the targets
+    TARGET_LINK_LIBRARIES(ROOT::Core INTERFACE Core Rint Tree MathCore Hist Physics)
+    #foreach(LIB Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread MultiProc)
+    # MESSAGE(STATUS "ROOT lib location ${LIB} ${ROOT_${LIB}_LIBRARY}")
+    # SET_TARGET_PROPERTIES(ROOT::${LIB}
+    #   PROPERTIES
+    #   INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
+    #   INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
+    #   IMPORTED_LOCATION ${ROOT_${LIB}_LIBRARY}
+    #   )
+    #endforeach()
+    # Non-standard ROOT components we need later on, we "import" them by hand for now
+    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore)
+      ADD_LIBRARY(ROOT::${LIB} INTERFACE IMPORTED GLOBAL)
+      TARGET_LINK_LIBRARIES(ROOT::${LIB} INTERFACE ${LIB})
+      # SET_TARGET_PROPERTIES(ROOT::${LIB}
+      #   PROPERTIES
+      #   INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
+      #   INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
+      #   IMPORTED_LOCATION ${ROOT_${LIB}_LIBRARY}
+      #   )
+    endforeach()
+  ENDIF(NOT TARGET ROOT::Core)
+
+
+  MESSAGE(STATUS "ROOT Libraries ${ROOT_LIBRARIES}")
+  MESSAGE(STATUS "ROOT CXX_FLAGS ${ROOT_CXX_FLAGS}")
+  MESSAGE(STATUS "ROOT INCL DIRS ${ROOT_INCLUDE_DIRS}")
+  MESSAGE(STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
+
+ENDMACRO()
+
+
+MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
+
+  IF(NOT TARGET Geant4::Interface)
+    
+    #include( ${Geant4_USE_FILE} ) # do not use the use file, this is not very considerate...
+    IF((NOT ${Geant4_TLS_MODEL} STREQUAL "global-dynamic") AND NOT ${DD4HEP_IGNORE_GEANT4_TLS})
+      MESSAGE(FATAL_ERROR "Geant4 was built with ${Geant4_TLS_MODEL}, DD4hep requires 'global-dynamic'! Ignore this ERROR with DD4HEP_IGNORE_GEANT4_TLS=True ")
+    ENDIF()
+
+    # if(Geant4_builtin_clhep_FOUND)
+    #   set(CLHEP "")
+    # else()
+    #   FIND_PACKAGE(CLHEP REQUIRED)
+    #   set(CLHEP CLHEP)
+    # endif()
+
+    MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES}")
+    MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
+    MESSAGE(STATUS "Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
+    MESSAGE(STATUS "Geant4_VERSION: ${Geant4_VERSION}" )
+
+    # Geant4::10.2.2 at least, not in 10.5 (check where it switches)
+    # Geant4 CXX Flags are a string with quotes, not a list, so we need to convert to a list...
+    string(REPLACE " " ";" Geant4_Flags ${Geant4_CXX_FLAGS} ${Geant4_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
+    SET(Geant4_CXX_FLAGS ${Geant4_Flags})
+
+    #Geant4_DEFINITIONS already include -D, we jave to get rid of that so we can join things when creating dictionaries
+    SET(G4_DEF_TEMP "")
+    foreach(def ${Geant4_DEFINITIONS})
+      string(REPLACE "-D" "" def ${def})
+      LIST(APPEND G4_DEF_TEMP ${def})
+    endforeach()
+    SET(Geant4_DEFINITIONS ${G4_DEF_TEMP})
+    UNSET(G4_DEF_TEMP)
+
+    #get_filename_component(Geant4_LOCATION ${Geant4_INCLUDE_DIRS} DIRECTORY)
+    #SET(Geant4_LOCATION "/cvmfs/ilc.desy.de/sw/x86_64_gcc49_sl6/geant4/10.03.p02/lib64")
+
+    ADD_LIBRARY(Geant4::Interface INTERFACE IMPORTED GLOBAL)
+
+    SET_TARGET_PROPERTIES(Geant4::Interface
+      PROPERTIES
+      INTERFACE_COMPILE_OPTIONS "${Geant4_CXX_FLAGS}"
+      INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
+      INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
+      )
+
+    IF(CLHEP)
+      MESSAGE(STATUS "Adding CLHEP to Geant4::Interface Dependencies")
+      TARGET_LINK_LIBRARIES(Geant4::Interface INTERFACE ${CLHEP})
+    ENDIF()
+
+    #Geant4_LIBRARIES are imported targets, we just add them all to our own interface library for convenience
+    #Geant4 Libraries to not (yet) use a namespace
+    foreach(LIB ${Geant4_LIBRARIES})
+      #ADD_LIBRARY(Geant4::${LIB} SHARED IMPORTED GLOBAL)
+      # MESSAGE(STATUS "Geant4 lib location ${LIB} ${G4_LIB_TEMP_${LIB}}")
+      # SET_TARGET_PROPERTIES(Geant4::${LIB}
+      #   PROPERTIES
+      #   INTERFACE_COMPILE_OPTIONS "${Geant4_CXX_FLAGS}"
+      #   INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
+      #   INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
+      #   IMPORTED_LOCATION ${G4_LIB_TEMP_${LIB}}
+      #   )
+      TARGET_LINK_LIBRARIES(Geant4::Interface INTERFACE ${LIB})
+    endforeach()
+
+    MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES};${Geant4_COMPONENT_LIBRARIES}")
+    MESSAGE(STATUS "Geant4 Location ${Geant4_LOCATION}")
+    MESSAGE(STATUS "Geant4 Defintitions ${Geant4_DEFINITIONS}")
+    MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
+    MESSAGE(STATUS "Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
+    MESSAGE(STATUS "Geant4_VERSION: ${Geant4_VERSION}" )
+
+  ENDIF()
+ENDMACRO()

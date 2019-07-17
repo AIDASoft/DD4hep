@@ -13,18 +13,29 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #--------------------------------------------------------------------------
 dd4hep_configure_output()
-dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
-  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector] 
-               [DD4hep REQUIRED COMPONENTS DDCore]
-  OPTIONAL     XERCESC
-  INCLUDE_DIRS include )
-#--------------------------------------------------------------------------
-dd4hep_add_plugin( ClientTests SOURCES src/*.cpp
-  OPTIONAL       [BOOST SOURCES src_boost/*.cpp]
+
+if(TARGET XercesC::XercesC)
+  link_libraries(XercesC::XercesC)
+endif()
+
+link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector
+  DD4hep::DDCore
+  DD4hep::DDCond
+  DD4hep::DDAlign
   )
+include_directories(./include)
+#--------------------------------------------------------------------------
+if(TARGET Boost::boost)
+  SET(CT_BOOST_SOURCES src_boost/*.cpp)
+  set(CT_BOOST_LIB Boost::boost)
+endif()
+new_dd4hep_add_plugin(ClientTests SOURCES src/*.cpp ${CT_BOOST_SOURCES}) 
+target_link_libraries(ClientTests ${CT_BOOST_LIB})
+install(TARGETS ClientTests LIBRARY DESTINATION lib)
+
 #
 #-----------------------------------------------------------------------------------
-dd4hep_add_executable( multipleGeo   main/MultipleGeometries.cpp )
+add_executable( multipleGeo   main/MultipleGeometries.cpp )
 #-----------------------------------------------------------------------------------
 #
 #
