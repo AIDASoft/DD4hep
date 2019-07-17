@@ -126,7 +126,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  python ${CLICSiDEx_INSTALL}/scripts/${script}.py
-      REQUIRES   DDG4 Geant4
       REGEX_PASS "TEST_PASSED"
       REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   endforeach(script)
@@ -135,7 +134,6 @@ if (DD4HEP_USE_GEANT4)
   #dd4hep_add_test_reg( CLICSiD_DDG4_GDML_LONGTEST
   #    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   #    EXEC_ARGS  python ${CLICSiDEx_INSTALL}/scripts/CLIC_GDML.py
-  #    REQUIRES   DDG4 Geant4
   #    REGEX_PASS "G4GDML. Writing 'CLICSiD.gdml' done !"
   #    REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   #
@@ -145,7 +143,6 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
                       --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
-    REQUIRES   DDG4 Geant4
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
   # Geant4 simulations with initialization using AClick and XMl
@@ -155,7 +152,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_AClick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${CLICSiDEx_INSTALL}/scripts/${script}\")"
-      REQUIRES   DDG4 Geant4
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
     #
@@ -163,7 +159,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_exe_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  ${script}
-      REQUIRES   DDG4 Geant4
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
