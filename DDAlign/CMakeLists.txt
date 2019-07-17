@@ -11,7 +11,7 @@
 
 file(GLOB DDAlign_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-add_library(DDAlign SHARED ${DDAlign_SOURCES} )
+add_library(DDAlign SHARED ${DDAlign_SOURCES})
 
 target_include_directories(DDAlign
   PUBLIC
@@ -29,6 +29,8 @@ new_dd4hep_add_plugin(DDAlignPlugins
   LINK_LIBRARIES DDAlign
   )
 
+
+set_target_properties(DDAlign DDAlignPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
 INSTALL(DIRECTORY include/DDAlign DESTINATION include)
-INSTALL(TARGETS DDAlign EXPORT DD4hep DESTINATION lib)
-INSTALL(TARGETS DDAlignPlugins DESTINATION lib)
+INSTALL(TARGETS DDAlign DDAlignPlugins EXPORT DD4hep DESTINATION lib)

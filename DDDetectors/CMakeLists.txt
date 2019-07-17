@@ -20,8 +20,9 @@
 new_dd4hep_add_plugin(DDDetectors 
   SOURCES src/*.cpp
   LINK_LIBRARIES DDRec
-  INCLUDE_DIRS include
+  INCLUDE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-INSTALL(TARGETS DDDetectors DESTINATION lib)
-INSTALL(DIRECTORY compact DESTINATION DDDetectors)
+set_target_properties(DDDetectors PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+install(TARGETS DDDetectors EXPORT DD4hep LIBRARY DESTINATION lib)
+install(DIRECTORY compact DESTINATION DDDetectors)

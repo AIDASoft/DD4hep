@@ -23,12 +23,11 @@ new_dd4hep_add_dictionary( G__DDRec
 
 file(GLOB DDRec_SOURCES src/*.cpp )
 
-#SOURCES include/ROOT/Warnings.h
-
 if(DD4HEP_USE_GEAR)
   FIND_PACAKGE(Gear REQUIRED COMPONENTS geartgeo)
   SET(GEAR_SOURCE_FILE src/gear/DDGear.cpp)
-  SET_SOURCE_FILE_PROPERTIES(${GEAR_SOURCE_FILE}
+  SET_SOURCE_FILES_PROPERTIES(${GEAR_SOURCE_FILE}
+    PROPERTIES
     COMPILE_DEFINITIONS DD4HEP_USE_GEAR
     )
 endif()
@@ -51,7 +50,6 @@ TARGET_LINK_LIBRARIES(DDRec PUBLIC
   ${GEAR_COMPONENT_LIBRARIES}
   )
 
-
 if(GEAR_FOUND)
   SET(DDREC_PLUGIN_GEAR
     src/gear/createGearForILD.cpp
@@ -61,7 +59,7 @@ if(GEAR_FOUND)
 endif()
   
 
-new_dd4hep_add_plugin(DDRecPlugins 
+new_dd4hep_add_plugin(DDRecPlugins
   SOURCES src/plugins/*.cpp ${DDREC_PLUGIN_GEAR}
   LINK_LIBRARIES DDRec
   DEFINITIONS ${DDREC_PLUGIN_DEFINITIONS}
@@ -81,12 +79,9 @@ else()
   endif()
 endif()
 
-dd4hep_install_files(FILES python/*.py DESTINATION python)
+set_target_properties(DDRec DDRecPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-INSTALL(DIRECTORY
-  include/DDRec
-  DESTINATION include
-  )
-
-INSTALL(TARGETS DDRec EXPORT DD4hep DESTINATION lib)
-INSTALL(TARGETS DDRecPlugins DESTINATION lib)
+file(GLOB DDRec_python python/*.py)
+INSTALL(FILES ${DDRec_python} DESTINATION python)
+INSTALL(DIRECTORY include/DDRec DESTINATION include)
+INSTALL(TARGETS DDRec DDRecPlugins EXPORT DD4hep LIBRARY DESTINATION lib)

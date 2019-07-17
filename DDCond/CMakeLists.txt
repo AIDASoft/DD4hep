@@ -11,7 +11,7 @@
 #---Generate ROOT dictionary-----------------------------------------------------
 
 #find_package (ROOT 6.08 REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG) # COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG
-new_dd4hep_add_dictionary( G__DDCond
+new_dd4hep_add_dictionary(G__DDCond
   SOURCES src/ConditionsDictionary.h
   DEPENDS DDCore DDParsers
   )
@@ -39,6 +39,8 @@ new_dd4hep_add_plugin(DDCondPlugins
   SOURCES  src/plugins/*.cpp src/Type1/*.cpp
   LINK_LIBRARIES DDCond)
 
+
+set_target_properties(DDCond DDCondPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
 INSTALL(DIRECTORY include/DDCond DESTINATION include)
-INSTALL(TARGETS DDCond EXPORT DD4hep DESTINATION lib)
-INSTALL(TARGETS DDCondPlugins DESTINATION lib)
+INSTALL(TARGETS DDCond DDCondPlugins EXPORT DD4hep DESTINATION lib)

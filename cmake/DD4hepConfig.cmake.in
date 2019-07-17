@@ -26,6 +26,7 @@ set ( DD4hep_ROOT               "${_thisdir}" )
 set ( DD4hep_VERSION            "@DD4hep_VERSION@" )
 set ( DD4hep_SOVERSION          "@DD4hep_SOVERSION@" )
 set ( DD4HEP_USE_GEANT4         "@DD4HEP_USE_GEANT4@" )
+set ( DD4HEP_USE_LCIO           "@DD4HEP_USE_LCIO@" )
 set ( DD4HEP_USE_XERCESC        "@DD4HEP_USE_XERCESC@" )
 set ( DD4hep_BUILD_CXX_STANDARD @CMAKE_CXX_STANDARD@ )
 
@@ -33,11 +34,7 @@ set ( DD4hep_BUILD_CXX_STANDARD @CMAKE_CXX_STANDARD@ )
 if (NOT "${CMAKE_CXX_STANDARD}" EQUAL "${DD4hep_BUILD_CXX_STANDARD}")
   message( SEND_ERROR "CMAKE_CXX_STANDARD is set to C++${CMAKE_CXX_STANDARD} but C++${DD4hep_BUILD_CXX_STANDARD} is required for DD4hep.")
 endif()
-         
 
-# set ( CMAKE_CXX_STANDARD_REQUIRED ON )
-# set ( CMAKE_CXX_EXTENSIONS OFF )
-# set ( Geant4_DIR         "@Geant4_DIR@" )
 # set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
 
 # set ( ROOTSYS            "$ENV{ROOTSYS}" )
@@ -90,15 +87,12 @@ MESSAGE(STATUS "include dirs ${DD4hep_INCLUDE_DIRS}")
 #set( DD4hep_LIBRARIES    DD4hep_LIBRARIES-NOTFOUND )
 #mark_as_advanced( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
 
-set(DD4hep_LIBRARIES DD4hep::DDParsers DD4hep::DDCore DD4hep::DDRec)
-
-#include( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
+set(DD4hep_LIBRARIES DD4hep::DDCore)
 
 SET(DD4hep_COMPONENT_LIBRARIES)
 IF(DD4hep_FIND_COMPONENTS)
   dd4hep_print( "|++> DD4hep: Looking for Components: ${DD4hep_FIND_COMPONENTS}" )
   FOREACH(comp ${DD4hep_FIND_COMPONENTS})
-    #CHECK_PACKAGE_LIBS is looking for components too, just need to check if they were found, if requested
     IF(NOT TARGET DD4hep::${comp})
       MESSAGE(FATAL_ERROR "|++> Did not find required component: ${comp}")
     ENDIF()

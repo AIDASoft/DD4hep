@@ -9,19 +9,6 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #=================================================================================
-# dd4hep_package(    DDParsers
-#   USES             [ROOT REQUIRED]
-#   OPTIONAL         XERCESC
-#   INCLUDE_DIRS     include
-#   INSTALL_INCLUDES include/Evaluator include/Parsers )
-
-# dd4hep_add_package_library ( DDParsers
-#   INCLUDE_DIRS
-#   LINK_LIBRARIES
-#   SOURCES        src/Parsers/*.cpp src/Evaluator/*.cpp
-#   OPTIONAL       [BOOST SOURCES src/Spirit/*.cpp]
-#   )
-
 
 file(GLOB DDParsers_SOURCES src/Parsers/*.cpp src/Evaluator/*.cpp)
 if(Boost_FOUND)
@@ -51,10 +38,6 @@ target_link_libraries(DDParsers PUBLIC
   ${XML_LIBRARIES}
   )
 
-INSTALL(TARGETS DDParsers EXPORT DD4hep DESTINATION lib)
-
-INSTALL(DIRECTORY
-  include/Parsers
-  include/Evaluator
-  DESTINATION include
-  )
+set_target_properties(DDParsers PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+install(TARGETS DDParsers EXPORT DD4hep LIBRARY DESTINATION lib)
+install(DIRECTORY include/Parsers include/Evaluator DESTINATION include)
