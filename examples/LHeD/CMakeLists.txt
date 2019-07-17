@@ -35,13 +35,12 @@ if (DD4HEP_USE_GEANT4)
   #--------------------------------------------------------------------------
   add_executable(LHeDACLick scripts/LHeDACLick.C)
   target_link_libraries(LHeDACLick DD4hep::DDCore DD4hep::DDG4 Geant4::Interface)
+  INSTALL(TARGETS LHeDXML LHeDACLick  LHeD
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    )
 endif()
 
-
-INSTALL(TARGETS LHeDXML LHeDACLick  LHeD
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
 #
 dd4hep_configure_scripts(LHeD DEFAULT_SETUP WITH_TESTS)
 #
@@ -88,7 +87,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( LHeD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  python ${LHeDEx_INSTALL}/scripts/${script}.py
-      REQUIRES   DDG4 Geant4
       REGEX_PASS "TEST_PASSED"
       REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   endforeach(script)
@@ -99,7 +97,6 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
                       --compact=file:${LHeDEx_INSTALL}/compact/compact.xml 
                       "--position=0,0,0" "--direction=0,1,0"
-    REQUIRES   DDG4 Geant4
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
   # Geant4 simulations with initialization using ACLick and XMl
@@ -109,7 +106,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( LHeD_DDG4_${script}_as_ACLick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  root.exe -b -x -n -q -l "${LHeDEx_INSTALL}/scripts/run.C(\"${LHeDEx_INSTALL}/scripts/${script}\")"
-      REQUIRES   DDG4 Geant4
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
     #
@@ -117,7 +113,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( LHeD_DDG4_${script}_as_exe_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  ${script}
-      REQUIRES   DDG4 Geant4
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)

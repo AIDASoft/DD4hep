@@ -1685,6 +1685,7 @@ ENDMACRO()
 
 MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
 
+  # only do this once
   IF(NOT TARGET Geant4::Interface)
     
     #include( ${Geant4_USE_FILE} ) # do not use the use file, this is not very considerate...
@@ -1692,12 +1693,18 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
       MESSAGE(FATAL_ERROR "Geant4 was built with ${Geant4_TLS_MODEL}, DD4hep requires 'global-dynamic'! Ignore this ERROR with DD4HEP_IGNORE_GEANT4_TLS=True ")
     ENDIF()
 
-    # if(Geant4_builtin_clhep_FOUND)
-    #   set(CLHEP "")
-    # else()
-    #   FIND_PACKAGE(CLHEP REQUIRED)
-    #   set(CLHEP CLHEP)
-    # endif()
+    if(Geant4_builtin_clhep_FOUND)
+      MESSAGE("STATUS: Using Geant4 internal CLHEP")
+      set(CLHEP "")
+    else()
+      FIND_PACKAGE(CLHEP REQUIRED)
+      set(CLHEP CLHEP::CLHEP)
+      MESSAGE("STATUS: Using External CLHEP")
+      MESSAGE(STATUS "CLHEP Libraries ${CLHEP_LIBRARIES}")
+      MESSAGE(STATUS "CLHEP CXX_FLAGS ${CLHEP_CXX_FLAGS}")
+      MESSAGE(STATUS "CLHEP INCL DIRS ${CLHEP_INCLUDE_DIRS}")
+      MESSAGE(STATUS "CLHEP_VERSION: ${CLHEP_VERSION}" )
+    endif()
 
     MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES}")
     MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
