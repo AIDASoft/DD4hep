@@ -36,6 +36,7 @@ install(TARGETS ClientTests LIBRARY DESTINATION lib)
 #
 #-----------------------------------------------------------------------------------
 add_executable( multipleGeo   main/MultipleGeometries.cpp )
+install(TARGETS multipleGeo RUNTIME DESTINATION bin)
 #-----------------------------------------------------------------------------------
 #
 #

@@ -36,6 +36,7 @@ if (DD4HEP_USE_GEANT4)
     LINK_LIBRARIES DD4hep::DDCore DD4hep::DDG4
     Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
     )
+  install(TARGETS DDG4UserLib LIBRARY DESTINATION lib)
   #
   #
   dd4hep_install_dir(data DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
