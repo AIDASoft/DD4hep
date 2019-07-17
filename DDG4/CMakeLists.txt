@@ -14,9 +14,6 @@ IF(NOT DD4HEP_USE_GEANT4)
   RETURN()
 ENDIF()
 
-find_package(Geant4 10.2.2 REQUIRED COMPONENTS gdml ui_all vis_all)
-DD4HEP_SETUP_GEANT4_TARGETS()
-
 # dd4hep_package(    DDG4
 #   USES            [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
 #                   [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
