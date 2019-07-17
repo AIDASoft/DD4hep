@@ -61,7 +61,7 @@ new_dd4hep_add_plugin(DDG4Plugins
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 
-FIND_PACKAGE(PythonLibs QUIET)
+FIND_PACKAGE(PythonLibs 2)
 if(PYTHONLIBS_FOUND)
   MESSAGE(STATUS "Python found, creating DDG4Python Dictionary")
   new_dd4hep_add_dictionary(G__DDG4Python
