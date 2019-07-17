@@ -276,7 +276,7 @@ namespace dd4hep  {
       else {
         std::cout << "The geometry was loaded. Application now exiting." << std::endl;
       }
-      if ( args.destroy ) delete &description;
+      if ( args.destroy ) description.destroyInstance();
       return 0;
     }
 
@@ -381,7 +381,7 @@ namespace dd4hep  {
       if ( !arguments.dry_run && interpreter.get() )  {
         interpreter->Run();
       }
-      if ( arguments.destroy ) delete &description;
+      if ( arguments.destroy ) description.destroyInstance();
       return 0;
     }
 

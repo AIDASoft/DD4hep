@@ -96,7 +96,11 @@ namespace {
       }
       return 0;
     }
-  } s_instances;
+  };
+  static Instances& detector_instances()    {
+    static Instances s_inst;
+    return s_inst;
+  }
 
   void description_unexpected()    {
     try  {
@@ -129,20 +133,20 @@ unique_ptr<Detector> Detector::make_unique(const std::string& name)   {
 }
 
 Detector& Detector::getInstance(const std::string& name)   {
-  lock_guard<recursive_mutex> lock(s_instances.lock);
-  Detector* description = s_instances.get(name);
+  lock_guard<recursive_mutex> lock(detector_instances().lock);
+  Detector* description = detector_instances().get(name);
   if ( 0 == description )   {
     gGeoManager = 0;
     description = new DetectorImp(name);
-    s_instances.insert(name,description);
+    detector_instances().insert(name,description);
   }
   return *description;
 }
 
 /// Destroy the instance
 void Detector::destroyInstance(const std::string& name) {
-  lock_guard<recursive_mutex> lock(s_instances.lock);
-  Detector* description = s_instances.remove(name);
+  lock_guard<recursive_mutex> lock(detector_instances().lock);
+  Detector* description = detector_instances().remove(name);
   if (description)
     delete description;
 }
@@ -196,11 +200,11 @@ DetectorImp::DetectorImp(const string& name)
 /// Standard destructor
 DetectorImp::~DetectorImp() {
   if ( m_manager )  {
-    lock_guard<recursive_mutex> lock(s_instances.lock);
+    lock_guard<recursive_mutex> lock(detector_instances().lock);
     if ( m_manager == gGeoManager ) gGeoManager = 0;
-    Detector* description = s_instances.get(m_manager->GetName());
+    Detector* description = detector_instances().get(m_manager->GetName());
     if ( 0 != description )   {
-      s_instances.remove(m_manager->GetName());
+      detector_instances().remove(m_manager->GetName());
     }
   }
   deletePtr(m_surfaceManager);
