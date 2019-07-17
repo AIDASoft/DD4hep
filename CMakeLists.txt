@@ -91,48 +91,7 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 find_package(ROOT 6.08 REQUIRED) # COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG
 #include(${ROOT_USE_FILE})
 
-
-ADD_LIBRARY(ROOT::Interface INTERFACE IMPORTED GLOBAL)
-
-#ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
-string(REPLACE " " ";" ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
-
-SET_TARGET_PROPERTIES(ROOT::Interface
-  PROPERTIES
-  INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
-  INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
-  )
-
-foreach(LIB Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread MultiProc)
-  ADD_LIBRARY(ROOT::${LIB} SHARED IMPORTED GLOBAL)
-  MESSAGE(STATUS "ROOT lib location ${LIB} ${ROOT_${LIB}_LIBRARY}")
-  SET_TARGET_PROPERTIES(ROOT::${LIB}
-    PROPERTIES
-    INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
-    INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
-    IMPORTED_LOCATION ${ROOT_${LIB}_LIBRARY}
-    )
-  TARGET_LINK_LIBRARIES(ROOT::Interface INTERFACE ROOT::${LIB})
-endforeach()
-
-foreach(LIB PyROOT Geom GenVector)
-  ADD_LIBRARY(ROOT::${LIB} SHARED IMPORTED GLOBAL)
-  MESSAGE(STATUS "ROOT lib location ${LIB} ${G4_LIB_TEMP_${LIB}}")
-  SET_TARGET_PROPERTIES(ROOT::${LIB}
-    PROPERTIES
-    INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
-    INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
-    IMPORTED_LOCATION ${ROOT_${LIB}_LIBRARY}
-    )
-endforeach()
-
-MESSAGE(STATUS "ROOT Libraries ${ROOT_LIBRARIES}")
-MESSAGE(STATUS "ROOT CXX_FLAGS ${ROOT_CXX_FLAGS}")
-MESSAGE(STATUS "ROOT INCL DIRS ${ROOT_INCLUDE_DIRS}")
-MESSAGE(STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
-GET_PROPERTY(IMP_LOC TARGET ROOT::Core PROPERTY IMPORTED_LOCATION)
-MESSAGE(STATUS "ROOT_IMP_LOC: ${IMP_LOC}" )
-
+DD4HEP_SETUP_ROOT_TARGETS()
 
 ###################
 # Configure BOOST #
@@ -142,7 +101,6 @@ SET_TARGET_PROPERTIES(Boost::boost
   PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
-
 
 ######################
 # Set compiler flags #
@@ -174,10 +132,14 @@ add_subdirectory(DDDigi)
 add_subdirectory(DDG4)
 
 # Note the order: DDEve partially depends on variables from DDG4!
-#add_subdirectory(DDEve)
+add_subdirectory(DDEve)
 
-# dd4hep_enable_tests( DDTest )
-# add_subdirectory(UtilityApps)
+include(CTest)
+
+if(BUILD_TESTING)
+  add_subdirectory(DDTest)
+endif()
+add_subdirectory(UtilityApps)
 
 #######################
 # Treatment for Apple #
@@ -217,7 +179,7 @@ display_std_variables()
 # generate and install following configuration files #
 ######################################################
 
-#dd4hep_generate_package_configuration_files( DD4hepConfig.cmake )
+dd4hep_generate_package_configuration_files( DD4hepConfig.cmake )
 if(APPLE)
   SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
 else()
@@ -237,7 +199,7 @@ endif()
 
 INSTALL(EXPORT DD4hep 
   NAMESPACE DD4hep::
-  FILE DD4hepConfig.cmake
+  FILE DD4hepConfig-targets.cmake
   DESTINATION lib
   EXPORT_LINK_INTERFACE_LIBRARIES
   )

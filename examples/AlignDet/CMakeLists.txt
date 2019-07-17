@@ -13,16 +13,23 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #--------------------------------------------------------------------------
 dd4hep_configure_output()
-dd4hep_package ( AlignDet MAJOR 0 MINOR 0 PATCH 1
-  USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
-                 [DD4hep REQUIRED COMPONENTS DDCore DDCond DDAlign]
-  OPTIONAL       XERCESC
-  INCLUDE_DIRS   include
+# dd4hep_package ( AlignDet MAJOR 0 MINOR 0 PATCH 1
+#   USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
+#                  [DD4hep REQUIRED COMPONENTS DDCore DDCond DDAlign]
+#   OPTIONAL       XERCESC
+#   INCLUDE_DIRS   include
+#   )
+
+link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
+  DD4hep::DDCore
+  DD4hep::DDCond
+  DD4hep::DDAlign
   )
 set(AlignDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/AlignDet)
-dd4hep_add_plugin(   AlignDetExample SOURCES src/*.cpp  )
-dd4hep_install_dir(  compact DESTINATION ${AlignDet_INSTALL} )
-dd4hep_configure_scripts( AlignDet DEFAULT_SETUP WITH_TESTS)
+new_dd4hep_add_plugin(AlignDetExample SOURCES src/*.cpp)
+dd4hep_install_dir(compact DESTINATION ${AlignDet_INSTALL})
+dd4hep_configure_scripts(AlignDet DEFAULT_SETUP WITH_TESTS)
+install(TARGETS AlignDetExample LIBRARY DESTINATION lib)
 
 #
 #---Testing: Load Telescope geometry and read conditions ------------------

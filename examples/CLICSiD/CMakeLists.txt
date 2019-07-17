@@ -13,23 +13,30 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
-dd4hep_package ( CLICSiD MAJOR 0 MINOR 0 PATCH 1
-  USES  [ROOT   REQUIRED COMPONENTS Geom] 
-        [DD4hep REQUIRED COMPONENTS DDCore]
-)
+
+find_package(DD4hep)
+find_package(ROOT REQUIRED COMPONENTS Geom)
+
 set(CLICSiDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
 dd4hep_install_dir( scripts sim DESTINATION ${CLICSiDEx_INSTALL} )
 #--------------------------------------------------------------------------
 if (DD4HEP_USE_GEANT4)
-  find_package(Geant4 REQUIRED)
-  dd4hep_add_executable(CLICSiDXML SOURCES scripts/CLICSiDXML.C
-    USES [DD4hep REQUIRED COMPONENTS DDCore DDG4] Geant4)
-  #--------------------------------------------------------------------------
-  dd4hep_add_executable(CLICSiDAClick SOURCES scripts/CLICSiDAClick.C
-    USES [DD4hep REQUIRED COMPONENTS DDCore DDG4] Geant4)
+  add_executable(CLICSiDXML scripts/CLICSiDXML.C)
+  target_link_libraries(CLICSiDXML DD4hep::DDCore DD4hep::DDG4)
+  
+  add_executable(CLICSiDAClick  scripts/CLICSiDAClick.C)
+  target_link_libraries(CLICSiDAClick DD4hep::DDCore DD4hep::DDG4)
 endif()
 #
+
+install(TARGETS CLICSiDXML CLICSiDAClick DESTINATION bin)
+
 dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
+
+enable_testing ()
+include(CTest)
+
+
 #
 #---Testing-------------------------------------------------------------------------
 #

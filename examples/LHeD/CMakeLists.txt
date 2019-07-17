@@ -13,25 +13,35 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
-dd4hep_package ( LHeD MAJOR 0 MINOR 0 PATCH 1
-  USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
-                 [DD4hep REQUIRED COMPONENTS DDRec DDCore DDCond DDAlign]
-  )
+# dd4hep_package ( LHeD MAJOR 0 MINOR 0 PATCH 1
+#   USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
+#                  [DD4hep REQUIRED COMPONENTS DDRec DDCore DDCond DDAlign]
+#   )
 set(LHeDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/LHeD)
 dd4hep_install_dir( src compact scripts sim DESTINATION ${LHeDEx_INSTALL} )
 #-----------------------------------------------------------------------------------
 set(LIBRARY_OUTPUT_PATH    ${PROJECT_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-dd4hep_add_plugin(LHeD SOURCES src/*.cpp)
+
+new_dd4hep_add_plugin(LHeD SOURCES src/*.cpp
+  LINK_LIBRARIES ROOT::Core ROOT::Geom ROOT::GenVector
+  DD4hep::DDRec DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign
+  )
 
 if (DD4HEP_USE_GEANT4)
   find_package(Geant4 REQUIRED)
-  dd4hep_add_executable(LHeDXML SOURCES scripts/LHeDXML.C
-    USES [DD4hep REQUIRED COMPONENTS DDCore DDG4] Geant4)
+  add_executable(LHeDXML scripts/LHeDXML.C)
+  target_link_libraries(LHeDXML DD4hep::DDCore DD4hep::DDG4 Geant4::Interface)
   #--------------------------------------------------------------------------
-  dd4hep_add_executable(LHeDACLick SOURCES scripts/LHeDACLick.C
-    USES [DD4hep REQUIRED COMPONENTS DDCore DDG4] Geant4)
+  add_executable(LHeDACLick scripts/LHeDACLick.C)
+  target_link_libraries(LHeDACLick DD4hep::DDCore DD4hep::DDG4 Geant4::Interface)
 endif()
+
+
+INSTALL(TARGETS LHeDXML LHeDACLick  LHeD
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
 #
 dd4hep_configure_scripts(LHeD DEFAULT_SETUP WITH_TESTS)
 #
