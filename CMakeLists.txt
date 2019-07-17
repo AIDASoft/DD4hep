@@ -102,6 +102,11 @@ SET_TARGET_PROPERTIES(Boost::boost
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
 
+IF(DD4HEP_USE_LCIO)
+  FIND_PACKAGE(LCIO REQUIRED)
+  DD4HEP_SETUP_LCIO_TARGETS()
+ENDIF()
+
 ######################
 # Set compiler flags #
 ######################

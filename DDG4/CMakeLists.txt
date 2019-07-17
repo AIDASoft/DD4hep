@@ -98,10 +98,9 @@ endif()
 #---------------------------  Plugin library for the simulation framework  ---------
 #---------------------------  LCIO Plugins for new simulation framework  -----------
 IF(DD4HEP_USE_LCIO)
-  FIND_PACKAGE(LCIO REQUIRED)    
   new_dd4hep_add_plugin(DDG4LCIO
     SOURCES lcio/*.cpp
-    LINK_LIBRARIES ${LCIO_LIBRARIES}
+    LINK_LIBRARIES LCIO::LCIO
     )
 ENDIF()
 # #---------------------------  DDRec dependent Plugins  -----------------------------
