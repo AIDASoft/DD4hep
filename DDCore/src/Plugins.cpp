@@ -120,9 +120,7 @@ namespace   {
     }
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
     if ( 0 != gSystem->Load(plugin_name) )   {
-      string err = "Failed to load plugin manager library: ";
-      err += plugin_name;
-      throw runtime_error(err);
+      printout(INFO,"Plugins","Failed to load plugin manager library: %s",plugin_name);
     }
 #else
     handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
