@@ -309,10 +309,10 @@ void HepMC::fix_particles(EventStream& info)  {
       for(id=v->out.begin(); id!=v->out.end();++id)    {
         EventStream::Particles::iterator ipp = parts.find(*id);
         Geant4Particle* dau = ipp != parts.end() ? (*ipp).second : 0;
-        p->daughters.insert(*id);
-        if ( !p )    {
+        if ( !dau )    {
           cout << "ERROR: Invalid daughter particle: " << *id << endl;
         }
+        p->daughters.insert(*id);
         dau->parents.insert(p->id);
       }
     }

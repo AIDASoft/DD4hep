@@ -119,7 +119,11 @@ namespace   {
       plugin_name = "libDD4hepGaudiPluginMgr";
     }
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
-    gSystem->Load(plugin_name);
+    if ( 0 != gSystem->Load(plugin_name) )   {
+      string err = "Failed to load plugin manager library: ";
+      err += plugin_name;
+      throw runtime_error(err);
+    }
 #else
     handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
 #endif

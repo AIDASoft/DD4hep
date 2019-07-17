@@ -128,18 +128,19 @@ void Geant4GDMLWriteAction::installCommandMessenger()   {
 
 /// Write geometry to GDML
 void Geant4GDMLWriteAction::writeGDML()   {
+  string fname = m_output;
   struct stat buff;
-  if ( m_output.empty() )   {
+  if ( fname.empty() )   {
     error("+++ No GDML file name given. Please set the output file (property Output)");
     return;
   }
-  if ( 0 == ::stat(m_output.c_str(), &buff) && !m_overWrite )  {
+  if ( 0 == ::stat(fname.c_str(), &buff) && !m_overWrite )  {
     error("+++ GDML file elready exists. Please set another output file (property Output)");
     return;
   }
-  if ( 0 == ::stat(m_output.c_str(), &buff) && m_overWrite )  {
-    warning("+++ GDML file %s already exists. Overwriting existing file.", m_output.c_str());
-    ::unlink(m_output.c_str());
+  if ( 0 == ::stat(fname.c_str(), &buff) && m_overWrite )  {
+    warning("+++ GDML file %s already exists. Overwriting existing file.", fname.c_str());
+    ::unlink(fname.c_str());
   }
   unique_ptr<G4GDMLParser> parser(new G4GDMLParser());
   parser->SetRegionExport(m_exportRegions != 0);
@@ -147,8 +148,8 @@ void Geant4GDMLWriteAction::writeGDML()   {
 #if G4VERSION_NUMBER>=1030
   parser->SetSDExport(m_exportSensitiveDetectors != 0);
 #endif
-  info("+++ Writing GDML file: %s", m_output.c_str());
-  parser->Write(m_output, context()->world());
+  info("+++ Writing GDML file: %s", fname.c_str());
+  parser->Write(fname, context()->world());
 }
 
 #include "DDG4/Factories.h"
