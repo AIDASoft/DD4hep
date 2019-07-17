@@ -1666,7 +1666,7 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     #   )
     #endforeach()
     # Non-standard ROOT components we need later on, we "import" them by hand for now
-    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore)
+    foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore EG EGL)
       ADD_LIBRARY(ROOT::${LIB} INTERFACE IMPORTED GLOBAL)
       TARGET_LINK_LIBRARIES(ROOT::${LIB} INTERFACE ${LIB})
       # SET_TARGET_PROPERTIES(ROOT::${LIB}
