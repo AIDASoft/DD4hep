@@ -8,11 +8,6 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-# dd4hep_package(UtilityApps
-#   USES DDCore
-#       [ROOT REQUIRED COMPONENTS Geom]
-#   )
-#-----------------------------------------------------------------------------------
 add_executable(geoDisplay src/display.cpp)
 target_link_libraries(geoDisplay DDCore)
 #-----------------------------------------------------------------------------------
@@ -37,7 +32,6 @@ target_link_libraries(materialBudget ROOT::Core ROOT::Geom DDRec ROOT::Hist)
 add_executable(graphicalScan src/graphicalScan.cpp)
 target_link_libraries(graphicalScan ROOT::Core ROOT::Geom DDRec ROOT::Hist)
 #-----------------------------------------------------------------------------------
-
 
 if(TARGET Geant4::Interface)
   add_executable(dumpdetector src/dumpdetector.cpp)
@@ -86,5 +80,6 @@ INSTALL(TARGETS geoDisplay
   graphicalScan
   dumpdetector
   teveDisplay
+  EXPORT DD4hep
   RUNTIME DESTINATION bin
   )

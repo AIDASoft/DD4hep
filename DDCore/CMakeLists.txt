@@ -78,10 +78,13 @@ target_link_libraries(DDCore
   ${XML_LIBRARIES} # XercesC or not
   )
 
-TARGET_COMPILE_FEATURES(DDCore
-  PUBLIC cxx_alignof
-  #cxx_std_${CMAKE_CXX_STANDARD} # Needs cmake 3.8
-  )
+if(${CMAKE_VERSION} VERSION_GREATER 3.7.99)
+  target_compile_features(DDCore
+    PUBLIC
+    cxx_std_${CMAKE_CXX_STANDARD} # Needs cmake 3.8
+    )
+endif()
+
 
 # # Generate DDCore plugins---------------------------------------------------------
 new_dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp
@@ -90,9 +93,11 @@ new_dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp
 # This plugins depends on the ROOT GDML readers. Hence, extra library
 IF(TARGET ROOT::Gdml)
   new_dd4hep_add_plugin(DDGDMLPlugins
-  SOURCES src/gdml/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Core ROOT::Gdml
-  )
+    SOURCES src/gdml/*.cpp
+    LINK_LIBRARIES DDCore ROOT::Core ROOT::Gdml
+    )
+  set_target_properties(DDGDMLPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  install(TARGETS DDGDMLPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
 ELSE()
   MESSAGE(WARN "ROOT does not include GDML, not building DDCore GDML Plugins")
 ENDIF()
@@ -100,9 +105,11 @@ ENDIF()
 #---------------------------  Specialized PYTHON plugin ----------------------------
 IF(TARGET ROOT::PyROOT)
   new_dd4hep_add_plugin(DDPythonPlugins
-  SOURCES src/python/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Core ROOT::PyROOT
-  )
+    SOURCES src/python/*.cpp
+    LINK_LIBRARIES DDCore ROOT::Core ROOT::PyROOT
+    )
+  set_target_properties(DDPythonPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  install(TARGETS DDPythonPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
 ELSE()
   MESSAGE(WARN "ROOT does not include PyRoot, not building DDCore DDPython Plugins")
 ENDIF()
@@ -122,6 +129,5 @@ INSTALL(DIRECTORY
   DESTINATION include
   )
 
-
-INSTALL(TARGETS DDCore EXPORT DD4hep DESTINATION lib)
-INSTALL(TARGETS DDCorePlugins DESTINATION lib)
+set_target_properties(DDCore DDCorePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+INSTALL(TARGETS DDCore DDCorePlugins EXPORT DD4hep LIBRARY DESTINATION lib)

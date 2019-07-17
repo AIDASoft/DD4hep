@@ -14,19 +14,12 @@ IF(NOT DD4HEP_USE_GEANT4)
   RETURN()
 ENDIF()
 
-# dd4hep_package(    DDG4
-#   USES            [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
-#                   [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-#                    BOOST DDCore
-#   OPTIONAL         ${CLHEP} [XercesC QUIET]
-#   INCLUDE_DIRS     include
-#   INSTALL_INCLUDES include/DDG4 )
-
 dd4hep_print ( "|++> CLHEP_LIBRARIES ${CLHEP_LIBRARIES} ${CLHEP_LIBRARY}" )
 
 #---Add Library---------------------------------------------------------------------
 file(GLOB DDG4_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(DDG4 SHARED ${DDG4_SOURCES})
+
 target_link_libraries(DDG4
   PUBLIC
   DDCore
@@ -71,7 +64,7 @@ if(PYTHONLIBS_FOUND)
     SOURCES tpython/DDPython.C
     INCLUDES ${PYTHON_INCLUDE_DIRS}
     )
-  if(ROOT_python_FOUND)
+  if(TARGET ROOT::PyROOT)
     #---------------------------  Specialized python plugins  --------------------------
     MESSAGE(STATUS "ROOT Has Python, creating DDPython library and plugins")
     add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
@@ -89,6 +82,9 @@ if(PYTHONLIBS_FOUND)
     #---Helper to overcome deficiency of the python executable concerning multi-threading
     add_executable(pyddg4 pyddg4.cpp)
     target_link_libraries(pyddg4 PUBLIC DDPython ROOT::Core ROOT::PyROOT)
+
+    # install these libraries
+    set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
     INSTALL(TARGETS DDPython pyddg4 DDG4Python EXPORT DD4hep
       LIBRARY DESTINATION lib
       RUNTIME DESTINATION bin)
@@ -104,7 +100,9 @@ IF(TARGET LCIO::LCIO)
     SOURCES lcio/*.cpp
     LINK_LIBRARIES DDG4 LCIO::LCIO
     )
-  install(TARGETS DDG4LCIO LIBRARY DESTINATION lib)
+  install(TARGETS DDG4LCIO EXPORT DD4hep LIBRARY DESTINATION lib)
+  set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
 ENDIF()
 # #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
@@ -113,7 +111,7 @@ ENDIF()
 #     SOURCES reco/*.cpp
 #     LINK_LIBRARIES DDCore DDG4 DDRec
 #     )
-#   install(TARGETS DDG4Reco LIBRARY DESTINATION lib)
+#   install(TARGETS DDG4Reco EXPORT DD4hep LIBRARY DESTINATION lib)
 # ENDIF()
 #-----------------------------------------------------------------------------------
 add_executable(g4gdmlDisplay g4gdmlDisplay.cpp)
@@ -124,17 +122,19 @@ target_link_libraries(g4gdmlDisplay DDG4)
 target_link_libraries(g4FromXML DDG4)
 
 #---Package installation procedure(s) ----------------------------------------------
-dd4hep_install_dir(examples DESTINATION examples/DDG4)
-dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)
+file(GLOB DDG4_python python/*.py python/*.C)
+install(FILES ${DDG4_python} DESTINATION python)
+
 install(PROGRAMS python/DDSim/bin/ddsim DESTINATION bin)
-dd4hep_install_dir(python/DDSim DESTINATION python)
+install(DIRECTORY python/DDSim DESTINATION python)
 
-INSTALL(TARGETS DDG4 EXPORT DD4hep DESTINATION lib)
-INSTALL(TARGETS DDG4 DDG4Plugins
-  g4gdmlDisplay
-  g4FromXML
+install(DIRECTORY examples DESTINATION examples/DDG4)
+
+set_target_properties(DDG4 DDG4Plugins DDG4Legacy PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
+
+install(TARGETS DDG4 DDG4Plugins DDG4Legacy g4gdmlDisplay g4FromXML
+  EXPORT DD4hep
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  )
-
-INSTALL(DIRECTORY include/DDG4 DESTINATION include)
+  RUNTIME DESTINATION bin)
+install(DIRECTORY include/DDG4 DESTINATION include)

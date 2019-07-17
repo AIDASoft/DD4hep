@@ -8,16 +8,9 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-# dd4hep_package(    DDDigi
-#   USES             DDCore
-#                    [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-#                    BOOST
-#   INCLUDE_DIRS     include
-#   INSTALL_INCLUDES include/DDDigi )
-
-#---Add Library---------------------------------------------------------------------
 file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(DDDigi SHARED ${DDDigi_SOURCES})
+
 target_link_libraries(DDDigi PUBLIC
   DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
 
@@ -41,8 +34,8 @@ endif()
 
 #---------------------------  Legacy libraries -------------------------------------
 new_dd4hep_add_dictionary(G__DDDigi
-  SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h python/DDDigiDict.C
-  LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
+  SOURCES ../DDCore/include/ROOT/Warnings.h python/DDDigiDict.C
+  LINKDEF ../DDCore/include/ROOT/LinkDef.h
   DEPENDS DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO Boost::boost
   )
 #---------------------------  Plugin library for the digitization framework  -------
@@ -53,6 +46,9 @@ new_dd4hep_add_plugin(DDDigiPlugins
   )
 
 #---Package installation procedure(s) ----------------------------------------------
+
+set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
 file(GLOB DDigi_python python/*.py python/*.C)
 install(FILES ${DDigi_python} DESTINATION python)
 install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep LIBRARY DESTINATION lib)

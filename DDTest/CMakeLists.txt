@@ -24,7 +24,7 @@ foreach(TEST_NAME
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
   target_link_libraries(${TEST_NAME} DDCore DDRec DDTest)
-  install(TARGETS ${TEST_NAME} DESTINATION bin)
+  install(TARGETS ${TEST_NAME} RUNTIME DESTINATION bin)
 
   set(cmd ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME})
   add_test(NAME t_${TEST_NAME} COMMAND ${cmd} ${TEST_NAME})
@@ -37,7 +37,7 @@ foreach(TEST_NAME
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
   target_link_libraries(${TEST_NAME} DDCore DDRec DDTest)
-  install(TARGETS ${TEST_NAME} DESTINATION bin)
+  install(TARGETS ${TEST_NAME} RUNTIME DESTINATION bin)
   add_test(NAME t_${TEST_NAME}
     COMMAND ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME} file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml)
   set_tests_properties(t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED")
@@ -62,3 +62,4 @@ if (DD4HEP_USE_GEANT4)
   SET_TESTS_PROPERTIES( test_ddsim PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
 
 endif()
+install(DIRECTORY include/DD4hep DESTINATION include)
