@@ -30,8 +30,6 @@ add_executable(listcomponents src/listcomponents.cpp )
 target_link_libraries(listcomponents DD4hepGaudiPluginMgr  ${CMAKE_DL_LIBS})
 target_compile_options(listcomponents PRIVATE -Wno-deprecated)
 
-install(TARGETS listcomponents DD4hepGaudiPluginMgr
+INSTALL(TARGETS listcomponents DD4hepGaudiPluginMgr EXPORT DD4hep
   RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
-INSTALL(TARGETS listcomponents DD4hepGaudiPluginMgr EXPORT DD4hep DESTINATION lib)
+  LIBRARY DESTINATION lib)

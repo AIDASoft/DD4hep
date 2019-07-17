@@ -95,29 +95,25 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 ########################
 
 # Configure ROOT
-find_package(ROOT 6.08 REQUIRED) # COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG
-#include(${ROOT_USE_FILE})
-
+find_package (ROOT 6.08 REQUIRED)
 DD4HEP_SETUP_ROOT_TARGETS()
 
-###################
-# Configure BOOST #
-###################
+# Configure BOOST
 find_package(Boost 1.49 REQUIRED COMPONENTS filesystem system)
 SET_TARGET_PROPERTIES(Boost::boost
   PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
 
-IF(DD4HEP_USE_LCIO)
-  FIND_PACKAGE(LCIO REQUIRED)
-  DD4HEP_SETUP_LCIO_TARGETS()
-ENDIF()
-
-
-IF(DD4HEP_USE_GEANT4)
-  find_package(Geant4 10.2.2 REQUIRED COMPONENTS gdml ui_all vis_all)
+# Configure Geant4
+if(DD4HEP_USE_GEANT4)
+  find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all )
   DD4HEP_SETUP_GEANT4_TARGETS()
+endif()
+
+if(DD4HEP_USE_LCIO)
+  find_package(LCIO REQUIRED)
+  DD4HEP_SETUP_LCIO_TARGETS()
 endif()
 
 ######################
@@ -152,9 +148,9 @@ add_subdirectory(DDG4)
 # Note the order: DDEve partially depends on variables from DDG4!
 add_subdirectory(DDEve)
 
-include(CTest)
-
+enable_testing()
 if(BUILD_TESTING)
+  include(CTest)
   add_subdirectory(DDTest)
 endif()
 add_subdirectory(UtilityApps)
@@ -218,6 +214,6 @@ endif()
 INSTALL(EXPORT DD4hep 
   NAMESPACE DD4hep::
   FILE DD4hepConfig-targets.cmake
-  DESTINATION lib
+  DESTINATION cmake
   EXPORT_LINK_INTERFACE_LIBRARIES
   )
