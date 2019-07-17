@@ -22,3 +22,6 @@ new_dd4hep_add_plugin(DDDetectors
   LINK_LIBRARIES DDRec
   INCLUDE_DIRS include
 )
+
+INSTALL(TARGETS DDDetectors DESTINATION lib)
+INSTALL(DIRECTORY compact DESTINATION DDDetectors)

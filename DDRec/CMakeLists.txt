@@ -80,6 +80,12 @@ else()
   endif()
 endif()
 
-# dd4hep_install_files(FILES python/*.py DESTINATION python)
+dd4hep_install_files(FILES python/*.py DESTINATION python)
+
+INSTALL(DIRECTORY
+  include/DDRec
+  DESTINATION include
+  )
 
 INSTALL(TARGETS DDRec EXPORT DD4hep DESTINATION lib)
+INSTALL(TARGETS DDRecPlugins DESTINATION lib)

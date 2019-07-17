@@ -39,4 +39,6 @@ new_dd4hep_add_plugin(DDCondPlugins
   SOURCES  src/plugins/*.cpp src/Type1/*.cpp
   LINK_LIBRARIES DDCond)
 
+INSTALL(DIRECTORY include/DDCond DESTINATION include)
 INSTALL(TARGETS DDCond EXPORT DD4hep DESTINATION lib)
+INSTALL(TARGETS DDCondPlugins DESTINATION lib)

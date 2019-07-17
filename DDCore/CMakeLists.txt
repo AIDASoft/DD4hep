@@ -73,8 +73,8 @@ target_link_libraries(DDCore
   PUBLIC
   DD4hepGaudiPluginMgr
   DDParsers
-  ROOT::Interface
-  ROOT::Geom ROOT::Geom GenVector
+  ROOT::Core
+  ROOT::Geom ROOT::GenVector
   ${XML_LIBRARIES} # XercesC or not
   )
 
@@ -82,19 +82,6 @@ TARGET_COMPILE_FEATURES(DDCore
   PUBLIC cxx_alignof
   #cxx_std_${CMAKE_CXX_STANDARD} # Needs cmake 3.8
   )
-
-#FIXME: install header file folders
-# dd4hep_package(    DDCore
-#   USES             [ROOT REQUIRED COMPONENTS Geom GenVector]
-#                    DDParsers
-#   OPTIONAL         XERCESC
-#   INCLUDE_DIRS     include
-#   INSTALL_INCLUDES include/DDSegmentation
-#   include/DD4hep 
-#   include/XML    
-#   include/JSON   
-#   include/Parsers
-#   include/ROOT   )
 
 # # Generate DDCore plugins---------------------------------------------------------
 new_dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp
@@ -104,7 +91,7 @@ new_dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp
 IF(${ROOT_gdml_FOUND})
   new_dd4hep_add_plugin(DDGDMLPlugins
   SOURCES src/gdml/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Interface
+  LINK_LIBRARIES DDCore ROOT::Core
   )
 ELSE()
   MESSAGE(WARN "ROOT does not include GDML, not building DDCore GDML Plugins")
@@ -114,7 +101,7 @@ ENDIF()
 IF(ROOT_python_FOUND)
   new_dd4hep_add_plugin(DDPythonPlugins
   SOURCES src/python/*.cpp
-  LINK_LIBRARIES DDCore ROOT::Interface ROOT::PyROOT
+  LINK_LIBRARIES DDCore ROOT::Core ROOT::PyROOT
   )
 ELSE()
   MESSAGE(WARN "ROOT does not include PyRoot, not building DDCore DDPython Plugins")
@@ -125,4 +112,16 @@ ENDIF()
 #---Package installation procedure(s) ----------------------------------------------
 dd4hep_install_files(FILES python/*.py DESTINATION python)
 
+INSTALL(DIRECTORY
+  include/DDSegmentation
+  include/DD4hep
+  include/XML
+  include/JSON
+  include/Parsers
+  include/ROOT
+  DESTINATION include
+  )
+
+
 INSTALL(TARGETS DDCore EXPORT DD4hep DESTINATION lib)
+INSTALL(TARGETS DDCorePlugins DESTINATION lib)

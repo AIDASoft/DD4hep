@@ -8,37 +8,51 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-dd4hep_package(    DDDigi
-  USES             DDCore
-                   [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
-                   BOOST
-  INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDDigi )
+# dd4hep_package(    DDDigi
+#   USES             DDCore
+#                    [ROOT   REQUIRED COMPONENTS Geom GenVector RIO]
+#                    BOOST
+#   INCLUDE_DIRS     include
+#   INSTALL_INCLUDES include/DDDigi )
 
 #---Add Library---------------------------------------------------------------------
-dd4hep_add_package_library(DDDigi SOURCES src/*.cpp
-  [OPTIONAL TBB REQUIRED]
+file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+add_library(DDDigi SHARED ${DDDigi_SOURCES})
+target_link_libraries(DDDigi PUBLIC
+  DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
+
+target_include_directories(DDDigi
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
   )
-if( TBB_INCLUDE_DIR )
+
+FIND_PACKAGE(TBB QUIET)
+if(TBB_FOUND)
   dd4hep_print( "|++> TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
   dd4hep_print( "|++> TBB_LIBRARY     -->  ${TBB_LIBRARY}")
   dd4hep_print( "|++> TBB found. DDDigi will run multi threaded.")
   target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
   target_link_libraries(DDDigi ${TBB_LIBRARY})
+  target_include_directories(DDDigi ${TBB_INCLUDE_DIRS})
 else()
   dd4hep_print( "|++> TBB not found. DDDigi will only work single threaded.")
 endif()
 
 #---------------------------  Legacy libraries -------------------------------------
-dd4hep_add_dictionary( G__DDDigi
+new_dd4hep_add_dictionary(G__DDDigi
   SOURCES ${DDCore_INCLUDE_DIRS}/include/ROOT/Warnings.h python/DDDigiDict.C
   LINKDEF ${DDCore_INCLUDE_DIRS}/include/ROOT/LinkDef.h
+  DEPENDS DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO Boost::boost
   )
 #---------------------------  Plugin library for the digitization framework  -------
-dd4hep_add_plugin(DDDigiPlugins
-  GENERATED   G__DDDigi.cxx
-  SOURCES     plugins/*.cpp
+new_dd4hep_add_plugin(DDDigiPlugins
+  SOURCES        plugins/*.cpp
+  GENERATED      G__DDDigi.cxx
+  LINK_LIBRARIES DDDigi
   )
-target_compile_definitions(DDDigiPlugins PUBLIC DD4HEP_USE_TBB)
+
 #---Package installation procedure(s) ----------------------------------------------
-dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)
+file(GLOB DDigi_python python/*.py python/*.C)
+install(FILES ${DDigi_python} DESTINATION python)
+install(TARGETS DDDigi EXPORT DD4hep DESTINATION lib)
