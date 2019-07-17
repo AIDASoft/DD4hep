@@ -51,9 +51,7 @@ new_dd4hep_add_plugin(DDG4Legacy  SOURCES legacy/*.cpp
 #-----------------------------------------------------------------------------------
 new_dd4hep_add_dictionary( G__DDG4
   SOURCES python/DDG4Dict.C
-  DEPENDS DDCore DDParsers DDG4
-  INCLUDES ${Geant4_INCLUDE_DIRS} 
-  DEFINITIONS ${Geant4_DEFINITIONS}
+  DEPENDS DDCore DDParsers DDG4 Geant4::Interface
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 new_dd4hep_add_plugin(DDG4Plugins
@@ -68,9 +66,7 @@ if(PYTHONLIBS_FOUND)
   MESSAGE(STATUS "Python found, creating DDG4Python Dictionary")
   new_dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
-    DEPENDS DDCore DDParsers DDG4 ROOT::Core
-    INCLUDES ${Geant4_INCLUDE_DIRS}  ${PYTHON_INCLUDE_DIRS}
-    DEFINITIONS ${Geant4_DEFINITIONS}
+    DEPENDS DDCore DDParsers DDG4 ROOT::Core Geant4::Interface
     )
   new_dd4hep_add_dictionary(G__DDPython
     SOURCES tpython/DDPython.C
