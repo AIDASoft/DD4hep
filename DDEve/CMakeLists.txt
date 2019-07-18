@@ -8,6 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDEve)
 
 add_library(DDEve_Interface INTERFACE)
 target_include_directories(DDEve_Interface

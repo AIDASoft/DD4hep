@@ -3,6 +3,7 @@ if (POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW) # CMake 3.12
 endif ()
 PROJECT( DD4hep LANGUAGES NONE)
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
 
 #################
 # Setup version #

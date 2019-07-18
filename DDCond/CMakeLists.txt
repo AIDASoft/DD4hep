@@ -8,8 +8,11 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCond)
+
 dd4hep_add_dictionary(G__DDCond
-  SOURCES src/ConditionsDictionary.h
+  SOURCES ../DDCore/include/ROOT/Warnings.h src/ConditionsDictionary.h
+  LINKDEF ../DDCore/include/ROOT/LinkDef.h
   USES    DDCore DDParsers
   )
 

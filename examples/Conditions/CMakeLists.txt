@@ -24,11 +24,6 @@ link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector
   DD4hep::DDAlign
   )
   
-# dd4hep_package ( Conditions MAJOR 0 MINOR 0 PATCH 1
-#   USES         [ROOT   REQUIRED COMPONENTS Geom GenVector]
-#                [DD4hep REQUIRED COMPONENTS DDCore DDCond DDAlign]
-#   OPTIONAL     XERCESC
-# )
 #-----------------------------------------------------------------------------------
 dd4hep_add_plugin(ConditionsExample SOURCES src/*.cpp)
 install(TARGETS ConditionsExample LIBRARY DESTINATION lib)

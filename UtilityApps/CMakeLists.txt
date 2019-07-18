@@ -8,6 +8,8 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME UtilityApps)
+
 add_executable(geoDisplay src/display.cpp)
 target_link_libraries(geoDisplay DDCore)
 #-----------------------------------------------------------------------------------

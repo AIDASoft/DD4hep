@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 if(NOT TARGET Geant4::Interface)
-  MESSAGE(STATUS "Not creating DDG4_MySensDet tests")
+  dd4hep_print("Not creating DDG4_MySensDet tests")
   return()
 endif()
 
