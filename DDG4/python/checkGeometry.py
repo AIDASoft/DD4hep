@@ -10,6 +10,7 @@
 #
 #==========================================================================
 
+from __future__ import absolute_import
 import sys, errno, optparse, logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)

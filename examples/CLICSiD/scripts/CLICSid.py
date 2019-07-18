@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import sys, logging, DDG4
 from g4units import *
 

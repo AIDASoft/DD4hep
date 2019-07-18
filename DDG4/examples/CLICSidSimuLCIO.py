@@ -1,5 +1,6 @@
 #
 #
+from __future__ import absolute_import
 import os, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *

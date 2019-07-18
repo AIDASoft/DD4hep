@@ -8,6 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+from __future__ import absolute_import
 import logging
 import dd4hep as core
 

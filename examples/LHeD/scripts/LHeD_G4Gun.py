@@ -7,6 +7,7 @@
    @version 1.0
 
 """
+from __future__ import absolute_import
 def run():
   import logging, LHeD, DDG4
   from DDG4 import OutputLevel as Output

@@ -1,5 +1,6 @@
 """Helper object for random number generator objects"""
 
+from __future__ import absolute_import
 import random
 
 from DDSim.Helper.ConfigHelper import ConfigHelper

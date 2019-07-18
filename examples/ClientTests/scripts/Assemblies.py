@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os, sys, time, DDG4
 from SystemOfUnits import *
 #

@@ -1,5 +1,6 @@
 """Helper object for particle gun properties"""
 
+from __future__ import absolute_import
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import GeV
 

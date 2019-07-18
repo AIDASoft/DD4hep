@@ -6,6 +6,7 @@
    @version 1.0
 
 """
+from __future__ import absolute_import
 def run():
   import os, sys, logging, DDG4, CLICSid, g4units
 

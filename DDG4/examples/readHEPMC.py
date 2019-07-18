@@ -6,6 +6,7 @@ dd4hep simulation example setup using the python configuration
 @version 1.0
 
 """
+from __future__ import absolute_import
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 
