@@ -117,7 +117,7 @@ endmacro(dd4hep_set_compiler_flags)
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_debug msg )
-  if( NOT "${DD4HEP_DEBUG_CMAKE}" STREQUAL "" ) 
+  if(DD4HEP_DEBUG_CMAKE) 
     get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
     string ( LENGTH "${msg}" lmsg ) 
     if ( ${lmsg} GREATER 1024 )
@@ -306,7 +306,7 @@ macro ( dd4hep_configure_output )
     set ( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin )
   endif()
   #------------- set the default installation directory to be the source directory
-  dd4hep_debug( "dd4hep_configure_output: CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}  CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT=${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT}" )
+  dd4hep_debug("|++> dd4hep_configure_output: CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}  CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT=${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT}" )
   if ( NOT "${ARG_INSTALL}" STREQUAL "" )
     set ( CMAKE_INSTALL_PREFIX ${ARG_INSTALL} CACHE PATH "Set install prefix path." FORCE )
     dd4hep_print( "DD4hep_configure_output: set CMAKE_INSTALL_PREFIX to ${ARG_INSTALL}" )

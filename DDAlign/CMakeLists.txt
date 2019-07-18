@@ -8,6 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDAlign)
 
 file(GLOB DDAlign_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
@@ -21,10 +22,7 @@ target_include_directories(DDAlign
 
 target_link_libraries(DDAlign PUBLIC DDCore)
 
-dd4hep_add_plugin(DDAlignPlugins
-  SOURCES src/plugins/*.cpp
-  USES    DDAlign
-  )
+dd4hep_add_plugin(DDAlignPlugins SOURCES src/plugins/*.cpp USES DDAlign)
 
 set_target_properties(DDAlign DDAlignPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 

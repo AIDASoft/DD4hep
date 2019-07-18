@@ -16,6 +16,7 @@
 #  Date:    13/11/2014
 #
 #--------------------------------------------------------------------------
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDDetectors)
 
 dd4hep_add_plugin(DDDetectors 
   SOURCES src/*.cpp

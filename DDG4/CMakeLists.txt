@@ -8,13 +8,13 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDG4)
+
 # configure Geant4
 IF(NOT DD4HEP_USE_GEANT4)
-  MESSAGE(STATUS "Not Using geant4, not building DDG4")
+  dd4hep_print("Not Using geant4, not building DDG4")
   RETURN()
 ENDIF()
-
-dd4hep_print ( "|++> CLHEP_LIBRARIES ${CLHEP_LIBRARIES} ${CLHEP_LIBRARY}" )
 
 #---Add Library---------------------------------------------------------------------
 file(GLOB DDG4_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
@@ -50,10 +50,10 @@ dd4hep_add_plugin(DDG4Plugins
 #---------------------------  Plugin library for the simulation framework  ---------
 
 
-find_package(PythonInterp 2 REQUIRED)
+find_package(PythonInterp 2)
 find_package(PythonLibs 2)
 if(PYTHONLIBS_FOUND)
-  MESSAGE(STATUS "Python found, creating DDG4Python Dictionary")
+  dd4hep_print("|++> Python found, creating DDG4Python Dictionary")
   dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
     USES    DDCore DDParsers DDG4 ROOT::Core Geant4::Interface
@@ -64,7 +64,7 @@ if(PYTHONLIBS_FOUND)
     )
   if(TARGET ROOT::PyROOT)
     #---------------------------  Specialized python plugins  --------------------------
-    MESSAGE(STATUS "ROOT Has Python, creating DDPython library and plugins")
+    dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
     add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
     target_link_libraries(DDPython DDG4 ROOT::Core ${PYTHON_LIBRARIES} ROOT::PyROOT)
     target_include_directories(DDPython PUBLIC ${PYTHON_INCLUDE_DIRS})
@@ -88,7 +88,7 @@ if(PYTHONLIBS_FOUND)
       RUNTIME DESTINATION bin)
   endif()
 else()
-  MESSAGE(STATUS "Python not found, not creating DDG4 4Python Dictionaries")
+  dd4hep_print("|+++++> Python not found, not creating DDG4 4Python Dictionaries")
 endif()
 
 #---------------------------  Plugin library for the simulation framework  ---------

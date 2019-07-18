@@ -17,13 +17,6 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #------------------------------------------------------------------------------
 
-# dd4hep_package(    DDCMS
-#   USES             [DD4hep REQUIRED COMPONENTS DDCore]
-#                    [ROOT REQUIRED COMPONENTS Geom GenVector]
-#   OPTIONAL         ${CLHEP} XERCESC
-#   INCLUDE_DIRS     include
-#   INSTALL_INCLUDES include/DDCMS)
-
 # CLHEP dependent stuff
 if(NOT TARGET CLHEP::CLHEP)
   # ensure we only look for CLHEP once

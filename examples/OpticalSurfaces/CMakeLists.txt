@@ -11,13 +11,13 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-message(STATUS "OpticalSurfaces: ROOT version: ${ROOT_VERSION}")
+dd4hep_print("|++> OpticalSurfaces: ROOT version: ${ROOT_VERSION}")
 
 if(NOT ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.18.00)
-  MESSAGE(STATUS "Not building optical surface test")
+  dd4hep_print("|++> Not building optical surface test")
   return()
 endif()
-MESSAGE(STATUS "building optical surface test")
+dd4hep_print("|++> Building optical surface test")
 
 #--------------------------------------------------------------------------
 dd4hep_configure_output()

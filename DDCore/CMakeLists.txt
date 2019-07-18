@@ -10,6 +10,8 @@
 #
 #=================================================================================
 #---Generate ROOT dictionary------------------------------------------------------
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCore)
+
 dd4hep_add_dictionary( G__DD4hep
   SOURCES include/ROOT/Warnings.h
   include/DD4hep/*.h
@@ -94,7 +96,7 @@ IF(TARGET ROOT::Gdml)
   set_target_properties(DDGDMLPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDGDMLPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
 ELSE()
-  MESSAGE(WARN "ROOT does not include GDML, not building DDCore GDML Plugins")
+  dd4hep_print("ROOT does not include GDML, not building DDCore GDML Plugins")
 ENDIF()
     
 #---------------------------  Specialized PYTHON plugin ----------------------------
@@ -106,7 +108,7 @@ IF(TARGET ROOT::PyROOT)
   set_target_properties(DDPythonPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDPythonPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
 ELSE()
-  MESSAGE(WARN "ROOT does not include PyRoot, not building DDCore DDPython Plugins")
+  dd4hep_print("ROOT does not include PyRoot, not building DDCore DDPython Plugins")
 ENDIF()
 
 # install python files

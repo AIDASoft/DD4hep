@@ -10,6 +10,7 @@
 # Author: F.Gaede (Desy)
 #
 #==========================================================================
+SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDRec)
 
 dd4hep_add_dictionary( G__DDRec
   SOURCES ../DDCore/include/ROOT/Warnings.h
