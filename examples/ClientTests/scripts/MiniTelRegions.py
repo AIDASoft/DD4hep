@@ -6,12 +6,17 @@
 
 """
 from __future__ import absolute_import
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 if __name__ == "__main__":
   from MiniTelSetup import Setup as MiniTel
-  import logging
   m = MiniTel()
   m.configure()
-  logging.info("#  Configure G4 geometry setup")
+  logger.info("#  Configure G4 geometry setup")
   seq,act = m.geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugRegions = True
   m.test_config(True)

@@ -12,7 +12,10 @@ from __future__ import absolute_import
 import logging
 from dd4hep_base import *
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def loadDDG4():
   ## import ROOT ## done in import * above
   from ROOT import gSystem
@@ -49,10 +52,10 @@ def _import_class(ns,nam):
 try:
   dd4hep = loadDDG4() 
 except Exception as X:
-  logging.info('+--%-100s--+',100*'-')
-  logging.info('|  %-100s  |','Failed to load DDG4 library:')
-  logging.info('|  %-100s  |',str(X))
-  logging.info('+--%-100s--+',100*'-')
+  logger.error('+--%-100s--+',100*'-')
+  logger.error('|  %-100s  |','Failed to load DDG4 library:')
+  logger.error('|  %-100s  |',str(X))
+  logger.error('+--%-100s--+',100*'-')
   exit(1)
 
 from ROOT import CLHEP as CLHEP
@@ -97,15 +100,15 @@ def importConstants(description,namespace=None,debug=False):
   while len(todo) and cnt<100:
     cnt = cnt + 1
     if cnt == 100:
-      logging.info('%s %d out of %d %s "%s": [%s]\n+++ %s',\
+      logger.error('%s %d out of %d %s "%s": [%s]\n+++ %s',\
             '+++ FAILED to import',
             len(todo),len(todo)+num,
             'global values into namespace',
             ns.__name__,'Try to continue anyway',100*'=')
       for k,v in todo.items():
         if not hasattr(ns,k):
-          logging.info('+++ FAILED to import: "'+k+'" = "'+str(v)+'"')
-      logging.info('+++ %s',100*'=')
+          logger.error('+++ FAILED to import: "'+k+'" = "'+str(v)+'"')
+      logger.info('+++ %s',100*'=')
 
     for k,v in todo.items():
       if not hasattr(ns,k):
@@ -114,11 +117,11 @@ def importConstants(description,namespace=None,debug=False):
         if status == 0:
           evaluator.setVariable(k,val)
           setattr(ns,k,val)
-          if debug: logging.info('Imported global value: "'+k+'" = "'+str(val)+'" into namespace'+ns.__name__)
+          if debug: logger.info('Imported global value: "'+k+'" = "'+str(val)+'" into namespace'+ns.__name__)
           del todo[k]
           num = num + 1
   if cnt<100:
-    logging.info('+++ Imported %d global values to namespace:%s',num,ns.__name__,)
+    logger.info('+++ Imported %d global values to namespace:%s',num,ns.__name__,)
 
 #---------------------------------------------------------------------------  
 def _registerGlobalAction(self,action):
@@ -127,7 +130,6 @@ def _registerGlobalFilter(self,filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
-  #logging.info('_getKernelProperty: %s  %s',str(type(self)),name)
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
     return ret.data
@@ -140,7 +142,6 @@ def _getKernelProperty(self, name):
 
 #---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
-  #logging.info('_setKernelProperty: %s %s',name,str(value))
   if Interface.setPropertyKernel(self.get(),name,str(value)):
     return
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
@@ -255,7 +256,6 @@ _import_class('CLHEP','HepRandomEngine')
 #---------------------------------------------------------------------------
 def _get(self, name):
   import traceback
-  #logging.info('_get: %s  %s',str(type(self)),name)
   a = Interface.toAction(self)
   ret = Interface.getProperty(a,name)
   if ret.status > 0:
@@ -271,7 +271,6 @@ def _get(self, name):
   raise KeyError(msg)
 
 def _set(self, name, value):
-  #logging.info('_set: %s %s',name,str(value))
   a = Interface.toAction(self)
   if Interface.setProperty(a,name,str(value)):
     return
@@ -508,9 +507,8 @@ class Geant4:
     return self
 
   def printDetectors(self):
-    logging.info('+++  List of sensitive detectors:')
+    logger.info('+++  List of sensitive detectors:')
     for i in self.description.detectors():
-      #logging.info(i.second.ptr().GetName())
       o = DetElement(i.second.ptr())
       sd = self.description.sensitiveDetector(o.name())
       if sd.isValid():
@@ -518,7 +516,7 @@ class Geant4:
         sdtyp = 'Unknown'
         if self.sensitive_types.has_key(typ):
           sdtyp = self.sensitive_types[typ]
-        logging.info('+++  %-32s type:%-12s  --> Sensitive type: %s',o.name(), typ, sdtyp)
+        logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s',o.name(), typ, sdtyp)
 
   def setupSensitiveSequencer(self, name, action):
     if isinstance( action, tuple ):
@@ -605,15 +603,15 @@ class Geant4:
     field.delta_one_step     = 0.01*SystemOfUnits.mm
     field.largest_step       = 1000*SystemOfUnits.m
     if prt:
-      logging.info('+++++> %s %s %s %s ',field.name,'-> stepper  = ',str(field.stepper),'')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> equation = ',str(field.equation),'')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> eps_min  = ',str(field.eps_min),'[mm]')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> eps_max  = ',str(field.eps_max),'[mm]')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> delta_chord        = ',str(field.delta_chord),'[mm]')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> min_chord_step     = ',str(field.min_chord_step),'[mm]')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> delta_one_step     = ',str(field.delta_one_step),'[mm]')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> delta_intersection = ',str(field.delta_intersection),'[mm]')
-      logging.info('+++++> %s %s %s %s ',field.name,'-> largest_step       = ',str(field.largest_step),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> stepper  = ',str(field.stepper),'')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> equation = ',str(field.equation),'')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> eps_min  = ',str(field.eps_min),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> eps_max  = ',str(field.eps_max),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> delta_chord        = ',str(field.delta_chord),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> min_chord_step     = ',str(field.min_chord_step),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> delta_one_step     = ',str(field.delta_one_step),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> delta_intersection = ',str(field.delta_intersection),'[mm]')
+      logger.info('+++++> %s %s %s %s ',field.name,'-> largest_step       = ',str(field.largest_step),'[mm]')
     return field
     
   def setupTrackingFieldMT(self, name='MagFieldTrackingSetup', stepper='ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):

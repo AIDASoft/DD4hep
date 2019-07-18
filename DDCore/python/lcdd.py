@@ -15,7 +15,12 @@ from os import path, listdir
 from functools import partial
 import SystemOfUnits
 import math
+import logging
 from ROOT import SetOwnership, dd4hep, TGeoMixture, TGeoMedium, gGeoManager, TNamed
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 Detector       = dd4hep.Geometry.Detector
 Constant   = dd4hep.Geometry.Constant
@@ -122,12 +127,12 @@ def load_drivers(*args):
   for arg in args:
     if path.exists(arg):
       if path.isfile(arg):
-        print "Loading driver file ... %s" % arg
+        logger.info("Loading driver file ... %s" % arg)
         execfile(arg, drivers)
       elif path.isdir(arg):
         for f in listdir(arg) : 
           if path.splitext(f)[1] == '.py':
-            print "Loading driver file ... %s" % path.join(arg,f)
+            logger.info("Loading driver file ... %s" % path.join(arg,f))
             execfile(path.join(arg,f), drivers)
       else: raise "Path '%s' is not a directory or file" % arg 
     else: raise "Path '%s' does not exists" % arg
@@ -157,12 +162,12 @@ def process_tag(description, elem):
     procs = drivers.get('process_%s'% elem.tag, None)
   if procs :
     apply(procs,(description, elem))
-  else : print 'XML tag %s not processed!!! No function found.' % elem.tag
+  else : logger.info('XML tag %s not processed!!! No function found.' % elem.tag)
 
 
 #--------------------------------------------------------------------------------
 def fromXML(xmlfile):
-  print 'Converting Compact file: ', xmlfile
+  logger.info('Converting Compact file: %s', xmlfile)
   description = Detector.getInstance()
   #description.create()
   process_xmlfile(description, xmlfile)
@@ -171,17 +176,17 @@ def fromXML(xmlfile):
 #---------------------------------------------------------------------------------
 def process_includes(description, elem):
   for c in elem.findall('gdmlFile'):
-    print 'Adding Gdml file ...', c.get('ref')
+    logger.info('Adding Gdml file ... %s', c.get('ref'))
     fname = c.get('ref').replace('file:','')
     if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
     process_xmlfile(description, fname)
   for c in elem.findall('pyBuilder'):
-    print 'Adding PyBuilder ...', c.get('ref')
+    logger.info('Adding PyBuilder ... %s', c.get('ref'))
     fname = c.get('ref')
     if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
     load_drivers(fname)
   for c in elem.findall('alignment'):
-    print 'Adding Alignment file ...', c.get('ref')
+    logger.info('Adding Alignment file ... %s', c.get('ref'))
     fname = c.get('ref').replace('file:','')
     if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
     process_xmlfile(description, fname)
@@ -193,14 +198,12 @@ def process_info(description, elem):
 #---------------------------------------------------------------------------------
 def process_define(description, elem):
   for c in elem.findall('constant'):
-    #print 'Adding constant ...', c.get('name')
     description.addConstant(Constant(c.get('name'),c.get('value')))
     _toDictionary(c.get('name'),c.get('value')) #-- Make it known to the evaluator
     constants[c.get('name')] = c.getF('value')
 
 #---------------------------------------------------------------------------------
 def process_element(description, elem):
-  #print 'Adding element ...', elem.get('name')
   ename = elem.get('name')
   tab = gGeoManager.GetElementTable()
   element = tab.FindElement(ename)
@@ -229,7 +232,6 @@ def process_materials(description, elem):
 
 
 def process_material(description, m):
-  #print 'Adding material ...', m.get('name')
   density = m.find('D')
   radlen  = m.find('RL')
   intlen  = m.find('NIL')
@@ -268,7 +270,6 @@ def process_material(description, m):
 #----------------------------------------------------------------------------------
 def process_display(description, elem):
   for v in elem.findall('vis'):
-    #print 'Adding vis ...', v.name
     visattr = VisAttr(v.name)
     r,g,b = 1.,1.,1.
     if 'r' in v.keys() : r = v.getF('r')    
@@ -287,7 +288,6 @@ def process_display(description, elem):
     if 'drawingStyle' in v.keys() :
       ds = v.get('drawingStyle')
       if ds == 'wireframe' : visattr.setDrawingStyle(VisAttr.WIREFRAME)
-    #print visattr.toString()
     description.addVisAttribute(visattr)
 
 def process_limits(description, elem):
@@ -307,7 +307,7 @@ def process_detectors(description, elem):
       detector = apply(procs,(description, d))
       description.addDetector(detector)
     else : 
-      print 'Detector type %s not found' % d.get('type')
+      logger.info('Detector type %s not found' % d.get('type'))
 
 #-----------------------------------------------------------------------------------
 def process_alignments(description, elem):
@@ -319,7 +319,7 @@ def process_alignment(description, elem):
   alignment = AlignmentEntry(description, elem.name)
   pos = getPosition(elem.find('position'))
   rot = getRotation(elem.find('rotation'))
-  print pos.isNull(), rot.isNull()
+  logger.info("%s %s", pos.isNull(), rot.isNull())
   alignment.align(pos,rot)
   return alignment
 
@@ -340,7 +340,7 @@ def process_readout(description, elem):
       segment = apply(procs,(description, seg))
       readout.setSegmentation(segment)
     else :
-      print 'Segmentation type %s not found' % seg.get('type')
+      logger.info('Segmentation type %s not found' % seg.get('type'))
   id = elem.find('id')
   if id is not None:
     idSpec = IDDescriptor(id.text)

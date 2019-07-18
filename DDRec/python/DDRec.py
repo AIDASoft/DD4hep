@@ -10,6 +10,11 @@
 #==========================================================================
 from __future__ import absolute_import
 import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 import dd4hep as core
 
 def loadDDRec():
@@ -34,10 +39,10 @@ def import_namespace_item(ns,nam):
 try:
   rec = loadDDRec()
 except Exception as X:
-  logging.info('+--%-100s--+',100*'-')
-  logging.info('|  %-100s  |','Failed to load DDRec library:')
-  logging.info('|  %-100s  |',str(X))
-  logging.info('+--%-100s--+',100*'-')
+  logger.error('+--%-100s--+',100*'-')
+  logger.error('|  %-100s  |','Failed to load DDRec library:')
+  logger.error('|  %-100s  |',str(X))
+  logger.error('+--%-100s--+',100*'-')
   exit(1)
 
 

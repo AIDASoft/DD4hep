@@ -11,8 +11,10 @@
 from __future__ import absolute_import
 import imp, logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-#
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 # We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
 def compileAClick(dictionary,g4=True):
   from ROOT import gInterpreter, gSystem
@@ -27,13 +29,10 @@ def compileAClick(dictionary,g4=True):
 
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
-  #####logging.info("Includes:   %s\n","Linked libs:%s",gSystem.GetIncludePath(),gSystem.GetLinkedLibs())
-  logging.info('Loading AClick %s',dictionary)
+  logger.info('Loading AClick %s',dictionary)
   package = imp.find_module('DDG4')
   dic = os.path.dirname(package[1])+os.sep+dictionary
-  ###logging.info(str(dic))
   gInterpreter.ProcessLine('.L '+dic+'+')
-  #####gInterpreter.Load('DDG4Dict_C.so')
   from ROOT import dd4hep as module
   return module
 
@@ -64,7 +63,6 @@ def import_namespace_item(ns,nam):
   return attr
 
 def import_root(nam):
-  #logging.info('import ROOT class %s in namespace %s',nam,str(name_space))
   setattr(name_space,nam,getattr(ROOT,nam))
 
 #---------------------------------------------------------------------------
@@ -74,10 +72,10 @@ try:
   import ROOT
 except Exception as X:
   import sys
-  logging.info('+--%-100s--+',100*'-')
-  logging.info('|  %-100s  |','Failed to load dd4hep base library:')
-  logging.info('|  %-100s  |',str(X))
-  logging.info('+--%-100s--+',100*'-')
+  logger.error('+--%-100s--+',100*'-')
+  logger.error('|  %-100s  |','Failed to load dd4hep base library:')
+  logger.error('|  %-100s  |',str(X))
+  logger.error('+--%-100s--+',100*'-')
   sys.exit(1)
 
 class _Levels:
@@ -293,13 +291,13 @@ try:
       ]
     if ns is None:
       ns = name_space
-    logging.debug('Importing units into namespace '+str(ns.__name__))
+    logger.debug('Importing units into namespace '+str(ns.__name__))
     for u in items:
       if u[0] != '_':
         import_unit(ns, u)
     return len(items)    
 except:
-  logging.debug('WARNING: No units can be imported.')
+  logger.warning('No units can be imported.')
   def import_units(ns=None):
     return 0
 

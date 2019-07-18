@@ -7,12 +7,12 @@
 
 """
 from __future__ import absolute_import
+
 def run():
   from g4units import *
-  import logging, CLICSid, DDG4
+  import CLICSid, DDG4
   from DDG4 import OutputLevel as Output
   
-  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   sid = CLICSid.CLICSid()
   sid.loadGeometry()
   sid.geant4.printDetectors()

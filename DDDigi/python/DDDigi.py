@@ -12,7 +12,10 @@ from __future__ import absolute_import
 import logging
 from dd4hep_base import *
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def loadDDDigi():
   ## import ROOT ## done in import * above
   from ROOT import gSystem
@@ -47,10 +50,10 @@ def _import_class(ns,nam):
 try:
   dd4hep = loadDDDigi() 
 except Exception as X:
-  logging.info('+--%-100s--+',100*'-')
-  logging.info('|  %-100s  |','Failed to load DDDigi library:')
-  logging.info('|  %-100s  |',str(X))
-  logging.info('+--%-100s--+',100*'-')
+  logger.error('+--%-100s--+',100*'-')
+  logger.error('|  %-100s  |','Failed to load DDDigi library:')
+  logger.error('|  %-100s  |',str(X))
+  logger.error('+--%-100s--+',100*'-')
   exit(1)
 
 core       = dd4hep
@@ -92,15 +95,15 @@ def importConstants(description,namespace=None,debug=False):
   while len(todo) and cnt<100:
     cnt = cnt + 1
     if cnt == 100:
-      logging.info('%s %d out of %d %s "%s": [%s]\n+++ %s',\
+      logger.info('%s %d out of %d %s "%s": [%s]\n+++ %s',\
             '+++ FAILED to import',
             len(todo),len(todo)+num,
             'global values into namespace',
             ns.__name__,'Try to continue anyway',100*'=')
       for k,v in todo.items():
         if not hasattr(ns,k):
-          logging.info('+++ FAILED to import: "'+k+'" = "'+str(v)+'"')
-      logging.info('+++ %s',100*'=')
+          logger.info('+++ FAILED to import: "'+k+'" = "'+str(v)+'"')
+      logger.info('+++ %s',100*'=')
 
     for k,v in todo.items():
       if not hasattr(ns,k):
@@ -109,15 +112,14 @@ def importConstants(description,namespace=None,debug=False):
         if status == 0:
           evaluator.setVariable(k,val)
           setattr(ns,k,val)
-          if debug: logging.info('Imported global value: "'+k+'" = "'+str(val)+'" into namespace'+ns.__name__)
+          if debug: logger.info('Imported global value: "'+k+'" = "'+str(val)+'" into namespace'+ns.__name__)
           del todo[k]
           num = num + 1
   if cnt<100:
-    logging.info('+++ Imported %d global values to namespace:%s',num,ns.__name__,)
+    logger.info('+++ Imported %d global values to namespace:%s',num,ns.__name__,)
 
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
-  #logging.info('_getKernelProperty: %s  %s',str(type(self)),name)
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
     return ret.data
@@ -130,7 +132,6 @@ def _getKernelProperty(self, name):
 
 #---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
-  #logging.info('_setKernelProperty: %s %s',name,str(value))
   if Interface.setPropertyKernel(self.get(),name,str(value)):
     return
   msg = 'DigiKernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
@@ -184,7 +185,6 @@ _import_class('digi','DigiAction')
 #---------------------------------------------------------------------------
 def _get(self, name):
   import traceback
-  #logging.info('_get: %s  %s',str(type(self)),name)
   a = Interface.toAction(self)
   ret = Interface.getProperty(a,name)
   if ret.status > 0:
@@ -268,10 +268,10 @@ class Digitize:
     return detectors
 
   def printDetectors(self):
-    logging.info('+++  List of sensitive detectors:')
+    logger.info('+++  List of sensitive detectors:')
     dets = self.activeDetectors()
     for d in dets:
-      logging.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
+      logger.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
 
   def setupDetector(self,name,collections=None,modules=None):
     parameterDict = {}

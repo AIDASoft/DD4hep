@@ -13,44 +13,43 @@
 from __future__ import absolute_import
 import sys, errno, optparse, logging
 
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def dumpData( det ):
   try:
     dat = DDRec.FixedPadSizeTPCData(det)
-    print dat.toString()
+    logger.info(dat.toString())
   except:
     pass
   try:
     dat = DDRec.ZPlanarData(det)
-    print dat.toString()
+    logger.info(dat.toString())
   except:
     pass
   try:
     dat = DDRec.ZDiskPetalsData(det)
-    print dat.toString()
+    logger.info(dat.toString())
   except:
     pass
   try:
     dat = DDRec.ConicalSupportData(det)
-    print dat.toString()
+    logger.info(dat.toString())
   except:
     pass
   try:
     dat = DDRec.LayeredCalorimeterData(det)
-    print dat.toString()
+    logger.info(dat.toString())
   except:
     pass
   try:
     dat = DDRec.NeighbourSurfacesStruct(det)
-    print dat.toString()
+    logger.info(dat.toString())
   except:
     pass
 
 
-
-
-
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 parser = optparse.OptionParser()
 parser.formatter.width = 132
 parser.description = "Dump detector data objects from DDRec"
@@ -61,7 +60,7 @@ parser.add_option("-c", "--compact", dest="compact", default=None,
 (opts, args) = parser.parse_args()
 
 if opts.compact is None:
-  logging.info("    %s",parser.format_help())
+  logger.info("    %s",parser.format_help())
   sys.exit(1)
 
 try:
@@ -69,27 +68,27 @@ try:
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError,X:
-  logging.error('PyROOT interface not accessible: %s',str(X))
-  logging.error("%s",parser.format_help())
+  logger.error('PyROOT interface not accessible: %s',str(X))
+  logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)
 
 try:
   import dd4hep
 except ImportError,X:
-  logging.error('dd4hep python interface not accessible: %s',str(X))
-  logging.error("%s",parser.format_help())
+  logger.error('dd4hep python interface not accessible: %s',str(X))
+  logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)
 #
 try:
   import DDRec
 except ImportError,X:
-  logging.error('ddrec python interface not accessible: %s',str(X))
-  logging.error("%s",parser.format_help())
+  logger.error('ddrec python interface not accessible: %s',str(X))
+  logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)
 #
 
 dd4hep.setPrintLevel(dd4hep.OutputLevel.ERROR)
-logging.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
+logger.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
 
 
 
@@ -101,9 +100,9 @@ description.fromXML(opts.compact)
 
 for n,d in description.detectors():
 
-    print 
-    print " ------------- detector :  " , d.name()
-    print 
+    logger.info("")
+    logger.info(" ------------- detector :  %s" , d.name())
+    logger.info("")
 
     det = description.detector( n ) 
 
@@ -112,5 +111,5 @@ for n,d in description.detectors():
 ##-----------------------------------------------------------------
 
 
-logging.info('+++ Execution finished...')
+logger.info('+++ Execution finished...')
 sys.exit(0)

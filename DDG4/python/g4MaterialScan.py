@@ -13,12 +13,15 @@
 from __future__ import absolute_import
 import os, sys, errno, optparse, logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def printOpts(opts):
   o = eval(str(opts))
   prefix = sys.argv[0].split(os.sep)[-1]
   for name,value in o.items():
-    logging.info('%s > %-18s %s  [%s]',prefix,name+':',str(value),str(value.__class__))
+    logger.info('%s > %-18s %s  [%s]',prefix,name+':',str(value),str(value.__class__))
 
 def materialScan(opts):
   kernel = DDG4.Kernel()
@@ -37,7 +40,7 @@ def materialScan(opts):
         geant4.setupDetector(o.name(),geant4.sensitive_types[typ])
         sdtyp = geant4.sensitive_types[typ]
       else:
-        logging.info('+++  %-32s type:%-12s  --> Unknown Sensitive type: %s',o.name(), typ, sdtyp)
+        logger.error('+++  %-32s type:%-12s  --> Unknown Sensitive type: %s',o.name(), typ, sdtyp)
         sys.exit(errno.EINVAL)
 
   gun = geant4.setupGun("Gun",
@@ -93,7 +96,7 @@ parser.add_option('-d', '--direction',
 (opts, args) = parser.parse_args()
 
 if opts.compact is None:
-  logging.info("   ",parser.format_help())
+  logger.info("%s",parser.format_help())
   sys.exit(1)
 
 opts.position=eval('('+opts.position+')')
@@ -105,15 +108,15 @@ try:
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError,X:
-  logging.info('PyROOT interface not accessible: %s',str(X))
-  logging.info(parser.format_help())
+  logger.error('PyROOT interface not accessible: %s', X)
+  logger.info(parser.format_help())
   sys.exit(errno.ENOENT)
 
 try:
   import DDG4, SystemOfUnits
 except ImportError,X:
-  logging.info('DDG4 python interface not accessible: %s',str(X))
-  logging.info(parser.format_help())
+  logger.error('DDG4 python interface not accessible: %s', X)
+  logger.info(parser.format_help())
   sys.exit(errno.ENOENT)
 #
 ret = materialScan(opts)

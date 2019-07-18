@@ -13,7 +13,10 @@
 from __future__ import absolute_import
 import sys, errno, optparse, logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 parser = optparse.OptionParser()
 parser.formatter.width = 132
 parser.description = "Check TGeo geometries for overlaps."
@@ -37,7 +40,7 @@ parser.add_option("-o", "--option", dest="option", default='',
 (opts, args) = parser.parse_args()
 
 if opts.compact is None:
-  logging.info("    %s",parser.format_help())
+  logger.info("    %s",parser.format_help())
   sys.exit(1)
 
 try:
@@ -45,31 +48,31 @@ try:
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError,X:
-  logging.error('PyROOT interface not accessible: %s',str(X))
-  logging.error("%s",parser.format_help())
+  logger.error('PyROOT interface not accessible: %s',str(X))
+  logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)
 
 try:
   import dd4hep
 except ImportError,X:
-  logging.error('dd4hep python interface not accessible: %s',str(X))
-  logging.error("%s",parser.format_help())
+  logger.error('dd4hep python interface not accessible: %s',str(X))
+  logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)
 #
 #
 opts.tolerance = float(opts.tolerance)
 dd4hep.setPrintLevel(dd4hep.OutputLevel.ERROR)
-logging.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
+logger.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
 description = dd4hep.Detector.getInstance()
 description.fromXML(opts.compact)
-logging.info('+++%s\n+++ Checking overlaps of geometry:%s tolerance:%f option:%s\n+++%s',120*'=',opts.compact,opts.tolerance,opts.option,120*'=')
+logger.info('+++%s\n+++ Checking overlaps of geometry:%s tolerance:%f option:%s\n+++%s',120*'=',opts.compact,opts.tolerance,opts.option,120*'=')
 description.manager().CheckOverlaps(opts.tolerance,opts.option)
 #
 #
 if opts.print_overlaps:
-  logging.info('+++%s\n+++ Printing overlaps of geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
+  logger.info('+++%s\n+++ Printing overlaps of geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
   description.manager().PrintOverlaps()
 #
 #
-logging.info('+++ Execution finished...')
+logger.info('+++ Execution finished...')
 sys.exit(0)

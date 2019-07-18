@@ -13,7 +13,10 @@
 from __future__ import absolute_import
 import sys, errno, optparse, logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 parser = optparse.OptionParser()
 parser.description = "TGeo Geometry checking."
 parser.formatter.width = 132
@@ -53,7 +56,7 @@ parser.add_option("-o", "--option", dest="option", default='ob',
 (opts, args) = parser.parse_args()
 
 if opts.compact is None:
-  logging.info("   %s",parser.format_help())
+  logger.info("   %s",parser.format_help())
   sys.exit(1)
 
 try:
@@ -61,30 +64,30 @@ try:
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError,X:
-  logging.error('PyROOT interface not accessible: %s',str(X))
+  logger.error('PyROOT interface not accessible: %s',str(X))
   sys.exit(errno.ENOENT)
 
 try:
   import dd4hep
 except ImportError,X:
-  logging.error('dd4hep python interface not accessible: %s',str(X))
+  logger.error('dd4hep python interface not accessible: %s',str(X))
   sys.exit(errno.ENOENT)
 
 dd4hep.setPrintLevel(dd4hep.OutputLevel.ERROR)
-logging.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
+logger.info('+++%s\n+++ Loading compact geometry:%s\n+++%s',120*'=',opts.compact,120*'=')
 description = dd4hep.Detector.getInstance()
 description.fromXML(opts.compact)
 opts.num_tracks = int(opts.num_tracks)
 opts.vx = float(opts.vx)
 opts.vy = float(opts.vy)
 opts.vz = float(opts.vz)
-logging.info('+++%s\n+++ Checking geometry:%s full-check:%s\n+++%s',120*'=',opts.compact,opts.full,120*'=')
+logger.info('+++%s\n+++ Checking geometry:%s full-check:%s\n+++%s',120*'=',opts.compact,opts.full,120*'=')
 if opts.full:
-  logging.info('+++ # tracks:%d vertex:(%7.3f, %7.3f, %7.3f) [cm]',opts.num_tracks,opts.vx,opts.vy,opts.vz)
+  logger.info('+++ # tracks:%d vertex:(%7.3f, %7.3f, %7.3f) [cm]',opts.num_tracks,opts.vx,opts.vy,opts.vz)
   description.manager().CheckGeometryFull(opts.num_tracks,opts.vx,opts.vy,opts.vz,opts.option)
 else:
   description.manager().CheckGeometry()
 #
 #
-logging.info('+++ Execution finished...')
+logger.info('+++ Execution finished...')
 sys.exit(0)

@@ -8,11 +8,17 @@
 
 """
 from __future__ import absolute_import
+
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def run():
-  import logging, CLICSid, DDG4
+  import CLICSid, DDG4
   from DDG4 import OutputLevel as Output
-  
-  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+
   sid = CLICSid.CLICSid()
   geant4 = sid.geant4
   kernel = sid.kernel
@@ -30,7 +36,7 @@ def run():
 
   gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
-  logging.info("#  First particle generator: gun")
+  logger.info("#  First particle generator: gun")
   gun = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/Gun");
   gun.Uses     = 'G4ParticleGun'
   gun.Mask     = 1

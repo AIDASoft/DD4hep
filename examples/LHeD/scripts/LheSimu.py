@@ -8,6 +8,12 @@
    
 """
 from __future__ import absolute_import
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def run():
   import LHeD, DDG4, os, SystemOfUnits
   from DDG4 import OutputLevel as Output
@@ -38,11 +44,11 @@ def run():
   field.delta_chord        = 0.25*SystemOfUnits.mm
   field.delta_intersection = 1e-05*SystemOfUnits.mm
   field.delta_one_step     = 0.001*SystemOfUnits.mm
-  print '+++++> ',field.name,'-> stepper  = ',field.stepper
-  print '+++++> ',field.name,'-> equation = ',field.equation
-  print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
-  print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
-  print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
+  logger.info('+++++> %s -> stepper  = %s' field.name, field.stepper)
+  logger.info('+++++> %s -> equation = %s', field.name, field.equation)
+  logger.info('+++++> %s -> eps_min  = %s', field.name, field.eps_min)
+  logger.info('+++++> %s -> eps_max  = %s', field.name, field.eps_max)
+  logger.info('+++++> %s -> delta_one_step = %s', field.name, field.delta_one_step)
 
 
   """
@@ -60,7 +66,6 @@ def run():
   run1.Property_int    = 12345
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_LHeD'
-  print run1.Property_string, run1.Property_double, run1.Property_int
   """
   run1.enableUI()
   kernel.registerGlobalAction(run1)
@@ -324,7 +329,7 @@ def run():
 
   #DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
-  print 'End of run. Terminating .......'
+  logging.info('End of run. Terminating .......')
   kernel.terminate()
 
 if __name__ == "__main__":

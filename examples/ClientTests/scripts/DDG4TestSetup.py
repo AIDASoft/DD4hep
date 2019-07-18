@@ -3,7 +3,9 @@ import os, sys, time, logging, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 """
 
@@ -63,7 +65,7 @@ class Setup:
   # Stop the entire excercise
   def terminate(self):
     self.kernel.terminate()
-    logging.info('+++++ All Done....\n\nTEST_PASSED')
+    logger.info('+++++ All Done....\n\nTEST_PASSED')
     sys.exit(0)
 
   # Test the configuration

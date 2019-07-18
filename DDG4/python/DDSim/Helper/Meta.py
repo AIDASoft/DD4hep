@@ -3,6 +3,11 @@
 from __future__ import absolute_import
 import datetime
 import os
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
@@ -41,7 +46,7 @@ class Meta( ConfigHelper ):
       if not pvalue:
         raise RuntimeError("ERROR: Event parameter '%s' has empty value" %(pname))
       allParameters.append(pname)
-      print "Event parameter '%s', type '%s', value='%s'"%(pname, ptype, pvalue)
+      logger.info("Event parameter '%s', type '%s', value='%s'"%(pname, ptype, pvalue))
       if ptype.lower() == "c":
         stringParameters[pname] = pvalue
       elif ptype.lower() == "f":
