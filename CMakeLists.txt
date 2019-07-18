@@ -142,9 +142,8 @@ add_subdirectory(DDG4)
 # Note the order: DDEve partially depends on variables from DDG4!
 add_subdirectory(DDEve)
 
-enable_testing()
 if(BUILD_TESTING)
-  include(CTest)
+  dd4hep_enable_tests()
   add_subdirectory(DDTest)
 endif()
 add_subdirectory(UtilityApps)

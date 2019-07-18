@@ -16,9 +16,8 @@ dd4hep_add_dictionary( G__DDRec
   SOURCES ../DDCore/include/ROOT/Warnings.h
   GENERATED src/RecDictionary.h
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  DEPENDS DDCore DDParsers
+  USES DDCore DDParsers
 )
-
 
 file(GLOB DDRec_SOURCES src/*.cpp )
 
