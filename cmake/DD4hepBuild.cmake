@@ -978,95 +978,6 @@ function ( dd4hep_add_executable binary )
   endif()
 endfunction(dd4hep_add_executable)
 
-# #---------------------------------------------------------------------------------------------------
-# #  dd4hep_add_dictionary
-# #
-# #
-# #  \author  M.Frank
-# #  \version 1.0
-# #
-# #---------------------------------------------------------------------------------------------------
-# function( dd4hep_add_dictionary dictionary )
-#   dd4hep_package_properties( pkg PKG enabled )
-#   set ( tag "Dictionary[${pkg}] -> ${dictionary}" )
-#   if ( NOT "${enabled}" )
-#     dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
-#   else()
-#     cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;INCLUDES;OUTPUT" ${ARGN} )
-#     dd4hep_print ( "|++> ${tag} Building dictionary ..." ) 
-#     if("${ARG_LINKDEF}" STREQUAL "")
-#       set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
-#     endif()
-#     #
-#     if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
-#       dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
-#     endif()
-#     #
-#     if ( NOT "${optional_missing}" STREQUAL "" )
-#       dd4hep_print ( "|++> ${tag} SKIPPED. Missing optional dependencies: ${optional_missing}" )
-#     else()
-#       set ( uses ${ARG_USES} ${optional_uses} )
-#       dd4hep_use_package ( ${tag} PACKAGE LOCAL 
-#         USES     "${uses}"
-#         OPTIONAL "${ARG_OPTIONAL}" )
-#     endif()
-#     if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
-#       dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}  --> FATAL ERROR. Build should fail!" )
-#     endif()
-#     #
-#     get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
-#     get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
-#     get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
-#     dd4hep_make_unique_list( incs VALUES ${LOCAL_INCLUDE_DIRS}   ${incs} )
-#     dd4hep_make_unique_list( defs VALUES ${LOCAL_DEFINITIONS}    ${defs} )
-#     #
-#     file( GLOB headers ${ARG_SOURCES} )
-#     file( GLOB excl_headers ${ARG_EXCLUDE} )
-#     foreach( f ${excl_headers} )
-#       list( REMOVE_ITEM headers ${f} )
-#       dd4hep_print ( "|++        exclude: ${f}" )
-#     endforeach()
-#     #
-#     set ( inc_dirs -I${CMAKE_CURRENT_SOURCE_DIR}/include )
-#     foreach ( inc ${ARG_INCLUDES} )
-#       set ( inc_dirs ${inc_dirs} -I${inc} )
-#     endforeach()
-#     foreach ( inc ${incs} )
-#       file ( GLOB inc ${inc} )
-#       set ( inc_dirs ${inc_dirs} -I${inc} )
-#     endforeach()
-#     #
-#     file ( GLOB linkdefs ${ARG_LINKDEF} )
-#     #
-#     set ( comp_defs )
-#     foreach ( def ${defs} )
-#       set ( comp_defs ${comp_defs} -D${def} )
-#     endforeach()
-#     #
-#     dd4hep_make_unique_list ( sources   VALUES ${headers} )
-#     dd4hep_make_unique_list ( linkdefs  VALUES ${linkdefs} )
-#     dd4hep_make_unique_list ( inc_dirs  VALUES ${inc_dirs} )
-#     dd4hep_make_unique_list ( comp_defs VALUES ${comp_defs} )
-#     #
-#     dd4hep_debug ( "${tag}  Linkdef: '${linkdefs}'" ) 
-#     dd4hep_debug ( "${tag}  Compile: '${comp_defs};${inc_dirs}'" ) 
-#     dd4hep_debug ( "${tag}  Files:   '${headers}'" ) 
-#     dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
-#     dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
-#     #
-#     set ( output_dir ${CMAKE_CURRENT_BINARY_DIR}/../lib )
-#     if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
-#       set ( output_dir ${ARG_OUTPUT} )
-#     endif()
-#     add_custom_command(OUTPUT ${dictionary}.cxx
-#       COMMAND ${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx
-#       -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${CMAKE_CXX_STANDARD} ${inc_dirs} ${headers} ${linkdefs}
-#       DEPENDS ${headers} ${linkdefs} )
-#     #  Install the binary to the destination directory
-#     install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
-#     endif()
-# endfunction()
-
 #---------------------------------------------------------------------------------------------------
 #
 #  \author  M.Frank
@@ -1111,7 +1022,7 @@ macro ( dd4hep_configure_scripts _pkg )
       dd4hep_install_dir ( compact DESTINATION examples/${_pkg} )
     endif()
   endif()
-  #dd4hep_enable_tests ( ${MACRO_ARG_UPARSED_ARGUMENTS} )
+  dd4hep_enable_tests ( ${MACRO_ARG_UPARSED_ARGUMENTS} )
   unset( PackageName )
 endmacro( dd4hep_configure_scripts )
 
