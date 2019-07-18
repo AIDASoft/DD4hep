@@ -35,19 +35,17 @@ target_include_directories(DDG4 BEFORE
 )
 
 #---------------------------  Legacy libraries (for Frank) -------------------------
-new_dd4hep_add_plugin(DDG4Legacy  SOURCES legacy/*.cpp
-  LINK_LIBRARIES DDG4
-  )
+dd4hep_add_plugin(DDG4Legacy  SOURCES legacy/*.cpp USES DDG4)
 #-----------------------------------------------------------------------------------
-new_dd4hep_add_dictionary( G__DDG4
+dd4hep_add_dictionary( G__DDG4
   SOURCES python/DDG4Dict.C
-  DEPENDS DDCore DDParsers DDG4 Geant4::Interface
+  USES    DDCore DDParsers DDG4 Geant4::Interface
   )
 #---------------------------  Plugin library for the simulation framework  ---------
-new_dd4hep_add_plugin(DDG4Plugins
-  SOURCES plugins/*.cpp
+dd4hep_add_plugin(DDG4Plugins
+  SOURCES   plugins/*.cpp
   GENERATED G__DDG4.cxx
-  LINK_LIBRARIES ROOT::Core ${CLHEP} DDG4 ${XML_LIBRARIES} DDParsers
+  USES      ROOT::Core ${CLHEP} DDG4 ${XML_LIBRARIES} DDParsers
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 
@@ -56,12 +54,12 @@ find_package(PythonInterp 2 REQUIRED)
 find_package(PythonLibs 2)
 if(PYTHONLIBS_FOUND)
   MESSAGE(STATUS "Python found, creating DDG4Python Dictionary")
-  new_dd4hep_add_dictionary(G__DDG4Python
+  dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
-    DEPENDS DDCore DDParsers DDG4 ROOT::Core Geant4::Interface
+    USES    DDCore DDParsers DDG4 ROOT::Core Geant4::Interface
     )
-  new_dd4hep_add_dictionary(G__DDPython
-    SOURCES tpython/DDPython.C
+  dd4hep_add_dictionary(G__DDPython
+    SOURCES  tpython/DDPython.C
     INCLUDES ${PYTHON_INCLUDE_DIRS}
     )
   if(TARGET ROOT::PyROOT)
@@ -74,10 +72,10 @@ if(PYTHONLIBS_FOUND)
       # python header not cxx17 compatible, gives error in clang
       target_compile_options(DDPython PUBLIC -Wno-register)
     ENDIF()
-    new_dd4hep_add_plugin(DDG4Python 
-      SOURCES src/python/*.cpp
+    dd4hep_add_plugin(DDG4Python 
+      SOURCES   src/python/*.cpp
       GENERATED G__DDG4Python.cxx
-      LINK_LIBRARIES DDG4 DDPython
+      USES      DDG4 DDPython
       )
     #---Helper to overcome deficiency of the python executable concerning multi-threading
     add_executable(pyddg4 pyddg4.cpp)
@@ -96,9 +94,9 @@ endif()
 #---------------------------  Plugin library for the simulation framework  ---------
 #---------------------------  LCIO Plugins for new simulation framework  -----------
 IF(TARGET LCIO::LCIO)
-  new_dd4hep_add_plugin(DDG4LCIO
+  dd4hep_add_plugin(DDG4LCIO
     SOURCES lcio/*.cpp
-    LINK_LIBRARIES DDG4 LCIO::LCIO
+    USES    DDG4 LCIO::LCIO
     )
   install(TARGETS DDG4LCIO EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
@@ -107,9 +105,9 @@ ENDIF()
 # #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
 # IF(TARGET DDRec)
-#   new_dd4hep_add_plugin(DDG4Reco
+#   dd4hep_add_plugin(DDG4Reco
 #     SOURCES reco/*.cpp
-#     LINK_LIBRARIES DDCore DDG4 DDRec
+#     USES DDCore DDG4 DDRec
 #     )
 #   install(TARGETS DDG4Reco EXPORT DD4hep LIBRARY DESTINATION lib)
 # ENDIF()

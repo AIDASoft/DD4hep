@@ -23,9 +23,9 @@ dd4hep_install_dir( src compact scripts sim DESTINATION ${LHeDEx_INSTALL} )
 set(LIBRARY_OUTPUT_PATH    ${PROJECT_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-new_dd4hep_add_plugin(LHeD SOURCES src/*.cpp
-  LINK_LIBRARIES ROOT::Core ROOT::Geom ROOT::GenVector
-  DD4hep::DDRec DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign
+dd4hep_add_plugin(LHeD
+  SOURCES src/*.cpp
+  USES  ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDRec DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign
   )
 
 if (DD4HEP_USE_GEANT4)

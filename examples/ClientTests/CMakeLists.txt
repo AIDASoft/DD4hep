@@ -29,7 +29,7 @@ if(TARGET Boost::boost)
   SET(CT_BOOST_SOURCES src_boost/*.cpp)
   set(CT_BOOST_LIB Boost::boost)
 endif()
-new_dd4hep_add_plugin(ClientTests SOURCES src/*.cpp ${CT_BOOST_SOURCES}) 
+dd4hep_add_plugin(ClientTests SOURCES src/*.cpp ${CT_BOOST_SOURCES}) 
 target_link_libraries(ClientTests ${CT_BOOST_LIB})
 install(TARGETS ClientTests LIBRARY DESTINATION lib)
 

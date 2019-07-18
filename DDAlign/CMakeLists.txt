@@ -19,18 +19,14 @@ target_include_directories(DDAlign
   $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(DDAlign
-  PUBLIC
-  DDCore
-  )
+target_link_libraries(DDAlign PUBLIC DDCore)
 
-new_dd4hep_add_plugin(DDAlignPlugins
+dd4hep_add_plugin(DDAlignPlugins
   SOURCES src/plugins/*.cpp
-  LINK_LIBRARIES DDAlign
+  USES    DDAlign
   )
-
 
 set_target_properties(DDAlign DDAlignPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-INSTALL(DIRECTORY include/DDAlign DESTINATION include)
-INSTALL(TARGETS DDAlign DDAlignPlugins EXPORT DD4hep DESTINATION lib)
+install(DIRECTORY include/DDAlign DESTINATION include)
+install(TARGETS DDAlign DDAlignPlugins EXPORT DD4hep DESTINATION lib)

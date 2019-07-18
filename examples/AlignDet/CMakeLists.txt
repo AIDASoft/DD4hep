@@ -26,7 +26,7 @@ link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
   DD4hep::DDAlign
   )
 set(AlignDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/AlignDet)
-new_dd4hep_add_plugin(AlignDetExample SOURCES src/*.cpp)
+dd4hep_add_plugin(AlignDetExample SOURCES src/*.cpp)
 dd4hep_install_dir(compact DESTINATION ${AlignDet_INSTALL})
 dd4hep_configure_scripts(AlignDet DEFAULT_SETUP WITH_TESTS)
 install(TARGETS AlignDetExample LIBRARY DESTINATION lib)

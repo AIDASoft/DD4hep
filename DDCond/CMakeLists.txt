@@ -8,24 +8,14 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-#---Generate ROOT dictionary-----------------------------------------------------
-
-#find_package (ROOT 6.08 REQUIRED COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG) # COMPONENTS Geom GenVector Eve Gui Graf3d RGL EG
-new_dd4hep_add_dictionary(G__DDCond
+dd4hep_add_dictionary(G__DDCond
   SOURCES src/ConditionsDictionary.h
-  DEPENDS DDCore DDParsers
+  USES    DDCore DDParsers
   )
 
 file(GLOB DDCond_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-#---DDCond library --------------------------------------------------------------
-add_library(DDCond SHARED ${DDCond_SOURCES}
-  G__DDCond.cxx 
-  )
 
-target_link_libraries(DDCond
-  PUBLIC
-  DDCore
-  )
+add_library(DDCond SHARED ${DDCond_SOURCES} G__DDCond.cxx)
 
 target_include_directories(DDCond
   PUBLIC
@@ -33,14 +23,14 @@ target_include_directories(DDCond
   $<INSTALL_INTERFACE:include>
   )
 
+target_link_libraries(DDCond PUBLIC DDCore)
 
-#---DDCond components -----------------------------------------------------------
-new_dd4hep_add_plugin(DDCondPlugins
-  SOURCES  src/plugins/*.cpp src/Type1/*.cpp
-  LINK_LIBRARIES DDCond)
-
+dd4hep_add_plugin(DDCondPlugins
+  SOURCES src/plugins/*.cpp src/Type1/*.cpp
+  USES    DDCond
+  )
 
 set_target_properties(DDCond DDCondPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-INSTALL(DIRECTORY include/DDCond DESTINATION include)
-INSTALL(TARGETS DDCond DDCondPlugins EXPORT DD4hep DESTINATION lib)
+install(DIRECTORY include/DDCond DESTINATION include)
+install(TARGETS DDCond DDCondPlugins EXPORT DD4hep DESTINATION lib)

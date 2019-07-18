@@ -13,6 +13,7 @@
 file(GLOB DDParsers_SOURCES src/Parsers/*.cpp src/Evaluator/*.cpp)
 if(Boost_FOUND)
   file(GLOB DDParsers_SPIRIT_SOURCES src/Spirit/*.cpp)
+  set(BOOST_LIB Boost::boost)
 endif()
 
 add_library(DDParsers SHARED ${DDParsers_SOURCES} ${DDParsers_SPIRIT_SOURCES})
@@ -27,14 +28,9 @@ target_include_directories(DDParsers
   $<INSTALL_INTERFACE:include>
   )
 
-target_include_directories(DDParsers
-  SYSTEM
-  PUBLIC
-  $<TARGET_PROPERTY:ROOT::Core,INTERFACE_INCLUDE_DIRECTORIES>
-  $<$<BOOL:Boost_FOUND>:$<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>>
-  )
-
 target_link_libraries(DDParsers PUBLIC
+  ROOT::Core
+  ${BOOST_LIB}
   ${XML_LIBRARIES}
   )
 

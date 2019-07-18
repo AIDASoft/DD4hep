@@ -19,7 +19,7 @@ set(DDDigiexamples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDDigi)
 #
 dd4hep_set_compiler_flags()
 #
-new_dd4hep_add_plugin(DDDigiExampleLib SOURCES src/*.cpp )
+dd4hep_add_plugin(DDDigiExampleLib SOURCES src/*.cpp )
 target_link_libraries(DDDigiExampleLib Boost::boost ROOT::Geom ROOT::GenVector ROOT::RIO)
 install(TARGETS DDDigiExampleLib LIBRARY DESTINATION lib)
 install(DIRECTORY scripts DESTINATION ${DDDigiexamples_INSTALL})

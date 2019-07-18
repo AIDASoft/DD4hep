@@ -12,9 +12,9 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #---DDCodex plugin library -------------------------------------------------------
-new_dd4hep_add_plugin(DDCodexPlugins
+dd4hep_add_plugin(DDCodexPlugins
   SOURCES src/*.cpp
-  LINK_LIBRARIES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector
+  USES    DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector
   )
 install(TARGETS DDCodexPlugins DESTINATION lib)
 #

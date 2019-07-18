@@ -18,7 +18,7 @@ endif()
 
 link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDCore DD4hep::DDRec)
 
-new_dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
+dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
 install(TARGETS SimpleDetector LIBRARY DESTINATION lib)
 install(DIRECTORY compact DESTINATION examples/ClientTests)
 #-----------------------------------------------------------------------------------
