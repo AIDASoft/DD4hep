@@ -77,7 +77,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 # dd4hep_generate_rootmap(library)
 #
-# Create the .rootmap file needed by the plug-in system.
+# Create the .components file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
   if(APPLE)
@@ -129,23 +129,4 @@ endfunction()
 function(dd4hep_generate_rootmap_apple library)
   # for now do the same for apple that is done for the rest
   dd4hep_generate_rootmap_notapple( ${library} )
-endfunction()
-#---------------------------------------------------------------------------------------------------
-# dd4hep_install_library(library)
-#
-# Install library
-#---------------------------------------------------------------------------------------------------
-function(dd4hep_install_library library)
-  set(installfile ${library}.install)
-
-  set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
-
-  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
-
-  add_custom_command(OUTPUT ${rootmapfile}
-		     SET ( ENV{LD_LIBRARY_PATH} ./:$ENV{LD_LIBRARY_PATH} )
-		     COMMAND echo
-			     ${library} ${LIBRARY_OUTPUT_DIR}
-		     DEPENDS ${library})
-  add_custom_target(${library}Install ALL DEPENDS ${installfile})
 endfunction()
