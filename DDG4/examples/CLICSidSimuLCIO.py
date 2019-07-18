@@ -44,7 +44,7 @@ def run():
   kernel.registerGlobalAction(evt2)
 
   evt1 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_1')
-  evt1.Property_int=01234
+  evt1.Property_int=0o1234
   evt1.Property_double=1e11
   evt1.Property_string='Hello_1'
   evt1.enableUI()
