@@ -36,7 +36,6 @@ if (NOT "${CMAKE_CXX_STANDARD}" EQUAL "${DD4hep_BUILD_CXX_STANDARD}")
 endif()
 
 # set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
-
 # set ( ROOTSYS            "$ENV{ROOTSYS}" )
 # set ( ROOT_DIR           "$ENV{ROOTSYS}/cmake" )
 # set ( ROOT_VERSION       "@ROOT_VERSION@" )
@@ -82,11 +81,6 @@ GET_TARGET_PROPERTY(DD4hep_INCLUDE_DIRS DD4hep::DDCore INTERFACE_INCLUDE_DIRECTO
 MESSAGE(STATUS "include dirs ${DD4hep_INCLUDE_DIRS}")
 
 # ---------- libraries --------------------------------------------------------
-# do not store find results in cache
-#set( DD4hep_LIBRARY_DIRS ${DD4hep_DIR}/lib )
-#set( DD4hep_LIBRARIES    DD4hep_LIBRARIES-NOTFOUND )
-#mark_as_advanced( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
-
 set(DD4hep_LIBRARIES DD4hep::DDCore)
 
 SET(DD4hep_COMPONENT_LIBRARIES)
