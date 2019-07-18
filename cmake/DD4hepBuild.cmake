@@ -837,257 +837,6 @@ function ( dd4hep_package_properties name upper enabled )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#  dd4hep_package
-#
-#  Arguments
-#  ---------
-#  packageName      -> name of the package
-#  INCLUDE_DIRS     -> Include directories needed to compile package binaries
-#  INSTALL_INCLUDES -> Installation directive for header files
-#  LINK_LIBRARIES   -> Libraries needed to link the binary
-#  USES             -> Required package dependencies
-#  OPTIONAL         -> Optional package dependency e.g. [LCIO REQUIRED COMPONENTS]
-#
-#  \author  M.Frank
-#  \version 1.0
-#
-#---------------------------------------------------------------------------------------------------
-function( dd4hep_package packageName )
-  #cmake_parse_arguments(ARG "" "LIBRARY;MAJOR;MINOR;PATCH;OUTPUT;INSTALL" "USES;OPTIONAL;LINK_LIBRARIES;INCLUDE_DIRS;INSTALL_INCLUDES" ${ARGN})
-  cmake_parse_arguments(ARG "" "LIBRARY;MAJOR;MINOR;PATCH" "USES;OPTIONAL;LINK_LIBRARIES;INCLUDE_DIRS;INSTALL_INCLUDES" ${ARGN})
-  set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME ${packageName} )
-  string ( TOUPPER "${packageName}" PKG_NAME )
-
-  set ( missing_uses )
-  foreach ( use ${ARG_USES} )
-    dd4hep_unpack_package_opts ( TEST ${use} )
-    dd4hep_find_package ( ${TEST_NAME} pkg_found )
-    if ( NOT "${pkg_found}" )
-      set ( missing_uses ${missing_uses} ${TEST_NAME} )
-    endif()
-  endforeach()
-
-  if ( NOT "${missing_uses}" STREQUAL "" )
-    dd4hep_print ( "+-------------------------------------------------------------------------" )
-    dd4hep_skipmsg ( "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" )
-    dd4hep_skipmsg ( "PACKAGE ${packageName} / ${PKG_NAME} SKIPPED! Missing dependency: ${missing_uses}"     )
-    dd4hep_skipmsg ( "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" )
-    set ( use "OFF" )
-    set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} ${use} )
-  else()
-    dd4hep_set_version ( ${packageName} MAJOR ${ARG_MAJOR} MINOR ${ARG_MINOR} PATCH ${ARG_PATCH} )
-    dd4hep_to_parent_scope ( ${packageName}_VERSION_MAJOR )
-    dd4hep_to_parent_scope ( ${packageName}_VERSION_MINOR )
-    dd4hep_to_parent_scope ( ${packageName}_VERSION_PATCH )
-    dd4hep_to_parent_scope ( ${packageName}_VERSION )
-    dd4hep_to_parent_scope ( ${packageName}_SOVERSION )
-    set ( vsn "Version: ( ${${packageName}_VERSION_MAJOR}.${${packageName}_VERSION_MINOR}.${${packageName}_VERSION_PATCH} )" )
-    dd4hep_print ( "+------------------------------------------- <<<< PACKAGE ${packageName} >>>> ${vsn}" )
-
-    dd4hep_use_package ( "Package[${packageName}]" PACKAGE PACKAGE 
-      USES     ${ARG_USES} 
-      OPTIONAL ${ARG_OPTIONAL} )
-
-    if ( "${PACKAGE_MISSING}" STREQUAL "" )
-      #
-      #
-      #
-      #dd4hep_configure_output ( OUTPUT "${ARG_OUTPUT}" INSTALL "${ARG_INSTALL}" )
-      #
-      #
-      set (used_incs  ${PACKAGE_INCLUDE_DIRS} )
-      set (used_libs  ${PACKAGE_LINK_LIBRARIES} )
-      #
-      #  Define the include directories including dependent packages
-      #
-      list(APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/include )
-      foreach( inc ${ARG_INCLUDE_DIRS} )
-        list(INSERT used_incs 0 ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
-      endforeach()
-      #
-      #  Build the list of link libraries required to build the package library and plugins etc.
-      #
-      dd4hep_make_unique_list ( used_libs VALUES ${used_libs} ${ARG_LINK_LIBRARIES} )
-      dd4hep_make_unique_list ( used_incs VALUES ${used_incs} )
-      #
-      #  Save the variables in the context of the current source directory (ie. THIS package)
-      #
-      set ( use "ON" )
-      set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS   ${used_incs} )
-      set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_LINK_LIBRARIES ${used_libs} )
-
-      set_property ( GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES    ${used_libs} )
-      set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME}   ${use} )
-      set_property ( GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS ${used_incs} )
-      set_property ( GLOBAL PROPERTY ${PKG_NAME}_USES         ${PACKAGE_USES} )
-      #
-      #  Add package to 'internal' package list
-      #
-      get_property ( all_packages GLOBAL PROPERTY DD4HEP_ALL_PACKAGES )
-      set ( all_packages ${PKG_NAME} ${all_packages} )
-      set_property ( GLOBAL PROPERTY DD4HEP_ALL_PACKAGES ${all_packages} )
-      get_property ( use GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} )
-      #
-      #  Some debugging:
-      #
-      dd4hep_debug ( "Property:  DD4HEP_USE_${PKG_NAME}=${use}" )
-      dd4hep_debug ( "Used Libs: ${used_libs}" )
-      dd4hep_debug ( "Used Incs: ${used_incs}" )
-      #
-      #  Define the installation pathes of the headers.
-      #
-      dd4hep_install_dir ( ${ARG_INSTALL_INCLUDES} DESTINATION include )
-    else()
-      dd4hep_fatal ( "Missing package dependencies: ${PACKAGE_MISSING}" )
-    endif()
-    set (used_incs  ${PACKAGE_INCLUDE_DIRS} )
-    set (used_libs  ${PACKAGE_LINK_LIBRARIES} )
-    #
-    #  Define the include directories including dependent packages
-    #
-    list(APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/include )
-    foreach( inc ${ARG_INCLUDE_DIRS} )
-      list( APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
-    endforeach()
-    #
-    #  Build the list of link libraries required to build the package library and plugins etc.
-    #
-    dd4hep_make_unique_list ( used_libs VALUES ${used_libs} ${ARG_LINK_LIBRARIES} )
-    dd4hep_make_unique_list ( used_incs VALUES ${used_incs} )
-    #
-    #  Save the variables in the context of the current source directory (ie. THIS package)
-    #
-    set ( use "ON" )
-    set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS   ${used_incs} )
-    set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_LINK_LIBRARIES ${used_libs} )
-
-    set_property ( GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES    ${used_libs} )
-    set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME}   ${use} )
-    set_property ( GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS ${used_incs} )
-    set_property ( GLOBAL PROPERTY ${PKG_NAME}_USES         ${PACKAGE_USES} )
-    #
-    #  Add package to 'internal' package list
-    #
-    get_property ( all_packages GLOBAL PROPERTY DD4HEP_ALL_PACKAGES )
-    set ( all_packages ${PKG_NAME} ${all_packages} )
-    set_property ( GLOBAL PROPERTY DD4HEP_ALL_PACKAGES ${all_packages} )
-    get_property ( use GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} )
-    #
-    #  Some debugging:
-    #
-    dd4hep_debug ( "Property:  DD4HEP_USE_${PKG_NAME}=${use}" )
-    dd4hep_debug ( "Used Libs: ${used_libs}" )
-    dd4hep_debug ( "Used Incs: ${used_incs}" )
-    #
-    #  Define the installation pathes of the headers.
-    #
-    dd4hep_install_dir ( ${ARG_INSTALL_INCLUDES} DESTINATION include )
-    #
-  endif()
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#  dd4hep_add_library
-#
-#  Arguments
-#  ---------
-#  binary         -> plugin name
-#  SOURCES        -> list of source files. Will be expanded to absolute names
-#
-#  The following variables EXTEND the package defaults
-#  INCLUDE_DIRS   -> Additional include directories need to compile the binary
-#  LINK_LIBRARIES -> Additional libraries needed to link the binary
-#  USES           -> Required package dependencies
-#  OPTIONAL       -> Optional package dependency
-#                    if required e.g. [LCIO REQUIRED SOURCES aaa.cpp] the plugin will NOT be built
-#                    else        e.g. [LCIO          SOURCES aaa.cpp] the plugin will be built, but
-#                                     the source files will be omitted.
-#  DEFINITIONS    -> Optional compiler definitions to compile the sources
-#
-#  \author  M.Frank
-#  \version 1.0
-#
-#---------------------------------------------------------------------------------------------------
-function( dd4hep_add_library binary building )
-  cmake_parse_arguments ( ARG "NODEFAULTS;NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;PRINT" ${ARGN} )
-  dd4hep_package_properties( pkg PKG_NAME enabled )
-  set ( tag "Library[${pkg}] -> ${binary}" )
-  if ( NOT "${ARG_PRINT}" STREQUAL "" )
-    set ( tag ${ARG_PRINT} )
-  endif()
-
-  if ( NOT "${enabled}" )
-    dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
-  else()
-    dd4hep_debug( "+------------------------------------------- <<<< LIBRARY ${pkg}:${binary} >>>> Version: ${${pkg}_VERSION}" )
-    set ( building_binary "OFF" )
-
-    if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
-      dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
-    endif()
-
-    if ( NOT "${optional_missing}" STREQUAL "" )
-      dd4hep_print ( "|++> ${tag} (optional) skipped. Missing dependency: ${optional_missing}" )
-    else()
-      if ( ${ARG_NODEFAULTS} )
-        set ( LOCAL_LINK_LIBRARIES )
-        set ( LOCAL_LINK_LIBRARIES )
-        set ( LOCAL_DEFINITIONS )
-      else()
-        dd4hep_use_package( "${tag}" PACKAGE LOCAL 
-          USES     ${ARG_USES} ${optional_uses}
-          OPTIONAL ${ARG_OPTIONAL} )
-      endif()
-      if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
-        dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}" )
-      endif()
-      #
-      dd4hep_make_unique_list( pkg_incs VALUES ${LOCAL_INCLUDE_DIRS}   ${ARG_INCLUDE_DIRS} )
-      dd4hep_make_unique_list( pkg_libs VALUES ${LOCAL_LINK_LIBRARIES} ${ARG_LINK_LIBRARIES} )
-      dd4hep_make_unique_list( pkg_defs VALUES ${LOCAL_DEFINITIONS}    ${ARG_DEFINITIONS} )
-      #
-      file ( GLOB   sources ${ARG_SOURCES} )
-      list ( APPEND sources ${optional_sources} )
-      if ( NOT "${ARG_GENERATED}" STREQUAL "" )
-        #
-        # root-cint produces warnings of type 'unused-function' disable them on generated files
-        foreach ( f in  ${ARG_GENERATED} )
-          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS "-Wno-unused-function -Wno-overlength-strings" GENERATED TRUE )
-        endforeach()
-        list ( APPEND sources ${ARG_GENERATED} )
-      endif()
-      #
-      #
-      if ( NOT "${sources}" STREQUAL "" )
-        dd4hep_make_unique_list ( sources  VALUES ${sources} )
-        dd4hep_debug( "${tag} ${sources}")
-        #
-        dd4hep_include_directories( "${pkg_incs}" )
-        add_definitions ( ${pkg_defs} )
-        #
-        add_library ( ${binary} SHARED ${sources} )
-        target_link_libraries ( ${binary} ${pkg_libs} )
-        if ( "${${pkg}_VERSION}" STREQUAL "" OR "${${pkg}_SOVERSION}" STREQUAL "" )
-          dd4hep_fatal ( "BAD Package versions: VERSION[${pkg}_VERSION] ${${pkg}_VERSION} SOVERSION[${pkg}_SOVERSION] ${${pkg}_SOVERSION} " )
-        endif()
-        ##dd4hep_print ( "set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})")
-        set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})
-        #
-        if ( NOT ${ARG_NOINSTALL} )
-          install ( TARGETS ${binary}  
-            LIBRARY DESTINATION lib 
-            RUNTIME DESTINATION bin)
-        endif()
-        set ( building_binary "ON" )
-      else()
-        dd4hep_print ( "|++> ${tag} Skipped. No sources to be compiled [Use constraint]" )
-      endif()
-    endif()
-  endif()
-  set ( ${building} ${building_binary} PARENT_SCOPE )
-endfunction(dd4hep_add_library)
-
-#---------------------------------------------------------------------------------------------------
 #  dd4hep_add_regular_library
 #
 #  Arguments      -> See function dd4hep_add_library
@@ -1143,59 +892,6 @@ function( dd4hep_add_package_library library )
     endif()
   endif()
 endfunction(dd4hep_add_package_library)
-
-#---------------------------------------------------------------------------------------------------
-#
-#  dd4hep_add_plugin 
-#
-#  Arguments
-#  ---------
-#  binary         -> plugin name
-#  SOURCES        -> list of source files. Will be expanded to absolute names
-#
-#  The following variables EXTEND the package defaults
-#  INCLUDE_DIRS   -> Additional include directories need to compile the binary
-#  LINK_LIBRARIES -> Additional libraries needed to link the binary
-#  USES           -> Required package dependencies
-#  OPTIONAL       -> Optional package dependency
-#                    if required e.g. [LCIO REQUIRED SOURCES aaa.cpp] the plugin will NOT be built
-#                    else        e.g. [LCIO          SOURCES aaa.cpp] the plugin will be built, but
-#                                     the source files will be omitted.
-#  DEFINITIONS    -> Optional compiler definitions to compile the sources
-#
-#  \author  M.Frank
-#  \version 1.0
-#
-#---------------------------------------------------------------------------------------------------
-function( dd4hep_add_plugin binary )
-  dd4hep_package_properties( pkg PKG enabled )
-  set ( tag "Plugin[${pkg}] -> ${binary}" )
-  if ( NOT "${enabled}" )
-    dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
-  else()
-    cmake_parse_arguments(ARG "NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS" ${ARGN})
-    if ( ${ARG_NOINSTALL} )
-      set(NOINSTALL NOINSTALL)
-    endif()
-    get_property(pkg_lib  GLOBAL PROPERTY ${PKG}_LIBRARIES )
-    dd4hep_add_library( ${binary} building
-      PRINT          ${tag}
-      SOURCES        ${ARG_SOURCES}
-      GENERATED      ${ARG_GENERATED}
-      LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${pkg_lib}
-      INCLUDE_DIRS   ${ARG_INCLUDE_DIRS} 
-      USES           ${ARG_USES}
-      OPTIONAL       "${ARG_OPTIONAL}"
-      DEFINITIONS    ${ARG_DEFINITIONS}
-      ${NOINSTALL}
-      )
-    #
-    # Generate ROOTMAP if the plugin will be built:
-    if ( "${building}" )
-      dd4hep_generate_rootmap( ${binary} )
-    endif()
-  endif()
-endfunction(dd4hep_add_plugin)
 
 #---------------------------------------------------------------------------------------------------
 #  dd4hep_add_executable
@@ -1282,94 +978,94 @@ function ( dd4hep_add_executable binary )
   endif()
 endfunction(dd4hep_add_executable)
 
-#---------------------------------------------------------------------------------------------------
-#  dd4hep_add_dictionary
-#
-#
-#  \author  M.Frank
-#  \version 1.0
-#
-#---------------------------------------------------------------------------------------------------
-function( dd4hep_add_dictionary dictionary )
-  dd4hep_package_properties( pkg PKG enabled )
-  set ( tag "Dictionary[${pkg}] -> ${dictionary}" )
-  if ( NOT "${enabled}" )
-    dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
-  else()
-    cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;INCLUDES;OUTPUT" ${ARGN} )
-    dd4hep_print ( "|++> ${tag} Building dictionary ..." ) 
-    if("${ARG_LINKDEF}" STREQUAL "")
-      set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
-    endif()
-    #
-    if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
-      dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
-    endif()
-    #
-    if ( NOT "${optional_missing}" STREQUAL "" )
-      dd4hep_print ( "|++> ${tag} SKIPPED. Missing optional dependencies: ${optional_missing}" )
-    else()
-      set ( uses ${ARG_USES} ${optional_uses} )
-      dd4hep_use_package ( ${tag} PACKAGE LOCAL 
-        USES     "${uses}"
-        OPTIONAL "${ARG_OPTIONAL}" )
-    endif()
-    if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
-      dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}  --> FATAL ERROR. Build should fail!" )
-    endif()
-    #
-    get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
-    get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
-    get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
-    dd4hep_make_unique_list( incs VALUES ${LOCAL_INCLUDE_DIRS}   ${incs} )
-    dd4hep_make_unique_list( defs VALUES ${LOCAL_DEFINITIONS}    ${defs} )
-    #
-    file( GLOB headers ${ARG_SOURCES} )
-    file( GLOB excl_headers ${ARG_EXCLUDE} )
-    foreach( f ${excl_headers} )
-      list( REMOVE_ITEM headers ${f} )
-      dd4hep_print ( "|++        exclude: ${f}" )
-    endforeach()
-    #
-    set ( inc_dirs -I${CMAKE_CURRENT_SOURCE_DIR}/include )
-    foreach ( inc ${ARG_INCLUDES} )
-      set ( inc_dirs ${inc_dirs} -I${inc} )
-    endforeach()
-    foreach ( inc ${incs} )
-      file ( GLOB inc ${inc} )
-      set ( inc_dirs ${inc_dirs} -I${inc} )
-    endforeach()
-    #
-    file ( GLOB linkdefs ${ARG_LINKDEF} )
-    #
-    set ( comp_defs )
-    foreach ( def ${defs} )
-      set ( comp_defs ${comp_defs} -D${def} )
-    endforeach()
-    #
-    dd4hep_make_unique_list ( sources   VALUES ${headers} )
-    dd4hep_make_unique_list ( linkdefs  VALUES ${linkdefs} )
-    dd4hep_make_unique_list ( inc_dirs  VALUES ${inc_dirs} )
-    dd4hep_make_unique_list ( comp_defs VALUES ${comp_defs} )
-    #
-    dd4hep_debug ( "${tag}  Linkdef: '${linkdefs}'" ) 
-    dd4hep_debug ( "${tag}  Compile: '${comp_defs};${inc_dirs}'" ) 
-    dd4hep_debug ( "${tag}  Files:   '${headers}'" ) 
-    dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
-    dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
-    #
-    set ( output_dir ${CMAKE_CURRENT_BINARY_DIR}/../lib )
-    if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
-      set ( output_dir ${ARG_OUTPUT} )
-    endif()
-    add_custom_command(OUTPUT ${dictionary}.cxx
-      COMMAND ${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx
-      -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${CMAKE_CXX_STANDARD} ${inc_dirs} ${headers} ${linkdefs}
-      DEPENDS ${headers} ${linkdefs} )
-    #  Install the binary to the destination directory
-    install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
-    endif()
-endfunction()
+# #---------------------------------------------------------------------------------------------------
+# #  dd4hep_add_dictionary
+# #
+# #
+# #  \author  M.Frank
+# #  \version 1.0
+# #
+# #---------------------------------------------------------------------------------------------------
+# function( dd4hep_add_dictionary dictionary )
+#   dd4hep_package_properties( pkg PKG enabled )
+#   set ( tag "Dictionary[${pkg}] -> ${dictionary}" )
+#   if ( NOT "${enabled}" )
+#     dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
+#   else()
+#     cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;INCLUDES;OUTPUT" ${ARGN} )
+#     dd4hep_print ( "|++> ${tag} Building dictionary ..." ) 
+#     if("${ARG_LINKDEF}" STREQUAL "")
+#       set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
+#     endif()
+#     #
+#     if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
+#       dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
+#     endif()
+#     #
+#     if ( NOT "${optional_missing}" STREQUAL "" )
+#       dd4hep_print ( "|++> ${tag} SKIPPED. Missing optional dependencies: ${optional_missing}" )
+#     else()
+#       set ( uses ${ARG_USES} ${optional_uses} )
+#       dd4hep_use_package ( ${tag} PACKAGE LOCAL 
+#         USES     "${uses}"
+#         OPTIONAL "${ARG_OPTIONAL}" )
+#     endif()
+#     if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
+#       dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}  --> FATAL ERROR. Build should fail!" )
+#     endif()
+#     #
+#     get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
+#     get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
+#     get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
+#     dd4hep_make_unique_list( incs VALUES ${LOCAL_INCLUDE_DIRS}   ${incs} )
+#     dd4hep_make_unique_list( defs VALUES ${LOCAL_DEFINITIONS}    ${defs} )
+#     #
+#     file( GLOB headers ${ARG_SOURCES} )
+#     file( GLOB excl_headers ${ARG_EXCLUDE} )
+#     foreach( f ${excl_headers} )
+#       list( REMOVE_ITEM headers ${f} )
+#       dd4hep_print ( "|++        exclude: ${f}" )
+#     endforeach()
+#     #
+#     set ( inc_dirs -I${CMAKE_CURRENT_SOURCE_DIR}/include )
+#     foreach ( inc ${ARG_INCLUDES} )
+#       set ( inc_dirs ${inc_dirs} -I${inc} )
+#     endforeach()
+#     foreach ( inc ${incs} )
+#       file ( GLOB inc ${inc} )
+#       set ( inc_dirs ${inc_dirs} -I${inc} )
+#     endforeach()
+#     #
+#     file ( GLOB linkdefs ${ARG_LINKDEF} )
+#     #
+#     set ( comp_defs )
+#     foreach ( def ${defs} )
+#       set ( comp_defs ${comp_defs} -D${def} )
+#     endforeach()
+#     #
+#     dd4hep_make_unique_list ( sources   VALUES ${headers} )
+#     dd4hep_make_unique_list ( linkdefs  VALUES ${linkdefs} )
+#     dd4hep_make_unique_list ( inc_dirs  VALUES ${inc_dirs} )
+#     dd4hep_make_unique_list ( comp_defs VALUES ${comp_defs} )
+#     #
+#     dd4hep_debug ( "${tag}  Linkdef: '${linkdefs}'" ) 
+#     dd4hep_debug ( "${tag}  Compile: '${comp_defs};${inc_dirs}'" ) 
+#     dd4hep_debug ( "${tag}  Files:   '${headers}'" ) 
+#     dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
+#     dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
+#     #
+#     set ( output_dir ${CMAKE_CURRENT_BINARY_DIR}/../lib )
+#     if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
+#       set ( output_dir ${ARG_OUTPUT} )
+#     endif()
+#     add_custom_command(OUTPUT ${dictionary}.cxx
+#       COMMAND ${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx
+#       -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${CMAKE_CXX_STANDARD} ${inc_dirs} ${headers} ${linkdefs}
+#       DEPENDS ${headers} ${linkdefs} )
+#     #  Install the binary to the destination directory
+#     install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
+#     endif()
+# endfunction()
 
 #---------------------------------------------------------------------------------------------------
 #
@@ -1519,26 +1215,39 @@ endfunction()
 
 
 #---------------------------------------------------------------------------------------------------
-#  new_dd4hep_add_dictionary
+#  dd4hep_add_dictionary
 #
+#  Arguments
+#  ---------
+#  dictionary     -> dictionary name
+#  SOURCES        -> Globbing expression to find source files
+#  EXCLUDE        -> Files to exclude if they are found via SOURCES
+#  LINKDEF        -> Last entry when calling rootcling
+#  USES           -> Libraries needed to link the binary
+#
+#  OPTIONS        -> Options to pass to rootcling
+#  INCLUDES       -> Additional include directories need to compile the binary
+#  DEFINITIONS    -> Additional compiler definitions to compile the sources
+#  OUTPUT         -> 
 #
 #  \author  A.Sailer
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function( new_dd4hep_add_dictionary dictionary )
-  cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL;DEPENDS;DEFINITIONS;INCLUDES;OUTPUT" ${ARGN} )
+function(dd4hep_add_dictionary dictionary )
+  cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;USES;DEFINITIONS;INCLUDES;OUTPUT" ${ARGN} )
   dd4hep_print ( "|++> Building dictionary ... ${dictionary}" ) 
-  # if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
-  #   dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
-  # endif()
 
   file(GLOB headers ${ARG_SOURCES})
   file(GLOB excl_headers ${ARG_EXCLUDE})
 
   foreach( f ${excl_headers} )
     list( REMOVE_ITEM headers ${f} )
-    dd4hep_print ( "|++        exclude: ${f}" )
+    dd4hep_debug ( "|++        exclude: ${f}" )
+  endforeach()
+
+  foreach( f ${headers} )
+    dd4hep_debug ( "|++        ${dictionary} is using: ${f}" )
   endforeach()
   
   set(inc_dirs ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -1551,7 +1260,7 @@ function( new_dd4hep_add_dictionary dictionary )
     LIST(APPEND comp_defs ${def})
   endforeach()
 
-  foreach(DEP ${ARG_DEPENDS})
+  foreach(DEP ${ARG_USES})
     # Get INCLUDE DIRECTORIES from Dependencies
     LIST(APPEND inc_dirs $<TARGET_PROPERTY:${DEP},INTERFACE_INCLUDE_DIRECTORIES>)
     # Get COMPILE DEFINITIONS from Dependencies
@@ -1574,7 +1283,6 @@ function( new_dd4hep_add_dictionary dictionary )
   endif()
 
   SET(COMP_DEFS )
-  SET(SPACE_I " -I")
   file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}_arguments
     CONTENT "${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} -std=c++${CMAKE_CXX_STANDARD}  \
    $<$<BOOL:${comp_defs}>:-D$<JOIN:${comp_defs}, -D>> \
@@ -1603,41 +1311,48 @@ endfunction()
 
 #---------------------------------------------------------------------------------------------------
 #
-#  new_dd4hep_add_plugin 
+#  dd4hep_add_plugin 
 #
 #  Arguments
 #  ---------
 #  binary         -> plugin name
 #  SOURCES        -> Globbing expression to find source files
 #  GENERATED      -> List of source files
+#  USES           -> Libraries needed to link the binary
 #
-#  INCLUDE_DIRS   -> Additional include directories need to compile the binary
-#  LINK_LIBRARIES -> Additional libraries needed to link the binary
+#  INCLUDES       -> Additional include directories need to compile the binary
 #  DEFINITIONS    -> Optional compiler definitions to compile the sources
+#  NOINSTALL      -> If set do not install the plugin
 #  \author  A.Sailer
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function(new_dd4hep_add_plugin binary)
-  cmake_parse_arguments(ARG "NOINSTALL" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;DEFINITIONS" ${ARGN})
+function(dd4hep_add_plugin binary)
+  cmake_parse_arguments(ARG "NOINSTALL" "" "SOURCES;GENERATED;USES;INCLUDES;DEFINITIONS" ${ARGN})
   if ( ${ARG_NOINSTALL} )
     set(NOINSTALL NOINSTALL)
   endif()
   file(GLOB SOURCES ${ARG_SOURCES})
 
-  ADD_LIBRARY(${binary} SHARED ${SOURCES} ${ARG_GENERATED})
-  TARGET_LINK_LIBRARIES(${binary} PUBLIC ${ARG_LINK_LIBRARIES})
-  TARGET_INCLUDE_DIRECTORIES(${binary} PUBLIC ${ARG_INCLUDE_DIRS})
-  TARGET_COMPILE_DEFINITIONS(${binary} PUBLIC ${ARG_DEFINITIONS})
-  # what do these options mean?
-  #NOINSTALL
-  # Generate ROOTMAP if the plugin will be built:
-  dd4hep_generate_rootmap( ${binary} )
-endfunction(new_dd4hep_add_plugin)
+  add_library(${binary} SHARED ${SOURCES} ${ARG_GENERATED})
+  target_link_libraries(${binary} PUBLIC ${ARG_USES})
+  target_include_directories(${binary} PUBLIC ${ARG_INCLUDES})
+  target_compile_definitions(${binary} PUBLIC ${ARG_DEFINITIONS})
+  dd4hep_generate_rootmap(${binary})
+  if(NOT ${ARG_NOINSTALL})
+    set(install_destination "lib")
+    if(CMAKE_INSTALL_LIBDIR)
+      set(install_destination ${CMAKE_INSTALL_LIBDIR})
+    endif()
+    install(TARGETS ${binary} LIBRARY DESTINATION ${install_destination})
+  endif()
+endfunction(dd4hep_add_plugin)
 
 
-
-
+#
+# Macro to set up ROOT:: targets so that we can use the same code for root 6.8 and for root 6.10 and beyond
+# This is called in dd4hep, and in DD4hepConfig
+#
 macro(DD4HEP_SETUP_ROOT_TARGETS)
 
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
@@ -1653,16 +1368,8 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
       )
     # there is also no dependency between the targets
     TARGET_LINK_LIBRARIES(ROOT::Core INTERFACE Core)
-    #foreach(LIB Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread MultiProc)
-    # MESSAGE(STATUS "ROOT lib location ${LIB} ${ROOT_${LIB}_LIBRARY}")
-    # SET_TARGET_PROPERTIES(ROOT::${LIB}
-    #   PROPERTIES
-    #   INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
-    #   INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
-    #   IMPORTED_LOCATION ${ROOT_${LIB}_LIBRARY}
-    #   )
-    #endforeach()
-    # Non-standard ROOT components we need later on, we "import" them by hand for now
+    # we list here the targets we use in dd4hep, as later versions of root have the namespace, we do not have to to this
+    # for ever
     foreach(LIB PyROOT Geom GenVector Eve Graf3d RGL Gui RIO MathCore MathMore EG EGL Rint Tree Hist Physics Gdml)
       IF(TARGET ${LIB})
         ADD_LIBRARY(ROOT::${LIB} INTERFACE IMPORTED GLOBAL)
@@ -1671,14 +1378,17 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     endforeach()
   ENDIF(NOT TARGET ROOT::Core)
 
-  MESSAGE(STATUS "ROOT Libraries ${ROOT_LIBRARIES}")
-  MESSAGE(STATUS "ROOT CXX_FLAGS ${ROOT_CXX_FLAGS}")
-  MESSAGE(STATUS "ROOT INCL DIRS ${ROOT_INCLUDE_DIRS}")
-  MESSAGE(STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
+  dd4hep_debug("ROOT Libraries ${ROOT_LIBRARIES}")
+  dd4hep_debug("ROOT CXX_FLAGS ${ROOT_CXX_FLAGS}")
+  dd4hep_debug("ROOT INCL DIRS ${ROOT_INCLUDE_DIRS}")
+  dd4hep_debug("ROOT_VERSION: ${ROOT_VERSION}" )
 
 ENDMACRO()
 
-
+#
+# Do some processing of the imported Geant4 Targets, CLHEP treatment etc.
+# Will only be done once, repeated calls should have no effect
+#
 MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
 
   # only do this once
@@ -1690,27 +1400,27 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
     ENDIF()
 
     if(Geant4_builtin_clhep_FOUND)
-      MESSAGE("STATUS: Using Geant4 internal CLHEP")
+      dd4hep_debug("Using Geant4 internal CLHEP")
       set(CLHEP "")
     else()
       IF(NOT TARGET CLHEP::CLHEP)
         FIND_PACKAGE(CLHEP REQUIRED)
       ENDIF()
       set(CLHEP CLHEP::CLHEP)
-      MESSAGE("STATUS: Using External CLHEP")
-      MESSAGE(STATUS "CLHEP Libraries ${CLHEP_LIBRARIES}")
-      MESSAGE(STATUS "CLHEP CXX_FLAGS ${CLHEP_CXX_FLAGS}")
-      MESSAGE(STATUS "CLHEP INCL DIRS ${CLHEP_INCLUDE_DIRS}")
-      MESSAGE(STATUS "CLHEP_VERSION: ${CLHEP_VERSION}" )
+      dd4hep_debug("Using External CLHEP")
+      dd4hep_debug("CLHEP Libraries ${CLHEP_LIBRARIES}")
+      dd4hep_debug("CLHEP CXX_FLAGS ${CLHEP_CXX_FLAGS}")
+      dd4hep_debug("CLHEP INCL DIRS ${CLHEP_INCLUDE_DIRS}")
+      dd4hep_debug("CLHEP_VERSION: ${CLHEP_VERSION}" )
     endif()
 
-    MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES}")
-    MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
-    MESSAGE(STATUS "Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
-    MESSAGE(STATUS "Geant4_VERSION: ${Geant4_VERSION}" )
+    dd4hep_debug("Geant4 Libraries ${Geant4_LIBRARIES}")
+    dd4hep_debug("Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
+    dd4hep_debug("Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
+    dd4hep_debug("Geant4_VERSION: ${Geant4_VERSION}" )
 
-    # Geant4::10.2.2 at least, not in 10.5 (check where it switches)
     # Geant4 CXX Flags are a string with quotes, not a list, so we need to convert to a list...
+    # Geant4::10.2.2 at least, not in 10.5 (check where it switches)
     string(REPLACE " " ";" Geant4_Flags ${Geant4_CXX_FLAGS} ${Geant4_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
     SET(Geant4_CXX_FLAGS ${Geant4_Flags})
 
@@ -1723,9 +1433,6 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
     SET(Geant4_DEFINITIONS ${G4_DEF_TEMP})
     UNSET(G4_DEF_TEMP)
 
-    #get_filename_component(Geant4_LOCATION ${Geant4_INCLUDE_DIRS} DIRECTORY)
-    #SET(Geant4_LOCATION "/cvmfs/ilc.desy.de/sw/x86_64_gcc49_sl6/geant4/10.03.p02/lib64")
-
     ADD_LIBRARY(Geant4::Interface INTERFACE IMPORTED GLOBAL)
 
     SET_TARGET_PROPERTIES(Geant4::Interface
@@ -1736,35 +1443,29 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
       )
 
     IF(CLHEP)
-      MESSAGE(STATUS "Adding CLHEP to Geant4::Interface Dependencies")
+      dd4hep_debug("Adding CLHEP to Geant4::Interface Dependencies")
       TARGET_LINK_LIBRARIES(Geant4::Interface INTERFACE ${CLHEP})
     ENDIF()
 
-    #Geant4_LIBRARIES are imported targets, we just add them all to our own interface library for convenience
-    #Geant4 Libraries to not (yet) use a namespace
+    # Geant4_LIBRARIES are imported targets, we just add them all to our own interface library for convenience
+    # Geant4 Libraries do not (yet) use a namespace
     foreach(LIB ${Geant4_LIBRARIES})
-      #ADD_LIBRARY(Geant4::${LIB} SHARED IMPORTED GLOBAL)
-      # MESSAGE(STATUS "Geant4 lib location ${LIB} ${G4_LIB_TEMP_${LIB}}")
-      # SET_TARGET_PROPERTIES(Geant4::${LIB}
-      #   PROPERTIES
-      #   INTERFACE_COMPILE_OPTIONS "${Geant4_CXX_FLAGS}"
-      #   INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
-      #   INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
-      #   IMPORTED_LOCATION ${G4_LIB_TEMP_${LIB}}
-      #   )
       TARGET_LINK_LIBRARIES(Geant4::Interface INTERFACE ${LIB})
     endforeach()
 
-    MESSAGE(STATUS "Geant4 Libraries ${Geant4_LIBRARIES};${Geant4_COMPONENT_LIBRARIES}")
-    MESSAGE(STATUS "Geant4 Location ${Geant4_LOCATION}")
-    MESSAGE(STATUS "Geant4 Defintitions ${Geant4_DEFINITIONS}")
-    MESSAGE(STATUS "Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
-    MESSAGE(STATUS "Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
-    MESSAGE(STATUS "Geant4_VERSION: ${Geant4_VERSION}" )
+    dd4hep_debug("Geant4 Libraries ${Geant4_LIBRARIES};${Geant4_COMPONENT_LIBRARIES}")
+    dd4hep_debug("Geant4 Location ${Geant4_LOCATION}")
+    dd4hep_debug("Geant4 Defintitions ${Geant4_DEFINITIONS}")
+    dd4hep_debug("Geant4 CXX_FLAGS ${Geant4_CXX_FLAGS}")
+    dd4hep_debug("Geant4 INCL DIRS ${Geant4_INCLUDE_DIRS}")
+    dd4hep_debug("Geant4_VERSION: ${Geant4_VERSION}" )
 
   ENDIF()
 ENDMACRO()
 
+#
+# Create Interface library for LCIO
+#
 MACRO(DD4HEP_SETUP_LCIO_TARGETS)
   IF(NOT TARGET LCIO::LCIO)
     ADD_LIBRARY(LCIO::LCIO INTERFACE IMPORTED GLOBAL)

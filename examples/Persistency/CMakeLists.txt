@@ -17,7 +17,7 @@ endif()
 link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDCore)
 
 #-----------------------------------------------------------------------------------
-new_dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp)
+dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp)
 install(TARGETS PersistencyExample LIBRARY DESTINATION lib)
 dd4hep_configure_scripts (Persistency DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------

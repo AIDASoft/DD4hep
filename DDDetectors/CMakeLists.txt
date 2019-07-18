@@ -17,10 +17,10 @@
 #
 #--------------------------------------------------------------------------
 
-new_dd4hep_add_plugin(DDDetectors 
+dd4hep_add_plugin(DDDetectors 
   SOURCES src/*.cpp
-  LINK_LIBRARIES DDRec
-  INCLUDE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  USES DDRec
+  INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 set_target_properties(DDDetectors PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})

@@ -17,14 +17,14 @@ target_include_directories(DDEve_Interface
 )
 target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
 
-new_dd4hep_add_dictionary(G__DDEve
+dd4hep_add_dictionary(G__DDEve
   SOURCES ../DDCore/include/ROOT/Warnings.h include/DDEve/*.h
   EXCLUDE include/DDEve/Utilities.h
   include/DDEve/ParticleActors.h
   include/DDEve/HitActors.h
   include/DDEve/Factories.h
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  DEPENDS DDCore
+  USES DDCore
   )
 
 if(TARGET LCIO::LCIO)
@@ -32,16 +32,16 @@ if(TARGET LCIO::LCIO)
   SET(DDEVE_LCIO_LINK LCIO::LCIO)
 endif()
 
-new_dd4hep_add_plugin(DDEvePlugins SOURCES src/*.cpp ${DDEVE_LCIO_SOURCES}
-  GENERATED  G__DDEve.cxx
-  LINK_LIBRARIES DDCore DDEve_Interface ${DDEVE_LCIO_LINK}
+dd4hep_add_plugin(DDEvePlugins SOURCES src/*.cpp ${DDEVE_LCIO_SOURCES}
+  GENERATED G__DDEve.cxx
+  USES      DDCore DDEve_Interface ${DDEVE_LCIO_LINK}
   )
 
 if(DD4HEP_USE_GEANT4)
-  new_dd4hep_add_dictionary(G__DDG4IO
+  dd4hep_add_dictionary(G__DDG4IO
     SOURCES ../DDCore/include/ROOT/Warnings.h DDEve/DDG4IO.C
     LINKDEF ../DDCore/include/ROOT/LinkDef.h
-    DEPENDS DDG4 
+    USES    DDG4 
     )
   add_library(DDG4IO SHARED DDEve/IO.cpp G__DDG4IO.cxx)
   target_link_libraries(DDG4IO DDG4 DDEve_Interface)

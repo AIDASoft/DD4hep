@@ -33,16 +33,16 @@ else()
 endif()
 
 #---------------------------  Legacy libraries -------------------------------------
-new_dd4hep_add_dictionary(G__DDDigi
+dd4hep_add_dictionary(G__DDDigi
   SOURCES ../DDCore/include/ROOT/Warnings.h python/DDDigiDict.C
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  DEPENDS DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO Boost::boost
+  USES    DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO Boost::boost
   )
 #---------------------------  Plugin library for the digitization framework  -------
-new_dd4hep_add_plugin(DDDigiPlugins
+dd4hep_add_plugin(DDDigiPlugins
   SOURCES        plugins/*.cpp
   GENERATED      G__DDDigi.cxx
-  LINK_LIBRARIES DDDigi
+  USES           DDDigi
   )
 
 #---Package installation procedure(s) ----------------------------------------------

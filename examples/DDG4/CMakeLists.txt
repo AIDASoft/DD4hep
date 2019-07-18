@@ -24,17 +24,16 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_set_compiler_flags()
   #
   #----  Dictionary of classes to be written to the ROOT file   --------------------
-  new_dd4hep_add_dictionary(G__DDG4UserDict
+  dd4hep_add_dictionary(G__DDG4UserDict
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h
   LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
   OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/lib
   )
   #----  Example of a client library with user defined plugins  --------------------
-  new_dd4hep_add_plugin( DDG4UserLib
+  dd4hep_add_plugin( DDG4UserLib
     SOURCES   src/*.cpp
     GENERATED G__DDG4UserDict.cxx
-    LINK_LIBRARIES DD4hep::DDCore DD4hep::DDG4
-    Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
+    USES      DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
     )
   install(TARGETS DDG4UserLib LIBRARY DESTINATION lib)
   #

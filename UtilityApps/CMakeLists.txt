@@ -49,18 +49,18 @@ if(BUILD_TESTING)
   endif()
   #-----------------------------------------------------------------------------------
 endif()
-new_dd4hep_add_dictionary( G__eve
+dd4hep_add_dictionary( G__eve
   SOURCES src/EvNavHandler.h
   LINKDEF src/LinkDef.h
-  DEPENDS DDCore ROOT::Geom
+  USES    DDCore ROOT::Geom
   )
 
 # #-----------------------------------------------------------------------------------
 if (DD4HEP_USE_LCIO)
-  new_dd4hep_add_dictionary( G__eve1
+  dd4hep_add_dictionary( G__eve1
     SOURCES src/EvNavHandler.h
     LINKDEF src/LinkDef.h
-    DEPENDS DDCore  ROOT::Geom
+    USES    DDCore ROOT::Geom
     )
   add_executable(teveLCIO G__eve1.cxx src/teve_display.cpp src/next_event_lcio.cpp)
   target_link_libraries(teveLCIO DDRec LCIO::LCIO ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL)

@@ -11,9 +11,7 @@
 #
 #==========================================================================
 
-#---Add Library-------------------------------------------------------------
-
-new_dd4hep_add_dictionary( G__DDRec
+dd4hep_add_dictionary( G__DDRec
   SOURCES ../DDCore/include/ROOT/Warnings.h
   GENERATED src/RecDictionary.h
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
@@ -59,19 +57,19 @@ if(GEAR_FOUND)
 endif()
   
 
-new_dd4hep_add_plugin(DDRecPlugins
+dd4hep_add_plugin(DDRecPlugins
   SOURCES src/plugins/*.cpp ${DDREC_PLUGIN_GEAR}
-  LINK_LIBRARIES DDRec
+  USES DDRec
   DEFINITIONS ${DDREC_PLUGIN_DEFINITIONS}
 )
 
 if(DD4HEP_USE_GEAR)
-  FIND_PACKAGE(Gear REQUIRED COMPONENTS geartgeo)
+  find_package(Gear REQUIRED COMPONENTS geartgeo)
   add_executable(convertToGear src/convertToGear.cc)
   target_link_libraries(convertToGear ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES} DDRec)
   target_compile_definitions(convertToGear PUBLIC DD4HEP_USE_GEAR)
 else()
-  FIND_PACKAGE(Gear COMPONENTS geartgeo QUIET)
+  find_package(Gear COMPONENTS geartgeo QUIET)
   IF(GEAR_FOUND)
     add_executable(convertToGear src/convertToGear.cc)
     target_link_libraries(convertToGear ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES} DDRec)
@@ -82,6 +80,6 @@ endif()
 set_target_properties(DDRec DDRecPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 file(GLOB DDRec_python python/*.py)
-INSTALL(FILES ${DDRec_python} DESTINATION python)
-INSTALL(DIRECTORY include/DDRec DESTINATION include)
-INSTALL(TARGETS DDRec DDRecPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+install(FILES ${DDRec_python} DESTINATION python)
+install(DIRECTORY include/DDRec DESTINATION include)
+install(TARGETS DDRec DDRecPlugins EXPORT DD4hep LIBRARY DESTINATION lib)

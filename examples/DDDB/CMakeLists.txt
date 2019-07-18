@@ -48,10 +48,7 @@ target_include_directories(DDDB
   )
 
 #---DDDB plugin library -------------------------------------------------------
-new_dd4hep_add_plugin(DDDBPlugins
-  SOURCES src/plugins/*.cpp
-  LINK_LIBRARIES DDDB
-  )
+dd4hep_add_plugin(DDDBPlugins SOURCES src/plugins/*.cpp USES DDDB)
 install(TARGETS DDDB DDDBPlugins LIBRARY DESTINATION lib)
 
 #---Package installation procedure(s) -----------------------------------------

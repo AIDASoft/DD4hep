@@ -30,17 +30,16 @@ if (DD4HEP_USE_GEANT4)
   #
   dd4hep_set_compiler_flags()
   #---------------------------  Plugin library for the simulation framework  ---------
-  new_dd4hep_add_dictionary(G__DDG4_MySensDet
+  dd4hep_add_dictionary(G__DDG4_MySensDet
     SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/MyTrackerHit.h
     LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
     )
 
   #----  Example of a client library with user defined plugins  --------------------
-  new_dd4hep_add_plugin( DDG4_MySensDet
+  dd4hep_add_plugin( DDG4_MySensDet
     GENERATED G__DDG4_MySensDet.cxx
     SOURCES   src/*.cpp
-    LINK_LIBRARIES  Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
-    DD4hep::DDCore DD4hep::DDG4
+    USES      Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO DD4hep::DDCore DD4hep::DDG4
     )
   install(TARGETS DDG4_MySensDet DESTINATION lib)
   
