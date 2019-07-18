@@ -7,10 +7,15 @@
 
 """
 from __future__ import absolute_import
-def run():
-  import os, sys, logging, DDG4, SystemOfUnits
+import logging
 
-  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+def run():
+  import os, sys, DDG4, SystemOfUnits
+
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry("file:"+install_dir+"/examples/LHeD/compact/compact.xml")
@@ -43,8 +48,8 @@ def run():
   kernel.run()
 
   kernel.terminate()
-  logging.info('End of run. Terminating .......')
-  logging.info('TEST_PASSED')
+  logger.info('End of run. Terminating .......')
+  logger.info('TEST_PASSED')
 
 if __name__ == "__main__":
   run()

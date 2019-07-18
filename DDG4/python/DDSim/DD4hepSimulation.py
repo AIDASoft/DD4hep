@@ -9,6 +9,12 @@ Based on M. Frank and F. Gaede runSim.py
 from __future__ import absolute_import
 __RCSID__ = "$Id$"
 from g4units import *
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 import argparse
 try:
   import argcomplete
@@ -241,9 +247,9 @@ class DD4hepSimulation(object):
 
     if self._dumpParameter:
       from pprint import pprint
-      print "="*80
+      logger.info("="*80)
       pprint(vars(self))
-      print "="*80
+      logger.info("="*80)
       exit(1)
 
     if self._dumpSteeringFile:
@@ -254,8 +260,6 @@ class DD4hepSimulation(object):
   def getDetectorLists( detectorDescription ):
     ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
     import DDG4
-  #  if len(detectorList):
-  #    print " subset list of detectors given - will only instantiate these: " , detectorList
     trackers,calos = [],[]
     for i in detectorDescription.detectors():
       det = DDG4.DetElement(i.second.ptr())
@@ -265,7 +269,7 @@ class DD4hepSimulation(object):
         detType = sd.type()
   #      if len(detectorList) and not(name in detectorList):
   #        continue
-        print 'getDetectorLists - found active detctor ' ,  name , ' type: ' , detType
+        logger.info('getDetectorLists - found active detctor %s type: %s' ,  name , detType)
         if detType == "tracker":
           trackers.append( det.name() )
         if detType == "calorimeter":
@@ -310,7 +314,7 @@ class DD4hepSimulation(object):
     elif self.runType == "batch":
       simple.setupUI(typ="csh", vis=False, macro=None, ui=False)
     else:
-      print "ERROR: unknown runType"
+      logger.errro("unknown runType")
       exit(1)
 
     #kernel.UI="csh"
@@ -349,14 +353,14 @@ class DD4hepSimulation(object):
       gun.Mask = 1
       actionList.append(gun)
       self.__applyBoostOrSmear(kernel, actionList, 1)
-      print "++++ Adding DD4hep Particle Gun ++++"
+      logger.info("++++ Adding DD4hep Particle Gun ++++")
 
     if self.enableG4Gun:
       ## GPS Create something
       self._g4gun = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/Gun")
       self._g4gun.Uses = 'G4ParticleGun'
       self._g4gun.Mask = 2
-      print "++++ Adding Geant4 Particle Gun ++++"
+      logger.info("++++ Adding Geant4 Particle Gun ++++")
       actionList.append(self._g4gun)
 
     if self.enableG4GPS:
@@ -364,7 +368,7 @@ class DD4hepSimulation(object):
       self._g4gps = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/GPS")
       self._g4gps.Uses = 'G4GeneralParticleSource'
       self._g4gps.Mask = 3
-      print "++++ Adding Geant4 General Particle Source ++++"
+      logger.info("++++ Adding Geant4 General Particle Source ++++")
       actionList.append(self._g4gps)
 
     for index,inputFile in enumerate(self.inputFiles, start=4):
@@ -427,7 +431,7 @@ class DD4hepSimulation(object):
     try:
       self.filter.setupFilters( kernel )
     except RuntimeError as e:
-      print "ERROR",str(e)
+      logger.error("%s", e)
       exit(1)
 
     #=================================================================================
@@ -439,14 +443,14 @@ class DD4hepSimulation(object):
     try:
       self.__setupSensitiveDetectors( trk, simple.setupTracker, self.filter.tracker)
     except Exception as e:
-      print "ERROR setting up sensitive detector", str(e)
+      logger.error("Setting up sensitive detector %s", e)
       raise
 
   # ---- add the calorimeters:
     try:
       self.__setupSensitiveDetectors( cal, simple.setupCalorimeter, self.filter.calo )
     except Exception as e:
-      print "ERROR setting up sensitive detector", str(e)
+      logger.error("Setting up sensitive detector %s", e)
       raise
 
   #=================================================================================
@@ -476,12 +480,12 @@ class DD4hepSimulation(object):
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     if self.printLevel <= 3:
-      print "DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)"% (totalTimeUser, totalTimeSys)
+      logger.info("DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)"% (totalTimeUser, totalTimeSys))
       if self.numberOfEvents != 0:
         eventTime = totalTimeUser - startUpTime
         perEventTime =  eventTime / float(self.numberOfEvents)
-        print "DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) " \
-            % (startUpTime, eventTime, perEventTime)
+        logger.info("DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) " \
+            % (startUpTime, eventTime, perEventTime))
 
 
   def __setMagneticFieldOptions(self, simple):
@@ -562,12 +566,12 @@ class DD4hepSimulation(object):
     :param setupFunction: function used to register the sensitive detector
     """
     for det in detectors:
-      print 'Setting up SD for %s' % det
+      logger.info('Setting up SD for %s' % det)
       action = None
       for pattern in self.action.mapActions:
         if pattern.lower() in det.lower():
           action = self.action.mapActions[pattern]
-          print  '       replace default action with : ' , action 
+          logger.info('       replace default action with : %s' , action)
           break
       seq,act = setupFuction( det, type=action )
       self.filter.applyFilters( seq, det, defaultFilter )
@@ -621,7 +625,7 @@ SIM = DD4hepSimulation()
         else:
           steeringFileBase += "SIM.%s = %s" %( parName, str(parameter))
         steeringFileBase += "\n"
-    print steeringFileBase
+    logger.info("%s", steeringFileBase)
 
 
   def _consistencyChecks( self ):
@@ -658,9 +662,9 @@ SIM = DD4hepSimulation()
     """
     enablePrimaryHandler = not (self.enableG4Gun or self.enableG4GPS)
     if enablePrimaryHandler:
-      print "Enabling the PrimaryHandler"
+      logger.info("Enabling the PrimaryHandler")
     else:
-      print "Disabling the PrimaryHandler"
+      logger.info("Disabling the PrimaryHandler")
     return enablePrimaryHandler
 
 

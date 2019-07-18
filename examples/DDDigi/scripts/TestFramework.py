@@ -1,7 +1,7 @@
 
 
 from __future__ import absolute_import
-import os, sys, logging, DDDigi
+import os, sys, DDDigi
 
 DDDigi.setPrintFormat('%-32s %5s %s')
 kernel = DDDigi.Kernel()

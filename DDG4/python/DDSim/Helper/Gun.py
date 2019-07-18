@@ -3,6 +3,11 @@
 from __future__ import absolute_import
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import GeV
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Gun( ConfigHelper ):
   """Configuration for the DDG4 ParticleGun"""
@@ -121,5 +126,5 @@ class Gun( ConfigHelper ):
         ddg4Gun.PhiMax = self.phiMax
         ddg4Gun.isotrop = True
     except Exception as e: #pylint: disable=W0703
-      print "ERROR: parsing gun options:\n%s\nException: %s " % (self, e )
+      logger.error("parsing gun options:\n%s\nException: %s " % (self, e ))
       exit(1)

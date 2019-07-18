@@ -8,6 +8,11 @@ The default filters are a GeantinoRejector and a 1keV minimum energy cut
 from __future__ import absolute_import
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import keV
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Filter( ConfigHelper ):
   """Configuration for sensitive detector filters
@@ -126,7 +131,7 @@ class Filter( ConfigHelper ):
     for val in self.mapDetFilter.values():
       listOfFilters += ConfigHelper.makeList(val)
     requestedFilter = set(chain( ConfigHelper.makeList(self.tracker), ConfigHelper.makeList(self.calo), listOfFilters))
-    print "ReqFilt",requestedFilter
+    logger.info("ReqFilt %s", requestedFilter)
     if requestedFilter - setOfFilters:
       raise RuntimeError(" Filter(s) '%s' are not registered!" %  str(requestedFilter - setOfFilters) )
 
@@ -143,7 +148,7 @@ class Filter( ConfigHelper ):
       if pattern.lower() in det.lower():
         foundFilter = True
         for filt in filts:
-          print "Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det )
+          logger.info("Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det ))
           seq.add( self.filters[filt]['filter'] )
 
     if not foundFilter and defaultFilter:

@@ -1,19 +1,21 @@
-#
-#
+"""
+
+    dd4hep simulation example setup using the python configuration
+
+    @author  M.Frank
+    @version 1.0
+
+"""
 from __future__ import absolute_import
 import os, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
-#
-#
-"""
+import logging
 
-   dd4hep simulation example setup using the python configuration
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-   @author  M.Frank
-   @version 1.0
-
-"""
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
@@ -30,7 +32,7 @@ def run():
   run1.Property_int    = 12345
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
-  print run1.Property_string, run1.Property_double, run1.Property_int
+  logger.info("%s %s %s", run1.Property_string, run1.Property_double, run1.Property_int)
   run1.enableUI()
   kernel.registerGlobalAction(run1)
   kernel.runAction().add(run1)

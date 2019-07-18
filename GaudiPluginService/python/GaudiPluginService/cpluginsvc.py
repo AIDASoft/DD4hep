@@ -1,5 +1,5 @@
 # cpluginsvc is a ctypes-based wrapper for the C-exposed API of GaudiPluginService
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 __doc__ = '''
 cpluginsvc is a ctypes-based wrapper for the C-API of the GaudiPluginService.
 
@@ -10,11 +10,11 @@ e.g.:
 ...     try:
 ...         f.load()
 ...     except Exception:
-...         print ("** could not load [%s] for factory [%s]" % (f.library, f.name))
+...         print(("** could not load [%s] for factory [%s]" % (f.library, f.name)))
 ...         continue
-...     print f
+...     print(f)
 ...     for k,v in f.properties.iteritems():
-...         print ("\t%s: %s" % (k,v))
+...         print(("\t%s: %s" % (k,v)))
 '''
 
 import ctypes
@@ -217,17 +217,16 @@ for f in _functions_list:
     pass
 
 if __name__ == "__main__":
-    print("instance: %s" % registry())
-    print("factories: %d" % len(factories()))
-    for _, f in factories().items():
+    print(("instance: %s" % registry()))
+    print(("factories: %d" % len(factories())))
+    for _,f in factories().items():
         try:
             f.load()
         except Exception:
-            print("** could not load [%s] for factory [%s]" % (f.library,
-                                                               f.name))
+            print(("** could not load [%s] for factory [%s]" % (f.library, f.name)))
             continue
-        print f
-        for k, v in f.properties.items():
-            print("\t%s: %s" % (k, v))
+        print(f)
+        for k,v in f.properties.items():
+            print(("\t%s: %s" % (k,v)))
 
 # EOF

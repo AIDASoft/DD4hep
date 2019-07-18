@@ -4,6 +4,12 @@ from __future__ import absolute_import
 import os, sys, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 #
 #
 """
@@ -63,7 +69,7 @@ def run():
 
   #DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
-  print 'End of run. Terminating .......'
+  logger.info('End of run. Terminating .......')
   kernel.terminate()
 
 if __name__ == "__main__":

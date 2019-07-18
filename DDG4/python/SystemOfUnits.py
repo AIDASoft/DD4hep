@@ -13,6 +13,6 @@
 #  The namespace "DD4hep" is deprecated. Please use "dd4hep" instead.
 #
 #==========================================================================
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 from g4units import *
-print 'DEPRECATION WARNING  The namespace "SystemOfUnits" is deprecated. Please use "g4units" instead.'
+print('DEPRECATION WARNING  The namespace "SystemOfUnits" is deprecated. Please use "g4units" instead.')

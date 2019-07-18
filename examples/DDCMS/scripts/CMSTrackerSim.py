@@ -2,6 +2,12 @@ from __future__ import absolute_import
 import os, sys, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 #
 #
 """
@@ -53,7 +59,7 @@ def run():
     sd = geant4.description.sensitiveDetector(o.name())
     if sd.isValid():
       type = geant4.sensitive_types[sd.type()]
-      print 'CMSTracker: Configure subdetector %-24s of type %s'%(o.name(),type,)
+      logger.info('CMSTracker: Configure subdetector %-24s of type %s'%(o.name(),type,))
       geant4.setupDetector(o.name(),type)
 
   # And handle the simulation particles.

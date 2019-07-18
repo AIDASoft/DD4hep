@@ -6,7 +6,9 @@ from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
 global geant4
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 #
 """
 
@@ -20,14 +22,14 @@ logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 def setupWorker():
   k = DDG4.Kernel()
   kernel = k.worker()
-  print 'PYTHON: +++ Creating Geant4 worker thread ....'
+  logger.info('PYTHON: +++ Creating Geant4 worker thread ....')
   
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
   run1.Property_int    = 12345
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
-  logging.info("%s %f %d",run1.Property_string, run1.Property_double, run1.Property_int)
+  logger.info("%s %f %d",run1.Property_string, run1.Property_double, run1.Property_int)
   run1.enableUI()
   kernel.registerGlobalAction(run1)
   kernel.runAction().adopt(run1)
@@ -118,11 +120,11 @@ def setupWorker():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
-  logging.info('PYTHON: +++ Geant4 worker thread configured successfully....')
+  logger.info('PYTHON: +++ Geant4 worker thread configured successfully....')
   return 1
   
 def setupMaster():
-  logging.info('PYTHON: +++ Setting up master thread.....')
+  logger.info('PYTHON: +++ Setting up master thread.....')
   return 1
 
 def setupSensitives():
@@ -134,15 +136,15 @@ def setupSensitives():
   seq,act = geant4.setupTracker('SiVertexEndcap')
   act.OutputLevel = Output.ERROR
   act.CollectSingleDeposits = False
-  logging.info('PYTHON: +++ Setting up Geant4 sensitive detectors for worker thread.....')
+  logger.info('PYTHON: +++ Setting up Geant4 sensitive detectors for worker thread.....')
   return 1
 
 def dummy_sd():
-  logging.info('PYTHON: +++ Setting up DUMMY Geant4 sensitive detectors for worker thread.....')
+  logger.info('PYTHON: +++ Setting up DUMMY Geant4 sensitive detectors for worker thread.....')
   return 1
   
 def dummy_geom():
-  logging.info('PYTHON: +++ Setting up DUMMY Geant4 geometry for worker thread.....')
+  logger.info('PYTHON: +++ Setting up DUMMY Geant4 geometry for worker thread.....')
   return 1
 
 def run():
@@ -224,5 +226,5 @@ def run():
 
 if __name__ == "__main__":
   import sys
-  logging.info('Arguments: %s',str(sys.argv))
+  logger.info('Arguments: %s',str(sys.argv))
   run()

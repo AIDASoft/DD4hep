@@ -2,6 +2,11 @@
 
 from __future__ import absolute_import
 import random
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
@@ -36,7 +41,7 @@ class Random (ConfigHelper):
     if self.seed is None:
       ## System provided random source, truely random according to documentation
       self.seed = random.SystemRandom().randint(0, 2**31-1)
-      print "Choosing random seed for you:", self.seed
+      logger.info("Choosing random seed for you: %s", self.seed)
 
     self._random.Seed = self.seed
     self._random.Luxury = self.luxury

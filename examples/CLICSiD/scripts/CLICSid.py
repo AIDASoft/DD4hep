@@ -2,6 +2,10 @@ from __future__ import absolute_import
 import sys, logging, DDG4
 from g4units import *
 
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class CLICSid:
   def __init__(self,tracker='Geant4TrackerCombineAction'):
     self.kernel = DDG4.Kernel()
@@ -60,13 +64,13 @@ class CLICSid:
     return self
 
   def setupDetectors(self):
-    logging.info("#  First the tracking detectors")
+    logger.info("#  First the tracking detectors")
     seq,act = self.geant4.setupTracker('SiVertexBarrel')
     seq,act = self.geant4.setupTracker('SiVertexEndcap')
     seq,act = self.geant4.setupTracker('SiTrackerBarrel')
     seq,act = self.geant4.setupTracker('SiTrackerEndcap')
     seq,act = self.geant4.setupTracker('SiTrackerForward')
-    logging.info("#  Now setup the calorimeters")
+    logger.info("#  Now setup the calorimeters")
     seq,act = self.geant4.setupCalorimeter('EcalBarrel')
     seq,act = self.geant4.setupCalorimeter('EcalEndcap')
     seq,act = self.geant4.setupCalorimeter('HcalBarrel')
@@ -91,5 +95,5 @@ class CLICSid:
       self.kernel.NumEvents = 0
       self.kernel.run()
     self.kernel.terminate()
-    logging.info('+++++ All Done....\n\nTEST_PASSED')
+    logger.info('+++++ All Done....\n\nTEST_PASSED')
     sys.exit(0)

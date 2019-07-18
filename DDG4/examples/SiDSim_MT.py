@@ -5,9 +5,11 @@ import os, time, logging, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 #
-logging.info("""
+"""
 
    dd4hep simulation example setup DDG4
    in multi-threaded mode using the python configuration
@@ -15,28 +17,28 @@ logging.info("""
    @author  M.Frank
    @version 1.0
 
-""")
+"""
 
 
 def setupWorker(geant4):
   kernel = geant4.kernel()
-  logging.info('#PYTHON: +++ Creating Geant4 worker thread ....')
-  logging.info("#PYTHON:  Configure Run actions")
+  logger.info('#PYTHON: +++ Creating Geant4 worker thread ....')
+  logger.info("#PYTHON:  Configure Run actions")
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit',shared=True)
   run1.Property_int    = int(12345)
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
-  logging.info("%s %s %s",run1.Property_string, str(run1.Property_double), str(run1.Property_int))
+  logger.info("%s %s %s",run1.Property_string, str(run1.Property_double), str(run1.Property_int))
   run1.enableUI()
   kernel.runAction().adopt(run1)
 
-  logging.info("#PYTHON:  Configure Event actions")
+  logger.info("#PYTHON:  Configure Event actions")
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.INFO
   prt.OutputType  = 3 # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
-  logging.info("\n#PYTHON:  Configure I/O\n")
+  logger.info("\n#PYTHON:  Configure I/O\n")
   #evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   #evt_lcio.OutputLevel = Output.ERROR
 
@@ -47,29 +49,29 @@ def setupWorker(geant4):
   gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-  logging.info("#PYTHON:\n#PYTHON:  Generation of isotrope tracks of a given multiplicity with overlay:\n#PYTHON:")
-  logging.info("#PYTHON:  First particle generator: pi+")
+  logger.info("#PYTHON:\n#PYTHON:  Generation of isotrope tracks of a given multiplicity with overlay:\n#PYTHON:")
+  logger.info("#PYTHON:  First particle generator: pi+")
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
   gen.Mask     = 1
   gen.Particle = 'pi+'
   gen.Energy   = 20 * GeV
   gen.Multiplicity = 2
   kernel.generatorAction().adopt(gen)
-  logging.info("#PYTHON:  Install vertex smearing for this interaction")
+  logger.info("#PYTHON:  Install vertex smearing for this interaction")
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearPi+");
   gen.Mask   = 1
   gen.Offset = (20*mm, 10*mm, 10*mm, 0*ns)
   gen.Sigma  = (4*mm, 1*mm, 1*mm, 0*ns)
   kernel.generatorAction().adopt(gen)
 
-  logging.info("#PYTHON:  Second particle generator: e-")
+  logger.info("#PYTHON:  Second particle generator: e-")
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropE-");
   gen.Mask     = 2
   gen.Particle = 'e-'
   gen.Energy   = 15 * GeV
   gen.Multiplicity = 3
   kernel.generatorAction().adopt(gen)
-  logging.info("#PYTHON:  Install vertex smearing for this interaction")
+  logger.info("#PYTHON:  Install vertex smearing for this interaction")
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearE-");
   gen.Mask   = 2
   gen.Offset = (-20*mm, -10*mm, -10*mm, 0*ns)
@@ -77,19 +79,19 @@ def setupWorker(geant4):
   kernel.generatorAction().adopt(gen)
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  logging.info("#PYTHON:  Merge all existing interaction records")
+  logger.info("#PYTHON:  Merge all existing interaction records")
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
   gen.OutputLevel = 4 #generator_output_level
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
-  logging.info("#PYTHON:  Finally generate Geant4 primaries")
+  logger.info("#PYTHON:  Finally generate Geant4 primaries")
   gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
   gen.OutputLevel = 4 #generator_output_level
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
-  logging.info("#PYTHON:  ....and handle the simulation particles.")
+  logger.info("#PYTHON:  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
   #part.SaveProcesses = ['conv','Decay']
@@ -102,24 +104,24 @@ def setupWorker(geant4):
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
-  logging.info('#PYTHON: +++ Geant4 worker thread configured successfully....')
+  logger.info('#PYTHON: +++ Geant4 worker thread configured successfully....')
   return 1
   
 def setupMaster(geant4):
   kernel = geant4.master()
-  logging.info('#PYTHON: +++ Setting up master thread for %d workers',int(kernel.NumberOfThreads))
+  logger.info('#PYTHON: +++ Setting up master thread for %d workers',int(kernel.NumberOfThreads))
   return 1
 
 def setupSensitives(geant4):
-  logging.info("#PYTHON:  Setting up all sensitive detectors")
+  logger.info("#PYTHON:  Setting up all sensitive detectors")
   geant4.printDetectors()
-  logging.info("#PYTHON:  First the tracking detectors")
+  logger.info("#PYTHON:  First the tracking detectors")
   seq,act = geant4.setupTracker('SiVertexBarrel')
   seq,act = geant4.setupTracker('SiVertexEndcap')
   seq,act = geant4.setupTracker('SiTrackerBarrel')
   seq,act = geant4.setupTracker('SiTrackerEndcap')
   seq,act = geant4.setupTracker('SiTrackerForward')
-  logging.info("#PYTHON:  Now setup the calorimeters")
+  logger.info("#PYTHON:  Now setup the calorimeters")
   seq,act = geant4.setupCalorimeter('EcalBarrel')
   seq,act = geant4.setupCalorimeter('EcalEndcap')
   seq,act = geant4.setupCalorimeter('HcalBarrel')
@@ -142,33 +144,33 @@ def run():
   kernel.NumberOfThreads = 3
   kernel.RunManagerType  = 'G4MTRunManager'
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
-  logging.info("#  Configure UI")
+  logger.info("#  Configure UI")
   geant4.setupCshUI()
 
-  logging.info("#  Geant4 user initialization action")
+  logger.info("#  Geant4 user initialization action")
   geant4.addUserInitialization(worker=setupWorker, worker_args=(geant4,),
                                master=setupMaster, master_args=(geant4,))
 
-  logging.info("#  Configure G4 geometry setup")
+  logger.info("#  Configure G4 geometry setup")
   seq,act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
 
-  logging.info("# Configure G4 sensitive detectors: python setup callback")
+  logger.info("# Configure G4 sensitive detectors: python setup callback")
   seq,act = geant4.addDetectorConstruction("Geant4PythonDetectorConstruction/SetupSD",
                                            sensitives=setupSensitives,sensitives_args=(geant4,))
-  logging.info("# Configure G4 sensitive detectors: atach'em to the sensitive volumes")
+  logger.info("# Configure G4 sensitive detectors: atach'em to the sensitive volumes")
   seq,act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
   #                                           allow_threads=True)
 
-  logging.info("#  Configure G4 magnetic field tracking")
+  logger.info("#  Configure G4 magnetic field tracking")
   geant4.setupTrackingFieldMT()
 
-  logging.info("#  Setup random generator")
+  logger.info("#  Setup random generator")
   rndm = DDG4.Action(kernel,'Geant4Random/Random')
   rndm.Seed = 987654321
   rndm.initialize()
   ##rndm.showStatus()
 
-  logging.info("#  Now build the physics list:")
+  logger.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
   phys.dump()
 

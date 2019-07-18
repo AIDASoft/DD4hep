@@ -1,6 +1,11 @@
 """Configuration Helper for ParticleHandler"""
 from __future__ import absolute_import
 from g4units import MeV, mm
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
@@ -112,7 +117,7 @@ class ParticleHandler( ConfigHelper ):
       return
 
     if self.userParticleHandler not in ["Geant4TCUserParticleHandler"]:
-      print "ERROR: unknown UserParticleHandler: %r" % self.userParticleHandler
+      logger.error("unknown UserParticleHandler: %r" % self.userParticleHandler)
       exit(1)
 
     if self.userParticleHandler == "Geant4TCUserParticleHandler":
@@ -120,15 +125,15 @@ class ParticleHandler( ConfigHelper ):
       try:
         user.TrackingVolume_Zmax = DDG4.tracker_region_zmax
         user.TrackingVolume_Rmax = DDG4.tracker_region_rmax
-        print " *** definition of tracker region *** "
-        print "    tracker_region_zmax = " , user.TrackingVolume_Zmax
-        print "    tracker_region_rmax = " , user.TrackingVolume_Rmax
-        print " ************************************ "
+        logger.info(" *** definition of tracker region *** ")
+        logger.info("    tracker_region_zmax = " , user.TrackingVolume_Zmax)
+        logger.info("    tracker_region_rmax = " , user.TrackingVolume_Rmax)
+        logger.info(" ************************************ ")
       except AttributeError as e:
-        print "ERROR - attribute of tracker region missing in detector model   ", str(e)
-        print "   make sure to specify the global constants tracker_region_zmax and tracker_region_rmax "
-        print "   this is needed for the MC-truth link of created sim-hits  !  "
-        print " Or Disable the User Particle Handler with --part.userParticleHandler=''"
+        logger.error("Attribute of tracker region missing in detector model %s", e)
+        logger.error("   make sure to specify the global constants tracker_region_zmax and tracker_region_rmax ")
+        logger.error("   this is needed for the MC-truth link of created sim-hits  !  ")
+        logger.error(" Or Disable the User Particle Handler with --part.userParticleHandler=''")
         exit(1)
       part.adopt(user)
 

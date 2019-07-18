@@ -7,10 +7,15 @@
 
 """
 from __future__ import absolute_import
-def run():
-  import os, sys, logging, DDG4, CLICSid, g4units
+import logging
 
-  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+def run():
+  import os, sys, DDG4, CLICSid, g4units
+
   sid = CLICSid.CLICSid()
   sid.loadGeometry()
   DDG4.Core.setPrintFormat("%-32s %6s %s")
@@ -41,8 +46,8 @@ def run():
   sid.kernel.run()
 
   sid.kernel.terminate()
-  logging.info('End of run. Terminating .......')
-  logging.info('TEST_PASSED')
+  logger.info('End of run. Terminating .......')
+  logger.info('TEST_PASSED')
 
 if __name__ == "__main__":
   run()
