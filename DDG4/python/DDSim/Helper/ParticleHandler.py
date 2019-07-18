@@ -1,4 +1,5 @@
 """Configuration Helper for ParticleHandler"""
+from __future__ import absolute_import
 from g4units import MeV, mm
 
 from DDSim.Helper.ConfigHelper import ConfigHelper

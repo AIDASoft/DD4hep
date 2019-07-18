@@ -10,6 +10,7 @@ python CreateParsers.py
 
 """
 
+from __future__ import absolute_import
 import os
 
 LICENSE ="""// $Id$

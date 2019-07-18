@@ -10,6 +10,7 @@
 #
 #==========================================================================
 
+from __future__ import absolute_import
 import os, sys, optparse, logging
 
 class ComponentDumper:

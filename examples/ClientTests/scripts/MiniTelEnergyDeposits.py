@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import sys, time, DDG4, MiniTelSetup
 from DDG4 import OutputLevel as Output
 #

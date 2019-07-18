@@ -4,6 +4,7 @@
 # Syntax is:
 #   gaudirun.py Brunel-Default.py <someDataFiles>.py
 ###############################################################################
+from __future__ import absolute_import
 from Gaudi.Configuration  import *
 from Configurables import LHCbConfigurableUser, LHCbApp, CondDB, ToolSvc, EventSelector
 from Configurables import LoadDD4hepDet, LbDD4hepExample

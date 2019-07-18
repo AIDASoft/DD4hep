@@ -1,5 +1,6 @@
 """Dummy helper object for particle gun properties"""
 
+from __future__ import absolute_import
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.DD4hepSimulation import outputLevel
 

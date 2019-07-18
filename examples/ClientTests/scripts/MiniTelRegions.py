@@ -5,6 +5,7 @@
    @version 1.0
 
 """
+from __future__ import absolute_import
 if __name__ == "__main__":
   from MiniTelSetup import Setup as MiniTel
   import logging

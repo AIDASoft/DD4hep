@@ -1,5 +1,6 @@
 """Helper object for configuring the LCIO output file (meta)"""
 
+from __future__ import absolute_import
 import datetime
 import os
 

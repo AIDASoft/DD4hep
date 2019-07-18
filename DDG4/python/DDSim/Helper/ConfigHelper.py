@@ -12,6 +12,7 @@ call for the parser object create an additional member::
 
 """
 
+from __future__ import absolute_import
 from pprint import pprint
 
 class ConfigHelper( object ):

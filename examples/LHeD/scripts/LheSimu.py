@@ -7,6 +7,7 @@
    modified for LHeC
    
 """
+from __future__ import absolute_import
 def run():
   import LHeD, DDG4, os, SystemOfUnits
   from DDG4 import OutputLevel as Output

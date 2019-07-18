@@ -5,6 +5,7 @@ The default filters are a GeantinoRejector and a 1keV minimum energy cut
 
 """
 
+from __future__ import absolute_import
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import keV
 

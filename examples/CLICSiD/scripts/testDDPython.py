@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from ROOT import gSystem
 
 import os, logging, platform
