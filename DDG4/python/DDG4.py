@@ -148,7 +148,7 @@ def _setKernelProperty(self, name, value):
   raise KeyError(msg)
 
 #---------------------------------------------------------------------------
-def _kernel_phase(self,name):        return self.addSimplePhase(name,False)
+def _kernel_phase(self,name):        return self.addSimplePhase(str(name),False)
 #---------------------------------------------------------------------------
 def _kernel_worker(self):            return Kernel(self.get().createWorker())
 #---------------------------------------------------------------------------
@@ -165,46 +165,46 @@ Kernel.terminate = _kernel_terminate
 ActionHandle = Sim.ActionHandle
 #---------------------------------------------------------------------------
 def SensitiveAction(kernel,nam,det,shared=False):
-  return Interface.createSensitive(kernel,nam,det,shared)
+  return Interface.createSensitive(kernel,str(nam),det,shared)
 #---------------------------------------------------------------------------
 def Action(kernel,nam,shared=False):
-  return Interface.createAction(kernel,nam,shared)
+  return Interface.createAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def Filter(kernel,nam,shared=False):
-  return Interface.createFilter(kernel,nam,shared)
+  return Interface.createFilter(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def PhaseAction(kernel,nam,shared=False):
-  return Interface.createPhaseAction(kernel,nam,shared)
+  return Interface.createPhaseAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def RunAction(kernel,nam,shared=False):
-  return Interface.createRunAction(kernel,nam,shared)
+  return Interface.createRunAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def EventAction(kernel,nam,shared=False):
-  return Interface.createEventAction(kernel,nam,shared)
+  return Interface.createEventAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def GeneratorAction(kernel,nam,shared=False):
-  return Interface.createGeneratorAction(kernel,nam,shared)
+  return Interface.createGeneratorAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def TrackingAction(kernel,nam,shared=False):
-  return Interface.createTrackingAction(kernel,nam,shared)
+  return Interface.createTrackingAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def SteppingAction(kernel,nam,shared=False):
-  return Interface.createSteppingAction(kernel,nam,shared)
+  return Interface.createSteppingAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def StackingAction(kernel,nam,shared=False):
-  return Interface.createStackingAction(kernel,nam,shared)
+  return Interface.createStackingAction(kernel,str(nam), shared)
 #---------------------------------------------------------------------------
 def DetectorConstruction(kernel,nam):
-  return Interface.createDetectorConstruction(kernel,nam)
+  return Interface.createDetectorConstruction(kernel,str(nam))
 #---------------------------------------------------------------------------
 def PhysicsList(kernel,nam):
-  return Interface.createPhysicsList(kernel,nam)
+  return Interface.createPhysicsList(kernel,str(nam))
 #---------------------------------------------------------------------------
 def UserInitialization(kernel, nam):
-  return Interface.createUserInitialization(kernel,nam)
+  return Interface.createUserInitialization(kernel,str(nam))
 #---------------------------------------------------------------------------
 def SensitiveSequence(kernel, nam):
-  return Interface.createSensDetSequence(kernel,nam)
+  return Interface.createSensDetSequence(kernel,str(nam))
 #---------------------------------------------------------------------------
 def _setup(obj):
   def _adopt(self,action):  self.__adopt(action.get())
@@ -272,6 +272,8 @@ def _get(self, name):
 
 def _set(self, name, value):
   a = Interface.toAction(self)
+  if isinstance(value,list):
+    value = [str(x) for x in value]
   if Interface.setProperty(a,name,str(value)):
     return
   msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set '+a.name()+'.'+name+' = '+str(value)
