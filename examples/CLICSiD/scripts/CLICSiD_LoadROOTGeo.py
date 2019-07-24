@@ -21,7 +21,7 @@ def run():
   sid = CLICSid.CLICSid()
   geant4 = sid.geant4
   kernel = sid.kernel
-  sid.loadGeometry('CLICSiD_geometry.root')
+  sid.loadGeometry(str('CLICSiD_geometry.root'))
   geant4.printDetectors()
 
   if len(sys.argv) >= 2 and sys.argv[1] =="batch":

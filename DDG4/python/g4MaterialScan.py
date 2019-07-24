@@ -26,8 +26,8 @@ def printOpts(opts):
 def materialScan(opts):
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
-  kernel.loadGeometry(opts.compact)
-  DDG4.Core.setPrintFormat("%-32s %6s %s")
+  kernel.loadGeometry(str(opts.compact))
+  DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
   geant4.setupCshUI(ui=None)

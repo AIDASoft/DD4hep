@@ -17,7 +17,7 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/SiliconBlock.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/ClientTests/compact/SiliconBlock.xml"))
   DDG4.importConstants(kernel.detectorDescription(),debug=False)
   # =======================================================================================
   # ===> This is actually the ONLY difference to ClientTests/scripts/SiliconBlock.py

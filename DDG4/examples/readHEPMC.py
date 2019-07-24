@@ -23,7 +23,7 @@ def run(input_file):
   gen.Input = "Geant4EventReaderHepMC|"+input_file
   gen.OutputLevel = Output.DEBUG
   gen.HaveAbort = False
-  prim_vtx = DDG4.std_vector('dd4hep::sim::Geant4Vertex*')()
+  prim_vtx = DDG4.std_vector(str('dd4hep::sim::Geant4Vertex*'))()
   parts = gen.new_particles()
   ret = 1
   evtid=0

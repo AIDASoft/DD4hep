@@ -17,8 +17,8 @@ def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   geometry = "file:"+install_dir+"/examples/ClientTests/compact/MultiCollections.xml"
-  kernel.setOutputLevel('Geant4Converter',Output.DEBUG)
-  kernel.setOutputLevel('Gun',Output.INFO)
+  kernel.setOutputLevel(str('Geant4Converter'),Output.DEBUG)
+  kernel.setOutputLevel(str('Gun'),Output.INFO)
   for i in xrange(len(sys.argv)):
     if sys.argv[i]=='-compact':
       geometry = sys.argv[i+1]
@@ -29,7 +29,7 @@ def run():
     elif sys.argv[i]=='batch':
       batch = True
 
-  kernel.loadGeometry(geometry)
+  kernel.loadGeometry(str(geometry))
   geant4 = DDG4.Geant4(kernel)
   geant4.printDetectors()
   geant4.setupCshUI()

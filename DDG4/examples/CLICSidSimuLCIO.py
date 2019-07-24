@@ -20,7 +20,7 @@ def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml"))
 
   simple = DDG4.Simple(kernel,tracker='LcioTestTrackerAction')
   simple.printDetectors()
@@ -124,11 +124,11 @@ def run():
   # Now build the physics list:
   phys = simple.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-  ph.addParticleConstructor('G4BosonConstructor')
-  ph.addParticleConstructor('G4LeptonConstructor')
-  ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
-  ph.addPhysicsConstructor('G4StepLimiterPhysics')
-  ph.addPhysicsConstructor('G4OpticalPhysics')
+  ph.addParticleConstructor(str('G4BosonConstructor'))
+  ph.addParticleConstructor(str('G4LeptonConstructor'))
+  ph.addParticleProcess(str('e[+-]'),str('G4eMultipleScattering'),-1,1,1)
+  ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
+  ph.addPhysicsConstructor(str('G4OpticalPhysics'))
   ph.enableUI()
   phys.add(ph)
 

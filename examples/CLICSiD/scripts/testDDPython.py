@@ -38,8 +38,8 @@ class a_class:
 py = import_namespace_item('Core','DDPython')
 
 logger.info('+++++ Test: Execute statements in python with C++ indirection')
-py.instance().execute('import sys, logging')
-py.instance().execute('logging.info("Arguments: %s", str(sys.argv))')
+py.instance().execute(str('import sys, logging'))
+py.instance().execute(str('logging.info("Arguments: %s", str(sys.argv))'))
 logger.info('\n')
 
 obj=a_class()

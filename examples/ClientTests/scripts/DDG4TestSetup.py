@@ -18,9 +18,9 @@ logger.setLevel(logging.INFO)
 class Setup:
   def __init__(self, geometry_file):
     self.kernel = DDG4.Kernel()
-    self.kernel.setOutputLevel('Geant4Converter',Output.DEBUG)
-    self.kernel.setOutputLevel('Gun',Output.INFO)
-    self.kernel.loadGeometry(geometry_file)
+    self.kernel.setOutputLevel(str('Geant4Converter'),Output.DEBUG)
+    self.kernel.setOutputLevel(str('Gun'),Output.INFO)
+    self.kernel.loadGeometry(str(geometry_file))
 
     self.geant4 = DDG4.Geant4(self.kernel)
     self.geant4.printDetectors()

@@ -25,7 +25,7 @@ def run():
   description = kernel.detectorDescription()
   
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/LheD_tracker.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/ClientTests/compact/LheD_tracker.xml"))
 
   DDG4.importConstants(description,debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
@@ -58,8 +58,8 @@ def run():
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-  ph.addParticleConstructor('G4Geantino')
-  ph.addParticleConstructor('G4BosonConstructor')
+  ph.addParticleConstructor(str('G4Geantino'))
+  ph.addParticleConstructor(str('G4BosonConstructor'))
   ph.enableUI()
   phys.adopt(ph)
   phys.dump()

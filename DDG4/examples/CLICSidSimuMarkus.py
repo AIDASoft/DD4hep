@@ -44,7 +44,7 @@ def run():
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml"))
   ##kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(description,debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
