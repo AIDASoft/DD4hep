@@ -7,9 +7,9 @@
 
 """
 from __future__ import absolute_import
+from g4units import *
 
 def run():
-  from g4units import *
   import CLICSid, DDG4
   from DDG4 import OutputLevel as Output
   
