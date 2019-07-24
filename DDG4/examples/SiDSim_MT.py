@@ -137,8 +137,8 @@ def run():
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
-  DDG4.Core.setPrintFormat("%-32s %6s %s")
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+  DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
+  kernel.loadGeometry(str("file:"+install_dir+"/DDDetectors/compact/SiD.xml"))
   DDG4.importConstants(description)
 
   kernel.NumberOfThreads = 3

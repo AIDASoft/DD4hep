@@ -17,7 +17,7 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/OpticalSurfaces/compact/OpNovice.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/OpticalSurfaces/compact/OpNovice.xml"))
 
   DDG4.importConstants(kernel.detectorDescription(),debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
@@ -83,14 +83,14 @@ def run():
   ph.addDiscreteParticleProcess('gamma',  'G4GammaConversion')
   ph.addDiscreteParticleProcess('gamma',  'G4ComptonScattering')
   ph.addDiscreteParticleProcess('gamma',  'G4PhotoElectricEffect')
-  ph.addParticleProcess('e[+-]',  'G4eMultipleScattering', -1, 1, 1)
-  ph.addParticleProcess('e[+-]',  'G4eIonisation',         -1, 2, 2)
-  ph.addParticleProcess('e[+-]',  'G4eBremsstrahlung',     -1, 3, 3)
-  ph.addParticleProcess('e+',     'G4eplusAnnihilation',    0,-1, 4)
-  ph.addParticleProcess('mu[+-]', 'G4MuMultipleScattering',-1, 1, 1)
-  ph.addParticleProcess('mu[+-]', 'G4MuIonisation',        -1, 2, 2)
-  ph.addParticleProcess('mu[+-]', 'G4MuBremsstrahlung',    -1, 3, 3)
-  ph.addParticleProcess('mu[+-]', 'G4MuPairProduction',    -1, 4, 4)
+  ph.addParticleProcess(str('e[+-]'),  str('G4eMultipleScattering'), -1, 1, 1)
+  ph.addParticleProcess(str('e[+-]'),  str('G4eIonisation'),         -1, 2, 2)
+  ph.addParticleProcess(str('e[+-]'),  str('G4eBremsstrahlung'),     -1, 3, 3)
+  ph.addParticleProcess(str('e+'),     str('G4eplusAnnihilation'),    0,-1, 4)
+  ph.addParticleProcess(str('mu[+-]'), str('G4MuMultipleScattering'),-1, 1, 1)
+  ph.addParticleProcess(str('mu[+-]'), str('G4MuIonisation'),        -1, 2, 2)
+  ph.addParticleProcess(str('mu[+-]'), str('G4MuBremsstrahlung'),    -1, 3, 3)
+  ph.addParticleProcess(str('mu[+-]'), str('G4MuPairProduction'),    -1, 4, 4)
   ph.enableUI()
   phys.adopt(ph)
 

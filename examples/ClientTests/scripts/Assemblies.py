@@ -12,7 +12,7 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/Assemblies.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/ClientTests/compact/Assemblies.xml"))
   #
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()

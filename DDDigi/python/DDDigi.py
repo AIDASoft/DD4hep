@@ -132,7 +132,7 @@ def _getKernelProperty(self, name):
 
 #---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
-  if Interface.setPropertyKernel(self.get(),name,str(value)):
+  if Interface.setPropertyKernel(self.get(),str(name),str(value)):
     return
   msg = 'DigiKernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
   raise KeyError(msg)
@@ -147,23 +147,23 @@ Kernel.terminate   = _kernel_terminate
 ActionHandle = digi.ActionHandle
 #---------------------------------------------------------------------------
 def Action(kernel, nam, parallel=False):
-  obj = Interface.createAction(kernel,nam)
+  obj = Interface.createAction(kernel,str(nam))
   obj.parallel = parallel
   return obj
 #---------------------------------------------------------------------------
 def TestAction(kernel, nam, sleep=0):
-  obj = Interface.createAction(kernel,'DigiTestAction/'+nam)
+  obj = Interface.createAction(kernel,str('DigiTestAction/'+nam))
   if sleep != 0:
     obj.sleep = sleep
   return obj
 #---------------------------------------------------------------------------
 def ActionSequence(kernel, nam, parallel=False):
-  obj = Interface.createSequence(kernel,nam)
+  obj = Interface.createSequence(kernel,str(nam))
   obj.parallel = parallel
   return obj
 #---------------------------------------------------------------------------
 def Synchronize(kernel, nam, parallel=False):
-  obj = Interface.createSync(kernel,nam)
+  obj = Interface.createSync(kernel,str(nam))
   obj.parallel = parallel
   return obj
 #---------------------------------------------------------------------------

@@ -290,7 +290,6 @@ class DD4hepSimulation(object):
 
     kernel = DDG4.Kernel()
     dd4hep.setPrintLevel(self.printLevel)
-    #kernel.setOutputLevel('Compact',1)
 
     kernel.loadGeometry(str("file:"+ self.compactFile ))
     detectorDescription = kernel.detectorDescription()

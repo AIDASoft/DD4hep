@@ -14,7 +14,7 @@ import os, sys, time, DDG4
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/TrackingRegion.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/ClientTests/compact/TrackingRegion.xml"))
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   # Configure field
   ##field = geant4.setupTrackingField(prt=True)

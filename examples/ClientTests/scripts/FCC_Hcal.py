@@ -16,11 +16,11 @@ def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.setOutputLevel('Geant4Converter',Output.DEBUG)
-  kernel.setOutputLevel('RootOutput',Output.INFO)
-  kernel.setOutputLevel('ShellHandler',Output.DEBUG)
-  kernel.setOutputLevel('Gun',Output.INFO)
-  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/FCC_HcalBarrel.xml")
+  kernel.setOutputLevel(str('Geant4Converter'),Output.DEBUG)
+  kernel.setOutputLevel(str('RootOutput'),Output.INFO)
+  kernel.setOutputLevel(str('ShellHandler'),Output.DEBUG)
+  kernel.setOutputLevel(str('Gun'),Output.INFO)
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/ClientTests/compact/FCC_HcalBarrel.xml"))
 
   geant4 = DDG4.Geant4(kernel)
   geant4.printDetectors()

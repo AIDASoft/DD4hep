@@ -17,7 +17,7 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/DDCodex/compact/CODEX-b-alone.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/DDCodex/compact/CODEX-b-alone.xml"))
 
   DDG4.importConstants(kernel.detectorDescription(),debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')

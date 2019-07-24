@@ -22,7 +22,7 @@ def run():
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+  kernel.loadGeometry(str("file:"+install_dir+"/DDDetectors/compact/SiD.xml"))
   DDG4.importConstants(description)
 
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
@@ -169,11 +169,7 @@ def run():
 
   logger.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = geant4.addPhysics('Geant4PhysicsList/Myphysics')
-  #ph.addParticleConstructor('G4BosonConstructor')
-  #ph.addParticleConstructor('G4LeptonConstructor')
-  #ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
-  #ph.addPhysicsConstructor('G4OpticalPhysics')
+  ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
 
   # Add special particle types from specialized physics constructor
   part = geant4.addPhysics('Geant4ExtraParticles/ExtraParticles')

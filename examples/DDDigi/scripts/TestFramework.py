@@ -3,11 +3,11 @@
 from __future__ import absolute_import, unicode_literals
 import os, sys, DDDigi
 
-DDDigi.setPrintFormat('%-32s %5s %s')
+DDDigi.setPrintFormat(str('%-32s %5s %s'))
 kernel = DDDigi.Kernel()
 install_dir = os.environ['DD4hepINSTALL']
 fname = "file:"+install_dir+"/examples/ClientTests/compact/MiniTel.xml"
-kernel.loadGeometry(fname)
+kernel.loadGeometry(str(fname))
 kernel.printProperties()
 digi = DDDigi.Digitize(kernel)
 digi.printDetectors()

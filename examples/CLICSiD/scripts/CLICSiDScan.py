@@ -18,7 +18,7 @@ def run():
 
   sid = CLICSid.CLICSid()
   sid.loadGeometry()
-  DDG4.Core.setPrintFormat("%-32s %6s %s")
+  DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
   geant4 = sid.geant4
   # Configure UI
   sid.geant4.setupCshUI(ui=None)

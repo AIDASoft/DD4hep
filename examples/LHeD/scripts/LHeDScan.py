@@ -18,8 +18,8 @@ def run():
 
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/examples/LHeD/compact/compact.xml")
-  DDG4.Core.setPrintFormat("%-32s %6s %s")
+  kernel.loadGeometry(str("file:"+install_dir+"/examples/LHeD/compact/compact.xml"))
+  DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
   geant4.setupCshUI(ui=None)

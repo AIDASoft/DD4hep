@@ -165,7 +165,7 @@ Kernel.terminate = _kernel_terminate
 ActionHandle = Sim.ActionHandle
 #---------------------------------------------------------------------------
 def SensitiveAction(kernel,nam,det,shared=False):
-  return Interface.createSensitive(kernel,str(nam),det,shared)
+  return Interface.createSensitive(kernel,str(nam),str(det),shared)
 #---------------------------------------------------------------------------
 def Action(kernel,nam,shared=False):
   return Interface.createAction(kernel,str(nam), shared)
@@ -512,7 +512,7 @@ class Geant4:
     logger.info('+++  List of sensitive detectors:')
     for i in self.description.detectors():
       o = DetElement(i.second.ptr())
-      sd = self.description.sensitiveDetector(o.name())
+      sd = self.description.sensitiveDetector(str(o.name()))
       if sd.isValid():
         typ = sd.type()
         sdtyp = 'Unknown'
@@ -543,7 +543,7 @@ class Geant4:
     seq.enableUI()
     acts = []
     if collections is None:
-      sd = self.description.sensitiveDetector(name)
+      sd = self.description.sensitiveDetector(str(name))
       ro = sd.readout()
       collections = ro.collectionNames()
       if len(collections)==0:
@@ -582,13 +582,13 @@ class Geant4:
     return (seq,acts[0])
 
   def setupCalorimeter(self,name,type=None,collections=None):
-    sd = self.description.sensitiveDetector(name)
+    sd = self.description.sensitiveDetector(str(name))
     ### sd.setType('calorimeter')
     if type is None: type = self.sensitive_types['calorimeter']
     return self.setupDetector(name,type,collections)
 
   def setupTracker(self,name,type=None,collections=None):
-    sd = self.description.sensitiveDetector(name)
+    sd = self.description.sensitiveDetector(str(name))
     ### sd.setType('tracker')
     if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type,collections)
