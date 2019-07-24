@@ -1,6 +1,6 @@
 """Helper object for random number generator objects"""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 import random
 import logging
 

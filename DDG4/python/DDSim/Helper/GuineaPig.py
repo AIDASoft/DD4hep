@@ -1,6 +1,6 @@
 """Helper object for GuineaPig InputFile Parameters"""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.Input import Input
 
 class GuineaPig( Input ):

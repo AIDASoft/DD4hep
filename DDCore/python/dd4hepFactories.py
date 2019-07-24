@@ -10,7 +10,7 @@
 #
 #==========================================================================
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 import os, sys, optparse, logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s')

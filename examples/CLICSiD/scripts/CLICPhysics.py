@@ -5,7 +5,7 @@
    @version 1.0
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 if __name__ == "__main__":
   import CLICSid
   sid = CLICSid.CLICSid().loadGeometry()

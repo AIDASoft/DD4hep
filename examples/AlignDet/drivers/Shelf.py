@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 def detector_Shelf(description, det):
 
   plane  = det.find('planes')

@@ -8,6 +8,6 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 from dd4hep_base import *
 import_units(__import__(__name__))

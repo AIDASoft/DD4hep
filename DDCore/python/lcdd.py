@@ -8,7 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 from math import cos, sin, pi, tan
 from os import path, listdir
