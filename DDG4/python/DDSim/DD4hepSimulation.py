@@ -6,7 +6,7 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 __RCSID__ = "$Id$"
 from g4units import *
 import logging

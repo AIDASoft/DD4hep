@@ -1,6 +1,6 @@
 """Base class for inputfile parameters"""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class Input( ConfigHelper ):

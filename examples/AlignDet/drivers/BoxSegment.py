@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 def detector_BoxSegment(description, det):
   box    = det.find('box')
   mat    = det.find('material')
