@@ -292,7 +292,7 @@ class DD4hepSimulation(object):
     dd4hep.setPrintLevel(self.printLevel)
     #kernel.setOutputLevel('Compact',1)
 
-    kernel.loadGeometry("file:"+ self.compactFile )
+    kernel.loadGeometry(str("file:"+ self.compactFile ))
     detectorDescription = kernel.detectorDescription()
 
     DDG4.importConstants( detectorDescription )
@@ -459,7 +459,7 @@ class DD4hepSimulation(object):
 
     ## add the G4StepLimiterPhysics to activate the max step limits in volumes
     ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-    ph.addPhysicsConstructor('G4StepLimiterPhysics')
+    ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
     _phys.add(ph)
 
     dd4hep.setPrintLevel(self.printLevel)
