@@ -47,14 +47,14 @@ try:
   import ROOT
   from ROOT import gROOT
   gROOT.SetBatch(1)
-except ImportError,X:
+except ImportError as X:
   logger.error('PyROOT interface not accessible: %s',str(X))
   logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)
 
 try:
   import dd4hep
-except ImportError,X:
+except ImportError as X:
   logger.error('dd4hep python interface not accessible: %s',str(X))
   logger.error("%s",parser.format_help())
   sys.exit(errno.ENOENT)

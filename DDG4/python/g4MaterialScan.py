@@ -107,14 +107,14 @@ try:
   import ROOT
   from ROOT import gROOT
   gROOT.SetBatch(1)
-except ImportError,X:
+except ImportError as X:
   logger.error('PyROOT interface not accessible: %s', X)
   logger.info(parser.format_help())
   sys.exit(errno.ENOENT)
 
 try:
   import DDG4, SystemOfUnits
-except ImportError,X:
+except ImportError as X:
   logger.error('DDG4 python interface not accessible: %s', X)
   logger.info(parser.format_help())
   sys.exit(errno.ENOENT)

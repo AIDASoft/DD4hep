@@ -31,7 +31,7 @@ def run(input_file):
     try:
       ret = gen.readParticles(evtid,prim_vtx,parts)
       evtid = evtid + 1
-    except Exception,X:
+    except Exception as X:
       logger.error( '\nException: readParticles: %s',str(X))
       ret = None
     if ret:
