@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import os, sys, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
+from six.moves import range
 #
 #
 """
@@ -19,7 +20,7 @@ def run():
   geometry = "file:"+install_dir+"/examples/ClientTests/compact/MultiCollections.xml"
   kernel.setOutputLevel(str('Geant4Converter'),Output.DEBUG)
   kernel.setOutputLevel(str('Gun'),Output.INFO)
-  for i in xrange(len(sys.argv)):
+  for i in range(len(sys.argv)):
     if sys.argv[i]=='-compact':
       geometry = sys.argv[i+1]
     elif sys.argv[i]=='-input':

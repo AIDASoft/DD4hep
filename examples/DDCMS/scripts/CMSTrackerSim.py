@@ -3,6 +3,7 @@ import os, sys, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 import logging
+from six.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ def run():
   geant4.setupCshUI()
   batch = False
   test  = False
-  for i in xrange(len(sys.argv)):
+  for i in range(len(sys.argv)):
     arg = sys.argv[i].lower()
     if arg == 'batch':
       batch = True

@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
+from six.moves import range
 
 class Action( ConfigHelper ):
   """Action holding sensitive detector actions
@@ -67,7 +68,7 @@ class Action( ConfigHelper ):
       vals = val
     if len(vals)%2 != 0:
       raise RuntimeError("Not enough parameters for mapActions")
-    for index in xrange(0,len(vals),2):
+    for index in range(0,len(vals),2):
       self._mapActions[vals[index]] = vals[index+1]
 
   def clearMapActions( self ):
