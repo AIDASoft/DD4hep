@@ -4,6 +4,7 @@
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from six.moves import range
+import six
 
 class Action( ConfigHelper ):
   """Action holding sensitive detector actions
@@ -62,7 +63,7 @@ class Action( ConfigHelper ):
       self._mapActions.update(val)
       return
 
-    if isinstance(val, basestring):
+    if isinstance(val, six.string_types):
       vals = val.split(" ")
     elif isinstance( val, list ):
       vals = val

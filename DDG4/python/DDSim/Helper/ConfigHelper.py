@@ -99,7 +99,7 @@ class ConfigHelper( object ):
       myTuple = val
     if isinstance( val, list ):
       myTuple = tuple(val)
-    if isinstance( val, basestring ):
+    if isinstance( val, six.string_types ):
       sep = ',' if ',' in val else ' '
       myTuple = tuple([ _.strip("(), ") for _ in val.split(sep) ])
     if myTuple is None:
@@ -111,7 +111,7 @@ class ConfigHelper( object ):
     """check if val is a bool or a string of true/false, otherwise raise exception"""
     if isinstance(val, bool):
       return val
-    elif isinstance(val, basestring):
+    elif isinstance(val, six.string_types):
       if val.lower() == 'true':
         return True
       elif val.lower() == 'false':
