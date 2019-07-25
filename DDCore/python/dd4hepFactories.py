@@ -104,7 +104,7 @@ class ComponentDumper:
                                             "<D>  to DUMP the list of components \n"+
                                             "<S>  to SKIP this particular library\n"+
                                             "<L>  to no longer LOAD libraries    \n")
-                        except Exception,X:
+                        except Exception as X:
                             ret = 'D'
                     if not len(ret):
                        ret = 'D'
@@ -156,13 +156,13 @@ try:
   from ROOT import gROOT
   from ROOT import gSystem
   gROOT.SetBatch(1)
-except ImportError,X:
+except ImportError as X:
   logger.error('PyROOT interface not accessible: %s',str(X))
   sys.exit(errno.ENOENT)
 
 try:
   import dd4hep
-except ImportError,X:
+except ImportError as X:
   logger.error('dd4hep python interface not accessible: %s',str(X))
   sys.exit(errno.ENOENT)
 
