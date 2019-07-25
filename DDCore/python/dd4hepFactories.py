@@ -56,7 +56,7 @@ class ComponentDumper:
         component_count = 0
         duplicate_count = 0
         for lib, comp in self.all_components:
-            if entries.has_key(comp):
+            if comp in entries:
                 dupl = entries[comp]
                 if dupl[1] == 0:
                     if not summary_only:
@@ -79,7 +79,7 @@ class ComponentDumper:
         library_count = 0
         component_count = 0
         for lib, comp in self.all_components:
-            if not entries.has_key(lib):
+            if lib not in entries:
                 entries[lib] = [comp]
                 library_count = library_count + 1
                 component_count = component_count + 1

@@ -36,7 +36,7 @@ def materialScan(opts):
     sd = geant4.description.sensitiveDetector(o.name())
     if sd.isValid():
       typ = sd.type()
-      if geant4.sensitive_types.has_key(typ):
+      if typ in geant4.sensitive_types:
         geant4.setupDetector(o.name(),geant4.sensitive_types[typ])
         sdtyp = geant4.sensitive_types[typ]
       else:

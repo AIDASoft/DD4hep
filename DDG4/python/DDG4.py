@@ -517,7 +517,7 @@ class Geant4:
       if sd.isValid():
         typ = sd.type()
         sdtyp = 'Unknown'
-        if self.sensitive_types.has_key(typ):
+        if typ in self.sensitive_types:
           sdtyp = self.sensitive_types[typ]
         logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s',o.name(), typ, sdtyp)
 
