@@ -7,6 +7,7 @@ Based on M. Frank and F. Gaede runSim.py
 
 """
 from __future__ import absolute_import, unicode_literals, division
+import six
 __RCSID__ = "$Id$"
 from g4units import *
 import logging
@@ -530,7 +531,7 @@ class DD4hepSimulation(object):
   def __parseAllHelper( self, parsed ):
     """ parse all the options for the helper """
     parsedDict = vars(parsed)
-    for name, obj in vars(self).iteritems():
+    for name, obj in six.iteritems(vars(self)):
       if isinstance( obj, ConfigHelper ):
         for var in obj.getOptions():
           key = "%s.%s" %( name,var )
@@ -593,7 +594,7 @@ SIM = DD4hepSimulation()
 """
     optionDict = parser._option_string_actions
     parameters = vars(self)
-    for parName, parameter in sorted(parameters.items(), sortParameters ):
+    for parName, parameter in sorted(list(parameters.items()), sortParameters ):
       if parName.startswith("_"):
         continue
       if isinstance( parameter, ConfigHelper ):
@@ -602,7 +603,7 @@ SIM = DD4hepSimulation()
         steeringFileBase += "## %s \n" % "\n## ".join( parameter.__doc__.splitlines() )
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
-        for opt, optionsDict in sorted( options.iteritems(), sortParameters ):
+        for opt, optionsDict in sorted( six.iteritems(options), sortParameters ):
           if opt.startswith("_"):
             continue
           parValue = optionsDict['default']

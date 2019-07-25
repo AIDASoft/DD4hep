@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
+import six
 
 class Input( ConfigHelper ):
   """Configuration for the InputFiles"""
@@ -20,7 +21,7 @@ class Input( ConfigHelper ):
   @_parameters.setter
   def _parameters( self, newParameters ):
     if isinstance( newParameters, dict ):
-      for par, val in newParameters.iteritems():
+      for par, val in six.iteritems(newParameters):
         self.__parameters[par] = str(val)
 
     else:

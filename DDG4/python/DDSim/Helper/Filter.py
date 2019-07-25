@@ -10,6 +10,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import keV
 import logging
 from six.moves import range
+import six
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -110,7 +111,7 @@ class Filter( ConfigHelper ):
 
   def __makeMapDetList( self ):
     """ create the values of the mapDetFilters a list of filters """
-    for pattern, filters in self._mapDetFilter.iteritems():
+    for pattern, filters in six.iteritems(self._mapDetFilter):
       self._mapDetFilter[pattern] = ConfigHelper.makeList(filters)
 
 
@@ -119,10 +120,10 @@ class Filter( ConfigHelper ):
     import DDG4
     setOfFilters = set()
 
-    for name, filt in self.filters.iteritems():
+    for name, filt in six.iteritems(self.filters):
       setOfFilters.add(name)
       ddFilt = DDG4.Filter(kernel,filt['name'])
-      for para, value in filt['parameter'].iteritems():
+      for para, value in six.iteritems(filt['parameter']):
         setattr( ddFilt, para, value )
       kernel.registerGlobalFilter(ddFilt)
       filt['filter'] = ddFilt
@@ -145,7 +146,7 @@ class Filter( ConfigHelper ):
     """
     self.__makeMapDetList()
     foundFilter=False
-    for pattern, filts in self.mapDetFilter.iteritems():
+    for pattern, filts in six.iteritems(self.mapDetFilter):
       if pattern.lower() in det.lower():
         foundFilter = True
         for filt in filts:
