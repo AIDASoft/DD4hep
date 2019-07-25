@@ -6,7 +6,7 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals, division
 __RCSID__ = "$Id$"
 from g4units import *
 import logging
@@ -482,7 +482,7 @@ class DD4hepSimulation(object):
       logger.info("DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)"% (totalTimeUser, totalTimeSys))
       if self.numberOfEvents != 0:
         eventTime = totalTimeUser - startUpTime
-        perEventTime =  eventTime / float(self.numberOfEvents)
+        perEventTime =  eventTime / self.numberOfEvents
         logger.info("DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) " \
             % (startUpTime, eventTime, perEventTime))
 
