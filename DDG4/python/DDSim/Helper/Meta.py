@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import os
 import logging
+import six
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -60,10 +61,10 @@ class Meta( ConfigHelper ):
     """add the parameters to the (lcio) run Header"""
     runHeader = {}
     parameters = vars(sim)
-    for parName, parameter in parameters.iteritems():
+    for parName, parameter in six.iteritems(parameters):
       if isinstance( parameter, ConfigHelper ):
         options = parameter.getOptions()
-        for opt,optionsDict in options.iteritems():
+        for opt,optionsDict in six.iteritems(options):
           runHeader["%s.%s"%(parName, opt)] = str(optionsDict['default'])
       else:
         runHeader[parName] = str(parameter)

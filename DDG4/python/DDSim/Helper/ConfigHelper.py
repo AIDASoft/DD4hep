@@ -14,6 +14,7 @@ call for the parser object create an additional member::
 
 from __future__ import absolute_import, unicode_literals
 from pprint import pprint
+import six
 
 class ConfigHelper( object ):
   """Base class for configuration helper"""
@@ -25,7 +26,7 @@ class ConfigHelper( object ):
 
     # get all direct members not starting with underscore
     allVars = vars(self)
-    for var,val in allVars.iteritems():
+    for var,val in six.iteritems(allVars):
       if not var.startswith('_'):
         extraArgumentsName = "_%s_EXTRA" % var
         options = getattr(self, extraArgumentsName) if hasattr(self, extraArgumentsName) else None
@@ -53,7 +54,7 @@ class ConfigHelper( object ):
   def printOptions( self ):
     """print all paramters"""
     options = []
-    for opt,val in self.getOptions().iteritems():
+    for opt,val in six.iteritems(self.getOptions()):
       options.append("\n\t'%s': '%s'" % (opt, val[0]))
     return "".join(options)
 
@@ -121,9 +122,9 @@ class ConfigHelper( object ):
   @staticmethod
   def addAllHelper(ddsim, parser):
     """all configHelper objects to commandline args"""
-    for name, obj in vars(ddsim).iteritems():
+    for name, obj in six.iteritems(vars(ddsim)):
       if isinstance(obj, ConfigHelper):
-        for var,optionsDict in obj.getOptions().iteritems():
+        for var,optionsDict in six.iteritems(obj.getOptions()):
           optionsDict['action']='store_true' if var.startswith("enable") else 'store'
           parser.add_argument("--%s.%s" % (name, var),
                               dest="%s.%s" % (name, var),

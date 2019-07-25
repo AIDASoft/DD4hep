@@ -307,20 +307,20 @@ def process_display(description, elem):
   for v in elem.findall('vis'):
     visattr = VisAttr(v.name)
     r, g, b = 1., 1., 1.
-    if 'r' in v.keys():
+    if 'r' in list(v.keys()):
       r = v.getF('r')
-    if 'g' in v.keys():
+    if 'g' in list(v.keys()):
       g = v.getF('g')
-    if 'b' in v.keys():
+    if 'b' in list(v.keys()):
       b = v.getF('b')
     visattr.setColor(r, g, b)
-    if 'showDaughters' in v.keys():
+    if 'showDaughters' in list(v.keys()):
       visattr.setShowDaughters(v.getB('showDaughters'))
-    if 'visible' in v.keys():
+    if 'visible' in list(v.keys()):
       visattr.setVisible(v.getB('visible'))
-    if 'alpha' in v.keys():
+    if 'alpha' in list(v.keys()):
       visattr.setAlpha(v.getF('alpha'))
-    if 'lineStyle' in v.keys():
+    if 'lineStyle' in list(v.keys()):
       ls = v.get('lineStyle')
       if ls == 'unbroken':
         visattr.setLineStyle(VisAttr.SOLID)
@@ -328,7 +328,7 @@ def process_display(description, elem):
         visattr.setLineStyle(VisAttr.DASHED)
     else:
       visattr.setLineStyle(VisAttr.SOLID)
-    if 'drawingStyle' in v.keys():
+    if 'drawingStyle' in list(v.keys()):
       ds = v.get('drawingStyle')
       if ds == 'wireframe':
         visattr.setDrawingStyle(VisAttr.WIREFRAME)
@@ -409,29 +409,29 @@ def process_readout(description, elem):
 
 def create_GridXYZ(description, elem):
   obj = GridXYZ()
-  if 'gridSizeX' in elem.keys():
+  if 'gridSizeX' in list(elem.keys()):
     obj.setGridSizeX(elem.getF('gridSizeX'))
-  if 'gridSizeY' in elem.keys():
+  if 'gridSizeY' in list(elem.keys()):
     obj.setGridSizeY(elem.getF('gridSizeY'))
-  if 'gridSizeZ' in elem.keys():
+  if 'gridSizeZ' in list(elem.keys()):
     obj.setGridSizeZ(elem.getF('gridSizeZ'))
   return obj
 
 
 def create_GlobalGridXY(description, elem):
   obj = GlobalGridXY()
-  if 'gridSizeX' in elem.keys():
+  if 'gridSizeX' in list(elem.keys()):
     obj.setGridSizeX(elem.getF('gridSizeX'))
-  if 'gridSizeY' in elem.keys():
+  if 'gridSizeY' in list(elem.keys()):
     obj.setGridSizeY(elem.getF('gridSizeY'))
   return obj
 
 
 def create_CartesianGridXY(description, elem):
   obj = CartesianGridXY()
-  if 'gridSizeX' in elem.keys():
+  if 'gridSizeX' in list(elem.keys()):
     obj.setGridSizeX(elem.getF('gridSizeX'))
-  if 'gridSizeY' in elem.keys():
+  if 'gridSizeY' in list(elem.keys()):
     obj.setGridSizeY(elem.getF('gridSizeY'))
   return obj
 
@@ -443,46 +443,46 @@ def create_NoSegmentation(description, elem):
 
 def create_ProjectiveCylinder(description, elem):
   obj = ProjectiveCylinder()
-  if 'phiBins' in elem.keys():
+  if 'phiBins' in list(elem.keys()):
     obj.setPhiBins(elem.getI('phiBins'))
-  if 'thetaBins' in elem.keys():
+  if 'thetaBins' in list(elem.keys()):
     obj.setThetaBins(elem.getI('thetaBins'))
   return obj
 
 
 def create_NonProjectiveCylinder(description, elem):
   obj = NonProjectiveCylinder()
-  if 'gridSizePhi' in elem.keys():
+  if 'gridSizePhi' in list(elem.keys()):
     obj.setThetaBinSize(elem.getF('gridSizePhi'))
-  if 'gridSizeZ' in elem.keys():
+  if 'gridSizeZ' in list(elem.keys()):
     obj.setPhiBinSize(elem.getI('gridSizeZ'))
   return obj
 
 
 def create_ProjectiveZPlane(description, elem):
   obj = ProjectiveZPlaner()
-  if 'phiBins' in elem.keys():
+  if 'phiBins' in list(elem.keys()):
     obj.setPhiBins(elem.getI('phiBins'))
-  if 'thetaBins' in elem.keys():
+  if 'thetaBins' in list(elem.keys()):
     obj.setThetaBins(elem.getI('thetaBins'))
   return obj
 
 
 def create_GridPhiEta(description, elem):
   obj = GridPhiEta()
-  if 'phiBins' in elem.keys():
+  if 'phiBins' in list(elem.keys()):
     obj.setPhiBins(elem.getI('phiBins'))
-  if 'gridSizeEta' in elem.keys():
+  if 'gridSizeEta' in list(elem.keys()):
     obj.setGridSizeEta(elem.getI('gridSizeEta'))
   return obj
 
 
 def create_GridRPhiEta(description, elem):
   obj = GridRPhiEta()
-  if 'phiBins' in elem.keys():
+  if 'phiBins' in list(elem.keys()):
     obj.setPhiBins(elem.getI('gridSizeR'))
-  if 'gridSizeEta' in elem.keys():
+  if 'gridSizeEta' in list(elem.keys()):
     obj.setGridSizeEta(elem.getI('gridSizeEta'))
-  if 'gridSizeR' in elem.keys():
+  if 'gridSizeR' in list(elem.keys()):
     obj.setGridSizeR(elem.getI('gridSizeR'))
   return obj
