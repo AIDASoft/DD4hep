@@ -143,12 +143,12 @@ def load_drivers(*args):
     if path.exists(arg):
       if path.isfile(arg):
         logger.info("Loading driver file ... %s" % arg)
-        execfile(arg, drivers)
+        exec(compile(open(arg).read(), arg, 'exec'), drivers)
       elif path.isdir(arg):
         for f in listdir(arg):
           if path.splitext(f)[1] == '.py':
             logger.info("Loading driver file ... %s" % path.join(arg, f))
-            execfile(path.join(arg, f), drivers)
+            exec(compile(open(path.join(arg, f)).read(), path.join(arg, f), 'exec'), drivers)
       else:
         raise "Path '%s' is not a directory or file" % arg
     else:
