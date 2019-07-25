@@ -10,6 +10,7 @@ from ROOT import TRandom
 from ROOT import gRandom
 
 import logging
+from six.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -45,23 +46,23 @@ if __name__ == "__main__":
 
   rndm.setSeed(1234)
   rndm.showStatus()
-  for i in xrange(10):
+  for i in range(10):
     logger.info("%s  -- 0 gRandome.Rndm()        -- Shoot random[[%d]= %f",rndm.name(),i,gRandom.Rndm())
   
   rndm.setSeed(1234)
-  for i in xrange(10):
+  for i in range(10):
     logger.info("%s  -- 1 gRandome.Rndm()        -- Shoot random[[%d]= %f",rndm.name(),i,gRandom.Rndm())
   
   rndm.setSeed(1234)
-  for i in xrange(10):
+  for i in range(10):
     logger.info("%s  -- 2 Geant4Random(CLHEP)    -- Shoot random[[%d]= %f",rndm.name(),i,rndm.rndm_clhep())
   
   rndm.setSeed(1234)
-  for i in xrange(10):
+  for i in range(10):
     logger.info("%s  -- 3 Geant4Random(CLHEP)    -- Shoot random[[%d]= %f",rndm.name(),i,rndm.rndm_clhep())
 
   rndm.setSeed(1234)
-  for i in xrange(10):
+  for i in range(10):
     logger.info("%s  -- 4 HepRandomEngine(CLHEP) -- Shoot random[%d]= %f",rndm.name(),i,rndm.engine().flat())
   
   sid.test_run(have_geo=False)

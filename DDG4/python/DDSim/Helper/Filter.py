@@ -9,6 +9,7 @@ from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import keV
 import logging
+from six.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -88,7 +89,7 @@ class Filter( ConfigHelper ):
       vals = val
     if len(vals)%2 != 0:
       raise RuntimeError("Not enough parameters for mapDetFilter")
-    for index in xrange(0,len(vals),2):
+    for index in range(0,len(vals),2):
       self._mapDetFilter[vals[index]] = vals[index+1]
 
   def resetFilter( self ):

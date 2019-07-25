@@ -1,5 +1,6 @@
 # cpluginsvc is a ctypes-based wrapper for the C-exposed API of GaudiPluginService
 from __future__ import absolute_import, unicode_literals, print_function
+from six.moves import range
 __doc__ = '''
 cpluginsvc is a ctypes-based wrapper for the C-API of the GaudiPluginService.
 
