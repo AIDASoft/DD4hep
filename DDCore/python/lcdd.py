@@ -179,7 +179,7 @@ def process_tag(description, elem):
   if not procs:
     procs = drivers.get('process_%s' % elem.tag, None)
   if procs:
-    apply(procs, (description, elem))
+    procs(*(description, elem))
   else:
     logger.info('XML tag %s not processed!!! No function found.' % elem.tag)
 
@@ -351,7 +351,7 @@ def process_detectors(description, elem):
   for d in elem.findall('detector'):
     procs = drivers.get('detector_%s' % d.get('type'), None)
     if procs:
-      detector = apply(procs, (description, d))
+      detector = procs(*(description, d))
       description.addDetector(detector)
     else:
       logger.info('Detector type %s not found' % d.get('type'))
@@ -392,7 +392,7 @@ def process_readout(description, elem):
     if not procs:
       procs = drivers.get('create_%s' % seg.get('type'), None)
     if procs:
-      segment = apply(procs, (description, seg))
+      segment = procs(*(description, seg))
       readout.setSegmentation(segment)
     else:
       logger.info('Segmentation type %s not found' % seg.get('type'))
