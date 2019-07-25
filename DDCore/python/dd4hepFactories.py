@@ -13,6 +13,7 @@
 from __future__ import absolute_import, unicode_literals
 import os, sys, optparse, logging
 from six.moves import input
+from io import open
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)

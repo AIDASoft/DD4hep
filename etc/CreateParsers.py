@@ -12,6 +12,7 @@ python CreateParsers.py
 
 from __future__ import absolute_import, unicode_literals
 import os
+from io import open
 
 LICENSE ="""// $Id$
 //==========================================================================
