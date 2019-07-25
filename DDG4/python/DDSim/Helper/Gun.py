@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import GeV
 import logging
+import six
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ class Gun( ConfigHelper ):
     if val is None:
       return
     possibleDistributions = ['uniform', 'cos(theta)', 'eta', 'pseudorapidity', 'ffbar'] ## (1+cos^2 theta)
-    if not isinstance( val, basestring):
+    if not isinstance( val, six.string_types):
       raise RuntimeError( "malformed input '%s' for gun.distribution. Need a string : %s " % (val, ",".join(possibleDistributions)) )
     if val not in possibleDistributions:
       ## surround options by quots to be explicit

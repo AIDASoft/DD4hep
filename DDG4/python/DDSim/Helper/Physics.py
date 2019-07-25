@@ -5,6 +5,7 @@ import os
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import mm
+import six
 
 class Physics( ConfigHelper ):
   """Configuration for the PhysicsList"""
@@ -56,7 +57,7 @@ class Physics( ConfigHelper ):
     if val is None:
       self._rangecut = None
       return
-    if isinstance( val, basestring):
+    if isinstance( val, six.string_types):
       if val == "None":
         self._rangecut = None
         return

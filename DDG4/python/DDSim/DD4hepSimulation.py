@@ -505,7 +505,7 @@ class DD4hepSimulation(object):
     """check if the fileName is allowed, note that the filenames are case
     sensitive, and in case of hepevt we depend on this to identify short and long versions of the content
     """
-    if isinstance( fileNames, basestring ):
+    if isinstance( fileNames, six.string_types ):
       fileNames = [fileNames]
     if not all( fileName.endswith( extensions ) for fileName in fileNames ):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
@@ -607,10 +607,10 @@ SIM = DD4hepSimulation()
           if opt.startswith("_"):
             continue
           parValue = optionsDict['default']
-          if isinstance(optionsDict.get('help'), basestring):
+          if isinstance(optionsDict.get('help'), six.string_types):
             steeringFileBase += "\n## %s\n" % "\n## ".join(optionsDict.get('help').splitlines())
           ## add quotes if it is a string
-          if isinstance( parValue, basestring ):
+          if isinstance( parValue, six.string_types ):
             steeringFileBase += "SIM.%s.%s = \"%s\"\n" %(parName, opt, parValue)
           else:
             steeringFileBase += "SIM.%s.%s = %s\n" %(parName, opt, parValue)
@@ -620,7 +620,7 @@ SIM = DD4hepSimulation()
         if isinstance(optionObj, argparse._StoreAction ):
           steeringFileBase += "## %s\n" % "\n## ".join(optionObj.help.splitlines())
         ## add quotes if it is a string
-        if isinstance(parameter, basestring):
+        if isinstance(parameter, six.string_types):
           steeringFileBase += "SIM.%s = \"%s\"" %( parName, str(parameter))
         else:
           steeringFileBase += "SIM.%s = %s" %( parName, str(parameter))

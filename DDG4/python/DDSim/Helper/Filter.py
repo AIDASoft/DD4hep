@@ -84,7 +84,7 @@ class Filter( ConfigHelper ):
       self._mapDetFilter.update(val)
       return
 
-    if isinstance(val, basestring):
+    if isinstance(val, six.string_types):
       vals = val.split(" ")
     elif isinstance( val, list ):
       vals = val
