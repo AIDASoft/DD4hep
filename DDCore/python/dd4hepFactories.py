@@ -12,6 +12,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import os, sys, optparse, logging
+from six.moves import input
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -97,7 +98,7 @@ class ComponentDumper:
                     ret = 'D'
                     if interactive:
                         try:
-                            ret = raw_input("<CR> to DUMP the list of components \n"+
+                            ret = input("<CR> to DUMP the list of components \n"+
                                             "<Q>  to QUIT                        \n"+
                                             "<D>  to DUMP the list of components \n"+
                                             "<S>  to SKIP this particular library\n"+
