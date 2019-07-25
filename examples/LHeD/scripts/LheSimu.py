@@ -44,7 +44,7 @@ def run():
   field.delta_chord        = 0.25*SystemOfUnits.mm
   field.delta_intersection = 1e-05*SystemOfUnits.mm
   field.delta_one_step     = 0.001*SystemOfUnits.mm
-  logger.info('+++++> %s -> stepper  = %s' field.name, field.stepper)
+  logger.info('+++++> %s -> stepper  = %s', field.name, field.stepper)
   logger.info('+++++> %s -> equation = %s', field.name, field.equation)
   logger.info('+++++> %s -> eps_min  = %s', field.name, field.eps_min)
   logger.info('+++++> %s -> eps_max  = %s', field.name, field.eps_max)
