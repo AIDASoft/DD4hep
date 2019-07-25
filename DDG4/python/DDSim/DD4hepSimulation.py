@@ -116,7 +116,7 @@ class DD4hepSimulation(object):
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
-    execfile(self.steeringFile, globs, locs)
+    exec(compile(open(self.steeringFile).read(), self.steeringFile, 'exec'), globs, locs)
     for _name, obj in locs.items():
       if isinstance(obj, DD4hepSimulation):
         self.__dict__ = obj.__dict__
