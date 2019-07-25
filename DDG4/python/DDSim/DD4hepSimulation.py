@@ -7,10 +7,11 @@ Based on M. Frank and F. Gaede runSim.py
 
 """
 from __future__ import absolute_import, unicode_literals, division
-import six
 __RCSID__ = "$Id$"
+import six
 from g4units import *
 import logging
+from io import open
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
