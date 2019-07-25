@@ -18,6 +18,7 @@ import SystemOfUnits
 import math
 import logging
 from six.moves import range
+from io import open
 from ROOT import SetOwnership, dd4hep, TGeoMixture, TGeoMedium, gGeoManager, TNamed
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
