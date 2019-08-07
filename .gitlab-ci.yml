@@ -220,7 +220,7 @@ deploy-documentation:
       EOS_PATH: "/eos/project/d/dd4hep/www/"
     only:
       - tags@CLICdp/DetectorSoftware/DD4hep
-      - branches@CLICdp/DetectorSoftware/DD4hep
+      - master@CLICdp/DetectorSoftware/DD4hep
     stage: deployment
     tags:
       - docker
