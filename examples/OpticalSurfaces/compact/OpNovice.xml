@@ -368,7 +368,7 @@
 
   <readouts>
     <readout name="BubbleDeviceHits">
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,tank:2,bubble:2,x:12:-6,y:24:-6</id>
     </readout>
   </readouts>
 

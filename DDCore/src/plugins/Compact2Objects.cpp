@@ -750,6 +750,7 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
   PropertyTable table(description, e.attr<string>(_U(name)), "", values.size()/cols, cols);
   for (size_t i=0, n=values.size(); i<n; ++i)
     table->Set(i/cols, i%cols, values[i]);
+  //if ( s_debug.matrix ) table->Print();
 }
 #endif
 

@@ -411,27 +411,27 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz)
-    {   make("", rmin, rmax, dz, 0, 2*M_PI);                   }
+    {  this->make("", rmin, rmax, dz, 0, 2*M_PI);                   }
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz, double endPhi)
-    {   make("", rmin, rmax, dz, 0, endPhi);                   }
+    {  this->make("", rmin, rmax, dz, 0, endPhi);                   }
     /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz, double startPhi, double endPhi)
-    {   make("", rmin, rmax, dz, startPhi, endPhi);            }
+    {  this->make("", rmin, rmax, dz, startPhi, endPhi);            }
 
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz)
-    {   make(nam, rmin, rmax, dz, 0, 2*M_PI);                  }
+    {  this->make(nam, rmin, rmax, dz, 0, 2*M_PI);                  }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz, double endPhi)
-    {  make(nam, rmin, rmax, dz, 0, endPhi);                   }
+    {  this->make(nam, rmin, rmax, dz, 0, endPhi);                   }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double endPhi)
-    {  make(nam, rmin, rmax, dz, startPhi, endPhi);            }
+    {  this->make(nam, rmin, rmax, dz, startPhi, endPhi);            }
     /// Constructor to create a new anonymous tube object with attribute initialization
     template <typename RMIN, typename RMAX, typename Z, typename ENDPHI=double>
     Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const ENDPHI& endPhi = 2.0*M_PI)
-    {  make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi));   }
+    {  this->make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi));   }
 
     /// Move Assignment operator
     Tube& operator=(Tube&& copy) = default;
@@ -558,19 +558,19 @@ namespace dd4hep {
     template <typename Q> EllipticalTube(const Handle<Q>& e) : Solid_type<Object>(e) {   }
 
     /// Constructor to create a new anonymous tube object with attribute initialization
-    EllipticalTube(double a, double b, double dz) {  make("", a, b, dz);  }
+    EllipticalTube(double a, double b, double dz) {  this->make("", a, b, dz);  }
     /// Constructor to create a new anonymous tube object with attribute initialization
     template <typename A, typename B, typename DZ>
     EllipticalTube(const A& a, const B& b, const DZ& dz)
-    {  make("",_toDouble(a), _toDouble(b), _toDouble(dz));     }
+    {  this->make("",_toDouble(a), _toDouble(b), _toDouble(dz));     }
 
     /// Constructor to create a new identified tube object with attribute initialization
     EllipticalTube(const std::string& nam, double a, double b, double dz)
-    {  make(nam, a, b, dz);                                    }
+    {  this->make(nam, a, b, dz);                                    }
     /// Constructor to create a new identified tube object with attribute initialization
     template <typename A, typename B, typename DZ>
     EllipticalTube(const std::string& nam, const A& a, const B& b, const DZ& dz)
-    {  make(nam, _toDouble(a), _toDouble(b), _toDouble(dz));   }
+    {  this->make(nam, _toDouble(a), _toDouble(b), _toDouble(dz));   }
 
     /// Move Assignment operator
     EllipticalTube& operator=(EllipticalTube&& copy) = default;
@@ -607,19 +607,19 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous object with attribute initialization
     Cone(double z, double rmin1, double rmax1, double rmin2, double rmax2)
-    {     make("", z, rmin1, rmax1, rmin2, rmax2);                                 }
+    {     this->make("", z, rmin1, rmax1, rmin2, rmax2);                                 }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
     Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
-    {     make("", _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+    {     this->make("", _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
 
     /// Constructor to create a new anonymous object with attribute initialization
     Cone(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2)
-    {     make(nam, z, rmin1, rmax1, rmin2, rmax2);                                 }
+    {     this->make(nam, z, rmin1, rmax1, rmin2, rmax2);                                 }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
     Cone(const std::string& nam, const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
-    {     make(nam, _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+    {     this->make(nam, _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
 
     /// Move Assignment operator
     Cone& operator=(Cone&& copy) = default;
@@ -660,10 +660,10 @@ namespace dd4hep {
          double h2, double bl2, double tl2, double alpha2);
     /// Constructor to create a new anonymous object for right angular wedge from STEP (Se G4 manual for details)
     Trap(double pz, double py, double px, double pLTX)
-    {  make("", pz,py,px,pLTX);  }
+    { this->make("", pz,py,px,pLTX);  }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename PZ,typename PY,typename PX,typename PLTX> Trap(PZ pz, PY py, PX px, PLTX pLTX)
-    { make("", _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
+    { this->make("", _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
 
     /// Constructor to create a new identified object with attribute initialization
     Trap(const std::string& name,
@@ -672,11 +672,11 @@ namespace dd4hep {
          double h2, double bl2, double tl2, double alpha2);
     /// Constructor to create a new identified object for right angular wedge from STEP (Se G4 manual for details)
     Trap(const std::string& nam, double pz, double py, double px, double pLTX)
-    {  make(nam, pz,py,px,pLTX);  }
+    { this->make(nam, pz,py,px,pLTX);  }
     /// Constructor to create a new identified object with attribute initialization
     template <typename PZ,typename PY,typename PX,typename PLTX>
     Trap(const std::string& nam, PZ pz, PY py, PX px, PLTX pLTX)
-    { make(nam, _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
+    { this->make(nam, _toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
 
     /// Move Assignment operator
     Trap& operator=(Trap&& copy) = default;
@@ -715,14 +715,14 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous object with attribute initialization
     PseudoTrap(double x1, double x2, double y1, double y2, double z, double radius, bool minusZ)
-    {  make("", x1, x2, y1, y2, z, radius, minusZ);    }
+    {  this->make("", x1, x2, y1, y2, z, radius, minusZ);    }
 
     /// Constructor to create a new identified object with attribute initialization
     PseudoTrap(const std::string& nam,
                double x1, double x2,
                double y1, double y2, double z,
                double radius, bool minusZ)
-    {  make(nam, x1, x2, y1, y2, z, radius, minusZ);    }
+    {  this->make(nam, x1, x2, y1, y2, z, radius, minusZ);    }
 
     /// Move Assignment operator
     PseudoTrap& operator=(PseudoTrap&& copy) = default;
@@ -759,19 +759,19 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous object with attribute initialization
     Trd1(double x1, double x2, double y, double z)
-    { make("", x1, x2, y, z);                                          }
+    { this->make("", x1, x2, y, z);                                           }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename X1,typename X2,typename Y,typename Z>
     Trd1(X1 x1, X2 x2, Y y, Z z)
-    { make("", _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
+    { this->make("", _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z));  }
 
     /// Constructor to create a new anonymous object with attribute initialization
     Trd1(const std::string& nam, double x1, double x2, double y, double z)
-    { make(nam, x1, x2, y, z);                                          }
+    { this->make(nam, x1, x2, y, z);                                          }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename X1,typename X2,typename Y,typename Z>
     Trd1(const std::string& nam, X1 x1, X2 x2, Y y, Z z)
-    { make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
+    { this->make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y),_toDouble(z)); }
 
     /// Move Assignment operator
     Trd1& operator=(Trd1&& copy) = default;
@@ -810,19 +810,19 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous object with attribute initialization
     Trd2(double x1, double x2, double y1, double y2, double z)
-    { make("", x1, x2, y1, y2, z);  }
+    { this->make("", x1, x2, y1, y2, z);  }
     /// Constructor to create a new anonymous object with attribute initialization
     template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
     Trd2(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
-    { make("", _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
+    { this->make("", _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
 
     /// Constructor to create a new identified object with attribute initialization
     Trd2(const std::string& nam, double x1, double x2, double y1, double y2, double z)
-    { make(nam, x1, x2, y1, y2, z);  }
+    { this->make(nam, x1, x2, y1, y2, z);  }
     /// Constructor to create a new identified object with attribute initialization
     template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
     Trd2(const std::string& nam, X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
-    { make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
+    { this->make(nam, _toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
 
     /// Copy Assignment operator
     Trd2& operator=(Trd2&& copy) = default;
@@ -862,18 +862,18 @@ namespace dd4hep {
     /// Constructor to create a new anonymous object with attribute initialization
     template<typename R, typename RMIN, typename RMAX, typename STARTPHI, typename DELTAPHI>
     Torus(R r, RMIN rmin, RMAX rmax, STARTPHI startPhi=M_PI, DELTAPHI deltaPhi = 2.*M_PI)
-    {   make("", _toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
+    {   this->make("", _toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
     /// Constructor to create a new anonymous object with attribute initialization
     Torus(double r, double rmin, double rmax, double startPhi=M_PI, double deltaPhi = 2.*M_PI)
-    {   make("", r, rmin, rmax, startPhi, deltaPhi);  }
+    {   this->make("", r, rmin, rmax, startPhi, deltaPhi);  }
 
     /// Constructor to create a new identified object with attribute initialization
     template<typename R, typename RMIN, typename RMAX, typename STARTPHI, typename DELTAPHI>
     Torus(const std::string& nam, R r, RMIN rmin, RMAX rmax, STARTPHI startPhi=M_PI, DELTAPHI deltaPhi = 2.*M_PI)
-    {   make(nam, _toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
+    {   this->make(nam, _toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(startPhi),_toDouble(deltaPhi));  }
     /// Constructor to create a new identified object with attribute initialization
     Torus(const std::string& nam, double r, double rmin, double rmax, double startPhi=M_PI, double deltaPhi = 2.*M_PI)
-    {   make(nam, r, rmin, rmax, startPhi, deltaPhi);  }
+    {   this->make(nam, r, rmin, rmax, startPhi, deltaPhi);  }
 
     /// Move Assignment operator
     Torus& operator=(Torus&& copy) = default;
@@ -916,7 +916,7 @@ namespace dd4hep {
     Sphere(double rmin,            double rmax,
            double startTheta= 0.0, double endTheta = M_PI,
            double startPhi  = 0.0, double endPhi   = 2. * M_PI)
-    {  make("", rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
+    {  this->make("", rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
     /// Constructor to create a new anonymous object with generic attribute initialization
     template<typename RMIN,              typename RMAX,
              typename STARTTHETA=double, typename ENDTHETA=double,
@@ -924,10 +924,10 @@ namespace dd4hep {
     Sphere(RMIN  rmin,                   RMAX     rmax,
            STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
            STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
-      make("",
-           _toDOuble(rmin),       _toDouble(rmax),
-           _toDouble(startTheta), _toDouble(endTheta),
-           _toDouble(startPhi),   _toDouble(endPhi));
+      this->make("",
+                 _toDOuble(rmin),       _toDouble(rmax),
+                 _toDouble(startTheta), _toDouble(endTheta),
+                 _toDouble(startPhi),   _toDouble(endPhi));
     }
 
     /// Constructor to create a new identified object with attribute initialization
@@ -935,7 +935,7 @@ namespace dd4hep {
            double rmin,            double rmax,
            double startTheta= 0.0, double endTheta = M_PI,
            double startPhi  = 0.0, double endPhi   = 2. * M_PI)
-    {  make(nam, rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
+    {  this->make(nam, rmin, rmax, startTheta, endTheta, startPhi, endPhi);     }
     /// Constructor to create a new identified object with generic attribute initialization
     template<typename RMIN,              typename RMAX,
              typename STARTTHETA=double, typename ENDTHETA=double,
@@ -944,10 +944,10 @@ namespace dd4hep {
            RMIN  rmin,                   RMAX     rmax,
            STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
            STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
-      make(nam,
-           _toDOuble(rmin),       _toDouble(rmax),
-           _toDouble(startTheta), _toDouble(endTheta),
-           _toDouble(startPhi),   _toDouble(endPhi));
+      this->make(nam,
+                 _toDOuble(rmin),       _toDouble(rmax),
+                 _toDouble(startTheta), _toDouble(endTheta),
+                 _toDouble(startPhi),   _toDouble(endPhi));
     }
 
     /// Move Assignment operator
@@ -987,19 +987,19 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous object with attribute initialization
     Paraboloid(double r_low, double r_high, double delta_z)
-    {  make("", r_low, r_high, delta_z);  }
+    {  this->make("", r_low, r_high, delta_z);  }
     /// Constructor to create a new anonymous object with attribute initialization
     template<typename R_LOW, typename R_HIGH, typename DELTA_Z>
     Paraboloid(R_LOW r_low, R_HIGH r_high, DELTA_Z delta_z)
-    {  make("", _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
+    {  this->make("", _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
 
     /// Constructor to create a new identified object with attribute initialization
     Paraboloid(const std::string& nam, double r_low, double r_high, double delta_z)
-    {  make(nam, r_low, r_high, delta_z);  }
+    {  this->make(nam, r_low, r_high, delta_z);  }
     /// Constructor to create a new identified object with attribute initialization
     template<typename R_LOW, typename R_HIGH, typename DELTA_Z>
     Paraboloid(const std::string& nam, R_LOW r_low, R_HIGH r_high, DELTA_Z delta_z)
-    {  make(nam, _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
+    {  this->make(nam, _toDouble(r_low), _toDouble(r_high), _toDouble(delta_z));  }
 
     /// Move Assignment operator
     Paraboloid& operator=(Paraboloid&& copy) = default;
@@ -1085,23 +1085,23 @@ namespace dd4hep {
 
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(int nsides, double rmin, double rmax, double zlen)
-    { make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);  }
+    { this->make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);           }
     /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen)
-    { make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);  }
+    { this->make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);   }
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
     PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2])
-    { make("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);  }
+    { this->make("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);        }
 
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(const std::string& nam, int nsides, double rmin, double rmax, double zlen)
-    { make(nam, nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);  }
+    { this->make(nam, nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);          }
     /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(const std::string& nam, int nsides, double phi_start, double rmin, double rmax, double zlen)
-    { make(nam, nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);  }
+    { this->make(nam, nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);  }
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
     PolyhedraRegular(const std::string& nam, int nsides, double rmin, double rmax, double zplanes[2])
-    { make(nam, nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);  }
+    { this->make(nam, nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);       }
     /// Move Assignment operator
     PolyhedraRegular& operator=(PolyhedraRegular&& copy) = default;
     /// Copy Assignment operator
@@ -1132,31 +1132,31 @@ namespace dd4hep {
     /// Copy Constructor
     Polyhedra(const Polyhedra& e) = default;
     /// Constructor to be used with an existing object
-    template <typename Q> Polyhedra(const Q* p) : Solid_type<Object>(p) {  }
+    template <typename Q> Polyhedra(const Q* p) : Solid_type<Object>(p)  {         }
     /// Constructor to be used when passing an already created object
     template <typename Q> Polyhedra(const Handle<Q>& e) : Solid_type<Object>(e) {  }
 
     /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
     Polyhedra(int nsides, double start, double delta,
               const std::vector<double>& z, const std::vector<double>& r)   {
-      std::vector<double> rmin(r.size(), 0.);
-      make("", nsides, start, delta, z, rmin, r);
+      std::vector<double> rmin(r.size(), 0e0);
+      this->make("", nsides, start, delta, z, rmin, r);
     }
     /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
     Polyhedra(int nsides, double start, double delta,
               const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax)
-    {  make("", nsides, start, delta, z, rmin, rmax);   }
+    {  this->make("", nsides, start, delta, z, rmin, rmax);   }
 
     /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
     Polyhedra(const std::string& nam, int nsides, double start, double delta,
               const std::vector<double>& z, const std::vector<double>& r)   {
-      std::vector<double> rmin(r.size(), 0.);
-      make(nam, nsides, start, delta, z, rmin, r);
+      std::vector<double> rmin(r.size(), 0e0);
+      this->make(nam, nsides, start, delta, z, rmin, r);
     }
     /// Constructor to create a new object. Phi(start), deltaPhi, Z-planes at specified positions
     Polyhedra(const std::string& nam, int nsides, double start, double delta,
               const std::vector<double>& z, const std::vector<double>& rmin, const std::vector<double>& rmax)
-    {  make(nam, nsides, start, delta, z, rmin, rmax);   }
+    {  this->make(nam, nsides, start, delta, z, rmin, rmax);   }
     /// Move Assignment operator
     Polyhedra& operator=(Polyhedra&& copy) = default;
     /// Copy Assignment operator
@@ -1201,7 +1201,7 @@ namespace dd4hep {
                     const std::vector<double> & sec_x,
                     const std::vector<double> & sec_y,
                     const std::vector<double> & zscale)
-    {  make("", pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
+    {  this->make("", pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
 
     /// Constructor to create a new identified object. 
     ExtrudedPolygon(const std::string& nam,
@@ -1211,7 +1211,7 @@ namespace dd4hep {
                     const std::vector<double> & sec_x,
                     const std::vector<double> & sec_y,
                     const std::vector<double> & zscale)
-    {  make(nam, pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
+    {  this->make(nam, pt_x, pt_y, sec_z, sec_x, sec_y, zscale);   }
     /// Move Assignment operator
     ExtrudedPolygon& operator=(ExtrudedPolygon&& copy) = default;
     /// Copy Assignment operator
@@ -1245,11 +1245,11 @@ namespace dd4hep {
 
     /// Constructor to create a new anonymous object with attribute initialization
     EightPointSolid(double dz, const double* vertices)
-    { make("", dz, vertices);    }
+    { this->make("", dz, vertices);    }
 
     /// Constructor to create a new identified object with attribute initialization
     EightPointSolid(const std::string& nam, double dz, const double* vertices)
-    { make(nam, dz, vertices);   }
+    { this->make(nam, dz, vertices);   }
 
     /// Move Assignment operator
     EightPointSolid& operator=(EightPointSolid&& copy) = default;

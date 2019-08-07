@@ -32,25 +32,33 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector /
   xml_det_t x_tank   = x_det.child(_Unicode(tank));
   xml_det_t x_bubble = x_det.child(_Unicode(bubble));
 
+  Assembly hall_vol("Hall");
+  Box    encl_box(_toDouble("world_x-2*cm"),_toDouble("world_y-2*cm"),_toDouble("world_z-2*cm"));
+  Volume encl_vol("Enclosure",encl_box,description.air());
   Box    tank_box(x_tank.x(), x_tank.y(), x_tank.z());
-  Volume tank_vol("Tank",tank_box,description.material(x_tank.materialStr()));
+  Volume tank_vol("Tank",tank_box,description.material(x_tank.attr<string>(_U(material))));
   Box    bubble_box(x_bubble.x(), x_bubble.y(), x_bubble.z());
-  Volume bubble_vol("Bubble",bubble_box,description.material(x_bubble.materialStr()));
+  Volume bubble_vol("Bubble",bubble_box,description.material(x_bubble.attr<string>(_U(material))));
 
+  encl_vol.setVisAttributes(description.invisible());
   tank_vol.setVisAttributes(description, x_tank.visStr());
   bubble_vol.setVisAttributes(description, x_bubble.visStr());
   
   PlacedVolume bubblePlace = tank_vol.placeVolume(bubble_vol);
-  PlacedVolume tankPlace   = description.pickMotherVolume(sdet).placeVolume(tank_vol);
-  sdet.setPlacement(tankPlace);
+  bubblePlace.addPhysVolID("bubble",1);
+  PlacedVolume tankPlace   = encl_vol.placeVolume(tank_vol);
+  tankPlace.addPhysVolID("tank",1);
+  PlacedVolume enclPlace   = hall_vol.placeVolume(encl_vol);
+  PlacedVolume hallPlace   = description.pickMotherVolume(sdet).placeVolume(hall_vol);
+  hallPlace.addPhysVolID("system",x_det.id());
+  sdet.setPlacement(hallPlace);
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   // Now attach the surface
   OpticalSurfaceManager surfMgr = description.surfaceManager();
-  PlacedVolume   hallPlace(description.manager().GetTopNode());
   OpticalSurface waterSurf  = surfMgr.opticalSurface("/world/"+det_name+"#WaterSurface");
   OpticalSurface airSurf    = surfMgr.opticalSurface("/world/"+det_name+"#AirSurface");
-  BorderSurface  tankSurf   = BorderSurface(description, sdet, "HallTank",   waterSurf, tankPlace,   hallPlace);
+  BorderSurface  tankSurf   = BorderSurface(description, sdet, "HallTank",   waterSurf, tankPlace,   enclPlace);
   BorderSurface  bubbleSurf = BorderSurface(description, sdet, "TankBubble", airSurf,   bubblePlace, tankPlace);
   bubbleSurf.isValid();
   tankSurf.isValid();

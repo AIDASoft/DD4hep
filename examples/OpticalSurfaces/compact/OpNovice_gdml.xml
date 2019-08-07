@@ -1,0 +1,37 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="gdml_import_test"
+        title="GDML import test"
+        author="Markus FRANK"
+        url=""
+        status="development"
+        version="$Id$">
+    <comment/>
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="world_side" value="1*m"/>
+    <constant name="world_x" value="world_side/2"/>
+    <constant name="world_y" value="world_side/2"/>
+    <constant name="world_z" value="world_side/2"/>
+  </define>
+  <debug>
+    <type name="surface" value="1"/>
+  </debug>
+
+  <display>
+    <vis name="TankVis"    alpha="0.5"   r="0"   g="0.0" b="1.0"  showDaughters="true"  visible="true"/>
+    <vis name="BubbleVis"  alpha="0.3"   r="1"   g="0.0" b="0.0"  showDaughters="true"  visible="true"/>
+  </display>
+
+  <detectors>
+  </detectors>
+
+</lccdd>
