@@ -1040,8 +1040,8 @@ void Polyhedra::make(const std::string& nam, int nsides, double start, double de
   }
   // No need to transform coordinates to cm. We are in the dd4hep world: all is already in cm.
   temp.reserve(4+z.size()*2);
-  temp.emplace_back(start);
-  temp.emplace_back(delta);
+  temp.emplace_back(start/units::deg);
+  temp.emplace_back(delta/units::deg);
   temp.emplace_back(double(nsides));
   temp.emplace_back(double(z.size()));
   for(size_t i=0; i<z.size(); ++i)   {

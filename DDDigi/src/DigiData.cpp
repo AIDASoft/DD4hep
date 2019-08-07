@@ -19,6 +19,7 @@
 #include "DDDigi/DigiData.h"
 
 // C/C++ include files
+#include <mutex>
 
 using namespace std;
 using namespace dd4hep;
@@ -47,6 +48,16 @@ Key::Key(mask_type mask, const std::string& item)  {
 Key& Key::operator=(const Key& copy)   {
   key = copy.key;
   return *this;
+}
+
+void Key::set(const std::string& name, int mask)    {
+  static std::mutex mtx;
+  std::lock_guard lock(mtx);
+  if ( name.empty() )   {
+    except("DDDigi::Key", "+++ No key name was specified  --  this is illegal!");
+  }
+  values.mask = (unsigned char)(0xFF&mask);
+  values.item = detail::hash32(name);
 }
 
 /// Intializing constructor

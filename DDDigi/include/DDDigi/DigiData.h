@@ -40,14 +40,19 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    template <typename T> class DigiContainer  {
+    template <typename T> class DigiContainer : public std::vector<T>    {
+      /// Unique name within the event
+      std::string    name;
+
     public:
       /// Default constructor
       DigiContainer() = default;
       /// Disable move constructor
-      DigiContainer(DigiContainer&& copy) = delete;
+      DigiContainer(DigiContainer&& copy) = default;
       /// Disable copy constructor
-      DigiContainer(const DigiContainer& copy) = delete;      
+      DigiContainer(const DigiContainer& copy) = default;      
+      /// Default constructor
+      DigiContainer(const std::string& nam) : name(nam) {}
       /// Default destructor
       virtual ~DigiContainer() = default;
       /// Disable move assignment
@@ -92,9 +97,9 @@ namespace dd4hep {
       /// Default constructor
       DigiCount() = default;
       /// Disable move constructor
-      DigiCount(DigiCount&& copy) = delete;
+      DigiCount(DigiCount&& copy) = default;
       /// Disable copy constructor
-      DigiCount(const DigiCount& copy) = delete;      
+      DigiCount(const DigiCount& copy) = default;
       /// Default destructor
       virtual ~DigiCount() = default;
       /// Disable move assignment
@@ -103,8 +108,8 @@ namespace dd4hep {
       DigiCount& operator=(const DigiCount& copy) = delete;      
     };
 
-    typedef DigiContainer<DigiDeposit> DigiEnergyDeposits;
-    typedef DigiContainer<DigiCount>   DigiCounts;
+    typedef DigiContainer<DigiDeposit*> DigiEnergyDeposits;
+    typedef DigiContainer<DigiCount*>   DigiCounts;
 
     ///  Key defintion to access the event data
     /**
@@ -130,6 +135,7 @@ namespace dd4hep {
       Key(mask_type mask, const std::string& item);
       Key& operator=(const Key&);
       key_type toLong()  const  {  return key; }
+      void set(const std::string& name, int mask);
     };
     
     ///  User event data for DDDigi
@@ -163,26 +169,37 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiEvent();
       /// Add item by key to the data 
-      template<typename T> bool put(const Key& key, dd4hep::any&& object)     {
-        bool ret = data.emplace(key.toLong(),object).second;
+      template<typename T> bool put(const Key& key, T&& object)     {
+        bool ret = data.emplace(key.toLong(),std::make_any<T>(object)).second;
         if ( ret ) return ret;
         except("DigiEvent","Invalid requested to store data in event container. Key:%ld",key.toLong());
         throw std::runtime_error("DigiEvent"); // Will never get here!
       }
+
       /// Retrieve item by key from the event data container
       template<typename T> T& get(const Key& key)     {
         auto iter = data.find(key.toLong());
-        if ( iter != data.end() ) return dd4hep::any_cast<T&>((*iter).second);
+        if ( iter != data.end() )  {
+          T* ptr = dd4hep::any_cast<T>(&(*iter).second);
+          if ( ptr ) return *ptr;
+          except("DigiEvent","Invalid data requested from event container [cast failed]. Key:%ld",key.toLong());
+        }
         except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
         throw std::runtime_error("DigiEvent"); // Will never get here!
       }
+
       /// Retrieve item by key from the event data container
       template<typename T> const T& get(const Key& key)  const    {
-        auto iter = data.find(key.toLong());
-        if ( iter != data.end() ) return dd4hep::any_cast<const T&>((*iter).second);
+        std::map<key_type, dd4hep::any>::const_iterator iter = data.find(key.toLong());
+        if ( iter != data.end() )  {
+          const T* ptr = dd4hep::any_cast<T>(&(*iter).second);
+          if ( ptr ) return *ptr;
+          except("DigiEvent","Invalid data requested from event container [cast failed]. Key:%ld",key.toLong());
+        }
         except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
         throw std::runtime_error("DigiEvent"); // Will never get here!
       }
+
       /// Add an extension object to the detector element
       void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
         return ObjectExtensions::addExtension(k, e);
