@@ -52,7 +52,7 @@ Key& Key::operator=(const Key& copy)   {
 
 void Key::set(const std::string& name, int mask)    {
   static std::mutex mtx;
-  std::lock_guard lock(mtx);
+  std::lock_guard<std::mutex> lock(mtx);
   if ( name.empty() )   {
     except("DDDigi::Key", "+++ No key name was specified  --  this is illegal!");
   }

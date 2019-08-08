@@ -170,7 +170,7 @@ namespace dd4hep {
       virtual ~DigiEvent();
       /// Add item by key to the data 
       template<typename T> bool put(const Key& key, T&& object)     {
-        bool ret = data.emplace(key.toLong(),std::make_any<T>(object)).second;
+        bool ret = data.emplace(key.toLong(),make_any<T>(object)).second;
         if ( ret ) return ret;
         except("DigiEvent","Invalid requested to store data in event container. Key:%ld",key.toLong());
         throw std::runtime_error("DigiEvent"); // Will never get here!
