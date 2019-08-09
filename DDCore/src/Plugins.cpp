@@ -44,6 +44,10 @@ bool PluginService::setDebug(bool new_value)   {
 #endif
 #include <cstring>
 
+
+#define MAKE_GAUDI_PLUGIN_SERVICE_ENTRY(n,v)     "dd4hep_pluginmgr_" #n "_V" #v
+#define MAKE_FUNC(name,version)  MAKE_GAUDI_PLUGIN_SERVICE_ENTRY(name,version)
+
 namespace   {
   struct PluginInterface  {
     int (*getDebug)();
@@ -98,14 +102,14 @@ namespace   {
 #else
     if ( 0 != gSystem->Load(plugin_name) ) {}
 #endif
-    getDebug = get_func< int (*) ()>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
-    setDebug = get_func< int (*) (int)>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
-    create   = get_func< PluginService::stub_t (*) (const char*,
-                                                const char*)>(handle, plugin_name,"dd4hep_pluginmgr_create");
+    getDebug = get_func< int (*) ()>(handle, plugin_name,MAKE_FUNC(getdebug,DD4HEP_PLUGINSVC_VERSION));
+  setDebug = get_func< int (*) (int)>(handle, plugin_name,MAKE_FUNC(setdebug,DD4HEP_PLUGINSVC_VERSION));
+    create   = get_func< PluginService::stub_t (*)(const char*,
+                                                   const char*)>(handle, plugin_name,MAKE_FUNC(create,DD4HEP_PLUGINSVC_VERSION));
     add      = get_func< void (*) (const char* identifier, 
                                    PluginService::stub_t&& creator_stub, 
                                    const char* signature, 
-                                   const char* return_type)>(handle, plugin_name,"dd4hep_pluginmgr_add_factory");
+                                   const char* return_type)>(handle, plugin_name,MAKE_FUNC(add_factory,DD4HEP_PLUGINSVC_VERSION));
   }
 }
 
@@ -153,35 +157,9 @@ void PluginService::print_bad_cast(const std::string& id,
     str << "Factory requested: " << id << " (" << typeid(signature).name() << ") :" << msg;
     printout(ERROR,"PluginService","%s", str.str().c_str());
     str.str("");
-#ifdef DD4HEP_HAVE_PLUGINSVC_V2
     if ( !stub.has_value() )  {
       str << "Stub is invalid!";
       printout(ERROR,"PluginService","%s", str.str().c_str());
     }
-#else
-    if ( !stub )  {
-      str << "Stub is invalid!";
-      printout(ERROR,"PluginService","%s", str.str().c_str());
-    }
-#endif
   }
 }
-
-#if !defined(DD4HEP_PARSERS_NO_ROOT)
-#include "DD4hep/Detector.h"
-#include "DD4hep/Handle.h"
-#include "DD4hep/GeoHandler.h"
-#include "XML/XMLElements.h"
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*,xml::Handle_t*,Ref_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*,xml::Handle_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Detector*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(TObject*,     (Detector*,xml::Handle_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*,xml::Handle_t*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*,xml::Handle_t const*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*, int, char**))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Detector*, const GeoHandler*, const std::map<std::string,std::string>*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, ())
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (const char*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (Detector*,int,char**))
-#endif
