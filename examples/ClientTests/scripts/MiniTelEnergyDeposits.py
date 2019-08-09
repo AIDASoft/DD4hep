@@ -1,4 +1,5 @@
 import sys, time, DDG4, MiniTelSetup
+from DDG4 import OutputLevel as Output
 #
 #
 """
@@ -14,9 +15,12 @@ def run():
   if len(sys.argv) >= 2 and sys.argv[1] =="batch":
     m.kernel.NumEvents = 200
     m.kernel.UI = ''
+    DDG4.setPrintLevel(Output.WARNING)
+
   m.configure()
-  m.setupGun()
-  m.setupGenerator()
+  gun = m.setupGun()
+  part = m.setupGenerator()
+  part.OutputLevel = Output.DEBUG
   # This is the actual test:
   hit_tuple = DDG4.EventAction(m.kernel,'HitTupleAction/MiniTelTuple',True)
   hit_tuple.OutputFile = 'MiniTel_EnergyDeposits_'+time.strftime('%Y-%m-%d_%H-%M')+'.root'

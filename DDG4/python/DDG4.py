@@ -613,12 +613,12 @@ class Geant4:
       logging.info('+++++> %s %s %s %s ',field.name,'-> largest_step       = ',str(field.largest_step),'[mm]')
     return field
     
-  def setupTrackingFieldMT(self, name='MagFieldTrackingSetup', stepper='G4ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
+  def setupTrackingFieldMT(self, name='MagFieldTrackingSetup', stepper='ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
     seq,fld = self.addDetectorConstruction("Geant4FieldTrackingConstruction/"+name)
     self._private_setupField(fld, stepper, equation, prt)
     return (seq,fld)
 
-  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='G4ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
+  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='ClassicalRK4', equation='Mag_UsualEqRhs',prt=False):
     field = self.addConfig('Geant4FieldTrackingSetupAction/'+name)
     self._private_setupField(field, stepper, equation, prt)
     return field

@@ -18,7 +18,9 @@
 /// Enable this if you want to minimize the footprint of conditions
 //#define DD4HEP_MINIMAL_CONDITIONS 1
 
-#define DD4HEP_CONDITIONS_DEBUG 1
+#define DD4HEP_CONDITIONS_DEBUG  1
+#define DD4HEP_HAVE_PLUGINSVC_V2 1
+
 
 #ifdef DD4HEP_INSTANCE_COUNTS
 #define INCREMENT_COUNTER InstanceCount::increment(this)

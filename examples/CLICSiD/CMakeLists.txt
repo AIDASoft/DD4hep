@@ -18,7 +18,7 @@ dd4hep_package ( CLICSiD MAJOR 0 MINOR 0 PATCH 1
         [DD4hep REQUIRED COMPONENTS DDCore]
 )
 set(CLICSiDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
-dd4hep_install_dir( compact scripts sim DESTINATION ${CLICSiDEx_INSTALL} )
+dd4hep_install_dir( scripts sim DESTINATION ${CLICSiDEx_INSTALL} )
 #--------------------------------------------------------------------------
 if (DD4HEP_USE_GEANT4)
   find_package(Geant4 REQUIRED)
@@ -37,14 +37,14 @@ dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
 ##dd4hep_add_test_reg ( "CLICSiD_converter_gdml_LONGTEST" 
 ##  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
 ##  EXEC_ARGS  geoConverter -compact2gdml 
-##                          -input file:${CLICSiDEx_INSTALL}/compact/compact.xml
+##                          -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
 ##                          -output file:CLICSiD.gdml
 ##  REGEX_PASS " Successfully extracted GDML to" )
 foreach ( typ description vis )
   dd4hep_add_test_reg ( "CLICSiD_converter_${typ}_LONGTEST" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 
-                            -input file:${CLICSiDEx_INSTALL}/compact/compact.xml
+                            -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                             -output file:CLICSiD.${typ}
     REGEX_PASS " Handled [1-9][0-9][0-9]+ volumes" )
 endforeach()
@@ -53,7 +53,7 @@ endforeach()
 dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
-                    --compact=file:${CLICSiDEx_INSTALL}/compact/compact.xml
+                    --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
@@ -61,7 +61,7 @@ dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
 dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
-                    --compact=file:${CLICSiDEx_INSTALL}/compact/compact.xml
+                    --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -72,7 +72,7 @@ if( "${ROOT_FIND_VERSION}" VERSION_GREATER "6.13.0" )
 # ROOT Geometry export to GDML
 dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input file:${CLICSiDEx_INSTALL}/compact/compact.xml -print WARNING -destroy -volmgr
+  EXEC_ARGS  geoPluginRun -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -print WARNING -destroy -volmgr
              -plugin DD4hep_ROOTGDMLExtract -output EcalBarrel.gdml            -path /world/EcalBarrel
              -plugin DD4hep_ROOTGDMLExtract -output EcalEndcap.gdml            -path /world/EcalEndcap
              -plugin DD4hep_ROOTGDMLExtract -output HcalBarrel.gdml            -path /world/HcalBarrel 
@@ -91,7 +91,7 @@ dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
 # ROOT Geometry export to GDML
 dd4hep_add_test_reg( CLICSiD_GDML_import_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input file:${CLICSiDEx_INSTALL}/compact/compact_nocalo.xml -print WARNING -destroy -volmgr
+  EXEC_ARGS  geoPluginRun -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -print WARNING -destroy -volmgr
              -plugin DD4hep_ROOTGDMLParse    -input EcalBarrel.gdml            -path /world/EcalBarrel
              -plugin DD4hep_ROOTGDMLParse    -input EcalEndcap.gdml            -path /world/EcalEndcap
              -plugin DD4hep_ROOTGDMLParse    -input HcalBarrel.gdml            -path /world/HcalBarrel
@@ -136,7 +136,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( CLICSiD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
-                      --compact=file:${CLICSiDEx_INSTALL}/compact/compact.xml 
+                      --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REQUIRES   DDG4 Geant4
     REGEX_PASS " Terminate Geant4 and delete associated actions." )

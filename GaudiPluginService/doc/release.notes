@@ -2,8 +2,108 @@
 ! Package     : GaudiPluginService
 ! Responsible : Marco Clemencic
 ! Purpose     : Provide a generic plugin service.
-! Commit Id   : 6d000098f7da11c89cbbbfa26aaa43c277f6d903
+! Commit Id   : f65d50dc9934d137aa95036285677d9fa8576b7d
 !-----------------------------------------------------------------------------
+
+================================ Gaudi v28r3 =================================
+
+
+================================ Gaudi v28r2 =================================
+
+
+================================ Gaudi v28r1 =================================
+
+
+================================ Gaudi v28r0 =================================
+
+! 2016-10-19 - Marco Clemencic (commit e2c1f4a)
+
+ - fixes and improvements for ROOT 6.08 and gcc 6.1
+
+   * added option to use or not GCC old C++11 ABI (off by default)
+   * added some missing #include for the usual headers clean up in gcc
+   * fixed a few places where old GCC behaviour was assumed
+   * fixed default C++ standard version for clang >= 3.7
+   * fixed GAUDI-1242
+
+    See merge request !187
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-10-01 - Marco Clemencic (commit 99b1001)
+
+ - enable missing override warnings (gcc >= 5.1)
+
+   Fixes GAUDI-1241
+    See merge request !192
+
+! 2016-08-19 - Marco Clemencic (commit f3050c3)
+
+ - Fix compile time warnings
+
+   fixed/hidden all warnings in GCC builds
+    See merge request !189
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
+! 2016-05-18 - Charles Leggett (commit 3f2b55e)
+
+ - Report underlying error when dlopen fails in listcomponents
+
+   When dlopen files in listcomponents.exe, listcomponents prints only that the
+   library didn't load, but doesn't include information on the underlying
+   error. This change adds the result of dlerror to the error message.
+    See merge request !159
+
+========================== GaudiPluginService v3r1 ===========================
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+
+! 2015-10-16 - commit bf01805
+
+ - Merge branch 'GAUDI-1111' into 'master'
+
+   remove dependency on Boost from GaudiPluginService
+
+   Reverted the part of commit dddeca32 that introduce the dependency on Boost.
+
+   Fixes GAUDI-1111.
+
+   See merge request !53
+
+========================== GaudiPluginService v3r0 ===========================
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
 
 ========================== GaudiPluginService v2r2 ===========================
 ! 2014-07-04 - Marco Clemencic
@@ -20,7 +120,7 @@
 
 ! 2014-05-07 - Sebastien Binet
  - leverage C++11 variadic templates for the factories.
- - internally, also use l-value references and std::forward
+ - internally, also use r-value references and std::forward
  - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
 
 ========================== GaudiPluginService v1r2 ===========================

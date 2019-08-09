@@ -7,41 +7,39 @@
 
 """
 def run():
-  import os, sys, logging, DDG4, SystemOfUnits
+  import os, sys, logging, DDG4, CLICSid, g4units
 
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-  kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+  sid = CLICSid.CLICSid()
+  sid.loadGeometry()
   DDG4.Core.setPrintFormat("%-32s %6s %s")
-  geant4 = DDG4.Geant4(kernel)
+  geant4 = sid.geant4
   # Configure UI
-  geant4.setupCshUI(ui=None)
-  gun = geant4.setupGun("Gun",
+  sid.geant4.setupCshUI(ui=None)
+  gun = sid.geant4.setupGun("Gun",
                         Standalone=True,
                         particle='geantino',
-                        energy=20*SystemOfUnits.GeV,
+                        energy=20*g4units.GeV,
                         position=(0,0,0),
                         multiplicity=1,
                         isotrop=False )
-  scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
-  kernel.steppingAction().adopt(scan)
+  scan = DDG4.SteppingAction(sid.kernel,'Geant4MaterialScanner/MaterialScan')
+  sid.kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
-  phys = geant4.setupPhysics('QGSP_BERT')
-  kernel.configure()
-  kernel.initialize()
-  kernel.NumEvents = 1
+  phys = sid.setupPhysics('QGSP_BERT')
+  sid.test_config()
+  sid.kernel.NumEvents = 1
 
   # 3 shots in different directions:
   gun.direction = (0,1,0)
-  kernel.run()
+  sid.kernel.run()
   gun.direction = (1,0,0)
-  kernel.run()
+  sid.kernel.run()
   gun.direction = (1,1,1)
-  kernel.run()
+  sid.kernel.run()
 
-  kernel.terminate()
+  sid.kernel.terminate()
   logging.info('End of run. Terminating .......')
   logging.info('TEST_PASSED')
 

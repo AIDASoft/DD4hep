@@ -36,6 +36,25 @@ namespace dd4hep {
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace detail {
 
+    /// Extended context. Needs to be public for persistency reasons
+    /**
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_CORE
+     */
+    class VolumeManagerContextExtension : public VolumeManagerContext {
+    public:
+      /// The placement of the (sensitive) volume
+      PlacedVolume placement{0};
+      /// The transformation of space-points to the coordinate system of the closests detector element
+      TGeoHMatrix toElement;
+      /// Default constructor
+      VolumeManagerContextExtension() = default;
+      /// Default destructor
+      ~VolumeManagerContextExtension() = default;
+    };
+  
     /// This structure describes the internal data of the volume manager object
     /**
      *

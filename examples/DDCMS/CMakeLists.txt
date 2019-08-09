@@ -170,7 +170,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Save_LONGTEST
   -destroy -print WARNING
   -plugin    DD4hep_Geometry2ROOT -output DDCMS_geometry.root
   REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file."
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;WriteObjectAny"
   )
 #
 #  Test restoring geometry from ROOT file: Volume Manager
@@ -180,7 +180,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_LONGTEST
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   DEPENDS    DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test restoring geometry from ROOT file: Volume Manager loading+nominals
@@ -191,7 +191,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_VolMgr1_LONGTEST
   -plugin    DD4hep_CheckVolumeManager
   DEPENDS    DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 36096 VolumeManager contexts. Num.Errors: 0"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test restoring geometry from ROOT file: Test Volume Manager results
@@ -202,7 +202,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_VolMgr2_LONGTEST
   -plugin    DD4hep_VolumeMgrTest PixelBarrel_1
   DEPENDS    DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED: Checked 10981 objects. Num.Errors:0"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test restoring geometry from ROOT file: DetElement nominal alignments
@@ -214,6 +214,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_Nominal_LONGTEST
   -plugin    DD4hep_CheckNominals
   DEPENDS    DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 25776 DetElements. Num.Errors: 0"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test restoring geometry from ROOT file: Sensitive detectors
@@ -224,7 +225,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_Sensitives_LONGTEST
   -plugin    DD4hep_CheckSensitives
   DEPENDS    DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 5 SensitiveDetector objects. Num.Errors: 0"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test restoring geometry from ROOT file: Readout structures
@@ -235,5 +236,5 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_Readouts_LONGTEST
   -plugin    DD4hep_CheckReadouts
   DEPENDS    DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 5 readout objects. Num.Errors: 0"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )

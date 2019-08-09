@@ -16,6 +16,16 @@
 #include <set>
 #include <typeinfo>
 #include <utility>
+#if __cplusplus >= 201703
+#  include <any>
+#else
+#  include <boost/any.hpp>
+namespace std {
+  using boost::any;
+  using boost::any_cast;
+  using boost::bad_any_cast;
+} // namespace std
+#endif
 
 #define Gaudi DD4hep_Flavor
 
@@ -24,15 +34,27 @@
 #pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif
 
+
+#define GAUDI_PLUGIN_SERVICE_V2 1
+
+#ifndef GAUDI_PLUGIN_SERVICE_V2
 #define private public
+#endif
 // This define will give us a version of the gaudi plugin manager,
 // which will NOT clash with Gaudi! It of course has a correspondance in the
 // compiler options of the GaudiPluginService package.
-#include "Gaudi/PluginService.h"
+#include <Gaudi/PluginService.h>
+
+#ifndef GAUDI_PLUGIN_SERVICE_V2
 #undef private
+#endif
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#ifdef GAUDI_PLUGIN_SERVICE_USE_V2
+using namespace Gaudi::PluginService::v2;
 #endif
 
 extern "C"  {
@@ -47,12 +69,26 @@ extern "C"  {
     return debug;
   }
   /// Access factory by name
-  void* dd4hep_pluginmgr_create(const char* id, const char* sig)   {
+  std::any dd4hep_pluginmgr_create(const char* id, const char* sig)   {
+#ifdef GAUDI_PLUGIN_SERVICE_USE_V2
+    const Details::Registry::FactoryInfo& info = Details::Registry::instance().getInfo(id, true);
+    return info.factory;
+#else
     return Gaudi::PluginService::Details::getCreator(id,sig);
+#endif
   }
+#ifdef GAUDI_PLUGIN_SERVICE_USE_V2
+  /// Add a new factory to the registry
+  void dd4hep_pluginmgr_add_factory(const char* id, std::any&& stub, const char* sig, const char* ret)   {
+    Details::Registry::Properties props = {};
+    std::string lib_name = "";
+    Details::Registry::instance().add( id, {lib_name, std::move( stub ), std::move( props )} );
+  }
+#else
   /// Add a new factory to the registry
   void dd4hep_pluginmgr_add_factory(const char* id, void* stub, const char* sig, const char* ret)   {
     Gaudi::PluginService::Details::Registry::instance().add(id,stub,sig,ret,id);
   }
+#endif
 }
 
