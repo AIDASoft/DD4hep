@@ -4,7 +4,7 @@ project(GaudiPluginService)
 find_package(Boost COMPONENTS filesystem REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIR})
 
-add_library(DD4hepGaudiPluginMgr SHARED src/PluginServiceV1.cpp src/PluginServiceV2.cpp interface/DD4hep.cpp)
+add_library(DD4hepGaudiPluginMgr SHARED src/PluginServiceV1.cpp src/PluginServiceV2.cpp interface/DD4hepV1.cpp interface/DD4hepV2.cpp)
 add_definitions(-DGaudi=DD4hep_Flavor -DUSE_BOOST_FILESYSTEM)
 if( APPLE ) 
   add_definitions( -DAPPLE) 

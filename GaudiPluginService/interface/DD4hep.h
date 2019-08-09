@@ -33,49 +33,57 @@ namespace std {
 #pragma clang diagnostic pop
 #endif
 
+#if GAUDI_PLUGIN_SERVICE_VERSION==2
 #define GAUDI_PLUGIN_SERVICE_V2 1
-
-// This define will give us a version of the gaudi plugin manager,
-// which will NOT clash with Gaudi! It of course has a correspondance in the
-// compiler options of the GaudiPluginService package.
 #include <Gaudi/PluginService.h>
-
-#ifdef GAUDI_PLUGIN_SERVICE_USE_V2
 using namespace Gaudi::PluginService::v2;
+
+#elif GAUDI_PLUGIN_SERVICE_VERSION==1
+#define private public
+#define GAUDI_PLUGIN_SERVICE_V1 1
+#include <Gaudi/PluginService.h>
+using namespace Gaudi::PluginService::v1;
+#undef private
 #endif
+
+#define MAKE_GAUDI_PLUGIN_SERVICE_ENTRY(n,v)     dd4hep_pluginmgr_##n##_V##v
+#define MAKE_FUNC(name,version)  MAKE_GAUDI_PLUGIN_SERVICE_ENTRY(name,version)
 
 extern "C"  {
   /// Access debug level
-  int dd4hep_pluginmgr_getdebug()   {
+  int MAKE_FUNC(getdebug,GAUDI_PLUGIN_SERVICE_VERSION) ()   {
     return (int)Gaudi::PluginService::Debug();
   }
   /// Set debug level
-  int dd4hep_pluginmgr_setdebug(int value)   {
-    int debug = dd4hep_pluginmgr_getdebug();
+  int MAKE_FUNC(setdebug,GAUDI_PLUGIN_SERVICE_VERSION)(int value)   {
+    int debug = (int)Gaudi::PluginService::Debug();
     Gaudi::PluginService::SetDebug(value);
     return debug;
   }
   /// Access factory by name
-  std::any dd4hep_pluginmgr_create(const char* id, const char* /* sig */)   {
-#ifdef GAUDI_PLUGIN_SERVICE_USE_V2
+#if GAUDI_PLUGIN_SERVICE_VERSION==2
+  std::any MAKE_FUNC(create,GAUDI_PLUGIN_SERVICE_VERSION)(const char* id, const char* /* sig */)   {
     const Details::Registry::FactoryInfo& info = Details::Registry::instance().getInfo(id, true);
     return info.factory;
-#else
-    return Gaudi::PluginService::Details::getCreator(id,sig);
-#endif
   }
-#ifdef GAUDI_PLUGIN_SERVICE_USE_V2
+#elif GAUDI_PLUGIN_SERVICE_VERSION==1
+  std::any MAKE_FUNC(create,GAUDI_PLUGIN_SERVICE_VERSION)(const char* id, const char* sig)   {
+    std::any ret;
+    ret = (void*)Gaudi::PluginService::Details::getCreator(id,sig);
+    return ret;
+  }
+#endif
+#if GAUDI_PLUGIN_SERVICE_VERSION==2
   /// Add a new factory to the registry
-  void dd4hep_pluginmgr_add_factory(const char* id, std::any&& stub, const char* /* sig */, const char* /* ret */)   {
+  void MAKE_FUNC(add_factory,GAUDI_PLUGIN_SERVICE_VERSION)(const char* id, std::any&& stub, const char* /* sig */, const char* /* ret */)   {
     Details::Registry::Properties props = {};
     std::string lib_name = "";
     Details::Registry::instance().add( id, {lib_name, std::move( stub ), std::move( props )} );
   }
-#else
+#elif GAUDI_PLUGIN_SERVICE_VERSION==1
   /// Add a new factory to the registry
-  void dd4hep_pluginmgr_add_factory(const char* id, void* stub, const char* sig, const char* ret)   {
-    Gaudi::PluginService::Details::Registry::instance().add(id,stub,sig,ret,id);
+  void MAKE_FUNC(add_factory,GAUDI_PLUGIN_SERVICE_VERSION)(const char* id, std::any&& stub, const char* sig, const char* ret)   {
+    Gaudi::PluginService::Details::Registry::instance().add(id, std::any_cast<void*>(stub), sig, ret, id);
   }
 #endif
 }
-

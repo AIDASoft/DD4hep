@@ -22,7 +22,6 @@
 #include <vector>
 #include <typeinfo>
 
-#ifdef DD4HEP_HAVE_PLUGINSVC_V2
 #if __cplusplus >= 201703
 #  include <any>
 #else
@@ -32,7 +31,6 @@ namespace std {
   using boost::any_cast;
   using boost::bad_any_cast;
 } // namespace std
-#endif
 #endif
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
@@ -86,14 +84,21 @@ namespace dd4hep {
   class PluginService  {
   private:
   public:
-#ifdef DD4HEP_HAVE_PLUGINSVC_V2
     typedef std::any stub_t;
     template <typename R, typename... Args> static R Create(const std::string& id, Args... args)  {
       typedef R(*func)(Args...);
       std::any f;
       try   {
+#if DD4HEP_PLUGINSVC_VERSION==1
+        union { void* ptr; func fcn; } fptr;
+        f = getCreator(id,typeid(R(Args...)));
+        fptr.ptr = std::any_cast<void*>(f);
+        if ( fptr.ptr )
+          return (*fptr.fcn)(std::forward<Args>(args)...);
+#elif DD4HEP_PLUGINSVC_VERSION==2
         f = getCreator(id,typeid(R(Args...)));
         return std::any_cast<func>(f)(std::forward<Args>(args)...);
+#endif
       }
       catch(const std::bad_any_cast& e)   {
         print_bad_cast(id, f, typeid(R(Args...)), e.what());
@@ -101,33 +106,14 @@ namespace dd4hep {
       return 0;
     }
     template <typename FUNCTION> static std::any function(FUNCTION func)  {
-      return std::any(func);
-    }
-#else
-    typedef void* stub_t;
-
-    template <typename FUNCTION> struct FuncPointer {
+#if DD4HEP_PLUGINSVC_VERSION==1
       union { void* ptr; FUNCTION fcn; } fptr;
-      FuncPointer()                      {  fptr.ptr = 0;           }
-      FuncPointer(const FuncPointer& _c) {  fptr.ptr = _c.fptr.ptr; }
-      FuncPointer(FUNCTION func)         {  fptr.fcn = func;        }
-      FuncPointer(void* _p)              {  fptr.ptr = _p;          }
-      void* ptr() const                  {  return fptr.ptr;        }
-      FUNCTION function() const          {  return fptr.func;       }
-      FuncPointer& operator=(const FuncPointer& copy)  { 
-        fptr.ptr = copy.fptr.ptr; return *this;
-      }
-      FuncPointer(FuncPointer&& _c) = delete;
-      FuncPointer& operator=(FuncPointer&& copy) = delete;
-    };
-    template <typename R, typename... Args> static R Create(const std::string& id, Args... args)  {
-      FuncPointer<R(*)(Args...)> f(getCreator(id,typeid(R(Args...))));
-      return f.fptr.ptr ? (*f.fptr.fcn)(std::forward<Args>(args)...) : 0;
-    }
-    template <typename FUNCTION> static FuncPointer<FUNCTION> function(FUNCTION func)  {
-      return FuncPointer<FUNCTION>(func);
-    }
+      fptr.fcn = func;
+      return std::any(fptr.ptr);
+#elif DD4HEP_PLUGINSVC_VERSION==2
+      return std::any(func);
 #endif
+    }
     static bool debug();
     static bool setDebug(bool new_value);
     static stub_t getCreator(const std::string& id, const std::type_info& info);
@@ -177,9 +163,6 @@ namespace dd4hep {
   template <typename P> class Factory<P, R()>                           \
     : public dd4hep::PluginFactoryBase {                                \
   public:                                                               \
-    static void wrapper(void *ret,void*,const std::vector<void*>& ,void*) { \
-      *(void**)ret = (void*)call();                                     \
-    }                                                                   \
     static R call();                                                    \
   };                                                                    \
   template <typename P> inline R Factory<P,R()>::call()
@@ -188,9 +171,6 @@ namespace dd4hep {
   template <typename P> class Factory<P, R(A0)>                         \
     : public dd4hep::PluginFactoryBase  {                               \
   public:                                                               \
-    static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
-      *(void**)ret = (void*)call(value<A0>(a[0]));                      \
-    }                                                                   \
     static R call(A0 a0);                                               \
   };                                                                    \
   template <typename P> inline R Factory<P,R(A0)>::call(A0 a0)
@@ -199,9 +179,6 @@ namespace dd4hep {
   template <typename P> class Factory<P, R(A0,A1)>                      \
     : public dd4hep::PluginFactoryBase  {                               \
   public:                                                               \
-    static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
-      *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]));      \
-    }                                                                   \
     static R call(A0 a0,A1 a1);                                         \
   };                                                                    \
   template <typename P> inline R Factory<P,R(A0,A1)>::call(A0 a0, A1 a1)
@@ -210,9 +187,6 @@ namespace dd4hep {
     template <typename P> class Factory<P, R(A0,A1,A2)>                 \
       : public dd4hep::PluginFactoryBase  {                             \
     public:                                                             \
-      static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
-        *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]),value<A2>(a[2])); \
-      }                                                                 \
       static R call(A0 a0,A1 a1,A2 a2);                                 \
     };                                                                  \
     template <typename P> inline R Factory<P,R(A0,A1,A2)>::call(A0 a0, A1 a1, A2 a2)
@@ -221,9 +195,6 @@ namespace dd4hep {
     template <typename P> class Factory<P, R(A0,A1,A2,A3)>              \
       : public dd4hep::PluginFactoryBase  {                             \
     public:                                                             \
-      static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
-        *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]),value<A2>(a[2]),value<A3>(a[3])); \
-      }                                                                 \
       static R call(A0 a0,A1 a1,A2 a2, A3 a3);                          \
     };                                                                  \
     template <typename P> inline R Factory<P,R(A0,A1,A2,A3)>::call(A0 a0, A1 a1, A2 a2, A3 a3)
@@ -232,9 +203,6 @@ namespace dd4hep {
     template <typename P> class Factory<P, R(A0,A1,A2,A3,A4)>           \
       : public dd4hep::PluginFactoryBase  {                             \
     public:                                                             \
-      static void wrapper(void *ret,void*,const std::vector<void*>& a,void*) { \
-        *(void**)ret = (void*)call(value<A0>(a[0]),value<A1>(a[1]),value<A2>(a[2]),value<A3>(a[3]),value<A4>(a[4])); \
-      }                                                                 \
       static R call(A0 a0,A1 a1,A2 a2, A3 a3, A4 a4);                   \
     };                                                                  \
     template <typename P> inline R Factory<P,R(A0,A1,A2,A3,A4)>::call(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4)
