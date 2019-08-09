@@ -33,16 +33,13 @@ namespace std {
 #pragma clang diagnostic pop
 #endif
 
-#if GAUDI_PLUGIN_SERVICE_VERSION==2
+#if GAUDI_PLUGIN_SERVICE_VERSION == 2
 #define GAUDI_PLUGIN_SERVICE_V2 1
 #include <Gaudi/PluginService.h>
-using namespace Gaudi::PluginService::v2;
-
-#elif GAUDI_PLUGIN_SERVICE_VERSION==1
+#elif GAUDI_PLUGIN_SERVICE_VERSION == 1
 #define private public
 #define GAUDI_PLUGIN_SERVICE_V1 1
 #include <Gaudi/PluginService.h>
-using namespace Gaudi::PluginService::v1;
 #undef private
 #endif
 
@@ -63,6 +60,7 @@ extern "C"  {
   /// Access factory by name
 #if GAUDI_PLUGIN_SERVICE_VERSION==2
   std::any MAKE_FUNC(create,GAUDI_PLUGIN_SERVICE_VERSION)(const char* id, const char* /* sig */)   {
+    using namespace Gaudi::PluginService::v2;
     const Details::Registry::FactoryInfo& info = Details::Registry::instance().getInfo(id, true);
     return info.factory;
   }
@@ -76,6 +74,7 @@ extern "C"  {
 #if GAUDI_PLUGIN_SERVICE_VERSION==2
   /// Add a new factory to the registry
   void MAKE_FUNC(add_factory,GAUDI_PLUGIN_SERVICE_VERSION)(const char* id, std::any&& stub, const char* /* sig */, const char* /* ret */)   {
+    using namespace Gaudi::PluginService::v2;
     Details::Registry::Properties props = {};
     std::string lib_name = "";
     Details::Registry::instance().add( id, {lib_name, std::move( stub ), std::move( props )} );
