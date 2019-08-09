@@ -95,6 +95,7 @@ message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
 # Configure BOOST
 find_package( Boost 1.49 REQUIRED )
 add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
+set ( ENV{Boost_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} )
 
 # Configure Geant4
 if(DD4HEP_USE_GEANT4)
