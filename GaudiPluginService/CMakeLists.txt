@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 
 project(GaudiPluginService)
 find_package(Boost COMPONENTS filesystem REQUIRED)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${BOOST_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIR})
 
 add_library(DD4hepGaudiPluginMgr SHARED src/PluginServiceV1.cpp src/PluginServiceV2.cpp interface/DD4hep.cpp)
 add_definitions(-DGaudi=DD4hep_Flavor -DUSE_BOOST_FILESYSTEM)
@@ -10,7 +10,7 @@ if( APPLE )
   add_definitions( -DAPPLE) 
 endif()
 #target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-unused-function)
-#target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-deprecated)
+target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-deprecated)
 #target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-shadow)
 
 target_link_libraries(DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS} ${Boost_FILESYSTEM_LIBRARY} )
@@ -23,7 +23,7 @@ endif()
 
 add_executable(listcomponents src/listcomponents.cpp )
 target_link_libraries(listcomponents DD4hepGaudiPluginMgr  ${CMAKE_DL_LIBS} ${Boost_FILESYSTEM_LIBRARY})
-#target_compile_options(listcomponents PRIVATE -Wno-deprecated)
+target_compile_options(listcomponents PRIVATE -Wno-deprecated)
 
 install(TARGETS listcomponents DD4hepGaudiPluginMgr
   RUNTIME DESTINATION bin
