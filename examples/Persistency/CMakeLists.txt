@@ -145,7 +145,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr1_LONGTEST
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckVolumeManager
   DEPENDS    Persist_CLICSiD_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ PASSED Checked 29270 VolumeManager contexts. Num.Errors: 0"
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 29366 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
@@ -168,7 +168,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Nominal_LONGTEST
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckNominals
   DEPENDS    Persist_CLICSiD_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ FAILED Checked 15946 DetElements. Num.Errors: 50"
+  REGEX_PASS "\\+\\+\\+ FAILED Checked 15994 DetElements. Num.Errors: 50"
   REGEX_FAIL "EXCEPTION;Exception;TStreamerInfo"
   )
 #
