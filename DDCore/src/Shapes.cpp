@@ -864,7 +864,7 @@ void Sphere::make(const std::string& nam, double rmin, double rmax, double start
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double startTheta, double endTheta, double startPhi, double endPhi) {
-  double params[] = { rmin, rmax, startTheta, endTheta/units::deg, startPhi/units::deg, endPhi/units::deg };
+  double params[] = { rmin, rmax, startTheta/units::deg, endTheta/units::deg, startPhi/units::deg, endPhi/units::deg };
   _setDimensions(params);
   return *this;
 }
