@@ -1,5 +1,5 @@
 import sys, logging, DDG4
-from SystemOfUnits import *
+from g4units import *
 
 class CLICSid:
   def __init__(self,tracker='Geant4TrackerCombineAction'):
@@ -13,7 +13,10 @@ class CLICSid:
     import os
     if file is None:
       install_dir = os.environ['DD4hepINSTALL']
+      level = DDG4.printLevel()
+      DDG4.setPrintLevel(DDG4.OutputLevel.WARNING)
       self.kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+      DDG4.setPrintLevel(level)
     else:
       ui = DDG4.DD4hepUI(self.description)
       ui.importROOT(file)

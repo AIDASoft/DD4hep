@@ -128,5 +128,5 @@
     <panel name="Silicon Deposits" use="Calo3DProjection"/>
     <panel name="Calo 2D"          use="Calo2DProjection"/>
   </view>
-  <include ref="../compact/compact.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD.xml"/>
 </ddeve>

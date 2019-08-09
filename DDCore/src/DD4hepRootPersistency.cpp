@@ -93,12 +93,12 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
 }
 
 int DD4hepRootPersistency::load(Detector& description, const char* fname, const char* instance)  {
+  DetectorData::patchRootStreamer(TGeoVolume::Class());
+  DetectorData::patchRootStreamer(TGeoNode::Class());
   TFile* f = TFile::Open(fname);
   if ( f && !f->IsZombie()) {
     try  {
       TTimeStamp start;
-      DetectorData::patchRootStreamer(TGeoVolume::Class());
-      DetectorData::patchRootStreamer(TGeoNode::Class());
       unique_ptr<DD4hepRootPersistency> persist((DD4hepRootPersistency*)f->Get(instance));
       if ( persist.get() )   {
         DetectorData* source = persist->m_data;
@@ -182,6 +182,8 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
     }
     return 0;
   }
+  DetectorData::unpatchRootStreamer(TGeoVolume::Class());
+  DetectorData::unpatchRootStreamer(TGeoNode::Class());
   printout(ERROR,"DD4hepRootPersistency","+++ Cannot open file '%s'.",fname);
   return 0;
 }

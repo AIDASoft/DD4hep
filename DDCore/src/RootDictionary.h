@@ -144,6 +144,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::VolumeManager+;
 #pragma link C++ class dd4hep::detail::VolumeManagerObject+;
 #pragma link C++ class dd4hep::VolumeManagerContext+;
+#pragma link C++ class dd4hep::detail::VolumeManagerContextExtension+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::VolumeManagerObject>+;
 #pragma link C++ class map<dd4hep::DetElement,dd4hep::VolumeManager>+;
 #pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManager>+;

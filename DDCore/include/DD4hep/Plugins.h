@@ -22,11 +22,21 @@
 #include <vector>
 #include <typeinfo>
 
+#ifdef DD4HEP_HAVE_PLUGINSVC_V2
+#if __cplusplus >= 201703
+#  include <any>
+#else
+#  include <boost/any.hpp>
+namespace std {
+  using boost::any;
+  using boost::any_cast;
+  using boost::bad_any_cast;
+} // namespace std
+#endif
+#endif
+
 #ifndef DD4HEP_PARSERS_NO_ROOT
 #include "RVersion.h"
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
-#define DD4HEP_ROOT_VERSION_5 1
-#endif
 #endif
 
 /// Namespace for the AIDA detector description toolkit
@@ -76,6 +86,24 @@ namespace dd4hep {
   class PluginService  {
   private:
   public:
+#ifdef DD4HEP_HAVE_PLUGINSVC_V2
+    typedef std::any stub_t;
+    template <typename R, typename... Args> static R Create(const std::string& id, Args... args)  {
+      typedef R(*func)(Args...);
+      std::any f;
+      try   {
+        f = getCreator(id,typeid(R(Args...)));
+        return std::any_cast<func>(f)(std::forward<Args>(args)...);
+      }
+      catch(const std::bad_any_cast& e)   {
+        print_bad_cast(id, f, typeid(R(Args...)), e.what());
+      }
+      return 0;
+    }
+    template <typename FUNCTION> static std::any function(FUNCTION func)  {
+      return std::any(func);
+    }
+#else
     typedef void* stub_t;
 
     template <typename FUNCTION> struct FuncPointer {
@@ -89,45 +117,25 @@ namespace dd4hep {
       FuncPointer& operator=(const FuncPointer& copy)  { 
         fptr.ptr = copy.fptr.ptr; return *this;
       }
+      FuncPointer(FuncPointer&& _c) = delete;
+      FuncPointer& operator=(FuncPointer&& copy) = delete;
     };
-    template <typename FUNCTION> static FuncPointer<FUNCTION> function(FUNCTION func)  {
-      return FuncPointer<FUNCTION>(func);
-    }
-
-    static bool debug();
-    static bool setDebug(bool new_value);
-
-    static void* getCreator(const std::string& id, const std::type_info& info);
-    static void  addFactory(const std::string& id, stub_t func,
-                            const std::type_info& signature_type,
-                            const std::type_info& return_type);
-
-#if defined(DD4HEP_ROOT_VERSION_5)
-    template <typename R> static R Create(const std::string& name);
-
-    template <typename R, typename A0>
-    static R Create(const std::string& name,A0 a0);
-
-    template <typename R, typename A0, typename A1>
-    static R Create(const std::string& name, A0 a0, A1 a1);
-
-    template <typename R, typename A0, typename A1, typename A2>
-    static R Create(const std::string& name, A0 a0, A1 a1, A2 a2);
-
-    template <typename R, typename A0, typename A1, typename A2, typename A3>
-    static R Create(const std::string& name, A0 a0, A1 a1, A2 a2, A3 a3);
-
-    template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4>
-    static R Create(const std::string& name, A0 a0, A1 a1, A2 a2, A3 a3, A4 a4);
-
-    template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
-    static R Create(const std::string& name, A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5);
-#else
     template <typename R, typename... Args> static R Create(const std::string& id, Args... args)  {
       FuncPointer<R(*)(Args...)> f(getCreator(id,typeid(R(Args...))));
       return f.fptr.ptr ? (*f.fptr.fcn)(std::forward<Args>(args)...) : 0;
     }
+    template <typename FUNCTION> static FuncPointer<FUNCTION> function(FUNCTION func)  {
+      return FuncPointer<FUNCTION>(func);
+    }
 #endif
+    static bool debug();
+    static bool setDebug(bool new_value);
+    static stub_t getCreator(const std::string& id, const std::type_info& info);
+    static void   addFactory(const std::string& id,
+                             stub_t&& func,
+                             const std::type_info& signature_type,
+                             const std::type_info& return_type);
+    static void print_bad_cast(const std::string& id, const stub_t& stub, const std::type_info& signature, const char* msg);
   };
 
   /// Factory template for the plugin mechanism
@@ -135,14 +143,9 @@ namespace dd4hep {
   public:
     typedef PluginService svc_t;
     typedef SIGNATURE signature_t;
-#if defined(DD4HEP_ROOT_VERSION_5)
-    typedef void (*stub_t)(void *retaddr, void*, const std::vector<void*>& arg, void*);
-    static void add(const char* name, stub_t stub);
-#else
     template <typename R, typename... Args>  static void add(const std::string& id, R(*func)(Args...))  {
-      svc_t::addFactory(id,svc_t::function(func).ptr(),typeid(R(Args...)),typeid(R));
+      svc_t::addFactory(id,svc_t::function(func),typeid(R(Args...)),typeid(R));
     }
-#endif
   };
 } /* End namespace dd4hep      */
 
@@ -151,16 +154,12 @@ namespace {
   template <typename P, typename S> class Factory {};
 }
 
-#if defined(DD4HEP_ROOT_VERSION_5)
-#define DD4HEP_FACTORY_CALL(type,name,signature) dd4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::wrapper);
-#else
 namespace dd4hep {
   template <> inline long PluginFactoryBase::make_return(const long& value)
   { static long stored=value; return (long)&stored; }  
 }
 #define DD4HEP_FACTORY_CALL(type,name,signature) dd4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::call)
 #define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(X,Y)
-#endif
 
 #define DD4HEP_OPEN_PLUGIN(ns,name)  namespace ns { namespace { struct name {}; } } namespace dd4hep
 #define DD4HEP_PLUGINSVC_CNAME(name, serial)  name##_dict_##serial

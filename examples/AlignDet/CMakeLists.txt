@@ -118,8 +118,8 @@ dd4hep_add_test_reg( AlignDet_Telescope_readback_xml
 dd4hep_add_test_reg( AlignDet_CLICSiD_stress_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun  -volmgr -destroy -plugin DD4hep_AlignmentExample_stress 
-      -input file:${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/compact/compact.xml -iovs 10 -runs 100
-  REGEX_PASS "Summary: Total 7352100 conditions used \\(S:7352100,L:0,C:0,M:0\\) \\(A:350100,M:0\\)"
+      -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 10 -runs 100
+  REGEX_PASS "Summary: Total 7372260 conditions used \\(S:7372260,L:0,C:0,M:0\\) \\(A:351060,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -127,8 +127,8 @@ dd4hep_add_test_reg( AlignDet_CLICSiD_stress_LONGTEST
 dd4hep_add_test_reg( AlignDet_CLICSiD_align_nominal_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
-     -input  file:${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/compact/compact.xml
-  REGEX_PASS "Printed 35011, scanned 35011 and computed a total of 35011 alignments \\(C:35011,M:0\\)"
+     -input  file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+  REGEX_PASS "Printed 35107, scanned 35107 and computed a total of 35107 alignments \\(C:35107,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #

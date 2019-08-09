@@ -13,9 +13,6 @@
 
 // Framework include files
 #include "DD4hep/Plugins.h"
-#if defined(DD4HEP_ROOT_VERSION_5)
-#include "DD4hep/detail/Plugins.inl"
-#endif
 #include <cstdlib>
 
 using namespace std;
@@ -39,34 +36,6 @@ bool PluginService::setDebug(bool new_value)   {
   return old_value;
 }
 
-#if !defined(DD4HEP_PARSERS_NO_ROOT) && DD4HEP_ROOT_VERSION_5
-
-/// Default constructor
-PluginDebug::PluginDebug(int dbg)
-  : m_debug(0) {
-  m_debug = ROOT::Reflex::PluginService::Debug();
-  ROOT::Reflex::PluginService::SetDebug(dbg);
-}
-
-/// Default destructor
-PluginDebug::~PluginDebug() noexcept(false) {
-  ROOT::Reflex::PluginService::SetDebug (m_debug);
-}
-
-/// Helper to check factory existence
-string PluginDebug::missingFactory(const string& name) const {
-  ROOT::Reflex::Scope factories = ROOT::Reflex::Scope::ByName(PLUGINSVC_FACTORY_NS);
-  string factoryname = ROOT::Reflex::PluginService::FactoryName(name);
-  string msg = "\t\tNo factory for type " + name + " found.\n"
-    "\t\tPlease check library load path and/or plugin factory name.";
-  return msg;
-}
-
-/// Dummy functions of the plugin service
-void* PluginService::getCreator(const std::string&, const std::type_info&)  {  return 0;   }
-void  PluginService::addFactory(const std::string&, void*, const std::type_info&, const std::type_info&)  {}
-
-#else   // ROOT 6 or no ROOT at all
 #include "DD4hep/Printout.h"
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
 #include "TSystem.h"
@@ -79,9 +48,9 @@ namespace   {
   struct PluginInterface  {
     int (*getDebug)();
     int (*setDebug)(int new_value);
-    void* (*create)(const char* identifier, const char* signature);
+    PluginService::stub_t (*create)(const char* identifier, const char* signature);
     void  (*add)(const char* identifier, 
-                 void* creator_stub, 
+                 PluginService::stub_t&& creator_stub, 
                  const char* signature, 
                  const char* return_type);
     PluginInterface() noexcept(false);
@@ -91,14 +60,20 @@ namespace   {
     }
   };
 
+  template <typename FUNCTION> struct _FP {
+    union { void* ptr; FUNCTION fcn; } fptr;
+    _FP(FUNCTION func)         {  fptr.fcn = func;        }
+    _FP(void* _p)              {  fptr.ptr = _p;          }
+  };
+
   template <typename T> 
   static inline T get_func(void* handle, const char* plugin, const char* entry)  {
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
-    PluginService::FuncPointer<Func_t> fun(gSystem->DynFindSymbol(plugin,entry));
-    PluginService::FuncPointer<T> fp(fun.fptr.ptr);
+    _FP<Func_t> fun(gSystem->DynFindSymbol(plugin,entry));
+    _FP<T> fp(fun.fptr.ptr);
     if ( handle ) {}
 #else
-    PluginService::FuncPointer<T> fp(::dlsym(handle, entry));
+    _FP<T> fp(::dlsym(handle, entry));
     if ( !fp.fptr.ptr ) fp.fptr.ptr = ::dlsym(0, entry);
 #endif
     if ( 0 == fp.fptr.ptr )      {
@@ -111,7 +86,7 @@ namespace   {
   }
 
   PluginInterface::PluginInterface()  noexcept(false)
-    : getDebug(0), setDebug(0), create(0), add(0)
+    : getDebug(0), setDebug(0), create(nullptr), add(nullptr)
   {
     void* handle = 0;
     const char* plugin_name = ::getenv("DD4HEP_PLUGINMGR");
@@ -125,10 +100,10 @@ namespace   {
 #endif
     getDebug = get_func< int (*) ()>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
     setDebug = get_func< int (*) (int)>(handle, plugin_name,"dd4hep_pluginmgr_getdebug");
-    create   = get_func< void* (*) (const char*,
-                                    const char*)>(handle, plugin_name,"dd4hep_pluginmgr_create");
+    create   = get_func< PluginService::stub_t (*) (const char*,
+                                                const char*)>(handle, plugin_name,"dd4hep_pluginmgr_create");
     add      = get_func< void (*) (const char* identifier, 
-                                   void* creator_stub, 
+                                   PluginService::stub_t&& creator_stub, 
                                    const char* signature, 
                                    const char* return_type)>(handle, plugin_name,"dd4hep_pluginmgr_add_factory");
   }
@@ -152,11 +127,12 @@ string PluginDebug::missingFactory(const string& name) const {
   return msg;
 }
 
-void* PluginService::getCreator(const std::string& id, const std::type_info& info)  {
+PluginService::stub_t PluginService::getCreator(const std::string& id, const std::type_info& info)  {
   return PluginInterface::instance().create(id.c_str(), info.name());
 }
 
-void PluginService::addFactory(const std::string& id, stub_t stub,
+void PluginService::addFactory(const std::string& id,
+                               PluginService::stub_t&& stub,
                                const std::type_info&  signature_type,
                                const std::type_info&  return_type)
 {
@@ -164,9 +140,32 @@ void PluginService::addFactory(const std::string& id, stub_t stub,
     printout(INFO,"PluginService","+++ Declared factory[%s] with signature %s type:%s.",
              id.c_str(),signature_type.name(),return_type.name());
   }
-  PluginInterface::instance().add(id.c_str(),stub,signature_type.name(),return_type.name());
+  PluginInterface::instance().add(id.c_str(),std::move(stub),signature_type.name(),return_type.name());
 }
+
+void PluginService::print_bad_cast(const std::string& id,
+                                   const stub_t& stub,
+                                   const std::type_info& signature,
+                                   const char* msg)   {
+  bool dbg = PluginInterface::instance().getDebug();
+  if ( dbg )   {
+    stringstream str;
+    str << "Factory requested: " << id << " (" << typeid(signature).name() << ") :" << msg;
+    printout(ERROR,"PluginService","%s", str.str().c_str());
+    str.str("");
+#ifdef DD4HEP_HAVE_PLUGINSVC_V2
+    if ( !stub.has_value() )  {
+      str << "Stub is invalid!";
+      printout(ERROR,"PluginService","%s", str.str().c_str());
+    }
+#else
+    if ( !stub )  {
+      str << "Stub is invalid!";
+      printout(ERROR,"PluginService","%s", str.str().c_str());
+    }
 #endif
+  }
+}
 
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
 #include "DD4hep/Detector.h"

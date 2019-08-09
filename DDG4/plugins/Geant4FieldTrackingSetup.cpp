@@ -192,13 +192,24 @@ Geant4FieldTrackingSetup::~Geant4FieldTrackingSetup()   {
 /// Perform the setup of the magnetic field tracking in Geant4
 int Geant4FieldTrackingSetup::execute(Detector& description)   {
   OverlayedField fld  = description.field();
+  G4ChordFinder*           chordFinder;
+  G4TransportationManager* transportMgr;
+  G4PropagatorInField*     propagator;
+  G4FieldManager*          fieldManager;
   G4MagneticField*         mag_field    = new sim::Geant4Field(fld);
   G4Mag_EqRhs*             mag_equation = PluginService::Create<G4Mag_EqRhs*>(eq_typ,mag_field);
-  G4MagIntegratorStepper*  fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_equation);
-  G4ChordFinder*           chordFinder  = new G4ChordFinder(mag_field,min_chord_step,fld_stepper);
-  G4TransportationManager* transportMgr = G4TransportationManager::GetTransportationManager();
-  G4PropagatorInField*     propagator   = transportMgr->GetPropagatorInField();
-  G4FieldManager*          fieldManager = transportMgr->GetFieldManager();
+  G4EquationOfMotion*      mag_eq       = mag_equation;
+  G4MagIntegratorStepper*  fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_eq);
+  if ( nullptr == fld_stepper )   {
+    fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_equation);
+    if ( nullptr == fld_stepper )   {
+      printout(WARNING,"FieldSetup", "Cannot create stepper of type: %s. Taking Geant4 defaults.",stepper_typ.c_str());
+    }
+  }
+  chordFinder  = new G4ChordFinder(mag_field,min_chord_step,fld_stepper);
+  transportMgr = G4TransportationManager::GetTransportationManager();
+  propagator   = transportMgr->GetPropagatorInField();
+  fieldManager = transportMgr->GetFieldManager();
 
   fieldManager->SetFieldChangesEnergy(fld.changesEnergy());
   fieldManager->SetDetectorField(mag_field);
