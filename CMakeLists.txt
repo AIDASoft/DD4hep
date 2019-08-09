@@ -199,11 +199,6 @@ endif()
 #######################
 
 if(APPLE)
-  dd4hep_print("|++> BOOST_LIBRARY_DIR ${BOOST_LIBRARY_DIR}")
-  dd4hep_print("|++> Boost_LIBRARY_DIR ${Boost_LIBRARY_DIR}")
-  dd4hep_print("|++> BOOST_LIBRARY_DIRS ${BOOST_LIBRARY_DIRS}")
-  dd4hep_print("|++> Boost_LIBRARY_DIRS ${Boost_LIBRARY_DIRS}")
-
   fill_dd4hep_library_path()
   message(STATUS "DD4HEP_LIBRARY_PATH= $ENV{DD4HEP_LIBRARY_PATH}")
 endif()
