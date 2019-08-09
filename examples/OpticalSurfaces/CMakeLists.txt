@@ -69,15 +69,19 @@ dd4hep_add_test_reg( Surfaces_OpNovice_write_gdml
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
-#---Testing: Load GDML and dump volumes
-dd4hep_add_test_reg( Surfaces_OpNovice_read_gdml
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy 
-  -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice_gdml.xml
-  -print INFO -destroy -volmgr
-  -plugin DD4hep_ROOTGDMLParse -input OpNovice.gdml -path /world/BubbleDevice
-  -plugin DD4hep_VolumeDump
-  REGEX_PASS "\\+\\+\\+ Checked 5 physical volume placements."
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
-  )
+#
+if ( "${ROOT_VERSION}" VERSION_GREATER "6.19.00" )
+  #
+  #---Testing: Load GDML and dump volumes
+  dd4hep_add_test_reg( Surfaces_OpNovice_read_gdml
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
+    EXEC_ARGS  geoPluginRun -volmgr -destroy 
+    -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice_gdml.xml
+    -print INFO -destroy -volmgr
+    -plugin DD4hep_ROOTGDMLParse -input OpNovice.gdml -path /world/BubbleDevice
+    -plugin DD4hep_VolumeDump
+    REGEX_PASS "\\+\\+\\+ Checked 5 physical volume placements."
+    REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+    )
+endif()
 #

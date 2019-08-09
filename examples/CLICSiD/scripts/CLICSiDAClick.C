@@ -53,7 +53,7 @@ int setupG4_CINT(bool interactive)  {
   string install_dir = getenv("DD4hepExamplesINSTALL");
   Phase p;
 
-  kernel.loadGeometry(("file:"+install_dir+"/DDDetectors/compact/SiD.xml").c_str());
+  kernel.loadGeometry(("file:"+det_dir+"/DDDetectors/compact/SiD.xml").c_str());
   kernel.loadXML(("file:"+install_dir+"/examples/CLICSiD/sim/field.xml").c_str());
 
   if ( interactive )   {

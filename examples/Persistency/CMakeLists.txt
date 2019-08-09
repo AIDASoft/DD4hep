@@ -121,7 +121,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Readouts_LONGTEST
 dd4hep_add_test_reg( Persist_CLICSiD_Save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
-  -volmgr    -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/compact/compact.xml
+  -volmgr    -destroy -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
   -plugin    DD4hep_Geometry2ROOT -output CLICSiD_geometry.root
   REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file."
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;WriteObjectAny"
