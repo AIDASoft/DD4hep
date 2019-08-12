@@ -22,6 +22,7 @@
 // C/C++ include files
 #include <stdexcept>
 #include <iomanip>
+#include <sstream>
 
 // ROOT includes
 #include "TClass.h"
@@ -34,41 +35,105 @@ using namespace dd4hep;
 namespace units = dd4hep;
 
 namespace {
+  template <typename SHAPE> void invalidSetDimensionCall(SHAPE sh, const vector<double>& params)   {
+    stringstream str;
+    str << "Shape: " << typeName(typeid(sh)) << "::setDimension: "
+        << "Invalid number of parameters: " << params.size();
+                                               throw runtime_error(str.str());
+  }
+
   std::vector<double> get_shape_dimensions(TGeoShape* shape)   {
     if (shape) {
-      if (shape->IsA() == TGeoShapeAssembly::Class()) {
+      TClass* cl = shape->IsA();
+      if (cl == TGeoShapeAssembly::Class()) {
         const TGeoShapeAssembly* sh = (const TGeoShapeAssembly*) shape;
         return { sh->GetDX(), sh->GetDY(), sh->GetDZ() };
       }
-      else if (shape->IsA() == TGeoBBox::Class()) {
+      else if (cl == TGeoBBox::Class()) {
         const TGeoBBox* sh = (const TGeoBBox*) shape;
         return { sh->GetDX(), sh->GetDY(), sh->GetDZ() };
       }
-      else if (shape->IsA() == TGeoTube::Class()) {
+      else if (cl == TGeoHalfSpace::Class()) {
+        TGeoHalfSpace* sh = (TGeoHalfSpace*)(const_cast<TGeoShape*>(shape));
+        return { sh->GetPoint()[0], sh->GetPoint()[1], sh->GetPoint()[2],
+            sh->GetNorm()[0], sh->GetNorm()[1], sh->GetNorm()[2] };
+      }
+      else if (cl == TGeoPcon::Class()) {
+        const TGeoPcon* sh = (const TGeoPcon*) shape;
+        vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNz()) };
+        for (Int_t i = 0; i < sh->GetNz(); ++i) {
+          pars.emplace_back(sh->GetZ(i));
+          pars.emplace_back(sh->GetRmin(i));
+          pars.emplace_back(sh->GetRmax(i));
+        }
+        return pars;
+      }
+      else if (cl == TGeoConeSeg::Class()) {
+        const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
+        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(),
+            sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
+      }
+      else if (cl == TGeoCone::Class()) {
+        const TGeoCone* sh = (const TGeoCone*) shape;
+        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetDz() };
+      }
+      else if (cl == TGeoTube::Class()) {
         const TGeoTube* sh = (const TGeoTube*) shape;
         return { sh->GetRmin(), sh->GetRmax(), sh->GetDz() };
       }
-      else if (shape->IsA() == TGeoTubeSeg::Class()) {
+      else if (cl == TGeoTubeSeg::Class()) {
         const TGeoTubeSeg* sh = (const TGeoTubeSeg*) shape;
         return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(), sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
       }
-      else if (shape->IsA() == TGeoEltu::Class()) {
+      else if (cl == TGeoEltu::Class()) {
         const TGeoEltu* sh = (const TGeoEltu*) shape;
         return { sh->GetA(), sh->GetB(), sh->GetDz() };
       }
-      else if (shape->IsA() == TGeoTrd1::Class()) {
+      else if (cl == TGeoTrd1::Class()) {
         const TGeoTrd1* sh = (const TGeoTrd1*) shape;
         return { sh->GetDx1(), sh->GetDx2(), sh->GetDy(), sh->GetDz() };
       }
-      else if (shape->IsA() == TGeoTrd2::Class()) {
+      else if (cl == TGeoTrd2::Class()) {
         const TGeoTrd2* sh = (const TGeoTrd2*) shape;
         return { sh->GetDx1(), sh->GetDx2(), sh->GetDy1(), sh->GetDy2(), sh->GetDz() };
       }
-      else if (shape->IsA() == TGeoHype::Class()) {
-        const TGeoHype* sh = (const TGeoHype*) shape;
-        return { sh->GetDz(), sh->GetRmin(), sh->GetStIn(), sh->GetRmax(), sh->GetStOut(), sh->GetDz() };
+      else if (cl == TGeoParaboloid::Class()) {
+        const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
+        return { sh->GetRlo(), sh->GetRhi(), sh->GetDz() };
       }
-      else if (shape->IsA() == TGeoXtru::Class()) {
+      else if (cl == TGeoHype::Class()) {
+        const TGeoHype* sh = (const TGeoHype*) shape;
+        return { sh->GetRmin(), sh->GetStIn()*units::deg,
+            sh->GetRmax(), sh->GetStOut()*units::deg, sh->GetDz() };
+      }
+      else if (cl == TGeoSphere::Class()) {
+        const TGeoSphere* sh = (const TGeoSphere*) shape;
+        return { sh->GetRmin(), sh->GetRmax(),
+            sh->GetTheta1()*units::deg, sh->GetTheta2()*units::deg,
+            sh->GetPhi1()*units::deg,   sh->GetPhi2()*units::deg };
+      }
+      else if (cl == TGeoTorus::Class()) {
+        const TGeoTorus* sh = (const TGeoTorus*) shape;
+        return { sh->GetR(), sh->GetRmin(), sh->GetRmax(),
+            sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg };
+      }
+      else if (cl == TGeoTrap::Class()) {
+        const TGeoTrap* sh = (const TGeoTrap*) shape;
+        return { sh->GetDz(), sh->GetTheta()*units::deg, sh->GetPhi()*units::deg,
+            sh->GetH1(), sh->GetBl1(), sh->GetBl2(), sh->GetAlpha1()*units::deg,
+            sh->GetH2(), sh->GetTl1(), sh->GetTl2(), sh->GetAlpha2()*units::deg };
+      }
+      else if (cl == TGeoPgon::Class()) {
+        const TGeoPgon* sh = (const TGeoPgon*) shape;
+        vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNedges()), double(sh->GetNz()) };
+        for (Int_t i = 0; i < sh->GetNz(); ++i) {
+          pars.emplace_back(sh->GetZ(i));
+          pars.emplace_back(sh->GetRmin(i));
+          pars.emplace_back(sh->GetRmax(i));
+        }
+        return pars;
+      }
+      else if (cl == TGeoXtru::Class()) {
         const TGeoXtru* sh = (const TGeoXtru*) shape;
         Int_t nz = sh->GetNz();
         vector<double> pars { double(nz) };
@@ -80,52 +145,7 @@ namespace {
         }
         return pars;
       }
-      else if (shape->IsA() == TGeoPgon::Class()) {
-        const TGeoPgon* sh = (const TGeoPgon*) shape;
-        vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNedges()), double(sh->GetNz()) };
-        for (Int_t i = 0; i < sh->GetNz(); ++i) {
-          pars.emplace_back(sh->GetZ(i));
-          pars.emplace_back(sh->GetRmin(i));
-          pars.emplace_back(sh->GetRmax(i));
-        }
-        return pars;
-      }
-      else if (shape->IsA() == TGeoPcon::Class()) {
-        const TGeoPcon* sh = (const TGeoPcon*) shape;
-        vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNz()) };
-        for (Int_t i = 0; i < sh->GetNz(); ++i) {
-          pars.emplace_back(sh->GetZ(i));
-          pars.emplace_back(sh->GetRmin(i));
-          pars.emplace_back(sh->GetRmax(i));
-        }
-        return pars;
-      }
-      else if (shape->IsA() == TGeoCone::Class()) {
-        const TGeoCone* sh = (const TGeoCone*) shape;
-        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetDz() };
-      }
-      else if (shape->IsA() == TGeoConeSeg::Class()) {
-        const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
-        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
-      }
-      else if (shape->IsA() == TGeoParaboloid::Class()) {
-        const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
-        return { sh->GetRlo(), sh->GetRhi(), sh->GetDz() };
-      }
-      else if (shape->IsA() == TGeoSphere::Class()) {
-        const TGeoSphere* sh = (const TGeoSphere*) shape;
-        return { sh->GetRmin(), sh->GetRmax(), sh->GetTheta1()*units::deg, sh->GetTheta2()*units::deg, sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
-      }
-      else if (shape->IsA() == TGeoTorus::Class()) {
-        const TGeoTorus* sh = (const TGeoTorus*) shape;
-        return { sh->GetR(), sh->GetRmin(), sh->GetRmax(), sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg };
-      }
-      else if (shape->IsA() == TGeoTrap::Class()) {
-        const TGeoTrap* sh = (const TGeoTrap*) shape;
-        return { sh->GetDz(), sh->GetTheta()*units::deg, sh->GetPhi()*units::deg, sh->GetH1(), sh->GetH2(),
-            sh->GetBl1(), sh->GetBl2(), sh->GetTl1(), sh->GetTl2(), sh->GetAlpha1()*units::deg, sh->GetAlpha2()*units::deg };
-      }
-      else if (shape->IsA() == TGeoArb8::Class())  {
+      else if (cl == TGeoArb8::Class())  {
         TGeoTrap* sh = (TGeoTrap*) shape;
         const Double_t* vertices = sh->GetVertices();
         vector<double> pars;
@@ -135,7 +155,7 @@ namespace {
         }
         return pars;
       }
-      else if (shape->IsA() == TGeoCompositeShape::Class()) {
+      else if (cl == TGeoCompositeShape::Class()) {
         const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
         const TGeoBoolNode* boolean = sh->GetBoolNode();
         TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
@@ -163,7 +183,7 @@ namespace {
       }
       else  {
         printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
-                 shape->IsA()->GetName());
+                 cl->GetName());
       }
       return {};
     }
@@ -438,7 +458,7 @@ namespace dd4hep {
   }
 }
 
-template <typename T> void Solid_type<T>::_setDimensions(double* param) {
+template <typename T> void Solid_type<T>::_setDimensions(double* param)   const {
   this->ptr()->SetDimensions(param);
   this->ptr()->ComputeBBox();
 }
@@ -499,6 +519,12 @@ ShapelessSolid::ShapelessSolid(const string& nam)  {
   _assign(new TGeoShapeAssembly(), nam, "Assembly", true);
 }
 
+/// Set the assembly dimensions (noop, prints warning)
+ShapelessSolid& ShapelessSolid::setDimensions(const vector<double>& /* params */)  {
+  printout(WARNING,"ShapelessSolid","+++ setDimensions is a compatibility call. Nothing implemented.");
+  return *this;
+}
+
 void Box::make(const std::string& nam, double x_val, double y_val, double z_val)   {
   _assign(new TGeoBBox(nam.c_str(), x_val, y_val, z_val), "", "Box", true);
 }
@@ -507,6 +533,17 @@ void Box::make(const std::string& nam, double x_val, double y_val, double z_val)
 Box& Box::setDimensions(double x_val, double y_val, double z_val)   {
   double params[] = { x_val, y_val, z_val};
   _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Box& Box::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 3 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -528,6 +565,17 @@ double Box::z() const {
 /// Internal helper method to support object construction
 void HalfSpace::make(const std::string& nam, const double* const point, const double* const normal)   {
   _assign(new TGeoHalfSpace(nam.c_str(),(Double_t*)point, (Double_t*)normal), "", "HalfSpace",true);
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+HalfSpace& HalfSpace::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 6 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
+  return *this;
 }
 
 /// Constructor to be used when creating a new object
@@ -627,7 +675,7 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
   TGeoPcon* sh = *this;
   vector<double> params;
   size_t num = sh->GetNz();
-  if (rmin.size() < 2) {
+  if (rmin.size() < 2)   {
     throw runtime_error("dd4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
   params.emplace_back(sh->GetPhi1());
@@ -644,6 +692,25 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
     params.emplace_back(rmax[i] );
   }
   _setDimensions(&params[0]);
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Polycone& Polycone::setDimensions(const vector<double>& params)   {
+  if ( params.size() < 3 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  size_t nz = size_t(params[2]);
+  if ( params.size() != 3 + 3*nz )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  vector<double> pars;
+  pars.emplace_back(params[0]/units::deg);
+  pars.emplace_back(params[1]/units::deg);
+  pars.emplace_back(params[2]);
+  for (size_t i = 3, n=3+3*nz; i < n; ++i)
+    pars.emplace_back(params[i]);
+  _setDimensions(&pars[0]);
+  return *this;
 }
 
 /// Constructor to be used when creating a new cone segment object
@@ -677,6 +744,43 @@ ConeSegment& ConeSegment::setDimensions(double dz,
   return *this;
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+ConeSegment& ConeSegment::setDimensions(const vector<double>& params)   {
+  if ( params.size() != 7 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  vector<double> pars;
+  for (size_t i = 0; i < 5; ++i)
+    pars.emplace_back(params[i]);
+  pars.emplace_back(params[5]/units::deg);
+  pars.emplace_back(params[6]/units::deg);
+  _setDimensions(&pars[0]);
+  return *this;
+}
+
+/// Constructor to be used when creating a new object with attribute initialization
+void Cone::make(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2) {
+  _assign(new TGeoCone(nam.c_str(), z, rmin1, rmax1, rmin2, rmax2 ), "", "Cone", true);
+}
+
+/// Set the box dimensions (startPhi=0.0, endPhi=2*pi)
+Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
+  double params[] = { z, rmin1, rmax1, rmin2, rmax2  };
+  _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Cone& Cone::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 5 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
+  return *this;
+}
+
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double endPhi) {
   _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, startPhi/units::deg, endPhi/units::deg),nam,"Tube",true);
@@ -686,6 +790,16 @@ void Tube::make(const string& nam, double rmin, double rmax, double z, double st
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double endPhi) {
   double params[] = {rmin,rmax,z,startPhi/units::deg,endPhi/units::deg};
   _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Tube& Tube::setDimensions(const vector<double>& params)   {
+  if ( params.size() != 3 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -706,6 +820,12 @@ CutTube::CutTube(const std::string& nam,
 void CutTube::make(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double endPhi,
                    double lx, double ly, double lz, double tx, double ty, double tz)  {
   _assign(new TGeoCtub(nam.c_str(), rmin,rmax,dz,startPhi,endPhi,lx,ly,lz,tx,ty,tz),"","CutTube",true);
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+CutTube& CutTube::setDimensions(const vector<double>& params)   {
+  if ( params.size() ) {}
+  throw runtime_error("CutTube: Special Boolean shape. setDimensions is not implemented!");
 }
 
 /// Constructor to create a truncated tube object with attribute initialization
@@ -790,20 +910,25 @@ void TruncatedTube::make(const std::string& nam,
 #endif
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+TruncatedTube& TruncatedTube::setDimensions(const vector<double>& params)   {
+  if ( params.size() ) {}
+  throw runtime_error("TruncatedTube: Special Boolean shape. setDimensions is not implemented!");
+}
+
 /// Constructor to be used when creating a new object with attribute initialization
 void EllipticalTube::make(const std::string& nam, double a, double b, double dz) {
   _assign(new TGeoEltu(nam.c_str(), a, b, dz), "", "EllipticalTube", true);
 }
 
-/// Constructor to be used when creating a new object with attribute initialization
-void Cone::make(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2) {
-  _assign(new TGeoCone(nam.c_str(), z, rmin1, rmax1, rmin2, rmax2 ), "", "Cone", true);
-}
-
-/// Set the box dimensions (startPhi=0.0, endPhi=2*pi)
-Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
-  double params[] = { z, rmin1, rmax1, rmin2, rmax2  };
-  _setDimensions(params);
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+EllipticalTube& EllipticalTube::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 3 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -819,6 +944,17 @@ Trd1& Trd1::setDimensions(double x1, double x2, double y, double z) {
   return *this;
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Trd1& Trd1::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 4 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
+  return *this;
+}
+
 /// Constructor to be used when creating a new object with attribute initialization
 void Trd2::make(const std::string& nam, double x1, double x2, double y1, double y2, double z) {
   _assign(new TGeoTrd2(nam.c_str(), x1, x2, y1, y2, z ), "", "Trd2", true);
@@ -828,6 +964,17 @@ void Trd2::make(const std::string& nam, double x1, double x2, double y1, double 
 Trd2& Trd2::setDimensions(double x1, double x2, double y1, double y2, double z) {
   double params[] = { x1, x2, y1, y2, z  };
   _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Trd2& Trd2::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 5 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -843,6 +990,17 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
   return *this;
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Paraboloid& Paraboloid::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 3 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
+  return *this;
+}
+
 /// Constructor to create a new anonymous object with attribute initialization
 void Hyperboloid::make(const std::string& nam, double rin, double stin, double rout, double stout, double dz) {
   _assign(new TGeoHype(nam.c_str(), rin, stin/units::deg, rout, stout/units::deg, dz), "", "Hyperboloid", true);
@@ -852,6 +1010,16 @@ void Hyperboloid::make(const std::string& nam, double rin, double stin, double r
 Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, double stout, double dz)  {
   double params[] = { rin, stin/units::deg, rout, stout/units::deg, dz};
   _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Hyperboloid& Hyperboloid::setDimensions(const vector<double>& params)   {
+  if ( params.size() != 5 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  double pars[] = { params[0], params[1]/units::deg, params[2], params[3]/units::deg, params[4]};
+  _setDimensions(pars);
   return *this;
 }
 
@@ -869,6 +1037,20 @@ Sphere& Sphere::setDimensions(double rmin, double rmax, double startTheta, doubl
   return *this;
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Sphere& Sphere::setDimensions(const vector<double>& params)   {
+  if ( params.size() < 2 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  double pars[] = { params[0], params[1], 0., M_PI, 0., 2*M_PI};
+  if (params.size() > 2) pars[2] = params[2]/units::deg;
+  if (params.size() > 3) pars[3] = params[3]/units::deg;
+  if (params.size() > 4) pars[4] = params[4]/units::deg;
+  if (params.size() > 5) pars[5] = params[5]/units::deg;
+  _setDimensions(pars);
+  return *this;
+}
+
 /// Constructor to be used when creating a new object with attribute initialization
 void Torus::make(const std::string& nam, double r, double rmin, double rmax, double startPhi, double deltaPhi) {
   _assign(new TGeoTorus(nam.c_str(), r, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg), "", "Torus", true);
@@ -878,6 +1060,17 @@ void Torus::make(const std::string& nam, double r, double rmin, double rmax, dou
 Torus& Torus::setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi) {
   double params[] = { r, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg };
   _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Torus& Torus::setDimensions(const vector<double>& params)   {
+  // No angles in this shape. Just pass on the parameters
+  if ( params.size() != 5 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  double pars[] = { params[0], params[1], params[2], params[3]/units::deg, params[4]/units::deg };
+  _setDimensions(pars);
   return *this;
 }
 
@@ -922,6 +1115,20 @@ Trap& Trap::setDimensions(double z, double theta, double phi,
                       h1, bl1, tl1, alpha1/units::deg,
                       h2, bl2, tl2, alpha2/units::deg };
   _setDimensions(params);
+  return *this;
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Trap& Trap::setDimensions(const vector<double>& params)   {
+  auto pars = params;
+  if ( params.size() != 10 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  pars[1]  /= units::deg;
+  pars[2]  /= units::deg;
+  pars[6]  /= units::deg;
+  pars[10] /= units::deg;
+  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -1017,6 +1224,12 @@ void PseudoTrap::make(const std::string& nam, double x1, double x2, double y1, d
   _assign(solid,"","PseudoTrap", true);
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+PseudoTrap& PseudoTrap::setDimensions(const vector<double>& params)   {
+  if ( params.size() ) {}
+  throw runtime_error("PseudoTrap: Special Boolean shape. setDimensions is not implemented!");
+}
+
 /// Helper function to create poly hedron
 void PolyhedraRegular::make(const std::string& nam, int nsides, double rmin, double rmax,
                             double zpos, double zneg, double start, double delta) {
@@ -1027,6 +1240,18 @@ void PolyhedraRegular::make(const std::string& nam, int nsides, double rmin, dou
   double params[] = { start/units::deg, delta/units::deg, double(nsides), 2e0, zpos, rmin, rmax, zneg, rmin, rmax };
   _assign(new TGeoPgon(params), nam, "Polyhedra", false);
   //_setDimensions(&params[0]);
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+PolyhedraRegular& PolyhedraRegular::setDimensions(const vector<double>& params)   {
+  auto pars = params;
+  if ( params.size() != 3 + 3*size_t(params[2]) )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  pars[0]  /= units::deg;
+  pars[1]  /= units::deg;
+  _setDimensions(&pars[0]);
+  return *this;
 }
 
 /// Helper function to create poly hedron
@@ -1052,6 +1277,18 @@ void Polyhedra::make(const std::string& nam, int nsides, double start, double de
   _assign(new TGeoPgon(&temp[0]), nam, "Polyhedra", false);
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+Polyhedra& Polyhedra::setDimensions(const vector<double>& params)   {
+  auto pars = params;
+  if ( params.size() != 3 + 3*size_t(params[2]) )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  pars[0]  /= units::deg;
+  pars[1]  /= units::deg;
+  _setDimensions(&pars[0]);
+  return *this;
+}
+
 /// Helper function to create the polyhedron
 void ExtrudedPolygon::make(const std::string& nam,
                            const vector<double>& pt_x,
@@ -1069,9 +1306,29 @@ void ExtrudedPolygon::make(const std::string& nam,
     solid->DefineSection(i, sec_z[i], sec_x[i], sec_y[i], sec_scale[i]);
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+ExtrudedPolygon& ExtrudedPolygon::setDimensions(const vector<double>& params)   {
+  if ( params.size() != 1 + 4*size_t(params[0]) )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
+  return *this;
+}
+
 /// Creator method
 void EightPointSolid::make(const std::string& nam, double dz, const double* vtx)   {
   _assign(new TGeoArb8(nam.c_str(), dz, (double*)vtx), "", "EightPointSolid", true);
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+EightPointSolid& EightPointSolid::setDimensions(const vector<double>& params)   {
+  if ( params.size() != 17 )   {
+    invalidSetDimensionCall(*this,params);
+  }
+  auto pars = params;
+  _setDimensions(&pars[0]);
+  return *this;
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
@@ -1134,6 +1391,11 @@ SubtractionSolid::SubtractionSolid(const std::string& nam, const Solid& shape1, 
   _assign(new TGeoCompositeShape(nam.c_str(), sub), "", "subtraction", true);
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+SubtractionSolid& SubtractionSolid::setDimensions(const vector<double>& )   {
+  throw runtime_error("SubtractionSolid: Boolean shape. setDimensions is not implemented!");
+}
+
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
@@ -1192,6 +1454,11 @@ UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid&
 UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
   _assign(new TGeoCompositeShape(nam.c_str(), uni), "", "Union", true);
+}
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+UnionSolid& UnionSolid::setDimensions(const vector<double>& )   {
+  throw runtime_error("UnionSolid: Boolean shape. setDimensions is not implemented!");
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
@@ -1253,6 +1520,12 @@ IntersectionSolid::IntersectionSolid(const std::string& nam, const Solid& shape1
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
   _assign(new TGeoCompositeShape(nam.c_str(), inter), "", "Intersection", true);
 }
+
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+IntersectionSolid& IntersectionSolid::setDimensions(const vector<double>& )   {
+  throw runtime_error("IntersectionSolid: Boolean shape. setDimensions is not implemented!");
+}
+
 
 #define INSTANTIATE(X) template class dd4hep::Solid_type<X>
 
