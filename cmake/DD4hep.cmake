@@ -97,23 +97,19 @@ function(dd4hep_generate_rootmap_notapple library)
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
   #message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
 
-  add_custom_command(TARGET ${library}
+  GET_TARGET_PROPERTY(boost_filesystem_loc Boost::filesystem IMPORTED_LOCATION)
+  GET_FILENAME_COMPONENT(boost_dir ${boost_filesystem_loc} DIRECTORY) 
+
+  add_custom_command(OUTPUT ${rootmapfile}
+                     DEPENDS ${library}
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
                              -DROOT_VERSION=${ROOT_VERSION}
                              -DDD4hep_DIR=${DD4hep_DIR}
+                             -DLD_PATH=${boost_dir}
                              -P ${DD4hep_DIR}/cmake/MakeGaudiMap.cmake)
-
-  #add_custom_command(OUTPUT ${rootmapfile}
-  #                   COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
-  #                           -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-  #                           -DROOT_VERSION=${ROOT_VERSION}
-  #                           -DDD4hep_DIR=${DD4hep_DIR}
-  #                           -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake
-  #                   DEPENDS ${library})
-  ##add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
-
+  add_custom_target(Components_${library} ALL DEPENDS ${rootmapfile})
   SET( install_destination "lib" )
   if( CMAKE_INSTALL_LIBDIR )
     SET( install_destination ${CMAKE_INSTALL_LIBDIR} )

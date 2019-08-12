@@ -18,7 +18,7 @@ target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-deprecated)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-keyword-macro)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-return-type-c-linkage)
 
-target_link_libraries(DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS} Boost::filesystem Boost::system)
+target_link_libraries(DD4hepGaudiPluginMgr PUBLIC Boost::filesystem Boost::system ${CMAKE_DL_LIBS})
 SET_TARGET_PROPERTIES(DD4hepGaudiPluginMgr PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR ) 
@@ -27,7 +27,8 @@ if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 endif()
 
 add_executable(listcomponents src/listcomponents.cpp )
-target_link_libraries(listcomponents DD4hepGaudiPluginMgr  ${CMAKE_DL_LIBS})
+add_executable(DD4hep::listcomponents ALIAS listcomponents)
+target_link_libraries(listcomponents PUBLIC DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS})
 target_compile_options(listcomponents PRIVATE -Wno-deprecated)
 
 INSTALL(TARGETS listcomponents DD4hepGaudiPluginMgr EXPORT DD4hep
