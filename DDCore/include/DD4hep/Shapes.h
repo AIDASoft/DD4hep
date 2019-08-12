@@ -85,7 +85,7 @@ namespace dd4hep {
    */
   template <typename T> class Solid_type: public Handle<T> {
   protected:
-    void _setDimensions(double* param);
+    void _setDimensions(double* param)   const;
     /// Assign pointrs and register solid to geometry
     void _assign(T* n, const std::string& nam, const std::string& tit, bool cbbox);
 
@@ -170,6 +170,8 @@ namespace dd4hep {
     ShapelessSolid& operator=(ShapelessSolid&& copy) = default;
     /// Copy Assignment operator
     ShapelessSolid& operator=(const ShapelessSolid& copy) = default;
+    /// Set the assembly dimensions (noop, prints warning)
+    ShapelessSolid& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a box shape
@@ -221,6 +223,8 @@ namespace dd4hep {
     Box& operator=(const Box& copy) = default;
     /// Set the box dimensions
     Box& setDimensions(double x_val, double y_val, double z_val);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Box& setDimensions(const std::vector<double>& params);
     /// Access half "length" of the box
     double x() const;
     /// Access half "width" of the box
@@ -268,7 +272,9 @@ namespace dd4hep {
     HalfSpace& operator=(HalfSpace&& copy) = default;
     /// Copy Assignment operator
     HalfSpace& operator=(const HalfSpace& copy) = default;
-  };
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    HalfSpace& setDimensions(const std::vector<double>& params); 
+ };
 
   /// Class describing a Polycone shape
   /**
@@ -326,6 +332,8 @@ namespace dd4hep {
 
     /// Add Z-planes to the Polycone
     void addZPlanes(const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Polycone& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a cone segment shape
@@ -369,6 +377,8 @@ namespace dd4hep {
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
                                double rmin2, double rmax2,
                                double startPhi = 0.0, double endPhi = 2.0 * M_PI);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    ConeSegment& setDimensions(const std::vector<double>& params);
   };
 #if 0
   /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
@@ -439,6 +449,8 @@ namespace dd4hep {
     Tube& operator=(const Tube& copy) = default;
     /// Set the tube dimensions
     Tube& setDimensions(double rmin, double rmax, double dz, double startPhi=0.0, double endPhi=2*M_PI);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Tube& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a tube shape of a section of a cut tube segment
@@ -482,6 +494,8 @@ namespace dd4hep {
     CutTube& operator=(CutTube&& copy) = default;
     /// Copy Assignment operator
     CutTube& operator=(const CutTube& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    CutTube& setDimensions(const std::vector<double>& params);
   };
 
   
@@ -526,6 +540,8 @@ namespace dd4hep {
     TruncatedTube& operator=(TruncatedTube&& copy) = default;
     /// Copy Assignment operator
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    TruncatedTube& setDimensions(const std::vector<double>& params);
   };
   
   /// Class describing a elliptical tube shape
@@ -578,6 +594,8 @@ namespace dd4hep {
     EllipticalTube& operator=(const EllipticalTube& copy) = default;
     /// Set the tube dimensions
     EllipticalTube& setDimensions(double a, double b, double dz);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    EllipticalTube& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a cone shape
@@ -627,6 +645,8 @@ namespace dd4hep {
     Cone& operator=(const Cone& copy) = default;
     /// Set the box dimensions
     Cone& setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Cone& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a trap shape
@@ -686,6 +706,8 @@ namespace dd4hep {
     Trap& setDimensions(double z, double theta, double phi,
                         double h1, double bl1, double tl1, double alpha1,
                         double h2, double bl2, double tl2, double alpha2);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Trap& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a pseudo trap shape (CMS'ism)
@@ -728,6 +750,8 @@ namespace dd4hep {
     PseudoTrap& operator=(PseudoTrap&& copy) = default;
     /// Copy Assignment operator
     PseudoTrap& operator=(const PseudoTrap& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    PseudoTrap& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a Trd1 shape
@@ -779,6 +803,8 @@ namespace dd4hep {
     Trd1& operator=(const Trd1& copy) = default;
     /// Set the Trd1 dimensions
     Trd1& setDimensions(double x1, double x2, double y, double z);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Trd1& setDimensions(const std::vector<double>& params);
   };
   
   /// Class describing a Trd2 shape
@@ -830,6 +856,8 @@ namespace dd4hep {
     Trd2& operator=(const Trd2& copy) = default;
     /// Set the Trd2 dimensions
     Trd2& setDimensions(double x1, double x2, double y1, double y2, double z);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Trd2& setDimensions(const std::vector<double>& params);
   };
   /// Shortcut name definition
   typedef Trd2 Trapezoid;
@@ -881,6 +909,8 @@ namespace dd4hep {
     Torus& operator=(const Torus& copy) = default;
     /// Set the Torus dimensions
     Torus& setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Torus& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a sphere shape
@@ -958,6 +988,8 @@ namespace dd4hep {
     Sphere& setDimensions(double rmin,       double rmax,
                           double startTheta, double endTheta,
                           double startPhi,   double endPhi);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Sphere& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a Paraboloid shape
@@ -1007,6 +1039,8 @@ namespace dd4hep {
     Paraboloid& operator=(const Paraboloid& copy) = default;
     /// Set the Paraboloid dimensions
     Paraboloid& setDimensions(double r_low, double r_high, double delta_z);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Paraboloid& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a Hyperboloid shape
@@ -1056,6 +1090,8 @@ namespace dd4hep {
     Hyperboloid& operator=(const Hyperboloid& copy) = default;
     /// Set the Hyperboloid dimensions
     Hyperboloid& setDimensions(double rin, double stin, double rout, double stout, double dz);
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Hyperboloid& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a regular polyhedron shape
@@ -1106,6 +1142,8 @@ namespace dd4hep {
     PolyhedraRegular& operator=(PolyhedraRegular&& copy) = default;
     /// Copy Assignment operator
     PolyhedraRegular& operator=(const PolyhedraRegular& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    PolyhedraRegular& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a regular polyhedron shape
@@ -1161,6 +1199,8 @@ namespace dd4hep {
     Polyhedra& operator=(Polyhedra&& copy) = default;
     /// Copy Assignment operator
     Polyhedra& operator=(const Polyhedra& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Polyhedra& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing a extruded polygon shape
@@ -1216,6 +1256,8 @@ namespace dd4hep {
     ExtrudedPolygon& operator=(ExtrudedPolygon&& copy) = default;
     /// Copy Assignment operator
     ExtrudedPolygon& operator=(const ExtrudedPolygon& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    ExtrudedPolygon& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing an arbitray solid defined by 8 vertices.
@@ -1255,6 +1297,8 @@ namespace dd4hep {
     EightPointSolid& operator=(EightPointSolid&& copy) = default;
     /// Copy Assignment operator
     EightPointSolid& operator=(const EightPointSolid& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    EightPointSolid& setDimensions(const std::vector<double>& params);
   };
 
   /// Base class describing boolean (=union,intersection,subtraction) solids
@@ -1331,6 +1375,8 @@ namespace dd4hep {
     SubtractionSolid& operator=(SubtractionSolid&& copy) = default;
     /// Copy Assignment operator
     SubtractionSolid& operator=(const SubtractionSolid& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    SubtractionSolid& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing boolean union solid
@@ -1379,6 +1425,8 @@ namespace dd4hep {
     UnionSolid& operator=(UnionSolid&& copy) = default;
     /// Copy Assignment operator
     UnionSolid& operator=(const UnionSolid& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    UnionSolid& setDimensions(const std::vector<double>& params);
   };
 
   /// Class describing boolean intersection solid
@@ -1427,6 +1475,8 @@ namespace dd4hep {
     IntersectionSolid& operator=(IntersectionSolid&& copy) = default;
     /// Copy Assignment operator
     IntersectionSolid& operator=(const IntersectionSolid& copy) = default;
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    IntersectionSolid& setDimensions(const std::vector<double>& params);
   };
 
 }         /* End namespace dd4hep             */

@@ -199,11 +199,17 @@ int Geant4FieldTrackingSetup::execute(Detector& description)   {
   G4MagneticField*         mag_field    = new sim::Geant4Field(fld);
   G4Mag_EqRhs*             mag_equation = PluginService::Create<G4Mag_EqRhs*>(eq_typ,mag_field);
   G4EquationOfMotion*      mag_eq       = mag_equation;
-  G4MagIntegratorStepper*  fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_eq);
+  if ( nullptr == mag_eq )   {
+    mag_eq = PluginService::Create<G4EquationOfMotion*>(eq_typ,mag_field);
+    if ( nullptr == mag_eq )   {
+      except("FieldSetup", "Cannot create G4EquationOfMotion of type: %s.",eq_typ.c_str());
+    }
+  }
+  G4MagIntegratorStepper* fld_stepper = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_eq);
   if ( nullptr == fld_stepper )   {
     fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_equation);
     if ( nullptr == fld_stepper )   {
-      printout(WARNING,"FieldSetup", "Cannot create stepper of type: %s. Taking Geant4 defaults.",stepper_typ.c_str());
+      except("FieldSetup", "Cannot create stepper of type: %s.",stepper_typ.c_str());
     }
   }
   chordFinder  = new G4ChordFinder(mag_field,min_chord_step,fld_stepper);
