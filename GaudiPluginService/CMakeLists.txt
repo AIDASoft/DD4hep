@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 
 project(GaudiPluginService)
-find_package(Boost COMPONENTS filesystem REQUIRED)
+find_package(Boost COMPONENTS filesystem system REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIR})
 
 add_library(DD4hepGaudiPluginMgr SHARED src/PluginServiceV1.cpp src/PluginServiceV2.cpp interface/DD4hepV1.cpp interface/DD4hepV2.cpp)
@@ -16,7 +16,7 @@ target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-deprecated)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-keyword-macro)
 target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-return-type-c-linkage)
 
-target_link_libraries(DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS} ${Boost_FILESYSTEM_LIBRARY} )
+target_link_libraries(DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 SET_TARGET_PROPERTIES(DD4hepGaudiPluginMgr PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR ) 
@@ -25,7 +25,7 @@ if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 endif()
 
 add_executable(listcomponents src/listcomponents.cpp )
-target_link_libraries(listcomponents DD4hepGaudiPluginMgr  ${CMAKE_DL_LIBS} ${Boost_FILESYSTEM_LIBRARY})
+target_link_libraries(listcomponents DD4hepGaudiPluginMgr  ${CMAKE_DL_LIBS} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 target_compile_options(listcomponents PRIVATE -Wno-deprecated)
 
 install(TARGETS listcomponents DD4hepGaudiPluginMgr
