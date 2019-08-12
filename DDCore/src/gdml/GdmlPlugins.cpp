@@ -177,7 +177,7 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
       if ( de.isValid() )   {
         TGDMLWrite extract;
         TUri uri(output.c_str());
-#if ROOT_VERSION_CODE >= ROOT_VERSION(7,19,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
         extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
 #else
         extract.WriteGDMLfile(&description.manager(), de.volume().ptr(), uri.GetRelativePart());
@@ -225,7 +225,7 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
       if ( a._node )    {
         TGDMLWrite extract;
         TUri uri(output.c_str());
-#if ROOT_VERSION_CODE >= ROOT_VERSION(7,19,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
         extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
 #else
         extract.WriteGDMLfile(&description.manager(), a._node->GetVolume(), uri.GetRelativePart());

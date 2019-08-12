@@ -70,7 +70,7 @@ dd4hep_add_test_reg( Surfaces_OpNovice_write_gdml
   )
 #
 #
-if ( "${ROOT_VERSION}" VERSION_GREATER "6.19.00" )
+if ( "${ROOT_VERSION}" VERSION_GREATER_EQUAL "6.20.00" )
   #
   #---Testing: Load GDML and dump volumes
   dd4hep_add_test_reg( Surfaces_OpNovice_read_gdml
