@@ -96,12 +96,17 @@ function(dd4hep_generate_rootmap_notapple library)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
   #message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
+
+  find_package(Boost COMPONENTS filesystem)
+  GET_FILENAME_COMPONENT(boost_dir ${Boost_FILESYSTEM_LIBRARY} DIRECTORY)
+  message(STATUS " *** listcomponents: boost_dir: ${boost_dir} " )
   add_custom_command(TARGET ${library}
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
                              -DROOT_VERSION=${ROOT_VERSION}
                              -DDD4hep_DIR=${DD4hep_DIR}
+                             -DLD_PATH=${boost_dir}
                              -P ${DD4hep_DIR}/cmake/MakeGaudiMap.cmake)
 
   #add_custom_command(OUTPUT ${rootmapfile}

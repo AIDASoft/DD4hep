@@ -7,11 +7,11 @@ message(STATUS " *** Gaudi listcomponents: Generate map for ${libname} ..." )
   MESSAGE( STATUS " *** MakeGaudiMap.cmake run command : ${Gaudi_listcomponents_CMD} -o ${rootmapfile} ${libname}
                  WORKING_DIRECTORY ${genmap_install_dir} "
     ) 
-
+  message(STATUS " *** listcomponents: LD_PATH: ${LD_PATH} " )
   if(APPLE)
-    SET ( ENV{DYLD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH}:$ENV{Boost_LIBRARY_DIRS} )
+    SET ( ENV{DYLD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH}:${LD_PATH} )
     EXECUTE_PROCESS( COMMAND echo DYLD_LIBRARY_PATH = $ENV{DYLD_LIBRARY_PATH} )
-    EXECUTE_PROCESS( COMMAND echo Boost_LIBRARY_DIRS = $ENV{Boost_LIBRARY_DIRS} )
+    EXECUTE_PROCESS( COMMAND echo LD_PATH = ${LD_PATH} )
   else()
     SET ( ENV{LD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{LD_LIBRARY_PATH} )
     #SET ( ENV{LD_PRELOAD} /lib64/libglapi.so )
