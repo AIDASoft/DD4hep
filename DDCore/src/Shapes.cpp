@@ -50,7 +50,7 @@ namespace {
       }
       else if (shape->IsA() == TGeoTubeSeg::Class()) {
         const TGeoTubeSeg* sh = (const TGeoTubeSeg*) shape;
-        return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(), sh->GetPhi1(), sh->GetPhi2() };
+        return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(), sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
       }
       else if (shape->IsA() == TGeoEltu::Class()) {
         const TGeoEltu* sh = (const TGeoEltu*) shape;
@@ -82,7 +82,7 @@ namespace {
       }
       else if (shape->IsA() == TGeoPgon::Class()) {
         const TGeoPgon* sh = (const TGeoPgon*) shape;
-        vector<double> pars { sh->GetPhi1(), sh->GetDphi(), double(sh->GetNedges()), double(sh->GetNz()) };
+        vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNedges()), double(sh->GetNz()) };
         for (Int_t i = 0; i < sh->GetNz(); ++i) {
           pars.emplace_back(sh->GetZ(i));
           pars.emplace_back(sh->GetRmin(i));
@@ -92,7 +92,7 @@ namespace {
       }
       else if (shape->IsA() == TGeoPcon::Class()) {
         const TGeoPcon* sh = (const TGeoPcon*) shape;
-        vector<double> pars { sh->GetPhi1(), sh->GetDphi(), double(sh->GetNz()) };
+        vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNz()) };
         for (Int_t i = 0; i < sh->GetNz(); ++i) {
           pars.emplace_back(sh->GetZ(i));
           pars.emplace_back(sh->GetRmin(i));
@@ -106,7 +106,7 @@ namespace {
       }
       else if (shape->IsA() == TGeoConeSeg::Class()) {
         const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
-        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetPhi1(), sh->GetPhi2() };
+        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
       }
       else if (shape->IsA() == TGeoParaboloid::Class()) {
         const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
@@ -114,16 +114,16 @@ namespace {
       }
       else if (shape->IsA() == TGeoSphere::Class()) {
         const TGeoSphere* sh = (const TGeoSphere*) shape;
-        return { sh->GetRmin(), sh->GetRmax(), sh->GetTheta1(), sh->GetTheta2(), sh->GetPhi1(), sh->GetPhi2() };
+        return { sh->GetRmin(), sh->GetRmax(), sh->GetTheta1()*units::deg, sh->GetTheta2()*units::deg, sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
       }
       else if (shape->IsA() == TGeoTorus::Class()) {
         const TGeoTorus* sh = (const TGeoTorus*) shape;
-        return { sh->GetR(), sh->GetRmin(), sh->GetRmax(), sh->GetPhi1(), sh->GetDphi() };
+        return { sh->GetR(), sh->GetRmin(), sh->GetRmax(), sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg };
       }
       else if (shape->IsA() == TGeoTrap::Class()) {
         const TGeoTrap* sh = (const TGeoTrap*) shape;
-        return { sh->GetDz(), sh->GetTheta(), sh->GetPhi(), sh->GetH1(), sh->GetH2(),
-            sh->GetBl1(), sh->GetBl2(), sh->GetTl1(), sh->GetTl2(), sh->GetAlpha1(), sh->GetAlpha2() };
+        return { sh->GetDz(), sh->GetTheta()*units::deg, sh->GetPhi()*units::deg, sh->GetH1(), sh->GetH2(),
+            sh->GetBl1(), sh->GetBl2(), sh->GetTl1(), sh->GetTl2(), sh->GetAlpha1()*units::deg, sh->GetAlpha2()*units::deg };
       }
       else if (shape->IsA() == TGeoArb8::Class())  {
         TGeoTrap* sh = (TGeoTrap*) shape;
@@ -864,7 +864,7 @@ void Sphere::make(const std::string& nam, double rmin, double rmax, double start
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double startTheta, double endTheta, double startPhi, double endPhi) {
-  double params[] = { rmin, rmax, startTheta, endTheta/units::deg, startPhi/units::deg, endPhi/units::deg };
+  double params[] = { rmin, rmax, startTheta/units::deg, endTheta/units::deg, startPhi/units::deg, endPhi/units::deg };
   _setDimensions(params);
   return *this;
 }

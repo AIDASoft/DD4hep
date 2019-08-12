@@ -77,7 +77,7 @@ namespace dd4hep {
     /// Access the transformation to the closest detector element
     const TGeoHMatrix& toElement()  const;
   };
-    
+
   /// Class to support the retrieval of detector elements and volumes given a valid identifier
   /**
    *

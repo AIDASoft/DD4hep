@@ -96,6 +96,7 @@ function(dd4hep_generate_rootmap_notapple library)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
   #message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
+
   add_custom_command(TARGET ${library}
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}

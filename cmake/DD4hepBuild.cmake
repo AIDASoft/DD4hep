@@ -1461,10 +1461,13 @@ endfunction()
 #
 #---------------------------------------------------------------------------------------------------
 function ( fill_dd4hep_library_path )
-
   string(REGEX REPLACE "/lib/libCore.*" "" ROOT_ROOT ${ROOT_Core_LIBRARY})
   SET( ENV{DD4HEP_LIBRARY_PATH} ${ROOT_ROOT}/lib )
-
+  if ( NOT "${Boost_LIBRARY_DIRS}" STREQUAL "" )
+    SET( ENV{DD4HEP_LIBRARY_PATH} $ENV{DD4HEP_LIBRARY_PATH}:${Boost_LIBRARY_DIRS} )
+  else()
+    dd4hep_print("|++> The boost library path cannot be determined. Problems maybe ahead.")
+  endif()
   if ( ${DD4HEP_USE_GEANT4} )
     string(REGEX REPLACE "/lib/Geant4.*" "" Geant4_ROOT ${Geant4_DIR})
     SET( ENV{DD4HEP_LIBRARY_PATH} ${Geant4_ROOT}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
@@ -1481,6 +1484,4 @@ function ( fill_dd4hep_library_path )
   endif()
 
   SET( ENV{DD4HEP_LIBRARY_PATH} ${CMAKE_BINARY_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
-
-
 endfunction()

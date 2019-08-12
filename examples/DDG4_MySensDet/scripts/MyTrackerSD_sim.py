@@ -39,8 +39,10 @@ def run():
   evt_root = geant4.setupROOTOutput('RootOutput','MySD_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=False)
   # Setup particle gun
   gun = geant4.setupGun("Gun",particle='mu-',energy=5*GeV,multiplicity=1,Standalone=True,position=(0,0,0))
-  geant4.setupTracker('SiliconBlockUpper')
-  geant4.setupTracker('SiliconBlockDown')
+  seq,act = geant4.setupTracker('SiliconBlockUpper')
+  act.OutputLevel = Output.INFO
+  seq,act = geant4.setupTracker('SiliconBlockDown')
+  act.OutputLevel = Output.INFO
   # Now build the physics list:
   phys = kernel.physicsList()
   phys.extends = 'QGSP_BERT'

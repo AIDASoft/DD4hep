@@ -35,8 +35,7 @@ class Setup:
 
   def setupGun(self, name="Gun",particle='pi-',energy=100*GeV,multiplicity=1):
     # Setup particle gun
-    self.geant4.setupGun(name,particle=particle,energy=energy,multiplicity=multiplicity)
-    return self
+    return self.geant4.setupGun(name,particle=particle,energy=energy,multiplicity=multiplicity)
 
   def setupGenerator(self):
     # And handle the simulation particles.
@@ -46,7 +45,7 @@ class Setup:
     part.MinimalKineticEnergy = 1*MeV
     part.OutputLevel = 5 # generator_output_level
     part.enableUI()
-    return self
+    return part
 
   def setupPhysics(self):
     # Now build the physics list:

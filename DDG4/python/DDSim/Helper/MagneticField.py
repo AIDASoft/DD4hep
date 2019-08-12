@@ -6,7 +6,7 @@ class MagneticField( ConfigHelper ):
   """Configuration for the magnetic field (stepper)"""
   def __init__( self ):
     super(MagneticField, self).__init__()
-    self.stepper = "G4ClassicalRK4"
+    self.stepper = "ClassicalRK4"
     self.equation = "Mag_UsualEqRhs"
     self.eps_min = 5e-05*mm
     self.eps_max = 0.001*mm

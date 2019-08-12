@@ -1,7 +1,13 @@
-// $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//--------------------------------------------------------------------------
 //
 //  Run Geant4 using DDG4 from root prompt with test objects for
 //  Run/Event/Sensitive actions.
@@ -18,7 +24,7 @@
 //
 //  Author     : M.Frank
 //
-//====================================================================
+//=====================================================------===============
 #include "DDG4/Geant4Config.h"
 #include <iostream>
 
@@ -27,9 +33,10 @@ using namespace dd4hep::sim::Setup;
 
 int setupG4_XML(bool interactive)  {
   string install_dir = getenv("DD4hepExamplesINSTALL");
+  string det_dir     = getenv("DD4hepINSTALL");
   string prefix = "file:"+install_dir+"/examples/";
   Kernel& kernel = Kernel::instance(dd4hep::Detector::getInstance());
-  kernel.loadGeometry((prefix+"CLICSiD/compact/compact.xml").c_str());
+  kernel.loadGeometry((det_dir+"/DDDetectors/compact/SiD.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/field.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/sequences.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/physics.xml").c_str());

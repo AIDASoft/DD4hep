@@ -32,21 +32,6 @@ using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
 
-
-namespace {
-  class ContextExtension : public VolumeManagerContext {
-  public:
-    /// The placement of the (sensitive) volume
-    PlacedVolume placement{0};
-    /// The transformation of space-points to the coordinate system of the closests detector element
-    TGeoHMatrix toElement;
-    /// Default constructor
-    ContextExtension() = default;
-    /// Default destructor
-    ~ContextExtension() = default;
-  };
-}
-
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -265,13 +250,13 @@ namespace dd4hep {
             // This is the block, we effectively have to save for each physical volume with a VolID
             VolumeManagerContext* context = nodes.empty()
               ? new VolumeManagerContext
-              : new ContextExtension;
+              : new detail::VolumeManagerContextExtension;
             context->identifier = code.first;
             context->mask       = code.second;
             context->element    = e;
             context->flag       = nodes.empty() ? 0 : 1;
             if ( context->flag )  {
-              ContextExtension* ext = (ContextExtension*)context;
+              detail::VolumeManagerContextExtension* ext = (detail::VolumeManagerContextExtension*)context;
               ext->placement  = PlacedVolume(n);
               for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
                 TGeoMatrix* m = nodes[i-1]->GetMatrix();
@@ -330,7 +315,7 @@ PlacedVolume VolumeManagerContext::elementPlacement()  const   {
 PlacedVolume VolumeManagerContext::volumePlacement()  const   {
   if ( 0 == flag )
     return element.placement();
-  const ContextExtension* ext = (const ContextExtension*)this;
+  const detail::VolumeManagerContextExtension* ext = (const detail::VolumeManagerContextExtension*)this;
   return ext->placement;
 }
 
@@ -338,7 +323,7 @@ PlacedVolume VolumeManagerContext::volumePlacement()  const   {
 const TGeoHMatrix& VolumeManagerContext::toElement()  const   {
   static TGeoHMatrix identity;
   if ( 0 == flag ) return identity;
-  const ContextExtension* ext = (const ContextExtension*)this;
+  const detail::VolumeManagerContextExtension* ext = (const detail::VolumeManagerContextExtension*)this;
   return ext->toElement;
 }
 

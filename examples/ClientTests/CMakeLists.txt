@@ -91,7 +91,7 @@ dd4hep_add_test_reg( ClientTests_DumpMaterials
 dd4hep_add_test_reg( ClientTests_MultipleGeometries
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS   multipleGeo
-  -compact file:${ClientTestsEx_INSTALL}/../CLICSiD/compact/compact.xml
+  -compact file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
   -compact file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -compact file:${ClientTestsEx_INSTALL}/compact/NestedDetectors.xml
   -no-interp
