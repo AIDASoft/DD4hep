@@ -39,7 +39,7 @@ namespace fs = boost::filesystem;
 namespace fs = std::filesystem;
 #endif // USE_BOOST_FILESYSTEM
 
-#if __cplusplus >= 201703
+#if __cplusplus >= 201703 || (__clang__ && __APPLE__)
 #  include <string_view>
 #else
 #  include <experimental/string_view>
