@@ -105,6 +105,7 @@ if [ ${XERCESCINSTALL} ]; then
     #dd4hep_add_path    PATH ${XERCESCINSTALL}/bin;
     dd4hep_add_library_path ${XERCESCINSTALL}/lib;
 fi;
+dd4hep_add_library_path @BOOST_DIR@
 #
 #----PATH---------------------------------------------------------------------
 dd4hep_add_path PATH       ${THIS}/bin;
