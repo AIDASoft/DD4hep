@@ -28,7 +28,7 @@ link_libraries(
   )
 
 set(OpticalSurfaces_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/OpticalSurfaces)
-new_dd4hep_add_plugin(OpticalSurfacesExample SOURCES src/*.cpp  )
+dd4hep_add_plugin(OpticalSurfacesExample SOURCES src/*.cpp  )
 install(TARGETS OpticalSurfacesExample LIBRARY DESTINATION lib)
 install(DIRECTORY compact scripts DESTINATION ${OpticalSurfaces_INSTALL} )
 dd4hep_configure_scripts( OpticalSurfaces DEFAULT_SETUP WITH_TESTS)
