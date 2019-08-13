@@ -34,14 +34,97 @@ using namespace std;
 using namespace dd4hep;
 namespace units = dd4hep;
 
-namespace {
-  template <typename SHAPE> void invalidSetDimensionCall(SHAPE sh, const vector<double>& params)   {
+#define TRUNCATEDTUBE_TAG "TruncatedTube"
+#define PSEUDOTRAP_TAG    "PseudoTrap"
+#define UNION_TAG         "Union"
+#define SUBTRACTION_TAG   "Subtraction"
+#define INTERSECTION_TAG  "Intersection"
+
+namespace dd4hep {
+  static bool check_shape_type(const Handle<TGeoShape>& solid, const TClass* cl)   {
+    if ( solid.isValid() )   {
+      return solid->IsA() == cl;
+    }
+    return false;
+  }
+
+  /// Type check of various shapes.
+  template <typename SOLID> bool instanceOf(const Handle<TGeoShape>& solid)   {
+    if ( solid.isValid() )   {
+      return solid->IsA() == SOLID::Object::Class();
+    }
+    return false;
+  }
+  template bool instanceOf<Box>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<ShapelessSolid>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<HalfSpace>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<ConeSegment>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Tube>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<CutTube>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<EllipticalTube>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Cone>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Trap>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Trd1>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Trd2>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Torus>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Sphere>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Paraboloid>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Hyperboloid>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<PolyhedraRegular>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<Polyhedra>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<ExtrudedPolygon>(const Handle<TGeoShape>& solid);
+  template bool instanceOf<BooleanSolid>(const Handle<TGeoShape>& solid);
+  template <> bool instanceOf<Polycone>(const Handle<TGeoShape>& solid)   {
+    return check_shape_type(solid, TGeoPcon::Class())
+      ||   check_shape_type(solid, TGeoPgon::Class());
+  }
+  template <> bool instanceOf<EightPointSolid>(const Handle<TGeoShape>& solid)   {
+    if ( solid.isValid() )   {
+      TClass* c = solid->IsA();
+      return c==TGeoTrap::Class() || c==TGeoArb8::Class() || c==TGeoGtra::Class();
+    }
+    return false;
+  }
+  template <> bool instanceOf<TruncatedTube>(const Handle<TGeoShape>& solid)   {
+    if ( solid.isValid() )   {
+      return solid->IsA() == TGeoCompositeShape::Class()
+        &&   ::strcmp(solid->GetTitle(), TRUNCATEDTUBE_TAG) == 0;
+    }
+    return false;
+  }
+  template <> bool instanceOf<PseudoTrap>(const Handle<TGeoShape>& solid)   {
+    if ( solid.isValid() )   {
+      return solid->IsA() == TGeoCompositeShape::Class()
+        &&   ::strcmp(solid->GetTitle(), PSEUDOTRAP_TAG) == 0;
+    }
+    return false;
+  }
+  template <> bool instanceOf<SubtractionSolid>(const Handle<TGeoShape>& solid)   {
+    TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
+    return sh && sh->IsA() == TGeoCompositeShape::Class()
+      &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoSubtraction;
+  }
+  template <> bool instanceOf<UnionSolid>(const Handle<TGeoShape>& solid)   {
+    TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
+    return sh && sh->IsA() == TGeoCompositeShape::Class()
+      &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoUnion;
+  }
+  template <> bool instanceOf<IntersectionSolid>(const Handle<TGeoShape>& solid)   {
+    TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
+    return sh && sh->IsA() == TGeoCompositeShape::Class()
+      &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoIntersection;
+  }
+}
+
+namespace dd4hep {
+  template <typename SHAPE> void invalidSetDimensionCall(const SHAPE& sh, const vector<double>& params)   {
     stringstream str;
     str << "Shape: " << typeName(typeid(sh)) << "::setDimension: "
         << "Invalid number of parameters: " << params.size();
-                                               throw runtime_error(str.str());
+    throw runtime_error(str.str());
   }
 
+  /// Access Shape dimension parameters (As in TGeo, but angles in radians rather than degrees)
   std::vector<double> get_shape_dimensions(TGeoShape* shape)   {
     if (shape) {
       TClass* cl = shape->IsA();
@@ -61,6 +144,7 @@ namespace {
       else if (cl == TGeoPcon::Class()) {
         const TGeoPcon* sh = (const TGeoPcon*) shape;
         vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNz()) };
+        pars.reserve(3+3*sh->GetNz());
         for (Int_t i = 0; i < sh->GetNz(); ++i) {
           pars.emplace_back(sh->GetZ(i));
           pars.emplace_back(sh->GetRmin(i));
@@ -75,7 +159,7 @@ namespace {
       }
       else if (cl == TGeoCone::Class()) {
         const TGeoCone* sh = (const TGeoCone*) shape;
-        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2(), sh->GetDz() };
+        return { sh->GetDz(), sh->GetRmin1(), sh->GetRmax1(), sh->GetRmin2(), sh->GetRmax2() };
       }
       else if (cl == TGeoTube::Class()) {
         const TGeoTube* sh = (const TGeoTube*) shape;
@@ -84,6 +168,14 @@ namespace {
       else if (cl == TGeoTubeSeg::Class()) {
         const TGeoTubeSeg* sh = (const TGeoTubeSeg*) shape;
         return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(), sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
+      }
+      else if (cl == TGeoCtub::Class()) {
+        const TGeoCtub* sh = (const TGeoCtub*) shape;
+        const Double_t*	lo = sh->GetNlow();
+        const Double_t*	hi = sh->GetNhigh();
+        return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(),
+            sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg,
+            lo[0], lo[1], lo[2], hi[0], hi[1], hi[2] };
       }
       else if (cl == TGeoEltu::Class()) {
         const TGeoEltu* sh = (const TGeoEltu*) shape;
@@ -103,8 +195,9 @@ namespace {
       }
       else if (cl == TGeoHype::Class()) {
         const TGeoHype* sh = (const TGeoHype*) shape;
-        return { sh->GetRmin(), sh->GetStIn()*units::deg,
-            sh->GetRmax(), sh->GetStOut()*units::deg, sh->GetDz() };
+        return { sh->GetDz(),
+            sh->GetRmin(), sh->GetStIn()*units::deg,
+            sh->GetRmax(), sh->GetStOut()*units::deg };
       }
       else if (cl == TGeoSphere::Class()) {
         const TGeoSphere* sh = (const TGeoSphere*) shape;
@@ -120,12 +213,13 @@ namespace {
       else if (cl == TGeoTrap::Class()) {
         const TGeoTrap* sh = (const TGeoTrap*) shape;
         return { sh->GetDz(), sh->GetTheta()*units::deg, sh->GetPhi()*units::deg,
-            sh->GetH1(), sh->GetBl1(), sh->GetBl2(), sh->GetAlpha1()*units::deg,
-            sh->GetH2(), sh->GetTl1(), sh->GetTl2(), sh->GetAlpha2()*units::deg };
+            sh->GetH1(), sh->GetBl1(), sh->GetTl1(), sh->GetAlpha1()*units::deg,
+            sh->GetH2(), sh->GetBl2(), sh->GetTl2(), sh->GetAlpha2()*units::deg };
       }
       else if (cl == TGeoPgon::Class()) {
         const TGeoPgon* sh = (const TGeoPgon*) shape;
         vector<double> pars { sh->GetPhi1()*units::deg, sh->GetDphi()*units::deg, double(sh->GetNedges()), double(sh->GetNz()) };
+        pars.reserve(4+3*sh->GetNz());
         for (Int_t i = 0; i < sh->GetNz(); ++i) {
           pars.emplace_back(sh->GetZ(i));
           pars.emplace_back(sh->GetRmin(i));
@@ -137,6 +231,7 @@ namespace {
         const TGeoXtru* sh = (const TGeoXtru*) shape;
         Int_t nz = sh->GetNz();
         vector<double> pars { double(nz) };
+        pars.reserve(1+4*nz);
         for(Int_t i=0; i<nz; ++i)   {
           pars.emplace_back(sh->GetZ(i));
           pars.emplace_back(sh->GetXOffset(i));
@@ -147,12 +242,21 @@ namespace {
       }
       else if (cl == TGeoArb8::Class())  {
         TGeoTrap* sh = (TGeoTrap*) shape;
-        const Double_t* vertices = sh->GetVertices();
-        vector<double> pars;
-        for ( size_t i=0; i<8; ++i )  {
-          pars.emplace_back(vertices[i*2]);
-          pars.emplace_back(vertices[i*2]+1);
+        struct _V { double xy[8][2]; } *vtx = (_V*)sh->GetVertices();
+        vector<double> pars { sh->GetDz() };
+        for ( size_t i=0; i<8; ++i )   {
+          pars.emplace_back(vtx->xy[i][0]);
+          pars.emplace_back(vtx->xy[i][1]);
         }
+#if 0
+        const Double_t* vertices = sh->GetVertices();
+        vector<double> pars { sh->GetDz() };
+        pars.reserve(17);
+        for ( size_t i=0; i<8; ++i )
+          pars.emplace_back(vertices[i*2]);
+        for ( size_t i=0; i<8; ++i )
+          pars.emplace_back(vertices[i*2]+1);
+#endif
         return pars;
       }
       else if (cl == TGeoCompositeShape::Class()) {
@@ -189,6 +293,222 @@ namespace {
     }
     except("Solid","Failed to access dimensions [Invalid handle].");
    return {};
+  }
+
+  /// Access Shape dimension parameters (As in TGeo, but angles in radians rather than degrees)
+  std::vector<double> get_shape_dimensions(Solid solid)   {
+    return get_shape_dimensions(solid.ptr());
+  }
+  
+  /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+  void set_shape_dimensions(TGeoShape* shape, const std::vector<double>& params)   {
+    if (shape) {
+      TClass* cl = shape->IsA();
+      Solid solid(shape);
+      if (cl == TGeoShapeAssembly::Class()) {
+        //TGeoShapeAssembly* sh = (TGeoShapeAssembly*) shape;
+        printout(WARNING,"ShapelessSolid","+++ setDimensions is a compatibility call. Nothing implemented.");
+      }
+      else if (cl == TGeoBBox::Class()) {
+        TGeoBBox* sh = (TGeoBBox*) shape;
+        auto pars = params;
+        if ( params.size() != 3 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoHalfSpace::Class()) {
+        TGeoHalfSpace* sh = (TGeoHalfSpace*)shape;
+        auto pars = params;
+        if ( params.size() != 6 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoPcon::Class()) {
+        TGeoPcon* sh = (TGeoPcon*) shape;
+        if ( params.size() < 3 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        size_t nz = size_t(params[2]);
+        if ( params.size() != 3 + 3*nz )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        vector<double> pars = params;
+        pars[0] /= units::deg;
+        pars[1] /= units::deg;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoConeSeg::Class()) {
+        TGeoConeSeg* sh = (TGeoConeSeg*) shape;
+        if ( params.size() != 7 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        auto pars = params;
+        pars[5] /= units::deg;
+        pars[6] /= units::deg;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoCone::Class()) {
+        TGeoCone* sh = (TGeoCone*) shape;
+        auto pars = params;
+        if ( params.size() != 5 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoTube::Class()) {
+        TGeoTube* sh = (TGeoTube*) shape;
+        if ( params.size() != 3 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        auto pars = params;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoTubeSeg::Class()) {
+        TGeoTubeSeg* sh = (TGeoTubeSeg*) shape;
+        if ( params.size() != 5 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        auto pars = params;
+        pars[3] /= units::deg;
+        pars[4] /= units::deg;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoCtub::Class()) {
+        TGeoCtub* sh = (TGeoCtub*) shape;
+        if ( params.size() != 11 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        auto pars = params;
+        pars[3] /= units::deg;
+        pars[4] /= units::deg;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoEltu::Class()) {
+        TGeoEltu* sh = (TGeoEltu*) shape;
+        auto pars = params;
+        if ( params.size() != 3 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoTrd1::Class()) {
+        TGeoTrd1* sh = (TGeoTrd1*) shape;
+        auto pars = params;
+        if ( params.size() != 4 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoTrd2::Class()) {
+        TGeoTrd2* sh = (TGeoTrd2*) shape;
+        auto pars = params;
+        if ( params.size() != 5 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoParaboloid::Class()) {
+        TGeoParaboloid* sh = (TGeoParaboloid*) shape;
+        auto pars = params;
+        if ( params.size() != 3 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoHype::Class()) {
+        TGeoHype* sh = (TGeoHype*) shape;
+        if ( params.size() != 5 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        double pars[] = { params[0], params[1], params[2]/units::deg, params[3], params[4]/units::deg };
+        solid._setDimensions(pars);
+      }
+      else if (cl == TGeoSphere::Class()) {
+        TGeoSphere* sh = (TGeoSphere*) shape;
+        if ( params.size() < 2 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        double pars[] = { params[0], params[1], 0.0, M_PI/units::deg, 0.0, 2*M_PI/units::deg };
+        if (params.size() > 2) pars[2] = params[2]/units::deg;
+        if (params.size() > 3) pars[3] = params[3]/units::deg;
+        if (params.size() > 4) pars[4] = params[4]/units::deg;
+        if (params.size() > 5) pars[5] = params[5]/units::deg;
+        sh->SetDimensions(pars, params.size());
+        sh->ComputeBBox();
+      }
+      else if (cl == TGeoTorus::Class()) {
+        TGeoTorus* sh = (TGeoTorus*) shape;
+        if ( params.size() != 5 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        double pars[] = { params[0], params[1], params[2], params[3]/units::deg, params[4]/units::deg };
+        solid._setDimensions(pars);
+      }
+      else if (cl == TGeoTrap::Class()) {
+        TGeoTrap* sh = (TGeoTrap*) shape;
+        auto pars = params;
+        if ( params.size() != 11 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        pars[1]  /= units::deg;
+        pars[2]  /= units::deg;
+        pars[6]  /= units::deg;
+        pars[10] /= units::deg;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoPgon::Class()) {
+        TGeoPgon* sh = (TGeoPgon*) shape;
+        auto pars = params;
+        if ( params.size() != 3 + 3*size_t(params[2]) )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        pars[0]  /= units::deg;
+        pars[1]  /= units::deg;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoXtru::Class()) {
+        TGeoXtru* sh = (TGeoXtru*) shape;
+        auto pars = params;
+        if ( params.size() != 1 + 4*size_t(params[0]) )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoArb8::Class())  {
+        TGeoTrap* sh = (TGeoTrap*) shape;
+        if ( params.size() != 17 )   {
+          invalidSetDimensionCall(*sh,params);
+        }
+        auto pars = params;
+        solid._setDimensions(&pars[0]);
+      }
+      else if (cl == TGeoCompositeShape::Class()) {
+        //TGeoCompositeShape* sh = (TGeoCompositeShape*) shape;
+        if ( instanceOf<TruncatedTube>(solid) )   {
+        }
+        else if ( instanceOf<PseudoTrap>(solid) )   {
+        }
+        else if ( instanceOf<SubtractionSolid>(solid) )   {
+        }
+        else if ( instanceOf<UnionSolid>(solid) )   {
+        }
+        else if ( instanceOf<IntersectionSolid>(solid) )   {
+        }
+        throw runtime_error("Composite shape. setDimensions is not implemented!");
+      }
+      else  {
+        printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
+                 cl->GetName());
+      }
+      return;
+    }
+    except("Solid","set_shape_dimensions: Failed to set dimensions [Invalid handle].");
+  }
+  /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+  void set_shape_dimensions(Solid solid, const std::vector<double>& params)   {
+    set_shape_dimensions(solid.ptr(), params);
   }
 }
 
@@ -382,81 +702,6 @@ std::string dd4hep::toStringMesh(const TGeoShape* shape, int prec)  {
   delete [] points;
   return os.str();
 }
-namespace dd4hep {
-  static bool check_shape_type(const Handle<TGeoShape>& solid, const TClass* cl)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == cl;
-    }
-    return false;
-  }
-
-  /// Type check of various shapes.
-  template <typename SOLID> bool instanceOf(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == SOLID::Object::Class();
-    }
-    return false;
-  }
-  template bool instanceOf<Box>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<ShapelessSolid>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<HalfSpace>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<ConeSegment>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Tube>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<CutTube>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<EllipticalTube>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Cone>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Trap>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Trd1>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Trd2>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Torus>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Sphere>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Paraboloid>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Hyperboloid>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<PolyhedraRegular>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<Polyhedra>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<ExtrudedPolygon>(const Handle<TGeoShape>& solid);
-  template bool instanceOf<BooleanSolid>(const Handle<TGeoShape>& solid);
-  template <> bool instanceOf<Polycone>(const Handle<TGeoShape>& solid)   {
-    return check_shape_type(solid, TGeoPcon::Class())
-      ||   check_shape_type(solid, TGeoPgon::Class());
-  }
-  template <> bool instanceOf<EightPointSolid>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      TClass* c = solid->IsA();
-      return c==TGeoTrap::Class() || c==TGeoArb8::Class() || c==TGeoGtra::Class();
-    }
-    return false;
-  }
-  template <> bool instanceOf<TruncatedTube>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == TGeoCompositeShape::Class()
-        &&   ::strcmp(solid->GetTitle(), "TruncatedTube") == 0;
-    }
-    return false;
-  }
-  template <> bool instanceOf<PseudoTrap>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == TGeoCompositeShape::Class()
-        &&   ::strcmp(solid->GetTitle(), "PseudoTrap") == 0;
-    }
-    return false;
-  }
-  template <> bool instanceOf<SubtractionSolid>(const Handle<TGeoShape>& solid)   {
-    TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
-    return sh && sh->IsA() == TGeoCompositeShape::Class()
-      &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoSubtraction;
-  }
-  template <> bool instanceOf<UnionSolid>(const Handle<TGeoShape>& solid)   {
-    TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
-    return sh && sh->IsA() == TGeoCompositeShape::Class()
-      &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoUnion;
-  }
-  template <> bool instanceOf<IntersectionSolid>(const Handle<TGeoShape>& solid)   {
-    TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
-    return sh && sh->IsA() == TGeoCompositeShape::Class()
-      &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoIntersection;
-  }
-}
 
 template <typename T> void Solid_type<T>::_setDimensions(double* param)   const {
   this->ptr()->SetDimensions(param);
@@ -501,6 +746,12 @@ template <typename T> vector<double> Solid_type<T>::dimensions()  {
   return move( get_shape_dimensions(this->access()) );
 }
 
+/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+template <typename T> Solid_type<T>& Solid_type<T>::setDimensions(const std::vector<double>& params)  {
+  set_shape_dimensions(this->access(), params);
+  return *this;
+}
+
 /// Divide volume into subsections (See the ROOT manuloa for details)
 template <typename T> TGeoVolume*
 Solid_type<T>::divide(const Volume& voldiv, const std::string& divname,
@@ -519,12 +770,6 @@ ShapelessSolid::ShapelessSolid(const string& nam)  {
   _assign(new TGeoShapeAssembly(), nam, "Assembly", true);
 }
 
-/// Set the assembly dimensions (noop, prints warning)
-ShapelessSolid& ShapelessSolid::setDimensions(const vector<double>& /* params */)  {
-  printout(WARNING,"ShapelessSolid","+++ setDimensions is a compatibility call. Nothing implemented.");
-  return *this;
-}
-
 void Box::make(const std::string& nam, double x_val, double y_val, double z_val)   {
   _assign(new TGeoBBox(nam.c_str(), x_val, y_val, z_val), "", "Box", true);
 }
@@ -533,17 +778,6 @@ void Box::make(const std::string& nam, double x_val, double y_val, double z_val)
 Box& Box::setDimensions(double x_val, double y_val, double z_val)   {
   double params[] = { x_val, y_val, z_val};
   _setDimensions(params);
-  return *this;
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Box& Box::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 3 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -565,17 +799,6 @@ double Box::z() const {
 /// Internal helper method to support object construction
 void HalfSpace::make(const std::string& nam, const double* const point, const double* const normal)   {
   _assign(new TGeoHalfSpace(nam.c_str(),(Double_t*)point, (Double_t*)normal), "", "HalfSpace",true);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-HalfSpace& HalfSpace::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 6 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
 }
 
 /// Constructor to be used when creating a new object
@@ -694,25 +917,6 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
   _setDimensions(&params[0]);
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Polycone& Polycone::setDimensions(const vector<double>& params)   {
-  if ( params.size() < 3 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  size_t nz = size_t(params[2]);
-  if ( params.size() != 3 + 3*nz )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  vector<double> pars;
-  pars.emplace_back(params[0]/units::deg);
-  pars.emplace_back(params[1]/units::deg);
-  pars.emplace_back(params[2]);
-  for (size_t i = 3, n=3+3*nz; i < n; ++i)
-    pars.emplace_back(params[i]);
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, 
                          double rmin1,     double rmax1,
@@ -744,20 +948,6 @@ ConeSegment& ConeSegment::setDimensions(double dz,
   return *this;
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-ConeSegment& ConeSegment::setDimensions(const vector<double>& params)   {
-  if ( params.size() != 7 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  vector<double> pars;
-  for (size_t i = 0; i < 5; ++i)
-    pars.emplace_back(params[i]);
-  pars.emplace_back(params[5]/units::deg);
-  pars.emplace_back(params[6]/units::deg);
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Constructor to be used when creating a new object with attribute initialization
 void Cone::make(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2) {
   _assign(new TGeoCone(nam.c_str(), z, rmin1, rmax1, rmin2, rmax2 ), "", "Cone", true);
@@ -770,17 +960,6 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
   return *this;
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Cone& Cone::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 5 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double endPhi) {
   _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, startPhi/units::deg, endPhi/units::deg),nam,"Tube",true);
@@ -790,16 +969,6 @@ void Tube::make(const string& nam, double rmin, double rmax, double z, double st
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double endPhi) {
   double params[] = {rmin,rmax,z,startPhi/units::deg,endPhi/units::deg};
   _setDimensions(params);
-  return *this;
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Tube& Tube::setDimensions(const vector<double>& params)   {
-  if ( params.size() != 3 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -822,12 +991,6 @@ void CutTube::make(const std::string& nam, double rmin, double rmax, double dz, 
   _assign(new TGeoCtub(nam.c_str(), rmin,rmax,dz,startPhi,endPhi,lx,ly,lz,tx,ty,tz),"","CutTube",true);
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-CutTube& CutTube::setDimensions(const vector<double>& params)   {
-  if ( params.size() ) {}
-  throw runtime_error("CutTube: Special Boolean shape. setDimensions is not implemented!");
-}
-
 /// Constructor to create a truncated tube object with attribute initialization
 TruncatedTube::TruncatedTube(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
                              double cutAtStart, double cutAtDelta, bool cutInside)
@@ -845,11 +1008,11 @@ void TruncatedTube::make(const std::string& nam,
                          double cutAtStart, double cutAtDelta, bool cutInside)   {
   // check the parameters
   if( rmin <= 0 || rmax <= 0 || cutAtStart <= 0 || cutAtDelta <= 0 )
-    except("TruncatedTube","++ 0 <= rIn,cutAtStart,rOut,cutAtDelta,rOut violated!");
+    except(TRUNCATEDTUBE_TAG,"++ 0 <= rIn,cutAtStart,rOut,cutAtDelta,rOut violated!");
   else if( rmin >= rmax )
-    except("TruncatedTube","++ rIn<rOut violated!");
+    except(TRUNCATEDTUBE_TAG,"++ rIn<rOut violated!");
   else if( startPhi != 0. )
-    except("TruncatedTube","++ startPhi != 0 not supported!");
+    except(TRUNCATEDTUBE_TAG,"++ startPhi != 0 not supported!");
 
   double r         = cutAtStart;
   double R         = cutAtDelta;
@@ -883,7 +1046,7 @@ void TruncatedTube::make(const std::string& nam,
   TGeoSubtraction* sub = new TGeoSubtraction(tubs, box, nullptr, new TGeoCombiTrans(trans, rot));
   // For debugging:
   // TGeoUnion* sub = new TGeoUnion(tubs, box, nullptr, new TGeoCombiTrans(trans, rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), sub),"","TruncatedTube",true);
+  _assign(new TGeoCompositeShape(nam.c_str(), sub),"",TRUNCATEDTUBE_TAG,true);
 #if 0
   cout << "Trans:";  trans.Print(); cout << endl;
   cout << "Rot:  ";  rot.Print();   cout << endl;
@@ -910,26 +1073,9 @@ void TruncatedTube::make(const std::string& nam,
 #endif
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-TruncatedTube& TruncatedTube::setDimensions(const vector<double>& params)   {
-  if ( params.size() ) {}
-  throw runtime_error("TruncatedTube: Special Boolean shape. setDimensions is not implemented!");
-}
-
 /// Constructor to be used when creating a new object with attribute initialization
 void EllipticalTube::make(const std::string& nam, double a, double b, double dz) {
   _assign(new TGeoEltu(nam.c_str(), a, b, dz), "", "EllipticalTube", true);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-EllipticalTube& EllipticalTube::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 3 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
@@ -941,17 +1087,6 @@ void Trd1::make(const std::string& nam, double x1, double x2, double y, double z
 Trd1& Trd1::setDimensions(double x1, double x2, double y, double z) {
   double params[] = { x1, x2, y, z  };
   _setDimensions(params);
-  return *this;
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Trd1& Trd1::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 4 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
   return *this;
 }
 
@@ -967,17 +1102,6 @@ Trd2& Trd2::setDimensions(double x1, double x2, double y1, double y2, double z) 
   return *this;
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Trd2& Trd2::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 5 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Constructor to be used when creating a new object with attribute initialization
 void Paraboloid::make(const std::string& nam, double r_low, double r_high, double delta_z) {
   _assign(new TGeoParaboloid(nam.c_str(), r_low, r_high, delta_z ), "", "Paraboloid", true);
@@ -990,17 +1114,6 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
   return *this;
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Paraboloid& Paraboloid::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 3 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Constructor to create a new anonymous object with attribute initialization
 void Hyperboloid::make(const std::string& nam, double rin, double stin, double rout, double stout, double dz) {
   _assign(new TGeoHype(nam.c_str(), rin, stin/units::deg, rout, stout/units::deg, dz), "", "Hyperboloid", true);
@@ -1010,16 +1123,6 @@ void Hyperboloid::make(const std::string& nam, double rin, double stin, double r
 Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, double stout, double dz)  {
   double params[] = { rin, stin/units::deg, rout, stout/units::deg, dz};
   _setDimensions(params);
-  return *this;
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Hyperboloid& Hyperboloid::setDimensions(const vector<double>& params)   {
-  if ( params.size() != 5 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  double pars[] = { params[0], params[1]/units::deg, params[2], params[3]/units::deg, params[4]};
-  _setDimensions(pars);
   return *this;
 }
 
@@ -1037,20 +1140,6 @@ Sphere& Sphere::setDimensions(double rmin, double rmax, double startTheta, doubl
   return *this;
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Sphere& Sphere::setDimensions(const vector<double>& params)   {
-  if ( params.size() < 2 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  double pars[] = { params[0], params[1], 0., M_PI, 0., 2*M_PI};
-  if (params.size() > 2) pars[2] = params[2]/units::deg;
-  if (params.size() > 3) pars[3] = params[3]/units::deg;
-  if (params.size() > 4) pars[4] = params[4]/units::deg;
-  if (params.size() > 5) pars[5] = params[5]/units::deg;
-  _setDimensions(pars);
-  return *this;
-}
-
 /// Constructor to be used when creating a new object with attribute initialization
 void Torus::make(const std::string& nam, double r, double rmin, double rmax, double startPhi, double deltaPhi) {
   _assign(new TGeoTorus(nam.c_str(), r, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg), "", "Torus", true);
@@ -1060,17 +1149,6 @@ void Torus::make(const std::string& nam, double r, double rmin, double rmax, dou
 Torus& Torus::setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi) {
   double params[] = { r, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg };
   _setDimensions(params);
-  return *this;
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Torus& Torus::setDimensions(const vector<double>& params)   {
-  // No angles in this shape. Just pass on the parameters
-  if ( params.size() != 5 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  double pars[] = { params[0], params[1], params[2], params[3]/units::deg, params[4]/units::deg };
-  _setDimensions(pars);
   return *this;
 }
 
@@ -1118,20 +1196,6 @@ Trap& Trap::setDimensions(double z, double theta, double phi,
   return *this;
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Trap& Trap::setDimensions(const vector<double>& params)   {
-  auto pars = params;
-  if ( params.size() != 10 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  pars[1]  /= units::deg;
-  pars[2]  /= units::deg;
-  pars[6]  /= units::deg;
-  pars[10] /= units::deg;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Internal helper method to support object construction
 void PseudoTrap::make(const std::string& nam, double x1, double x2, double y1, double y2, double z, double r, bool atMinusZ)    {
   double x            = atMinusZ ? x1 : x2;
@@ -1175,7 +1239,7 @@ void PseudoTrap::make(const std::string& nam, double x1, double x2, double y1, d
     }    
   }
   else  {
-    except("PseudoTrap","Check parameters of the PseudoTrap!");   
+    except(PSEUDOTRAP_TAG,"Check parameters of the PseudoTrap!");   
   }
 #endif
 
@@ -1208,7 +1272,7 @@ void PseudoTrap::make(const std::string& nam, double x1, double x2, double y1, d
     }    
   }
   else  {
-    except("PseudoTrap","Check parameters of the PseudoTrap!");   
+    except(PSEUDOTRAP_TAG,"Check parameters of the PseudoTrap!");   
   }
 
   Solid trap(new TGeoTrd2((nam+"Trd2").c_str(), x1, x2, y1, y2, halfZ));
@@ -1221,13 +1285,7 @@ void PseudoTrap::make(const std::string& nam, double x1, double x2, double y1, d
     SubtractionSolid sub((nam+"Subs").c_str(), tubs, Box(1.1*x, 1.1*h, std::sqrt(r*r-x*x)), Transform3D(RotationX(M_PI/2.)));
     solid = UnionSolid(nam, trap, sub, Transform3D(RotationX(M_PI/2.), Position(0,0,displacement))).ptr();
   }
-  _assign(solid,"","PseudoTrap", true);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-PseudoTrap& PseudoTrap::setDimensions(const vector<double>& params)   {
-  if ( params.size() ) {}
-  throw runtime_error("PseudoTrap: Special Boolean shape. setDimensions is not implemented!");
+  _assign(solid,"",PSEUDOTRAP_TAG, true);
 }
 
 /// Helper function to create poly hedron
@@ -1240,18 +1298,6 @@ void PolyhedraRegular::make(const std::string& nam, int nsides, double rmin, dou
   double params[] = { start/units::deg, delta/units::deg, double(nsides), 2e0, zpos, rmin, rmax, zneg, rmin, rmax };
   _assign(new TGeoPgon(params), nam, "Polyhedra", false);
   //_setDimensions(&params[0]);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-PolyhedraRegular& PolyhedraRegular::setDimensions(const vector<double>& params)   {
-  auto pars = params;
-  if ( params.size() != 3 + 3*size_t(params[2]) )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  pars[0]  /= units::deg;
-  pars[1]  /= units::deg;
-  _setDimensions(&pars[0]);
-  return *this;
 }
 
 /// Helper function to create poly hedron
@@ -1277,18 +1323,6 @@ void Polyhedra::make(const std::string& nam, int nsides, double start, double de
   _assign(new TGeoPgon(&temp[0]), nam, "Polyhedra", false);
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-Polyhedra& Polyhedra::setDimensions(const vector<double>& params)   {
-  auto pars = params;
-  if ( params.size() != 3 + 3*size_t(params[2]) )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  pars[0]  /= units::deg;
-  pars[1]  /= units::deg;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Helper function to create the polyhedron
 void ExtrudedPolygon::make(const std::string& nam,
                            const vector<double>& pt_x,
@@ -1306,224 +1340,189 @@ void ExtrudedPolygon::make(const std::string& nam,
     solid->DefineSection(i, sec_z[i], sec_x[i], sec_y[i], sec_scale[i]);
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-ExtrudedPolygon& ExtrudedPolygon::setDimensions(const vector<double>& params)   {
-  if ( params.size() != 1 + 4*size_t(params[0]) )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Creator method
 void EightPointSolid::make(const std::string& nam, double dz, const double* vtx)   {
   _assign(new TGeoArb8(nam.c_str(), dz, (double*)vtx), "", "EightPointSolid", true);
 }
 
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-EightPointSolid& EightPointSolid::setDimensions(const vector<double>& params)   {
-  if ( params.size() != 17 )   {
-    invalidSetDimensionCall(*this,params);
-  }
-  auto pars = params;
-  _setDimensions(&pars[0]);
-  return *this;
-}
-
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
-  _assign(new TGeoCompositeShape("", sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape("", sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
-  _assign(new TGeoCompositeShape("", sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape("", sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
-  _assign(new TGeoCompositeShape("", sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape("", sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
-  _assign(new TGeoCompositeShape("", sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape("", sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
-  _assign(new TGeoCompositeShape("", sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape("", sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
-  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 SubtractionSolid::SubtractionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
-  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
-  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", "Subtraction", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", "subtraction", true);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-SubtractionSolid& SubtractionSolid::setDimensions(const vector<double>& )   {
-  throw runtime_error("SubtractionSolid: Boolean shape. setDimensions is not implemented!");
+  _assign(new TGeoCompositeShape(nam.c_str(), sub), "", SUBTRACTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
-  _assign(new TGeoCompositeShape("", uni), "", "Union", true);
+  _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
-  _assign(new TGeoCompositeShape("", uni), "", "Union", true);
+  _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
-  _assign(new TGeoCompositeShape("", uni), "", "Union", true);
+  _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
   TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
-  _assign(new TGeoCompositeShape("", uni), "", "Union", true);
+  _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
-  _assign(new TGeoCompositeShape("", uni), "", "Union", true);
+  _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
-  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", "Union", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
-  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", "Union", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Rotation is identity rotation
 UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
-  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", "Union", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
   TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", "Union", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoUnion *uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", "Union", true);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-UnionSolid& UnionSolid::setDimensions(const vector<double>& )   {
-  throw runtime_error("UnionSolid: Boolean shape. setDimensions is not implemented!");
+  _assign(new TGeoCompositeShape(nam.c_str(), uni), "", UNION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
-  _assign(new TGeoCompositeShape("", inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape("", inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
-  _assign(new TGeoCompositeShape("", inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape("", inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity.
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
-  _assign(new TGeoCompositeShape("", inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape("", inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
-  _assign(new TGeoCompositeShape("", inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape("", inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
-  _assign(new TGeoCompositeShape("", inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape("", inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
 IntersectionSolid::IntersectionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());
-  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 IntersectionSolid::IntersectionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Transform3D& trans) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_transform(trans));
-  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity.
 IntersectionSolid::IntersectionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
-  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const RotationZYX& rot) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotationZYX(rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", "Intersection", true);
+  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", INTERSECTION_TAG, true);
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const std::string& nam, const Solid& shape1, const Solid& shape2, const Rotation3D& rot) {
   TGeoIntersection* inter = new TGeoIntersection(shape1, shape2, detail::matrix::_identity(), detail::matrix::_rotation3D(rot));
-  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", "Intersection", true);
-}
-
-/// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
-IntersectionSolid& IntersectionSolid::setDimensions(const vector<double>& )   {
-  throw runtime_error("IntersectionSolid: Boolean shape. setDimensions is not implemented!");
+  _assign(new TGeoCompositeShape(nam.c_str(), inter), "", INTERSECTION_TAG, true);
 }
 
 

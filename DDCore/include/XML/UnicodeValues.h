@@ -118,6 +118,7 @@ UNICODE (dipole_coeff);
 UNICODE (disk);
 UNICODE (disks);
 UNICODE (display);
+UNICODE (division);
 UNICODE (dr);
 UNICODE (drawing_style);
 UNICODE (drawingStyle);
