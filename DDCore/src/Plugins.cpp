@@ -157,7 +157,7 @@ void PluginService::print_bad_cast(const std::string& id,
     str << "Factory requested: " << id << " (" << typeid(signature).name() << ") :" << msg;
     printout(ERROR,"PluginService","%s", str.str().c_str());
     str.str("");
-    if ( !stub.has_value() )  {
+    if ( !any_has_value(stub) )  {
       str << "Stub is invalid!";
       printout(ERROR,"PluginService","%s", str.str().c_str());
     }
