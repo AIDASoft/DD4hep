@@ -35,6 +35,7 @@ namespace dd4hep  {
     class arg;
   }
 
+
   // Converters re-used from compact:
   template <> void Converter<Readout>::operator()(xml_h element) const;
   template <> void Converter<LimitSet>::operator()(xml_h element) const;
@@ -44,7 +45,7 @@ namespace dd4hep  {
   template <> void Converter<include_file>::operator()(xml_h element) const;
   template <> void Converter<plugins>::operator()(xml_h element)  const;
   template <> void Converter<plugin>::operator()(xml_h element)  const;
-  template <> void Converter<arg>::operator()(xml_h element)  const;
+  template <> void Converter<dd4hep::arg>::operator()(xml_h element)  const;
 }
 using namespace std;
 using namespace dd4hep;
@@ -56,7 +57,7 @@ using namespace dd4hep::detail;
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<arg>::operator()(xml_h e)  const  {
+template <> void Converter<dd4hep::arg>::operator()(xml_h e)  const  {
   xml_comp_t c(e);
   string val = c.valueStr();
   vector<string>* args = (vector<string>*)param;
@@ -76,7 +77,7 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
   vector<const char*> cargs;
   //args.emplace_back("plugin:"+nam);
 
-  xml_coll_t(e,"arg").for_each(Converter<arg>(description,&args));
+  xml_coll_t(e,"arg").for_each(Converter<dd4hep::arg>(description,&args));
   for(vector<string>::const_iterator i=args.begin(); i!=args.end();++i)
     cargs.emplace_back((*i).c_str());
   printout(INFO,"ConverterPlugin","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
