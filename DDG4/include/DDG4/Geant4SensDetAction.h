@@ -126,7 +126,7 @@ namespace dd4hep {
       int  m_hitCreationMode = 0;
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
-      Detector*            m_detDesc;
+      Detector*            m_detDesc {0};
 #else
       /// Reference to the detector description object
       Detector&            m_detDesc;

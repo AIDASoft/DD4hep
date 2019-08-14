@@ -59,7 +59,12 @@ namespace dd4hep {
   /// Output mesh vertices to string
   std::string toStringMesh(const TGeoShape* shape, int precision=2);
   
+  /// Access Shape dimension parameters (As in TGeo, but angles in radians rather than degrees)
+  std::vector<double> get_shape_dimensions(TGeoShape* shape);
   
+  /// Set the shape dimensions (As for the TGeo shape, but angles in rad rather than degrees)
+  void set_shape_dimensions(TGeoShape* shape, const std::vector<double>& params);
+
   ///  Base class for Solid (shape) objects
   /**
    *   Generic handle holding an object of base TGeoShape.
@@ -84,8 +89,10 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   template <typename T> class Solid_type: public Handle<T> {
+    friend void set_shape_dimensions(TGeoShape* shape, const std::vector<double>& params);
+
   protected:
-    void _setDimensions(double* param);
+    void _setDimensions(double* param)   const;
     /// Assign pointrs and register solid to geometry
     void _assign(T* n, const std::string& nam, const std::string& tit, bool cbbox);
 
@@ -129,6 +136,8 @@ namespace dd4hep {
     }
     /// Access the dimensions of the shape: inverse of the setDimensions member function
     std::vector<double> dimensions();
+    /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+    Solid_type& setDimensions(const std::vector<double>& params);
     /// Conversion to string for pretty print
     std::string toString(int precision=2) const   {
       return toStringSolid(this->m_element,precision);
@@ -268,7 +277,7 @@ namespace dd4hep {
     HalfSpace& operator=(HalfSpace&& copy) = default;
     /// Copy Assignment operator
     HalfSpace& operator=(const HalfSpace& copy) = default;
-  };
+ };
 
   /// Class describing a Polycone shape
   /**

@@ -309,11 +309,11 @@ void HepMC::fix_particles(EventStream& info)  {
       for(id=v->out.begin(); id!=v->out.end();++id)    {
         EventStream::Particles::iterator ipp = parts.find(*id);
         Geant4Particle* dau = ipp != parts.end() ? (*ipp).second : 0;
-        if ( !dau )    {
+        if ( !dau )
           cout << "ERROR: Invalid daughter particle: " << *id << endl;
-        }
+        else
+          dau->parents.insert(p->id);
         p->daughters.insert(*id);
-        dau->parents.insert(p->id);
       }
     }
   }
@@ -486,6 +486,10 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
   }
   input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
         >> num_orphans_in >> num_particles_out >> weights_size;
+  if( !input ) {
+    delete v;
+    return 0;
+  }
 #if defined(DD4HEP_DEBUG_HEP_MC_VERTEX)
   if ( id == DD4HEP_DEBUG_HEP_MC_VERTEX )   {
     printout(ALWAYS,"HepMC","++ Created Vertex ID=%d",id);

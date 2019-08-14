@@ -611,17 +611,21 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
 // first argument is the type from the xml file
 DECLARE_DETELEMENT(DD4hep_TestShape_Creator,create_shape)
 
-void* shape_mesh_verifier(Detector& /* description */, int argc, char** argv)    {
+void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   if ( argc != 2 )   {  }
   xml_det_t    x_det  = *(xml_h*)argv[0];
   PlacedVolume pv     = *(PlacedVolume*)argv[1];
   xml_comp_t   x_test = x_det.child(xml_tag_t("test"));
   int          ref_cr = x_test.hasAttr(_U(create)) ? x_test.attr<int>(_U(create)) : 0;
+  int          nseg   = x_test.hasAttr(_U(segmentation)) ? x_test.attr<int>(_U(segmentation)) : -1;
   TString      ref    = x_test.refStr().c_str();
   string       ref_str;  
   stringstream os;
 
-  Volume      v = pv.volume();
+  if ( nseg > 0 )   {
+    description.manager().SetNsegments(nseg);
+  }
+  Volume v = pv.volume();
   for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
     PlacedVolume place = v->GetNode(ipv);
     os << "ShapeCheck[" << ipv << "] ";
@@ -651,6 +655,38 @@ void* shape_mesh_verifier(Detector& /* description */, int argc, char** argv)   
       printout(ERROR,"Mesh_Verifier","+++ Output and reference differ! Please check.");
       return Constant("FAILURE",os.str().c_str()).ptr();
     }
+    printout(INFO,"Mesh_Verifier","+++ Successfully checked CREATED shapes.");
+    os.str("");
+    for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
+      PlacedVolume place = v->GetNode(ipv);
+      Solid solid = place.volume().solid();
+      if ( instanceOf<TruncatedTube>(solid) )   {
+        auto params = solid.dimensions();
+        solid.setDimensions(params);
+      }
+      else if ( instanceOf<PseudoTrap>(solid) )   {
+        auto params = solid.dimensions();
+        solid.setDimensions(params);
+      }
+      else if ( solid->IsA() != TGeoCompositeShape::Class() )   {
+        auto params = solid.dimensions();
+        solid.setDimensions(params);
+      }
+      else   {
+        printout(INFO,"Mesh_Verifier","+++ Skip re-dimensioning of %s [%s].",
+                 solid->IsA()->GetName(), solid->GetTitle());
+      }
+    }
+    for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
+      PlacedVolume place = v->GetNode(ipv);
+      os << "ShapeCheck[" << ipv << "] ";
+      os << toStringMesh(place, 2);
+    }
+    if ( ref_str != os.str() )  {
+      printout(ERROR,"Mesh_Verifier","+++ Output and reference differ after re-dimension! Please check.");
+      return Constant("FAILURE",os.str().c_str()).ptr();
+    }
+    printout(INFO,"Mesh_Verifier","+++ Successfully checked REDIMENSIONED shapes.");
   }
   return Constant("SUCCESS",os.str().c_str()).ptr();
 }
