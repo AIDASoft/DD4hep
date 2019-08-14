@@ -134,11 +134,12 @@ void Geant4GDMLWriteAction::writeGDML()   {
     error("+++ No GDML file name given. Please set the output file (property Output)");
     return;
   }
-  if ( 0 == ::stat(fname.c_str(), &buff) && !m_overWrite )  {
-    error("+++ GDML file elready exists. Please set another output file (property Output)");
-    return;
-  }
-  if ( 0 == ::stat(fname.c_str(), &buff) && m_overWrite )  {
+  if ( 0 == ::stat(fname.c_str(), &buff) )   {
+    if ( !m_overWrite )  {
+      error("+++ GDML file %s elready exists. Please set another output file (property Output)",
+            fname.c_str());
+      return;
+    }
     warning("+++ GDML file %s already exists. Overwriting existing file.", fname.c_str());
     ::unlink(fname.c_str());
   }
