@@ -660,7 +660,15 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
     for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
       PlacedVolume place = v->GetNode(ipv);
       Solid solid = place.volume().solid();
-      if ( solid->IsA() != TGeoCompositeShape::Class() )   {
+      if ( instanceOf<TruncatedTube>(solid) )   {
+        auto params = solid.dimensions();
+        solid.setDimensions(params);
+      }
+      else if ( instanceOf<PseudoTrap>(solid) )   {
+        auto params = solid.dimensions();
+        solid.setDimensions(params);
+      }
+      else if ( solid->IsA() != TGeoCompositeShape::Class() )   {
         auto params = solid.dimensions();
         solid.setDimensions(params);
       }
