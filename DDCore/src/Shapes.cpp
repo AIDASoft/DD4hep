@@ -344,8 +344,10 @@ namespace dd4hep {
           stringstream params(right_matrix->GetTitle());
           vector<double> pars;
           pars.reserve(7);
+#ifdef DIMENSION_DEBUG
           cout << "dimensions: [" << PSEUDOTRAP_TAG << "]" << endl
                << right_matrix->GetTitle() << endl;
+#endif
           for(size_t i=0; i<7; ++i)   {
             double val;
             params >> val;
@@ -599,9 +601,10 @@ namespace dd4hep {
           double cutAtStart = params[5];
           double cutAtDelta = params[6];
           bool   cutInside  = params[7] > 0.5;
-
+#ifdef DIMENSION_DEBUG
           cout << "setDimensions: [" << TRUNCATEDTUBE_TAG << "]" << endl
                << right_matrix->GetTitle() << endl;
+#endif
           // check the parameters
           if( rmin <= 0 || rmax <= 0 || cutAtStart <= 0 || cutAtDelta <= 0 )
             except(TRUNCATEDTUBE_TAG,"++ 0 <= rIn,cutAtStart,rOut,cutAtDelta,rOut violated!");
@@ -662,9 +665,10 @@ namespace dd4hep {
           /// calculate the displacement of the tubs w.r.t. to the trap, determine the opening angle of the tubs
           double delta        = std::sqrt( r * r - x * x );
 
+#ifdef DIMENSION_DEBUG
           cout << "setDimensions: [" << PSEUDOTRAP_TAG << "]" << endl
                << right_matrix->GetTitle() << endl;
-
+#endif
           // Implementation from :
           // https://cmssdt.cern.ch/lxr/source/Fireworks/Geometry/src/TGeoMgrFromDdd.cc#0538
           if( r < 0 && std::abs(r) >= x )  {
@@ -720,13 +724,16 @@ namespace dd4hep {
           right_matrix->SetTitle(params.str().c_str());
           return;
         }
+        // In general TGeoCompositeShape instances have an empty SetDimension call
         else if ( instanceOf<SubtractionSolid>(solid) )   {
         }
         else if ( instanceOf<UnionSolid>(solid) )   {
         }
         else if ( instanceOf<IntersectionSolid>(solid) )   {
         }
+#ifdef DIMENSION_DEBUG
         throw runtime_error("Composite shape. setDimensions is not implemented!");
+#endif
       }
       else  {
         printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
