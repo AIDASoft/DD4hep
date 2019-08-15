@@ -60,7 +60,7 @@ dd4hep_enable_tests (
   DDG4_MySensDet
   DDCodex
   )
-if ( "${ROOT_VERSION}" VERSION_GREATER_EQUAL "6.20.00" )
+if ( "${ROOT_VERSION}" VERSION_GREATER_EQUAL "6.18.00" )
   dd4hep_enable_tests (
     OpticalSurfaces
     )
