@@ -1,6 +1,6 @@
 message(STATUS " *** Gaudi listcomponents: Generate map for ${libname} ..." )
   #
-  #  Running listcomponents from Gaudi
+  #  Running listcomponents from DD4hep
   #   
   FIND_PROGRAM( Gaudi_listcomponents_CMD listcomponents PATHS ${genmap_install_dir}/../bin ${DD4hep_DIR}/bin
     NO_DEFAULT_PATH NO_CMAKE_PATH)
@@ -9,7 +9,7 @@ message(STATUS " *** Gaudi listcomponents: Generate map for ${libname} ..." )
                  WORKING_DIRECTORY ${genmap_install_dir} "
     ) 
   if(APPLE)
-    SET ( ENV{DYLD_LIBRARY_PATH} ${genmap_install_dir}:${LD_PATH}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
+    SET ( ENV{DYLD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
     ##EXECUTE_PROCESS( COMMAND echo DYLD_LIBRARY_PATH = $ENV{DYLD_LIBRARY_PATH} )
   else()
     SET ( ENV{LD_LIBRARY_PATH} ${genmap_install_dir}:$ENV{LD_LIBRARY_PATH} )

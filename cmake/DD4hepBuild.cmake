@@ -1297,6 +1297,36 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
 ENDMACRO()
 
 #
+# Do some processing of the imported Boost Targets
+# Some libraries are only needed for cxx std 14
+# we also have to make sure the boost library location is known in that case
+#
+#
+
+MACRO(DD4HEP_SETUP_BOOST_TARGETS)
+
+  SET_TARGET_PROPERTIES(Boost::boost
+  PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
+  )
+
+IF(${CMAKE_CXX_STANDARD} EQUAL 14)
+  find_package(Boost 1.49 REQUIRED COMPONENTS filesystem system)
+  SET(FS_LIBRARIES Boost::filesystem Boost::system)
+SET_TARGET_PROPERTIES(Boost::filesystem
+  PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS USE_BOOST_FILESYSTEM
+  )
+  GET_TARGET_PROPERTY(BOOST_FILESYSTEM_LOC Boost::filesystem IMPORTED_LOCATION)
+  GET_FILENAME_COMPONENT(BOOST_DIR ${BOOST_FILESYSTEM_LOC} DIRECTORY)
+ELSE()
+  SET(FS_LIBRARIES stdc++fs)
+ENDIF()
+
+
+ENDMACRO()
+
+#
 # Do some processing of the imported Geant4 Targets, CLHEP treatment etc.
 # Will only be done once, repeated calls should have no effect
 #
