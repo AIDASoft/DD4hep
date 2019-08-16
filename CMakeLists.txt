@@ -97,18 +97,17 @@ find_package (ROOT 6.08 REQUIRED)
 DD4HEP_SETUP_ROOT_TARGETS()
 
 # Configure BOOST
-find_package(Boost 1.49 REQUIRED COMPONENTS filesystem system)
-SET_TARGET_PROPERTIES(Boost::boost
-  PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
-  )
-GET_TARGET_PROPERTY(BOOST_FILESYSTEM_LOC Boost::filesystem IMPORTED_LOCATION)
-GET_FILENAME_COMPONENT(BOOST_DIR ${BOOST_FILESYSTEM_LOC} DIRECTORY)
+find_package(Boost 1.49 REQUIRED)
+DD4HEP_SETUP_BOOST_TARGETS()
 
 # Configure Geant4
 if(DD4HEP_USE_GEANT4)
   find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all )
   DD4HEP_SETUP_GEANT4_TARGETS()
+  # Geant4 sets the CLHEP include directory to include_directories, we undo this here
+  # we don't do this inside DD4hep_SETUP_GEANT4_TARGETS, because that is also used in
+  # DD4hepConfig by users of DD4hep
+  SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "")
 endif()
 
 if(DD4HEP_USE_LCIO)
