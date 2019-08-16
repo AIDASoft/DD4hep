@@ -1310,17 +1310,33 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
 
-IF(${CMAKE_CXX_STANDARD} EQUAL 14)
-  find_package(Boost 1.49 REQUIRED COMPONENTS filesystem system)
-  SET(FS_LIBRARIES Boost::filesystem Boost::system)
-SET_TARGET_PROPERTIES(Boost::filesystem
-  PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS USE_BOOST_FILESYSTEM
-  )
+  # Try to compile with filesystem header linking against different FS libraries
+  SET(HAVE_FILESYSTEM False)
+  FOREACH(FS_LIB_NAME stdc++fs c++fs )
+    try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${CMAKE_SOURCE_DIR}/cmake/TryFileSystem.cpp
+      CXX_STANDARD ${CMAKE_CXX_STANDARD}
+      CXX_EXTENSIONS False
+      OUTPUT_VARIABLE HAVE_FS_OUTPUT
+      LINK_LIBRARIES ${FS_LIB_NAME}
+      )
+    dd4hep_print("|++> ${HAVE_FS_OUTPUT}")
+    IF(HAVE_FILESYSTEM)
+      MESSAGE(STATUS "Compiler supports filesystem, linking against ${FS_LIB_NAME}")
+      SET(FS_LIBRARIES ${FS_LIB_NAME})
+      BREAK()
+    ENDIF()
+  ENDFOREACH()
+
+  IF(NOT HAVE_FILESYSTEM)
+    MESSAGE(STATUS "Compiler does not have filesystem support, falling  back to Boost::filesystem")
+    FIND_PACKAGE(Boost 1.49 REQUIRED COMPONENTS filesystem system)
+    SET(FS_LIBRARIES Boost::filesystem Boost::system)
+    SET_TARGET_PROPERTIES(Boost::filesystem
+      PROPERTIES
+      INTERFACE_COMPILE_DEFINITIONS USE_BOOST_FILESYSTEM
+    )
   GET_TARGET_PROPERTY(BOOST_FILESYSTEM_LOC Boost::filesystem IMPORTED_LOCATION)
   GET_FILENAME_COMPONENT(BOOST_DIR ${BOOST_FILESYSTEM_LOC} DIRECTORY)
-ELSE()
-  SET(FS_LIBRARIES stdc++fs)
 ENDIF()
 
 
