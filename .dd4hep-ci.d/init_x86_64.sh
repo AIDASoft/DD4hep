@@ -28,11 +28,13 @@ fi
 if [ -z ${COMPILER_TYPE} ]; then
     COMPILER_TYPE="gcc"
 fi
-if [ ${COMPILER_TYPE} == "gcc" ]; then
-    COMPILER_VERSION="gcc8"
-fi
-if [[ ${COMPILER_TYPE} == "clang" ]]; then
-    COMPILER_VERSION="clang8"
+if [ -z ${COMPILER_VERSION} ]; then
+    if [ ${COMPILER_TYPE} == "gcc" ]; then
+        COMPILER_VERSION="gcc8"
+    fi
+    if [[ ${COMPILER_TYPE} == "clang" ]]; then
+        COMPILER_VERSION="clang8"
+    fi
 fi
 
 
