@@ -10,17 +10,14 @@
 #
 #=================================================================================
 
+dd4hep_print(STATUS "|++> Will build DDParsers")
+
 file(GLOB DDParsers_SOURCES src/Parsers/*.cpp src/Evaluator/*.cpp)
-if(Boost_FOUND)
-  file(GLOB DDParsers_SPIRIT_SOURCES src/Spirit/*.cpp)
-  set(BOOST_LIB Boost::boost)
-endif()
+file(GLOB DDParsers_SPIRIT_SOURCES src/Spirit/*.cpp)
 
 add_library(DDParsers SHARED ${DDParsers_SOURCES} ${DDParsers_SPIRIT_SOURCES})
 
-target_compile_definitions(DDParsers INTERFACE
-  $<$<BOOL:Boost_FOUND>:BOOST_SPIRIT_USE_PHOENIX_V3>
-  )
+target_compile_definitions(DDParsers INTERFACE BOOST_SPIRIT_USE_PHOENIX_V3)
 
 target_include_directories(DDParsers
   PUBLIC
@@ -28,11 +25,7 @@ target_include_directories(DDParsers
   $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(DDParsers PUBLIC
-  ROOT::Core
-  ${BOOST_LIB}
-  ${XML_LIBRARIES}
-  )
+target_link_libraries(DDParsers PUBLIC ROOT::Core Boost::boost ${XML_LIBRARIES})
 
 set_target_properties(DDParsers PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 install(TARGETS DDParsers EXPORT DD4hep LIBRARY DESTINATION lib)
