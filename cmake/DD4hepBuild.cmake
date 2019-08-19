@@ -1147,7 +1147,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_add_dictionary dictionary )
   cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;USES;DEFINITIONS;INCLUDES;OUTPUT" ${ARGN} )
-  dd4hep_print ( "|++> Building dictionary ... ${dictionary}" ) 
+  dd4hep_print ( "|++++> Building dictionary ... ${dictionary}" )
 
   file(GLOB headers ${ARG_SOURCES})
   file(GLOB excl_headers ${ARG_EXCLUDE})
@@ -1315,7 +1315,7 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
   dd4hep_debug("|++> Checking if compiler supports filesystem library")
   FOREACH(FS_LIB_NAME stdc++fs c++fs )
     dd4hep_debug("|++++> linking against ${FS_LIB_NAME}")
-    try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${CMAKE_SOURCE_DIR}/cmake/TryFileSystem.cpp
+    try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${CMAKE_CURRENT_LIST_DIR}/cmake/TryFileSystem.cpp
       CXX_STANDARD ${CMAKE_CXX_STANDARD}
       CXX_EXTENSIONS False
       OUTPUT_VARIABLE HAVE_FS_OUTPUT

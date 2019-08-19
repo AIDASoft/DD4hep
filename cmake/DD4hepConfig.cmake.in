@@ -32,7 +32,7 @@ set ( DD4hep_BUILD_CXX_STANDARD @CMAKE_CXX_STANDARD@ )
 
 # figure out if including build has compatible standard set
 if (NOT "${CMAKE_CXX_STANDARD}" EQUAL "${DD4hep_BUILD_CXX_STANDARD}")
-  message( SEND_ERROR "CMAKE_CXX_STANDARD is set to C++${CMAKE_CXX_STANDARD} but C++${DD4hep_BUILD_CXX_STANDARD} is required for DD4hep.")
+  message( FATAL_ERROR "CMAKE_CXX_STANDARD is set to C++${CMAKE_CXX_STANDARD} but C++${DD4hep_BUILD_CXX_STANDARD} is required for DD4hep.")
 endif()
 
 # set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
@@ -54,11 +54,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 
-FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system)
-SET_TARGET_PROPERTIES(Boost::boost
-  PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
-  )
+FIND_PACKAGE(Boost REQUIRED)
+DD4HEP_SETUP_BOOST_TARGETS()
 
 if(DD4HEP_USE_GEANT4)
   find_package(Geant4 10.2.2 REQUIRED gdml ui_all vis_all)
