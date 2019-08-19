@@ -13,7 +13,7 @@ ctest --output-on-failure -j4 && \
 cd ../examples/ && \
 mkdir build && \
 cd build && \
-cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON .. && \
+cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=${STANDARD} .. && \
 ninja && \
 ninja install && \
 ctest --output-on-failure -j2
