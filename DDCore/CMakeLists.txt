@@ -11,6 +11,7 @@
 #=================================================================================
 #---Generate ROOT dictionary------------------------------------------------------
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCore)
+dd4hep_print("|++> Will be Building DDCore")
 
 dd4hep_add_dictionary( G__DD4hep
   SOURCES include/ROOT/Warnings.h
@@ -52,7 +53,8 @@ dd4hep_add_dictionary( G__DD4hepSegmentations
   )
 
 file(GLOB DDCore_SOURCES src/*.cpp src/segmentations/*.cpp src/XML/*.cpp)
-if(Boost_FOUND)
+if(TARGET Boost::boost)
+  dd4hep_print("|++> Boost available, building Json Parsers")
   file(GLOB DDCore_BOOST_SOURCES src/JSON/*.cpp)
 endif()
 
@@ -89,6 +91,7 @@ dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp USES DDCore)
 
 # This plugins depends on the ROOT GDML readers. Hence, extra library
 IF(TARGET ROOT::Gdml)
+  dd4hep_print("|++> Found Root::GDML: Creating DDGDMLPlugins")
   dd4hep_add_plugin(DDGDMLPlugins
     SOURCES src/gdml/*.cpp
     USES DDCore ROOT::Core ROOT::Gdml
