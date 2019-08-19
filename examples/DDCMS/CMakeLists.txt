@@ -48,7 +48,7 @@ endif()
 #
 #---DDCMS plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDCMS SOURCES src/*.cpp src/plugins/*.cpp
-  USES DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector
+  USES DD4hep::DDParsers DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector
   )
 install(TARGETS DDCMS LIBRARY DESTINATION lib)
 target_include_directories(DDCMS PUBLIC include)

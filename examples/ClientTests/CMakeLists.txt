@@ -14,15 +14,17 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #--------------------------------------------------------------------------
 dd4hep_configure_output()
 
+link_libraries(
+  DD4hep::DDCore
+  DD4hep::DDCond
+  DD4hep::DDAlign
+  ROOT::Core ROOT::Geom ROOT::GenVector
+  )
+
 if(TARGET XercesC::XercesC)
   link_libraries(XercesC::XercesC)
 endif()
 
-link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector
-  DD4hep::DDCore
-  DD4hep::DDCond
-  DD4hep::DDAlign
-  )
 include_directories(./include)
 #--------------------------------------------------------------------------
 if(TARGET Boost::boost)

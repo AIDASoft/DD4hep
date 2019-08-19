@@ -16,8 +16,8 @@ if(NOT TARGET Geant4::Interface)
   return()
 endif()
 
-link_libraries(Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
-  DD4hep::DDCore DD4hep::DDG4)
+link_libraries(DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
+
 
 #-----------------------------------------------------------------------------------
 set(DDG4_MySensDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/DDG4_MySensDet)
@@ -39,7 +39,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_plugin( DDG4_MySensDet
     GENERATED G__DDG4_MySensDet.cxx
     SOURCES   src/*.cpp
-    USES      Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO DD4hep::DDCore DD4hep::DDG4
+    USES      DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
     )
   install(TARGETS DDG4_MySensDet DESTINATION lib)
   
