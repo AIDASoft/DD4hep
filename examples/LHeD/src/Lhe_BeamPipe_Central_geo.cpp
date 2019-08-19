@@ -106,7 +106,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   DetElement sdet (name,x_det.id());
   Material   mat  (description.material(x_det.materialStr()));
   //  vector<double> rmin,rmax,z,thickness;
-  double rmin, rmax, thickness, z;
+  double rmin, rmax, thickness, z=0.0;
   //  PlacedVolume pv;
 
   // multiplication factor for ellipse major radius

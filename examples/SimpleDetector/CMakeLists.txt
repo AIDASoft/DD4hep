@@ -12,11 +12,11 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
+link_libraries(DD4hep::DDCore DD4hep::DDRec ROOT::Core ROOT::Geom ROOT::GenVector)
+
 if(TARGET XercesC::XercesC)
   link_libraries(XercesC::XercesC)
 endif()
-
-link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDCore DD4hep::DDRec)
 
 dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
 install(TARGETS SimpleDetector LIBRARY DESTINATION lib)

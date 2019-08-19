@@ -14,10 +14,11 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #--------------------------------------------------------------------------
 dd4hep_configure_output()
 
-link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
+link_libraries(
   DD4hep::DDCore
   DD4hep::DDCond
   DD4hep::DDAlign
+  ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
   )
 set(AlignDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/AlignDet)
 dd4hep_add_plugin(AlignDetExample SOURCES src/*.cpp)

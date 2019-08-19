@@ -18,10 +18,11 @@ if(TARGET XercesC::XercesC)
   link_libraries(XercesC::XercesC)
 endif()
 
-link_libraries(ROOT::Core ROOT::Geom ROOT::GenVector
+link_libraries(
   DD4hep::DDCore
   DD4hep::DDCond
   DD4hep::DDAlign
+  ROOT::Core ROOT::Geom ROOT::GenVector
   )
   
 #-----------------------------------------------------------------------------------

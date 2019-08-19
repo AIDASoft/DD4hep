@@ -25,11 +25,10 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 dd4hep_add_plugin(LHeD
   SOURCES src/*.cpp
-  USES  ROOT::Core ROOT::Geom ROOT::GenVector DD4hep::DDRec DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign
+  USES    DD4hep::DDRec DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign ROOT::Core ROOT::Geom ROOT::GenVector 
   )
 
 if (DD4HEP_USE_GEANT4)
-  find_package(Geant4 REQUIRED)
   add_executable(LHeDXML scripts/LHeDXML.C)
   target_link_libraries(LHeDXML DD4hep::DDCore DD4hep::DDG4 Geant4::Interface)
   #--------------------------------------------------------------------------
