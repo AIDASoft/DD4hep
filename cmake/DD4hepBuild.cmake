@@ -1312,23 +1312,26 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
 
   # Try to compile with filesystem header linking against different FS libraries
   SET(HAVE_FILESYSTEM False)
+  dd4hep_debug("|++> Checking if compiler supports filesystem library")
   FOREACH(FS_LIB_NAME stdc++fs c++fs )
+    dd4hep_debug("|++++> linking against ${FS_LIB_NAME}")
     try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${CMAKE_SOURCE_DIR}/cmake/TryFileSystem.cpp
       CXX_STANDARD ${CMAKE_CXX_STANDARD}
       CXX_EXTENSIONS False
       OUTPUT_VARIABLE HAVE_FS_OUTPUT
       LINK_LIBRARIES ${FS_LIB_NAME}
       )
-    dd4hep_print("|++> ${HAVE_FS_OUTPUT}")
+    dd4hep_debug("|++++> ${HAVE_FS_OUTPUT}")
     IF(HAVE_FILESYSTEM)
-      MESSAGE(STATUS "Compiler supports filesystem, linking against ${FS_LIB_NAME}")
+      dd4hep_print("|++> Compiler supports filesystem, linking against ${FS_LIB_NAME}")
       SET(FS_LIBRARIES ${FS_LIB_NAME})
       BREAK()
     ENDIF()
+    dd4hep_debug("|++++> Compiler not compatible when linking against ${FS_LIB_NAME}")
   ENDFOREACH()
 
   IF(NOT HAVE_FILESYSTEM)
-    MESSAGE(STATUS "Compiler does not have filesystem support, falling  back to Boost::filesystem")
+    dd4hep_print("|++> Compiler does not have filesystem support, falling  back to Boost::filesystem")
     FIND_PACKAGE(Boost 1.49 REQUIRED COMPONENTS filesystem system)
     SET(FS_LIBRARIES Boost::filesystem Boost::system)
     SET_TARGET_PROPERTIES(Boost::filesystem
