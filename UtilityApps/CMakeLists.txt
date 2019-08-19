@@ -38,6 +38,7 @@ target_link_libraries(graphicalScan ROOT::Core ROOT::Geom DDRec ROOT::Hist)
 if(TARGET Geant4::Interface)
   add_executable(dumpdetector src/dumpdetector.cpp)
   target_link_libraries(dumpdetector Geant4::Interface DDCore DDRec)
+  LIST(APPEND OPTIONAL_EXECUTABLES dumpdetector)
 endif()
 
 # #-----------------------------------------------------------------------------------
@@ -48,6 +49,9 @@ if(BUILD_TESTING)
 
     add_executable(test_cellid_position_converter src/test_cellid_position_converter.cpp)
     target_link_libraries(test_cellid_position_converter DDRec DDTest LCIO::LCIO)
+
+    LIST(APPEND OPTIONAL_EXECUTABLES test_surfaces)
+    LIST(APPEND OPTIONAL_EXECUTABLES test_cellid_position_converter)
   endif()
   #-----------------------------------------------------------------------------------
 endif()
@@ -66,6 +70,7 @@ if (DD4HEP_USE_LCIO)
     )
   add_executable(teveLCIO G__eve1.cxx src/teve_display.cpp src/next_event_lcio.cpp)
   target_link_libraries(teveLCIO DDRec LCIO::LCIO ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL)
+  LIST(APPEND OPTIONAL_EXECUTABLES teveLCIO)
 endif()
 
 # #-----------------------------------------------------------------------------------
@@ -80,8 +85,8 @@ INSTALL(TARGETS geoDisplay
   materialScan
   materialBudget
   graphicalScan
-  dumpdetector
   teveDisplay
+  ${OPTIONAL_EXECUTABLES}
   EXPORT DD4hep
   RUNTIME DESTINATION bin
   )
