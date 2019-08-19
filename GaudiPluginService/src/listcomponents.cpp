@@ -110,12 +110,12 @@ int main( int argc, char* argv[] ) {
   };
 
   // loop over the list of libraries passed on the command line
-  for ( const char* lib : libs ) {
-    if ( dlopen( lib, RTLD_LAZY | RTLD_LOCAL ) ) {
-      dump_from( reg2, lib, "v2" );
-      dump_from( reg1, lib, "v1" );
+  for ( const char* aLib : libs ) {
+    if ( dlopen( aLib, RTLD_LAZY | RTLD_LOCAL ) ) {
+      dump_from( reg2, aLib, "v2" );
+      dump_from( reg1, aLib, "v1" );
     } else {
-      std::cerr << "ERROR: failed to load " << lib << ": " << dlerror() << std::endl;
+      std::cerr << "ERROR: failed to load " << aLib << ": " << dlerror() << std::endl;
       return EXIT_FAILURE;
     }
   }
