@@ -48,6 +48,7 @@ FIND_PACKAGE(Boost REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()
 
 if(DD4HEP_USE_GEANT4)
+  MESSAGE(STATUS "DD4hep uses Geant4")
   find_package(Geant4 10.2.2 REQUIRED gdml ui_all vis_all)
   DD4HEP_SETUP_GEANT4_TARGETS()
 endif()
@@ -56,6 +57,7 @@ FIND_PACKAGE(ROOT REQUIRED)
 DD4HEP_SETUP_ROOT_TARGETS()
 
 if(DD4HEP_USE_LCIO)
+  MESSAGE(STATUS "DD4hep uses LCIO")
   find_package(LCIO REQUIRED)
   DD4HEP_SETUP_LCIO_TARGETS()
 endif()
@@ -67,7 +69,6 @@ endif()
 # ---------- include dirs -----------------------------------------------------
 # do not store find results in cache
 GET_TARGET_PROPERTY(DD4hep_INCLUDE_DIRS DD4hep::DDCore INTERFACE_INCLUDE_DIRECTORIES)
-MESSAGE(STATUS "include dirs ${DD4hep_INCLUDE_DIRS}")
 
 # ---------- libraries --------------------------------------------------------
 set(DD4hep_LIBRARIES DD4hep::DDCore)
