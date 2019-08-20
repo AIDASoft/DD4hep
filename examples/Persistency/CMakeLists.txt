@@ -11,13 +11,14 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-link_libraries(DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector)
 if(TARGET XercesC::XercesC)
-  link_libraries(XercesC::XercesC)
+  SET(OPT_XERCESC XercesC::XercesC)
 endif()
 
 #-----------------------------------------------------------------------------------
-dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp)
+dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp
+  USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector ${OPT_XERCESC}
+  )
 install(TARGETS PersistencyExample LIBRARY DESTINATION lib)
 dd4hep_configure_scripts (Persistency DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------

@@ -13,10 +13,6 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
-# dd4hep_package ( LHeD MAJOR 0 MINOR 0 PATCH 1
-#   USES           [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
-#                  [DD4hep REQUIRED COMPONENTS DDRec DDCore DDCond DDAlign]
-#   )
 set(LHeDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/LHeD)
 dd4hep_install_dir( src compact scripts sim DESTINATION ${LHeDEx_INSTALL} )
 #-----------------------------------------------------------------------------------

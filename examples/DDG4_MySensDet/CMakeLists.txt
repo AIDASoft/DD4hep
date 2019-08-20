@@ -16,9 +16,6 @@ if(NOT TARGET Geant4::Interface)
   return()
 endif()
 
-link_libraries(DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
-
-
 #-----------------------------------------------------------------------------------
 set(DDG4_MySensDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/DDG4_MySensDet)
 install(DIRECTORY scripts DESTINATION ${DDG4_MySensDet_INSTALL})
