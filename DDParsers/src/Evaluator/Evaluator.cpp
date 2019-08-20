@@ -26,6 +26,17 @@
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
+// fallthrough only exists from c++17
+#if defined __has_cpp_attribute
+    #if __has_cpp_attribute(fallthrough)
+        #define ATTR_FALLTHROUGH [[fallthrough]]
+    #else
+        #define ATTR_FALLTHROUGH
+    #endif
+#else
+    #define ATTR_FALLTHROUGH
+#endif
+
 //---------------------------------------------------------------------------
 
 /// Internal expression evaluator helper class
@@ -361,7 +372,7 @@ static int maker(int op, stack<double> & val)
     errno = 0;
     val.top() = pow(val1,val2);
     if (errno == 0) return EVAL::OK;
-    [[fallthrough]];
+    ATTR_FALLTHROUGH;
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }
