@@ -10,6 +10,7 @@ slc6-gcc8-Geant10.5:
   image: clicdp/slc6-lcg
   script:
     - source .dd4hep-ci.d/init_x86_64.sh
+    - unset CPATH
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
@@ -32,6 +33,7 @@ centos7-gcc8-Geant10.5:
   image: clicdp/cc7-lcg
   script:
     - source .dd4hep-ci.d/init_x86_64.sh
+    - unset CPATH
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
@@ -54,6 +56,7 @@ centos7-gcc8-Geant10.5-XERCESC:
   image: clicdp/cc7-lcg
   script:
     - source .dd4hep-ci.d/init_x86_64.sh
+    - unset CPATH
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
@@ -78,6 +81,7 @@ centos7-gcc8-Geant10.5-Python3:
   script:
     - export LCG_RELEASE="LCG_96python3"
     - source .dd4hep-ci.d/init_x86_64.sh
+    - unset CPATH
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
@@ -102,6 +106,7 @@ centos7-clang8-Geant10.5-XERCESC:
   script:
     - export COMPILER_TYPE="clang"
     - source .dd4hep-ci.d/init_x86_64.sh
+    - unset CPATH
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
