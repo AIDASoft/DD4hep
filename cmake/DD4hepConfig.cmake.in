@@ -30,16 +30,6 @@ set ( DD4HEP_USE_LCIO           "@DD4HEP_USE_LCIO@" )
 set ( DD4HEP_USE_XERCESC        "@DD4HEP_USE_XERCESC@" )
 set ( DD4hep_BUILD_CXX_STANDARD @CMAKE_CXX_STANDARD@ )
 
-# figure out if including build has compatible standard set
-if (NOT "${CMAKE_CXX_STANDARD}" EQUAL "${DD4hep_BUILD_CXX_STANDARD}")
-  message( FATAL_ERROR "CMAKE_CXX_STANDARD is set to C++${CMAKE_CXX_STANDARD} but C++${DD4hep_BUILD_CXX_STANDARD} is required for DD4hep.")
-endif()
-
-# set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
-# set ( ROOTSYS            "$ENV{ROOTSYS}" )
-# set ( ROOT_DIR           "$ENV{ROOTSYS}/cmake" )
-# set ( ROOT_VERSION       "@ROOT_VERSION@" )
-
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 set (CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake  )
