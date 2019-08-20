@@ -15,18 +15,15 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 dd4hep_configure_output ()
 
 if(TARGET XercesC::XercesC)
-  link_libraries(XercesC::XercesC)
+  SET(OPT_XERCESC XercesC::XercesC)
 endif()
-
-link_libraries(
-  DD4hep::DDCore
-  DD4hep::DDCond
-  DD4hep::DDAlign
-  ROOT::Core ROOT::Geom ROOT::GenVector
-  )
   
 #-----------------------------------------------------------------------------------
-dd4hep_add_plugin(ConditionsExample SOURCES src/*.cpp)
+dd4hep_add_plugin(ConditionsExample SOURCES src/*.cpp
+  USES  DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign
+        ROOT::Core ROOT::Geom ROOT::GenVector
+        ${OPT_XERCESC}
+  )
 install(TARGETS ConditionsExample LIBRARY DESTINATION lib)
 dd4hep_install_dir( xml  DESTINATION examples/Conditions )
 dd4hep_install_dir( data DESTINATION examples/Conditions )

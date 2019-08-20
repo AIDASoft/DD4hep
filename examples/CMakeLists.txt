@@ -45,8 +45,6 @@ SET( ENV{DD4hepExamplesINSTALL} ${CMAKE_INSTALL_PREFIX} )
 #
 dd4hep_configure_output()
 
-find_package(ROOT REQUIRED COMPONENTS Geom GenVector)
-
 add_subdirectory(CLICSiD)
 add_subdirectory(LHeD)
 add_subdirectory(AlignDet)

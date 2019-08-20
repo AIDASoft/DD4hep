@@ -22,13 +22,9 @@ dd4hep_print("|++> Building optical surface test")
 #--------------------------------------------------------------------------
 dd4hep_configure_output()
 
-link_libraries(
-  DD4hep::DDCore DD4hep::DDCond
-  ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
-  )
-
 set(OpticalSurfaces_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/OpticalSurfaces)
-dd4hep_add_plugin(OpticalSurfacesExample SOURCES src/*.cpp  )
+dd4hep_add_plugin(OpticalSurfacesExample SOURCES src/*.cpp
+  USES DD4hep::DDCore DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore)
 install(TARGETS OpticalSurfacesExample LIBRARY DESTINATION lib)
 install(DIRECTORY compact scripts DESTINATION ${OpticalSurfaces_INSTALL} )
 dd4hep_configure_scripts( OpticalSurfaces DEFAULT_SETUP WITH_TESTS)

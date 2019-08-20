@@ -13,7 +13,6 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
-link_libraries(DD4hep::DDCore)
 
 set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
 #
