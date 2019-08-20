@@ -61,6 +61,6 @@ source /cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}/${BUILD_FLAVOUR}/setup.sh
 #--------------------------------------------------------------------------------
 export LCIO=/cvmfs/clicdp.cern.ch/software/LCIO/2.12.1/x86_64-${OS}-${COMPILER_VERSION}-LCG_96
 export LCIO_ROOT=${LCIO}
-export PYTHONPATH=${LCIO}/python
+export PYTHONPATH=${LCIO}/python:$PYTHONPATH
 export PATH=${LCIO}/bin:$PATH
 export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
