@@ -195,8 +195,12 @@ usermanuals:
     stage: documentation
     tags:
       - docker
-    image: gitlab-registry.cern.ch/clicdp/publications/templates/custom_ci_worker:fedora-latex-latest
+    image: clicdp/cc7-lcg
     script:
+        - yum install -y ghostscript poppler-utils perl
+        - source .dd4hep-ci.d/init_x86_64.sh
+        - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2017/bin/x86_64-linux:$PATH
+        - export max_print_line=200
         - mkdir -p public/usermanuals
         - mkdir build
         - cd build
