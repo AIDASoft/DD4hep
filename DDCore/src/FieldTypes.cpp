@@ -22,6 +22,17 @@ using namespace dd4hep;
 #define INFINITY (numeric_limits<double>::max())
 #endif
 
+// fallthrough only exists from c++17
+#if defined __has_cpp_attribute
+    #if __has_cpp_attribute(fallthrough)
+        #define ATTR_FALLTHROUGH [[fallthrough]]
+    #else
+        #define ATTR_FALLTHROUGH
+    #endif
+#else
+    #define ATTR_FALLTHROUGH
+#endif
+
 DD4HEP_INSTANTIATE_HANDLE(ConstantField);
 DD4HEP_INSTANTIATE_HANDLE(SolenoidField);
 DD4HEP_INSTANTIATE_HANDLE(DipoleField);
@@ -101,19 +112,19 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     case 4:      // Ocupole momentum
       by += (1./6.) * ( coefficents[3] * (x2*x - 3.0*x*y2) + skews[3]*(y2*y - 3.0*x2*y) );
       bx += (1./6.) * ( coefficents[3] * (3.0*x2*y - y2*y) + skews[3]*(x2*x - 3.0*x*y2) );
-      [[fallthrough]];
+      ATTR_FALLTHROUGH;
     case 3:      // Sextupole momentum:
       by +=  (1./2.) * ( coefficents[2] * (x2 - y2) - skews[2] * 2.0 * xy );
       bx +=  (1./2.) * ( coefficents[2] * 2.0 * xy + skews[2] * (x2 - y2) );
-      [[fallthrough]];
+      ATTR_FALLTHROUGH;
     case 2:      // Quadrupole momentum:
       bx += coefficents[1] * y + skews[1]*x;
       by += coefficents[1] * x - skews[1]*y;
-      [[fallthrough]];
+      ATTR_FALLTHROUGH;
     case 1:      // Dipole momentum:
       bx += skews[0];
       by += coefficents[0];
-      [[fallthrough]];
+      ATTR_FALLTHROUGH;
     case 0:      // Nothing, but still valid
       break;
     default:     // Error condition
