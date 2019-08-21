@@ -638,22 +638,23 @@ void DetectorImp::init() {
     Constant     vac_const = getRefChild(m_define, "Vacuum", false);
     Box          worldSolid;
     
-    m_materialAir    = material(air_const.isValid() ? air_const->GetTitle() : "Air");
     m_materialVacuum = material(vac_const.isValid() ? vac_const->GetTitle() : "Vacuum");
 
     m_worldVol = m_manager->GetTopVolume();
     if ( m_worldVol.isValid() )   {
-      worldSolid = m_worldVol.solid();
+      worldSolid    = m_worldVol.solid();
+      m_materialAir = m_worldVol.material();
       printout(INFO,"Detector", "*********** Use Top Node from manager as "
-               "world volume [%s].  BBox: %4.0f %4.0f %4.0f",
-               worldSolid->IsA()->GetName(),
+               "world volume [%s].  Material: %s BBox: %4.0f %4.0f %4.0f",
+               worldSolid->IsA()->GetName(), m_materialAir.name(),
                worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
     }
     else   {
       /// Construct the top level world element
       Solid parallelWorldSolid = Box("world_x", "world_y", "world_z");
-      worldSolid = Box("world_x", "world_y", "world_z");
-      m_worldVol = Volume("world_volume", worldSolid, m_materialAir);
+      worldSolid    = Box("world_x", "world_y", "world_z");
+      m_materialAir = material(air_const.isValid() ? air_const->GetTitle() : "Air");
+      m_worldVol    = Volume("world_volume", worldSolid, m_materialAir);
       parallelWorldSolid->SetName("parallel_world_solid");
       printout(INFO,"Detector","*********** Created World volume with size: %4.0f %4.0f %4.0f",
                worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());

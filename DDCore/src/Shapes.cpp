@@ -718,10 +718,10 @@ namespace dd4hep {
             except("PseudoTrap","+++ Incompatible change of parameters.");
           }
           ((TGeoTranslation*)right_matrix)->SetTranslation(0,0,displacement);
-          stringstream params;
-          params << x1 << " " << x2 << " " << y1 << " " << y2 << " " << z << " "
-                 << r << " " << char(atMinusZ ? '1' : '0') << " ";
-          right_matrix->SetTitle(params.str().c_str());
+          stringstream str;
+          str << x1 << " " << x2 << " " << y1 << " " << y2 << " " << z << " "
+              << r << " " << char(atMinusZ ? '1' : '0') << " ";
+          right_matrix->SetTitle(str.str().c_str());
           return;
         }
         // In general TGeoCompositeShape instances have an empty SetDimension call
