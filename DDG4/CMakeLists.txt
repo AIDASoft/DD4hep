@@ -31,7 +31,6 @@ target_include_directories(DDG4 BEFORE
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
   $<INSTALL_INTERFACE:include>
-  $<TARGET_PROPERTY:DDCore,INTERFACE_INCLUDE_DIRECTORIES>  # FIXME: Check if this works when using imported target
 )
 
 #---------------------------  Legacy libraries (for Frank) -------------------------
