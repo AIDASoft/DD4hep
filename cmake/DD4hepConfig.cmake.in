@@ -35,7 +35,6 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 set (CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake  )
 
 # ---------- include dirs -----------------------------------------------------
-# do not store find results in cache
 set(DD4hep_INCLUDE_DIRS "")
 
 # ---------- default build type  --------------------------------------------------------
@@ -66,13 +65,11 @@ if(NOT CMAKE_PROJECT_NAME STREQUAL DD4hep)
   include("${DD4hep_ROOT}/cmake/DD4hepConfig-targets.cmake")
 endif()
 
-# ---------- include dirs -----------------------------------------------------
-# do not store find results in cache
+# Backward compatible DD4hep_INCLUDE_DIRS and DD4hep_LIBRARIES variables
 GET_TARGET_PROPERTY(DD4hep_INCLUDE_DIRS DD4hep::DDCore INTERFACE_INCLUDE_DIRECTORIES)
-
-# ---------- libraries --------------------------------------------------------
 set(DD4hep_LIBRARIES DD4hep::DDCore)
 
+# Backward compatible DD4hep_COMPONENT_LIBRARIES variable
 SET(DD4hep_COMPONENT_LIBRARIES)
 IF(DD4hep_FIND_COMPONENTS)
   dd4hep_print( "|++> DD4hep: Looking for Components: ${DD4hep_FIND_COMPONENTS}" )
