@@ -631,14 +631,14 @@ endfunction(dd4hep_add_plugin)
 macro(DD4HEP_SETUP_ROOT_TARGETS)
 
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
-  string(REPLACE " " ";" ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
+  string(REPLACE " " ";" DD4HEP_ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
 
   IF(NOT TARGET ROOT::Core)
     #in ROOT before 6.10 there is no ROOT namespace, so we create ROOT::Core ourselves
     ADD_LIBRARY(ROOT::Core INTERFACE IMPORTED GLOBAL)
     SET_TARGET_PROPERTIES(ROOT::Core
       PROPERTIES
-      INTERFACE_COMPILE_OPTIONS "${ROOT_CXX_FLAGS}"
+      INTERFACE_COMPILE_OPTIONS "${DD4HEP_ROOT_CXX_FLAGS}"
       INTERFACE_INCLUDE_DIRECTORIES ${ROOT_INCLUDE_DIRS}
       )
     # there is also no dependency between the targets
@@ -654,7 +654,7 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
   ENDIF(NOT TARGET ROOT::Core)
 
   dd4hep_debug("ROOT Libraries ${ROOT_LIBRARIES}")
-  dd4hep_debug("ROOT CXX_FLAGS ${ROOT_CXX_FLAGS}")
+  dd4hep_debug("ROOT CXX_FLAGS ${DD4HEP_ROOT_CXX_FLAGS}")
   dd4hep_debug("ROOT INCL DIRS ${ROOT_INCLUDE_DIRS}")
   dd4hep_debug("ROOT_VERSION: ${ROOT_VERSION}" )
 
@@ -747,7 +747,6 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
     # Geant4 CXX Flags are a string with quotes, not a list, so we need to convert to a list...
     # Geant4::10.2.2 at least, not in 10.5 (check where it switches)
     string(REPLACE " " ";" Geant4_Flags ${Geant4_CXX_FLAGS} ${Geant4_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
-    SET(Geant4_CXX_FLAGS ${Geant4_Flags})
 
     #Geant4_DEFINITIONS already include -D, we jave to get rid of that so we can join things when creating dictionaries
     SET(G4_DEF_TEMP "")
@@ -755,15 +754,15 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
       string(REPLACE "-D" "" def ${def})
       LIST(APPEND G4_DEF_TEMP ${def})
     endforeach()
-    SET(Geant4_DEFINITIONS ${G4_DEF_TEMP})
+    SET(DD4HEP_Geant4_DEFINITIONS ${G4_DEF_TEMP})
     UNSET(G4_DEF_TEMP)
 
     ADD_LIBRARY(Geant4::Interface INTERFACE IMPORTED GLOBAL)
 
     SET_TARGET_PROPERTIES(Geant4::Interface
       PROPERTIES
-      INTERFACE_COMPILE_OPTIONS "${Geant4_CXX_FLAGS}"
-      INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
+      INTERFACE_COMPILE_OPTIONS "${Geant4_Flags}"
+      INTERFACE_COMPILE_DEFINITIONS "${DD4HEP_Geant4_DEFINITIONS}"
       INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
       )
 
