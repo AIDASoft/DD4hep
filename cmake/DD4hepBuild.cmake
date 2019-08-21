@@ -677,7 +677,8 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
   # Try to compile with filesystem header linking against different FS libraries
   SET(HAVE_FILESYSTEM False)
   dd4hep_debug("|++> Checking if compiler supports filesystem library")
-  FOREACH(FS_LIB_NAME stdc++fs c++fs )
+  # stdc++fs needed in gcc8, no lib for gcc9.1, c++fs for llvm
+  FOREACH(FS_LIB_NAME stdc++fs "" c++fs )
     dd4hep_debug("|++++> linking against ${FS_LIB_NAME}")
     try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${CMAKE_CURRENT_LIST_DIR}/cmake/TryFileSystem.cpp
       CXX_STANDARD ${CMAKE_CXX_STANDARD}
@@ -687,7 +688,7 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
       )
     dd4hep_debug("|++++> ${HAVE_FS_OUTPUT}")
     IF(HAVE_FILESYSTEM)
-      dd4hep_print("|++> Compiler supports filesystem, linking against ${FS_LIB_NAME}")
+      dd4hep_print("|++> Compiler supports filesystem when linking against ${FS_LIB_NAME}")
       SET(FS_LIBRARIES ${FS_LIB_NAME})
       BREAK()
     ENDIF()
