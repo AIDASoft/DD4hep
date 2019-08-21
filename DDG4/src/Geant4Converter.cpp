@@ -494,64 +494,62 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       G4MaterialPropertiesTable* tab = 0;
       TListIter propIt(&material->GetProperties());
       for(TObject* obj=propIt.Next(); obj; obj = propIt.Next())  {
-        TNamed*      n = (TNamed*)obj;
-        TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(n->GetTitle());
+        TNamed*      named  = (TNamed*)obj;
+        TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
         Geant4GeometryInfo::PropertyVector* v =
           (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
         if ( 0 == v )   {
           except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
-                 material->GetName(), n->GetName());
+                 material->GetName(), named->GetName());
         }
         if ( 0 == tab )  {
           tab = new G4MaterialPropertiesTable();
           mat->SetMaterialPropertiesTable(tab);
         }
-        int idx = tab->GetPropertyIndex(n->GetName(), false);
+        int idx = tab->GetPropertyIndex(named->GetName(), false);
         if ( idx < 0 )   {
-          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", n->GetName());
+          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
           continue;
         }
         // We need to convert the property from TGeo units to Geant4 units
         auto conv = g4PropertyConversion(idx);
-        double* bins = new double[v->bins.size()];
-        double* vals = new double[v->bins.size()];
-        for(size_t i=0, count=v->bins.size(); i<count; ++i)   {
-          bins[i] = v->bins[i] * conv.first;
-          vals[i] = v->values[i] * conv.second;
-        }
-        G4MaterialPropertyVector* vec =
-          new G4MaterialPropertyVector(bins, vals, v->bins.size());
-        delete [] bins;
-        delete [] vals;
+        vector<double> bins(v->bins), vals(v->values);
+        for(size_t i=0, count=bins.size(); i<count; ++i)
+          bins[i] *= conv.first, vals[i] *= conv.second;
+
+        G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
+        tab->AddProperty(named->GetName(), vec);
         printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
-                 n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
-        tab->AddProperty(n->GetName(), vec);
+                 named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
+        for(size_t i=0, count=v->bins.size(); i<count; ++i)
+          printout(lvl,named->GetName(),"  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
+                   bins[i], v->bins[i], conv.first);
       }
       /// Attach the material properties if any
       TListIter cpropIt(&material->GetConstProperties());
       for(TObject* obj=cpropIt.Next(); obj; obj = cpropIt.Next())  {
         Bool_t     err = kFALSE;
-        TNamed*      n = (TNamed*)obj;
-        double       v = info.manager->GetProperty(n->GetTitle(),&err);
+        TNamed*  named = (TNamed*)obj;
+        double       v = info.manager->GetProperty(named->GetTitle(),&err);
         if ( err != kFALSE )   {
           except("Geant4Converter",
                  "++ FAILED to create G4 material %s "
                  "[Cannot convert const property: %s]",
-                 material->GetName(), n->GetName());
+                 material->GetName(), named->GetName());
         }
         if ( 0 == tab )  {
           tab = new G4MaterialPropertiesTable();
           mat->SetMaterialPropertiesTable(tab);
         }
-        int idx = tab->GetConstPropertyIndex(n->GetName(), false);
+        int idx = tab->GetConstPropertyIndex(named->GetName(), false);
         if ( idx < 0 )   {
-          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", n->GetName());
+          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
           continue;
         }
         // We need to convert the property from TGeo units to Geant4 units
         double conv = g4ConstPropertyConversion(idx);
-        printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", n->GetName(), v);
-        tab->AddConstProperty(n->GetName(), v * conv);
+        printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", named->GetName(), v);
+        tab->AddConstProperty(named->GetName(), v * conv);
       }
 #endif
       auto* ionization = mat->GetIonisation();
@@ -1326,8 +1324,8 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     G4MaterialPropertiesTable* tab = 0;
     TListIter it(&optSurf->GetProperties());
     for(TObject* obj = it.Next(); obj; obj = it.Next())  {
-      TNamed* n = (TNamed*)obj;
-      TGDMLMatrix *matrix = info.manager->GetGDMLMatrix(n->GetTitle());
+      TNamed*      named = (TNamed*)obj;
+      TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       if ( 0 == tab )  {
         tab = new G4MaterialPropertiesTable();
         g4->SetMaterialPropertiesTable(tab);
@@ -1336,14 +1334,28 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
       if ( !v )  {  // Error!
         except("Geant4OpticalSurface","++ Failed to convert opt.surface %s. Property table %s is not defined!",
-               optSurf->GetName(), n->GetTitle());
+               optSurf->GetName(), named->GetTitle());
       }
-      G4MaterialPropertyVector* vec =
-        new G4MaterialPropertyVector(&v->bins[0], &v->values[0], v->bins.size());
-      tab->AddProperty(n->GetName(), vec);
+      int idx = tab->GetPropertyIndex(named->GetName(), false);
+      if ( idx < 0 )   {
+        printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 Property: %-20s [IGNORED]", named->GetName());
+        continue;
+      }
+      // We need to convert the property from TGeo units to Geant4 units
+      auto conv = g4PropertyConversion(idx);
+      vector<double> bins(v->bins), vals(v->values);
+      for(size_t i=0, count=v->bins.size(); i<count; ++i)
+        bins[i] *= conv.first, vals[i] *= conv.second;
+      G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
+      tab->AddProperty(named->GetName(), vec);
+      
       printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
                "++       Property: %-20s [%ld x %ld] -->  %s",
-               n->GetName(), matrix->GetRows(), matrix->GetCols(), n->GetTitle());
+               named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
+      for(size_t i=0, count=v->bins.size(); i<count; ++i)
+        printout(debugSurfaces ? ALWAYS : DEBUG, named->GetName(),
+                 "  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
+                 bins[i], v->bins[i], conv.first);
     }
     info.g4OpticalSurfaces[optSurf] = g4;
   }

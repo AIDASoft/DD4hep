@@ -499,6 +499,10 @@ namespace dd4hep {
    *   No real correspondance to TGeo. In principle it's a boolean Solid based on a tube.
    *   \see http://cmssdt.cern.ch/lxr/source/DetectorDescription/Core/src/TruncTubs.h
    *
+   *   The Solid::dimension() and Solid::setDimension() calls for the TruncatedTube
+   *   deliver/expect the parameters in the same order as the constructor:
+   *   (zhalf, rmin, rmax, startPhi, deltaPhi, cutAtStart, cutAtDelta, cutInside)
+   *
    *   \author  M.Frank
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
@@ -702,6 +706,10 @@ namespace dd4hep {
    *   No real correspondance to TGeo. In principle it's a boolean Solid based on a tube.
    *   \see http://cmssdt.cern.ch/lxr/source/DetectorDescription/Core/src/PseudoTrap.h
    *
+   *   The Solid::dimension() and Solid::setDimension() calls for the PseudoTrap
+   *   deliver/expect the parameters in the same order as the constructor:
+   *   (x1, x2, y1, y2, z, radius, minusZ)
+   *
    *   \author  M.Frank
    *   \version 1.0
    *   \ingroup DD4HEP_CORE
@@ -729,8 +737,8 @@ namespace dd4hep {
     /// Constructor to create a new identified object with attribute initialization
     PseudoTrap(const std::string& nam,
                double x1, double x2,
-               double y1, double y2, double z,
-               double radius, bool minusZ)
+               double y1, double y2,
+               double z,  double radius, bool minusZ)
     {  this->make(nam, x1, x2, y1, y2, z, radius, minusZ);    }
 
     /// Move Assignment operator
