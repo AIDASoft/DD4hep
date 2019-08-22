@@ -17,7 +17,7 @@
 #
 
 #==========================================================================
-cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 # XercesC dependent stuff
 if(DD4HEP_USE_XERCESC)

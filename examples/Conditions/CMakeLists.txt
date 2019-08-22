@@ -8,7 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #--------------------------------------------------------------------------
