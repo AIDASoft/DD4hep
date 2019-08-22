@@ -285,7 +285,7 @@ namespace {
     case kSPECULARLOBECONSTANT:           return make_pair(CLHEP::keV/units::keV, 1.0);
     case kSPECULARSPIKECONSTANT:          return make_pair(CLHEP::keV/units::keV, 1.0);
     case kBACKSCATTERCONSTANT:            return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kGROUPVEL:                       return make_pair(CLHEP::keV/units::keV, 1.0);  // ???  meter/second ?
+    case kGROUPVEL:                       return make_pair(CLHEP::keV/units::keV, (CLHEP::m/CLHEP::s)/(units::m/units::s));  // meter/second
     case kMIEHG:                          return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
     case kRAYLEIGH:                       return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);  // ??? says its a length
     case kWLSCOMPONENT:                   return make_pair(CLHEP::keV/units::keV, 1.0);
@@ -312,22 +312,22 @@ namespace {
   double g4ConstPropertyConversion(int index)   {
 #if G4VERSION_NUMBER >= 1040
     switch(index)   {
-    case kSURFACEROUGHNESS:            return 1.0;  // ??
-    case kISOTHERMAL_COMPRESSIBILITY:  return 1.0;  // ??
+    case kSURFACEROUGHNESS:            return CLHEP::m/units::m;                             // Length
+    case kISOTHERMAL_COMPRESSIBILITY:  return (CLHEP::m3/CLHEP::keV)/(units::m3/CLHEP::keV); // Volume/Energy
     case kRS_SCALE_FACTOR:             return 1.0;  // ??
     case kWLSMEANNUMBERPHOTONS:        return 1.0;  // ??
-    case kWLSTIMECONSTANT:             return CLHEP::second/units::second;
+    case kWLSTIMECONSTANT:             return CLHEP::second/units::second;                   // Time
     case kMIEHG_FORWARD:               return 1.0;
     case kMIEHG_BACKWARD:              return 1.0;
     case kMIEHG_FORWARD_RATIO:         return 1.0;
-    case kSCINTILLATIONYIELD:          return units::keV/CLHEP::keV;
+    case kSCINTILLATIONYIELD:          return units::keV/CLHEP::keV;                         // Energy
     case kRESOLUTIONSCALE:             return 1.0;
-    case kFASTTIMECONSTANT:            return CLHEP::second/units::second;
-    case kFASTSCINTILLATIONRISETIME:   return CLHEP::second/units::second;
-    case kSLOWTIMECONSTANT:            return CLHEP::second/units::second;
-    case kSLOWSCINTILLATIONRISETIME:   return CLHEP::second/units::second;
+    case kFASTTIMECONSTANT:            return CLHEP::second/units::second;                   // Time
+    case kFASTSCINTILLATIONRISETIME:   return CLHEP::second/units::second;                   // Time
+    case kSLOWTIMECONSTANT:            return CLHEP::second/units::second;                   // Time
+    case kSLOWSCINTILLATIONRISETIME:   return CLHEP::second/units::second;                   // Time
     case kYIELDRATIO:                  return 1.0;
-    case kFERMIPOT:                    return CLHEP::keV/units::keV;
+    case kFERMIPOT:                    return CLHEP::keV/units::keV;                         // Energy
     case kDIFFUSION:                   return 1.0;
     case kSPINFLIP:                    return 1.0;
     case kLOSS:                        return 1.0;  // ??
@@ -337,11 +337,11 @@ namespace {
     case kMR_NBTHETA:                  return 1.0;
     case kMR_NBE:                      return 1.0;
     case kMR_RRMS:                     return 1.0;  // ??
-    case kMR_CORRLEN:                  return CLHEP::m/units::m;
+    case kMR_CORRLEN:                  return CLHEP::m/units::m;                             // Length
     case kMR_THETAMIN:                 return 1.0;
     case kMR_THETAMAX:                 return 1.0;
-    case kMR_EMIN:                     return CLHEP::keV/units::keV;
-    case kMR_EMAX:                     return CLHEP::keV/units::keV;
+    case kMR_EMIN:                     return CLHEP::keV/units::keV;                         // Energy
+    case kMR_EMAX:                     return CLHEP::keV/units::keV;                         // Energy
     case kMR_ANGNOTHETA:               return 1.0;
     case kMR_ANGNOPHI:                 return 1.0;
     case kMR_ANGCUT:                   return 1.0;
