@@ -21,10 +21,7 @@
 # 
 # M.Frank, CERN, 2015:  Adapt to new cmake scripts
 #==========================================================================
-cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
-if (POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW) # CMake 3.12
-endif ()
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project( DD4hep_Examples )
 
