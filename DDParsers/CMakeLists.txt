@@ -10,7 +10,7 @@
 #
 #=================================================================================
 
-dd4hep_print(STATUS "|++> Will build DDParsers")
+dd4hep_print("|++> Will build DDParsers")
 
 file(GLOB DDParsers_SOURCES src/Parsers/*.cpp src/Evaluator/*.cpp)
 file(GLOB DDParsers_SPIRIT_SOURCES src/Spirit/*.cpp)
