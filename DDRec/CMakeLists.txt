@@ -11,7 +11,7 @@
 #
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDRec)
-
+dd4hep_print("|++> Will build DDRec")
 dd4hep_add_dictionary( G__DDRec
   SOURCES ../DDCore/include/ROOT/Warnings.h
   GENERATED src/RecDictionary.h
@@ -22,6 +22,7 @@ dd4hep_add_dictionary( G__DDRec
 file(GLOB DDRec_SOURCES src/*.cpp )
 
 if(DD4HEP_USE_GEAR)
+  dd4hep_print("|++++> Adding gear to DDRec")
   FIND_PACKAGE(GEAR REQUIRED COMPONENTS geartgeo)
   SET(GEAR_SOURCE_FILE src/gear/DDGear.cpp)
   SET_SOURCE_FILES_PROPERTIES(${GEAR_SOURCE_FILE}
