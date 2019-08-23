@@ -25,10 +25,6 @@ if(DD4HEP_USE_GEAR)
   dd4hep_print("|++++> Adding gear to DDRec")
   FIND_PACKAGE(GEAR REQUIRED COMPONENTS geartgeo)
   SET(GEAR_SOURCE_FILE src/gear/DDGear.cpp)
-  SET_SOURCE_FILES_PROPERTIES(${GEAR_SOURCE_FILE}
-    PROPERTIES
-    COMPILE_DEFINITIONS DD4HEP_USE_GEAR
-    )
 endif()
 
 ADD_LIBRARY(DDRec SHARED
@@ -50,32 +46,27 @@ TARGET_LINK_LIBRARIES(DDRec PUBLIC
   )
 
 if(GEAR_FOUND)
+  FOREACH(GEAR_INC_DIR ${GEAR_INCLUDE_DIRS})
+    TARGET_INCLUDE_DIRECTORIES(DDRec
+      SYSTEM PUBLIC
+      $<BUILD_INTERFACE:${GEAR_INC_DIR}>
+      )
+  ENDFOREACH()
   SET(DDREC_PLUGIN_GEAR
     src/gear/createGearForILD.cpp
     src/gear/createGearForCLIC.cpp
     src/gear/createGearForSiD.cpp)
-  SET(DDREC_PLUGIN_DEFINITIONS DD4HEP_USE_GEAR)
 endif()
   
 
 dd4hep_add_plugin(DDRecPlugins
   SOURCES src/plugins/*.cpp ${DDREC_PLUGIN_GEAR}
   USES DDRec
-  DEFINITIONS ${DDREC_PLUGIN_DEFINITIONS}
 )
 
 if(DD4HEP_USE_GEAR)
-  find_package(GEAR REQUIRED COMPONENTS geartgeo)
   add_executable(convertToGear src/convertToGear.cc)
   target_link_libraries(convertToGear ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES} DDRec)
-  target_compile_definitions(convertToGear PUBLIC DD4HEP_USE_GEAR)
-else()
-  find_package(GEAR COMPONENTS geartgeo QUIET)
-  IF(GEAR_FOUND)
-    add_executable(convertToGear src/convertToGear.cc)
-    target_link_libraries(convertToGear ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES} DDRec)
-    target_compile_definitions(convertToGear PUBLIC DD4HEP_USE_GEAR)
-  endif()
 endif()
 
 set_target_properties(DDRec DDRecPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
