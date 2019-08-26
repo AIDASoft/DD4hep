@@ -100,6 +100,9 @@ DD4HEP_SETUP_BOOST_TARGETS()
 # Configure Geant4
 if(DD4HEP_USE_GEANT4)
   find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all )
+  IF(NOT Geant4_builtin_clhep_FOUND)
+    SET(DD4HEP_USE_CLHEP TRUE)
+  ENDIF()
   DD4HEP_SETUP_GEANT4_TARGETS()
   # Geant4 sets the CLHEP include directory to include_directories, we undo this here
   # we don't do this inside DD4hep_SETUP_GEANT4_TARGETS, because that is also used in
