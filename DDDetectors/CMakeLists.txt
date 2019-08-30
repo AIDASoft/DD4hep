@@ -20,7 +20,7 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDDetectors)
 
 dd4hep_add_plugin(DDDetectors 
   SOURCES src/*.cpp
-  USES DDRec
+  USES DD4hep::DDRec
   INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 

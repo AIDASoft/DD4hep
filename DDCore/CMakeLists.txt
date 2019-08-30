@@ -64,6 +64,7 @@ add_library(DDCore SHARED ${DDCore_SOURCES} ${DDCore_BOOST_SOURCES}
   G__DD4hepProperties.cxx
   G__DD4hepGeo.cxx
   )
+add_library(DD4hep::DDCore ALIAS DDCore)
 
 target_include_directories(DDCore
   PUBLIC
@@ -73,8 +74,8 @@ target_include_directories(DDCore
 
 target_link_libraries(DDCore
   PUBLIC
-  DD4hepGaudiPluginMgr
-  DDParsers
+  DD4hep::DD4hepGaudiPluginMgr
+  DD4hep::DDParsers
   ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics ROOT::Geom ROOT::GenVector
   ${XML_LIBRARIES}
   )
@@ -94,7 +95,7 @@ IF(TARGET ROOT::Gdml)
   dd4hep_print("|++> Found Root::GDML: Creating DDGDMLPlugins")
   dd4hep_add_plugin(DDGDMLPlugins
     SOURCES src/gdml/*.cpp
-    USES DDCore ROOT::Core ROOT::Gdml
+    USES DD4hep::DDCore ROOT::Core ROOT::Gdml
     )
   set_target_properties(DDGDMLPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDGDMLPlugins EXPORT DD4hep LIBRARY DESTINATION lib)

@@ -14,8 +14,10 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
 
-find_package(DD4hep)
-find_package(ROOT REQUIRED COMPONENTS Geom)
+IF(NOT TARGET DD4hep::DDCore)
+  find_package(DD4hep)
+  find_package(ROOT REQUIRED COMPONENTS Geom)
+ENDIF()
 
 set(CLICSiDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
 dd4hep_install_dir( scripts sim DESTINATION ${CLICSiDEx_INSTALL} )
@@ -26,10 +28,9 @@ if (DD4HEP_USE_GEANT4)
   
   add_executable(CLICSiDAClick  scripts/CLICSiDAClick.C)
   target_link_libraries(CLICSiDAClick DD4hep::DDCore DD4hep::DDG4)
+  install(TARGETS CLICSiDXML CLICSiDAClick DESTINATION bin)
 endif()
 #
-
-install(TARGETS CLICSiDXML CLICSiDAClick DESTINATION bin)
 
 dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
 

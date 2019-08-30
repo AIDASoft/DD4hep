@@ -13,12 +13,13 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCond)
 dd4hep_add_dictionary(G__DDCond
   SOURCES ../DDCore/include/ROOT/Warnings.h src/ConditionsDictionary.h
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  USES    DDCore DDParsers
+  USES    DD4hep::DDCore DD4hep::DDParsers
   )
 
 file(GLOB DDCond_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_library(DDCond SHARED ${DDCond_SOURCES} G__DDCond.cxx)
+add_library(DD4hep::DDCond ALIAS DDCond)
 
 target_include_directories(DDCond
   PUBLIC
@@ -26,11 +27,11 @@ target_include_directories(DDCond
   $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(DDCond PUBLIC DDCore)
+target_link_libraries(DDCond PUBLIC DD4hep::DDCore)
 
 dd4hep_add_plugin(DDCondPlugins
   SOURCES src/plugins/*.cpp src/Type1/*.cpp
-  USES    DDCond
+  USES    DD4hep::DDCond
   )
 
 set_target_properties(DDCond DDCondPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})

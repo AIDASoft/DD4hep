@@ -10,9 +10,13 @@
 #
 #=================================================================================
 
-##set(DD4HEP_DEBUG_CMAKE 1)
-message ( STATUS "INCLUDING DD4hepBuild.cmake" )
+
 include ( CMakeParseArguments )
+
+if(DD4hepBuild_included)
+  RETURN()
+endif()
+message(STATUS "Including DD4hepBuild.cmake")
 set ( DD4hepBuild_included ON )
 
 #---------------------------------------------------------------------------------------------------
@@ -48,10 +52,10 @@ macro(dd4hep_set_compiler_flags)
 
     CHECK_CXX_COMPILER_FLAG( "${FLAG}" CXX_FLAG_WORKS_${FLAG_WORD} )
     IF( ${CXX_FLAG_WORKS_${FLAG_WORD}} )
-      MESSAGE ( STATUS "Adding ${FLAG} to CXX_FLAGS" )
+      dd4hep_debug("|DDD> Adding ${FLAG} to CXX_FLAGS" )
       SET ( CMAKE_CXX_FLAGS "${FLAG} ${CMAKE_CXX_FLAGS} ")
     ELSE()
-      MESSAGE ( STATUS "NOT Adding ${FLAG} to CXX_FLAGS" )
+      dd4hep_debug("|DDD> NOT Adding ${FLAG} to CXX_FLAGS" )
     ENDIF()
   ENDFOREACH()
 

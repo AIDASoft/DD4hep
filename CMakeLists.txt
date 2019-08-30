@@ -52,6 +52,8 @@ set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard used for compiling")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+SET(DD4hep_DIR ${CMAKE_SOURCE_DIR} CACHE STRING "DD4hep directory")
+
 IF(${CMAKE_CXX_STANDARD} LESS 14)
   MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 14 to compile")
 ENDIF()
@@ -67,6 +69,13 @@ option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"     OFF)
 option(BUILD_TESTING      "Enable and build tests"    ON)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
+SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDDigi DDG4 DDEve UtilityApps"
+  CACHE STRING "List of DD4hep packages to build")
+SEPARATE_ARGUMENTS(DD4HEP_BUILD_PACKAGES)
+MESSAGE(STATUS "Will be building these packages: ${DD4HEP_BUILD_PACKAGES}")
+
+OPTION(DD4HEP_BUILD_EXAMPLES "Build all the examples" OFF)
+OPTION(DD4HEP_DEBUG_CMAKE "Print debugging information for DD4hep CMAKE" OFF)
 
 #####################
 # Configure version #
@@ -124,9 +133,6 @@ dd4hep_set_compiler_flags()
 ####################
 # Include packages #
 ####################
-
-add_subdirectory ( GaudiPluginService )
-
 include(DD4hep)
 include(DD4hepMacros) 
 
@@ -135,23 +141,26 @@ if( DEFINED DD4HEP_WITH_GEANT4 OR DEFINED DD4HEP_WITH_GEAR )
 endif()
 
 include(DD4hep_XML_setup)
-add_subdirectory(DDParsers)
-add_subdirectory(DDCore)
-add_subdirectory(DDRec)
-add_subdirectory(DDDetectors)
-add_subdirectory(DDCond)
-add_subdirectory(DDAlign)
-add_subdirectory(DDDigi)
-add_subdirectory(DDG4)
 
-# Note the order: DDEve partially depends on variables from DDG4!
-add_subdirectory(DDEve)
+#These pacakges are mandatory
+FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
+  dd4hep_print("|> Building ${DDPackage}")
+  add_subdirectory(${DDPackage})
+ENDFOREACH()
+
+FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
+  dd4hep_print("|> Building ${DDPackage}")
+  add_subdirectory(${DDPackage})
+ENDFOREACH()
 
 if(BUILD_TESTING)
   dd4hep_enable_tests()
   add_subdirectory(DDTest)
 endif()
-add_subdirectory(UtilityApps)
+
+if(DD4HEP_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
 #######################
 # Treatment for Apple #
