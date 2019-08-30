@@ -6,6 +6,8 @@ if [ "$(uname)" == "Linux" ]; then
         OS=slc6
     elif [ "$( cat /etc/*-release | grep CentOS )" ]; then
         OS=centos7
+    elif [ "$( cat /etc/*-release | grep Beaver )" ]; then
+        OS=ubuntu1804
     fi
 else
     echo "UNKNOWN OS"
