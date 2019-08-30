@@ -20,7 +20,7 @@ endif()
 
 #---------------------------------------------------------------------------------------------------
 # Main functional include file
-if ( "${DD4hepBuild_included}" STREQUAL "" )
+if (NOT DD4hepBuild_included)
   include ( DD4hepBuild )
   include ( DD4hep_XML_setup )
 endif()
@@ -91,7 +91,6 @@ function(dd4hep_generate_rootmap_notapple library)
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
-  #message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}

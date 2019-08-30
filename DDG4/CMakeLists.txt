@@ -12,17 +12,18 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDG4)
 
 # configure Geant4
 IF(NOT DD4HEP_USE_GEANT4)
-  dd4hep_print("Not Using geant4, not building DDG4")
+  dd4hep_print("|++> Not Using geant4, not building DDG4")
   RETURN()
 ENDIF()
 
 #---Add Library---------------------------------------------------------------------
 file(GLOB DDG4_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(DDG4 SHARED ${DDG4_SOURCES})
+add_library(DD4hep::DDG4 ALIAS DDG4)
 
 target_link_libraries(DDG4
   PUBLIC
-  DDCore
+  DD4hep::DDCore
   Geant4::Interface
   )
 
@@ -38,13 +39,13 @@ dd4hep_add_plugin(DDG4Legacy  SOURCES legacy/*.cpp USES DDG4)
 #-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__DDG4
   SOURCES python/DDG4Dict.C
-  USES    DDCore DDParsers DDG4 Geant4::Interface
+  USES    DD4hep::DDCore DD4hep::DDParsers DD4hep::DDG4 Geant4::Interface
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 dd4hep_add_plugin(DDG4Plugins
   SOURCES   plugins/*.cpp
   GENERATED G__DDG4.cxx
-  USES      ROOT::Core ${CLHEP} DDG4 ${XML_LIBRARIES} DDParsers
+  USES      DD4hep::DDG4 DD4hep::DDParsers ${XML_LIBRARIES} ROOT::Core ${CLHEP} 
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 
@@ -54,7 +55,7 @@ if(TARGET Python2::Python)
   dd4hep_print("|++> Python found, creating DDG4Python Dictionary")
   dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
-    USES    DDCore DDParsers DDG4 ROOT::Core Geant4::Interface
+    USES    DD4hep::DDCore DD4hep::DDParsers DD4hep::DDG4 ROOT::Core Geant4::Interface
     )
   dd4hep_add_dictionary(G__DDPython
     SOURCES  tpython/DDPython.C
@@ -64,7 +65,8 @@ if(TARGET Python2::Python)
     #---------------------------  Specialized python plugins  --------------------------
     dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
     add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
-    target_link_libraries(DDPython DDG4 ROOT::Core Python2::Python ROOT::PyROOT)
+    add_library(DD4hep::DDPython ALIAS DDPython)
+    target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python2::Python ROOT::PyROOT)
     IF(${CMAKE_CXX_STANDARD} GREATER 16)
       # python header not cxx17 compatible, gives error in clang
       target_compile_options(DDPython PUBLIC -Wno-register)
@@ -72,11 +74,11 @@ if(TARGET Python2::Python)
     dd4hep_add_plugin(DDG4Python 
       SOURCES   src/python/*.cpp
       GENERATED G__DDG4Python.cxx
-      USES      DDG4 DDPython
+      USES      DD4hep::DDG4 DD4hep::DDPython
       )
     #---Helper to overcome deficiency of the python executable concerning multi-threading
     add_executable(pyddg4 pyddg4.cpp)
-    target_link_libraries(pyddg4 PUBLIC DDPython ROOT::Core ROOT::PyROOT)
+    target_link_libraries(pyddg4 PUBLIC DD4hep::DDPython ROOT::Core ROOT::PyROOT)
 
     # install these libraries
     set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
@@ -93,7 +95,7 @@ endif()
 IF(TARGET LCIO::LCIO)
   dd4hep_add_plugin(DDG4LCIO
     SOURCES lcio/*.cpp
-    USES    DDG4 LCIO::LCIO
+    USES    DD4hep::DDG4 LCIO::LCIO
     )
   install(TARGETS DDG4LCIO EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})

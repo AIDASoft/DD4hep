@@ -10,6 +10,8 @@
 #=================================================================================
 
 add_library(DDTest INTERFACE)
+add_library(DD4hep::DDTest ALIAS DDTest)
+
 target_include_directories(DDTest INTERFACE include)
 
 foreach(TEST_NAME
@@ -23,7 +25,7 @@ foreach(TEST_NAME
     test_segmentationHandles
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
-  target_link_libraries(${TEST_NAME} DDCore DDRec DDTest)
+  target_link_libraries(${TEST_NAME} DD4hep::DDCore DD4hep::DDRec DD4hep::DDTest)
   install(TARGETS ${TEST_NAME} RUNTIME DESTINATION bin)
 
   set(cmd ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME})
@@ -36,7 +38,7 @@ foreach(TEST_NAME
     test_surface
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
-  target_link_libraries(${TEST_NAME} DDCore DDRec DDTest)
+  target_link_libraries(${TEST_NAME} DD4hep::DDCore DD4hep::DDRec DD4hep::DDTest)
   install(TARGETS ${TEST_NAME} RUNTIME DESTINATION bin)
   add_test(NAME t_${TEST_NAME}
     COMMAND ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${TEST_NAME} file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml)
@@ -48,7 +50,7 @@ if (DD4HEP_USE_GEANT4)
       test_EventReaders
       )
     add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
-    target_link_libraries(${TEST_NAME} DDCore DDRec DDG4)
+    target_link_libraries(${TEST_NAME} DD4hep::DDCore DD4hep::DDRec DD4hep::DDG4)
     target_include_directories(${TEST_NAME} PRIVATE ./include)
     install(TARGETS ${TEST_NAME} DESTINATION bin)
 

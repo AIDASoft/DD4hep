@@ -16,6 +16,7 @@ file(GLOB DDParsers_SOURCES src/Parsers/*.cpp src/Evaluator/*.cpp)
 file(GLOB DDParsers_SPIRIT_SOURCES src/Spirit/*.cpp)
 
 add_library(DDParsers SHARED ${DDParsers_SOURCES} ${DDParsers_SPIRIT_SOURCES})
+add_library(DD4hep::DDParsers ALIAS DDParsers)
 
 target_compile_definitions(DDParsers INTERFACE BOOST_SPIRIT_USE_PHOENIX_V3)
 

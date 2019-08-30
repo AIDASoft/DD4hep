@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 
 project(GaudiPluginService)
 add_library(DD4hepGaudiPluginMgr SHARED src/PluginServiceV1.cpp src/PluginServiceV2.cpp interface/DD4hepV1.cpp interface/DD4hepV2.cpp)
+add_library(DD4hep::DD4hepGaudiPluginMgr ALIAS DD4hepGaudiPluginMgr)
+
 target_compile_definitions(DD4hepGaudiPluginMgr PUBLIC Gaudi=DD4hep_Flavor)
 
 target_include_directories(DD4hepGaudiPluginMgr PUBLIC

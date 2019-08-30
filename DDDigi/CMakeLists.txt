@@ -11,9 +11,10 @@
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDDigi)
 file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(DDDigi SHARED ${DDDigi_SOURCES})
+add_library(DD4hep::DDDigi ALIAS DDDigi)
 
 target_link_libraries(DDDigi PUBLIC
-  DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
+  DD4hep::DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
 
 target_include_directories(DDDigi
   PUBLIC
@@ -37,13 +38,13 @@ endif()
 dd4hep_add_dictionary(G__DDDigi
   SOURCES ../DDCore/include/ROOT/Warnings.h python/DDDigiDict.C
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  USES    DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO Boost::boost
+  USES    DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO Boost::boost
   )
 #---------------------------  Plugin library for the digitization framework  -------
 dd4hep_add_plugin(DDDigiPlugins
   SOURCES        plugins/*.cpp
   GENERATED      G__DDDigi.cxx
-  USES           DDDigi
+  USES           DD4hep::DDDigi
   )
 
 #---Package installation procedure(s) ----------------------------------------------
