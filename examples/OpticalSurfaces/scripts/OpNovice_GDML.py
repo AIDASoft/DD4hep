@@ -6,6 +6,7 @@
    @version 1.0
 
 """
+from __future__ import absolute_import, unicode_literals
 import os, sys, time, logging, DDG4
 from DDG4 import OutputLevel as Output
 
