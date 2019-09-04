@@ -73,7 +73,6 @@ centos7-gcc8-Geant10.5-XERCESC:
     - ctest --output-on-failure
 
 centos7-gcc8-Geant10.5-Python3:
-  allow_failure: true
   stage: build
   tags:
     - docker
