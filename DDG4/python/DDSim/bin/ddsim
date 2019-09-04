@@ -7,11 +7,10 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from DDSim.DD4hepSimulation import DD4hepSimulation
-#------------------------------------------------
 from __future__ import absolute_import, unicode_literals
-
 import logging
+
+from DDSim.DD4hepSimulation import DD4hepSimulation
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
