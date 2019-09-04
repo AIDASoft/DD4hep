@@ -9,6 +9,14 @@ Based on M. Frank and F. Gaede runSim.py
 """
 from DDSim.DD4hepSimulation import DD4hepSimulation
 #------------------------------------------------
+from __future__ import absolute_import, unicode_literals
+
+import logging
+
+logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 if __name__ == "__main__":
   RUNNER = DD4hepSimulation()
   RUNNER.parseOptions()
@@ -17,6 +25,4 @@ if __name__ == "__main__":
   except NameError as e:
     if "global name" in str(e):
       globalToSet = str(e).split("'")[1]
-      print """ERROR: Unknown global variable, please add
-      global %s
-      to your steeringFile""" % globalToSet
+      logger.fatal("Unknown global variable, please add global %s to your steeringFile" % globalToSet)
