@@ -50,8 +50,8 @@ dd4hep_add_plugin(DDG4Plugins
 #---------------------------  Plugin library for the simulation framework  ---------
 
 
-find_package(Python2 COMPONENTS Development)
-if(TARGET Python2::Python)
+find_package(Python COMPONENTS Development)
+if(TARGET Python::Python)
   dd4hep_print("|++> Python found, creating DDG4Python Dictionary")
   dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
@@ -59,14 +59,14 @@ if(TARGET Python2::Python)
     )
   dd4hep_add_dictionary(G__DDPython
     SOURCES  tpython/DDPython.C
-    USES     Python2::Python
+    USES     Python::Python
     )
   if(TARGET ROOT::PyROOT)
     #---------------------------  Specialized python plugins  --------------------------
     dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
     add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
     add_library(DD4hep::DDPython ALIAS DDPython)
-    target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python2::Python ROOT::PyROOT)
+    target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ROOT::PyROOT)
     IF(${CMAKE_CXX_STANDARD} GREATER 16)
       # python header not cxx17 compatible, gives error in clang
       target_compile_options(DDPython PUBLIC -Wno-register)
