@@ -52,8 +52,6 @@ def _import_class(ns, nam):
   setattr(current, nam, getattr(scope, nam))
 
 
-# ---------------------------------------------------------------------------
-#
 try:
   dd4hep = loadDDG4()
 except Exception as X:
@@ -70,9 +68,6 @@ Simulation = dd4hep.sim
 Kernel = Sim.KernelHandle
 Interface = Sim.Geant4ActionCreation
 Detector = Core.Detector
-#
-#
-# ---------------------------------------------------------------------------
 
 
 def _constant(self, name):
@@ -80,7 +75,6 @@ def _constant(self, name):
 
 
 Detector.globalVal = _constant
-# ---------------------------------------------------------------------------
 
 
 def importConstants(description, namespace=None, debug=False):
@@ -131,8 +125,6 @@ def importConstants(description, namespace=None, debug=False):
   if cnt < 100:
     logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
 
-# ---------------------------------------------------------------------------
-
 
 def _registerGlobalAction(self, action):
   self.get().registerGlobalAction(Interface.toAction(action))
@@ -140,7 +132,6 @@ def _registerGlobalAction(self, action):
 
 def _registerGlobalFilter(self, filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
-# ---------------------------------------------------------------------------
 
 
 def _getKernelProperty(self, name):
@@ -154,8 +145,6 @@ def _getKernelProperty(self, name):
   msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
-# ---------------------------------------------------------------------------
-
 
 def _setKernelProperty(self, name, value):
   if Interface.setPropertyKernel(self.get(), name, str(value)):
@@ -163,21 +152,19 @@ def _setKernelProperty(self, name, value):
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
   raise KeyError(msg)
 
-# ---------------------------------------------------------------------------
+
+def _kernel_phase(self, name):
+  return self.addSimplePhase(str(name), False)
 
 
-def _kernel_phase(self, name): return self.addSimplePhase(str(name), False)
-# ---------------------------------------------------------------------------
+def _kernel_worker(self):
+  return Kernel(self.get().createWorker())
 
 
-def _kernel_worker(self): return Kernel(self.get().createWorker())
-# ---------------------------------------------------------------------------
+def _kernel_terminate(self):
+  return self.get().terminate()
 
 
-def _kernel_terminate(self): return self.get().terminate()
-
-
-# ---------------------------------------------------------------------------
 Kernel.phase = _kernel_phase
 Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
@@ -185,79 +172,64 @@ Kernel.createWorker = _kernel_worker
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
-# ---------------------------------------------------------------------------
+
 ActionHandle = Sim.ActionHandle
-# ---------------------------------------------------------------------------
 
 
 def SensitiveAction(kernel, nam, det, shared=False):
   return Interface.createSensitive(kernel, str(nam), str(det), shared)
-# ---------------------------------------------------------------------------
 
 
 def Action(kernel, nam, shared=False):
   return Interface.createAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def Filter(kernel, nam, shared=False):
   return Interface.createFilter(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def PhaseAction(kernel, nam, shared=False):
   return Interface.createPhaseAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def RunAction(kernel, nam, shared=False):
   return Interface.createRunAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def EventAction(kernel, nam, shared=False):
   return Interface.createEventAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def GeneratorAction(kernel, nam, shared=False):
   return Interface.createGeneratorAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def TrackingAction(kernel, nam, shared=False):
   return Interface.createTrackingAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def SteppingAction(kernel, nam, shared=False):
   return Interface.createSteppingAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def StackingAction(kernel, nam, shared=False):
   return Interface.createStackingAction(kernel, str(nam), shared)
-# ---------------------------------------------------------------------------
 
 
 def DetectorConstruction(kernel, nam):
   return Interface.createDetectorConstruction(kernel, str(nam))
-# ---------------------------------------------------------------------------
 
 
 def PhysicsList(kernel, nam):
   return Interface.createPhysicsList(kernel, str(nam))
-# ---------------------------------------------------------------------------
 
 
 def UserInitialization(kernel, nam):
   return Interface.createUserInitialization(kernel, str(nam))
-# ---------------------------------------------------------------------------
 
 
 def SensitiveSequence(kernel, nam):
   return Interface.createSensDetSequence(kernel, str(nam))
-# ---------------------------------------------------------------------------
 
 
 def _setup(obj):
@@ -277,7 +249,6 @@ def _setup_callback(obj):
   setattr(o, 'add', _adopt)
 
 
-# ---------------------------------------------------------------------------
 _setup_callback('Geant4ActionPhase')
 _setup('Geant4RunActionSequence')
 _setup('Geant4EventActionSequence')
@@ -309,8 +280,6 @@ _import_class('Sim', 'Geant4Random')
 _import_class('CLHEP', 'HepRandom')
 _import_class('CLHEP', 'HepRandomEngine')
 
-# ---------------------------------------------------------------------------
-
 
 def _get(self, name):
   import traceback
@@ -322,9 +291,6 @@ def _get(self, name):
     return getattr(self.action, name)
   elif hasattr(a, name):
     return getattr(a, name)
-  # elif hasattr(self,name):
-  #  return getattr(self,name)
-  # traceback.print_stack()
   msg = 'Geant4Action::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
 
@@ -378,17 +344,13 @@ _props('Geant4PhysicsListActionSequence')
 
 class Geant4:
   """
-    Helper object to perform stuff, which occurs very often.
-    I am sick of typing the same over and over again.
-    Hence, I grouped often used python fragments to this small
-    class to re-usage.
+  Helper object to perform stuff, which occurs very often.
+  I am sick of typing the same over and over again.
+  Hence, I grouped often used python fragments to this small
+  class to re-usage.
 
-    Long live laziness!
-
-
-    \author  M.Frank
-    \version 1.0
-
+  \author  M.Frank
+  \version 1.0
   """
 
   def __init__(self, kernel=None,
@@ -406,20 +368,20 @@ class Geant4:
     self.sensitive_types['escape_counter'] = 'Geant4EscapeCounter'
 
   def kernel(self):
-  """
-      Access the worker kernel object.
+    """
+    Access the worker kernel object.
 
-      \author  M.Frank
-  """
-  return self._kernel.worker()
+    \author  M.Frank
+    """
+    return self._kernel.worker()
 
   def master(self):
-  """
+    """
     Access the master kernel object.
 
     \author  M.Frank
-  """
-  return self._kernel
+    """
+    return self._kernel
 
   def setupUI(self, typ='csh', vis=False, ui=True, macro=None):
     """
@@ -443,18 +405,18 @@ class Geant4:
     return ui_action
 
   def setupCshUI(self, typ='csh', vis=False, ui=True, macro=None):
-  """
-      Configure the Geant4 command executive with a csh like command prompt
+    """
+    Configure the Geant4 command executive with a csh like command prompt
 
-      \author  M.Frank
-  """
-  return self.setupUI(typ='csh', vis=vis, ui=ui, macro=macro)
+    \author  M.Frank
+    """
+    return self.setupUI(typ='csh', vis=vis, ui=ui, macro=macro)
 
   def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):
     """
-      Configure Geant4 user initialization for optionasl multi-threading mode
+    Configure Geant4 user initialization for optionasl multi-threading mode
 
-      \author  M.Frank
+    \author  M.Frank
     """
     import sys
     init_seq = self.master().userInitialization(True)
@@ -506,9 +468,9 @@ class Geant4:
 
   def addPhaseAction(self, phase_name, factory_specification, ui=True, instance=None):
     """
-      Add a new phase action to an arbitrary step.
+    Add a new phase action to an arbitrary step.
 
-      \author  M.Frank
+    \author  M.Frank
     """
     if instance is None:
       instance = self.kernel()
@@ -531,12 +493,12 @@ class Geant4:
 
   def addInit(self, factory_specification):
     """
-      Add a new phase action to the 'initialize' step.
-      Called at the beginning of Geant4Exec::initialize.
-      The factory specification is the typical string "<factory_name>/<instance name>".
-      If no instance name is specified it defaults to the factory name.
+    Add a new phase action to the 'initialize' step.
+    Called at the beginning of Geant4Exec::initialize.
+    The factory specification is the typical string "<factory_name>/<instance name>".
+    If no instance name is specified it defaults to the factory name.
 
-      \author  M.Frank
+    \author  M.Frank
     """
     return self.addPhaseAction('initialize', factory_specification)
 
@@ -553,20 +515,20 @@ class Geant4:
 
   def addStop(self, factory_specification):
     """
-      Add a new phase action to the 'stop' step.
-      Called at the end of Geant4Exec::run.
-      The factory specification is the typical string "<factory_name>/<instance name>".
-      If no instance name is specified it defaults to the factory name.
+    Add a new phase action to the 'stop' step.
+    Called at the end of Geant4Exec::run.
+    The factory specification is the typical string "<factory_name>/<instance name>".
+    If no instance name is specified it defaults to the factory name.
 
-      \author  M.Frank
+    \author  M.Frank
     """
     return self.addPhaseAction('stop', factory_specification)
 
   def execute(self):
     """
-      Execute the Geant 4 program with all steps.
+    Execute the Geant 4 program with all steps.
 
-      \author  M.Frank
+    \author  M.Frank
     """
     self.kernel().configure()
     self.kernel().initialize()
@@ -754,16 +716,16 @@ class Geant4:
 
   def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
     """
-      Generic build of the input stage with multiple input modules.
+    Generic build of the input stage with multiple input modules.
 
-      Actions executed are:
-      1) Register Generation initialization action
-      2) Append all modules to build the complete input record
-      These modules are readers/particle sources, boosters and/or smearing actions.
-      3) Merge all existing interaction records
-      4) Add the MC truth handler
+    Actions executed are:
+    1) Register Generation initialization action
+    2) Append all modules to build the complete input record
+    These modules are readers/particle sources, boosters and/or smearing actions.
+    3) Merge all existing interaction records
+    4) Add the MC truth handler
 
-      \author  M.Frank
+    \author  M.Frank
     """
     ga = self.kernel().generatorAction()
     # Register Generation initialization action
@@ -800,8 +762,8 @@ class Geant4:
 
   def run(self):
     """
-      Execute the main Geant4 action
-      \author  M.Frank
+    Execute the main Geant4 action
+    \author  M.Frank
     """
     from ROOT import PyDDG4
     PyDDG4.run(self.master().get())
