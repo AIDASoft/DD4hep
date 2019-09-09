@@ -4,9 +4,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import MeV, mm
 import logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class ParticleHandler(ConfigHelper):

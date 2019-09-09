@@ -12,9 +12,7 @@ from __future__ import absolute_import, unicode_literals
 import dd4hep as core
 import logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def loadDDRec():

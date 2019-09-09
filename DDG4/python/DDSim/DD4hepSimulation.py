@@ -28,9 +28,7 @@ from g4units import *
 import logging
 from io import open
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 try:
   import argcomplete

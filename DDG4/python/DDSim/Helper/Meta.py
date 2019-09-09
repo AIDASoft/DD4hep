@@ -8,9 +8,7 @@ import logging
 import ddsix as six
 from io import open
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class Meta(ConfigHelper):
