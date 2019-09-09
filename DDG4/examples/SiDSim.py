@@ -105,7 +105,7 @@ def run():
   gen.Offset = (-20 * mm, -10 * mm, -10 * mm, 0 * ns)
   gen.Sigma = (12 * mm, 8 * mm, 8 * mm, 0 * ns)
   kernel.generatorAction().adopt(gen)
-  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   logger.info("#  Merge all existing interaction records")
   gen = DDG4.GeneratorAction(kernel, "Geant4InteractionMerger/InteractionMerger")

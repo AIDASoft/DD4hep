@@ -142,7 +142,7 @@ def run():
   gen.Sigma = (12*mm, 8*mm, 8*mm, 0*ns)
   kernel.generatorAction().adopt(gen)
   """
-  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
@@ -176,7 +176,7 @@ def run():
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
-  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   # Merge all existing interaction records
   gen = DDG4.GeneratorAction(kernel, "Geant4InteractionMerger/InteractionMerger")

@@ -1,6 +1,7 @@
 """Helper object for configuring the LCIO output file (meta)"""
 
 from __future__ import absolute_import, unicode_literals
+from DDSim.Helper.ConfigHelper import ConfigHelper
 import datetime
 import os
 import logging
@@ -10,8 +11,6 @@ from io import open
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-from DDSim.Helper.ConfigHelper import ConfigHelper
 
 
 class Meta(ConfigHelper):

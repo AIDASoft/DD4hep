@@ -42,7 +42,7 @@ def _get_filename():
       'Darwin': "libGaudiPluginService.dylib",
       'Windows': "libGaudiPluginService.dll",
       'Linux': "libGaudiPluginService.so",
-  }[name]
+      }[name]
   return fname
 
 
@@ -100,7 +100,7 @@ class Factory(ctypes.Structure):
   _fields_ = [
       ("_registry", Registry),
       ("_id", ctypes.c_char_p),
-  ]
+      ]
 
   @property
   def name(self):
@@ -139,7 +139,7 @@ class Factory(ctypes.Structure):
         self.type,
         self.classname,
         len(self.properties),
-    )
+        )
 
   pass
 
@@ -153,7 +153,7 @@ class Property(ctypes.Structure):
       ("_registry", Registry),
       ("_id", ctypes.c_char_p),
       ("_key", ctypes.c_char_p),
-  ]
+      ]
 
   @property
   def key(self):

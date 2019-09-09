@@ -1,14 +1,15 @@
-#==========================================================================
+# ==========================================================================
 #  AIDA Detector description implementation
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
 #
 # For the licensing terms see $DD4hepINSTALL/LICENSE.
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
-#==========================================================================
+# ==========================================================================
 from __future__ import absolute_import, unicode_literals
+from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 import logging
 from dd4hep_base import *
 
@@ -49,7 +50,7 @@ def _import_class(ns, nam):
   setattr(current, nam, getattr(scope, nam))
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 #
 try:
   dd4hep = loadDDDigi()
@@ -66,9 +67,8 @@ Kernel = digi.KernelHandle
 Interface = digi.DigiActionCreation
 Detector = core.Detector
 #
-from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 #
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _constant(self, name):
@@ -76,7 +76,7 @@ def _constant(self, name):
 
 
 Detector.globalVal = _constant
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 """
   Import the Detector constants into the DDDigi namespace
@@ -128,7 +128,7 @@ def importConstants(description, namespace=None, debug=False):
   if cnt < 100:
     logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _getKernelProperty(self, name):
@@ -142,7 +142,7 @@ def _getKernelProperty(self, name):
   msg = 'DigiKernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _setKernelProperty(self, name, value):
@@ -151,26 +151,26 @@ def _setKernelProperty(self, name, value):
   msg = 'DigiKernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
   raise KeyError(msg)
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _kernel_terminate(self): return self.get().terminate()
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 ActionHandle = digi.ActionHandle
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def Action(kernel, nam, parallel=False):
   obj = Interface.createAction(kernel, str(nam))
   obj.parallel = parallel
   return obj
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def TestAction(kernel, nam, sleep=0):
@@ -178,21 +178,21 @@ def TestAction(kernel, nam, sleep=0):
   if sleep != 0:
     obj.sleep = sleep
   return obj
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def ActionSequence(kernel, nam, parallel=False):
   obj = Interface.createSequence(kernel, str(nam))
   obj.parallel = parallel
   return obj
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def Synchronize(kernel, nam, parallel=False):
   obj = Interface.createSync(kernel, str(nam))
   obj.parallel = parallel
   return obj
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _setup(obj):
@@ -204,14 +204,14 @@ def _setup(obj):
   # setattr(o,'add',_adopt)
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 _setup('DigiActionSequence')
 _setup('DigiSynchronize')
 _import_class('digi', 'DigiKernel')
 _import_class('digi', 'DigiContext')
 _import_class('digi', 'DigiAction')
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _get(self, name):

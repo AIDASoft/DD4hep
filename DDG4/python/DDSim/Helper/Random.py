@@ -1,14 +1,13 @@
 """Helper object for random number generator objects"""
 
 from __future__ import absolute_import, unicode_literals
+from DDSim.Helper.ConfigHelper import ConfigHelper
 import random
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-from DDSim.Helper.ConfigHelper import ConfigHelper
 
 
 class Random (ConfigHelper):

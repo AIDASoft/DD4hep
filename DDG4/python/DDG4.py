@@ -1,14 +1,16 @@
-#==========================================================================
+# ==========================================================================
 #  AIDA Detector description implementation
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
 #
 # For the licensing terms see $DD4hepINSTALL/LICENSE.
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
-#==========================================================================
+# ==========================================================================
 from __future__ import absolute_import, unicode_literals
+import g4units as G4Units
+from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 import logging
 from dd4hep_base import *
 import six
@@ -52,7 +54,7 @@ def _import_class(ns, nam):
   setattr(current, nam, getattr(scope, nam))
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 #
 try:
   dd4hep = loadDDG4()
@@ -63,7 +65,7 @@ except Exception as X:
   logger.error('+--%-100s--+', 100 * '-')
   exit(1)
 
-from ROOT import CLHEP as CLHEP
+from ROOT import CLHEP as CLHEP  # noqa
 Core = dd4hep
 Sim = dd4hep.sim
 Simulation = dd4hep.sim
@@ -71,10 +73,8 @@ Kernel = Sim.KernelHandle
 Interface = Sim.Geant4ActionCreation
 Detector = Core.Detector
 #
-from dd4hep_base import std, std_vector, std_list, std_map, std_pair
-import g4units as G4Units
 #
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _constant(self, name):
@@ -82,7 +82,7 @@ def _constant(self, name):
 
 
 Detector.globalVal = _constant
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 """
   Import the Detector constants into the DDG4 namespace
@@ -134,7 +134,7 @@ def importConstants(description, namespace=None, debug=False):
   if cnt < 100:
     logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _registerGlobalAction(self, action):
@@ -143,7 +143,7 @@ def _registerGlobalAction(self, action):
 
 def _registerGlobalFilter(self, filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _getKernelProperty(self, name):
@@ -157,7 +157,7 @@ def _getKernelProperty(self, name):
   msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _setKernelProperty(self, name, value):
@@ -166,21 +166,21 @@ def _setKernelProperty(self, name, value):
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
   raise KeyError(msg)
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _kernel_phase(self, name): return self.addSimplePhase(str(name), False)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _kernel_worker(self): return Kernel(self.get().createWorker())
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _kernel_terminate(self): return self.get().terminate()
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 Kernel.phase = _kernel_phase
 Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
@@ -188,79 +188,79 @@ Kernel.createWorker = _kernel_worker
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 ActionHandle = Sim.ActionHandle
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def SensitiveAction(kernel, nam, det, shared=False):
   return Interface.createSensitive(kernel, str(nam), str(det), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def Action(kernel, nam, shared=False):
   return Interface.createAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def Filter(kernel, nam, shared=False):
   return Interface.createFilter(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def PhaseAction(kernel, nam, shared=False):
   return Interface.createPhaseAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def RunAction(kernel, nam, shared=False):
   return Interface.createRunAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def EventAction(kernel, nam, shared=False):
   return Interface.createEventAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def GeneratorAction(kernel, nam, shared=False):
   return Interface.createGeneratorAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def TrackingAction(kernel, nam, shared=False):
   return Interface.createTrackingAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def SteppingAction(kernel, nam, shared=False):
   return Interface.createSteppingAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def StackingAction(kernel, nam, shared=False):
   return Interface.createStackingAction(kernel, str(nam), shared)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def DetectorConstruction(kernel, nam):
   return Interface.createDetectorConstruction(kernel, str(nam))
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def PhysicsList(kernel, nam):
   return Interface.createPhysicsList(kernel, str(nam))
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def UserInitialization(kernel, nam):
   return Interface.createUserInitialization(kernel, str(nam))
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def SensitiveSequence(kernel, nam):
   return Interface.createSensDetSequence(kernel, str(nam))
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _setup(obj):
@@ -280,7 +280,7 @@ def _setup_callback(obj):
   setattr(o, 'add', _adopt)
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 _setup_callback('Geant4ActionPhase')
 _setup('Geant4RunActionSequence')
 _setup('Geant4EventActionSequence')
@@ -312,7 +312,7 @@ _import_class('Sim', 'Geant4Random')
 _import_class('CLHEP', 'HepRandom')
 _import_class('CLHEP', 'HepRandomEngine')
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _get(self, name):
