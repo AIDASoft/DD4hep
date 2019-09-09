@@ -1,5 +1,5 @@
 #==========================================================================
-#  AIDA Detector description implementation 
+#  AIDA Detector description implementation
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.

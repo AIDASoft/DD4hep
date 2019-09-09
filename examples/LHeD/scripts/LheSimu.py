@@ -14,10 +14,14 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def run():
-  import LHeD, DDG4, os, SystemOfUnits
+  import LHeD
+  import DDG4
+  import os
+  import SystemOfUnits
   from DDG4 import OutputLevel as Output
-  
+
   lhed = LHeD.LHeD()
   geant4 = lhed.geant4
   kernel = lhed.kernel
@@ -26,30 +30,29 @@ def run():
   kernel.UI = "UI"
   geant4.setupCshUI()
   lhed.setupField(quiet=False)
-  DDG4.importConstants(kernel.detectorDescription(),debug=False)
+  DDG4.importConstants(kernel.detectorDescription(), debug=False)
 
   dd4hep_dir = os.environ['DD4hep']
-  kernel.loadXML("file:"+dd4hep_dir+"/examples/LHeD/scripts/DDG4_field.xml")
+  kernel.loadXML("file:" + dd4hep_dir + "/examples/LHeD/scripts/DDG4_field.xml")
 
-  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
+  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
 
   # Configure G4 magnetic field tracking
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-  field.stepper            = "HelixGeant4Runge"
-  field.equation           = "Mag_UsualEqRhs"
-  field.eps_min            = 5e-0520*SystemOfUnits.mm
-  field.eps_max            = 0.001*SystemOfUnits.mm
-  field.min_chord_step     = 0.01*SystemOfUnits.mm
-  field.delta_chord        = 0.25*SystemOfUnits.mm
-  field.delta_intersection = 1e-05*SystemOfUnits.mm
-  field.delta_one_step     = 0.001*SystemOfUnits.mm
+  field.stepper = "HelixGeant4Runge"
+  field.equation = "Mag_UsualEqRhs"
+  field.eps_min = 5e-0520 * SystemOfUnits.mm
+  field.eps_max = 0.001 * SystemOfUnits.mm
+  field.min_chord_step = 0.01 * SystemOfUnits.mm
+  field.delta_chord = 0.25 * SystemOfUnits.mm
+  field.delta_intersection = 1e-05 * SystemOfUnits.mm
+  field.delta_one_step = 0.001 * SystemOfUnits.mm
   logger.info('+++++> %s -> stepper  = %s', field.name, field.stepper)
   logger.info('+++++> %s -> equation = %s', field.name, field.equation)
   logger.info('+++++> %s -> eps_min  = %s', field.name, field.eps_min)
   logger.info('+++++> %s -> eps_max  = %s', field.name, field.eps_max)
   logger.info('+++++> %s -> delta_one_step = %s', field.name, field.delta_one_step)
-
 
   """
   # Setup random generator
@@ -61,7 +64,7 @@ def run():
   """
 
   # Configure Run actions
-  run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
+  run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
   """
   run1.Property_int    = 12345
   run1.Property_double = -5e15*keV
@@ -72,19 +75,19 @@ def run():
   kernel.runAction().adopt(run1)
 
   # Configure Event actions
-  prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
+  prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.INFO
-  prt.OutputType  = 3 # Print both: table and tree
+  prt.OutputType = 3  # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
   #evt_lcio = geant4.setupLCIOOutput('LcioOutput','Lhe_dip_sol_circ-higgs-bb')
   #evt_lcio.OutputLevel = Output.ERROR
-  
-  evt_root = geant4.setupROOTOutput('RootOutput','Lhe_dip_sol_circ-higgs-bb')
+
+  evt_root = geant4.setupROOTOutput('RootOutput', 'Lhe_dip_sol_circ-higgs-bb')
   evt_root.OutputLevel = Output.INFO
 
-  gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
+  gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
 
   """
@@ -105,11 +108,11 @@ def run():
   kernel.generatorAction().adopt(gen)
   """
 
-  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of isotrope tracks of a given multiplicity with overlay:
   """
-  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   # First particle generator: pi+
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
@@ -140,70 +143,67 @@ def run():
   kernel.generatorAction().adopt(gen)
   """
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
 
-
-  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of primary particles from LCIO input files
   """
-  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-    
+  # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
   # First particle file reader
-  gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
+  gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO1")
   # gen.Input = "LCIOStdHepReader|/afs/.cern.ch/project/lhec/software/aidasoft/DD4hep/DD4hep/files/NC_bb_tag_2_pythia_events.hep"
   #gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/NC_bb_tag_2_pythia_events.hep"
   gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/lhec_for_peter/tag_2_pythia_events.hep"
   # gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/single-top-tag_1_pythia_events.hep"
-  
+
   # gen.Input = "Geant4EventReaderHepMC|/opt/DD4hep/files/ePb-q2-0-i.mc2"
   # gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/single-top-tag_1_pythia_events.hep"
   # gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/root.hep"
 
-  gen.OutputLevel = 2 # generator_output_level
+  gen.OutputLevel = 2  # generator_output_level
   gen.MomentumScale = 1.0
   gen.Mask = 1
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   # Install vertex smearing for this interaction
-  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear1");  
-  gen.OutputLevel = 4 #generator_output_level
+  gen = DDG4.GeneratorAction(kernel, "Geant4InteractionVertexSmear/Smear1")
+  gen.OutputLevel = 4  # generator_output_level
   gen.Mask = 1
-  gen.Offset = (-20*SystemOfUnits.mm, -10*SystemOfUnits.mm, -10*SystemOfUnits.mm, 0*SystemOfUnits.ns)
-  gen.Sigma = (12*SystemOfUnits.mm, 8*SystemOfUnits.mm, 8*SystemOfUnits.mm, 0*SystemOfUnits.ns)
+  gen.Offset = (-20 * SystemOfUnits.mm, -10 * SystemOfUnits.mm, -10 * SystemOfUnits.mm, 0 * SystemOfUnits.ns)
+  gen.Sigma = (12 * SystemOfUnits.mm, 8 * SystemOfUnits.mm, 8 * SystemOfUnits.mm, 0 * SystemOfUnits.ns)
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  
+
   # Merge all existing interaction records
-  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
-  gen.OutputLevel = 4 #generator_output_level
+  gen = DDG4.GeneratorAction(kernel, "Geant4InteractionMerger/InteractionMerger")
+  gen.OutputLevel = 4  # generator_output_level
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   # Finally generate Geant4 primaries
-  gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
-  gen.OutputLevel = 4 #generator_output_level
+  gen = DDG4.GeneratorAction(kernel, "Geant4PrimaryHandler/PrimaryHandler")
+  gen.OutputLevel = 4  # generator_output_level
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   # And handle the simulation particles.
-  part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
+  part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
   #part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
-  part.MinimalKineticEnergy = 10*SystemOfUnits.MeV
-  part.OutputLevel = 5 # generator_output_level
+  part.MinimalKineticEnergy = 10 * SystemOfUnits.MeV
+  part.OutputLevel = 5  # generator_output_level
   part.enableUI()
 
-  user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
+  user = DDG4.Action(kernel, "Geant4TCUserParticleHandler/UserParticleHandler")
   user.TrackingVolume_Zmax = DDG4.EcalEndcap_zmin_fwd
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
-
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
@@ -216,96 +216,95 @@ def run():
   """
 
   # Setup global filters fur use in sensntive detectors
-  f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
+  f1 = DDG4.Filter(kernel, 'GeantinoRejectFilter/GeantinoRejector')
   kernel.registerGlobalFilter(f1)
-  f2 = DDG4.Filter(kernel,'ParticleRejectFilter/OpticalPhotonRejector')
+  f2 = DDG4.Filter(kernel, 'ParticleRejectFilter/OpticalPhotonRejector')
   f2.particle = 'opticalphoton'
   kernel.registerGlobalFilter(f2)
-  f3 = DDG4.Filter(kernel,'ParticleSelectFilter/OpticalPhotonSelector') 
+  f3 = DDG4.Filter(kernel, 'ParticleSelectFilter/OpticalPhotonSelector')
   f3.particle = 'opticalphoton'
   kernel.registerGlobalFilter(f3)
 
-  f4 = DDG4.Filter(kernel,'EnergyDepositMinimumCut')
-  f4.Cut = 0.5*SystemOfUnits.MeV
+  f4 = DDG4.Filter(kernel, 'EnergyDepositMinimumCut')
+  f4.Cut = 0.5 * SystemOfUnits.MeV
   f4.enableUI()
   kernel.registerGlobalFilter(f4)
 
   # First the tracking detectors
-  seq,act = geant4.setupTracker('SiVertexBarrel')
+  seq, act = geant4.setupTracker('SiVertexBarrel')
   seq.adopt(f1)
   act.adopt(f1)
-  
-  seq,act = geant4.setupTracker('SiTrackerBarrel')
+
+  seq, act = geant4.setupTracker('SiTrackerBarrel')
   seq.adopt(f1)
   act.adopt(f1)
-  seq,act = geant4.setupTracker('SiTrackerForward')
+  seq, act = geant4.setupTracker('SiTrackerForward')
   seq.adopt(f1)
   act.adopt(f1)
-  seq,act = geant4.setupTracker('SiTrackerBackward')
+  seq, act = geant4.setupTracker('SiTrackerBackward')
   seq.adopt(f1)
   act.adopt(f1)
 
   # Now the calorimeters
-  seq,act = geant4.setupCalorimeter('EcalBarrel')
+  seq, act = geant4.setupCalorimeter('EcalBarrel')
   seq.adopt(f3)
   act.adopt(f3)
   seq.adopt(f4)
   act.adopt(f4)
 
-  seq,act = geant4.setupCalorimeter('EcalEndcap_fwd')
+  seq, act = geant4.setupCalorimeter('EcalEndcap_fwd')
   seq.adopt(f3)
   act.adopt(f3)
   seq.adopt(f4)
   act.adopt(f4)
-  seq,act = geant4.setupCalorimeter('EcalEndcap_bwd')
-  seq.adopt(f3)
-  act.adopt(f3)
-  seq.adopt(f4)
-  act.adopt(f4)
-    
-  seq,act = geant4.setupCalorimeter('HcalBarrel')
-  seq.adopt(f3)
-  act.adopt(f3)
-  seq.adopt(f4)
-  act.adopt(f4)
-  seq,act = geant4.setupCalorimeter('HcalEndcap_fwd')
-  seq.adopt(f3)
-  act.adopt(f3)
-  seq.adopt(f4)
-  act.adopt(f4)
-  seq,act = geant4.setupCalorimeter('HcalEndcap_bwd')
+  seq, act = geant4.setupCalorimeter('EcalEndcap_bwd')
   seq.adopt(f3)
   act.adopt(f3)
   seq.adopt(f4)
   act.adopt(f4)
 
-  seq,act = geant4.setupCalorimeter('HcalPlug_fwd')
+  seq, act = geant4.setupCalorimeter('HcalBarrel')
   seq.adopt(f3)
   act.adopt(f3)
   seq.adopt(f4)
   act.adopt(f4)
-  seq,act = geant4.setupCalorimeter('HcalPlug_bwd')
+  seq, act = geant4.setupCalorimeter('HcalEndcap_fwd')
   seq.adopt(f3)
   act.adopt(f3)
   seq.adopt(f4)
   act.adopt(f4)
-    
-  seq,act = geant4.setupCalorimeter('MuonBarrel')
-  seq.adopt(f2)
-  act.adopt(f2)
-  seq,act = geant4.setupCalorimeter('MuonEndcap_fwd1')
-  seq.adopt(f2)
-  act.adopt(f2)
-  seq,act = geant4.setupCalorimeter('MuonEndcap_fwd2')
-  seq.adopt(f2)
-  act.adopt(f2)
-  seq,act = geant4.setupCalorimeter('MuonEndcap_bwd1')
-  seq.adopt(f2)
-  act.adopt(f2)
-  seq,act = geant4.setupCalorimeter('MuonEndcap_bwd2')
-  seq.adopt(f2)
-  act.adopt(f2)
+  seq, act = geant4.setupCalorimeter('HcalEndcap_bwd')
+  seq.adopt(f3)
+  act.adopt(f3)
+  seq.adopt(f4)
+  act.adopt(f4)
 
+  seq, act = geant4.setupCalorimeter('HcalPlug_fwd')
+  seq.adopt(f3)
+  act.adopt(f3)
+  seq.adopt(f4)
+  act.adopt(f4)
+  seq, act = geant4.setupCalorimeter('HcalPlug_bwd')
+  seq.adopt(f3)
+  act.adopt(f3)
+  seq.adopt(f4)
+  act.adopt(f4)
+
+  seq, act = geant4.setupCalorimeter('MuonBarrel')
+  seq.adopt(f2)
+  act.adopt(f2)
+  seq, act = geant4.setupCalorimeter('MuonEndcap_fwd1')
+  seq.adopt(f2)
+  act.adopt(f2)
+  seq, act = geant4.setupCalorimeter('MuonEndcap_fwd2')
+  seq.adopt(f2)
+  act.adopt(f2)
+  seq, act = geant4.setupCalorimeter('MuonEndcap_bwd1')
+  seq.adopt(f2)
+  act.adopt(f2)
+  seq, act = geant4.setupCalorimeter('MuonEndcap_bwd2')
+  seq.adopt(f2)
+  act.adopt(f2)
 
   """
   scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
@@ -314,11 +313,11 @@ def run():
 
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
+  ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
   ph.addParticleConstructor(str('G4Geantino'))
   ph.addParticleConstructor(str('G4BosonConstructor'))
   ph.addParticleConstructor(str('G4LeptonConstructor'))
-  ph.addParticleProcess(str('e[+-]'),str('G4eMultipleScattering'),-1,1,1)
+  ph.addParticleProcess(str('e[+-]'), str('G4eMultipleScattering'), -1, 1, 1)
   ph.addPhysicsConstructor(str('G4OpticalPhysics'))
   ph.enableUI()
   phys.adopt(ph)
@@ -327,10 +326,11 @@ def run():
   kernel.configure()
   kernel.initialize()
 
-  #DDG4.setPrintLevel(Output.DEBUG)
+  # DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
   logging.info('End of run. Terminating .......')
   kernel.terminate()
+
 
 if __name__ == "__main__":
   run()

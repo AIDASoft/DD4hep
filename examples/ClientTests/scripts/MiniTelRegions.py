@@ -17,7 +17,7 @@ if __name__ == "__main__":
   m = MiniTel()
   m.configure()
   logger.info("#  Configure G4 geometry setup")
-  seq,act = m.geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+  seq, act = m.geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugRegions = True
   m.test_config(True)
   m.terminate()

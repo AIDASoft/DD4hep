@@ -3,16 +3,18 @@ from __future__ import absolute_import, unicode_literals
 from g4units import mm, m
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
-class MagneticField( ConfigHelper ):
+
+class MagneticField(ConfigHelper):
   """Configuration for the magnetic field (stepper)"""
-  def __init__( self ):
+
+  def __init__(self):
     super(MagneticField, self).__init__()
     self.stepper = "ClassicalRK4"
     self.equation = "Mag_UsualEqRhs"
-    self.eps_min = 5e-05*mm
-    self.eps_max = 0.001*mm
-    self.min_chord_step = 0.01*mm
-    self.delta_chord = 0.25*mm
-    self.delta_intersection = 0.001*mm
-    self.delta_one_step = 0.01*mm
-    self.largest_step = 10*m
+    self.eps_min = 5e-05 * mm
+    self.eps_max = 0.001 * mm
+    self.min_chord_step = 0.01 * mm
+    self.delta_chord = 0.25 * mm
+    self.delta_intersection = 0.001 * mm
+    self.delta_one_step = 0.01 * mm
+    self.largest_step = 10 * m

@@ -14,7 +14,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 from io import open
 
-LICENSE ="""// $Id$
+LICENSE = """// $Id$
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -26,6 +26,7 @@ LICENSE ="""// $Id$
 //
 //==========================================================================
 """
+
 
 def createParsers():
   """ make files for all parsers"""
@@ -46,65 +47,65 @@ def createParsers():
                  'unsigned long long',
                  'std::string',
                  'signed char',
-               ]
-  listOfContainers = ['std::vector','std::list','std::set','std::deque']
-  listOfMaps = ['int','unsigned long','std::string',]
-
+                 ]
+  listOfContainers = ['std::vector', 'std::list', 'std::set', 'std::deque']
+  listOfMaps = ['int', 'unsigned long', 'std::string', ]
 
   for typ in listOfTypes:
     for cont in listOfContainers:
-      createContainerFile( typ, cont)
+      createContainerFile(typ, cont)
     for mtype in listOfMaps:
-      createMapFile( typ, mtype )
+      createMapFile(typ, mtype)
 
-    createMappedFile( typ )
+    createMappedFile(typ)
 
-def createMappedFile( typ ):
+
+def createMappedFile(typ):
   """ create file for mapped parsers """
   tName = typ[5:] if typ.startswith("std::") else typ
-  filename="ParserStandardList_Mapped_%s.cpp" % ( tName.replace(" ", "") )
-  fileContent= """
+  filename = "ParserStandardList_Mapped_%s.cpp" % (tName.replace(" ", ""))
+  fileContent = """
 #include "ParsersStandardListCommon.h"
 namespace dd4hep{ namespace Parsers{
 IMPLEMENT_MAPPED_PARSERS(pair,%(type)s)
   }}
-""" % { "type":typ }
-  fileContent = LICENSE+fileContent
+""" % {"type": typ}
+  fileContent = LICENSE + fileContent
   if os.path.exists(filename):
     os.remove(filename)
   with open(filename, "w") as parseFile:
     parseFile.write(fileContent)
 
 
-def createContainerFile( typ, cont ):
+def createContainerFile(typ, cont):
   """create file to make container parser"""
   tName = typ[5:] if typ.startswith("std::") else typ
-  filename="ParserStandardList_%s_%s.cpp" % ( cont[5:], tName.replace(" ", ""))
-  fileContent= """
+  filename = "ParserStandardList_%s_%s.cpp" % (cont[5:], tName.replace(" ", ""))
+  fileContent = """
 #include "ParsersStandardListCommon.h"
 namespace dd4hep{ namespace Parsers{
 IMPLEMENT_STL_PARSER(%(cont)s,%(type)s)
   }}
-""" % { "cont": cont, "type":typ }
-  fileContent = LICENSE+fileContent
+""" % {"cont": cont, "type": typ}
+  fileContent = LICENSE + fileContent
   if os.path.exists(filename):
     os.remove(filename)
   with open(filename, "w") as parseFile:
     parseFile.write(fileContent)
 
 
-def createMapFile( typ, mtype ):
+def createMapFile(typ, mtype):
   """ create file to make map parser"""
   mName = mtype[5:] if mtype.startswith("std::") else mtype
   tName = typ[5:] if typ.startswith("std::") else typ
-  filename="ParserStandardList_Map%s_%s.cpp" % ( mName.replace(" ", "") , tName.replace(" ", ""))
-  fileContent= """
+  filename = "ParserStandardList_Map%s_%s.cpp" % (mName.replace(" ", ""), tName.replace(" ", ""))
+  fileContent = """
 #include "ParsersStandardListCommon.h"
 namespace dd4hep{ namespace Parsers{
 IMPLEMENT_STL_MAP_PARSER(std::map,%(mtype)s,%(type)s)
   }}
-""" % { "mtype": mtype, "type":typ }
-  fileContent = LICENSE+fileContent
+""" % {"mtype": mtype, "type": typ}
+  fileContent = LICENSE + fileContent
   if os.path.exists(filename):
     os.remove(filename)
   with open(filename, "w") as parseFile:

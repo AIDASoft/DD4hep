@@ -16,7 +16,8 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-class Filter( ConfigHelper ):
+
+class Filter(ConfigHelper):
   """Configuration for sensitive detector filters
 
   Set the default filter for tracker or caliromter
@@ -36,95 +37,96 @@ class Filter( ConfigHelper ):
   >>> SIM.filter.filters['edep3kev'] = dict(name="EnergyDepositMinimumCut/3keV", parameter={"Cut": 3.0*keV} )
 
   """
-  def __init__( self ):
+
+  def __init__(self):
     super(Filter, self).__init__()
     self._mapDetFilter = {}
     self._tracker = "edep1kev"
-    self._calo    = "edep0"
+    self._calo = "edep0"
     self._filters = {}
     self._createDefaultFilters()
 
   @property
-  def tracker( self ):
+  def tracker(self):
     """ default filter for tracking sensitive detectors; this is applied if no other filter is used for a tracker"""
     return self._tracker
+
   @tracker.setter
-  def tracker( self, val ):
+  def tracker(self, val):
     self._tracker = val
 
   @property
-  def calo( self ):
+  def calo(self):
     """ default filter for calorimeter sensitive detectors; this is applied if no other filter is used for a calorimeter """
     return self._calo
+
   @calo.setter
-  def calo( self, val ):
+  def calo(self, val):
     self._calo = val
 
-
   @property
-  def filters( self ):
+  def filters(self):
     """ list of filter objects: map between name and parameter dictionary """
     return self._filters
+
   @filters.setter
-  def filters( self, val ):
+  def filters(self, val):
     if isinstance(val, dict):
       self._filters.update(val)
       return
     ##
-    raise RuntimeError("Commandline setting of filters is not supported, use a steeringFile: %s " % val )
-
+    raise RuntimeError("Commandline setting of filters is not supported, use a steeringFile: %s " % val)
 
   @property
-  def mapDetFilter( self ):
+  def mapDetFilter(self):
     """ a map between patterns and filter objects, using patterns to attach filters to sensitive detector """
     return self._mapDetFilter
+
   @mapDetFilter.setter
-  def mapDetFilter( self, val ):
+  def mapDetFilter(self, val):
     if isinstance(val, dict):
       self._mapDetFilter.update(val)
       return
 
     if isinstance(val, six.string_types):
       vals = val.split(" ")
-    elif isinstance( val, list ):
+    elif isinstance(val, list):
       vals = val
-    if len(vals)%2 != 0:
+    if len(vals) % 2 != 0:
       raise RuntimeError("Not enough parameters for mapDetFilter")
-    for index in range(0,len(vals),2):
-      self._mapDetFilter[vals[index]] = vals[index+1]
+    for index in range(0, len(vals), 2):
+      self._mapDetFilter[vals[index]] = vals[index + 1]
 
-  def resetFilter( self ):
+  def resetFilter(self):
     """ remove all filters """
     self._filters = {}
 
-  def _createDefaultFilters( self ):
+  def _createDefaultFilters(self):
     """ create the map with the default filters """
-    self.filters["geantino"]= dict( name="GeantinoRejectFilter/GeantinoRejector",
-                                    parameter={} )
+    self.filters["geantino"] = dict(name="GeantinoRejectFilter/GeantinoRejector",
+                                    parameter={})
 
-    self.filters["edep1kev"] = dict( name="EnergyDepositMinimumCut",
-                                     parameter={"Cut": 1.0*keV} )
+    self.filters["edep1kev"] = dict(name="EnergyDepositMinimumCut",
+                                    parameter={"Cut": 1.0 * keV})
 
-    self.filters["edep0"] = dict( name="EnergyDepositMinimumCut/Cut0",
-                                  parameter={"Cut": 0.0} )
+    self.filters["edep0"] = dict(name="EnergyDepositMinimumCut/Cut0",
+                                 parameter={"Cut": 0.0})
 
-
-  def __makeMapDetList( self ):
+  def __makeMapDetList(self):
     """ create the values of the mapDetFilters a list of filters """
     for pattern, filters in six.iteritems(self._mapDetFilter):
       self._mapDetFilter[pattern] = ConfigHelper.makeList(filters)
 
-
-  def setupFilters( self, kernel):
+  def setupFilters(self, kernel):
     """ attach all filters to the kernel """
     import DDG4
     setOfFilters = set()
 
     for name, filt in six.iteritems(self.filters):
       setOfFilters.add(name)
-      ddFilt = DDG4.Filter(kernel,filt['name'])
+      ddFilt = DDG4.Filter(kernel, filt['name'])
       for para, value in six.iteritems(filt['parameter']):
-        setattr( ddFilt, para, value )
+        setattr(ddFilt, para, value)
       kernel.registerGlobalFilter(ddFilt)
       filt['filter'] = ddFilt
 
@@ -132,12 +134,12 @@ class Filter( ConfigHelper ):
     listOfFilters = []
     for val in self.mapDetFilter.values():
       listOfFilters += ConfigHelper.makeList(val)
-    requestedFilter = set(chain( ConfigHelper.makeList(self.tracker), ConfigHelper.makeList(self.calo), listOfFilters))
+    requestedFilter = set(chain(ConfigHelper.makeList(self.tracker), ConfigHelper.makeList(self.calo), listOfFilters))
     logger.info("ReqFilt %s", requestedFilter)
     if requestedFilter - setOfFilters:
-      raise RuntimeError(" Filter(s) '%s' are not registered!" %  str(requestedFilter - setOfFilters) )
+      raise RuntimeError(" Filter(s) '%s' are not registered!" % str(requestedFilter - setOfFilters))
 
-  def applyFilters( self, seq, det, defaultFilter=None):
+  def applyFilters(self, seq, det, defaultFilter=None):
     """apply the filters to to the sensitive detector
 
     :param seq: sequence object returned when creating sensitive detector
@@ -145,13 +147,13 @@ class Filter( ConfigHelper ):
     :returns: None
     """
     self.__makeMapDetList()
-    foundFilter=False
+    foundFilter = False
     for pattern, filts in six.iteritems(self.mapDetFilter):
       if pattern.lower() in det.lower():
         foundFilter = True
         for filt in filts:
-          logger.info("Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det ))
-          seq.add( self.filters[filt]['filter'] )
+          logger.info("Adding filter '%s' matched with '%s' to sensitive detector for '%s' " % (filt, pattern, det))
+          seq.add(self.filters[filt]['filter'])
 
     if not foundFilter and defaultFilter:
-      seq.add( self.filters[defaultFilter]['filter'] )
+      seq.add(self.filters[defaultFilter]['filter'])

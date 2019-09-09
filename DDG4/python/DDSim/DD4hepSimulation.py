@@ -20,25 +20,26 @@ logger.setLevel(logging.INFO)
 import argparse
 try:
   import argcomplete
-  ARGCOMPLETEENABLED=True
+  ARGCOMPLETEENABLED = True
 except ImportError:
-  ARGCOMPLETEENABLED=False
+  ARGCOMPLETEENABLED = False
 
 POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
 
-def outputLevel( level ):
+
+def outputLevel(level):
   """return INT for outputlevel"""
   if isinstance(level, int):
     if level < 1 or 7 < level:
       raise KeyError
     return level
-  outputlevels = { "VERBOSE": 1,
-                   "DEBUG":   2,
-                   "INFO":    3,
-                   "WARNING": 4,
-                   "ERROR":   5,
-                   "FATAL":   6,
-                   "ALWAYS":  7 }
+  outputlevels = {"VERBOSE": 1,
+                  "DEBUG": 2,
+                  "INFO": 3,
+                  "WARNING": 4,
+                  "ERROR": 5,
+                  "FATAL": 6,
+                  "ALWAYS": 7}
   return outputlevels[level.upper()]
 
 
@@ -59,6 +60,7 @@ import os
 import sys
 import datetime
 
+
 class DD4hepSimulation(object):
   """Class to hold all the parameters and functions to run simulation"""
 
@@ -72,7 +74,7 @@ class DD4hepSimulation(object):
 
     self.numberOfEvents = 0
     self.skipNEvents = 0
-    self.physicsList = None ## deprecated use physics.list
+    self.physicsList = None  # deprecated use physics.list
     self.crossingAngleBoost = 0.0
     self.macroFile = ''
     self.enableGun = False
@@ -88,7 +90,7 @@ class DD4hepSimulation(object):
     self._dumpParameter = False
     self._dumpSteeringFile = False
 
-    ## objects for extended configuration option
+    # objects for extended configuration option
     self.output = Output()
     self.random = Random()
     self.gun = Gun()
@@ -104,16 +106,15 @@ class DD4hepSimulation(object):
 
     self._argv = None
 
-    ### use TCSH geant UI instead of QT
+    # use TCSH geant UI instead of QT
     os.environ['G4UI_USE_TCSH'] = "1"
-
 
   def readSteeringFile(self):
     """Reads a steering file and sets the parameters to that of the
     DD4hepSimulation object present in the steering file.
     """
     globs = {}
-    locs  = {}
+    locs = {}
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
@@ -135,35 +136,35 @@ class DD4hepSimulation(object):
     parser.add_argument("--steeringFile", "-S", action="store", default=self.steeringFile,
                         help="Steering file to change default behaviour")
 
-    #first we parse just the steering file, but only if we don't want to see the help message
-    if not any( opt in self._argv for opt in ('-h','--help')):
+    # first we parse just the steering file, but only if we don't want to see the help message
+    if not any(opt in self._argv for opt in ('-h', '--help')):
       parsed, _unknown = parser.parse_known_args()
       self.steeringFile = parsed.steeringFile
       self.readSteeringFile()
 
-    ## readSteeringFile will set self._argv to None if there is a steering file
+    # readSteeringFile will set self._argv to None if there is a steering file
     if self._argv is None:
       self._argv = list(argv) if argv else list(sys.argv)
-
 
     parser.add_argument("--compactFile", action="store", default=self.compactFile,
                         help="The compact XML file")
 
-    parser.add_argument("--runType", action="store", choices=("batch","vis","run","shell"), default=self.runType,
-                        help="The type of action to do in this invocation"##Note: implicit string concatenation
+    parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell"), default=self.runType,
+                        help="The type of action to do in this invocation"  # Note: implicit string concatenation
                         "\nbatch: just simulate some events, needs numberOfEvents, and input file or gun"
                         "\nvis: enable visualisation, run the macroFile if it is set"
                         "\nrun: run the macroFile and exit"
                         "\nshell: enable interactive session")
 
     parser.add_argument("--inputFiles", "-I", nargs='+', action="store", default=self.inputFiles,
-                        help="InputFiles for simulation %s files are supported" % ", ".join(POSSIBLEINPUTFILES) )
+                        help="InputFiles for simulation %s files are supported" % ", ".join(POSSIBLEINPUTFILES))
 
-    parser.add_argument("--outputFile","-O", action="store", default=self.outputFile,
+    parser.add_argument("--outputFile", "-O", action="store", default=self.outputFile,
                         help="Outputfile from the simulation,only lcio output is supported")
 
     parser.add_argument("-v", "--printLevel", action="store", default=self.printLevel, dest="printLevel",
-                        choices=(1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS'),
+                        choices=(1, 2, 3, 4, 5, 6, 7, 'VERBOSE', 'DEBUG',
+                                 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS'),
                         help="Verbosity use integers from 1(most) to 7(least) verbose"
                         "\nor strings: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL, ALWAYS")
 
@@ -179,10 +180,10 @@ class DD4hepSimulation(object):
     parser.add_argument("--crossingAngleBoost", action="store", dest="crossingAngleBoost", default=self.crossingAngleBoost,
                         type=float, help="Lorentz boost for the crossing angle, in radian!")
 
-    parser.add_argument("--vertexSigma", nargs=4, action="store", dest="vertexSigma", default=self.vertexSigma, metavar = ('X','Y','Z','T'),
+    parser.add_argument("--vertexSigma", nargs=4, action="store", dest="vertexSigma", default=self.vertexSigma, metavar=('X', 'Y', 'Z', 'T'),
                         type=float, help="FourVector of the Sigma for the Smearing of the Vertex position: x y z t")
 
-    parser.add_argument("--vertexOffset", nargs=4, action="store", dest="vertexOffset", default=self.vertexOffset, metavar = ('X','Y','Z','T'),
+    parser.add_argument("--vertexOffset", nargs=4, action="store", dest="vertexOffset", default=self.vertexOffset, metavar=('X', 'Y', 'Z', 'T'),
                         type=float, help="FourVector of translation for the Smearing of the Vertex position: x y z t")
 
     parser.add_argument("--macroFile", "-M", action="store", dest="macroFile", default=self.macroFile,
@@ -206,11 +207,11 @@ class DD4hepSimulation(object):
     parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile", default=self._dumpSteeringFile,
                         help="print an example steering file to stdout")
 
-    #output, or do something smarter with fullHelp only for example
+    # output, or do something smarter with fullHelp only for example
     ConfigHelper.addAllHelper(self, parser)
-    ## now parse everything. The default values are now taken from the
-    ## steeringFile if they were set so that the steering file parameters can be
-    ## overwritten from the command line
+    # now parse everything. The default values are now taken from the
+    # steeringFile if they were set so that the steering file parameters can be
+    # overwritten from the command line
     if ARGCOMPLETEENABLED:
       argcomplete.autocomplete(parser)
     parsed = parser.parse_args()
@@ -220,9 +221,9 @@ class DD4hepSimulation(object):
 
     self.compactFile = parsed.compactFile
     self.inputFiles = parsed.inputFiles
-    self.inputFiles = self.__checkFileFormat( self.inputFiles, POSSIBLEINPUTFILES)
+    self.inputFiles = self.__checkFileFormat(self.inputFiles, POSSIBLEINPUTFILES)
     self.outputFile = parsed.outputFile
-    self.__checkFileFormat( self.outputFile, ('.root', '.slcio'))
+    self.__checkFileFormat(self.outputFile, ('.root', '.slcio'))
     self.runType = parsed.runType
     self.printLevel = self.__checkOutputLevel(parsed.printLevel)
 
@@ -241,7 +242,7 @@ class DD4hepSimulation(object):
     self._consistencyChecks()
 
     #self.__treatUnknownArgs( parsed, unknown )
-    self.__parseAllHelper( parsed )
+    self.__parseAllHelper(parsed)
     if self._errorMessages and not (self._dumpParameter or self._dumpSteeringFile):
       parser.epilog = "\n".join(self._errorMessages)
       parser.print_help()
@@ -249,35 +250,35 @@ class DD4hepSimulation(object):
 
     if self._dumpParameter:
       from pprint import pprint
-      logger.info("="*80)
+      logger.info("=" * 80)
       pprint(vars(self))
-      logger.info("="*80)
+      logger.info("=" * 80)
       exit(1)
 
     if self._dumpSteeringFile:
-      self.__printSteeringFile( parser )
+      self.__printSteeringFile(parser)
       exit(1)
 
   @staticmethod
-  def getDetectorLists( detectorDescription ):
+  def getDetectorLists(detectorDescription):
     ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
     import DDG4
-    trackers,calos = [],[]
+    trackers, calos = [], []
     for i in detectorDescription.detectors():
       det = DDG4.DetElement(i.second.ptr())
       name = det.name()
-      sd =  detectorDescription.sensitiveDetector( name )
+      sd = detectorDescription.sensitiveDetector(name)
       if sd.isValid():
         detType = sd.type()
   #      if len(detectorList) and not(name in detectorList):
   #        continue
-        logger.info('getDetectorLists - found active detctor %s type: %s' ,  name , detType)
+        logger.info('getDetectorLists - found active detctor %s type: %s', name, detType)
         if detType == "tracker":
-          trackers.append( det.name() )
+          trackers.append(det.name())
         if detType == "calorimeter":
-          calos.append( det.name() )
+          calos.append(det.name())
 
-    return trackers,calos
+    return trackers, calos
 
 #==================================================================================
 
@@ -286,31 +287,32 @@ class DD4hepSimulation(object):
     import ROOT
     ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-    import DDG4, dd4hep
+    import DDG4
+    import dd4hep
 
     self.printLevel = getOutputLevel(self.printLevel)
 
     kernel = DDG4.Kernel()
     dd4hep.setPrintLevel(self.printLevel)
 
-    kernel.loadGeometry(str("file:"+ self.compactFile ))
+    kernel.loadGeometry(str("file:" + self.compactFile))
     detectorDescription = kernel.detectorDescription()
 
-    DDG4.importConstants( detectorDescription )
+    DDG4.importConstants(detectorDescription)
 
   #----------------------------------------------------------------------------------
 
     #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
     #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
-    simple = DDG4.Geant4( kernel, tracker=self.action.tracker, calo=self.action.calo )
+    simple = DDG4.Geant4(kernel, tracker=self.action.tracker, calo=self.action.calo)
 
     simple.printDetectors()
 
-    if self.runType =="vis":
+    if self.runType == "vis":
       simple.setupUI(typ="csh", vis=True, macro=self.macroFile)
-    elif self.runType =="run":
+    elif self.runType == "run":
       simple.setupUI(typ="csh", vis=False, macro=self.macroFile, ui=False)
-    elif self.runType =="shell":
+    elif self.runType == "shell":
       simple.setupUI(typ="csh", vis=False, macro=None, ui=True)
     elif self.runType == "batch":
       simple.setupUI(typ="csh", vis=False, macro=None, ui=False)
@@ -318,8 +320,8 @@ class DD4hepSimulation(object):
       logger.errro("unknown runType")
       exit(1)
 
-    #kernel.UI="csh"
-    kernel.NumEvents=self.numberOfEvents
+    # kernel.UI="csh"
+    kernel.NumEvents = self.numberOfEvents
 
     #-----------------------------------------------------------------------------------
     # setup the magnetic field:
@@ -328,12 +330,12 @@ class DD4hepSimulation(object):
     #----------------------------------------------------------------------------------
 
     # Configure Run actions
-    run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
+    run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
     kernel.registerGlobalAction(run1)
     kernel.runAction().add(run1)
 
     # Configure the random seed, do it before the I/O because we might change the seed!
-    _rndm = self.random.initialize( DDG4, kernel, self.output.random )
+    _rndm = self.random.initialize(DDG4, kernel, self.output.random)
 
     # Configure I/O
     if self.outputFile.endswith(".slcio"):
@@ -348,8 +350,8 @@ class DD4hepSimulation(object):
     actionList = []
 
     if self.enableGun:
-      gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/"+"Gun")
-      self.gun.setOptions( gun )
+      gun = DDG4.GeneratorAction(kernel, "Geant4ParticleGun/" + "Gun")
+      self.gun.setOptions(gun)
       gun.Standalone = False
       gun.Mask = 1
       actionList.append(gun)
@@ -357,45 +359,45 @@ class DD4hepSimulation(object):
       logger.info("++++ Adding DD4hep Particle Gun ++++")
 
     if self.enableG4Gun:
-      ## GPS Create something
-      self._g4gun = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/Gun")
+      # GPS Create something
+      self._g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun")
       self._g4gun.Uses = 'G4ParticleGun'
       self._g4gun.Mask = 2
       logger.info("++++ Adding Geant4 Particle Gun ++++")
       actionList.append(self._g4gun)
 
     if self.enableG4GPS:
-      ## GPS Create something
-      self._g4gps = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/GPS")
+      # GPS Create something
+      self._g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS")
       self._g4gps.Uses = 'G4GeneralParticleSource'
       self._g4gps.Mask = 3
       logger.info("++++ Adding Geant4 General Particle Source ++++")
       actionList.append(self._g4gps)
 
-    for index,inputFile in enumerate(self.inputFiles, start=4):
+    for index, inputFile in enumerate(self.inputFiles, start=4):
       if inputFile.endswith(".slcio"):
-        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO%d" % index)
         gen.Parameters = self.lcio.getParameters()
-        gen.Input="LCIOFileReader|"+inputFile
+        gen.Input = "LCIOFileReader|" + inputFile
       elif inputFile.endswith(".stdhep"):
-        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/STDHEP%d" % index)
-        gen.Input="LCIOStdHepReader|"+inputFile
+        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/STDHEP%d" % index)
+        gen.Input = "LCIOStdHepReader|" + inputFile
       elif inputFile.endswith(".HEPEvt"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/HEPEvt%d" % index)
-        gen.Input="Geant4EventReaderHepEvtShort|"+inputFile
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/HEPEvt%d" % index)
+        gen.Input = "Geant4EventReaderHepEvtShort|" + inputFile
       elif inputFile.endswith(".hepevt"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepevt%d" % index)
-        gen.Input="Geant4EventReaderHepEvtLong|"+inputFile
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
+        gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
       elif inputFile.endswith(".hepmc"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc%d" % index)
-        gen.Input="Geant4EventReaderHepMC|"+inputFile
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+        gen.Input = "Geant4EventReaderHepMC|" + inputFile
       elif inputFile.endswith(".pairs"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/GuineaPig%d" % index)
-        gen.Input="Geant4EventReaderGuineaPig|"+inputFile
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
+        gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
       else:
-        ##this should never happen because we already check at the top, but in case of some LogicError...
-        raise RuntimeError( "Unknown input file type: %s" % inputFile )
+        # this should never happen because we already check at the top, but in case of some LogicError...
+        raise RuntimeError("Unknown input file type: %s" % inputFile)
       gen.Sync = self.skipNEvents
       gen.Mask = index
       actionList.append(gen)
@@ -403,26 +405,25 @@ class DD4hepSimulation(object):
 
     if actionList:
       self._buildInputStage(simple, actionList, output_level=self.output.inputStage,
-                            have_mctruth=self._enablePrimaryHandler() )
+                            have_mctruth=self._enablePrimaryHandler())
 
     #================================================================================================
 
     # And handle the simulation particles.
-    part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
+    part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
     kernel.generatorAction().adopt(part)
     #part.SaveProcesses = ['conv','Decay']
-    part.SaveProcesses        = self.part.saveProcesses
+    part.SaveProcesses = self.part.saveProcesses
     part.MinimalKineticEnergy = self.part.minimalKineticEnergy
-    part.KeepAllParticles     = self.part.keepAllParticles
-    part.PrintEndTracking     = self.part.printEndTracking
-    part.PrintStartTracking   = self.part.printStartTracking
-    part.MinDistToParentVertex= self.part.minDistToParentVertex
+    part.KeepAllParticles = self.part.keepAllParticles
+    part.PrintEndTracking = self.part.printEndTracking
+    part.PrintStartTracking = self.part.printStartTracking
+    part.MinDistToParentVertex = self.part.minDistToParentVertex
     part.OutputLevel = self.output.part
     part.enableUI()
 
-
     if self.part.enableDetailedHitsAndParticleInfo:
-      self.part.setDumpDetailedParticleInfo( kernel, DDG4 )
+      self.part.setDumpDetailedParticleInfo(kernel, DDG4)
 
     self.part.setupUserParticleHandler(part, kernel, DDG4)
 
@@ -430,7 +431,7 @@ class DD4hepSimulation(object):
 
     # Setup global filters for use in sensitive detectors
     try:
-      self.filter.setupFilters( kernel )
+      self.filter.setupFilters(kernel)
     except RuntimeError as e:
       logger.error("%s", e)
       exit(1)
@@ -438,28 +439,28 @@ class DD4hepSimulation(object):
     #=================================================================================
     # get lists of trackers and calorimeters in detectorDescription
 
-    trk,cal = self.getDetectorLists( detectorDescription )
+    trk, cal = self.getDetectorLists(detectorDescription)
 
     # ---- add the trackers:
     try:
-      self.__setupSensitiveDetectors( trk, simple.setupTracker, self.filter.tracker)
+      self.__setupSensitiveDetectors(trk, simple.setupTracker, self.filter.tracker)
     except Exception as e:
       logger.error("Setting up sensitive detector %s", e)
       raise
 
   # ---- add the calorimeters:
     try:
-      self.__setupSensitiveDetectors( cal, simple.setupCalorimeter, self.filter.calo )
+      self.__setupSensitiveDetectors(cal, simple.setupCalorimeter, self.filter.calo)
     except Exception as e:
       logger.error("Setting up sensitive detector %s", e)
       raise
 
   #=================================================================================
     # Now build the physics list:
-    _phys = self.physics.setupPhysics( kernel, name=self.physicsList )
+    _phys = self.physics.setupPhysics(kernel, name=self.physicsList)
 
-    ## add the G4StepLimiterPhysics to activate the max step limits in volumes
-    ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
+    # add the G4StepLimiterPhysics to activate the max step limits in volumes
+    ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
     ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
     _phys.add(ph)
 
@@ -468,7 +469,7 @@ class DD4hepSimulation(object):
     kernel.configure()
     kernel.initialize()
 
-    ## GPS
+    # GPS
     if self._g4gun is not None:
       self._g4gun.generator()
     if self._g4gps is not None:
@@ -481,38 +482,38 @@ class DD4hepSimulation(object):
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     if self.printLevel <= 3:
-      logger.info("DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)"% (totalTimeUser, totalTimeSys))
+      logger.info("DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)" %
+                  (totalTimeUser, totalTimeSys))
       if self.numberOfEvents != 0:
         eventTime = totalTimeUser - startUpTime
-        perEventTime =  eventTime / self.numberOfEvents
-        logger.info("DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) " \
-            % (startUpTime, eventTime, perEventTime))
-
+        perEventTime = eventTime / self.numberOfEvents
+        logger.info("DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) "
+                    % (startUpTime, eventTime, perEventTime))
 
   def __setMagneticFieldOptions(self, simple):
     """ create and configure the magnetic tracking setup """
     field = simple.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-    field.stepper            = self.field.stepper
-    field.equation           = self.field.equation
-    field.eps_min            = self.field.eps_min
-    field.eps_max            = self.field.eps_max
-    field.min_chord_step     = self.field.min_chord_step
-    field.delta_chord        = self.field.delta_chord
+    field.stepper = self.field.stepper
+    field.equation = self.field.equation
+    field.eps_min = self.field.eps_min
+    field.eps_max = self.field.eps_max
+    field.min_chord_step = self.field.min_chord_step
+    field.delta_chord = self.field.delta_chord
     field.delta_intersection = self.field.delta_intersection
-    field.delta_one_step     = self.field.delta_one_step
-    field.largest_step       = self.field.largest_step
+    field.delta_one_step = self.field.delta_one_step
+    field.largest_step = self.field.largest_step
 
   def __checkFileFormat(self, fileNames, extensions):
     """check if the fileName is allowed, note that the filenames are case
     sensitive, and in case of hepevt we depend on this to identify short and long versions of the content
     """
-    if isinstance( fileNames, six.string_types ):
+    if isinstance(fileNames, six.string_types):
       fileNames = [fileNames]
-    if not all( fileName.endswith( extensions ) for fileName in fileNames ):
+    if not all(fileName.endswith(extensions) for fileName in fileNames):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
     return fileNames
 
-  def __applyBoostOrSmear( self, kernel, actionList, mask ):
+  def __applyBoostOrSmear(self, kernel, actionList, mask):
     """apply boost or smearing for given mask index"""
     import DDG4
     if self.crossingAngleBoost:
@@ -528,19 +529,18 @@ class DD4hepSimulation(object):
       vSmear.Mask = mask
       actionList.append(vSmear)
 
-
-  def __parseAllHelper( self, parsed ):
+  def __parseAllHelper(self, parsed):
     """ parse all the options for the helper """
     parsedDict = vars(parsed)
     for name, obj in six.iteritems(vars(self)):
-      if isinstance( obj, ConfigHelper ):
+      if isinstance(obj, ConfigHelper):
         for var in obj.getOptions():
-          key = "%s.%s" %( name,var )
+          key = "%s.%s" % (name, var)
           if key in parsedDict:
             try:
-              obj.setOption( var, parsedDict[key] )
+              obj.setOption(var, parsedDict[key])
             except RuntimeError as e:
-              self._errorMessages.append( "ERROR: %s " % e )
+              self._errorMessages.append("ERROR: %s " % e)
 
   def __checkOutputLevel(self, level):
     """return outputlevel as int so we don't have to import anything for faster startup"""
@@ -553,10 +553,10 @@ class DD4hepSimulation(object):
       try:
         return outputLevel(level.upper())
       except ValueError:
-        self._errorMessages.append( "ERROR: printLevel is neither integer nor string" )
+        self._errorMessages.append("ERROR: printLevel is neither integer nor string")
         return -1
     except KeyError:
-      self._errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
+      self._errorMessages.append("ERROR: printLevel '%s' unknown" % level)
       return -1
 
   def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None):
@@ -572,12 +572,12 @@ class DD4hepSimulation(object):
       for pattern in self.action.mapActions:
         if pattern.lower() in det.lower():
           action = self.action.mapActions[pattern]
-          logger.info('       replace default action with : %s' , action)
+          logger.info('       replace default action with : %s', action)
           break
-      seq,act = setupFuction( det, type=action )
-      self.filter.applyFilters( seq, det, defaultFilter )
+      seq, act = setupFuction(det, type=action)
+      self.filter.applyFilters(seq, det, defaultFilter)
 
-      ##set detailed hit creation mode for this
+      # set detailed hit creation mode for this
       if self.enableDetailedShowerMode:
         if isinstance(act, list):
           for a in act:
@@ -585,51 +585,50 @@ class DD4hepSimulation(object):
         else:
           act.HitCreationMode = 2
 
-  def __printSteeringFile( self, parser):
+  def __printSteeringFile(self, parser):
     """print the parameters formated as a steering file"""
 
-    steeringFileBase="""from DDSim.DD4hepSimulation import DD4hepSimulation
+    steeringFileBase = """from DDSim.DD4hepSimulation import DD4hepSimulation
 from g4units import mm, GeV, MeV
 SIM = DD4hepSimulation()
 
 """
     optionDict = parser._option_string_actions
     parameters = vars(self)
-    for parName, parameter in sorted(list(parameters.items()), sortParameters ):
+    for parName, parameter in sorted(list(parameters.items()), sortParameters):
       if parName.startswith("_"):
         continue
-      if isinstance( parameter, ConfigHelper ):
+      if isinstance(parameter, ConfigHelper):
         steeringFileBase += "\n\n"
         steeringFileBase += "################################################################################\n"
-        steeringFileBase += "## %s \n" % "\n## ".join( parameter.__doc__.splitlines() )
+        steeringFileBase += "## %s \n" % "\n## ".join(parameter.__doc__.splitlines())
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
-        for opt, optionsDict in sorted( six.iteritems(options), sortParameters ):
+        for opt, optionsDict in sorted(six.iteritems(options), sortParameters):
           if opt.startswith("_"):
             continue
           parValue = optionsDict['default']
           if isinstance(optionsDict.get('help'), six.string_types):
             steeringFileBase += "\n## %s\n" % "\n## ".join(optionsDict.get('help').splitlines())
-          ## add quotes if it is a string
-          if isinstance( parValue, six.string_types ):
-            steeringFileBase += "SIM.%s.%s = \"%s\"\n" %(parName, opt, parValue)
+          # add quotes if it is a string
+          if isinstance(parValue, six.string_types):
+            steeringFileBase += "SIM.%s.%s = \"%s\"\n" % (parName, opt, parValue)
           else:
-            steeringFileBase += "SIM.%s.%s = %s\n" %(parName, opt, parValue)
+            steeringFileBase += "SIM.%s.%s = %s\n" % (parName, opt, parValue)
       else:
-        ## get the docstring from the command line parameter
-        optionObj = optionDict.get("--"+parName, None)
-        if isinstance(optionObj, argparse._StoreAction ):
+        # get the docstring from the command line parameter
+        optionObj = optionDict.get("--" + parName, None)
+        if isinstance(optionObj, argparse._StoreAction):
           steeringFileBase += "## %s\n" % "\n## ".join(optionObj.help.splitlines())
-        ## add quotes if it is a string
+        # add quotes if it is a string
         if isinstance(parameter, six.string_types):
-          steeringFileBase += "SIM.%s = \"%s\"" %( parName, str(parameter))
+          steeringFileBase += "SIM.%s = \"%s\"" % (parName, str(parameter))
         else:
-          steeringFileBase += "SIM.%s = %s" %( parName, str(parameter))
+          steeringFileBase += "SIM.%s = %s" % (parName, str(parameter))
         steeringFileBase += "\n"
     logger.info("%s", steeringFileBase)
 
-
-  def _consistencyChecks( self ):
+  def _consistencyChecks(self):
     """Check if the requested setup makes sense, or if there is something preventing it from working correctly
 
     Appends error messages to self._errorMessages
@@ -646,16 +645,16 @@ SIM = DD4hepSimulation()
       if not self.inputFiles and not self.enableGun:
         self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
 
-    if self.inputFiles and ( self.enableG4Gun or self.enableG4GPS ):
+    if self.inputFiles and (self.enableG4Gun or self.enableG4GPS):
       self._errorMessages.append("ERROR: Cannot use both inputFiles and Geant4Gun or GeneralParticleSource")
 
-    if self.enableGun and ( self.enableG4Gun or self.enableG4GPS ):
+    if self.enableGun and (self.enableG4Gun or self.enableG4GPS):
       self._errorMessages.append("ERROR: Cannot use both DD4hepGun and Geant4 Gun or GeneralParticleSource")
 
     if self.numberOfEvents < 0 and not self.inputFiles:
       self._errorMessages.append("ERROR: Negative number of events only sensible for inputFiles")
 
-  def _enablePrimaryHandler( self ):
+  def _enablePrimaryHandler(self):
     """ the geant4 Gun or GeneralParticleSource cannot be used together with the PrimaryHandler.
         Particles would be simulated multiple times
 
@@ -667,7 +666,6 @@ SIM = DD4hepSimulation()
     else:
       logger.info("Disabling the PrimaryHandler")
     return enablePrimaryHandler
-
 
   def _buildInputStage(self, simple, generator_input_modules, output_level=None, have_mctruth=True):
     """
@@ -683,7 +681,7 @@ SIM = DD4hepSimulation()
     ga = simple.kernel().generatorAction()
 
     # Register Generation initialization action
-    gen = GeneratorAction(simple.kernel(),"Geant4GeneratorActionInit/GenerationInit")
+    gen = GeneratorAction(simple.kernel(), "Geant4GeneratorActionInit/GenerationInit")
     if output_level is not None:
       gen.OutputLevel = output_level
     ga.adopt(gen)
@@ -697,7 +695,7 @@ SIM = DD4hepSimulation()
       ga.adopt(gen)
 
     # Merge all existing interaction records
-    gen = GeneratorAction(simple.kernel(),"Geant4InteractionMerger/InteractionMerger")
+    gen = GeneratorAction(simple.kernel(), "Geant4InteractionMerger/InteractionMerger")
     gen.enableUI()
     if output_level is not None:
       gen.OutputLevel = output_level
@@ -705,8 +703,8 @@ SIM = DD4hepSimulation()
 
     # Finally generate Geant4 primaries
     if have_mctruth:
-      gen = GeneratorAction(simple.kernel(),"Geant4PrimaryHandler/PrimaryHandler")
-      gen.RejectPDGs=ConfigHelper.makeString(self.physics.rejectPDGs)
+      gen = GeneratorAction(simple.kernel(), "Geant4PrimaryHandler/PrimaryHandler")
+      gen.RejectPDGs = ConfigHelper.makeString(self.physics.rejectPDGs)
       gen.enableUI()
       if output_level is not None:
         gen.OutputLevel = output_level
@@ -716,10 +714,10 @@ SIM = DD4hepSimulation()
 
 
 ################################################################################
-### MODULE FUNCTIONS GO HERE
+# MODULE FUNCTIONS GO HERE
 ################################################################################
 
-def sortParameters( parA, parB ):
+def sortParameters(parA, parB):
   """sort the parameters by name: first normal parameters, then set of
   parameters based on ConfigHelper objects
   """
@@ -734,15 +732,15 @@ def sortParameters( parA, parB ):
   else:
     return 1 if str(parA[0]) > str(parB[0]) else -1
 
+
 def getOutputLevel(level):
   """return output.LEVEL"""
   from DDG4 import OutputLevel
-  levels = { 1: OutputLevel.VERBOSE,
-             2: OutputLevel.DEBUG,
-             3: OutputLevel.INFO,
-             4: OutputLevel.WARNING,
-             5: OutputLevel.ERROR,
-             6: OutputLevel.FATAL,
-             7: OutputLevel.ALWAYS }
+  levels = {1: OutputLevel.VERBOSE,
+            2: OutputLevel.DEBUG,
+            3: OutputLevel.INFO,
+            4: OutputLevel.WARNING,
+            5: OutputLevel.ERROR,
+            6: OutputLevel.FATAL,
+            7: OutputLevel.ALWAYS}
   return levels[level]
-

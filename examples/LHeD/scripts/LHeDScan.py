@@ -13,12 +13,16 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def run():
-  import os, sys, DDG4, SystemOfUnits
+  import os
+  import sys
+  import DDG4
+  import SystemOfUnits
 
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry(str("file:"+install_dir+"/examples/LHeD/compact/compact.xml"))
+  kernel.loadGeometry(str("file:" + install_dir + "/examples/LHeD/compact/compact.xml"))
   DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
@@ -26,11 +30,11 @@ def run():
   gun = geant4.setupGun("Gun",
                         Standalone=True,
                         particle='geantino',
-                        energy=20*SystemOfUnits.GeV,
-                        position=(0,0,0),
+                        energy=20 * SystemOfUnits.GeV,
+                        position=(0, 0, 0),
                         multiplicity=1,
-                        isotrop=False )
-  scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
+                        isotrop=False)
+  scan = DDG4.SteppingAction(kernel, 'Geant4MaterialScanner/MaterialScan')
   kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
@@ -40,16 +44,17 @@ def run():
   kernel.NumEvents = 1
 
   # 3 shots in different directions:
-  gun.direction = (0,1,0)
+  gun.direction = (0, 1, 0)
   kernel.run()
-  gun.direction = (1,0,0)
+  gun.direction = (1, 0, 0)
   kernel.run()
-  gun.direction = (1,1,1)
+  gun.direction = (1, 1, 1)
   kernel.run()
 
   kernel.terminate()
   logger.info('End of run. Terminating .......')
   logger.info('TEST_PASSED')
+
 
 if __name__ == "__main__":
   run()

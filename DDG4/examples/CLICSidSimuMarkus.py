@@ -1,7 +1,10 @@
 #
 #
 from __future__ import absolute_import, unicode_literals
-import os, time, logging, DDG4
+import os
+import time
+import logging
+import DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
@@ -39,42 +42,44 @@ kernel.configure()
 
 
 """
+
+
 def run():
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry(str("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml"))
-  ##kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
-  DDG4.importConstants(description,debug=False)
-  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
+  example_dir = install_dir + '/examples/DDG4/examples'
+  kernel.loadGeometry(str("file:" + install_dir + "/DDDetectors/compact/SiD_Markus.xml"))
+  # kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
+  DDG4.importConstants(description, debug=False)
+  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI
-  #geant4.setupCshUI(macro='run.mac',ui=None)
+  # geant4.setupCshUI(macro='run.mac',ui=None)
   geant4.setupCshUI()
   geant4.setupTrackingField()
 
   # Configure Run actions
-  run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
+  run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
   run1.enableUI()
   kernel.registerGlobalAction(run1)
   kernel.runAction().adopt(run1)
 
   # Configure Event actions
-  prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
+  prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.WARNING
-  prt.OutputType  = 3 # Print both: table and tree
+  prt.OutputType = 3  # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
   generator_output_level = Output.WARNING
 
   # Configure I/O
-  evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_lcio = geant4.setupLCIOOutput('LcioOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
   ##evt_lcio.OutputLevel = generator_output_level
   #evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
-  prim = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
-  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  prim = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
+  # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of primary particles from LCIO input files
   """
@@ -98,9 +103,9 @@ def run():
   geant4.buildInputStage([gen],output_level=generator_output_level)
   """
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  gen = geant4.setupGun("Gun",particle='mu+',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
+  gen = geant4.setupGun("Gun", particle='mu+', energy=20 * GeV, position=(0 * mm, 0 * mm, 0 * cm), multiplicity=3)
   gen.isotrop = True
-  gen.direction = (1,0,0)
+  gen.direction = (1, 0, 0)
   gen.OutputLevel = generator_output_level
   gen.Standalone = False
   """
@@ -118,7 +123,7 @@ def run():
   user.enableUI()
   part.adopt(user)
   """
-  geant4.buildInputStage([prim,gen],Output.ERROR)
+  geant4.buildInputStage([prim, gen], Output.ERROR)
 
   """
   """
@@ -133,11 +138,10 @@ def run():
   kernel.generatorAction().adopt(rdr)
   """
 
-
   # First the tracking detectors
-  seq,act = geant4.setupTracker('SiTrackerBarrel')
-  seq,act = geant4.setupTracker('SiTrackerEndcap')
-  seq,act = geant4.setupTracker('SiTrackerForward')
+  seq, act = geant4.setupTracker('SiTrackerBarrel')
+  seq, act = geant4.setupTracker('SiTrackerEndcap')
+  seq, act = geant4.setupTracker('SiTrackerForward')
   """
   # Now the calorimeters
   seq,act = geant4.setupTracker('SiVertexBarrel')
@@ -158,10 +162,9 @@ def run():
   kernel.steppingAction().adopt(scan)
   """
 
-
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
+  ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
   ph.addParticleConstructor('G4Geantino')
   ph.addParticleConstructor('G4BosonConstructor')
   ph.enableUI()
@@ -171,10 +174,11 @@ def run():
   kernel.configure()
   kernel.initialize()
 
-  #DDG4.setPrintLevel(Output.DEBUG)
+  # DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
   logger.info('End of run. Terminating .......')
   kernel.terminate()
+
 
 if __name__ == "__main__":
   run()
