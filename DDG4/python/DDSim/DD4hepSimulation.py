@@ -23,7 +23,7 @@ from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Gun import Gun
 import argparse
-import six
+import ddsix as six
 from g4units import *
 import logging
 from io import open

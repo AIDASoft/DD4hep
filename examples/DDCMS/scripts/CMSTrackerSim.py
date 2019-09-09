@@ -6,7 +6,7 @@ import DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 import logging
-from six.moves import range
+from ddsix.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)

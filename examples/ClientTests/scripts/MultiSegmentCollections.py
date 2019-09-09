@@ -5,7 +5,7 @@ import time
 import DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
-from six.moves import range
+from ddsix.moves import range
 #
 #
 """

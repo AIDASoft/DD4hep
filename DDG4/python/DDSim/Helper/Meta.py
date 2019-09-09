@@ -5,7 +5,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 import datetime
 import os
 import logging
-import six
+import ddsix as six
 from io import open
 
 logging.basicConfig(format='%(levelname)s: %(message)s')

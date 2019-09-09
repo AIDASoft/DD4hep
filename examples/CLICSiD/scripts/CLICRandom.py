@@ -10,7 +10,7 @@ from ROOT import TRandom
 from ROOT import gRandom
 
 import logging
-from six.moves import range
+from ddsix.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)

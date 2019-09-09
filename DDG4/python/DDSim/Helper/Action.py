@@ -3,8 +3,8 @@
 
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
-from six.moves import range
-import six
+from ddsix.moves import range
+import ddsix as six
 
 
 class Action(ConfigHelper):

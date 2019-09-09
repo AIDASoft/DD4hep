@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
-import six
+import ddsix as six
 
 
 class Input(ConfigHelper):

@@ -13,7 +13,7 @@ import g4units as G4Units
 from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 import logging
 from dd4hep_base import *
-import six
+import ddsix as six
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
