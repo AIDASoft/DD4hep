@@ -13,9 +13,7 @@ import cppyy
 import imp
 import logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 # We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
 

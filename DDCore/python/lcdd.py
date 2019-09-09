@@ -21,9 +21,7 @@ from ddsix.moves import range
 from io import open
 from ROOT import SetOwnership, dd4hep, TGeoMixture, TGeoMedium, gGeoManager, TNamed
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 Detector = dd4hep.Geometry.Detector
 Constant = dd4hep.Geometry.Constant

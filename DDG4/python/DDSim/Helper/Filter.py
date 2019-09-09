@@ -12,9 +12,7 @@ import logging
 from ddsix.moves import range
 import ddsix as six
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class Filter(ConfigHelper):

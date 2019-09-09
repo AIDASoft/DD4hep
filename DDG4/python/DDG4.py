@@ -15,9 +15,7 @@ import logging
 from dd4hep_base import *
 import ddsix as six
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def loadDDG4():

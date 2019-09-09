@@ -13,9 +13,7 @@ from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 import logging
 from dd4hep_base import *
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def loadDDDigi():

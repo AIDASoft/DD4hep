@@ -6,9 +6,7 @@ from g4units import GeV
 import logging
 import ddsix as six
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class Gun(ConfigHelper):
