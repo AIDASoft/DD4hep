@@ -24,4 +24,4 @@ if __name__ == "__main__":
   except NameError as e:
     if "global name" in str(e):
       globalToSet = str(e).split("'")[1]
-      logger.fatal("Unknown global variable, please add global %s to your steeringFile" % globalToSet)
+      logger.fatal("Unknown global variable, please add\nglobal %s\nto your steeringFile" % globalToSet)
