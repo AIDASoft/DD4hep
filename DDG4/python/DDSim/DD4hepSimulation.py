@@ -28,7 +28,7 @@ from g4units import *
 import logging
 from io import open
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('DDSim')
 
 try:
   import argcomplete
