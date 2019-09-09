@@ -82,12 +82,11 @@ def _constant(self, name):
 Detector.globalVal = _constant
 # ---------------------------------------------------------------------------
 
-"""
-  Import the Detector constants into the DDG4 namespace
-"""
-
 
 def importConstants(description, namespace=None, debug=False):
+  """
+  Import the Detector constants into the DDG4 namespace
+  """
   scope = current
   ns = current
   if namespace is not None and not hasattr(current, namespace):
@@ -376,22 +375,22 @@ _props('UserInitializationSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
 
-"""
-   Helper object to perform stuff, which occurs very often.
-   I am sick of typing the same over and over again.
-   Hence, I grouped often used python fragments to this small
-   class to re-usage.
-
-   Long live laziness!
-
-
-   \author  M.Frank
-   \version 1.0
-
-"""
-
 
 class Geant4:
+  """
+    Helper object to perform stuff, which occurs very often.
+    I am sick of typing the same over and over again.
+    Hence, I grouped often used python fragments to this small
+    class to re-usage.
+
+    Long live laziness!
+
+
+    \author  M.Frank
+    \version 1.0
+
+  """
+
   def __init__(self, kernel=None,
                calo='Geant4CalorimeterAction',
                tracker='Geant4SimpleTrackerAction'):
@@ -406,32 +405,28 @@ class Geant4:
     self.sensitive_types['calorimeter'] = calo
     self.sensitive_types['escape_counter'] = 'Geant4EscapeCounter'
 
-  """
-     Access the worker kernel object.
-     
-     \author  M.Frank
-  """
-
   def kernel(self):
-    return self._kernel.worker()
+  """
+      Access the worker kernel object.
 
+      \author  M.Frank
   """
-     Access the master kernel object.
-     
-     \author  M.Frank
-  """
+  return self._kernel.worker()
 
   def master(self):
-    return self._kernel
-
   """
-     Configure the Geant4 command executive
+    Access the master kernel object.
 
-     \author  M.Frank
+    \author  M.Frank
   """
+  return self._kernel
 
   def setupUI(self, typ='csh', vis=False, ui=True, macro=None):
-    # Configure UI
+    """
+    Configure the Geant4 command executive
+
+    \author  M.Frank
+    """
     ui_action = Action(self.master(), "Geant4UIManager/UI")
     if vis:
       ui_action.HaveVIS = True
@@ -447,22 +442,20 @@ class Geant4:
     self.master().registerGlobalAction(ui_action)
     return ui_action
 
-  """
-     Configure the Geant4 command executive with a csh like command prompt
-
-     \author  M.Frank
-  """
-
   def setupCshUI(self, typ='csh', vis=False, ui=True, macro=None):
-    return self.setupUI(typ='csh', vis=vis, ui=ui, macro=macro)
-
   """
-     Configure Geant4 user initialization for optionasl multi-threading mode
+      Configure the Geant4 command executive with a csh like command prompt
 
-     \author  M.Frank
+      \author  M.Frank
   """
+  return self.setupUI(typ='csh', vis=vis, ui=ui, macro=macro)
 
   def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):
+    """
+      Configure Geant4 user initialization for optionasl multi-threading mode
+
+      \author  M.Frank
+    """
     import sys
     init_seq = self.master().userInitialization(True)
     init_action = UserInitialization(self.master(), 'Geant4PythonInitialization/PyG4Init')
@@ -482,17 +475,16 @@ class Geant4:
     seq = self.master().detectorConstruction(True)
     return seq
 
-  """
-     Configure Geant4 user initialization for optionasl multi-threading mode
-
-     \author  M.Frank
-  """
-
   def addDetectorConstruction(self, name_type,
                               field=None, field_args=None,
                               geometry=None, geometry_args=None,
                               sensitives=None, sensitives_args=None,
                               allow_threads=False):
+    """
+    Configure Geant4 user initialization for optionasl multi-threading mode
+
+    \author  M.Frank
+    """
     init_seq = self.master().detectorConstruction(True)
     init_action = DetectorConstruction(self.master(), name_type)
     #
@@ -512,13 +504,12 @@ class Geant4:
 
     return init_seq, init_action
 
-  """
-     Add a new phase action to an arbitrary step.
-
-     \author  M.Frank
-  """
-
   def addPhaseAction(self, phase_name, factory_specification, ui=True, instance=None):
+    """
+      Add a new phase action to an arbitrary step.
+
+      \author  M.Frank
+    """
     if instance is None:
       instance = self.kernel()
     action = PhaseAction(instance, factory_specification)
@@ -527,61 +518,56 @@ class Geant4:
       action.enableUI()
     return action
 
-  """
-     Add a new phase action to the 'configure' step.
-     Called at the beginning of Geant4Exec::configure.
-     The factory specification is the typical string "<factory_name>/<instance name>".
-     If no instance name is specified it defaults to the factory name.
-
-     \author  M.Frank
-  """
-
   def addConfig(self, factory_specification):
+    """
+    Add a new phase action to the 'configure' step.
+    Called at the beginning of Geant4Exec::configure.
+    The factory specification is the typical string "<factory_name>/<instance name>".
+    If no instance name is specified it defaults to the factory name.
+
+    \author  M.Frank
+    """
     return self.addPhaseAction('configure', factory_specification, instance=self.master())
 
-  """
-     Add a new phase action to the 'initialize' step.
-     Called at the beginning of Geant4Exec::initialize.
-     The factory specification is the typical string "<factory_name>/<instance name>".
-     If no instance name is specified it defaults to the factory name.
-
-     \author  M.Frank
-  """
-
   def addInit(self, factory_specification):
+    """
+      Add a new phase action to the 'initialize' step.
+      Called at the beginning of Geant4Exec::initialize.
+      The factory specification is the typical string "<factory_name>/<instance name>".
+      If no instance name is specified it defaults to the factory name.
+
+      \author  M.Frank
+    """
     return self.addPhaseAction('initialize', factory_specification)
 
-  """
-     Add a new phase action to the 'start' step.
-     Called at the beginning of Geant4Exec::run.
-     The factory specification is the typical string "<factory_name>/<instance name>".
-     If no instance name is specified it defaults to the factory name.
-
-     \author  M.Frank
-  """
-
   def addStart(self, factory_specification):
+    """
+    Add a new phase action to the 'start' step.
+    Called at the beginning of Geant4Exec::run.
+    The factory specification is the typical string "<factory_name>/<instance name>".
+    If no instance name is specified it defaults to the factory name.
+
+    \author  M.Frank
+    """
     return self.addPhaseAction('start', factory_specification)
 
-  """
-     Add a new phase action to the 'stop' step.
-     Called at the end of Geant4Exec::run.
-     The factory specification is the typical string "<factory_name>/<instance name>".
-     If no instance name is specified it defaults to the factory name.
-
-     \author  M.Frank
-  """
-
   def addStop(self, factory_specification):
+    """
+      Add a new phase action to the 'stop' step.
+      Called at the end of Geant4Exec::run.
+      The factory specification is the typical string "<factory_name>/<instance name>".
+      If no instance name is specified it defaults to the factory name.
+
+      \author  M.Frank
+    """
     return self.addPhaseAction('stop', factory_specification)
 
-  """
-     Execute the Geant 4 program with all steps.
-
-     \author  M.Frank
-  """
-
   def execute(self):
+    """
+      Execute the Geant 4 program with all steps.
+
+      \author  M.Frank
+    """
     self.kernel().configure()
     self.kernel().initialize()
     self.kernel().run()
@@ -737,13 +723,12 @@ class Geant4:
       self.kernel().generatorAction().add(gun)
     return gun
 
-  """
-     Configure ROOT output for the simulated events
-
-     \author  M.Frank
-  """
-
   def setupROOTOutput(self, name, output, mc_truth=True):
+    """
+    Configure ROOT output for the simulated events
+
+    \author  M.Frank
+    """
     evt_root = EventAction(self.kernel(), 'Geant4Output2ROOT/' + name, True)
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
@@ -754,13 +739,12 @@ class Geant4:
     self.kernel().eventAction().add(evt_root)
     return evt_root
 
-  """
-     Configure LCIO output for the simulated events
-
-     \author  M.Frank
-  """
-
   def setupLCIOOutput(self, name, output):
+    """
+    Configure LCIO output for the simulated events
+
+    \author  M.Frank
+    """
     evt_lcio = EventAction(self.kernel(), 'Geant4Output2LCIO/' + name, True)
     evt_lcio.Control = True
     evt_lcio.Output = output
@@ -768,20 +752,19 @@ class Geant4:
     self.kernel().eventAction().add(evt_lcio)
     return evt_lcio
 
-  """
-     Generic build of the input stage with multiple input modules.
-
-     Actions executed are:
-     1) Register Generation initialization action
-     2) Append all modules to build the complete input record
-        These modules are readers/particle sources, boosters and/or smearing actions.
-     3) Merge all existing interaction records
-     4) Add the MC truth handler
-
-     \author  M.Frank
-  """
-
   def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
+    """
+      Generic build of the input stage with multiple input modules.
+
+      Actions executed are:
+      1) Register Generation initialization action
+      2) Append all modules to build the complete input record
+      These modules are readers/particle sources, boosters and/or smearing actions.
+      3) Merge all existing interaction records
+      4) Add the MC truth handler
+
+      \author  M.Frank
+    """
     ga = self.kernel().generatorAction()
     # Register Generation initialization action
     gen = GeneratorAction(self.kernel(), "Geant4GeneratorActionInit/GenerationInit")
@@ -815,16 +798,11 @@ class Geant4:
     # Puuuhh! All done.
     return self
 
-  """
-     Execute the main Geant4 action
-     \author  M.Frank
-  """
-
   def run(self):
-    # self.master().configure()
-    # self.master().initialize()
-    # self.master().run()
-    # self.master().terminate()
+    """
+      Execute the main Geant4 action
+      \author  M.Frank
+    """
     from ROOT import PyDDG4
     PyDDG4.run(self.master().get())
     return self
