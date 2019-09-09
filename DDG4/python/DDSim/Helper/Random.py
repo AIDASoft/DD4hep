@@ -10,9 +10,11 @@ logger.setLevel(logging.INFO)
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
+
 class Random (ConfigHelper):
   """Properties for the random number generator"""
-  def __init__ (self):
+
+  def __init__(self):
     super(Random, self).__init__()
     self.seed = None
     self.type = None
@@ -21,8 +23,8 @@ class Random (ConfigHelper):
     self.file = None
     self._random = None
 
-    self._enableEventSeed_EXTRA = {'help': "If True, calculate random seed for each event based" \
-                                           "on eventID and runID\nAllows reproducibility even when" \
+    self._enableEventSeed_EXTRA = {'help': "If True, calculate random seed for each event based"
+                                           "on eventID and runID\nAllows reproducibility even when"
                                            "SkippingEvents"}
     self.enableEventSeed = False
 
@@ -36,11 +38,11 @@ class Random (ConfigHelper):
     """
     if self._random:
       return self._random
-    self._random = DDG4.Action(kernel,'Geant4Random/R1')
+    self._random = DDG4.Action(kernel, 'Geant4Random/R1')
 
     if self.seed is None:
-      ## System provided random source, truely random according to documentation
-      self.seed = random.SystemRandom().randint(0, 2**31-1)
+      # System provided random source, truely random according to documentation
+      self.seed = random.SystemRandom().randint(0, 2**31 - 1)
       logger.info("Choosing random seed for you: %s", self.seed)
 
     self._random.Seed = self.seed
@@ -52,9 +54,9 @@ class Random (ConfigHelper):
     self._random.initialize()
 
     if self.seed is not None and self.enableEventSeed:
-      self._eventseed = DDG4.RunAction(kernel,'Geant4EventSeed/EventSeeder1')
+      self._eventseed = DDG4.RunAction(kernel, 'Geant4EventSeed/EventSeeder1')
 
-    ## Needs to be called after initilisation
+    # Needs to be called after initilisation
     if output <= 3:
       self._random.showStatus()
     return self._random

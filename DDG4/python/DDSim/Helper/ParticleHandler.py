@@ -9,16 +9,18 @@ logger.setLevel(logging.INFO)
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
-class ParticleHandler( ConfigHelper ):
+
+class ParticleHandler(ConfigHelper):
   """Configuration for the Particle Handler/ MCTruth treatment"""
-  def __init__( self ):
+
+  def __init__(self):
     super(ParticleHandler, self).__init__()
     self._saveProcesses = ['Decay']
-    self._minimalKineticEnergy = 1*MeV
+    self._minimalKineticEnergy = 1 * MeV
     self._keepAllParticles = False
     self._printEndTracking = False
     self._printStartTracking = False
-    self._minDistToParentVertex = 2.2e-14*mm
+    self._minDistToParentVertex = 2.2e-14 * mm
     self._enableDetailedHitsAndParticleInfo = False
     self._userParticleHandler = "Geant4TCUserParticleHandler"
 
@@ -28,83 +30,90 @@ class ParticleHandler( ConfigHelper ):
     return self._enableDetailedHitsAndParticleInfo
 
   @enableDetailedHitsAndParticleInfo.setter
-  def enableDetailedHitsAndParticleInfo( self, val ):
+  def enableDetailedHitsAndParticleInfo(self, val):
     self._enableDetailedHitsAndParticleInfo = val
 
   @property
-  def userParticleHandler( self ):
+  def userParticleHandler(self):
     """Optionally enable an extended Particle Handler"""
     return self._userParticleHandler
+
   @userParticleHandler.setter
-  def userParticleHandler( self, val ):
+  def userParticleHandler(self, val):
     self._userParticleHandler = val
 
   @property
-  def minDistToParentVertex( self ):
+  def minDistToParentVertex(self):
     """Minimal distance between particle vertex and endpoint of parent after
     which the vertexIsNotEndpointOfParent flag is set
     """
     return self._minDistToParentVertex
+
   @minDistToParentVertex.setter
-  def minDistToParentVertex( self, val ):
+  def minDistToParentVertex(self, val):
     self._minDistToParentVertex = val
 
   @property
   def saveProcesses(self):
     """List of processes to save, on command line give as whitespace separated string in quotation marks"""
     return self._saveProcesses
+
   @saveProcesses.setter
   def saveProcesses(self, stringVal):
-    self._saveProcesses = ConfigHelper.makeList( stringVal )
+    self._saveProcesses = ConfigHelper.makeList(stringVal)
 
   @property
   def minimalKineticEnergy(self):
     """MinimalKineticEnergy to store particles created in the tracking region"""
     return self._minimalKineticEnergy
+
   @minimalKineticEnergy.setter
-  def minimalKineticEnergy( self, val ):
+  def minimalKineticEnergy(self, val):
     self._minimalKineticEnergy = val
 
   @property
-  def keepAllParticles( self ):
+  def keepAllParticles(self):
     """ Keep all created particles """
     return self._keepAllParticles
+
   @keepAllParticles.setter
-  def keepAllParticles( self, val ):
+  def keepAllParticles(self, val):
     self._keepAllParticles = val
 
   @property
-  def printStartTracking( self ):
+  def printStartTracking(self):
     """ Printout at Start of Tracking """
     return self._printStartTracking
+
   @printStartTracking.setter
-  def printStartTracking( self, val ):
+  def printStartTracking(self, val):
     self._printEndTracking = val
 
   @property
-  def printEndTracking( self ):
+  def printEndTracking(self):
     """ Printout at End of Tracking """
     return self._printEndTracking
+
   @printEndTracking.setter
-  def printEndTracking( self, val ):
+  def printEndTracking(self, val):
     self._printEndTracking = val
 
-  def setDumpDetailedParticleInfo( self, kernel, DDG4 ):
+  def setDumpDetailedParticleInfo(self, kernel, DDG4):
     #---- debug code from Markus for detailed dumps of hits and MC-truth assignement ------
     # Add the particle dumper to associate the MC truth
-    evt = DDG4.EventAction(kernel,"Geant4ParticleDumpAction/ParticleDump")
+    evt = DDG4.EventAction(kernel, "Geant4ParticleDumpAction/ParticleDump")
     kernel.eventAction().adopt(evt)
     evt.enableUI()
     # Add the hit dumper BEFORE any hit truth is fixed
-    evt = DDG4.EventAction(kernel,"Geant4HitDumpAction/RawDump")
+    evt = DDG4.EventAction(kernel, "Geant4HitDumpAction/RawDump")
     kernel.eventAction().adopt(evt)
     evt.enableUI()
     # Add the hit dumper to the event action sequence
-    evt = DDG4.EventAction(kernel,"Geant4HitTruthHandler/HitTruth")
+    evt = DDG4.EventAction(kernel, "Geant4HitTruthHandler/HitTruth")
     kernel.eventAction().adopt(evt)
     evt.enableUI()
     # Add the hit dumper AFTER any hit truth is fixed. We should see the reduced track references
-    evt = DDG4.EventAction(kernel,"Geant4HitDumpAction/HitDump")
+    evt = DDG4.EventAction(kernel, "Geant4HitDumpAction/HitDump")
     kernel.eventAction().adopt(evt)
     evt.enableUI()
 
@@ -121,13 +130,13 @@ class ParticleHandler( ConfigHelper ):
       exit(1)
 
     if self.userParticleHandler == "Geant4TCUserParticleHandler":
-      user = DDG4.Action(kernel,"%s/UserParticleHandler" % self.userParticleHandler)
+      user = DDG4.Action(kernel, "%s/UserParticleHandler" % self.userParticleHandler)
       try:
         user.TrackingVolume_Zmax = DDG4.tracker_region_zmax
         user.TrackingVolume_Rmax = DDG4.tracker_region_rmax
         logger.info(" *** definition of tracker region *** ")
-        logger.info("    tracker_region_zmax = " , user.TrackingVolume_Zmax)
-        logger.info("    tracker_region_rmax = " , user.TrackingVolume_Rmax)
+        logger.info("    tracker_region_zmax = ", user.TrackingVolume_Zmax)
+        logger.info("    tracker_region_rmax = ", user.TrackingVolume_Rmax)
         logger.info(" ************************************ ")
       except AttributeError as e:
         logger.error("Attribute of tracker region missing in detector model %s", e)

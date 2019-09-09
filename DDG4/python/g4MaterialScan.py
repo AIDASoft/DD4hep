@@ -1,6 +1,6 @@
 #!/bin/python
 #==========================================================================
-#  AIDA Detector description implementation 
+#  AIDA Detector description implementation
 #--------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
@@ -11,17 +11,23 @@
 #==========================================================================
 
 from __future__ import absolute_import, unicode_literals
-import os, sys, errno, optparse, logging
+import os
+import sys
+import errno
+import optparse
+import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def printOpts(opts):
   o = eval(str(opts))
   prefix = sys.argv[0].split(os.sep)[-1]
-  for name,value in o.items():
-    logger.info('%s > %-18s %s  [%s]',prefix,name+':',str(value),str(value.__class__))
+  for name, value in o.items():
+    logger.info('%s > %-18s %s  [%s]', prefix, name + ':', str(value), str(value.__class__))
+
 
 def materialScan(opts):
   kernel = DDG4.Kernel()
@@ -37,21 +43,21 @@ def materialScan(opts):
     if sd.isValid():
       typ = sd.type()
       if typ in geant4.sensitive_types:
-        geant4.setupDetector(o.name(),geant4.sensitive_types[typ])
+        geant4.setupDetector(o.name(), geant4.sensitive_types[typ])
         sdtyp = geant4.sensitive_types[typ]
       else:
-        logger.error('+++  %-32s type:%-12s  --> Unknown Sensitive type: %s',o.name(), typ, sdtyp)
+        logger.error('+++  %-32s type:%-12s  --> Unknown Sensitive type: %s', o.name(), typ, sdtyp)
         sys.exit(errno.EINVAL)
 
   gun = geant4.setupGun("Gun",
                         Standalone=True,
                         particle='geantino',
-                        energy=20*SystemOfUnits.GeV,
+                        energy=20 * SystemOfUnits.GeV,
                         position=opts.position,
                         direction=opts.direction,
                         multiplicity=1,
-                        isotrop=False )
-  scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
+                        isotrop=False)
+  scan = DDG4.SteppingAction(kernel, 'Geant4MaterialScanner/MaterialScan')
   kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
@@ -73,34 +79,35 @@ def materialScan(opts):
   kernel.run()
   kernel.terminate()
   return 0
-  
+
+
 parser = optparse.OptionParser()
 parser.formatter.width = 132
 parser.description = 'Material scan using Geant4.'
 parser.add_option('-c', '--compact', dest='compact', default=None,
                   help='Define LCCDD style compact xml input',
-		  metavar='<FILE>')
+                  metavar='<FILE>')
 parser.add_option('-P', '--print',
-		  dest='print_level', default=2,
+                  dest='print_level', default=2,
                   help='Set dd4hep print level.',
-		  metavar='<int>')
+                  metavar='<int>')
 parser.add_option('-p', '--position',
-		  dest='position', default='0.0,0.0,0.0',
+                  dest='position', default='0.0,0.0,0.0',
                   help='Start position of the material scan. [give tuple "x,y,z" as string]',
-		  metavar='<tuple>')
+                  metavar='<tuple>')
 parser.add_option('-d', '--direction',
-		  dest='direction', default='0.0,1.0,0.0',
+                  dest='direction', default='0.0,1.0,0.0',
                   help='Direction of the material scan. [give tuple "x,y,z" as string]',
-		  metavar='<tuple>')
+                  metavar='<tuple>')
 
 (opts, args) = parser.parse_args()
 
 if opts.compact is None:
-  logger.info("%s",parser.format_help())
+  logger.info("%s", parser.format_help())
   sys.exit(1)
 
-opts.position=eval('('+opts.position+')')
-opts.direction=eval('('+opts.direction+')')
+opts.position = eval('(' + opts.position + ')')
+opts.direction = eval('(' + opts.direction + ')')
 printOpts(opts)
 
 try:
@@ -113,11 +120,12 @@ except ImportError as X:
   sys.exit(errno.ENOENT)
 
 try:
-  import DDG4, SystemOfUnits
+  import DDG4
+  import SystemOfUnits
 except ImportError as X:
   logger.error('DDG4 python interface not accessible: %s', X)
   logger.info(parser.format_help())
   sys.exit(errno.ENOENT)
 #
 ret = materialScan(opts)
-sys.exit(ret);
+sys.exit(ret)

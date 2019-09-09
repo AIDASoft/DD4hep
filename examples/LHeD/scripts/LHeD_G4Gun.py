@@ -14,10 +14,12 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def run():
-  import LHeD, DDG4
+  import LHeD
+  import DDG4
   from DDG4 import OutputLevel as Output
-  
+
   lhed = LHeD.LHeD()
   geant4 = lhed.geant4
   kernel = lhed.kernel
@@ -26,33 +28,32 @@ def run():
   kernel.UI = "UI"
   geant4.setupCshUI()
   lhed.setupField(quiet=False)
-  DDG4.importConstants(kernel.detectorDescription(),debug=False)
+  DDG4.importConstants(kernel.detectorDescription(), debug=False)
 
-  prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
+  prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.INFO
-  prt.OutputType  = 3 # Print both: table and tree
+  prt.OutputType = 3  # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
-  gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
+  gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
   logger.info("#  First particle generator: gun")
-  gun = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/Gun");
-  gun.Uses     = 'G4ParticleGun'
-  gun.Mask     = 1
+  gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun")
+  gun.Uses = 'G4ParticleGun'
+  gun.Mask = 1
   kernel.generatorAction().adopt(gun)
 
   # Merge all existing interaction records
-  merger = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
+  merger = DDG4.GeneratorAction(kernel, "Geant4InteractionMerger/InteractionMerger")
   merger.enableUI()
   kernel.generatorAction().adopt(merger)
 
-
   # And handle the simulation particles.
-  part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
+  part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
   part.OutputLevel = Output.INFO
   part.enableUI()
-  user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
+  user = DDG4.Action(kernel, "Geant4TCUserParticleHandler/UserParticleHandler")
   user.TrackingVolume_Zmax = DDG4.EcalEndcap_zmin
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
@@ -64,6 +65,7 @@ def run():
   gun.generator()  # Instantiate gun to be able to set properties from G4 prompt
   kernel.run()
   kernel.terminate()
+
 
 if __name__ == "__main__":
   run()
