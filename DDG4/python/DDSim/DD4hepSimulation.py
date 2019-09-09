@@ -314,7 +314,7 @@ class DD4hepSimulation(object):
     elif self.runType == "batch":
       simple.setupUI(typ="csh", vis=False, macro=None, ui=False)
     else:
-      logger.errro("unknown runType")
+      logger.error("unknown runType")
       exit(1)
 
     # kernel.UI="csh"
