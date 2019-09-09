@@ -149,9 +149,9 @@ def load_drivers(*args):
             logger.info("Loading driver file ... %s" % path.join(arg, f))
             exec(compile(open(path.join(arg, f)).read(), path.join(arg, f), 'exec'), drivers)
       else:
-        raise "Path '%s' is not a directory or file" % arg
+        raise IOError("Path '%s' is not a directory or file" % arg)
     else:
-      raise "Path '%s' does not exists" % arg
+      raise IOError("Path '%s' does not exists" % arg)
 
 
 # ---------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ def process_material(description, m):
       elif gGeoManager.GetMaterial(nam):
         mat.AddElement(gGeoManager.GetMaterial(nam), fraction)
       else:
-        raise 'Something going very wrong. Undefined material:' + nam
+        raise NameError('Something going very wrong. Undefined material:' + nam)
   medium = gGeoManager.GetMedium(m.name)
   if not medium:
     global unique_mat_id
