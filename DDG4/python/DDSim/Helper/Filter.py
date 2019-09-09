@@ -9,8 +9,8 @@ from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import keV
 import logging
-from six.moves import range
-import six
+from ddsix.moves import range
+import ddsix as six
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)

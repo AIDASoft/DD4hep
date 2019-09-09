@@ -17,7 +17,7 @@ from functools import partial
 import SystemOfUnits
 import math
 import logging
-from six.moves import range
+from ddsix.moves import range
 from io import open
 from ROOT import SetOwnership, dd4hep, TGeoMixture, TGeoMedium, gGeoManager, TNamed
 

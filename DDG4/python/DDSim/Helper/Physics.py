@@ -5,7 +5,7 @@ import os
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import mm
-import six
+import ddsix as six
 
 
 class Physics(ConfigHelper):

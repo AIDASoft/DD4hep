@@ -15,7 +15,7 @@ import os
 import sys
 import optparse
 import logging
-from six.moves import input
+from ddsix.moves import input
 from io import open
 
 logging.basicConfig(format='%(levelname)s: %(message)s')

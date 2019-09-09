@@ -14,7 +14,7 @@ call for the parser object create an additional member::
 
 from __future__ import absolute_import, unicode_literals
 from pprint import pprint
-import six
+import ddsix as six
 
 
 class ConfigHelper(object):
