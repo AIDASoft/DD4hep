@@ -1,0 +1,2 @@
+[MASTER]
+load-plugins=caniusepython3.pylint_checker
