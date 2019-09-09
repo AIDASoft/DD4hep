@@ -102,7 +102,7 @@ def run():
   gen.Mask = 1
   geant4.buildInputStage([gen],output_level=generator_output_level)
   """
-  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   gen = geant4.setupGun("Gun", particle='mu+', energy=20 * GeV, position=(0 * mm, 0 * mm, 0 * cm), multiplicity=3)
   gen.isotrop = True
   gen.direction = (1, 0, 0)

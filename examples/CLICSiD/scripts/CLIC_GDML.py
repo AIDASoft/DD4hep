@@ -47,7 +47,7 @@ def run():
       '/ddg4/Writer/Output CLICSiD.gdml',
       '/ddg4/Writer/OverWrite 1',
       '/ddg4/Writer/write'
-  ]
+      ]
   kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()

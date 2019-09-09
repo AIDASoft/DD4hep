@@ -1,4 +1,6 @@
 from __future__ import absolute_import, unicode_literals
+import traceback
+import sys
 from ROOT import gSystem
 
 import os
@@ -8,7 +10,7 @@ if platform.system() == "Darwin":
   gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
 gSystem.Load('libglapi')
 gSystem.Load('libDDPython')
-from ROOT import dd4hep as Core
+from ROOT import dd4hep as Core  # noqa
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -51,8 +53,6 @@ py.instance().execute(str('logging.info("Arguments: %s", str(sys.argv))'))
 logger.info('\n')
 
 obj = a_class()
-import sys
-import traceback
 
 logger.info('+++++ Test: simple function call')
 ret = py.instance().call(a_func, None)

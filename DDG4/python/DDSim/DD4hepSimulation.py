@@ -8,6 +8,21 @@ Based on M. Frank and F. Gaede runSim.py
 """
 from __future__ import absolute_import, unicode_literals, division
 __RCSID__ = "$Id$"
+import datetime
+import sys
+import os
+from DDSim.Helper.Meta import Meta
+from DDSim.Helper.LCIO import LCIO
+from DDSim.Helper.GuineaPig import GuineaPig
+from DDSim.Helper.Physics import Physics
+from DDSim.Helper.Filter import Filter
+from DDSim.Helper.Random import Random
+from DDSim.Helper.Action import Action
+from DDSim.Helper.ConfigHelper import ConfigHelper
+from DDSim.Helper.MagneticField import MagneticField
+from DDSim.Helper.ParticleHandler import ParticleHandler
+from DDSim.Helper.Gun import Gun
+import argparse
 import six
 from g4units import *
 import logging
@@ -17,7 +32,6 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-import argparse
 try:
   import argcomplete
   ARGCOMPLETEENABLED = True
@@ -43,22 +57,7 @@ def outputLevel(level):
   return outputlevels[level.upper()]
 
 
-from DDSim.Helper.Gun import Gun
-from DDSim.Helper.ParticleHandler import ParticleHandler
-from DDSim.Helper.Output import Output
-from DDSim.Helper.MagneticField import MagneticField
-from DDSim.Helper.ConfigHelper import ConfigHelper
-from DDSim.Helper.Action import Action
-from DDSim.Helper.Random import Random
-from DDSim.Helper.Filter import Filter
-from DDSim.Helper.Physics import Physics
-from DDSim.Helper.GuineaPig import GuineaPig
-from DDSim.Helper.LCIO import LCIO
-from DDSim.Helper.Meta import Meta
-
-import os
-import sys
-import datetime
+from DDSim.Helper.Output import Output  # noqa
 
 
 class DD4hepSimulation(object):
@@ -280,7 +279,7 @@ class DD4hepSimulation(object):
 
     return trackers, calos
 
-#==================================================================================
+# ==================================================================================
 
   def run(self):
     """setup the geometry and dd4hep and geant4 and do what was asked to be done"""
@@ -300,7 +299,7 @@ class DD4hepSimulation(object):
 
     DDG4.importConstants(detectorDescription)
 
-  #----------------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------------
 
     #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
     #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
@@ -323,11 +322,11 @@ class DD4hepSimulation(object):
     # kernel.UI="csh"
     kernel.NumEvents = self.numberOfEvents
 
-    #-----------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
     # setup the magnetic field:
     self.__setMagneticFieldOptions(simple)
 
-    #----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     # Configure Run actions
     run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
@@ -407,7 +406,7 @@ class DD4hepSimulation(object):
       self._buildInputStage(simple, actionList, output_level=self.output.inputStage,
                             have_mctruth=self._enablePrimaryHandler())
 
-    #================================================================================================
+    # ================================================================================================
 
     # And handle the simulation particles.
     part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
@@ -427,7 +426,7 @@ class DD4hepSimulation(object):
 
     self.part.setupUserParticleHandler(part, kernel, DDG4)
 
-    #=================================================================================
+    # =================================================================================
 
     # Setup global filters for use in sensitive detectors
     try:
@@ -436,7 +435,7 @@ class DD4hepSimulation(object):
       logger.error("%s", e)
       exit(1)
 
-    #=================================================================================
+    # =================================================================================
     # get lists of trackers and calorimeters in detectorDescription
 
     trk, cal = self.getDetectorLists(detectorDescription)
@@ -455,7 +454,7 @@ class DD4hepSimulation(object):
       logger.error("Setting up sensitive detector %s", e)
       raise
 
-  #=================================================================================
+  # =================================================================================
     # Now build the physics list:
     _phys = self.physics.setupPhysics(kernel, name=self.physicsList)
 

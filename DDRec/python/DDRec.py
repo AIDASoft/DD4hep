@@ -1,21 +1,20 @@
-#==========================================================================
+# ==========================================================================
 #  AIDA Detector description implementation
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
 #
 # For the licensing terms see $DD4hepINSTALL/LICENSE.
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
-#==========================================================================
+# ==========================================================================
 from __future__ import absolute_import, unicode_literals
+import dd4hep as core
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-import dd4hep as core
 
 
 def loadDDRec():
@@ -39,7 +38,7 @@ def import_namespace_item(ns, nam):
   return attr
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 #
 try:
   rec = loadDDRec()

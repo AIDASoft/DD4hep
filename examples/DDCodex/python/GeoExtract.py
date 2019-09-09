@@ -5,6 +5,7 @@
 #   gaudirun.py Brunel-Default.py <someDataFiles>.py
 ###############################################################################
 from __future__ import absolute_import, unicode_literals
+from GaudiConf import IOHelper
 from Gaudi.Configuration import *
 from Configurables import LHCbConfigurableUser, LHCbApp, CondDB, ToolSvc, EventSelector
 from Configurables import LoadDD4hepDet, LbDD4hepExample
@@ -18,11 +19,11 @@ class MyTest(LHCbConfigurableUser):
   # Steering options
   __slots__ = {
       "DDDBtag": "", "CondDBtag": "", "UseDBSnapshot": False, "PartitionName": "LHCb", "DBSnapshotDirectory": "/group/online/hlt/conditions"
-  }
+      }
 
   _propertyDocDct = {
       'DDDBtag': """ Tag for DDDB """, 'CondDBtag': """ Tag for CondDB """, "UseDBSnapshot": """Use a snapshot for velo position and rich pressure""", "PartitionName": """Name of the partition when running (needed to find DB: '', 'FEST', or 'LHCb'""", "DBSnapshotDirectory": """Local Directory where the snapshot is"""
-  }
+      }
 
   # Apply the configuration
   def __apply_configuration__(self):
@@ -66,7 +67,7 @@ theApp.setOtherProps(cdb, ['UseDBSnapshot',
                            'DBSnapshotDirectory',
                            'PartitionName'])
 
-#-- Use latest database tags for real data
+# -- Use latest database tags for real data
 #LHCbApp().DDDBtag   = ""
 #LHCbApp().CondDBtag = "default"
 LHCbApp().EvtMax = 5
@@ -74,7 +75,6 @@ LHCbApp().DataType = "Upgrade"
 LHCbApp().Simulation = True
 EventSelector().PrintFreq = 1
 
-from GaudiConf import IOHelper
 IOHelper('ROOT').inputFiles([
     'PFN:Gauss/Boole.xdigi',
 ])

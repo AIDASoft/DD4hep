@@ -1,14 +1,15 @@
-#==========================================================================
+# ==========================================================================
 #  AIDA Detector description implementation
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 # All rights reserved.
 #
 # For the licensing terms see $DD4hepINSTALL/LICENSE.
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
-#==========================================================================
+# ==========================================================================
 from __future__ import absolute_import, unicode_literals
+import cppyy
 import imp
 import logging
 
@@ -76,7 +77,7 @@ def import_root(nam):
   setattr(name_space, nam, getattr(ROOT, nam))
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 #
 try:
   dd4hep = loaddd4hep()
@@ -102,28 +103,27 @@ class _Levels:
 
 
 OutputLevel = _Levels()
-#------------------------Generic STL stuff can be accessed using std:  -----
+# ------------------------Generic STL stuff can be accessed using std:  -----
 #
-#-- e.g. Create an instance of std::vector<dd4hep::sim::Geant4Vertex*>:
+# -- e.g. Create an instance of std::vector<dd4hep::sim::Geant4Vertex*>:
 #    >>> v=dd4hep.vector('dd4hep::sim::Geant4Vertex*')()
 #
-#---------------------------------------------------------------------------
-import cppyy
+# ---------------------------------------------------------------------------
 std = cppyy.gbl.std
 std_vector = std.vector
 std_list = std.list
 std_map = std.map
 std_pair = std.pair
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 core = dd4hep
 cond = dd4hep.cond
 tools = dd4hep.tools
 align = dd4hep.align
 detail = dd4hep.detail
 units = imp.new_module('units')
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 import_namespace_item('tools', 'Evaluator')
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 import_namespace_item('core', 'NamedObject')
 import_namespace_item('core', 'run_interpreter')
 
@@ -144,7 +144,7 @@ def import_geometry():
   import_namespace_item('core', 'OverlayedField')
   import_namespace_item('core', 'Ref_t')
 
-  #// Objects.h
+  # // Objects.h
   import_namespace_item('core', 'Author')
   import_namespace_item('core', 'Header')
   import_namespace_item('core', 'Constant')
@@ -155,27 +155,27 @@ def import_geometry():
   import_namespace_item('core', 'LimitSet')
   import_namespace_item('core', 'Region')
 
-  #// Readout.h
+  # // Readout.h
   import_namespace_item('core', 'Readout')
 
-  #// Alignments.h
+  # // Alignments.h
   import_namespace_item('core', 'Alignment')
   import_namespace_item('core', 'AlignmentCondition')
 
-  #// Conditions.h
+  # // Conditions.h
   import_namespace_item('core', 'Condition')
   import_namespace_item('core', 'ConditionKey')
 
-  #// DetElement.h
+  # // DetElement.h
   import_namespace_item('core', 'World')
   import_namespace_item('core', 'DetElement')
   import_namespace_item('core', 'SensitiveDetector')
 
-  #// Volume.h
+  # // Volume.h
   import_namespace_item('core', 'Volume')
   import_namespace_item('core', 'PlacedVolume')
 
-  #// Shapes.h
+  # // Shapes.h
   import_namespace_item('core', 'Solid')
   import_namespace_item('core', 'Box')
   import_namespace_item('core', 'HalfSpace')
@@ -304,7 +304,7 @@ try:
         'elm_coupling', 'fine_structure_const', 'classic_electr_radius', 'electron_Compton_length', 'Bohr_radius',
         'alpha_rcl2', 'twopi_mc2_rcl2', 'k_Boltzmann', 'STP_Temperature', 'STP_Pressure',
         'kGasThreshold', 'universe_mean_density'
-    ]
+        ]
     if ns is None:
       ns = name_space
     logger.debug('Importing units into namespace ' + str(ns.__name__))

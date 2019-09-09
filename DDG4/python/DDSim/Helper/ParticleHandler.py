@@ -1,13 +1,12 @@
 """Configuration Helper for ParticleHandler"""
 from __future__ import absolute_import, unicode_literals
+from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import MeV, mm
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-from DDSim.Helper.ConfigHelper import ConfigHelper
 
 
 class ParticleHandler(ConfigHelper):
@@ -99,7 +98,7 @@ class ParticleHandler(ConfigHelper):
     self._printEndTracking = val
 
   def setDumpDetailedParticleInfo(self, kernel, DDG4):
-    #---- debug code from Markus for detailed dumps of hits and MC-truth assignement ------
+    # ---- debug code from Markus for detailed dumps of hits and MC-truth assignement ------
     # Add the particle dumper to associate the MC truth
     evt = DDG4.EventAction(kernel, "Geant4ParticleDumpAction/ParticleDump")
     kernel.eventAction().adopt(evt)
