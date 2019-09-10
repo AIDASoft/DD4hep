@@ -12,13 +12,14 @@ import logging
 
 from DDSim.DD4hepSimulation import DD4hepSimulation
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
-logger = logging.getLogger('DDSim')
-logger.setLevel(logging.INFO)
 
 if __name__ == "__main__":
   RUNNER = DD4hepSimulation()
   RUNNER.parseOptions()
+
+  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+  logger = logging.getLogger('DDSim')
+
   try:
     RUNNER.run()
   except NameError as e:
