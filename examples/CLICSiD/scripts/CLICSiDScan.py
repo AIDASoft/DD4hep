@@ -9,9 +9,8 @@
 from __future__ import absolute_import, unicode_literals
 import logging
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def run():

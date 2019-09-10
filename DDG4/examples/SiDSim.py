@@ -9,9 +9,8 @@ from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
 #
-logging.basicConfig(format='%(levelname)s: %(message)s')
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 """
 
    dd4hep simulation example setup using the python configuration

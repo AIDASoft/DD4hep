@@ -20,9 +20,8 @@ def run():
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry("file:" + install_dir + "/examples/OpticalSurfaces/compact/OpNovice.xml")
 
-  logging.basicConfig(format='%(levelname)s: %(message)s')
+  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
   logger = logging.getLogger(__name__)
-  logger.setLevel(logging.INFO)
 
 
 if __name__ == "__main__":
