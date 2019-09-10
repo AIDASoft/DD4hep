@@ -12,9 +12,8 @@ gSystem.Load('libglapi')
 gSystem.Load('libDDPython')
 from ROOT import dd4hep as Core  # noqa
 
-logging.basicConfig(format='%(levelname)s: %(message)s')
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 name_space = __import__(__name__)
 
