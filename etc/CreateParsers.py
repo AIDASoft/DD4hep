@@ -1,8 +1,10 @@
 #!/usr/env python
 """
-This file will automaticcaly create the cpp files for the parsers for pod and std::containers of pods, and some other maps
+This file will automaticcaly create the cpp files for the parsers
+for pod and std::containers of pods, and some other maps
 
-This reduces the maximum required memory and allows faster compilation due to higher parallelisation of the build process
+This reduces the maximum required memory and allows faster compilation due to
+higher parallelisation of the build process
 This needs only to be run if additional parsers are neccessary.
 In this case copy the file to DDCore/src/parsers and run the program.
 
@@ -16,7 +18,7 @@ from io import open
 
 LICENSE = """// $Id$
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
