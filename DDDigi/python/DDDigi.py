@@ -9,15 +9,14 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 import logging
-from dd4hep_base import *
+from dd4hep_base import *  # noqa: F403
 
 logger = logging.getLogger(__name__)
 
 
 def loadDDDigi():
-  # import ROOT ## done in import * above
+  import ROOT
   from ROOT import gSystem
 
   # Try to load libglapi to avoid issues with TLS Static
@@ -82,7 +81,6 @@ Detector.globalVal = _constant
 
 
 def importConstants(description, namespace=None, debug=False):
-  scope = current
   ns = current
   if namespace is not None and not hasattr(current, namespace):
     import imp
@@ -152,7 +150,8 @@ def _setKernelProperty(self, name, value):
 # ---------------------------------------------------------------------------
 
 
-def _kernel_terminate(self): return self.get().terminate()
+def _kernel_terminate(self):
+  return self.get().terminate()
 
 
 # ---------------------------------------------------------------------------
@@ -194,7 +193,8 @@ def Synchronize(kernel, nam, parallel=False):
 
 
 def _setup(obj):
-  def _adopt(self, action): self.__adopt(action.get())
+  def _adopt(self, action):
+    self.__adopt(action.get())
   _import_class('digi', obj)
   o = getattr(current, obj)
   setattr(o, '__adopt', getattr(o, 'adopt'))
@@ -213,7 +213,7 @@ _import_class('digi', 'DigiAction')
 
 
 def _get(self, name):
-  import traceback
+  # import traceback
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
   if ret.status > 0:
@@ -273,7 +273,7 @@ class Digitize:
 
   """
      Access the worker kernel object.
-     
+
      \author  M.Frank
   """
 
@@ -296,7 +296,7 @@ class Digitize:
   def activeDetectors(self):
     detectors = []
     for i in self.description.detectors():
-      o = DetElement(i.second.ptr())
+      o = DetElement(i.second.ptr())  # noqa: F405
       sd = self.description.sensitiveDetector(o.name())
       if sd.isValid():
         d = {'name': o.name(), 'type': sd.type(), 'detector': o, 'sensitive': sd}
@@ -310,7 +310,6 @@ class Digitize:
       logger.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
 
   def setupDetector(self, name, collections=None, modules=None):
-    parameterDict = {}
     seq = ActionSequence(self.kernel(), 'DigiActionSequence/' + name)
     actions = []
     if isinstance(modules, tuple) or isinstance(modules, list):
@@ -326,7 +325,6 @@ class Digitize:
             for k, v in params.items():
               setattr(a, k, v)
         else:
-          ol = m.OutputLevel    # Check if the object is a DigiAction....
           actions.append(m)
     for a in actions:
       seq.adopt(a)
@@ -339,7 +337,7 @@ class Digitize:
   """
 
   def setupROOTOutput(self, name, output, mc_truth=True):
-    evt_root = EventAction(self.kernel(), 'DigiOutput2ROOT/' + name, True)
+    evt_root = EventAction(self.kernel(), 'DigiOutput2ROOT/' + name, True)  # noqa: F405
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
     if not output.endswith('.root'):
@@ -365,7 +363,7 @@ class Digitize:
   def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
     ga = self.kernel().generatorAction()
     # Register Generation initialization action
-    gen = GeneratorAction(self.kernel(), "DigiGeneratorActionInit/GenerationInit")
+    gen = GeneratorAction(self.kernel(), "DigiGeneratorActionInit/GenerationInit")  # noqa: F405
     if output_level is not None:
       gen.OutputLevel = output_level
     ga.adopt(gen)
@@ -379,7 +377,7 @@ class Digitize:
       ga.adopt(gen)
 
     # Merge all existing interaction records
-    gen = GeneratorAction(self.kernel(), "DigiInteractionMerger/InteractionMerger")
+    gen = GeneratorAction(self.kernel(), "DigiInteractionMerger/InteractionMerger")  # noqa: F405
     gen.enableUI()
     if output_level is not None:
       gen.OutputLevel = output_level
@@ -387,7 +385,7 @@ class Digitize:
 
     # Finally generate Digi primaries
     if have_mctruth:
-      gen = GeneratorAction(self.kernel(), "DigiPrimaryHandler/PrimaryHandler")
+      gen = GeneratorAction(self.kernel(), "DigiPrimaryHandler/PrimaryHandler")  # noqa: F405
       gen.RejectPDGs = "{1,2,3,4,5,6,21,23,24}"
       gen.enableUI()
       if output_level is not None:
