@@ -1,3 +1,4 @@
+# flake8: noqa
 # Copyright (c) 2010-2018 Benjamin Peterson
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
