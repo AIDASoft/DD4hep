@@ -1,11 +1,9 @@
 from __future__ import absolute_import, unicode_literals
-import os
 import sys
-import time
 import logging
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import GeV, MeV
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)

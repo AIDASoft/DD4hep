@@ -6,7 +6,7 @@ import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import GeV, m
 #
 #
 """
@@ -34,7 +34,7 @@ def run():
     geant4.setupCshUI()
 
   # Configure field
-  field = geant4.setupTrackingField(prt=True)
+  geant4.setupTrackingField(prt=True)
   # Configure Event actions
   prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.WARNING
@@ -42,7 +42,7 @@ def run():
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
-  evt_root = geant4.setupROOTOutput('RootOutput', 'CodexB_' + time.strftime('%Y-%m-%d_%H-%M'))
+  geant4.setupROOTOutput('RootOutput', 'CodexB_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
 
@@ -58,17 +58,19 @@ def run():
   setattr(gun, 'print', True)
   """
   gen =  DDG4.GeneratorAction(kernel,"Geant4InputAction/Input")
-  ##gen.Input = "Geant4EventReaderHepMC|"+ "/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/examples/DDG4/data/hepmc_geant4.dat"
-  gen.Input = "Geant4EventReaderHepMC|"+ "/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/DDG4/examples/MinBias_HepMC.txt"
+  # gen.Input = "Geant4EventReaderHepMC|"+
+  #             "/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/examples/DDG4/data/hepmc_geant4.dat"
+  gen.Input = "Geant4EventReaderHepMC|"+
+              "/afs/cern.ch/work/j/jongho/Project_DD4hep/Test/DD4hep/DDG4/examples/MinBias_HepMC.txt"
   gen.MomentumScale = 1.0
   gen.Mask = 1
   geant4.buildInputStage([gen],output_level=Output.DEBUG)
   """
 
   seq, action = geant4.setupTracker('CODEXb')
-  #action.OutputLevel = Output.ERROR
-  #seq,action = geant4.setupTracker('Shield')
-  #action.OutputLevel = Output.ERROR
+  # action.OutputLevel = Output.ERROR
+  # seq,action = geant4.setupTracker('Shield')
+  # action.OutputLevel = Output.ERROR
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
@@ -82,7 +84,7 @@ def run():
   part.adopt(user)
 
   # Now build the physics list:
-  ##phys = kernel.physicsList()
+  # phys = kernel.physicsList()
   phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
   ph.addParticleConstructor('G4LeptonConstructor')

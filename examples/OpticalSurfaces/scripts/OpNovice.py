@@ -3,10 +3,9 @@
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
-import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import keV
 #
 #
 """
@@ -34,7 +33,7 @@ def run():
     geant4.setupCshUI()
 
   # Configure field
-  field = geant4.setupTrackingField(prt=True)
+  geant4.setupTrackingField(prt=True)
   # Configure Event actions
   prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.DEBUG
@@ -52,7 +51,7 @@ def run():
   act.DebugSurfaces = True
 
   # Configure I/O
-  ###evt_root = geant4.setupROOTOutput('RootOutput','OpNovice_'+time.strftime('%Y-%m-%d_%H-%M'))
+  # evt_root = geant4.setupROOTOutput('RootOutput','OpNovice_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='gamma', energy=5 * keV, multiplicity=1)

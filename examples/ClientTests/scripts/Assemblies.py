@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import DDG4
-from g4units import *
+from g4units import GeV, mm, cm
 #
 """
    dd4hep example setup using the python configuration
@@ -27,7 +27,7 @@ def run():
     kernel.UI = ''
 
   # Configure field
-  field = geant4.setupTrackingField(prt=True)
+  geant4.setupTrackingField(prt=True)
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'Assemblies_' + time.strftime('%Y-%m-%d_%H-%M'), mc_truth=False)
   # Setup particle gun

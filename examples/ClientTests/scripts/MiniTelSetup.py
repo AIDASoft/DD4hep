@@ -32,7 +32,7 @@ class Setup(DDG4TestSetup.Setup):
     seq, act = self.geant4.setupTracker('MyLHCBdetector4')
     if output_level:
       act.OutputLevel = output_level
-    #act.OutputLevel = 4
+    # act.OutputLevel = 4
     seq, act = self.geant4.setupTracker('MyLHCBdetector5')
     if output_level:
       act.OutputLevel = output_level

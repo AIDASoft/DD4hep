@@ -7,13 +7,12 @@
 
 """
 from __future__ import absolute_import, unicode_literals
-from g4units import *
+from g4units import GeV
 
 
 def run():
   import CLICSid
   import DDG4
-  from DDG4 import OutputLevel as Output
 
   sid = CLICSid.CLICSid()
   sid.loadGeometry()
@@ -28,7 +27,7 @@ def run():
   kernel.registerGlobalAction(writer)
   sid.setupPhysics('QGSP_BERT')
   #
-  gen = sid.geant4.setupGun('Gun', 'pi-', 10 * GeV, Standalone=True)
+  sid.geant4.setupGun('Gun', 'pi-', 10 * GeV, Standalone=True)
   # Now initialize. At the Geant4 command prompt we can write the geometry:
   # Idle> /ddg4/Writer/write
   # or by configuring the UI using ui.Commands

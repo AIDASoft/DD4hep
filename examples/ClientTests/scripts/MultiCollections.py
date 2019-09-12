@@ -4,7 +4,7 @@ import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import GeV, MeV
 from ddsix.moves import range
 #
 #
@@ -43,9 +43,9 @@ def run():
     kernel.UI = ''
 
   # Configure field
-  field = geant4.setupTrackingField(prt=True)
+  geant4.setupTrackingField(prt=True)
   # Configure I/O
-  evt_root = geant4.setupROOTOutput('RootOutput', 'Multi_coll_' + time.strftime('%Y-%m-%d_%H-%M'), mc_truth=True)
+  geant4.setupROOTOutput('RootOutput', 'Multi_coll_' + time.strftime('%Y-%m-%d_%H-%M'), mc_truth=True)
   # Setup particle gun
   geant4.setupGun("Gun", particle='pi-', energy=10 * GeV, multiplicity=1)
 

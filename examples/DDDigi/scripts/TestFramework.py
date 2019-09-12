@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import, unicode_literals
 import os
-import sys
 import DDDigi
 
 DDDigi.setPrintFormat(str('%-32s %5s %s'))

@@ -14,8 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 def run():
-  import os
-  import sys
   import DDG4
   import CLICSid
   import g4units
@@ -23,7 +21,6 @@ def run():
   sid = CLICSid.CLICSid()
   sid.loadGeometry()
   DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
-  geant4 = sid.geant4
   # Configure UI
   sid.geant4.setupCshUI(ui=None)
   gun = sid.geant4.setupGun("Gun",
@@ -37,7 +34,7 @@ def run():
   sid.kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
-  phys = sid.setupPhysics('QGSP_BERT')
+  sid.setupPhysics('QGSP_BERT')
   sid.test_config()
   sid.kernel.NumEvents = 1
 

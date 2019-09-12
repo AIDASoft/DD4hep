@@ -3,7 +3,6 @@
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
-import time
 import DDG4
 #
 """
@@ -22,7 +21,7 @@ def run():
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/TrackingRegion.xml"))
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   # Configure field
-  ##field = geant4.setupTrackingField(prt=True)
+  # field = geant4.setupTrackingField(prt=True)
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugVolumes = True

@@ -5,7 +5,7 @@
    @author  M.Frank
    @version 1.0
    modified for LHeC
-   
+
 """
 from __future__ import absolute_import, unicode_literals
 import logging
@@ -80,8 +80,8 @@ def run():
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
-  #evt_lcio = geant4.setupLCIOOutput('LcioOutput','Lhe_dip_sol_circ-higgs-bb')
-  #evt_lcio.OutputLevel = Output.ERROR
+  # evt_lcio = geant4.setupLCIOOutput('LcioOutput','Lhe_dip_sol_circ-higgs-bb')
+  # evt_lcio.OutputLevel = Output.ERROR
 
   evt_root = geant4.setupROOTOutput('RootOutput', 'Lhe_dip_sol_circ-higgs-bb')
   evt_root.OutputLevel = Output.INFO
@@ -90,7 +90,7 @@ def run():
   kernel.generatorAction().adopt(gen)
 
   """
-  # First particle generator: e-  non-isotropic generation using Gun: 
+  # First particle generator: e-  non-isotropic generation using Gun:
   gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGenerator/Gun");
   gun.Particle = 'e-'
   gun.Energy = 60 * GeV
@@ -151,8 +151,9 @@ def run():
 
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO1")
-  # gen.Input = "LCIOStdHepReader|/afs/.cern.ch/project/lhec/software/aidasoft/DD4hep/DD4hep/files/NC_bb_tag_2_pythia_events.hep"
-  #gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/NC_bb_tag_2_pythia_events.hep"
+  # gen.Input = "LCIOStdHepReader|/afs/.cern.ch/project/lhec/"
+  #             "software/aidasoft/DD4hep/DD4hep/files/NC_bb_tag_2_pythia_events.hep"
+  # gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/NC_bb_tag_2_pythia_events.hep"
   gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/lhec_for_peter/tag_2_pythia_events.hep"
   # gen.Input = "LCIOStdHepReader|/opt/DD4hep/files/single-top-tag_1_pythia_events.hep"
 
@@ -192,7 +193,7 @@ def run():
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
-  #part.SaveProcesses = ['conv','Decay']
+  # part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
   part.MinimalKineticEnergy = 10 * g4units.MeV
   part.OutputLevel = 5  # generator_output_level
