@@ -3,7 +3,7 @@ import os
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import GeV
 #
 #
 """
@@ -19,7 +19,6 @@ from g4units import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir + '/examples/DDG4/examples'
   kernel.setOutputLevel(str('Geant4Converter'), Output.DEBUG)
   kernel.setOutputLevel(str('RootOutput'), Output.INFO)
   kernel.setOutputLevel(str('ShellHandler'), Output.DEBUG)
@@ -31,9 +30,9 @@ def run():
   geant4.setupCshUI()
 
   # Configure field
-  field = geant4.setupTrackingField(prt=True)
+  geant4.setupTrackingField(prt=True)
   # Configure I/O
-  evt_root = geant4.setupROOTOutput('RootOutput', 'FCC_' + time.strftime('%Y-%m-%d_%H-%M'), mc_truth=False)
+  geant4.setupROOTOutput('RootOutput', 'FCC_' + time.strftime('%Y-%m-%d_%H-%M'), mc_truth=False)
   # Setup particle gun
   geant4.setupGun("Gun", particle='pi-', energy=100 * GeV, multiplicity=1)
   # Now the calorimeters

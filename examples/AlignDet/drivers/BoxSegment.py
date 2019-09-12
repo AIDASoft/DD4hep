@@ -7,11 +7,11 @@ def detector_BoxSegment(description, det):
   pos = det.find('position')
   rot = det.find('rotation')
   mother = description.worldVolume()
-  de = DetElement(description, det.name, det.type, det.id)
-  sha = Box(description, det.name + '_envelope', box.x, box.y, box.z)
-  vol = Volume(description, det.name + '_envelope_volume', sha, description.material(mat.name))
-  phv = mother.placeVolume(vol, Position(pos.x, pos.y, pos.z),
-                           Rotation(rot.x, rot.y, rot.z))
+  de = DetElement(description, det.name, det.type, det.id)  # noqa: F821
+  sha = Box(description, det.name + '_envelope', box.x, box.y, box.z)  # noqa: F821
+  vol = Volume(description, det.name + '_envelope_volume', sha, description.material(mat.name))  # noqa: F821
+  phv = mother.placeVolume(vol, Position(pos.x, pos.y, pos.z),  # noqa: F821
+                           Rotation(rot.x, rot.y, rot.z))  # noqa: F821
   vol.setVisAttributes(description, det.vis)
   phv.addPhysVolID('id', det.id)
   de.addPlacement(phv)

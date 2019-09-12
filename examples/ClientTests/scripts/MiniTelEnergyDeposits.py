@@ -24,7 +24,7 @@ def run():
     DDG4.setPrintLevel(Output.WARNING)
 
   m.configure()
-  gun = m.setupGun()
+  m.setupGun()
   part = m.setupGenerator()
   part.OutputLevel = Output.DEBUG
   # This is the actual test:

@@ -67,7 +67,7 @@ logger.info('+++++ Test: object method call with non callable')
 try:
   ret = py.instance().call(1, None)
   logger.info('ret: %s', str(ret))
-except:
+except Exception:
   traceback.print_exc()
 logger.info('\n')
 
@@ -75,7 +75,7 @@ logger.info('+++++ Test: object method call with exception in python callback')
 try:
   ret = py.instance().call(obj.fcn_except, (1, [1, 2, 3, 4, 5, 6],))
   logger.info('ret: %s', str(ret))
-except:
+except Exception:
   traceback.print_exc()
 logger.info('\n')
 logger.info('+++++ All Done....\n\n')

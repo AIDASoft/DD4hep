@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 def run():
   import os
-  import sys
   import DDG4
   import g4units
 
@@ -37,7 +36,7 @@ def run():
   kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
-  phys = geant4.setupPhysics('QGSP_BERT')
+  geant4.setupPhysics('QGSP_BERT')
   kernel.configure()
   kernel.initialize()
   kernel.NumEvents = 1

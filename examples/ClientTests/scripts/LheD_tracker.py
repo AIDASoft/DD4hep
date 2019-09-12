@@ -6,7 +6,7 @@ import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import GeV, mm, cm
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -43,7 +43,7 @@ def run():
     kernel.UI = ''
 
   # Configure field
-  field = geant4.setupTrackingField(prt=True)
+  geant4.setupTrackingField(prt=True)
   # Configure Event actions
   prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.WARNING  # Output.WARNING
@@ -51,13 +51,13 @@ def run():
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
-  evt_root = geant4.setupROOTOutput('RootOutput', 'LHeD_tracker_' + time.strftime('%Y-%m-%d_%H-%M'))
+  geant4.setupROOTOutput('RootOutput', 'LHeD_tracker_' + time.strftime('%Y-%m-%d_%H-%M'))
   gen = geant4.setupGun("Gun", particle='geantino', energy=20 * GeV, position=(0 * mm, 0 * mm, 0 * cm), multiplicity=3)
   gen.isotrop = False
   gen.direction = (1, 0, 0)
   gen.OutputLevel = Output.WARNING
 
-  #seq,act = geant4.setupTracker('SiVertexBarrel')
+  # seq,act = geant4.setupTracker('SiVertexBarrel')
 
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
