@@ -17,7 +17,8 @@ class Meta(ConfigHelper):
   def __init__(self):
     super(Meta, self).__init__()
     self._eventParameters_EXTRA = {'help': "Event parameters to write in every event. "
-                                           "Use C/F/I ids to specify parameter type. E.g parameterName/F=0.42 to set a float parameter",
+                                           "Use C/F/I ids to specify parameter type. "
+                                           "E.g parameterName/F=0.42 to set a float parameter",
                                    'nargs': '+'}
     self.eventParameters = []
     self._runNumberOffset_EXTRA = {'help': "The run number offset to write in slcio output file. "
@@ -28,7 +29,10 @@ class Meta(ConfigHelper):
     self.eventNumberOffset = 0
 
   def parseEventParameters(self):
-    """Parse the event parameters and return 3 event parameter dictionnaries, respectively for string, int and float parameters"""
+    """
+    Parse the event parameters and return 3 event parameter dictionnaries, respectively
+    for string, int and float parameters
+    """
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
     for p in self.eventParameters:
       parameterAndValue = p.split("=", 1)

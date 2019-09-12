@@ -8,7 +8,6 @@ Based on M. Frank and F. Gaede runSim.py
 """
 from __future__ import absolute_import, unicode_literals, division
 __RCSID__ = "$Id$"
-import datetime
 import sys
 import os
 from DDSim.Helper.Meta import Meta
@@ -24,7 +23,6 @@ from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Gun import Gun
 import argparse
 import ddsix as six
-from g4units import *
 import logging
 from io import open
 
@@ -174,13 +172,16 @@ class DD4hepSimulation(object):
     parser.add_argument("--physicsList", action="store", dest="physicsList", default=self.physicsList,
                         help="Physics list to use in simulation")
 
-    parser.add_argument("--crossingAngleBoost", action="store", dest="crossingAngleBoost", default=self.crossingAngleBoost,
+    parser.add_argument("--crossingAngleBoost", action="store", dest="crossingAngleBoost",
+                        default=self.crossingAngleBoost,
                         type=float, help="Lorentz boost for the crossing angle, in radian!")
 
-    parser.add_argument("--vertexSigma", nargs=4, action="store", dest="vertexSigma", default=self.vertexSigma, metavar=('X', 'Y', 'Z', 'T'),
+    parser.add_argument("--vertexSigma", nargs=4, action="store", dest="vertexSigma",
+                        default=self.vertexSigma, metavar=('X', 'Y', 'Z', 'T'),
                         type=float, help="FourVector of the Sigma for the Smearing of the Vertex position: x y z t")
 
-    parser.add_argument("--vertexOffset", nargs=4, action="store", dest="vertexOffset", default=self.vertexOffset, metavar=('X', 'Y', 'Z', 'T'),
+    parser.add_argument("--vertexOffset", nargs=4, action="store", dest="vertexOffset",
+                        default=self.vertexOffset, metavar=('X', 'Y', 'Z', 'T'),
                         type=float, help="FourVector of translation for the Smearing of the Vertex position: x y z t")
 
     parser.add_argument("--macroFile", "-M", action="store", dest="macroFile", default=self.macroFile,
@@ -190,19 +191,22 @@ class DD4hepSimulation(object):
                         help="enable the DDG4 particle gun")
 
     parser.add_argument("--enableG4GPS", action="store_true", dest="enableG4GPS", default=self.enableG4GPS,
-                        help="enable the Geant4 GeneralParticleSource. Needs a macroFile (runType run) or use it with the shell (runType shell)")
+                        help="enable the Geant4 GeneralParticleSource. Needs a macroFile (runType run)"
+                        "or use it with the shell (runType shell)")
 
     parser.add_argument("--enableG4Gun", action="store_true", dest="enableG4Gun", default=self.enableG4Gun,
-                        help="enable the Geant4 particle gun. Needs a macroFile (runType run) or use it with the shell (runType shell)")
+                        help="enable the Geant4 particle gun. Needs a macroFile (runType run)"
+                        " or use it with the shell (runType shell)")
 
-    parser.add_argument("--dumpParameter", "--dump", action="store_true", dest="dumpParameter", default=self._dumpParameter,
-                        help="Print all configuration Parameters and exit")
+    parser.add_argument("--dumpParameter", "--dump", action="store_true", dest="dumpParameter",
+                        default=self._dumpParameter, help="Print all configuration Parameters and exit")
 
-    parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="enableDetailedShowerMode", default=self.enableDetailedShowerMode,
+    parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="enableDetailedShowerMode",
+                        default=self.enableDetailedShowerMode,
                         help="use detailed shower mode")
 
-    parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile", default=self._dumpSteeringFile,
-                        help="print an example steering file to stdout")
+    parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile",
+                        default=self._dumpSteeringFile, help="print an example steering file to stdout")
 
     # output, or do something smarter with fullHelp only for example
     ConfigHelper.addAllHelper(self, parser)
@@ -238,7 +242,7 @@ class DD4hepSimulation(object):
 
     self._consistencyChecks()
 
-    #self.__treatUnknownArgs( parsed, unknown )
+    # self.__treatUnknownArgs( parsed, unknown )
     self.__parseAllHelper(parsed)
     if self._errorMessages and not (self._dumpParameter or self._dumpSteeringFile):
       parser.epilog = "\n".join(self._errorMessages)
@@ -299,8 +303,8 @@ class DD4hepSimulation(object):
 
   # ----------------------------------------------------------------------------------
 
-    #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
-    #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
+    # simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
+    # simple = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
     simple = DDG4.Geant4(kernel, tracker=self.action.tracker, calo=self.action.calo)
 
     simple.printDetectors()
@@ -332,13 +336,14 @@ class DD4hepSimulation(object):
     kernel.runAction().add(run1)
 
     # Configure the random seed, do it before the I/O because we might change the seed!
-    _rndm = self.random.initialize(DDG4, kernel, self.output.random)
+    self.random.initialize(DDG4, kernel, self.output.random)
 
     # Configure I/O
     if self.outputFile.endswith(".slcio"):
       lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
       lcOut.RunHeader = self.meta.addParametersToRunHeader(self)
-      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = self.meta.parseEventParameters()
+      eventPars = self.meta.parseEventParameters()
+      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
       lcOut.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
       lcOut.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
     elif self.outputFile.endswith(".root"):
@@ -409,7 +414,7 @@ class DD4hepSimulation(object):
     # And handle the simulation particles.
     part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
     kernel.generatorAction().adopt(part)
-    #part.SaveProcesses = ['conv','Decay']
+    # part.SaveProcesses = ['conv','Decay']
     part.SaveProcesses = self.part.saveProcesses
     part.MinimalKineticEnergy = self.part.minimalKineticEnergy
     part.KeepAllParticles = self.part.keepAllParticles

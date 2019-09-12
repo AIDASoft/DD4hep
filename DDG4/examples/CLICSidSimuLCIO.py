@@ -10,8 +10,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 import time
 import DDG4
-from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import keV, GeV, MeV
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -21,7 +20,6 @@ logger = logging.getLogger(__name__)
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir + '/examples/DDG4/examples'
   kernel.loadGeometry(str("file:" + install_dir + "/examples/CLICSiD/compact/compact.xml"))
 
   simple = DDG4.Simple(kernel, tracker='LcioTestTrackerAction')
@@ -64,13 +62,13 @@ def run():
   mc.release()
   """
   # Configure I/O
-  evt_lcio = simple.setupLCIOOutput('LcioOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
+  simple.setupLCIOOutput('LcioOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   gen = DDG4.GeneratorAction(kernel, "Geant4TestGeneratorAction/Generate")
   kernel.generatorAction().add(gen)
 
   # Setup particle gun
-  gun = simple.setupGun('Gun', 'pi-', 100 * GeV, True)
+  simple.setupGun('Gun', 'pi-', 100 * GeV, True)
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")

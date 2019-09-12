@@ -9,17 +9,15 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-import g4units as G4Units
-from dd4hep_base import std, std_vector, std_list, std_map, std_pair
 import logging
-from dd4hep_base import *
+from dd4hep_base import *  # noqa: F403
 import ddsix as six
 
 logger = logging.getLogger(__name__)
 
 
 def loadDDG4():
-  # import ROOT ## done in import * above
+  import ROOT
   from ROOT import gSystem
 
   # Try to load libglapi to avoid issues with TLS Static
@@ -81,7 +79,6 @@ def importConstants(description, namespace=None, debug=False):
   """
   Import the Detector constants into the DDG4 namespace
   """
-  scope = current
   ns = current
   if namespace is not None and not hasattr(current, namespace):
     import imp
@@ -233,7 +230,8 @@ def SensitiveSequence(kernel, nam):
 
 
 def _setup(obj):
-  def _adopt(self, action): self.__adopt(action.get())
+  def _adopt(self, action):
+    self.__adopt(action.get())
   _import_class('Sim', obj)
   o = getattr(current, obj)
   setattr(o, '__adopt', getattr(o, 'adopt'))
@@ -242,7 +240,8 @@ def _setup(obj):
 
 
 def _setup_callback(obj):
-  def _adopt(self, action): self.__adopt(action.get(), action.callback())
+  def _adopt(self, action):
+    self.__adopt(action.get(), action.callback())
   _import_class('Sim', obj)
   o = getattr(current, obj)
   setattr(o, '__adopt', getattr(o, 'add'))
@@ -282,7 +281,6 @@ _import_class('CLHEP', 'HepRandomEngine')
 
 
 def _get(self, name):
-  import traceback
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
   if ret.status > 0:
@@ -418,7 +416,6 @@ class Geant4:
 
     \author  M.Frank
     """
-    import sys
     init_seq = self.master().userInitialization(True)
     init_action = UserInitialization(self.master(), 'Geant4PythonInitialization/PyG4Init')
     #
@@ -539,7 +536,7 @@ class Geant4:
   def printDetectors(self):
     logger.info('+++  List of sensitive detectors:')
     for i in self.description.detectors():
-      o = DetElement(i.second.ptr())
+      o = DetElement(i.second.ptr())  # noqa: F405
       sd = self.description.sensitiveDetector(str(o.name()))
       if sd.isValid():
         typ = sd.type()
@@ -547,15 +544,6 @@ class Geant4:
         if typ in self.sensitive_types:
           sdtyp = self.sensitive_types[typ]
         logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s', o.name(), typ, sdtyp)
-
-  def setupSensitiveSequencer(self, name, action):
-    if isinstance(action, tuple):
-      sensitive_type = action[0]
-    else:
-      sensitive_type = action
-    seq = SensitiveSequence(self.kernel(), 'Geant4SensDetActionSequence/' + name)
-    seq.enableUI()
-    return seq
 
   def setupDetector(self, name, action, collections=None):
     # fg: allow the action to be a tuple with parameter dictionary
@@ -610,14 +598,14 @@ class Geant4:
     return (seq, acts[0])
 
   def setupCalorimeter(self, name, type=None, collections=None):
-    sd = self.description.sensitiveDetector(str(name))
+    self.description.sensitiveDetector(str(name))
     # sd.setType('calorimeter')
     if type is None:
       type = self.sensitive_types['calorimeter']
     return self.setupDetector(name, type, collections)
 
   def setupTracker(self, name, type=None, collections=None):
-    sd = self.description.sensitiveDetector(str(name))
+    self.description.sensitiveDetector(str(name))
     # sd.setType('tracker')
     if type is None:
       type = self.sensitive_types['tracker']
@@ -646,12 +634,14 @@ class Geant4:
       logger.info('+++++> %s %s %s %s ', field.name, '-> largest_step       = ', str(field.largest_step), '[mm]')
     return field
 
-  def setupTrackingFieldMT(self, name='MagFieldTrackingSetup', stepper='ClassicalRK4', equation='Mag_UsualEqRhs', prt=False):
+  def setupTrackingFieldMT(self, name='MagFieldTrackingSetup',
+                           stepper='ClassicalRK4', equation='Mag_UsualEqRhs', prt=False):
     seq, fld = self.addDetectorConstruction("Geant4FieldTrackingConstruction/" + name)
     self._private_setupField(fld, stepper, equation, prt)
     return (seq, fld)
 
-  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='ClassicalRK4', equation='Mag_UsualEqRhs', prt=False):
+  def setupTrackingField(self, name='MagFieldTrackingSetup',
+                         stepper='ClassicalRK4', equation='Mag_UsualEqRhs', prt=False):
     field = self.addConfig('Geant4FieldTrackingSetupAction/' + name)
     self._private_setupField(field, stepper, equation, prt)
     return field
@@ -671,7 +661,8 @@ class Geant4:
     phys.adopt(opt)
     return opt
 
-  def setupGun(self, name, particle, energy, isotrop=True, multiplicity=1, position=(0.0, 0.0, 0.0), register=True, **args):
+  def setupGun(self, name, particle, energy, isotrop=True,
+               multiplicity=1, position=(0.0, 0.0, 0.0), register=True, **args):
     gun = GeneratorAction(self.kernel(), "Geant4ParticleGun/" + name, True)
     for i in args.items():
       setattr(gun, i[0], i[1])

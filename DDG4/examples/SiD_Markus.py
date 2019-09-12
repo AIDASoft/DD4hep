@@ -6,7 +6,7 @@ import time
 import logging
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import keV, GeV, mm, ns, MeV
 #
 global geant4
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -52,8 +52,8 @@ def setupWorker():
   evt_lcio = geant4.setupLCIOOutput('LcioOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio.OutputLevel = Output.DEBUG
 
-  #evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  #generator_output_level = Output.INFO
+  # evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  # generator_output_level = Output.INFO
 
   gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
@@ -113,7 +113,7 @@ def setupWorker():
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
-  #part.SaveProcesses = ['conv','Decay']
+  # part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
   part.MinimalKineticEnergy = 100 * MeV
   part.OutputLevel = Output.DEBUG  # generator_output_level
@@ -178,7 +178,7 @@ def run():
   seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
 
   # Configure G4 magnetic field tracking
-  self.setupTrackingFieldMT()
+  self.setupTrackingFieldMT()  # noqa: F821
 
   seq, act = geant4.addDetectorConstruction("Geant4PythonDetectorConstruction/DummyDet",
                                             geometry=dummy_geom,
@@ -200,19 +200,19 @@ def run():
   f1 = DDG4.Filter(kernel, 'GeantinoRejectFilter/GeantinoRejector')
   kernel.registerGlobalFilter(f1)
 
-  #seq,act = geant4.setupTracker('SiTrackerBarrel')
-  #seq,act = geant4.setupTracker('SiTrackerEndcap')
-  #seq,act = geant4.setupTracker('SiTrackerForward')
+  # seq,act = geant4.setupTracker('SiTrackerBarrel')
+  # seq,act = geant4.setupTracker('SiTrackerEndcap')
+  # seq,act = geant4.setupTracker('SiTrackerForward')
   # Now the calorimeters
-  #seq,act = geant4.setupCalorimeter('EcalBarrel')
-  #seq,act = geant4.setupCalorimeter('EcalEndcap')
-  #seq,act = geant4.setupCalorimeter('HcalBarrel')
-  #seq,act = geant4.setupCalorimeter('HcalEndcap')
-  #seq,act = geant4.setupCalorimeter('HcalPlug')
-  #seq,act = geant4.setupCalorimeter('MuonBarrel')
-  #seq,act = geant4.setupCalorimeter('MuonEndcap')
-  #seq,act = geant4.setupCalorimeter('LumiCal')
-  #seq,act = geant4.setupCalorimeter('BeamCal')
+  # seq,act = geant4.setupCalorimeter('EcalBarrel')
+  # seq,act = geant4.setupCalorimeter('EcalEndcap')
+  # seq,act = geant4.setupCalorimeter('HcalBarrel')
+  # seq,act = geant4.setupCalorimeter('HcalEndcap')
+  # seq,act = geant4.setupCalorimeter('HcalPlug')
+  # seq,act = geant4.setupCalorimeter('MuonBarrel')
+  # seq,act = geant4.setupCalorimeter('MuonEndcap')
+  # seq,act = geant4.setupCalorimeter('LumiCal')
+  # seq,act = geant4.setupCalorimeter('BeamCal')
 
   # Now build the physics list:
   seq = geant4.setupPhysics('QGSP_BERT')
