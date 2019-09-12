@@ -24,32 +24,32 @@ def dumpData(det):
   try:
     dat = DDRec.FixedPadSizeTPCData(det)
     logger.info(dat.toString())
-  except:
+  except Exception:
     pass
   try:
     dat = DDRec.ZPlanarData(det)
     logger.info(dat.toString())
-  except:
+  except Exception:
     pass
   try:
     dat = DDRec.ZDiskPetalsData(det)
     logger.info(dat.toString())
-  except:
+  except Exception:
     pass
   try:
     dat = DDRec.ConicalSupportData(det)
     logger.info(dat.toString())
-  except:
+  except Exception:
     pass
   try:
     dat = DDRec.LayeredCalorimeterData(det)
     logger.info(dat.toString())
-  except:
+  except Exception:
     pass
   try:
     dat = DDRec.NeighbourSurfacesStruct(det)
     logger.info(dat.toString())
-  except:
+  except Exception:
     pass
 
 
@@ -67,7 +67,6 @@ if opts.compact is None:
   sys.exit(1)
 
 try:
-  import ROOT
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError as X:
