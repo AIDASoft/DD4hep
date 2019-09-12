@@ -18,7 +18,7 @@ def run():
   import LHeD
   import DDG4
   import os
-  import SystemOfUnits
+  import g4units
   from DDG4 import OutputLevel as Output
 
   lhed = LHeD.LHeD()
@@ -41,12 +41,12 @@ def run():
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
   field.stepper = "HelixGeant4Runge"
   field.equation = "Mag_UsualEqRhs"
-  field.eps_min = 5e-0520 * SystemOfUnits.mm
-  field.eps_max = 0.001 * SystemOfUnits.mm
-  field.min_chord_step = 0.01 * SystemOfUnits.mm
-  field.delta_chord = 0.25 * SystemOfUnits.mm
-  field.delta_intersection = 1e-05 * SystemOfUnits.mm
-  field.delta_one_step = 0.001 * SystemOfUnits.mm
+  field.eps_min = 5e-0520 * g4units.mm
+  field.eps_max = 0.001 * g4units.mm
+  field.min_chord_step = 0.01 * g4units.mm
+  field.delta_chord = 0.25 * g4units.mm
+  field.delta_intersection = 1e-05 * g4units.mm
+  field.delta_one_step = 0.001 * g4units.mm
   logger.info('+++++> %s -> stepper  = %s', field.name, field.stepper)
   logger.info('+++++> %s -> equation = %s', field.name, field.equation)
   logger.info('+++++> %s -> eps_min  = %s', field.name, field.eps_min)
@@ -170,8 +170,8 @@ def run():
   gen = DDG4.GeneratorAction(kernel, "Geant4InteractionVertexSmear/Smear1")
   gen.OutputLevel = 4  # generator_output_level
   gen.Mask = 1
-  gen.Offset = (-20 * SystemOfUnits.mm, -10 * SystemOfUnits.mm, -10 * SystemOfUnits.mm, 0 * SystemOfUnits.ns)
-  gen.Sigma = (12 * SystemOfUnits.mm, 8 * SystemOfUnits.mm, 8 * SystemOfUnits.mm, 0 * SystemOfUnits.ns)
+  gen.Offset = (-20 * g4units.mm, -10 * g4units.mm, -10 * g4units.mm, 0 * g4units.ns)
+  gen.Sigma = (12 * g4units.mm, 8 * g4units.mm, 8 * g4units.mm, 0 * g4units.ns)
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
@@ -194,7 +194,7 @@ def run():
   kernel.generatorAction().adopt(part)
   #part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
-  part.MinimalKineticEnergy = 10 * SystemOfUnits.MeV
+  part.MinimalKineticEnergy = 10 * g4units.MeV
   part.OutputLevel = 5  # generator_output_level
   part.enableUI()
 
@@ -225,7 +225,7 @@ def run():
   kernel.registerGlobalFilter(f3)
 
   f4 = DDG4.Filter(kernel, 'EnergyDepositMinimumCut')
-  f4.Cut = 0.5 * SystemOfUnits.MeV
+  f4.Cut = 0.5 * g4units.MeV
   f4.enableUI()
   kernel.registerGlobalFilter(f4)
 

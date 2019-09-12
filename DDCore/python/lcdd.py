@@ -14,7 +14,7 @@ import xml.etree.ElementTree as xml
 from math import cos, sin, pi, tan
 from os import path, listdir
 from functools import partial
-import SystemOfUnits
+import g4units
 import math
 import logging
 from ddsix.moves import range
@@ -57,7 +57,7 @@ unique_mat_id = 0x7FFEFEED
 current_xmlfile = None
 
 constants = {}
-constants.update(SystemOfUnits.__dict__)
+constants.update(g4units.__dict__)
 constants.update(math.__dict__)
 drivers = {}
 drivers.update(math.__dict__)

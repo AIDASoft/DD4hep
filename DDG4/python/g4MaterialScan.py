@@ -51,7 +51,7 @@ def materialScan(opts):
   gun = geant4.setupGun("Gun",
                         Standalone=True,
                         particle='geantino',
-                        energy=20 * SystemOfUnits.GeV,
+                        energy=20 * g4units.GeV,
                         position=opts.position,
                         direction=opts.direction,
                         multiplicity=1,
@@ -120,7 +120,7 @@ except ImportError as X:
 
 try:
   import DDG4
-  import SystemOfUnits
+  import g4units
 except ImportError as X:
   logger.error('DDG4 python interface not accessible: %s', X)
   logger.info(parser.format_help())

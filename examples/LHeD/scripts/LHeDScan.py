@@ -17,7 +17,7 @@ def run():
   import os
   import sys
   import DDG4
-  import SystemOfUnits
+  import g4units
 
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
@@ -29,7 +29,7 @@ def run():
   gun = geant4.setupGun("Gun",
                         Standalone=True,
                         particle='geantino',
-                        energy=20 * SystemOfUnits.GeV,
+                        energy=20 * g4units.GeV,
                         position=(0, 0, 0),
                         multiplicity=1,
                         isotrop=False)
