@@ -9,5 +9,5 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-from dd4hep_base import *
-import_units(__import__(__name__))
+from dd4hep_base import *  # noqa: F403
+import_units(__import__(__name__))  # noqa: F405
