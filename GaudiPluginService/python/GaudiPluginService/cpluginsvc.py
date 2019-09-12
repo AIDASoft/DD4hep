@@ -27,7 +27,7 @@ __all__ = (
     "factories",
     "Factory",
     "Property",
-)
+    )
 
 _libname = None
 
@@ -170,43 +170,43 @@ _functions_list = [(
     "cgaudi_pluginsvc_instance",
     [],
     Registry,
-), (
+    ), (
     "cgaudi_pluginsvc_get_factory_size",
     [Registry],
     ctypes.c_int,
-), (
+    ), (
     "cgaudi_pluginsvc_get_factory_at",
     [Registry, ctypes.c_int],
     Factory,
-), (
+    ), (
     "cgaudi_factory_get_library",
     [Factory],
     ctypes.c_char_p,
-), (
+    ), (
     "cgaudi_factory_get_type",
     [Factory],
     ctypes.c_char_p,
-), (
+    ), (
     "cgaudi_factory_get_classname",
     [Factory],
     ctypes.c_char_p,
-), (
+    ), (
     "cgaudi_factory_get_property_size",
     [Factory],
     ctypes.c_int,
-), (
+    ), (
     "cgaudi_factory_get_property_at",
     [Factory, ctypes.c_int],
     Property,
-), (
+    ), (
     "cgaudi_property_get_key",
     [Property],
     ctypes.c_char_p,
-), (
+    ), (
     "cgaudi_property_get_value",
     [Property],
     ctypes.c_char_p,
-)]
+    )]
 
 for f in _functions_list:
   n = f[0]
