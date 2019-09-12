@@ -6,7 +6,7 @@ import time
 import logging
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import keV, GeV, mm, ns, MeV
 #
 #
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -61,12 +61,10 @@ def run():
   logger.info("""
   Configure I/O
   """)
-  #evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  #evt_lcio.OutputLevel = Output.ERROR
+  # evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  # evt_lcio.OutputLevel = Output.ERROR
 
-  evt_root = geant4.setupROOTOutput('RootOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
-
-  generator_output_level = Output.INFO
+  geant4.setupROOTOutput('RootOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
@@ -121,7 +119,7 @@ def run():
   logger.info("#  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
-  #part.SaveProcesses = ['conv','Decay']
+  # part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
   part.MinimalKineticEnergy = 100 * MeV
   part.OutputLevel = 5  # generator_output_level
@@ -172,7 +170,7 @@ def run():
 
   logger.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
+  geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
 
   # Add special particle types from specialized physics constructor
   part = geant4.addPhysics('Geant4ExtraParticles/ExtraParticles')

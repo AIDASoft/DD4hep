@@ -12,8 +12,8 @@ class Action(ConfigHelper):
   The default tracker and calorimeter actions can be set with
 
   >>> SIM = DD4hepSimulation()
-  >>> SIM.action.tracker = ('Geant4TrackerWeightedAction', {'HitPositionCombination': 2, 'CollectSingleDeposits': False})
-  >>> SIM.action.calo    = "Geant4CalorimeterAction"
+  >>> SIM.action.tracker=('Geant4TrackerWeightedAction', {'HitPositionCombination': 2, 'CollectSingleDeposits': False})
+  >>> SIM.action.calo = "Geant4CalorimeterAction"
 
   for specific subdetectors specific sensitive detectors can be set based on pattern matching
 

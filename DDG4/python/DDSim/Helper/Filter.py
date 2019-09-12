@@ -55,7 +55,10 @@ class Filter(ConfigHelper):
 
   @property
   def calo(self):
-    """ default filter for calorimeter sensitive detectors; this is applied if no other filter is used for a calorimeter """
+    """
+    default filter for calorimeter sensitive detectors;
+    this is applied if no other filter is used for a calorimeter
+    """
     return self._calo
 
   @calo.setter

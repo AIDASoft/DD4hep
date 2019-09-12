@@ -17,7 +17,7 @@ def run(input_file):
   import DDG4
   from DDG4 import OutputLevel as Output
   kernel = DDG4.Kernel()
-  description = kernel.detectorDescription()
+  kernel.detectorDescription()
   gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/Input")
   kernel.generatorAction().adopt(gen)
   gen.Input = "Geant4EventReaderHepMC|" + input_file

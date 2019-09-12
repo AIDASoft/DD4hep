@@ -6,7 +6,7 @@ import time
 import logging
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import *
+from g4units import GeV, mm, cm
 #
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ def run():
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir + '/examples/DDG4/examples'
+  # example_dir = install_dir + '/examples/DDG4/examples'
   kernel.loadGeometry(str("file:" + install_dir + "/DDDetectors/compact/SiD_Markus.xml"))
   # kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(description, debug=False)
@@ -73,9 +73,9 @@ def run():
   generator_output_level = Output.WARNING
 
   # Configure I/O
-  evt_lcio = geant4.setupLCIOOutput('LcioOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
-  ##evt_lcio.OutputLevel = generator_output_level
-  #evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  geant4.setupLCIOOutput('LcioOutput', 'CLICSiD_' + time.strftime('%Y-%m-%d_%H-%M'))
+  # evt_lcio.OutputLevel = generator_output_level
+  # evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   prim = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV

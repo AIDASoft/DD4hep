@@ -30,7 +30,6 @@ def printOpts(opts):
 
 def materialScan(opts):
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry(str(opts.compact))
   DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
   geant4 = DDG4.Geant4(kernel)
@@ -48,19 +47,19 @@ def materialScan(opts):
         logger.error('+++  %-32s type:%-12s  --> Unknown Sensitive type: %s', o.name(), typ, sdtyp)
         sys.exit(errno.EINVAL)
 
-  gun = geant4.setupGun("Gun",
-                        Standalone=True,
-                        particle='geantino',
-                        energy=20 * g4units.GeV,
-                        position=opts.position,
-                        direction=opts.direction,
-                        multiplicity=1,
-                        isotrop=False)
+  geant4.setupGun("Gun",
+                  Standalone=True,
+                  particle='geantino',
+                  energy=20 * g4units.GeV,
+                  position=opts.position,
+                  direction=opts.direction,
+                  multiplicity=1,
+                  isotrop=False)
   scan = DDG4.SteppingAction(kernel, 'Geant4MaterialScanner/MaterialScan')
   kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
-  phys = geant4.setupPhysics('QGSP_BERT')
+  geant4.setupPhysics('QGSP_BERT')
   """
   phys = geant4.setupPhysics('')
   ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
@@ -69,7 +68,7 @@ def materialScan(opts):
   ph.addParticleConstructor('G4LeptonConstructor')
   phys.transportation = True
   phys.decays = True
-  phys.adopt(ph) 
+  phys.adopt(ph)
   """
 
   kernel.configure()
@@ -110,7 +109,6 @@ opts.direction = eval('(' + opts.direction + ')')
 printOpts(opts)
 
 try:
-  import ROOT
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError as X:

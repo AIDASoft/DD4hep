@@ -62,7 +62,6 @@ if opts.compact is None:
   sys.exit(1)
 
 try:
-  import ROOT
   from ROOT import gROOT
   gROOT.SetBatch(1)
 except ImportError as X:
