@@ -6,7 +6,7 @@ import time
 import logging
 import DDG4
 from DDG4 import OutputLevel as Output
-from SystemOfUnits import *
+from g4units import *
 #
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)

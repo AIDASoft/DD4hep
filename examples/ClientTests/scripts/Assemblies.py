@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import DDG4
-from SystemOfUnits import *
+from g4units import *
 #
 """
    dd4hep example setup using the python configuration

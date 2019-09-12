@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import sys
 import logging
 import DDG4
-from SystemOfUnits import *
+from g4units import *
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)

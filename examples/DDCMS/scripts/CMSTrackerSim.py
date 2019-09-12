@@ -4,7 +4,7 @@ import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from SystemOfUnits import *
+from g4units import *
 import logging
 from ddsix.moves import range
 

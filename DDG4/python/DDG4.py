@@ -624,16 +624,16 @@ class Geant4:
     return self.setupDetector(name, type, collections)
 
   def _private_setupField(self, field, stepper, equation, prt):
-    import SystemOfUnits
+    import g4units
     field.stepper = stepper
     field.equation = equation
-    field.eps_min = 5e-05 * SystemOfUnits.mm
-    field.eps_max = 0.001 * SystemOfUnits.mm
-    field.min_chord_step = 0.01 * SystemOfUnits.mm
-    field.delta_chord = 0.25 * SystemOfUnits.mm
-    field.delta_intersection = 0.001 * SystemOfUnits.mm
-    field.delta_one_step = 0.01 * SystemOfUnits.mm
-    field.largest_step = 1000 * SystemOfUnits.m
+    field.eps_min = 5e-05 * g4units.mm
+    field.eps_max = 0.001 * g4units.mm
+    field.min_chord_step = 0.01 * g4units.mm
+    field.delta_chord = 0.25 * g4units.mm
+    field.delta_intersection = 0.001 * g4units.mm
+    field.delta_one_step = 0.01 * g4units.mm
+    field.largest_step = 1000 * g4units.m
     if prt:
       logger.info('+++++> %s %s %s %s ', field.name, '-> stepper  = ', str(field.stepper), '')
       logger.info('+++++> %s %s %s %s ', field.name, '-> equation = ', str(field.equation), '')
