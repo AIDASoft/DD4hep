@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 def compileAClick(dictionary, g4=True):
   from ROOT import gInterpreter, gSystem
-  import sys
   import os.path
   dd4hep = os.environ['DD4hepINSTALL']
   inc = ' -I' + os.environ['ROOTSYS'] + '/include -I' + dd4hep + '/include '
@@ -45,7 +44,6 @@ def loaddd4hep():
   import sys
   # Add ROOT to the python path in case it is not yet there....
   sys.path.append(os.environ['ROOTSYS'] + os.sep + 'lib')
-  import ROOT
   from ROOT import gSystem
 
   import platform
@@ -258,7 +256,7 @@ import_detail()
 #  Calling import_units makes all the units local to the dd4hep module.
 #
 try:
-  ###from ROOT import TGeoUnit as TGeoUnits
+  # from ROOT import TGeoUnit as TGeoUnits
   def import_units(ns=None):
     def import_unit(ns, nam):
       setattr(ns, nam, getattr(core, nam))
@@ -274,12 +272,13 @@ try:
         # Angle
         'radian', 'milliradian', 'degree', 'steradian', 'rad', 'mrad', 'sr', 'deg',
         # Time & frequency
-        'nanosecond', 'second', 'millisecond', 'microsecond', 'picosecond', 'hertz', 'kilohertz', 'megahertz', 'ns', 's', 'ms',
+        'nanosecond', 'second', 'millisecond', 'microsecond', 'picosecond', 'hertz',
+        'kilohertz', 'megahertz', 'ns', 's', 'ms',
         # Electric charge
         'eplus', 'e_SI', 'coulomb',
         # Energy
-        'electronvolt', 'kiloelectronvolt', 'megaelectronvolt', 'gigaelectronvolt', 'teraelectronvolt', 'petaelectronvolt',
-        'joule', 'eV', 'keV', 'MeV', 'GeV', 'TeV', 'PeV',
+        'electronvolt', 'kiloelectronvolt', 'megaelectronvolt', 'gigaelectronvolt', 'teraelectronvolt',
+        'petaelectronvolt', 'joule', 'eV', 'keV', 'MeV', 'GeV', 'TeV', 'PeV',
         # Mass
         'milligram', 'gram', 'kilogram', 'mg', 'g', 'kg',
         # Power, Force, Pressure
@@ -296,8 +295,8 @@ try:
         'candela', 'lumen', 'lux',
         # Misc
         'perCent', 'perThousand', 'perMillion', 'pi', 'twopi', 'halfpi', 'pi2',
-        'Avogadro', 'c_light', 'c_squared', 'h_Planck', 'hbar_Planck', 'hbarc', 'hbarc_squared', 'electron_charge', 'e_squared',
-        'electron_mass_c2', 'proton_mass_c2', 'neutron_mass_c2', 'amu_c2', 'amu', 'mu0', 'epsilon0',
+        'Avogadro', 'c_light', 'c_squared', 'h_Planck', 'hbar_Planck', 'hbarc', 'hbarc_squared', 'electron_charge',
+        'e_squared', 'electron_mass_c2', 'proton_mass_c2', 'neutron_mass_c2', 'amu_c2', 'amu', 'mu0', 'epsilon0',
         #
         'elm_coupling', 'fine_structure_const', 'classic_electr_radius', 'electron_Compton_length', 'Bohr_radius',
         'alpha_rcl2', 'twopi_mc2_rcl2', 'k_Boltzmann', 'STP_Temperature', 'STP_Pressure',
@@ -310,8 +309,8 @@ try:
       if u[0] != '_':
         import_unit(ns, u)
     return len(items)
-except:
-  logger.warning('No units can be imported.')
+except Exception as e:
+  logger.warning('No units can be imported. %s' % str(e))
 
   def import_units(ns=None):
     return 0

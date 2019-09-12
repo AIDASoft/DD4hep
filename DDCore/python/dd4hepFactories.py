@@ -15,6 +15,7 @@ import os
 import sys
 import optparse
 import logging
+import errno
 from ddsix.moves import input
 from io import open
 
@@ -45,11 +46,11 @@ class ComponentDumper:
     file = open(fname, "r")
     lines = file.readlines()
     dirname = os.path.dirname(fname)
-    for l in lines:
-      l = l[:-1]
-      if len(l) > 2 and (l[0:2] == '//' or l[0] == '#'):
+    for line in lines:
+      line = line[:-1]
+      if len(line) > 2 and (line[0:2] == '//' or line[0] == '#'):
         continue
-      lib, comp = l.split(':')
+      lib, comp = line.split(':')
       self.all_components.append([dirname + os.sep + lib, comp])
     file.close()
 
@@ -102,12 +103,12 @@ class ComponentDumper:
           ret = 'D'
           if interactive:
             try:
-              ret = input("<CR> to DUMP the list of components \n" +
-                          "<Q>  to QUIT                        \n" +
-                          "<D>  to DUMP the list of components \n" +
-                          "<S>  to SKIP this particular library\n" +
-                          "<L>  to no longer LOAD libraries    \n")
-            except Exception as X:
+              ret = input("%s%s%s%s" % ("<CR> to DUMP the list of components \n",
+                                        "<Q>  to QUIT                        \n",
+                                        "<D>  to DUMP the list of components \n",
+                                        "<S>  to SKIP this particular library\n",
+                                        "<L>  to no longer LOAD libraries    \n"))
+            except Exception:
               ret = 'D'
           if not len(ret):
             ret = 'D'
@@ -155,7 +156,6 @@ if not (opts.check or opts.dump or opts.load):
   sys.exit(0)
 
 try:
-  import ROOT
   from ROOT import gROOT
   from ROOT import gSystem
   gROOT.SetBatch(1)
@@ -164,7 +164,7 @@ except ImportError as X:
   sys.exit(errno.ENOENT)
 
 try:
-  import dd4hep
+  import dd4hep  # noqa: F401
 except ImportError as X:
   logger.error('dd4hep python interface not accessible: %s', str(X))
   sys.exit(errno.ENOENT)
