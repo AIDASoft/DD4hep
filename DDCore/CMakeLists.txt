@@ -116,7 +116,7 @@ ENDIF()
 
 # install python files
 file(GLOB DDCore_Python python/*.py)
-install(FILES ${DDCore_Python} DESTINATION python)
+install(FILES ${DDCore_Python} DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
 # install header files
 install(DIRECTORY
