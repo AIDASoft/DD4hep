@@ -8,10 +8,11 @@ language: cpp
 
 env:
   matrix:
-    - COMPILER=gcc;   LCG_RELEASE=LCG_96; STANDARD=17; COMPILER_VERSION=gcc8
-    - COMPILER=gcc;   LCG_RELEASE=LCG_96python3; STANDARD=17; COMPILER_VERSION=gcc8
-    - COMPILER=clang; LCG_RELEASE=LCG_96; STANDARD=17; COMPILER_VERSION=clang8
-    - COMPILER=gcc;   LCG_RELEASE=LCG_96; STANDARD=14; COMPILER_VERSION=gcc62
+    - COMPILER=gcc;   LCG_RELEASE=LCG_96b; STANDARD=17; COMPILER_VERSION=gcc8; PYTHON_CHECK="no"
+    - COMPILER=gcc;   LCG_RELEASE=LCG_96python3; STANDARD=17; COMPILER_VERSION=gcc8; PYTHON_CHECK="no"
+    - COMPILER=clang; LCG_RELEASE=LCG_96b; STANDARD=17; COMPILER_VERSION=clang8; PYTHON_CHECK="no"
+    - COMPILER=gcc;   LCG_RELEASE=LCG_96b; STANDARD=14; COMPILER_VERSION=gcc62; PYTHON_CHECK="no"
+    - PYTHON_CHECK="yes"; COMPILER=gcc;   LCG_RELEASE=LCG_96b; STANDARD=17; COMPILER_VERSION=gcc8;
 
 before_install:
   - wget --no-check-certificate https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
@@ -45,8 +46,13 @@ install:
 # command to run tests
 script:
   - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER_TYPE=$COMPILER -e LCG_RELEASE=${LCG_RELEASE} -e STANDARD=${STANDARD} -e COMPILER_VERSION=${COMPILER_VERSION} -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/clicdp.cern.ch:/cvmfs/clicdp.cern.ch -d clicdp/cc7-lcg /bin/bash
-  - docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/compile_and_test.sh"
-  - if [[ "${TRAVIS_EVENT_TYPE}" != "cron" && "${TRAVIS_EVENT_TYPE}" != "pull_request" && "${COMPILER}" == "gcc" && "${TRAVIS_REPO_SLUG%/*}" == "AIDASoft" ]];
+  - if [[ "$PYTHON_CHECK" == "yes" ]];
+    then docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/runPythonChecks.sh";
+    else docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/compile_and_test.sh";
+    fi
+
+after_success:
+  - if [[ "${TRAVIS_EVENT_TYPE}" != "cron" && "${TRAVIS_EVENT_TYPE}" != "pull_request" && "${COMPILER}" == "clang" && "${TRAVIS_REPO_SLUG%/*}" == "AIDASoft" ]];
     then curl -X POST -F token=$GITLAB_TOKEN -F ref=master https://gitlab.cern.ch/api/v4/projects/7828/trigger/pipeline;
     fi
 
