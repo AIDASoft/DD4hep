@@ -50,7 +50,6 @@ dd4hep_add_plugin(DDG4Plugins
 #---------------------------  Plugin library for the simulation framework  ---------
 
 
-find_package(Python COMPONENTS Development)
 if(TARGET Python::Python)
   dd4hep_print("|++> Python found, creating DDG4Python Dictionary")
   dd4hep_add_dictionary(G__DDG4Python
