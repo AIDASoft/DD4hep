@@ -70,7 +70,7 @@ dd4hep_add_path PATH       ${THIS}/bin;
 #----LIBRARY_PATH-------------------------------------------------------------
 dd4hep_add_library_path    ${THIS}/lib;
 #----PYTHONPATH---------------------------------------------------------------
-dd4hep_add_path PYTHONPATH ${THIS}/python;
+dd4hep_add_path PYTHONPATH ${THIS}/lib/python@Python_VERSION_MAJOR@.@Python_VERSION_MINOR@/site-packages;
 #----ROOT_INCLUDE_PATH--------------------------------------------------------
 dd4hep_add_path ROOT_INCLUDE_PATH ${THIS}/include;
 #-----------------------------------------------------------------------------
