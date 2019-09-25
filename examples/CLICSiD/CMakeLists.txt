@@ -60,16 +60,14 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
-                    --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+  EXEC_ARGS  checkGeometry --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
-                    --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+  EXEC_ARGS  checkOverlaps --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -141,8 +139,7 @@ if (DD4HEP_USE_GEANT4)
   # Material scan
   dd4hep_add_test_reg( CLICSiD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
-                      --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+    EXEC_ARGS  g4MaterialScan --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
