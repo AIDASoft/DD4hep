@@ -153,16 +153,20 @@ namespace Gaudi {
           std::regex  line_format{"^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$"};
           std::smatch m;
 
-          std::string_view search_path = std::getenv( envVar );
+          std::string search_path = std::getenv( envVar );
           if ( !search_path.empty() ) {
             logger().debug( std::string( "searching factories in " ) + envVar );
 
-            std::string_view::size_type start_pos = 0, end_pos = 0;
-            while ( start_pos != std::string_view::npos ) {
+            std::string::size_type start_pos = 0, end_pos = 0;
+            while ( start_pos != std::string::npos ) {
               // correctly handle begin of string or path separator
               if ( start_pos ) ++start_pos;
 
               end_pos = search_path.find( sep, start_pos );
+              if ( end_pos == start_pos )   {
+                start_pos = std::string::npos;
+                continue;
+              }
               fs::path dirName =
 #ifdef USE_BOOST_FILESYSTEM
                   std::string{search_path.substr( start_pos, end_pos - start_pos )};

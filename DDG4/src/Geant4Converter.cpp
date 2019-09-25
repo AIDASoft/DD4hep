@@ -73,6 +73,7 @@
 #include "G4Ellipsoid.hh"
 #include "G4GenericTrap.hh"
 #include "G4ExtrudedSolid.hh"
+#include "G4ReflectedSolid.hh"
 #include "G4EllipticalTube.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
@@ -698,7 +699,16 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
         vertices.emplace_back(G4TwoVector(vtx_xy[0] * CM_2_MM,vtx_xy[1] * CM_2_MM));
       solid = new G4GenericTrap(name, sh->GetDz() * CM_2_MM, vertices);
     }
-    else if (shape->IsA() == TGeoCompositeShape::Class()) {
+    else if (shape->IsA() == TGeoScaledShape::Class())  {
+      TGeoScaledShape* sh = (TGeoScaledShape*) shape;
+      const double*    vals = sh->GetScale()->GetScale();
+      Solid            s_sh(sh->GetShape());
+      G4VSolid* scaled = (G4VSolid*)handleSolid(s_sh.name(), s_sh.ptr());
+      solid = new G4ReflectedSolid(scaled->GetName() + "_refl",
+                                   scaled, G4Scale3D(vals[0],vals[1],vals[2]));
+      printout(INFO,"G4Shapes","Converting scaled shape from reflection: %s",sh->GetName());
+    }
+    else if (shape->IsA() == TGeoCompositeShape::Class())    {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
       const TGeoBoolNode* boolean = sh->GetBoolNode();
       TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
@@ -851,7 +861,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     info.g4Volumes[v] = vol;
     printout(lvl, "Geant4Converter", "++ Volume     + %s converted: %p ---> G4: %p", n.c_str(), v, vol);
   }
-  return 0;
+  return nullptr;
 }
 
 /// Dump logical volume in GDML format to output stream

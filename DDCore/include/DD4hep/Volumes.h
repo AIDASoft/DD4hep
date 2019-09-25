@@ -20,27 +20,14 @@
 
 // C/C++ include files
 #include <map>
+#include <memory>
 
 // ROOT include file (includes TGeoVolume + TGeoShape)
 #include "TGeoNode.h"
 #include "TGeoPatternFinder.h"
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(5,34,9)
 // Recent ROOT versions
 #include "TGeoExtension.h"
-
-#else
-// Older ROOT version
-#define DD4HEP_EMULATE_TGEOEXTENSIONS
-class TGeoExtension : public TObject  {
-public:
-  virtual ~TGeoExtension() {}
-  /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-  virtual TGeoExtension *Grab() = 0;
-  /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-  virtual void Release() const = 0;
-};
-#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -78,14 +65,13 @@ namespace dd4hep {
     class VolIDs: public std::vector<VolID> {
     public:
       typedef std::vector<VolID> Base;
-      /// Default constructor
-      VolIDs() = default;
-      /// Copy constructor
-      VolIDs(const VolIDs& c) = default;
-      /// Destructor
-      ~VolIDs() {}
-      /// Assignment operator        
-      VolIDs& operator=(const VolIDs& c) = default;
+      using Base::Base;
+      /// Copy operator
+      VolIDs(const VolIDs& copy) = default;
+      /// Move assignment
+      VolIDs& operator=(VolIDs&& copy)  = default;
+      /// Assignment operator
+      VolIDs& operator=(const VolIDs& c)  = default;
       /// Find entry
       std::vector<VolID>::const_iterator find(const std::string& name) const;
       /// Insert new entry
@@ -117,7 +103,7 @@ namespace dd4hep {
     PlacedVolumeExtension(const PlacedVolumeExtension& c);
     /// Default destructor
     virtual ~PlacedVolumeExtension();
-    /// No move assignment
+    /// Move assignment
     PlacedVolumeExtension& operator=(PlacedVolumeExtension&& copy)  {
       magic  = std::move(copy.magic);
       volIDs = std::move(copy.volIDs);
@@ -235,6 +221,8 @@ namespace dd4hep {
     VisAttr             vis;
     /// Reference to the sensitive detector
     Handle<NamedObject> sens_det;
+    /// Reference to the reflected volume (or to the original volume for reflections)
+    Handle<TGeoVolume>  reflected;
     
     /// Default destructor
     virtual ~VolumeExtension();
@@ -243,11 +231,11 @@ namespace dd4hep {
     /// No move
     VolumeExtension(VolumeExtension&& copy) = delete;
     /// No copy
-    VolumeExtension(const VolumeExtension& copy) = delete;
+    VolumeExtension(const VolumeExtension& copy) = default;
     /// No move assignment
     VolumeExtension& operator=(VolumeExtension&& copy) = delete;
     /// No copy assignment
-    VolumeExtension& operator=(const VolumeExtension& copy) = delete;
+    VolumeExtension& operator=(const VolumeExtension& copy) = default;
     /// Copy the object
     void copy(const VolumeExtension& c) {
       magic      = c.magic;
@@ -295,7 +283,8 @@ namespace dd4hep {
     enum  {
       VETO_SIMU     = 1,
       VETO_RECO     = 2,
-      VETO_DISPLAY  = 3
+      VETO_DISPLAY  = 3,
+      REFLECTED     = 10
     };
   public:
     /// Default constructor
@@ -328,6 +317,9 @@ namespace dd4hep {
     /// Check if placement is properly instrumented
     Object* data() const;
 
+    /// Create a reflected volume. The reflected volume has left-handed coordinates
+    Volume reflect()  const;
+    
     /// If we import volumes from external sources, we have to attach the extensions to the tree
     Volume& import();
 
@@ -335,27 +327,27 @@ namespace dd4hep {
     Volume divide(const std::string& divname, int iaxis, int ndiv, double start, double step, int numed = 0, const char* option = "");
     /** Daughter placements with auto-generated copy number for the daughter volume  */
     /// Place daughter volume. The position and rotation are the identity
-    PlacedVolume placeVolume(const Volume& vol) const;
+    PlacedVolume placeVolume(const Volume& volume) const;
     /// Place daughter volume according to a generic Transform3D
     PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr) const;
     /// Place un-rotated daughter volume at the given position.
-    PlacedVolume placeVolume(const Volume& vol, const Position& pos) const;
+    PlacedVolume placeVolume(const Volume& volume, const Position& pos) const;
     /// Place rotated daughter volume. The position is automatically the identity position
-    PlacedVolume placeVolume(const Volume& vol, const RotationZYX& rot) const;
+    PlacedVolume placeVolume(const Volume& volume, const RotationZYX& rot) const;
     /// Place rotated daughter volume. The position is automatically the identity position
-    PlacedVolume placeVolume(const Volume& vol, const Rotation3D& rot) const;
+    PlacedVolume placeVolume(const Volume& volume, const Rotation3D& rot) const;
 
     /** Daughter placements with user supplied copy number for the daughter volume  */
     /// Place daughter volume. The position and rotation are the identity
-    PlacedVolume placeVolume(const Volume& vol, int copy_no) const;
+    PlacedVolume placeVolume(const Volume& volume, int copy_no) const;
     /// Place daughter volume according to a generic Transform3D
     PlacedVolume placeVolume(const Volume& volume, int copy_no, const Transform3D& tr) const;
     /// Place un-rotated daughter volume at the given position.
-    PlacedVolume placeVolume(const Volume& vol, int copy_no, const Position& pos) const;
+    PlacedVolume placeVolume(const Volume& volume, int copy_no, const Position& pos) const;
     /// Place rotated daughter volume. The position is automatically the identity position
-    PlacedVolume placeVolume(const Volume& vol, int copy_no, const RotationZYX& rot) const;
+    PlacedVolume placeVolume(const Volume& volume, int copy_no, const RotationZYX& rot) const;
     /// Place rotated daughter volume. The position is automatically the identity position
-    PlacedVolume placeVolume(const Volume& vol, int copy_no, const Rotation3D& rot) const;
+    PlacedVolume placeVolume(const Volume& volume, int copy_no, const Rotation3D& rot) const;
     /// Parametrized volume implementation
     /** Embedding parametrized daughter placements in a mother volume
      *  @param start  start transormation for the first placement
@@ -390,6 +382,9 @@ namespace dd4hep {
     void setFlagBit(unsigned int bit);
     /// Test the user flag bit
     bool testFlagBit(unsigned int bit)   const;
+
+    /// Test if this volume was reflected
+    bool isReflected()   const;
     
     /// Set the volume's option value
     void setOption(const std::string& opt) const;

@@ -28,6 +28,7 @@
 #include "TClass.h"
 #include "TGeoMatrix.h"
 #include "TGeoBoolNode.h"
+#include "TGeoScaledShape.h"
 #include "TGeoCompositeShape.h"
 
 using namespace std;
@@ -248,6 +249,15 @@ namespace dd4hep {
           pars.emplace_back(vtx->xy[i][0]);
           pars.emplace_back(vtx->xy[i][1]);
         }
+        return pars;
+      }
+      else if (cl == TGeoScaledShape::Class()) {
+        TGeoScaledShape* sh = (TGeoScaledShape*) shape;
+        TGeoShape*       s_sh = sh->GetShape();
+        const Double_t*  scale = sh->GetScale()->GetScale();
+        vector<double>   pars {scale[0],scale[1],scale[2]};
+        vector<double>   s_pars = get_shape_dimensions(s_sh);
+        for(auto p : s_pars) pars.push_back(p);
         return pars;
       }
       else if (cl == TGeoCompositeShape::Class()) {
@@ -584,6 +594,13 @@ namespace dd4hep {
         auto pars = params;
         solid._setDimensions(&pars[0]);
       }
+      else if (cl == TGeoScaledShape::Class()) {
+        TGeoScaledShape* sh = (TGeoScaledShape*) shape;
+        Solid            s_sh(sh->GetShape());
+        sh->GetScale()->SetScale(params[0], params[1], params[2]);
+        auto pars = params;
+        s_sh._setDimensions(&pars[3]);
+      }
       else if (cl == TGeoCompositeShape::Class()) {
         TGeoCompositeShape* sh = (TGeoCompositeShape*) shape;
         TGeoBoolNode* boolean = sh->GetBoolNode();
@@ -736,7 +753,7 @@ namespace dd4hep {
 #endif
       }
       else  {
-        printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
+        printout(ERROR,"Solid","Failed to set dimensions for shape of type:%s.",
                  cl->GetName());
       }
       return;

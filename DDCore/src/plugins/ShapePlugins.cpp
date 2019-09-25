@@ -487,41 +487,64 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
 }
 DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanMulti)
 
+#include "DD4hep/MatrixHelpers.h"
+#include <TGeoReflectionFactory.h>
+TGeoCombiTrans* createPlacement(const Rotation3D& iRot, const Position& iTrans) {
+  double elements[9];
+  iRot.GetComponents(elements);
+  TGeoRotation r;
+  r.SetMatrix(elements);
+  TGeoTranslation t(iTrans.x(), iTrans.y(), iTrans.z());
+  return new TGeoCombiTrans(t, r);
+}
+
 static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
-  xml_det_t    x_det  = e;
-  string       name   = x_det.nameStr();
-  xml_comp_t   x_test = x_det.child(xml_tag_t("test"), false);
-  DetElement   det     (name,x_det.id());
-  Assembly     assembly(name);
+  xml_det_t    x_det     = e;
+  string       name      = x_det.nameStr();
+  xml_dim_t    x_reflect = x_det.child(_U(reflect), false);
+  xml_comp_t   x_test    = x_det.child(xml_tag_t("test"), false);
+  DetElement   det         (name,x_det.id());
+  Assembly     assembly    (name);
   PlacedVolume pv;
   int count = 0;
   for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )   {
-    xml_dim_t   x_check = itm;
-    xml_comp_t  shape  (x_check.child(_U(shape)));
-    xml_dim_t   pos    (x_check.child(_U(position), false));
-    xml_dim_t   rot    (x_check.child(_U(rotation), false));
-    Solid       solid  (shape.createShape());
-    Volume      volume (name+_toString(count,"_vol_%d"),solid, description.air());
+    xml_dim_t  x_check = itm;
+    xml_comp_t shape    (x_check.child(_U(shape)));
+    xml_dim_t  pos      (x_check.child(_U(position), false));
+    xml_dim_t  rot      (x_check.child(_U(rotation), false));
+    bool       reflect = x_check.hasChild(_U(reflect));
+    Solid      solid    (shape.createShape());
+    Volume     volume   (name+_toString(count,"_vol_%d"),solid, description.air());
+
+    volume.setVisAttributes(description, x_check.visStr());
+    solid->SetName(shape.typeStr().c_str());
 
     if ( pos.ptr() && rot.ptr() )  {
-      Transform3D trafo(Rotation3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0))),
-                        Position(pos.x(0),pos.y(0),pos.z(0)));
-      pv = assembly.placeVolume(volume,trafo);
+      Rotation3D  rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
+      Position    pos3D(pos.x(0),pos.y(0),pos.z(0));
+      Rotation3D  rrot3D(rot3D);
+      if ( reflect )
+        rrot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
+      Transform3D tr(rrot3D, pos3D);
+      pv = assembly.placeVolume(volume,tr);
     }
     else if ( pos.ptr() )  {
       pv = assembly.placeVolume(volume,Position(pos.x(0),pos.y(0),pos.z(0)));
     }
     else if ( rot.ptr() )  {
-      pv = assembly.placeVolume(volume,Rotation3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0))));
+      Rotation3D rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
+      if ( reflect )
+        rot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
+      pv = assembly.placeVolume(volume,rot3D);
     }
     else {
       pv = assembly.placeVolume(volume);
     }
-    volume.setVisAttributes(description, x_check.visStr());
+
     if ( x_check.hasAttr(_U(id)) )  {
       pv.addPhysVolID("check",x_check.id());
     }
-    solid->SetName(shape.typeStr().c_str());
+
     printout(INFO,"TestShape","Created successfull shape of type: %s",
              shape.typeStr().c_str());
     bool instance_test = false;
@@ -584,8 +607,40 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
                shape.typeStr().c_str(), solid->GetTitle(), "OK");
     }
   }
-  pv = description.worldVolume().placeVolume(assembly);
-  det.setPlacement(pv);
+  if ( x_reflect )   {
+    xml_dim_t   x_pos(x_reflect.child(_U(position), false));
+    xml_dim_t   x_rot(x_reflect.child(_U(rotation), false));
+    DetElement  full_detector(name+"_full",x_det.id());
+    Assembly    full_assembly(name+"_full");
+    RotationZYX refl_rot;
+    Position    refl_pos;
+
+    if ( x_rot ) refl_rot = RotationZYX(x_rot.z(0),x_rot.y(0),x_rot.x(0));
+    if ( x_pos ) refl_pos = Position(x_pos.x(0),x_pos.y(0),x_pos.z(0));
+    Transform3D refl_trafo(Rotation3D(refl_rot),refl_pos);
+
+    /// Place the regular detector
+    pv = full_assembly.placeVolume(assembly);
+    full_detector.add(det);
+    det.setPlacement(pv);
+
+    /// Place reflected object
+    auto reflected = det.reflect(name+"_reflected",x_det.id());
+    pv = full_assembly.placeVolume(reflected.second, refl_trafo);
+    full_detector.add(reflected.first);
+    reflected.first.setPlacement(pv);
+
+    /// Place mother
+    pv = description.worldVolume().placeVolume(full_assembly);
+    full_detector.setPlacement(pv);
+    
+    det = full_detector;
+  }
+  else  {
+    pv = description.worldVolume().placeVolume(assembly);
+    det.setPlacement(pv);
+  }
+
   if ( x_test.ptr() )  {
     string typ = x_test.typeStr();
     const void* argv[] = { &e, &pv, 0};

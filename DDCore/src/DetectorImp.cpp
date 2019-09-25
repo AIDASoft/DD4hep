@@ -162,7 +162,7 @@ DetectorImp::DetectorImp(const string& name)
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-  TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
+  //TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
 #endif
   SetTitle("DD4hep detector description object");
   set_terminate( description_unexpected );
