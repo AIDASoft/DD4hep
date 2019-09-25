@@ -123,6 +123,11 @@ file(GLOB DDG4_python python/*.py python/*.C)
 install(FILES ${DDG4_python} DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
 install(PROGRAMS python/DDSim/bin/ddsim DESTINATION bin)
+
+install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlaps)
+install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
+install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
+
 install(DIRECTORY python/DDSim DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
 install(DIRECTORY examples DESTINATION examples/DDG4)
