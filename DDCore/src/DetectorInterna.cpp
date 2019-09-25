@@ -143,8 +143,8 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
         except("DetElement","reflect: Something went wrong when reflecting the source volume!");
       }
       de.setPlacement((*i).second);
-      const auto& children = de.children();
-      for(const auto& c : children)
+      const auto& childrens = de.children();
+      for( const auto& c : childrens )
         match(c.second);
     }
     void map(TGeoNode* n1, TGeoNode* n2)   {

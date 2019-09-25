@@ -52,7 +52,7 @@ TGeoCompositeShape 32  Local  (  38.48,  -90.00,  126.06) Global (-173.94,  -90.
 TGeoCompositeShape 33  Local  (  29.11,  -90.00,  128.98) Global (-171.02,  -90.00,   29.11)
 TGeoCompositeShape 34  Local  (  19.53,  -90.00,  131.09) Global (-168.91,  -90.00,   19.53)
 TGeoCompositeShape 35  Local  (   9.80,  -90.00,  132.36) Global (-167.64,  -90.00,    9.80)
-TGeoCompositeShape 36  Local  (   0.00,  -90.00,  132.78) Global (-167.22,  -90.00,   -0.00)
+TGeoCompositeShape 36  Local  (   0.00,  -90.00,  132.78) Global (-167.22,  -90.00,    0.00)
 TGeoCompositeShape 37  Local  (  -9.80,  -90.00,  132.36) Global (-167.64,  -90.00,   -9.80)
 TGeoCompositeShape 38  Local  ( -19.53,  -90.00,  131.09) Global (-168.91,  -90.00,  -19.53)
 TGeoCompositeShape 39  Local  ( -29.11,  -90.00,  128.98) Global (-171.02,  -90.00,  -29.11)
