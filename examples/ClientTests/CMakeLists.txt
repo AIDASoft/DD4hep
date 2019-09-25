@@ -52,7 +52,7 @@ dd4hep_add_test_reg( ClientTests_volume_scanner
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -destroy -plugin DD4hep_PlacedVolumeScannerTest -detector /world
-  REGEX_PASS "Visited a total of 11 placed volumes"
+  REGEX_PASS "Visited a total of 31 placed volumes"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
