@@ -29,9 +29,6 @@
 
 #include "TGeoVoxelFinder.h"
 #include "TGeoShapeAssembly.h"
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-#include "TGeoReflectionFactory.h"
-#endif
 #include "TGeoScaledShape.h"
 #include "TMap.h"
 
