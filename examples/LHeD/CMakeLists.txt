@@ -38,6 +38,8 @@ endif()
 
 #
 dd4hep_configure_scripts(LHeD DEFAULT_SETUP WITH_TESTS)
+enable_testing ()
+include(CTest)
 #
 #---Testing-------------------------------------------------------------------------
 #

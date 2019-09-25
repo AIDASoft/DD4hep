@@ -20,7 +20,7 @@ for i in "$@" ; do
     fi
 done
 
-#echo " #### LD_LIBRARY_PATH = :  ${LD_LIBRARY_PATH}" 
+echo " #### LD_LIBRARY_PATH = :  ${LD_LIBRARY_PATH}"
 
 echo " ### running test :  '${command} ${theargs}'"
 exec ${command} ${theargs}
