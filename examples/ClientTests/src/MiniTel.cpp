@@ -79,8 +79,6 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
 
   Volume motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
 
-  PlacedVolume pv;	//struct of Handle giving the volume id(ayto pou 8a kanw volume kai 8a to steilw me setplacement),dld o detector mou
-
   xml_coll_t mi(x_det, _U(module));
   xml_comp_t dtc_mod = mi;	    // considering the module-pixel of the detector
   double pixelX = dtc_mod.x();  // The x dimension of the module
@@ -109,17 +107,29 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   }
   Volume m_volume(det_name, Box(dim_x, dim_y, dim_z), mat);	//as parameters it needs name,solid,material
   m_volume.setVisAttributes(description.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
-  pv = motherVol.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
-
-  xml_comp_t dtctr = x_det;
+  m_volume.setLimitSet(description,x_det.limitsStr());
   m_volume.setRegion(description,x_det.regionStr());
-  if ( dtctr.isSensitive() ) {
-    sens.setType("tracker");
-    pv.addPhysVolID("system",detectors_id);
-    m_volume.setSensitiveDetector(sens);
-    // Set volume attributes
-    m_volume.setLimitSet(description,x_det.limitsStr());
+  m_volume.setSensitiveDetector(sens);
+
+  PlacedVolume pv1, pv2;
+  pv1 = assembly.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
+  if ( x_det.hasChild(_U(reflect)) )   {
+    /// Reflect in XY-plane
+    pv2 = assembly.placeVolume(m_volume,Transform3D(Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.),
+                                                    Position(det_x,det_y,-det_z)));
   }
+  xml_comp_t dtctr = x_det;
+  if ( dtctr.isSensitive() ) {
+    // Set volume attributes
+    sens.setType("tracker");
+    pv1.addPhysVolID("system",detectors_id);
+    pv1.addPhysVolID("side",0);
+    if ( pv2.isValid() )  {
+      pv2.addPhysVolID("system",detectors_id);
+      pv2.addPhysVolID("side",1);
+    }
+  }
+  auto pv = motherVol.placeVolume(assembly);
   sdet.setPlacement(pv);
   // Support additional test if Detector_InhibitConstants is set to TRUE
   description.constant<double>("world_side");

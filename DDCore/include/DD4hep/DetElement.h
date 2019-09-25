@@ -166,7 +166,11 @@ namespace dd4hep {
    *       The access to conditions is exposed via the DetConditions interface.
    *       See dd4hep/DetConditions.h for further details.
    *    -  alignment information.
-   *    .
+   *
+   *  Reflection Note:
+   *    -  Reflecting a detector element is NOT the same as "clone".
+   *       The placed volumes of the reflected detector element and the
+   *       corresponding volumes/shapes have left-handed coordinates!
    *
    *  \author  M.Frank
    *  \version 1.0
@@ -322,6 +326,12 @@ namespace dd4hep {
 
     /// Clone (Deep copy) the DetElement structure with a new name and new identifier
     DetElement clone(const std::string& new_name, int new_id) const;
+
+    /// Reflect (Deep copy) the DetElement structure with a new name
+    std::pair<DetElement,Volume> reflect(const std::string& new_name) const;
+
+    /// Reflect (Deep copy) the DetElement structure with a new name and new identifier
+    std::pair<DetElement,Volume> reflect(const std::string& new_name, int new_id) const;
 
     /// Add an extension object to the detector element
     void* addExtension(ExtensionEntry* entry) const;

@@ -430,6 +430,7 @@ UNICODE (shapes);
 UNICODE (shield);
 UNICODE (show_daughters);
 UNICODE (showDaughters);
+UNICODE (side);
 UNICODE (size);
 UNICODE (signed);
 UNICODE (skew);

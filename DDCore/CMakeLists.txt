@@ -89,7 +89,7 @@ endif()
 dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp USES DDCore)
 
 # This plugins depends on the ROOT GDML readers. Hence, extra library
-IF(TARGET ROOT::Gdml)
+IF(TARGET ROOT::Gdml2)
   dd4hep_print("|++> Found Root::GDML: Creating DDGDMLPlugins")
   dd4hep_add_plugin(DDGDMLPlugins
     SOURCES src/gdml/*.cpp

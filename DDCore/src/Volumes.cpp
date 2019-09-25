@@ -29,6 +29,11 @@
 
 #include "TGeoVoxelFinder.h"
 #include "TGeoShapeAssembly.h"
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
+#include "TGeoReflectionFactory.h"
+#endif
+#include "TGeoScaledShape.h"
+#include "TMap.h"
 
 // C/C++ include files
 #include <climits>
@@ -40,241 +45,6 @@
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
-
-#ifdef DD4HEP_EMULATE_TGEOEXTENSIONS
-namespace dd4hep {
-  namespace detail {
-
-    struct DDExtension  {
-      TGeoExtension* m_extension;
-      DDExtension() : m_extension(0) {}
-      DDExtension(const DDExtension& c) : m_extension(0) {
-        if ( c.m_extension ) m_extension = c.m_extension->Grab();
-      }
-      virtual ~DDExtension() {
-        if ( m_extension ) m_extension->Release();
-      }
-      DDExtension& operator=(const DDExtension& c) {
-        if ( this != &c ) SetUserExtension(c.GetUserExtension());
-        return *this;
-      }
-      void SetUserExtension(TGeoExtension *ext)  {
-        if (m_extension) m_extension->Release();
-        m_extension = 0;
-        if (ext) m_extension = ext->Grab();
-      }
-      TGeoExtension* GetUserExtension() const  {
-        return m_extension;
-      }
-    };
-    struct DD_TGeoNodeMatrix : public TGeoNodeMatrix, public DDExtension  {
-    private:
-      DD_TGeoNodeMatrix& operator=(const DD_TGeoNodeMatrix&) { return *this; }
-    public:
-      DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
-        : TGeoNodeMatrix(v, m), DDExtension() {
-        INCREMENT_COUNTER;
-      }
-      DD_TGeoNodeMatrix(const DD_TGeoNodeMatrix& c)
-        : TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), DDExtension(c) {
-        INCREMENT_COUNTER;
-      }
-      virtual ~DD_TGeoNodeMatrix() {
-        DECREMENT_COUNTER;
-      }
-      virtual TGeoNode *MakeCopyNode() const {
-        TGeoNodeMatrix *node = new DD_TGeoNodeMatrix(*this);
-        node->SetName(this->TGeoNodeMatrix::GetName());
-        // set the mother
-        node->SetMotherVolume(fMother);
-        // set the copy number
-        node->SetNumber(fNumber);
-        // copy overlaps
-        if (fNovlp > 0) {
-          if (fOverlaps) {
-            Int_t *ovlps = new Int_t[fNovlp];
-            memcpy(ovlps, fOverlaps, fNovlp * sizeof(Int_t));
-            node->SetOverlaps(ovlps, fNovlp);
-          }
-          else {
-            node->SetOverlaps(fOverlaps, fNovlp);
-          }
-        }
-        // copy VC
-        if (IsVirtual())
-          node->SetVirtual();
-        return node;
-      }
-    };
-
-    template <class T> struct _VolWrap: public T, public DDExtension {
-    public:
-      _VolWrap(const char* name) : T(name), DDExtension() {
-        INCREMENT_COUNTER;
-      }
-      virtual ~_VolWrap() {
-        DECREMENT_COUNTER;
-      }
-      virtual void AddNode(const TGeoVolume *vol, Int_t copy_no, TGeoMatrix *mat, Option_t* = "") {
-        TGeoMatrix *matrix = mat;
-        if (matrix == 0)
-          matrix = gGeoIdentity;
-        else
-          matrix->RegisterYourself();
-        if (!vol) {
-          this->T::Error("AddNode", "Volume is NULL");
-          return;
-        }
-        if (!vol->IsValid()) {
-          this->T::Error("AddNode", "Won't add node with invalid shape");
-          printf("### invalid volume was : %s\n", vol->GetName());
-          return;
-        }
-        if (!this->T::fNodes)
-          this->T::fNodes = new TObjArray();
-
-        if (this->T::fFinder) {
-          // volume already divided.
-          this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no,
-                         this->T::GetName());
-          return;
-        }
-
-        TGeoNodeMatrix *node = new DD_TGeoNodeMatrix(vol, matrix);
-        //node = new TGeoNodeMatrix(vol, matrix);
-        node->SetMotherVolume(this);
-        this->T::fNodes->Add(node);
-        TString name = TString::Format("%s_%d", vol->GetName(), copy_no);
-        if (this->T::fNodes->FindObject(name))
-          this->T::Warning("AddNode", "Volume %s : added node %s with same name", this->T::GetName(), name.Data());
-        node->SetName(name);
-        node->SetNumber(copy_no);
-      }
-    };
-
-    template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name) : TGeoVolume(name,0,0), DDExtension() {
-      INCREMENT_COUNTER;
-    }
-
-    struct TGeoVolumeValue : public _VolWrap<TGeoVolume> {
-      TGeoVolumeValue(const char* name, TGeoShape* s, TGeoMedium* m) : _VolWrap<TGeoVolume>(name) {
-        SetShape(s);
-        SetMedium(m);
-      }
-      virtual ~TGeoVolumeValue() {      }
-      TGeoVolume *_copyVol(TGeoShape *newshape) const {
-        TGeoVolumeValue *vol = new TGeoVolumeValue(this->TGeoVolume::GetName(),newshape,fMedium);
-        if ( m_extension ) vol->m_extension = m_extension->Grab();
-        //vol->copy(*this);
-        return vol;
-      }
-      virtual TGeoVolume* MakeCopyVolume(TGeoShape *newshape) {
-        // make a copy of this volume. build a volume with same name, shape and medium
-        TGeoVolume *vol = _copyVol(newshape);
-        vol->SetVisibility(IsVisible());
-        vol->SetLineColor(GetLineColor());
-        vol->SetLineStyle(GetLineStyle());
-        vol->SetLineWidth(GetLineWidth());
-        vol->SetFillColor(GetFillColor());
-        vol->SetFillStyle(GetFillStyle());
-        vol->SetField(fField);
-        if (fFinder)
-          vol->SetFinder(fFinder);
-        CloneNodesAndConnect(vol);
-        ((TObject*) vol)->SetBit(kVolumeClone);
-        return vol;
-      }
-      virtual TGeoVolume* CloneVolume() const {
-        TGeoVolume *vol = _copyVol(fShape);
-        Int_t i;
-        // copy volume attributes
-        vol->SetLineColor(GetLineColor());
-        vol->SetLineStyle(GetLineStyle());
-        vol->SetLineWidth(GetLineWidth());
-        vol->SetFillColor(GetFillColor());
-        vol->SetFillStyle(GetFillStyle());
-        // copy other attributes
-        Int_t nbits = 8 * sizeof(UInt_t);
-        for (i = 0; i < nbits; i++)
-          vol->SetAttBit(1 << i, TGeoAtt::TestAttBit(1 << i));
-        for (i = 14; i < 24; i++)
-          vol->SetBit(1 << i, this->TGeoVolume::TestBit(1 << i));
-
-        // copy field
-        vol->SetField(fField);
-        // Set bits
-        for (i = 0; i < nbits; i++)
-          vol->SetBit(1 << i, this->TGeoVolume::TestBit(1 << i));
-        vol->SetBit(kVolumeClone);
-        // copy nodes
-        //   CloneNodesAndConnect(vol);
-        vol->MakeCopyNodes(this);
-        // if volume is divided, copy finder
-        vol->SetFinder(fFinder);
-        // copy voxels
-        if (fVoxels) {
-          TGeoVoxelFinder *voxels = new TGeoVoxelFinder(vol);
-          vol->SetVoxelFinder(voxels);
-        }
-        // copy option, uid
-        vol->SetOption(fOption);
-        vol->SetNumber(fNumber);
-        vol->SetNtotal(fNtotal);
-        return vol;
-      }
-    };
-
-    struct TGeoVolumeAssemblyValue : public _VolWrap<TGeoVolumeAssembly>  {
-      TGeoVolumeAssemblyValue(const char* name) : _VolWrap<TGeoVolumeAssembly>(name) {
-      }
-      virtual ~TGeoVolumeAssemblyValue() {
-      }
-      TGeoVolume *CloneVolume() const {
-        TGeoVolumeAssemblyValue *vol = new TGeoVolumeAssemblyValue(this->TGeoVolume::GetName());
-        if ( m_extension ) vol->m_extension = m_extension->Grab();
-        Int_t i;
-        // copy other attributes
-        Int_t nbits = 8 * sizeof(UInt_t);
-        for (i = 0; i < nbits; i++)
-          vol->SetAttBit(1 << i, TGeoAtt::TestAttBit(1 << i));
-        for (i = 14; i < 24; i++)
-          vol->SetBit(1 << i, this->TGeoVolumeAssembly::TestBit(1 << i));
-
-        // copy field
-        vol->SetField(fField);
-        // Set bits
-        for (i = 0; i < nbits; i++)
-          vol->SetBit(1 << i, this->TGeoVolumeAssembly::TestBit(1 << i));
-        vol->SetBit(kVolumeClone);
-        // make copy nodes
-        vol->MakeCopyNodes(this);
-        ((TGeoShapeAssembly*) vol->GetShape())->NeedsBBoxRecompute();
-        // copy voxels
-        if (fVoxels) {
-          TGeoVoxelFinder *voxels = new TGeoVoxelFinder(vol);
-          vol->SetVoxelFinder(voxels);
-        }
-        // copy option, uid
-        vol->SetOption(fOption);
-        vol->SetNumber(fNumber);
-        vol->SetNtotal(fNtotal);
-        return vol;
-      }
-    };
-
-  }
-}
-typedef DD_TGeoNodeMatrix       geo_node_t;
-typedef TGeoVolumeValue         geo_volume_t;
-typedef TGeoVolumeAssemblyValue geo_assembly_t;
-
-template <typename T> static typename T::Object* _userExtension(const T& v)  {
-  typedef typename T::Object O;
-  const DDExtension* p = dynamic_cast<const DDExtension*>(v.ptr());
-  O* o = (O*)(p ? p->GetUserExtension() : 0);
-  return o;
-}
-#else
 
 /*
  *  The section below uses the new ROOT features using user extensions to volumes
@@ -291,7 +61,7 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
   O* o = (O*)(v.ptr()->GetUserExtension());
   return o;
 }
-#endif
+
 ClassImp(PlacedVolumeExtension)
 namespace {
   TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
@@ -309,8 +79,25 @@ namespace {
     e->SetUserExtension(new VolumeMulti::Object());
     return e;
   }
+  PlacedVolume::Object* _data(const PlacedVolume& v) {
+    PlacedVolume::Object* o = _userExtension(v);
+    if (o) return o;
+    throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+  }
+  /// Accessor to the data part of the Volume
+  Volume::Object* _data(const Volume& v, bool throw_exception = true) {
+    //if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
+    Volume::Object* o = _userExtension(v);
+    if (o)
+      return o;
+    else if (!throw_exception)
+      return nullptr;
+    throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+  }
+
   class VolumeImport   {
   public:
+    /// Callback for simple imports. Simple add a user extension
     void operator()(TGeoVolume* v)   {
       TClass* c = v->IsA();
       if ( !v->GetUserExtension() )   {
@@ -335,7 +122,143 @@ namespace {
         (*this)(pv->GetVolume());
       }
     }
+    /// Callback for clone imports, where the user extension should be copied
+    void operator()(TGeoVolume* new_v, TGeoVolume* old_v, int set_bit)   {
+      if ( !new_v || !old_v )  {
+        except("dd4hep","VolumeImport: ERROR: The refected volume is INVALID!");        
+      }
+      else if ( !old_v->GetUserExtension() )   {
+        except("dd4hep","VolumeImport: ERROR: Reflection of non-dd4hep volume %s",new_v->IsA()->GetName());
+      }
+      else if ( !new_v->GetUserExtension() )   {
+        TClass* c = new_v->IsA();
+        Volume old_vol(old_v);
+        Volume new_vol(new_v);
+        if ( c == geo_volume_t::Class() )  {
+          Volume::Object *new_e, *old_e = (Volume::Object*)_data(old_vol);
+          old_e->reflected = new_v;
+          new_v->SetUserExtension(new_e = new Volume::Object(*old_e)); 
+          new_e->reflected = old_v;
+        }
+        else if  ( c == geo_assembly_t::Class() )  {
+          Assembly::Object *new_e, *old_e = (Assembly::Object*)_data(old_vol);
+          old_e->reflected = new_v;
+          new_v->SetUserExtension(new_e = new Assembly::Object(*old_e));
+          new_e->reflected = old_v;
+        }
+        else if  ( c == TGeoVolumeMulti::Class() )   {
+          VolumeMulti::Object *new_e, *old_e = (VolumeMulti::Object*)_data(old_vol);
+          TGeoVolumeMulti* new_mv = (TGeoVolumeMulti*)new_v;
+          TGeoVolumeMulti* old_mv = (TGeoVolumeMulti*)old_v;
+          new_v->SetUserExtension(new_e = new VolumeMulti::Object(*old_e));
+          old_e->reflected = new_v;
+          new_e->reflected = old_v;
+          for(int i=0, n=new_mv->GetNvolumes(); i<n; ++i)
+            (*this)(new_mv->GetVolume(i), old_mv->GetVolume(i), set_bit);
+        }
+        else
+          except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",new_v->IsA()->GetName());
+
+        new_vol.setSensitiveDetector(old_vol.sensitiveDetector());
+        new_vol.setVisAttributes(old_vol.visAttributes());
+        new_vol.setLimitSet(old_vol.limitSet());
+        new_vol.setRegion(old_vol.region());
+
+        if ( set_bit >= 0 ) new_vol.setFlagBit(set_bit);
+        for(Int_t i=0; i<new_v->GetNdaughters(); ++i)  {
+          geo_node_t* pv = new_v->GetNode(i);
+          geo_node_t* ov = old_v->GetNode(i);
+          if ( !pv->GetUserExtension() )   {
+            auto* e = (PlacedVolume::Object*)ov->geo_node_t::GetUserExtension();
+            pv->geo_node_t::SetUserExtension(new PlacedVolume::Object(*e));
+          }
+          (*this)(pv->GetVolume(), ov->GetVolume(), set_bit);
+        }
+      }
+    }
   };
+
+  TGeoVolume *MakeReflection(TGeoVolume* v, const char *newname=0)  {
+    static TMap map(100);
+    TGeoVolume *vol = (TGeoVolume*)map.GetValue(v);
+    if (vol) {
+      if (newname && newname[0]) vol->SetName(newname);
+      return vol;
+    }
+    vol = v->CloneVolume();
+    if (!vol) {
+      printout(ERROR,"MakeReflection", "Cannot clone volume %s\n", v->GetName());
+      return nullptr;
+    }
+    map.Add((TObject*)v, vol);
+    if (newname && newname[0]) vol->SetName(newname);
+    delete vol->GetNodes();
+    vol->SetNodes(NULL);
+    vol->SetBit(TGeoVolume::kVolumeImportNodes, kFALSE);
+    v->CloneNodesAndConnect(vol);
+    // The volume is now properly cloned, but with the same shape.
+    // Reflect the shape (if any) and connect it.
+    if (v->GetShape())   {
+      TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
+      TGeoShape *reflected_shape =
+        TGeoScaledShape::MakeScaledShape("", v->GetShape(), scale);
+      vol->SetShape(reflected_shape);
+    }
+    // Reflect the daughters.
+    Int_t nd = vol->GetNdaughters();
+    if (!nd) return vol;
+    TGeoNodeMatrix *node;
+    TGeoMatrix *local, *local_cloned;
+    TGeoVolume *new_vol;
+    if ( !vol->GetFinder() ) {
+      for (Int_t i=0; i<nd; i++) {
+        node = (TGeoNodeMatrix*)vol->GetNode(i);
+        local = node->GetMatrix();
+        //         printf("%s before\n", node->GetName());
+        //         local->Print();
+        Bool_t reflected = local->IsReflection();
+        local_cloned = new TGeoCombiTrans(*local);
+        local_cloned->RegisterYourself();
+        node->SetMatrix(local_cloned);
+        if (!reflected) {
+          // We need to reflect only the translation and propagate to daughters.
+          // H' = Sz * H * Sz
+          local_cloned->ReflectZ(kTRUE,kFALSE);
+          local_cloned->ReflectZ(kFALSE,kFALSE);
+          //            printf("%s after\n", node->GetName());
+          //            node->GetMatrix()->Print();
+          new_vol = MakeReflection(node->GetVolume());
+          node->SetVolume(new_vol);
+          continue;
+        }
+        // The next daughter is already reflected, so reflect on Z everything and stop
+        local_cloned->ReflectZ(kTRUE); // rot + tr
+        //         printf("%s already reflected... After:\n", node->GetName());
+        //         node->GetMatrix()->Print();
+      }
+      if ( vol->GetVoxels() ) vol->GetVoxels()->Voxelize();
+      return vol;
+    }
+    // Volume is divided, so we have to reflect the division.
+    //   printf("   ... divided %s\n", fFinder->ClassName());
+    TGeoPatternFinder *new_finder = v->GetFinder()->MakeCopy(kTRUE);
+    if (!new_finder) {
+      printout(ERROR,"MakeReflection", "Could not copy finder for volume %s", v->GetName());
+      return nullptr;
+    }
+    new_finder->SetVolume(vol);
+    vol->SetFinder(new_finder);
+    TGeoNodeOffset *nodeoff;
+    new_vol = 0;
+    for (Int_t i=0; i<nd; i++) {
+      nodeoff = (TGeoNodeOffset*)vol->GetNode(i);
+      nodeoff->SetFinder(new_finder);
+      new_vol = MakeReflection(nodeoff->GetVolume());
+      nodeoff->SetVolume(new_vol);
+    }
+    return vol;
+  }
+
 }
 
 /// Default constructor
@@ -356,14 +279,16 @@ PlacedVolumeExtension::PlacedVolumeExtension()
 
 /// Default move
 PlacedVolumeExtension::PlacedVolumeExtension(PlacedVolumeExtension&& c)
-  : TGeoExtension(c), magic(move(c.magic)), refCount(0), volIDs(move(c.volIDs)) {
+  : TGeoExtension(c), magic(move(c.magic)), refCount(0), volIDs() {
   INCREMENT_COUNTER;
+  volIDs = move(c.volIDs);
 }
 
 /// Copy constructor
 PlacedVolumeExtension::PlacedVolumeExtension(const PlacedVolumeExtension& c)
-  : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs) {
+  : TGeoExtension(), magic(c.magic), refCount(0), volIDs() {
   INCREMENT_COUNTER;
+  volIDs = c.volIDs;
 }
 
 /// Default destructor
@@ -420,12 +345,6 @@ string PlacedVolumeExtension::VolIDs::str()  const   {
         << setfill('0') << i.second << setfill(' ') << " ";
   }
   return str.str();
-}
-
-static PlacedVolume::Object* _data(const PlacedVolume& v) {
-  PlacedVolume::Object* o = _userExtension(v);
-  if (o) return o;
-  throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Check if placement is properly instrumented
@@ -540,17 +459,6 @@ void VolumeExtension::Release() const  {
   }
 }
 
-/// Accessor to the data part of the Volume
-Volume::Object* _data(const Volume& v, bool throw_exception = true) {
-  //if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
-  Volume::Object* o = _userExtension(v);
-  if (o)
-    return o;
-  else if (!throw_exception)
-    return 0;
-  throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
-}
-
 /// Constructor to be used when creating a new geometry tree.
 Volume::Volume(const string& nam) {
   m_element = _createTGeoVolume(nam,0,0);
@@ -579,6 +487,24 @@ Volume::Object* Volume::data() const   {
   return o;
 }
 
+/// Create a reflected volume. The reflected volume has left-handed coordinates
+Volume Volume::reflect()  const   {
+  if ( m_element )   {
+    VolumeImport imp;
+    string nam = name();
+    nam       += "_refl";
+    Object* o = data();
+    if ( !o->reflected.isValid() )  {
+      TGeoVolume* vol = MakeReflection(m_element, nam.c_str());
+      imp(vol, m_element, Volume::REFLECTED);
+      o->reflected = vol;
+    }
+    return o->reflected;
+  }
+  except("dd4hep","Volume: Attempt to reflect an invalid Volume handle.");
+  return *this;
+}
+
 /// If we import volumes from external sources, we have to attach the extensions to the tree
 Volume& Volume::import()    {
   if ( m_element )   {
@@ -586,7 +512,7 @@ Volume& Volume::import()    {
     imp(m_element);
     return *this;
   }
-  except("dd4hep","Volume: Attempt to import invalid Volume handle.");
+  except("dd4hep","Volume: Attempt to import an invalid Volume handle.");
   return *this;
 }
 
@@ -608,6 +534,11 @@ bool Volume::testFlagBit(unsigned int bit)   const    {
   return false; // Anyhow never called. Only to satisfy the compiler.
 }    
 
+/// Test if this volume was reflected
+bool Volume::isReflected()   const    {
+  return testFlagBit(REFLECTED);
+}
+
 /// Divide volume into subsections (See the ROOT manuloa for details)
 Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
                       double start, double step, int numed, const char* option)   {
@@ -619,7 +550,13 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
     return mvp;
   }
   except("dd4hep","Volume: Attempt to divide an invalid logical volume.");
-  return 0;
+  return nullptr;
+}
+
+Int_t get_copy_number(TGeoVolume* par)    {
+  TObjArray* a = par ? par->GetNodes() : 0;
+  Int_t copy_nr = (a ? a->GetEntries() : 0);
+  return copy_nr;
 }
 
 PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
@@ -630,10 +567,18 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
   if ( !daughter )   {
     except("dd4hep","Volume: Attempt to assign an invalid physical daughter volume.");
   }
-  if (transform && transform != detail::matrix::_identity()) {
+  if ( !transform )   {
+    except("dd4hep","Volume: Attempt to place volume without placement matrix.");
+  }
+  if ( transform != detail::matrix::_identity() ) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
   }
+#if 0
+  if ( transform->IsTranslation() ) {
+    cout << daughter->GetName() << ": Translation: " << transform->GetTranslation()[2] << endl;
+  }
+#endif
   TGeoShape* shape = daughter->GetShape();
   // Need to fix the daughter's BBox of assemblies, if the BBox was not calculated....
   if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
@@ -658,40 +603,79 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
   return PlacedVolume(n);
 }
 
-PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
-  TObjArray* a = par ? par->GetNodes() : 0;
-  Int_t id = (a ? a->GetEntries() : 0);
-  return _addNode(par, daughter, id, transform);
+PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotation3D& rot3D)   {
+  Position   x,y,z;
+  Rotation3D rot = rot3D;
+  rot.GetComponents(x,y,z);
+  bool left_handed = (x.Cross(y)).Dot(z) < 0;
+  if ( left_handed )    {
+    // The reflected volume already scales Z with -1 to be left-handed
+    // We have to accomplish for and undo this when placing the volume
+    rot *= Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
+    daughter = daughter.reflect();
+    //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
+  }
+  double elements[9];
+  rot3D.GetComponents(elements);
+  auto r = new TGeoRotation();
+  r->SetMatrix(elements);
+  auto m = new TGeoCombiTrans(); 
+  m->SetRotation(r);
+  return _addNode(par, daughter, copy_nr, m);
+}
+
+PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Transform3D& tr)   {
+  Position   x, y, z, pos3D;
+  Rotation3D rot3D;
+  tr.GetRotation(rot3D);
+  tr.GetTranslation(pos3D);
+  rot3D.GetComponents(x,y,z);
+  bool left_handed = (x.Cross(y)).Dot(z) < 0;
+  if ( left_handed )    {
+    // The reflected volume already scales Z with -1 to be left-handed
+    // We have to accomplish for and undo this when placing the volume
+    rot3D *= Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
+    daughter = daughter.reflect();
+    //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
+  }
+  double elements[9];
+  rot3D.GetComponents(elements);
+  auto m = new TGeoCombiTrans();
+  m->SetTranslation(pos3D.x(), pos3D.y(), pos3D.z()); 
+  auto r = new TGeoRotation();
+  r->SetMatrix(elements);
+  m->SetRotation(r);
+  return _addNode(par, daughter, copy_nr, m);
 }
 
 /// Place daughter volume according to generic Transform3D
 PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& trans) const {
-  return _addNode(m_element, volume, detail::matrix::_transform(trans));
+  return _addNode(m_element, volume, get_copy_number(m_element), trans);
 }
 
 /// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume) const {
-  return _addNode(m_element, volume, detail::matrix::_identity());
+  return _addNode(m_element, volume, get_copy_number(m_element), detail::matrix::_identity());
 }
 
 /// Place un-rotated daughter volume at the given position.
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos) const {
-  return _addNode(m_element, volume, detail::matrix::_translation(pos));
+  return _addNode(m_element, volume, get_copy_number(m_element), detail::matrix::_translation(pos));
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const RotationZYX& rot) const {
-  return _addNode(m_element, volume, detail::matrix::_rotationZYX(rot));
+  return _addNode(m_element, volume, get_copy_number(m_element), detail::matrix::_rotationZYX(rot));
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation3D& rot) const {
-  return _addNode(m_element, volume, detail::matrix::_rotation3D(rot));
+  return _addNode(m_element, volume, get_copy_number(m_element), rot);
 }
 
 /// Place daughter volume according to generic Transform3D
 PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Transform3D& trans) const {
-  return _addNode(m_element, volume, copy_no, detail::matrix::_transform(trans));
+  return _addNode(m_element, volume, copy_no, trans);
 }
 
 /// Place daughter volume. The position and rotation are the identity
@@ -711,7 +695,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Rotati
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Rotation3D& rot) const {
-  return _addNode(m_element, volume, copy_no, detail::matrix::_rotation3D(rot));
+  return _addNode(m_element, volume, copy_no, rot);
 }
 
 /// Constructor to be used when creating a new parametrized volume object
@@ -737,7 +721,7 @@ void Volume::paramVolume1D(const Transform3D& start,
 {
   Transform3D transformation(start);
   for(size_t i=0; i<count; ++i)    {
-    _addNode(m_element, entity, detail::matrix::_transform(transformation));
+    _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(transformation));
     transformation *= trafo;
   }
 }
@@ -1007,6 +991,14 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
   Solid        sol   = vol.solid();
   stringstream os;
 
+
+  if ( vol->IsA() == TGeoVolumeAssembly::Class() )    {
+    for(Int_t i=0; i<vol->GetNdaughters(); ++i)  {
+      os << toStringMesh(vol->GetNode(i), prec) << endl;
+    }
+    return os.str();
+  }
+
   // Prints shape parameters
   Int_t nvert = 0, nsegs = 0, npols = 0;
   sol->GetMeshNumbers(nvert, nsegs, npols);
@@ -1048,3 +1040,4 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
   delete [] points;
   return os.str();
 }
+

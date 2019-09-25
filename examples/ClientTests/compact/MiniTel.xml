@@ -42,6 +42,7 @@
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="0*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
     <detector name="MyLHCBdetector2" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="2" sensitive="true" readout="MyLHCBdetector2Hits"  limits="minitel_limits" region="minitel_region">
@@ -49,6 +50,7 @@
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="10*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
     <detector name="MyLHCBdetector3" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="3"  sensitive="true" readout="MyLHCBdetector3Hits" limits="minitel_limits" region="minitel_region">
@@ -56,6 +58,7 @@
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="20*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="5*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
 
@@ -64,6 +67,7 @@
       <dimensions z="1*mm" y="10*cm" x="10*cm"/>
       <position z="30*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="21*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
 
@@ -72,6 +76,7 @@
       <dimensions z="1*mm" y="10*cm" x="10*cm"/>
       <position z="40*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="10*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
 
@@ -80,6 +85,7 @@
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="50*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
 
@@ -88,6 +94,7 @@
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="60*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
 
@@ -96,6 +103,7 @@
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="70*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
     <detector name="MyLHCBdetector9" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="9"  sensitive="true" readout="MyLHCBdetector9Hits" limits="minitel_limits" region="minitel_region">
@@ -103,6 +111,7 @@
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="80*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
 
     <detector name="MyLHCBdetector10" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="10" sensitive="true" readout="MyLHCBdetector10Hits" limits="minitel_limits" region="minitel_region">
@@ -110,6 +119,7 @@
       <dimensions  z="1*mm" y="10*cm" x="10*cm" />
       <position z="90*mm" y="0*cm" x="0*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <reflect/>
     </detector>
   </detectors>
 
@@ -145,43 +155,43 @@
   <readouts>
     <readout name="MyLHCBdetector1Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector2Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector3Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector4Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector5Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector6Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector7Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector8Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector9Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector10Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:12:-6,y:24:-6</id>
+      <id>system:6,side:1,x:12:-6,y:24:-6</id>
     </readout>
   </readouts>
 

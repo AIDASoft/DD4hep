@@ -1,0 +1,54 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Trapezoid" type="DD4hep_TestShape_Creator">
+<a>
+      <check vis="Shape1_vis">
+        <shape type="Trd2" z="30*cm" x1="30*cm" x2="50*cm" y1="15*cm" y2="30*cm"/>
+        <position x="30"  y="30" z="100*cm"/>
+        <rotation x="0."  y="0"  z="0"/>
+      </check>
+      <check vis="Shape2_vis">
+        <shape type="Trd2" z="30*cm" x1="30*cm" x2="50*cm" y1="15*cm" y2="30*cm"/>
+        <position x="30"   y="30" z="-100*cm"/>
+        <rotation x="0."   y="0"  z="0"/>
+        <reflect/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Trapezoid_Reflect_Volume.txt" create="1"/>
+</a>
+      <check vis="Shape1_vis">
+        <shape type="EightPointSolid" dz="30*cm">
+           <vertex x="-30*cm" y="-25*cm"/>
+           <vertex x="-25*cm" y=" 25*cm"/>
+           <vertex x="  5*cm" y=" 25*cm"/>
+           <vertex x=" 25*cm" y="-25*cm"/>
+           <vertex x="-28*cm" y="-23*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x=" 13*cm" y="-27*cm"/>
+        </shape>
+        <position x="0"  y="0" z="100"/>
+        <rotation x="0"  y="0" z="0"/>
+      </check>
+      <check vis="Shape2_vis">
+        <shape type="EightPointSolid" dz="30*cm">
+           <vertex x="-30*cm" y="-25*cm"/>
+           <vertex x="-25*cm" y=" 25*cm"/>
+           <vertex x="  5*cm" y=" 25*cm"/>
+           <vertex x=" 25*cm" y="-25*cm"/>
+           <vertex x="-28*cm" y="-23*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x=" 13*cm" y="-27*cm"/>
+        </shape>
+        <position x="0"  y="0" z="-100"/>
+        <rotation x="0"  y="0" z="0"/>
+        <reflect/>
+      </check>
+
+    </detector>
+  </detectors>
+</lccdd>

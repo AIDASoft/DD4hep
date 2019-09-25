@@ -132,7 +132,7 @@ namespace dd4hep {
                        parent.name(), pv.volume().name(), sd.ptr());
             }
           }
-          for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
+          for (int idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
             TGeoNode* daughter = node->GetDaughter(idau);
             PlacedVolume placement(daughter);
             if ( placement.data() ) {

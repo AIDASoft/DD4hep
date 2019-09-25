@@ -133,6 +133,44 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   return obj;
 }
 
+/// Reflect all volumes in a DetElement sub-tree and re-attach the placements
+pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, int new_id)   {
+  struct ChildMapper  {
+    std::map<TGeoNode*,TGeoNode*> nodes;
+    void match(DetElement de)   {
+      auto i = nodes.find(de.placement().ptr());
+      if ( i == nodes.end() )  {
+        except("DetElement","reflect: Something went wrong when reflecting the source volume!");
+      }
+      de.setPlacement((*i).second);
+      const auto& children = de.children();
+      for(const auto& c : children)
+        match(c.second);
+    }
+    void map(TGeoNode* n1, TGeoNode* n2)   {
+      if ( nodes.find(n1) != nodes.end() )   {
+        TGeoVolume* v1 = n1->GetVolume();
+        TGeoVolume* v2 = n2->GetVolume();
+        nodes.insert(make_pair(n1,n2));
+        for(Int_t i=0; i<v1->GetNdaughters(); ++i)
+          map(v1->GetNode(i), v2->GetNode(i));
+      }
+    }
+  } mapper;
+  DetElement  det(this);
+  DetElement  det_ref   = det.clone(new_name, new_id);
+  Volume      vol       = det.volume();
+  TGeoVolume* vol_det   = vol.ptr();
+  TGeoVolume* vol_ref   = vol.reflect();
+  const auto& childrens = det.children();
+
+  for(Int_t i=0; i<vol_det->GetNdaughters(); ++i)
+    mapper.map(vol_det->GetNode(i), vol_ref->GetNode(i));
+  for(const auto& c : childrens)
+    mapper.match(c.second);
+  return make_pair(det_ref,vol_ref);
+}
+
 /// Access to the world object. Only possible once the geometry is closed.
 World DetElementObject::i_access_world()   {
   if ( !privateWorld.isValid() )  {

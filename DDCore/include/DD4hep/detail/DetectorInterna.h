@@ -178,6 +178,8 @@ namespace dd4hep {
     void update(unsigned int tags, void* param);
     /// Revalidate the caches
     void revalidate();
+    /// Reflect all volumes in a DetElement sub-tree and re-attach the placements
+    std::pair<DetElement,Volume> reflect(const std::string& new_name, int new_id);
   };
 
   /// Data class with properties of a detector element

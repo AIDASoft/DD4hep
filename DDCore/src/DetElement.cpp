@@ -258,15 +258,11 @@ DetElement DetElement::clone(int flg) const   {
   Object* n = o->clone(o->id, flg);
   n->SetName(o->GetName());
   n->SetTitle(o->GetTitle());
-  return DetElement(n);
+  return n;
 }
 
 DetElement DetElement::clone(const string& new_name) const {
-  Object* o = access();
-  Object* n = o->clone(o->id, COPY_NONE);
-  n->SetName(new_name.c_str());
-  n->SetTitle(o->GetTitle());
-  return DetElement(n);
+  return clone(new_name, access()->id);
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id) const {
@@ -274,7 +270,20 @@ DetElement DetElement::clone(const string& new_name, int new_id) const {
   Object* n = o->clone(new_id, COPY_NONE);
   n->SetName(new_name.c_str());
   n->SetTitle(o->GetTitle());
-  return DetElement(n);
+  return n;
+}
+
+pair<DetElement,Volume> DetElement::reflect(const string& new_name) const {
+  return reflect(new_name, access()->id);
+}
+
+pair<DetElement,Volume> DetElement::reflect(const string& new_name, int new_id) const {
+  if ( placement().isValid() )   {
+    return m_element->reflect(new_name, new_id);
+  }
+  except("DetElement","reflect: Only placed DetElement objects can be reflected: %s",
+         path().c_str());
+  return make_pair(DetElement(),Volume());
 }
 
 /// Access to the ideal physical volume of this detector element
