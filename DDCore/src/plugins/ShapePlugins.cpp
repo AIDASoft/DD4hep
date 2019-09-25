@@ -487,8 +487,6 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
 }
 DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanMulti)
 
-#include "DD4hep/MatrixHelpers.h"
-#include <TGeoReflectionFactory.h>
 TGeoCombiTrans* createPlacement(const Rotation3D& iRot, const Position& iTrans) {
   double elements[9];
   iRot.GetComponents(elements);
