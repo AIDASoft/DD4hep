@@ -11,7 +11,8 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#-----------------------------------------------------------------------------------
+dd4hep_set_compiler_flags()
+#==========================================================================
 dd4hep_configure_output ()
 
 set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
@@ -19,9 +20,6 @@ set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
 #---Geant4 Testsing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
-  #
-  dd4hep_set_compiler_flags()
-  #
   #----  Dictionary of classes to be written to the ROOT file   --------------------
   dd4hep_add_dictionary(G__DDG4UserDict
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h

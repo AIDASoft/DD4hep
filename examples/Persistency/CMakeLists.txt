@@ -11,6 +11,8 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+dd4hep_set_compiler_flags()
+#==========================================================================
 if(TARGET XercesC::XercesC)
   SET(OPT_XERCESC XercesC::XercesC)
 endif()

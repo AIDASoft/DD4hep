@@ -11,7 +11,8 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#--------------------------------------------------------------------------
+dd4hep_set_compiler_flags()
+#==========================================================================
 dd4hep_configure_output()
 
 set(AlignDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/AlignDet)

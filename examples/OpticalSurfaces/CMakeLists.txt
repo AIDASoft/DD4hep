@@ -11,6 +11,8 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+dd4hep_set_compiler_flags()
+#==========================================================================
 dd4hep_print("|++> OpticalSurfaces: ROOT version: ${ROOT_VERSION}")
 
 if(NOT ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.18.00)

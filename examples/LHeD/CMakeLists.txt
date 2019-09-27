@@ -6,12 +6,13 @@
 #
 # For the licensing terms see $DD4hepINSTALL/LICENSE.
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
-# CLICSiD used as template!
+#
 #==========================================================================
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#-----------------------------------------------------------------------------------
+dd4hep_set_compiler_flags()
+#==========================================================================
 dd4hep_configure_output ()
 set(LHeDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/LHeD)
 dd4hep_install_dir( src compact scripts sim DESTINATION ${LHeDEx_INSTALL} )
