@@ -11,11 +11,12 @@
 #
 # DDCMS is a detector description convention developed by the CMS experiment.
 #
-#=================================================================================
+#==========================================================================
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
-
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
-#------------------------------------------------------------------------------
+
+dd4hep_set_compiler_flags()
+#==========================================================================
 
 # CLHEP dependent stuff
 if(NOT TARGET CLHEP::CLHEP)

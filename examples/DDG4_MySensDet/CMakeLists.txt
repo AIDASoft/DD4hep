@@ -11,6 +11,8 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+dd4hep_set_compiler_flags()
+#==========================================================================
 if(NOT TARGET Geant4::Interface)
   dd4hep_print("Not creating DDG4_MySensDet tests")
   return()
@@ -26,8 +28,6 @@ include(CTest)
 #---Geant4 Testsing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
-  #
-  dd4hep_set_compiler_flags()
   #---------------------------  Plugin library for the simulation framework  ---------
   dd4hep_add_dictionary(G__DDG4_MySensDet
     SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/MyTrackerHit.h

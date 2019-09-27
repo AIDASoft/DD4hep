@@ -11,12 +11,11 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#-----------------------------------------------------------------------------------
+dd4hep_set_compiler_flags()
+#==========================================================================
 dd4hep_configure_output ()
 
 set(DDDigiexamples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDDigi)
-#
-dd4hep_set_compiler_flags()
 #
 dd4hep_add_plugin(DDDigiExampleLib SOURCES src/*.cpp )
 target_link_libraries(DDDigiExampleLib DD4hep::DDDigi Boost::boost ROOT::Geom ROOT::GenVector ROOT::RIO)

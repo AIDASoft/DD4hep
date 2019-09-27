@@ -15,10 +15,12 @@
 #
 # The usage of Xerces-C is mandatory due to the entity resolution mechanism
 #
-
 #==========================================================================
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+dd4hep_set_compiler_flags()
+#==========================================================================
 # XercesC dependent stuff
 if(DD4HEP_USE_XERCESC)
   dd4hep_print("|++> XercesC PRESENT. Building DDDB examples.")
@@ -26,9 +28,6 @@ else()
   dd4hep_print("|++> XercesC is not present. NOT building DDDB examples.")
   return()
 endif()
-
-
-include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #------------------------------------------------------------------------------
 dd4hep_configure_output ()
