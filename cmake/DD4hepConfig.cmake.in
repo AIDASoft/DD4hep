@@ -33,6 +33,8 @@ set ( DD4hep_BUILD_CXX_STANDARD @CMAKE_CXX_STANDARD@ )
 
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
+include(CMakeFindDependencyMacro)
+
 set (CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake  )
 
 # ---------- include dirs -----------------------------------------------------
@@ -44,25 +46,25 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 
-FIND_PACKAGE(Boost REQUIRED)
+FIND_DEPENDENCY(Boost REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()
 
 if(DD4HEP_USE_GEANT4)
   MESSAGE(STATUS "DD4hep uses Geant4")
   IF(DD4HEP_USE_CLHEP)
-    find_package(CLHEP REQUIRED CONFIG)
+    find_dependency(CLHEP REQUIRED CONFIG)
     UNSET(CLHEP_INCLUDE_DIR)
   ENDIF()
-  find_package(Geant4 10.2.2 REQUIRED gdml ui_all vis_all)
+  find_dependency(Geant4 10.2.2 REQUIRED gdml ui_all vis_all)
   DD4HEP_SETUP_GEANT4_TARGETS()
 endif()
 
-FIND_PACKAGE(ROOT REQUIRED)
+FIND_DEPENDENCY(ROOT REQUIRED)
 DD4HEP_SETUP_ROOT_TARGETS()
 
 if(DD4HEP_USE_LCIO)
   MESSAGE(STATUS "DD4hep uses LCIO")
-  find_package(LCIO REQUIRED)
+  find_dependency(LCIO REQUIRED)
   DD4HEP_SETUP_LCIO_TARGETS()
 endif()
 
