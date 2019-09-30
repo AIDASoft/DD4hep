@@ -18,7 +18,6 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/*.h
   include/DD4hep/detail/*.h
   include/XML/*.h
-  src/DetectorImp.h
   src/RootDictionary.h
   EXCLUDE include/DD4hep/DetFactoryHelper.h
   include/DD4hep/Any.h
