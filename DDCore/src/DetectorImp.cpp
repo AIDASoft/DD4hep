@@ -23,7 +23,7 @@
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/VolumeManagerInterna.h"
 #include "DD4hep/detail/OpticalSurfaceManagerInterna.h"
-#include "DetectorImp.h"
+#include "DD4hep/DetectorImp.h"
 
 // C/C++ include files
 #include <iostream>

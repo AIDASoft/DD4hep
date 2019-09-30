@@ -36,7 +36,7 @@
 #include "DD4hep/DetectorData.h"
 #include "DD4hep/DetectorProcessor.h"
 #include "DD4hep/ComponentProperties.h"
-#include "../src/DetectorImp.h"
+#include "DD4hep/DetectorImp.h"
 
 // C/C++ include files
 #include <vector>

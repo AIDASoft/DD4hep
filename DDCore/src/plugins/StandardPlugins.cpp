@@ -13,6 +13,7 @@
 
 // Framework include files
 #include "DD4hep/Detector.h"
+#include "DD4hep/DetectorImp.h"
 #include "DD4hep/Memory.h"
 #include "DD4hep/DD4hepUI.h"
 #include "DD4hep/Factories.h"
@@ -26,7 +27,6 @@
 #include "XML/DocumentHandler.h"
 #include "XML/XMLElements.h"
 #include "XML/XMLTags.h"
-#include "../DetectorImp.h"
 
 // ROOT includes
 #include "TInterpreter.h"
