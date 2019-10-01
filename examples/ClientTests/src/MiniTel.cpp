@@ -119,12 +119,15 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
     pv2 = assembly.placeVolume(m_volume,Transform3D(Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.),
                                                     Position(det_x,det_y,-det_z)));
   }
-  xml_comp_t dtctr = x_det;
-  if ( dtctr.isSensitive() ) {
+  if ( x_det.isSensitive() ) {
+    DetElement side_0(sdet,"side_0",x_det.id());
     // Set volume attributes
     sens.setType("tracker");
     pv1.addPhysVolID("side",0);
+    side_0.setPlacement(pv1);
     if ( pv2.isValid() )  {
+      DetElement side_1(sdet,"side_1",x_det.id());
+      side_1.setPlacement(pv2);
       pv2.addPhysVolID("side",1);
     }
   }

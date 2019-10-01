@@ -69,7 +69,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_VolMgr1_LONGTEST
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckVolumeManager
   DEPENDS    Persist_MiniTel_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 VolumeManager contexts. Num.Errors: 0"
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 20 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
@@ -80,7 +80,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Nominal_LONGTEST
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckNominals
   DEPENDS    Persist_MiniTel_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ PASSED Checked 10 DetElements. Num.Errors: 0"
+  REGEX_PASS "\\+\\+\\+ PASSED Checked 20 DetElements. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #

@@ -150,7 +150,7 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
         }
         DetectorData* tar_data = dynamic_cast<DetectorData*>(&description);
         DetectorData* src_data = dynamic_cast<DetectorData*>(source);
-        if( tar_data != nullptr && src_data != nullptr ){
+        if( tar_data != nullptr && src_data != nullptr )  {
           tar_data->adoptData(*src_data,false);
           TTimeStamp stop;
           printout(ALWAYS,"DD4hepRootPersistency",
