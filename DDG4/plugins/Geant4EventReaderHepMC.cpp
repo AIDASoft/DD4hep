@@ -239,6 +239,8 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
   primary_vertex->z = 0;
 
   if ( !m_events->ok() )  {
+    vertices.clear();
+    output.clear();
     return EVENT_READER_EOF;
   }
   else if ( m_events->read() )  {
@@ -283,6 +285,8 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
     ++m_currEvent;
     return EVENT_READER_OK;
   }
+  vertices.clear();
+  output.clear();
   return EVENT_READER_EOF;
 }
 

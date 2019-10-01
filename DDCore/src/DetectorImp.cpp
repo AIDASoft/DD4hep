@@ -164,6 +164,7 @@ DetectorImp::DetectorImp(const string& name)
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
   //TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
 #endif
+  SetName(name.c_str());
   SetTitle("DD4hep detector description object");
   set_terminate( description_unexpected );
   InstanceCount::increment(this);
@@ -202,13 +203,13 @@ DetectorImp::~DetectorImp() {
   if ( m_manager )  {
     lock_guard<recursive_mutex> lock(detector_instances().lock);
     if ( m_manager == gGeoManager ) gGeoManager = 0;
-    Detector* description = detector_instances().get(m_manager->GetName());
+    Detector* description = detector_instances().get(GetName());
     if ( 0 != description )   {
       detector_instances().remove(m_manager->GetName());
     }
   }
   deletePtr(m_surfaceManager);
-  destroyData(true);
+  destroyData(false);
   m_extensions.clear();
   InstanceCount::decrement(this);
 }

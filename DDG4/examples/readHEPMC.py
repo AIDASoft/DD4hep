@@ -7,7 +7,7 @@ dd4hep simulation example setup using the python configuration
 
 """
 from __future__ import absolute_import, unicode_literals
-import logging
+import os, logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,11 +29,13 @@ def run(input_file):
   evtid = 0
   while ret:
     try:
+      parts.clear()
+      prim_vtx.clear()
       ret = gen.readParticles(evtid, prim_vtx, parts)
       evtid = evtid + 1
     except Exception as X:
       logger.error('\nException: readParticles: %s', str(X))
-      ret = None
+      if evtid > 0: os._exit(0);
     if ret:
       for v in prim_vtx:
         logger.info('Mask:%04X (X:%8.2g,Y:%8.2g,Z:%8.2g) time:%8.2g Outgoing:%4d particles',

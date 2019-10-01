@@ -301,22 +301,22 @@ namespace gaudi   {
     {  return 0 == (staticData().de_user&DeVeloFlags::LEFT);        }
     /// Return true for X>0 side of the detector (+ve x is Left) 
     bool 	  isLeft () const
-    {  return 1 == (staticData().de_user&DeVeloFlags::LEFT);        }
+    {  return 0 != (staticData().de_user&DeVeloFlags::LEFT);        }
     /// Returns true if sensor is downstream. 
     bool 	  isDownstream () const
-    {  return 1 == (staticData().de_user&DeVeloFlags::DOWNSTREAM);  }
+    {  return 0 != (staticData().de_user&DeVeloFlags::DOWNSTREAM);  }
     /// Returns true if pile up Sensor. 
     bool 	  isPileUp () const
-    {  return 1 == (staticData().de_user&DeVeloFlags::PU_TYPE);     }
+    {  return 0 != (staticData().de_user&DeVeloFlags::PU_TYPE);     }
     /// Returns true if R Sensor. 
     bool   	isR () const
-    {  return 1 == (staticData().de_user&DeVeloFlags::R_TYPE);      }
+    {  return 0 != (staticData().de_user&DeVeloFlags::R_TYPE);      }
     /// Returns true if Phi Sensor. 
     bool 	  isPhi () const
-    {  return 1 == (staticData().de_user&DeVeloFlags::PHI_TYPE);    }
+    {  return 0 != (staticData().de_user&DeVeloFlags::PHI_TYPE);    }
     /// Returns true if sensor is top cabled. 
     bool 	  isTop () const
-    {  return 1 == (staticData().de_user&DeVeloFlags::TOP);         }
+    {  return 0 != (staticData().de_user&DeVeloFlags::TOP);         }
     /// Returns true if sensor is bottom cabled. 
     bool 	  isBottom () const
     {  return 0 == (staticData().de_user&DeVeloFlags::TOP);         }
@@ -325,13 +325,13 @@ namespace gaudi   {
      *  with time.
      */
     bool isReadOut() const
-    { return 1 == (staticData().de_user&DeVeloFlags::READOUT);      }
+    { return 0 != (staticData().de_user&DeVeloFlags::READOUT);      }
     /** Check whether this sensor exists or is TELL1 w/o sensor (cached condition).
      *  This information is based on CondDB, i.e. it can change
      *  with time.
      */
     bool tell1WithoutSensor() const
-    { return 1 == (staticData().de_user&DeVeloFlags::T1NOSENS);     }
+    { return 0 != (staticData().de_user&DeVeloFlags::T1NOSENS);     }
 
 
     unsigned int globalZoneOfStrip(const unsigned int strip) const {
