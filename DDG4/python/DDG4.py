@@ -144,7 +144,7 @@ def _getKernelProperty(self, name):
 
 
 def _setKernelProperty(self, name, value):
-  if Interface.setPropertyKernel(self.get(), name, str(value)):
+  if Interface.setPropertyKernel(self.get(), str(name), str(value)):
     return
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
   raise KeyError(msg)
@@ -297,7 +297,7 @@ def _set(self, name, value):
   a = Interface.toAction(self)
   if isinstance(value, list):
     value = [str(x) for x in value]
-  if Interface.setProperty(a, name, str(value)):
+  if Interface.setProperty(a, str(name), str(value)):
     return
   msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + str(value)
   raise KeyError(msg)
