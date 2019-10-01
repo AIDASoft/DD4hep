@@ -63,29 +63,34 @@ dd4hep_add_test_reg( Surfaces_read_MaterialProperties
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
-#---Testing: Load OpNovice and dump it to GDML
-dd4hep_add_test_reg( Surfaces_OpNovice_write_gdml
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy 
-  -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice.xml
-  -plugin DD4hep_ROOTGDMLExtract -output OpNovice.gdml -path /world/BubbleDevice
-  REGEX_PASS "File OpNovice.gdml saved"
-  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
-  )
-#
-#
-if ( "${ROOT_VERSION}" VERSION_GREATER_EQUAL "6.20.00" )
-  #
-  #---Testing: Load GDML and dump volumes
-  dd4hep_add_test_reg( Surfaces_OpNovice_read_gdml
+# This plugins depends on the ROOT GDML readers. Hence, extra library
+IF(TARGET ROOT::Gdml)
+  #---Testing: Load OpNovice and dump it to GDML
+  dd4hep_add_test_reg( Surfaces_OpNovice_write_gdml
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
     EXEC_ARGS  geoPluginRun -volmgr -destroy 
-    -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice_gdml.xml
-    -print INFO -destroy -volmgr
-    -plugin DD4hep_ROOTGDMLParse -input OpNovice.gdml -path /world/BubbleDevice
-    -plugin DD4hep_VolumeDump
-    REGEX_PASS "\\+\\+\\+ Checked 5 physical volume placements."
+    -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice.xml
+    -plugin DD4hep_ROOTGDMLExtract -output OpNovice.gdml -path /world/BubbleDevice
+    REGEX_PASS "File OpNovice.gdml saved"
     REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+  #
+  #
+  if ( "${ROOT_VERSION}" VERSION_GREATER_EQUAL "6.19.01" )
+    #
+    #---Testing: Load GDML and dump volumes
+    dd4hep_add_test_reg( Surfaces_OpNovice_read_gdml
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
+      EXEC_ARGS  geoPluginRun -volmgr -destroy 
+      -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice_gdml.xml
+      -print INFO -destroy -volmgr
+      -plugin DD4hep_ROOTGDMLParse -input OpNovice.gdml -path /world/BubbleDevice
+      -plugin DD4hep_VolumeDump
+      REGEX_PASS "\\+\\+\\+ Checked 5 physical volume placements."
+      REGEX_FAIL " ERROR ;EXCEPTION;Exception"
     )
-endif()
+  endif()
+ELSE()
+  dd4hep_print("ROOT does not include GDML, not building OpticalSurfaces GDML tests")
+ENDIF()
 #
