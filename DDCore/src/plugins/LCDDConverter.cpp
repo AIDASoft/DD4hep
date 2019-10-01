@@ -46,7 +46,6 @@
 #include "TGeoTrd2.h"
 #include "TGeoTube.h"
 #include "TGeoScaledShape.h"
-//#include "TGeoEllipsoid.h"
 
 #include "TGeoNode.h"
 #include "TClass.h"
@@ -471,6 +470,20 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       solid.setAttr(_U(v8x), vtx[14]);
       solid.setAttr(_U(v8y), vtx[15]);
       solid.setAttr(_U(dz),  sh->GetDz());
+      solid.setAttr(_U(lunit), "cm");
+    }
+    else if (isa == TGeoScaledShape::Class())  {
+      TGeoScaledShape* sh = (TGeoScaledShape*) shape;
+      const double*    vals = sh->GetScale()->GetScale();
+      Solid            s_sh(sh->GetShape());
+      handleSolid(s_sh.name(), s_sh.ptr());
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(scale)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(shape), s_sh.name());
+      solid.setAttr(_U(x),     vals[0]);
+      solid.setAttr(_U(y),     vals[1]);
+      solid.setAttr(_U(z),     vals[2]);
+      solid.setAttr(_U(aunit), "deg");
       solid.setAttr(_U(lunit), "cm");
     }
     else if (isa == TGeoCompositeShape::Class() ||

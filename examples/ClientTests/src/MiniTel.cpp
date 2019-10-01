@@ -112,7 +112,8 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   m_volume.setSensitiveDetector(sens);
 
   PlacedVolume pv1, pv2;
-  pv1 = assembly.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
+  // det_x,det_y,det_z are the dimensions of the detector in space
+  pv1 = assembly.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));
   if ( x_det.hasChild(_U(reflect)) )   {
     /// Reflect in XY-plane
     pv2 = assembly.placeVolume(m_volume,Transform3D(Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.),
@@ -122,14 +123,13 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   if ( dtctr.isSensitive() ) {
     // Set volume attributes
     sens.setType("tracker");
-    pv1.addPhysVolID("system",detectors_id);
     pv1.addPhysVolID("side",0);
     if ( pv2.isValid() )  {
-      pv2.addPhysVolID("system",detectors_id);
       pv2.addPhysVolID("side",1);
     }
   }
   auto pv = motherVol.placeVolume(assembly);
+  pv.addPhysVolID("system",detectors_id);
   sdet.setPlacement(pv);
   // Support additional test if Detector_InhibitConstants is set to TRUE
   description.constant<double>("world_side");

@@ -42,7 +42,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   try {
     isStripDetector = x_det.attr<bool>( _Unicode(isStripDetector) ) ;
 
-  } catch(std::runtime_error ){}
+  } catch(const std::runtime_error& ){}
 
   //=========  loop over layer elements in xml  ======================================
 
