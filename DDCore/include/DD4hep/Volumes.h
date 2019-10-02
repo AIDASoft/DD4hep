@@ -65,8 +65,11 @@ namespace dd4hep {
     class VolIDs: public std::vector<VolID> {
     public:
       typedef std::vector<VolID> Base;
-      using Base::Base;
-      /// Copy operator
+      /// Default constructor
+      VolIDs() = default;
+      /// Move constructor
+      VolIDs(VolIDs&& copy) = default;
+      /// Copy constructor
       VolIDs(const VolIDs& copy) = default;
       /// Move assignment
       VolIDs& operator=(VolIDs&& copy)  = default;
