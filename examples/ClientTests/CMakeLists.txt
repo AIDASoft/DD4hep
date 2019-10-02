@@ -255,7 +255,7 @@ foreach (test Assemblies BoxTrafos CaloEndcapReflection LheD_tracker MagnetField
   if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( ClientTests_g4material_scan_${test}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  g4MaterialScan --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
+      EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                         "--position=0,0,0" "--direction=0,1,0"
       REGEX_PASS " Terminate Geant4 and delete associated actions." )
   endif(DD4HEP_USE_GEANT4)
@@ -276,14 +276,14 @@ foreach (test BoxTrafos CaloEndcapReflection IronCylinder MiniTel SiliconBlock N
   # ROOT Geometry checks
   dd4hep_add_test_reg( ClientTests_check_geometry_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  checkGeometry --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkGeometry --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                       --full=true --ntracks=10
     REGEX_PASS " Execution finished..." )
   #
   # ROOT Geometry overlap checks
   dd4hep_add_test_reg( ClientTests_check_overlaps_${test}_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  checkOverlaps --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
                       --tolerance=0.1
     REGEX_PASS " Execution finished..." )
 endforeach()
