@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
-import os, sys, DDG4
+import os
+import sys
+import DDG4
 #
 """
    dd4hep example setup using the python configuration
@@ -12,7 +14,6 @@ import os, sys, DDG4
 
 def run():
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepExamplesINSTALL']
   # Configure UI
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geant4.setupCshUI(vis=True)
