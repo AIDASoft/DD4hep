@@ -36,7 +36,8 @@ def run(input_file):
       evtid = evtid + 1
     except Exception as X:
       logger.error('\nException: readParticles: %s', str(X))
-      if evtid > 0: os._exit(0);
+      if evtid > 0:
+        os._exit(0);
     if ret:
       for v in prim_vtx:
         logger.info('Mask:%04X (X:%8.2g,Y:%8.2g,Z:%8.2g) time:%8.2g Outgoing:%4d particles',
