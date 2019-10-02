@@ -144,8 +144,24 @@ dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const double* r) {
   return XYZAngles(atan2(-r[7], r[4]),atan2(-r[2], cosb),0);
 }
 
+void dd4hep::detail::matrix::_decompose(const TGeoMatrix& trafo, Position& pos, Rotation3D& rot)  {
+  _decompose(_transform(trafo), pos, rot);
+}
+
+void dd4hep::detail::matrix::_decompose(const TGeoMatrix& trafo, Position& pos, RotationZYX& rot)   {
+  _decompose(_transform(trafo), pos, rot);
+}
+
+void dd4hep::detail::matrix::_decompose(const TGeoMatrix& trafo, Position& pos, XYZAngles& rot)   {
+  _decompose(_transform(trafo), pos, rot);
+}
+
+void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Position& pos, Rotation3D& rot)  {
+  trafo.GetDecomposition(rot, pos);  
+}
+
 void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Translation3D& pos, RotationZYX& rot)   {
-  trafo.GetDecomposition(rot,pos);
+  trafo.GetDecomposition(rot, pos);
 }
 
 void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Translation3D& pos, XYZAngles& rot)   {

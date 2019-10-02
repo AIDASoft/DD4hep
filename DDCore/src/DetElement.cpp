@@ -278,8 +278,12 @@ pair<DetElement,Volume> DetElement::reflect(const string& new_name) const {
 }
 
 pair<DetElement,Volume> DetElement::reflect(const string& new_name, int new_id) const {
+  return reflect(new_name, new_id, SensitiveDetector(0));
+}
+
+pair<DetElement,Volume> DetElement::reflect(const string& new_name, int new_id, SensitiveDetector sd) const {
   if ( placement().isValid() )   {
-    return m_element->reflect(new_name, new_id);
+    return m_element->reflect(new_name, new_id, sd);
   }
   except("DetElement","reflect: Only placed DetElement objects can be reflected: %s",
          path().c_str());

@@ -332,6 +332,8 @@ namespace dd4hep {
 
     /// Reflect (Deep copy) the DetElement structure with a new name and new identifier
     std::pair<DetElement,Volume> reflect(const std::string& new_name, int new_id) const;
+    /// Reflect (Deep copy) the DetElement structure with a new name and new identifier and new sensitive detector
+    std::pair<DetElement,Volume> reflect(const std::string& new_name, int new_id, SensitiveDetector sd) const;
 
     /// Add an extension object to the detector element
     void* addExtension(ExtensionEntry* entry) const;

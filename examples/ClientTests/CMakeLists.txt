@@ -183,7 +183,7 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
 #
 #  Test basic shapes by comparing mesh vertices with reference file
 foreach (test Box Cone ConeSegment Tube ElTube
-    CutTube Hyperboloid Paraboloid EightPointSolid
+    CutTube Hyperboloid Paraboloid EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement
     Polycone PseudoTrap PseudoTrap2 Sphere Torus
     Trap Trd1 Trd2 TruncatedTube ExtrudedPolygon)
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
@@ -204,7 +204,7 @@ dd4hep_add_test_reg( ClientTests_Check_VolumeDivisionTest
 #
 # only if root version > 6.19: MaterialTester
 #
-foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields  
+foreach (test Assemblies BoxTrafos CaloEndcapReflection IronCylinder LheD_tracker MagnetFields  
     MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
     MultiCollections MultiSegmentations )
 
@@ -239,7 +239,7 @@ endforeach()
 # IronCylinder has no segmentation!
 # MaterialTester no geometry
 # SectorBarrelCalorimeter is bad
-foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBlock 
+foreach (test Assemblies BoxTrafos CaloEndcapReflection LheD_tracker MagnetFields MiniTel SiliconBlock 
          NestedSimple NestedDetectors MultiCollections )
   #
   # Test material scans in [origine to 10 meters in y]
@@ -261,7 +261,7 @@ endforeach()
 #
 #
 #
-foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiCollections )
+foreach (test BoxTrafos CaloEndcapReflection IronCylinder MiniTel SiliconBlock NestedSimple MultiCollections )
   #
   #  Read data from XML file. Then parse the pure XML string.
   dd4hep_add_test_reg( ClientTests_parse_xml_string_${test}

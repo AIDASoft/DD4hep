@@ -1,0 +1,9 @@
+/control/verbose 2
+/run/initialize
+/vis/open OGL
+/vis/verbose errors
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 55. 45.
+/vis/scene/add/axes 0 0 0 1 m
+/vis/viewer/refresh
+

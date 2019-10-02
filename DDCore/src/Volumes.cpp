@@ -120,7 +120,7 @@ namespace {
       }
     }
     /// Callback for clone imports, where the user extension should be copied
-    void operator()(TGeoVolume* new_v, TGeoVolume* old_v, int set_bit)   {
+    void operator()(TGeoVolume* new_v, TGeoVolume* old_v, SensitiveDetector sd, int set_bit)   {
       if ( !new_v || !old_v )  {
         except("dd4hep","VolumeImport: ERROR: The refected volume is INVALID!");        
       }
@@ -131,6 +131,9 @@ namespace {
         TClass* c = new_v->IsA();
         Volume old_vol(old_v);
         Volume new_vol(new_v);
+        if ( sd.isValid() && old_vol.isSensitive() )   {
+          new_vol.setSensitiveDetector(sd);
+        }
         if ( c == geo_volume_t::Class() )  {
           Volume::Object *new_e, *old_e = (Volume::Object*)_data(old_vol);
           old_e->reflected = new_v;
@@ -151,7 +154,7 @@ namespace {
           old_e->reflected = new_v;
           new_e->reflected = old_v;
           for(int i=0, n=new_mv->GetNvolumes(); i<n; ++i)
-            (*this)(new_mv->GetVolume(i), old_mv->GetVolume(i), set_bit);
+            (*this)(new_mv->GetVolume(i), old_mv->GetVolume(i), sd, set_bit);
         }
         else
           except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",new_v->IsA()->GetName());
@@ -169,7 +172,7 @@ namespace {
             auto* e = (PlacedVolume::Object*)ov->geo_node_t::GetUserExtension();
             pv->geo_node_t::SetUserExtension(new PlacedVolume::Object(*e));
           }
-          (*this)(pv->GetVolume(), ov->GetVolume(), set_bit);
+          (*this)(pv->GetVolume(), ov->GetVolume(), sd, set_bit);
         }
       }
     }
@@ -178,8 +181,7 @@ namespace {
   TGeoVolume *MakeReflection(TGeoVolume* v, const char *newname=0)  {
     static TMap map(100);
     TGeoVolume *vol = (TGeoVolume*)map.GetValue(v);
-    if (vol) {
-      if (newname && newname[0]) vol->SetName(newname);
+    if ( vol ) {
       return vol;
     }
     vol = v->CloneVolume();
@@ -188,7 +190,15 @@ namespace {
       return nullptr;
     }
     map.Add((TObject*)v, vol);
-    if (newname && newname[0]) vol->SetName(newname);
+    string nam;
+    if (newname && newname[0])  {
+      nam = newname;
+      vol->SetName(newname);
+    }
+    else   {
+      nam = v->GetName();
+      vol->SetName((nam+"_refl").c_str());
+    }
     delete vol->GetNodes();
     vol->SetNodes(NULL);
     vol->SetBit(TGeoVolume::kVolumeImportNodes, kFALSE);
@@ -198,7 +208,7 @@ namespace {
     if (v->GetShape())   {
       TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
       TGeoShape *reflected_shape =
-        TGeoScaledShape::MakeScaledShape("", v->GetShape(), scale);
+        TGeoScaledShape::MakeScaledShape((nam+"_shape_refl").c_str(), v->GetShape(), scale);
       vol->SetShape(reflected_shape);
     }
     // Reflect the daughters.
@@ -484,16 +494,19 @@ Volume::Object* Volume::data() const   {
   return o;
 }
 
-/// Create a reflected volume. The reflected volume has left-handed coordinates
+/// Create a reflected volume tree. The reflected volume has left-handed coordinates
 Volume Volume::reflect()  const   {
+  return reflect(SensitiveDetector(0));
+}
+    
+/// Create a reflected volume tree. The reflected volume has left-handed coordinates
+Volume Volume::reflect(SensitiveDetector sd)  const   {
   if ( m_element )   {
     VolumeImport imp;
-    string nam = name();
-    nam       += "_refl";
     Object* o = data();
     if ( !o->reflected.isValid() )  {
-      TGeoVolume* vol = MakeReflection(m_element, nam.c_str());
-      imp(vol, m_element, Volume::REFLECTED);
+      TGeoVolume* vol = MakeReflection(m_element);
+      imp(vol, m_element, sd, Volume::REFLECTED);
       o->reflected = vol;
     }
     return o->reflected;

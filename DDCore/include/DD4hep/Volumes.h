@@ -320,8 +320,13 @@ namespace dd4hep {
     /// Check if placement is properly instrumented
     Object* data() const;
 
-    /// Create a reflected volume. The reflected volume has left-handed coordinates
+    /// Create a reflected volume tree. The reflected volume has left-handed coordinates
     Volume reflect()  const;
+
+    /// Create a reflected volume tree. The reflected volume has left-handed coordinates.
+    /** Swap the sensitive detector - if valid - on all sensitive sub-volumes
+     */
+    Volume reflect(SensitiveDetector sd)  const;
     
     /// If we import volumes from external sources, we have to attach the extensions to the tree
     Volume& import();
