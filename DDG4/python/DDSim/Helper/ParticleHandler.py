@@ -132,8 +132,8 @@ class ParticleHandler(ConfigHelper):
         user.TrackingVolume_Zmax = DDG4.tracker_region_zmax
         user.TrackingVolume_Rmax = DDG4.tracker_region_rmax
         logger.info(" *** definition of tracker region *** ")
-        logger.info("    tracker_region_zmax = ", user.TrackingVolume_Zmax)
-        logger.info("    tracker_region_rmax = ", user.TrackingVolume_Rmax)
+        logger.info("    tracker_region_zmax = %s", user.TrackingVolume_Zmax)
+        logger.info("    tracker_region_rmax = %s", user.TrackingVolume_Rmax)
         logger.info(" ************************************ ")
       except AttributeError as e:
         logger.error("Attribute of tracker region missing in detector model %s", e)
