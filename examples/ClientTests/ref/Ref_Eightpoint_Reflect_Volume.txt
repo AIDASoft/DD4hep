@@ -10,7 +10,7 @@ TGeoArb8         6   Local  ( -23.00,   27.00,   30.00) Global ( -23.00,   27.00
 TGeoArb8         7   Local  (  13.00,  -27.00,   30.00) Global (  13.00,  -27.00,  130.00)
 TGeoArb8         Bounding box:  dx=  27.50 dy=  27.00 dz=  30.00 Origin: x=  -2.50 y=   0.00 z=   0.00
 ShapeCheck[1] TGeoScaledShape  8 Mesh-points:
-TGeoScaledShape  TGeoScaledShape N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
+TGeoScaledShape  Shape_Eightpoint_vol_1_shape_refl N(mesh)=8  N(vert)=8  N(seg)=12  N(pols)=6
 TGeoScaledShape  0   Local  ( -30.00,  -25.00,   30.00) Global ( -30.00,  -25.00,  -70.00)
 TGeoScaledShape  1   Local  ( -25.00,   25.00,   30.00) Global ( -25.00,   25.00,  -70.00)
 TGeoScaledShape  2   Local  (   5.00,   25.00,   30.00) Global (   5.00,   25.00,  -70.00)
