@@ -6,13 +6,13 @@
 <!-- ====================================================================== -->
 
 <detectors>
-  <detector id="9" name="HcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
+  <detector id="HcalEndcap_ID" name="HcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" reflect="true" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
 
     <comment>Hadron Calorimeter Endcaps</comment>
 
     <dimensions numsides="(int) CaloSides" zmin="HcalEndcap_zmin" rmin="HcalEndcap_rmin" rmax="HcalEndcap_rmax" />
     <layer repeat="(int) HcalEndcap_layers">
-      <slice material = "Steel235" thickness = "2.0*cm" />
+      <slice material = "Steel235"    thickness = "2.0*cm" />
       <slice material = "Polystyrene" thickness = "0.50*cm" sensitive = "yes" limits="cal_limits" />        
       <slice material = "Air" thickness = "0.15*cm" />
     </layer>

@@ -1,0 +1,115 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Markus Frank"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="1.0">
+    <comment>Test for reflections with left handed coordinates of the ECAL/HCAL encap</comment>
+  </info>
+
+  <define>
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiDConstants.xml"/>
+  </define>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <comment>Common Generic visualization attributes</comment>
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="GreenVis"   alpha="1" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="RedVis"     alpha="1" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="BlueVis"    alpha="1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="YellowVis"  alpha="1" r="1.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="PinkVis"    alpha="1" r="0.9" g="0.3" b="0.8" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="EcalEndcap_ID" name="EcalEndcapA" type="DD4hep_PolyhedraEndcapCalorimeter2" reflect="false" readout="EcalEndcapAHits" vis="InvisibleWithDaughters" calorimeterType="EM_ENDCAP">
+
+      <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
+      <layer repeat="3" vis="YellowVis">
+        <slice material = "Silicon" thickness = "1*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>
+      </layer>       
+      <layer repeat="3" vis="RedVis">
+        <slice material = "Silicon" thickness = "1*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>
+      </layer>
+      <layer repeat="3" vis="BlueVis">
+        <slice material = "Silicon" thickness = "1*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>
+      </layer>
+      <layer repeat="3" vis="PinkVis">
+        <slice material = "Silicon" thickness = "1*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>
+      </layer>
+    </detector>
+    <detector id="EcalEndcap_ID+100" name="EcalEndcapB" type="DD4hep_ReflectedDetector"
+              sensitive="true" sdref="EcalEndcapA"    readout="EcalEndcapBHits">
+      <sensitive type="calorimeter"/>
+    </detector>
+
+  </detectors>
+
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="EcalEndcapAHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+      <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+    </readout>
+    <readout name="EcalEndcapBHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+      <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+
+  <detectors>
+    <detector id="HcalEndcap_ID" name="HcalEndcapA" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalEndcapAHits" reflect="false" vis="InvisibleWithDaughters" calorimeterType="HAD_ENDCAP">
+      <dimensions numsides="(int) CaloSides" zmin="HcalEndcap_zmin" rmin="HcalEndcap_rmin" rmax="HcalEndcap_rmax" />
+      <layer repeat="2" vis="YellowVis">
+        <slice material="Polystyrene" thickness="3*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>        
+      </layer>
+      <layer repeat="2" vis="RedVis">
+        <slice material="Polystyrene" thickness="3*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>        
+      </layer>
+      <layer repeat="2" vis="BlueVis">
+        <slice material="Polystyrene" thickness="3*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>        
+      </layer>
+      <layer repeat="2" vis="PinkVis">
+        <slice material="Polystyrene" thickness="3*cm" sensitive="yes" limits="cal_limits" vis="InvisibleNoDaughters"/>        
+      </layer>
+    </detector>
+    <detector id="HcalEndcap_ID+100" name="HcalEndcapB" type="DD4hep_ReflectedDetector"
+              sensitive="true" sdref="HcalEndcapA"    readout="HcalEndcapBHits">
+      <sensitive type="calorimeter"/>
+    </detector>
+  </detectors>
+
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="HcalEndcapAHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+      <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+    <readout name="HcalEndcapBHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+      <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+
+  <comment>Beampipe</comment>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Beampipe.xml"/>
+  
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="SolenoidCoilOuterZ"
+	   outer_radius="SolenoidalFieldRadius">
+    </field>
+  </fields>
+</lccdd>

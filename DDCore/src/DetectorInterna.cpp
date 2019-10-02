@@ -134,7 +134,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
 }
 
 /// Reflect all volumes in a DetElement sub-tree and re-attach the placements
-pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, int new_id)   {
+pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, int new_id, SensitiveDetector sd)   {
   struct ChildMapper  {
     std::map<TGeoNode*,TGeoNode*> nodes;
     void match(DetElement de)   {
@@ -148,7 +148,7 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
         match(c.second);
     }
     void map(TGeoNode* n1, TGeoNode* n2)   {
-      if ( nodes.find(n1) != nodes.end() )   {
+      if ( nodes.find(n1) == nodes.end() )   {
         TGeoVolume* v1 = n1->GetVolume();
         TGeoVolume* v2 = n2->GetVolume();
         nodes.insert(make_pair(n1,n2));
@@ -161,7 +161,7 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
   DetElement  det_ref   = det.clone(new_name, new_id);
   Volume      vol       = det.volume();
   TGeoVolume* vol_det   = vol.ptr();
-  TGeoVolume* vol_ref   = vol.reflect();
+  TGeoVolume* vol_ref   = vol.reflect(sd);
   const auto& childrens = det.children();
 
   for(Int_t i=0; i<vol_det->GetNdaughters(); ++i)

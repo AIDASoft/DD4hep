@@ -65,6 +65,14 @@ namespace dd4hep {
       Transform3D      _transform(const TGeoMatrix* matrix);
       Transform3D      _transform(const TGeoMatrix& matrix);
 
+      /// Decompose a generic ROOT Matrix into a translation (Position) and a Rotation3D        \ingroup DD4HEP \ingroup DD4HEP_CORE
+      void _decompose(const TGeoMatrix& trafo, Position& pos, Rotation3D& rot);
+      /// Decompose a generic ROOT Matrix into a translation (Position) and a RotationZYX       \ingroup DD4HEP \ingroup DD4HEP_CORE
+      void _decompose(const TGeoMatrix& trafo, Position& pos, RotationZYX& rot);
+      /// Decompose a generic ROOT Matrix into a translation (Position) and XYZAngles           \ingroup DD4HEP \ingroup DD4HEP_CORE
+      void _decompose(const TGeoMatrix& trafo, Position& pos, XYZAngles& rot);
+      /// Decompose a generic Transform3D into a translation (Position) and a Rotation3D        \ingroup DD4HEP \ingroup DD4HEP_CORE
+      void _decompose(const Transform3D& trafo, Position& pos, Rotation3D& rot);
       /// Decompose a generic Transform3D into a translation (Position) and a RotationZYX       \ingroup DD4HEP \ingroup DD4HEP_CORE
       void _decompose(const Transform3D& trafo, Position& pos, RotationZYX& rot);
       /// Decompose a generic Transform3D into a translation (Position) and XYZAngles \ingroup DD4HEP \ingroup DD4HEP_CORE

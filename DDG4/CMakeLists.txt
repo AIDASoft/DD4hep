@@ -101,7 +101,8 @@ IF(TARGET LCIO::LCIO)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 ENDIF()
-# #---------------------------  DDRec dependent Plugins  -----------------------------
+#
+#---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
 # IF(TARGET DDRec)
 #   dd4hep_add_plugin(DDG4Reco
