@@ -520,10 +520,9 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     if ( pos.ptr() && rot.ptr() )  {
       Rotation3D  rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
       Position    pos3D(pos.x(0),pos.y(0),pos.z(0));
-      Rotation3D  rrot3D(rot3D);
       if ( reflect )
-        rrot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
-      Transform3D tr(rrot3D, pos3D);
+        rot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
+      Transform3D tr(rot3D, pos3D);
       pv = assembly.placeVolume(volume,tr);
     }
     else if ( pos.ptr() )  {
