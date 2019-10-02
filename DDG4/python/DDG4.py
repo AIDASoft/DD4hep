@@ -297,6 +297,13 @@ def _set(self, name, value):
   a = Interface.toAction(self)
   if isinstance(value, list):
     value = [str(x) for x in value]
+  if isinstance(value, dict):
+    tempDict = {}
+    for key, val in value.items():
+      if isinstance(val, six.string_types):
+        val = str(val)
+      tempDict[str(key)] = val
+    value = tempDict
   if Interface.setProperty(a, str(name), str(value)):
     return
   msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + str(value)
