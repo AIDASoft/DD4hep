@@ -148,6 +148,8 @@ endif()
 
 include(DD4hep_XML_setup)
 
+IF(DD4HEP_USE_EXISTING_DD4HEP)
+
   MESSAGE(STATUS "|!!> Using pre-existing DD4hep: ${DD4HEP_USE_EXISTING_DD4HEP}")
   SET(CMAKE_PROJECT_NAME DD4hepSelected)
   dd4hep_set_version(${CMAKE_PROJECT_NAME}
