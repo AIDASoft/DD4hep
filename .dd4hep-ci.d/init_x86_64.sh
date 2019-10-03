@@ -43,18 +43,20 @@ if [ -z ${BUILD_TYPE} ]; then
     BUILD_TYPE=opt
 fi
 
-
 # General variables
 if [ -z ${LCG_RELEASE} ]; then
     LCG_RELEASE="LCG_96"
 fi
 
-LCGREPO=/cvmfs/sft.cern.ch/lcg/releases/${LCG_RELEASE}
+if [[ "${LCG_RELEASE}" =~ "dev" ]]; then
+    LCGREPO=/cvmfs/sft-nightlies.cern.ch/lcg/views/${LCG_RELEASE}/latest
+else
+    LCGREPO=/cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}
+fi
+
 BUILD_FLAVOUR=x86_64-${OS}-${COMPILER_VERSION}-${BUILD_TYPE}
-
-echo /cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}/${BUILD_FLAVOUR}/setup.sh
-source /cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}/${BUILD_FLAVOUR}/setup.sh
-
+echo ${LCGREPO}/${BUILD_FLAVOUR}/setup.sh
+source ${LCGREPO}/${BUILD_FLAVOUR}/setup.sh
 
 #--------------------------------------------------------------------------------
 #     LCIO
