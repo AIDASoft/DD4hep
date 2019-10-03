@@ -1,0 +1,44 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="AssemblyDetector" parent="/world" type="DD4hep_VolumeAssembly" vis="ShapeGray_vis_50">
+      <envelope material="Air">
+        <shape name="BiggerBox" type="Box" dx="100" dy="100" dz="100"/>
+      </envelope>
+      <position x="0" y="0" z="0"/>
+      <volume name="lvSmallerBox1" material="Air" vis="Shape1_vis">
+        <shape type="Box" dx="5" dy="5" dz="5"/>
+      </volume>
+      <volume name="lvSmallerBox2" material="Air" vis="Shape2_vis">
+        <shape type="Box" dx="10" dy="10" dz="10"/>
+      </volume>
+      <volume name="lvSmallerBox3" material="Air" vis="Shape3_vis">
+        <shape type="Box" dx="20" dy="20" dz="20"/>
+      </volume>
+      <physvol element="Smaller1" volume="lvSmallerBox1">
+        <position x="0" y="0" z="0"/>
+      </physvol>
+      <physvol element="Smaller2" volume="lvSmallerBox2">
+        <position x="-90" y="-90" z="-90"/>
+      </physvol>
+      <physvol element="Smaller3" volume="lvSmallerBox3">
+        <position x="80" y="80" z="80"/>
+      </physvol>
+    </detector>
+    <detector id="2" name="AssemblyReflected_Z" type="DD4hep_ReflectedDetector" sdref="AssemblyDetector">
+      <reflect type="Z"/>
+      <position x="0" y="0" z="-200"/>
+    </detector>
+    <detector id="3" name="AssemblyReflected_Y" type="DD4hep_ReflectedDetector" sdref="AssemblyDetector">
+      <reflect type="Y"/>
+      <position x="0" y="200" z="0"/>
+    </detector>
+    <detector id="4" name="AssemblyReflected_X" type="DD4hep_ReflectedDetector" sdref="AssemblyDetector">
+      <reflect type="X"/>
+      <position x="200" y="0" z="0"/>
+    </detector>
+  </detectors>
+</lccdd>

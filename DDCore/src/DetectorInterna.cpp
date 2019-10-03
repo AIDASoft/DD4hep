@@ -118,7 +118,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->children.clear();
   for (const auto& i : children )  {
     const DetElementObject& d = i.second._data();
-    DetElement c = d.clone(d.id, DetElement::COPY_PLACEMENT);
+    DetElement c = d.clone(obj->id, DetElement::COPY_PLACEMENT);
     c->SetName(d.GetName());
     c->SetTitle(d.GetTitle());
     bool r = obj->children.emplace(c.name(), c).second;
@@ -137,21 +137,24 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
 pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, int new_id, SensitiveDetector sd)   {
   struct ChildMapper  {
     std::map<TGeoNode*,TGeoNode*> nodes;
-    void match(DetElement de)   {
-      auto i = nodes.find(de.placement().ptr());
-      if ( i == nodes.end() )  {
+    void match(DetElement de_det, DetElement de_ref)  const  {
+      auto k = nodes.find(de_det.placement().ptr());
+      printout(INFO,"","Match  %s %p  ",de_det.name(), de_det.placement().ptr());
+      if ( k == nodes.end() )  {
         except("DetElement","reflect: Something went wrong when reflecting the source volume!");
       }
-      de.setPlacement((*i).second);
-      const auto& childrens = de.children();
-      for( const auto& c : childrens )
-        match(c.second);
+      de_ref.setPlacement((*k).second);
+      const auto& childrens_det = de_det.children();
+      const auto& childrens_ref = de_ref.children();
+      for(auto i=childrens_det.begin(), j=childrens_ref.begin(); i!=childrens_det.end(); ++i, ++j)
+        match((*i).second, (*j).second);
     }
     void map(TGeoNode* n1, TGeoNode* n2)   {
       if ( nodes.find(n1) == nodes.end() )   {
         TGeoVolume* v1 = n1->GetVolume();
         TGeoVolume* v2 = n2->GetVolume();
         nodes.insert(make_pair(n1,n2));
+        printout(INFO,"","Map  %p  --- %p ",n1,n2);
         for(Int_t i=0; i<v1->GetNdaughters(); ++i)
           map(v1->GetNode(i), v2->GetNode(i));
       }
@@ -162,12 +165,13 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
   Volume      vol       = det.volume();
   TGeoVolume* vol_det   = vol.ptr();
   TGeoVolume* vol_ref   = vol.reflect(sd);
-  const auto& childrens = det.children();
+  const auto& childrens_det = det.children();
+  const auto& childrens_ref = det_ref.children();
 
   for(Int_t i=0; i<vol_det->GetNdaughters(); ++i)
     mapper.map(vol_det->GetNode(i), vol_ref->GetNode(i));
-  for(const auto& c : childrens)
-    mapper.match(c.second);
+  for(auto i=childrens_det.begin(), j=childrens_ref.begin(); i!=childrens_det.end(); ++i, ++j)
+    mapper.match((*i).second, (*j).second);
   return make_pair(det_ref,vol_ref);
 }
 
