@@ -267,7 +267,7 @@ DetElement DetElement::clone(const string& new_name) const {
 
 DetElement DetElement::clone(const string& new_name, int new_id) const {
   Object* o = access();
-  Object* n = o->clone(new_id, COPY_NONE);
+  Object* n = o->clone(new_id, COPY_PLACEMENT);
   n->SetName(new_name.c_str());
   n->SetTitle(o->GetTitle());
   return n;
