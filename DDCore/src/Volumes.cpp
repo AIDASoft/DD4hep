@@ -625,13 +625,12 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotat
     daughter = daughter.reflect();
     //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
   }
+  TGeoRotation r;
   double elements[9];
   rot3D.GetComponents(elements);
-  auto r = new TGeoRotation();
-  r->SetMatrix(elements);
-  auto m = new TGeoCombiTrans(); 
-  m->SetRotation(r);
-  return _addNode(par, daughter, copy_nr, m);
+  r.SetMatrix(elements);
+  auto m = make_unique<TGeoCombiTrans>(TGeoTranslation(0,0,0),r);
+  return _addNode(par, daughter, copy_nr, m.release());
 }
 
 PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Transform3D& tr)   {
@@ -648,14 +647,12 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Trans
     daughter = daughter.reflect();
     //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
   }
+  TGeoRotation r;
   double elements[9];
   rot3D.GetComponents(elements);
-  auto m = new TGeoCombiTrans();
-  m->SetTranslation(pos3D.x(), pos3D.y(), pos3D.z()); 
-  auto r = new TGeoRotation();
-  r->SetMatrix(elements);
-  m->SetRotation(r);
-  return _addNode(par, daughter, copy_nr, m);
+  r.SetMatrix(elements);
+  auto m = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
+  return _addNode(par, daughter, copy_nr, m.release());
 }
 
 /// Place daughter volume according to generic Transform3D
