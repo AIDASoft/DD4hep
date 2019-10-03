@@ -139,7 +139,7 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
     std::map<TGeoNode*,TGeoNode*> nodes;
     void match(DetElement de_det, DetElement de_ref)  const  {
       auto k = nodes.find(de_det.placement().ptr());
-      printout(INFO,"","Match  %s %p  ",de_det.name(), de_det.placement().ptr());
+      printout(DEBUG,"DetElement","reflect: Match  %s %p  ",de_det.name(), de_det.placement().ptr());
       if ( k == nodes.end() )  {
         except("DetElement","reflect: Something went wrong when reflecting the source volume!");
       }
@@ -154,7 +154,7 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
         TGeoVolume* v1 = n1->GetVolume();
         TGeoVolume* v2 = n2->GetVolume();
         nodes.insert(make_pair(n1,n2));
-        printout(INFO,"","Map  %p  --- %p ",n1,n2);
+        printout(DEBUG,"DetElement","reflect: Map  %p  --- %p ",n1,n2);
         for(Int_t i=0; i<v1->GetNdaughters(); ++i)
           map(v1->GetNode(i), v2->GetNode(i));
       }
