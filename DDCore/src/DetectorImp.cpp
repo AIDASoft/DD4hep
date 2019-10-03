@@ -11,6 +11,8 @@
 //
 //==========================================================================
 
+#define DD4HEP_MUST_USE_DETECTORIMP_H 1
+
 // Framework include files
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"

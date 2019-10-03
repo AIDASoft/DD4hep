@@ -31,6 +31,7 @@ dd4hep_add_dictionary( G__DD4hep
   include/XML/tinystring.h
   LINKDEF include/ROOT/LinkDef.h
   USES DDParsers ${XML_LIBRARIES}
+  DEFINITIONS DD4HEP_MUST_USE_DETECTORIMP_H
   )
 
 dd4hep_add_dictionary( G__DD4hepGeo

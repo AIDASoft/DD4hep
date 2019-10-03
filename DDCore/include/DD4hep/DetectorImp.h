@@ -10,9 +10,22 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DD4HEP_DetectorGEOIMP_H
 #define DD4HEP_DetectorGEOIMP_H
+
+//==========================================================================
+//
+// Please note:
+//
+// This header file is purely DD4hep internal. It should never be used
+// independently outside DetectorImp.cpp and certain DD4hep specific plugins.
+// This header files is only publicly present to satisfy the ROOT interpreter
+// when loading precompiled dictionary libraries.
+//
+//==========================================================================
+#if !defined(DD4HEP_MUST_USE_DETECTORIMP_H) && !defined(G__ROOT)
+#error "DetectorImp.h is a dd4hep internal header. Never use it in a depending compilation unit!"
+#endif
 
 // Framework include files
 #include "DD4hep/DetectorData.h"

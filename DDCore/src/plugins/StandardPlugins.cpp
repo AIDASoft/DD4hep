@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework include files
+#define DD4HEP_MUST_USE_DETECTORIMP_H
 #include "DD4hep/Detector.h"
 #include "DD4hep/DetectorImp.h"
 #include "DD4hep/Memory.h"
