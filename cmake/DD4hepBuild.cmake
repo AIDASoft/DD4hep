@@ -709,7 +709,7 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
 
   IF(NOT HAVE_FILESYSTEM)
     dd4hep_print("|++> Compiler does not have filesystem support, falling  back to Boost::filesystem")
-    FIND_PACKAGE(Boost 1.49 REQUIRED COMPONENTS filesystem system)
+    FIND_PACKAGE(Boost 1.56 REQUIRED COMPONENTS filesystem system)
     SET(FS_LIBRARIES Boost::filesystem Boost::system)
     SET_TARGET_PROPERTIES(Boost::filesystem
       PROPERTIES
