@@ -31,7 +31,7 @@ set ( DD4HEP_USE_LCIO           @DD4HEP_USE_LCIO@ )
 set ( DD4HEP_USE_XERCESC        @DD4HEP_USE_XERCESC@ )
 set ( @CMAKE_PROJECT_NAME@_BUILD_CXX_STANDARD @CMAKE_CXX_STANDARD@ )
 
-include ( ${@CMAKE_PROJECT_NAME@_DIR}/cmake/@CMAKE_PROJECT_NAME@.cmake )
+include ( ${@CMAKE_PROJECT_NAME@_DIR}/cmake/DD4hep.cmake )
 
 include(CMakeFindDependencyMacro)
 
