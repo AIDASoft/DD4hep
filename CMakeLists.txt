@@ -100,6 +100,7 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 
 # Configure Python
 find_package(Python COMPONENTS Development)
+set(DD4HEP_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
 # Configure ROOT
 find_package (ROOT 6.08 REQUIRED)

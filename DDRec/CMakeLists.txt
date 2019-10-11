@@ -73,6 +73,6 @@ endif()
 set_target_properties(DDRec DDRecPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 file(GLOB DDRec_python python/*.py)
-install(FILES ${DDRec_python} DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+install(FILES ${DDRec_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 install(DIRECTORY include/DDRec DESTINATION include)
 install(TARGETS DDRec DDRecPlugins EXPORT DD4hep LIBRARY DESTINATION lib)

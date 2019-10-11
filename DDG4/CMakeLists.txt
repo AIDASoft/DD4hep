@@ -120,7 +120,7 @@ target_link_libraries(g4FromXML DDG4)
 
 #---Package installation procedure(s) ----------------------------------------------
 file(GLOB DDG4_python python/*.py python/*.C)
-install(FILES ${DDG4_python} DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+install(FILES ${DDG4_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 
 install(PROGRAMS python/DDSim/bin/ddsim.py DESTINATION bin RENAME ddsim)
 
@@ -128,7 +128,7 @@ install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlap
 install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
 install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
 
-install(DIRECTORY python/DDSim DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+install(DIRECTORY python/DDSim DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 
 install(DIRECTORY examples DESTINATION examples/DDG4)
 
