@@ -92,7 +92,7 @@ ENDIF()
 if(DD4HEP_USE_XERCESC)
   set( DD4HEP_USE_XERCESC True )
 endif()
-INCLUDE( ${@CMAKE_PROJECT_NAME@_DIR}/cmake/@CMAKE_PROJECT_NAME@_XML_setup.cmake )
+INCLUDE( ${@CMAKE_PROJECT_NAME@_DIR}/cmake/DD4hep_XML_setup.cmake )
 
 #----- APPLE ? -------
 
