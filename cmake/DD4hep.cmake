@@ -22,7 +22,6 @@ endif()
 # Main functional include file
 if (NOT DD4hepBuild_included)
   include ( DD4hepBuild )
-  include ( DD4hep_XML_setup )
 endif()
 
 ##---------------------------------------------------------------------------------------------------

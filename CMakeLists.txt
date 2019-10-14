@@ -146,8 +146,6 @@ if( DEFINED DD4HEP_WITH_GEANT4 OR DEFINED DD4HEP_WITH_GEAR )
   dd4hep_print_cmake_options( OPTIONAL "Obsolete options: only the following are allowed:" ERROR 1 )
 endif()
 
-include(DD4hep_XML_setup)
-
 IF(DD4HEP_USE_EXISTING_DD4HEP)
 
   MESSAGE(STATUS "|!!> Using pre-existing DD4hep: ${DD4HEP_USE_EXISTING_DD4HEP}")
@@ -169,6 +167,8 @@ IF(DD4HEP_USE_EXISTING_DD4HEP)
 
 
 ELSE()
+
+include(DD4hep_XML_setup)
 
 #These pacakges are mandatory
 FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
