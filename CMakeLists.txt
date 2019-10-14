@@ -164,14 +164,15 @@ IF(DD4HEP_USE_EXISTING_DD4HEP)
     dd4hep_print("|> Building ${DDPackage}")
     add_subdirectory(${DDPackage})
   ENDFOREACH()
-
-
+  LIST(GET DD4HEP_BUILD_PACKAGES 0 DD4HEP_SELECTED_PACKAGE)
 ELSE()
 
 include(DD4hep_XML_setup)
 
 #These pacakges are mandatory
+SET(DD4HEP_SELECTED_PACKAGE DDCore)
 FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
+  dd4hep_print("|> Building ${DDPackage}")
   add_subdirectory(${DDPackage})
 ENDFOREACH()
 
