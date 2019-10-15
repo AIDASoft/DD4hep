@@ -18,7 +18,7 @@ ENDIF()
 
 #---Add Library---------------------------------------------------------------------
 file(GLOB DDG4_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-add_library(DDG4 SHARED ${DDG4_SOURCES})
+add_library(DDG4 ${DDG4_SOURCES})
 add_library(DD4hep::DDG4 ALIAS DDG4)
 
 target_link_libraries(DDG4
@@ -63,7 +63,7 @@ if(TARGET Python::Python)
   if(TARGET ROOT::PyROOT)
     #---------------------------  Specialized python plugins  --------------------------
     dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
-    add_library(DDPython SHARED G__DDPython.cxx tpython/DDPython.cpp)
+    add_library(DDPython G__DDPython.cxx tpython/DDPython.cpp)
     add_library(DD4hep::DDPython ALIAS DDPython)
     target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ROOT::PyROOT)
     IF(${CMAKE_CXX_STANDARD} GREATER 16)
@@ -137,6 +137,7 @@ set_target_properties(DDG4 DDG4Plugins DDG4Legacy PROPERTIES VERSION ${DD4hep_VE
 
 install(TARGETS DDG4 DDG4Plugins DDG4Legacy g4gdmlDisplay g4FromXML
   EXPORT DD4hep
+  ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/DDG4 DESTINATION include)

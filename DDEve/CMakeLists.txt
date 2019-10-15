@@ -45,10 +45,13 @@ if(DD4HEP_USE_GEANT4)
     LINKDEF ../DDCore/include/ROOT/LinkDef.h
     USES    DD4hep::DDG4 
     )
-  add_library(DDG4IO SHARED DDEve/IO.cpp G__DDG4IO.cxx)
+  add_library(DDG4IO DDEve/IO.cpp G__DDG4IO.cxx)
   target_link_libraries(DDG4IO DD4hep::DDG4 DD4hep::DDEve_Interface)
   set_target_properties(DDG4IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  install(TARGETS DDG4IO EXPORT DD4hep LIBRARY DESTINATION lib)
+  install(TARGETS DDG4IO EXPORT DD4hep
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
 endif()
 
 add_executable(ddeve DDEve/DDEve.cpp)
@@ -61,6 +64,7 @@ set_target_properties(DDEvePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSIO
 install(DIRECTORY DDEve DESTINATION examples )
 install(DIRECTORY include/DDEve DESTINATION include)
 install(TARGETS ddeve DDEvePlugins DDEve_Interface EXPORT DD4hep
+  ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
   )
