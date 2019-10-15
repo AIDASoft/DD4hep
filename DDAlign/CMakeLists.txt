@@ -12,7 +12,7 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDAlign)
 
 file(GLOB DDAlign_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-add_library(DDAlign SHARED ${DDAlign_SOURCES})
+add_library(DDAlign ${DDAlign_SOURCES})
 add_library(DD4hep::DDAlign ALIAS DDAlign)
 
 target_include_directories(DDAlign
@@ -28,4 +28,6 @@ dd4hep_add_plugin(DDAlignPlugins SOURCES src/plugins/*.cpp USES DDAlign)
 set_target_properties(DDAlign DDAlignPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 install(DIRECTORY include/DDAlign DESTINATION include)
-install(TARGETS DDAlign DDAlignPlugins EXPORT DD4hep DESTINATION lib)
+install(TARGETS DDAlign DDAlignPlugins EXPORT DD4hep
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)

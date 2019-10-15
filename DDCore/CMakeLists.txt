@@ -58,7 +58,7 @@ if(TARGET Boost::boost)
   file(GLOB DDCore_BOOST_SOURCES src/JSON/*.cpp)
 endif()
 
-add_library(DDCore SHARED ${DDCore_SOURCES} ${DDCore_BOOST_SOURCES}
+add_library(DDCore ${DDCore_SOURCES} ${DDCore_BOOST_SOURCES}
   G__DD4hep.cxx
   G__DD4hepSegmentations.cxx
   G__DD4hepProperties.cxx
@@ -97,7 +97,7 @@ IF(TARGET ROOT::Gdml)
     USES DD4hep::DDCore ROOT::Core ROOT::Gdml
     )
   set_target_properties(DDGDMLPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  install(TARGETS DDGDMLPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+  LIST(APPEND OPTIONAL_TARGETS DDGDMLPlugins)
 ELSE()
   dd4hep_print("ROOT does not include GDML, not building DDCore GDML Plugins")
 ENDIF()
@@ -109,7 +109,7 @@ IF(TARGET ROOT::PyROOT)
     USES DDCore ROOT::Core ROOT::PyROOT
     )
   set_target_properties(DDPythonPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  install(TARGETS DDPythonPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+  LIST(APPEND OPTIONAL_TARGETS DDPythonPlugins)
 ELSE()
   dd4hep_print("ROOT does not include PyRoot, not building DDCore DDPython Plugins")
 ENDIF()
@@ -130,4 +130,7 @@ install(DIRECTORY
   )
 
 set_target_properties(DDCore DDCorePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-install(TARGETS DDCore DDCorePlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+install(TARGETS DDCore DDCorePlugins ${OPTIONAL_TARGETS} EXPORT DD4hep
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  )

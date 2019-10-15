@@ -68,6 +68,7 @@ option(DD4HEP_IGNORE_GEANT4_TLS "Ignore the tls flag Geant4 was compiled with" O
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"     OFF)
 option(BUILD_TESTING      "Enable and build tests"    ON)
+option(BUILD_SHARED_LIBS  "If OFF build STATIC Libraries" ON)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDDigi DDG4 DDEve UtilityApps"
   CACHE STRING "List of DD4hep packages to build")
