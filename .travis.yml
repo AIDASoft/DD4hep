@@ -8,6 +8,7 @@ language: cpp
 
 env:
   - COMPILER=gcc;   LCG_RELEASE=LCG_96b; STANDARD=17; COMPILER_VERSION=gcc8; PYTHON_CHECK="no"
+  - COMPILER=gcc;   LCG_RELEASE=LCG_96b; STANDARD=17; COMPILER_VERSION=gcc8; PYTHON_CHECK="no"; CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF"
   - COMPILER=gcc;   LCG_RELEASE=LCG_96python3; STANDARD=17; COMPILER_VERSION=gcc8; PYTHON_CHECK="no"
   - COMPILER=clang; LCG_RELEASE=LCG_96b; STANDARD=17; COMPILER_VERSION=clang8; PYTHON_CHECK="no"
   - COMPILER=gcc;   LCG_RELEASE=LCG_96b; STANDARD=14; COMPILER_VERSION=gcc62; PYTHON_CHECK="no"
@@ -58,7 +59,7 @@ install:
 
 # command to run tests
 script:
-  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER_TYPE=$COMPILER -e LCG_RELEASE=${LCG_RELEASE} -e STANDARD=${STANDARD} -e COMPILER_VERSION=${COMPILER_VERSION} ${CVMFS_REPOS} -d clicdp/cc7-lcg /bin/bash
+  - docker run -ti --name CI_container -v $PKGDIR:/DD4hep -e COMPILER_TYPE=$COMPILER -e LCG_RELEASE=${LCG_RELEASE} -e STANDARD=${STANDARD} -e COMPILER_VERSION=${COMPILER_VERSION} -e CMAKE_ARGS=${CMAKE_ARGS} ${CVMFS_REPOS} -d clicdp/cc7-lcg /bin/bash
   - if [[ "$PYTHON_CHECK" == "yes" ]];
     then docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/runPythonChecks.sh";
     else docker exec -ti CI_container /bin/bash -c "./DD4hep/.dd4hep-ci.d/compile_and_test.sh";
