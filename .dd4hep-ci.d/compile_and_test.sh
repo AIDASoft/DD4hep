@@ -13,7 +13,7 @@ cmake -GNinja -DDD4HEP_USE_GEANT4=ON \
     -DDD4HEP_DEBUG_CMAKE=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always -Werror"  \
-    -DCMAKE_CXX_STANDARD=${STANDARD} .. && \
+    -DCMAKE_CXX_STANDARD=${STANDARD} ${CMAKE_ARGS} .. && \
 ninja && \
 ninja install && \
 . ../bin/thisdd4hep.sh && \
