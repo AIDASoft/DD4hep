@@ -692,7 +692,7 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
   # stdc++fs needed in gcc8, no lib for gcc9.1, c++fs for llvm
   FOREACH(FS_LIB_NAME stdc++fs "" c++fs )
     dd4hep_debug("|++++> linking against ${FS_LIB_NAME}")
-    try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${CMAKE_CURRENT_LIST_DIR}/cmake/TryFileSystem.cpp
+    try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${DD4hep_DIR}/cmake/TryFileSystem.cpp
       CXX_STANDARD ${CMAKE_CXX_STANDARD}
       CXX_EXTENSIONS False
       OUTPUT_VARIABLE HAVE_FS_OUTPUT
