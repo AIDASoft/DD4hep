@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def run():
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepINSTALL']
+  install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.setOutputLevel(str('Geant4Converter'), Output.DEBUG)
   kernel.setOutputLevel(str('Gun'), Output.INFO)
   kernel.detectorDescription().fromXML(str("file:" + install_dir + "/examples/DDCMS/data/dd4hep-config.xml"))
