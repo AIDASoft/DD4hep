@@ -28,10 +28,8 @@
 #endif
 // ROOT include files
 #include "TGeoCone.h"
-#include "TGeoParaboloid.h"
 #include "TGeoPgon.h"
 #include "TGeoPcon.h"
-#include "TGeoSphere.h"
 #include "TGeoArb8.h"
 #include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
@@ -40,7 +38,9 @@
 #include "TGeoXtru.h"
 #include "TGeoHype.h"
 #include "TGeoTorus.h"
+#include "TGeoSphere.h"
 #include "TGeoHalfSpace.h"
+#include "TGeoParaboloid.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
 #ifdef __GNUC__
@@ -64,6 +64,12 @@ namespace dd4hep {
   
   /// Set the shape dimensions (As for the TGeo shape, but angles in rad rather than degrees)
   void set_shape_dimensions(TGeoShape* shape, const std::vector<double>& params);
+
+  /// Type check of various shapes. Result like dynamic_cast. Compare with python's isinstance(obj,type)
+  template <typename SOLID> bool isInstance(const Handle<TGeoShape>& solid);
+  /// Type check of various shapes. Do not allow for polymorphism. Types must match exactly
+  template <typename SOLID> bool isA(const Handle<TGeoShape>& solid);
+  
 
   ///  Base class for Solid (shape) objects
   /**
@@ -148,9 +154,6 @@ namespace dd4hep {
   };
   typedef Solid_type<TGeoShape> Solid;
 
-  /// Type check of various shapes.
-  template <typename SOLID> bool instanceOf(const Handle<TGeoShape>& solid);
-  
   /// Class describing a shape-less solid shape
   /**
    *   For any further documentation please see the following ROOT documentation:
@@ -379,16 +382,7 @@ namespace dd4hep {
                                double rmin2, double rmax2,
                                double startPhi = 0.0, double endPhi = 2.0 * M_PI);
   };
-#if 0
-  /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
-  class MyConeSeg: public TGeoConeSeg {
-  public:
-    MyConeSeg() : TGeoConeSeg(0.0,0.0,0.0,0.0,0.0,0.0,0.0) { }
-    virtual ~MyConeSeg() { }
-    double GetRmin() const {        return GetRmin1();      }
-    double GetRmax() const {        return GetRmax1();      }
-  };
-#endif
+
   /// Class describing a tube shape of a section of a tube
   /**
    *   TGeoTube - cylindrical tube class. It takes 3 parameters :

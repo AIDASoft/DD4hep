@@ -140,6 +140,15 @@ ConditionDependency::ConditionDependency(Condition::key_type  key,
 }
 
 /// Initializing constructor
+ConditionDependency::ConditionDependency(Condition::detkey_type det_key,
+                                         Condition::itemkey_type item_key,
+                                         std::shared_ptr<ConditionUpdateCall> call)
+  : m_refCount(0), target(det_key, item_key), callback(std::move(call))
+{
+  InstanceCount::increment(this);
+}
+
+/// Initializing constructor
 ConditionDependency::ConditionDependency(DetElement              de,
                                          Condition::itemkey_type item_key,
                                          std::shared_ptr<ConditionUpdateCall> call)
@@ -172,7 +181,8 @@ ConditionDependency::ConditionDependency()
 }
 
 /// Default destructor
-ConditionDependency::~ConditionDependency()  {
+ConditionDependency::~ConditionDependency()
+{
   InstanceCount::decrement(this);
 }
 
