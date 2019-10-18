@@ -139,7 +139,7 @@ namespace dd4hep {
         z.emplace_back(G4ExtrudedSolid::ZSection(sh->GetZ(i) * CM_2_MM,
                                                  {sh->GetXOffset(i), sh->GetYOffset(i)},
                                                  sh->GetScale(i));
-        polygon.emplace_back(G4TwoVector(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM));
+        polygon.emplace_back(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM);
       }
       return new G4ExtrudedSolid(sh->GetName(), polygon, z);
     }
