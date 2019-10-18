@@ -556,7 +556,7 @@ function(dd4hep_add_dictionary dictionary )
   if ( NOT "${ARG_OUTPUT}" STREQUAL "" )
     set ( output_dir ${ARG_OUTPUT} )
   endif()
-
+  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir})
   SET(COMP_DEFS )
   file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}_arguments
     CONTENT "${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} -std=c++${CMAKE_CXX_STANDARD}  \

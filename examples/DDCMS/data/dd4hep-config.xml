@@ -106,7 +106,7 @@
   </display>
 
   <plugin name="DD4hep_XMLLoader">
-    <arg value="file:${DD4hepINSTALL}/examples/DDCMS/data/cms_tracker.xml"/>
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_tracker.xml"/>
   </plugin>
 
   <plugin name="DD4hep_PlacedVolumeProcessor">

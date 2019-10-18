@@ -28,20 +28,12 @@ project( DD4hep_Examples )
 include(CTest)
 option(BUILD_TESTING "Enable and build tests" ON)
 
-option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
-#
+SET( ENV{DD4hepExamplesINSTALL} ${CMAKE_INSTALL_PREFIX} )
+
 IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
-  include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
-  include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
-  find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
-  dd4hep_set_compiler_flags()
 ENDIF()
-#
-#include(${ROOT_USE_FILE})
-#
-SET( ENV{DD4hepExamplesINSTALL} ${CMAKE_INSTALL_PREFIX} )
-#
+
 dd4hep_configure_output()
 
 add_subdirectory(CLICSiD)

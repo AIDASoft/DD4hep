@@ -6,7 +6,7 @@ import DDDigi
 
 DDDigi.setPrintFormat(str('%-32s %5s %s'))
 kernel = DDDigi.Kernel()
-install_dir = os.environ['DD4hepINSTALL']
+install_dir = os.environ['DD4hepExamplesINSTALL']
 fname = "file:" + install_dir + "/examples/ClientTests/compact/MiniTel.xml"
 kernel.loadGeometry(str(fname))
 kernel.printProperties()

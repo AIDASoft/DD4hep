@@ -9,15 +9,20 @@
 #
 #==========================================================================
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
-include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+
+IF(NOT TARGET DD4hep::DDCore)
+  find_package ( DD4hep REQUIRED )
+  include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+  include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
+  dd4hep_configure_output()
+ENDIF()
 
 dd4hep_set_compiler_flags()
 #==========================================================================
+
 #---------------------------
 set( PackageName Segmentation )
 #---------------------------
-
-project(${PackageName})
 
 # project version
 SET( ${PackageName}_VERSION_MAJOR 0 )
@@ -44,13 +49,8 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-find_package( DD4hep ) 
-
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${dd4hep_ROOT}/cmake ) 
-include( dd4hep )
 
 find_package( ROOT REQUIRED )
-#find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 #-------------------------------------------------------------
@@ -88,7 +88,7 @@ target_link_libraries(Segmentation ${dd4hep_LIBRARIES} )
 
 
 #---- configure run environment ---------------
-configure_file( ${dd4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/this${PackageName}.sh
   DESTINATION bin
