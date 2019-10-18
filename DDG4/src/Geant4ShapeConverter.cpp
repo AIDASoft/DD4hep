@@ -124,7 +124,7 @@ namespace dd4hep {
       TGeoArb8* sh = (TGeoArb8*) shape;
       Double_t* vtx_xy = sh->GetVertices();
       for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
-        vertices.emplace_back(G4TwoVector(vtx_xy[0] * CM_2_MM,vtx_xy[1] * CM_2_MM));
+        vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
       return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
     }
 
