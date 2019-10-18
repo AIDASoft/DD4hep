@@ -342,6 +342,8 @@ namespace dd4hep {
       ConditionDependency(DetElement de, const std::string& item, std::shared_ptr<ConditionUpdateCall> call);
       /// Initializing constructor used by builder
       ConditionDependency(DetElement de, Condition::itemkey_type item_key, std::shared_ptr<ConditionUpdateCall> call);
+      /// Initializing constructor used by builder
+      ConditionDependency(Condition::detkey_type det_key, Condition::itemkey_type item_key, std::shared_ptr<ConditionUpdateCall> call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key

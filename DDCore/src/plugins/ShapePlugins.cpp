@@ -546,55 +546,55 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
              shape.typeStr().c_str());
     bool instance_test = false;
     if ( 0 == strcasecmp(solid->GetTitle(),"box") )
-      instance_test = instanceOf<Box>(solid);
+      instance_test = isInstance<Box>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Tube") )
-      instance_test = instanceOf<Tube>(solid);
+      instance_test = isInstance<Tube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"CutTube") )
-      instance_test = instanceOf<CutTube>(solid);
+      instance_test = isInstance<CutTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Cone") )
-      instance_test = instanceOf<Cone>(solid);
+      instance_test = isInstance<Cone>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Trap") )
-      instance_test = instanceOf<Trap>(solid);
+      instance_test = isInstance<Trap>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Trd1") )
-      instance_test = instanceOf<Trd1>(solid);
+      instance_test = isInstance<Trd1>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Trd2") )
-      instance_test = instanceOf<Trd2>(solid);
+      instance_test = isInstance<Trd2>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Torus") )
-      instance_test = instanceOf<Torus>(solid);
+      instance_test = isInstance<Torus>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Sphere") )
-      instance_test = instanceOf<Sphere>(solid);
+      instance_test = isInstance<Sphere>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"HalfSpace") )
-      instance_test = instanceOf<HalfSpace>(solid);
+      instance_test = isInstance<HalfSpace>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"ConeSegment") )
-      instance_test = instanceOf<ConeSegment>(solid);
+      instance_test = isInstance<ConeSegment>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Paraboloid") )
-      instance_test = instanceOf<Paraboloid>(solid);
+      instance_test = isInstance<Paraboloid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Hyperboloid") )
-      instance_test = instanceOf<Hyperboloid>(solid);
+      instance_test = isInstance<Hyperboloid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"PolyhedraRegular") )
-      instance_test = instanceOf<PolyhedraRegular>(solid);
+      instance_test = isInstance<PolyhedraRegular>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Polyhedra") )
-      instance_test = instanceOf<Polyhedra>(solid);
+      instance_test = isInstance<Polyhedra>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"EllipticalTube") )
-      instance_test = instanceOf<EllipticalTube>(solid);
+      instance_test = isInstance<EllipticalTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"ExtrudedPolygon") )
-      instance_test = instanceOf<ExtrudedPolygon>(solid);
+      instance_test = isInstance<ExtrudedPolygon>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Polycone") )
-      instance_test = instanceOf<Polycone>(solid);
+      instance_test = isInstance<Polycone>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"EightPointSolid") )
-      instance_test = instanceOf<EightPointSolid>(solid);
+      instance_test = isInstance<EightPointSolid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"SubtractionSolid") )
-      instance_test = instanceOf<SubtractionSolid>(solid);
+      instance_test = isInstance<SubtractionSolid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"UnionSolid") )
-      instance_test = instanceOf<UnionSolid>(solid);
+      instance_test = isInstance<UnionSolid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"IntersectionSolid") )
-      instance_test = instanceOf<IntersectionSolid>(solid);
+      instance_test = isInstance<IntersectionSolid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"TruncatedTube") )
-      instance_test = instanceOf<TruncatedTube>(solid);
+      instance_test = isInstance<TruncatedTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"PseudoTrap") )
-      instance_test = instanceOf<PseudoTrap>(solid);
+      instance_test = isInstance<PseudoTrap>(solid);
 
-    if ( !instance_test || ::strcasecmp(shape.typeStr().c_str(),solid->GetTitle()) )   {
+    if ( !instance_test || ::strcasecmp(shape.typeStr().c_str(),solid->GetTitle()) != 0 )   {
       printout(ERROR,"TestShape","BAD shape type: %s <-> %s Instance test: %s",
                shape.typeStr().c_str(), solid->GetTitle(),
                instance_test ? "OK" : "FAILED");
@@ -712,11 +712,11 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
     for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
       PlacedVolume place = v->GetNode(ipv);
       Solid solid = place.volume().solid();
-      if ( instanceOf<TruncatedTube>(solid) )   {
+      if ( isInstance<TruncatedTube>(solid) )   {
         auto params = solid.dimensions();
         solid.setDimensions(params);
       }
-      else if ( instanceOf<PseudoTrap>(solid) )   {
+      else if ( isInstance<PseudoTrap>(solid) )   {
         auto params = solid.dimensions();
         solid.setDimensions(params);
       }
