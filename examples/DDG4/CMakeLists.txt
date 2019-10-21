@@ -14,9 +14,9 @@ IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
   include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
   include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
-  dd4hep_configure_output()
 ENDIF()
 
+dd4hep_configure_output()
 dd4hep_set_compiler_flags()
 #==========================================================================
 
@@ -29,6 +29,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary(G__DDG4UserDict
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h
   LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
+  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/lib
   )
   #----  Example of a client library with user defined plugins  --------------------
   dd4hep_add_plugin( DDG4UserLib
