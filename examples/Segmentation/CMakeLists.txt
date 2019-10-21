@@ -70,3 +70,10 @@ dd4hep_configure_scripts(${PackageName} DEFAULT_SETUP WITH_TESTS)
 install(TARGETS ${PackageName} LIBRARY DESTINATION lib)
 
 #-------------------------------------------------------
+
+dd4hep_add_test_reg( Segmentation_Example_Test
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Segmentation.sh"
+  EXEC_ARGS  SegmentationTest
+  REGEX_PASS "Neighbours of system:1,barrel:0,module:5,layer:12,slice:0,x:10,y:-30:"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
