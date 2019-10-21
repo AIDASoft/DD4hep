@@ -6,6 +6,7 @@
  */
 
 #include "DD4hep/Detector.h"
+#include "DDSegmentation/BitField64.h"
 
 #include "DDSegmentation/SegmentationFactory.h"
 #include "DDSegmentation/SegmentationParameter.h"
@@ -17,7 +18,7 @@ using namespace dd4hep;
 using namespace detail;
 using namespace DDSegmentation;
 
-int main(int argc, char** argv) {
+int main(int, char**) {
 
 	SegmentationFactory* f = SegmentationFactory::instance();
 
@@ -29,16 +30,16 @@ int main(int argc, char** argv) {
 		DDSegmentation::Segmentation* s = f->create(typeName);
 		cout << "\t" << typeName << ", " << s->type() << endl;
 		Parameters parameters = s->parameters();
-		Parameters::iterator it;
-		for (it = parameters.begin(); it != parameters.end(); ++it) {
-			Parameter p = *it;
+		Parameters::iterator it2;
+		for (it2 = parameters.begin(); it2 != parameters.end(); ++it2) {
+			Parameter p = *it2;
 			cout << "\t\t" << p->name() << " = " << p->value() << endl;
 		}
 		delete s;
 	}
 
 	DDSegmentation::Segmentation* s = f->create("CartesianGridXY", "system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16");
-	BitField64& d = *s->decoder();
+	BitField64 d = s->decoder();
 	d["system"] = 1;
 	d["barrel"] = 0;
 	d["module"] = 5;
@@ -56,4 +57,4 @@ int main(int argc, char** argv) {
 	}
 	delete s;
 	return 0;
-};
+}
