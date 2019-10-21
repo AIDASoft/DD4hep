@@ -36,19 +36,14 @@ ENDIF()
 
 dd4hep_configure_output()
 
-add_subdirectory(CLICSiD)
-add_subdirectory(LHeD)
-add_subdirectory(AlignDet)
-add_subdirectory(ClientTests)
-add_subdirectory(Conditions)
-add_subdirectory(DDG4)
-add_subdirectory(DDDigi)
-add_subdirectory(Persistency)
-add_subdirectory(SimpleDetector)
-add_subdirectory(DDG4_MySensDet)
-add_subdirectory(DDCodex)
+#==========================================================================
 
-add_subdirectory(DDDB)
-add_subdirectory(DDCMS)
+SET(DD4HEP_BUILD_EXAMPLES "AlignDet CLICSiD ClientTests Conditions DDCMS DDCodex DDDB DDDigi DDG4 DDG4_MySensDet LHeD OpticalSurfaces Persistency SimpleDetector"
+  CACHE STRING "List of DD4hep Examples to build")
+SEPARATE_ARGUMENTS(DD4HEP_BUILD_EXAMPLES)
+MESSAGE(STATUS "Will be building these examples: ${DD4HEP_BUILD_EXAMPLES}")
 
-add_subdirectory(OpticalSurfaces)
+FOREACH(DDExample IN LISTS DD4HEP_BUILD_EXAMPLES)
+  dd4hep_print("|> Building ${DDExample}")
+  add_subdirectory(${DDExample})
+ENDFOREACH()
