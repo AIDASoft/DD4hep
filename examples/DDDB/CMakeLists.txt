@@ -35,10 +35,6 @@ else()
   return()
 endif()
 
-#------------------------------------------------------------------------------
-dd4hep_configure_output ()
-
-#
 #---DDDB library --------------------------------------------------------------
 FILE(GLOB DDDB_SOURCES src/*.cpp src/Detector/*.cpp)
 add_library(DDDB SHARED ${DDDB_SOURCES})
