@@ -14,9 +14,9 @@ IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
   include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
   include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
+  dd4hep_configure_output()
 ENDIF()
 
-dd4hep_configure_output()
 dd4hep_set_compiler_flags()
 #==========================================================================
 
@@ -54,47 +54,19 @@ find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
 
 #-------------------------------------------------------------
 
-include_directories( ${CMAKE_SOURCE_DIR}/include
-  ${DD4hep_INCLUDE_DIRS}
-  ${ROOT_INCLUDE_DIR}
-  )
 
-file(GLOB sources src/*.cpp )
-file(GLOB headers include/*.h)
-
-include(DD4hep_XML_setup)
-
-if(DD4HEP_USE_PYROOT)
-  ROOT_GENERATE_DICTIONARY(G__Segmentation ${headers} LINKDEF include/ROOT/LinkDef.h)
-  list(APPEND sources G__Segmentation.cxx)
-endif()
-
-add_executable(Segmentation SegmentationTest.cpp ${sources})
-
-target_link_libraries(Segmentation ${DD4hep_LIBRARIES} )
-
-#---Rootmap generation--------------------------------------------------------------
+set(Segmentationexamples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/Segmentation)
 #
-#if(APPLE)
-#  dd4hep_generate_rootmap_apple(${PackageName} )
-#else()
-#  dd4hep_generate_rootmap(${PackageName} )
-#endif()
+add_executable(SegmentationTest SegmentationTest.cpp)
+target_link_libraries(SegmentationTest DD4hep::DDCore)
+install(TARGETS SegmentationTest LIBRARY DESTINATION bin)
 
 
 #---- configure run environment ---------------
-configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
-
-install(FILES ${CMAKE_BINARY_DIR}/this${PackageName}.sh
-  DESTINATION bin
-  )
-
+dd4hep_configure_scripts(${PackageName} DEFAULT_SETUP WITH_TESTS)
 
 #--- install target-------------------------------------
 
-install(TARGETS ${PackageName}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
-# to do: add corresponding uninstall...
+install(TARGETS ${PackageName} LIBRARY DESTINATION lib)
+
 #-------------------------------------------------------
