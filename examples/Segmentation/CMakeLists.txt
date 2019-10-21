@@ -14,9 +14,9 @@ IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
   include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
   include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
-  dd4hep_configure_output()
 ENDIF()
 
+dd4hep_configure_output()
 dd4hep_set_compiler_flags()
 #==========================================================================
 
@@ -50,17 +50,12 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-find_package( ROOT REQUIRED )
-set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
-
-#-------------------------------------------------------------
-# add additional packages here
-
+find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
 
 #-------------------------------------------------------------
 
 include_directories( ${CMAKE_SOURCE_DIR}/include
-  ${dd4hep_INCLUDE_DIRS}
+  ${DD4hep_INCLUDE_DIRS}
   ${ROOT_INCLUDE_DIR}
   )
 
@@ -76,7 +71,7 @@ endif()
 
 add_executable(Segmentation SegmentationTest.cpp ${sources})
 
-target_link_libraries(Segmentation ${dd4hep_LIBRARIES} )
+target_link_libraries(Segmentation ${DD4hep_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
 #
