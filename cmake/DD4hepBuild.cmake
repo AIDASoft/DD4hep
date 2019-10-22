@@ -559,7 +559,7 @@ function(dd4hep_add_dictionary dictionary )
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir})
   SET(COMP_DEFS )
   file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}_arguments
-    CONTENT "${ROOT_rootcling_CMD} -cint -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} -std=c++${CMAKE_CXX_STANDARD}  \
+    CONTENT "${ROOT_rootcling_CMD} -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader ${ARG_OPTIONS}  \
    $<$<BOOL:${comp_defs}>:-D$<JOIN:${comp_defs}, -D>> \
    $<$<BOOL:${inc_dirs}>:-I$<JOIN:${inc_dirs}, -I>> \
    $<JOIN:${headers}, >  $<JOIN:${linkdefs}, >"
