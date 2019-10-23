@@ -10,7 +10,7 @@
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDDigi)
 file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-add_library(DDDigi SHARED ${DDDigi_SOURCES})
+add_library(DDDigi ${DDDigi_SOURCES})
 add_library(DD4hep::DDDigi ALIAS DDDigi)
 
 target_link_libraries(DDDigi PUBLIC
@@ -53,6 +53,9 @@ set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} 
 
 file(GLOB DDigi_python python/*.py python/*.C)
 install(FILES ${DDigi_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
-install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  )
 install(DIRECTORY include/DDDigi DESTINATION include)
 

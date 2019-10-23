@@ -18,7 +18,7 @@ dd4hep_add_dictionary(G__DDCond
 
 file(GLOB DDCond_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-add_library(DDCond SHARED ${DDCond_SOURCES} G__DDCond.cxx)
+add_library(DDCond ${DDCond_SOURCES} G__DDCond.cxx)
 add_library(DD4hep::DDCond ALIAS DDCond)
 
 target_include_directories(DDCond
@@ -37,4 +37,6 @@ dd4hep_add_plugin(DDCondPlugins
 set_target_properties(DDCond DDCondPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 install(DIRECTORY include/DDCond DESTINATION include)
-install(TARGETS DDCond DDCondPlugins EXPORT DD4hep DESTINATION lib)
+install(TARGETS DDCond DDCondPlugins EXPORT DD4hep
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)

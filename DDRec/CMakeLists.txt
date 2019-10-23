@@ -27,7 +27,7 @@ if(DD4HEP_USE_GEAR)
   SET(GEAR_SOURCE_FILE src/gear/DDGear.cpp)
 endif()
 
-ADD_LIBRARY(DDRec SHARED
+ADD_LIBRARY(DDRec
   ${DDRec_SOURCES}
   ${GEAR_SOURCE_FILE}
   G__DDRec.cxx
@@ -75,4 +75,7 @@ set_target_properties(DDRec DDRecPlugins PROPERTIES VERSION ${DD4hep_VERSION} SO
 file(GLOB DDRec_python python/*.py)
 install(FILES ${DDRec_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 install(DIRECTORY include/DDRec DESTINATION include)
-install(TARGETS DDRec DDRecPlugins EXPORT DD4hep LIBRARY DESTINATION lib)
+install(TARGETS DDRec DDRecPlugins EXPORT DD4hep
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  )
