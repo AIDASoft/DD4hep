@@ -17,9 +17,11 @@ cmake -GNinja -DDD4HEP_USE_GEANT4=ON \
     -DCMAKE_CXX_STANDARD=${STANDARD} .. && \
     ninja
 
-if [[ "${SHARED}" == "OFF" ]];
-then
-    exit $?;
+BUILD_RESULT=$?
+
+if [[ "${SHARED}" == "OFF" ]]; then
+    echo "Not building SHARED libraries, ending tests here"
+    exit ${BUILD_RESULT}
 fi
 
 ninja install && \
