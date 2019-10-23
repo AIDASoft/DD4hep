@@ -48,7 +48,9 @@ protected:
   /// Parent object
   ConditionsPrinter* m_parent = 0;
 public:
+  /// Prefix to tag print statements
   std::string        prefix;
+  /// Used printout level
   PrintLevel         printLevel = INFO;
 public:
   /// Copy constructor
