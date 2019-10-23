@@ -16,7 +16,7 @@ dd4hep_add_dictionary( G__DDRec
   SOURCES ../DDCore/include/ROOT/Warnings.h
   GENERATED src/RecDictionary.h
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  USES DDCore DDParsers
+  USES DD4hep::DDCore DD4hep::DDParsers
 )
 
 file(GLOB DDRec_SOURCES src/*.cpp )
@@ -41,7 +41,7 @@ TARGET_INCLUDE_DIRECTORIES(DDRec
   )
 
 TARGET_LINK_LIBRARIES(DDRec PUBLIC
-  DDCore
+  DD4hep::DDCore
   ${GEAR_LIBRARIES}
   ${GEAR_COMPONENT_LIBRARIES}
   )

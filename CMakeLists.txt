@@ -77,6 +77,8 @@ MESSAGE(STATUS "Will be building these packages: ${DD4HEP_BUILD_PACKAGES}")
 OPTION(DD4HEP_BUILD_EXAMPLES "Build all the examples" OFF)
 OPTION(DD4HEP_DEBUG_CMAKE "Print debugging information for DD4hep CMAKE" OFF)
 
+SET(DD4HEP_USE_EXISTING_DD4HEP "" CACHE STRING "Build some parts of DD4hep against an existing installation")
+
 #####################
 # Configure version #
 #####################
@@ -144,9 +146,31 @@ if( DEFINED DD4HEP_WITH_GEANT4 OR DEFINED DD4HEP_WITH_GEAR )
   dd4hep_print_cmake_options( OPTIONAL "Obsolete options: only the following are allowed:" ERROR 1 )
 endif()
 
+IF(DD4HEP_USE_EXISTING_DD4HEP)
+
+  MESSAGE(STATUS "|!!> Using pre-existing DD4hep: ${DD4HEP_USE_EXISTING_DD4HEP}")
+  SET(CMAKE_PROJECT_NAME DD4hepSelected)
+  dd4hep_set_version(${CMAKE_PROJECT_NAME}
+    MAJOR ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR}
+    MINOR ${${CMAKE_PROJECT_NAME}_VERSION_MINOR}
+    PATCH ${${CMAKE_PROJECT_NAME}_VERSION_PATCH} )
+
+  FIND_PACKAGE(DD4hep REQUIRED  NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH
+    PATHS ${DD4HEP_USE_EXISTING_DD4HEP})
+
+  dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
+
+  FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
+    dd4hep_print("|> Building ${DDPackage}")
+    add_subdirectory(${DDPackage})
+  ENDFOREACH()
+  LIST(GET DD4HEP_BUILD_PACKAGES 0 DD4HEP_SELECTED_PACKAGE)
+ELSE()
+
 include(DD4hep_XML_setup)
 
 #These pacakges are mandatory
+SET(DD4HEP_SELECTED_PACKAGE DDCore)
 FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
   dd4hep_print("|> Building ${DDPackage}")
   add_subdirectory(${DDPackage})
@@ -166,6 +190,8 @@ if(DD4HEP_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
+
+ENDIF(DD4HEP_USE_EXISTING_DD4HEP)
 #######################
 # Treatment for Apple #
 #######################
@@ -202,7 +228,13 @@ display_std_variables()
 # generate and install following configuration files #
 ######################################################
 
-dd4hep_generate_package_configuration_files( DD4hepConfig.cmake )
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/cmake/DD4hepConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake @ONLY
+  )
+INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ./cmake )
+
+dd4hep_generate_package_configuration_files( ${CMAKE_PROJECT_NAME}Config.cmake )
+
 if(APPLE)
   SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
 else()
@@ -221,6 +253,6 @@ endif()
 
 INSTALL(EXPORT DD4hep 
   NAMESPACE DD4hep::
-  FILE DD4hepConfig-targets.cmake
+  FILE ${CMAKE_PROJECT_NAME}Config-targets.cmake
   DESTINATION cmake
   )
