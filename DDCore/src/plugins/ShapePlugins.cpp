@@ -553,8 +553,6 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test = isInstance<CutTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Cone") )
       instance_test = isInstance<Cone>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Trap") )
-      instance_test = isInstance<Trap>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Trd1") )
       instance_test = isInstance<Trd1>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Trd2") )
@@ -581,18 +579,60 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test = isInstance<ExtrudedPolygon>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"Polycone") )
       instance_test = isInstance<Polycone>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"EightPointSolid") )
-      instance_test = isInstance<EightPointSolid>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"SubtractionSolid") )
-      instance_test = isInstance<SubtractionSolid>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"UnionSolid") )
-      instance_test = isInstance<UnionSolid>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"IntersectionSolid") )
-      instance_test = isInstance<IntersectionSolid>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"TruncatedTube") )
-      instance_test = isInstance<TruncatedTube>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"PseudoTrap") )
-      instance_test = isInstance<PseudoTrap>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),"EightPointSolid") )   {
+      instance_test  =  isInstance<EightPointSolid>(solid);
+      instance_test &= !isInstance<Trap>(solid);
+      instance_test &=  isA<EightPointSolid>(solid);
+      instance_test &= !isA<Trap>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),"Trap") )   {
+      instance_test  =  isInstance<EightPointSolid>(solid);
+      instance_test &=  isInstance<Trap>(solid);
+      instance_test &=  isA<Trap>(solid);
+      instance_test &= !isA<EightPointSolid>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),"SubtractionSolid") )  {
+      instance_test  =  isInstance<BooleanSolid>(solid);
+      instance_test &=  isInstance<SubtractionSolid>(solid);
+      instance_test &= !isA<IntersectionSolid>(solid);
+      instance_test &= !isA<UnionSolid>(solid);
+      instance_test &=  isA<SubtractionSolid>(solid);
+      instance_test &= !isA<PseudoTrap>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),"UnionSolid") )  {
+      instance_test  =  isInstance<BooleanSolid>(solid);
+      instance_test &=  isInstance<UnionSolid>(solid);
+      instance_test &= !isA<IntersectionSolid>(solid);
+      instance_test &=  isA<UnionSolid>(solid);
+      instance_test &= !isA<SubtractionSolid>(solid);
+      instance_test &= !isA<PseudoTrap>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),"IntersectionSolid") )  {
+      instance_test  =  isInstance<BooleanSolid>(solid);
+      instance_test &=  isInstance<IntersectionSolid>(solid);
+      instance_test &=  isA<IntersectionSolid>(solid);
+      instance_test &= !isA<UnionSolid>(solid);
+      instance_test &= !isA<SubtractionSolid>(solid);
+      instance_test &= !isA<PseudoTrap>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),"TruncatedTube") )  {
+      instance_test  =  isInstance<BooleanSolid>(solid);
+      instance_test &=  isInstance<TruncatedTube>(solid);
+      instance_test &=  isA<TruncatedTube>(solid);
+      instance_test &= !isA<PseudoTrap>(solid);
+      instance_test &= !isA<IntersectionSolid>(solid);
+      instance_test &= !isA<UnionSolid>(solid);
+      instance_test &= !isA<SubtractionSolid>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),"PseudoTrap") )  {
+      instance_test  =  isInstance<BooleanSolid>(solid);
+      instance_test &=  isInstance<PseudoTrap>(solid);
+      instance_test &=  isA<PseudoTrap>(solid);
+      instance_test &= !isA<TruncatedTube>(solid);
+      instance_test &= !isA<IntersectionSolid>(solid);
+      instance_test &= !isA<UnionSolid>(solid);
+      instance_test &= !isA<SubtractionSolid>(solid);
+    }
 
     if ( !instance_test || ::strcasecmp(shape.typeStr().c_str(),solid->GetTitle()) != 0 )   {
       printout(ERROR,"TestShape","BAD shape type: %s <-> %s Instance test: %s",
