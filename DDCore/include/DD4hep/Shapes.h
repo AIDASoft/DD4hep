@@ -1282,15 +1282,13 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   class BooleanSolid : public Solid_type<TGeoCompositeShape> {
-  protected:
+  public:
     /// Default constructor
     BooleanSolid() = default;
     /// Move Constructor
     BooleanSolid(BooleanSolid&& b) = default;
     /// Copy Constructor
     BooleanSolid(const BooleanSolid& b) = default;
-      
-  public:
     /// Constructor to be used when passing an already created object
     template <typename Q>
     BooleanSolid(const Handle<Q>& e) : Solid_type<Object>(e) { }
