@@ -21,7 +21,6 @@
 // C/C++ include files
 #include <vector>
 
-
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated" // Code that causes warning goes here
@@ -69,7 +68,11 @@ namespace dd4hep {
   template <typename SOLID> bool isInstance(const Handle<TGeoShape>& solid);
   /// Type check of various shapes. Do not allow for polymorphism. Types must match exactly
   template <typename SOLID> bool isA(const Handle<TGeoShape>& solid);
-  
+  /// Access Shape dimension parameters (As in TGeo, but angles in radians rather than degrees)
+  template <typename SOLID> std::vector<double> dimensions(const Handle<TGeoShape>& solid);
+  /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
+  template <typename SOLID> void set_dimensions(SOLID solid, const std::vector<double>& params);
+
 
   ///  Base class for Solid (shape) objects
   /**
@@ -95,8 +98,9 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   template <typename T> class Solid_type: public Handle<T> {
-    friend void set_shape_dimensions(TGeoShape* shape, const std::vector<double>& params);
-
+  public:
+    template <typename Q> friend void set_dimensions(Q ptr, const std::vector<double>& params);
+    
   protected:
     void _setDimensions(double* param)   const;
     /// Assign pointrs and register solid to geometry
@@ -281,6 +285,55 @@ namespace dd4hep {
     /// Copy Assignment operator
     HalfSpace& operator=(const HalfSpace& copy) = default;
  };
+
+  /// Class describing a cone shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoCone.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class Cone : public Solid_type<TGeoCone> {
+  protected:
+    /// Internal helper method to support object construction
+    void make(const std::string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2);
+  public:
+    /// Default constructor
+    Cone() = default;
+    /// Move Constructor
+    Cone(Cone&& e) = default;
+    /// Copy Constructor
+    Cone(const Cone& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> Cone(const Q* p) : Solid_type<Object>(p) { }
+    /// Constructor to be used when passing an already created object
+    template <typename Q> Cone(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
+    /// Constructor to create a new anonymous object with attribute initialization
+    Cone(double z, double rmin1, double rmax1, double rmin2, double rmax2)
+    {     this->make("", z, rmin1, rmax1, rmin2, rmax2);                                 }
+    /// Constructor to create a new anonymous object with attribute initialization
+    template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
+    Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
+    {     this->make("", _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+
+    /// Constructor to create a new anonymous object with attribute initialization
+    Cone(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2)
+    {     this->make(nam, z, rmin1, rmax1, rmin2, rmax2);                                 }
+    /// Constructor to create a new anonymous object with attribute initialization
+    template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
+    Cone(const std::string& nam, const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
+    {     this->make(nam, _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
+
+    /// Move Assignment operator
+    Cone& operator=(Cone&& copy) = default;
+    /// Copy Assignment operator
+    Cone& operator=(const Cone& copy) = default;
+    /// Set the box dimensions
+    Cone& setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2);
+  };
 
   /// Class describing a Polycone shape
   /**
@@ -585,55 +638,6 @@ namespace dd4hep {
     EllipticalTube& operator=(const EllipticalTube& copy) = default;
     /// Set the tube dimensions
     EllipticalTube& setDimensions(double a, double b, double dz);
-  };
-
-  /// Class describing a cone shape
-  /**
-   *   For any further documentation please see the following ROOT documentation:
-   *   \see http://root.cern.ch/root/html/TGeoCone.html
-   *
-   *   \author  M.Frank
-   *   \version 1.0
-   *   \ingroup DD4HEP_CORE
-   */
-  class Cone : public Solid_type<TGeoCone> {
-  protected:
-    /// Internal helper method to support object construction
-    void make(const std::string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2);
-  public:
-    /// Default constructor
-    Cone() = default;
-    /// Move Constructor
-    Cone(Cone&& e) = default;
-    /// Copy Constructor
-    Cone(const Cone& e) = default;
-    /// Constructor to be used with an existing object
-    template <typename Q> Cone(const Q* p) : Solid_type<Object>(p) { }
-    /// Constructor to be used when passing an already created object
-    template <typename Q> Cone(const Handle<Q>& e) : Solid_type<Object>(e) { }
-
-    /// Constructor to create a new anonymous object with attribute initialization
-    Cone(double z, double rmin1, double rmax1, double rmin2, double rmax2)
-    {     this->make("", z, rmin1, rmax1, rmin2, rmax2);                                 }
-    /// Constructor to create a new anonymous object with attribute initialization
-    template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
-    Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
-    {     this->make("", _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
-
-    /// Constructor to create a new anonymous object with attribute initialization
-    Cone(const std::string& nam, double z, double rmin1, double rmax1, double rmin2, double rmax2)
-    {     this->make(nam, z, rmin1, rmax1, rmin2, rmax2);                                 }
-    /// Constructor to create a new anonymous object with attribute initialization
-    template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
-    Cone(const std::string& nam, const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2)
-    {     this->make(nam, _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2)); }
-
-    /// Move Assignment operator
-    Cone& operator=(Cone&& copy) = default;
-    /// Copy Assignment operator
-    Cone& operator=(const Cone& copy) = default;
-    /// Set the box dimensions
-    Cone& setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2);
   };
 
   /// Class describing a trap shape
