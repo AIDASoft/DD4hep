@@ -81,14 +81,14 @@ string Property::type() const {
 }
 
 const PropertyGrammar& Property::grammar() const {
-  if (m_hdl)
+  if ( m_hdl )
     return *m_hdl;
   throw runtime_error("Attempt to access property grammar from invalid object.");
 }
 
 /// Conversion to string value
 string Property::str() const {
-  if (m_hdl && m_par ) {
+  if ( m_hdl && m_par ) {
     return m_hdl->str(m_par);
   }
   throw runtime_error("Attempt to access property grammar from invalid object.");
@@ -96,7 +96,7 @@ string Property::str() const {
 
 /// Conversion from string value
 const Property& Property::str(const std::string& input)   const {
-  if (m_hdl && m_par )   {
+  if ( m_hdl && m_par )   {
     m_hdl->fromString(m_par,input);
     return *this;
   }
@@ -105,7 +105,7 @@ const Property& Property::str(const std::string& input)   const {
 
 /// Conversion from string value
 Property& Property::str(const std::string& input)    {
-  if (m_hdl && m_par )   {
+  if ( m_hdl && m_par )   {
     m_hdl->fromString(m_par,input);
     return *this;
   }
@@ -113,14 +113,8 @@ Property& Property::str(const std::string& input)    {
 }
 
 /// Assignment operator / set new balue
-//Property& Property::operator=(const string& val)  {
-//  this->set<string>(val);
-//  return *this;
-//}
-
-/// Assignment operator / set new balue
 Property& Property::operator=(const char* val) {
-  if (val) {
+  if ( val ) {
     this->set < string > (val);
     return *this;
   }

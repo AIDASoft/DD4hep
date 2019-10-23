@@ -51,44 +51,41 @@ namespace dd4hep {
       except("Solid","+++ Shape:%s setDimension: Invalid number of parameters: %ld",
              (sh ? typeName(typeid(*sh)) : typeName(typeid(sh))).c_str(), params.size());
     }
-    inline bool check_shape_type(const Handle<TGeoShape>& solid, const TClass* cl)   {
-      return solid.isValid() && solid->IsA() == cl;
+    template <typename T> inline bool check_shape_type(const Handle<TGeoShape>& solid)   {
+      return solid.isValid() && solid->IsA() == T::Class();
     }
   }
   
   /// Type check of various shapes. Result like dynamic_cast. Compare with python's isinstance(obj,type)
   template <typename SOLID> bool isInstance(const Handle<TGeoShape>& solid)   {
-    return check_shape_type(solid, SOLID::Object::Class());
+    return check_shape_type<typename SOLID::Object>(solid);
   }
-  template bool isInstance<Box>(const Handle<TGeoShape>& solid);
-  template bool isInstance<ShapelessSolid>(const Handle<TGeoShape>& solid);
-  template bool isInstance<HalfSpace>(const Handle<TGeoShape>& solid);
-  template bool isInstance<ConeSegment>(const Handle<TGeoShape>& solid);
-  template bool isInstance<CutTube>(const Handle<TGeoShape>& solid);
-  template bool isInstance<EllipticalTube>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Trap>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Trd1>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Trd2>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Torus>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Sphere>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Paraboloid>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Hyperboloid>(const Handle<TGeoShape>& solid);
-  template bool isInstance<PolyhedraRegular>(const Handle<TGeoShape>& solid);
-  template bool isInstance<Polyhedra>(const Handle<TGeoShape>& solid);
-  template bool isInstance<ExtrudedPolygon>(const Handle<TGeoShape>& solid);
-  template bool isInstance<BooleanSolid>(const Handle<TGeoShape>& solid);
+  template bool isInstance<Box>               (const Handle<TGeoShape>& solid);
+  template bool isInstance<ShapelessSolid>    (const Handle<TGeoShape>& solid);
+  template bool isInstance<HalfSpace>         (const Handle<TGeoShape>& solid);
+  template bool isInstance<ConeSegment>       (const Handle<TGeoShape>& solid);
+  template bool isInstance<CutTube>           (const Handle<TGeoShape>& solid);
+  template bool isInstance<EllipticalTube>    (const Handle<TGeoShape>& solid);
+  template bool isInstance<Trap>              (const Handle<TGeoShape>& solid);
+  template bool isInstance<Trd1>              (const Handle<TGeoShape>& solid);
+  template bool isInstance<Trd2>              (const Handle<TGeoShape>& solid);
+  template bool isInstance<Torus>             (const Handle<TGeoShape>& solid);
+  template bool isInstance<Sphere>            (const Handle<TGeoShape>& solid);
+  template bool isInstance<Paraboloid>        (const Handle<TGeoShape>& solid);
+  template bool isInstance<Hyperboloid>       (const Handle<TGeoShape>& solid);
+  template bool isInstance<PolyhedraRegular>  (const Handle<TGeoShape>& solid);
+  template bool isInstance<Polyhedra>         (const Handle<TGeoShape>& solid);
+  template bool isInstance<ExtrudedPolygon>   (const Handle<TGeoShape>& solid);
+  template bool isInstance<BooleanSolid>      (const Handle<TGeoShape>& solid);
 
   template <> bool isInstance<Cone>(const Handle<TGeoShape>& solid)  {
-    return check_shape_type(solid, TGeoConeSeg::Class())
-      ||   check_shape_type(solid, TGeoCone::Class());
+    return check_shape_type<TGeoConeSeg>(solid) || check_shape_type<TGeoCone>(solid);
   }
   template <> bool isInstance<Tube>(const Handle<TGeoShape>& solid)  {
-    return check_shape_type(solid, TGeoTubeSeg::Class())
-      ||   check_shape_type(solid, TGeoCtub::Class());
+    return check_shape_type<TGeoTubeSeg>(solid) || check_shape_type<TGeoCtub>(solid);
   }
   template <> bool isInstance<Polycone>(const Handle<TGeoShape>& solid)   {
-    return check_shape_type(solid, TGeoPcon::Class())
-      ||   check_shape_type(solid, TGeoPgon::Class());
+    return check_shape_type<TGeoPcon>(solid)    || check_shape_type<TGeoPgon>(solid);
   }
   template <> bool isInstance<EightPointSolid>(const Handle<TGeoShape>& solid)   {
     if ( solid.isValid() )   {
@@ -98,18 +95,12 @@ namespace dd4hep {
     return false;
   }
   template <> bool isInstance<TruncatedTube>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == TGeoCompositeShape::Class()
-        &&   ::strcmp(solid->GetTitle(), TRUNCATEDTUBE_TAG) == 0;
-    }
-    return false;
+    return check_shape_type<TGeoCompositeShape>(solid)
+      &&   ::strcmp(solid->GetTitle(), TRUNCATEDTUBE_TAG) == 0;
   }
   template <> bool isInstance<PseudoTrap>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == TGeoCompositeShape::Class()
-        &&   ::strcmp(solid->GetTitle(), PSEUDOTRAP_TAG) == 0;
-    }
-    return false;
+    return check_shape_type<TGeoCompositeShape>(solid)
+      &&   ::strcmp(solid->GetTitle(), PSEUDOTRAP_TAG) == 0;
   }
   template <> bool isInstance<SubtractionSolid>(const Handle<TGeoShape>& solid)   {
     TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
@@ -129,7 +120,7 @@ namespace dd4hep {
 
   /// Type check of various shapes. Do not allow for polymorphism. Types must match exactly
   template <typename SOLID> bool isA(const Handle<TGeoShape>& solid)   {
-    return check_shape_type(solid, SOLID::Object::Class());
+    return check_shape_type<typename SOLID::Object>(solid);
   }
   template bool isA<Box>(const Handle<TGeoShape>& solid);
   template bool isA<ShapelessSolid>(const Handle<TGeoShape>& solid);
@@ -153,36 +144,30 @@ namespace dd4hep {
   template bool isA<EightPointSolid>(const Handle<TGeoShape>& solid);
 
   template <> bool isA<TruncatedTube>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == TGeoCompositeShape::Class()
-        &&   ::strcmp(solid->GetTitle(), TRUNCATEDTUBE_TAG) == 0;
-    }
-    return false;
+    return check_shape_type<TGeoCompositeShape>(solid)
+      &&   ::strcmp(solid->GetTitle(), TRUNCATEDTUBE_TAG) == 0;
   }
   template <> bool isA<PseudoTrap>(const Handle<TGeoShape>& solid)   {
-    if ( solid.isValid() )   {
-      return solid->IsA() == TGeoCompositeShape::Class()
-        &&   ::strcmp(solid->GetTitle(), PSEUDOTRAP_TAG) == 0;
-    }
-    return false;
+    return check_shape_type<TGeoCompositeShape>(solid)
+      &&   ::strcmp(solid->GetTitle(), PSEUDOTRAP_TAG) == 0;
   }
   template <> bool isA<SubtractionSolid>(const Handle<TGeoShape>& solid)   {
     TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
     return sh && sh->IsA() == TGeoCompositeShape::Class()
       &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoSubtraction
-      &&    ::strcmp(solid->GetTitle(), SUBTRACTION_TAG) == 0;
+      &&   ::strcmp(sh->GetTitle(), SUBTRACTION_TAG) == 0;
   }
   template <> bool isA<UnionSolid>(const Handle<TGeoShape>& solid)   {
     TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
     return sh && sh->IsA() == TGeoCompositeShape::Class()
       &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoUnion
-      &&    ::strcmp(solid->GetTitle(), UNION_TAG) == 0;
+      &&   ::strcmp(sh->GetTitle(), UNION_TAG) == 0;
   }
   template <> bool isA<IntersectionSolid>(const Handle<TGeoShape>& solid)   {
     TGeoCompositeShape* sh = (TGeoCompositeShape*)solid.ptr();
     return sh && sh->IsA() == TGeoCompositeShape::Class()
       &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoIntersection
-      &&    ::strcmp(solid->GetTitle(), INTERSECTION_TAG) == 0;
+      &&   ::strcmp(sh->GetTitle(), INTERSECTION_TAG) == 0;
   }
 
   template <typename T> vector<double> dimensions(const TGeoShape* shape)    {
