@@ -13,8 +13,15 @@ cmake -GNinja -DDD4HEP_USE_GEANT4=ON \
     -DDD4HEP_DEBUG_CMAKE=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always -Werror"  \
-    -DCMAKE_CXX_STANDARD=${STANDARD} ${CMAKE_ARGS} .. && \
-ninja && \
+    -DBUILD_SHARED_LIBS=${SHARED} \
+    -DCMAKE_CXX_STANDARD=${STANDARD} .. && \
+    ninja
+
+if [[ "${SHARED}" == "OFF" ]];
+then
+    exit 0;
+fi
+
 ninja install && \
 . ../bin/thisdd4hep.sh && \
 ctest --output-on-failure -j4 && \
