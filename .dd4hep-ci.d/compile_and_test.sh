@@ -19,7 +19,7 @@ cmake -GNinja -DDD4HEP_USE_GEANT4=ON \
 
 if [[ "${SHARED}" == "OFF" ]];
 then
-    exit 0;
+    exit $?;
 fi
 
 ninja install && \
