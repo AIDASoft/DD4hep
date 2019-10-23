@@ -24,6 +24,7 @@ if [[ "${SHARED}" == "OFF" ]]; then
     exit ${BUILD_RESULT}
 fi
 
+test ${BUILD_RESULT} -eq 0 && \
 ninja install && \
 . ../bin/thisdd4hep.sh && \
 ctest --output-on-failure -j4 && \
