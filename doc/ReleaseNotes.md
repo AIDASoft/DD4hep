@@ -1,3 +1,302 @@
+# v01-11
+
+* 2019-10-23 MarkusFrankATcernch ([PR#587](https://github.com/AidaSoft/DD4hep/pull/587))
+  -  Have separate compilation unit for shape utilities like `set_dimension(...)`, `dimension()`, `isA()`, `instanceOf()`... 
+  - Improvements to basic shape test
+
+* 2019-10-23 Andre Sailer ([PR#579](https://github.com/AidaSoft/DD4hep/pull/579))
+  - CMake: Add possibility to build only shared libraries, fixes #493: 
+    - Usage `cmake ... -D BUILD_SHARED_LIBS=OFF ...`
+
+* 2019-10-23 Andre Sailer ([PR#575](https://github.com/AidaSoft/DD4hep/pull/575))
+  * CMake: Add `DD4HEP_USE_EXISTING_DD4HEP` option which together with `DD4HEP_BUILD_PACKAGES` can be used to rebuild, for example only DDG4.
+     * This creates a new Package called "DD4hepSelected" which can then be used alongside the full DD4hep Package in a third project.
+
+* 2019-10-22 Marko Petric ([PR#586](https://github.com/AidaSoft/DD4hep/pull/586))
+  - Remove deprecated rootcling flags (`-cint`, `-c`, `-p`, `-std=c++`) from dictionary creation script
+
+* 2019-10-22 Marko Petric ([PR#585](https://github.com/AidaSoft/DD4hep/pull/585))
+  - Fix bug that the c++ filesystem check is called from `${DD4hep_ROOT}`
+  - Install `DD4hepConfig.cmake` only in `__prefix__/cmake` to avoid path detection confusion
+  - Enable choosing examples in the `examples/CMakeLists.cmake` via cmake flag `-DDD4HEP_BUILD_EXAMPLES=OpticalSurfaces` (recommended method)
+  - Make each example folder to compile standalone (not recommended method)
+  - Update cmake of Segmentation example to more current state and fix resulting errors
+    - include segmentation example as test
+  - Resolves #582 and resolves #583
+
+* 2019-10-21 MarkusFrankATcernch ([PR#584](https://github.com/AidaSoft/DD4hep/pull/584))
+  - Add function `bool isInstance(const Handle<TGeoShape>& solid)`
+     - compares types of shapes and behaves like `dynamic_cast`, similar to python's `isinstance(obj,type)`
+     - remove deprecated function `instanceOf` in favour of `isInstance`. Same behavior.
+   - Add function `bool isA(const Handle<TGeoShape>& solid)`
+     - compares types of shapes and requires exact match, no polymorphism allowed.
+  - Add Geant4 conversion for shape `TGeoCtub` -> `G4CutTube`
+
+* 2019-10-14 Marko Petric ([PR#572](https://github.com/AidaSoft/DD4hep/pull/572))
+  - Install python files in `lib/pythonX.Y/site-packages` resolves #562 
+    - adapt `thisdd4hep.sh` scripts
+  - Add missing RPATH to examples (basically bug fix for mac)
+  - Add DDG4 tools to bin to make them more accessible to users:
+    - `g4MaterialScan`, `checkGeometry`, `checkOverlaps`
+
+* 2019-10-03 MarkusFrankATcernch ([PR#577](https://github.com/AidaSoft/DD4hep/pull/577))
+  - Inhibit not allowed use of `DetectorImp.h`
+
+* 2019-10-03 Andre Sailer ([PR#574](https://github.com/AidaSoft/DD4hep/pull/574))
+  - CMake: When needing `boost::filesystem` (c++14, gcc  < 8) require at least Boost 1.56, see #567
+
+* 2019-10-03 Markus Frank ([PR#573](https://github.com/AidaSoft/DD4hep/pull/573))
+  - Fix memory leak introduced when generalizing placements to include left-handed coordinate systems.
+
+* 2019-10-03 Markus Frank ([PR#571](https://github.com/AidaSoft/DD4hep/pull/571))
+  - Add example to the volume reflection mechanism
+  - Fix bug in volume reflection
+
+* 2019-10-02 Markus Frank ([PR#569](https://github.com/AidaSoft/DD4hep/pull/569))
+  - First implementation to support reflection with left-handed volumes/solids
+    - Changes for volumes and solids.
+    - Conversion handling of `TGeoScaledShape` in DDG4
+
+* 2019-09-30 Andre Sailer ([PR#566](https://github.com/AidaSoft/DD4hep/pull/566))
+  - PythonBindings: fix issue when source files were not available, fixes #565 
+  - CMake: drop DDCores dependency on DD4hepGaudiPluginMgr
+  - CMake: DD4hepConfig: use find_dependency instead of find_package
+
+* 2019-09-24 Marko Petric ([PR#564](https://github.com/AidaSoft/DD4hep/pull/564))
+  - Added test for Python3 compliance of code
+  - Added test to require flake8 python code formatting
+
+* 2019-09-13 Marko Petric ([PR#540](https://github.com/AidaSoft/DD4hep/pull/540))
+  - Make python code compatible to python 2 and 3
+    - add `absolute_import` and `unicode_literals` to all files
+      - fix API calls and cast `unicode` to `string` when needed
+    - replace print statement with logging
+    - remove old octal literal
+    - use future division
+    - use `six`:
+       - replace `dict.iteritems` with `six.iteritems`
+       - replace `xrange` with `range` from `six.move`
+       - replace `basestring` with `six.string_types`
+       - replace `raw_input` with `input` from `six.moves`
+       - added a copy of six.py named ddsix.py to DDCore
+    - Replace deprecated `execfile` with call to `open`, `compile` and `exec`
+    - Remove usage of `apply`
+    - use `io.open` instead of standard `open`
+    - convert `except a,b` to `except a as b`
+    - change `dict.has_key` to `key in dict`
+  - Require DD4hep Python3 CI tests to pass
+  - Remove obsolete `lcdd.py`
+  - Remove deprecated `SystemOfUnits.py` and replace everywhere with `g4units.py`
+  - Flake8 all files
+
+* 2019-09-02 Andre Sailer ([PR#561](https://github.com/AidaSoft/DD4hep/pull/561))
+  - CMake: add option `DD4HEP_BUILD_PACKAGES` so that only individual packages can be compiled. If an incorrect selection is given cmake should fail due to missing alias libraries. The option requires a whitespace or semicolon separated list.
+  - CMake add option `DD4HEP_BUILD_EXAMPLES` to enable compilation of examples together with the main DD4hep packages. Default OFF
+  - CMake: add `DD4hep::` aliases for all libraries and some executables
+
+* 2019-08-26 Andre Sailer ([PR#559](https://github.com/AidaSoft/DD4hep/pull/559))
+  - DD4hepConfig: make all DD4HEP_USE variables behave as booleans
+
+* 2019-08-22 Markus Frank ([PR#554](https://github.com/AidaSoft/DD4hep/pull/554))
+  - Fix property table translation to Geant4 according to suggestions from Dong Liu
+    (see issue https://github.com/AIDASoft/DD4hep/issues/440 )
+
+* 2019-08-22 Andre Sailer ([PR#552](https://github.com/AidaSoft/DD4hep/pull/552))
+  * DD4hepConfig: `DD4hepConfig.CMake` now exports `DD4hep::DDCore` `DD4hep::<Component>` targets to be consumed by users of the DD4hep package, the CMake variables `DD4hep_LIBRARIES` etc. are still being filled for backward compatibility
+  
+  * DD4hep CMake: Only the `dd4hep_add_plugin` and `dd4hep_add_dictionary` CMake functions are to create targets still exist, `dd4hep_add_package`/`library`/`executable` were removed and instead the cmake `default add_library`/`executable` have to be used.
+  
+  * PluginManager: only link against boost filesystem if the compiler and standard library do not support the filesystem library
+  
+  * DD4hep Requirements: Now require cmake version 3.12
+  
+  * DD4hep Requirements: Now require c++ standard 14
+
+* 2019-08-21 Markus Frank ([PR#553](https://github.com/AidaSoft/DD4hep/pull/553))
+  - Fix unit conversion for optical surface properties. The units of the property tables were not converted from TGeo to Geant4. See dicussion in issue https://github.com/AIDASoft/DD4hep/issues/440
+  - If an external world volume is supplied, the material `Air` is deduced from this solid (only used by CMS).
+
+* 2019-08-15 Frank Gaede ([PR#550](https://github.com/AidaSoft/DD4hep/pull/550))
+  - make compatible with MacOS (10.14.6)
+       - address latest developments w/ new Gaudi Plugin Manager
+
+* 2019-08-14 Markus Frank ([PR#551](https://github.com/AidaSoft/DD4hep/pull/551))
+  - Moved `setDimensions` call out of the individual dd4hep shapes into the base Solid.
+  - Add `Solid::dimensions()`, `Solid::setDimension()` implementation for `PseudoTrap` and  `TruncatedTube`. The solution is not optimal, because a analytical solution tends to be ambiguous due to solutions of polynomials of degree 2 and the initial parameters had to be stored as a string.
+  - Upgraded shape tests to also check the shapes (using mesh vertices) after a re-dimension using the same parameters.
+  - Geant4FieldTrackingSetup: Any failure in the creation of the `G4EquationOfMotion` or the `G4MagIntegratorStepper` is now FATAL and causes an exception.
+
+* 2019-08-12 Markus Frank ([PR#549](https://github.com/AidaSoft/DD4hep/pull/549))
+  - Adopted new Gaudi plugin manager V2. V1 can be enabled using compile switch in `DD4hep/config.h`. Removed the traces from the ROOT5 Reflex based plugin service. The new plugin service depends on `Boost::file_system` and `Boost::system`. 
+  - Improve GDML saving from ROOT. (requires ROOT >= 6.20)
+  - Fix ROOT persistency for the volume manager.
+  - Fix Geant4FieldTrackingSetup: Issue warning if the `G4MagIntegratorStepper` cannot be created.
+  - Examples: based the CLICSiD example on the XML sources of DDDetectors. This ensures XML sources match C++ sources.
+
+* 2019-08-12 Andre Sailer ([PR#548](https://github.com/AidaSoft/DD4hep/pull/548))
+  - Shapes: fix conversion of `startTheta` for Sphere::setDimensions
+  - Shapes::get_shape_dimension: add return value conversion for angles to internal unit (radians)
+
+* 2019-08-12 MarkusFrankATcernch ([PR#547](https://github.com/AidaSoft/DD4hep/pull/547))
+  - make compatible w/ macos (c++14)
+           - replace `std::make_any` w/ make_any (defined in Any.h)
+           - use `std::lock_guard<std::mutex>`
+
+* 2019-08-07 MarkusFrankATcernch ([PR#545](https://github.com/AidaSoft/DD4hep/pull/545))
+  - Fix bug in Polyhedra shape (See #544).
+  - Update optical surface example (resolves #440) .
+
+* 2019-07-16 Markus Frank ([PR#539](https://github.com/AidaSoft/DD4hep/pull/539))
+  - Remove clang warnings.
+
+* 2019-07-16 MarkusFrankATcernch ([PR#538](https://github.com/AidaSoft/DD4hep/pull/538))
+  - Fix coverity errors 
+  - Fix Trap shape conversion to Geant4. The theta/phi angle was not converted from degree to radians (Resolves #536).
+
+* 2019-07-15 Marko Petric ([PR#537](https://github.com/AidaSoft/DD4hep/pull/537))
+  - Add a Python 3 pipeline to the CI (currently set to `allow_failure`)
+
+* 2019-07-13 Marko Petric ([PR#535](https://github.com/AidaSoft/DD4hep/pull/535))
+  - Update CI to be based on LCG 96 (ROOT 6.18, Geant 10.5, C++17)
+  - Remove `FindXercesC.cmake` since it is in CMake
+
+* 2019-07-10 Markus Frank ([PR#533](https://github.com/AidaSoft/DD4hep/pull/533))
+  - Optimize STL containers: replace insert/push with emplace. 2nd. episode.
+
+* 2019-07-10 Marko Petric ([PR#532](https://github.com/AidaSoft/DD4hep/pull/532))
+  - Remove `dd_sim` (resolves #435)
+
+* 2019-07-10 Marko Petric ([PR#531](https://github.com/AidaSoft/DD4hep/pull/531))
+  - Remove shadow warnings related to code interfacing only ROOT 6.18
+  - Add `DBoost_NO_BOOST_CMAKE=ON` to examples cmake call as it is necessary now
+  - Set CMP0074 policy to NEW if can be set
+
+* 2019-07-10 Markus Frank ([PR#530](https://github.com/AidaSoft/DD4hep/pull/530))
+  - Optimize STL containers: replace insert/push with emplace
+
+* 2019-07-09 Markus Frank ([PR#528](https://github.com/AidaSoft/DD4hep/pull/528))
+  * Allow for various material scan types from the root interactove prompt
+  
+         Examples: from DDDetectors/compact/SiD.xml
+         $> materialScan file:checkout/DDDetectors/compact/SiD.xml -interactive
+       
+         1) Simple scan:
+            root [0] gMaterialScan->print(5,5,0,5,5,400)
+         2) Scan a given subdetector:
+            root [0] de=gDD4hepUI->instance()->detector("LumiCal");
+            root [1] gMaterialScan->setDetector(de);
+            root [2] gMaterialScan->print(5,5,0,5,5,400)
+         3) Scan by material:
+            root [0] gMaterialScan->setMaterial("Silicon");
+            root [1] gMaterialScan->print(5,5,0,5,5,400)
+         4) Scan by region:
+            root [0] gMaterialScan->setRegion("SiTrackerBarrelRegion");
+            root [1] gMaterialScan->print(0,0,0,100,100,0)
+  
+  * Added copyright notices to the DDRec files.
+
+* 2019-07-09 Marko Petric ([PR#527](https://github.com/AidaSoft/DD4hep/pull/527))
+  - Update CI to macOS Mojave 10.14
+  - Make `PluginService.cpp` C++17 compliant (addresses partially #525)
+    - replace `ptr_fun` with `lambda`
+  - Remove deprecated code that uses `auto_prt`
+  - Remove deprecated `set_unexpected` from  `DetectorImp.cpp`
+  - Remove code associated to `DD4HEP_DD4HEP_PTR_AUTO`
+
+* 2019-07-08 Markus Frank ([PR#524](https://github.com/AidaSoft/DD4hep/pull/524))
+  - Get the new package formally into the same shape as the other packages together with an example section.
+  - Add small example to test the basic development framework
+
+* 2019-07-04 Markus Frank ([PR#520](https://github.com/AidaSoft/DD4hep/pull/520))
+  - From ROOT 6.20 onwards dd4hep shall use the Geant4 unit system (mm, nsec, MeV) instead of the TGeo units (cm, sec, keV). This commit prepares for the necessary changes.
+  - A new package was created, which shall host the dd4hep digitization components.
+    A small tbb based multi threaded framework was put in place. Now the real work can start.
+  - The material scanner has now a switch to run in interactive mode from the ROOT prompt.
+    To invoke: materialScan compact.xml  x0 y0 z0 x1 y1 z1 -interactive
+    If the interactive switch is missing, the old behavior is preserved.
+
+* 2019-06-26 Markus Frank ([PR#517](https://github.com/AidaSoft/DD4hep/pull/517))
+  - Material properties use now default dd4hep units
+  - Translated and updated surface example from geant4 to dd4hep
+  - Added shape identification using `instanceOf operator (function)`
+  - Improved handling of xml files if improperly terminated
+
+* 2019-06-26 MarkusFrankATcernch ([PR#516](https://github.com/AidaSoft/DD4hep/pull/516))
+  - CMakeLists: Changed the order in which include directories are listed when compiling, move DD4hep source paths to the front. This fixes a problem if older DD4hep installations are inadvertently in one of the include paths passed to compilers or rootcling (e.g., in LCG Views), fixes #515
+
+* 2019-06-06 Andre Sailer ([PR#514](https://github.com/AidaSoft/DD4hep/pull/514))
+  - Gean4ExtraParticles: no longer add decay process to extra particles, this is done by Geant4  resolves #513 
+  - ddsim: disable physics.decays by default. This should only be enabled if completely new physics lists are created resolves #513
+
+* 2019-05-09 Markus Frank ([PR#510](https://github.com/AidaSoft/DD4hep/pull/510))
+  - Add debug printout of MEE in Geant4 material conversion
+
+* 2019-04-29 MarkusFrankATcernch ([PR#508](https://github.com/AidaSoft/DD4hep/pull/508))
+  * Geant4GDMLWriteAction:
+    * Add properties to Geant4GDMLWriteAction to steer writing of regions, cuts and sensitive detectors. See github issue #507
+      * Property: Export region information to the GDML: ExportRegions, default: True
+      * Property: Export energy cut information to the GDML: ExportEnergyCuts, default: True
+      * Property: Export sensitive detector information to the GDML: ExportSensitiveDetectors, default: True
+    * **Note: The Geant4 physics list must be initialized BEFORE invoking the writer with options. Otherwise the particle definitions are missing! If you ONLY want to dump the geometry to GDML you must call**
+      ```
+         /run/beamOn 0
+      ```
+      before writing the GDML file!
+      You also need to setup a minimal generation action like:
+       ```py
+       sid.geant4.setupGun('Gun','pi-',10*GeV,Standalone=True)
+       ```
+
+* 2019-04-29 Frank Gaede ([PR#506](https://github.com/AidaSoft/DD4hep/pull/506))
+  - add utility materialBudget.cpp 
+       - create plots w/ integrated radiation and interaction lengths
+  - bug fix in materialScan.cpp
+       - print correct endpoint
+
+* 2019-04-17 Marko Petric ([PR#503](https://github.com/AidaSoft/DD4hep/pull/503))
+  - DDG4: DDSim add option Physics.zeroTimePDG to configure ignoring particles of given PDG when their properTime is ZERO, e.g. charged leptons undergoing FSR, fixes #390 
+  - DDG4: DDSim: fix parsing of rejectPDGs values from the command line
+
+* 2019-04-12 Marko Petric ([PR#502](https://github.com/AidaSoft/DD4hep/pull/502))
+  - DDSim: Add Higgs PDG code 25 to rejected codes for reading events
+
+* 2019-04-10 MarkusFrankATcernch ([PR#501](https://github.com/AidaSoft/DD4hep/pull/501))
+  - Add access to all Geant4Action derivatives to the Geant4 top level physical volume (world).
+  - Add Geant4 GDML writer action accessible and configurable from the Geant4 prompt
+
+* 2019-04-09 Mircho Rodozov ([PR#496](https://github.com/AidaSoft/DD4hep/pull/496))
+  - Added powerpc macros check to include header `cxxabi.h`
+
+* 2019-04-01 Markus Frank ([PR#494](https://github.com/AidaSoft/DD4hep/pull/494))
+  -  Use shared_ptr instead of home made ref counting for ConditionUpdateCalls
+  -  Implement construction parameter access for solids.  This one is a bit tricky: Some shapes (ShapeAssembly, Boolean shapes) had no such parameters. Added them as the sequence of the basic shape parameters + the corresponding matrices.
+  -  Add move constructors to handles 
+  -  Improve const-ness of detector object in DDG4
+
+* 2019-03-11 Markus Frank ([PR#491](https://github.com/AidaSoft/DD4hep/pull/491))
+  - Implemented basic handles to support surface objects
+  - Implemented import of surface optical objects in compact to create TGeo surface objects and tabulated properties.
+  - Implemented the translation from TGeo to Geant4
+  - Added physics components for DDG4 handling Cerekov, Scintillation and generic optical photon physics
+  - Added examples
+  
+  Please Note: 
+  1) This is only enabled for a ROOT version > 6.17 (which is supposed to come)
+  2) There are still changes in ROOT in the pipeline. The code shall have to be adapted accordingly once these changes are activated.
+
+* 2019-03-06 ebrianne ([PR#489](https://github.com/AidaSoft/DD4hep/pull/489))
+  - Added Initialization of G4EmSaturation to initialize birks coefficients - for g4 version > 10.03
+
+* 2019-02-19 Andre Sailer ([PR#486](https://github.com/AidaSoft/DD4hep/pull/486))
+  - DDRec: Surface: add accessor to DetElement member
+  - DDRec: DetectorData: add Extension holding a map of String to Doubles
+
+* 2019-02-14 Paul Gessinger ([PR#485](https://github.com/AidaSoft/DD4hep/pull/485))
+  * In `DD4hepConfig.cmake`, figure out if build has compatible standard set and print error if not
+
+* 2019-02-13 Frank Gaede ([PR#483](https://github.com/AidaSoft/DD4hep/pull/483))
+  - fix drawing of surfaces for z-disks and cylinders (resolves #482)
+
 # v01-10
 
 * 2019-01-31 Markus Frank ([PR#480](https://github.com/aidasoft/dd4hep/pull/480))
