@@ -87,7 +87,6 @@ int initAClick(const char* command=0)  {
   libs += " " +dd4hep+"/lib/libDD4hepGaudiPluginMgr." + ext;
   libs += " " +dd4hep+"/lib/libDDCore."+ ext;
   libs += " " +dd4hep+"/lib/libDDG4."+ ext;
-  gSystem->Load(std::string("libDD4hepGaudiPluginMgr." + ext).c_str());
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
