@@ -62,7 +62,13 @@ int initAClick(const char* command=0)  {
   std::string clhep   = make_str(gSystem->Getenv("CLHEP_ROOT_DIR"));
   std::string defs    = "";
   std::string libs    = " -L"+rootsys+"/lib";
-  std::string inc     = " -I"+dd4hep+"/examples/LHeD/scripts -I"+dd4hep + " -I"+dd4hep+"/include"+clhep+"/include -I"+geant4+"/include";
+  std::string inc     = "";
+  inc += " -I" + dd4hep + "/examples/LHeD/scripts ";
+  inc += " -I" + dd4hep;
+  inc += " -I" + dd4hep + "/include ";
+  inc += " -I" + clhep  + "/include ";
+  inc += " -I" + geant4 + "/include ";
+
   std::string ext = "so";
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
