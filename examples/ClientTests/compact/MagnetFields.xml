@@ -51,7 +51,7 @@
     </field>
 
 
-    <field name="MagnetFields_GlobalMultipole" type="MultipoleMagnet" Z="50*cm">
+    <field name="MagnetFields_GlobalMultipole" type="MultipoleMagnet" Z="5*tesla">
       <position x="30*cm" y="20*cm" z="40*cm"/>
       <rotation x="1" y="0" z="0"/>
       <coefficient coefficient="1.0*tesla" skew="0.1*tesla"/>
