@@ -63,10 +63,12 @@ int initAClick(const char* command=0)  {
   std::string defs    = "";
   std::string libs    = " -L"+rootsys+"/lib";
   std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples -I"+dd4hep + " -I"+dd4hep+"/include";
+  std::string ext = "so";
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
 #ifdef __APPLE__
     libs += (" -L"+geant4+"/lib");
+    ext = "dylib";
 #else
     libs += (" -L"+geant4+"/lib -L"+geant4+"/lib64");
 #endif
@@ -82,10 +84,10 @@ int initAClick(const char* command=0)  {
 #ifndef __APPLE__
   libs += " -lCore -lMathCore -pthread -lm -ldl -rdynamic";
 #endif
-  libs += " " +dd4hep+"/lib/libDD4hepGaudiPluginMgr.so";
-  libs += " " +dd4hep+"/lib/libDDCore.so";
-  libs += " " +dd4hep+"/lib/libDDG4.so";
-  gSystem->Load("libDD4hepGaudiPluginMgr.so");
+  libs += " " +dd4hep+"/lib/libDD4hepGaudiPluginMgr." + ext;
+  libs += " " +dd4hep+"/lib/libDDCore."+ ext;
+  libs += " " +dd4hep+"/lib/libDDG4."+ ext;
+  gSystem->Load(std::string("libDD4hepGaudiPluginMgr." + ext).c_str());
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
