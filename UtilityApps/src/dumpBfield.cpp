@@ -42,20 +42,20 @@ static int invoke_dump_B_field(int argc, char** argv ){
   sstr << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << " " << argv[7] ;
   
   float xRange , yRange , zRange , dx , dy, dz ;
-  sstr >> xRange ;
-  sstr >> yRange ;
-  sstr >> zRange ;
-  sstr >> dx ;
-  sstr >> dy ;
-  sstr >> dz ;
-  
-  
-  
+  sstr >> xRange >> yRange >> zRange >> dx >> dy >> dz;
+
+  xRange *= dd4hep::cm;
+  yRange *= dd4hep::cm;
+  zRange *= dd4hep::cm;
+  dx *= dd4hep::cm;
+  dy *= dd4hep::cm;
+  dz *= dd4hep::cm;
+
   Detector& description = Detector::getInstance();
   description.fromCompact( inFile );
   
   printf("#######################################################################################################\n");
-  printf("       x[cm]             y[cm]           z[cm]           Bx[Tesla]        By[cm]          Bz[cm]       \n");
+  printf("      x[cm]            y[cm]            z[cm]          Bx[Tesla]        By[Tesla]        Bz[Tesla]     \n");
 
   for( float x = -xRange ; x <=xRange ; x += dx ){
     for( float y = -yRange ; y <=yRange ; y += dy ){
@@ -66,7 +66,7 @@ static int invoke_dump_B_field(int argc, char** argv ){
 	description.field().magneticField( posV  , bfieldV  ) ;
 
 	printf(" %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  \n",
-         posV[0], posV[1],  posV[2],
+         posV[0]/dd4hep::cm, posV[1]/dd4hep::cm,  posV[2]/dd4hep::cm,
          bfieldV[0]/dd4hep::tesla , bfieldV[1]/dd4hep::tesla, bfieldV[2]/dd4hep::tesla ) ; 
 
       }
