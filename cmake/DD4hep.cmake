@@ -90,13 +90,10 @@ function(dd4hep_generate_rootmap_notapple library)
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -Dlibname=$<TARGET_FILE_NAME:${library}> -Drootmapfile=${rootmapfile}
-                             -DDD4HEP_LISTCOMPONENTS_CMD=$<TARGET_FILE:DD4hep::listcomponents>
-                             -DLIBRARY_LOCATION=$<TARGET_FILE_DIR:${library}>
-                             -DDD4HEP_LIBRARY_LOCATION=$<TARGET_FILE_DIR:DD4hep::DDCore>
-                             -DDD4hep_DIR=${DD4hep_DIR}
-                             -P ${DD4hep_DIR}/cmake/MakeGaudiMap.cmake)
+                     COMMAND DD4hep::listcomponents -o ${rootmapfile} $<TARGET_FILE:${library}>
+                     WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
+                     )
+
   add_custom_target(Components_${library} ALL DEPENDS ${rootmapfile})
   SET( install_destination "lib" )
   if( CMAKE_INSTALL_LIBDIR )
