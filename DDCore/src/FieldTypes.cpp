@@ -109,7 +109,7 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     double x2 = x*x;
     double y2 = y*y;
     switch(coefficents.size())  {
-    case 4:      // Ocupole momentum
+    case 4:      // Octupole momentum
       by += (1./6.) * ( coefficents[3] * (x2*x - 3.0*x*y2) + skews[3]*(y2*y - 3.0*x2*y) );
       bx += (1./6.) * ( coefficents[3] * (3.0*x2*y - y2*y) + skews[3]*(x2*x - 3.0*x*y2) );
       ATTR_FALLTHROUGH;
