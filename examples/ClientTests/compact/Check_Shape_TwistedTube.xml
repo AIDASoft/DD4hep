@@ -4,7 +4,7 @@
   </includes>
 
   <detectors>
-    <detector id="1" name="Shape_TwistedTube" type="DD4hep_TestShape_Creator">
+    <detector id="1" name="Shape_Test" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
         <shape type="TwistedTube" twist="20*degree" rmin="10*cm" rmax="30*cm" dz="40*cm" deltaphi="45*degree" />
         <position x="30"  y="30"   z="30"/>

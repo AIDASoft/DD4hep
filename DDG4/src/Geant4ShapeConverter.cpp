@@ -15,6 +15,7 @@
 #include "DD4hep/Shapes.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/detail/ShapesInterna.h"
 
 #include "Geant4ShapeConverter.h"
 
@@ -36,8 +37,9 @@
 #include "G4CutTubs.hh"
 #include "G4Polycone.hh"
 #include "G4Polyhedra.hh"
-#include "G4Paraboloid.hh"
 #include "G4Ellipsoid.hh"
+#include "G4Paraboloid.hh"
+#include "G4TwistedTubs.hh"
 #include "G4GenericTrap.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4EllipticalTube.hh"
@@ -98,6 +100,14 @@ namespace dd4hep {
     template <> G4VSolid* convertShape<TGeoEltu>(const TGeoShape* shape)  {
       const TGeoEltu* sh = (const TGeoEltu*) shape;
       return new G4EllipticalTube(sh->GetName(),sh->GetA() * CM_2_MM, sh->GetB() * CM_2_MM, sh->GetDz() * CM_2_MM);
+    }
+
+    template <> G4VSolid* convertShape<TwistedTubeObject>(const TGeoShape* shape)  {
+      const TwistedTubeObject* sh = (const TwistedTubeObject*) shape;
+      return new G4TwistedTubs(sh->GetName(),sh->GetPhiTwist() * DEGREE_2_RAD,
+                               sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM,
+                               sh->GetNegativeEndZ() * CM_2_MM, sh->GetPositiveEndZ() * CM_2_MM,
+                               sh->GetNsegments(), (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD);
     }
 
     template <> G4VSolid* convertShape<TGeoTrd1>(const TGeoShape* shape)  {
