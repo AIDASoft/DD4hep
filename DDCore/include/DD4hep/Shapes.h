@@ -588,13 +588,13 @@ namespace dd4hep {
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
   };
   
-  /// Class describing a elliptical tube shape
+  /// Class describing a twisted tube shape
   /**
-   *   This is actually no TGeo shape. This implementation is a placeholder
-   *   for the Geant4 implementation G4TwistedTube.
-   *   In root it is implemented by a simple tube segment.
-   *   When converted to geant4 it will become a G4TwistedTube.
+   *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
+   *            Semi axis of ellipsis in x and y and half-length dz.
    *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoElTu.html
    *
    *   \author  M.Frank
    *   \version 1.0
@@ -640,13 +640,13 @@ namespace dd4hep {
     EllipticalTube& setDimensions(double a, double b, double dz);
   };
 
-  /// Class describing a twisted tube shape
+  /// Class describing a elliptical tube shape
   /**
-   *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
-   *            Semi axis of ellipsis in x and y and half-length dz.
+   *   This is actually no TGeo shape. This implementation is a placeholder
+   *   for the Geant4 implementation G4TwistedTube.
+   *   In root it is implemented by a simple tube segment.
+   *   When converted to geant4 it will become a G4TwistedTube.
    *
-   *   For any further documentation please see the following ROOT documentation:
-   *   \see http://root.cern.ch/root/html/TGeoElTu.html
    *
    *   \author  M.Frank
    *   \version 1.0

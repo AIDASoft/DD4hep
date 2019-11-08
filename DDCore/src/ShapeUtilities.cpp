@@ -737,7 +737,7 @@ namespace dd4hep {
   template <> void set_dimensions(CutTube shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(TwistedTube shape, const std::vector<double>& params)
-  {  set_dimensions(shape.ptr(), params);   }
+  {  set_dimensions((TwistedTubeObject*)shape.ptr(), params);   }
   template <> void set_dimensions(EllipticalTube shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(Trap shape, const std::vector<double>& params)

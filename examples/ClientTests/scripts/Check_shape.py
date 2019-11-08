@@ -27,7 +27,6 @@ def run():
 
   ui = geant4.setupCshUI(ui=None,vis=vis)
   if batch: kernel.UI = ''
-  print('Geometry:'+str(geo))
   kernel.loadGeometry(geo)
   # Configure field
   geant4.setupTrackingField(prt=True)
