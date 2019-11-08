@@ -55,7 +55,7 @@ Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  cons
     iov->iov_intersection(c.iov());
     return c;
   }
-#ifdef DD4HEP_CONDITIONS_DEBUG
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
   except("ConditionUpdateCall:","Failed to access non-existing condition:"+key_value.name);
 #else
   ConditionKey::KeyMaker key(key_value.hash);
@@ -117,7 +117,7 @@ ConditionResolver::~ConditionResolver()  {
 
 /// Throw exception on conditions access failure
 void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const   {
-#ifdef DD4HEP_CONDITIONS_DEBUG
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
   except("ConditionUpdateCall",
          "%s [%016llX]: FAILED to access non-existing item:%s [%016llX]",
          dependency->target.name.c_str(), dependency->target.hash,

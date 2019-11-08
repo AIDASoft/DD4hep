@@ -1,0 +1,15 @@
+ShapeCheck[0] TGeoPgon         12 Mesh-points:
+TGeoPgon         Polyhedra N(mesh)=12  N(vert)=12  N(seg)=20  N(pols)=10
+TGeoPgon         0   Local  ( 177.50,  -31.30,    0.00) Global ( 207.50,   -1.30,   50.00)
+TGeoPgon         1   Local  ( 177.50,   31.30,    0.00) Global ( 207.50,   61.30,   50.00)
+TGeoPgon         2   Local  ( 185.15,  -32.65,    0.00) Global ( 215.15,   -2.65,   50.00)
+TGeoPgon         3   Local  ( 185.15,   32.65,    0.00) Global ( 215.15,   62.65,   50.00)
+TGeoPgon         4   Local  ( 177.50,  -31.30,  308.24) Global ( 207.50,   -1.30,  358.24)
+TGeoPgon         5   Local  ( 177.50,   31.30,  308.24) Global ( 207.50,   61.30,  358.24)
+TGeoPgon         6   Local  ( 185.15,  -32.65,  308.24) Global ( 215.15,   -2.65,  358.24)
+TGeoPgon         7   Local  ( 185.15,   32.65,  308.24) Global ( 215.15,   62.65,  358.24)
+TGeoPgon         8   Local  ( 185.15,  -32.65,  321.54) Global ( 215.15,   -2.65,  371.54)
+TGeoPgon         9   Local  ( 185.15,   32.65,  321.54) Global ( 215.15,   62.65,  371.54)
+TGeoPgon         10  Local  ( 185.15,  -32.65,  321.54) Global ( 215.15,   -2.65,  371.54)
+TGeoPgon         11  Local  ( 185.15,   32.65,  321.54) Global ( 215.15,   62.65,  371.54)
+TGeoPgon         Bounding box:  dx=   6.60 dy=  32.65 dz= 160.77 Origin: x= 181.40 y=   0.00 z= 160.77

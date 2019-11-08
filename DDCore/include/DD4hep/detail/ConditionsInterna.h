@@ -57,14 +57,14 @@ namespace dd4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionObject
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if defined(DD4HEP_CONDITIONS_DEBUG) || !defined(DD4HEP_MINIMAL_CONDITIONS)
       : public NamedObject
 #endif
     {
     public:
       /// Condition value (in string form)
       std::string          value;
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if defined(DD4HEP_CONDITIONS_DEBUG) || !defined(DD4HEP_MINIMAL_CONDITIONS)
       /// Condition validity (in string form)
       std::string          validity;
       /// Condition address

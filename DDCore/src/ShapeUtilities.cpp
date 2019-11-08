@@ -18,6 +18,7 @@
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/detail/ShapesInterna.h"
 #include "ShapeTags.h"
 
 // C/C++ include files
@@ -82,7 +83,9 @@ namespace dd4hep {
     return check_shape_type<TGeoConeSeg>(solid) || check_shape_type<TGeoCone>(solid);
   }
   template <> bool isInstance<Tube>(const Handle<TGeoShape>& solid)  {
-    return check_shape_type<TGeoTubeSeg>(solid) || check_shape_type<TGeoCtub>(solid);
+    return check_shape_type<TGeoTubeSeg>(solid)
+      || check_shape_type<TGeoCtub>(solid)
+      || check_shape_type<TwistedTubeObject>(solid);
   }
   template <> bool isInstance<Polycone>(const Handle<TGeoShape>& solid)   {
     return check_shape_type<TGeoPcon>(solid)    || check_shape_type<TGeoPgon>(solid);
@@ -93,6 +96,9 @@ namespace dd4hep {
       return c==TGeoArb8::Class() || c==TGeoTrap::Class() || c==TGeoGtra::Class();
     }
     return false;
+  }
+  template <> bool isInstance<TwistedTube>(const Handle<TGeoShape>& solid)  {
+    return check_shape_type<TwistedTubeObject>(solid);
   }
   template <> bool isInstance<TruncatedTube>(const Handle<TGeoShape>& solid)   {
     return check_shape_type<TGeoCompositeShape>(solid)
@@ -143,6 +149,10 @@ namespace dd4hep {
   template bool isA<Polycone>(const Handle<TGeoShape>& solid);
   template bool isA<EightPointSolid>(const Handle<TGeoShape>& solid);
 
+  template <> bool isA<TwistedTube>(const Handle<TGeoShape>& solid)   {
+    return check_shape_type<TwistedTubeObject>(solid)
+      &&   ::strcmp(solid->GetTitle(), TWISTEDTUBE_TAG) == 0;
+  }
   template <> bool isA<TruncatedTube>(const Handle<TGeoShape>& solid)   {
     return check_shape_type<TGeoCompositeShape>(solid)
       &&   ::strcmp(solid->GetTitle(), TRUNCATEDTUBE_TAG) == 0;
@@ -218,6 +228,12 @@ namespace dd4hep {
   template <> vector<double> dimensions<TGeoTubeSeg>(const TGeoShape* shape)    {
     const TGeoTubeSeg* sh = get_ptr<TGeoTubeSeg>(shape);
     return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(), sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg };
+  }
+  template <> vector<double> dimensions<TwistedTubeObject>(const TGeoShape* shape)    {
+    const TwistedTubeObject* sh = get_ptr<TwistedTubeObject>(shape);
+    return { sh->GetPhiTwist(), sh->GetRmin(), sh->GetRmax(),
+        sh->GetNegativeEndZ(), sh->GetPositiveEndZ(),
+        double(sh->GetNsegments()), sh->GetPhi2()*units::deg };
   }
   template <> vector<double> dimensions<TGeoCtub>(const TGeoShape* shape)    {
     const TGeoCtub* sh = get_ptr<TGeoCtub>(shape);
@@ -353,6 +369,7 @@ namespace dd4hep {
   template vector<double> dimensions<ConeSegment>      (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<Tube>             (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<CutTube>          (const Handle<TGeoShape>& shape);
+  template vector<double> dimensions<TwistedTube>      (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<EllipticalTube>   (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<Cone>             (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<Trap>             (const Handle<TGeoShape>& shape);
@@ -418,6 +435,8 @@ namespace dd4hep {
         return dimensions<TGeoBBox>(shape.ptr());
       else if (cl == TGeoHalfSpace::Class())
         return dimensions<TGeoHalfSpace>(shape.ptr());
+      else if (cl == TGeoPgon::Class())
+        return dimensions<TGeoPgon>(shape.ptr());
       else if (cl == TGeoPcon::Class())
         return dimensions<TGeoPcon>(shape.ptr());
       else if (cl == TGeoConeSeg::Class())
@@ -432,6 +451,8 @@ namespace dd4hep {
         return dimensions<TGeoCtub>(shape.ptr());
       else if (cl == TGeoEltu::Class())
         return dimensions<TGeoEltu>(shape.ptr());
+      else if (cl == TwistedTubeObject::Class())
+        return dimensions<TwistedTubeObject>(shape.ptr());
       else if (cl == TGeoTrd1::Class())
         return dimensions<TGeoTrd1>(shape.ptr());
       else if (cl == TGeoTrd2::Class())
@@ -550,6 +571,24 @@ namespace dd4hep {
     pars[4] /= units::deg;
     Solid(sh)._setDimensions(&pars[0]);
   }
+  template <> void set_dimensions(TwistedTubeObject* sh, const std::vector<double>& params)   {
+    if ( params.size() != 7 )   {
+      invalidSetDimensionCall(sh,params);
+    }
+    auto pars = params;
+    sh->fPhiTwist = pars[0]/units::deg;
+    sh->fNegativeEndz = pars[3];
+    sh->fPositiveEndz = pars[4];
+    sh->fNsegments    = (int)pars[5];
+
+    pars[0] = pars[1];
+    pars[1] = pars[2];
+    pars[2] = (pars[3]+pars[4])/2.0;
+    pars[3] = 0.0;
+    pars[4] = pars[6];
+    pars.resize(5);
+    set_dimensions((TGeoTubeSeg*)sh, pars);
+  }
   template <> void set_dimensions(TGeoCtub* sh, const std::vector<double>& params)   {
     if ( params.size() != 11 )   {
       invalidSetDimensionCall(sh,params);
@@ -615,7 +654,7 @@ namespace dd4hep {
   }
   template <> void set_dimensions(TGeoPgon* sh, const std::vector<double>& params)   {
     auto pars = params;
-    if ( params.size() != 3 + 3*size_t(params[2]) )   {
+    if ( params.size() < 4 || params.size() != 4 + 3*size_t(params[3]) )   {
       invalidSetDimensionCall(sh,params);
     }
     pars[0]  /= units::deg;
@@ -624,7 +663,7 @@ namespace dd4hep {
   }
   template <> void set_dimensions(TGeoXtru* sh, const std::vector<double>& params)   {
     auto pars = params;
-    if ( params.size() != 1 + 4*size_t(params[0]) )   {
+    if ( params.size() < 1 || params.size() != 1 + 4*size_t(params[0]) )   {
       invalidSetDimensionCall(sh,params);
     }
     Solid(sh)._setDimensions(&pars[0]);
@@ -696,6 +735,8 @@ namespace dd4hep {
   template <> void set_dimensions(Tube shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(CutTube shape, const std::vector<double>& params)
+  {  set_dimensions(shape.ptr(), params);   }
+  template <> void set_dimensions(TwistedTube shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(EllipticalTube shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
@@ -899,6 +940,8 @@ namespace dd4hep {
         set_dimensions(CutTube(shape), params);
       else if (cl == TGeoEltu::Class())
         set_dimensions(EllipticalTube(shape), params);
+      else if (cl == TwistedTubeObject::Class())
+        set_dimensions(TwistedTube(shape), params);
       else if (cl == TGeoTrd1::Class())
         set_dimensions(Trd1(shape), params);
       else if (cl == TGeoTrd2::Class())

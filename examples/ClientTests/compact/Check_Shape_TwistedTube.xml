@@ -1,0 +1,20 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_TwistedTube" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="TwistedTube" twist="20*degree" rmin="10*cm" rmax="30*cm" dz="40*cm" deltaphi="45*degree" />
+        <position x="30"  y="30"   z="30"/>
+        <rotation x="0"   y="0"    z="0"/>
+      </check>
+<a>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TwistedTube.txt" create="CheckShape_create"/>
+</a>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TwistedTube.txt" create="1"/>
+
+    </detector>
+  </detectors>
+</lccdd>

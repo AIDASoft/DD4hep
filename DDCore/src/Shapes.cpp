@@ -18,6 +18,7 @@
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/detail/ShapesInterna.h"
 #include "ShapeTags.h"
 
 // C/C++ include files
@@ -434,6 +435,13 @@ void TruncatedTube::make(const string& nam,
 /// Constructor to be used when creating a new object with attribute initialization
 void EllipticalTube::make(const string& nam, double a, double b, double dz) {
   _assign(new TGeoEltu(nam.c_str(), a, b, dz), "", ELLIPTICALTUBE_TAG, true);
+}
+
+/// Internal helper method to support TwistedTube object construction
+void TwistedTube::make(const std::string& nam, double twist_angle, double rmin, double rmax,
+                       double zneg, double zpos, int nsegments, double totphi)   {
+  _assign(new TwistedTubeObject(nam.c_str(), twist_angle, rmin, rmax, zneg, zpos, nsegments, totphi/units::deg),
+          "", TWISTEDTUBE_TAG, true);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization

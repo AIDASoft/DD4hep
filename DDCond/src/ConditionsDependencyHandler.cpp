@@ -248,9 +248,14 @@ void ConditionsDependencyHandler::do_callback(Work* work)   {
       // during the construction tries to access this one.
       // ---> Classic dead-lock
       except("DependencyHandler",
-             "++ Handler caught in infinite recursion loop. DE:%s Key:%s",
+             "++ Handler caught in infinite recursion loop. Key:%s %c%s%c",
              work->context.dependency->target.toString().c_str(),
-             work->context.dependency->detector.path().c_str());
+#if defined(DD4HEP_CONDITIONS_DEBUG)
+             '[',work->context.dependency->detector.path().c_str(),']'
+#else
+             ' ',"",' '
+#endif
+             );
     }
     ++work->callstack;
     work->condition = (*dep->callback)(dep->target, work->context).ptr();

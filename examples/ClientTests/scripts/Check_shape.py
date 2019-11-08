@@ -15,29 +15,39 @@ def run():
   kernel = DDG4.Kernel()
   # Configure UI
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
-  geant4.setupCshUI(vis=True)
-  if len(sys.argv) >= 2 and sys.argv[1] == "batch":
-    kernel.UI = ''
-  elif len(sys.argv) >= 3 and (sys.argv[1] == "batch" or sys.argv[2] == "batch"):
-    kernel.UI = ''
-  elif len(sys.argv) == 2 and sys.argv[1] != "batch":
-    kernel.loadGeometry(sys.argv[1])
-  elif len(sys.argv) == 3 and sys.argv[1] != "batch":
-    kernel.loadGeometry(sys.argv[2])
-  elif len(sys.argv) == 3 and sys.argv[2] != "batch":
-    kernel.loadGeometry(sys.argv[1])
-  #
+  geo = None
+  vis = False
+  batch = False
+  #pdb.set_trace()
+  for i in xrange(len(sys.argv)):
+    c = sys.argv[i].upper()
+    if c.find('BATCH') < 2 and c.find('BATCH') >= 0: batch = True
+    if c[:4] == '-GEO': geo = sys.argv[i+1]
+    if c[:4] == '-VIS': vis = True
+
+  ui = geant4.setupCshUI(ui=None,vis=vis)
+  if batch: kernel.UI = ''
+  print('Geometry:'+str(geo))
+  kernel.loadGeometry(geo)
   # Configure field
   geant4.setupTrackingField(prt=True)
   # Now build the physics list:
-  phys = kernel.physicsList()
-  phys.extends = 'QGSP_BERT'
-  phys.enableUI()
-  phys.dump()
-
+  geant4.setupPhysics('')
+  kernel.physicsList().enableUI()
   DDG4.setPrintLevel(DDG4.OutputLevel.DEBUG)
-  geant4.execute()
-
+  #
+  #      '/ddg4/ConstructGeometry/DumpGDML   test.gdml',
+  #      '/ddg4/ConstructGeometry/writeGDML',
+  ui.Commands = [
+      '/ddg4/ConstructGeometry/VolumePath /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0',
+      '/ddg4/ConstructGeometry/printVolume',
+      'exit'
+      ]
+  kernel.NumEvents = 0
+  kernel.configure()
+  kernel.initialize()
+  kernel.run()
+  kernel.terminate()
 
 if __name__ == "__main__":
   run()

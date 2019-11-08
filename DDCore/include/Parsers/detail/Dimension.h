@@ -155,6 +155,10 @@ namespace dd4hep {
       double startphi() const;
       /// Access rotation constants: startphi
       double startphi(double default_value) const;
+      /// Access rotation constants: twist
+      double twist() const;
+      /// Access rotation constants: twist
+      double twist(double default_value) const;
 
       /// Access parameters: a
       double a() const;
@@ -364,9 +368,17 @@ namespace dd4hep {
       double dz() const;
       /// Access parameters: dz, if not present returns default
       double dz(double default_value) const;
-      /// Access min/max parameters: zmax
+      /// Access pos/neg parameters: zpos
+      double zpos() const;
+      /// Access pos/neg parameters: zpos
+      double zpos(double default_value) const;
+      /// Access pos/neg parameters: zneg
+      double zneg() const;
+      /// Access pos/neg parameters: zneg
+      double zneg(double default_value) const;
+      /// Access min/max parameters: zmin
       double zmin() const;
-      /// Access min/max parameters: zmax
+      /// Access min/max parameters: zmin
       double zmin(double default_value) const;
       /// Access min/max parameters: zmax
       double zmax() const;
@@ -449,6 +461,8 @@ namespace dd4hep {
 
       /// Access attribute values: nmodules
       int nmodules() const;
+      /// Access attribute values: nsegments
+      int nsegments() const;
       /// Access attribute values: nModules
       int nModules() const;
       /// Access attribute values: RowID
@@ -576,17 +590,17 @@ namespace dd4hep {
       /// Access min/max parameters: lunit
       double lunit(double default_value) const;
 
-      /// Access rotation constants: temperature
+      /// Access constants: temperature
       double temperature() const;
-      /// Access rotation constants: temperature
+      /// Access constants: temperature
       double temperature(double default_value) const;
-      /// Access rotation constants: pressure
+      /// Access constants: pressure
       double pressure() const;
-      /// Access rotation constants: pressure
+      /// Access constants: pressure
       double pressure(double default_value) const;
-      /// Access rotation constants: density
+      /// Access constants: density
       double density() const;
-      /// Access rotation constants: density
+      /// Access constants: density
       double density(double default_value) const;
 
       /// Access child element with tag "dimensions" as Dimension object

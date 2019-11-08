@@ -20,6 +20,7 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Shapes.h"
 #include "DD4hep/VolumeProcessor.h"
+#include "DD4hep/detail/ShapesInterna.h"
 
 // C/C++ include files
 #include <vector>
@@ -131,6 +132,10 @@ template vector<pair<string, int> >::iterator;
 
 #pragma link C++ class dd4hep::PlacedVolumeProcessor+;
 #pragma link C++ class dd4hep::PlacedVolumeScanner+;
+
+#pragma link C++ class dd4hep::TwistedTube+;
+#pragma link C++ class dd4hep::Solid_type<dd4hep::TwistedTubeObject>+;
+#pragma link C++ class dd4hep::TwistedTubeObject+;
 
 #endif  // __CINT__
 #endif  /* DD4HEP_DDCORE_ROOTDICTIONARY_H  */

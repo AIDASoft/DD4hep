@@ -23,6 +23,14 @@
 using namespace std;
 using namespace dd4hep;
 
+#if defined(DD4HEP_CONDITIONS_DEBUG) && !defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
+#define DD4HEP_CONDITIONKEY_HAVE_NAME 1
+#endif
+
+#if defined(DD4HEP_CONDITIONS_DEBUG) && defined(DD4HEP_MINIMAL_CONDITIONS)
+#undef DD4HEP_MINIMAL_CONDITIONS
+#endif
+
 /// Initializing constructor for a pure, undecorated conditions object
 Condition::Condition(key_type hash_key) : Handle<Object>()
 {
@@ -269,7 +277,7 @@ string ConditionKey::toString()  const    {
   dd4hep::ConditionKey::KeyMaker key(hash);
   char text[64];
   ::snprintf(text,sizeof(text),"%08X-%08X",key.values.det_key, key.values.item_key);
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
   if ( !name.empty() )   {
     stringstream str;
     str << "(" << name << ") " << text;
