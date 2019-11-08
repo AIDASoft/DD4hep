@@ -117,7 +117,7 @@ static Handle<TObject> create_TwistedTube(Detector&, xml_h element)   {
     zpos = e.zpos();
     zneg = e.zneg();
   }
-  solid = TwistedTube(e.twist(0.0), e.rmin(0.0),e.rmax(),zpos, zneg, nseg, e.deltaphi(2*M_PI));
+  solid = TwistedTube(e.twist(0.0), e.rmin(0.0),e.rmax(),zneg, zpos, nseg, e.deltaphi(2*M_PI));
 
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;

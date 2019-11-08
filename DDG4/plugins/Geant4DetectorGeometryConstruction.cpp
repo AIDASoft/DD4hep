@@ -74,7 +74,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4DetectorGeometryConstruction();
       /// Geometry construction callback. Called at "Construct()"
-      void constructGeo(Geant4DetectorConstructionContext* ctxt);
+      void constructGeo(Geant4DetectorConstructionContext* ctxt)  override;
       /// Install command control messenger to write GDML file from command prompt.
       virtual void installCommandMessenger()   override;
     };

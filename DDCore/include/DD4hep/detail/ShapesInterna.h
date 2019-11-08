@@ -37,10 +37,10 @@ namespace dd4hep {
     /// Inhibit copy assignment
     TwistedTubeObject& operator=(const TwistedTubeObject&) = delete;
   public:
-    double fPhiTwist {0};       // Twist angle from -fZHalfLength to fZHalfLength
-    double fNegativeEndz {0};   // -ve z endplate
-    double fPositiveEndz {0};   // +ve z endplate
-    int    fNsegments {0};      // Number of segments in totalPhi
+    double fPhiTwist     {0.0};   // Twist angle from -fZHalfLength to fZHalfLength
+    double fNegativeEndz {0.0};   // -ve z endplate
+    double fPositiveEndz {0.0};   // +ve z endplate
+    int    fNsegments    {0};     // Number of segments in totalPhi
     
   public:
     /// Standard constructor
@@ -66,7 +66,7 @@ namespace dd4hep {
     int    GetNsegments()    const { return fNsegments;    }
     
     /// in case shape has some negative parameters, these has to be computed in order to fit the mother
-    virtual TGeoShape *GetMakeRuntimeShape(TGeoShape *mother, TGeoMatrix * /*mat*/) const  override;
+    virtual TGeoShape *GetMakeRuntimeShape(TGeoShape* mother, TGeoMatrix* mat) const  override;
     /// print shape parameters
     virtual void InspectShape() const  override;
 
