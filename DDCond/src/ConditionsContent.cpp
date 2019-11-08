@@ -126,9 +126,13 @@ ConditionsContent::addDependency(ConditionDependency* dep)
     return *(ret.first);
   }
   ConditionKey::KeyMaker km(dep->target.hash);
+#if defined(DD4HEP_CONDITIONS_DEBUG)
   DetElement             de(dep->detector);
-  dep->release();
   const char* path = de.isValid() ? de.path().c_str() : "(global)";
+#else
+  const char* path = "";
+#endif
+  dep->release();
   except("DeConditionsRequests",
          "++ Dependency already exists: %s [%08X] [%016llX]",
          path, km.values.item_key, km.hash);

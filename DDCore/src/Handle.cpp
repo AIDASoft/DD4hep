@@ -372,6 +372,7 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 #include "TGeoVolume.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
+#include "DD4hep/detail/ShapesInterna.h"
 DD4HEP_INSTANTIATE_HANDLE(TGeoVolumeAssembly,TGeoVolume,TGeoAtt);
 DD4HEP_INSTANTIATE_HANDLE(TGeoVolumeMulti,TGeoVolume,TGeoAtt);
 DD4HEP_INSTANTIATE_HANDLE(TGeoVolume,TGeoAtt,TAttLine,TAtt3D);
@@ -392,6 +393,8 @@ DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoHype,TGeoTube);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoEltu,TGeoTube);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoTubeSeg,TGeoTube);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoCtub,TGeoTubeSeg,TGeoTube);
+using dd4hep::TwistedTubeObject;
+DD4HEP_INSTANTIATE_SHAPE_HANDLE(TwistedTubeObject,TGeoTubeSeg);
 
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoTrap,TGeoArb8);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoGtra,TGeoArb8);

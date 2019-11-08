@@ -20,7 +20,7 @@
 using namespace std;
 using namespace dd4hep;
 
-#if defined(DD4HEP_MINIMAL_CONDITIONS)
+#if !defined(DD4HEP_CONDITIONS_DEBUG) && defined(DD4HEP_MINIMAL_CONDITIONS)
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(detail::ConditionObject);
 #else
 DD4HEP_INSTANTIATE_HANDLE_NAMED(detail::ConditionObject);
@@ -44,7 +44,7 @@ detail::ConditionObject::ConditionObject()
 }
 
 /// Standard constructor
-#if defined(DD4HEP_MINIMAL_CONDITIONS)
+#if !defined(DD4HEP_CONDITIONS_DEBUG) && defined(DD4HEP_MINIMAL_CONDITIONS)
 detail::ConditionObject::ConditionObject(const string& ,const string& )
   : data()
 #else

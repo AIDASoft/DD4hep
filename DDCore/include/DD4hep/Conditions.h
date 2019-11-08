@@ -181,7 +181,7 @@ namespace dd4hep {
     /// Access the type field of the condition
     const std::string& type()  const;
 
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if defined(DD4HEP_CONDITIONS_DEBUG) || !defined(DD4HEP_MINIMAL_CONDITIONS)
     /// Access the value field of the condition as a string
     const std::string& value()  const;
     /// Access the comment field of the condition
@@ -244,7 +244,7 @@ namespace dd4hep {
    */
   class ConditionKey  {
   public:
-#ifdef DD4HEP_CONDITIONS_DEBUG
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
     /// Optional string identifier. Helps debugging a lot!
     std::string  name;
 #endif

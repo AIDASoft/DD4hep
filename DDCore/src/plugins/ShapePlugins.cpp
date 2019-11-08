@@ -15,6 +15,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Printout.h"
 #include "XML/Utilities.h"
+#include "../ShapeTags.h"
 #include "TGeoShapeAssembly.h"
 #include "TSystem.h"
 #include "TClass.h"
@@ -100,6 +101,28 @@ static Handle<TObject> create_Tube(Detector&, xml_h element)   {
   return solid;
 }
 DECLARE_XML_SHAPE(Tube__shape_constructor,create_Tube)
+
+static Handle<TObject> create_TwistedTube(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  Solid solid;
+  int nseg = 1;
+  double zpos = 0.0, zneg = 0.0;
+  if ( element.attr_nothrow(_U(nsegments)) )  {
+    nseg = e.nsegments();
+  }
+  if ( element.attr_nothrow(_U(dz)) )  {
+    zneg = -1.0*(zpos = e.dz());
+  }
+  else   {
+    zpos = e.zpos();
+    zneg = e.zneg();
+  }
+  solid = TwistedTube(e.twist(0.0), e.rmin(0.0),e.rmax(),zpos, zneg, nseg, e.deltaphi(2*M_PI));
+
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  return solid;
+}
+DECLARE_XML_SHAPE(TwistedTube__shape_constructor,create_TwistedTube)
 
 static Handle<TObject> create_CutTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
@@ -545,53 +568,59 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     printout(INFO,"TestShape","Created successfull shape of type: %s",
              shape.typeStr().c_str());
     bool instance_test = false;
-    if ( 0 == strcasecmp(solid->GetTitle(),"box") )
+    if ( 0 == strcasecmp(solid->GetTitle(),BOX_TAG) )
       instance_test = isInstance<Box>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Tube") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),TUBE_TAG) )
       instance_test = isInstance<Tube>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"CutTube") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),CUTTUBE_TAG) )
       instance_test = isInstance<CutTube>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Cone") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),CONE_TAG) )
       instance_test = isInstance<Cone>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Trd1") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),TRD1_TAG) )
       instance_test = isInstance<Trd1>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Trd2") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),TRD2_TAG) )
       instance_test = isInstance<Trd2>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Torus") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),TORUS_TAG) )
       instance_test = isInstance<Torus>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Sphere") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),SPHERE_TAG) )
       instance_test = isInstance<Sphere>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"HalfSpace") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),HALFSPACE_TAG) )
       instance_test = isInstance<HalfSpace>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"ConeSegment") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),CONESEGMENT_TAG) )
       instance_test = isInstance<ConeSegment>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Paraboloid") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),PARABOLOID_TAG) )
       instance_test = isInstance<Paraboloid>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Hyperboloid") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),HYPERBOLOID_TAG) )
       instance_test = isInstance<Hyperboloid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),"PolyhedraRegular") )
       instance_test = isInstance<PolyhedraRegular>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Polyhedra") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),POLYHEDRA_TAG) )
       instance_test = isInstance<Polyhedra>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"EllipticalTube") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),ELLIPTICALTUBE_TAG) )
       instance_test = isInstance<EllipticalTube>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"ExtrudedPolygon") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),EXTRUDEDPOLYGON_TAG) )
       instance_test = isInstance<ExtrudedPolygon>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Polycone") )
+    else if ( 0 == strcasecmp(solid->GetTitle(),POLYCONE_TAG) )
       instance_test = isInstance<Polycone>(solid);
-    else if ( 0 == strcasecmp(solid->GetTitle(),"EightPointSolid") )   {
+    else if ( 0 == strcasecmp(solid->GetTitle(),TWISTEDTUBE_TAG) )   {
+      instance_test  =  isInstance<TwistedTube>(solid);
+      instance_test &=  isInstance<Tube>(solid);
+      instance_test &=  isA<TwistedTube>(solid);
+      instance_test &= !isA<Tube>(solid);
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),EIGHTPOINTSOLID_TAG) )   {
       instance_test  =  isInstance<EightPointSolid>(solid);
       instance_test &= !isInstance<Trap>(solid);
       instance_test &=  isA<EightPointSolid>(solid);
       instance_test &= !isA<Trap>(solid);
     }
-    else if ( 0 == strcasecmp(solid->GetTitle(),"Trap") )   {
+    else if ( 0 == strcasecmp(solid->GetTitle(),TRAP_TAG) )   {
       instance_test  =  isInstance<EightPointSolid>(solid);
       instance_test &=  isInstance<Trap>(solid);
       instance_test &=  isA<Trap>(solid);
       instance_test &= !isA<EightPointSolid>(solid);
     }
-    else if ( 0 == strcasecmp(solid->GetTitle(),"SubtractionSolid") )  {
+    else if ( 0 == strcasecmp(solid->GetTitle(),SUBTRACTION_TAG) )  {
       instance_test  =  isInstance<BooleanSolid>(solid);
       instance_test &=  isInstance<SubtractionSolid>(solid);
       instance_test &= !isA<IntersectionSolid>(solid);
@@ -599,7 +628,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test &=  isA<SubtractionSolid>(solid);
       instance_test &= !isA<PseudoTrap>(solid);
     }
-    else if ( 0 == strcasecmp(solid->GetTitle(),"UnionSolid") )  {
+    else if ( 0 == strcasecmp(solid->GetTitle(),UNION_TAG) )  {
       instance_test  =  isInstance<BooleanSolid>(solid);
       instance_test &=  isInstance<UnionSolid>(solid);
       instance_test &= !isA<IntersectionSolid>(solid);
@@ -607,7 +636,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test &= !isA<SubtractionSolid>(solid);
       instance_test &= !isA<PseudoTrap>(solid);
     }
-    else if ( 0 == strcasecmp(solid->GetTitle(),"IntersectionSolid") )  {
+    else if ( 0 == strcasecmp(solid->GetTitle(),INTERSECTION_TAG) )  {
       instance_test  =  isInstance<BooleanSolid>(solid);
       instance_test &=  isInstance<IntersectionSolid>(solid);
       instance_test &=  isA<IntersectionSolid>(solid);
@@ -615,7 +644,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test &= !isA<SubtractionSolid>(solid);
       instance_test &= !isA<PseudoTrap>(solid);
     }
-    else if ( 0 == strcasecmp(solid->GetTitle(),"TruncatedTube") )  {
+    else if ( 0 == strcasecmp(solid->GetTitle(),TRUNCATEDTUBE_TAG) )  {
       instance_test  =  isInstance<BooleanSolid>(solid);
       instance_test &=  isInstance<TruncatedTube>(solid);
       instance_test &=  isA<TruncatedTube>(solid);
@@ -624,7 +653,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test &= !isA<UnionSolid>(solid);
       instance_test &= !isA<SubtractionSolid>(solid);
     }
-    else if ( 0 == strcasecmp(solid->GetTitle(),"PseudoTrap") )  {
+    else if ( 0 == strcasecmp(solid->GetTitle(),PSEUDOTRAP_TAG) )  {
       instance_test  =  isInstance<BooleanSolid>(solid);
       instance_test &=  isInstance<PseudoTrap>(solid);
       instance_test &=  isA<PseudoTrap>(solid);

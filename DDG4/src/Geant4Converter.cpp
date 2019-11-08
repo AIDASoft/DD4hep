@@ -107,26 +107,16 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
                                    G4int copyNumBase,
                                    G4bool surfCheck )
 {
-  TGeoVolume* vol = parent->GetVolume();
   static int level=0;
+  TGeoVolume* vol = parent->GetVolume();
+  unsigned int  numberOfDaughters = 
+    (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
+
   ++level;
-
-
-  unsigned int  numberOfDaughters;
-
-  if( copyNumBase == 0 )
-  {
-    numberOfDaughters = pMotherLV->GetNoDaughters();
-  }
-  else
-  {
-    numberOfDaughters = copyNumBase;
-  }
 
   // We start from the first available index
   //
   numberOfDaughters++;
-
   ImprintsCountPlus();
 
   vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
@@ -1028,20 +1018,20 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
 /// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
 void* Geant4Converter::handleVis(const string& /* name */, VisAttr attr) const {
   Geant4GeometryInfo& info = data();
-  G4VisAttributes* g4 = info.g4Vis[attr];
-  if (!g4) {
+  G4VisAttributes*    g4   = info.g4Vis[attr];
+  if ( !g4 ) {
     float red = 0, green = 0, blue = 0;
-    int style = attr.lineStyle();
+    int   style = attr.lineStyle();
     attr.rgb(red, green, blue);
     g4 = new G4VisAttributes(attr.visible(), G4Colour(red, green, blue, attr.alpha()));
     //g4->SetLineWidth(attr->GetLineWidth());
     g4->SetDaughtersInvisible(!attr.showDaughters());
-    if (style == VisAttr::SOLID) {
+    if ( style == VisAttr::SOLID ) {
       g4->SetLineStyle(G4VisAttributes::unbroken);
       g4->SetForceWireframe(false);
       g4->SetForceSolid(true);
     }
-    else if (style == VisAttr::WIREFRAME || style == VisAttr::DASHED) {
+    else if ( style == VisAttr::WIREFRAME || style == VisAttr::DASHED ) {
       g4->SetLineStyle(G4VisAttributes::dashed);
       g4->SetForceSolid(false);
       g4->SetForceWireframe(true);

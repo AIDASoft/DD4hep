@@ -590,11 +590,11 @@ namespace dd4hep {
   
   /// Class describing a elliptical tube shape
   /**
-   *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
-   *            Semi axis of ellipsis in x and y and half-length dz.
+   *   This is actually no TGeo shape. This implementation is a placeholder
+   *   for the Geant4 implementation G4TwistedTube.
+   *   In root it is implemented by a simple tube segment.
+   *   When converted to geant4 it will become a G4TwistedTube.
    *
-   *   For any further documentation please see the following ROOT documentation:
-   *   \see http://root.cern.ch/root/html/TGeoElTu.html
    *
    *   \author  M.Frank
    *   \version 1.0
@@ -638,6 +638,83 @@ namespace dd4hep {
     EllipticalTube& operator=(const EllipticalTube& copy) = default;
     /// Set the tube dimensions
     EllipticalTube& setDimensions(double a, double b, double dz);
+  };
+
+  /// Class describing a twisted tube shape
+  /**
+   *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
+   *            Semi axis of ellipsis in x and y and half-length dz.
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoElTu.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class TwistedTube : public Solid_type<TGeoTubeSeg> {
+  protected:
+    /// Internal helper method to support TwistedTube object construction
+    void make(const std::string& nam, double twist_angle, double rmin, double rmax,
+              double zneg, double zpos, int nsegments, double totphi);
+
+  public:
+    /// Default constructor
+    TwistedTube() = default;
+    /// Move Constructor
+    TwistedTube(TwistedTube&& e) = default;
+    /// Copy Constructor
+    TwistedTube(const TwistedTube& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> TwistedTube(const Q* p) : Solid_type<Object>(p) {   }
+    /// Constructor to assign an object
+    template <typename Q> TwistedTube(const Handle<Q>& e) : Solid_type<Object>(e) {   }
+
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(double twist_angle, double rmin, double rmax,
+                double dz, double dphi)
+    {  this->make("", twist_angle, rmin, rmax, -dz, dz, 1, dphi);  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(double twist_angle, double rmin, double rmax,
+                double dz, int nsegments, double totphi)
+    {  this->make("", twist_angle, rmin, rmax, -dz, dz, nsegments, totphi);  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(double twist_angle, double rmin, double rmax,
+                double zneg, double zpos, double totphi)
+    {  this->make("", twist_angle, rmin, rmax, zneg, zpos, 1, totphi);  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(double twist_angle, double rmin, double rmax,
+                double zneg, double zpos, int nsegments, double totphi)
+    {  this->make("", twist_angle, rmin, rmax, zneg, zpos, nsegments, totphi);  }
+
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(const std::string& nam, double twist_angle, double rmin, double rmax,
+                double dz, double dphi)
+    {  this->make(nam, twist_angle, rmin, rmax, -dz, dz, 1, dphi);  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(const std::string& nam, double twist_angle, double rmin, double rmax,
+                double dz, int nsegments, double totphi)
+    {  this->make(nam, twist_angle, rmin, rmax, -dz, dz, nsegments, totphi);  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(const std::string& nam, double twist_angle, double rmin, double rmax,
+                double zneg, double zpos, double totphi)
+    {  this->make(nam, twist_angle, rmin, rmax, zneg, zpos, 1, totphi);  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    TwistedTube(const std::string& nam, double twist_angle, double rmin, double rmax,
+                double zneg, double zpos, int nsegments, double totphi)
+    {  this->make(nam, twist_angle, rmin, rmax, zneg, zpos, nsegments, totphi);  }
+
+    /// Constructor to create a new identified tube object with attribute initialization
+    template <typename A, typename B, typename DZ>
+    TwistedTube(const std::string& nam, const A& a, const B& b, const DZ& dz)
+    {  this->make(nam, _toDouble(a), _toDouble(b), _toDouble(dz));   }
+
+    /// Move Assignment operator
+    TwistedTube& operator=(TwistedTube&& copy) = default;
+    /// Copy Assignment operator
+    TwistedTube& operator=(const TwistedTube& copy) = default;
+    /// Set the tube dimensions
+    TwistedTube& setDimensions(double a, double b, double dz);
   };
 
   /// Class describing a trap shape

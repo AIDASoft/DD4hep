@@ -26,6 +26,7 @@
 #define PARABOLOID_TAG      "Paraboloid"
 #define HYPERBOLOID_TAG     "Hyperboloid"
 #define ELLIPTICALTUBE_TAG  "EllipticalTube"
+#define TWISTEDTUBE_TAG     "TwistedTube"
 #define SPHERE_TAG          "Sphere"
 #define TORUS_TAG           "Torus"
 #define TRAP_TAG            "Trap"

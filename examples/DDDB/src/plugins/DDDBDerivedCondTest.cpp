@@ -81,8 +81,8 @@ namespace  {
     virtual ~ConditionUpdate1() {    }
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& ) override final {
-      printout(context.level,"ConditionUpdate1","++ Building dependent condition: %s",key.name.c_str());
-      Condition    target(key.name,"Alignment");
+      printout(context.level,"ConditionUpdate1","++ Building dependent condition: %s",key.toString().c_str());
+      Condition    target("","Alignment");
       target.bind<AlignmentData>();
       return target;
     }
@@ -99,7 +99,7 @@ namespace  {
       catch(const exception& exc)   {
         ++context.numFail1;
         printout(ERROR,"ConditionUpdate2","++ Failed to build condition %s: %s",
-                 ctxt.key(0).name.c_str(), exc.what());
+                 ctxt.key(0).toString().c_str(), exc.what());
       }
     }
   };
@@ -120,8 +120,8 @@ namespace  {
     virtual ~ConditionUpdate2() {    }
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext&)  override final  {
-      printout(context.level,"ConditionUpdate2","++ Building dependent condition: %s",key.name.c_str());
-      Condition     target(key.name,"Alignment");
+      printout(context.level,"ConditionUpdate2","++ Building dependent condition: %s",key.toString().c_str());
+      Condition     target("","Alignment");
       target.bind<AlignmentData>();
       return target;
     }
@@ -140,7 +140,7 @@ namespace  {
       catch(const exception& exc)   {
         ++context.numFail2;
         printout(ERROR,"ConditionUpdate2","++ Failed to build condition %s: %s",
-                 ctxt.key(0).name.c_str(), exc.what());
+                 ctxt.key(0).toString().c_str(), exc.what());
       }
     }
   };
@@ -161,8 +161,8 @@ namespace  {
     virtual ~ConditionUpdate3() {    }
     /// Interface to client Callback in order to update the condition
     virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext&)  override final  {
-      printout(context.level,"ConditionUpdate3","++ Building dependent condition: %s",key.name.c_str());
-      Condition    target(key.name,"Alignment");
+      printout(context.level,"ConditionUpdate3","++ Building dependent condition: %s",key.toString().c_str());
+      Condition    target("","Alignment");
       target.bind<AlignmentData>();
       return target;
     }
@@ -183,7 +183,7 @@ namespace  {
       catch(const exception& exc)   {
         ++context.numFail3;
         printout(ERROR,"ConditionUpdate3","++ Failed to build condition %s: %s",
-                 ctxt.key(0).name.c_str(), exc.what());
+                 ctxt.key(0).toString().c_str(), exc.what());
       }
     }
   };

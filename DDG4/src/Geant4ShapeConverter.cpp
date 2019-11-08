@@ -144,28 +144,26 @@ namespace dd4hep {
 
     template <> G4VSolid* convertShape<TGeoPgon>(const TGeoShape* shape)  {
       const TGeoPgon* sh = (const TGeoPgon*) shape;
-      double phi_start = sh->GetPhi1() * DEGREE_2_RAD;
-      double phi_total = (sh->GetDphi() + sh->GetPhi1()) * DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
       for (Int_t i = 0; i < sh->GetNz(); ++i) {
         rmin.emplace_back(sh->GetRmin(i) * CM_2_MM);
         rmax.emplace_back(sh->GetRmax(i) * CM_2_MM);
         z.emplace_back(sh->GetZ(i) * CM_2_MM);
       }
-      return new G4Polyhedra(sh->GetName(), phi_start, phi_total, sh->GetNedges(), sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
+      return new G4Polyhedra(sh->GetName(), sh->GetPhi1() * DEGREE_2_RAD, sh->GetDphi() * DEGREE_2_RAD,
+                             sh->GetNedges(), sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
 
     template <> G4VSolid* convertShape<TGeoPcon>(const TGeoShape* shape)  {
       const TGeoPcon* sh = (const TGeoPcon*) shape;
-      double phi_start = sh->GetPhi1() * DEGREE_2_RAD;
-      double phi_total = (sh->GetDphi() + sh->GetPhi1()) * DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
       for (Int_t i = 0; i < sh->GetNz(); ++i) {
         rmin.emplace_back(sh->GetRmin(i) * CM_2_MM);
         rmax.emplace_back(sh->GetRmax(i) * CM_2_MM);
         z.emplace_back(sh->GetZ(i) * CM_2_MM);
       }
-      return new G4Polycone(sh->GetName(), phi_start, phi_total, sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
+      return new G4Polycone(sh->GetName(), sh->GetPhi1() * DEGREE_2_RAD, sh->GetDphi() * DEGREE_2_RAD,
+                            sh->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
 
     template <> G4VSolid* convertShape<TGeoCone>(const TGeoShape* shape)  {
